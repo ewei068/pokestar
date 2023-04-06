@@ -4,8 +4,4 @@ const echo = (client, message) => {
     message.channel.send(args.join(" "));
 }
 
-module.exports = {
-	command: "echo",
-    description: "echoes message",
-    execute: echo
-};
+module.exports = echo;
