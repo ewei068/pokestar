@@ -3,9 +3,11 @@ const { stageConfig } = require('../../config/stageConfig');
 
 const prefix = stageConfig[process.env.STAGE].prefix;
 
-const help = (client, message) => {
+const help = async (client, message) => {
     const args = message.content.split(" ");
     args.shift();
+
+    // TODO: change to embed
 
     // if no args, send help message
     if (args.length == 0) {
