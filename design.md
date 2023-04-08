@@ -217,7 +217,7 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 **User Pokemon (in database):**
 
 * ID (index): Unique ID of Pokemon for user.
-* UserID: 
+* UserID (index): Unique ID of Pokemon's owner.
 * SpeciesID: Pokemon's species.
 * Level: Pokemon's level, capped at 100.
 * Exp: Current Pokemon exp.

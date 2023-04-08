@@ -28,6 +28,12 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 * Enable Bot & ability to read client message content
 * Generate link with bot & command priviledges
 
+### Database
+
+* `brew tap mongodb/brew`
+* `brew install mongodb-community@6.0`
+* `brew install mongosh`
+
 ### Environment
 
 * `brew install tmux`
