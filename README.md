@@ -35,11 +35,22 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 
 ### Database
 
+**Local**
+
 * `brew tap mongodb/brew`
 * `brew install mongodb-community@6.0`
 * `brew install mongosh`
 * `brew services start mongodb-community`
     * To stop, `brew services stop mongodb-community`
+    * Don't run in `tmux`
+
+**Debian**
+
+* Follow instructions: https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-debian/
+* If pubkey error: https://chrisjean.com/fix-apt-get-update-the-following-signatures-couldnt-be-verified-because-the-public-key-is-not-available/
+
+**Run Migration**
+
 * `node database/migration.js`
 
 ### Run Bot
