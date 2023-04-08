@@ -20,13 +20,45 @@ The bot should be able to perform the following functions:
 * Handle errors gracefully and provide informative error messages to users 
 
 ## Architecture
-The bot will be built using the Discord.js library, which is a powerful and widely-used library for building Discord bots. The bot will be hosted on a GCP server using a Node.js runtime environment. The data will be stored on a [TBD] database.
+The bot will be built using the Discord.js library, which is a powerful and widely-used library for building Discord bots. The bot will be hosted on a GCP server using a Node.js runtime environment. The data will be stored on a MongoDB database.
 
 The following components will be used to build the bot:
 
 * Discord.js library
 * Node.js runtime environment
-* Database
+* MongoDB database
+
+### Database
+
+There are two options being considered for database
+
+**Option 1: MongoDB (recommended)**
+
+* Pros:
+	* Easy to use
+	* Easy to handle queries and data access
+	* Flexible schema
+	* New (want to learn)
+* Cons:
+	* May be slower
+	* Harder to support complex operations and queries
+	* (Possibly) more expensive
+
+**Option 2: Postgres**
+
+* Pros:
+	* Already know how to use
+	* Easily supports complex operations
+	* Data is somewhat-relational
+	* Flexible compared to other SQL
+* Cons:
+	* Hard to query
+	* More difficult to make changes
+	* Requires more planning
+
+**Choice: Option 1 MongoDB**
+
+I'm deciding to go with MongoDB for a few reasons. First, the ease-of-use and flexibility of MongoDB will be useful for this project as I don't know the full scope and data requirements as of yet. Some of the data takes on a document-like structure, such as Pokemon information and backpack information, which makes MongoDB convenient. Additionally, I'd like to learn something new for this project.
 
 
 ## Design
@@ -116,6 +148,12 @@ Rate limiting users and/or servers: TBD.
 	* Held items: TBD
 	* Evolution items: TBD
 
+**Trainer Info**
+
+* Aliases: `trainerinfo`, `trainer`, `user`, `userinfo`
+* Args: `user` (discord handle) 
+* Functionality: Displays the users info if no args. If `user` provided, displays info for the specified user (don't implement yet). 
+
 **Daily Rewards**
 
 * Aliases: `daily`, `dailyrewards`
@@ -133,6 +171,14 @@ Rate limiting users and/or servers: TBD.
 * Functionality: Lists all the items in the user's backpack by category and their quantity.
 
 ## Data
+
+### MongoDB
+
+The MongoDB will have two collections as of now. These are the Users and User Pokemon collections (as specified below). Queries will be handled by a MongoDB client helper, which is in charge of loading MongoDB client, specifying tables, and interacting with the client.
+
+To manage schema migrations, a config will be created that details the tables and their index configurations. A file will be created that will create the tables and indices from the config if they don't already exist. This script will be run before every deployment.
+
+Once the data schema gets more set-in-stone, JSON schema validation will be implemented.
 
 ### General
 
@@ -156,7 +202,7 @@ Rate limiting users and/or servers: TBD.
 
 **Pokemon config:**
 
-* ID: Pokemon's unique ID.
+* SpeciesID: Pokemon's unique ID. 
 * Name: Pokemon's display name.
 * Rarity: Rarity of Pokemon, determines growth rate.
 * Type: The type(s) of the Pokemon.
@@ -168,18 +214,20 @@ Rate limiting users and/or servers: TBD.
 	* Level: Evolution level
 	* Item: Evolution item
 
-**User Pokemon:**
+**User Pokemon (in database):**
 
-* ID: Unique ID of Pokemon for user.
+* ID (index): Unique ID of Pokemon for user.
+* UserID: 
+* SpeciesID: Pokemon's species.
 * Level: Pokemon's level, capped at 100.
 * Exp: Current Pokemon exp.
 * EVs: List of EVs for Pokemon.
 * IVs: List of IVs for Pokemon.
-* Nature: Pokemon's nature, modifying stats.
-* Ability: Pokemon's ability.
+* NatureID: Pokemon's nature ID, modifying stats.
+* AbilityID: Pokemon's ability ID.
 * Item: Pokemon's held item.
-* Moves: Pokemon's currently learned moves.
-* Equipped Moves: Pokemon's currently equipped moves.
+* MoveIDs: Pokemon's currently learned move IDs.
+* Equipped MoveIDs: Pokemon's currently equipped move IDs.
 
 **Nature**
 
@@ -188,10 +236,39 @@ Rate limiting users and/or servers: TBD.
 * Up: Stat the nature boosts.
 * Down: Stat the nature reduces.
 
+### Trainer
+
+**Users (in database):**
+
+* UserID (index): User's Discord ID.
+* Money: User's money.
+* LastDaily: Time last daily reward claimed.
+* Backpack:
+	* {CATEGORY_ID}: ID of cateogry.
+		* {ITEM_ID} => Quantity: Maps an item ID to quantity of owned item.
+
+**Backpack Category Config**
+
+* CategoryID: Category of items.
+	* Name: Name of Category.
+	* Description: Description of Category.
+	* ItemIDs: List of item IDs belonging to this category
+
+**Backpack Item Config**
+
+* ItemID
+	* Name: Name of item.
+	* Category (?): Category of item.
+	* Description: Description of item.
+	* Image (?): Link to image of item. 
+
 ## Starting Roadmap
 
 * General functionality
+* Setup Database
 * Basic trainer: daily rewards, balls, backpack
 * Basic pokemon: draw, list, inspect
 * Basic training: train, evolve
+* Database schema validation
 * Basic battling: placement, teams, moves (no abilities/held items)
+* Automate stage deployment pipeline
