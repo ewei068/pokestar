@@ -1,8 +1,12 @@
-const { collectionNames } = require("../../config/databaseConfig");
-const { findDocuments } = require("../../database/mongoHandler");
-
-const ping = async (client, message) => {
+const pingMessageCommand = async (client, message) => {
     message.channel.send("pong!");
 }
 
-module.exports = ping;
+const pingSlashCommand = async (interaction) => {
+    interaction.reply("pong!");
+}
+
+module.exports = {
+    message: pingMessageCommand,
+    slash: pingSlashCommand
+};

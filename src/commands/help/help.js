@@ -1,16 +1,13 @@
-const commandConfig = require('../../config/commandConfig');
+const { commandConfig } = require('../../config/commandConfig');
 const { stageConfig } = require('../../config/stageConfig');
 
 const prefix = stageConfig[process.env.STAGE].prefix;
 
-const help = async (client, message) => {
-    const args = message.content.split(" ");
-    args.shift();
-
+const help = async (command) => {
     // TODO: change to embed
 
     // if no args, send help message
-    if (args.length == 0) {
+    if (command == "") {
         let msg = ">>> **Help**\n\n";
         // parse command config for commands and categories
         for (const category in commandConfig) {
@@ -27,12 +24,12 @@ const help = async (client, message) => {
                 msg += `* \`${prefix}${command}${argString}\` - ${commandConfig[category].commands[command].description}\n`;
             }
         }
-        message.channel.send(msg);
+        return msg;
     }
 
     // if args, send help message for specific command
     else {
-        const providedCommand = args[0];
+        const providedCommand = command;
         // search through command config for alias
         for (const category in commandConfig) {
             for (const command in commandConfig[category].commands) {
@@ -52,13 +49,39 @@ const help = async (client, message) => {
                         const argConfig = commandConfig[category].commands[command].args[arg];
                         msg += `* \`${arg}\` - ${argConfig.type} ${argConfig.optional ? "(optional)" : ""}\n`;
                     }
-                    message.channel.send(msg);
-                    return;
+                    return msg;
                 }
             }
         }
-        message.channel.send(`>>> **Help for ${command}**\n\nCommand not found.`);
+        return `>>> **Help for ${command}**\n\nCommand not found.`;
     }
 }
 
-module.exports = help;
+const helpMessageCommand = async (client, message) => {
+    const args = message.content.split(" ");
+    args.shift();
+
+    let command = ""
+    if (args.length > 0) {
+        command = args[0];
+    }
+
+    const helpMessage = await help(command);
+    message.channel.send(helpMessage);
+}
+
+const helpSlashCommand = async (interaction) => {
+    const args = interaction.options._hoistedOptions;
+    let command = "";
+    if (args.length > 0) {
+        command = args[0].value;
+    }
+
+    const helpMessage = await help(command);
+    interaction.reply(helpMessage);
+}
+
+module.exports = {
+    message: helpMessageCommand,
+    slash: helpSlashCommand
+}

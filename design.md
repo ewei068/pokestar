@@ -77,6 +77,7 @@ Rate limiting users and/or servers: TBD.
 ## Detailed Implementation
 
 ### General Implementation
+* Slash commands: the Bot will support both message prefixes and Slash commands.
 * Command prefix: The `ps!` prefix will be used to signal a bot command. This prefix is designed to be unique to ensure compatability with other possible bots on the server. Development stages will have different prefixes.
 * Command config: A config file will be kept that enumerates each command and its appropriate information.
 * Command handler: When the bot is started up, the command config is parsed to map each command in the stage and all its aliases to a its execution function. Upon recieving a command, the command handler will validate that the correct prefix is used. Then, the command will be looked up in the command map. If the command exists, the arguments will be parsed and validated. If no errors, the appropriate function will be executed.
@@ -192,6 +193,7 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 		* Aliases: All aliases of a command. Aliases can be used in place of a command name.
 		* Args: Arguments of a command, to be listed after the command name.
 			* Type: Type of argument.
+			* Description: Description of argument.
 			* Optional: Whether or not the argument is optional.
 			* Variable: If an argument is variable, it may contain multiple words and must be at the end of the command.
 		* Execute: JS file where this command's execute functionality is located.
@@ -274,4 +276,4 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 * Basic training: train, evolve
 * Database schema validation
 * Basic battling: placement, teams, moves (no abilities/held items)
-* Automate stage deployment pipeline
+* Automate stage deployment pipeline and testing

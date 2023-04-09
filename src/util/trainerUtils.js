@@ -6,7 +6,6 @@ const { trainerFields } = require("../config/trainerConfig");
 "user": {
     "username": "Mason",
     "public_flags": 131141,
-    "id": "53908232506183680",
     "discriminator": "1337",
     "avatar": "a_d5efa99b3eeaa7dd43acca82f5692432"
 } 
@@ -48,6 +47,15 @@ const initTrainer = async (user) => {
 }
 
 const getTrainer = async (user) => {
+    // only keep desired fields
+    let tmpUser = {
+        "id": user.id,
+        "username": user.username,
+        "discriminator": user.discriminator,
+        "avatar": user.avatar
+    }
+    user = tmpUser;
+
     let trainers;
     try {
         // check if trainer exists
@@ -73,7 +81,6 @@ const getTrainer = async (user) => {
 
     // check to see if trainer.user is up to date
     if (trainer.user.username != user.username 
-        || trainer.user.public_flags != user.public_flags 
         || trainer.user.discriminator != user.discriminator 
         || trainer.user.avatar != user.avatar) {
         // update trainer.user
@@ -98,6 +105,7 @@ const getTrainer = async (user) => {
     }
 
     if (modified) {
+        console.log(`Updating trainer ${user.username}...`)
         const rv = await updateDocument(
             collectionNames.USERS,
             { "userId": user.id },

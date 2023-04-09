@@ -2,17 +2,34 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Events, GatewayIntentBits } = require('discord.js');
-const { runCommand } = require('./commands/commandManager.js');
+const { runMessageCommand, runSlashCommand } = require('./commands/commandManager.js');
 
 // Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
+const client = new Client({ intents: 
+    [
+        GatewayIntentBits.Guilds, 
+        GatewayIntentBits.GuildMessages, 
+        GatewayIntentBits.MessageContent
+    ] 
+});
 
-client.on("messageCreate", (message) => {
-    runCommand(client, message).then(() => {
+client.on(Events.MessageCreate, (message) => {
+    runMessageCommand(client, message).then(() => {
         // do nothing
     }).catch((error) => {
         console.error(error)
         message.reply("There was an error trying to execute that command!");
+    });
+});
+
+client.on(Events.InteractionCreate, (interaction) => {
+    if (!interaction.isChatInputCommand()) return;
+
+    runSlashCommand(interaction).then(() => {
+        // do nothing
+    }).catch((error) => {
+        console.error(error)
+        interaction.reply("There was an error trying to execute that command!");
     });
 });
 

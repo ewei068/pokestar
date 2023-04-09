@@ -19,6 +19,7 @@ const commandConfig = {
                 "args": {
                     "message": {
                         "type": "string",
+                        "description": "message to echo",
                         "optional": true,
                         "variable": true
                     }
@@ -38,6 +39,7 @@ const commandConfig = {
                 "args": {
                     "command": {
                         "type": "string",
+                        "description": "command to get help with",
                         "optional": true,
                         "variable": false
                     }
@@ -61,4 +63,6 @@ const commandConfig = {
     }
 }
 
-module.exports = commandConfig;
+module.exports = { 
+    commandConfig
+};

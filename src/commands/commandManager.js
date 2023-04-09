@@ -1,12 +1,40 @@
-const commandConfig = require('../config/commandConfig');
+const { SlashCommandBuilder } = require('discord.js');
+const { commandConfig } = require('../config/commandConfig');
 const { stageNames, stageConfig } = require('../config/stageConfig');
 const fs = require('node:fs');
 const path = require('node:path');
 
 const prefix = stageConfig[process.env.STAGE].prefix;
 
-const commands = {};
+const messageCommands = {};
+const slashCommands = {}
 const commandLookup = {};
+
+const buildSlashCommand = (commandConfig) => {
+    const slashCommand = new SlashCommandBuilder()
+        .setName(commandConfig.aliases[0])
+        .setDescription(commandConfig.description);
+    for (const arg in commandConfig.args) {
+        const argConfig = commandConfig.args[arg];
+        if (argConfig.type == "string") {
+            slashCommand.addStringOption(option =>
+                option.setName(arg)
+                    .setDescription(argConfig.description)
+                    .setRequired(!argConfig.optional));
+        } else if (argConfig.type == "int") {
+            slashCommand.addIntegerOption(option =>
+                option.setName(arg)
+                    .setDescription(argConfig.description)
+                    .setRequired(!argConfig.optional));
+        } else if (argConfig.type == "boolean") {
+            slashCommand.addBooleanOption(option =>
+                option.setName(arg)
+                    .setDescription(argConfig.description)
+                    .setRequired(!argConfig.optional));
+        }
+    }
+    return slashCommand;
+}
 
 for (const commandGroup in commandConfig) {
     const commandGroupConfig = commandConfig[commandGroup];
@@ -16,8 +44,13 @@ for (const commandGroup in commandConfig) {
             const filePath = path.join(__dirname, commandGroupConfig.folder, commandConfig.execute);
             const commandExecute = require(filePath);
             for (const alias of commandConfig.aliases) {
-                commands[`${prefix}${alias}`] = commandExecute;
+                if (commandExecute.message) {
+                    messageCommands[`${prefix}${alias}`] = commandExecute.message;
+                }
                 commandLookup[`${prefix}${alias}`] = commandConfig;
+            }
+            if (commandExecute.slash) {
+                slashCommands[command] = commandExecute.slash;
             }
         }
     }
@@ -76,12 +109,18 @@ const validateArgs = (command, args) => {
     return true;
 }
             
-const runCommand = async (client, message) => {
+const runMessageCommand = async (client, message) => {
     // get first word of message
     let command = message.content.split(" ")[0];
 
-    // if command doesn't start with prefix or not in commands, return
-    if (!command.startsWith(prefix) || !(command in commands)) return;
+    // if not a command, return
+    if (!command.startsWith(prefix)) return;
+
+    // if command not in commands, return
+    if (!(command in messageCommands)) {
+        message.reply(`Invalid command! Try \`${prefix}help\` for more info.`);
+        return;
+    }
 
     // validate args
     const args = message.content.split(" ").slice(1);
@@ -94,11 +133,31 @@ const runCommand = async (client, message) => {
 
     // execute command
     try {
-        await commands[command](client, message);
+        await messageCommands[command](client, message);
     } catch (error) {
         console.error(error);
         message.reply("There was an error trying to execute that command!");
     }
 }
 
-module.exports = { runCommand };
+const runSlashCommand = async (interaction) => {
+    // get command name
+    const command = interaction.commandName;
+
+    // if command not in commands, return
+    if (!(command in slashCommands)) return;
+
+    // execute command
+    try {
+        await slashCommands[command](interaction);
+    } catch (error) {
+        console.error(error);
+        interaction.reply("There was an error trying to execute that command!");
+    }
+}
+
+module.exports = { 
+    runMessageCommand: runMessageCommand,
+    runSlashCommand: runSlashCommand,
+    buildSlashCommand
+};

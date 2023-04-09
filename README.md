@@ -20,7 +20,7 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 * `brew install node@16`
 * Add path to `~/.profile`
 * `git clone https://github.com/ewei068/pokestar.git`
-* `cd pokestar && npm install`
+* `cd pokestar/src && npm install`
 
 ### Create Bot
 
@@ -31,7 +31,8 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 ### Environment
 
 * `brew install tmux`
-* Export `DISCORD_TOKEN`, `STAGE`, `MONGODB_URL` in profile
+* Export `DISCORD_TOKEN`, `STAGE`, `MONGODB_URL`, `CLIENT_ID` in profile
+* Upload commands: `node commands/deployCommands.js`
 
 ### Database
 
