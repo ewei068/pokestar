@@ -5,13 +5,11 @@ const baseURL = process.env.MONGODB_URL;
 
 const client = new MongoClient(`${baseURL}/${DB_NAME}`, { useUnifiedTopology: true, connectTimeoutMS: 5000});
 
-const connectToClient = async () => {
-    await client.connect();
-    return client;
-}
+client.connect().then(() => {
+    console.log("Connected to MongoDB");
+});
 
 const getCollection = async (collectionName) => {
-    const client = await connectToClient();
     const dbo = client.db(DB_NAME);
     return dbo.collection(collectionName);
 }

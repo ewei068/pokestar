@@ -8,13 +8,12 @@ const { runCommand } = require('./commands/commandManager.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
 client.on("messageCreate", (message) => {
-    // execute command
-    try {
-        runCommand(client, message);
-    } catch (error) {
-        console.error(error);
+    runCommand(client, message).then(() => {
+        // do nothing
+    }).catch((error) => {
+        console.error(error)
         message.reply("There was an error trying to execute that command!");
-    }
+    });
 });
 
 // When the client is ready, run this code (only once)

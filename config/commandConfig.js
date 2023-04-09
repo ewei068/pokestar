@@ -45,6 +45,19 @@ const commandConfig = {
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD]
             }
         }
+    },
+    "trainer": {
+        "description": "Trainer commands",
+        "folder": "trainer",
+        "commands": {
+            "trainerinfo": {
+                "aliases": ["trainerinfo", "trainer", "ti", "userinfo", "user"],
+                "description": "Get info about a trainer",
+                "execute": "trainerInfo.js",
+                "args": {},
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD]
+            },
+        }
     }
 }
 

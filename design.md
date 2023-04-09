@@ -241,6 +241,7 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 **Users (in database):**
 
 * UserID (index): User's Discord ID.
+* User: JSON of user information.
 * Money: User's money.
 * LastDaily: Time last daily reward claimed.
 * Backpack:

@@ -76,7 +76,7 @@ const validateArgs = (command, args) => {
     return true;
 }
             
-const runCommand = (client, message) => {
+const runCommand = async (client, message) => {
     // get first word of message
     let command = message.content.split(" ")[0];
 
@@ -94,7 +94,7 @@ const runCommand = (client, message) => {
 
     // execute command
     try {
-        commands[command](client, message);
+        await commands[command](client, message);
     } catch (error) {
         console.error(error);
         message.reply("There was an error trying to execute that command!");

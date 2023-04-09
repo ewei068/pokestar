@@ -7,7 +7,12 @@ const collectionNames = {
 
 const collectionConfig = {
     [collectionNames.USERS]: {
-        indexes: []
+        indexes: [
+            {
+                key: { userId: 1 },
+                unique: true
+            }
+        ]
     },
     [collectionNames.USER_POKEMON]: {
         indexes: [
