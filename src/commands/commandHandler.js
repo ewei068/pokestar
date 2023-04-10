@@ -140,7 +140,7 @@ const runMessageCommand = async (client, message) => {
         if (exp && exp > 0) {
             const { level, err } = await addExp(message.author, commandLookup[command].exp);
             if (err) {
-                logger.error(err);
+                return;
             } else if (level) {
                 message.reply(`You leveled up to level ${level}!`);
             }
@@ -165,15 +165,23 @@ const runSlashCommand = async (interaction) => {
         if (exp && exp > 0) {
             const { level, err } = await addExp(interaction.user, commandLookup[`${prefix}${command}`].exp);
             if (err) {
-                logger.error(err);
+                return;
             } else if (level) {
                 // TODO: figure out better way to multi-reply to an interaction
-                interaction.channel.send(`You leveled up to level ${level}!`);
+                try {
+                    await interaction.reply(`You leveled up to level ${level}!`);
+                } catch (error) {
+                    await interaction.channel.send(`You leveled up to level ${level}!`);
+                }
             }
         }
     } catch (error) {
         logger.error(error);
-        interaction.reply("There was an error trying to execute that command!");
+        try {
+            await interaction.reply("There was an error trying to execute that command!");
+        } catch (error) {
+            await interaction.channel.send("There was an error trying to execute that command!");
+        }
     }
 }
 

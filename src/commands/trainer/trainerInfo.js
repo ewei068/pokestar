@@ -14,8 +14,7 @@ const trainerInfo = async (user) => {
 const trainerInfoMessageCommand = async (client, message) => {
     const { embed, err } = await trainerInfo(message.author);
     if (err) {
-        logger.error(err);
-        message.channel.send("Error getting trainer info.");
+        message.channel.send(`${err}`);
     } else {
         message.channel.send({ embeds: [embed] });
     }
@@ -24,8 +23,7 @@ const trainerInfoMessageCommand = async (client, message) => {
 const trainerInfoSlashCommand = async (interaction) => {
     const { embed, err } = await trainerInfo(interaction.user);
     if (err) {
-        logger.error(err);
-        interaction.reply("Error getting trainer info.");
+        interaction.reply(`${err}`);
     } else {
         interaction.reply({ embeds: [embed] });
     }

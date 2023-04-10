@@ -42,9 +42,19 @@ const initTrainer = async (user) => {
         }
     }
 
-    const res = await insertDocument(collectionNames.USERS, trainer);
-    logger.info(`Trainer ${user.username} created at ID ${res.insertedId}.`);
-    return trainer;
+    try {
+        const res = await insertDocument(collectionNames.USERS, trainer);
+        if (res.insertedCount === 0) {
+            logger.error(`Failed to insert trainer ${user.username}.`);
+            return null;
+        }
+
+        logger.info(`Trainer ${user.username} created at ID ${res.insertedId}.`);
+        return trainer;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
 }
 
 const getTrainer = async (user) => {
@@ -70,6 +80,9 @@ const getTrainer = async (user) => {
     if (trainers.length === 0) {
         try {
             trainer = await initTrainer(user);
+            if (trainer === null) {
+                return { data: null, err: "Error creating trainer." };
+            }
         } catch (error) {
             logger.error(error);
             return { data: null, err: "Error creating trainer." };
@@ -97,14 +110,19 @@ const getTrainer = async (user) => {
     }
 
     if (modified) {
-        logger.info(`Updating trainer ${user.username}...`)
-        const res = await updateDocument(
-            collectionNames.USERS,
-            { "userId": user.id },
-            { $set: trainer }
-        );
-        if (res.modifiedCount === 0) {
-            // console.error(error);
+        try {
+            const res = await updateDocument(
+                collectionNames.USERS,
+                { "userId": user.id },
+                { $set: trainer }
+            );
+            if (res.modifiedCount === 0) {
+                logger.error(`Failed to update trainer ${user.username}.`)
+                return { data: null, err: "Error updating trainer." };
+            }
+            logger.info(`Updated trainer ${user.username}.`);
+        } catch (error) {
+            logger.error(error);
             return { data: null, err: "Error updating trainer." };
         }
     }
@@ -128,27 +146,38 @@ const addExp = async (user, exp) => {
     }
 
     if (level > trainer.data.level) {
-        res = await updateDocument(
-            collectionNames.USERS,
-            { "userId": user.id },
-            { $set: { "level": level, "exp": newExp } }
-        );
-        if (res.modifiedCount === 0) {
-            // console.error(error);
+        try {
+            res = await updateDocument(
+                collectionNames.USERS,
+                { "userId": user.id },
+                { $set: { "level": level, "exp": newExp } }
+            );
+            if (res.modifiedCount === 0) {
+                logger.error(`Failed to level-up trainer ${user.username}.`)
+                return { level: 0, err: "Error updating trainer." };
+            }
+            logger.info(`Trainer ${user.username} leveled up to level ${level}.`);
+            return { level: level, err: null };
+        } catch (error) {
+            logger.error(error);
             return { level: 0, err: "Error updating trainer." };
         }
-        return { level: level, err: null };
     } else {
-        res = await updateDocument(
-            collectionNames.USERS,
-            { "userId": user.id },
-            { $set: { "exp": newExp } }
-        );
-        if (res.modifiedCount === 0) {
-            // console.error(error);
+        try {
+            res = await updateDocument(
+                collectionNames.USERS,
+                { "userId": user.id },
+                { $set: { "exp": newExp } }
+            );
+            if (res.modifiedCount === 0) {
+                logger.error(`Failed to add exp to trainer ${user.username}.`);
+                return { level: 0, err: "Error updating trainer." };
+            }
+            return { level: 0, err: null };
+        } catch (error) {
+            logger.error(error);
             return { level: 0, err: "Error updating trainer." };
         }
-        return { level: 0, err: null };
     }
 }
 

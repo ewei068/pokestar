@@ -33,8 +33,7 @@ const daily = async (user) => {
 const dailyMessageCommand = async (client, message) => {
     const { data, err } = await daily(message.author);
     if (err) {
-        logger.error(err);
-        message.channel.send("Error claiming daily rewards.");
+        message.channel.send(`${err}`);
     } else {
         message.channel.send(data);
     }
@@ -43,8 +42,7 @@ const dailyMessageCommand = async (client, message) => {
 const dailySlashCommand = async (interaction) => {
     const { data, err } = await daily(interaction.user);
     if (err) {
-        logger.error(err);
-        interaction.reply("Error claiming daily rewards.");
+        interaction.reply(`${err}`);
     } else {
         interaction.reply(data);
     }

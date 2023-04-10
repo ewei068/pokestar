@@ -1,12 +1,13 @@
 const { MongoClient } = require("mongodb");
 const { DB_NAME, collectionNames } = require("../config/databaseConfig");
+const { logger } = require("../log");
 
 const baseURL = process.env.MONGODB_URL;
 
 const client = new MongoClient(`${baseURL}/${DB_NAME}`, { useUnifiedTopology: true, connectTimeoutMS: 5000});
 
 client.connect().then(() => {
-    console.log("Connected to MongoDB");
+    logger.info(`Connected to database ${DB_NAME}!`);
 });
 
 const getCollection = async (collectionName) => {

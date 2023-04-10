@@ -14,24 +14,35 @@ const client = new Client({ intents:
     ] 
 });
 
-client.on(Events.MessageCreate, (message) => {
+client.on(Events.MessageCreate, async (message) => {
     runMessageCommand(client, message).then(() => {
         // do nothing
     }).catch((error) => {
+        logger.error(`Error in message command: ${message.content}`);
         logger.error(error);
         message.reply("There was an error trying to execute that command!");
     });
 });
 
-client.on(Events.InteractionCreate, (interaction) => {
+client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
     runSlashCommand(interaction).then(() => {
         // do nothing
-    }).catch((error) => {
+    }).catch(async (error) => {
+        logger.error(`Error in slash command: ${interaction.commandName}`);
         logger.error(error);
-        interaction.reply("There was an error trying to execute that command!");
+        try {
+            await interaction.reply("There was an error trying to execute that command!");
+        } catch (error) {
+            interaction.channel.send("There was an error trying to execute that command!");
+        }
     });
+});
+
+// On guild join, log it
+client.on(Events.GuildCreate, (guild) => {
+    logger.info(`Joined guild: ${guild.name} (${guild.id})`);
 });
 
 // When the client is ready, run this code (only once)
@@ -39,6 +50,12 @@ client.on(Events.InteractionCreate, (interaction) => {
 client.once(Events.ClientReady, c => {
 	logger.info(`Ready! Logged in as ${c.user.tag}`);
     client.user.setActivity(`psa!help | psa!ti`);
+    // log connected guilds
+    let guildString = "";
+    client.guilds.cache.forEach(guild => {
+        guildString += `${guild.name} (${guild.id})\n`;
+    });
+    logger.info(`Connected to guilds: \n${guildString}`);
 });
 
 // Log in to Discord with your client's token

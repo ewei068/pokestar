@@ -2,6 +2,7 @@ const { backpackCategories } = require('../config/backpackConfig');
 const { dailyRewardChances, NUM_DAILY_REWARDS } = require('../config/gachaConfig');
 const { updateDocument } = require('../database/mongoHandler');
 const { stageNames } = require('../config/stageConfig');
+const { logger } = require('../log');
 
 const drawDiscrete = (probabilityDistribution, times) => {
     const results = [];
@@ -39,10 +40,13 @@ const drawDaily = async (trainer) => {
     try {
         res = await updateDocument('users', { userId: trainer.userId }, { $set: { backpack: trainer.backpack, lastDaily: trainer.lastDaily } });
         if (res.modifiedCount === 0) {
-            return { data: null, err: "Error updating trainer." };
+            logger.error(`Failed to daily draw and update ${trainer.user.username}.`);
+            return { data: null, err: "Error daily draw update." };
         }
+        logger.info(`Daily draw and update ${trainer.user.username}.`);
     } catch (error) {
-        return { data: null, err: "Error updating trainer." };
+        logger.error(error);
+        return { data: null, err: "Error daily draw update." };
     }
 
     return { data: results, err: null };
