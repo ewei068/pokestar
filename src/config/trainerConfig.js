@@ -38,40 +38,15 @@ const trainerFields = {
     },
 }
 
-const levelConfig = {
-    1: {
-        "exp": 0,
-    },
-    2: {
-        "exp": 100,
-    },
-    3: {
-        "exp": 200,
-    },
-    4: {
-        "exp": 300,
-    },
-    5: {
-        "exp": 400,
-    },
-    6: {
-        "exp": 500,
-    },
-    7: {
-        "exp": 600,
-    },
-    8: {
-        "exp": 700,
-    },
-    9: {
-        "exp": 800,
-    },
-    10: {
-        "exp": 900,
-    }
+// level 1: 0 exp, level 2: 100 exp, level 3: 300 exp, level 4: 600 exp, level 5: 1000 exp etc...
+const getTrainerLevelExp = (level) => {
+    return 50 * (level ** 2 - level);
 }
+const MAX_TRAINER_LEVEL = 10;
+
 
 module.exports = { 
     trainerFields, 
-    levelConfig 
+    getTrainerLevelExp: getTrainerLevelExp,
+    MAX_TRAINER_LEVEL,
 };

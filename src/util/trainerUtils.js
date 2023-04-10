@@ -1,6 +1,6 @@
 const { findDocuments, insertDocument, updateDocument } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
-const { trainerFields } = require("../config/trainerConfig");
+const { trainerFields, getTrainerLevelExp, MAX_TRAINER_LEVEL } = require("../config/trainerConfig");
 
 /* 
 "user": {
@@ -106,13 +106,13 @@ const getTrainer = async (user) => {
 
     if (modified) {
         console.log(`Updating trainer ${user.username}...`)
-        const rv = await updateDocument(
+        const res = await updateDocument(
             collectionNames.USERS,
             { "userId": user.id },
             { $set: trainer }
         );
-        if (rv.modifiedCount === 0) {
-            console.error(error);
+        if (res.modifiedCount === 0) {
+            // console.error(error);
             return { data: null, err: "Error updating trainer." };
         }
     }
@@ -120,6 +120,49 @@ const getTrainer = async (user) => {
     return { data: trainer, err: null };
 }
 
+const addExp = async (user, exp) => {
+    const trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { level: 0, err: trainer.err };
+    }
+
+    const newExp = trainer.data.exp + exp;
+    let level = trainer.data.level;
+    while (newExp >= getTrainerLevelExp(level + 1)) {
+        if (level >= MAX_TRAINER_LEVEL) {
+            break;
+        }
+        level++;
+    }
+
+    if (level > trainer.data.level) {
+        res = await updateDocument(
+            collectionNames.USERS,
+            { "userId": user.id },
+            { $set: { "level": level, "exp": newExp } }
+        );
+        if (res.modifiedCount === 0) {
+            // console.error(error);
+            return { level: 0, err: "Error updating trainer." };
+        }
+        return { level: level, err: null };
+    } else {
+        res = await updateDocument(
+            collectionNames.USERS,
+            { "userId": user.id },
+            { $set: { "exp": newExp } }
+        );
+        if (res.modifiedCount === 0) {
+            // console.error(error);
+            return { level: 0, err: "Error updating trainer." };
+        }
+        return { level: 0, err: null };
+    }
+}
+
+
+
 module.exports = {
     getTrainer,
+    addExp
 }

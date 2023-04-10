@@ -116,6 +116,9 @@ Rate limiting users and/or servers: TBD.
 	* `ball`
 * Functionality: Attempts to use the specified `ball` to roll on the provided `bannerId`. Errors out if `bannerId` or `ball` doesn't exist, or if user doesn't have enough balls. If successful, a Pokemon will be drawn from the banner. This Pokemon will be level 1, 0 EVs, random IVs, random ability, random nature, base moveset. The Pokemon will also have a randomly generated UUID.
 
+**Banners**
+List banners.
+
 **List**
 
 * Aliases: `list`, `listpokemon`

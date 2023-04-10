@@ -57,7 +57,8 @@ const commandConfig = {
                 "description": "Get info about a trainer",
                 "execute": "trainerInfo.js",
                 "args": {},
-                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD]
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+                "exp": 10
             },
         }
     }
