@@ -30,9 +30,12 @@ const drawDaily = async (trainer) => {
     }
 
     const results = drawDiscrete(dailyRewardChances, NUM_DAILY_REWARDS);
+    const pokeballs = trainer.backpack[backpackCategories.POKEBALLS] || {};
     for (const result of results) {
-        trainer.backpack[backpackCategories.POKEBALLS][result]++;
+        const oldVal = pokeballs[result] || 0;
+        pokeballs[result] = oldVal + 1;
     }
+    trainer.backpack[backpackCategories.POKEBALLS] = pokeballs;
     try {
         res = await updateDocument('users', { userId: trainer.userId }, { $set: { backpack: trainer.backpack, lastDaily: trainer.lastDaily } });
         if (res.modifiedCount === 0) {

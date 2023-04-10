@@ -13,7 +13,7 @@ const backpackCategoryConfig = {
     [backpackCategories.POKEBALLS]: {
         "name": "Pokeballs",
         "emoji": "🎾",
-        "description": "Used to catch Pokemon! Use the \`gacha\` command to learn more!",
+        "description": "Used to catch Pokemon! Use \`/help gacha\` command to learn more!",
         "items": [
             backpackItems.POKEBALL,
             backpackItems.GREATBALL,
