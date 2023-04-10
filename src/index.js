@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 const { runMessageCommand, runSlashCommand } = require('./commands/commandHandler.js');
+const { logger } = require('./log');
 
 // Create a new client instance
 const client = new Client({ intents: 
@@ -17,7 +18,7 @@ client.on(Events.MessageCreate, (message) => {
     runMessageCommand(client, message).then(() => {
         // do nothing
     }).catch((error) => {
-        console.error(error)
+        logger.error(error);
         message.reply("There was an error trying to execute that command!");
     });
 });
@@ -28,7 +29,7 @@ client.on(Events.InteractionCreate, (interaction) => {
     runSlashCommand(interaction).then(() => {
         // do nothing
     }).catch((error) => {
-        console.error(error)
+        logger.error(error);
         interaction.reply("There was an error trying to execute that command!");
     });
 });
@@ -36,7 +37,7 @@ client.on(Events.InteractionCreate, (interaction) => {
 // When the client is ready, run this code (only once)
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, c => {
-	console.log(`Ready! Logged in as ${c.user.tag}`);
+	logger.info(`Ready! Logged in as ${c.user.tag}`);
     client.user.setActivity(`psa!help | psa!ti`);
 });
 

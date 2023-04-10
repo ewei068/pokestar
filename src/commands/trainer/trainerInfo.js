@@ -1,5 +1,6 @@
 const { getTrainer } = require('../../utils/trainerUtils.js');
 const { buildTrainerEmbed } = require('../../embeds/trainerEmbeds.js');
+const { logger } = require('../../log.js');
 
 const trainerInfo = async (user) => {
     const trainer = await getTrainer(user);
@@ -13,7 +14,7 @@ const trainerInfo = async (user) => {
 const trainerInfoMessageCommand = async (client, message) => {
     const { embed, err } = await trainerInfo(message.author);
     if (err) {
-        console.error(err);
+        logger.error(err);
         message.channel.send("Error getting trainer info.");
     } else {
         message.channel.send({ embeds: [embed] });
@@ -23,7 +24,7 @@ const trainerInfoMessageCommand = async (client, message) => {
 const trainerInfoSlashCommand = async (interaction) => {
     const { embed, err } = await trainerInfo(interaction.user);
     if (err) {
-        console.error(err);
+        logger.error(err);
         interaction.reply("Error getting trainer info.");
     } else {
         interaction.reply({ embeds: [embed] });

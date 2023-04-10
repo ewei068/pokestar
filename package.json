@@ -18,6 +18,7 @@
   "homepage": "https://github.com/ewei068/pokestar#readme",
   "dependencies": {
     "discord.js": "^14.9.0",
+    "log4js": "^6.9.1",
     "mongodb": "^5.2.0"
   }
 }

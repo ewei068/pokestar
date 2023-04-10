@@ -1,5 +1,6 @@
 const { getTrainer } = require('../../utils/trainerUtils');
 const { buildBackpackEmbed } = require('../../embeds/trainerEmbeds');
+const { logger } = require('../../log');
 
 const backpack = async (user) => {
     const trainer = await getTrainer(user);
@@ -13,7 +14,7 @@ const backpack = async (user) => {
 const backpackMessageCommand = async (client, message) => {
     const { embed, err } = await backpack(message.author);
     if (err) {
-        console.error(err);
+        logger.error(err);
         message.channel.send("Error getting backpack.");
     } else {
         message.channel.send({ embeds: [embed] });
@@ -23,7 +24,7 @@ const backpackMessageCommand = async (client, message) => {
 const backpackSlashCommand = async (interaction) => {
     const { embed, err } = await backpack(interaction.user);
     if (err) {
-        console.error(err);
+        logger.error(err);
         interaction.reply("Error getting backpack.");
     } else {
         interaction.reply({ embeds: [embed] });

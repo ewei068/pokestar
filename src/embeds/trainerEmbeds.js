@@ -47,6 +47,9 @@ const buildBackpackEmbed = (trainer) => {
     for (const category in trainer.backpack) {
         backpackString += `**${backpackCategoryConfig[category].emoji} ${backpackCategoryConfig[category].name}**\n`;
         for (const item in trainer.backpack[category]) {
+            if (trainer.backpack[category][item] == 0) {
+                continue;
+            }
             backpackString += `${backpackItemConfig[item].name}: ${trainer.backpack[category][item]}\n`;
         }
     }

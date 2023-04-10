@@ -1,5 +1,6 @@
 const { DB_NAME, collectionConfig } = require("../config/databaseConfig");
 const { MongoClient } = require("mongodb");
+const { logger } = require("../log");
 
 const baseURL = process.env.MONGODB_URL;
 
@@ -11,16 +12,16 @@ const createIndices = (dbo, collectionName, collection) => {
             // check if index exists
             dbo.collection(collectionName).indexExists(index.key).then((exists) => {
                 if (exists) {
-                    console.log(`Index already exists for ${collectionName}!`);
+                    logger.info(`Index already exists for ${collectionName}!`);
                     return;
                 }
                 dbo.collection(collectionName).createIndex(index.key, { unique: index.unique }).then(() => {
-                    console.log(`Index created for ${collectionName}!`);
+                    logger.info(`Index created for ${collectionName}!`);
                 }).catch(err => {
-                    console.log(err)
+                    logger.info(err)
                 });
             }).catch(err => {
-                console.log(err)
+                logger.info(err)
             });
         }
         resolve();
@@ -28,7 +29,7 @@ const createIndices = (dbo, collectionName, collection) => {
 }
 
 client.connect().then(() => {
-    console.log("Database connected!")
+    logger.info("Database connected!")
 
     const dbo = client.db(DB_NAME);
 
@@ -38,21 +39,21 @@ client.connect().then(() => {
             // TODO: index removal?
 
             if (collections.length > 0) {
-                console.log(`Collection ${collectionName} already exists!`);
+                logger.info(`Collection ${collectionName} already exists!`);
                 createIndices(dbo, collectionName, collectionConfig[collectionName]);
                 return;
             }
             const collection = collectionConfig[collectionName];
             dbo.createCollection(collectionName).then(() => {
-                console.log(`Collection ${collectionName} created!`);
+                logger.info(`Collection ${collectionName} created!`);
                 createIndices(dbo, collectionName, collection);
             }).catch(err => {
-                console.log(err)
+                logger.info(err)
             });
         }).catch(err => {
-            console.log(err)
+            logger.info(err)
         });
     }
 }).catch(err => {
-    console.log(err)
+    logger.info(err)
 })

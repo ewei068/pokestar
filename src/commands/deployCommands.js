@@ -1,6 +1,7 @@
 const { REST, Routes } = require('discord.js');
 const { commandConfig } = require('../config/commandConfig');
 const { buildSlashCommand } = require('./commandHandler');
+const { logger } = require('../log');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -26,8 +27,8 @@ const rest = new REST().setToken(token);
 // and deploy your commands!
 (async () => {
 	try {
-		console.log(`Started refreshing ${commands.length} application (/) commands.`);
-		console.log(commands);
+		logger.info(`Started refreshing ${commands.length} application (/) commands.`);
+		logger.info(commands);
 
 		// The put method is used to fully refresh all commands in the guild with the current set
 		const data = await rest.put(
@@ -35,9 +36,9 @@ const rest = new REST().setToken(token);
 			{ body: commands },
 		);
 
-		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+		logger.info(`Successfully reloaded ${data.length} application (/) commands.`);
 	} catch (error) {
 		// And of course, make sure you catch and log any errors!
-		console.error(error);
+		logger.error(error);
 	}
 })();

@@ -1,6 +1,7 @@
 const { drawDaily } = require('../../utils/gachaUtils');
 const { getTrainer } = require('../../utils/trainerUtils');
 const { backpackCategories, backpackItemConfig } = require('../../config/backpackConfig');
+const { logger } = require('../../log');
 
 const daily = async (user) => {
     const trainer = await getTrainer(user);
@@ -32,7 +33,7 @@ const daily = async (user) => {
 const dailyMessageCommand = async (client, message) => {
     const { data, err } = await daily(message.author);
     if (err) {
-        console.error(err);
+        logger.error(err);
         message.channel.send("Error claiming daily rewards.");
     } else {
         message.channel.send(data);
@@ -42,7 +43,7 @@ const dailyMessageCommand = async (client, message) => {
 const dailySlashCommand = async (interaction) => {
     const { data, err } = await daily(interaction.user);
     if (err) {
-        console.error(err);
+        logger.error(err);
         interaction.reply("Error claiming daily rewards.");
     } else {
         interaction.reply(data);

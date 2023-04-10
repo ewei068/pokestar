@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const { commandConfig } = require('../config/commandConfig');
 const { stageNames, stageConfig } = require('../config/stageConfig');
 const { addExp } = require('../utils/trainerUtils');
+const { logger } = require('../log');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -139,13 +140,13 @@ const runMessageCommand = async (client, message) => {
         if (exp && exp > 0) {
             const { level, err } = await addExp(message.author, commandLookup[command].exp);
             if (err) {
-                console.error(err);
+                logger.error(err);
             } else if (level) {
                 message.reply(`You leveled up to level ${level}!`);
             }
         }
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         message.reply("There was an error trying to execute that command!");
     }
 }
@@ -164,14 +165,14 @@ const runSlashCommand = async (interaction) => {
         if (exp && exp > 0) {
             const { level, err } = await addExp(interaction.user, commandLookup[`${prefix}${command}`].exp);
             if (err) {
-                console.error(err);
+                logger.error(err);
             } else if (level) {
                 // TODO: figure out better way to multi-reply to an interaction
                 interaction.channel.send(`You leveled up to level ${level}!`);
             }
         }
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         interaction.reply("There was an error trying to execute that command!");
     }
 }

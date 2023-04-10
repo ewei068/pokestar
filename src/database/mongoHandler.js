@@ -16,20 +16,20 @@ const getCollection = async (collectionName) => {
 
 const insertDocument = async (collectionName, document) => {
     const collection = await getCollection(collectionName);
-    const rv = await collection.insertOne(document);
-    return rv;
+    const res = await collection.insertOne(document);
+    return res;
 }
 
 const updateDocument = async (collectionName, filter, update) => {
     const collection = await getCollection(collectionName);
-    const rv = await collection.updateOne(filter, update);
-    return rv;
+    const res = await collection.updateOne(filter, update);
+    return res;
 }
 
 const findDocuments = async (collectionName, filter) => {
     const collection = await getCollection(collectionName);
-    const rv = await collection.find(filter).toArray();
-    return rv
+    const res = await collection.find(filter).toArray();
+    return res
 }
 
 module.exports = {

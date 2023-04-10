@@ -1,6 +1,7 @@
 const { findDocuments, insertDocument, updateDocument } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { trainerFields, getTrainerLevelExp, MAX_TRAINER_LEVEL } = require("../config/trainerConfig");
+const { logger } = require("../log");
 
 /* 
 "user": {
@@ -42,7 +43,7 @@ const initTrainer = async (user) => {
     }
 
     const res = await insertDocument(collectionNames.USERS, trainer);
-    console.log(`Trainer ${user.username} created at ID ${res.insertedId}.`);
+    logger.info(`Trainer ${user.username} created at ID ${res.insertedId}.`);
     return trainer;
 }
 
@@ -61,7 +62,7 @@ const getTrainer = async (user) => {
         // check if trainer exists
         trainers = await findDocuments(collectionNames.USERS, { "userId": user.id });
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         return { data: null, err: "Error finding trainer." };
     }
 
@@ -70,7 +71,7 @@ const getTrainer = async (user) => {
         try {
             trainer = await initTrainer(user);
         } catch (error) {
-            console.error(error);
+            logger.error(error);
             return { data: null, err: "Error creating trainer." };
         }
     } else {
@@ -83,15 +84,6 @@ const getTrainer = async (user) => {
     if (trainer.user.username != user.username 
         || trainer.user.discriminator != user.discriminator 
         || trainer.user.avatar != user.avatar) {
-        // update trainer.user
-        /* const rv = await updateDocument(
-            collectionNames.USERS, 
-            { "userId": user.id }, { $set: { "user": user } }
-        );
-        if (rv.modifiedCount === 0) {
-            console.error(error);
-            return { data: null, err: "Error updating trainer." };
-        } */
         trainer.user = user;
         modified = true;
     }
@@ -105,7 +97,7 @@ const getTrainer = async (user) => {
     }
 
     if (modified) {
-        console.log(`Updating trainer ${user.username}...`)
+        logger.info(`Updating trainer ${user.username}...`)
         const res = await updateDocument(
             collectionNames.USERS,
             { "userId": user.id },
