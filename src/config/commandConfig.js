@@ -60,6 +60,22 @@ const commandConfig = {
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
                 "exp": 10
             },
+            "backpack": {
+                "aliases": ["backpack", "bp"],
+                "description": "Get info about your backpack items",
+                "execute": "backpack.js",
+                "args": {},
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+                "exp": 10
+            },
+            "daily": {
+                "aliases": ["daily", "d"],
+                "description": "Get your daily reward",
+                "execute": "daily.js",
+                "args": {},
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+                "exp": 10
+            },
         }
     }
 }

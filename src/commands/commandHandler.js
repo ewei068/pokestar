@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { commandConfig } = require('../config/commandConfig');
 const { stageNames, stageConfig } = require('../config/stageConfig');
-const { addExp } = require('../util/trainerUtils');
+const { addExp } = require('../utils/trainerUtils');
 const fs = require('node:fs');
 const path = require('node:path');
 

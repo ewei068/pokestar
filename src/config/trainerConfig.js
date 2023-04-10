@@ -9,6 +9,8 @@
 }
 */
 
+const { backpackCategories, backpackItems } = require('./backpackConfig');
+
 const trainerFields = {
     "userId": {
         "type": "string",
@@ -34,7 +36,14 @@ const trainerFields = {
     },
     "backpack": {
         "type": "object",
-        "default": {},
+        "default": {
+            [backpackCategories.POKEBALLS] : {
+                [backpackItems.POKEBALL] : 10,
+                [backpackItems.GREATBALL] : 0,
+                [backpackItems.ULTRABALL] : 0,
+                [backpackItems.MASTERBALL] : 0
+            }
+        },
     },
 }
 

@@ -170,7 +170,7 @@ List banners.
 
 **Backpack**
 
-* Aliases: `backpack`, `pack`, `b`
+* Aliases: `backpack`, `bp`
 * Args: none
 * Functionality: Lists all the items in the user's backpack by category and their quantity.
 
