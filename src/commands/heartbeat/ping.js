@@ -1,9 +1,9 @@
 const pingMessageCommand = async (client, message) => {
-    message.channel.send("pong!");
+    await message.channel.send("pong!");
 }
 
 const pingSlashCommand = async (interaction) => {
-    interaction.reply("pong!");
+    await interaction.reply("pong!");
 }
 
 module.exports = {

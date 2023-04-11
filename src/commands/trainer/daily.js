@@ -33,18 +33,18 @@ const daily = async (user) => {
 const dailyMessageCommand = async (client, message) => {
     const { data, err } = await daily(message.author);
     if (err) {
-        message.channel.send(`${err}`);
+        await message.channel.send(`${err}`);
     } else {
-        message.channel.send(data);
+        await message.channel.send(data);
     }
 }
 
 const dailySlashCommand = async (interaction) => {
     const { data, err } = await daily(interaction.user);
     if (err) {
-        interaction.reply(`${err}`);
+        await interaction.reply(`${err}`);
     } else {
-        interaction.reply(data);
+        await interaction.reply(data);
     }
 }
 

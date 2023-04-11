@@ -209,21 +209,24 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 
 * SpeciesID: Pokemon's unique ID. 
 * Name: Pokemon's display name.
-* Rarity: Rarity of Pokemon, determines growth rate.
+* Rarity: Rarity of Pokemon.
 * Type: The type(s) of the Pokemon.
 * Stats: List of base stats for the Pokemon.
 * Sprite: Link or path to Sprite.
-* Abilities: Abilities the Pokemon can have.
+* Abilities: Abilities the Pokemon can have, and the probability to get them.
 * Moves: Moves the Pokemon can learn.
 * Evolution
 	* Level: Evolution level
 	* Item: Evolution item
+	* ID: ID of pokemon it evolves to
+* Growth: EXP growth of pokemon.
 
 **User Pokemon (in database):**
 
 * ID (index): Unique ID of Pokemon for user.
 * UserID (index): Unique ID of Pokemon's owner.
 * SpeciesID: Pokemon's species.
+* Name: User-given name to pokemon, defaults to Pokemon species.
 * Level: Pokemon's level, capped at 100.
 * Exp: Current Pokemon exp.
 * EVs: List of EVs for Pokemon.

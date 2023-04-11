@@ -14,18 +14,18 @@ const backpack = async (user) => {
 const backpackMessageCommand = async (client, message) => {
     const { embed, err } = await backpack(message.author);
     if (err) {
-        message.channel.send(`${err}`);
+        await message.channel.send(`${err}`);
     } else {
-        message.channel.send({ embeds: [embed] });
+        await message.channel.send({ embeds: [embed] });
     }
 }
 
 const backpackSlashCommand = async (interaction) => {
     const { embed, err } = await backpack(interaction.user);
     if (err) {
-        interaction.reply(`${err}`);
+        await interaction.reply(`${err}`);
     } else {
-        interaction.reply({ embeds: [embed] });
+        await interaction.reply({ embeds: [embed] });
     }
 }
 

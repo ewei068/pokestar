@@ -21,7 +21,8 @@ const buildTrainerEmbed = (trainer) => {
 
     // level progress bar based off percentage
     const progress = Math.floor(levelPercent / 5);
-    const progressBar = `${"▓".repeat(progress)}${"░".repeat(20 - progress)} -- ${levelPercent}%`;
+    // progress bar and round percent to nearest int
+    const progressBar = `${"▓".repeat(progress)}${"░".repeat(20 - progress)} -- ${Math.round(levelPercent)}%`;
 
     // check to see if daily availible
     const daily = new Date(trainer.lastDaily);

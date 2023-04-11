@@ -67,7 +67,7 @@ const helpMessageCommand = async (client, message) => {
     }
 
     const helpMessage = await help(command);
-    message.channel.send(helpMessage);
+    await message.channel.send(helpMessage);
 }
 
 const helpSlashCommand = async (interaction) => {
@@ -78,7 +78,7 @@ const helpSlashCommand = async (interaction) => {
     }
 
     const helpMessage = await help(command);
-    interaction.reply(helpMessage);
+    await interaction.reply(helpMessage);
 }
 
 module.exports = {

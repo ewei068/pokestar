@@ -18,21 +18,28 @@ const buildSlashCommand = (commandConfig) => {
         .setDescription(commandConfig.description);
     for (const arg in commandConfig.args) {
         const argConfig = commandConfig.args[arg];
+
+        const optionFn = (option) => {
+            option.setName(arg)
+                .setDescription(argConfig.description)
+                .setRequired(!argConfig.optional);
+            if (argConfig.enum) {
+                for (const enumOption of argConfig.enum) {
+                    option.addChoices({
+                        name: enumOption,
+                        value: enumOption
+                    });
+                }
+            }
+            return option;
+        }
+
         if (argConfig.type == "string") {
-            slashCommand.addStringOption(option =>
-                option.setName(arg)
-                    .setDescription(argConfig.description)
-                    .setRequired(!argConfig.optional));
+            slashCommand.addStringOption(optionFn);
         } else if (argConfig.type == "int") {
-            slashCommand.addIntegerOption(option =>
-                option.setName(arg)
-                    .setDescription(argConfig.description)
-                    .setRequired(!argConfig.optional));
+            slashCommand.addIntegerOption(optionFn);
         } else if (argConfig.type == "boolean") {
-            slashCommand.addBooleanOption(option =>
-                option.setName(arg)
-                    .setDescription(argConfig.description)
-                    .setRequired(!argConfig.optional));
+            slashCommand.addBooleanOption(optionFn);
         }
     }
     return slashCommand;
@@ -62,6 +69,12 @@ const getCommand = (command) => {
     return commandLookup[command];
 }
 
+const enumCheck = (value, enumOptions) => {
+    // cast enumOptions to strings
+    enumOptions = enumOptions.map(option => option.toString());
+    return enumOptions.includes(value);
+}
+
 const validateArgs = (command, args) => {
     const commandConfig = getCommand(command);
     let i = 0
@@ -76,9 +89,7 @@ const validateArgs = (command, args) => {
             }
             
             // try to get the arg from user input
-            try {
-                const providedArg = args[i];
-            } catch (error) {
+            if (args.length <= i) {
                 // if arg is optional, no more input and may return true. 
                 // else, arg missing and return false
                 if (argConfig.optional) {
@@ -88,6 +99,8 @@ const validateArgs = (command, args) => {
                 }
             }
 
+            const providedArg = args[i];
+
             // type check
             if (argConfig.type == "int") {
                 if (isNaN(providedArg)) {
@@ -95,6 +108,13 @@ const validateArgs = (command, args) => {
                 }
             } else if (argConfig.type == "boolean") {
                 if (providedArg != "true" && providedArg != "false") {
+                    return false;
+                }
+            }
+
+            // enum check
+            if (argConfig.enum) {
+                if (!enumCheck(providedArg, argConfig.enum)) {
                     return false;
                 }
             }

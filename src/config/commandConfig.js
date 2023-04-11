@@ -77,7 +77,31 @@ const commandConfig = {
                 "exp": 10
             },
         }
-    }
+    },
+    "pokemon": {
+        "description": "Pokemon commands",
+        "folder": "pokemon",
+        "commands": {
+            "gacha": {
+                "aliases": ["gacha", "g", "roll", "draw"],
+                "description": "Roll the gacha",
+                "execute": "gacha.js",
+                "args": {
+                    "pokeball": {
+                        "type": "string",
+                        "description": "pokeball to use",
+                        "optional": false,
+                        "variable": false,
+                        "enum": [
+                            "pokeball", "greatball", "ultraball", "masterball",
+                        ]
+                    }
+                },
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+                "exp": 20
+            },
+        }
+    },
 }
 
 module.exports = { 
