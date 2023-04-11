@@ -27,9 +27,10 @@ const updateDocument = async (collectionName, filter, update) => {
     return res;
 }
 
-const findDocuments = async (collectionName, filter) => {
+const findDocuments = async (collectionName, filter, limit=100, page=0) => {
     const collection = await getCollection(collectionName);
-    const res = await collection.find(filter).toArray();
+    // retrieves one extra item to check for end of items
+    const res = await collection.find(filter).limit(limit + 1).skip(page * limit).toArray();
     return res
 }
 

@@ -28,25 +28,25 @@ const backpackItemConfig = {
         "name": "Pokeball",
         "emoji": "🎾",
         "description": "Used to catch Pokemon! Use the \`gacha\` command to learn more!",
-        "category": 0,
+        "category": backpackCategories.POKEBALLS,
     },
     [backpackItems.GREATBALL]: {
         "name": "Greatball",
         "emoji": "🎾",
         "description": "Used to catch better Pokemon! Use the \`gacha\` command to learn more!",
-        "category": 0,
+        "category": backpackCategories.POKEBALLS,
     },
     [backpackItems.ULTRABALL]: {
         "name": "Ultraball",
         "emoji": "🎾",
         "description": "Used to catch top-tier Pokemon! Use the \`gacha\` command to learn more!",
-        "category": 0,
+        "category": backpackCategories.POKEBALLS,
     },
     [backpackItems.MASTERBALL]: {
         "name": "Masterball",
         "emoji": "🎾",
         "description": "Used to catch the best Pokemon! Use the \`gacha\` command to learn more!",
-        "category": 0,
+        "category": backpackCategories.POKEBALLS,
     },
 }
 

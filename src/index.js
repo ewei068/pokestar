@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 const { runMessageCommand, runSlashCommand } = require('./handlers/commandHandler.js');
+const { handleEvent } = require('./handlers/eventHandler.js');
 const { logger } = require('./log');
 
 // Create a new client instance
@@ -35,9 +36,23 @@ client.on(Events.InteractionCreate, async (interaction) => {
         try {
             await interaction.reply("There was an error trying to execute that command!");
         } catch (error) {
-            interaction.channel.send("There was an error trying to execute that command!");
+            interaction.followUp("There was an error trying to execute that command!");
         }
     });
+});
+
+client.on(Events.InteractionCreate, async (interaction) => {
+    if (!interaction.isButton()) return;
+
+    // logger.info(interaction)
+    // turn interaction customId into json
+    // logger.info(JSON.parse(interaction.customId));
+    try {
+        await handleEvent(interaction);
+    } catch (error) {
+        logger.error(`Error in event handler: ${interaction.customId}`);
+        logger.error(error);
+    }
 });
 
 // On guild join, log it

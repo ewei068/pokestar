@@ -106,7 +106,7 @@ const commandConfig = {
                 "execute": "list.js",
                 "args": {
                     "page": {
-                        "type": "number",
+                        "type": "int",
                         "description": "page number",
                         "optional": true,
                         "variable": false

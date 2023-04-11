@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { commandConfig } = require('../config/commandConfig');
 const { stageNames, stageConfig } = require('../config/stageConfig');
-const { addExp } = require('../extensions/trainer');
+const { addExp } = require('../services/trainer');
 const { logger } = require('../log');
 const path = require('node:path');
 
@@ -54,11 +54,16 @@ for (const commandGroup in commandConfig) {
             for (const alias of commandConfig.aliases) {
                 if (commandExecute.message) {
                     messageCommands[`${prefix}${alias}`] = commandExecute.message;
+                } else {
+                    logger.warn(`No message command for ${command}!`);
+                    break;
                 }
                 commandLookup[`${prefix}${alias}`] = commandConfig;
             }
             if (commandExecute.slash) {
                 slashCommands[command] = commandExecute.slash;
+            } else {
+                logger.warn(`No slash command for ${command}!`);
             }
         }
     }
@@ -190,7 +195,7 @@ const runSlashCommand = async (interaction) => {
                 try {
                     await interaction.reply(`You leveled up to level ${level}!`);
                 } catch (error) {
-                    await interaction.channel.send(`You leveled up to level ${level}!`);
+                    await interaction.followUp(`You leveled up to level ${level}!`);
                 }
             }
         }
@@ -199,7 +204,7 @@ const runSlashCommand = async (interaction) => {
         try {
             await interaction.reply("There was an error trying to execute that command!");
         } catch (error) {
-            await interaction.channel.send("There was an error trying to execute that command!");
+            await interaction.followUp("There was an error trying to execute that command!");
         }
     }
 }

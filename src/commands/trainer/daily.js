@@ -1,5 +1,5 @@
-const { drawDaily } = require('../../extensions/gacha');
-const { getTrainer } = require('../../extensions/trainer');
+const { drawDaily } = require('../../services/gacha');
+const { getTrainer } = require('../../services/trainer');
 const { backpackCategories, backpackItemConfig } = require('../../config/backpackConfig');
 
 const daily = async (user) => {

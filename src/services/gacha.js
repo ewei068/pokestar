@@ -40,6 +40,7 @@ const drawDaily = async (trainer) => {
 }
 
 const usePokeball = async (trainer, pokeballId) => {
+    // TODO: add count check
     const pokeballs = getOrSetDefault(trainer.backpack, backpackCategories.POKEBALLS, {});
     if (getOrSetDefault(pokeballs, pokeballId, 0) > 0) {
         pokeballs[pokeballId]--;

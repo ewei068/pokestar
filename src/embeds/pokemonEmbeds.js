@@ -1,4 +1,4 @@
-const { rarities, rarityConfig, natureConfig, } = require('../config/pokemonConfig');
+const { rarities, rarityConfig, natureConfig, pokemonConfig } = require('../config/pokemonConfig');
 const { EmbedBuilder } = require('discord.js');
 
 // pokemon: user's pokemon data
@@ -36,6 +36,24 @@ const buildNewPokemonEmbed = (pokemon, pokemonData) => {
     return embed;
 }
 
+const buildPokemonListEmbed = (trainer, pokemons, page) => {
+    let pokemonString = "\n";
+    for (let i = 0; i < pokemons.length; i++) {
+        const pokemon = pokemons[i];
+        const pokemonData = pokemonConfig[pokemons[i].speciesId];
+        pokemonString += `${pokemonData.emoji} **[Lv. ${pokemon.level}]** ${pokemon.name} (${pokemon._id})\n`;
+    }
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`Trainer ${trainer.user.username}'s Pokemon`);
+    embed.setColor(0xffffff);
+    embed.setDescription(pokemonString);
+    embed.setFooter({ text: `Page ${page} | Use \`/inspect <id>\` to inspect a Pokemon!` });
+
+    return embed;
+}
+
 module.exports = {
-    buildNewPokemonEmbed
+    buildNewPokemonEmbed,
+    buildPokemonListEmbed,
 }

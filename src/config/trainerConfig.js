@@ -51,7 +51,7 @@ const trainerFields = {
 const getTrainerLevelExp = (level) => {
     return 50 * (level ** 2 - level);
 }
-const MAX_TRAINER_LEVEL = 10;
+const MAX_TRAINER_LEVEL = 25;
 
 
 module.exports = { 

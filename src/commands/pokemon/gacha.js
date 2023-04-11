@@ -1,5 +1,5 @@
-const { getTrainer } = require ('../../extensions/trainer') ;
-const { usePokeball } = require ('../../extensions/gacha') ;
+const { getTrainer } = require ('../../services/trainer') ;
+const { usePokeball } = require ('../../services/gacha') ;
 const { buildNewPokemonEmbed } = require('../../embeds/pokemonEmbeds');
 
 const gacha = async (user, pokeball) => {

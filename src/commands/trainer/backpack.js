@@ -1,4 +1,4 @@
-const { getTrainer } = require('../../extensions/trainer');
+const { getTrainer } = require('../../services/trainer');
 const { buildBackpackEmbed } = require('../../embeds/trainerEmbeds');
 
 const backpack = async (user) => {
