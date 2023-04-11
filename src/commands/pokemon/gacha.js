@@ -1,6 +1,6 @@
-const { getTrainer }  =  require ( '../../utils/trainerUtils.js' ) ;
-const { usePokeball }  =  require ( '../../utils/gachaUtils.js' ) ;
-const { buildNewPokemonEmbed } = require('../../embeds/pokemonEmbeds.js');
+const { getTrainer } = require ('../../extensions/trainer') ;
+const { usePokeball } = require ('../../extensions/gacha') ;
+const { buildNewPokemonEmbed } = require('../../embeds/pokemonEmbeds');
 
 const gacha = async (user, pokeball) => {
     // map input pokeball to pokeball item

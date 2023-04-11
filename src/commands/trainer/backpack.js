@@ -1,6 +1,5 @@
-const { getTrainer } = require('../../utils/trainerUtils');
+const { getTrainer } = require('../../extensions/trainer');
 const { buildBackpackEmbed } = require('../../embeds/trainerEmbeds');
-const { logger } = require('../../log');
 
 const backpack = async (user) => {
     const trainer = await getTrainer(user);

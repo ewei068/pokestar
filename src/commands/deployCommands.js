@@ -1,6 +1,6 @@
 const { REST, Routes } = require('discord.js');
 const { commandConfig } = require('../config/commandConfig');
-const { buildSlashCommand } = require('./commandHandler');
+const { buildSlashCommand } = require('../handlers/commandHandler');
 const { logger } = require('../log');
 const fs = require('node:fs');
 const path = require('node:path');

@@ -1,6 +1,5 @@
-const { getTrainer } = require('../../utils/trainerUtils.js');
-const { buildTrainerEmbed } = require('../../embeds/trainerEmbeds.js');
-const { logger } = require('../../log.js');
+const { getTrainer } = require('../../extensions/trainer');
+const { buildTrainerEmbed } = require('../../embeds/trainerEmbeds');
 
 const trainerInfo = async (user) => {
     const trainer = await getTrainer(user);

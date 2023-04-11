@@ -1,9 +1,8 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { commandConfig } = require('../config/commandConfig');
 const { stageNames, stageConfig } = require('../config/stageConfig');
-const { addExp } = require('../utils/trainerUtils');
+const { addExp } = require('../extensions/trainer');
 const { logger } = require('../log');
-const fs = require('node:fs');
 const path = require('node:path');
 
 const prefix = stageConfig[process.env.STAGE].prefix;
@@ -50,7 +49,7 @@ for (const commandGroup in commandConfig) {
     for (const command in commandGroupConfig.commands) {
         const commandConfig = commandGroupConfig.commands[command];
         if (commandConfig.stages.includes(process.env.STAGE)) {
-            const filePath = path.join(__dirname, commandGroupConfig.folder, commandConfig.execute);
+            const filePath = path.join(__dirname, "../commands", commandGroupConfig.folder, commandConfig.execute);
             const commandExecute = require(filePath);
             for (const alias of commandConfig.aliases) {
                 if (commandExecute.message) {

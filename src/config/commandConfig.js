@@ -100,6 +100,21 @@ const commandConfig = {
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
                 "exp": 20
             },
+            "list": {
+                "aliases": ["list", "listpokemon", "lp"],
+                "description": "List your pokemon",
+                "execute": "list.js",
+                "args": {
+                    "page": {
+                        "type": "number",
+                        "description": "page number",
+                        "optional": true,
+                        "variable": false
+                    }
+                },
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+                "exp": 10
+            },
         }
     },
 }

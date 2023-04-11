@@ -1,7 +1,6 @@
-const { drawDaily } = require('../../utils/gachaUtils');
-const { getTrainer } = require('../../utils/trainerUtils');
+const { drawDaily } = require('../../extensions/gacha');
+const { getTrainer } = require('../../extensions/trainer');
 const { backpackCategories, backpackItemConfig } = require('../../config/backpackConfig');
-const { logger } = require('../../log');
 
 const daily = async (user) => {
     const trainer = await getTrainer(user);
