@@ -37,15 +37,117 @@ const trainerFields = {
     "backpack": {
         "type": "object",
         "default": {
-            [backpackCategories.POKEBALLS] : {
-                [backpackItems.POKEBALL] : 10,
-                [backpackItems.GREATBALL] : 0,
-                [backpackItems.ULTRABALL] : 0,
-                [backpackItems.MASTERBALL] : 0
+            [backpackCategories.POKEBALLS]: {
+                [backpackItems.POKEBALL]: 10,
+                [backpackItems.GREATBALL]: 0,
+                [backpackItems.ULTRABALL]: 0,
+                [backpackItems.MASTERBALL]: 0
             }
         },
     },
+    "claimedLevelRewards": {
+        "type": "array",
+        "default": [],
+    }
 }
+
+const levelConfig = {
+    1: {
+        "rewards": {
+            "backpack": {}
+        }
+    },
+    2: {
+        "rewards": {
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 5,
+                }
+            }
+        }
+    },
+    3: {
+        "rewards": {
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.GREATBALL]: 5,
+                }
+            }
+        }
+    },
+    4: {
+        "rewards": {
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.ULTRABALL]: 3,
+                }
+            }
+        }
+    },
+    5: {
+        "rewards": {
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.MASTERBALL]: 1,
+                }
+            }
+        }
+    },
+    6: {
+        "rewards": {
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                }
+            }
+        }
+    },
+    7: {
+        "rewards": {
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                }
+            }
+        }
+    },
+    8: {
+        "rewards": {
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                }
+            }
+        }
+    },
+    9: {
+        "rewards": {
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                }
+            }
+        }
+    },
+    10: {
+        "rewards": {
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.MASTERBALL]: 3,
+                }
+            }
+        }
+    },
+}
+
 
 // level 1: 0 exp, level 2: 100 exp, level 3: 300 exp, level 4: 600 exp, level 5: 1000 exp etc...
 const getTrainerLevelExp = (level) => {
@@ -58,4 +160,5 @@ module.exports = {
     trainerFields, 
     getTrainerLevelExp: getTrainerLevelExp,
     MAX_TRAINER_LEVEL,
+    levelConfig,
 };

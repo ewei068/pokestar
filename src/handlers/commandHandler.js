@@ -166,7 +166,7 @@ const runMessageCommand = async (message) => {
             if (err) {
                 return;
             } else if (level) {
-                message.reply(`You leveled up to level ${level}!`);
+                message.reply(`You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`);
             }
         }
     } catch (error) {
@@ -191,11 +191,10 @@ const runSlashCommand = async (interaction) => {
             if (err) {
                 return;
             } else if (level) {
-                // TODO: figure out better way to multi-reply to an interaction
                 try {
-                    await interaction.reply(`You leveled up to level ${level}!`);
+                    await interaction.reply(`You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`);
                 } catch (error) {
-                    await interaction.followUp(`You leveled up to level ${level}!`);
+                    await interaction.followUp(`You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`);
                 }
             }
         }

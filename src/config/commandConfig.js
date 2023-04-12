@@ -76,6 +76,14 @@ const commandConfig = {
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
                 "exp": 10
             },
+            "levelrewards": {
+                "aliases": ["levelrewards"],
+                "description": "Get your level rewards",
+                "execute": "levelRewards.js",
+                "args": {},
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+                "exp": 10
+            },
         }
     },
     "pokemon": {

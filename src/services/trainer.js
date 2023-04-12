@@ -1,7 +1,8 @@
 const { findDocuments, insertDocument, updateDocument } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
-const { trainerFields, getTrainerLevelExp, MAX_TRAINER_LEVEL } = require("../config/trainerConfig");
+const { trainerFields, getTrainerLevelExp, MAX_TRAINER_LEVEL, levelConfig } = require("../config/trainerConfig");
 const { logger } = require("../log");
+const { getOrSetDefault } = require("../utils/utils");
 
 /* 
 "user": {
@@ -181,9 +182,68 @@ const addExp = async (user, exp) => {
     }
 }
 
+const getLevelRewards = async (user) => {
+    const { data: trainer, err } = await getTrainer(user);
+    if (err) {
+        return { data: null, err: err };
+    }
+    
+    const allRewards = {};
+    for (const level in levelConfig) {
+        const rewards = levelConfig[level].rewards;
+        if (!rewards) {
+            continue;
+        }
+        // if level not adequete or level in trainers claimedLevelRewards, continue
+        if (level > trainer.level || trainer.claimedLevelRewards.includes(level)) {
+            continue;
+        }
+        
+        if (rewards.money) {
+            allRewards.money = (allRewards.money || 0) + rewards.money;
+            trainer.money += rewards.money;
+        }
+        if (rewards.backpack) {
+            const backpack = getOrSetDefault(allRewards, "backpack", {});
+            for (const categoryId in rewards.backpack) {
+                const trainerBackpackCategory = getOrSetDefault(trainer.backpack, categoryId, {});
+                for (const itemId in rewards.backpack[categoryId]) {
+                    backpack[itemId] = getOrSetDefault(backpack, itemId, 0) + rewards.backpack[categoryId][itemId];
+                    trainerBackpackCategory[itemId] = getOrSetDefault(trainerBackpackCategory, itemId, 0) + rewards.backpack[categoryId][itemId];
+                }
+            }
+        }
+
+        trainer.claimedLevelRewards.push(level);
+    }
+
+    if (Object.keys(allRewards).length === 0) {
+        return { data: null, err: "No rewards to claim!" };
+    }
+
+    // update trainer
+    try {
+        const res = await updateDocument(
+            collectionNames.USERS,
+            { userId: user.id },
+            { $set: trainer }
+        );
+        if (res.modifiedCount === 0) {
+            logger.error(`Failed to update trainer ${user.username} after claiming level rewards.`);
+            return { data: null, err: "Error updating trainer." };
+        }
+        logger.info(`Updated trainer ${user.username} after claiming level rewards.`);
+    } catch (error) {
+        logger.error(error);
+        return { data: null, err: "Error updating trainer." };
+    }
+
+    return { data: allRewards, err: null };
+}
 
 
 module.exports = {
     getTrainer,
-    addExp
+    addExp,
+    getLevelRewards
 }
