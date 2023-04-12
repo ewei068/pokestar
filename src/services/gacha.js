@@ -1,10 +1,11 @@
 const { backpackCategories, backpackItemConfig } = require('../config/backpackConfig');
 const { dailyRewardChances, NUM_DAILY_REWARDS, pokeballChanceConfig } = require('../config/gachaConfig');
-const { rarityBins, pokemonConfig } = require('../config/pokemonConfig');
+const { rarityBins, pokemonConfig, rarities } = require('../config/pokemonConfig');
 const { collectionNames } = require('../config/databaseConfig');
-const { updateDocument, insertDocument } = require('../database/mongoHandler');
+const { updateDocument, insertDocument, countDocuments } = require('../database/mongoHandler');
 const { stageNames } = require('../config/stageConfig');
 const { drawDiscrete, drawIterable, drawUniform } = require('../utils/gachaUtils');
+const { MAX_POKEMON } = require('../config/trainerConfig');
 
 const { logger } = require('../log');
 const { getOrSetDefault } = require('../utils/utils');
@@ -41,7 +42,17 @@ const drawDaily = async (trainer) => {
 }
 
 const usePokeball = async (trainer, pokeballId) => {
-    // TODO: add count check
+    // check for max pokemon
+    try {
+        const numPokemon = await countDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId });
+        if (numPokemon >= MAX_POKEMON) {
+            return { data: null, err: "Max pokemon reached! Use `/release` to release some pokemon." };
+        }
+    } catch (error) {
+        logger.error(error);
+        return { data: null, err: "Error checking max pokemon." };
+    }
+    
     const pokeballs = getOrSetDefault(trainer.backpack, backpackCategories.POKEBALLS, {});
     if (getOrSetDefault(pokeballs, pokeballId, 0) > 0) {
         pokeballs[pokeballId]--;
@@ -66,6 +77,23 @@ const usePokeball = async (trainer, pokeballId) => {
     const pokemonId = drawIterable(rarityBins[rarity], 1)[0];
     const speciesData = pokemonConfig[pokemonId];
 
+
+    const ivs = drawUniform(0, 31, 6);
+    // if legendary, set 3 random IVs to 31
+    if (rarity == rarities.LEGENDARY) {
+        const indices = drawUniform(0, 5, 3);
+
+        // while dupes, reroll indices
+        // TODO: make this better lol im lazy
+        while (indices[0] == indices[1] || indices[0] == indices[2] || indices[1] == indices[2]) {
+            indices = drawUniform(0, 5, 3);
+        }
+
+        for (const index of indices) {
+            ivs[index] = 31;
+        }
+    }
+
     const pokemon = {
         "userId": trainer.userId,
         "speciesId": pokemonId,
@@ -73,7 +101,7 @@ const usePokeball = async (trainer, pokeballId) => {
         "level": 1,
         "experience": 0,
         "evs": [0, 0, 0, 0, 0, 0],
-        "ivs": drawUniform(0, 31, 6),
+        "ivs": ivs,
         "natureId": `${drawUniform(0, 24, 1)[0]}`,
         "abilityId": `${drawDiscrete(speciesData.abilities, 1)[0]}`,
         "item": "",

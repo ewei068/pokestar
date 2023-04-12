@@ -1,20 +1,19 @@
 const { logger } = require("../log");
-const { findDocuments, updateDocument } = require("../database/mongoHandler");
+const { findDocuments, updateDocument, deleteDocuments, idFrom } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { getOrSetDefault } = require("../utils/utils");
 const { natureConfig, pokemonConfig } = require("../config/pokemonConfig");
-const { ObjectId } = require("mongodb");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
 
-const listPokemons = async (trainer, page) => {
+const listPokemons = async (trainer, page=1, filter = {}, pageSize = PAGE_SIZE) => {
     // get pokemon with pagination
     try {
-        const res = await findDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId }, PAGE_SIZE, page - 1);
+        const res = await findDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId, ...filter }, pageSize, page - 1);
         if (res.length === 0) {
             return { data: null, err: "No Pokemon found." };
-        } else if (res.length > PAGE_SIZE) {
+        } else if (res.length > pageSize) {
             res.pop();
             return { data: res, lastPage: false, err: null };
         } else {
@@ -74,11 +73,9 @@ const calculateAndUpdatePokemonStats = async (pokemon, speciesData) => {
         || oldStats[5] !== pokemon.stats[5] 
         || oldCombatPower !== pokemon.combatPower) {
         try {
-            const id = new ObjectId(pokemon._id);    
-
             const res = await updateDocument(
                 collectionNames.USER_POKEMON,
-                { userId: pokemon.userId, _id: id },
+                { userId: pokemon.userId, _id: idFrom(pokemon._id) },
                 { $set: pokemon }
             );
             if (res.modifiedCount === 0) {
@@ -96,11 +93,9 @@ const calculateAndUpdatePokemonStats = async (pokemon, speciesData) => {
 }
 
 const getPokemon = async (trainer, pokemonId) => {
-    const id = new ObjectId(pokemonId);
-
     // find instance of pokemon in trainer's collection
     try {
-        const res = await findDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId, _id: id });
+        const res = await findDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId, _id: idFrom(pokemonId) });
         if (res.length === 0) {
             return { data: null, err: "Pokemon not found." };
         } else {
@@ -112,9 +107,25 @@ const getPokemon = async (trainer, pokemonId) => {
     }
 }
 
+const releasePokemons = async (trainer, pokemonIds) => {
+    // remove pokemon from trainer's collection
+    try {
+        const res = await deleteDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId, _id: { $in: pokemonIds.map(idFrom) } });
+        if (res.deletedCount === 0) {
+            return { data: null, err: "No Pokemon found." };
+        }
+        logger.info(`${trainer.user.username} released ${res.deletedCount} Pokemon.`);
+        return { data: res.deletedCount, err: null };
+    } catch (error) {
+        logger.error(error);
+        return { data: null, err: "Error releasing Pokemon." };
+    }
+}
+
 module.exports = {
     listPokemons,
     getPokemon,
     calculatePokemonStats,
-    calculateAndUpdatePokemonStats
+    calculateAndUpdatePokemonStats,
+    releasePokemons
 };

@@ -1,4 +1,4 @@
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId} = require("mongodb");
 const { DB_NAME, collectionNames } = require("../config/databaseConfig");
 const { logger } = require("../log");
 
@@ -34,8 +34,27 @@ const findDocuments = async (collectionName, filter, limit=100, page=0) => {
     return res
 }
 
+const deleteDocuments = async (collectionName, filter) => {
+    const collection = await getCollection(collectionName);
+    const res = await collection.deleteMany(filter);
+    return res;
+}
+
+const countDocuments = async (collectionName, filter) => {
+    const collection = await getCollection(collectionName);
+    const res = collection.countDocuments(filter);
+    return res;
+}
+
+const idFrom = (str) => {
+    return new ObjectId(str);
+}
+
 module.exports = {
     insertDocument,
     updateDocument,
     findDocuments,
+    countDocuments,
+    deleteDocuments,
+    idFrom
 };

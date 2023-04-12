@@ -11,6 +11,10 @@
 
 const { backpackCategories, backpackItems } = require('./backpackConfig');
 
+const MAX_TRAINER_LEVEL = 25;
+const MAX_POKEMON = 200;
+const MAX_RELEASE = 10;
+
 const trainerFields = {
     "userId": {
         "type": "string",
@@ -148,17 +152,16 @@ const levelConfig = {
     },
 }
 
-
 // level 1: 0 exp, level 2: 100 exp, level 3: 300 exp, level 4: 600 exp, level 5: 1000 exp etc...
 const getTrainerLevelExp = (level) => {
     return 50 * (level ** 2 - level);
 }
-const MAX_TRAINER_LEVEL = 25;
-
 
 module.exports = { 
     trainerFields, 
-    getTrainerLevelExp: getTrainerLevelExp,
+    getTrainerLevelExp,
     MAX_TRAINER_LEVEL,
+    MAX_POKEMON,
+    MAX_RELEASE,
     levelConfig,
 };

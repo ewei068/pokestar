@@ -37,7 +37,6 @@ const gachaMessageCommand = async (message) => {
         await message.channel.send(`${err}`);
     }
     else {
-        // await message.channel.send(`${embed}`);
         await message.channel.send({ embeds: [embed] });
     }
 }
@@ -49,7 +48,6 @@ const gachaSlashCommand = async (interaction) => {
         await interaction.reply(`${err}`);
     }
     else {
-        // await interaction.reply(`${embed}`);
         await interaction.reply({ embeds: [embed] });
     }
 }

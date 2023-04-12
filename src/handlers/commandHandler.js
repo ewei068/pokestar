@@ -86,11 +86,6 @@ const validateArgs = (command, args) => {
         for (const arg in commandConfig.args) {
             // get the arg config
             const argConfig = commandConfig.args[arg];
-
-            // if variable, any args are valid
-            if (argConfig.variable) {
-                return true;
-            }
             
             // try to get the arg from user input
             if (args.length <= i) {
@@ -101,6 +96,11 @@ const validateArgs = (command, args) => {
                 } else {
                     return false;
                 }
+            }
+
+            // if variable, any args are valid
+            if (argConfig.variable) {
+                return true;
             }
 
             const providedArg = args[i];

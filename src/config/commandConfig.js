@@ -138,6 +138,21 @@ const commandConfig = {
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
                 "exp": 10
             },
+            "release": {
+                "aliases": ["release"],
+                "description": "Release up to 10 pokemon",
+                "execute": "release.js",
+                "args": {
+                    "pokemonids": {
+                        "type": "string",
+                        "description": "List of unique IDs for pokemon to release, separated by spaces",
+                        "optional": false,
+                        "variable": true
+                    }
+                },
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+                "exp": 0
+            },
         }
     },
 }
