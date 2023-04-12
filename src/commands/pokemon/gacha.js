@@ -30,7 +30,7 @@ const gacha = async (user, pokeball) => {
     return { embed: embed, err: null };
 }
 
-const gachaMessageCommand = async (client, message) => {
+const gachaMessageCommand = async (message) => {
     const pokeball = message.content.split(" ")[1];
     const { embed, err } = await gacha(message.author, pokeball);
     if (err) {

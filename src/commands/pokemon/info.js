@@ -15,7 +15,7 @@ const info = async (user, pokemonId) => {
     return { embed: embed, err: null };
 }
 
-const infoMessageCommand = async (client, message) => {
+const infoMessageCommand = async (message) => {
     const pokemonId = message.content.split(' ')[1];
     const { embed, err } = await info(message.author, pokemonId);
     if (err) {

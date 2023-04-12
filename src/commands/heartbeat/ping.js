@@ -1,4 +1,4 @@
-const pingMessageCommand = async (client, message) => {
+const pingMessageCommand = async (message) => {
     await message.channel.send("pong!");
 }
 

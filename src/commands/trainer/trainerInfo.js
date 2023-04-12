@@ -10,7 +10,7 @@ const trainerInfo = async (user) => {
     return { embed: embed, err: null };
 }
 
-const trainerInfoMessageCommand = async (client, message) => {
+const trainerInfoMessageCommand = async (message) => {
     const { embed, err } = await trainerInfo(message.author);
     if (err) {
         await message.channel.send(`${err}`);

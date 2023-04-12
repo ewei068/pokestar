@@ -24,7 +24,7 @@ const list = async (user, page) => {
     return { embeds: [embed], components: [actionRow], err: null };
 }
 
-const listMessageCommand = async (client, message) => {
+const listMessageCommand = async (message) => {
     const args = message.content.split(" ");
     const page = args[1] ? parseInt(args[1]) : 1;
     const { embeds, components, err } = await list(message.author, page);

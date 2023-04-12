@@ -29,7 +29,7 @@ const daily = async (user) => {
     return { data: rewardsString, err: null };
 }
 
-const dailyMessageCommand = async (client, message) => {
+const dailyMessageCommand = async (message) => {
     const { data, err } = await daily(message.author);
     if (err) {
         await message.channel.send(`${err}`);

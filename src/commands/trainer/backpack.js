@@ -10,7 +10,7 @@ const backpack = async (user) => {
     return { embed: embed, err: null };
 }
 
-const backpackMessageCommand = async (client, message) => {
+const backpackMessageCommand = async (message) => {
     const { embed, err } = await backpack(message.author);
     if (err) {
         await message.channel.send(`${err}`);

@@ -57,7 +57,7 @@ const help = async (command) => {
     }
 }
 
-const helpMessageCommand = async (client, message) => {
+const helpMessageCommand = async (message) => {
     const args = message.content.split(" ");
     args.shift();
 

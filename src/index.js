@@ -16,7 +16,7 @@ const client = new Client({ intents:
 });
 
 client.on(Events.MessageCreate, async (message) => {
-    runMessageCommand(client, message).then(() => {
+    runMessageCommand(message).then(() => {
         // do nothing
     }).catch((error) => {
         logger.error(`Error in message command: ${message.content}`);

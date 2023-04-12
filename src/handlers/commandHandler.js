@@ -135,7 +135,7 @@ const validateArgs = (command, args) => {
     return true;
 }
             
-const runMessageCommand = async (client, message) => {
+const runMessageCommand = async (message) => {
     // get first word of message
     let command = message.content.split(" ")[0];
 
@@ -159,7 +159,7 @@ const runMessageCommand = async (client, message) => {
 
     // execute command
     try {
-        await messageCommands[command](client, message);
+        await messageCommands[command](message);
         const exp = commandLookup[command].exp;
         if (exp && exp > 0) {
             const { level, err } = await addExp(message.author, commandLookup[command].exp);

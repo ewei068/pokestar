@@ -1,4 +1,4 @@
-const echoMessageCommand = async (client, message) => {
+const echoMessageCommand = async (message) => {
     const args = message.content.split(" ");
     args.shift();
     await message.channel.send(args.join(" "));
