@@ -115,6 +115,21 @@ const commandConfig = {
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
                 "exp": 10
             },
+            "info": {
+                "aliases": ["info", "i", "pokemoninfo", "pi"],
+                "description": "Get info about a pokemon",
+                "execute": "info.js",
+                "args": {
+                    "pokemonid": {
+                        "type": "string",
+                        "description": "unique ID for pokemon",
+                        "optional": false,
+                        "variable": false
+                    }
+                },
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+                "exp": 10
+            },
         }
     },
 }

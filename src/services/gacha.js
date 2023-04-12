@@ -8,6 +8,7 @@ const { drawDiscrete, drawIterable, drawUniform } = require('../utils/gachaUtils
 
 const { logger } = require('../log');
 const { getOrSetDefault } = require('../utils/utils');
+const { calculatePokemonStats } = require('./pokemon');
 
 const drawDaily = async (trainer) => {
     // check if new day; if in alpha, ignore
@@ -63,22 +64,25 @@ const usePokeball = async (trainer, pokeballId) => {
     }
 
     const pokemonId = drawIterable(rarityBins[rarity], 1)[0];
-    const pokemonData = pokemonConfig[pokemonId];
+    const speciesData = pokemonConfig[pokemonId];
 
     const pokemon = {
         "userId": trainer.userId,
         "speciesId": pokemonId,
-        "name": pokemonData.name,
+        "name": speciesData.name,
         "level": 1,
         "experience": 0,
         "evs": [0, 0, 0, 0, 0, 0],
         "ivs": drawUniform(0, 31, 6),
         "natureId": `${drawUniform(0, 24, 1)[0]}`,
-        "abilityId": `${drawDiscrete(pokemonData.abilities, 1)[0]}`,
+        "abilityId": `${drawDiscrete(speciesData.abilities, 1)[0]}`,
         "item": "",
         "moves": [],
         "shiny": false,
     }
+
+    // calculate stats
+    calculatePokemonStats(pokemon, speciesData);
 
     // store pokemon
     try {
@@ -95,7 +99,7 @@ const usePokeball = async (trainer, pokeballId) => {
 
     const rv = {
         "pokemon": pokemon,
-        "pokemonData": pokemonData,
+        "speciesData": speciesData,
     }
 
     return { data: rv , err: null };

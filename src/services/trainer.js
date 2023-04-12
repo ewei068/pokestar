@@ -113,7 +113,7 @@ const getTrainer = async (user) => {
         try {
             const res = await updateDocument(
                 collectionNames.USERS,
-                { "userId": user.id },
+                { userId: user.id },
                 { $set: trainer }
             );
             if (res.modifiedCount === 0) {
@@ -166,7 +166,7 @@ const addExp = async (user, exp) => {
         try {
             res = await updateDocument(
                 collectionNames.USERS,
-                { "userId": user.id },
+                { userId: user.id },
                 { $set: { "exp": newExp } }
             );
             if (res.modifiedCount === 0) {

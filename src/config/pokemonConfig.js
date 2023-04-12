@@ -445,8 +445,8 @@ const rarityBins = {
 }
 
 for (const id in pokemonConfig) {
-    const pokemonData = pokemonConfig[id];
-    rarityBins[pokemonData.rarity].push(id);
+    const speciesData = pokemonConfig[id];
+    rarityBins[speciesData.rarity].push(id);
 }
 
 // TODO: fix pokemon rarity bins

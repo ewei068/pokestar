@@ -1,5 +1,5 @@
 const { getTrainer } = require("../services/trainer");
-const { listPokemon } = require("../services/pokemon");
+const { listPokemons: listPokemon } = require("../services/pokemon");
 const { buildPokemonListEmbed } = require("../embeds/pokemonEmbeds");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { eventNames } = require("../config/eventConfig");

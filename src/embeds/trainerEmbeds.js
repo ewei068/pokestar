@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const { getTrainerLevelExp: getTrainerLevelExp, MAX_TRAINER_LEVEL } = require('../config/trainerConfig');
 const { backpackCategories, backpackItems, backpackCategoryConfig, backpackItemConfig } = require('../config/backpackConfig');
+const { getPBar } = require("../utils/utils");
 
 /*
 "trainer": {
@@ -18,11 +19,7 @@ const buildTrainerEmbed = (trainer) => {
     const oldLevelExp = getTrainerLevelExp(trainer.level);
     const newLevelExp = getTrainerLevelExp(trainer.level + 1);
     const levelPercent = trainer.level == MAX_TRAINER_LEVEL ? 0 : 100 * (trainer.exp - oldLevelExp) / (newLevelExp - oldLevelExp);
-
-    // level progress bar based off percentage
-    const progress = Math.floor(levelPercent / 5);
-    // progress bar and round percent to nearest int
-    const progressBar = `${"▓".repeat(progress)}${"░".repeat(20 - progress)} -- ${Math.round(levelPercent)}%`;
+    const progressBar = `${getPBar(levelPercent, 20)} -- ${Math.round(levelPercent)}%`;
 
     // check to see if daily availible
     const daily = new Date(trainer.lastDaily);

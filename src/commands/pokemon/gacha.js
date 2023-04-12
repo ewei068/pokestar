@@ -26,7 +26,7 @@ const gacha = async (user, pokeball) => {
         return { embed: null, err: gacha.err };
     }
 
-    embed = buildNewPokemonEmbed(gacha.data.pokemon, gacha.data.pokemonData);
+    embed = buildNewPokemonEmbed(gacha.data.pokemon, gacha.data.speciesData);
     return { embed: embed, err: null };
 }
 

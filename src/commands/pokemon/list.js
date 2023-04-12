@@ -1,4 +1,4 @@
-const { listPokemon } = require('../../services/pokemon');
+const { listPokemons: listPokemon } = require('../../services/pokemon');
 const { getTrainer } = require('../../services/trainer');
 const { buildPokemonListEmbed } = require('../../embeds/pokemonEmbeds');
 const { buildScrollActionRow } = require('../../components/scrollActionRow');

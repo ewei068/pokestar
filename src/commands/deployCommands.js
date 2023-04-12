@@ -2,8 +2,6 @@ const { REST, Routes } = require('discord.js');
 const { commandConfig } = require('../config/commandConfig');
 const { buildSlashCommand } = require('../handlers/commandHandler');
 const { logger } = require('../log');
-const fs = require('node:fs');
-const path = require('node:path');
 
 const clientId = process.env.CLIENT_ID;
 const token = process.env.DISCORD_TOKEN;
