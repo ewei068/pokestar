@@ -228,6 +228,104 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW,
     },
+    "10": {
+        "name": "Caterpie",
+        "emoji": "🐛",
+        "description": "Its short feet are tipped with suction pads that enable it to tirelessly climb slopes and walls.",
+        "type": [types.BUG],
+        "baseStats": [45, 30, 35, 20, 20, 45],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png",
+        "evolution": [{
+            "level": 7,
+            "id": "11",
+        }],
+        "abilities": {
+            "19": 0.8,
+            "50": 0.2
+        },
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.FAST,
+    },
+    "11": {
+        "name": "Metapod",
+        "emoji": "🐛",
+        "description": "This POKéMON is vulnerable to attack while its shell is soft, exposing its weak and tender body.",
+        "type": [types.BUG],
+        "baseStats": [50, 20, 55, 25, 25, 30],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/11.png",
+        "evolution": [{
+            "level": 10,
+            "id": "12",
+        }],
+        "abilities": {
+            "61": 1
+        },
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.FAST,
+    },
+    "12": {
+        "name": "Butterfree",
+        "emoji": "🦋",
+        "description": "In battle, it flaps its wings at high speed to release highly toxic dust into the air.",
+        "type": [types.BUG, types.FLYING],
+        "baseStats": [60, 45, 50, 90, 80, 70],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/12.png",
+        "abilities": {
+            "14": 0.8,
+            "110": 0.2
+        },
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.FAST,
+    },
+    "13": {
+        "name": "Weedle",
+        "emoji": "🐛",
+        "description": "Often found in forests, eating leaves. It has a sharp venomous stinger on its head.",
+        "type": [types.BUG, types.POISON],
+        "baseStats": [40, 35, 30, 20, 20, 50],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/13.png",
+        "evolution": [{
+            "level": 7,
+            "id": "14",
+        }],
+        "abilities": {
+            "19": 0.8,
+            "50": 0.2
+        },
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.FAST,
+    },
+    "14": {
+        "name": "Kakuna",
+        "emoji": "🐛",
+        "description": "Almost incapable of moving, this POKéMON can only harden its shell to protect itself from predators.",
+        "type": [types.BUG, types.POISON],
+        "baseStats": [45, 25, 50, 25, 25, 35],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/14.png",
+        "evolution": [{
+            "level": 10,
+            "id": "15",
+        }],
+        "abilities": {
+            "61": 1
+        },
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.FAST,
+    },
+    "15": {
+        "name": "Beedrill",
+        "emoji": "🐝",
+        "description": "Flies at high speed and attacks using its large venomous stingers on its forelegs and tail.",
+        "type": [types.BUG, types.POISON],
+        "baseStats": [65, 90, 40, 45, 80, 75],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/15.png",
+        "abilities": {
+            "68": 0.8,
+            "97": 0.2
+        },
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.FAST,
+    },
     "16" : {
         "name": "Pidgey",
         "emoji": "🐦",
@@ -379,6 +477,144 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "66": {
+        "name": "Machop",
+        "emoji": "💪",
+        "description": "Loves to build its muscles. It trains in all styles of martial arts to become even stronger.",
+        "type": [types.FIGHTING],
+        "baseStats": [70, 80, 50, 35, 35, 35],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/66.png",
+        "evolution": [{
+            "level": 28,
+            "id": "67",
+        }],
+        "abilities": {
+            "62": 0.45,
+            "99": 0.45,
+            "80": 0.1
+        },
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "67": {
+        "name": "Machoke",
+        "emoji": "💪",
+        "description": "Its muscular body is so powerful, it must wear a power save belt to be able to regulate its motions.",
+        "type": [types.FIGHTING],
+        "baseStats": [80, 100, 70, 50, 60, 45],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/67.png",
+        "evolution": [{
+            "level": 42,
+            "id": "68",
+        }],
+        "abilities": {
+            "62": 0.45,
+            "99": 0.45,
+            "80": 0.1
+        },
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "68": {
+        "name": "Machamp",
+        "emoji": "💪",
+        "description": "Using its heavy muscles, it throws powerful punches that can send the victim clear over the horizon.",
+        "type": [types.FIGHTING],
+        "baseStats": [90, 130, 80, 65, 85, 55],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/68.png",
+        "abilities": {
+            "62": 0.45,
+            "99": 0.45,
+            "80": 0.1
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "74": {
+        "name": "Geodude",
+        "emoji": "🪨",
+        "description": "Found in fields and mountains. Mistaking them for boulders, people often step or trip on them.",
+        "type": [types.ROCK, types.GROUND],
+        "baseStats": [40, 80, 100, 30, 30, 20],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/74.png",
+        "evolution": [{
+            "level": 25,
+            "id": "75",
+        }],
+        "abilities": {
+            "69": 0.45,
+            "5": 0.45,
+            "8": 0.1
+        },
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "75": {
+        "name": "Graveler",
+        "emoji": "🪨",
+        "description": "Rolls down slopes to move. It rolls over any obstacle without slowing or changing its direction.",
+        "type": [types.ROCK, types.GROUND],
+        "baseStats": [55, 95, 115, 45, 45, 35],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/75.png",
+        "evolution": [{
+            "level": 40,
+            "id": "76",
+        }],
+        "abilities": {
+            "69": 0.45,
+            "5": 0.45,
+            "8": 0.1
+        },
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "76": {
+        "name": "Golem",
+        "emoji": "🪨",
+        "description": "Its boulder-like body is extremely hard. It can easily withstand dynamite blasts without damage.",
+        "type": [types.ROCK, types.GROUND],
+        "baseStats": [80, 120, 130, 55, 65, 45],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/76.png",
+        "abilities": {
+            "69": 0.45,
+            "5": 0.45,
+            "8": 0.1
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "129": {
+        "name": "Magikarp",
+        "emoji": "🐟",
+        "description": "In the distant past, it was somewhat stronger than the horribly weak descendants that exist today.",
+        "type": [types.WATER],
+        "baseStats": [20, 10, 55, 15, 20, 80],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/129.png",
+        "evolution": [{
+            "level": 20,
+            "id": "130",
+        }],
+        "abilities": {
+            "33": 0.8,
+            "155": 0.2
+        },
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "130": {
+        "name": "Gyarados",
+        "emoji": "🐉",
+        "description": "Rarely seen in the wild. Huge and vicious, it is capable of destroying entire cities in a rage.",
+        "type": [types.WATER, types.FLYING],
+        "baseStats": [95, 125, 79, 60, 100, 81],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/130.png",
+        "abilities": {
+            "22": 0.8,
+            "153": 0.2
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
     "144" : {
         "name": "Articuno",
         "emoji": "🦅",
@@ -419,6 +655,56 @@ const pokemonConfig = {
             "49": 0.2
         },
         "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW
+    },
+    "147": {
+        "name": "Dratini", 
+        "emoji": "🐉",
+        "description": "Long considered a mythical POKéMON until recently when a small colony was found living underwater.",
+        "type": [types.DRAGON],
+        "baseStats": [41, 64, 45, 50, 50, 50],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/147.png",
+        "evolution": [{
+            "level": 30,
+            "id": "148",
+        }],
+        "abilities": {
+            "61": 0.8,
+            "63": 0.2
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.SLOW
+    },
+    "148": {
+        "name": "Dragonair",
+        "emoji": "🐉",
+        "description": "A mystical POKéMON that exudes a gentle aura. Has the ability to change climate conditions.",
+        "type": [types.DRAGON],
+        "baseStats": [61, 84, 65, 70, 70, 70],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/148.png",
+        "evolution": [{
+            "level": 55,
+            "id": "149",
+        }],
+        "abilities": {
+            "61": 0.8,
+            "63": 0.2
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.SLOW
+    },
+    "149": {
+        "name": "Dragonite",
+        "emoji": "🐉",
+        "description": "An extremely rarely seen marine POKéMON. Its intelligence is said to match that of humans.",
+        "type": [types.DRAGON, types.FLYING],
+        "baseStats": [91, 134, 95, 100, 100, 80],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/149.png",
+        "abilities": {
+            "39": 0.8,
+            "138": 0.2
+        },
+        "rarity": rarities.EPIC,
         "growthRate": growthRates.SLOW
     },
     "150" : {
