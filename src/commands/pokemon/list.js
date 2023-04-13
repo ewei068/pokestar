@@ -23,7 +23,11 @@ const list = async (user, page) => {
 
     const embed = buildPokemonListEmbed(trainer.data, pokemons.data, page);
 
-    const stateId = setState({ userId: user.id, page: page, lastPage: pokemons.lastPage }, ttl=300);
+    const stateId = setState({ 
+        userId: user.id, 
+        page: page, 
+        lastPage: pokemons.lastPage 
+    }, ttl=300);
     const scrollRowData = {
         stateId: stateId,
     }

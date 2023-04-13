@@ -1,5 +1,7 @@
 const { stageNames } = require('./stageConfig');
 
+// TODO: re-order commands and categories
+// TODO: add long descriptions
 const commandConfig = {
     "heartbeat": {
         "description": "Basic heartbeat commands",
@@ -74,7 +76,7 @@ const commandConfig = {
                 "execute": "daily.js",
                 "args": {},
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-                "exp": 10
+                "exp": 50
             },
             "levelrewards": {
                 "aliases": ["levelrewards"],
@@ -160,13 +162,28 @@ const commandConfig = {
                 "args": {
                     "pokemonid": {
                         "type": "string",
-                        "description": "unique ID for pokemon",
+                        "description": "unique ID for pokemon to train",
                         "optional": false,
                         "variable": false
                     }
                 },
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
                 "exp": 15
+            },
+            "evolve": {
+                "aliases": ["evolve"],
+                "description": "Evolve a pokemon",
+                "execute": "evolve.js",
+                "args": {
+                    "pokemonid": {
+                        "type": "string",
+                        "description": "unique ID for pokemon to evolve",
+                        "optional": false,
+                        "variable": false
+                    }
+                },
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+                "exp": 25
             },
         }
     },

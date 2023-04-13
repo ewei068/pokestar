@@ -2,6 +2,8 @@ const eventNames = {
     POKEMON_SCROLL: "pokemonScroll",
     POKEMON_RELEASE: "pokemonRelease",
     POKEMON_LIST_SELECT: "pokemonSelect",
+    POKEMON_EVOLVE_SELECT: "pokemonEvolveSelect",
+    POKEMON_EVOLVE_CONFIRM: "pokemonEvolveConfirm",
 };
 
 const eventConfig = {
@@ -16,6 +18,14 @@ const eventConfig = {
     [eventNames.POKEMON_LIST_SELECT]: {
         "name": "Pokemon List Select",
         "execute": "pokemonListSelect.js",
+    },
+    [eventNames.POKEMON_EVOLVE_SELECT]: {
+        "name": "Pokemon Evolve Select",
+        "execute": "pokemonEvolveSelect.js",
+    },
+    [eventNames.POKEMON_EVOLVE_CONFIRM]: {
+        "name": "Pokemon Evolve Confirm",
+        "execute": "pokemonEvolveConfirm.js",
     },
 };
 

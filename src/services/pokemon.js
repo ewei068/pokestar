@@ -124,6 +124,79 @@ const releasePokemons = async (trainer, pokemonIds) => {
     }
 }
 
+const getEvolvedPokemon = (pokemon, evolutionSpeciesId) => {
+    // get species data
+    const speciesData = pokemonConfig[pokemon.speciesId];
+    const evolutionSpeciesData = pokemonConfig[evolutionSpeciesId];
+
+    // get evolution pokemon
+    pokemon = calculatePokemonStats(pokemon, evolutionSpeciesData);
+    pokemon.speciesId = evolutionSpeciesId;
+    if (pokemon.name === speciesData.name) {
+        pokemon.name = evolutionSpeciesData.name;
+    }
+
+    // calculate ability
+    // if evolution has one ability, give that ability
+    // else, use ability slots
+    // 2 abilities => slot 1, 3
+    // 3 abilities => slot 1, 2, 3
+    // first convert abilities (map id => probability) into lists
+    const abilities = Object.keys(speciesData.abilities);
+    const evolutionAbilities = Object.keys(evolutionSpeciesData.abilities);
+    if (evolutionAbilities.length === 1) {
+        pokemon.abilityId = evolutionAbilities[0];
+    } else {
+        // get current ability slot
+        let slot = 1;
+        const index = abilities.indexOf(pokemon.abilityId);
+        if (abilities.length === 2) {
+            slot = index === 0 ? 1 : 3;
+        } else if (abilities.length === 3) {
+            slot = index + 1;
+        }
+
+        // use slot to get new ability
+        if (evolutionAbilities.length === 2) {
+            if (slot === 1 || slot === 2) {
+                pokemon.abilityId = evolutionAbilities[0];
+            } else {
+                pokemon.abilityId = evolutionAbilities[1];
+            }
+        } else if (evolutionAbilities.length === 3) {
+            pokemon.abilityId = evolutionAbilities[slot - 1];
+        }
+    }
+
+    // TODO: change moves
+
+    return pokemon;
+}
+
+const evolvePokemon = async (pokemon, evolutionSpeciesId) => {
+    // get evolved pokemon
+    pokemon = getEvolvedPokemon(pokemon, evolutionSpeciesId);
+    const evolutionSpeciesData = pokemonConfig[evolutionSpeciesId];
+
+    // update pokemon
+    try {
+        const res = await updateDocument(
+            collectionNames.USER_POKEMON,
+            { userId: pokemon.userId, _id: idFrom(pokemon._id) },
+            { $set: pokemon }
+        );
+        if (res.modifiedCount === 0) {
+            logger.error(`Failed to evolve Pokemon ${pokemon._id}.`)
+            return { data: null, err: "Error evolving Pokemon." };
+        }
+        logger.info(`Evolved Pokemon ${pokemon._id}.`);
+        return { data: { pokemon: pokemon, species: evolutionSpeciesData.name }, err: null };
+    } catch (error) {
+        logger.error(error);
+        return { data: null, err: "Error evolving Pokemon." };
+    }
+}
+
 const addPokemonExp = async (trainer, pokemon, exp) => {
     // get species data
     const speciesData = pokemonConfig[pokemon.speciesId];
@@ -191,6 +264,8 @@ const addPokemonExp = async (trainer, pokemon, exp) => {
 module.exports = {
     listPokemons,
     getPokemon,
+    getEvolvedPokemon,
+    evolvePokemon,
     calculatePokemonStats,
     calculateAndUpdatePokemonStats,
     releasePokemons,

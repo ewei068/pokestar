@@ -13,7 +13,7 @@ const pokemonListSelect = async (interaction, data) => {
         return;
     }
 
-    const pokemonId = interaction.values[0]
+    const pokemonId = interaction.values[0];
     await interaction.update({ 
         content: `${pokemonId}`, 
         embeds: interaction.message.embeds, 
