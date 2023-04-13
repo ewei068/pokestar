@@ -1,23 +1,28 @@
 const { v4: uuidv4 } = require('uuid');
+const { logger } = require('../log');
 
 const states = {};
 const ttls = {};
 
-const cleanup = () => {
-    const now = Date.now();
-    const toDelete = [];
-    for (const stateId in ttls) {
-        const ttl = ttls[stateId];
-        if (now - ttl.lastCalled > ttl.ttl * 1000) {
-            toDelete.push(stateId);
-        }
+const handleTimeout = (stateId) => {
+    // check if state exists
+    if (!(stateId in states)) {
+        return;
     }
 
-    for (const stateId of toDelete) {
+    const now = Date.now();
+    const ttl = ttls[stateId];
+    if (now - ttl.lastCalled > ttl.ttl * 1000) {
         delete states[stateId];
         delete ttls[stateId];
+        logger.warn(`State ${stateId} timed out!`);
+    } else {
+        setTimeout(() => {
+            handleTimeout(stateId);
+        }, ttl.ttl * 1000 - (now - ttl.lastCalled));
     }
 }
+
 
 const setState = (state, ttl=60) => {
     // generate random state UUID
@@ -31,12 +36,21 @@ const setState = (state, ttl=60) => {
             ttl: ttl,
             lastCalled: Date.now()
         }
+        handleTimeout(stateId);
     }
-
-    cleanup();
 
     // return state UUID
     return stateId;
+}
+
+const updateState = (stateId, state) => {
+    // check if state exists
+    if (stateId in states) {
+        // update state
+        states[stateId] = state;
+        // update lastCalled time
+        ttls[stateId].lastCalled = Date.now();
+    }
 }
 
 const getState = (stateId) => {
@@ -63,5 +77,6 @@ const deleteState = (stateId) => {
 module.exports = {
     setState: setState,
     getState: getState,
+    updateState: updateState,
     deleteState: deleteState
 }

@@ -5,7 +5,7 @@ const { idFrom } = require("../../database/mongoHandler");
 const { buildPokemonListEmbed } = require('../../embeds/pokemonEmbeds');
 const { buildYesNoActionRow } = require('../../components/yesNoActionRow');
 const { eventNames } = require('../../config/eventConfig');
-const { setState } = require('../../services/eventStates');
+const { setState } = require('../../services/state');
 
 const release = async (user, pokemonIds) => {
     if (pokemonIds.length > MAX_RELEASE) {
@@ -27,7 +27,7 @@ const release = async (user, pokemonIds) => {
 
     const embed = buildPokemonListEmbed(trainer.data, toRelease.data, 1);
 
-    const stateId = setState({ userId: user.id, pokemonIds: pokemonIds }, ttl=300);
+    const stateId = setState({ userId: user.id, pokemonIds: pokemonIds }, ttl=150);
     const releaseData = {
         stateId: stateId,
     }

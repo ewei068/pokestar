@@ -1,6 +1,6 @@
 const { getTrainer } = require("../services/trainer");
 const { releasePokemons } = require("../services/pokemon");
-const { getState, deleteState } = require("../services/eventStates");
+const { getState, deleteState } = require("../services/state");
 
 const pokemonRelease = async (interaction, data) => {
     // get state
