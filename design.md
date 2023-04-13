@@ -71,6 +71,14 @@ The following design patterns and best practices will be used to ensure the bot 
 * User Interface:
 The bot will not have a graphical user interface, as it will be a chatbot that interacts with users through text commands. Users will interact with the bot by sending messages in a designated channel on the Discord server.
 
+The goal of this bot is to be a fresh, unique take on other Discord Bots, Pokemon Bots, and Pokemon games. To accomplish this, we will focus on the following unique game mechanics:
+
+* Gacha: Pokemon and other items will be obtained by a gacha system. This will make obtaining items feel more exciting and rewarding. We will ensure fairness of the gacha with pity mechanics, selection mechanics, and fair rates.
+* Progression: Players will be able to progress in multiple ways, such as Pokemon training, user level-ups, and purchasing from the shop.
+* Interactivity: When applicable, bot responses will include buttons to allow for better responsive-ness and ease of interaction.
+* Battles: There will be a focus on the battling system. Battles will be unique, 6v6 turn-based battles with each move and Pokemon individually tuned. There will be multiple battle modes, both PvP and PvE.
+* Socialization: Due to the social nature of Discord, systems in the game will be tuned for socialization. This may include PvP battles, trading, and Co-op.
+
 ## Security
 Rate limiting users and/or servers: TBD.
 
@@ -275,11 +283,12 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 
 ## Starting Roadmap
 
-* General functionality
-* Setup Database
-* Basic trainer: daily rewards, balls, backpack
-* Basic pokemon: draw, list, inspect
+* General functionality (DONE)
+* Setup Database (DONE)
+* Basic trainer: daily rewards, balls, backpack (DONE)
+* Basic pokemon: draw, list, inspect, release (DONE)
 * Basic training: train, evolve
+* Basic money: money acquisition & shop
 * Database schema validation
 * Basic battling: placement, teams, moves (no abilities/held items)
 * Automate stage deployment pipeline and testing
