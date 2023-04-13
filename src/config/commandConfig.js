@@ -153,6 +153,21 @@ const commandConfig = {
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
                 "exp": 0
             },
+            "train": {
+                "aliases": ["train", "t"],
+                "description": "Train a pokemon",
+                "execute": "train.js",
+                "args": {
+                    "pokemonid": {
+                        "type": "string",
+                        "description": "unique ID for pokemon",
+                        "optional": false,
+                        "variable": false
+                    }
+                },
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+                "exp": 15
+            },
         }
     },
 }

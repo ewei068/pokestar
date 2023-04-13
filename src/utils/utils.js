@@ -8,6 +8,8 @@ const getOrSetDefault = (obj, key, defaultValue) => {
 const getPBar = (percent, size = 20) => {
     if (percent > 100) {
         percent = 100;
+    } else if (percent < 0) {
+        percent = 0;
     }
     const progress = Math.floor(percent / (100 / size));
     return `${"▓".repeat(progress)}${"░".repeat(size - progress)}`;

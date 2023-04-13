@@ -152,9 +152,15 @@ const levelConfig = {
     },
 }
 
+// TODO: move?
 // level 1: 0 exp, level 2: 100 exp, level 3: 300 exp, level 4: 600 exp, level 5: 1000 exp etc...
 const getTrainerLevelExp = (level) => {
     return 50 * (level ** 2 - level);
+}
+
+const expMultiplier = (level) => {
+    // 4 * x ^ (2/3)
+    return 4 * (Math.pow(level, 2/3));
 }
 
 module.exports = { 
@@ -164,4 +170,5 @@ module.exports = {
     MAX_POKEMON,
     MAX_RELEASE,
     levelConfig,
+    expMultiplier
 };

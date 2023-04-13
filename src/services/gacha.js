@@ -99,7 +99,7 @@ const usePokeball = async (trainer, pokeballId) => {
         "speciesId": pokemonId,
         "name": speciesData.name,
         "level": 1,
-        "experience": 0,
+        "exp": 0,
         "evs": [0, 0, 0, 0, 0, 0],
         "ivs": ivs,
         "natureId": `${drawUniform(0, 24, 1)[0]}`,

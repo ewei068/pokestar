@@ -2,7 +2,9 @@ const { logger } = require("../log");
 const { findDocuments, updateDocument, deleteDocuments, idFrom } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { getOrSetDefault } = require("../utils/utils");
-const { natureConfig, pokemonConfig } = require("../config/pokemonConfig");
+const { natureConfig, pokemonConfig, growthRates } = require("../config/pokemonConfig");
+const { expMultiplier } = require("../config/trainerConfig");
+const { getPokemonExpNeeded } = require("../utils/pokemonUtils");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
@@ -122,10 +124,75 @@ const releasePokemons = async (trainer, pokemonIds) => {
     }
 }
 
+const addPokemonExp = async (trainer, pokemon, exp) => {
+    // get species data
+    const speciesData = pokemonConfig[pokemon.speciesId];
+
+    // calculate exp based on trainer level
+    exp = Math.floor(exp * expMultiplier(trainer.level));
+    if (!pokemon.exp) {
+        pokemon.exp = 0;
+    }
+    pokemon.exp += exp;
+
+    // add exp to pokemon
+    let levelUp = false;
+    while (pokemon.exp >= getPokemonExpNeeded(pokemon.level + 1, speciesData.growthRate)) {
+        if (pokemon.level >= 100) {
+            break;
+        }
+        pokemon.level++;
+        levelUp = true;
+    }
+
+    if (levelUp) {
+        // calculate new stats
+        pokemon = calculatePokemonStats(pokemon, speciesData);
+    }
+
+    // if level up, update pokemon
+    if (levelUp) {
+        try {
+            const res = await updateDocument(
+                collectionNames.USER_POKEMON,
+                { userId: trainer.userId, _id: idFrom(pokemon._id) },
+                { $set: pokemon }
+            );
+            if (res.modifiedCount === 0) {
+                logger.error(`Failed to update Pokemon ${pokemon._id}.`)
+                return { data: null, err: "Error updating Pokemon." };
+            }
+            logger.info(`Level-up and update stats for Pokemon ${pokemon._id}.`);
+        } catch (error) {
+            logger.error(error);
+            return { data: null, err: "Error updating Pokemon." };
+        }
+    } else {
+        try {
+            const res = await updateDocument(
+                collectionNames.USER_POKEMON,
+                { userId: trainer.userId, _id: idFrom(pokemon._id) },
+                { $inc: { exp: exp } }
+            );
+            if (res.modifiedCount === 0) {
+                logger.error(`Failed to update Pokemon ${pokemon._id}.`)
+                return { data: null, err: "Error updating Pokemon." };
+            }
+        } catch (error) {
+            logger.error(error);
+            return { data: null, err: "Error updating Pokemon." };
+        }
+    }
+
+    return { data: exp, err: null };
+}
+
+
 module.exports = {
     listPokemons,
     getPokemon,
     calculatePokemonStats,
     calculateAndUpdatePokemonStats,
-    releasePokemons
+    releasePokemons,
+    addPokemonExp
 };
