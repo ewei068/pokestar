@@ -120,17 +120,18 @@ const usePokeball = async (trainer, pokeballId) => {
             return { data: null, err: "Error pokemon saving." };
         }
         logger.info(`Inserted pokemon ${pokemon.name} for ${trainer.user.username}.`);
+
+        const rv = {
+            "pokemon": pokemon,
+            "speciesData": speciesData,
+            "id": res.insertedId
+        };
+    
+        return { data: rv , err: null };
     } catch (error) {
         logger.error(error);
         return { data: null, err: "Error pokemon saving." };
     }
-
-    const rv = {
-        "pokemon": pokemon,
-        "speciesData": speciesData,
-    }
-
-    return { data: rv , err: null };
 }
 
 module.exports = {

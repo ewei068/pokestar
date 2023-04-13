@@ -1,5 +1,11 @@
 # Pokestar Changelog
 
+## 0.2.0
+
+-`/train`: Train you Pokemon!
+-Improved mobile compatibility: Pokemon IDs are printed as messages to copy on mobile.
+-Added EXP bar to trainer info.
+
 ## 0,1,0 (4/11)
 
 Initial release! Supports very basic Pokemon, trainer, and gacha commands.

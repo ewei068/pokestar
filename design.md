@@ -289,6 +289,8 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 * Basic pokemon: draw, list, inspect, release (DONE)
 * Basic training: train, evolve
 * Basic money: money acquisition & shop
-* Database schema validation
+* Leaderboards
+* Take care of other issues: help revamp, documentation, code qc
 * Basic battling: placement, teams, moves (no abilities/held items)
+* Database schema validation ?
 * Automate stage deployment pipeline and testing

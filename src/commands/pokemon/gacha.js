@@ -27,28 +27,32 @@ const gacha = async (user, pokeball) => {
     }
 
     embed = buildNewPokemonEmbed(gacha.data.pokemon, gacha.data.speciesData);
-    return { embed: embed, err: null };
+    const send = {
+        content: `${gacha.data.id}`,
+        embeds: [embed]
+    }
+    return { send: send, err: null };
 }
 
 const gachaMessageCommand = async (message) => {
     const pokeball = message.content.split(" ")[1];
-    const { embed, err } = await gacha(message.author, pokeball);
+    const { send, err } = await gacha(message.author, pokeball);
     if (err) {
         await message.channel.send(`${err}`);
     }
     else {
-        await message.channel.send({ embeds: [embed] });
+        await message.channel.send(send);
     }
 }
 
 const gachaSlashCommand = async (interaction) => {
     const pokeball = interaction.options.getString('pokeball');
-    const { embed, err } = await gacha(interaction.user, pokeball);
+    const { send, err } = await gacha(interaction.user, pokeball);
     if (err) {
         await interaction.reply(`${err}`);
     }
     else {
-        await interaction.reply({ embeds: [embed] });
+        await interaction.reply(send);
     }
 }
 

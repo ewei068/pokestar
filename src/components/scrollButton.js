@@ -1,10 +1,10 @@
 const { ButtonBuilder, ButtonStyle } = require('discord.js');
 
-const buildScrollButton = (page, isLeft, disabled, eventName) => {
+const buildScrollButton = (isLeft, data, disabled, eventName) => {
     const buttonId = {
-        page: page,
         isLeft: isLeft,
-        eventName: eventName
+        eventName: eventName,
+        ...data,
     }
 
     const button = new ButtonBuilder()

@@ -11,27 +11,33 @@ const info = async (user, pokemonId) => {
     if (pokemon.err) {
         return { embed: null, err: pokemon.err };
     }
+
     const embed = buildPokemonEmbed(trainer.data, pokemon.data);
-    return { embed: embed, err: null };
+
+    const send = {
+        content: `${pokemon.data._id}`,
+        embeds: [embed]
+    }
+    return { send: send, err: null };
 }
 
 const infoMessageCommand = async (message) => {
     const pokemonId = message.content.split(' ')[1];
-    const { embed, err } = await info(message.author, pokemonId);
+    const { send, err } = await info(message.author, pokemonId);
     if (err) {
         await message.channel.send(`${err}`);
     } else {
-        await message.channel.send({ embeds: [embed] });
+        await message.channel.send(send);
     }
 }
 
 const infoSlashCommand = async (interaction) => {
     const pokemonId = interaction.options.getString('pokemonid');
-    const { embed, err } = await info(interaction.user, pokemonId);
+    const { send, err } = await info(interaction.user, pokemonId);
     if (err) {
         await interaction.reply(`${err}`);
     } else {
-        await interaction.reply({ embeds: [embed] });
+        await interaction.reply(send);
     }
 }
 

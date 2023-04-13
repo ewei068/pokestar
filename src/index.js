@@ -42,7 +42,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
-    if (!interaction.isButton()) return;
+    if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;
 
     // logger.info(interaction)
     // turn interaction customId into json
