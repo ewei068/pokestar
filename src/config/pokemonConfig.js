@@ -445,6 +445,74 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "35": {
+        "name": "Clefairy",
+        "emoji": "🧚",
+        "description": "Its magical and cute appeal has many admirers. It is rare and found only in certain areas.",
+        "type": [types.FAIRY],
+        "baseStats": [70, 45, 48, 60, 65, 35],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/35.png",
+        "evolution": [{
+            "level": 26,
+            "id": "36",
+        }],
+        "abilities": {
+            "56": 0.45,
+            "98": 0.45,
+            "132": 0.1
+        },
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "36": {
+        "name": "Clefable",
+        "emoji": "🧚",
+        "description": "A timid fairy POKéMON that is rarely seen. It will run and hide the moment it senses people.",
+        "type": [types.FAIRY],
+        "baseStats": [95, 70, 73, 95, 90, 60],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/36.png",
+        "abilities": {
+            "56": 0.45,
+            "98": 0.45,
+            "109": 0.1
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "39" : {
+        "name": "Jigglypuff",
+        "emoji": "🎤",
+        "description": "When its huge eyes light up, it sings a mysteriously soothing melody that lulls its enemies to sleep.",
+        "type": [types.NORMAL, types.FAIRY],
+        "baseStats": [115, 45, 20, 45, 25, 20],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/39.png",
+        "evolution": [{
+            "level": 26,
+            "id": "40",
+        }],
+        "abilities": {
+            "56": 0.45,
+            "172": 0.45,
+            "132": 0.1
+        },
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "40" : {
+        "name": "Wigglytuff",
+        "emoji": "🎤",
+        "description": "The body is soft and rubbery. When angered, it will suck in air and inflate itself to an enormous size.",
+        "type": [types.NORMAL, types.FAIRY],
+        "baseStats": [140, 70, 45, 85, 50, 45],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/40.png",
+        "abilities": {
+            "56": 0.45,
+            "172": 0.45,
+            "119": 0.1
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "41" : {
         "name": "Zubat",
         "emoji": "🦇",
@@ -476,6 +544,59 @@ const pokemonConfig = {
         },
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST
+    },
+    "63": {
+        "name": "Abra",
+        "emoji": "🧠",
+        "description": "Using its ability to read minds, it will identify impending danger and TELEPORT to safety.",
+        "type": [types.PSYCHIC],
+        "baseStats": [25, 20, 15, 105, 55, 90],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/63.png",
+        "evolution": [{
+            "level": 16,
+            "id": "64",
+        }],
+        "abilities": {
+            "28": 0.45,
+            "39": 0.45,
+            "98": 0.1
+        },
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "64": {
+        "name": "Kadabra",
+        "emoji": "🥄",
+        "description": "It emits special alpha waves from its body that induce headaches just by being close by.",
+        "type": [types.PSYCHIC],
+        "baseStats": [40, 35, 30, 120, 70, 105],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/64.png",
+        "evolution": [{
+            "level": 36,
+            "id": "65",
+        }],
+        "abilities": {
+            "28": 0.45,
+            "39": 0.45,
+            "98": 0.1
+        },
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "65": {
+        "name": "Alakazam",
+        "emoji": "🥄",
+        "description": "Its brain can outperform a supercomputer. Its intelligence quotient is said to be 5,000.",
+        "type": [types.PSYCHIC],
+        "baseStats": [55, 50, 45, 135, 95, 120],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/65.png",
+        "abilities": {
+            "28": 0.45,
+            "39": 0.45,
+            "98": 0.1
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
     },
     "66": {
         "name": "Machop",
@@ -583,6 +704,53 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "92": {
+        "name": "Gastly",
+        "emoji": "👻",
+        "description": "Almost invisible, this gaseous POKéMON cloaks the target and puts it to sleep without notice.",
+        "type": [types.GHOST, types.POISON],
+        "baseStats": [30, 35, 30, 100, 35, 80],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/92.png",
+        "evolution": [{
+            "level": 25,
+            "id": "93",
+        }],
+        "abilities": {
+            "26": 1
+        },
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "93": {
+        "name": "Haunter",
+        "emoji": "👻",
+        "description": "Because of its ability to slip through block walls, it is said to be from another dimension.",
+        "type": [types.GHOST, types.POISON],
+        "baseStats": [45, 50, 45, 115, 55, 95],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/93.png",
+        "evolution": [{
+            "level": 40,
+            "id": "94",
+        }],
+        "abilities": {
+            "26": 1
+        },
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "94": {
+        "name": "Gengar",
+        "emoji": "👻",
+        "description": "Under a full moon, this POKéMON likes to mimic the shadows of people and laugh at their fright.",
+        "type": [types.GHOST, types.POISON],
+        "baseStats": [60, 65, 60, 130, 75, 110],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/94.png",
+        "abilities": {
+            "130": 1
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
     "129": {
         "name": "Magikarp",
         "emoji": "🐟",
@@ -611,6 +779,77 @@ const pokemonConfig = {
         "abilities": {
             "22": 0.8,
             "153": 0.2
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "133": {
+        "name": "Eevee",
+        "emoji": "🐶",
+        "description": "Its genetic code is irregular. It may mutate if it is exposed to radiation from element STONES.",
+        "type": [types.NORMAL],
+        "baseStats": [55, 55, 50, 45, 65, 55],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png",
+        "evolution": [
+            {
+                "level": 25,
+                "id": "134",
+            },
+            {
+                "level": 25,
+                "id": "135",
+            },
+            {
+                "level": 25,
+                "id": "136",
+            },
+        ],
+        "abilities": {
+            "50": 0.45,
+            "91": 0.45,
+            "107": 0.1
+        },
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "134": {
+        "name": "Vaporeon",
+        "emoji": "🧜‍♀️",
+        "description": "Lives close to water. Its long tail is ridged with a fin which is often mistaken for a mermaid's.",
+        "type": [types.WATER],
+        "baseStats": [130, 65, 60, 110, 95, 65],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/134.png",
+        "abilities": {
+            "11": 0.8,
+            "93": 0.2
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "135": {
+        "name": "Jolteon",
+        "emoji": "⚡",
+        "description": "It accumulates negative ions in the atmosphere to blast out 10000-volt lightning bolts.",
+        "type": [types.ELECTRIC],
+        "baseStats": [65, 65, 60, 110, 95, 130],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/135.png",
+        "abilities": {
+            "10": 0.8,
+            "95": 0.2
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "136": {
+        "name": "Flareon",
+        "emoji": "🔥",
+        "description": "When storing thermal energy in its body, its temperature could soar to over 1600 degrees.",
+        "type": [types.FIRE],
+        "baseStats": [65, 130, 60, 95, 110, 65],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/136.png",
+        "abilities": {
+            "18": 0.8,
+            "62": 0.2
         },
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW

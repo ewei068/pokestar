@@ -137,16 +137,27 @@ List banners.
 	* OPTIONAL `sortOrder`
 * Functionality: Lists out up to 25 Pokemon owned by this player. This list will only show Pokemon ID, name, level, and type. Use `page`, `filter`, and `sort` to display a different subset of Pokemon. Filter will filter for name subset, while sort will sort based of TBD columns.
 
-**Inspect**
+**Info**
 
-* Aliases: `inspect`, `i`
+* Aliases: `info`, `i`, `pokemoninfo`, `pi`
 * Args:
 	* `id`
 * Functionality: Uses the user ID and provided Pokemon `id` to look up the Pokemon. If it exists, displays all the information about the Pokemon.
 
 **Train**
 
+* Aliases: `train`, `t`
+* Args:
+	* `id`
+	* OPTIONAL `location`
+* Functionality: Trains the Pokemon at `id` by granting it EXP, and leveling up if appropriate. If `location` is provided, will train it at a location (different locations give different EXP and EVs).
+
 **Evolve**
+
+* Aliases: `evolve`
+* Args:
+	* `id`
+* Functionality: If the Pokemon at `id` can evolve, lists all elligible evolutions for that Pokemon. The user can then select that Pokemon and confirm its evolution. To evolve, the Pokemon's ID, abilities, moves, and stats are changed. If the name is the default species name, then the name is changed too.
 
 ### Trainer
 
