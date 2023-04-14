@@ -7,6 +7,10 @@ const pokemonEvolveConfirm = async (interaction, data) => {
     // get state
     const state = getState(data.stateId);
     if (!state) {
+        await interaction.update({ 
+            content: "This interaction has expired.",
+            components: [] 
+        });
         return;
     }
 

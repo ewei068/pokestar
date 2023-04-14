@@ -3,8 +3,10 @@
 ## 0.2.0
 
 -`/train`: Train you Pokemon!
+-`/evolve`: Evolve your Pokemon!
 -Improved mobile compatibility: Pokemon IDs are printed as messages to copy on mobile.
 -Added EXP bar to trainer info.
+-Feedback for when an interaction expires due to timeout.
 
 ## 0,1,0 (4/11)
 

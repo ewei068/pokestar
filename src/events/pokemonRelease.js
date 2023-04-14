@@ -6,6 +6,10 @@ const pokemonRelease = async (interaction, data) => {
     // get state
     const state = getState(data.stateId);
     if (!state) {
+        await interaction.update({ 
+            content: "This interaction has expired.",
+            components: [] 
+        });
         return;
     }
 
@@ -14,7 +18,10 @@ const pokemonRelease = async (interaction, data) => {
         return;
     }
     if (!data.yes) {
-        await interaction.update({ content: "Pokemon release cancelled.", embeds: [], components: []});
+        await interaction.update({ 
+            content: "Pokemon release cancelled.", 
+            components: []
+        });
         deleteState(data.stateId);
         return;
     }
@@ -29,7 +36,10 @@ const pokemonRelease = async (interaction, data) => {
         return;
     } 
 
-    await interaction.update({ content: "Pokemon released.", embeds: [], components: [] });
+    await interaction.update({ 
+        content: "Pokemon released.",  
+        components: [] 
+    });
     deleteState(data.stateId);
 }
 
