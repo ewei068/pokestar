@@ -219,5 +219,6 @@ const runSlashCommand = async (interaction) => {
 module.exports = { 
     runMessageCommand: runMessageCommand,
     runSlashCommand: runSlashCommand,
-    buildSlashCommand
+    buildSlashCommand,
+    prefix
 };

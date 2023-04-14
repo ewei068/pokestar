@@ -1,5 +1,9 @@
 # Pokestar Changelog
 
+### 0,2.1 (4/13)
+
+* Fixed prefix in commands displayed under bot information based on deployment stage.
+
 ## 0.2.0 (4/13) - The Training Update
 
 The training update! Train your Pokemon and evolve them when they meet certain requirements.
@@ -10,6 +14,7 @@ Training EXP scales with your trainer level.
 * Improved mobile compatibility: Pokemon IDs are printed as messages to copy on mobile.
 * Added EXP bar to trainer info.
 * Feedback for when an interaction expires due to timeout.
+* Certain component interactions now grant EXP.
 * Added more Pokemon!
 
 ## 0,1,0 (4/11)

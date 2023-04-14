@@ -2,7 +2,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Events, GatewayIntentBits } = require('discord.js');
-const { runMessageCommand, runSlashCommand } = require('./handlers/commandHandler.js');
+const { runMessageCommand, runSlashCommand, prefix } = require('./handlers/commandHandler.js');
 const { handleEvent } = require('./handlers/eventHandler.js');
 const { logger } = require('./log');
 
@@ -44,9 +44,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
 client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;
 
-    // logger.info(interaction)
-    // turn interaction customId into json
-    // logger.info(JSON.parse(interaction.customId));
     try {
         await handleEvent(interaction);
     } catch (error) {
@@ -64,7 +61,7 @@ client.on(Events.GuildCreate, (guild) => {
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, c => {
 	logger.info(`Ready! Logged in as ${c.user.tag}`);
-    client.user.setActivity(`psa!help | psa!ti`);
+    client.user.setActivity(`${prefix}help | ${prefix}d | ${prefix}g`);
     // log connected guilds
     let guildString = "";
     client.guilds.cache.forEach(guild => {
