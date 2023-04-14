@@ -14,6 +14,7 @@ const trainerInfoMessageCommand = async (message) => {
     const { embed, err } = await trainerInfo(message.author);
     if (err) {
         await message.channel.send(`${err}`);
+        return { err: err };
     } else {
         await message.channel.send({ embeds: [embed] });
     }
@@ -23,6 +24,7 @@ const trainerInfoSlashCommand = async (interaction) => {
     const { embed, err } = await trainerInfo(interaction.user);
     if (err) {
         await interaction.reply(`${err}`);
+        return { err: err };
     } else {
         await interaction.reply({ embeds: [embed] });
     }

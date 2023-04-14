@@ -25,6 +25,7 @@ const levelRewardsMessageCommand = async (message) => {
     const { data, err } = await levelRewards(message.author);
     if (err) {
         await message.channel.send(`${err}`);
+        return { err: err };
     } else {
         await message.channel.send(data);
     }
@@ -34,6 +35,7 @@ const levelRewardsSlashCommand = async (interaction) => {
     const { data, err } = await levelRewards(interaction.user);
     if (err) {
         await interaction.reply(`${err}`);
+        return { err: err };
     } else {
         await interaction.reply(data);
     }

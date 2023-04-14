@@ -41,6 +41,7 @@ const releaseMessageCommand = async (message) => {
     const { embeds, components, err } = await release(message.author, pokemonIds);
     if (err) {
         await message.channel.send(`${err}`);
+        return { err: err };
     } else {
         await message.channel.send({ content: "Are you sure you want to release the following Pokemon?", embeds: embeds, components: components })
     }
@@ -51,6 +52,7 @@ const releaseSlashCommand = async (interaction) => {
     const { embeds, components, err } = await release(interaction.user, pokemonIds);
     if (err) {
         await interaction.reply(`${err}`);
+        return { err: err };
     } else {
         await interaction.reply({ content: "Are you sure you want to release the following Pokemon?", embeds: embeds, components: components });
     }

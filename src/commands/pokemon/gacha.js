@@ -39,6 +39,7 @@ const gachaMessageCommand = async (message) => {
     const { send, err } = await gacha(message.author, pokeball);
     if (err) {
         await message.channel.send(`${err}`);
+        return { err: err };
     }
     else {
         await message.channel.send(send);
@@ -50,6 +51,7 @@ const gachaSlashCommand = async (interaction) => {
     const { send, err } = await gacha(interaction.user, pokeball);
     if (err) {
         await interaction.reply(`${err}`);
+        return { err: err };
     }
     else {
         await interaction.reply(send);

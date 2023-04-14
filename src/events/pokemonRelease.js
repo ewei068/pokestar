@@ -10,12 +10,12 @@ const pokemonRelease = async (interaction, data) => {
             content: "This interaction has expired.",
             components: [] 
         });
-        return;
+        return { err: "This interaction has expired." };
     }
 
     // if data has userId component, verify interaction was done by that user
     if (state.userId && interaction.user.id !== state.userId) {
-        return;
+        return { err: "This interaction was not initiated by you." };
     }
     if (!data.yes) {
         await interaction.update({ 
@@ -28,12 +28,12 @@ const pokemonRelease = async (interaction, data) => {
 
     const trainer = await getTrainer(interaction.user);
     if (trainer.err) {
-        return;
+        return { err: trainer.err };
     }
 
     const releaseResult = await releasePokemons(trainer.data, state.pokemonIds);
     if (releaseResult.err) {
-        return;
+        return { err: releaseResult.err };
     } 
 
     await interaction.update({ 

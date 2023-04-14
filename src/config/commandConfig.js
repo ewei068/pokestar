@@ -60,7 +60,7 @@ const commandConfig = {
                 "execute": "trainerInfo.js",
                 "args": {},
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-                "exp": 10
+                "exp": 0
             },
             "backpack": {
                 "aliases": ["backpack", "bp"],
@@ -68,7 +68,7 @@ const commandConfig = {
                 "execute": "backpack.js",
                 "args": {},
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-                "exp": 10
+                "exp": 5
             },
             "daily": {
                 "aliases": ["daily", "d"],
@@ -84,7 +84,7 @@ const commandConfig = {
                 "execute": "levelRewards.js",
                 "args": {},
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-                "exp": 10
+                "exp": 0
             },
         }
     },
@@ -183,7 +183,7 @@ const commandConfig = {
                     }
                 },
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-                "exp": 25
+                "exp": 0
             },
         }
     },

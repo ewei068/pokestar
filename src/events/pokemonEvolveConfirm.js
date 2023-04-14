@@ -11,28 +11,28 @@ const pokemonEvolveConfirm = async (interaction, data) => {
             content: "This interaction has expired.",
             components: [] 
         });
-        return;
+        return { err: "This interaction has expired." };
     }
 
     // if data has userId component, verify interaction was done by that user
     if (state.userId && interaction.user.id !== state.userId) {
-        return;
+        return { err: "This interaction was not initiated by you." };
     }
     // if no pokemon selected, return
     if (!state.speciesId) {
-        return;
+        return { err: "No pokemon selected." };
     }
 
     // get trainer
     const trainer = await getTrainer(interaction.user);
     if (trainer.err) {
-        return;
+        return { err: trainer.err };
     }
 
     // get pokemon
     const pokemon = await getPokemon(trainer.data, state.pokemonId);
     if (pokemon.err) {
-        return;
+        return { err: pokemon.err };
     }
     const originalName = pokemon.data.name;
 
@@ -40,7 +40,7 @@ const pokemonEvolveConfirm = async (interaction, data) => {
     const speciesId = state.speciesId;
     const evolveResult = await evolvePokemon(pokemon.data, speciesId);
     if (evolveResult.err) {
-        return;
+        return { err: evolveResult.err };
     }
     const { pokemon: evolvedPokemon, species: newName } = evolveResult.data;
 

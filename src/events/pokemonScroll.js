@@ -14,12 +14,12 @@ const pokemonScroll = async (interaction, data) => {
             content: "This interaction has expired.",
             components: [] 
         });
-        return;
+        return { err: "This interaction has expired." };
     }
 
     // verify user is the same as the user who pressed the button
     if (state.userId && interaction.user.id !== state.userId) {
-        return;
+        return { err: "This interaction was not initiated by you." };
     }
 
     let page = state.page;
@@ -29,19 +29,19 @@ const pokemonScroll = async (interaction, data) => {
         page += 1;
     }
     if (page < 1 || (!data.isLeft && state.lastPage)) {
-        return;
+        return { err: "Invalid page." };
     }
     state.page = page;
 
     // TODO: move to one function?
     const trainer = await getTrainer(interaction.user);
     if (trainer.err) {
-        return;
+        return { err: trainer.err };
     }
 
     const pokemons = await listPokemons(trainer.data, page);
     if (pokemons.err) {
-        return;
+        return { err: pokemons.err };
     } 
 
     const embed = buildPokemonListEmbed(trainer.data, pokemons.data, page);

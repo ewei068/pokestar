@@ -159,7 +159,11 @@ const runMessageCommand = async (message) => {
 
     // execute command
     try {
-        await messageCommands[command](message);
+        const res = await messageCommands[command](message);
+        if (res && res.err) {
+            return;
+        }
+
         const exp = commandLookup[command].exp;
         if (exp && exp > 0) {
             const { level, err } = await addExp(message.author, commandLookup[command].exp);
@@ -184,7 +188,11 @@ const runSlashCommand = async (interaction) => {
 
     // execute command
     try {
-        await slashCommands[command](interaction);
+        const res = await slashCommands[command](interaction);
+        if (res && res.err) {
+            return;
+        }
+
         const exp = commandLookup[`${prefix}${command}`].exp;
         if (exp && exp > 0) {
             const { level, err } = await addExp(interaction.user, commandLookup[`${prefix}${command}`].exp);

@@ -69,6 +69,7 @@ const evolveMessageCommand = async (message) => {
     const { send, err } = await evolve(message.author, pokemonId);
     if (err) {
         await message.channel.send(`${err}`);
+        return { err: err };
     }
     else {
         await message.channel.send(send);
@@ -80,6 +81,7 @@ const evolveSlashCommand = async (interaction) => {
     const { send, err } = await evolve(interaction.user, pokemonId);
     if (err) {
         await interaction.reply(`${err}`);
+        return { err: err };
     }
     else {
         await interaction.reply(send);

@@ -37,6 +37,7 @@ const trainMessageCommand = async (message) => {
     const { data, err } = await train(message.author, pokemonId);
     if (err) {
         await message.channel.send(`${err}`);
+        return { err: err };
     } else {
         await message.channel.send(`${data}`);
     }
@@ -47,6 +48,7 @@ const trainSlashCommand = async (interaction) => {
     const { data, err } = await train(interaction.user, pokemonId);
     if (err) {
         await interaction.reply(`${err}`);
+        return { err: err };
     } else {
         await interaction.reply(`${data}`);
     }

@@ -13,24 +13,24 @@ const pokemonEvolveSelect = async (interaction, data) => {
             content: "This interaction has expired.",
             components: [] 
         });
-        return;
+        return { err: "This interaction has expired." };
     }
 
     // if data has userId component, verify interaction was done by that user
     if (state.userId && interaction.user.id !== state.userId) {
-        return;
+        return { err: "This interaction was not initiated by you." };
     }
 
     // get trainer
     const trainer = await getTrainer(interaction.user);
     if (trainer.err) {
-        return;
+        return { err: trainer.err };
     }
 
     // get pokemon
     const pokemon = await getPokemon(trainer.data, state.pokemonId);
     if (pokemon.err) {
-        return;
+        return { err: pokemon.err };
     }
 
     // update embed to selected evolution

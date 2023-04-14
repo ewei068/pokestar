@@ -52,6 +52,7 @@ const listMessageCommand = async (message) => {
     const { send, err } = await list(message.author, page);
     if (err) {
         await message.channel.send(`${err}`);
+        return { err: err };
     } else {
         await message.channel.send(send);
     }
@@ -62,6 +63,7 @@ const listSlashCommand = async (interaction) => {
     const { send, err } = await list(interaction.user, page);
     if (err) {
         await interaction.reply(`${err}`);
+        return { err: err };
     } else {
         await interaction.reply(send);
     }
