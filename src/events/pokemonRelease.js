@@ -1,6 +1,8 @@
-const { getTrainer } = require("../services/trainer");
-const { releasePokemons } = require("../services/pokemon");
+const { getTrainer, addExpAndMoneyTrainer } = require("../services/trainer");
+const { releasePokemons, listPokemons } = require("../services/pokemon");
 const { getState, deleteState } = require("../services/state");
+const { idFrom } = require("../utils/utils");
+const { calculateWorth } = require("../utils/pokemonUtils");
 
 const pokemonRelease = async (interaction, data) => {
     // get state
@@ -31,13 +33,32 @@ const pokemonRelease = async (interaction, data) => {
         return { err: trainer.err };
     }
 
+    // make sure they have all pokemon still
+    const toRelease = await listPokemons(trainer.data, page = 1, filter = { _id: { $in: state.pokemonIds.map(idFrom)} });
+    if (toRelease.err) {
+        return { err: toRelease.err };
+    } else if (toRelease.data.length !== state.pokemonIds.length) {
+        await interaction.update({ 
+            content: "One or more of the pokemon you selected to release are no longer in your party.",
+            components: []
+        });
+        deleteState(data.stateId);
+        return { err: "One or more of the pokemon you selected to release are no longer in your party." };
+    }
+
     const releaseResult = await releasePokemons(trainer.data, state.pokemonIds);
     if (releaseResult.err) {
         return { err: releaseResult.err };
     } 
 
+    // if deleted count equals pokemonIds length, add money
+    if (releaseResult.data === state.pokemonIds.length) {
+        const money = calculateWorth(toRelease.data);
+        await addExpAndMoneyTrainer(trainer.data, 0, money);
+    }
+
     await interaction.update({ 
-        content: "Pokemon released.",  
+        content: "Pokemon released. Bye-bye!",  
         components: [] 
     });
     deleteState(data.stateId);

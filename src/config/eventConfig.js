@@ -26,7 +26,8 @@ const eventConfig = {
     [eventNames.POKEMON_EVOLVE_CONFIRM]: {
         "name": "Pokemon Evolve Confirm",
         "execute": "pokemonEvolveConfirm.js",
-        "exp": 25
+        "exp": 25,
+        "money": 100,
     },
 };
 

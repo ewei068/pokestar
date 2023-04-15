@@ -131,14 +131,10 @@ const getTrainer = async (user) => {
     return { data: trainer, err: null };
 }
 
-const addExp = async (user, exp) => {
-    const trainer = await getTrainer(user);
-    if (trainer.err) {
-        return { level: 0, err: trainer.err };
-    }
-
-    const newExp = trainer.data.exp + exp;
-    let level = trainer.data.level;
+const addExpAndMoneyTrainer = async (trainer, exp, money) => {
+    // levelup/exp
+    const newExp = trainer.exp + exp;
+    let level = trainer.level;
     while (newExp >= getTrainerLevelExp(level + 1)) {
         if (level >= MAX_TRAINER_LEVEL) {
             break;
@@ -146,40 +142,36 @@ const addExp = async (user, exp) => {
         level++;
     }
 
-    if (level > trainer.data.level) {
-        try {
-            res = await updateDocument(
-                collectionNames.USERS,
-                { "userId": user.id },
-                { $set: { "level": level, "exp": newExp } }
-            );
-            if (res.modifiedCount === 0) {
-                logger.error(`Failed to level-up trainer ${user.username}.`)
-                return { level: 0, err: "Error updating trainer." };
+    // money
+    const newMoney = trainer.money + money;
+    try {
+        const res = await updateDocument(
+            collectionNames.USERS,
+            { userId: trainer.userId },
+            {
+                $set: { "level": level },
+                $inc: { "exp": exp, "money": money }
             }
-            logger.info(`Trainer ${user.username} leveled up to level ${level}.`);
-            return { level: level, err: null };
-        } catch (error) {
-            logger.error(error);
+        );
+        if (res.modifiedCount === 0) {
+            logger.error(`Failed to add exp and money to trainer ${trainer.user.username}.`);
             return { level: 0, err: "Error updating trainer." };
         }
-    } else {
-        try {
-            res = await updateDocument(
-                collectionNames.USERS,
-                { userId: user.id },
-                { $set: { "exp": newExp } }
-            );
-            if (res.modifiedCount === 0) {
-                logger.error(`Failed to add exp to trainer ${user.username}.`);
-                return { level: 0, err: "Error updating trainer." };
-            }
-            return { level: 0, err: null };
-        } catch (error) {
-            logger.error(error);
-            return { level: 0, err: "Error updating trainer." };
-        }
+        return { level: level > trainer.level ? level : 0, money: newMoney, err: null };
+    } catch (error) {
+        logger.error(error);
+        return { level: 0, err: "Error updating trainer." };
     }
+
+}
+
+const addExpAndMoney = async (user, exp, money) => {
+    const trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { level: 0, err: trainer.err };
+    }
+
+    return await addExpAndMoneyTrainer(trainer.data, exp, money);
 }
 
 const getLevelRewards = async (user) => {
@@ -244,6 +236,7 @@ const getLevelRewards = async (user) => {
 
 module.exports = {
     getTrainer,
-    addExp,
+    addExpAndMoneyTrainer,
+    addExpAndMoney: addExpAndMoney,
     getLevelRewards
 }

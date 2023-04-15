@@ -979,22 +979,27 @@ const rarityConfig = {
     [rarities.COMMON]: {
         pokemon: [],
         color: 0x00ff00,
+        money: 25,
     },
     [rarities.RARE]: {
         pokemon: [],
         color: 0x0000ff,
+        money: 50,
     },
     [rarities.EPIC]: {
         pokemon: [],
         color: 0xff00ff,
+        money: 75,
     },
     [rarities.LEGENDARY]: {
         pokemon: [],
         color: 0xff0000,
+        money: 200,
     },
     [rarities.MYTHICAL]: {
         pokemon: [],
         color: 0xffff00,
+        money: 1000,
     },
 }
 

@@ -161,7 +161,11 @@ List banners.
 
 ### Trainer
 
-* Money: How much money a user has
+* Money: How much money a user has. Money will be gained from the following planned methods:
+	* Commands & interactions will give a small amount of money
+	* Level rewards
+	* Releasing Pokemon gives money based off rarity
+	* Daily rewards?
 * Backpack
 	* Pokeballs: Used to draw the gacha at various rates (Common/Rare/Epic/Legendary).
 		* Pokeball: 70/20/9/1
@@ -192,6 +196,13 @@ List banners.
 * Aliases: `backpack`, `bp`
 * Args: none
 * Functionality: Lists all the items in the user's backpack by category and their quantity.
+
+**Shop**
+
+* Aliases: `shop`, `s`, `pokemart`, `pm`
+* Args: 
+	* OPTIONAL `category`
+* Functionality: Displays the user's money and a selection menu of all the categories. Selecting a category will bring the user to the category, or if `category` is provided, then the user will be directed straight to the category. In a shop category, a player can scroll through the category, select items from a menu, and select a quantity. Then, they can confirm the purchase by pressing a "purchase" button.
 
 ## Data
 
@@ -298,7 +309,7 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 * Setup Database (DONE)
 * Basic trainer: daily rewards, balls, backpack (DONE)
 * Basic pokemon: draw, list, inspect, release (DONE)
-* Basic training: train, evolve
+* Basic training: train, evolve (DONE)
 * Basic money: money acquisition & shop
 * Leaderboards
 * Take care of other issues: help revamp, documentation, code qc

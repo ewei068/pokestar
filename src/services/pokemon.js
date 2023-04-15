@@ -1,7 +1,7 @@
 const { logger } = require("../log");
-const { findDocuments, updateDocument, deleteDocuments, idFrom } = require("../database/mongoHandler");
+const { findDocuments, updateDocument, deleteDocuments} = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
-const { getOrSetDefault } = require("../utils/utils");
+const { getOrSetDefault, idFrom } = require("../utils/utils");
 const { natureConfig, pokemonConfig, growthRates } = require("../config/pokemonConfig");
 const { expMultiplier } = require("../config/trainerConfig");
 const { getPokemonExpNeeded } = require("../utils/pokemonUtils");
@@ -259,7 +259,6 @@ const addPokemonExp = async (trainer, pokemon, exp) => {
 
     return { data: exp, err: null };
 }
-
 
 module.exports = {
     listPokemons,

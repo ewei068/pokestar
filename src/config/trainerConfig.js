@@ -32,7 +32,7 @@ const trainerFields = {
     },
     "money": {
         "type": "number",
-        "default": 0,
+        "default": 1000,
     },
     "lastDaily": {
         "type": "number",
@@ -63,6 +63,7 @@ const levelConfig = {
     },
     2: {
         "rewards": {
+            "money": 200,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 5,
@@ -72,6 +73,7 @@ const levelConfig = {
     },
     3: {
         "rewards": {
+            "money": 300,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.GREATBALL]: 5,
@@ -81,6 +83,7 @@ const levelConfig = {
     },
     4: {
         "rewards": {
+            "money": 400,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.ULTRABALL]: 3,
@@ -90,6 +93,7 @@ const levelConfig = {
     },
     5: {
         "rewards": {
+            "money": 1000,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.MASTERBALL]: 1,
@@ -99,6 +103,7 @@ const levelConfig = {
     },
     6: {
         "rewards": {
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
@@ -110,6 +115,7 @@ const levelConfig = {
     },
     7: {
         "rewards": {
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
@@ -121,6 +127,7 @@ const levelConfig = {
     },
     8: {
         "rewards": {
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
@@ -132,6 +139,7 @@ const levelConfig = {
     },
     9: {
         "rewards": {
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
@@ -143,6 +151,7 @@ const levelConfig = {
     },
     10: {
         "rewards": {
+            "money": 2000,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.MASTERBALL]: 3,

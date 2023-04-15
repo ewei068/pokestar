@@ -10,7 +10,7 @@ const levelRewards = async (user) => {
     // build itemized rewards string
     let rewardsString = "**You received:**";
     if (rewards.data.money) {
-        rewardsString += `\n$${rewards.data.money}`;
+        rewardsString += `\n₽${rewards.data.money}`;
     }
     if (rewards.data.backpack) {
         for (const itemId in rewards.data.backpack) {

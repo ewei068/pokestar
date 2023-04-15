@@ -11,6 +11,8 @@ const { logger } = require('../log');
 const { getOrSetDefault } = require('../utils/utils');
 const { calculatePokemonStats } = require('./pokemon');
 
+const DAILY_MONEY = 300;
+
 const drawDaily = async (trainer) => {
     // check if new day; if in alpha, ignore
     const now = new Date();
@@ -23,11 +25,19 @@ const drawDaily = async (trainer) => {
 
     const results = drawDiscrete(dailyRewardChances, NUM_DAILY_REWARDS);
     const pokeballs = getOrSetDefault(trainer.backpack, backpackCategories.POKEBALLS, {});
+    trainer.money += DAILY_MONEY;
     for (const result of results) {
         pokeballs[result] = getOrSetDefault(pokeballs, result, 0) + 1;
     }
     try {
-        res = await updateDocument(collectionNames.USERS, { userId: trainer.userId }, { $set: { backpack: trainer.backpack, lastDaily: trainer.lastDaily } });
+        res = await updateDocument(
+            collectionNames.USERS, 
+            { userId: trainer.userId }, 
+            { 
+                $set: { backpack: trainer.backpack, lastDaily: trainer.lastDaily },
+                $inc: { money: DAILY_MONEY }
+            }
+        );
         if (res.modifiedCount === 0) {
             logger.error(`Failed to daily draw and update ${trainer.user.username}.`);
             return { data: null, err: "Error daily draw update." };
@@ -38,7 +48,12 @@ const drawDaily = async (trainer) => {
         return { data: null, err: "Error daily draw update." };
     }
 
-    return { data: results, err: null };
+    const rv = {
+        money: DAILY_MONEY,
+        backpack: results
+    }
+
+    return { data: rv, err: null };
 }
 
 const usePokeball = async (trainer, pokeballId) => {
@@ -106,7 +121,7 @@ const usePokeball = async (trainer, pokeballId) => {
         "abilityId": `${drawDiscrete(speciesData.abilities, 1)[0]}`,
         "item": "",
         "moves": [],
-        "shiny": false,
+        "shiny": drawUniform(0, 8192, 1)[0] == 0,
     }
 
     // calculate stats

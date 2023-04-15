@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { commandConfig } = require('../config/commandConfig');
 const { stageNames, stageConfig } = require('../config/stageConfig');
-const { addExp } = require('../services/trainer');
+const { addExpAndMoney: addExpAndMoney } = require('../services/trainer');
 const { logger } = require('../log');
 const path = require('node:path');
 
@@ -164,9 +164,11 @@ const runMessageCommand = async (message) => {
             return;
         }
 
-        const exp = commandLookup[command].exp;
-        if (exp && exp > 0) {
-            const { level, err } = await addExp(message.author, commandLookup[command].exp);
+        // add exp & money if possible
+        const exp = commandLookup[`${command}`].exp || 0;
+        const money = commandLookup[`${command}`].money || 0;
+        if (exp > 0 || money > 0) {
+            const { level, err } = await addExpAndMoney(interaction.user, exp, money);
             if (err) {
                 return;
             } else if (level) {
@@ -193,9 +195,11 @@ const runSlashCommand = async (interaction) => {
             return;
         }
 
-        const exp = commandLookup[`${prefix}${command}`].exp;
-        if (exp && exp > 0) {
-            const { level, err } = await addExp(interaction.user, commandLookup[`${prefix}${command}`].exp);
+        // add exp & money if possible
+        const exp = commandLookup[`${prefix}${command}`].exp || 0;
+        const money = commandLookup[`${prefix}${command}`].money || 0;
+        if (exp > 0 || money > 0) {
+            const { level, err } = await addExpAndMoney(interaction.user, exp, money);
             if (err) {
                 return;
             } else if (level) {

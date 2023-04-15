@@ -68,7 +68,8 @@ const commandConfig = {
                 "execute": "backpack.js",
                 "args": {},
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-                "exp": 5
+                "exp": 5,
+                "money": 10
             },
             "daily": {
                 "aliases": ["daily", "d"],
@@ -123,7 +124,8 @@ const commandConfig = {
                     }
                 },
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-                "exp": 10
+                "exp": 10,
+                "money": 10
             },
             "info": {
                 "aliases": ["info", "i", "pokemoninfo", "pi"],
@@ -138,7 +140,8 @@ const commandConfig = {
                     }
                 },
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-                "exp": 10
+                "exp": 10,
+                "money": 10
             },
             "release": {
                 "aliases": ["release"],
@@ -168,7 +171,8 @@ const commandConfig = {
                     }
                 },
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-                "exp": 15
+                "exp": 15,
+                "money": 25
             },
             "evolve": {
                 "aliases": ["evolve"],
@@ -183,7 +187,7 @@ const commandConfig = {
                     }
                 },
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-                "exp": 0
+                "exp": 0,
             },
         }
     },

@@ -1,3 +1,5 @@
+const { ObjectId } = require("mongodb");
+
 const getOrSetDefault = (obj, key, defaultValue) => {
     if (!obj[key]) {
         obj[key] = defaultValue;
@@ -24,8 +26,13 @@ const getWhitespace = (strings) => {
     return whitespace;
 }
 
+const idFrom = (str) => {
+    return new ObjectId(str);
+}
+
 module.exports = {
     getOrSetDefault,
     getPBar,
     getWhitespace,
+    idFrom
 }

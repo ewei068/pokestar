@@ -27,6 +27,12 @@ const updateDocument = async (collectionName, filter, update) => {
     return res;
 }
 
+const updateDocuments = async (collectionName, filter, update) => {
+    const collection = await getCollection(collectionName);
+    const res = await collection.updateMany(filter, update);
+    return res;
+}
+
 const findDocuments = async (collectionName, filter, limit=100, page=0) => {
     const collection = await getCollection(collectionName);
     // retrieves one extra item to check for end of items
@@ -46,15 +52,11 @@ const countDocuments = async (collectionName, filter) => {
     return res;
 }
 
-const idFrom = (str) => {
-    return new ObjectId(str);
-}
-
 module.exports = {
     insertDocument,
     updateDocument,
+    updateDocuments,
     findDocuments,
     countDocuments,
     deleteDocuments,
-    idFrom
 };

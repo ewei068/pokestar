@@ -9,22 +9,29 @@ const daily = async (user) => {
     }
 
     const rewards = await drawDaily(trainer.data);
+    const { money, backpack } = rewards.data;
     if (rewards.err) {
         return { data: null, err: rewards.err };
-    } else if (rewards.data.length === 0) {
+    } else if (backpack.length === 0) {
         return { data: null, err: "You already claimed your daily rewards today!" };
     }
 
     // build itemized rewards string
     let rewardsString = "**You received:**";
-    for (let i = 0; i < rewards.data.length; i++) {
-        rewardsString += `\n${backpackItemConfig[rewards.data[i]].emoji} ${backpackItemConfig[rewards.data[i]].name}`;
+    if (money) {
+        rewardsString += `\n₽${money}`;
+    }
+    for (let i = 0; i < backpack.length; i++) {
+        rewardsString += `\n${backpackItemConfig[backpack[i]].emoji} ${backpackItemConfig[backpack[i]].name}`;
     }
     rewardsString += "\n\n**You now own:**";
+    if (money) {
+        rewardsString += `\n₽${trainer.data.money}`;
+    }
     for (const item in trainer.data.backpack[backpackCategories.POKEBALLS]) {
         rewardsString += `\n${backpackItemConfig[item].emoji} ${trainer.data.backpack[backpackCategories.POKEBALLS][item]}x ${backpackItemConfig[item].name}`;
     }
-    rewardsString += "\nUse \`/help gacha\` command to learn how to use these!";
+    rewardsString += "\nSpend your Pokedollars at the \`/pokemart\` | Use \`/help gacha\` to learn how to use your Pokeballs";
 
     return { data: rewardsString, err: null };
 }

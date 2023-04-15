@@ -1,6 +1,15 @@
 # Pokestar Changelog
 
-### 0,2.1 (4/13)
+## 0.3.0 - The Pokedollar Update
+
+* Added Pokedollars! Here are some ways to obtain them:
+    * Certain commands and interactions give a small amount of Pokedollars.
+    * Pokedollars have been added to daily rewards.
+    * Level rewards also have Pokedollars. All level rewards have been reset; use `/levelrewards` to reclaim them!
+    * Team Plasma will now offer you Pokedollars to release your Pokemon!
+* Migrations have been added to help us better manage user data!
+
+### 0.2.1 (4/13)
 
 * Fixed prefix in commands displayed under bot information based on deployment stage.
 
@@ -17,7 +26,7 @@ Training EXP scales with your trainer level.
 * Certain component interactions now grant EXP.
 * Added more Pokemon!
 
-## 0,1,0 (4/11)
+## 0.1.0 (4/11) - Initial Release
 
 Initial release! Supports very basic Pokemon, trainer, and gacha commands.
 

@@ -1,4 +1,4 @@
-const { growthRates } = require('../config/pokemonConfig');
+const { growthRates, rarityConfig, pokemonConfig } = require('../config/pokemonConfig');
 
 const getPokemonExpNeeded = (level, growthRate) => {
     if (growthRate == growthRates.FAST) {
@@ -18,6 +18,22 @@ const getPokemonExpNeeded = (level, growthRate) => {
     return 0;
 }
 
+const calculateWorth = (pokemons=null, speciesIds=null) => {
+    let worth = 0;
+    if (pokemons) {
+        pokemons.forEach(pokemon => {
+            worth += rarityConfig[pokemonConfig[pokemon.speciesId].rarity].money;
+        });
+    } else if (speciesIds) {
+        speciesIds.forEach(speciesId => {
+            worth += rarityConfig[pokemonConfig[speciesId].rarity].money;
+        });
+    }
+
+    return worth;
+}
+
 module.exports = {
     getPokemonExpNeeded,
+    calculateWorth,
 };

@@ -32,7 +32,7 @@ const buildTrainerEmbed = (trainer) => {
     embed.setThumbnail(`https://cdn.discordapp.com/avatars/${trainer.userId}/${trainer.user.avatar}.webp`);
     embed.addFields(
         { name: "Level", value: `${trainer.level}`, inline: true },
-        { name: "Money", value: `$${trainer.money}`, inline: true },
+        { name: "Money", value: `₽${trainer.money}`, inline: true },
         { name: "Daily Available", value: `${dailyAvailable}`, inline: true },
         { name: "Level Progress", value: `${progressBar}`, inline: false },
     );
