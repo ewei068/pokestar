@@ -168,7 +168,7 @@ const runMessageCommand = async (message) => {
         const exp = commandLookup[`${command}`].exp || 0;
         const money = commandLookup[`${command}`].money || 0;
         if (exp > 0 || money > 0) {
-            const { level, err } = await addExpAndMoney(interaction.user, exp, money);
+            const { level, err } = await addExpAndMoney(message.author, exp, money);
             if (err) {
                 return;
             } else if (level) {

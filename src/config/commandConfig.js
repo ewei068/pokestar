@@ -191,6 +191,41 @@ const commandConfig = {
             },
         }
     },
+    "shop": {
+        "description": "Shop commands",
+        "folder": "shop",
+        "commands": {
+            "pokemart": {
+                "aliases": ["pokemart", "pm", "shop"],
+                "description": "Get info about the items in stock at the Pokemart",
+                "execute": "pokemart.js",
+                "args": {},
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+                "exp": 5
+            },
+            "buy": {
+                "aliases": ["buy", "b"],
+                "description": "Buy an item from the Pokemart",
+                "execute": "buy.js",
+                "args": {
+                    "itemid": {
+                        "type": "string",
+                        "description": "item to buy",
+                        "optional": false,
+                        "variable": false
+                    },
+                    "quantity": {
+                        "type": "int",
+                        "description": "quantity to buy",
+                        "optional": true,
+                        "variable": false
+                    }
+                },
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+                "exp": 10,
+            },
+        }
+    },
 }
 
 module.exports = { 

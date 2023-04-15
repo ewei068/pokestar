@@ -1,7 +1,6 @@
 const { StringSelectMenuBuilder, ActionRowBuilder } = require("discord.js");
-const { pokemonConfig } = require('../config/pokemonConfig');
 
-const buildSpeciesSelectRow = (speciesIds, data, eventName) => {
+const buildIdConfigSelectRow = (ids, config, placeholder, data, eventName) => {
     const menuId = {
         eventName: eventName,
         ...data,
@@ -9,12 +8,12 @@ const buildSpeciesSelectRow = (speciesIds, data, eventName) => {
 
     const selectMenu = new StringSelectMenuBuilder()
         .setCustomId(`${JSON.stringify(menuId)}`)
-        .setPlaceholder('Select a pokemon')
-        .addOptions(speciesIds.map(speciesId => {
-            const speciesData = pokemonConfig[speciesId];
+        .setPlaceholder(placeholder)
+        .addOptions(ids.map(id => {
+            const data = config[id];
             return {
-                label: `${speciesData.name} #${speciesId}`,
-                value: `${speciesId}`,
+                label: `${data.name} #${id}`,
+                value: `${id}`,
             }
         }));
 
@@ -25,5 +24,5 @@ const buildSpeciesSelectRow = (speciesIds, data, eventName) => {
 }
 
 module.exports = {
-    buildSpeciesSelectRow
+    buildIdConfigSelectRow: buildIdConfigSelectRow
 };

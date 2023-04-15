@@ -10,6 +10,7 @@
 */
 
 const { backpackCategories, backpackItems } = require('./backpackConfig');
+const { shopItems } = require('./shopConfig');
 
 const MAX_TRAINER_LEVEL = 25;
 const MAX_POKEMON = 200;
@@ -52,6 +53,18 @@ const trainerFields = {
     "claimedLevelRewards": {
         "type": "array",
         "default": [],
+    },
+    "purchasedShopItemsToday": {
+        "type": "object",
+        "default": {},
+    },
+    "lastShopPurchase": {
+        "type": "number",
+        "default": (new Date(0)).getTime(),
+    },
+    "locations": {
+        "type": "object",
+        "default": {},
     }
 }
 

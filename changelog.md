@@ -7,6 +7,8 @@
     * Pokedollars have been added to daily rewards.
     * Level rewards also have Pokedollars. All level rewards have been reset; use `/levelrewards` to reclaim them!
     * Team Plasma will now offer you Pokedollars to release your Pokemon!
+* `/pokemart`: Browse all the items for sale at the Pokemart!
+* `/buy`: Spend your Pokedollars to buy something from the shop!
 * Migrations have been added to help us better manage user data!
 
 ### 0.2.1 (4/13)

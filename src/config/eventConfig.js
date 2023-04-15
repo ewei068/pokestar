@@ -4,6 +4,8 @@ const eventNames = {
     POKEMON_LIST_SELECT: "pokemonSelect",
     POKEMON_EVOLVE_SELECT: "pokemonEvolveSelect",
     POKEMON_EVOLVE_CONFIRM: "pokemonEvolveConfirm",
+    SHOP_SELECT: "shopSelect",
+    BACK: "back",
 };
 
 const eventConfig = {
@@ -28,6 +30,14 @@ const eventConfig = {
         "execute": "pokemonEvolveConfirm.js",
         "exp": 25,
         "money": 100,
+    },
+    [eventNames.SHOP_SELECT]: {
+        "name": "Shop Select",
+        "execute": "shopSelect.js",
+    },
+    [eventNames.BACK]: {
+        "name": "Back",
+        "execute": "back.js",
     },
 };
 

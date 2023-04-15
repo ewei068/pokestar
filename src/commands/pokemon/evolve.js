@@ -2,7 +2,7 @@ const { getPokemon } = require('../../services/pokemon');
 const { getTrainer } = require('../../services/trainer');
 const { pokemonConfig } = require('../../config/pokemonConfig');
 const { setState } = require('../../services/state');
-const { buildSpeciesSelectRow } = require('../../components/speciesSelectRow');
+const { buildIdConfigSelectRow: buildSpeciesSelectRow } = require('../../components/idConfigSelectRow');
 const { buildPokemonEmbed } = require('../../embeds/pokemonEmbeds');
 const { eventNames } = require('../../config/eventConfig');
 
@@ -53,7 +53,13 @@ const evolve = async (user, pokemonId) => {
     const selectionRowData = {
         stateId: stateId,
     }
-    const selectionRow = buildSpeciesSelectRow(evolutionSpeciesIds, selectionRowData, eventNames.POKEMON_EVOLVE_SELECT);
+    const selectionRow = buildSpeciesSelectRow(
+        evolutionSpeciesIds, 
+        pokemonConfig,
+        "Select a pokemon to evolve to:",
+        selectionRowData, 
+        eventNames.POKEMON_EVOLVE_SELECT
+    );
 
     const send = {
         content: `Select a pokemon to evolve ${pokemon.data.name} to:`,

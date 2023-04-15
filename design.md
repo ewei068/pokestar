@@ -200,9 +200,16 @@ List banners.
 **Shop**
 
 * Aliases: `shop`, `s`, `pokemart`, `pm`
-* Args: 
-	* OPTIONAL `category`
-* Functionality: Displays the user's money and a selection menu of all the categories. Selecting a category will bring the user to the category, or if `category` is provided, then the user will be directed straight to the category. In a shop category, a player can scroll through the category, select items from a menu, and select a quantity. Then, they can confirm the purchase by pressing a "purchase" button.
+* Args: none
+* Functionality: Displays the user's money and a selection menu of all the categories. Selecting a category will bring the user to the category. In a shop category, a player can scroll through the category, and select an Item to view more info.
+
+**Buy**
+
+* Aliases: `buy`, `b`
+* Args:
+	* `itemId`
+	* OPTIONAL `quantity`
+* Functionality: Attempts to buy an item from the shop. Quantity defaults to 1. First, checks last purchase date. If it's a new day, resets daily item purchase limits. Then, checks to see if user has enough money to purchase items at said quanity. If able to purchase, special logic to enact purchase is executed depending on the item. Finally, updates daily item purchase limit & last purchase date.
 
 ## Data
 
@@ -287,6 +294,10 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 * Backpack:
 	* {CATEGORY_ID}: ID of cateogry.
 		* {ITEM_ID} => Quantity: Maps an item ID to quantity of owned item.
+* claimedLevelRewards: Array of level rewards claimed.
+* purchasedShopItemsToday: Map of itemId => quantity purchased; used to track daily purchase limits.
+* lastShopPurchase: Date of last shop purchase, resets purchasedShopItemsToday on a new day.
+* locations: Map of owned locations => level.
 
 **Backpack Category Config**
 
