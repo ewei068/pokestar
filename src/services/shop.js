@@ -61,7 +61,7 @@ const buyItem = async (trainer, itemId, quantity) => {
             pokeballs[result] = getOrSetDefault(pokeballs, result, 0) + 1;
         }
 
-        returnString = `You purchased ${quantity} random pokeballs for ${cost} money.`;
+        returnString = `You purchased ${quantity} random pokeballs for ₽${cost}.`;
         // build itemized rewards string
         returnString += "\n**You received:**";
         for (const result of results) {
@@ -107,7 +107,7 @@ const buyItem = async (trainer, itemId, quantity) => {
         trainer.money -= cost;
         trainer.locations[locationId] = level + 1;
 
-        returnString = `You purchased a level ${level + 1} ${locationData.name} for ${cost} money.`;
+        returnString = `You purchased a level ${level + 1} ${locationData.name} for ₽${cost}.`;
     }
 
     // update trainer

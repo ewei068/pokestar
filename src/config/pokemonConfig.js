@@ -58,6 +58,15 @@ const stats = {
     SPEED: 5,
 }
 
+const statConfig = {
+    "0": { "name": "HP", "emoji": "❤️", "description": "Hit Points",},
+    "1": { "name": "Atk", "emoji": "⚔️", "description": "Attack",},
+    "2": { "name": "Def", "emoji": "🛡️", "description": "Defense",},
+    "3": { "name": "SpA", "emoji": "🔮", "description": "Special Attack",},
+    "4": { "name": "SpD", "emoji": "🛡️", "description": "Special Defense",},
+    "5": { "name": "Spe", "emoji": "🏃", "description": "Speed",},
+}
+
 const growthRates = {
     ERRATIC: 0,
     FAST: 1,
@@ -1003,6 +1012,9 @@ const rarityConfig = {
     },
 }
 
+MAX_TOTAL_EVS = 510;
+MAX_SINGLE_EVS = 252;
+
 module.exports = {
     pokemonConfig,
     rarities,
@@ -1010,5 +1022,9 @@ module.exports = {
     rarityConfig,
     types,
     growthRates,
-    natureConfig
+    natureConfig,
+    MAX_TOTAL_EVS,
+    MAX_SINGLE_EVS,
+    stats,
+    statConfig
 }

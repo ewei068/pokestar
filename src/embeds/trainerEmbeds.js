@@ -2,6 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 const { getTrainerLevelExp: getTrainerLevelExp, MAX_TRAINER_LEVEL } = require('../config/trainerConfig');
 const { backpackCategories, backpackItems, backpackCategoryConfig, backpackItemConfig } = require('../config/backpackConfig');
 const { getPBar } = require("../utils/utils");
+const { locationConfig } = require("../config/locationConfig");
 
 /*
 "trainer": {
@@ -61,8 +62,29 @@ const buildBackpackEmbed = (trainer) => {
     return embed;
 }
 
+const buildLocationsEmbed = (trainer) => {
+    // create a string with all locations
+    let locationString = "";
+    for (const locationId in trainer.locations) {
+        const locationLevel = trainer.locations[locationId];
+        const location = locationConfig[locationId];
+
+        locationString += `${location.emoji} ${location.name} (Level ${locationLevel})\n`;
+    }
+
+    const embed = new EmbedBuilder()
+    embed.setTitle(`Trainer ${trainer.user.username}'s Locations`);
+    embed.setColor(0xffffff);
+    embed.setThumbnail(`https://cdn.discordapp.com/avatars/${trainer.userId}/${trainer.user.avatar}.webp`);
+    embed.setDescription(locationString);
+    embed.setFooter({ text: "Use /pokemart to find more locations to buy!" });
+
+    return embed;
+}
+
 
 module.exports = { 
     buildTrainerEmbed, 
-    buildBackpackEmbed
+    buildBackpackEmbed,
+    buildLocationsEmbed
  };

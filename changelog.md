@@ -8,7 +8,10 @@
     * Level rewards also have Pokedollars. All level rewards have been reset; use `/levelrewards` to reclaim them!
     * Team Plasma will now offer you Pokedollars to release your Pokemon!
 * `/pokemart`: Browse all the items for sale at the Pokemart!
-* `/buy`: Spend your Pokedollars to buy something from the shop!
+* `/buy`: Spend your Pokedollars to buy something from the Pokemart!
+* `/locations`: View the locations you have purchased!
+    * Currently, you can buy and upgrade locations from the Pokemart.
+    * Locations affect the experience and EVs gained when training. Use `/train <pokemonid> <location>` to specify a location to train at!
 * Migrations have been added to help us better manage user data!
 
 ### 0.2.1 (4/13)

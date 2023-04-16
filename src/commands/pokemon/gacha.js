@@ -1,18 +1,17 @@
 const { getTrainer } = require ('../../services/trainer') ;
 const { usePokeball } = require ('../../services/gacha') ;
 const { buildNewPokemonEmbed } = require('../../embeds/pokemonEmbeds');
+const { backpackItems } = require('../../config/backpackConfig');
 
 const gacha = async (user, pokeball) => {
     // map input pokeball to pokeball item
-    if (pokeball === "pokeball") {
-        pokeball = "0"
-    } else if (pokeball === "greatball") {
-        pokeball = "1"
-    } else if (pokeball === "ultraball") {
-        pokeball = "2"
-    } else if (pokeball === "masterball") {
-        pokeball = "3"
+    const map = { 
+        "pokeball": backpackItems.POKEBALL,
+        "greatball": backpackItems.GREATBALL,
+        "ultraball": backpackItems.ULTRABALL,
+        "masterball": backpackItems.MASTERBALL
     }
+    const pokeballId = map[pokeball];
 
     // get trainer
     const trainer = await getTrainer(user);
@@ -21,7 +20,7 @@ const gacha = async (user, pokeball) => {
     }
 
     // use pokeball
-    const gacha = await usePokeball(trainer.data, pokeball);
+    const gacha = await usePokeball(trainer.data, pokeballId);
     if (gacha.err) {
         return { embed: null, err: gacha.err };
     }

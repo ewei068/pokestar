@@ -71,6 +71,15 @@ const commandConfig = {
                 "exp": 5,
                 "money": 10
             },
+            "locations": {
+                "aliases": ["locations"],
+                "description": "Get info about the locations you own",
+                "execute": "locations.js",
+                "args": {},
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+                "exp": 5,
+                "money": 10
+            },
             "daily": {
                 "aliases": ["daily", "d"],
                 "description": "Get your daily reward",
@@ -168,6 +177,15 @@ const commandConfig = {
                         "description": "unique ID for pokemon to train",
                         "optional": false,
                         "variable": false
+                    },
+                    "location": {
+                        "type": "string",
+                        "description": "location to train at; defaults to home",
+                        "optional": true,
+                        "variable": false,
+                        "enum": [
+                            "home", "restaurant", "gym", "dojo", "temple", "school", "track"
+                        ]
                     }
                 },
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
@@ -222,7 +240,7 @@ const commandConfig = {
                     }
                 },
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-                "exp": 10,
+                "exp": 15,
             },
         }
     },
