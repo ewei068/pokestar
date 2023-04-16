@@ -1,6 +1,6 @@
 # Pokestar Changelog
 
-## 0.3.0 - The Pokedollar Update
+## 0.3.0 (4/16) - The Pokedollar Update
 
 * Added Pokedollars! Here are some ways to obtain them:
     * Certain commands and interactions give a small amount of Pokedollars.
