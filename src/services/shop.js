@@ -14,11 +14,6 @@ const buyItem = async (trainer, itemId, quantity) => {
     if (!item) {
         return { data: null, err: "Item does not exist." };
     }
-    
-    // verify quantity
-    if (quantity < 1) {
-        return { data: null, err: "Quantity must be greater than 0." };
-    }
 
     // check last purchase date
     const lastShopPurchase = new Date(trainer.lastShopPurchase);

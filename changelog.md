@@ -12,6 +12,7 @@
 * `/locations`: View the locations you have purchased!
     * Currently, you can buy and upgrade locations from the Pokemart.
     * Locations affect the experience and EVs gained when training. Use `/train <pokemonid> <location>` to specify a location to train at!
+* Added more Pokemon and level rewards!
 * Migrations have been added to help us better manage user data!
 
 ### 0.2.1 (4/13)

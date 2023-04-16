@@ -2,6 +2,13 @@ const { buyItem } = require('../../services/shop');
 const { getTrainer } = require('../../services/trainer');
 
 const buy = async (user, itemId, quantity) => {
+    if (quantity > 10) {
+        return { embed: null, err: 'You can only buy 10 items at a time.' };
+    }
+    if (quantity < 1) {
+        return { embed: null, err: 'You must buy at least 1 item.' };
+    }
+
     const trainer = await getTrainer(user);
     if (trainer.err) {
         return { embed: null, err: trainer.err };

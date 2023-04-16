@@ -554,6 +554,74 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "50": {
+        "name": "Diglett",
+        "emoji": "🐁",
+        "description": "Lives about one yard underground where it feeds on plant roots. It sometimes appears above ground.",
+        "type": [types.GROUND],
+        "baseStats": [10, 55, 25, 35, 45, 95],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/50.png",
+        "evolution": [{
+            "level": 26,
+            "id": "51",
+        }],
+        "abilities": {
+            "8": 0.45,
+            "71": 0.45,
+            "159": 0.1
+        },
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "51": {
+        "name": "Dugtrio",
+        "emoji": "🐁",
+        "description": "A team of DIGLETT triplets. It triggers huge earthquakes by burrowing 60 miles underground.",
+        "type": [types.GROUND],
+        "baseStats": [35, 100, 50, 50, 70, 120],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/51.png",
+        "abilities": {
+            "8": 0.45,
+            "71": 0.45,
+            "159": 0.1
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "58": {
+        "name": "Growlithe",
+        "emoji": "🐕",
+        "description": "Very protective of its territory. It will bark and bite to repel intruders from its space.",
+        "type": [types.FIRE],
+        "baseStats": [55, 70, 45, 70, 50, 60],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/58.png",
+        "evolution": [{
+            "level": 36,
+            "id": "59",
+        }],
+        "abilities": {
+            "22": 0.45,
+            "18": 0.45,
+            "154": 0.1
+        },
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "59": {
+        "name": "Arcanine",
+        "emoji": "🐕",
+        "description": "A POKéMON that has been admired since the past for its beauty. It runs agilely as if on wings.",
+        "type": [types.FIRE],
+        "baseStats": [90, 110, 80, 100, 80, 95],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/59.png",
+        "abilities": {
+            "22": 0.45,
+            "18": 0.45,
+            "154": 0.1
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
     "63": {
         "name": "Abra",
         "emoji": "🧠",
@@ -713,6 +781,40 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "81": {
+        "name": "Magnemite",
+        "emoji": "🧲",
+        "description": "Uses anti-gravity to stay suspended. Appears without warning and uses THUNDER WAVE and similar moves.",
+        "type": [types.ELECTRIC, types.STEEL],
+        "baseStats": [25, 35, 70, 95, 55, 45],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/81.png",
+        "evolution": [{
+            "level": 30,
+            "id": "82",
+        }],
+        "abilities": {
+            "42": 0.45,
+            "5": 0.45,
+            "148": 0.1
+        },
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "82": {
+        "name": "Magneton",
+        "emoji": "🧲",
+        "description": "Formed by several MAGNEMITEs linked together. They frequently appear when sunspots flare up.",
+        "type": [types.ELECTRIC, types.STEEL],
+        "baseStats": [50, 60, 95, 120, 70, 70],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/82.png",
+        "abilities": {
+            "42": 0.45,
+            "5": 0.45,
+            "148": 0.1
+        },
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "92": {
         "name": "Gastly",
         "emoji": "👻",
@@ -792,6 +894,21 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "131": {
+        "name": "Lapras",
+        "emoji": "🐋",
+        "description": "A POKéMON that has been overhunted almost to extinction. It can ferry people across the water.",
+        "type": [types.WATER, types.ICE],
+        "baseStats": [130, 85, 80, 85, 95, 60],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/131.png",
+        "abilities": {
+            "11": 0.45,
+            "75": 0.45,
+            "93": 0.1
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
     "133": {
         "name": "Eevee",
         "emoji": "🐶",
@@ -859,6 +976,21 @@ const pokemonConfig = {
         "abilities": {
             "18": 0.8,
             "62": 0.2
+        },
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "143": {
+        "name": "Snorlax",
+        "emoji": "😴",
+        "description": "Very lazy. Just eats and sleeps. As its rotund bulk builds, it becomes steadily more slothful.",
+        "type": [types.NORMAL],
+        "baseStats": [160, 110, 65, 65, 110, 30],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/143.png",
+        "abilities": {
+            "17": 0.45,
+            "47": 0.45,
+            "82": 0.1
         },
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
