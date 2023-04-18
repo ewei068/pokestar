@@ -16,7 +16,7 @@ const client = new Client({ intents:
 });
 
 client.on(Events.MessageCreate, async (message) => {
-    runMessageCommand(message).then(() => {
+    runMessageCommand(message, client).then(() => {
         // do nothing
     }).catch((error) => {
         logger.error(`Error in message command: ${message.content}`);
@@ -28,7 +28,7 @@ client.on(Events.MessageCreate, async (message) => {
 client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
-    runSlashCommand(interaction).then(() => {
+    runSlashCommand(interaction, client).then(() => {
         // do nothing
     }).catch(async (error) => {
         logger.error(`Error in slash command: ${interaction.commandName}`);
@@ -45,7 +45,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;
 
     try {
-        await handleEvent(interaction);
+        await handleEvent(interaction, client);
     } catch (error) {
         logger.error(`Error in event handler: ${interaction.customId}`);
         logger.error(error);

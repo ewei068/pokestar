@@ -135,7 +135,7 @@ const validateArgs = (command, args) => {
     return true;
 }
             
-const runMessageCommand = async (message) => {
+const runMessageCommand = async (message, client) => {
     // get first word of message
     let command = message.content.split(" ")[0];
 
@@ -159,7 +159,7 @@ const runMessageCommand = async (message) => {
 
     // execute command
     try {
-        const res = await messageCommands[command](message);
+        const res = await messageCommands[command](message, client);
         if (res && res.err) {
             return;
         }
@@ -181,7 +181,7 @@ const runMessageCommand = async (message) => {
     }
 }
 
-const runSlashCommand = async (interaction) => {
+const runSlashCommand = async (interaction, client) => {
     // get command name
     const command = interaction.commandName;
 
@@ -190,7 +190,7 @@ const runSlashCommand = async (interaction) => {
 
     // execute command
     try {
-        const res = await slashCommands[command](interaction);
+        const res = await slashCommands[command](interaction, client);
         if (res && res.err) {
             return;
         }

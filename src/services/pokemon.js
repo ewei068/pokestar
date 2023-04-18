@@ -1,8 +1,8 @@
 const { logger } = require("../log");
-const { findDocuments, updateDocument, deleteDocuments} = require("../database/mongoHandler");
+const { findDocuments, updateDocument, deleteDocuments, QueryBuilder } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { getOrSetDefault, idFrom } = require("../utils/utils");
-const { natureConfig, pokemonConfig, growthRates, MAX_TOTAL_EVS, MAX_SINGLE_EVS } = require("../config/pokemonConfig");
+const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS } = require("../config/pokemonConfig");
 const { expMultiplier } = require("../config/trainerConfig");
 const { getPokemonExpNeeded } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
@@ -13,7 +13,12 @@ const PAGE_SIZE = 10;
 const listPokemons = async (trainer, page=1, filter = {}, pageSize = PAGE_SIZE) => {
     // get pokemon with pagination
     try {
-        const res = await findDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId, ...filter }, pageSize, page - 1);
+        const query = new QueryBuilder(collectionNames.USER_POKEMON)
+            .setFilter({ userId: trainer.userId, ...filter })
+            .setLimit(pageSize)
+            .setPage(page - 1);
+
+        const res = await query.find();
         if (res.length === 0) {
             return { data: null, err: "No Pokemon found." };
         } else if (res.length > pageSize) {
@@ -98,11 +103,15 @@ const calculateAndUpdatePokemonStats = async (pokemon, speciesData) => {
 const getPokemon = async (trainer, pokemonId) => {
     // find instance of pokemon in trainer's collection
     try {
-        const res = await findDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId, _id: idFrom(pokemonId) });
-        if (res.length === 0) {
+        const query = new QueryBuilder(collectionNames.USER_POKEMON)
+            .setFilter({ userId: trainer.userId, _id: idFrom(pokemonId) });
+        
+        const res = await query.findOne();
+        
+        if (!res) {
             return { data: null, err: "Pokemon not found." };
         } else {
-            return await calculateAndUpdatePokemonStats(res[0], pokemonConfig[res[0].speciesId]);
+            return await calculateAndUpdatePokemonStats(res, pokemonConfig[res.speciesId]);
         }
     } catch (error) {
         logger.error(error);

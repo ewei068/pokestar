@@ -1,5 +1,10 @@
 # Pokestar Changelog
 
+## 0.4.0 - The Leaderboard Update
+
+* `/leaderboard`: See how you compare to other trainers! Choose different categories, and compare yourself globally or to your server members!
+* Updated database optimizations and querying.
+
 ## 0.3.0 (4/16) - The Pokedollar Update
 
 * Added Pokedollars! Here are some ways to obtain them:

@@ -11,7 +11,7 @@ for (const eventName in eventConfig) {
     eventHandlers[eventName] = require(filePath);
 }
 
-const handleEvent = async (interaction) => {
+const handleEvent = async (interaction, client) => {
     const data = JSON.parse(interaction.customId);
     const eventName = data.eventName;
 
@@ -23,7 +23,7 @@ const handleEvent = async (interaction) => {
 
     // execute event
     try {
-        res = await eventHandlers[eventName](interaction, data);
+        res = await eventHandlers[eventName](interaction, data, client);
         if (res && res.err) {
             logger.warn(`Error executing event ${eventName}`);
             return;

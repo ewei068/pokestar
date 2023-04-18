@@ -6,54 +6,66 @@ const baseURL = process.env.MONGODB_URL;
 
 const client = new MongoClient(`${baseURL}/${DB_NAME}`, { useUnifiedTopology: true, connectTimeoutMS: 5000});
 
-const createIndices = (dbo, collectionName, collection) => {
-    return new Promise((resolve, reject) => {
-        for (const index of collection.indexes) {
-            // check if index exists
-            dbo.collection(collectionName).indexExists(index.key).then((exists) => {
-                if (exists) {
-                    logger.info(`Index already exists for ${collectionName}!`);
-                    return;
-                }
-                dbo.collection(collectionName).createIndex(index.key, { unique: index.unique }).then(() => {
-                    logger.info(`Index created for ${collectionName}!`);
-                }).catch(err => {
-                    logger.info(err)
-                });
-            }).catch(err => {
-                logger.info(err)
-            });
+const createIndices = async (dbo, collectionName, collection) => {
+    if (!collection.indices) {
+        return;
+    }
+    for (const index of collection.indices) {
+        try {
+            await dbo.collection(collectionName).createIndex(index);
+            logger.info(`Index ${index} created for collection ${collectionName}`);
+        } catch (error) {
+            logger.error(`Error creating index ${index} for collection ${collectionName}`);
+            logger.error(error);
         }
-        resolve();
-    });
+    }
 }
 
-client.connect().then(() => {
+const createCollection = async (dbo, name, collectionData) => {
+    // check if collection exists
+    const collectionList = await dbo.listCollections({ name }).toArray();
+    if (collectionList.length > 0) {
+        if (!collectionData.viewOn) {
+            logger.info(`Collection ${name} already exists!`);
+            return;
+        } else {
+            // drop view
+            await dbo.dropCollection(name);
+            logger.info(`View ${name} dropped!`);
+        }
+    }
+
+    // create collection
+    if (collectionData.viewOn) {
+        await dbo.createCollection(name, { 
+            viewOn: collectionData.viewOn, 
+            pipeline: collectionData.pipeline 
+        });
+        logger.info(`View ${name} created!`);
+    } else {
+        await dbo.createCollection(name);
+        logger.info(`Collection ${name} created!`);
+    }
+}
+
+client.connect().then(async () => {
     logger.info("Database connected!")
 
-    const dbo = client.db(DB_NAME);
+    const dbo = await client.db(DB_NAME);
 
     for (const collectionName in collectionConfig) {
-        // check if collection exists
-        dbo.listCollections({ name: collectionName }).toArray().then((collections) => {
-            // TODO: index removal?
-
-            if (collections.length > 0) {
-                logger.info(`Collection ${collectionName} already exists!`);
-                createIndices(dbo, collectionName, collectionConfig[collectionName]);
-                return;
-            }
-            const collection = collectionConfig[collectionName];
-            dbo.createCollection(collectionName).then(() => {
-                logger.info(`Collection ${collectionName} created!`);
-                createIndices(dbo, collectionName, collection);
-            }).catch(err => {
-                logger.info(err)
-            });
-        }).catch(err => {
-            logger.info(err)
-        });
+        const collectionData = collectionConfig[collectionName];
+        try {
+            await createCollection(dbo, collectionName, collectionData);
+        } catch (error) {
+            logger.error(`Error creating collection ${collectionName}`);
+            logger.error(error);
+            continue;
+        }
+        const collection = await dbo.collection(collectionName);
+        await createIndices(dbo, collectionName, collection);
     }
+    
 }).catch(err => {
     logger.info(err)
 })

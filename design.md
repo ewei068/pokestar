@@ -132,10 +132,11 @@ List banners.
 * Aliases: `list`, `listpokemon`
 * Args:
 	* OPTIONAL `page`
-	* OPTIONAL `filter`
+	* OPTIONAL `filterfield`
+	* OPTIONAL `filtervalue`
 	* OPTIONAL `sort`
 	* OPTIONAL `sortOrder`
-* Functionality: Lists out up to 25 Pokemon owned by this player. This list will only show Pokemon ID, name, level, and type. Use `page`, `filter`, and `sort` to display a different subset of Pokemon. Filter will filter for name subset, while sort will sort based of TBD columns.
+* Functionality: Lists out up to 25 Pokemon owned by this player. This list will only show Pokemon ID, name, level, and type. Use `page`, `filter`, and `sort` to display a different subset of Pokemon. Filter will filter a `filterfield` with equality to `filtervalue`. Right now, planned filters include shiny, name, species, and rarity. `sort` decides which field to sort on. Right now, planned fields include individual stats, individual ivs, iv total, level, and combat power.
 
 **Info**
 
@@ -197,6 +198,8 @@ List banners.
 * Args: none
 * Functionality: Lists all the items in the user's backpack by category and their quantity.
 
+### Shop
+
 **Shop**
 
 * Aliases: `shop`, `s`, `pokemart`, `pm`
@@ -210,6 +213,16 @@ List banners.
 	* `itemId`
 	* OPTIONAL `quantity`
 * Functionality: Attempts to buy an item from the shop. Quantity defaults to 1. First, checks last purchase date. If it's a new day, resets daily item purchase limits. Then, checks to see if user has enough money to purchase items at said quanity. If able to purchase, special logic to enact purchase is executed depending on the item. Finally, updates daily item purchase limit & last purchase date.
+
+### Social
+
+**Leaderboard**
+
+* Aliases: `leaderboard`
+* Args:
+	* `category`
+	* OPTIONAL `scope`
+* Queries a joined view of users and user Pokemon to show the top ten users or Pokemon. The `category` argument provides the metric that is being measured. Current planned leaderboards include: user level, user num shinies, user net Pokemon worth, Pokemon combat power. The `scope` parameter allows users to specify server or overall rankings, defaulting to overall. If friends can be easily implemented, then that will be another option.
 
 ## Data
 
@@ -321,9 +334,9 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 * Basic trainer: daily rewards, balls, backpack (DONE)
 * Basic pokemon: draw, list, inspect, release (DONE)
 * Basic training: train, evolve (DONE)
-* Basic money: money acquisition & shop
-* Leaderboards, sort/filter
-* Take care of other issues: help revamp, documentation, code qc
+* Basic money: money acquisition & shop (DONE)
+* Leaderboards, sort/filter, shinies
+* Take care of other issues: help revamp, documentation, code qc, add emojis?
 * Basic battling: placement, teams, moves (no abilities/held items)
 * Database schema validation ?
 * Automate stage deployment pipeline and testing

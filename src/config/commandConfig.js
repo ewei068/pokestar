@@ -244,6 +244,38 @@ const commandConfig = {
             },
         }
     },
+    "social": {
+        "description": "Social commands",
+        "folder": "social",
+        "commands": {
+            "leaderboard": {
+                "aliases": ["leaderboard", "rankings"],
+                "description": "Get the leaderboard",
+                "execute": "leaderboard.js",
+                "args": {
+                    "category": {
+                        "type": "string",
+                        "description": "category to get the leaderboard for",
+                        "optional": false,
+                        "variable": false,
+                        "enum": [
+                            "level", "worth", "shiny", "power"
+                        ]
+                    },
+                    "scope": {
+                        "type": "string",
+                        "description": "scope to get the leaderboard for",
+                        "optional": true,
+                        "variable": false,
+                        "enum": [
+                            "global", "server"
+                        ]
+                    },
+                },
+                "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+            },
+        }
+    },
 }
 
 module.exports = { 

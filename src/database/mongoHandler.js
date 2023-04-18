@@ -33,6 +33,9 @@ const updateDocuments = async (collectionName, filter, update) => {
     return res;
 }
 
+/**
+ * @deprecated Use query builder instead
+ */
 const findDocuments = async (collectionName, filter, limit=100, page=0) => {
     const collection = await getCollection(collectionName);
     // retrieves one extra item to check for end of items
@@ -46,10 +49,104 @@ const deleteDocuments = async (collectionName, filter) => {
     return res;
 }
 
+/**
+ * @deprecated Use query builder instead
+ */
 const countDocuments = async (collectionName, filter) => {
     const collection = await getCollection(collectionName);
     const res = collection.countDocuments(filter);
     return res;
+}
+
+// TODO: transition to this
+class QueryBuilder {
+    constructor(collectionName) {
+        this.collectionName = collectionName;
+    }
+
+    setFilter(filter) {
+        this.filter = filter;
+        return this;
+    }
+
+    setLimit(limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    setPage(page) {
+        this.page = page;
+        return this;
+    }
+
+    setAggregate(aggregatePipeline) {
+        this.aggregatePipeline = aggregatePipeline;
+        return this;
+    }
+
+    setSort(sort) {
+        this.sort = sort;
+        return this;
+    }
+
+    setProjection(projection) {
+        this.projection = projection;
+        return this;
+    }
+
+    setUpsert(upsert) {
+        this.upsert = upsert;
+        return this;
+    }
+
+    async aggregate() {
+        let query = await getCollection(this.collectionName);
+        query = query.aggregate(this.aggregatePipeline);
+        
+        return await query.toArray();
+    }
+
+    async findOne() {
+        let query = await getCollection(this.collectionName);
+        query = query.findOne(this.filter);
+
+        if (this.projection) {
+            query = query.project(this.projection);
+        }
+
+        return await query;
+    }
+
+    async find() {
+        let query = await getCollection(this.collectionName);
+        query = query.find(this.filter);
+
+        if (this.projection) {
+            query = query.project(this.projection);
+        }
+
+        if (this.sort) {
+            query = query.sort(this.sort);
+        }
+
+        if (this.limit) {
+            // plus 1 to see if there are more items
+            query = query.limit(this.limit + 1);
+        }
+
+        if (this.page) {
+            query = query.skip(this.page * this.limit);
+        }
+
+        return await query.toArray();
+    }
+
+    async countDocuments() {
+        let query = await getCollection(this.collectionName);
+        query = query.countDocuments(this.filter);
+
+        return await query;
+    }
 }
 
 module.exports = {
@@ -59,4 +156,5 @@ module.exports = {
     findDocuments,
     countDocuments,
     deleteDocuments,
+    QueryBuilder,
 };
