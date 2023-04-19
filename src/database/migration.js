@@ -7,15 +7,15 @@ const baseURL = process.env.MONGODB_URL;
 const client = new MongoClient(`${baseURL}/${DB_NAME}`, { useUnifiedTopology: true, connectTimeoutMS: 5000});
 
 const createIndices = async (dbo, collectionName, collection) => {
-    if (!collection.indices) {
+    if (!collection.indexes) {
         return;
     }
-    for (const index of collection.indices) {
+    for (const index of collection.indexes) {
         try {
-            await dbo.collection(collectionName).createIndex(index);
-            logger.info(`Index ${index} created for collection ${collectionName}`);
+            await dbo.collection(collectionName).createIndex(index.key, { unique: index.unique });
+            logger.info(`Index created for collection ${collectionName}`);
         } catch (error) {
-            logger.error(`Error creating index ${index} for collection ${collectionName}`);
+            logger.error(`Error creating index for collection ${collectionName}`);
             logger.error(error);
         }
     }
@@ -62,8 +62,8 @@ client.connect().then(async () => {
             logger.error(error);
             continue;
         }
-        const collection = await dbo.collection(collectionName);
-        await createIndices(dbo, collectionName, collection);
+        // const collection = await dbo.collection(collectionName);
+        await createIndices(dbo, collectionName, collectionData);
     }
     
 }).catch(err => {
