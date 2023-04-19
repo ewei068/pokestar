@@ -1,6 +1,8 @@
 # Pokestar Changelog
 
-## 0.4.0 - The Leaderboard Update
+## 0.4.0 (4/18) - The Leaderboard Update
+
+How well do you stack up to your friends? Find out with leaderboards! In light of leaderboards, new stats are available for trainers and Pokemon.
 
 * `/leaderboard`: See how you compare to other trainers! Choose different categories, and compare yourself globally or to your server members!
 * The `/list` command now supports filtering and sorting!
