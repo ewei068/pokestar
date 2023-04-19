@@ -26,7 +26,7 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
         page: page,
     }
     if (filterBy != "none") {
-        if (!filterValue) {
+        if (filterValue == null) {
             return { embed: null, err: "Filter value must be provided if filterBy is provided." };
         }
 
@@ -75,7 +75,7 @@ const listMessageCommand = async (message) => {
     const args = message.content.split(" ");
     const page = args[1] ? parseInt(args[1]) : 1;
     const filterBy = args[2] ? args[2] : "none";
-    const filterValue = args[3] ? args[3] : "";
+    const filterValue = args[3] ? args[3] : null;
     const sortBy = args[4] ? args[4] : null;
     const descending = args[5] == "true";
     const { send, err } = await list(message.author, page, filterBy, filterValue, sortBy, descending);
@@ -90,7 +90,7 @@ const listMessageCommand = async (message) => {
 const listSlashCommand = async (interaction) => {
     const page = interaction.options.getInteger('page') ? interaction.options.getInteger('page') : 1;
     const filterBy = interaction.options.getString('filterby') ? interaction.options.getString('filterby') : "none";
-    const filterValue = interaction.options.getString('filtervalue') ? interaction.options.getString('filtervalue') : "";
+    const filterValue = interaction.options.getString('filtervalue') ? interaction.options.getString('filtervalue') : null;
     const sortBy = interaction.options.getString('sortby') ? interaction.options.getString('sortby') : null;
     const descending = interaction.options.getBoolean('descending') ? interaction.options.getBoolean('descending') : false;
     const { send, err } = await list(interaction.user, page, filterBy, filterValue, sortBy, descending);

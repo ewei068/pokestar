@@ -62,12 +62,6 @@ const collectionConfig = {
                 }
             },
         ],
-        indexes: [
-            {
-                key: { userId: 1 },
-                unique: true
-            }
-        ]
     },
     [collectionNames.POKEMON_AND_USERS]: {
         viewOn: collectionNames.USERS,
@@ -90,12 +84,6 @@ const collectionConfig = {
                 $unwind: "$pokemon"
             },
         ],
-        indexes: [
-            {
-                key: { userId: 1 },
-                unique: true
-            }
-        ]
     },
 }
 
