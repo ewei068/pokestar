@@ -34,7 +34,10 @@ const pokemonRelease = async (interaction, data) => {
     }
 
     // make sure they have all pokemon still
-    const toRelease = await listPokemons(trainer.data, page = 1, filter = { _id: { $in: state.pokemonIds.map(idFrom)} });
+    const toRelease = await listPokemons(
+        trainer.data, 
+        { page: 1, filter: { _id: { $in: state.pokemonIds.map(idFrom)} } }
+    );
     if (toRelease.err) {
         return { err: toRelease.err };
     } else if (toRelease.data.length !== state.pokemonIds.length) {

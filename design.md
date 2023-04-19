@@ -136,7 +136,7 @@ List banners.
 	* OPTIONAL `filtervalue`
 	* OPTIONAL `sort`
 	* OPTIONAL `sortOrder`
-* Functionality: Lists out up to 25 Pokemon owned by this player. This list will only show Pokemon ID, name, level, and type. Use `page`, `filter`, and `sort` to display a different subset of Pokemon. Filter will filter a `filterfield` with equality to `filtervalue`. Right now, planned filters include shiny, name, species, and rarity. `sort` decides which field to sort on. Right now, planned fields include individual stats, individual ivs, iv total, level, and combat power.
+* Functionality: Lists out up to 25 Pokemon owned by this player. This list will only show Pokemon ID, name, level, and type. Use `page`, `filter`, and `sort` to display a different subset of Pokemon. Filter will filter a `filterfield` with equality to `filtervalue`. Right now, planned filters include shiny, name, species, and rarity. `sort` decides which field to sort on. Right now, planned fields include name, individual stats, individual ivs, iv total, level, and combat power.
 
 **Info**
 

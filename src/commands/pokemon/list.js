@@ -1,4 +1,4 @@
-const { listPokemons: listPokemon } = require('../../services/pokemon');
+const { listPokemons: listPokemons } = require('../../services/pokemon');
 const { getTrainer } = require('../../services/trainer');
 const { buildPokemonListEmbed } = require('../../embeds/pokemonEmbeds');
 const { buildScrollActionRow } = require('../../components/scrollActionRow');
@@ -6,7 +6,7 @@ const { eventNames } = require('../../config/eventConfig');
 const { setState } = require('../../services/state');
 const { buildPokemonSelectRow } = require('../../components/pokemonSelectRow');
 
-const list = async (user, page) => {
+const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
     if (page < 1) {
         return { embeds: null, err: "Page must be greater than 0." };
     }
@@ -16,7 +16,32 @@ const list = async (user, page) => {
         return { embed: null, err: trainer.err };
     }
 
-    const pokemons = await listPokemon(trainer.data, page);
+    // build list options with page/sort/filter
+    if (filterValue == "true") {
+        filterValue = true;
+    } else if (filterValue == "false") {
+        filterValue = false;
+    }
+    const listOptions = {
+        page: page,
+    }
+    if (filterBy != "none") {
+        if (!filterValue) {
+            return { embed: null, err: "Filter value must be provided if filterBy is provided." };
+        }
+
+        listOptions.filter = {
+            [filterBy]: filterValue
+        }
+    }
+    if (sortBy) {
+        listOptions.sort = {
+            [sortBy]: descending ? -1 : 1,
+            "_id": 1
+        }
+    }
+
+    const pokemons = await listPokemons(trainer.data, listOptions);
     if (pokemons.err) {
         return { embed: null, err: pokemons.err };
     } 
@@ -25,7 +50,7 @@ const list = async (user, page) => {
 
     const stateId = setState({ 
         userId: user.id, 
-        page: page, 
+        listOptions: listOptions,
         lastPage: pokemons.lastPage 
     }, ttl=300);
     const scrollRowData = {
@@ -49,7 +74,11 @@ const list = async (user, page) => {
 const listMessageCommand = async (message) => {
     const args = message.content.split(" ");
     const page = args[1] ? parseInt(args[1]) : 1;
-    const { send, err } = await list(message.author, page);
+    const filterBy = args[2] ? args[2] : "none";
+    const filterValue = args[3] ? args[3] : "";
+    const sortBy = args[4] ? args[4] : null;
+    const descending = args[5] == "true";
+    const { send, err } = await list(message.author, page, filterBy, filterValue, sortBy, descending);
     if (err) {
         await message.channel.send(`${err}`);
         return { err: err };
@@ -59,8 +88,12 @@ const listMessageCommand = async (message) => {
 }
 
 const listSlashCommand = async (interaction) => {
-    let page = interaction.options.getInteger('page') ? interaction.options.getInteger('page') : 1;
-    const { send, err } = await list(interaction.user, page);
+    const page = interaction.options.getInteger('page') ? interaction.options.getInteger('page') : 1;
+    const filterBy = interaction.options.getString('filterby') ? interaction.options.getString('filterby') : "none";
+    const filterValue = interaction.options.getString('filtervalue') ? interaction.options.getString('filtervalue') : "";
+    const sortBy = interaction.options.getString('sortby') ? interaction.options.getString('sortby') : null;
+    const descending = interaction.options.getBoolean('descending') ? interaction.options.getBoolean('descending') : false;
+    const { send, err } = await list(interaction.user, page, filterBy, filterValue, sortBy, descending);
     if (err) {
         await interaction.reply(`${err}`);
         return { err: err };

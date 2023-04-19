@@ -130,6 +130,36 @@ const commandConfig = {
                         "description": "page number",
                         "optional": true,
                         "variable": false
+                    },
+                    "filterby": {
+                        "type": "string",
+                        "description": "category to filter by",
+                        "optional": true,
+                        "variable": false,
+                        "enum": [
+                            "shiny", "name", "rarity", "none"
+                        ]
+                    },
+                    "filtervalue": {
+                        "type": "string",
+                        "description": "value to filter by",
+                        "optional": true,
+                        "variable": false
+                    },
+                    "sortby": {
+                        "type": "string",
+                        "description": "category to sort by",
+                        "optional": true,
+                        "variable": false,
+                        "enum": [
+                            "name", "ivTotal", "combatPower", "level", "dateAcquired"
+                        ]
+                    },
+                    "descending": {
+                        "type": "bool",
+                        "description": "sort descending",
+                        "optional": true,
+                        "variable": false
                     }
                 },
                 "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],

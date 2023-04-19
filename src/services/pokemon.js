@@ -10,13 +10,20 @@ const { locations, locationConfig } = require("../config/locationConfig");
 // TODO: move this?
 const PAGE_SIZE = 10;
 
-const listPokemons = async (trainer, page=1, filter = {}, pageSize = PAGE_SIZE) => {
+const listPokemons = async (trainer, listOptions) => {
+    // listOptions: { page, pageSize, filter, sort }
+    const filter = { userId: trainer.userId, ...listOptions.filter};
+    const pageSize = listOptions.pageSize || PAGE_SIZE;
+    const page = listOptions.page || 1;
+    const sort = listOptions.sort || null;
+
     // get pokemon with pagination
     try {
         const query = new QueryBuilder(collectionNames.USER_POKEMON)
-            .setFilter({ userId: trainer.userId, ...filter })
+            .setFilter(filter)
             .setLimit(pageSize)
-            .setPage(page - 1);
+            .setPage(page - 1)
+            .setSort(sort);
 
         const res = await query.find();
         if (res.length === 0) {

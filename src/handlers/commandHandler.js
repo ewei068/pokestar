@@ -37,7 +37,7 @@ const buildSlashCommand = (commandConfig) => {
             slashCommand.addStringOption(optionFn);
         } else if (argConfig.type == "int") {
             slashCommand.addIntegerOption(optionFn);
-        } else if (argConfig.type == "boolean") {
+        } else if (argConfig.type == "bool") {
             slashCommand.addBooleanOption(optionFn);
         }
     }
@@ -110,7 +110,7 @@ const validateArgs = (command, args) => {
                 if (isNaN(providedArg)) {
                     return false;
                 }
-            } else if (argConfig.type == "boolean") {
+            } else if (argConfig.type == "bool") {
                 if (providedArg != "true" && providedArg != "false") {
                     return false;
                 }

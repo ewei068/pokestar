@@ -22,7 +22,9 @@ const pokemonScroll = async (interaction, data) => {
         return { err: "This interaction was not initiated by you." };
     }
 
-    let page = state.page;
+    const listOptions = state.listOptions;
+
+    let page = listOptions.page;
     if (data.isLeft) {
         page -= 1;
     } else {
@@ -31,7 +33,7 @@ const pokemonScroll = async (interaction, data) => {
     if (page < 1 || (!data.isLeft && state.lastPage)) {
         return { err: "Invalid page." };
     }
-    state.page = page;
+    listOptions.page = page;
 
     // TODO: move to one function?
     const trainer = await getTrainer(interaction.user);
@@ -39,7 +41,7 @@ const pokemonScroll = async (interaction, data) => {
         return { err: trainer.err };
     }
 
-    const pokemons = await listPokemons(trainer.data, page);
+    const pokemons = await listPokemons(trainer.data, listOptions);
     if (pokemons.err) {
         return { err: pokemons.err };
     } 

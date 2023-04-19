@@ -122,6 +122,10 @@ const usePokeball = async (trainer, pokeballId) => {
         "item": "",
         "moves": [],
         "shiny": drawUniform(0, 8192, 1)[0] == 0,
+        "dateAcquired": (new Date()).getTime(),
+        "ivTotal": ivs.reduce((a, b) => a + b, 0),
+        "originalOwner": trainer.userId,
+        "rarity": rarity,
     }
 
     // calculate stats

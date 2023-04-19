@@ -25,7 +25,6 @@ const handleEvent = async (interaction, client) => {
     try {
         res = await eventHandlers[eventName](interaction, data, client);
         if (res && res.err) {
-            logger.warn(`Error executing event ${eventName}`);
             return;
         }
         

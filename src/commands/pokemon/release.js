@@ -18,7 +18,10 @@ const release = async (user, pokemonIds) => {
         return { err: trainer.err };
     }
 
-    const toRelease = await listPokemons(trainer.data, page = 1, filter = { _id: { $in: pokemonIds.map(idFrom)} });
+    const toRelease = await listPokemons(
+        trainer.data, 
+        { page: 1, filter: { _id: { $in: pokemonIds.map(idFrom)} } }
+    );
     if (toRelease.err) {
         return { err: toRelease.err };
     } else if (toRelease.data.length !== pokemonIds.length) {

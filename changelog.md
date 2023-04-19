@@ -3,6 +3,8 @@
 ## 0.4.0 - The Leaderboard Update
 
 * `/leaderboard`: See how you compare to other trainers! Choose different categories, and compare yourself globally or to your server members!
+* The `/list` command now supports filtering and sorting!
+* Added more informative Pokemon information!
 * Updated database optimizations and querying.
 
 ## 0.3.0 (4/16) - The Pokedollar Update

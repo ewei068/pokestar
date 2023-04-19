@@ -1,7 +1,11 @@
-const { pokemonConfig, rarityConfig } = require('./pokemonConfig');
+const { rarityConfig } = require('./pokemonConfig');
 
-const shinyAggregate = (shiny) => {
+const shinyAggregate = function(shiny) {
     return shiny ? 1 : 0;
+}
+
+const worthAggregate = function(rarityConfig, rarity) {
+    return rarityConfig[rarity].money;
 }
 
 const DB_NAME = 'pokestar';
@@ -36,16 +40,9 @@ const collectionConfig = {
             {
                 $project: {
                     "userId": 1,
-                    // TODO: find a better way to do this
                     "worth": { $function: { 
-                        body: `function (speciesId) {
-                            const pokemonConfig = ${JSON.stringify(pokemonConfig)};
-                            const rarityConfig = ${JSON.stringify(rarityConfig)};
-                            const speciesData = pokemonConfig[speciesId];
-                            const rarity = rarityConfig[speciesData.rarity];
-                            return rarity.money;
-                        }`, 
-                        args: ["$speciesId"], 
+                        body: worthAggregate.toString(),
+                        args: [rarityConfig, "$rarity"], 
                         lang: "js" 
                     } },
                     "shiny": { $function: { 

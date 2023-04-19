@@ -1,4 +1,3 @@
-const { listPokemons: listPokemon } = require("../services/pokemon");
 const { getState  } = require("../services/state");
 
 const pokemonListSelect = async (interaction, data) => {
