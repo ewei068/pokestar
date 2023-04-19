@@ -1,5 +1,5 @@
 const { rarities, rarityConfig, natureConfig, pokemonConfig, } = require('../config/pokemonConfig');
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, Client } = require('discord.js');
 const { getWhitespace, getPBar } = require('../utils/utils');
 const { getPokemonExpNeeded } = require('../utils/pokemonUtils');
 
@@ -32,7 +32,7 @@ const buildNewPokemonEmbed = (pokemon, speciesData) => {
         { name: "Shiny", value: pokemon.shiny ? "True" : "False", inline: true },
         { name: "IVs", value: ivString, inline: false },
     );
-    embed.setImage(speciesData.sprite);
+    embed.setImage(pokemon.shiny ? speciesData.shinySprite : speciesData.sprite);
     embed.setFooter({ text: `ID: ${pokemon._id}` });
 
     return embed;
@@ -43,7 +43,9 @@ const buildPokemonListEmbed = (trainer, pokemons, page) => {
     for (let i = 0; i < pokemons.length; i++) {
         const pokemon = pokemons[i];
         const speciesData = pokemonConfig[pokemons[i].speciesId];
-        pokemonString += `${speciesData.emoji} **[Lv. ${pokemon.level}]** ${pokemon.name} (${pokemon._id})\n`;
+        const ivPercent = pokemon.ivTotal * 100 / (31 * 6);
+        
+        pokemonString += `${pokemon.shiny ? "✨" : ""}${speciesData.emoji} **[Lv. ${pokemon.level}] [IV ${Math.round(ivPercent)}%]** ${pokemon.name} (${pokemon._id})\n`;
     }
 
     const embed = new EmbedBuilder();
@@ -57,7 +59,6 @@ const buildPokemonListEmbed = (trainer, pokemons, page) => {
 
 const buildPokemonEmbed = (trainer, pokemon) => {
     const speciesData = pokemonConfig[pokemon.speciesId];
-    // console.log(speciesData)
 
     let typeString = "";
     for (let i = 0; i < speciesData.type.length; i++) {
@@ -90,18 +91,22 @@ const buildPokemonEmbed = (trainer, pokemon) => {
     statString += `\`Spe (${whitespace[5]}${statArray[5]})\` ${getPBar(pokemon.stats[5] * 100 / 300)}\n`;
     statString += `Power: ${pokemon.combatPower}`;
 
+    // TODO: display original owner?
     const embed = new EmbedBuilder();
     embed.setTitle(`${trainer.user.username}'s ${pokemon.name}`);
     embed.setDescription(`**[Lv. ${pokemon.level}]** ${speciesData.name} (#${pokemon.speciesId})`);
     embed.setColor(rarityConfig[speciesData.rarity].color);
     embed.addFields(
         { name: "Type", value: typeString, inline: true },
-        { name: "Nature", value: `${natureConfig[pokemon.natureId].name} (${natureConfig[pokemon.natureId].description})`, inline: true },
         { name: "Ability", value: pokemon.abilityId, inline: true },
+        { name: "Nature", value: `${natureConfig[pokemon.natureId].name} (${natureConfig[pokemon.natureId].description})`, inline: true },
+        { name: "Rarity", value: speciesData.rarity, inline: true },
+        { name: "Shiny", value: pokemon.shiny ? "True" : "False", inline: true },
+        { name: "Date Caught", value: new Date(pokemon.dateAcquired).toLocaleDateString(), inline: true },
         { name: "Stats (Stat|IVs|EVs)", value: statString, inline: false },
         { name: "Level Progress", value: progressBar, inline: false }
     );
-    embed.setImage(speciesData.sprite);
+    embed.setImage(pokemon.shiny ? speciesData.shinySprite : speciesData.sprite);
     embed.setFooter({ text: `ID: ${pokemon._id}` });
 
     return embed;

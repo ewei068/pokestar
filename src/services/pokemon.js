@@ -152,6 +152,7 @@ const getEvolvedPokemon = (pokemon, evolutionSpeciesId) => {
     if (pokemon.name === speciesData.name) {
         pokemon.name = evolutionSpeciesData.name;
     }
+    pokemon.rarity = evolutionSpeciesData.rarity;
 
     // calculate ability
     // if evolution has one ability, give that ability

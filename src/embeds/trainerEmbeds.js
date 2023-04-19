@@ -16,25 +16,23 @@ const { locationConfig } = require("../config/locationConfig");
 }
 */
 
-const buildTrainerEmbed = (trainer) => {
-    const oldLevelExp = getTrainerLevelExp(trainer.level);
-    const newLevelExp = getTrainerLevelExp(trainer.level + 1);
-    const levelPercent = trainer.level == MAX_TRAINER_LEVEL ? 0 : 100 * (trainer.exp - oldLevelExp) / (newLevelExp - oldLevelExp);
+const buildTrainerEmbed = (trainerInfo) => {
+    const oldLevelExp = getTrainerLevelExp(trainerInfo.level);
+    const newLevelExp = getTrainerLevelExp(trainerInfo.level + 1);
+    const levelPercent = trainerInfo.level == MAX_TRAINER_LEVEL ? 0 : 100 * (trainerInfo.exp - oldLevelExp) / (newLevelExp - oldLevelExp);
     const progressBar = `${getPBar(levelPercent, 20)} -- ${Math.round(levelPercent)}%`;
 
-    // check to see if daily availible
-    const daily = new Date(trainer.lastDaily);
-    const now = new Date();
-    const dailyAvailable = now.getDate() != daily.getDate();
-
     const embed = new EmbedBuilder();
-    embed.setTitle(`Trainer ${trainer.user.username}`);
+    embed.setTitle(`Trainer ${trainerInfo.user.username}`);
     embed.setColor(0xffffff);
-    embed.setThumbnail(`https://cdn.discordapp.com/avatars/${trainer.userId}/${trainer.user.avatar}.webp`);
+    embed.setThumbnail(`https://cdn.discordapp.com/avatars/${trainerInfo.userId}/${trainerInfo.user.avatar}.webp`);
     embed.addFields(
-        { name: "Level", value: `${trainer.level}`, inline: true },
-        { name: "Money", value: `₽${trainer.money}`, inline: true },
-        { name: "Daily Available", value: `${dailyAvailable}`, inline: true },
+        { name: "Level", value: `${trainerInfo.level}`, inline: true },
+        { name: "Money", value: `₽${trainerInfo.money}`, inline: true },
+        { name: "Pokemon", value: `${trainerInfo.numPokemon}`, inline: true },
+        { name: "Power", value: `${trainerInfo.totalPower}`, inline: true },
+        { name: "Worth", value: `₽${trainerInfo.totalWorth}`, inline: true },
+        { name: "Shinies", value: `${trainerInfo.totalShiny}`, inline: true },
         { name: "Level Progress", value: `${progressBar}`, inline: false },
     );
     return embed;

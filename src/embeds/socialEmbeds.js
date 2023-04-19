@@ -9,7 +9,7 @@ const buildLeaderboardEmbed = (leaderboardInfo, categoryData, scope) => {
 
     const embed = new EmbedBuilder()
         .setTitle(`Top ${categoryData.name} (${scope})`)
-        .setColor("#FF0000")
+        .setColor("#FFFFFF")
         .addFields(
             { name: "Top 10", value: leaderboardString, inline: true }
         )

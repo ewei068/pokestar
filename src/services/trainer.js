@@ -1,4 +1,4 @@
-const { findDocuments, insertDocument, updateDocument } = require("../database/mongoHandler");
+const { findDocuments, insertDocument, updateDocument, QueryBuilder } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { trainerFields, getTrainerLevelExp, MAX_TRAINER_LEVEL, levelConfig } = require("../config/trainerConfig");
 const { logger } = require("../log");
@@ -131,6 +131,46 @@ const getTrainer = async (user) => {
     return { data: trainer, err: null };
 }
 
+const getTrainerInfo = async (user) => {
+    const trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { data: null, err: trainer.err };
+    }
+    
+    // get extra info
+    try {
+        const numPokemonQuery = new QueryBuilder(collectionNames.USER_POKEMON)
+            .setFilter({ "userId": trainer.data.userId });
+            
+
+        const numPokemonRes = await numPokemonQuery.countDocuments();
+        
+        const aggQuery = new QueryBuilder(collectionNames.POKEMON_AND_USERS)
+            .setFilter({ "userId": trainer.data.userId });
+
+        const pokemonRes = await aggQuery.findOne();
+        if (pokemonRes === null) {
+            return { data: null, err: "Error finding trainer." };
+        }
+
+        const extraInfo = {
+            ...pokemonRes.pokemon,
+            numPokemon: numPokemonRes,
+        }
+
+        return {
+            data: {
+                ...trainer.data,
+                ...extraInfo
+            },
+            err: null
+        };
+    } catch (error) {
+        logger.error(error);
+        return { data: null, err: "Error finding trainer." };
+    }
+}
+
 const addExpAndMoneyTrainer = async (trainer, exp, money) => {
     // levelup/exp
     const newExp = trainer.exp + exp;
@@ -236,6 +276,7 @@ const getLevelRewards = async (user) => {
 
 module.exports = {
     getTrainer,
+    getTrainerInfo,
     addExpAndMoneyTrainer,
     addExpAndMoney: addExpAndMoney,
     getLevelRewards

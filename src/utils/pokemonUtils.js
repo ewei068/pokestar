@@ -1,6 +1,10 @@
 const { growthRates, rarityConfig, pokemonConfig } = require('../config/pokemonConfig');
 
 const getPokemonExpNeeded = (level, growthRate) => {
+    if (level <= 1) {
+        return 0;
+    }
+
     if (growthRate == growthRates.FAST) {
         // (1/2) x ^ 2.5
         return Math.floor(0.5 * Math.pow(level, 2.5));

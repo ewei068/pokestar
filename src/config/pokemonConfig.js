@@ -23,29 +23,29 @@ const types = {
 
 const natureConfig = {
     "0": { "name": "Hardy", "description": "No stat changes", "stats": [0, 0, 0, 0, 0, 0],},
-    "1": { "name": "Lonely", "description": "Attack +1, Defense -1", "stats": [0, 1, -1, 0, 0, 0],},
-    "2": { "name": "Brave", "description": "Attack +1, Speed -1", "stats": [0, 1, 0, 0, 0, -1],},
-    "3": { "name": "Adamant", "description": "Attack +1, Sp. Atk -1", "stats": [0, 1, 0, -1, 0, 0],},
-    "4": { "name": "Naughty", "description": "Attack +1, Sp. Def -1", "stats": [0, 1, 0, 0, -1, 0],},
-    "5": { "name": "Bold", "description": "Defense +1, Attack -1", "stats": [0, -1, 1, 0, 0, 0],},
+    "1": { "name": "Lonely", "description": "Atk +1, Def -1", "stats": [0, 1, -1, 0, 0, 0],},
+    "2": { "name": "Brave", "description": "Atk +1, Spe -1", "stats": [0, 1, 0, 0, 0, -1],},
+    "3": { "name": "Adamant", "description": "Atk +1, SpA -1", "stats": [0, 1, 0, -1, 0, 0],},
+    "4": { "name": "Naughty", "description": "Atk +1, SpD -1", "stats": [0, 1, 0, 0, -1, 0],},
+    "5": { "name": "Bold", "description": "Def +1, Atk -1", "stats": [0, -1, 1, 0, 0, 0],},
     "6": { "name": "Docile", "description": "No stat changes", "stats": [0, 0, 0, 0, 0, 0],},
-    "7": { "name": "Relaxed", "description": "Defense +1, Speed -1", "stats": [0, 0, 1, 0, 0, -1],},
-    "8": { "name": "Impish", "description": "Defense +1, Sp. Atk -1", "stats": [0, 0, 1, -1, 0, 0],},
-    "9": { "name": "Lax", "description": "Defense +1, Sp. Def -1", "stats": [0, 0, 1, 0, -1, 0],},
-    "10": { "name": "Timid", "description": "Speed +1, Attack -1", "stats": [0, -1, 0, 0, 0, 1],},
-    "11": { "name": "Hasty", "description": "Speed +1, Defense -1", "stats": [0, 0, -1, 0, 0, 1],},
+    "7": { "name": "Relaxed", "description": "Def +1, Spe -1", "stats": [0, 0, 1, 0, 0, -1],},
+    "8": { "name": "Impish", "description": "Def +1, SpA -1", "stats": [0, 0, 1, -1, 0, 0],},
+    "9": { "name": "Lax", "description": "Def +1, SpD -1", "stats": [0, 0, 1, 0, -1, 0],},
+    "10": { "name": "Timid", "description": "Spe +1, Atk -1", "stats": [0, -1, 0, 0, 0, 1],},
+    "11": { "name": "Hasty", "description": "Spe +1, Def -1", "stats": [0, 0, -1, 0, 0, 1],},
     "12": { "name": "Serious", "description": "No stat changes", "stats": [0, 0, 0, 0, 0, 0],},
-    "13": { "name": "Jolly", "description": "Speed +1, Sp. Atk -1", "stats": [0, 0, 0, -1, 0, 1],},
-    "14": { "name": "Naive", "description": "Speed +1, Sp. Def -1", "stats": [0, 0, 0, 0, -1, 1],},
-    "15": { "name": "Modest", "description": "Sp. Atk +1, Attack -1", "stats": [0, -1, 0, 1, 0, 0],},
-    "16": { "name": "Mild", "description": "Sp. Atk +1, Defense -1", "stats": [0, 0, -1, 1, 0, 0],},
-    "17": { "name": "Quiet", "description": "Sp. Atk +1, Speed -1", "stats": [0, 0, 0, 1, 0, -1],},
+    "13": { "name": "Jolly", "description": "Spe +1, SpA -1", "stats": [0, 0, 0, -1, 0, 1],},
+    "14": { "name": "Naive", "description": "Spe +1, SpD -1", "stats": [0, 0, 0, 0, -1, 1],},
+    "15": { "name": "Modest", "description": "SpA +1, Atk -1", "stats": [0, -1, 0, 1, 0, 0],},
+    "16": { "name": "Mild", "description": "SpA +1, Def -1", "stats": [0, 0, -1, 1, 0, 0],},
+    "17": { "name": "Quiet", "description": "SpA +1, Spe -1", "stats": [0, 0, 0, 1, 0, -1],},
     "18": { "name": "Bashful", "description": "No stat changes", "stats": [0, 0, 0, 0, 0, 0],},
-    "19": { "name": "Rash", "description": "Sp. Atk +1, Sp. Def -1", "stats": [0, 0, 0, 1, -1, 0],},
-    "20": { "name": "Calm", "description": "Sp. Def +1, Attack -1", "stats": [0, -1, 0, 0, 1, 0],},
-    "21": { "name": "Gentle", "description": "Sp. Def +1, Defense -1", "stats": [0, 0, -1, 0, 1, 0],},
-    "22": { "name": "Sassy", "description": "Sp. Def +1, Speed -1", "stats": [0, 0, 0, 0, 1, -1],},
-    "23": { "name": "Careful", "description": "Sp. Def +1, Sp. Atk -1", "stats": [0, 0, 0, -1, 1, 0],},
+    "19": { "name": "Rash", "description": "SpA +1, SpD -1", "stats": [0, 0, 0, 1, -1, 0],},
+    "20": { "name": "Calm", "description": "SpD +1, Atk -1", "stats": [0, -1, 0, 0, 1, 0],},
+    "21": { "name": "Gentle", "description": "SpD +1, Def -1", "stats": [0, 0, -1, 0, 1, 0],},
+    "22": { "name": "Sassy", "description": "SpD +1, Spe -1", "stats": [0, 0, 0, 0, 1, -1],},
+    "23": { "name": "Careful", "description": "SpD +1, SpA -1", "stats": [0, 0, 0, -1, 1, 0],},
     "24": { "name": "Quirky", "description": "No stat changes", "stats": [0, 0, 0, 0, 0, 0],},
 }
 
@@ -92,6 +92,7 @@ const pokemonConfig = {
         "type": [types.GRASS, types.POISON],
         "baseStats": [45, 49, 49, 65, 65, 45],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/1.png",
         "evolution": [
             {
                 "level": 16,
@@ -112,6 +113,7 @@ const pokemonConfig = {
         "type": [types.GRASS, types.POISON],
         "baseStats": [60, 62, 63, 80, 80, 60],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/2.png",
         "evolution": [{
             "level": 32,
             "id": "3",
@@ -130,6 +132,7 @@ const pokemonConfig = {
         "type": [types.GRASS, types.POISON],
         "baseStats": [80, 82, 83, 100, 100, 80],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/3.png",
         "abilities": {
             "65": 0.8,
             "34": 0.2
@@ -144,6 +147,7 @@ const pokemonConfig = {
         "type": [types.FIRE],
         "baseStats": [39, 52, 43, 60, 50, 65],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/4.png",
         "evolution":[ {
             "level": 16,
             "id": "5",
@@ -162,6 +166,7 @@ const pokemonConfig = {
         "type": [types.FIRE],
         "baseStats": [58, 64, 58, 80, 65, 80],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/5.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/5.png",
         "evolution": [{
             "level": 36,
             "id": "6",
@@ -180,6 +185,7 @@ const pokemonConfig = {
         "type": [types.FIRE, types.FLYING],
         "baseStats": [78, 84, 78, 109, 85, 100],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/6.png",
         "abilities": {
             "66": 0.8,
             "94": 0.2
@@ -194,6 +200,7 @@ const pokemonConfig = {
         "type": [types.WATER],
         "baseStats": [44, 48, 65, 50, 64, 43],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/7.png",
         "evolution": [{
             "level": 16,
             "id": "8",
@@ -212,6 +219,7 @@ const pokemonConfig = {
         "type": [types.WATER],
         "baseStats": [59, 63, 80, 65, 80, 58],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/8.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/8.png",
         "evolution": {
             "level": 36,
             "id": "9",
@@ -230,6 +238,7 @@ const pokemonConfig = {
         "type": [types.WATER],
         "baseStats": [79, 83, 100, 85, 105, 78],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/9.png",
         "abilities": {
             "67": 0.8,
             "44": 0.2
@@ -244,6 +253,7 @@ const pokemonConfig = {
         "type": [types.BUG],
         "baseStats": [45, 30, 35, 20, 20, 45],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10.png",
         "evolution": [{
             "level": 7,
             "id": "11",
@@ -262,6 +272,7 @@ const pokemonConfig = {
         "type": [types.BUG],
         "baseStats": [50, 20, 55, 25, 25, 30],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/11.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/11.png",
         "evolution": [{
             "level": 10,
             "id": "12",
@@ -279,6 +290,7 @@ const pokemonConfig = {
         "type": [types.BUG, types.FLYING],
         "baseStats": [60, 45, 50, 90, 80, 70],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/12.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/12.png",
         "abilities": {
             "14": 0.8,
             "110": 0.2
@@ -293,6 +305,7 @@ const pokemonConfig = {
         "type": [types.BUG, types.POISON],
         "baseStats": [40, 35, 30, 20, 20, 50],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/13.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/13.png",
         "evolution": [{
             "level": 7,
             "id": "14",
@@ -311,6 +324,7 @@ const pokemonConfig = {
         "type": [types.BUG, types.POISON],
         "baseStats": [45, 25, 50, 25, 25, 35],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/14.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/14.png",
         "evolution": [{
             "level": 10,
             "id": "15",
@@ -328,6 +342,7 @@ const pokemonConfig = {
         "type": [types.BUG, types.POISON],
         "baseStats": [65, 90, 40, 45, 80, 75],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/15.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/15.png",
         "abilities": {
             "68": 0.8,
             "97": 0.2
@@ -342,6 +357,7 @@ const pokemonConfig = {
         "type": [types.NORMAL, types.FLYING],
         "baseStats": [40, 45, 40, 35, 35, 56],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/16.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/16.png",
         "evolution": [{
             "level": 18,
             "id": "17",
@@ -361,6 +377,7 @@ const pokemonConfig = {
         "type": [types.NORMAL, types.FLYING],
         "baseStats": [63, 60, 55, 50, 50, 71],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/17.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/17.png",
         "evolution": [{
             "level": 36,
             "id": "18",
@@ -380,6 +397,7 @@ const pokemonConfig = {
         "type": [types.NORMAL, types.FLYING],
         "baseStats": [83, 80, 75, 70, 70, 101],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/18.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/18.png",
         "abilities": {
             "51": 0.45,
             "77": 0.45,
@@ -395,6 +413,7 @@ const pokemonConfig = {
         "type": [types.NORMAL],
         "baseStats": [30, 56, 35, 25, 35, 72],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/19.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/19.png",
         "evolution": [{
             "level": 20,
             "id": "20",
@@ -414,6 +433,7 @@ const pokemonConfig = {
         "type": [types.NORMAL],
         "baseStats": [55, 81, 60, 50, 70, 97],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/20.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/20.png",
         "abilities": {
             "50": 0.45,
             "62": 0.45,
@@ -429,6 +449,7 @@ const pokemonConfig = {
         "type": [types.ELECTRIC],
         "baseStats": [35, 55, 40, 50, 50, 90],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/25.png",
         "evolution": [{
             "level": 16,
             "id": "26",
@@ -447,6 +468,7 @@ const pokemonConfig = {
         "type": [types.ELECTRIC],
         "baseStats": [60, 90, 55, 90, 80, 110],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/26.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/26.png",
         "abilities": {
             "9": 0.8,
             "31": 0.2
@@ -461,6 +483,7 @@ const pokemonConfig = {
         "type": [types.FAIRY],
         "baseStats": [70, 45, 48, 60, 65, 35],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/35.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/35.png",
         "evolution": [{
             "level": 26,
             "id": "36",
@@ -480,6 +503,7 @@ const pokemonConfig = {
         "type": [types.FAIRY],
         "baseStats": [95, 70, 73, 95, 90, 60],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/36.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/36.png",
         "abilities": {
             "56": 0.45,
             "98": 0.45,
@@ -495,6 +519,7 @@ const pokemonConfig = {
         "type": [types.NORMAL, types.FAIRY],
         "baseStats": [115, 45, 20, 45, 25, 20],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/39.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/39.png",
         "evolution": [{
             "level": 26,
             "id": "40",
@@ -514,6 +539,7 @@ const pokemonConfig = {
         "type": [types.NORMAL, types.FAIRY],
         "baseStats": [140, 70, 45, 85, 50, 45],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/40.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/40.png",
         "abilities": {
             "56": 0.45,
             "172": 0.45,
@@ -529,6 +555,7 @@ const pokemonConfig = {
         "type": [types.POISON, types.FLYING],
         "baseStats": [40, 45, 35, 30, 40, 55],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/41.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/41.png",
         "evolution": [{
             "level": 22,
             "id": "42",
@@ -547,6 +574,7 @@ const pokemonConfig = {
         "type": [types.POISON, types.FLYING],
         "baseStats": [75, 80, 70, 65, 75, 90],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/42.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/42.png",
         "abilities": {
             "39": 0.8,
             "16": 0.2
@@ -561,6 +589,7 @@ const pokemonConfig = {
         "type": [types.GROUND],
         "baseStats": [10, 55, 25, 35, 45, 95],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/50.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/50.png",
         "evolution": [{
             "level": 26,
             "id": "51",
@@ -580,6 +609,7 @@ const pokemonConfig = {
         "type": [types.GROUND],
         "baseStats": [35, 100, 50, 50, 70, 120],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/51.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/51.png",
         "abilities": {
             "8": 0.45,
             "71": 0.45,
@@ -595,6 +625,7 @@ const pokemonConfig = {
         "type": [types.FIRE],
         "baseStats": [55, 70, 45, 70, 50, 60],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/58.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/58.png",
         "evolution": [{
             "level": 36,
             "id": "59",
@@ -614,6 +645,7 @@ const pokemonConfig = {
         "type": [types.FIRE],
         "baseStats": [90, 110, 80, 100, 80, 95],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/59.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/59.png",
         "abilities": {
             "22": 0.45,
             "18": 0.45,
@@ -629,6 +661,7 @@ const pokemonConfig = {
         "type": [types.PSYCHIC],
         "baseStats": [25, 20, 15, 105, 55, 90],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/63.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/63.png",
         "evolution": [{
             "level": 16,
             "id": "64",
@@ -648,6 +681,7 @@ const pokemonConfig = {
         "type": [types.PSYCHIC],
         "baseStats": [40, 35, 30, 120, 70, 105],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/64.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/64.png",
         "evolution": [{
             "level": 36,
             "id": "65",
@@ -667,6 +701,7 @@ const pokemonConfig = {
         "type": [types.PSYCHIC],
         "baseStats": [55, 50, 45, 135, 95, 120],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/65.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/65.png",
         "abilities": {
             "28": 0.45,
             "39": 0.45,
@@ -682,6 +717,7 @@ const pokemonConfig = {
         "type": [types.FIGHTING],
         "baseStats": [70, 80, 50, 35, 35, 35],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/66.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/66.png",
         "evolution": [{
             "level": 28,
             "id": "67",
@@ -701,6 +737,7 @@ const pokemonConfig = {
         "type": [types.FIGHTING],
         "baseStats": [80, 100, 70, 50, 60, 45],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/67.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/67.png",
         "evolution": [{
             "level": 42,
             "id": "68",
@@ -720,6 +757,7 @@ const pokemonConfig = {
         "type": [types.FIGHTING],
         "baseStats": [90, 130, 80, 65, 85, 55],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/68.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/68.png",
         "abilities": {
             "62": 0.45,
             "99": 0.45,
@@ -735,6 +773,7 @@ const pokemonConfig = {
         "type": [types.ROCK, types.GROUND],
         "baseStats": [40, 80, 100, 30, 30, 20],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/74.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/74.png",
         "evolution": [{
             "level": 25,
             "id": "75",
@@ -754,6 +793,7 @@ const pokemonConfig = {
         "type": [types.ROCK, types.GROUND],
         "baseStats": [55, 95, 115, 45, 45, 35],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/75.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/75.png",
         "evolution": [{
             "level": 40,
             "id": "76",
@@ -773,6 +813,7 @@ const pokemonConfig = {
         "type": [types.ROCK, types.GROUND],
         "baseStats": [80, 120, 130, 55, 65, 45],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/76.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/76.png",
         "abilities": {
             "69": 0.45,
             "5": 0.45,
@@ -788,6 +829,7 @@ const pokemonConfig = {
         "type": [types.ELECTRIC, types.STEEL],
         "baseStats": [25, 35, 70, 95, 55, 45],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/81.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/81.png",
         "evolution": [{
             "level": 30,
             "id": "82",
@@ -807,6 +849,7 @@ const pokemonConfig = {
         "type": [types.ELECTRIC, types.STEEL],
         "baseStats": [50, 60, 95, 120, 70, 70],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/82.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/82.png",
         "abilities": {
             "42": 0.45,
             "5": 0.45,
@@ -822,6 +865,7 @@ const pokemonConfig = {
         "type": [types.GHOST, types.POISON],
         "baseStats": [30, 35, 30, 100, 35, 80],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/92.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/92.png",
         "evolution": [{
             "level": 25,
             "id": "93",
@@ -839,6 +883,7 @@ const pokemonConfig = {
         "type": [types.GHOST, types.POISON],
         "baseStats": [45, 50, 45, 115, 55, 95],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/93.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/93.png",
         "evolution": [{
             "level": 40,
             "id": "94",
@@ -856,6 +901,7 @@ const pokemonConfig = {
         "type": [types.GHOST, types.POISON],
         "baseStats": [60, 65, 60, 130, 75, 110],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/94.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/94.png",
         "abilities": {
             "130": 1
         },
@@ -869,6 +915,7 @@ const pokemonConfig = {
         "type": [types.WATER],
         "baseStats": [20, 10, 55, 15, 20, 80],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/129.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/129.png",
         "evolution": [{
             "level": 20,
             "id": "130",
@@ -887,6 +934,7 @@ const pokemonConfig = {
         "type": [types.WATER, types.FLYING],
         "baseStats": [95, 125, 79, 60, 100, 81],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/130.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/130.png",
         "abilities": {
             "22": 0.8,
             "153": 0.2
@@ -901,6 +949,7 @@ const pokemonConfig = {
         "type": [types.WATER, types.ICE],
         "baseStats": [130, 85, 80, 85, 95, 60],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/131.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/131.png",
         "abilities": {
             "11": 0.45,
             "75": 0.45,
@@ -916,6 +965,7 @@ const pokemonConfig = {
         "type": [types.NORMAL],
         "baseStats": [55, 55, 50, 45, 65, 55],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/133.png",
         "evolution": [
             {
                 "level": 25,
@@ -945,6 +995,7 @@ const pokemonConfig = {
         "type": [types.WATER],
         "baseStats": [130, 65, 60, 110, 95, 65],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/134.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/134.png",
         "abilities": {
             "11": 0.8,
             "93": 0.2
@@ -959,6 +1010,7 @@ const pokemonConfig = {
         "type": [types.ELECTRIC],
         "baseStats": [65, 65, 60, 110, 95, 130],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/135.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/135.png",
         "abilities": {
             "10": 0.8,
             "95": 0.2
@@ -973,6 +1025,7 @@ const pokemonConfig = {
         "type": [types.FIRE],
         "baseStats": [65, 130, 60, 95, 110, 65],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/136.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/136.png",
         "abilities": {
             "18": 0.8,
             "62": 0.2
@@ -987,6 +1040,7 @@ const pokemonConfig = {
         "type": [types.NORMAL],
         "baseStats": [160, 110, 65, 65, 110, 30],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/143.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/143.png",
         "abilities": {
             "17": 0.45,
             "47": 0.45,
@@ -1002,6 +1056,7 @@ const pokemonConfig = {
         "type": [types.ICE, types.FLYING],
         "baseStats": [90, 85, 100, 95, 125, 85],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/144.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/144.png",
         "abilities": {
             "46": 0.8,
             "81": 0.2
@@ -1016,6 +1071,7 @@ const pokemonConfig = {
         "type": [types.ELECTRIC, types.FLYING],
         "baseStats": [90, 90, 85, 125, 90, 100],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/145.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/145.png",
         "abilities": {
             "46": 0.8,
             "9": 0.2
@@ -1030,6 +1086,7 @@ const pokemonConfig = {
         "type": [types.FIRE, types.FLYING],
         "baseStats": [90, 100, 90, 125, 85, 90],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/146.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/146.png",
         "abilities": {
             "46": 0.8,
             "49": 0.2
@@ -1044,6 +1101,7 @@ const pokemonConfig = {
         "type": [types.DRAGON],
         "baseStats": [41, 64, 45, 50, 50, 50],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/147.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/147.png",
         "evolution": [{
             "level": 30,
             "id": "148",
@@ -1062,6 +1120,7 @@ const pokemonConfig = {
         "type": [types.DRAGON],
         "baseStats": [61, 84, 65, 70, 70, 70],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/148.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/148.png",
         "evolution": [{
             "level": 55,
             "id": "149",
@@ -1080,6 +1139,7 @@ const pokemonConfig = {
         "type": [types.DRAGON, types.FLYING],
         "baseStats": [91, 134, 95, 100, 100, 80],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/149.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/149.png",
         "abilities": {
             "39": 0.8,
             "138": 0.2
@@ -1094,6 +1154,7 @@ const pokemonConfig = {
         "type": [types.PSYCHIC],
         "baseStats": [106, 110, 90, 154, 90, 130],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/150.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/150.png",
         "abilities": {
             "46": 0.8,
             "127": 0.2

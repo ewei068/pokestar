@@ -4,8 +4,10 @@
 
 * `/leaderboard`: See how you compare to other trainers! Choose different categories, and compare yourself globally or to your server members!
 * The `/list` command now supports filtering and sorting!
-* Added more informative Pokemon information!
+* Added more informative Pokemon information to `/info`!
+* Added more informative trainer information to `/trainerinfo`!
 * Updated database optimizations and querying.
+* Your new Pokemon may infrequently have a rare, different color palette...
 
 ## 0.3.0 (4/16) - The Pokedollar Update
 
