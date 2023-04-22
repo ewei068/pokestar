@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { commandConfig } = require('../config/commandConfig');
+const { commandCategoryConfig, commandConfig } = require('../config/commandConfig');
 const { stageNames, stageConfig } = require('../config/stageConfig');
 const { addExpAndMoney: addExpAndMoney } = require('../services/trainer');
 const { logger } = require('../log');
@@ -44,26 +44,26 @@ const buildSlashCommand = (commandConfig) => {
     return slashCommand;
 }
 
-for (const commandGroup in commandConfig) {
-    const commandGroupConfig = commandConfig[commandGroup];
-    for (const command in commandGroupConfig.commands) {
-        const commandConfig = commandGroupConfig.commands[command];
-        if (commandConfig.stages.includes(process.env.STAGE)) {
-            const filePath = path.join(__dirname, "../commands", commandGroupConfig.folder, commandConfig.execute);
+for (const commandGroup in commandCategoryConfig) {
+    const commandCategoryData = commandCategoryConfig[commandGroup];
+    for (const commandName of commandCategoryData.commands) {
+        const commandData = commandConfig[commandName];
+        if (commandData.stages.includes(process.env.STAGE)) {
+            const filePath = path.join(__dirname, "../commands", commandCategoryData.folder, commandData.execute);
             const commandExecute = require(filePath);
-            for (const alias of commandConfig.aliases) {
+            for (const alias of commandData.aliases) {
                 if (commandExecute.message) {
                     messageCommands[`${prefix}${alias}`] = commandExecute.message;
                 } else {
-                    logger.warn(`No message command for ${command}!`);
+                    logger.warn(`No message command for ${commandName}!`);
                     break;
                 }
-                commandLookup[`${prefix}${alias}`] = commandConfig;
+                commandLookup[`${prefix}${alias}`] = commandData;
             }
             if (commandExecute.slash) {
-                slashCommands[command] = commandExecute.slash;
+                slashCommands[commandName] = commandExecute.slash;
             } else {
-                logger.warn(`No slash command for ${command}!`);
+                logger.warn(`No slash command for ${commandName}!`);
             }
         }
     }

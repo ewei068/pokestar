@@ -17,9 +17,9 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
     }
 
     // build list options with page/sort/filter
-    if (filterValue == "true") {
+    if (filterValue == "true" || filterValue == "True") {
         filterValue = true;
-    } else if (filterValue == "false") {
+    } else if (filterValue == "false" || filterValue == "False") {
         filterValue = false;
     }
     const listOptions = {

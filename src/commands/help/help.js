@@ -1,5 +1,9 @@
-const { commandConfig } = require('../../config/commandConfig');
+const { buildIdConfigSelectRow } = require('../../components/idConfigSelectRow');
+const { commandConfig, commandCategoryConfig } = require('../../config/commandConfig');
+const { eventNames } = require('../../config/eventConfig');
 const { stageConfig } = require('../../config/stageConfig');
+const { buildHelpEmbed, buildHelpCommandEmbed } = require('../../embeds/helpEmbeds');
+const { setState, getState } = require('../../services/state');
 
 const prefix = stageConfig[process.env.STAGE].prefix;
 
@@ -8,52 +12,43 @@ const help = async (command) => {
 
     // if no args, send help message
     if (command == "") {
-        let msg = ">>> **Help**\n\n";
-        // parse command config for commands and categories
-        for (const category in commandConfig) {
-            msg += `\n** -- Category: ${category}** -- \n`;
-            msg += `${commandConfig[category].description}\n`;
-            for (const command in commandConfig[category].commands) {
-                // parse args
-                let argString = "";
-                for (const arg in commandConfig[category].commands[command].args) {
-                    const argConfig = commandConfig[category].commands[command].args[arg];
-                    argString += ` <${arg}${argConfig.optional ? "?" : ""}>`;
-                }
-
-                msg += `* \`${prefix}${command}${argString}\` - ${commandConfig[category].commands[command].description}\n`;
-            }
+        const stateId = setState({
+            messageStack: []
+        }, ttl=150);
+        const categorySelectRowData = {
+            stateId: stateId,
+            select: "category"
         }
-        return msg;
+        const categorySelectRow = buildIdConfigSelectRow(
+            Object.keys(commandCategoryConfig),
+            commandCategoryConfig,
+            "Select a category:",
+            categorySelectRowData,
+            eventNames.HELP_SELECT,
+            false
+        )
+        const send = {
+            embeds: [buildHelpEmbed()],
+            components: [categorySelectRow]
+        }
+        
+        getState(stateId).messageStack.push(send);
+        
+        return send;
     }
 
     // if args, send help message for specific command
     else {
         const providedCommand = command;
         // search through command config for alias
-        for (const category in commandConfig) {
-            for (const command in commandConfig[category].commands) {
-                if (commandConfig[category].commands[command].aliases.includes(providedCommand)) {
-                    // send help message
-                    let msg = `>>> **Help for ${command}**\n\n`;
-                    msg += `${commandConfig[category].commands[command].description}\n\n`;
-                    msg += `**Aliases:** ${commandConfig[category].commands[command].aliases.join(", ")}\n\n`;
-                    msg += `**Usage:** \`${prefix}${command} `;
-                    for (const arg in commandConfig[category].commands[command].args) {
-                        const argConfig = commandConfig[category].commands[command].args[arg];
-                        msg += `<${arg}${argConfig.optional ? "?" : ""}> `;
-                    }
-                    msg += "\`\n\n";
-                    msg += `**Arguments:**\n`;
-                    for (const arg in commandConfig[category].commands[command].args) {
-                        const argConfig = commandConfig[category].commands[command].args[arg];
-                        msg += `* \`${arg}\` - ${argConfig.type} ${argConfig.optional ? "(optional)" : ""}\n`;
-                    }
-                    return msg;
-                }
+        for (const commandName in commandConfig) {
+            const commandData = commandConfig[commandName];
+            if (commandData.aliases.includes(providedCommand) && commandData.stages.includes(process.env.STAGE)) {
+                // send help message
+                return { embeds: [buildHelpCommandEmbed(commandData.aliases[0])] };
             }
         }
-        return `>>> **Help for ${command}**\n\nCommand not found.`;
+        return `Command \`${command}\` not found.`;
     }
 }
 
@@ -71,11 +66,7 @@ const helpMessageCommand = async (message) => {
 }
 
 const helpSlashCommand = async (interaction) => {
-    const args = interaction.options._hoistedOptions;
-    let command = "";
-    if (args.length > 0) {
-        command = args[0].value;
-    }
+    const command = interaction.options.getString('command') || "";
 
     const helpMessage = await help(command);
     await interaction.reply(helpMessage);

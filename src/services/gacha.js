@@ -72,7 +72,7 @@ const usePokeball = async (trainer, pokeballId) => {
     if (getOrSetDefault(pokeballs, pokeballId, 0) > 0) {
         pokeballs[pokeballId]--;
     } else {
-        return { data: null, err: `No pokeballs of type ${backpackItemConfig[pokeballId].name}!` };
+        return { data: null, err: `No pokeballs of type ${backpackItemConfig[pokeballId].name}! Use the \`/pokemart\`, daily rewards, or level rewards to get more.` };
     }
 
     const rarity = drawDiscrete(pokeballChanceConfig[pokeballId], 1)[0];

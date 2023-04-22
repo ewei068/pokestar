@@ -1,6 +1,6 @@
 const { StringSelectMenuBuilder, ActionRowBuilder } = require("discord.js");
 
-const buildIdConfigSelectRow = (ids, config, placeholder, data, eventName) => {
+const buildIdConfigSelectRow = (ids, config, placeholder, data, eventName, showId=true) => {
     const menuId = {
         eventName: eventName,
         ...data,
@@ -12,7 +12,7 @@ const buildIdConfigSelectRow = (ids, config, placeholder, data, eventName) => {
         .addOptions(ids.map(id => {
             const data = config[id];
             return {
-                label: `${data.name} #${id}`,
+                label: `${data.name}${showId ? "#" + id.toString() : ""}`,
                 value: `${id}`,
             }
         }));

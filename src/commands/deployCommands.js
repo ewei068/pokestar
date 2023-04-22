@@ -1,5 +1,5 @@
 const { REST, Routes } = require('discord.js');
-const { commandConfig } = require('../config/commandConfig');
+const { commandConfig, commandCategoryConfig } = require('../config/commandConfig');
 const { buildSlashCommand } = require('../handlers/commandHandler');
 const { logger } = require('../log');
 
@@ -8,12 +8,12 @@ const token = process.env.DISCORD_TOKEN;
 const commands = [];
 
 // iterate over command config categories and commands
-for (const commandGroup in commandConfig) {
-    const commandGroupConfig = commandConfig[commandGroup];
-    for (const command in commandGroupConfig.commands) {
-        const commandConfig = commandGroupConfig.commands[command];
-        if (commandConfig.stages.includes(process.env.STAGE)) {
-            const slashCommand = buildSlashCommand(commandConfig);
+for (const commandCategory in commandCategoryConfig) {
+    const commandCategoryData = commandCategoryConfig[commandCategory];
+    for (const commandName of commandCategoryData.commands) {
+        const commandData = commandConfig[commandName];
+        if (commandData.stages.includes(process.env.STAGE)) {
+            const slashCommand = buildSlashCommand(commandData);
             commands.push(slashCommand.toJSON());
         }
     }
