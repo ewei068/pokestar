@@ -27,7 +27,7 @@ const shopItems = {
 const shopCategoryConfig = {
     [shopCategories.GACHA]: {
         "name": "Gacha",
-        "emoji": "🎾",
+        "emoji": "<:pokeball:1100296136931156008>",
         "description": "Used to catch Pokemon! Use the \`/help gacha\` command to learn more!",
         "items": [
             shopItems.RANDOM_POKEBALL,
@@ -53,7 +53,7 @@ const shopCategoryConfig = {
 const shopItemConfig = {
     [shopItems.RANDOM_POKEBALL]: {
         "name": "Random Pokeball",
-        "emoji": "🎾",
+        "emoji": "<:pokeball:1100296136931156008>",
         "description": "Gain a random Pokeball used to catch Pokemon! Use the \`/help gacha\` command to learn more! Limit 5 per day.",
         "category": shopCategories.GACHA,
         "price": [200],

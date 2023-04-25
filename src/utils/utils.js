@@ -26,6 +26,25 @@ const getWhitespace = (strings) => {
     return whitespace;
 }
 
+// line break string, first split into words, then
+// line break when sum of words is greater than maxLen
+const linebreakString = (str, maxLen = 20) => {
+    const words = str.split(" ");
+    let lines = [];
+    let line = "";
+    for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        if (line.length + word.length > maxLen) {
+            lines.push(line);
+            line = "";
+        }
+        line += word + " ";
+    }
+    lines.push(line);
+    // convert lines to string by join
+    return lines.join("\n");
+}
+
 const idFrom = (str) => {
     return new ObjectId(str);
 }
@@ -34,5 +53,6 @@ module.exports = {
     getOrSetDefault,
     getPBar,
     getWhitespace,
+    linebreakString,
     idFrom
 }

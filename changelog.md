@@ -1,5 +1,13 @@
 # Pokestar Changelog
 
+### 0.4.1 - QOL Patch
+
+Added a few helpful QOL features to make bot interaction easier!
+
+* Revamped the `/help` command! Now includes an interactive menu and more descriptive command info, usage, and arguments.
+* Added Pokemon and item emojis.
+* Buffed money gained from commands and interactions.
+
 ## 0.4.0 (4/18) - The Leaderboard Update
 
 How well do you stack up to your friends? Find out with leaderboards! In light of leaderboards, new stats are available for trainers and Pokemon.

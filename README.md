@@ -2,6 +2,13 @@
 
 ## Running
 
+### Create Bot
+
+* Create developer application
+* Enable Bot & ability to read client message content
+* Generate link with bot & command priviledges
+* Add bot to relevant servers & emoji servers
+
 ### Install homebrew & build tools
 
 * Purge mandb `sudo apt-get remove -y --purge man-db`
@@ -21,12 +28,6 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 * Add path to `~/.profile`
 * `git clone https://github.com/ewei068/pokestar.git`
 * `cd pokestar/src && npm install`
-
-### Create Bot
-
-* Create developer application
-* Enable Bot & ability to read client message content
-* Generate link with bot & command priviledges
 
 ### Environment
 
@@ -58,3 +59,8 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 
 * `tmux`
 * `node index.js`
+
+## Credits
+
+* Emojis: https://veekun.com/dex/downloads
+* Pokemon Data: PokeAPI

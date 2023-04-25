@@ -1,6 +1,6 @@
 const { rarities, rarityConfig, natureConfig, pokemonConfig, } = require('../config/pokemonConfig');
 const { EmbedBuilder, Client } = require('discord.js');
-const { getWhitespace, getPBar } = require('../utils/utils');
+const { getWhitespace, getPBar, linebreakString } = require('../utils/utils');
 const { getPokemonExpNeeded } = require('../utils/pokemonUtils');
 
 // pokemon: user's pokemon data
@@ -94,7 +94,7 @@ const buildPokemonEmbed = (trainer, pokemon) => {
     // TODO: display original owner?
     const embed = new EmbedBuilder();
     embed.setTitle(`${trainer.user.username}'s ${pokemon.name}`);
-    embed.setDescription(`**[Lv. ${pokemon.level}]** ${speciesData.name} (#${pokemon.speciesId})`);
+    embed.setDescription(`${pokemon.shiny ? "✨" : ""}**[Lv. ${pokemon.level}]** ${speciesData.name} (#${pokemon.speciesId})\n${linebreakString(speciesData.description, 50)}`);
     embed.setColor(rarityConfig[speciesData.rarity].color);
     embed.addFields(
         { name: "Type", value: typeString, inline: true },

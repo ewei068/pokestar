@@ -87,7 +87,7 @@ const rarities = {
 const pokemonConfig = {
     "1": {
         "name": "Bulbasaur",
-        "emoji": "1️⃣",
+        "emoji": "<:1_:1100279982556708956>",
         "description": "A strange seed was planted on its back at birth. The plant sprouts and grows with this Pokémon.",
         "type": [types.GRASS, types.POISON],
         "baseStats": [45, 49, 49, 65, 65, 45],
@@ -108,7 +108,7 @@ const pokemonConfig = {
     },
     "2": {
         "name": "Ivysaur",
-        "emoji": "2️⃣",
+        "emoji": "<:2_:1100279984922296501>",
         "description": "When the bulb on its back grows large, it appears to lose the ability to stand on its hind legs.",
         "type": [types.GRASS, types.POISON],
         "baseStats": [60, 62, 63, 80, 80, 60],
@@ -127,7 +127,7 @@ const pokemonConfig = {
     },
     "3": {
         "name": "Venusaur",
-        "emoji": "3️⃣",
+        "emoji": "<:3:1100279986012819536>",
         "description": "The plant blooms when it is absorbing solar energy. It stays on the move to seek sunlight.",
         "type": [types.GRASS, types.POISON],
         "baseStats": [80, 82, 83, 100, 100, 80],
@@ -142,7 +142,7 @@ const pokemonConfig = {
     },
     "4": {
         "name": "Charmander",
-        "emoji": "4️⃣",
+        "emoji": "<:4:1100279987057209364>",
         "description": "Obviously prefers hot places. When it rains, steam is said to spout from the tip of its tail.",
         "type": [types.FIRE],
         "baseStats": [39, 52, 43, 60, 50, 65],
@@ -161,7 +161,7 @@ const pokemonConfig = {
     },
     "5": {
         "name": "Charmeleon",
-        "emoji": "5️⃣",
+        "emoji": "<:5:1100279988156104774>",
         "description": "When it swings its burning tail, it elevates the temperature to unbearably high levels.",
         "type": [types.FIRE],
         "baseStats": [58, 64, 58, 80, 65, 80],
@@ -180,7 +180,7 @@ const pokemonConfig = {
     },
     "6": {
         "name": "Charizard",
-        "emoji": "6️⃣",
+        "emoji": "<:6:1100279989703819264>",
         "description": "Spits fire that is hot enough to melt boulders. Known to cause forest fires unintentionally.",
         "type": [types.FIRE, types.FLYING],
         "baseStats": [78, 84, 78, 109, 85, 100],
@@ -195,7 +195,7 @@ const pokemonConfig = {
     },
     "7": {
         "name": "Squirtle",
-        "emoji": "7️⃣",
+        "emoji": "<:7:1100279990806904882>",
         "description": "After birth, its back swells and hardens into a shell. Powerfully sprays foam from its mouth.",
         "type": [types.WATER],
         "baseStats": [44, 48, 65, 50, 64, 43],
@@ -214,7 +214,7 @@ const pokemonConfig = {
     },
     "8": {
         "name": "Wartortle",
-        "emoji": "8️⃣",
+        "emoji": "<:8:1100279991813558332>",
         "description": "Often hides in water to stalk unwary prey. For swimming fast, it moves its ears to maintain balance.",
         "type": [types.WATER],
         "baseStats": [59, 63, 80, 65, 80, 58],
@@ -233,7 +233,7 @@ const pokemonConfig = {
     },
     "9": {
         "name": "Blastoise",
-        "emoji": "9️⃣",
+        "emoji": "<:9_:1100280018468347974>",
         "description": "A brutal POKéMON with pressurized water jets on its shell. They are used for high speed tackles.",
         "type": [types.WATER],
         "baseStats": [79, 83, 100, 85, 105, 78],
@@ -248,7 +248,7 @@ const pokemonConfig = {
     },
     "10": {
         "name": "Caterpie",
-        "emoji": "🐛",
+        "emoji": "<:10:1100279993835196418>",
         "description": "Its short feet are tipped with suction pads that enable it to tirelessly climb slopes and walls.",
         "type": [types.BUG],
         "baseStats": [45, 30, 35, 20, 20, 45],
@@ -267,7 +267,7 @@ const pokemonConfig = {
     },
     "11": {
         "name": "Metapod",
-        "emoji": "🐛",
+        "emoji": "<:11:1100280981321162752>",
         "description": "This POKéMON is vulnerable to attack while its shell is soft, exposing its weak and tender body.",
         "type": [types.BUG],
         "baseStats": [50, 20, 55, 25, 25, 30],
@@ -285,7 +285,7 @@ const pokemonConfig = {
     },
     "12": {
         "name": "Butterfree",
-        "emoji": "🦋",
+        "emoji": "<:12:1100280983024058418>",
         "description": "In battle, it flaps its wings at high speed to release highly toxic dust into the air.",
         "type": [types.BUG, types.FLYING],
         "baseStats": [60, 45, 50, 90, 80, 70],
@@ -300,7 +300,7 @@ const pokemonConfig = {
     },
     "13": {
         "name": "Weedle",
-        "emoji": "🐛",
+        "emoji": "<:13:1100280983837737041>",
         "description": "Often found in forests, eating leaves. It has a sharp venomous stinger on its head.",
         "type": [types.BUG, types.POISON],
         "baseStats": [40, 35, 30, 20, 20, 50],
@@ -319,7 +319,7 @@ const pokemonConfig = {
     },
     "14": {
         "name": "Kakuna",
-        "emoji": "🐛",
+        "emoji": "<:14:1100280985343508520>",
         "description": "Almost incapable of moving, this POKéMON can only harden its shell to protect itself from predators.",
         "type": [types.BUG, types.POISON],
         "baseStats": [45, 25, 50, 25, 25, 35],
@@ -337,7 +337,7 @@ const pokemonConfig = {
     },
     "15": {
         "name": "Beedrill",
-        "emoji": "🐝",
+        "emoji": "<:15:1100280987197378610>",
         "description": "Flies at high speed and attacks using its large venomous stingers on its forelegs and tail.",
         "type": [types.BUG, types.POISON],
         "baseStats": [65, 90, 40, 45, 80, 75],
@@ -352,7 +352,7 @@ const pokemonConfig = {
     },
     "16" : {
         "name": "Pidgey",
-        "emoji": "🐦",
+        "emoji": "<:16:1100280988304674866>",
         "description": "Very docile. If attacked, it will often kick up sand to protect itself rather than fight back.",
         "type": [types.NORMAL, types.FLYING],
         "baseStats": [40, 45, 40, 35, 35, 56],
@@ -372,7 +372,7 @@ const pokemonConfig = {
     },
     "17" : {
         "name": "Pidgeotto",
-        "emoji": "🐦",
+        "emoji": "<:17:1100280989403578410>",
         "description": "This POKéMON is full of vitality. It constantly flies around its large territory in search of prey.",
         "type": [types.NORMAL, types.FLYING],
         "baseStats": [63, 60, 55, 50, 50, 71],
@@ -392,7 +392,7 @@ const pokemonConfig = {
     },
     "18" : {
         "name": "Pidgeot",
-        "emoji": "🐦",
+        "emoji": "<:18:1100280990225662025>",
         "description": "When hunting, it skims the surface of water at high speed to pick off unwary prey such as MAGIKARP.",
         "type": [types.NORMAL, types.FLYING],
         "baseStats": [83, 80, 75, 70, 70, 101],
@@ -408,7 +408,7 @@ const pokemonConfig = {
     },
     "19" : {
         "name": "Rattata",
-        "emoji": "🐀",
+        "emoji": "<:19:1100280992297664552>",
         "description": "Bites anything when it attacks. Small and very quick, it is a common sight in many places.",
         "type": [types.NORMAL],
         "baseStats": [30, 56, 35, 25, 35, 72],
@@ -428,7 +428,7 @@ const pokemonConfig = {
     },
     "20" : {
         "name": "Raticate",
-        "emoji": "🐀",
+        "emoji": "<:20:1100281012111552562>",
         "description": "It uses its whis­kers to maintain its balance. It apparently slows down if they are cut off.",
         "type": [types.NORMAL],
         "baseStats": [55, 81, 60, 50, 70, 97],
@@ -444,7 +444,7 @@ const pokemonConfig = {
     },
     "25" : {
         "name": "Pikachu",
-        "emoji": "⚡",
+        "emoji": "<:25:1100282072003772457>",
         "description": "When several of these POKéMON gather, their electricity could build and cause lightning storms.",
         "type": [types.ELECTRIC],
         "baseStats": [35, 55, 40, 50, 50, 90],
@@ -463,7 +463,7 @@ const pokemonConfig = {
     },
     "26" : {
         "name": "Raichu",
-        "emoji": "⚡",
+        "emoji": "<:26:1100282073509527672>",
         "description": "Its long tail serves as a ground to protect itself from its own high-voltage power.",
         "type": [types.ELECTRIC],
         "baseStats": [60, 90, 55, 90, 80, 110],
@@ -478,7 +478,7 @@ const pokemonConfig = {
     },
     "35": {
         "name": "Clefairy",
-        "emoji": "🧚",
+        "emoji": "<:35:1100282812810137600>",
         "description": "Its magical and cute appeal has many admirers. It is rare and found only in certain areas.",
         "type": [types.FAIRY],
         "baseStats": [70, 45, 48, 60, 65, 35],
@@ -498,7 +498,7 @@ const pokemonConfig = {
     },
     "36": {
         "name": "Clefable",
-        "emoji": "🧚",
+        "emoji": "<:36:1100282814701781032>",
         "description": "A timid fairy POKéMON that is rarely seen. It will run and hide the moment it senses people.",
         "type": [types.FAIRY],
         "baseStats": [95, 70, 73, 95, 90, 60],
@@ -514,7 +514,7 @@ const pokemonConfig = {
     },
     "39" : {
         "name": "Jigglypuff",
-        "emoji": "🎤",
+        "emoji": "<:39:1100282819411972116>",
         "description": "When its huge eyes light up, it sings a mysteriously soothing melody that lulls its enemies to sleep.",
         "type": [types.NORMAL, types.FAIRY],
         "baseStats": [115, 45, 20, 45, 25, 20],
@@ -534,7 +534,7 @@ const pokemonConfig = {
     },
     "40" : {
         "name": "Wigglytuff",
-        "emoji": "🎤",
+        "emoji": "<:40:1100282821093904484>",
         "description": "The body is soft and rubbery. When angered, it will suck in air and inflate itself to an enormous size.",
         "type": [types.NORMAL, types.FAIRY],
         "baseStats": [140, 70, 45, 85, 50, 45],
@@ -550,7 +550,7 @@ const pokemonConfig = {
     },
     "41" : {
         "name": "Zubat",
-        "emoji": "🦇",
+        "emoji": "<:41:1100283650458779648>",
         "description": "Forms colonies in perpetually dark places. Uses ultrasonic waves to identify and approach targets.",
         "type": [types.POISON, types.FLYING],
         "baseStats": [40, 45, 35, 30, 40, 55],
@@ -569,7 +569,7 @@ const pokemonConfig = {
     },
     "42" : {
         "name": "Golbat",
-        "emoji": "🦇",
+        "emoji": "<:42:1100283652367200276>",
         "description": "Once it strikes, it will not stop draining energy from the victim even if it gets too heavy to fly.",
         "type": [types.POISON, types.FLYING],
         "baseStats": [75, 80, 70, 65, 75, 90],
@@ -584,7 +584,7 @@ const pokemonConfig = {
     },
     "50": {
         "name": "Diglett",
-        "emoji": "🐁",
+        "emoji": "<:50:1100283701142757397>",
         "description": "Lives about one yard underground where it feeds on plant roots. It sometimes appears above ground.",
         "type": [types.GROUND],
         "baseStats": [10, 55, 25, 35, 45, 95],
@@ -604,7 +604,7 @@ const pokemonConfig = {
     },
     "51": {
         "name": "Dugtrio",
-        "emoji": "🐁",
+        "emoji": "<:51:1100285026106613840>",
         "description": "A team of DIGLETT triplets. It triggers huge earthquakes by burrowing 60 miles underground.",
         "type": [types.GROUND],
         "baseStats": [35, 100, 50, 50, 70, 120],
@@ -620,7 +620,7 @@ const pokemonConfig = {
     },
     "58": {
         "name": "Growlithe",
-        "emoji": "🐕",
+        "emoji": "<:58:1100285035745136650>",
         "description": "Very protective of its territory. It will bark and bite to repel intruders from its space.",
         "type": [types.FIRE],
         "baseStats": [55, 70, 45, 70, 50, 60],
@@ -640,7 +640,7 @@ const pokemonConfig = {
     },
     "59": {
         "name": "Arcanine",
-        "emoji": "🐕",
+        "emoji": "<:59:1100285037452202024>",
         "description": "A POKéMON that has been admired since the past for its beauty. It runs agilely as if on wings.",
         "type": [types.FIRE],
         "baseStats": [90, 110, 80, 100, 80, 95],
@@ -656,7 +656,7 @@ const pokemonConfig = {
     },
     "63": {
         "name": "Abra",
-        "emoji": "🧠",
+        "emoji": "<:63:1100286235064414279>",
         "description": "Using its ability to read minds, it will identify impending danger and TELEPORT to safety.",
         "type": [types.PSYCHIC],
         "baseStats": [25, 20, 15, 105, 55, 90],
@@ -676,7 +676,7 @@ const pokemonConfig = {
     },
     "64": {
         "name": "Kadabra",
-        "emoji": "🥄",
+        "emoji": "<:64:1100286236280754206>",
         "description": "It emits special alpha waves from its body that induce headaches just by being close by.",
         "type": [types.PSYCHIC],
         "baseStats": [40, 35, 30, 120, 70, 105],
@@ -696,7 +696,7 @@ const pokemonConfig = {
     },
     "65": {
         "name": "Alakazam",
-        "emoji": "🥄",
+        "emoji": "<:65:1100286237836836914>",
         "description": "Its brain can outperform a supercomputer. Its intelligence quotient is said to be 5,000.",
         "type": [types.PSYCHIC],
         "baseStats": [55, 50, 45, 135, 95, 120],
@@ -712,7 +712,7 @@ const pokemonConfig = {
     },
     "66": {
         "name": "Machop",
-        "emoji": "💪",
+        "emoji": "<:66:1100286238864449616>",
         "description": "Loves to build its muscles. It trains in all styles of martial arts to become even stronger.",
         "type": [types.FIGHTING],
         "baseStats": [70, 80, 50, 35, 35, 35],
@@ -732,7 +732,7 @@ const pokemonConfig = {
     },
     "67": {
         "name": "Machoke",
-        "emoji": "💪",
+        "emoji": "<:67:1100286239929815050>",
         "description": "Its muscular body is so powerful, it must wear a power save belt to be able to regulate its motions.",
         "type": [types.FIGHTING],
         "baseStats": [80, 100, 70, 50, 60, 45],
@@ -752,7 +752,7 @@ const pokemonConfig = {
     },
     "68": {
         "name": "Machamp",
-        "emoji": "💪",
+        "emoji": "<:68:1100286241376849941>",
         "description": "Using its heavy muscles, it throws powerful punches that can send the victim clear over the horizon.",
         "type": [types.FIGHTING],
         "baseStats": [90, 130, 80, 65, 85, 55],
@@ -768,7 +768,7 @@ const pokemonConfig = {
     },
     "74": {
         "name": "Geodude",
-        "emoji": "🪨",
+        "emoji": "<:74:1100287553464184933>",
         "description": "Found in fields and mountains. Mistaking them for boulders, people often step or trip on them.",
         "type": [types.ROCK, types.GROUND],
         "baseStats": [40, 80, 100, 30, 30, 20],
@@ -788,7 +788,7 @@ const pokemonConfig = {
     },
     "75": {
         "name": "Graveler",
-        "emoji": "🪨",
+        "emoji": "<:75:1100287555330654320>",
         "description": "Rolls down slopes to move. It rolls over any obstacle without slowing or changing its direction.",
         "type": [types.ROCK, types.GROUND],
         "baseStats": [55, 95, 115, 45, 45, 35],
@@ -808,7 +808,7 @@ const pokemonConfig = {
     },
     "76": {
         "name": "Golem",
-        "emoji": "🪨",
+        "emoji": "<:76:1100287556530212914>",
         "description": "Its boulder-like body is extremely hard. It can easily withstand dynamite blasts without damage.",
         "type": [types.ROCK, types.GROUND],
         "baseStats": [80, 120, 130, 55, 65, 45],
@@ -824,7 +824,7 @@ const pokemonConfig = {
     },
     "81": {
         "name": "Magnemite",
-        "emoji": "🧲",
+        "emoji": "<:81:1100288375589699594>",
         "description": "Uses anti-gravity to stay suspended. Appears without warning and uses THUNDER WAVE and similar moves.",
         "type": [types.ELECTRIC, types.STEEL],
         "baseStats": [25, 35, 70, 95, 55, 45],
@@ -844,7 +844,7 @@ const pokemonConfig = {
     },
     "82": {
         "name": "Magneton",
-        "emoji": "🧲",
+        "emoji": "<:82:1100288377275818068>",
         "description": "Formed by several MAGNEMITEs linked together. They frequently appear when sunspots flare up.",
         "type": [types.ELECTRIC, types.STEEL],
         "baseStats": [50, 60, 95, 120, 70, 70],
@@ -860,7 +860,7 @@ const pokemonConfig = {
     },
     "92": {
         "name": "Gastly",
-        "emoji": "👻",
+        "emoji": "<:92:1100288967909322783>",
         "description": "Almost invisible, this gaseous POKéMON cloaks the target and puts it to sleep without notice.",
         "type": [types.GHOST, types.POISON],
         "baseStats": [30, 35, 30, 100, 35, 80],
@@ -878,7 +878,7 @@ const pokemonConfig = {
     },
     "93": {
         "name": "Haunter",
-        "emoji": "👻",
+        "emoji": "<:93:1100288969935175750>",
         "description": "Because of its ability to slip through block walls, it is said to be from another dimension.",
         "type": [types.GHOST, types.POISON],
         "baseStats": [45, 50, 45, 115, 55, 95],
@@ -896,7 +896,7 @@ const pokemonConfig = {
     },
     "94": {
         "name": "Gengar",
-        "emoji": "👻",
+        "emoji": "<:94:1100288971067633765>",
         "description": "Under a full moon, this POKéMON likes to mimic the shadows of people and laugh at their fright.",
         "type": [types.GHOST, types.POISON],
         "baseStats": [60, 65, 60, 130, 75, 110],
@@ -910,7 +910,7 @@ const pokemonConfig = {
     },
     "129": {
         "name": "Magikarp",
-        "emoji": "🐟",
+        "emoji": "<:129:1100290837092515870>",
         "description": "In the distant past, it was somewhat stronger than the horribly weak descendants that exist today.",
         "type": [types.WATER],
         "baseStats": [20, 10, 55, 15, 20, 80],
@@ -929,7 +929,7 @@ const pokemonConfig = {
     },
     "130": {
         "name": "Gyarados",
-        "emoji": "🐉",
+        "emoji": "<:130:1100290880952348762>",
         "description": "Rarely seen in the wild. Huge and vicious, it is capable of destroying entire cities in a rage.",
         "type": [types.WATER, types.FLYING],
         "baseStats": [95, 125, 79, 60, 100, 81],
@@ -944,7 +944,7 @@ const pokemonConfig = {
     },
     "131": {
         "name": "Lapras",
-        "emoji": "🐋",
+        "emoji": "<:131:1100291594927742976>",
         "description": "A POKéMON that has been overhunted almost to extinction. It can ferry people across the water.",
         "type": [types.WATER, types.ICE],
         "baseStats": [130, 85, 80, 85, 95, 60],
@@ -960,7 +960,7 @@ const pokemonConfig = {
     },
     "133": {
         "name": "Eevee",
-        "emoji": "🐶",
+        "emoji": "<:133:1100291598564204634>",
         "description": "Its genetic code is irregular. It may mutate if it is exposed to radiation from element STONES.",
         "type": [types.NORMAL],
         "baseStats": [55, 55, 50, 45, 65, 55],
@@ -990,8 +990,8 @@ const pokemonConfig = {
     },
     "134": {
         "name": "Vaporeon",
-        "emoji": "🧜‍♀️",
-        "description": "Lives close to water. Its long tail is ridged with a fin which is often mistaken for a mermaid's.",
+        "emoji": "<:134:1100291601311486052>",
+        "description": "Hey guys, did you know that in terms of...",
         "type": [types.WATER],
         "baseStats": [130, 65, 60, 110, 95, 65],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/134.png",
@@ -1005,7 +1005,7 @@ const pokemonConfig = {
     },
     "135": {
         "name": "Jolteon",
-        "emoji": "⚡",
+        "emoji": "<:135:1100291602402005073>",
         "description": "It accumulates negative ions in the atmosphere to blast out 10000-volt lightning bolts.",
         "type": [types.ELECTRIC],
         "baseStats": [65, 65, 60, 110, 95, 130],
@@ -1020,7 +1020,7 @@ const pokemonConfig = {
     },
     "136": {
         "name": "Flareon",
-        "emoji": "🔥",
+        "emoji": "<:136:1100291603635126402>",
         "description": "When storing thermal energy in its body, its temperature could soar to over 1600 degrees.",
         "type": [types.FIRE],
         "baseStats": [65, 130, 60, 95, 110, 65],
@@ -1035,7 +1035,7 @@ const pokemonConfig = {
     },
     "143": {
         "name": "Snorlax",
-        "emoji": "😴",
+        "emoji": "<:143:1100294778157027328>",
         "description": "Very lazy. Just eats and sleeps. As its rotund bulk builds, it becomes steadily more slothful.",
         "type": [types.NORMAL],
         "baseStats": [160, 110, 65, 65, 110, 30],
@@ -1051,7 +1051,7 @@ const pokemonConfig = {
     },
     "144" : {
         "name": "Articuno",
-        "emoji": "🦅",
+        "emoji": "<:144:1100294779419504680>",
         "description": "A legendary bird POKéMON that is said to appear to doomed people who are lost in icy mountains.",
         "type": [types.ICE, types.FLYING],
         "baseStats": [90, 85, 100, 95, 125, 85],
@@ -1066,7 +1066,7 @@ const pokemonConfig = {
     },
     "145" : {
         "name": "Zapdos",
-        "emoji": "🦅",
+        "emoji": "<:145:1100294781789286500>",
         "description": "A legendary bird POKéMON that is said to appear from clouds while dropping enormous lightning bolts.",
         "type": [types.ELECTRIC, types.FLYING],
         "baseStats": [90, 90, 85, 125, 90, 100],
@@ -1081,7 +1081,7 @@ const pokemonConfig = {
     },
     "146" : {
         "name": "Moltres",
-        "emoji": "🦅",
+        "emoji": "<:146:1100294783097917490>",
         "description": "Known as the legendary bird of fire. Every flap of its wings creates a dazzling flash of flames.",
         "type": [types.FIRE, types.FLYING],
         "baseStats": [90, 100, 90, 125, 85, 90],
@@ -1096,7 +1096,7 @@ const pokemonConfig = {
     },
     "147": {
         "name": "Dratini", 
-        "emoji": "🐉",
+        "emoji": "<:147:1100294785367015434>",
         "description": "Long considered a mythical POKéMON until recently when a small colony was found living underwater.",
         "type": [types.DRAGON],
         "baseStats": [41, 64, 45, 50, 50, 50],
@@ -1115,7 +1115,7 @@ const pokemonConfig = {
     },
     "148": {
         "name": "Dragonair",
-        "emoji": "🐉",
+        "emoji": "<:148:1100294786474332230>",
         "description": "A mystical POKéMON that exudes a gentle aura. Has the ability to change climate conditions.",
         "type": [types.DRAGON],
         "baseStats": [61, 84, 65, 70, 70, 70],
@@ -1134,7 +1134,7 @@ const pokemonConfig = {
     },
     "149": {
         "name": "Dragonite",
-        "emoji": "🐉",
+        "emoji": "<:149:1100294787996860508>",
         "description": "An extremely rarely seen marine POKéMON. Its intelligence is said to match that of humans.",
         "type": [types.DRAGON, types.FLYING],
         "baseStats": [91, 134, 95, 100, 100, 80],
@@ -1149,7 +1149,7 @@ const pokemonConfig = {
     },
     "150" : {
         "name": "Mewtwo",
-        "emoji": "🐱",
+        "emoji": "<:150:1100294789867520052>",
         "description": "It was created by a scientist after years of horrific gene splicing and DNA engineering experiments.",
         "type": [types.PSYCHIC],
         "baseStats": [106, 110, 90, 154, 90, 130],

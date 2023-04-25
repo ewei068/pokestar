@@ -30,7 +30,7 @@ const eventConfig = {
         "name": "Pokemon Evolve Confirm",
         "execute": "pokemonEvolveConfirm.js",
         "exp": 25,
-        "money": 100,
+        "money": 200,
     },
     [eventNames.SHOP_SELECT]: {
         "name": "Shop Select",

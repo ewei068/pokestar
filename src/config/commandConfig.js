@@ -152,7 +152,8 @@ const commandConfig = {
             }
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-        "exp": 20
+        "exp": 20,
+        "money": 50
     },
     "list": {
         "name": "List",
@@ -203,7 +204,7 @@ const commandConfig = {
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 10,
-        "money": 10
+        "money": 25
     },
     "info": {
         "name": "Info",
@@ -221,7 +222,7 @@ const commandConfig = {
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 10,
-        "money": 10
+        "money": 25
     },
     "release": {
         "name": "Release",
@@ -265,7 +266,7 @@ const commandConfig = {
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 15,
-        "money": 25
+        "money": 50
     },
     "evolve": {
         "name": "Evolve",
