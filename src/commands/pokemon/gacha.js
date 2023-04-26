@@ -3,6 +3,12 @@ const { usePokeball } = require ('../../services/gacha') ;
 const { buildNewPokemonEmbed } = require('../../embeds/pokemonEmbeds');
 const { backpackItems } = require('../../config/backpackConfig');
 
+/**
+ * Attempts to use a pokeball to spin the gacha for a random pokemon.
+ * @param {Object} user User who initiated the command.
+ * @param {String} pokeball Pokeball to use.
+ * @returns An embed with the new pokemon, or an error message.
+ */
 const gacha = async (user, pokeball) => {
     // map input pokeball to pokeball item
     const map = { 
@@ -25,6 +31,7 @@ const gacha = async (user, pokeball) => {
         return { embed: null, err: gacha.err };
     }
 
+    // build Pokemon embed
     embed = buildNewPokemonEmbed(gacha.data.pokemon, gacha.data.speciesData);
     const send = {
         content: `${gacha.data.id}`,

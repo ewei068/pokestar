@@ -1,17 +1,18 @@
 const { buildIdConfigSelectRow } = require('../../components/idConfigSelectRow');
 const { commandConfig, commandCategoryConfig } = require('../../config/commandConfig');
 const { eventNames } = require('../../config/eventConfig');
-const { stageConfig } = require('../../config/stageConfig');
 const { buildHelpEmbed, buildHelpCommandEmbed } = require('../../embeds/helpEmbeds');
 const { setState, getState } = require('../../services/state');
 
-const prefix = stageConfig[process.env.STAGE].prefix;
-
+/**
+ * Parses the command config, returning an embed that allows users to browse for commands.
+ * @param {String} command If provided, returns an embed for the specified command.
+ * @returns Embed or message to send.
+ */
 const help = async (command) => {
-    // TODO: change to embed
-
     // if no args, send help message
     if (command == "") {
+        // build state & select row UI
         const stateId = setState({
             messageStack: []
         }, ttl=150);
@@ -27,11 +28,13 @@ const help = async (command) => {
             eventNames.HELP_SELECT,
             false
         )
+
         const send = {
             embeds: [buildHelpEmbed()],
             components: [categorySelectRow]
         }
         
+        // add state to stack for back button
         getState(stateId).messageStack.push(send);
         
         return send;
@@ -44,7 +47,7 @@ const help = async (command) => {
         for (const commandName in commandConfig) {
             const commandData = commandConfig[commandName];
             if (commandData.aliases.includes(providedCommand) && commandData.stages.includes(process.env.STAGE)) {
-                // send help message
+                // build specific command help message
                 return { embeds: [buildHelpCommandEmbed(commandData.aliases[0])] };
             }
         }
@@ -55,18 +58,14 @@ const help = async (command) => {
 const helpMessageCommand = async (message) => {
     const args = message.content.split(" ");
     args.shift();
-
-    let command = ""
-    if (args.length > 0) {
-        command = args[0];
-    }
+    const command = args[0] || ""; // default to nothing if no args
 
     const helpMessage = await help(command);
     await message.channel.send(helpMessage);
 }
 
 const helpSlashCommand = async (interaction) => {
-    const command = interaction.options.getString('command') || "";
+    const command = interaction.options.getString('command') || ""; // default to nothing if no args
 
     const helpMessage = await help(command);
     await interaction.reply(helpMessage);

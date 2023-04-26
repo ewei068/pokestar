@@ -2,6 +2,12 @@ const { getLeaderboard } = require('../../services/social');
 const { leaderboardConfig } = require('../../config/socialConfig');
 const { buildLeaderboardEmbed } = require('../../embeds/socialEmbeds');
 
+/**
+ * Displays a top 10 leaderboard for a given category and scope.
+ * @param {String} category Category to display leaderboard for.
+ * @param {String} scope Scope of leaderboard (global, social).
+ * @returns Embed with leaderboard.
+ */
 const leaderboard = async (category, scope) => {
     const categoryData = leaderboardConfig[category];
 
@@ -12,11 +18,13 @@ const leaderboard = async (category, scope) => {
         subset = members.map(member => member.user.id);
     }
 
+    // get leaderboard
     const leaderboard = await getLeaderboard(categoryData, subset);
     if (leaderboard.err) {
         return { embed: null, err: leaderboard.err };
     }
     
+    // build leaderboard embed
     const embed = buildLeaderboardEmbed(leaderboard.data, categoryData, scope);
 
     const send = {
@@ -29,7 +37,7 @@ const leaderboard = async (category, scope) => {
 const leaderboardMessageCommand = async (message) => {
     const args = message.content.split(' ');
     const category = args[1];
-    const scope = args[2] || 'global';
+    const scope = args[2] || 'global'; // default to global
     const { send, err } = await leaderboard(category, scope);
     if (err) {
         await message.channel.send(`${err}`);
@@ -41,7 +49,7 @@ const leaderboardMessageCommand = async (message) => {
 
 const leaderboardSlashCommand = async (interaction) => {
     const category = interaction.options.getString('category');
-    const scope = interaction.options.getString('scope') || 'global';
+    const scope = interaction.options.getString('scope') || 'global'; // default to global
     const { send, err } = await leaderboard(category, scope);
     if (err) {
         await interaction.reply(`${err}`);

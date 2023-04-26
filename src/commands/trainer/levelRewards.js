@@ -1,7 +1,13 @@
 const { getLevelRewards } = require("../../services/trainer");
 const { backpackItemConfig } = require("../../config/backpackConfig");
 
+/**
+ * Grants any unclaimed level rewards to the user.
+ * @param {Object} user User who initiated the command.
+ * @returns Embed with the user's level rewards, or an error message.
+ */
 const levelRewards = async (user) => {
+    // get level rewards
     const rewards = await getLevelRewards(user);
     if (rewards.err) {
         return { data: null, err: rewards.err };

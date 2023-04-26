@@ -1,6 +1,11 @@
 const { getTrainer } = require('../../services/trainer');
 const { buildLocationsEmbed } = require('../../embeds/trainerEmbeds');
 
+/**
+ * Displays the user's owned locations.
+ * @param {Object} user User who initiated the command.
+ * @returns Embed with user's owned locations.
+ */
 const locations = async (user) => {
     // get trainer
     const trainer = await getTrainer(user);

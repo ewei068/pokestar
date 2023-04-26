@@ -1,4 +1,4 @@
-const { getState } = require('../services/state');
+const { getState, deleteState } = require('../services/state');
 const { getTrainer } = require('../services/trainer');
 const { getPokemon, evolvePokemon } = require('../services/pokemon');
 const { buildPokemonEmbed } = require('../embeds/pokemonEmbeds');
@@ -46,6 +46,8 @@ const pokemonEvolveConfirm = async (interaction, data) => {
 
     // update embed to selected evolution
     const embed = buildPokemonEmbed(trainer.data, evolvedPokemon);
+
+    deleteState(data.stateId);
 
     await interaction.update({ 
         content: `Your ${originalName} evolved into a ${newName}!`,

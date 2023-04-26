@@ -6,17 +6,32 @@ const { eventNames } = require('../../config/eventConfig');
 const { setState } = require('../../services/state');
 const { buildPokemonSelectRow } = require('../../components/pokemonSelectRow');
 
+/**
+ * Fetches a list of a trainer's Pokemon, returning an embed with the list.
+ * Uses pagination, filtering, and sorting. Also allows users to select a Pokemon
+ * to copy its ID.
+ * @param {Object} user User who initiated the command.
+ * @param {Number} page Page of the list to display.
+ * @param {String} filterBy Field to filter by.
+ * @param {String} filterValue Value to filter for equality.
+ * @param {String} sortBy Field to sort by.
+ * @param {boolean} descending Sort in descending order.
+ * @returns Embed with list of Pokemon, and components for pagination/selection.
+ */
 const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
+    // validate page
     if (page < 1) {
         return { embeds: null, err: "Page must be greater than 0." };
     }
 
+    // get trainer
     const trainer = await getTrainer(user);
     if (trainer.err) {
         return { embed: null, err: trainer.err };
     }
 
     // build list options with page/sort/filter
+    // casts filterValue to boolean if possible
     if (filterValue == "true" || filterValue == "True") {
         filterValue = true;
     } else if (filterValue == "false" || filterValue == "False") {
@@ -25,6 +40,7 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
     const listOptions = {
         page: page,
     }
+    // ignore filter if filterBy is not provided
     if (filterBy != "none") {
         if (filterValue == null) {
             return { embed: null, err: "Filter value must be provided if filterBy is provided." };
@@ -34,6 +50,7 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
             [filterBy]: filterValue
         }
     }
+    // build sort
     if (sortBy) {
         listOptions.sort = {
             [sortBy]: descending ? -1 : 1,
@@ -41,13 +58,16 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
         }
     }
 
+    // get list of pokemon
     const pokemons = await listPokemons(trainer.data, listOptions);
     if (pokemons.err) {
         return { embed: null, err: pokemons.err };
     } 
 
+    // build list embed
     const embed = buildPokemonListEmbed(trainer.data, pokemons.data, page);
 
+    // build pagination row
     const stateId = setState({ 
         userId: user.id, 
         listOptions: listOptions,
@@ -58,6 +78,7 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
     }
     const scrollActionRow = buildScrollActionRow(page, pokemons.lastPage, scrollRowData, eventNames.POKEMON_SCROLL);
     
+    // build select row
     const selectRowData = {
         stateId: stateId,
     }

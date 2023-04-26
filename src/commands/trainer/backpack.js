@@ -1,11 +1,18 @@
 const { getTrainer } = require('../../services/trainer');
 const { buildBackpackEmbed } = require('../../embeds/trainerEmbeds');
 
+/**
+ * Displays the user's backpack items.
+ * @param {Object} user User who initiated the command.
+ * @returns Embed with user's backpack items.
+ */
 const backpack = async (user) => {
+    // get trainer
     const trainer = await getTrainer(user);
     if (trainer.err) {
         return { embed: null, err: trainer.err };
     }
+    // build backpack embed
     const embed = buildBackpackEmbed(trainer.data);
     return { embed: embed, err: null };
 }

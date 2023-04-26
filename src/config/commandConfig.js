@@ -65,7 +65,7 @@ const commandConfig = {
                 "variable": true
             }
         },
-        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD]
+        "stages": [stageNames.ALPHA, stageNames.BETA]
     },
     "help": {
         "name": "Help",

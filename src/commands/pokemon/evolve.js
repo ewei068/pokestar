@@ -6,6 +6,13 @@ const { buildIdConfigSelectRow: buildSpeciesSelectRow } = require('../../compone
 const { buildPokemonEmbed } = require('../../embeds/pokemonEmbeds');
 const { eventNames } = require('../../config/eventConfig');
 
+/**
+ * Looks up a Pokemon, returning an embed with the Pokemon's valid
+ * evolution options.
+ * @param {Object} user User who initiated the command.
+ * @param {String} pokemonId ID of the Pokemon to evolve.
+ * @returns Embed with Pokemon's valid evolution options.
+ */
 const evolve = async (user, pokemonId) => {
     // get trainer
     const trainer = await getTrainer(user);
@@ -22,12 +29,11 @@ const evolve = async (user, pokemonId) => {
     // get species data
     const speciesData = pokemonConfig[pokemon.data.speciesId];
 
+    // check if pokemon can evolve
     if (!speciesData.evolution) {
         return { send: null, err: `${pokemon.data.name} cannot evolve!` };
     }
-
     const evolutionSpeciesIds = [];
-    // check if pokemon can evolve
     for (const evolutionConfig of speciesData.evolution) {
         if (evolutionConfig.level) {
             if (pokemon.data.level >= evolutionConfig.level) {
@@ -42,6 +48,7 @@ const evolve = async (user, pokemonId) => {
         return { send: null, err: `${pokemon.data.name} cannot evolve yet!` };
     }
 
+    // build pokemon embed
     const embed = buildPokemonEmbed(trainer.data, pokemon.data);
 
     // build selection list of pokemon to evolve to

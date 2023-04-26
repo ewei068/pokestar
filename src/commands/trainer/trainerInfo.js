@@ -1,12 +1,19 @@
 const { getTrainerInfo } = require('../../services/trainer');
 const { buildTrainerEmbed } = require('../../embeds/trainerEmbeds');
 
+/**
+ * Displays the user's trainer info (trainer card).
+ * @param {Object} user User who initiated the command.
+ * @returns Embed with user's trainer info.
+ */
 const trainerInfo = async (user) => {
+    // get trainer info (contains extra info)
     const trainer = await getTrainerInfo(user);
     if (trainer.err) {
         return { embed: null, err: trainer.err };
     }
 
+    // build embed
     const embed = buildTrainerEmbed(trainer.data);
 
     const send = {

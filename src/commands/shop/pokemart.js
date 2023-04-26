@@ -5,14 +5,23 @@ const { buildIdConfigSelectRow } = require('../../components/idConfigSelectRow')
 const { shopCategoryConfig } = require('../../config/shopConfig');
 const { eventNames } = require('../../config/eventConfig');
 
+/**
+ * Parses the shop config, returning an interactive embed for the user to
+ * browse the shop.
+ * @param {String} user User who initiated the command.
+ * @returns Embed with shop options.
+ */
 const pokemart = async (user) => {
+    // get trainer
     const trainer = await getTrainer(user);
     if (trainer.err) {
         return { embed: null, err: trainer.err };
     }
     
+    // build shop embed
     const embed = buildShopEmbed(trainer.data);
 
+    // build selection list of shop categories
     const stateId = setState({
         userId: user.id,
         trainer: trainer.data,
@@ -35,6 +44,7 @@ const pokemart = async (user) => {
         components: [categorySelectRow]
     }
 
+    // add message to stack for back button
     getState(stateId).messageStack.push(send);
     return { send: send, err: null };
 }

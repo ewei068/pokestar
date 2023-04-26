@@ -1,6 +1,6 @@
 # Pokestar Changelog
 
-### 0.4.1 - QOL Patch
+### 0.4.1 (4/24) - QOL Patch
 
 Added a few helpful QOL features to make bot interaction easier!
 

@@ -3,7 +3,15 @@ const { getTrainer } = require("../../services/trainer");
 const { locations } = require("../../config/locationConfig");
 const { statConfig } = require("../../config/pokemonConfig");
 
+/**
+ * Trains a Pokemon at a given locations, boosting its EXP and EVs.
+ * @param {Object} user User who initiated the command.
+ * @param {String} pokemonId ID of the Pokemon to train.
+ * @param {String} location Location to train at.
+ * @returns Message indicating the Pokemon's gained EXP and EVs.
+ */
 const train = async (user, pokemonId, location) => {
+    // get location id
     const map = {
         "home": locations.HOME,
         "restaurant": locations.RESTAURANT,
@@ -28,13 +36,14 @@ const train = async (user, pokemonId, location) => {
     }
     const oldLevel = pokemon.data.level;
 
-    // add exp
+    // add exp & EVs
     const res = await trainPokemon(trainer.data, pokemon.data, locationId);
     if (res.err) {
         return { data: null, err: res.err };
     }
     const { exp, evs } = res.data;
 
+    // build message
     let message = `Trained ${pokemon.data.name} and gained ${exp} exp.`;
     if (evs[0] > 0 || evs[1] > 0 || evs[2] > 0 || evs[3] > 0 || evs[4] > 0 || evs[5] > 0) {
         message += ` ${pokemon.data.name} gained the following EVs:`;
@@ -50,6 +59,7 @@ const train = async (user, pokemonId, location) => {
             message += ".";
         }
     }
+    // check if pokemon leveled up
     if (pokemon.data.level > oldLevel) {
         message += ` ${pokemon.data.name} leveled up to level ${pokemon.data.level}!`;
     }
@@ -60,7 +70,7 @@ const train = async (user, pokemonId, location) => {
 const trainMessageCommand = async (message) => {
     const args = message.content.split(" ");
     const pokemonId = args[1];
-    let location = args.length > 2 ? args[2] : "home";
+    let location = args.length > 2 ? args[2] : "home"; // default to home
     const { data, err } = await train(message.author, pokemonId, location);
     if (err) {
         await message.channel.send(`${err}`);
@@ -72,7 +82,7 @@ const trainMessageCommand = async (message) => {
 
 const trainSlashCommand = async (interaction) => {
     const pokemonId = interaction.options.getString('pokemonid');
-    const location = interaction.options.getString('location');
+    const location = interaction.options.getString('location'); // default to home
     const { data, err } = await train(interaction.user, pokemonId, location || "home");
     if (err) {
         await interaction.reply(`${err}`);

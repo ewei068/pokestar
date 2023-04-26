@@ -122,9 +122,10 @@ Rate limiting users and/or servers: TBD.
 * Args:
 	* `bannerId`
 	* `ball`
-* Functionality: Attempts to use the specified `ball` to roll on the provided `bannerId`. Errors out if `bannerId` or `ball` doesn't exist, or if user doesn't have enough balls. If successful, a Pokemon will be drawn from the banner. This Pokemon will be level 1, 0 EVs, random IVs, random ability, random nature, base moveset. The Pokemon will also have a randomly generated UUID.
+* Functionality: Attempts to use the specified `ball` to roll on the provided `bannerId`. Errors out if `bannerId` or `ball` doesn't exist, or if user doesn't have enough balls. If successful, a Pokemon will be drawn from the banner. This Pokemon will be level 1, 0 EVs, random IVs, random ability, random nature, base moveset. The Pokemon will also have a randomly generated UUID. Right now, banner is not implemented.
 
 **Banners**
+
 List banners.
 
 **List**
@@ -132,36 +133,44 @@ List banners.
 * Aliases: `list`, `listpokemon`
 * Args:
 	* OPTIONAL `page`
-	* OPTIONAL `filterfield`
+	* OPTIONAL `filterby`
 	* OPTIONAL `filtervalue`
-	* OPTIONAL `sort`
-	* OPTIONAL `sortOrder`
-* Functionality: Lists out up to 25 Pokemon owned by this player. This list will only show Pokemon ID, name, level, and type. Use `page`, `filter`, and `sort` to display a different subset of Pokemon. Filter will filter a `filterfield` with equality to `filtervalue`. Right now, planned filters include shiny, name, species, and rarity. `sort` decides which field to sort on. Right now, planned fields include name, individual stats, individual ivs, iv total, level, and combat power.
+	* OPTIONAL `sortby`
+	* OPTIONAL `descending`
+* Functionality: Lists out up to 10 Pokemon owned by this player. This list will only show Pokemon ID, name, level, and type. Use provided arguments to display a different subset of Pokemon. Filter will filter a `filterby` with equality to `filtervalue`. Right now, planned filters include shiny, name, species, and rarity. `sortby` decides which field to sort on. Right now, fields include name, iv total, level, and combat power.
 
 **Info**
 
 * Aliases: `info`, `i`, `pokemoninfo`, `pi`
 * Args:
-	* `id`
-* Functionality: Uses the user ID and provided Pokemon `id` to look up the Pokemon. If it exists, displays all the information about the Pokemon.
+	* `pokemonid`
+* Functionality: Uses the user ID and provided Pokemon `pokemonid` to look up the Pokemon. If it exists, displays all the information about the Pokemon.
 
 **Train**
 
 * Aliases: `train`, `t`
 * Args:
-	* `id`
+	* `pokemonid`
 	* OPTIONAL `location`
-* Functionality: Trains the Pokemon at `id` by granting it EXP, and leveling up if appropriate. If `location` is provided, will train it at a location (different locations give different EXP and EVs).
+* Functionality: Trains the Pokemon at `pokemonid` by granting it EXP, and leveling up if appropriate. If `location` is provided, will train it at a location (different locations give different EXP and EVs).
 
 **Evolve**
 
 * Aliases: `evolve`
 * Args:
-	* `id`
-* Functionality: If the Pokemon at `id` can evolve, lists all elligible evolutions for that Pokemon. The user can then select that Pokemon and confirm its evolution. To evolve, the Pokemon's ID, abilities, moves, and stats are changed. If the name is the default species name, then the name is changed too.
+	* `pokemonid`
+* Functionality: If the Pokemon at `pokemonid` can evolve, lists all elligible evolutions for that Pokemon. The user can then select that Pokemon and confirm its evolution. To evolve, the Pokemon's ID, abilities, moves, and stats are changed. If the name is the default species name, then the name is changed too.
+
+**Release**
+
+* Aliases: `release`
+* Args:
+	* `pokemonids`
+* Functionality: Releases up to 10 Pokemon specified in `pokemonids`. First sends a confirmation message about the release. If confirmed, releases said Pokemon and grants the user Pokedollars equal to the combined worth of the released Pokemon.
 
 ### Trainer
 
+* Level: Players can gain EXP via certain commands and component interactions, allowing them to level up. Higher levels allow users to train Pokemon faster and claim valuable level rewards.
 * Money: How much money a user has. Money will be gained from the following planned methods:
 	* Commands & interactions will give a small amount of money
 	* Level rewards
@@ -175,28 +184,41 @@ List banners.
 		* Masterball: 0/0/90/10
 	* Held items: TBD
 	* Evolution items: TBD
+* Locations: Currently locations can be purchased at the Pokemart and grant bonus EXP or EVs during training.
 
 **Trainer Info**
 
-* Aliases: `trainerinfo`, `trainer`, `user`, `userinfo`
-* Args: `user` (discord handle) 
+* Aliases: `trainerinfo`, `trainer`, `ti`, `user`, `userinfo`
+* Args: OPTIONAL `user` (discord handle) 
 * Functionality: Displays the users info if no args. If `user` provided, displays info for the specified user (don't implement yet). 
 
 **Daily Rewards**
 
-* Aliases: `daily`, `dailyrewards`
+* Aliases: `daily`, `d`
 * Args: none
-* Functionality: Draws the daily rewards for the player, if the player hasn't drawn the daily rewards yet. The balls are displayed to the player and stored in their backpack. For now, the daily rewards are 3 random Pokeballs with probability:
+* Functionality: Draws the daily rewards for the player, if the player hasn't drawn the daily rewards yet. Gives 300 Pokedollars and 3 random Pokeballs. The balls are displayed to the player and stored in their backpack. For now, the daily rewards are 3 random Pokeballs with probability:
 	* Pokeball: 70%
 	* Greatball: 25%
 	* Ultraball: 4%
 	* Masterball: 1%
+
+**Level Rewards**
+
+* Aliases: `levelrewards`
+* Args: none
+* Functionality: Claims any unclaimed level rewards, including money, items, and Pokeballs. A list of claimed level rewards will be stored for the user in the database. Whenever level rewards change, a script will be ran to reset the level rewards, allowing users to re-claim them.
 
 **Backpack**
 
 * Aliases: `backpack`, `bp`
 * Args: none
 * Functionality: Lists all the items in the user's backpack by category and their quantity.
+
+**Locations**
+
+* Aliases: `locations`
+* Args: none
+* Functionality: Lists all trainer owned locations and their levels.
 
 ### Shop
 
@@ -210,7 +232,7 @@ List banners.
 
 * Aliases: `buy`, `b`
 * Args:
-	* `itemId`
+	* `itemid`
 	* OPTIONAL `quantity`
 * Functionality: Attempts to buy an item from the shop. Quantity defaults to 1. First, checks last purchase date. If it's a new day, resets daily item purchase limits. Then, checks to see if user has enough money to purchase items at said quanity. If able to purchase, special logic to enact purchase is executed depending on the item. Finally, updates daily item purchase limit & last purchase date.
 
@@ -222,7 +244,7 @@ List banners.
 * Args:
 	* `category`
 	* OPTIONAL `scope`
-* Queries a joined view of users and user Pokemon to show the top ten users or Pokemon. The `category` argument provides the metric that is being measured. Current planned leaderboards include: user level, user num shinies, user net Pokemon worth, Pokemon combat power. The `scope` parameter allows users to specify server or overall rankings, defaulting to overall. If friends can be easily implemented, then that will be another option.
+* Queries a joined view of users and user Pokemon to show the top ten users or Pokemon. The `category` argument provides the metric that is being measured. Current planned leaderboards include: user level, user num shinies, user net Pokemon worth, user total Pokemon combat power. The `scope` parameter allows users to specify server or overall rankings, defaulting to overall. If friends can be easily implemented, then that will be another option (doesn't seem likely right now).
 
 ## Data
 

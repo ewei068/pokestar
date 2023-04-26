@@ -2,12 +2,20 @@ const { drawDaily } = require('../../services/gacha');
 const { getTrainer } = require('../../services/trainer');
 const { backpackCategories, backpackItemConfig } = require('../../config/backpackConfig');
 
+/**
+ * Attempts to grant the user their daily rewards. If the user has 
+ * already claimed their daily rewards, returns an error message.
+ * @param {Object} user User who initiated the command.
+ * @returns Embed with the user's daily rewards, or an error message.
+ */
 const daily = async (user) => {
+    // get trainer
     const trainer = await getTrainer(user);
     if (trainer.err) {
         return { data: null, err: trainer.err };
     }
 
+    // draw daily rewards
     const rewards = await drawDaily(trainer.data);
     const { money, backpack } = rewards.data;
     if (rewards.err) {

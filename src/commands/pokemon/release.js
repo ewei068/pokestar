@@ -8,16 +8,25 @@ const { eventNames } = require('../../config/eventConfig');
 const { setState } = require('../../services/state');
 const { calculateWorth } = require('../../utils/pokemonUtils');
 
+/**
+ * Fetches a list of a trainer's Pokemon, with a confirmation prompt to release.
+ * @param {Object} user User who initiated the command. 
+ * @param {Array} pokemonIds Array of Pokemon IDs to release.
+ * @returns Embed with list of Pokemon, and components for confirmation.
+ */
 const release = async (user, pokemonIds) => {
+    // check if pokemonIds has too many ids
     if (pokemonIds.length > MAX_RELEASE) {
         return { err: `You can only release up to ${MAX_RELEASE} pokemons at a time!` };
     }
 
+    // get trainer
     const trainer = await getTrainer(user);
     if (trainer.err) {
         return { err: trainer.err };
     }
 
+    // get pokemon to release
     const toRelease = await listPokemons(
         trainer.data, 
         { page: 1, filter: { _id: { $in: pokemonIds.map(idFrom)} } }
@@ -28,10 +37,13 @@ const release = async (user, pokemonIds) => {
         return { err: `You don't have all the pokemon you want to release!` };
     }
 
+    // calculate total worth of pokemon
     const totalWorth = calculateWorth(toRelease.data, null);
 
+    // build list embed
     const embed = buildPokemonListEmbed(trainer.data, toRelease.data, 1);
 
+    // build confirmation prompt
     const stateId = setState({ userId: user.id, pokemonIds: pokemonIds }, ttl=150);
     const releaseData = {
         stateId: stateId,

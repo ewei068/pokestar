@@ -1,3 +1,8 @@
+/**
+ * This file is used to deploy the slash commands to the discord server.
+ * Should be used sparingly after testing.
+ */
+
 const { REST, Routes } = require('discord.js');
 const { commandConfig, commandCategoryConfig } = require('../config/commandConfig');
 const { buildSlashCommand } = require('../handlers/commandHandler');
