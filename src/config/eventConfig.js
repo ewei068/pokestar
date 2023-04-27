@@ -44,6 +44,10 @@ const eventConfig = {
         "name": "Back",
         "execute": "back.js",
     },
+    "test": {
+        "name": "Test",
+        "execute": "testEvent.js",
+    },
 };
 
 module.exports = {

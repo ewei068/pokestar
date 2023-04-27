@@ -23,6 +23,12 @@ const commandCategoryConfig = {
         "folder": "shop",
         "commands": ["pokemart", "buy"]
     },
+    "battle": {
+        "name": "Battle",
+        "description": "Battle commands",
+        "folder": "battle",
+        "commands": ["partyadd", "partyremove"]
+    },
     "social": {
         "name": "Social",
         "description": "Social commands",
@@ -39,7 +45,7 @@ const commandCategoryConfig = {
         "name": "Heartbeat",
         "description": "Basic heartbeat commands; intended for testing",
         "folder": "heartbeat",
-        "commands": ["ping", "echo"]
+        "commands": ["ping", "echo", "test"]
     },
 }
 
@@ -343,6 +349,66 @@ const commandConfig = {
             },
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    },
+    "partyadd": {
+        "name": "Party Add",
+        "aliases": ["partyadd", "pa"],
+        "description": "Add a Pokemon to your party",
+        "longDescription": "Add a Pokemon to your party at a specified position. If the Pokemon is in the party already, swaps with another Pokemon. If the position is full, removes the Pokemon at that position first.",
+        "execute": "partyadd.js",
+        "args": {
+            "pokemonid": {
+                "type": "string",
+                "description": "unique ID for Pokemon to add to party",
+                "optional": false,
+                "variable": false
+            },
+            "position": {
+                "type": "int",
+                "description": "position to add Pokemon to",
+                "optional": false,
+                "variable": false
+            }
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10
+    },
+    "partyremove": {
+        "name": "Party Remove",
+        "aliases": ["partyremove", "pr"],
+        "description": "Remove a Pokemon from your party",
+        "longDescription": `Remove Pokemon(s) from your party depending on \`option\`:
+        If \`option\` is a number, attempts to remove a Pokemon at that position.
+        If \`option\` is a Pokemon ID, attempts to remove Pokemon with that ID.
+        If \`option\` is ALL, removes all Pokemon from your party.`,
+        "execute": "partyremove.js",
+        "args": {
+            "option": {
+                "type": "string",
+                "description": "option to remove Pokemon by",
+                "optional": false,
+                "variable": false,
+            },
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10
+    },
+    "test": {
+        "name": "Test",
+        "aliases": ["test"],
+        "description": "Test command",
+        "execute": "test.js",
+        "args": {
+            "arg1": {
+                "type": "string",
+                "description": "arg1",
+                "optional": true,
+                "variable": true
+            },
+        },
+        "stages": [stageNames.ALPHA],
     },
 }
 

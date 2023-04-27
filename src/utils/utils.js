@@ -49,10 +49,40 @@ const idFrom = (str) => {
     return new ObjectId(str);
 }
 
+const matrixLoc = (matrix, index) => {
+    const row = Math.floor(index / matrix[0].length);
+    const col = index % matrix[0].length;
+    return matrix[row][col];
+}
+
+const matrixIndex = (matrix, index) => {
+    const row = Math.floor(index / matrix[0].length);
+    const col = index % matrix[0].length;
+    return [row, col];
+}
+
+const matrixIndexOf = (matrix, value) => {
+    for (let i = 0; i < matrix.length; i++) {
+        const row = matrix[i];
+        for (let j = 0; j < row.length; j++) {
+            const col = row[j];
+            if (col === value) {
+                return [i, j];
+            }
+        }
+    }
+    return null;
+}
+
+
+
 module.exports = {
     getOrSetDefault,
     getPBar,
     getWhitespace,
     linebreakString,
-    idFrom
+    idFrom,
+    matrixIndex,
+    matrixLoc,
+    matrixIndexOf
 }

@@ -1,5 +1,7 @@
 const { getTrainerInfo } = require('../../services/trainer');
 const { buildTrainerEmbed } = require('../../embeds/trainerEmbeds');
+const { getPartyPokemons } = require('../../services/party');
+const { buildPartyEmbed } = require('../../embeds/battleEmbeds');
 
 /**
  * Displays the user's trainer info (trainer card).
@@ -13,11 +15,19 @@ const trainerInfo = async (user) => {
         return { embed: null, err: trainer.err };
     }
 
-    // build embed
-    const embed = buildTrainerEmbed(trainer.data);
+    // get party info
+    // TODO: should move to another command?
+    const partyPokemons = await getPartyPokemons(trainer.data);
+    if (partyPokemons.err) {
+        return { embed: null, err: partyPokemons.err };
+    }
+
+    // build embeds
+    const trainerEmbed = buildTrainerEmbed(trainer.data);
+    const partyEmbed = buildPartyEmbed(trainer.data, partyPokemons.data);
 
     const send = {
-        embeds: [embed]
+        embeds: [trainerEmbed, partyEmbed]
     }
     return { send: send, err: null };
 }

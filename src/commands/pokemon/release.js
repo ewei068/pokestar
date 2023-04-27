@@ -37,6 +37,13 @@ const release = async (user, pokemonIds) => {
         return { err: `You don't have all the pokemon you want to release!` };
     }
 
+    // see if any pokemon are in a team
+    for (const pokemon of toRelease.data) {
+        if (trainer.data.party.pokemonIds.includes(pokemon._id.toString())) {
+            return { err: `You can't release ${pokemon.name} because it's in your party!` };
+        }
+    }
+
     // calculate total worth of pokemon
     const totalWorth = calculateWorth(toRelease.data, null);
 

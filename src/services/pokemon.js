@@ -11,11 +11,12 @@ const { locations, locationConfig } = require("../config/locationConfig");
 const PAGE_SIZE = 10;
 
 const listPokemons = async (trainer, listOptions) => {
-    // listOptions: { page, pageSize, filter, sort }
+    // listOptions: { page, pageSize, filter, sort, allowNone }
     const filter = { userId: trainer.userId, ...listOptions.filter};
     const pageSize = listOptions.pageSize || PAGE_SIZE;
     const page = listOptions.page || 1;
     const sort = listOptions.sort || null;
+    const allowNone = listOptions.allowNone || false;
 
     // get pokemon with pagination
     try {
@@ -26,7 +27,7 @@ const listPokemons = async (trainer, listOptions) => {
             .setSort(sort);
 
         const res = await query.find();
-        if (res.length === 0) {
+        if (res.length === 0 && !allowNone) {
             return { data: null, err: "No Pokemon found. Use `/gacha` to catch some Pokemon!" };
         } else if (res.length > pageSize) {
             res.pop();

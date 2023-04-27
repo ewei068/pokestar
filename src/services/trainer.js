@@ -279,5 +279,5 @@ module.exports = {
     getTrainerInfo,
     addExpAndMoneyTrainer,
     addExpAndMoney: addExpAndMoney,
-    getLevelRewards
+    getLevelRewards,
 }

@@ -42,11 +42,19 @@ const pokemonRelease = async (interaction, data) => {
         return { err: toRelease.err };
     } else if (toRelease.data.length !== state.pokemonIds.length) {
         await interaction.update({ 
-            content: "One or more of the pokemon you selected to release are no longer in your party.",
+            content: "One or more of the pokemon you selected to release are no longer in your box.",
             components: []
         });
         deleteState(data.stateId);
-        return { err: "One or more of the pokemon you selected to release are no longer in your party." };
+        return { err: "One or more of the pokemon you selected to release are no longer in your box." };
+    }
+
+    // see if any pokemon are in a team
+    for (const pokemon of toRelease.data) {
+        if (trainer.data.party.pokemonIds.includes(pokemon._id.toString())) {
+            deleteState(data.stateId);
+            return { err: `You can't release ${pokemon.name} because it's in your party!` };
+        }
     }
 
     const releaseResult = await releasePokemons(trainer.data, state.pokemonIds);
