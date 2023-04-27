@@ -82,6 +82,8 @@ The goal of this bot is to be a fresh, unique take on other Discord Bots, Pokemo
 ## Security
 Rate limiting users and/or servers: TBD.
 
+Suspending users: TBD.
+
 ## Detailed Implementation
 
 ### General Implementation
@@ -246,6 +248,127 @@ List banners.
 	* OPTIONAL `scope`
 * Queries a joined view of users and user Pokemon to show the top ten users or Pokemon. The `category` argument provides the metric that is being measured. Current planned leaderboards include: user level, user num shinies, user net Pokemon worth, user total Pokemon combat power. The `scope` parameter allows users to specify server or overall rankings, defaulting to overall. If friends can be easily implemented, then that will be another option (doesn't seem likely right now).
 
+### Battle
+
+**Format:** Battles are planned to be a turn-based 1v1 (PvP or PvE) format where 6 Pokemon on each side face off *at the same time*. This is different to typical Pokemon battles where only one Pokemon faces off at a time, allowing Pokemon to be swapped in. Because of this format, the battles will be balanced around AoE attacks, support & synergy among Pokemon, and modified move usage. Once all Pokemon on one side are knocked out, a winner is decided.
+
+**Turns:** A Pokemon's speed determines how fast their combat readiness fills up. Once at 100% combat readiness, a Pokemon may move. Note that this may allow for certain Pokemon to go multiple times in a row, or certain players to move many times before an opponent. Due to this, a consideration will be made for speed tuning to better even out speeds among Pokemon. Additionally, certain moves or abilities may manually boost the combat readiness meter.
+
+**Moves:** At the beginning, each Pokemon will have a set move pool of 4 moves. 1 move will be a "basic" move, 2 being "powerful" moves, and 1 being an "ultimate" move. The basic move will have no cooldown, while the other moves will have long cooldowns. The long cooldowns are a balancing mechanism to allow these moves to be more powerful without harming the game state, while also forcing the player to strategically utilize a Pokemon's full moveset. Additionally, some moves will have special area of effect attack patterns, allowing for more move variety and strategy. Finally, moves may "miss". A miss is calculated by considering base move accuracy, type advantages, buffs & debuffs. If a move misses, it won't apply extra effects to the target, and will deal 0.7 times damage.
+
+**Placement:** Each player will be able to arrange their 6 Pokemon on a 3x3 grid. Proper placement should be ensured to account for special attack or support move AoE patterns. Additionally, most moves will be forced to target the front row first, allowing for strategic placement of tanky vs support/DPS Pokemon in different rows.
+
+**Abilities:** TBD
+
+**UI:** The UI will consist of the following components:
+
+* Battle log: the "content" of the message will contain a battle log for everything that happened in the previous turn, and will mention the user who's turn it is.
+* Battle Layout: an embed with the layout of the current battle, displaying all involved parties, their Pokemon, HP, and positions.
+* Battle Info: an embed with info on the current battle. Comes with multiple options such as user pokemon and move info.
+* Info selection menu: Allow the users to select what information shows up in the battle info embed.
+* Move selection menu: Allows users to select what move to use.
+* Target selection menu: When a move is selected, the target selection menu appears, displaying valid targets of the move.
+
+**Details:**
+
+The state and management of a battle will be kept with a special `Battle` class:
+
+`class Battle`
+
+* `userIds`: list of IDs of involved parties
+* `users`: mapping of user ID => user Object & if the user is an NPC
+* `teams`: list of team Object. A team Object contains team information such as users
+* `turn`: which Pokemon's turn it is
+* `pokemon`: mapping of user ID => 3x3 grid of `Pokemon` objects (see below)
+* `log`: log of the current battle messages to be displayed. Resets each turn.
+* `eventHandler`: event handler for this battle. Various entities may register event listeners to the handler.
+* `winner`: the winner of the battle, if there is one. Once the battle is won, no further actions will take place.
+* `constructor()`: fills in all relevant fields, creates the event handler and Pokemon grid.
+* `battleStart()`: begins the battle. Triggers any `onBattleStart` events.
+* `nextTurn()`: ticks the next turn of the battle, to be used after `battleStart` or after a party's move. Executes the following functionality:
+	* Turn end functionality: triggers any `onTurnEnd` events, then ticks down all buffs and debuffs for the Pokemon who's turn it is.
+	* Battle win: check if the battle has been won or tied. If so, ignore next steps and end game.
+	* Next turn functionality: calculates who goes next by using current combat readiness and Pokemon speed. Then, calculate how many "ticks" it takes to get that Pokemon to 100% CR, and adds CR to all other Pokemon according to ticks and speed. Finally, set `turn` to the Pokemon with 100% CR.
+	* Turn begin functionality: triggers any `onTurnBegin` events, then ticks down all cooldowns for the Pokemon who's turn it is. Also ticks up status effects.
+
+`class BattleEventHandler`
+
+* `battle`: reference to the Battle where this instance belongs
+* `eventNames`: mapping of event names => event listener IDs
+* `eventListeners`: mapping of event listener IDs => event listener
+	* Listeners have the following fields:
+		* `execute`: execution function, which should take in one argument `args`
+		* `xargs`: extra arguments to insert into function
+* `registerListener(eventName, eventListener) -> listenerId`:
+	* Creates a new ID for the event listener
+	* Registers the event listener ID in `eventNames`
+	* Registers the event listener in `eventListeners`, adding `listenerId` to `xargs`
+	* Returns the event listener ID
+* `unregisterListener(eventName, listenerId)`: unregisters the event listener if it exists in the event name and specified ID
+* `triggerEvent(eventName, args, listenerId=null)`:
+	* For all listeners on event name, combine `args` and `xargs`, then trigger its execute function
+	* If `listenerId` is provided, only trigger that listener
+
+`class Pokemon`
+
+* `battle`: reference to the Battle where this instance belongs
+* `pokemonData`: Pokemon object that was stored in database
+* `speciesData`: species data from config
+* `userId`: user ID of owning trainer
+* `stats`: (6 fields) of all stats
+* `currentHp`: current HP of Pokemon, starts at max HP
+* `effectIds`: mapping of effect (buff, debuff, neutral) => cooldown
+* `moveIds`: mapping of moves => cooldown
+* `statusId`: Pokemon's current status effect, if any, + how many turns its been active
+* `combatReadiness`: combat readiness of Pokemon
+* `position`: grid position of Pokemon
+* `fainted`: if the Pokemon has fainted
+* `useMove(move, target) -> err`:
+	* Check to see if its this Pokemon's turn
+	* Check to see if valid move & move off cooldown
+	* Check to see if valid target
+	* Clear battle log
+	* Trigger `onMoveBegin` events
+	* Triggers move execution function
+	* Trigger `onMoveEnd` events
+	* Trigger `battle.nextTurn()`
+* `dealDamage(damage, target, type) -> damageDealt`:
+	* Use `type` to trigger any necessary events
+	* Trigger `beforeDealDamage` events
+	* Triggers `target.takeDamage()`
+	* Trigger `afterDealDamage` events
+	* Use `type` to trigger any more necessary events
+	* Return damage dealt
+* `takeDamage(damage, source, type) -> damageTaken`:
+	* Use `type` to trigger any necessary events
+	* Trigger `beforeTakeDamage` events
+	* Calculate HP loss
+	* Trigger `faint` if necessary
+	* Trigger `afterTakeDamage` events
+	* Use `type` to trigger any more necessary events 
+	* Return damage taken
+* `giveHeal` and `takeHeal` will work the same way
+* `faint()`:
+	* Sets current HP to 0, and `fainted` to true
+	* Triggers `onFaint` events
+
+`isMiss(source, move, targets, eventHandler)`: Calculate whether or not the move misses, and triggers `onAccuracyCheck` events.
+
+`calculateDamage(source, move, target, miss)`: Calculate and returns damage done based on given parameters.
+
+Typical battle turn: 
+
+* User chooses move => get list of valid targets
+* User chooses a target
+* `Pokemon.useMove()` is called on relevant targets
+	* Targets get damaged
+	* Effects get applied
+	* nextTurn is called
+	* Battle state is updated
+* Build new log, embeds, components from battle state
+* Send updated message
+
+
 ## Data
 
 ### MongoDB
@@ -348,6 +471,32 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 	* Category (?): Category of item.
 	* Description: Description of item.
 	* Image (?): Link to image of item. 
+
+### Battle
+
+**Move Config**
+
+* Move ID
+	* Name
+	* Type
+	* Special/Phys
+	* Category
+	* Power
+	* TargetType
+	* TargetPosition
+	* TargetPattern
+	* Cooldown
+	* Description
+	* Execute
+
+**Effect Config**
+
+* Effect ID
+	* Name
+	* Duration
+	* Description
+	* onEffectAdd
+	* onEffectRemove
 
 ## Starting Roadmap
 
