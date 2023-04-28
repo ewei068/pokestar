@@ -56,6 +56,69 @@ const drawDaily = async (trainer) => {
     return { data: rv, err: null };
 }
 
+const giveNewPokemon = async (trainer, pokemonId) => {
+    const speciesData = pokemonConfig[pokemonId];
+
+    const ivs = drawUniform(0, 31, 6);
+    // if legendary, set 3 random IVs to 31
+    if (speciesData.rarity == rarities.LEGENDARY) {
+        const indices = drawUniform(0, 5, 3);
+
+        // while dupes, reroll indices
+        // TODO: make this better lol im lazy
+        while (indices[0] == indices[1] || indices[0] == indices[2] || indices[1] == indices[2]) {
+            indices = drawUniform(0, 5, 3);
+        }
+
+        for (const index of indices) {
+            ivs[index] = 31;
+        }
+    }
+
+    const pokemon = {
+        "userId": trainer.userId,
+        "speciesId": pokemonId,
+        "name": speciesData.name,
+        "level": 1,
+        "exp": 0,
+        "evs": [0, 0, 0, 0, 0, 0],
+        "ivs": ivs,
+        "natureId": `${drawUniform(0, 24, 1)[0]}`,
+        "abilityId": `${drawDiscrete(speciesData.abilities, 1)[0]}`,
+        "item": "",
+        "moves": [],
+        "shiny": drawUniform(0, 8192, 1)[0] == 0,
+        "dateAcquired": (new Date()).getTime(),
+        "ivTotal": ivs.reduce((a, b) => a + b, 0),
+        "originalOwner": trainer.userId,
+        "rarity": speciesData.rarity,
+    }
+
+    // calculate stats
+    calculatePokemonStats(pokemon, speciesData);
+
+    // store pokemon
+    try {
+        const res = await insertDocument(collectionNames.USER_POKEMON, pokemon);
+        if (res.insertedCount === 0) {
+            logger.error(`Failed to insert pokemon ${pokemon.name} for ${trainer.user.username}.`);
+            return { data: null, err: "Error pokemon saving." };
+        }
+        logger.info(`Inserted pokemon ${pokemon.name} for ${trainer.user.username}.`);
+
+        const rv = {
+            "pokemon": pokemon,
+            "speciesData": speciesData,
+            "id": res.insertedId
+        };
+    
+        return { data: rv , err: null };
+    } catch (error) {
+        logger.error(error);
+        return { data: null, err: "Error pokemon saving." };
+    }
+}
+
 const usePokeball = async (trainer, pokeballId) => {
     // check for max pokemon
     try {
@@ -90,70 +153,12 @@ const usePokeball = async (trainer, pokeballId) => {
     }
 
     const pokemonId = drawIterable(rarityBins[rarity], 1)[0];
-    const speciesData = pokemonConfig[pokemonId];
-
-
-    const ivs = drawUniform(0, 31, 6);
-    // if legendary, set 3 random IVs to 31
-    if (rarity == rarities.LEGENDARY) {
-        const indices = drawUniform(0, 5, 3);
-
-        // while dupes, reroll indices
-        // TODO: make this better lol im lazy
-        while (indices[0] == indices[1] || indices[0] == indices[2] || indices[1] == indices[2]) {
-            indices = drawUniform(0, 5, 3);
-        }
-
-        for (const index of indices) {
-            ivs[index] = 31;
-        }
-    }
-
-    const pokemon = {
-        "userId": trainer.userId,
-        "speciesId": pokemonId,
-        "name": speciesData.name,
-        "level": 1,
-        "exp": 0,
-        "evs": [0, 0, 0, 0, 0, 0],
-        "ivs": ivs,
-        "natureId": `${drawUniform(0, 24, 1)[0]}`,
-        "abilityId": `${drawDiscrete(speciesData.abilities, 1)[0]}`,
-        "item": "",
-        "moves": [],
-        "shiny": drawUniform(0, 8192, 1)[0] == 0,
-        "dateAcquired": (new Date()).getTime(),
-        "ivTotal": ivs.reduce((a, b) => a + b, 0),
-        "originalOwner": trainer.userId,
-        "rarity": rarity,
-    }
-
-    // calculate stats
-    calculatePokemonStats(pokemon, speciesData);
-
-    // store pokemon
-    try {
-        const res = await insertDocument(collectionNames.USER_POKEMON, pokemon);
-        if (res.insertedCount === 0) {
-            logger.error(`Failed to insert pokemon ${pokemon.name} for ${trainer.user.username}.`);
-            return { data: null, err: "Error pokemon saving." };
-        }
-        logger.info(`Inserted pokemon ${pokemon.name} for ${trainer.user.username}.`);
-
-        const rv = {
-            "pokemon": pokemon,
-            "speciesData": speciesData,
-            "id": res.insertedId
-        };
     
-        return { data: rv , err: null };
-    } catch (error) {
-        logger.error(error);
-        return { data: null, err: "Error pokemon saving." };
-    }
+    return await giveNewPokemon(trainer, pokemonId);
 }
 
 module.exports = {
     drawDaily,
+    giveNewPokemon,
     usePokeball,
 };

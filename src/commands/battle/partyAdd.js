@@ -2,6 +2,7 @@ const { getTrainer } = require('../../services/trainer');
 const { updateParty, getPartyPokemons } = require('../../services/party');
 const { getPokemon } = require('../../services/pokemon');
 const { buildPartyEmbed } = require('../../embeds/battleEmbeds');
+const { pokemonConfig } = require('../../config/pokemonConfig');
 
 const partyAdd = async (user, pokemonId, position) => {
     const index = position - 1;
@@ -21,6 +22,11 @@ const partyAdd = async (user, pokemonId, position) => {
     const pokemon = await getPokemon(trainer.data, pokemonId);
     if (pokemon.err) {
         return { send: null, err: pokemon.err };
+    }
+
+    // temp: check battle elibility
+    if (!pokemonConfig[pokemon.data.speciesId].battleEligible) {
+        return { send: null, err: `We have not implemented ${pokemon.data.name}'s battle moves yet; look forward to a future update!` };
     }
 
     // if pokemon in party, swap pokemon from both indices

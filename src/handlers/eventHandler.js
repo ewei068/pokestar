@@ -25,6 +25,17 @@ const handleEvent = async (interaction, client) => {
     try {
         res = await eventHandlers[eventName](interaction, data, client);
         if (res && res.err) {
+            // send ephemeral message
+            const send = { 
+                content: `${res.err}`,
+                ephemeral: true 
+            }
+            try {
+                await interaction.reply(send);
+            } catch (error) {
+                await interaction.followUp(send);
+            }
+
             return;
         }
         
@@ -36,7 +47,12 @@ const handleEvent = async (interaction, client) => {
             if (err) {
                 return;
             } else if (level) {
-                await interaction.followUp(`You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`);
+                const levelString = `You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`;
+                try {
+                    await interaction.reply(levelString);
+                } catch (error) {
+                    await interaction.followUp(levelString);
+                }
             }
         }
     } catch (error) {

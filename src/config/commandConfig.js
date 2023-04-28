@@ -27,7 +27,7 @@ const commandCategoryConfig = {
         "name": "Battle",
         "description": "Battle commands",
         "folder": "battle",
-        "commands": ["partyadd", "partyremove"]
+        "commands": ["pvp", "partyadd", "partyremove"]
     },
     "social": {
         "name": "Social",
@@ -45,7 +45,7 @@ const commandCategoryConfig = {
         "name": "Heartbeat",
         "description": "Basic heartbeat commands; intended for testing",
         "folder": "heartbeat",
-        "commands": ["ping", "echo", "test"]
+        "commands": ["ping", "echo", "give", "test"]
     },
 }
 
@@ -350,6 +350,15 @@ const commandConfig = {
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },
+    "pvp": {
+        "name": "PvP",
+        "aliases": ["pvp", "battle"],
+        "description": "Battle another player",
+        "longDescription": "Initiates a battle in the channel. Another player may choose to accept the battle.",
+        "execute": "pvp.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    },
     "partyadd": {
         "name": "Party Add",
         "aliases": ["partyadd", "pa"],
@@ -394,6 +403,24 @@ const commandConfig = {
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
         "money": 10
+    },
+    "give": {
+        "name": "Give",
+        "aliases": ["give"],
+        "description": "Give a Pokemon to self",
+        "longDescription": "Give a Pokemon to self.",
+        "execute": "give.js",
+        "args": {
+            "pokemonid": {
+                "type": "string",
+                "description": "unique ID for Pokemon to give to self",
+                "optional": false,
+                "variable": false
+            },
+        },
+        "stages": [stageNames.ALPHA],
+        "exp": 0,
+        "money": 0
     },
     "test": {
         "name": "Test",

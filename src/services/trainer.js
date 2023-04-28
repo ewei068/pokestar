@@ -148,9 +148,15 @@ const getTrainerInfo = async (user) => {
         const aggQuery = new QueryBuilder(collectionNames.POKEMON_AND_USERS)
             .setFilter({ "userId": trainer.data.userId });
 
-        const pokemonRes = await aggQuery.findOne();
+        let pokemonRes = await aggQuery.findOne();
         if (pokemonRes === null) {
-            return { data: null, err: "Error finding trainer." };
+            // set default values, TODO: fix this probably https://www.mongodb.com/community/forums/t/how-can-i-do-a-left-outer-join-in-mongodb/189735/2
+            pokemonRes = { pokemon: {
+                _id: trainer.data.userId,
+                totalWorth: 0,
+                totalShiny: 0,
+                totalPower: 0,
+            } }
         }
 
         const extraInfo = {

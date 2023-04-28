@@ -11,7 +11,6 @@ const pokemonScroll = async (interaction, data) => {
     const state = getState(data.stateId);
     if (!state) {
         await interaction.update({ 
-            content: "This interaction has expired.",
             components: [] 
         });
         return { err: "This interaction has expired." };

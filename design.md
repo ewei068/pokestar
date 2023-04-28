@@ -286,10 +286,10 @@ The state and management of a battle will be kept with a special `Battle` class:
 * `constructor()`: fills in all relevant fields, creates the event handler and Pokemon grid.
 * `battleStart()`: begins the battle. Triggers any `onBattleStart` events.
 * `nextTurn()`: ticks the next turn of the battle, to be used after `battleStart` or after a party's move. Executes the following functionality:
-	* Turn end functionality: triggers any `onTurnEnd` events, then ticks down all buffs and debuffs for the Pokemon who's turn it is.
+	* Turn end functionality: triggers any `onTurnEnd` events, then ticks down all buffs and debuffs for the Pokemon who's turn it is.  Also ticks up status effects.
 	* Battle win: check if the battle has been won or tied. If so, ignore next steps and end game.
 	* Next turn functionality: calculates who goes next by using current combat readiness and Pokemon speed. Then, calculate how many "ticks" it takes to get that Pokemon to 100% CR, and adds CR to all other Pokemon according to ticks and speed. Finally, set `turn` to the Pokemon with 100% CR.
-	* Turn begin functionality: triggers any `onTurnBegin` events, then ticks down all cooldowns for the Pokemon who's turn it is. Also ticks up status effects.
+	* Turn begin functionality: triggers any `onTurnBegin` events, then ticks down all cooldowns for the Pokemon who's turn it is.
 
 `class BattleEventHandler`
 

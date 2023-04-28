@@ -3,6 +3,7 @@ const { logger } = require('../log');
 const { updateDocument } = require('../database/mongoHandler');
 const { listPokemons } = require('../services/pokemon');
 const { idFrom } = require('../utils/utils');
+const { pokemonConfig } = require('../config/pokemonConfig');
 
 const updateParty = async (trainer, party) => {
     try {
@@ -57,7 +58,57 @@ const getPartyPokemons = async (trainer) => {
     return { data: partyPokemons, err: null };
 }
 
+const validateParty = async (trainer) => {
+    const party = trainer.party;
+
+    // check if party has valid length
+    if (party.pokemonIds.length !== party.rows * party.cols) {
+        return { data: null, err: "Please reset your party with `/partyremove ALL`." };
+    }
+
+    // check that the party has no duplicates
+    const pokemonIds = party.pokemonIds.reduce((acc, curr) => {
+        if (curr) {
+            acc.push(curr);
+        }
+        return acc;
+    }, []);
+    if (pokemonIds.length !== new Set(pokemonIds).size) {
+        return { data: null, err: "Please reset your party with `/partyremove ALL`." };
+    }
+
+    // check that the party has between 1 and 6 pokemon
+    if (pokemonIds.length < 1) {
+        return { data: null, err: "No Pokemon in party. Add Pokemon with `/partyadd`." };
+    } else if (pokemonIds.length > 6) {
+        return { data: null, err: "Invalid party. Please reset your party with `/partyremove ALL`." };
+    }
+
+    // attempt to retrieve party pokemon
+    const partyPokemons = await getPartyPokemons(trainer);
+    if (partyPokemons.err) {
+        return { data: null, err: partyPokemons.err };
+    }
+
+    // check that all party pokemon are valid
+    for (const pokemon of partyPokemons.data) {
+        if (pokemon === null) {
+            continue;
+        }
+        if (pokemon.userId.toString() !== trainer.userId.toString()) {
+            return { data: null, err: "Please reset your party with `/partyremove ALL`." };
+        }
+        // check if species is battle eligible
+        if (!pokemonConfig[pokemon.speciesId].battleEligible) {
+            return { data: null, err: "Please reset your party with `/partyremove ALL`." };
+        }
+    }
+
+    return partyPokemons;
+}
+
 module.exports = {
     updateParty,
     getPartyPokemons,
+    validateParty,
 };

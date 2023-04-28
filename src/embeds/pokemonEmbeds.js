@@ -1,5 +1,5 @@
-const { rarities, rarityConfig, natureConfig, pokemonConfig, } = require('../config/pokemonConfig');
-const { EmbedBuilder, Client } = require('discord.js');
+const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig } = require('../config/pokemonConfig');
+const { EmbedBuilder } = require('discord.js');
 const { getWhitespace, getPBar, linebreakString } = require('../utils/utils');
 const { getPokemonExpNeeded } = require('../utils/pokemonUtils');
 
@@ -8,7 +8,7 @@ const { getPokemonExpNeeded } = require('../utils/pokemonUtils');
 const buildNewPokemonEmbed = (pokemon, speciesData) => {
     let typeString = "";
     for (let i = 0; i < speciesData.type.length; i++) {
-        typeString += speciesData.type[i].name;
+        typeString += typeConfig[speciesData.type[i]].name;
         if (i < speciesData.type.length - 1) {
             typeString += "/";
         }
@@ -62,7 +62,7 @@ const buildPokemonEmbed = (trainer, pokemon) => {
 
     let typeString = "";
     for (let i = 0; i < speciesData.type.length; i++) {
-        typeString += speciesData.type[i].name;
+        typeString += typeConfig[speciesData.type[i]].name;
         if (i < speciesData.type.length - 1) {
             typeString += "/";
         }

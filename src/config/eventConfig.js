@@ -6,6 +6,9 @@ const eventNames = {
     POKEMON_EVOLVE_CONFIRM: "pokemonEvolveConfirm",
     SHOP_SELECT: "shopSelect",
     HELP_SELECT: "helpSelect",
+    PVP_ACCEPT: "pvpAccept",
+    BATTLE_MOVE_SELECT: "battleMoveSelect",
+    BATTLE_TARGET_SELECT: "battleTargetSelect",
     BACK: "back",
 };
 
@@ -43,6 +46,22 @@ const eventConfig = {
     [eventNames.BACK]: {
         "name": "Back",
         "execute": "back.js",
+    },
+    [eventNames.PVP_ACCEPT]: {
+        "name": "PVP Accept",
+        "execute": "pvpAccept.js",
+        "exp": 10,
+        "money": 25,
+    },
+    [eventNames.BATTLE_MOVE_SELECT]: {
+        "name": "Battle Move Select",
+        "execute": "battleMoveSelect.js",
+    },
+    [eventNames.BATTLE_TARGET_SELECT]: {
+        "name": "Battle Target Select",
+        "execute": "battleTargetSelect.js",
+        "exp": 15,
+        "money": 30,
     },
     "test": {
         "name": "Test",
