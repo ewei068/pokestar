@@ -2,8 +2,10 @@ const { getOrSetDefault } = require("../utils/utils");
 const { v4: uuidv4 } = require('uuid');
 const { pokemonConfig } = require('../config/pokemonConfig');
 const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions } = require("../config/battleConfig");
-const { buildBattleEmbed } = require("../embeds/battleEmbeds");
+const { buildBattleEmbed, buildBattleMovesetEmbed } = require("../embeds/battleEmbeds");
 const { buildSelectBattleMoveRow } = require("../components/selectBattleMoveRow");
+const { buildButtonActionRow } = require("../components/buttonActionRow");
+const { buildBattleInfoActionRow } = require("../components/battleInfoActionRow");
 
 class Battle {
     userIds;
@@ -378,6 +380,7 @@ class Pokemon {
         if (true) {
             // if pokemon alive, get all targets
             const allTargets = this.getTargets(moveId, targetPokemonId);
+            // TODO: calculate miss
             this.battle.addToLog(`${this.name} used ${moveConfig[moveId].name} against ${primaryTarget.name}!`);
             moveExecutes[moveId](this.battle, this, primaryTarget, allTargets);
             // set cooldown
@@ -602,18 +605,22 @@ const getStartTurnSend = (battle, stateId) => {
     const content = battle.log.join('\n');
 
     const stateEmbed = buildBattleEmbed(battle);
+    const infoEmbed = buildBattleMovesetEmbed(battle.activePokemon);
     
     components = [];
     if (!battle.winner) {
         // TODO: handle pokemon fainted or incapacitated
         // TODO: handle edge case where pokemon can't use any moves
+        const infoRow = buildBattleInfoActionRow(battle, stateId)
+        components.push(infoRow);
+
         const selectMoveComponent = buildSelectBattleMoveRow(battle, stateId);
         components.push(selectMoveComponent);
     }
 
     return {
         content: content,
-        embeds: [stateEmbed],
+        embeds: [stateEmbed, infoEmbed],
         components: components
     }
 }

@@ -27,7 +27,7 @@ const commandCategoryConfig = {
         "name": "Battle",
         "description": "Battle commands",
         "folder": "battle",
-        "commands": ["pvp", "partyadd", "partyremove"]
+        "commands": ["pvp", "partyinfo", "partyadd", "partyremove"]
     },
     "social": {
         "name": "Social",
@@ -359,12 +359,22 @@ const commandConfig = {
         "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },
+    "partyinfo": {
+        "name": "Party Info",
+        "aliases": ["partyinfo"],
+        "description": "Get info about your party",
+        "execute": "partyInfo.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10
+    },
     "partyadd": {
         "name": "Party Add",
         "aliases": ["partyadd", "pa"],
         "description": "Add a Pokemon to your party",
         "longDescription": "Add a Pokemon to your party at a specified position. If the Pokemon is in the party already, swaps with another Pokemon. If the position is full, removes the Pokemon at that position first.",
-        "execute": "partyadd.js",
+        "execute": "partyAdd.js",
         "args": {
             "pokemonid": {
                 "type": "string",
@@ -391,7 +401,7 @@ const commandConfig = {
         If \`option\` is a number, attempts to remove a Pokemon at that position.
         If \`option\` is a Pokemon ID, attempts to remove Pokemon with that ID.
         If \`option\` is ALL, removes all Pokemon from your party.`,
-        "execute": "partyremove.js",
+        "execute": "partyRemove.js",
         "args": {
             "option": {
                 "type": "string",

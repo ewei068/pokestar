@@ -7,14 +7,15 @@ const battleEventNames = {
 }
 
 const damageTypes = {
-    PHYSICAL: "physical",
-    SPECIAL: "special",
+    PHYSICAL: "Physical",
+    SPECIAL: "Special",
+    OTHER: "Other",
 }
 
 const moveTiers = {
-    BASIC: "basic",
-    POWERFUL: "powerful",
-    ULTIMATE: "ultimate",
+    BASIC: "Basic",
+    POWERFUL: "Powerful",
+    ULTIMATE: "Ultimate",
 }
 // create pokemon type advantage matrix
 /*
@@ -121,26 +122,26 @@ const calculateDamage = (move, source, target, miss=false) => {
 };
 
 const targetTypes = {
-    ALLY: "ally",
-    ENEMY: "enemy",
-    ANY: "any",
+    ALLY: "Ally",
+    ENEMY: "Enemy",
+    ANY: "Any",
 };
 const targetPositions = {
-    SELF: "self",
-    NON_SELF: "non-self",
-    ANY: "any",
-    FRONT: "front",
-    BACK: "back",
+    SELF: "Self",
+    NON_SELF: "Non-self",
+    ANY: "Any",
+    FRONT: "Front",
+    BACK: "Back",
 }
 const targetPatterns = {
-    SINGLE: "single",
-    ALL: "all",
-    ALL_EXCEPT_SELF: "all-except-self",
-    ROW: "row",
-    COLUMN: "column",
-    RANDOM: "random",
-    SQUARE: "square",
-    CROSS: "cross",
+    SINGLE: "Single",
+    ALL: "All",
+    ALL_EXCEPT_SELF: "All-except-self",
+    ROW: "Row",
+    COLUMN: "Column",
+    RANDOM: "Random",
+    SQUARE: "Square",
+    CROSS: "Cross",
 };
 
 const moveConfig = {
@@ -157,12 +158,23 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The target is struck with large, imposing wings spread wide to inflict damage.",
     },
+    "38": {
+        "name": "Double Edge",
+        "type": types.NORMAL,
+        "power": 120,
+        "accuracy": 100,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "A reckless, life-risking tackle. This also damages the user quite a lot.",
+    },
 };
 
 const moveExecutes = {
     "17": function (battle, source, primaryTargets, allTargets) {
-        // TODO: calculate miss
-
         for (const target of allTargets) {
             const damageToDeal = calculateDamage(moveConfig["17"], source, allTargets[0]);
             source.dealDamage(damageToDeal, target, {
@@ -170,7 +182,23 @@ const moveExecutes = {
                 ...moveConfig["17"]
             });
         }
-    }
+    },
+    "38": function (battle, source, primaryTargets, allTargets) {
+        let damageDealt = 0;
+        for (const target of allTargets) {
+            const damageToDeal = calculateDamage(moveConfig["38"], source, allTargets[0]);
+            damageDealt += source.dealDamage(damageToDeal, target, {
+                type: "move",
+                ...moveConfig["38"]
+            });
+        }
+        // recoil damage to self
+        battle.addToLog(`${source.name} is affected by recoil!`);
+        const damageToDeal = Math.floor(damageDealt / 3);
+        source.dealDamage(damageToDeal, source, {
+            type: "recoil"
+        });
+    },
 };
 
 module.exports = {

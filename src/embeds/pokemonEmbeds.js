@@ -1,7 +1,9 @@
 const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig } = require('../config/pokemonConfig');
+const { moveConfig } = require('../config/battleConfig');
 const { EmbedBuilder } = require('discord.js');
 const { getWhitespace, getPBar, linebreakString } = require('../utils/utils');
 const { getPokemonExpNeeded } = require('../utils/pokemonUtils');
+const { buildMoveString } = require('../utils/battleUtils');
 
 // pokemon: user's pokemon data
 // speciesData: pokemon species config data
@@ -106,6 +108,20 @@ const buildPokemonEmbed = (trainer, pokemon) => {
         { name: "Stats (Stat|IVs|EVs)", value: statString, inline: false },
         { name: "Level Progress", value: progressBar, inline: false }
     );
+
+    // if pokemon has moves, display them
+    if (speciesData.moveIds) {
+        embed.addFields(speciesData.moveIds.map((moveId) => {
+            const moveData = moveConfig[moveId];
+            const { moveHeader, moveString } = buildMoveString(moveData);
+            return {
+                name: moveHeader,
+                value: moveString,
+                inline: true,
+            };
+        }));
+    }
+
     embed.setImage(pokemon.shiny ? speciesData.shinySprite : speciesData.sprite);
     embed.setFooter({ text: `ID: ${pokemon._id}` });
 

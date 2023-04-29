@@ -7,6 +7,7 @@ const eventNames = {
     SHOP_SELECT: "shopSelect",
     HELP_SELECT: "helpSelect",
     PVP_ACCEPT: "pvpAccept",
+    BATTLE_INFO: "battleInfo",
     BATTLE_MOVE_SELECT: "battleMoveSelect",
     BATTLE_TARGET_SELECT: "battleTargetSelect",
     BACK: "back",
@@ -52,6 +53,10 @@ const eventConfig = {
         "execute": "pvpAccept.js",
         "exp": 10,
         "money": 25,
+    },
+    [eventNames.BATTLE_INFO]: {
+        "name": "Battle Info",
+        "execute": "battleInfo.js",
     },
     [eventNames.BATTLE_MOVE_SELECT]: {
         "name": "Battle Move Select",

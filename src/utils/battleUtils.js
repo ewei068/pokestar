@@ -1,4 +1,5 @@
-const { pokemonConfig } = require('../config/pokemonConfig');
+const { pokemonConfig, typeConfig } = require('../config/pokemonConfig');
+const { getPBar } = require('./utils');
 
 const buildPartyString = (pokemons, rows, cols, reverse=false, hp=false, emphPosition=null) => {
     let globalIndex = 0;
@@ -82,6 +83,55 @@ const buildPartyString = (pokemons, rows, cols, reverse=false, hp=false, emphPos
     return partyString;
 }
 
+const buildMoveString = (moveData, cooldown=0) => {
+    let moveHeader = '';
+    if (cooldown) {
+        moveHeader += `[ON COOLDOWN: ${cooldown} TURNS]\n`;
+    }
+    moveHeader += `**${moveData.name}** | ${typeConfig[moveData.type].name} | ${moveData.damageType} `;
+
+    let moveString = '';
+    moveString += `**[${moveData.tier}]** PWR: ${moveData.power || "-"} | ACC: ${moveData.accuracy || "-"} | MAX CD: ${moveData.cooldown}\n`;
+    moveString += `**Target:** ${moveData.targetType}/${moveData.targetPosition}/${moveData.targetPattern}\n`;
+    moveString += `${moveData.description}`;
+
+    return {
+        moveHeader,
+        moveString,
+    }
+}
+
+const buildBattlePokemonString = (pokemon) => {
+    let pokemonHeader = ""
+    if (pokemon.isFainted) {
+        // TODO: check for other status conditions
+        pokemonHeader += "[FNT] ";
+    }
+    pokemonHeader += `[${pokemon.position}] [Lv. ${pokemon.level}] ${pokemon.name}`;
+    let pokemonString = '';
+    // build hp percent string
+    const hpPercent = Math.min(Math.round(Math.floor(pokemon.hp * 100 / pokemon.maxHp)), 100);
+    pokemonString += `**HP:** ${getPBar(hpPercent, 10)} ${hpPercent}%\n`;
+    // build cr string
+    const crPercent = Math.min(Math.round(Math.floor(pokemon.combatReadiness * 100 / 100)), 100);
+    pokemonString += `**CR:** ${getPBar(crPercent, 10)} ${crPercent}%\n`;
+    // build effects string
+    if (pokemon.effectsIds) {
+        // TODO: build effects string
+    } else {
+        pokemonString += `**Effects:** None\n`;
+    }
+
+    return {
+        pokemonHeader,
+        pokemonString,
+    }
+}
+
+
+
 module.exports = {
     buildPartyString,
+    buildMoveString,
+    buildBattlePokemonString,
 };

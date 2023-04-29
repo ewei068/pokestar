@@ -46,8 +46,8 @@ const pokemonEvolveSelect = async (interaction, data) => {
         [{
             label: 'Evolve!',
             disabled: false,
+            data: rowData
         }],
-        rowData,
         eventNames.POKEMON_EVOLVE_CONFIRM
     )
 

@@ -42,8 +42,8 @@ const pvp = async (user) => {
         [{
             label: 'Accept Challenge!',
             disabled: false,
+            data: rowData
         }],
-        rowData,
         eventNames.PVP_ACCEPT
     )
 

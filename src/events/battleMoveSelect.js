@@ -48,8 +48,8 @@ const battleMoveSelect = async (interaction, data) => {
     const targetSelectMenu = buildSelectBattleTargetRow(battle, targets, moveId, data.stateId);
 
     // TODO: change when we have more than one component
-    // if components length > 1, remove last component
-    if (interaction.message.components.length > 1) {
+    // if components length > 2, remove last component
+    if (interaction.message.components.length > 2) {
         interaction.message.components.pop();
     }
 

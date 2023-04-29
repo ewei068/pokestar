@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
-const { buildPartyString } = require("../utils/battleUtils");
+const { moveConfig } = require("../config/battleConfig");
+const { buildPartyString, buildMoveString, buildBattlePokemonString } = require("../utils/battleUtils");
 
 const buildPartyEmbed = (trainer, pokemons) => {
     const party = trainer.party;
@@ -15,10 +16,10 @@ const buildPartyEmbed = (trainer, pokemons) => {
     embed.setTitle(`${trainer.user.username}'s Party`);
     embed.setColor(0xffffff);
     embed.setThumbnail(`https://cdn.discordapp.com/avatars/${trainer.userId}/${trainer.user.avatar}.webp`);
-    embed.addFields([
+    embed.addFields(
         { name: "Power", value: `${power}`, inline: true },
         { name: "Pokemon", value: buildPartyString(pokemons, party.rows, party.cols), inline: false },
-    ]);
+    );
 
     return embed;
 }
@@ -33,22 +34,74 @@ const buildBattleEmbed = (battle) => {
     const team2EmphPosition = battle.activePokemon.teamName === team2.name ? battle.activePokemon.position : null;
 
     // TODO: deal with NPCs
+    const team1UserString = team1.userIds.map((userId) => {
+        const user = battle.users[userId];
+        return `${user.username}#${user.discriminator}`;
+    }).join(" ");
+    const team2UserString = team2.userIds.map((userId) => {
+        const user = battle.users[userId];
+        return `${user.username}#${user.discriminator}`;
+    }).join(" ");
+
     const embed = new EmbedBuilder();
     embed.setTitle(`Battle State`);
     embed.setColor(0xffffff);
     embed.setDescription(battle.log[battle.log.length - 1] || "No log yet.");
-    embed.addFields([
+    embed.addFields(
         { 
-            name: `${team1.name}`, 
+            name: `${team1.name} | ${team1UserString}`, 
             value: buildPartyString(team1Party.pokemons, team1Party.rows, team1Party.cols, true, true, team1EmphPosition), 
             inline: false 
         },
         { 
-            name: `${team2.name}`, 
+            name: `${team2.name} | ${team2UserString}`, 
             value: buildPartyString(team2Party.pokemons, team2Party.rows, team2Party.cols, false, true, team2EmphPosition), 
             inline: false 
         },
-    ]);
+    );
+
+    return embed;
+}
+
+const buildBattleMovesetEmbed = (pokemon) => {
+    const embed = new EmbedBuilder();
+    embed.setTitle(`[${pokemon.position}] ${pokemon.name}'s Moveset`);
+    embed.setColor(0xffffff);
+    embed.addFields(Object.keys(pokemon.moveIds).map((moveId, index) => {
+        const cooldown = pokemon.moveIds[moveId];
+        const moveData = moveConfig[moveId];
+        const { moveHeader, moveString } = buildMoveString(moveData, cooldown);
+        return {
+            name: moveHeader,
+            value: moveString,
+            inline: true,
+        };
+    }));
+    embed.setFooter({ text: "Use the buttons for battle info | Use the selection menus to select & use a move" });
+
+    return embed;
+}
+
+const buildBattleTeamEmbed = (battle, teamName) => {
+    const teamUserIds = battle.teams[teamName].userIds;
+    const teamPokemons = battle.parties[teamName].pokemons;
+    const teamUserString = teamUserIds.map((userId) => {
+        const user = battle.users[userId];
+        return `${user.username}#${user.discriminator}`;
+    }).join(" ");
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${teamName}'s Pokemon | ${teamUserString}`);
+    embed.setColor(0xffffff);
+    embed.addFields(teamPokemons.filter(pokemon => pokemon !== null).map((pokemon, index) => {
+        const { pokemonHeader, pokemonString } = buildBattlePokemonString(pokemon);
+        return {
+            name: pokemonHeader,
+            value: pokemonString,
+            inline: true,
+        };
+    }));
+    embed.setFooter({ text: "Use the buttons for battle info | Use the selection menus to select & use a move" });
 
     return embed;
 }
@@ -56,4 +109,6 @@ const buildBattleEmbed = (battle) => {
 module.exports = {
     buildPartyEmbed,
     buildBattleEmbed,
+    buildBattleMovesetEmbed,
+    buildBattleTeamEmbed,
 };

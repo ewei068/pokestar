@@ -24,6 +24,7 @@ const trainerInfo = async (user) => {
 
     // build embeds
     const trainerEmbed = buildTrainerEmbed(trainer.data);
+    // TODO: should remove?
     const partyEmbed = buildPartyEmbed(trainer.data, partyPokemons.data);
 
     const send = {

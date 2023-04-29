@@ -6,7 +6,17 @@ const { ActionRowBuilder } = require("discord.js");
 //  disabled 
 //  ...
 // }]
-const buildButtonActionRow = (buttonConfigs, data, eventName) => {
+/**
+ * 
+ * @param {*} buttonConfigs buttonConfigs = [{
+ *  label,
+ *  disabled,
+ *  data
+ * }]
+ * @param {*} eventName 
+ * @returns 
+ */
+const buildButtonActionRow = (buttonConfigs, eventName) => {
 
     let primary = buttonConfigs.length === 1;
 
@@ -14,7 +24,7 @@ const buildButtonActionRow = (buttonConfigs, data, eventName) => {
         .addComponents(buttonConfigs.map(buttonConfig => {
             const button = buildSingleButton(
                 buttonConfig.label, 
-                data, 
+                buttonConfig.data, 
                 primary, 
                 buttonConfig.disabled, 
                 eventName

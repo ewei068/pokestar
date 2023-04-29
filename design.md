@@ -511,3 +511,14 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 * Basic battling: placement, teams, moves (no abilities/held items)
 * Database schema validation ?
 * Automate stage deployment pipeline and testing
+
+### Future Feature Ideas
+
+* Abilities & battle items
+* PvE training
+* Raid boss
+* Co-op
+* Non-real-time arena
+* Trading
+* More moves/pokemon
+* Special mythic pokemon
