@@ -111,7 +111,7 @@ const buildPokemonEmbed = (trainer, pokemon) => {
 
     // if pokemon has moves, display them
     if (speciesData.moveIds) {
-        embed.addFields(speciesData.moveIds.map((moveId) => {
+        const fields = speciesData.moveIds.map((moveId) => {
             const moveData = moveConfig[moveId];
             const { moveHeader, moveString } = buildMoveString(moveData);
             return {
@@ -119,7 +119,16 @@ const buildPokemonEmbed = (trainer, pokemon) => {
                 value: moveString,
                 inline: true,
             };
-        }));
+        });
+    
+        // every 2 fields, add a blank field
+        if (fields.length > 2) {
+            for (let i = 2; i < fields.length; i += 3) {
+                fields.splice(i, 0, { name: '** **', value: '** **', inline: false });
+            }
+        }
+
+        embed.addFields(fields);
     }
 
     embed.setImage(pokemon.shiny ? speciesData.shinySprite : speciesData.sprite);

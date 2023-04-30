@@ -426,7 +426,7 @@ const pokemonConfig = {
             "77": 0.45,
             "145": 0.1
         },
-        "moveIds": ["17", "38"],
+        "moveIds": ["m17", "m355", "m369", "m38"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST

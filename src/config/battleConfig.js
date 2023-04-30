@@ -14,7 +14,7 @@ const damageTypes = {
 
 const moveTiers = {
     BASIC: "Basic",
-    POWERFUL: "Powerful",
+    POWER: "Power",
     ULTIMATE: "Ultimate",
 }
 // create pokemon type advantage matrix
@@ -70,11 +70,9 @@ const getTypeDamageMultiplier = (moveType, targetPokemon) => {
             mult *= adv;
         }
 
-        if (targetPokemon.type2) {
-            adv = typeAdvantages[moveType][targetPokemon.type2];
-            if (adv !== undefined) {
-                mult *= adv;
-            }
+        adv = typeAdvantages[moveType][targetPokemon.type2];
+        if (adv !== undefined) {
+            mult *= adv;
         }
     }
 
@@ -90,6 +88,7 @@ const calculateDamage = (move, source, target, miss=false) => {
     const attack = move.damageType === damageTypes.PHYSICAL ? source.atk : source.spa;
     const defense = move.damageType === damageTypes.PHYSICAL ? target.def : target.spd;
     const stab = source.type1 === move.type || source.type2 === move.type ? 1.5 : 1;
+    const missMult = miss ? 0.7 : 1;
     let type = getTypeDamageMultiplier(move.type, target);
     // balance type
     if (type >= 4) {
@@ -116,7 +115,7 @@ const calculateDamage = (move, source, target, miss=false) => {
     console.log("type", type)
     console.log("random", random) */
 
-    const damage = Math.floor((((2 * level / 5 + 2) * power * attack / defense) / 50 + 2) * stab * type * random);
+    const damage = Math.floor((((2 * level / 5 + 2) * power * attack / defense) / 50 + 2) * stab * type * random * missMult);
 
     return Math.max(damage, 1);
 };
@@ -144,8 +143,54 @@ const targetPatterns = {
     CROSS: "Cross",
 };
 
+// TODO: is it worth having classes for these?
+
+const effectTypes = {
+    BUFF: "Buff",
+    DEBUFF: "Debuff",
+    NEUTRAL: "Neutral",
+};
+const effectConfig = {
+    "loseFlying": {
+        "name": "No Flying Type",
+        "description": "The target loses its Flying type.",
+        "type": effectTypes.NEUTRAL,
+        "effectAdd": function(battle, target) {
+            battle.addToLog(`${target.name} lost its Flying type!`);
+            // if pure flying, change to pure normal
+            if (target.type1 === types.FLYING && target.type2 === null) {
+                target.type1 = types.NORMAL;
+                return {
+                    "typeSlot": "type1",
+                }
+            // else
+            } else if (target.type1 === types.FLYING) {
+                target.type1 = null;
+                return {
+                    "typeSlot": "type1",
+                }
+            } else if (target.type2 === types.FLYING && target.type1 === null) {
+                target.type2 = types.NORMAL;
+                return {
+                    "typeSlot": "type2",
+                }
+            } else if (target.type2 === types.FLYING) {
+                target.type2 = null;
+                return {
+                    "typeSlot": "type2",
+                }
+            }
+        },
+        "effectRemove": function(battle, target, args) {
+            battle.addToLog(`${target.name} regained its Flying type!`);
+            if (args.typeSlot)
+                target[args.typeSlot] = types.FLYING;
+        },
+    },
+}
+
 const moveConfig = {
-    "17": {
+    "m17": {
         "name": "Wing Attack",
         "type": types.FLYING,
         "power": 35,
@@ -158,7 +203,7 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The target is struck with large, imposing wings spread wide to inflict damage.",
     },
-    "38": {
+    "m38": {
         "name": "Double Edge",
         "type": types.NORMAL,
         "power": 120,
@@ -171,25 +216,51 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "A reckless, life-risking tackle. This also damages the user quite a lot.",
     },
+    "m355": {
+        "name": "Roost",
+        "type": types.FLYING,
+        "power": 0,
+        "accuracy": null,
+        "cooldown": 4,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user lands and rests its body, removing its Flying type for one turn. It restores the user's HP by up to half of its max HP.",
+    },
+    "m369": {
+        "name": "U-Turn",
+        "type": types.BUG,
+        "power": 70,
+        "accuracy": 100,
+        "cooldown": 3,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "After making its attack, the user rushes back, boosting a random party Pokemon's combat readiness to max.",
+    },
 };
 
 const moveExecutes = {
-    "17": function (battle, source, primaryTargets, allTargets) {
+    "m17": function (battle, source, primaryTargets, allTargets, missedTargets) {
         for (const target of allTargets) {
-            const damageToDeal = calculateDamage(moveConfig["17"], source, allTargets[0]);
+            const damageToDeal = calculateDamage(moveConfig["m17"], source, target, missedTargets.includes(target));
             source.dealDamage(damageToDeal, target, {
                 type: "move",
-                ...moveConfig["17"]
+                ...moveConfig["m17"]
             });
         }
     },
-    "38": function (battle, source, primaryTargets, allTargets) {
+    "m38": function (battle, source, primaryTargets, allTargets, missedTargets) {
         let damageDealt = 0;
         for (const target of allTargets) {
-            const damageToDeal = calculateDamage(moveConfig["38"], source, allTargets[0]);
+            const damageToDeal = calculateDamage(moveConfig["m38"], source, target, missedTargets.includes(target));
             damageDealt += source.dealDamage(damageToDeal, target, {
                 type: "move",
-                ...moveConfig["38"]
+                ...moveConfig["m38"]
             });
         }
         // recoil damage to self
@@ -199,6 +270,34 @@ const moveExecutes = {
             type: "recoil"
         });
     },
+    "m355": function (battle, source, primaryTargets, allTargets) {
+        for (const target of allTargets) {
+            source.giveHeal(Math.min(Math.floor(target.maxHp / 2), target.maxHp - target.hp), target, {
+                type: "move",
+                ...moveConfig["m355"]
+            });
+        }
+
+        // lose flying type
+        source.addEffect("loseFlying", 2, source);
+    },
+    "m369": function (battle, source, primaryTargets, allTargets, missedTargets) {
+        for (const target of allTargets) {
+            const damageToDeal = calculateDamage(moveConfig["m369"], source, target, missedTargets.includes(target));
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                ...moveConfig["m369"]
+            });
+        }
+
+        // boost random non-self party pokemon cr to 100
+        const party = battle.parties[source.teamName].pokemons;
+        const pokemons = Object.values(party).filter(p => p !== null && !p.isFainted && p !== source);
+        if (pokemons.length > 0) {
+            const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
+            pokemon.boostCombatReadiness(source, 100);
+        } 
+    }
 };
 
 module.exports = {
@@ -208,4 +307,7 @@ module.exports = {
     targetTypes,
     targetPositions,
     targetPatterns,
+    getTypeDamageMultiplier,
+    effectConfig,
+    effectTypes,
 };

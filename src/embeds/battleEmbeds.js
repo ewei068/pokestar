@@ -64,10 +64,7 @@ const buildBattleEmbed = (battle) => {
 }
 
 const buildBattleMovesetEmbed = (pokemon) => {
-    const embed = new EmbedBuilder();
-    embed.setTitle(`[${pokemon.position}] ${pokemon.name}'s Moveset`);
-    embed.setColor(0xffffff);
-    embed.addFields(Object.keys(pokemon.moveIds).map((moveId, index) => {
+    const fields = Object.keys(pokemon.moveIds).map((moveId, index) => {
         const cooldown = pokemon.moveIds[moveId];
         const moveData = moveConfig[moveId];
         const { moveHeader, moveString } = buildMoveString(moveData, cooldown);
@@ -76,7 +73,19 @@ const buildBattleMovesetEmbed = (pokemon) => {
             value: moveString,
             inline: true,
         };
-    }));
+    });
+
+    // every 2 fields, add a blank field
+    if (fields.length > 2) {
+        for (let i = 2; i < fields.length; i += 3) {
+            fields.splice(i, 0, { name: '** **', value: '** **', inline: false });
+        }
+    }
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`[${pokemon.position}] ${pokemon.name}'s Moveset`);
+    embed.setColor(0xffffff);
+    embed.addFields(fields);
     embed.setFooter({ text: "Use the buttons for battle info | Use the selection menus to select & use a move" });
 
     return embed;

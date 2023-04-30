@@ -1,7 +1,7 @@
 const { getOrSetDefault } = require("../utils/utils");
 const { v4: uuidv4 } = require('uuid');
 const { pokemonConfig } = require('../config/pokemonConfig');
-const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions } = require("../config/battleConfig");
+const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, getTypeDamageMultiplier, effectConfig } = require("../config/battleConfig");
 const { buildBattleEmbed, buildBattleMovesetEmbed } = require("../embeds/battleEmbeds");
 const { buildSelectBattleMoveRow } = require("../components/selectBattleMoveRow");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
@@ -134,7 +134,12 @@ class Battle {
     nextTurn() {
         // end turn logic
         this.eventHandler.emit(battleEventNames.TURN_END);
-        // TODO: tick effects & status effects
+        // TODO: tick status effects
+
+        // tick effects
+        if (!this.activePokemon.isFainted) {
+            this.activePokemon.tickEffectDurations();
+        }
 
         // increase turn and check for game end
         this.turn++;
@@ -172,7 +177,9 @@ class Battle {
 
         // begin turn
         this.eventHandler.emit(battleEventNames.TURN_BEGIN);
-        this.activePokemon.tickMoveCooldowns();
+        if (!this.activePokemon.isFainted) {
+            this.activePokemon.tickMoveCooldowns();
+        }
 
         // TODO: deal with NPC case
         // log
@@ -333,6 +340,7 @@ class Pokemon {
         this.spe = pokemonData.stats[5];
         this.type1 = this.speciesData.type[0];
         this.type2 = this.speciesData.type[1] || null;
+        // map effectId => effect data (duration, args)
         this.effectIds = {};
         this.moveIds = this.speciesData.moveIds.reduce((acc, moveId) => {
             acc[moveId] = 0;
@@ -381,8 +389,13 @@ class Pokemon {
             // if pokemon alive, get all targets
             const allTargets = this.getTargets(moveId, targetPokemonId);
             // TODO: calculate miss
+            const missedTargets = this.getMisses(moveId, allTargets);
             this.battle.addToLog(`${this.name} used ${moveConfig[moveId].name} against ${primaryTarget.name}!`);
-            moveExecutes[moveId](this.battle, this, primaryTarget, allTargets);
+            // if misses, log miss
+            if (missedTargets.length > 0) {
+                this.battle.addToLog(`Missed ${missedTargets.map(target => target.name).join(', ')}!`);
+            }
+            moveExecutes[moveId](this.battle, this, primaryTarget, allTargets, missedTargets);
             // set cooldown
             this.moveIds[moveId] = moveConfig[moveId].cooldown;
         }
@@ -492,6 +505,32 @@ class Pokemon {
         return allTargets;
     }
 
+    getMisses(moveId, targetPokemons) {
+        const moveData = moveConfig[moveId];
+        const misses = [];
+        if (!moveData.accuracy) {
+            return misses;
+        }
+        for (const target of targetPokemons) {
+            // TODO: account for user hitchance and target evasion
+            let hitChance = moveData.accuracy;
+            const damageMult = getTypeDamageMultiplier(moveData.type, target);
+            if (damageMult >= 4) {
+                hitChance *= 1.25;
+            } else if (damageMult >= 2) {
+                hitChance *= 1.1;
+            } else if (damageMult <= 0.5) {
+                hitChance *= 0.75;
+            } else if (damageMult <= 0.25) {
+                hitChance *= 0.5;
+            }
+
+            if (Math.random() > hitChance) {
+                misses.push(target);
+            }
+        }
+        return misses;
+    }
 
 
     dealDamage(damage, target, damageInfo) {
@@ -530,6 +569,72 @@ class Pokemon {
         this.hp = 0;
         this.isFainted = true;
         this.battle.addToLog(`${this.name} fainted!`);
+    }
+
+    giveHeal(heal, target, healInfo) {
+        const healGiven = target.takeHeal(heal, this, healInfo);
+        return healGiven;
+    }
+
+    takeHeal(heal, source, healInfo) {
+        const oldHp = this.hp;
+        if (oldHp <= 0 || this.isFainted) {
+            return 0;
+        }
+        this.hp = Math.min(this.maxHp, this.hp + heal);
+        const healTaken = this.hp - oldHp;
+        this.battle.addToLog(`${this.name} healed ${healTaken} HP!`);
+        return healTaken;
+    }
+    
+    boostCombatReadiness(source, amount) {
+        const oldCombatReadiness = this.combatReadiness;
+        this.combatReadiness = Math.min(100, this.combatReadiness + amount);
+        const combatReadinessGained = this.combatReadiness - oldCombatReadiness;
+        this.battle.addToLog(`${this.name} gained ${Math.round(combatReadinessGained)} combat readiness!`);
+        return combatReadinessGained;
+    }
+
+    addEffect(effectId, duration, source) {
+        const effectData = effectConfig[effectId];
+
+        // if effect already exists for longer or equal duration, do nothing
+        if (this.effectIds[effectId] && this.effectIds[effectId].duration >= duration) {
+            return;
+        }
+
+        // TODO: trigger before add effect events
+
+        const args = effectData.effectAdd(this.battle, this);
+        this.effectIds[effectId] = {
+            duration: duration,
+            source: source,
+            args: args,
+        };
+
+        // TODO: trigger after add effect events
+    }
+
+    removeEffect(effectId) {
+        const effectData = effectConfig[effectId];
+
+        // if effect doesn't exist, do nothing
+        if (!this.effectIds[effectId]) {
+            return;
+        }
+
+        effectData.effectRemove(this.battle, this, this.effectIds[effectId].args);
+
+        delete this.effectIds[effectId];
+    }
+
+    tickEffectDurations() {
+        for (const effectId in this.effectIds) {
+            this.effectIds[effectId].duration--;
+            if (this.effectIds[effectId].duration <= 0) {
+                this.removeEffect(effectId);
+            }
+        }
     }
 
     tickMoveCooldowns() {
@@ -605,13 +710,12 @@ const getStartTurnSend = (battle, stateId) => {
     const content = battle.log.join('\n');
 
     const stateEmbed = buildBattleEmbed(battle);
-    const infoEmbed = buildBattleMovesetEmbed(battle.activePokemon);
     
     components = [];
     if (!battle.winner) {
         // TODO: handle pokemon fainted or incapacitated
         // TODO: handle edge case where pokemon can't use any moves
-        const infoRow = buildBattleInfoActionRow(battle, stateId)
+        const infoRow = buildBattleInfoActionRow(battle, stateId, Object.keys(battle.teams).length + 1)
         components.push(infoRow);
 
         const selectMoveComponent = buildSelectBattleMoveRow(battle, stateId);
@@ -620,7 +724,7 @@ const getStartTurnSend = (battle, stateId) => {
 
     return {
         content: content,
-        embeds: [stateEmbed, infoEmbed],
+        embeds: [stateEmbed],
         components: components
     }
 }
