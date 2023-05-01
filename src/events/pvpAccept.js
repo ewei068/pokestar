@@ -41,7 +41,7 @@ const pvpAccept = async (interaction, data) => {
     // start battle
     battle.start();
 
-    await interaction.update(getStartTurnSend(battle, data.stateId));
+    await interaction.update(await getStartTurnSend(battle, data.stateId));
 }
 
 module.exports = pvpAccept;

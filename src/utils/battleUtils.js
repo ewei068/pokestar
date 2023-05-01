@@ -1,3 +1,4 @@
+const { effectConfig } = require('../config/battleConfig');
 const { pokemonConfig, typeConfig } = require('../config/pokemonConfig');
 const { getPBar } = require('./utils');
 
@@ -116,10 +117,12 @@ const buildBattlePokemonString = (pokemon) => {
     const crPercent = Math.min(Math.round(Math.floor(pokemon.combatReadiness * 100 / 100)), 100);
     pokemonString += `**CR:** ${getPBar(crPercent, 10)} ${crPercent}%\n`;
     // build effects string
-    if (pokemon.effectsIds) {
-        // TODO: build effects string
+    if (Object.keys(pokemon.effectIds).length > 0) {
+        pokemonString += `**Effects:** ${Object.keys(pokemon.effectIds).map((effectId) => {
+            return `${effectConfig[effectId].name} (${pokemon.effectIds[effectId].duration})`;
+        }).join(', ')}`;
     } else {
-        pokemonString += `**Effects:** None\n`;
+        pokemonString += `**Effects:** None`;
     }
 
     return {

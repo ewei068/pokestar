@@ -183,7 +183,7 @@ const commandConfig = {
                 "optional": true,
                 "variable": false,
                 "enum": [
-                    "shiny", "name", "rarity", "none"
+                    "shiny", "name", "rarity", "battleEligible", "none"
                 ]
             },
             "filtervalue": {

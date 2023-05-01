@@ -38,7 +38,7 @@ const battleTargetSelect = async (interaction, data) => {
     // TODO: do something with result?
     const result = battle.activePokemon.useMove(moveId, targetId);
 
-    await interaction.update(getStartTurnSend(battle, data.stateId));
+    await interaction.update(await getStartTurnSend(battle, data.stateId));
 }
 
 module.exports = battleTargetSelect;

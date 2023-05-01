@@ -9,7 +9,7 @@ const { MAX_POKEMON } = require('../config/trainerConfig');
 
 const { logger } = require('../log');
 const { getOrSetDefault } = require('../utils/utils');
-const { calculatePokemonStats } = require('./pokemon');
+const { calculatePokemonStats, getBattleEligible } = require('./pokemon');
 
 const DAILY_MONEY = 300;
 
@@ -96,6 +96,9 @@ const giveNewPokemon = async (trainer, pokemonId) => {
 
     // calculate stats
     calculatePokemonStats(pokemon, speciesData);
+
+    // get battle eligible
+    pokemon["battleEligible"] = getBattleEligible(pokemonConfig, pokemon);
 
     // store pokemon
     try {

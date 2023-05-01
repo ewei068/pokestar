@@ -1,4 +1,4 @@
-const { listPokemons: listPokemons } = require('../../services/pokemon');
+const { listPokemons: listPokemons, setBattleEligible } = require('../../services/pokemon');
 const { getTrainer } = require('../../services/trainer');
 const { buildPokemonListEmbed } = require('../../embeds/pokemonEmbeds');
 const { buildScrollActionRow } = require('../../components/scrollActionRow');
@@ -44,6 +44,15 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
     if (filterBy != "none") {
         if (filterValue == null) {
             return { embed: null, err: "Filter value must be provided if filterBy is provided." };
+        }
+
+        // temporary fill-on-demand battle eligible
+        // TODO: remove this when all pokemon have battleEligible
+        if (filterBy == "battleEligible") {
+            const res = await setBattleEligible(trainer.data);
+            if (res.err) {
+                return { embed: null, err: res.err };
+            }
         }
 
         listOptions.filter = {

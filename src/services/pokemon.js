@@ -216,7 +216,7 @@ const evolvePokemon = async (pokemon, evolutionSpeciesId) => {
     }
 }
 
-const addPokemonExpAndEVs = async (trainer, pokemon, exp, evs) => {
+const addPokemonExpAndEVs = async (trainer, pokemon, exp, evs=[0, 0, 0, 0, 0, 0]) => {
     // get species data
     const speciesData = pokemonConfig[pokemon.speciesId];
 
@@ -311,6 +311,54 @@ const trainPokemon = async (trainer, pokemon, locationId) => {
     return await addPokemonExpAndEVs(trainer, pokemon, exp, evs);
 }
 
+// to be used in mongo aggregate or other
+function getBattleEligible(pokemonConfig, pokemon) {
+    return pokemonConfig[pokemon.speciesId].battleEligible ? true : false;
+}
+
+/**
+ * Sets the battle eligibility of all pokemon owned by the trainer.
+ * Use aggregation pipeline to get all pokemon owned by the trainer,
+ * then looks up the Pokemon by species id to get the battle eligibility.
+ * @param {*} trainer 
+ */
+const setBattleEligible = async (trainer) => {
+    const aggregation = [
+        { $match: { userId: trainer.userId } },
+        {
+            $addFields: {
+                battleEligible: {
+                    $function: {
+                        body: getBattleEligible.toString(),
+                        args: [pokemonConfig, "$$ROOT"],
+                        lang: "js"
+                    }
+                }
+            }
+        },
+        { 
+            $merge: {
+                into: collectionNames.USER_POKEMON,
+                on: "_id",
+                whenMatched: "replace",
+                whenNotMatched: "insert"
+            }
+        }
+    ];
+
+    try {
+        const query = new QueryBuilder(collectionNames.USER_POKEMON)
+            .setAggregate(aggregation);
+        const res = await query.aggregate();
+        logger.info(`Set battle eligibility for all Pokemon owned by ${trainer.userId}.`);
+    } catch (error) {
+        logger.error(error);
+        return { data: null, err: "Error setting battle eligibility." };
+    }
+
+    return { data: null, err: null };
+}
+
 module.exports = {
     listPokemons,
     getPokemon,
@@ -320,5 +368,7 @@ module.exports = {
     calculateAndUpdatePokemonStats,
     releasePokemons,
     addPokemonExpAndEVs,
-    trainPokemon
+    trainPokemon,
+    setBattleEligible,
+    getBattleEligible
 };

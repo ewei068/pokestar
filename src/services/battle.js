@@ -6,8 +6,19 @@ const { buildBattleEmbed, buildBattleMovesetEmbed } = require("../embeds/battleE
 const { buildSelectBattleMoveRow } = require("../components/selectBattleMoveRow");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildBattleInfoActionRow } = require("../components/battleInfoActionRow");
+const { getTrainer, addExpAndMoney } = require("./trainer");
+const { addPokemonExpAndEVs, getPokemon } = require("./pokemon");
+const { logger } = require("../log");
 
 class Battle {
+    baseMoney=100;
+    baseExp=50;
+    moneyMultiplier;
+    expMultiplier;
+    pokemonExpMultiplier;
+    moneyReward;
+    expReward;
+    pokemonExpReward;
     userIds;
     users;
     teams;
@@ -17,8 +28,15 @@ class Battle {
     eventHandler;
     turn;
     winner;
+    ended;
 
-    constructor() {
+    constructor(moneyMultiplier=1, expMultiplier=1, pokemonExpMultiplier=1) {
+        this.moneyMultiplier = moneyMultiplier;
+        this.expMultiplier = expMultiplier;
+        this.pokemonExpMultiplier = pokemonExpMultiplier;
+        this.moneyReward = 0;
+        this.expReward = 0;
+        this.pokemonExpReward = 0;
         this.userIds = [];
         // map userId to user
         this.users = {};
@@ -33,6 +51,7 @@ class Battle {
         this.eventHandler = new BattleEventHandler(this);
         this.turn = 0;
         this.winner = null;
+        this.ended = false;
     }
     
     addTeam(teamName, isNpc) {
@@ -144,8 +163,7 @@ class Battle {
         // increase turn and check for game end
         this.turn++;
         if (this.turn > 100) {
-            this.winner = "DRAW";
-            return;
+            return this.endBattle();
         }
         const undefeatedTeams = [];
         for (const teamName in this.teams) {
@@ -162,14 +180,9 @@ class Battle {
         }
         if (undefeatedTeams.length === 1) {
             this.winner = undefeatedTeams[0];
-            // TODO: deal with NPC case
-            const winnerMentions = this.teams[this.winner].userIds.map(userId => `<@${userId}>`).join(" ");
-            this.addToLog(`Team ${this.winner} has won! ${winnerMentions}`);
-            return;
+            return this.endBattle();
         } else if (undefeatedTeams.length === 0) {
-            this.winner = "DRAW";
-            this.addToLog("The battle has ended in a draw!");
-            return;
+            return this.endBattle();
         }
 
         // push cr
@@ -185,6 +198,31 @@ class Battle {
         // log
         this.log.push(`[Turn ${this.turn}] It is <@${this.activePokemon.userId}>'s ${this.activePokemon.name}'s turn.`);
     }
+
+    endBattle() {
+        if (this.winner) {
+            // TODO: deal with NPC case
+            const winnerMentions = this.teams[this.winner].userIds.map(userId => `<@${userId}>`).join(" ");
+            this.addToLog(`Team ${this.winner} has won! ${winnerMentions}`);
+        } else {
+            this.addToLog("The battle has ended in a draw!");
+        }
+        this.ended = true;
+
+        this.moneyReward = this.baseMoney * this.moneyMultiplier;
+        this.expReward = this.baseExp * this.expMultiplier;
+        // calculate pokemon exp by summing defeated pokemon's levels
+        this.pokemonExpReward = Object.values(this.allPokemon).reduce((acc, pokemon) => {
+            if (pokemon.isFainted) {
+                return acc + pokemon.level;
+            } else {
+                return acc;
+            }
+        }, 0) * this.pokemonExpMultiplier;
+
+        this.addToLog(`Winners recieved ₽${this.moneyReward}, ${this.expReward} exp, and ${this.pokemonExpReward} Pokemon exp. Losers recieved half the amount.`);
+    }
+        
 
     getEligibleTargets(source, moveId) {
         const moveData = moveConfig[moveId];
@@ -706,13 +744,13 @@ class BattleEventHandler {
     }
 }
 
-const getStartTurnSend = (battle, stateId) => {
+const getStartTurnSend = async (battle, stateId) => {
     const content = battle.log.join('\n');
 
     const stateEmbed = buildBattleEmbed(battle);
     
     components = [];
-    if (!battle.winner) {
+    if (!battle.ended) {
         // TODO: handle pokemon fainted or incapacitated
         // TODO: handle edge case where pokemon can't use any moves
         const infoRow = buildBattleInfoActionRow(battle, stateId, Object.keys(battle.teams).length + 1)
@@ -720,6 +758,48 @@ const getStartTurnSend = (battle, stateId) => {
 
         const selectMoveComponent = buildSelectBattleMoveRow(battle, stateId);
         components.push(selectMoveComponent);
+    } else {
+        // if game ended, add rewards to trainers and pokemon
+        // for non-NPC teams, for all trainers, add rewards
+        try {
+            for (const teamName in battle.teams) {
+                const team = battle.teams[teamName];
+                if (team.isNpc) {
+                    continue;
+                }
+
+                const moneyReward = teamName === battle.winner ? battle.moneyReward : Math.floor(battle.moneyReward / 2);
+                const expReward = teamName === battle.winner ? battle.expReward : Math.floor(battle.expReward / 2);
+                const pokemonExpReward = teamName === battle.winner ? battle.pokemonExpReward : Math.floor(battle.pokemonExpReward / 2);
+
+                for (const userId of team.userIds) {
+                    const user = battle.users[userId];
+                    // get trainer
+                    const trainer = await getTrainer(user);
+                    if (trainer.err) {
+                        logger.warn(`Failed to get trainer for user ${user.id} after battle`);
+                        continue;
+                    }
+
+                    // add trainer rewards
+                    await addExpAndMoney(user, moneyReward, expReward);
+
+                    // add pokemon rewards
+                    for (const pokemon of Object.values(battle.allPokemon).filter(p => p.userId === trainer.data.userId)) {
+                        // get db pokemon
+                        const dbPokemon = await getPokemon(trainer.data, pokemon.id);
+                        if (dbPokemon.err) {
+                            logger.warn(`Failed to get pokemon ${pokemon.id} after battle`);
+                            continue;
+                        }
+                        
+                        await addPokemonExpAndEVs(trainer.data, dbPokemon.data, pokemonExpReward);
+                    }
+                }
+            }
+        } catch (err) {
+            logger.error(`Failed to add battle rewards: ${err}`);
+        }
     }
 
     return {

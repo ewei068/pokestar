@@ -26,7 +26,7 @@ const partyAdd = async (user, pokemonId, position) => {
 
     // temp: check battle elibility
     if (!pokemonConfig[pokemon.data.speciesId].battleEligible) {
-        return { send: null, err: `We have not implemented ${pokemon.data.name}'s battle moves yet; look forward to a future update!` };
+        return { send: null, err: `We have not implemented ${pokemon.data.name}'s battle moves yet; look forward to a future update! Use \`/list filterby: battleEligible filtervalue: True\` to find your battle eligible Pokemon!` };
     }
 
     // if pokemon in party, swap pokemon from both indices
