@@ -22,21 +22,26 @@ const battleTargetSelect = async (interaction, data) => {
         return { err: "It's not your turn." };
     }
 
-    // get move ID from data
-    const moveId = data.moveId;
-    if (!moveId) {
-        return { err: "No move selected." };
-    }
+    // if skip turn, skip turn
+    if (data.skipTurn) {
+        const result = battle.activePokemon.skipTurn();
+    } else {
+        // get move ID from data
+        const moveId = data.moveId;
+        if (!moveId) {
+            return { err: "No move selected." };
+        }
 
-    // get target ID from interaction
-    const targetId = interaction.values[0];
-    if (!targetId) {
-        return { err: "No target selected." };
-    }
+        // get target ID from interaction
+        const targetId = interaction.values[0];
+        if (!targetId) {
+            return { err: "No target selected." };
+        }
 
-    // use move on target
-    // TODO: do something with result?
-    const result = battle.activePokemon.useMove(moveId, targetId);
+        // use move on target
+        // TODO: do something with result?
+        const result = battle.activePokemon.useMove(moveId, targetId);
+    }
 
     await interaction.update(await getStartTurnSend(battle, data.stateId));
 }

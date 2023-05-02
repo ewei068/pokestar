@@ -1,4 +1,4 @@
-const { effectConfig } = require('../config/battleConfig');
+const { effectConfig, statusConditions } = require('../config/battleConfig');
 const { pokemonConfig, typeConfig } = require('../config/pokemonConfig');
 const { getPBar } = require('./utils');
 
@@ -92,7 +92,7 @@ const buildMoveString = (moveData, cooldown=0) => {
     moveHeader += `**${moveData.name}** | ${typeConfig[moveData.type].name} | ${moveData.damageType} `;
 
     let moveString = '';
-    moveString += `**[${moveData.tier}]** PWR: ${moveData.power || "-"} | ACC: ${moveData.accuracy || "-"} | MAX CD: ${moveData.cooldown}\n`;
+    moveString += `**[${moveData.tier}]** PWR: ${moveData.power || "-"} | ACC: ${moveData.accuracy || "-"} | CD: ${moveData.cooldown}\n`;
     moveString += `**Target:** ${moveData.targetType}/${moveData.targetPosition}/${moveData.targetPattern}\n`;
     moveString += `${moveData.description}`;
 
@@ -107,15 +107,39 @@ const buildBattlePokemonString = (pokemon) => {
     if (pokemon.isFainted) {
         // TODO: check for other status conditions
         pokemonHeader += "[FNT] ";
+    } else {
+        switch (pokemon.status.statusId) {
+            case statusConditions.BURN:
+                pokemonHeader += "[BRN] ";
+                break;
+            case statusConditions.FREEZE:
+                pokemonHeader += "[FRZ] ";
+                break;
+            case statusConditions.PARALYSIS:
+                pokemonHeader += "[PAR] ";
+                break;
+            case statusConditions.POISON:
+                pokemonHeader += "[PSN] ";
+                break;
+            case statusConditions.BADLY_POISON:
+                pokemonHeader += "[PSN] ";
+                break;
+            case statusConditions.SLEEP:
+                pokemonHeader += "[SLP] ";
+                break;
+            default:
+                break;
+        }
     }
+
     pokemonHeader += `[${pokemon.position}] [Lv. ${pokemon.level}] ${pokemon.name}`;
     let pokemonString = '';
     // build hp percent string
     const hpPercent = Math.min(Math.round(Math.floor(pokemon.hp * 100 / pokemon.maxHp)), 100);
-    pokemonString += `**HP:** ${getPBar(hpPercent, 10)} ${hpPercent}%\n`;
+    pokemonString += `**HP** ${getPBar(hpPercent, 10)} ${hpPercent}\n`;
     // build cr string
     const crPercent = Math.min(Math.round(Math.floor(pokemon.combatReadiness * 100 / 100)), 100);
-    pokemonString += `**CR:** ${getPBar(crPercent, 10)} ${crPercent}%\n`;
+    pokemonString += `**CR** ${getPBar(crPercent, 10)} ${crPercent}\n`;
     // build effects string
     if (Object.keys(pokemon.effectIds).length > 0) {
         pokemonString += `**Effects:** ${Object.keys(pokemon.effectIds).map((effectId) => {

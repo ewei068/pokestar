@@ -13,10 +13,12 @@ const buildSelectBattleMoveRow = (battle, stateId) => {
         .addOptions(Object.keys(battle.activePokemon.moveIds).map(moveId => {
             // TODO: remove moves on cooldown?
             const moveData = moveConfig[moveId];
-            const cooldown = battle.activePokemon.moveIds[moveId];
+            const cooldown = battle.activePokemon.moveIds[moveId].cooldown;
             const cdString = cooldown > 0 ? `[COOLDOWN ${cooldown}] ` : "";
+            const disabled = battle.activePokemon.moveIds[moveId].disabled;
+            const disabledString = disabled ? "[DISABLED] " : "";
             return {
-                label: `${cdString}[${typeConfig[moveData.type].name.toUpperCase()}] ${moveData.name}`,
+                label: `${disabledString}${cdString}[${typeConfig[moveData.type].name.toUpperCase()}] ${moveData.name}`,
                 value: `${moveId}`,
             }
         }));

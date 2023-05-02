@@ -1,7 +1,7 @@
 const { getOrSetDefault } = require("../utils/utils");
 const { v4: uuidv4 } = require('uuid');
-const { pokemonConfig } = require('../config/pokemonConfig');
-const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, getTypeDamageMultiplier, effectConfig } = require("../config/battleConfig");
+const { pokemonConfig, types } = require('../config/pokemonConfig');
+const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, getTypeDamageMultiplier, effectConfig, statusConditions } = require("../config/battleConfig");
 const { buildBattleEmbed, buildBattleMovesetEmbed } = require("../embeds/battleEmbeds");
 const { buildSelectBattleMoveRow } = require("../components/selectBattleMoveRow");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
@@ -9,6 +9,7 @@ const { buildBattleInfoActionRow } = require("../components/battleInfoActionRow"
 const { getTrainer, addExpAndMoney } = require("./trainer");
 const { addPokemonExpAndEVs, getPokemon } = require("./pokemon");
 const { logger } = require("../log");
+const { buildNextTurnActionRow } = require("../components/battleNextTurnRow");
 
 class Battle {
     baseMoney=100;
@@ -30,7 +31,7 @@ class Battle {
     winner;
     ended;
 
-    constructor(moneyMultiplier=1, expMultiplier=1, pokemonExpMultiplier=1) {
+    constructor(moneyMultiplier=1, expMultiplier=1, pokemonExpMultiplier=0.5) {
         this.moneyMultiplier = moneyMultiplier;
         this.expMultiplier = expMultiplier;
         this.pokemonExpMultiplier = pokemonExpMultiplier;
@@ -153,7 +154,11 @@ class Battle {
     nextTurn() {
         // end turn logic
         this.eventHandler.emit(battleEventNames.TURN_END);
-        // TODO: tick status effects
+
+        // tick status effects
+        if (!this.activePokemon.isFainted) {
+            this.activePokemon.tickStatus();
+        }
 
         // tick effects
         if (!this.activePokemon.isFainted) {
@@ -196,7 +201,11 @@ class Battle {
 
         // TODO: deal with NPC case
         // log
-        this.log.push(`[Turn ${this.turn}] It is <@${this.activePokemon.userId}>'s ${this.activePokemon.name}'s turn.`);
+        if (this.activePokemon.canMove()) {
+            this.log.push(`[Turn ${this.turn}] It is <@${this.activePokemon.userId}>'s ${this.activePokemon.name}'s turn.`);
+        } else {
+            this.log.push(`[Turn ${this.turn}] <@${this.activePokemon.userId}>'s ${this.activePokemon.name} is unable to move.`);
+        }
     }
 
     endBattle() {
@@ -255,6 +264,7 @@ class Battle {
         }
 
         // use target position to get valid targets
+        let index;
         switch (moveData.targetPosition) {
             case targetPositions.SELF:
                 eligibleTargets.push(source);
@@ -271,7 +281,7 @@ class Battle {
                 // if pokemons exist in row, add to eligible targets
                 // if all pokemon in front row fainted or nonexistent, move to next row
                 
-                let index = 0;
+                index = 0;
                 for (let i = 0; i < targetParty.rows; i++) {
                     let pokemonFound = false;
                     for (let j = 0; j < targetParty.cols; j++) {
@@ -343,15 +353,20 @@ class Pokemon {
     hp;
     maxHp;
     atk;
+    batk;
     def;
+    bdef;
     spd;
+    bspd;
     spa;
+    bspa;
     spe;
+    bspe;
     type1;
     type2;
     // effectId => duration
     effectIds;
-    // moveId => cooldown
+    // moveId => { cooldown, disabled }
     moveIds;
     // { statusId. tuns active }
     status;
@@ -372,16 +387,24 @@ class Pokemon {
         this.maxHp = this.hp;
         this.level = pokemonData.level;
         this.atk = pokemonData.stats[1];
+        this.batk = pokemonData.stats[1];
         this.def = pokemonData.stats[2];
+        this.bdef = pokemonData.stats[2];
         this.spd = pokemonData.stats[3];
+        this.bspd = pokemonData.stats[3];
         this.spa = pokemonData.stats[4];
+        this.bspa = pokemonData.stats[4];
         this.spe = pokemonData.stats[5];
+        this.bspe = pokemonData.stats[5];
         this.type1 = this.speciesData.type[0];
         this.type2 = this.speciesData.type[1] || null;
         // map effectId => effect data (duration, args)
         this.effectIds = {};
         this.moveIds = this.speciesData.moveIds.reduce((acc, moveId) => {
-            acc[moveId] = 0;
+            acc[moveId] = {
+                cooldown: 0,
+                disabled: false,
+            };
             return acc;
         }, {});
         this.status = {
@@ -394,17 +417,13 @@ class Pokemon {
     }
 
     useMove(moveId, targetPokemonId) {
-        // make sure its this pokemon's turn
-        if (this.battle.activePokemon !== this) {
+        // make sure pokemon can move
+        if (!this.canMove()) {
             return;
         }
-        // make sure move exists and is not on cooldown
-        const cooldown = this.moveIds[moveId];
-        if (cooldown == null || cooldown > 0) {
-            return;
-        }
-        // check if pokemon fainted
-        if (this.isFainted) {
+        // make sure move exists and is not on cooldown & disabled
+        const moveData = moveConfig[moveId];
+        if (!moveData || this.moveIds[moveId].cooldown > 0 || this.moveIds[moveId].disabled) {
             return;
         }
         // check to see if target is valid
@@ -419,29 +438,243 @@ class Pokemon {
         // reset combat readiness
         this.combatReadiness = 0;
 
-        // TODO: trigger move begin
+        let canUseMove = true;
 
-        // get move data and execute move
-        // TODO: check if pokemon still alive and not incapacitated
-        if (true) {
-            // if pokemon alive, get all targets
-            const allTargets = this.getTargets(moveId, targetPokemonId);
-            // TODO: calculate miss
-            const missedTargets = this.getMisses(moveId, allTargets);
-            this.battle.addToLog(`${this.name} used ${moveConfig[moveId].name} against ${primaryTarget.name}!`);
-            // if misses, log miss
-            if (missedTargets.length > 0) {
-                this.battle.addToLog(`Missed ${missedTargets.map(target => target.name).join(', ')}!`);
+        // check status conditions
+        if (this.status.statusId !== null) {
+            switch (this.status.statusId) {
+                case statusConditions.PARALYSIS:
+                    // 25% chance to be paralyzed
+                    const paralysisRoll = Math.random();
+                    if (paralysisRoll < 0.25) {
+                        this.battle.addToLog(`${this.name} is paralyzed and can't move!`);
+                        canUseMove = false;
+                    }
+                    break;
+                case statusConditions.SLEEP:
+                    // sleep wakeup chance: 0 turns: 0%, 1 turn: 33%, 2 turns: 66%, 3 turns: 100%
+                    // round this up a little bit
+                    const wakeupChance = this.status.turns * 0.334;
+                    const wakeupRoll = Math.random();
+                    if (wakeupRoll < wakeupChance) {
+                        this.removeStatus();
+                    } else {
+                        this.battle.addToLog(`${this.name} is fast asleep!`);
+                        canUseMove = false;
+                    }
+                    break;
+                default:
+                    break;
             }
-            moveExecutes[moveId](this.battle, this, primaryTarget, allTargets, missedTargets);
-            // set cooldown
-            this.moveIds[moveId] = moveConfig[moveId].cooldown;
         }
 
-        // TODO: trigger move end
+        if (canUseMove) {
+            const eventArgs = {
+                canUseMove: canUseMove,
+                user: this,
+                primaryTarget: primaryTarget,
+                move: moveId,
+            };
+
+            // trigger before move events
+            this.battle.eventHandler.emit(battleEventNames.MOVE_BEGIN, eventArgs);
+
+            canUseMove = eventArgs.canUseMove;
+        }
+
+        // check if pokemon can use move make sure pokemon is alive
+        canUseMove = canUseMove && !this.isFainted ? true : false;
+
+        // get move data and execute move
+        if (canUseMove) {
+            // see if move log should be silenced
+            const isSilenced = moveConfig[moveId].silenceIf && moveConfig[moveId].silenceIf(this.battle, this);
+            // if pokemon alive, get all targets
+            const allTargets = this.getTargets(moveId, targetPokemonId);
+            if (!isSilenced) {
+                this.battle.addToLog(`${this.name} used ${moveConfig[moveId].name} against ${primaryTarget.name}!`);
+            }
+            // calculate miss
+            const missedTargets = this.getMisses(moveId, allTargets);
+            // if misses, log miss
+            if (missedTargets.length > 0 && !isSilenced) {
+                this.battle.addToLog(`Missed ${missedTargets.map(target => target.name).join(', ')}!`);
+            } 
+
+            // set cooldown
+            this.moveIds[moveId].cooldown = moveConfig[moveId].cooldown;
+
+            // execute move
+            moveExecutes[moveId](this.battle, this, primaryTarget, allTargets, missedTargets);
+
+            // TODO: trigger move end
+        }
+
 
         // end turn
         this.battle.nextTurn();
+    }
+
+    /**
+     * Called if the Pokemon is the active Pokemon but can't move.
+     * @returns null
+     */
+    skipTurn() {
+        // make sure its this Pokemon's turn
+        if (this.battle.activePokemon !== this) {
+            return;
+        }
+        // make sure Pokemon can't move
+        if (this.canMove()) {
+            return;
+        }
+
+        // clear battle log
+        this.battle.clearLog();
+
+        // reset combat readiness
+        this.combatReadiness = 0;
+
+        // check pre-move status conditions that tick regardless of move
+        if (this.status.statusId !== null && canUseMove) {
+            switch (this.status.statusId) {
+                case statusConditions.SLEEP:
+                    // sleep wakeup chance: 0 turns: 0%, 1 turn: 33%, 2 turns: 66%, 3 turns: 100%
+                    // round this up a little bit
+                    const wakeupChance = this.status.turns * 0.334;
+                    const wakeupRoll = Math.random();
+                    if (wakeupRoll < wakeupChance) {
+                        this.removeStatus();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // end turn
+        this.battle.nextTurn();
+    }
+
+    /**
+     * Check that the Pokemon may take a valid action.
+     * @returns True or False
+     */
+    canMove() {
+        // make sure its this pokemon's turn
+        if (this.battle.activePokemon !== this) {
+            return false;
+        }
+
+        // if fainted, return
+        if (this.isFainted) {
+            return false;
+        }
+
+        // if flinched, return
+        // TODO: check for other impairments
+        if (this.effectIds.flinched !== undefined) {
+            return false;
+        }
+
+        // for all non-disabled moves not on cooldown, check to see if valid targets exist
+        for (const moveId in this.moveIds) {
+            if (this.moveIds[moveId].disabled || this.moveIds[moveId].cooldown > 0) {
+                continue;
+            }
+            const eligibleTargets = this.battle.getEligibleTargets(this, moveId);
+            if (eligibleTargets.length > 0) {
+                return true;
+            }
+        }
+
+        // if no valid targets exist, return false
+        return false;
+    }
+
+    getPatternTargets(targetParty, targetPattern, targetRow, targetCol) {
+        const targets = [];
+
+        switch (targetPattern) {
+            case targetPatterns.ALL:
+                // return all pokemon in party
+                for (const pokemon of targetParty.pokemons) {
+                    if (pokemon && !pokemon.isFainted) {
+                        targets.push(pokemon);
+                    }
+                }
+                break;
+            case targetPatterns.ALL_EXCEPT_SELF:
+                // return all pokemon in party except self
+                for (const pokemon of targetParty.pokemons) {
+                    if (pokemon && !pokemon.isFainted && pokemon !== this) {
+                        targets.push(pokemon);
+                    }
+                }
+                break;
+            case targetPatterns.COLUMN:
+                // return all pokemon in column
+                for (const pokemon of targetParty.pokemons) {
+                    if (pokemon && !pokemon.isFainted && (pokemon.position - 1)% targetParty.cols === targetCol) {
+                        targets.push(pokemon);
+                    }
+                }
+                break;
+            case targetPatterns.ROW:
+                // return all pokemon in row
+                for (const pokemon of targetParty.pokemons) {
+                    if (pokemon && !pokemon.isFainted && Math.floor((pokemon.position - 1) / targetParty.cols) === targetRow) {
+                        targets.push(pokemon);
+                    }
+                }
+                break;
+            case targetPatterns.RANDOM:
+                // return random pokemon in party
+                const validPokemons = [];
+                for (const pokemon of targetParty.pokemons) {
+                    if (pokemon && !pokemon.isFainted) {
+                        validPokemons.push(pokemon);
+                    }
+                }
+                targets.push(validPokemons[Math.floor(Math.random() * validPokemons.length)]);
+                break;
+            case targetPatterns.SQUARE:
+                // if row index or column index within 1 of target, add to targets
+                for (const pokemon of targetParty.pokemons) {
+                    if (pokemon && !pokemon.isFainted) {
+                        const pokemonRow = Math.floor((pokemon.position - 1) / targetParty.cols);
+                        const pokemonCol = (pokemon.position - 1) % targetParty.cols;
+                        if (Math.abs(targetRow - pokemonRow) <= 1 && Math.abs(targetCol - pokemonCol) <= 1) {
+                            targets.push(pokemon);
+                        }
+                    }
+                }
+                break;
+            case targetPatterns.CROSS:
+                // target manhattan distance <= 1, add to targets
+                for (const pokemon of targetParty.pokemons) {
+                    if (pokemon && !pokemon.isFainted) {
+                        const pokemonRow = Math.floor((pokemon.position - 1) / targetParty.cols);
+                        const pokemonCol = (pokemon.position - 1) % targetParty.cols;
+                        if (Math.abs(targetRow - pokemonRow) + Math.abs(targetCol - pokemonCol) <= 1) {
+                            targets.push(pokemon);
+                        }
+                    }
+                }
+                break;
+            default:
+                // default is single
+
+                // get target pokemon
+                const targetPokemon = targetParty.pokemons[targetRow * targetParty.cols + targetCol];
+                if (targetPokemon && !targetPokemon.isFainted) {
+                    targets.push(targetPokemon);
+                }
+
+                break;
+        }
+
+        return targets;
     }
 
     getTargets(moveId, targetPokemonId) {
@@ -456,91 +689,10 @@ class Pokemon {
         // get party of target
         const targetParty = this.battle.parties[target.teamName];
 
-        // get eligible targets based on target pattern AOE
-        switch (moveData.targetPattern) {
-            case targetPatterns.ALL:
-                // return all pokemon in party
-                for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted) {
-                        allTargets.push(pokemon);
-                    }
-                }
-                break;
-            case targetPatterns.ALL_EXCEPT_SELF:
-                // return all pokemon in party except self
-                for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted && pokemon !== this) {
-                        allTargets.push(pokemon);
-                    }
-                }
-                break;
-            case targetPatterns.COLUMN:
-                // TODO: should i use index or position?
-                // return all pokemon in column
-                const column = target.position % targetParty.cols;
-                for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted && pokemon.position % targetParty.cols === column) {
-                        allTargets.push(pokemon);
-                    }
-                }
-                break;
-            case targetPatterns.ROW:
-                // TODO: should i use index or position?
-                // return all pokemon in row
-                const row = Math.floor((target.position - 1) / targetParty.cols);
-                for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted && Math.floor((pokemon.position - 1) / targetParty.cols) === row) {
-                        allTargets.push(pokemon);
-                    }
-                }
-                break;
-            case targetPatterns.RANDOM:
-                // return random pokemon in party
-                const validPokemons = [];
-                for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted) {
-                        validPokemons.push(pokemon);
-                    }
-                }
-                allTargets.push(validPokemons[Math.floor(Math.random() * validPokemons.length)]);
-                break;
-            case targetPatterns.SQUARE:
-                // if row index or column index within 1 of target, add to targets
-                let targetRow = Math.floor((target.position - 1) / targetParty.cols);
-                let targetCol = target.position % targetParty.cols;
-                for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted) {
-                        const pokemonRow = Math.floor((pokemon.position - 1) / targetParty.cols);
-                        const pokemonCol = pokemon.position % targetParty.cols;
-                        if (Math.abs(targetRow - pokemonRow) <= 1 && Math.abs(targetCol - pokemonCol) <= 1) {
-                            allTargets.push(pokemon);
-                        }
-                    }
-                }
-                break;
-            case targetPatterns.CROSS:
-                // target manhattan distance <= 1, add to targets
-                targetRow = Math.floor((target.position - 1) / targetParty.cols);
-                targetCol = target.position % targetParty.cols;
-                for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted) {
-                        const pokemonRow = Math.floor((pokemon.position - 1) / targetParty.cols);
-                        const pokemonCol = pokemon.position % targetParty.cols;
-                        if (Math.abs(targetRow - pokemonRow) + Math.abs(targetCol - pokemonCol) <= 1) {
-                            allTargets.push(pokemon);
-                        }
-                    }
-                }
-                break;
-            default:
-                // default is single
-                if (!target.isFainted) {
-                    allTargets.push(target);
-                }
-                break;
-        }
+        const targetRow = Math.floor((target.position - 1) / targetParty.cols);
+        const targetCol = (target.position - 1) % targetParty.cols;
 
-        return allTargets;
+        return this.getPatternTargets(targetParty, moveData.targetPattern, targetRow, targetCol);
     }
 
     getMisses(moveId, targetPokemons) {
@@ -563,7 +715,7 @@ class Pokemon {
                 hitChance *= 0.5;
             }
 
-            if (Math.random() > hitChance) {
+            if (Math.random() > hitChance / 100) {
                 misses.push(target);
             }
         }
@@ -621,11 +773,18 @@ class Pokemon {
         }
         this.hp = Math.min(this.maxHp, this.hp + heal);
         const healTaken = this.hp - oldHp;
-        this.battle.addToLog(`${this.name} healed ${healTaken} HP!`);
+        if (healTaken > 0) {
+            this.battle.addToLog(`${this.name} healed ${healTaken} HP!`);
+        }
         return healTaken;
     }
     
     boostCombatReadiness(source, amount) {
+        // if faint, do nothing
+        if (this.isFainted) {
+            return 0;
+        }
+
         const oldCombatReadiness = this.combatReadiness;
         this.combatReadiness = Math.min(100, this.combatReadiness + amount);
         const combatReadinessGained = this.combatReadiness - oldCombatReadiness;
@@ -633,7 +792,25 @@ class Pokemon {
         return combatReadinessGained;
     }
 
+    reduceCombatReadiness(source, amount) {
+        // if faint, do nothing
+        if (this.isFainted) {
+            return 0;
+        }
+
+        const oldCombatReadiness = this.combatReadiness;
+        this.combatReadiness = Math.max(0, this.combatReadiness - amount);
+        const combatReadinessLost = oldCombatReadiness - this.combatReadiness;
+        this.battle.addToLog(`${this.name} lost ${Math.round(combatReadinessLost)} combat readiness!`);
+        return combatReadinessLost;
+    }
+
     addEffect(effectId, duration, source) {
+        // if faint, do nothing
+        if (this.isFainted) {
+            return;
+        }
+
         const effectData = effectConfig[effectId];
 
         // if effect already exists for longer or equal duration, do nothing
@@ -641,16 +818,43 @@ class Pokemon {
             return;
         }
 
+        // if effect exists, refresh duration
+        // TODO: should this be modified?
+        if (this.effectIds[effectId]) {
+            this.effectIds[effectId].duration = duration;
+            return;
+        }
+
         // TODO: trigger before add effect events
 
-        const args = effectData.effectAdd(this.battle, this);
         this.effectIds[effectId] = {
             duration: duration,
             source: source,
-            args: args,
         };
+        const args = effectData.effectAdd(this.battle, this);
+        
+        // if effect still exists, add args
+        if (this.effectIds[effectId]) {
+            this.effectIds[effectId].args = args;
+        }
 
         // TODO: trigger after add effect events
+    }
+
+    dispellEffect(effectId) {
+        const effectData = effectConfig[effectId];
+
+        // if effect doesn't exist, do nothing
+        if (!this.effectIds[effectId]) {
+            return;
+        }
+
+        // if effect is not dispellable, do nothing
+        if (!effectData.dispellable) {
+            return;
+        }
+
+        this.removeEffect(effectId);
     }
 
     removeEffect(effectId) {
@@ -666,6 +870,172 @@ class Pokemon {
         delete this.effectIds[effectId];
     }
 
+    applyStatus(statusId, source) {
+        // if faint, do nothing
+        if (this.isFainted) {
+            return;
+        }
+
+        // if status already exists, do nothing
+        if (this.status.statusId) {
+            this.battle.addToLog(`${this.name} already has a status condition!`);
+            return;
+        }
+
+        // TODO: trigger before apply status events
+
+        switch (statusId) {
+            // TODO: other status effects
+            case statusConditions.BURN:
+                if (this.type1 === types.FIRE || this.type2 === types.FIRE) {
+                    this.battle.addToLog(`${this.name}'s Fire type renders it immune to burns!`);
+                    break;
+                }
+
+                this.status = {
+                    statusId: statusId,
+                    turns: 0,
+                }
+                this.battle.addToLog(`${this.name} was burned!`);
+                break;
+            case statusConditions.PARALYSIS:
+                if (this.type1 === types.ELECTRIC || this.type2 === types.ELECTRIC) {
+                    this.battle.addToLog(`${this.name}'s Electric type renders it immune to paralysis!`);
+                    break;
+                }
+
+                // reduce speed by 25%
+                this.spe -= Math.floor(this.bspd * 0.25);
+
+                this.status = {
+                    statusId: statusId,
+                    turns: 0,
+                }
+                this.battle.addToLog(`${this.name} was paralyzed!`);
+                break;
+            case statusConditions.POISON:
+                if (this.type1 === types.POISON || this.type2 === types.POISON) {
+                    this.battle.addToLog(`${this.name}'s Poison type renders it immune to poison!`);
+                    break;
+                }
+
+                this.status = {
+                    statusId: statusId,
+                    turns: 0,
+                }
+                this.battle.addToLog(`${this.name} was poisoned!`);
+                break;
+            case statusConditions.SLEEP:
+                this.status = {
+                    statusId: statusId,
+                    turns: 0,
+                }
+                this.battle.addToLog(`${this.name} fell asleep!`);
+                break;
+            default:
+                break;
+        }
+
+        // TODO: trigger after apply status events
+    }
+
+    tickStatus() {
+        // if status doesn't exist, do nothing
+        if (!this.status.statusId) {
+            return;
+        }
+
+        this.status.turns += 1;
+
+        switch (this.status.statusId) {
+            case statusConditions.POISON:
+                const damage = Math.round(this.maxHp / 8);
+                this.battle.addToLog(`${this.name} is hurt by poison!`);
+                this.takeDamage(damage, null, {
+                    type: "statusCondition",
+                    statusId: statusConditions.POISON,
+                });
+                break;
+            case statusConditions.BURN:
+                const burnDamage = Math.round(this.maxHp / 16);
+                this.battle.addToLog(`${this.name} is hurt by its burn!`);
+                this.takeDamage(burnDamage, null, {
+                    type: "statusCondition",
+                    statusId: statusConditions.BURN,
+                });
+            default:
+                break;
+        }
+    }
+
+    removeStatus() {
+        // if status doesn't exist, do nothing
+        if (!this.status.statusId) {
+            return false;
+        }
+
+        // TODO: trigger before remove status events
+
+        switch (this.status.statusId) {
+            case statusConditions.BURN:
+                this.battle.addToLog(`${this.name} was cured of its burn!`);
+                break;
+            case statusConditions.PARALYSIS:
+                // restore speed
+                this.spe += Math.floor(this.bspd * 0.25);
+
+                this.battle.addToLog(`${this.name} was cured of its paralysis!`);
+                break;
+            case statusConditions.POISON:
+                this.battle.addToLog(`${this.name} was cured of its poison!`);
+                break;
+            case statusConditions.SLEEP:
+                this.battle.addToLog(`${this.name} woke up!`);
+                break;
+            default:
+                break;
+        }
+
+        this.status = {
+            statusId: null,
+            turns: 0,
+        }
+
+        return true;
+    }
+
+    disableMove(moveId, source) {
+        // check that move exists
+        if (!this.moveIds[moveId]) {
+            return;
+        }
+
+        // if move already disabled, do nothing
+        if (this.moveIds[moveId].disabled) {
+            return;
+        }
+
+        // disable move
+        this.moveIds[moveId].disabled = true;
+        // this.battle.addToLog(`${this.name}'s ${moveConfig[moveId].name} was disabled!`);
+    }
+
+    enableMove(moveId, source) {
+        // check that move exists
+        if (!this.moveIds[moveId]) {
+            return;
+        }
+
+        // if move not disabled, do nothing
+        if (!this.moveIds[moveId].disabled) {
+            return;
+        }
+
+        // enable move
+        this.moveIds[moveId].disabled = false;
+        // this.battle.addToLog(`${this.name}'s ${moveConfig[moveId].name} is no longer disabled!`);
+    }
+
     tickEffectDurations() {
         for (const effectId in this.effectIds) {
             this.effectIds[effectId].duration--;
@@ -677,8 +1047,8 @@ class Pokemon {
 
     tickMoveCooldowns() {
         for (const moveId in this.moveIds) {
-            if (this.moveIds[moveId] > 0) {
-                this.moveIds[moveId]--;
+            if (this.moveIds[moveId].cooldown > 0) {
+                this.moveIds[moveId].cooldown--;
             }
         }
     }
@@ -699,15 +1069,16 @@ class BattleEventHandler {
     }
 
     registerListener(eventName, listener) {
-        getOrSetDefault(this.eventNames, eventName, []).push(listener);
         // generate listener UUID
         const listenerId = uuidv4();
+
+        getOrSetDefault(this.eventNames, eventName, []).push(listenerId);
         this.eventListeners[listenerId] = listener;
         // add listenerId and eventName to listener.initialargs
-        listener.initialargs = {
+        listener.initialArgs = {
             listenerId: listenerId,
             eventName: eventName,
-            ...listener.initialargs
+            ...listener.initialArgs
         }
 
         return listenerId;
@@ -716,7 +1087,7 @@ class BattleEventHandler {
     unregisterListener(listenerId) {
         const listener = this.eventListeners[listenerId];
         if (listener) {
-            const eventName = listener.initialargs.eventName;
+            const eventName = listener.initialArgs.eventName;
             const listenerIds = this.eventNames[eventName];
             if (listenerIds) {
                 const index = listenerIds.indexOf(listenerId);
@@ -734,10 +1105,7 @@ class BattleEventHandler {
             for (const listenerId of listenerIds) {
                 const listener = this.eventListeners[listenerId];
                 if (listener) {
-                    listener.execute({
-                        ...args,
-                        ...listener.initialargs
-                    })
+                    listener.execute(listener.initialArgs, args);
                 }
             }
         }
@@ -751,13 +1119,18 @@ const getStartTurnSend = async (battle, stateId) => {
     
     components = [];
     if (!battle.ended) {
-        // TODO: handle pokemon fainted or incapacitated
-        // TODO: handle edge case where pokemon can't use any moves
         const infoRow = buildBattleInfoActionRow(battle, stateId, Object.keys(battle.teams).length + 1)
         components.push(infoRow);
 
-        const selectMoveComponent = buildSelectBattleMoveRow(battle, stateId);
-        components.push(selectMoveComponent);
+        // check if active pokemon can move
+        // TODO: deal with NPC case
+        if (battle.activePokemon.canMove()) {
+            const selectMoveComponent = buildSelectBattleMoveRow(battle, stateId);
+            components.push(selectMoveComponent);
+        } else {
+            const nextTurnComponent = buildNextTurnActionRow(stateId);
+            components.push(nextTurnComponent);
+        }
     } else {
         // if game ended, add rewards to trainers and pokemon
         // for non-NPC teams, for all trainers, add rewards

@@ -62,7 +62,7 @@ const giveNewPokemon = async (trainer, pokemonId) => {
     const ivs = drawUniform(0, 31, 6);
     // if legendary, set 3 random IVs to 31
     if (speciesData.rarity == rarities.LEGENDARY) {
-        const indices = drawUniform(0, 5, 3);
+        let indices = drawUniform(0, 5, 3);
 
         // while dupes, reroll indices
         // TODO: make this better lol im lazy

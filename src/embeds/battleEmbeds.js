@@ -65,7 +65,7 @@ const buildBattleEmbed = (battle) => {
 
 const buildBattleMovesetEmbed = (pokemon) => {
     const fields = Object.keys(pokemon.moveIds).map((moveId, index) => {
-        const cooldown = pokemon.moveIds[moveId];
+        const cooldown = pokemon.moveIds[moveId].cooldown;
         const moveData = moveConfig[moveId];
         const { moveHeader, moveString } = buildMoveString(moveData, cooldown);
         return {

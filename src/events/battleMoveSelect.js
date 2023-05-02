@@ -32,9 +32,13 @@ const battleMoveSelect = async (interaction, data) => {
         return { err: "Invalid move." };
     }
     // validate cooldown
-    if (pokemon.moveIds[moveId] > 0) {
+    if (pokemon.moveIds[moveId].cooldown > 0) {
         return { err: "Move is on cooldown." };
-    }    
+    }
+    // validate disabled
+    if (pokemon.moveIds[moveId].disabled) {
+        return { err: "Move is disabled." };
+    }
 
     // find valid targets for move
     const targets = battle.getEligibleTargets(pokemon, moveId);
