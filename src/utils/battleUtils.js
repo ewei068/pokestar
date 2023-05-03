@@ -155,8 +155,6 @@ const buildBattlePokemonString = (pokemon) => {
     }
 }
 
-
-
 module.exports = {
     buildPartyString,
     buildMoveString,

@@ -1,8 +1,9 @@
 const { EmbedBuilder } = require("discord.js");
 const { moveConfig } = require("../config/battleConfig");
 const { buildPartyString, buildMoveString, buildBattlePokemonString } = require("../utils/battleUtils");
+const { buildPokemonStatString } = require("../utils/pokemonUtils");
 
-const buildPartyEmbed = (trainer, pokemons) => {
+const buildPartyEmbed = (trainer, pokemons, detailed=false) => {
     const party = trainer.party;
 
     const power = pokemons.reduce((acc, pokemon) => {
@@ -20,6 +21,24 @@ const buildPartyEmbed = (trainer, pokemons) => {
         { name: "Power", value: `${power}`, inline: true },
         { name: "Pokemon", value: buildPartyString(pokemons, party.rows, party.cols), inline: false },
     );
+
+    if (detailed) {
+        const pokemonFields = pokemons.filter(p => p !== null).map((pokemon, index) => {
+            const statString = buildPokemonStatString(pokemon, size=10, compact=true)
+            return {
+                name: `[${pokemons.indexOf(pokemon)}] [Lv. ${pokemon.level}] ${pokemon.name}`,
+                value: statString,
+                inline: true,
+            };
+        });
+        // every 2 fields, add a blank field
+        if (pokemonFields.length > 2) {
+            for (let i = 2; i < pokemonFields.length; i += 3) {
+                pokemonFields.splice(i, 0, { name: '** **', value: '** **', inline: false });
+            }
+        }
+        embed.addFields(pokemonFields);
+    }
 
     return embed;
 }

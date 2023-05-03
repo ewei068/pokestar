@@ -25,7 +25,7 @@ const partyInfo = async (user) => {
     }
 
     // build embed
-    const partyEmbed = buildPartyEmbed(trainer.data, partyPokemons.data);
+    const partyEmbed = buildPartyEmbed(trainer.data, partyPokemons.data, detailed=true);
 
     // set state
     const stateId = setState({ 

@@ -1181,10 +1181,12 @@ const pokemonConfig = {
             "39": 0.8,
             "138": 0.2
         },
+        "moveIds": ["m239", "m245", "m349", "m200"],
+        "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.SLOW
     },
-    "150" : {
+    "150": {
         "name": "Mewtwo",
         "emoji": "<:150:1100294789867520052>",
         "description": "It was created by a scientist after years of horrific gene splicing and DNA engineering experiments.",
@@ -1196,6 +1198,8 @@ const pokemonConfig = {
             "46": 0.8,
             "127": 0.2
         },
+        "moveIds": ["m246", "m53", "m58", "m540"],
+        "battleEligible": true,
         "rarity": rarities.LEGENDARY,
         "growthRate": growthRates.SLOW
     },

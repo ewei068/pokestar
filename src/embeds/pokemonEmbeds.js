@@ -2,7 +2,7 @@ const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig } = requ
 const { moveConfig } = require('../config/battleConfig');
 const { EmbedBuilder } = require('discord.js');
 const { getWhitespace, getPBar, linebreakString } = require('../utils/utils');
-const { getPokemonExpNeeded } = require('../utils/pokemonUtils');
+const { getPokemonExpNeeded, buildPokemonStatString } = require('../utils/pokemonUtils');
 const { buildMoveString } = require('../utils/battleUtils');
 
 // pokemon: user's pokemon data
@@ -75,23 +75,7 @@ const buildPokemonEmbed = (trainer, pokemon) => {
     const levelPercent = pokemon.level >= 100 ? 0 : ((pokemon.exp || 0) - oldLevelExp) / (newLevelExp - oldLevelExp) * 100;
     const progressBar = `${getPBar(levelPercent, 20)} -- ${Math.round(levelPercent)}%`;
 
-    const statArray = [
-        `${pokemon.stats[0]}|${pokemon.ivs[0]}|${pokemon.evs[0]}`,
-        `${pokemon.stats[1]}|${pokemon.ivs[1]}|${pokemon.evs[1]}`,
-        `${pokemon.stats[2]}|${pokemon.ivs[2]}|${pokemon.evs[2]}`,
-        `${pokemon.stats[3]}|${pokemon.ivs[3]}|${pokemon.evs[3]}`,
-        `${pokemon.stats[4]}|${pokemon.ivs[4]}|${pokemon.evs[4]}`,
-        `${pokemon.stats[5]}|${pokemon.ivs[5]}|${pokemon.evs[5]}`
-    ];
-    const whitespace = getWhitespace(statArray);
-    let statString = "";
-    statString += `\` HP (${whitespace[0]}${statArray[0]})\` ${getPBar(pokemon.stats[0] * 100 / 300)}\n`;
-    statString += `\`Atk (${whitespace[1]}${statArray[1]})\` ${getPBar(pokemon.stats[1] * 100 / 300)}\n`;
-    statString += `\`Def (${whitespace[2]}${statArray[2]})\` ${getPBar(pokemon.stats[2] * 100 / 300)}\n`;
-    statString += `\`SpA (${whitespace[3]}${statArray[3]})\` ${getPBar(pokemon.stats[3] * 100 / 300)}\n`;
-    statString += `\`SpD (${whitespace[4]}${statArray[4]})\` ${getPBar(pokemon.stats[4] * 100 / 300)}\n`;
-    statString += `\`Spe (${whitespace[5]}${statArray[5]})\` ${getPBar(pokemon.stats[5] * 100 / 300)}\n`;
-    statString += `Power: ${pokemon.combatPower}`;
+    const statString = buildPokemonStatString(pokemon);
 
     // TODO: display original owner?
     const embed = new EmbedBuilder();

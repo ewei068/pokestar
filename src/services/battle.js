@@ -218,18 +218,18 @@ class Battle {
         }
         this.ended = true;
 
-        this.moneyReward = this.baseMoney * this.moneyMultiplier;
-        this.expReward = this.baseExp * this.expMultiplier;
+        this.moneyReward = Math.floor(this.baseMoney * this.moneyMultiplier);
+        this.expReward = Math.floor(this.baseExp * this.expMultiplier);
         // calculate pokemon exp by summing defeated pokemon's levels
-        this.pokemonExpReward = Object.values(this.allPokemon).reduce((acc, pokemon) => {
+        this.pokemonExpReward = Math.floor(Object.values(this.allPokemon).reduce((acc, pokemon) => {
             if (pokemon.isFainted) {
                 return acc + pokemon.level;
             } else {
                 return acc;
             }
-        }, 0) * this.pokemonExpMultiplier;
+        }, 0) * this.pokemonExpMultiplier);
 
-        this.addToLog(`Winners recieved ₽${this.moneyReward}, ${this.expReward} exp, and ${this.pokemonExpReward} Pokemon exp. Losers recieved half the amount.`);
+        this.addToLog(`Winners recieved ₽${this.moneyReward}, ${this.expReward} exp, and ${this.pokemonExpReward} BASE Pokemon exp. Losers recieved half the amount.`);
     }
         
 
@@ -356,10 +356,10 @@ class Pokemon {
     batk;
     def;
     bdef;
-    spd;
-    bspd;
     spa;
     bspa;
+    spd;
+    bspd;
     spe;
     bspe;
     type1;
@@ -390,10 +390,10 @@ class Pokemon {
         this.batk = pokemonData.stats[1];
         this.def = pokemonData.stats[2];
         this.bdef = pokemonData.stats[2];
-        this.spd = pokemonData.stats[3];
-        this.bspd = pokemonData.stats[3];
-        this.spa = pokemonData.stats[4];
-        this.bspa = pokemonData.stats[4];
+        this.spa = pokemonData.stats[3];
+        this.bspa = pokemonData.stats[3];
+        this.spd = pokemonData.stats[4];
+        this.bspd = pokemonData.stats[4];
         this.spe = pokemonData.stats[5];
         this.bspe = pokemonData.stats[5];
         this.type1 = this.speciesData.type[0];
@@ -443,6 +443,17 @@ class Pokemon {
         // check status conditions
         if (this.status.statusId !== null) {
             switch (this.status.statusId) {
+                case statusConditions.FREEZE:
+                    // thaw chance (turns => chance): 0 => 0%, 1 => 20%, 2 => 40%, 3 => 60%, 4 => 80%, 5 => 100%
+                    const thawChance = this.status.turns * 0.2;
+                    const thawRoll = Math.random();
+                    if (thawRoll < thawChance) {
+                        this.removeStatus();
+                    } else {
+                        this.battle.addToLog(`${this.name} is frozen solid!`);
+                        canUseMove = false;
+                    }
+                    break;
                 case statusConditions.PARALYSIS:
                     // 25% chance to be paralyzed
                     const paralysisRoll = Math.random();
@@ -488,11 +499,15 @@ class Pokemon {
         // get move data and execute move
         if (canUseMove) {
             // see if move log should be silenced
-            const isSilenced = moveConfig[moveId].silenceIf && moveConfig[moveId].silenceIf(this.battle, this);
+            const isSilenced = moveData.silenceIf && moveData.silenceIf(this.battle, this);
             // if pokemon alive, get all targets
             const allTargets = this.getTargets(moveId, targetPokemonId);
             if (!isSilenced) {
-                this.battle.addToLog(`${this.name} used ${moveConfig[moveId].name} against ${primaryTarget.name}!`);
+                const targetString = moveData.targetPattern === targetPatterns.ALL 
+                || moveData.targetPattern === targetPatterns.ALL_EXCEPT_SELF
+                || moveData.targetPattern === targetPatterns.RANDOM
+                ? "!" : ` against ${primaryTarget.name}!`
+                this.battle.addToLog(`${this.name} used ${moveData.name}${targetString}`);
             }
             // calculate miss
             const missedTargets = this.getMisses(moveId, allTargets);
@@ -502,7 +517,7 @@ class Pokemon {
             } 
 
             // set cooldown
-            this.moveIds[moveId].cooldown = moveConfig[moveId].cooldown;
+            this.moveIds[moveId].cooldown = moveData.cooldown;
 
             // execute move
             moveExecutes[moveId](this.battle, this, primaryTarget, allTargets, missedTargets);
@@ -538,6 +553,14 @@ class Pokemon {
         // check pre-move status conditions that tick regardless of move
         if (this.status.statusId !== null && canUseMove) {
             switch (this.status.statusId) {
+                case statusConditions.FREEZE:
+                    // thaw chance (turns => chance): 0 => 0%, 1 => 20%, 2 => 40%, 3 => 60%, 4 => 80%, 5 => 100%
+                    const thawChance = this.status.turns * 0.2;
+                    const thawRoll = Math.random();
+                    if (thawRoll < thawChance) {
+                        this.removeStatus();
+                    }
+                    break;
                 case statusConditions.SLEEP:
                     // sleep wakeup chance: 0 turns: 0%, 1 turn: 33%, 2 turns: 66%, 3 turns: 100%
                     // round this up a little bit
@@ -736,7 +759,22 @@ class Pokemon {
     }
 
     takeDamage(damage, source, damageInfo) {
+        if (this.isFainted) {
+            return 0;
+        }
+
         // TODO: trigger damage taken begin & type events
+
+        // if frozen and fire type, thaw and deal 1.5x damage
+        const freezeCheck = this.status.statusId === statusConditions.FREEZE
+        && damageInfo.type === "move"
+        && moveConfig[damageInfo.moveId] !== undefined
+        && moveConfig[damageInfo.moveId].type === types.FIRE;
+        if (freezeCheck) {
+            if(this.removeStatus()) {
+                damage = Math.floor(damage * 1.5);
+            }
+        }
 
         const oldHp = this.hp;
         if (oldHp <= 0 || this.isFainted) {
@@ -898,6 +936,18 @@ class Pokemon {
                 }
                 this.battle.addToLog(`${this.name} was burned!`);
                 break;
+            case statusConditions.FREEZE:
+                if (this.type1 === types.ICE || this.type2 === types.ICE) {
+                    this.battle.addToLog(`${this.name}'s Ice type renders it immune to freezing!`);
+                    break;
+                }
+
+                this.status = {
+                    statusId: statusId,
+                    turns: 0,
+                }
+                this.battle.addToLog(`${this.name} was frozen!`);
+                break;
             case statusConditions.PARALYSIS:
                 if (this.type1 === types.ELECTRIC || this.type2 === types.ELECTRIC) {
                     this.battle.addToLog(`${this.name}'s Electric type renders it immune to paralysis!`);
@@ -979,6 +1029,9 @@ class Pokemon {
         switch (this.status.statusId) {
             case statusConditions.BURN:
                 this.battle.addToLog(`${this.name} was cured of its burn!`);
+                break;
+            case statusConditions.FREEZE:
+                this.battle.addToLog(`${this.name} was thawed out!`);
                 break;
             case statusConditions.PARALYSIS:
                 // restore speed

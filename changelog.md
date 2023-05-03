@@ -1,5 +1,22 @@
 # Pokestar Changelog
 
+## 0.5.0 - The Battle Update
+
+A HUGE update that now supports battles! Add your Pokemon to your party and participate in fun, strategic 6v6 battles to gain massive rewards!
+
+* Party commands:
+    * `/partyadd <pokemonid> <position>`: Add a Pokemon to your party in positions 1-9!
+    * `/partyremove <pokemonid|slot|"ALL">`: Remove a specified Pokemon from your party!
+    * `/partyinfo`: View your party Pokemon and positions!
+    * **NOTE:** Not all Pokemon have been implemented for battle yet, and you won't be able to add them into your party. Currently implemented Pokemon: Venusaur, Charizard, Blastoise, Pidgeot, Articuno, Zapdos, Moltres, Dragonite, Mewtwo. Use `/list filterby: battleEligible filtervalue: True` to find your battle eligible Pokemon!
+* `/pvp`: Start a PVP challenge! Someone else in the same server may accept this challenge, and you will both face off in a 6v6 Pokemon battle! Make sure to use the above party commands to specify your party before battling!
+    * In battle, you can use the select menus to select moves to use and targets to use the moves on.
+    * The buttons can be toggled for more battle information.
+    * All participating players get trainer EXP, Pokedollars, and Pokemon EXP when a battle ends, with winners getting more.
+* Added party information to the `/trainerinfo` command!
+* Failed component interaction now gives feedback!
+* Updated some command documentation.
+
 ### 0.4.1 (4/24) - QOL Patch
 
 Added a few helpful QOL features to make bot interaction easier!
