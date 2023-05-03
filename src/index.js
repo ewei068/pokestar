@@ -5,6 +5,7 @@ const { Client, Events, GatewayIntentBits } = require('discord.js');
 const { runMessageCommand, runSlashCommand, prefix } = require('./handlers/commandHandler.js');
 const { handleEvent } = require('./handlers/eventHandler.js');
 const { logger } = require('./log');
+const { checkRateLimit } = require('./services/rateLimit.js');
 
 // Create a new client instance
 const client = new Client({ intents: 
@@ -16,6 +17,12 @@ const client = new Client({ intents:
 });
 
 client.on(Events.MessageCreate, async (message) => {
+    try {
+        if (!checkRateLimit(message.author.id)) return;
+    } catch (error) {
+        return;
+    }
+
     runMessageCommand(message, client).then(() => {
         // do nothing
     }).catch((error) => {
@@ -27,6 +34,12 @@ client.on(Events.MessageCreate, async (message) => {
 
 client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
+
+    try {
+        if (!checkRateLimit(interaction.user.id)) return;
+    } catch (error) {
+        return;
+    }
 
     runSlashCommand(interaction, client).then(() => {
         // do nothing
@@ -43,6 +56,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;
+
+    try {
+        if (!checkRateLimit(interaction.user.id)) return;
+    } catch (error) {
+        return;
+    }
 
     try {
         await handleEvent(interaction, client);
