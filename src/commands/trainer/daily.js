@@ -17,12 +17,10 @@ const daily = async (user) => {
 
     // draw daily rewards
     const rewards = await drawDaily(trainer.data);
-    const { money, backpack } = rewards.data;
     if (rewards.err) {
         return { data: null, err: rewards.err };
-    } else if (backpack.length === 0) {
-        return { data: null, err: "You already claimed your daily rewards today!" };
     }
+    const { money, backpack } = rewards.data;
 
     // build itemized rewards string
     let rewardsString = "**You received:**";

@@ -20,7 +20,7 @@ const drawDaily = async (trainer) => {
     if (now.getDate() != lastDaily.getDate() || process.env.STAGE == stageNames.ALPHA) {
         trainer.lastDaily = now.getTime();
     } else {
-        return { data: [], err: null };
+        return { data: null, err: "You already claimed your daily rewards today!" };
     }
 
     const results = drawDiscrete(dailyRewardChances, NUM_DAILY_REWARDS);

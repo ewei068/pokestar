@@ -1,6 +1,11 @@
 # Pokestar Changelog
 
-## 0.5.0 - The Battle Update
+### 0,5.1
+
+* Patched daily rewards error.
+* Patched state cleanup after battle end.
+
+## 0.5.0 (5/2) - The Battle Update
 
 A HUGE update that now supports battles! Add your Pokemon to your party and participate in fun, strategic 6v6 battles to gain massive rewards!
 

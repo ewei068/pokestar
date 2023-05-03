@@ -10,6 +10,7 @@ const { getTrainer, addExpAndMoney } = require("./trainer");
 const { addPokemonExpAndEVs, getPokemon } = require("./pokemon");
 const { logger } = require("../log");
 const { buildNextTurnActionRow } = require("../components/battleNextTurnRow");
+const { deleteState } = require("./state");
 
 class Battle {
     baseMoney=100;
@@ -1226,6 +1227,8 @@ const getStartTurnSend = async (battle, stateId) => {
         } catch (err) {
             logger.error(`Failed to add battle rewards: ${err}`);
         }
+
+        deleteState(stateId);
     }
 
     return {
