@@ -36,17 +36,15 @@ const buildBattleInfoActionRow = (battle, stateId, selectionIndex=0) => {
             selectionIndex: i + 1
         }
     });
-    // on alpha only, push a debug button
-    if (process.env.STAGE === stageNames.ALPHA) {
-        buttonConfigs.push({
-            label: 'Debug',
-            disabled: false,
-            data: {
-                ...infoRowData,
-                selectionIndex: i + 2
-            }
-        });
-    }
+    
+    buttonConfigs.push({
+        label: 'Refresh',
+        disabled: false,
+        data: {
+            ...infoRowData,
+            selectionIndex: i + 2
+        }
+    });
     
     // disable selection index
     buttonConfigs[selectionIndex].disabled = true;

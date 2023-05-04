@@ -1,6 +1,13 @@
 # Pokestar Changelog
 
-### 0,5.1 (5/2)
+### 0.5.2
+
+* Added a battle refresh button. Press it if there are connectivity issues or glitches.
+* The `/pvp` command now supports optionaly mentioning another user to only challenge them!
+* Added more informative party info & failed command feedback.
+* Users are now rate-limited at 1 interaction/second. Any additional interactions or commands will may be dropped.
+
+### 0.5.1 (5/2)
 
 * Patched daily rewards error.
 * Patched state cleanup after battle end.

@@ -1,6 +1,7 @@
 const { getState } = require("../services/state");
 const { buildBattleInfoActionRow } = require("../components/battleInfoActionRow");
 const { buildBattleMovesetEmbed, buildBattleTeamEmbed } = require("../embeds/battleEmbeds");
+const { getStartTurnSend } = require("../services/battle");
 const { stageNames } = require("../config/stageConfig");
 const { logger } = require("../log");
 
@@ -51,10 +52,13 @@ const battleInfo = async (interaction, data) => {
     } else if (selectionIndex === numTeams + 1) {
         // hide info embed
         interaction.message.embeds = [interaction.message.embeds[0]];
-    } else if (selectionIndex === numTeams + 2 && process.env.STAGE === stageNames.ALPHA) {
+    } else if (selectionIndex === numTeams + 2) {
         // in alpha, show debug
-        logger.info(battle)
-        await interaction.reply({ content: "Debug info sent to console.", ephemeral: true });
+        if (process.env.STAGE == stageNames.ALPHA) {
+            logger.info(battle)
+        }
+        // refresh battle display
+        interaction.update(await getStartTurnSend(battle, data.stateId));
         return;
     } else {
         return { err: "Invalid selection." };

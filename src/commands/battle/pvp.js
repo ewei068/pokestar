@@ -54,9 +54,11 @@ const pvp = async (user, opponentUserId) => {
         eventNames.PVP_ACCEPT
     )
 
+    const opponentString = opponentUserId ? `<@${opponentUserId}> has ` : "You have ";
+
     const send = {
         // TODO: mentions
-        content: `You have been challenged to a battle by ${user.username}!`,
+        content: `${opponentString}been challenged to a battle by ${user.username}!`,
         embeds: [embed],
         components: [confirmButtonRow]
     }
