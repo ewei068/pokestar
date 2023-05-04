@@ -2,12 +2,13 @@
 
 ### 0.5.3 (5/3)
 
-* Implemented battle moves for Butterfree, Beedrill, Ratticate, Raichu
+* Implemented battle moves for Butterfree, Beedrill, Ratticate, Raichu!
 * Balance changes:
-    * Buffed Discharge, Flamethrower, Hydro Pump
-    * Buffed speed boosts
-    * Reduced miss chance
-* Add more level-up rewards
+    * Buffed Discharge, Flamethrower, Hydro Pump!
+    * Buffed speed boosts!
+    * Reduced miss chance!
+* Add more level-up rewards.
+* Increased starting Pokeballs.
 
 ### 0.5.2 (5/3)
 

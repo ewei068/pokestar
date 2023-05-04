@@ -43,9 +43,9 @@ const trainerFields = {
         "default": {
             [backpackCategories.POKEBALLS]: {
                 [backpackItems.POKEBALL]: 10,
-                [backpackItems.GREATBALL]: 0,
-                [backpackItems.ULTRABALL]: 0,
-                [backpackItems.MASTERBALL]: 0
+                [backpackItems.GREATBALL]: 5,
+                [backpackItems.ULTRABALL]: 3,
+                [backpackItems.MASTERBALL]: 1,
             }
         },
     },
