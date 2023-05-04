@@ -236,7 +236,125 @@ const levelConfig = {
                 }
             }
         }
-    }
+    },
+    16: {
+        "rewards": {
+            "money": 1000,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                },
+            }
+        }
+    },
+    17: {
+        "rewards": {
+            "money": 1000,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                },
+            }
+        }
+    },
+    18: {
+        "rewards": {
+            "money": 1000,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                },
+            }
+        }
+    },
+    19: {
+        "rewards": {
+            "money": 1000,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                },
+            }
+        }
+    },
+    20: {
+        "rewards": {
+            "money": 5000,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.ULTRABALL]: 5,
+                    [backpackItems.MASTERBALL]: 3,
+                }
+            }
+        }
+    },
+    21: {
+        "rewards": {
+            "money": 1500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                },
+            }
+        }
+    },
+    22: {
+        "rewards": {
+            "money": 1500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                },
+            }
+        }
+    },
+    23: {
+        "rewards": {
+            "money": 1500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                },
+            }
+        }
+    },
+    24: {
+        "rewards": {
+            "money": 1500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                },
+            }
+        }
+    },
+    25: {
+        "rewards": {
+            "money": 7500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.ULTRABALL]: 5,
+                    [backpackItems.MASTERBALL]: 5,
+                }
+            }
+        }
+    },
 }
 
 // TODO: move?
