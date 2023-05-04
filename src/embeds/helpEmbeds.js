@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { commandConfig, commandCategoryConfig } = require('../config/commandConfig');
 const { stageConfig } = require('../config/stageConfig');
+const { buildCommandUsageString } = require('../utils/utils');
 
 const prefix = stageConfig[process.env.STAGE].prefix;
 
@@ -29,14 +30,8 @@ const buildHelpCategoryEmbed = (category) => {
             continue;
         }
 
-        commandsString += `\`${prefix}${commandData.aliases[0]}`;
-        if (commandData.args) {
-            for (const arg in commandData.args) {
-                const argConfig = commandData.args[arg];
-                commandsString += ` <${arg}${argConfig.optional ? "?" : ""}>`;
-            }
-        }
-        commandsString += `\` - ${commandData.description}\n`;
+        commandsString += buildCommandUsageString(prefix, commandData);
+        commandsString += ` - ${commandData.description}\n`;
     }
     const embed = new EmbedBuilder();
     embed.setTitle(`Help - ${commandCategoryConfig[category].name}`)
@@ -51,14 +46,7 @@ const buildHelpCategoryEmbed = (category) => {
 const buildHelpCommandEmbed = (commandName) => {
     const commandData = commandConfig[commandName];
 
-    let usageString = `\`${prefix}${commandData.aliases[0]}`;
-    if (commandData.args) {
-        for (const arg in commandData.args) {
-            const argConfig = commandData.args[arg];
-            usageString += ` <${arg}${argConfig.optional ? "?" : ""}>`;
-        }
-    }
-    usageString += "\`";
+    const usageString = buildCommandUsageString(prefix, commandData)
 
     let argsString = "";
     for (const arg in commandData.args) {

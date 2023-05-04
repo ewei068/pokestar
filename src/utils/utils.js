@@ -74,6 +74,29 @@ const matrixIndexOf = (matrix, value) => {
     return null;
 }
 
+const getUserId = (string) => {
+    if (!string) {
+        return null;
+    }
+
+    const id = string.match(/<@!?(\d+)>/);
+    if (id) {
+        return id[1];
+    }
+    return null;
+}
+
+const buildCommandUsageString = (prefix, commandData) => {
+    let usageString = `\`${prefix}${commandData.aliases[0]}`;
+    if (commandData.args) {
+        for (const arg in commandData.args) {
+            const argConfig = commandData.args[arg];
+            usageString += ` <${arg}${argConfig.optional ? "?" : ""}: ${argConfig.type}>`;
+        }
+    }
+    usageString += "\`";
+    return usageString;
+}
 
 
 module.exports = {
@@ -84,5 +107,7 @@ module.exports = {
     idFrom,
     matrixIndex,
     matrixLoc,
-    matrixIndexOf
+    matrixIndexOf,
+    getUserId,
+    buildCommandUsageString
 }

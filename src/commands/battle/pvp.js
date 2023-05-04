@@ -5,8 +5,14 @@ const { setState } = require('../../services/state');
 const { buildButtonActionRow } = require('../../components/buttonActionRow');
 const { buildTrainerEmbed } = require('../../embeds/trainerEmbeds');
 const { eventNames } = require('../../config/eventConfig');
+const { getUserId } = require('../../utils/utils');
 
-const pvp = async (user) => {
+const pvp = async (user, opponentUserId) => {
+    // if opponent user ID equals user ID, return error
+    if (opponentUserId === user.id) {
+        return { send: null, err: "You can't challenge yourself!" };
+    }
+
     // get trainer
     const trainer = await getTrainerInfo(user);
     if (trainer.err) {
@@ -31,6 +37,7 @@ const pvp = async (user) => {
     const state = {
         battle: battle,
         userId: user.id,
+        opponentUserId: opponentUserId
     }
     const stateId = setState(state, 300);
 
@@ -58,7 +65,10 @@ const pvp = async (user) => {
 }
 
 const pvpMessageCommand = async (message) => {
-    const { send, err } = await pvp(message.author);
+    const args = message.content.split(' ');
+    const opponentUserId = getUserId(args[1]) || null;
+
+    const { send, err } = await pvp(message.author, opponentUserId);
     if (err) {
         await message.channel.send(`${err}`);
         return { err: err };
@@ -68,7 +78,9 @@ const pvpMessageCommand = async (message) => {
 }
 
 const pvpSlashCommand = async (interaction) => {
-    const { send, err } = await pvp(interaction.user);
+    const opponentUserId = interaction.options.getUser('opponent') ? interaction.options.getUser('opponent').id : null;
+    
+    const { send, err } = await pvp(interaction.user, opponentUserId);
     if (err) {
         await interaction.reply(`${err}`);
         return { err: err };

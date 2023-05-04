@@ -13,6 +13,11 @@ const pvpAccept = async (interaction, data) => {
         return { err: "This interaction has expired." };
     }
 
+    // if state.opponentUserId does not match interaction.user.id, return error
+    if (state.opponentUserId && state.opponentUserId != interaction.user.id) {
+        return { err: "You can't accept this battle!" };
+    }
+
     // if data has userId component, verify interaction was NOT done by that user
     if (state.userId && interaction.user.id == state.userId) {
         return { err: "You can't accept your own battle!" };

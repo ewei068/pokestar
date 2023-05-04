@@ -31,11 +31,14 @@ const test = async (channel, interaction=false) => {
 
 const testMessageCommand = async (message) => {
     const send = await test(message.channel);
+    console.log(message)
     await message.channel.send(send);
 }
 
 const testSlashCommand = async (interaction) => {
     const send = await test(interaction.channel, true);
+    const arg1 = interaction.options.getString('arg1');
+    console.log(arg1);
     await interaction.reply(send);
 }
 

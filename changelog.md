@@ -1,6 +1,6 @@
 # Pokestar Changelog
 
-### 0,5.1
+### 0,5.1 (5/2)
 
 * Patched daily rewards error.
 * Patched state cleanup after battle end.

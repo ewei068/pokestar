@@ -354,9 +354,16 @@ const commandConfig = {
         "name": "PvP",
         "aliases": ["pvp", "battle"],
         "description": "Battle another player",
-        "longDescription": "Initiates a battle in the channel. Another player may choose to accept the battle.",
+        "longDescription": "Initiates a battle in the channel. Another player may choose to accept the battle. If opponent is specified, only the opponent may accept the battle.",
         "execute": "pvp.js",
-        "args": {},
+        "args": {
+            "opponent": {
+                "type": "user",
+                "description": "@mention an opponent to battle",
+                "optional": true,
+                "variable": false
+            }
+        },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },
     "partyinfo": {
@@ -384,7 +391,7 @@ const commandConfig = {
             },
             "position": {
                 "type": "int",
-                "description": "position to add Pokemon to",
+                "description": "position (1-9) to add Pokemon to",
                 "optional": false,
                 "variable": false
             }

@@ -4,6 +4,7 @@ const { stageNames, stageConfig } = require('../config/stageConfig');
 const { addExpAndMoney: addExpAndMoney } = require('../services/trainer');
 const { logger } = require('../log');
 const path = require('node:path');
+const { buildCommandUsageString } = require('../utils/utils');
 
 const prefix = stageConfig[process.env.STAGE].prefix;
 
@@ -39,6 +40,8 @@ const buildSlashCommand = (commandConfig) => {
             slashCommand.addIntegerOption(optionFn);
         } else if (argConfig.type == "bool") {
             slashCommand.addBooleanOption(optionFn);
+        } else if (argConfig.type == "user") {
+            slashCommand.addUserOption(optionFn);
         }
     }
     return slashCommand;
@@ -54,11 +57,11 @@ for (const commandGroup in commandCategoryConfig) {
             for (const alias of commandData.aliases) {
                 if (commandExecute.message) {
                     messageCommands[`${prefix}${alias}`] = commandExecute.message;
+                    commandLookup[`${prefix}${alias}`] = commandData;
                 } else {
                     logger.warn(`No message command for ${commandName}!`);
                     break;
                 }
-                commandLookup[`${prefix}${alias}`] = commandData;
             }
             if (commandExecute.slash) {
                 slashCommands[commandName] = commandExecute.slash;
@@ -114,6 +117,10 @@ const validateArgs = (command, args) => {
                 if (providedArg != "true" && providedArg != "false") {
                     return false;
                 }
+            } else if (argConfig.type == "user") {
+                if (!providedArg.startsWith("<@") || !providedArg.endsWith(">")) {
+                    return false;
+                }
             }
 
             // enum check
@@ -143,8 +150,9 @@ const runMessageCommand = async (message, client) => {
     if (!command.startsWith(prefix)) return;
 
     // if command not in commands, return
-    if (!(command in messageCommands)) {
-        message.reply(`Invalid command! Try \`${prefix}help\` for more info.`);
+    const commandData = getCommand(command);
+    if (!(command in messageCommands) || !commandData) {
+        message.reply(`Invalid command! Try \`${prefix}help\` to view all commands.`);
         return;
     }
 
@@ -153,7 +161,7 @@ const runMessageCommand = async (message, client) => {
     if (!validateArgs(command, args)) {
         // remove command prefix
         command = command.slice(prefix.length);
-        message.reply(`Invalid arguments! Try \`${prefix}help ${command}\` for more info.`);
+        message.reply(`Invalid arguments! The correct usage is ${buildCommandUsageString(prefix, commandData)}. Try \`${prefix}help ${command}\` for more info.`);
         return;
     }
 
