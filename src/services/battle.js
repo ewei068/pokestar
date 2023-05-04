@@ -730,13 +730,15 @@ class Pokemon {
             let hitChance = moveData.accuracy;
             const damageMult = getTypeDamageMultiplier(moveData.type, target);
             if (damageMult >= 4) {
-                hitChance *= 1.25;
+                hitChance *= 1.4;
             } else if (damageMult >= 2) {
-                hitChance *= 1.1;
+                hitChance *= 1.15;
             } else if (damageMult <= 0.5) {
-                hitChance *= 0.75;
+                hitChance *= 0.8;
             } else if (damageMult <= 0.25) {
-                hitChance *= 0.5;
+                hitChance *= 0.6;
+            } else if (damageMult === 0) {
+                hitChance = 0;
             }
 
             if (Math.random() > hitChance / 100) {
@@ -765,6 +767,15 @@ class Pokemon {
         }
 
         // TODO: trigger damage taken begin & type events
+        const eventArgs = {
+            target: this,
+            damage: damage,
+            source: source,
+            damageInfo: damageInfo,
+        };
+
+        this.battle.eventHandler.emit(battleEventNames.BEFORE_DAMAGE_TAKEN, eventArgs);
+        damage = eventArgs.damage;
 
         // if frozen and fire type, thaw and deal 1.5x damage
         const freezeCheck = this.status.statusId === statusConditions.FREEZE
@@ -955,8 +966,8 @@ class Pokemon {
                     break;
                 }
 
-                // reduce speed by 25%
-                this.spe -= Math.floor(this.bspd * 0.25);
+                // reduce speed by 30%
+                this.spe -= Math.floor(this.bspd * 0.3);
 
                 this.status = {
                     statusId: statusId,

@@ -107,7 +107,6 @@ const giveNewPokemon = async (trainer, pokemonId) => {
             logger.error(`Failed to insert pokemon ${pokemon.name} for ${trainer.user.username}.`);
             return { data: null, err: "Error pokemon saving." };
         }
-        logger.info(`Inserted pokemon ${pokemon.name} for ${trainer.user.username}.`);
 
         const rv = {
             "pokemon": pokemon,
