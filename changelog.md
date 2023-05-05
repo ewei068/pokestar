@@ -1,6 +1,6 @@
 # Pokestar Changelog
 
-### 0.5.4 - Balance Patch
+### 0.5.4 (5/5) - Balance Patch
 
 * Implemented various balance changes to fix the following issues:
     * AoE attacks OP
