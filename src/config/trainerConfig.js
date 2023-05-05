@@ -68,7 +68,11 @@ const trainerFields = {
     "party": {
         "type": "object",
         "default": {
-            "pokemonIds": [null, null, null, null, null, null, null, null, null],
+            "pokemonIds": [
+                null, null, null, null, 
+                null, null, null, null, 
+                null, null, null, null,
+            ],
             "rows": 3,
             "cols": 4,
         },

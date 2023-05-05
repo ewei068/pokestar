@@ -8,7 +8,11 @@ const resizeParty = function(party) {
     party.cols = 4;
 
     if (!party.pokemonIds || party.pokemonIds.length != 9) {
-        party.pokemonIds = [null, null, null, null, null, null, null, null, null, null, null, null];
+        party.pokemonIds = [
+            null, null, null, null, 
+            null, null, null, null, 
+            null, null, null, null
+        ];
         return party;
     } else {
         // insert null after 9, 6, 3
