@@ -4,7 +4,7 @@ const { collectionNames } = require("../config/databaseConfig");
 const { getOrSetDefault, idFrom } = require("../utils/utils");
 const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS } = require("../config/pokemonConfig");
 const { expMultiplier } = require("../config/trainerConfig");
-const { getPokemonExpNeeded } = require("../utils/pokemonUtils");
+const { getPokemonExpNeeded, calculateEffectiveSpeed } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
 
 // TODO: move this?
@@ -63,8 +63,8 @@ const calculatePokemonStats = (pokemon, speciesData) => {
     }
 
     // calculate new combat power
-    // TODO: change calculation?
-    const newCombatPower = (newStats[0]/2) + newStats[1] + newStats[2] + newStats[3] + newStats[4] + newStats[5];
+    // new calc: level * 3 + (3/4) * hp + atk + def + spa + spd + calculateEffectiveSpeed(spe)
+    const newCombatPower = Math.floor(level * 3 + (3/4) * newStats[0] + newStats[1] + newStats[2] + newStats[3] + newStats[4] + calculateEffectiveSpeed(newStats[5]));
     
     pokemon.stats = newStats;
     pokemon.combatPower = newCombatPower;

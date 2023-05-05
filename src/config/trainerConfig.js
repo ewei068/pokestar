@@ -70,7 +70,7 @@ const trainerFields = {
         "default": {
             "pokemonIds": [null, null, null, null, null, null, null, null, null],
             "rows": 3,
-            "cols": 3,
+            "cols": 4,
         },
     }
 }

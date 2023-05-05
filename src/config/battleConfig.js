@@ -685,7 +685,7 @@ const moveConfig = {
     "m38": {
         "name": "Double Edge",
         "type": types.NORMAL,
-        "power": 130,
+        "power": 125,
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -724,7 +724,7 @@ const moveConfig = {
     "m53": {
         "name": "Flamethrower",
         "type": types.FIRE,
-        "power": 75,
+        "power": 70,
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -750,7 +750,7 @@ const moveConfig = {
     "m56": {
         "name": "Hydro Pump",
         "type": types.WATER,
-        "power": 110,
+        "power": 100,
         "accuracy": 80,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -763,7 +763,7 @@ const moveConfig = {
     "m57": {
         "name": "Surf",
         "type": types.WATER,
-        "power": 75,
+        "power": 70,
         "accuracy": 90,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -857,7 +857,7 @@ const moveConfig = {
     "m87": {
         "name": "Thunder",
         "type": types.ELECTRIC,
-        "power": 110,
+        "power": 100,
         "accuracy": 70,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -938,7 +938,7 @@ const moveConfig = {
     "m200": {
         "name": "Outrage",
         "type": types.DRAGON,
-        "power": 120,
+        "power": 110,
         "accuracy": 100,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -1107,7 +1107,7 @@ const moveConfig = {
     "m394": {
         "name": "Flare Blitz",
         "type": types.FIRE,
-        "power": 115,
+        "power": 110,
         "accuracy": 100,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -1133,7 +1133,7 @@ const moveConfig = {
     "m405": {
         "name": "Bug Buzz",
         "type": types.BUG,
-        "power": 80,
+        "power": 70,
         "accuracy": 100,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -1172,7 +1172,7 @@ const moveConfig = {
     "m435": {
         "name": "Discharge",
         "type": types.ELECTRIC,
-        "power": 70,
+        "power": 65,
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -1211,7 +1211,7 @@ const moveConfig = {
     "m540": {
         "name": "Psystrke",
         "type": types.PSYCHIC,
-        "power": 100,
+        "power": 90,
         "accuracy": 100,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -1224,7 +1224,7 @@ const moveConfig = {
     "m542": {
         "name": "Hurricane",
         "type": types.FLYING,
-        "power": 80,
+        "power": 75,
         "accuracy": 70,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,

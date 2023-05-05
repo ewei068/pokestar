@@ -11,6 +11,7 @@ const { addPokemonExpAndEVs, getPokemon } = require("./pokemon");
 const { logger } = require("../log");
 const { buildNextTurnActionRow } = require("../components/battleNextTurnRow");
 const { deleteState } = require("./state");
+const { calculateEffectiveSpeed } = require("../utils/pokemonUtils");
 
 class Battle {
     baseMoney=100;
@@ -90,12 +91,11 @@ class Battle {
         this.parties[teamName] = {
             pokemons: partyPokemons,
             rows: 3,
-            cols: 3,
+            cols: 4,
         }
     }
 
     increaseCombatReadiness() {
-        // TODO: possibly balance effective speed
         // get min ticks for a pokemon to be ready
         const MAX_CR = 100;
         let minTicks = Number.MAX_SAFE_INTEGER;
@@ -105,7 +105,7 @@ class Battle {
             for (const pokemon of party.pokemons) {
                 if (pokemon && !pokemon.isFainted) {
                     const requiredCr = MAX_CR - pokemon.combatReadiness;
-                    const ticks = requiredCr / pokemon.spe;
+                    const ticks = requiredCr / pokemon.effectiveSpeed();
                     if (ticks < minTicks) {
                         minTicks = ticks;
                         minTicksPokemon = pokemon;
@@ -132,7 +132,7 @@ class Battle {
             const party = this.parties[partyName];
             for (const pokemon of party.pokemons) {
                 if (pokemon && !pokemon.isFainted) {
-                    pokemon.combatReadiness = Math.min(MAX_CR, pokemon.combatReadiness + pokemon.spe * minTicks);
+                    pokemon.combatReadiness = Math.min(MAX_CR, pokemon.combatReadiness + pokemon.effectiveSpeed() * minTicks);
                 }
             }
         }
@@ -445,8 +445,8 @@ class Pokemon {
         if (this.status.statusId !== null) {
             switch (this.status.statusId) {
                 case statusConditions.FREEZE:
-                    // thaw chance (turns => chance): 0 => 0%, 1 => 20%, 2 => 40%, 3 => 60%, 4 => 80%, 5 => 100%
-                    const thawChance = this.status.turns * 0.2;
+                    // thaw chance (turns => chance): 0 => 0%, 1 => 40%, 2 => 80%, 3 => 100%
+                    const thawChance = this.status.turns * 0.4;
                     const thawRoll = Math.random();
                     if (thawRoll < thawChance) {
                         this.removeStatus();
@@ -464,9 +464,8 @@ class Pokemon {
                     }
                     break;
                 case statusConditions.SLEEP:
-                    // sleep wakeup chance: 0 turns: 0%, 1 turn: 33%, 2 turns: 66%, 3 turns: 100%
-                    // round this up a little bit
-                    const wakeupChance = this.status.turns * 0.334;
+                    // sleep wakeup chance: 0 turns: 0%, 1 turn: 66%, 2 turns: 100%
+                    const wakeupChance = this.status.turns * 0.66;
                     const wakeupRoll = Math.random();
                     if (wakeupRoll < wakeupChance) {
                         this.removeStatus();
@@ -555,17 +554,16 @@ class Pokemon {
         if (this.status.statusId !== null && canUseMove) {
             switch (this.status.statusId) {
                 case statusConditions.FREEZE:
-                    // thaw chance (turns => chance): 0 => 0%, 1 => 20%, 2 => 40%, 3 => 60%, 4 => 80%, 5 => 100%
-                    const thawChance = this.status.turns * 0.2;
+                    // thaw chance (turns => chance): 0 => 0%, 1 => 40%, 2 => 80%, 3 => 100%
+                    const thawChance = this.status.turns * 0.4;
                     const thawRoll = Math.random();
                     if (thawRoll < thawChance) {
                         this.removeStatus();
                     }
                     break;
                 case statusConditions.SLEEP:
-                    // sleep wakeup chance: 0 turns: 0%, 1 turn: 33%, 2 turns: 66%, 3 turns: 100%
-                    // round this up a little bit
-                    const wakeupChance = this.status.turns * 0.334;
+                    // sleep wakeup chance: 0 turns: 0%, 1 turn: 66%, 2 turns: 100%
+                    const wakeupChance = this.status.turns * 0.66;
                     const wakeupRoll = Math.random();
                     if (wakeupRoll < wakeupChance) {
                         this.removeStatus();
@@ -1116,6 +1114,10 @@ class Pokemon {
                 this.moveIds[moveId].cooldown--;
             }
         }
+    }
+
+    effectiveSpeed() {
+        return calculateEffectiveSpeed(this.spe);
     }
 
 }

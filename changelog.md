@@ -1,5 +1,17 @@
 # Pokestar Changelog
 
+### 0.5.4 - Balance Patch
+
+* Implemented various balance changes to fix the following issues:
+    * AoE attacks OP
+    * Setup moves not useful
+    * Battles too short
+    * Speed OP
+* Slightly nerf AoE attacks
+* Increased party size by one column to help avoid AoE
+* Slightly nerfed CC (freeze, sleep)
+* Mitigate early speed balancing with new effective speed calculation
+
 ### 0.5.3 (5/3)
 
 * Implemented battle moves for Butterfree, Beedrill, Ratticate, Raichu!
@@ -27,7 +39,7 @@
 A HUGE update that now supports battles! Add your Pokemon to your party and participate in fun, strategic 6v6 battles to gain massive rewards!
 
 * Party commands:
-    * `/partyadd <pokemonid> <position>`: Add a Pokemon to your party in positions 1-9!
+    * `/partyadd <pokemonid> <position>`: Add a Pokemon to your party in positions 1-12!
     * `/partyremove <pokemonid|slot|"ALL">`: Remove a specified Pokemon from your party!
     * `/partyinfo`: View your party Pokemon and positions!
     * **NOTE:** Not all Pokemon have been implemented for battle yet, and you won't be able to add them into your party. Currently implemented Pokemon: Venusaur, Charizard, Blastoise, Pidgeot, Articuno, Zapdos, Moltres, Dragonite, Mewtwo. Use `/list filterby: battleEligible filtervalue: True` to find your battle eligible Pokemon!

@@ -53,7 +53,9 @@ const buildPartyString = (pokemons, rows, cols, reverse=false, hp=false, emphPos
             const rborder = emphPosition && emphPosition - 1 == globalIndex ? '║' : '|';
             const pokemon = pokemons[globalIndex];
             const emoji = pokemon ? pokemonConfig[pokemon.speciesId].emoji : '⬛';
-            rowString += `${lborder} \`${emoji}\` `;
+            // if j is divisible by 3 and not 0, remove a space from the left
+            const leftSpace = j % 3 === 0 && j !== 0 ? '' : ' ';
+            rowString += `${lborder} \`${emoji}\`${leftSpace}`;
             globalIndex++;
             if (j == cols - 1) {
                 rowString += `${rborder}\``;
@@ -69,7 +71,11 @@ const buildPartyString = (pokemons, rows, cols, reverse=false, hp=false, emphPos
             const rplus = emphPosition && emphPosition - 1 == globalIndex ? '╬' : '+';
             const border = emphPosition && emphPosition - 1 == globalIndex ? '=' : '-';
             const position = globalIndex + 1;
-            rowString += `${lplus}${border}${border}${position}${border}${border}`;
+            if (position < 10) {
+                rowString += `${lplus}${border}${border}${position}${border}${border}`;
+            } else {
+                rowString += `${lplus}${border}${border}${position}${border}`;
+            }
             if (j == cols - 1) {
                 rowString += `${rplus}\``;
             }

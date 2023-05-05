@@ -60,8 +60,24 @@ const buildPokemonStatString = (pokemon, size=20, compact=false) => {
     return statString;
 }
 
+const calculateEffectiveSpeed = (speed) => {
+    // use formula:
+    // y\ =\ 50\ \left\{x\ \le\ 0\right\}
+    // y=\frac{1}{2}x\ +\ 50\ \left\{0\ <x\ \le\ 100\right\}
+    // y\ =\ x\ \left\{\ 100\ <\ x\ \right\}
+
+    if (speed <= 0) {
+        return 50;
+    } else if (speed <= 100) {
+        return Math.floor(0.5 * speed + 50);
+    } else {
+        return speed;
+    }
+}
+
 module.exports = {
     getPokemonExpNeeded,
     calculateWorth,
-    buildPokemonStatString
+    buildPokemonStatString,
+    calculateEffectiveSpeed
 };

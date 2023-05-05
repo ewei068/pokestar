@@ -391,7 +391,7 @@ const commandConfig = {
             },
             "position": {
                 "type": "int",
-                "description": "position (1-9) to add Pokemon to",
+                "description": "position (1-12) to add Pokemon to",
                 "optional": false,
                 "variable": false
             }
