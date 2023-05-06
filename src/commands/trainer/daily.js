@@ -37,7 +37,7 @@ const daily = async (user) => {
     for (const item in trainer.data.backpack[backpackCategories.POKEBALLS]) {
         rewardsString += `\n${backpackItemConfig[item].emoji} ${trainer.data.backpack[backpackCategories.POKEBALLS][item]}x ${backpackItemConfig[item].name}`;
     }
-    rewardsString += "\nSpend your Pokedollars at the \`/pokemart\` | Use \`/help gacha\` to learn how to use your Pokeballs";
+    rewardsString += "\nSpend your Pokedollars at the \`/pokemart\` | Use \`/gacha\` to use your Pokeballs";
 
     return { data: rewardsString, err: null };
 }

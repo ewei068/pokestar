@@ -130,14 +130,14 @@ const usePokeball = async (trainer, pokeballId) => {
         }
     } catch (error) {
         logger.error(error);
-        return { data: null, err: "Error checking max pokemon." };
+        return { data: null, err: "Error checking max Pokemon." };
     }
     
     const pokeballs = getOrSetDefault(trainer.backpack, backpackCategories.POKEBALLS, {});
     if (getOrSetDefault(pokeballs, pokeballId, 0) > 0) {
         pokeballs[pokeballId]--;
     } else {
-        return { data: null, err: `No pokeballs of type ${backpackItemConfig[pokeballId].name}! Use the \`/pokemart\`, daily rewards, or level rewards to get more.` };
+        return { data: null, err: `No pokeballs of type ${backpackItemConfig[pokeballId].name}! View your items with \`/backpack\`. Use the \`/pokemart\`, daily rewards, or level rewards to get more.` };
     }
 
     const rarity = drawDiscrete(pokeballChanceConfig[pokeballId], 1)[0];
@@ -146,12 +146,12 @@ const usePokeball = async (trainer, pokeballId) => {
         const res = await updateDocument(collectionNames.USERS, { userId: trainer.userId }, { $set: { backpack: trainer.backpack } });
         if (res.modifiedCount === 0) {
             logger.error(`Failed to use pokeball and update ${trainer.user.username}.`);
-            return { data: null, err: "Error pokeball use update." };
+            return { data: null, err: "Error using Pokeball." };
         }
         // logger.info(`Used pokeball and updated ${trainer.user.username}.`);
     } catch (error) {
         logger.error(error);
-        return { data: null, err: "Error pokeball use update." };
+        return { data: null, err: "Error using Pokeball." };
     }
 
     const pokemonId = drawIterable(rarityBins[rarity], 1)[0];

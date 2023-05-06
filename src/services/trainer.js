@@ -256,7 +256,7 @@ const getLevelRewards = async (user) => {
     }
 
     if (Object.keys(allRewards).length === 0) {
-        return { data: null, err: "No rewards to claim!" };
+        return { data: null, err: "No rewards to claim! Keep playing to level up!" };
     }
 
     // update trainer

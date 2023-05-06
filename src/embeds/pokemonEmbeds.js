@@ -35,7 +35,9 @@ const buildNewPokemonEmbed = (pokemon, speciesData) => {
         { name: "IVs", value: ivString, inline: false },
     );
     embed.setImage(pokemon.shiny ? speciesData.shinySprite : speciesData.sprite);
-    embed.setFooter({ text: `ID: ${pokemon._id}` });
+    const lbHelp = '/info <id> to inspect this Pokemon\n/train <id> to train this Pokemon\n/list to see all your Pokemon';
+    const footerText= `ID: ${pokemon._id}\n${lbHelp}`;
+    embed.setFooter({ text: footerText });
 
     return embed;
 }
@@ -116,7 +118,9 @@ const buildPokemonEmbed = (trainer, pokemon) => {
     }
 
     embed.setImage(pokemon.shiny ? speciesData.shinySprite : speciesData.sprite);
-    embed.setFooter({ text: `ID: ${pokemon._id}` });
+
+    const lbHelp = '/train <id> to train this Pokemon' + (pokemon.battleEligible ? '\n/partyadd <id> <position> to add this Pokemon to your party' : '');
+    embed.setFooter({ text: `ID: ${pokemon._id}\n${lbHelp}` });
 
     return embed;
 }

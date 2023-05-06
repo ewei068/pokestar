@@ -111,8 +111,14 @@ const calculateAndUpdatePokemonStats = async (pokemon, speciesData) => {
 const getPokemon = async (trainer, pokemonId) => {
     // find instance of pokemon in trainer's collection
     try {
+        let id = null;
+        try {
+            id = idFrom(pokemonId);
+        } catch (error) {
+            return { data: null, err: "Invalid Pokemon ID." };
+        }
         const query = new QueryBuilder(collectionNames.USER_POKEMON)
-            .setFilter({ userId: trainer.userId, _id: idFrom(pokemonId) });
+            .setFilter({ userId: trainer.userId, _id: id });
         
         const res = await query.findOne();
         
@@ -299,7 +305,7 @@ const trainPokemon = async (trainer, pokemon, locationId) => {
     if (!locationLevel) {
         // if home (no location), continue
         if (locationId != locations.HOME)
-            return { data: null, err: "You don't own that location!" };
+            return { data: null, err: "You don't own that location! View your locations with `/locations`, and buy more at the `/pokemart`!" };
     } else {
         const levelConfig = locationData.levelConfig[locationLevel];
         // get exp and evs based on location

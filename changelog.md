@@ -1,5 +1,11 @@
 # Pokestar Changelog
 
+### 0.5.6
+
+* Patch a few party and damage calculation bugs.
+* Reduce rate limit to 0.75 seconds.
+* Added more helpful command feedback!
+
 ### 0.5.4 (5/5) - Balance Patch
 
 * Implemented various balance changes to fix the following issues:
@@ -11,8 +17,6 @@
 * Increased party size by one column to help avoid AoE
 * Slightly nerfed CC (freeze, sleep)
 * Mitigate early speed balancing with new effective speed calculation
-* Patch a few party and damage calculation bugs
-* Reduce rate limit to 0.75 seconds
 
 ### 0.5.3 (5/3)
 

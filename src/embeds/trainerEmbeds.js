@@ -35,6 +35,10 @@ const buildTrainerEmbed = (trainerInfo) => {
         { name: "Shinies", value: `${trainerInfo.totalShiny}`, inline: true },
         { name: "Level Progress", value: `${progressBar}`, inline: false },
     );
+
+    const footerString = '/gacha to get Pokemon\n/backpack to view your items\n/list to view your Pokemon';
+    embed.setFooter({ text: footerString });
+
     return embed;
 }
 

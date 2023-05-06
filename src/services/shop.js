@@ -29,12 +29,12 @@ const buyItem = async (trainer, itemId, quantity) => {
     if (itemId === shopItems.RANDOM_POKEBALL) {
         // check if limit has been reached
         if (trainer.purchasedShopItemsToday[itemId] >= item.limit) {
-            return { data: null, err: "You have reached the limit for this item." };
+            return { data: null, err: "You have reached the daily limit for this item." };
         }
 
         // check if quantity exceeds limit
         if (trainer.purchasedShopItemsToday[itemId] + quantity > item.limit) {
-            return { data: null, err: `You can only purchase ${item.limit - trainer.purchasedShopItemsToday[itemId]} more of this item.` };
+            return { data: null, err: `You can only purchase ${item.limit - trainer.purchasedShopItemsToday[itemId]} more of this item today.` };
         }
 
         // check if trainer has enough money
@@ -102,7 +102,7 @@ const buyItem = async (trainer, itemId, quantity) => {
         trainer.money -= cost;
         trainer.locations[locationId] = level + 1;
 
-        returnString = `You purchased a level ${level + 1} ${locationData.name} for ₽${cost}.`;
+        returnString = `You purchased a level ${level + 1} ${locationData.name} for ₽${cost}. View your locations with \`/locations\`.`;
     }
 
     // update trainer

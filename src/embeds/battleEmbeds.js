@@ -40,6 +40,9 @@ const buildPartyEmbed = (trainer, pokemons, detailed=false) => {
         embed.addFields(pokemonFields);
     }
 
+    const footerString = 'Modify your party with /partyadd and /partyremove';
+    embed.setFooter({ text: footerString });
+
     return embed;
 }
 
