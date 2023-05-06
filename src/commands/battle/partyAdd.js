@@ -14,8 +14,8 @@ const partyAdd = async (user, pokemonId, position) => {
     const partyPokemon = trainer.data.party.pokemonIds;
 
     // check if position is valid
-    if (index < 0 || index >= trainer.data.party.length) {
-        return { send: null, err: `Invalid position! Must be between 1 and ${trainer.data.party.length}.` };
+    if (index < 0 || index >= trainer.data.party.pokemonIds.length) {
+        return { send: null, err: `Invalid position! Must be between 1 and ${trainer.data.party.pokemonIds.length}.` };
     }
 
     // get pokemon

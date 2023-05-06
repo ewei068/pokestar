@@ -309,7 +309,7 @@ const commandConfig = {
         "args": {
             "itemid": {
                 "type": "string",
-                "description": "item to buy",
+                "description": "item ID to buy",
                 "optional": false,
                 "variable": false
             },
@@ -412,7 +412,7 @@ const commandConfig = {
         "args": {
             "option": {
                 "type": "string",
-                "description": "option to remove Pokemon by",
+                "description": "option (<position> or <pokemonid> or ALL) to remove Pokemon by",
                 "optional": false,
                 "variable": false,
             },

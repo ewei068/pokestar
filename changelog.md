@@ -11,6 +11,8 @@
 * Increased party size by one column to help avoid AoE
 * Slightly nerfed CC (freeze, sleep)
 * Mitigate early speed balancing with new effective speed calculation
+* Patch a few party and damage calculation bugs
+* Reduce rate limit to 0.75 seconds
 
 ### 0.5.3 (5/3)
 

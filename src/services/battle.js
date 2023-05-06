@@ -731,12 +731,12 @@ class Pokemon {
                 hitChance *= 1.4;
             } else if (damageMult >= 2) {
                 hitChance *= 1.15;
-            } else if (damageMult <= 0.5) {
-                hitChance *= 0.8;
-            } else if (damageMult <= 0.25) {
-                hitChance *= 0.6;
             } else if (damageMult === 0) {
                 hitChance = 0;
+            } else if (damageMult <= 0.25) {
+                hitChance *= 0.6;
+            } else if (damageMult <= 0.5) {
+                hitChance *= 0.8;
             }
 
             if (Math.random() > hitChance / 100) {
@@ -764,17 +764,6 @@ class Pokemon {
             return 0;
         }
 
-        // TODO: trigger damage taken begin & type events
-        const eventArgs = {
-            target: this,
-            damage: damage,
-            source: source,
-            damageInfo: damageInfo,
-        };
-
-        this.battle.eventHandler.emit(battleEventNames.BEFORE_DAMAGE_TAKEN, eventArgs);
-        damage = eventArgs.damage;
-
         // if frozen and fire type, thaw and deal 1.5x damage
         const freezeCheck = this.status.statusId === statusConditions.FREEZE
         && damageInfo.type === "move"
@@ -785,6 +774,17 @@ class Pokemon {
                 damage = Math.floor(damage * 1.5);
             }
         }
+
+        // TODO: trigger damage taken begin & type events
+        const eventArgs = {
+            target: this,
+            damage: damage,
+            source: source,
+            damageInfo: damageInfo,
+        };
+
+        this.battle.eventHandler.emit(battleEventNames.BEFORE_DAMAGE_TAKEN, eventArgs);
+        damage = eventArgs.damage;
 
         const oldHp = this.hp;
         if (oldHp <= 0 || this.isFainted) {
@@ -894,15 +894,15 @@ class Pokemon {
 
         // if effect doesn't exist, do nothing
         if (!this.effectIds[effectId]) {
-            return;
+            return false;
         }
 
         // if effect is not dispellable, do nothing
         if (!effectData.dispellable) {
-            return;
+            return false;
         }
 
-        this.removeEffect(effectId);
+        return this.removeEffect(effectId);
     }
 
     removeEffect(effectId) {
@@ -910,12 +910,13 @@ class Pokemon {
 
         // if effect doesn't exist, do nothing
         if (!this.effectIds[effectId]) {
-            return;
+            return false;
         }
 
         effectData.effectRemove(this.battle, this, this.effectIds[effectId].args);
 
         delete this.effectIds[effectId];
+        return true;
     }
 
     applyStatus(statusId, source) {

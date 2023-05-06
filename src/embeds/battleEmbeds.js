@@ -27,7 +27,7 @@ const buildPartyEmbed = (trainer, pokemons, detailed=false) => {
             const statString = buildPokemonStatString(pokemon, size=10, compact=true)
             return {
                 name: `[${pokemons.indexOf(pokemon) + 1}] [Lv. ${pokemon.level}] ${pokemon.name}`,
-                value: statString,
+                value: `${pokemon._id}\n${statString}`,
                 inline: true,
             };
         });

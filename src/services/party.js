@@ -78,9 +78,10 @@ const validateParty = async (trainer) => {
     }
 
     // check that the party has between 1 and 6 pokemon
-    if (pokemonIds.length < 1) {
+    const filteredPokemonIds = pokemonIds.filter(id => id !== null);
+    if (filteredPokemonIds.length < 1) {
         return { data: null, err: "No Pokemon in party. Add Pokemon with `/partyadd`." };
-    } else if (pokemonIds.length > 6) {
+    } else if (filteredPokemonIds.length > 6) {
         return { data: null, err: "Invalid party. Please reset your party with `/partyremove ALL`." };
     }
 
