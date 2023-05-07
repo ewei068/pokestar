@@ -761,7 +761,7 @@ const effectConfig = {
         "type": effectTypes.DEBUFF,
         "dispellable": true,
         "effectAdd": function(battle, source, target) {
-            battle.addToLog(`${target.name} is foreseeing an attack!`);
+            battle.addToLog(`${source.name} is foreseeing an attack against ${target.name}!`);
         },
         "effectRemove": function(battle, target, args) {
             const effect = target.effectIds["futureSight"];
