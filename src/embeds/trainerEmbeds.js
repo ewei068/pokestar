@@ -73,6 +73,9 @@ const buildLocationsEmbed = (trainer) => {
 
         locationString += `${location.emoji} ${location.name} (Level ${locationLevel})\n`;
     }
+    if (locationString == "") {
+        locationString = "No locations found!";
+    }
 
     const embed = new EmbedBuilder()
     embed.setTitle(`Trainer ${trainer.user.username}'s Locations`);
