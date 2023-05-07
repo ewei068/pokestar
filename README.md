@@ -1,8 +1,10 @@
 # [pokestar](https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot)
 
-A Pokemon Discord bot. Currently open for beta testing! **[Invite Pokestar to your server.](https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot)**
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/starmie.png" width="300" height="300">
+</p>
 
-(starmie)
+A Pokemon Discord bot. Currently open for beta testing! **[Invite Pokestar to your server.](https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot)**
 
 ### Why Pokestar?
 
@@ -12,7 +14,7 @@ Pokestar focuses on a few key features that sets it apart from other Pokemon Dis
 
 The main focus of Pokestar is the unique 6v6 battling system. Battles involve *all 6 Pokemon* on each side battling at once, a new system designed specially for this bot. 
 
-(Gif)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/battle.gif" height="500">
 
 The new format makes for fun and exciting teamplay among Pokemon, while keeping or adapting many mechanics from the original Pokemon games to stay true to the original, competitve format.
 
@@ -38,11 +40,11 @@ Pokestar tries to be a fluid and responsive experience. Components and UI are a 
 
 You can use almost any command to start you journey! I would recommend **using `/trainerinfo` to get your basic trainer information.**
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/trainerinfo.png" height="200">
 
 As you can see, you don't have much yet. All trainers start off with some starter money and that's about it. You also start with a few Pokeballs! **Use `/backpack` to see your items.**
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/backpack.png" height="200">
 
 You will use these Pokeballs to get your first few Pokemon!
 
@@ -52,7 +54,7 @@ You will use these Pokeballs to get your first few Pokemon!
 
 The only way to get new Pokemon currently is with the Gacha system. The gacha costs 1 Pokeball of the type you want to use. **Use `/gacha <pokeball>` to get your first Pokemon!**
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/gacha.png" height="300">
 
 New Pokemon come at level 1 and have a few randomized attributes, such as IVs and nature. Note that these Pokemon also have a rarity! Rare Pokemon are harder to get, but tend to be better. **You can increase the chances of getting a rare Pokemon by using a better Pokeball;** however, these Pokeballs are harder to come by. The exact gacha rates are as follows (Common/Rare/Epic/Legendary):
 
@@ -65,7 +67,7 @@ New Pokemon come at level 1 and have a few randomized attributes, such as IVs an
 
 When you recieved a Pokemon from the gacha, its ID is displayed. **To view more information on a Pokemon, use `/info <id>`.**
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/info.png" height="400">
 
 This brings up a detailed information display of this Pokemon. If the Pokemon has moves (not all Pokemon moves have been implemented yet, hang tight!), then move descriptions will be displayed too. We will go over these moves more in-depth later.
 
@@ -73,7 +75,7 @@ This brings up a detailed information display of this Pokemon. If the Pokemon ha
 
 To view all your Pokemon, **use `/list`.**
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/list.png" height="250">
 
 If you have more than 10 Pokemon, you will be able to use the buttons on the bottom to scroll through all your Pokemon. You can also use `/list <page>` to go to a specific page immediately. **The list command also supports more complex filtering and sorting options; use `/help list` to learn more.**
 
@@ -83,7 +85,7 @@ Using the selection menu will allow you to view a Pokemon's detailed information
 
 To increase your Pokemon's experience, **use the `/train <id>` command!**
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/train.png" height="150">
 
 When your Pokemon gains experience, it may level up to! As you may notice, experience gain is fairly slow and inefficient at the beginning. We will go over some ways to make this better in the next few sections.
 
@@ -91,7 +93,7 @@ When your Pokemon gains experience, it may level up to! As you may notice, exper
 
 Mobile play is a bit more difficult because Discord makes it hard to copy text. Therefore, it's hard to copy a Pokemon's ID to inspect & train. The workaround to this is that a Pokemon's ID is typically listed within the message text to copy. **To copy a Pokemon's ID on mobile, long press a message and press copy text.**
 
-(pics)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/mobile.jpg" height="300">
 
 You can now paste the Pokemon's ID into the commands that need it. If you want to copy and ID from the `/list` command, use the selection menu to bring up that Pokemon's info, then copy the ID from there.
 
@@ -101,7 +103,7 @@ You can now paste the Pokemon's ID into the commands that need it. If you want t
 
 Make sure to claim your daily rewards every day! This is a very easy way to get some free resources. **Use `/daily` to claim your daily rewards!** These rewards reset at 00:00 UTC.
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/daily.png" height="250">
 
 **Trainer Experience**
 
@@ -109,7 +111,7 @@ You may have noticed that your trainer (not Pokemon) has levelled up! Most comma
 
 There are a two key benefits to levelling up. You can use `/levelrewards` to claim your level-up rewards.
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/levelrewards.png" height="150">
 
 Level rewards are very lucrative and are a great way to get resources, especially in the early game when levels are quick.
 
@@ -119,7 +121,7 @@ The second benefit is Pokemon training. **Higher level trainers have a passive P
 
 Similar to trainer experience, money is gained passively just for playing. Unlike trainer experience, you can get money from other sources such as rewards and releasing Pokemon. **You can spend money at the `/pokemart`.**
 
-(gif)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pokemart.gif" height="300">
 
 Use the selection menus of the Pokemart to browse its categories and stock. You can also buy items at the Pokemart. Note that certain items have daily purchase limits. **You can also buy items directly with `/buy <itemid> <quantity?>`.**
 
@@ -127,11 +129,11 @@ Use the selection menus of the Pokemart to browse its categories and stock. You 
 
 In the Pokemart, you may have noticed locations. Currently, locations have 3 levels, with the price increasing each level. **To view your locations, use `/locations`.**
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/locations.png" height="200">
 
 Once you purchase a location, **you can train a Pokemon there with `/train <id> <location>`.**
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/train-location.png" height="150">
 
 **Different locations provide different benefits, increasing EXP gained and providing EVs** based on the location's level. NOTE: if a location isn't specified while training, the location will default to "Home", which provides boosted EXP. The exact boosts are listed below (lv.1/lv.2/lv.3):
 
@@ -147,7 +149,7 @@ Once you purchase a location, **you can train a Pokemon there with `/train <id> 
 
 Once you get enough EXP, use **/evolve <id>** to evolve your Pokemon.
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/evolve.png" height="400">
 
 This will bring up a selection menu where you can preview and confirm your Pokemon's evolution. Right now, all Pokemon evolve via levels.
 
@@ -157,13 +159,13 @@ This will bring up a selection menu where you can preview and confirm your Pokem
 
 Temporarily while all Pokemon's moves are being implemented, only certain Pokemon are eligible for battle. **This list currently includes: Venusaur, Charizard, Blastoise, Butterfree, Beedrill, Pidgeot, Ratticate, Alakazam, Machamp, Golem, Gengar, Articuno, Zapdos, Moltres, and Mewtwo.** We are working hard to implement all of the other Pokemon. **You can view your battle eligible Pokemon with this command (copy/paste it) `/list filterby: battleEligible filtervalue: True`.**
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/battle-eligible.png" height="300">
 
 **Party**
 
 Before you battle, you must add Pokemon to your party. Your party has positions 1-12, but only 6 Pokemon can be present at a time. **You can add a Pokemon to your party with `/partyadd <id> <position>`.**
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/partyadd.png" height="300">
 
 If the desired Pokemon is already in your party, this command will swap positions instead of adding or removing Pokemon. If you already have a Pokemon in the given position, that Pokemon will be swapped out.
 
@@ -171,7 +173,7 @@ The positioning of your Pokemon does matter! We will go over the positioning sys
 
 If you would like to remove Pokemon, **use `/partyremove <id|position|ALL>`.**
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/partyremove.png" height="300">
 
 Note the last argument can have many different options. If a Pokemon ID is specified, that Pokemon will be removed if it exists. If a position is specified, the Pokemon at that position will be removed if it exists. If "ALL" is specified, then all Pokemon will be removed. **Using `/partyremove ALL` also resets your party if it ever glitches out and can't be used.**
 
@@ -179,7 +181,7 @@ Note the last argument can have many different options. If a Pokemon ID is speci
 
 To initiate a friendly battle within your server, **use `/pvp`.**
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pvp.png" height="250">
 
 An opponent may now accept your challenge and the battle is on! You can also provide an @ mention like `/pvp @user` and only the mentioned user may accept the challenge.
 
@@ -197,8 +199,6 @@ The battling system works differently from traditional Pokemon, while attempting
 
 Positioning is a big part of the strategy in battles. Up to 6 Pokemon will be placed on a 3x4 grid, numbered 1-12. The "front" row is 1-4, while the "back" row is 9-12. Note that the appearance of the positions may be flipped during a real battle for UI sake, but the mechanics remain the same.
 
-(pic)
-
 Strategic positioning is important because most attacks in the game can only target the front row. Therefore, it may be beneficial to protect your squishy damage dealers or supports behind tanky frontliners. Additionally, many attacks in this game have AoE. Supporting moves may also have friendly AoE. You may want to position your team around dodging enemy AoE while maximizing effectiveness of friendly AoE.
 
 **Turn Order**
@@ -209,7 +209,7 @@ Turn order is decided by combat readiness. **All Pokemon start with 0 combat rea
 
 If it's one of your Pokemon's turns, you can move! **You can use the selection menu to select a move to use.** Once a move is selected, another selection menu will show up with the eligible targets of that move. **Select a Pokemon to use that move against them.** Note: the position of a Pokemon is listed in the select menu in order to more easily distinguish them.
 
-(gif)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/move-select.gif" height="250">
 
 In rare cases, your Pokemon may be incapacitated and can't move, or your Pokemon may have no available moves with eligible targets. In this scenario, simply press the "next" button to go to the next turn.
 
@@ -217,7 +217,7 @@ In rare cases, your Pokemon may be incapacitated and can't move, or your Pokemon
 
 The top row of a battle has various information buttons. 
 
-(gif)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/battle-info.gif" height="300">
 
 * The team buttons display team Pokemon, their HP and combat readiness, and their acquired effects. 
 * The "Moves" button displays move information. 
@@ -230,7 +230,7 @@ All Pokemon have 4 moves only. Movesets consisit of 1 "basic" move, 2 "power" mo
 
 You can view a Pokemon's moves with `/info <id>`. If a Pokemon has moves, their moves will be displayed. This can also be viewed in battle in with the "Moves" button.
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/move-info.png" height="150">
 
 There is a lot to unpack in the move details, and we will spend the next few sections going over them.
 
@@ -238,7 +238,7 @@ There is a lot to unpack in the move details, and we will spend the next few sec
 
 The most important aspect of a move is its targeting. This is seen in the "target" section of a move's information. The target field is in the form of party type / position / AoE pattern.
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/move-target.png" height="50">
 
 The **Party Type** of a move target specifies which team the Pokemon is allowed to target. This only has 3 options: ally, enemy, or any.
 
@@ -269,13 +269,13 @@ Note that some moves may have effects on other Pokemon not targeted. These targe
 
 Each move has a move type:
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/move-type.png" height="50">
 
 Just like the main game, moves will deal more or less damage based on type advantages. In order to reduce the polarization of this effect, the **type mutlipliers have been reduced**, and all non-effective types (like normal vs ghost), will still deal damage, although very little. However, type advantages now have another effect, in missing moves.
 
 **Missing**
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/move-miss.png" height="150">
 
 To reduce the polarization of random accuracy effects, missing has been tuned down in this system. If a move misses, it will only deal 70% damage and not apply any effects to target Pokemon (usually). Another change introduced is that **type advantages have a slight effect on hit chance**, making type advantages matter in this aspect. The following is the type advantage => hit chance modifier:
 
@@ -289,11 +289,11 @@ To reduce the polarization of random accuracy effects, missing has been tuned do
 
 Some moves apply effects, which can be broken down into 2 main categories.
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/status-condition.png" height="50">
 
 Status Conditions: **Most status conditions work similarly to the game**. Most are permanent unless cleansed, can't be replaced, and are separate from other conditions. In this battle system, sleep and freeze have been nerfed to reduce CC. Additionally, fire moves that thaw Pokemon also deal 1.5x damage!
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/effect.png" height="100">
 
 Other effects: All other effects work as duration-based effects. Pokemon will remain with the effect until it is cleansed or its duration runs out. Effect durations are reduced by 1 **after** a Pokemon moves. **The information panels display remaining effect durations.**
 
@@ -301,7 +301,7 @@ Other effects: All other effects work as duration-based effects. Pokemon will re
 
 Many moves in the game have a cooldown. **When a move is used, the move will go on cooldown** for its specified duration (with some exceptions). Move cooldowns are displayed in the move information panel and in the move selection menu.
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/cooldown.png" height="50">
 
 **When a move is on cooldown, it cannot be used.** Move cooldowns are reduced by 1 at the end of a Pokemon's turn.
 
@@ -309,13 +309,13 @@ Many moves in the game have a cooldown. **When a move is used, the move will go 
 
 The battle ends when all Pokemon on one team faints, or if over 100 turns have passed. In the latter case, the battle ends in a draw. When a battle ends, all participants gain rewards, with winners gaining more.
 
-(pic)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/battle-win.png" height="100">
 
 ### More Information
 
 For more information about what commands do, use the `/help` command to browse command categories and commands. You can also skip to a command with `/help <command>`.
 
-(gif)
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/help.gif" height="250">
 
 All of the commands are also listed below for your convenience:
 
