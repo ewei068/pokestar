@@ -11,7 +11,7 @@ const { addPokemonExpAndEVs, getPokemon } = require("./pokemon");
 const { logger } = require("../log");
 const { buildNextTurnActionRow } = require("../components/battleNextTurnRow");
 const { deleteState } = require("./state");
-const { calculateEffectiveSpeed } = require("../utils/pokemonUtils");
+const { calculateEffectiveSpeed, calculateEffectiveAccuracy } = require("../utils/pokemonUtils");
 
 class Battle {
     baseMoney=100;
@@ -363,6 +363,7 @@ class Pokemon {
     bspd;
     spe;
     bspe;
+    acc;
     type1;
     type2;
     // effectId => duration
@@ -397,6 +398,7 @@ class Pokemon {
         this.bspd = pokemonData.stats[4];
         this.spe = pokemonData.stats[5];
         this.bspe = pokemonData.stats[5];
+        this.acc = 100;
         this.type1 = this.speciesData.type[0];
         this.type2 = this.speciesData.type[1] || null;
         // map effectId => effect data (duration, args)
@@ -724,8 +726,8 @@ class Pokemon {
             return misses;
         }
         for (const target of targetPokemons) {
-            // TODO: account for user hitchance and target evasion
-            let hitChance = moveData.accuracy;
+            // TODO: account for target evasion
+            let hitChance = moveData.accuracy * calculateEffectiveAccuracy(this.acc);
             const damageMult = getTypeDamageMultiplier(moveData.type, target);
             if (damageMult >= 4) {
                 hitChance *= 1.4;
@@ -837,6 +839,14 @@ class Pokemon {
         this.combatReadiness = Math.min(100, this.combatReadiness + amount);
         const combatReadinessGained = this.combatReadiness - oldCombatReadiness;
         this.battle.addToLog(`${this.name} gained ${Math.round(combatReadinessGained)} combat readiness!`);
+        
+        const eventArgs = {
+            target: this,
+            source: source,
+            combatReadinessGained: amount,
+        };
+        this.battle.eventHandler.emit(battleEventNames.AFTER_CR_GAINED, eventArgs);
+
         return combatReadinessGained;
     }
 
@@ -879,7 +889,7 @@ class Pokemon {
             duration: duration,
             source: source,
         };
-        const args = effectData.effectAdd(this.battle, this);
+        const args = effectData.effectAdd(this.battle, source, this);
         
         // if effect still exists, add args
         if (this.effectIds[effectId]) {

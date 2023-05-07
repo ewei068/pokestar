@@ -6,6 +6,7 @@ const battleEventNames = {
     TURN_BEGIN: "turnBegin",
     MOVE_BEGIN: "moveBegin",
     BEFORE_DAMAGE_TAKEN: "beforeDamageTaken",
+    AFTER_CR_GAINED: "afterCRGained",
 }
 
 const damageTypes = {
@@ -106,7 +107,7 @@ const calculateDamage = (move, source, target, miss=false, { atkStat = null, def
     } else if (type >= 0.25) {
         type = 0.5;
     } else {
-        type = 0.25;
+        type = 0.35;
     }
     const random = Math.random() * (1 - 0.85) + 0.85;
     const burn = source.status.statusId === statusConditions.BURN && move.damageType === damageTypes.PHYSICAL ? 0.5 : 1;
@@ -160,7 +161,7 @@ const effectConfig = {
         "description": "The target's Attack increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             // if greaterAtkUp exists on target, remove atkUp and refresh greaterAtkUp
             if (target.effectIds.greaterAtkUp) {
                 const currentDuration = target.effectIds.atkUp.duration;
@@ -183,7 +184,7 @@ const effectConfig = {
         "description": "The target's Attack greatly increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             // if atkUp exists on target, remove greaterAtkUp and refresh atkUp
             if (target.effectIds.atkUp) {
                 const currentDuration = target.effectIds.greaterAtkUp.duration;
@@ -206,7 +207,7 @@ const effectConfig = {
         "description": "The target's Defense increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             // if greaterDefUp exists on target, remove defUp and refresh greaterDefUp
             if (target.effectIds.greaterDefUp) {
                 const currentDuration = target.effectIds.defUp.duration;
@@ -229,7 +230,7 @@ const effectConfig = {
         "description": "The target's Defense sharply increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             battle.addToLog(`${target.name}'s Defense sharply rose!`);
             // if defUp exists on target, remove defUp and refresh greaterDefUp
             if (target.effectIds.defUp) {
@@ -252,7 +253,7 @@ const effectConfig = {
         "description": "The target's Special Attack increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             // if greaterSpaUp exists on target, remove spaUp and refresh greaterSpaUp
             if (target.effectIds.greaterSpaUp) {
                 const currentDuration = target.effectIds.spaUp.duration;
@@ -275,7 +276,7 @@ const effectConfig = {
         "description": "The target's Special Attack sharply increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             battle.addToLog(`${target.name}'s Special Attack sharply rose!`);
             // if spaUp exists on target, remove spaUp and refresh greaterSpaUp
             if (target.effectIds.spaUp) {
@@ -298,7 +299,7 @@ const effectConfig = {
         "description": "The target's Special Defense increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             // if greaterSpdUp exists on target, remove spdUp and refresh greaterSpdUp
             if (target.effectIds.greaterSpdUp) {
                 const currentDuration = target.effectIds.spdUp.duration;
@@ -321,7 +322,7 @@ const effectConfig = {
         "description": "The target's Special Defense sharply increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             battle.addToLog(`${target.name}'s Special Defense sharply rose!`);
             // if spdUp exists on target, remove spdUp and refresh greaterSpdUp
             if (target.effectIds.spdUp) {
@@ -344,7 +345,7 @@ const effectConfig = {
         "description": "The target's Special Defense decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             // if greaterSpdDown exists on target, remove spdDown and refresh greaterSpdDown
             if (target.effectIds.greaterSpdDown) {
                 const currentDuration = target.effectIds.spdDown.duration;
@@ -367,7 +368,7 @@ const effectConfig = {
         "description": "The target's Special Defense sharply decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             battle.addToLog(`${target.name}'s Special Defense sharply fell!`);
             // if spdDown exists on target, remove spdDown and refresh greaterSpdDown
             if (target.effectIds.spdDown) {
@@ -390,7 +391,7 @@ const effectConfig = {
         "description": "The target's Speed increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             // if greaterSpeUp exists on target, remove speUp and refresh greaterSpeUp
             if (target.effectIds.greaterSpeUp) {
                 const currentDuration = target.effectIds.speUp.duration;
@@ -413,7 +414,7 @@ const effectConfig = {
         "description": "The target's Speed sharply increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             battle.addToLog(`${target.name}'s Speed sharply rose!`);
             // if speUp exists on target, remove speUp and refresh greaterSpeUp
             if (target.effectIds.speUp) {
@@ -431,12 +432,58 @@ const effectConfig = {
             target.spe -= Math.floor(target.bspe * 0.6);
         },
     },
+    "accDown": {
+        "name": "Acc. Down",
+        "description": "The target's Accuracy decreased.",
+        "type": effectTypes.DEBUFF,
+        "dispellable": true,
+        "effectAdd": function(battle, source, target) {
+            // if greaterAccDown exists on target, remove accDown and refresh greaterAccDown
+            if (target.effectIds.greaterAccDown) {
+                const currentDuration = target.effectIds.accDown.duration;
+                delete target.effectIds.accDown;
+                if (target.effectIds.greaterAccDown.duration < currentDuration) {
+                    target.effectIds.greaterAccDown.duration = currentDuration;
+                }
+            } else {
+                battle.addToLog(`${target.name}'s Accuracy fell!`);
+                target.acc -= 30;
+            }
+        },
+        "effectRemove": function(battle, target) {
+            battle.addToLog(`${target.name}'s Accuracy drop faded!`);
+            target.acc += 30;
+        },
+    },
+    "greaterAccDown": {
+        "name": "Greater Acc. Down",
+        "description": "The target's Accuracy sharply decreased.",
+        "type": effectTypes.DEBUFF,
+        "dispellable": true,
+        "effectAdd": function(battle, source, target) {
+            battle.addToLog(`${target.name}'s Accuracy sharply fell!`);
+            // if accDown exists on target, remove accDown and refresh greaterAccDown
+            if (target.effectIds.accDown) {
+                const currentDuration = target.effectIds.accDown.duration;
+                delete target.effectIds.accDown;
+                if (target.effectIds.greaterAccDown.duration < currentDuration) {
+                    target.effectIds.greaterAccDown.duration = currentDuration;
+                }
+                target.acc += 30;
+            }
+            target.acc -= 50;
+        },
+        "effectRemove": function(battle, target) {
+            battle.addToLog(`${target.name}'s Accuracy drop faded!`);
+            target.acc += 50;
+        },
+    },
     "confused": {
         "name": "Confused",
         "description": "The target is confused.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -481,7 +528,7 @@ const effectConfig = {
         "description": "The target flinched.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             battle.addToLog(`${target.name} flinched!`);
         },
         "effectRemove": function(battle, target) {
@@ -493,7 +540,7 @@ const effectConfig = {
         "description": "The target's HP cannot be reduced below 1.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             battle.addToLog(`${target.name} is immortal!`);
             const listener = {
                 initialArgs: {
@@ -523,12 +570,90 @@ const effectConfig = {
             battle.eventHandler.unregisterListener(listenerId);
         }
     },
+    "stealthRock": {
+        "name": "Stealth Rock",
+        "description": "The target is affected by Stealth Rock.",
+        "type": effectTypes.DEBUFF,
+        "dispellable": true,
+        "effectAdd": function(battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const affectedPokemon = initialArgs.pokemon;
+                    const targetPokemon = args.target;
+                    if (affectedPokemon !== targetPokemon) {
+                        return;
+                    }
+
+                    // get damage multiplier
+                    let mult = getTypeDamageMultiplier(types.ROCK, targetPokemon);
+                    if (mult >= 4) {
+                        mult = 2;
+                    } else if (mult >= 2) {
+                        mult = 1.5;
+                    } else if (mult >= 1) {
+                        mult = 1;
+                    } else if (mult >= 0.5) {
+                        mult = 0.75;
+                    } else {
+                        mult = 0.5;
+                    }
+
+                    // calculate damage
+                    const damage = Math.floor(targetPokemon.maxHp * mult / 8);
+                    targetPokemon.takeDamage(damage, affectedPokemon, {
+                        "type": "stealthRock",
+                    });
+                }
+            }
+
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_CR_GAINED, listener);
+            return {
+                "listenerId": listenerId,
+            };
+        },
+        "effectRemove": function(battle, target, args) {
+            const listenerId = args.listenerId;
+            battle.eventHandler.unregisterListener(listenerId);
+        }
+    },
+    "taunt": {
+        "name": "Taunt",
+        "description": "The target is taunted.",
+        "type": effectTypes.DEBUFF,
+        "dispellable": true,
+        "effectAdd": function(battle, source, target) {
+            battle.addToLog(`${target.name} was taunted!`);
+            // disable moves with no power
+            for (const moveId of Object.keys(target.moveIds)) {
+                const moveData = moveConfig[moveId];
+                if (!moveData.power) {
+                    target.disableMove(moveId, source);
+                }
+            }
+            return {
+                "source": source,
+            }
+        },
+        "effectRemove": function(battle, target, args) {
+            battle.addToLog(`${target.name} is no longer taunted!`);
+            // enable moves with no power
+            for (const moveId of Object.keys(target.moveIds)) {
+                const moveData = moveConfig[moveId];
+                if (!moveData.power) {
+                    target.enableMove(moveId, args.source);
+                }
+            }
+        }
+    },
     "loseFlying": {
         "name": "No Flying Type",
         "description": "The target loses its Flying type.",
         "type": effectTypes.NEUTRAL,
         "dispellable": true,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             battle.addToLog(`${target.name} lost its Flying type!`);
             // if pure flying, change to pure normal
             if (target.type1 === types.FLYING && target.type2 === null) {
@@ -565,7 +690,7 @@ const effectConfig = {
         "description": "The target absorbs light, preparing a powerful Solar Beam.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             battle.addToLog(`${target.name} is absorbing light!`);
             // disable non-solar beam moves
             for (const moveId in target.moveIds) {
@@ -588,7 +713,7 @@ const effectConfig = {
         "description": "The target is charging a powerful Sky Attack.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             battle.addToLog(`${target.name} becomes cloaked in a harsh light!`);
             // disable non-sky attack moves
             for (const moveId in target.moveIds) {
@@ -611,7 +736,7 @@ const effectConfig = {
         "description": "The target is enraged, attacking wildly.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function(battle, target) {
+        "effectAdd": function(battle, source, target) {
             battle.addToLog(`${target.name} is enraged!`);
             // disable non-outrage moves
             for (const moveId in target.moveIds) {
@@ -628,6 +753,49 @@ const effectConfig = {
                     target.enableMove(moveId, target);
                 }
             }
+        }
+    },
+    "futureSight": {
+        "name": "Future Sight",
+        "description": "The target is foreseeing an attack.",
+        "type": effectTypes.DEBUFF,
+        "dispellable": true,
+        "effectAdd": function(battle, source, target) {
+            battle.addToLog(`${target.name} is foreseeing an attack!`);
+        },
+        "effectRemove": function(battle, target, args) {
+            const effect = target.effectIds["futureSight"];
+            if (!effect) return;
+            const source = effect.source;
+            if (!source) return;
+            const remainingDuration = effect.duration;
+            if (remainingDuration === undefined) return;
+
+            battle.addToLog(`${target.name} was hit by ${source.name}'s Future Sight!`);
+            const damageCalc = calculateDamage(moveConfig["m248"], source, target);
+            // calculate damage based on remaining duration. 0 => 100%, 1 => 50%, >= 2 => 25%
+            let damageToDeal = damageCalc;
+            if (remainingDuration === 0) {
+                damageToDeal = damageCalc;
+            } else if (remainingDuration === 1) {
+                damageToDeal = Math.floor(damageCalc / 2);
+            } else {
+                damageToDeal = Math.floor(damageCalc / 4);
+            }
+            source.dealDamage(damageToDeal, target, {
+                "type": "move",
+                "moveId": "m248",
+            });
+        }
+    },
+    "rollout": {
+        "name": "Rollout",
+        "description": "The target is rolling out of control.",
+        "type": effectTypes.BUFF,
+        "dispellable": false,
+        "effectAdd": function(battle, source, target) {
+        },
+        "effectRemove": function(battle, target, args) {
         }
     },
 }
@@ -857,7 +1025,7 @@ const moveConfig = {
     "m87": {
         "name": "Thunder",
         "type": types.ELECTRIC,
-        "power": 100,
+        "power": 95,
         "accuracy": 70,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -866,6 +1034,32 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.SPECIAL,
         "description": "A wicked thunderbolt is dropped on the target to inflict damage. This has a 30% chance to paralyze targets.",
+    },
+    "m89": {
+        "name": "Earthquake",
+        "type": types.GROUND,
+        "power": 95,
+        "accuracy": 100,
+        "cooldown": 6,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user sets off an earthquake that hits all the Pokémon in the battle. Has 5 less base power for each additional enemy targetted (not including the first).",
+    },
+    "m93": {
+        "name": "Confusion",
+        "type": types.PSYCHIC,
+        "power": 40,
+        "accuracy": 100,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The target is hit by a weak telekinetic force. This has a 25% chance to confuse the target for 1 turn.",
     },
     "m97": {
         "name": "Agility",
@@ -892,6 +1086,19 @@ const moveConfig = {
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user lunges at the target at a speed that makes it almost invisible. Also boosts the user's combat readiness by 30%.",
+    },
+    "m134": {
+        "name": "Kinesis",
+        "type": types.PSYCHIC,
+        "power": 40,
+        "accuracy": 80,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user distracts the target by bending a spoon. This lowers the target's accuracy for 1 turn.",
     },
     "m143": {
         "name": "Sky Attack",
@@ -961,6 +1168,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "Applies Immortality to the user for 1 turn.",
     },
+    "m205": {
+        "name": "Rollout",
+        "type": types.ROCK,
+        "power": 30,
+        "accuracy": 90,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user continually rolls into the target. If it hits, the next turn's rollout has base 60 power.",
+    },
     "m215": {
         "name": "Heal Bell",
         "type": types.NORMAL,
@@ -974,6 +1194,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user makes a soothing bell chime to heal the status conditions of all the party Pokémon. If a condition is removed, also heals the target for 10% of their max HP.",
     },
+    "m223": {
+        "name": "Dynamic Punch",
+        "type": types.FIGHTING,
+        "power": 125,
+        "accuracy": 50,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user punches the target with full, concentrated power. If hit, this also confuses the target for 3 turns.",
+    },
     "m229": {
         "name": "Rapid Spin",
         "type": types.NORMAL,
@@ -986,6 +1219,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "A spin attack that can also dispells debuffs from the user and adjacent allies.",
+    },
+    "m238": {
+        "name": "Cross Chop",
+        "type": types.FIGHTING,
+        "power": 80,
+        "accuracy": 80,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.CROSS,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user delivers a double chop with its forearms crossed. Deals half damage to adjacent targets.",
     },
     "m239": {
         "name": "Twister",
@@ -1025,6 +1271,58 @@ const moveConfig = {
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.SPECIAL,
         "description": "The user attacks with a prehistoric power. This has a 50% chance to raise the user's highest non-hp base stat for 1 turn.",
+    },
+    "m247": {
+        "name": "Shadow Ball",
+        "type": types.GHOST,
+        "power": 80,
+        "accuracy": 100,
+        "cooldown": 3,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user hurls a shadowy blob at the target. This may also lower the target's Sp. Def stat with a 85% chance.",
+    },
+    "m248": {
+        "name": "Future Sight",
+        "type": types.PSYCHIC,
+        "power": 100,
+        "accuracy": 100,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "Two turns after this move is used, a hunk of psychic energy attacks the target. If the Future Sight debuff is cleansed early, deals less damage.",
+    },
+    "m269": {
+        "name": "Taunt",
+        "type": types.DARK,
+        "power": null,
+        "accuracy": 100,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user taunts the target into only using moves with base power for 3 turns.",
+    },
+    "m282": {
+        "name": "Knock Off",
+        "type": types.DARK,
+        "power": 65,
+        "accuracy": 100,
+        "cooldown": 3,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user slaps down the target, removing all buffs. For each buff removed, deals 25% more damage, up to 75% more damage.",
     },
     "m283": {
         "name": "Endeavor",
@@ -1128,7 +1426,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
-        "description": "The user stabs the target with a poisonous stinger. This has a 50% chance to poison the target.",
+        "description": "The user stabs the target with a poisonous stinger. This has a 80% chance to poison the target.",
     },
     "m405": {
         "name": "Bug Buzz",
@@ -1156,6 +1454,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user stimulates its brain by thinking bad thoughts. This sharply raises the user's Sp. Attack stat for 3 turns.",
     },
+    "m418": {
+        "name": "Bullet Punch",
+        "type": types.STEEL,
+        "power": 40,
+        "accuracy": 100,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user strikes the target with tough punches as fast as bullets, dealing damage and increasing its own combat readiness by 30%.",
+    },
     "m420": {
         "name": "Ice Shard",
         "type": types.ICE,
@@ -1182,6 +1493,45 @@ const moveConfig = {
         "damageType": damageTypes.SPECIAL,
         "description": "The user fires a powerful electric blast at the target, dealing damage and has a 35% chance to paralyze targets.",
     },
+    "m444": {
+        "name": "Stone Edge",
+        "type": types.ROCK,
+        "power": 80,
+        "accuracy": 80,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.COLUMN,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user stabs the target column with sharpened stones from below.",
+    },
+    "m446": {
+        "name": "Stealth Rock",
+        "type": types.ROCK,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user lays a trap of levitating stones around the target for 3 turns. The trap hurts opposing Pokemon that have their combat readiness boosted.",
+    },
+    "m482": {
+        "name": "Sludge Wave",
+        "type": types.POISON,
+        "power": 85,
+        "accuracy": 100,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user strikes everything around it by swamping the area with a giant sludge wave. This only deals damage to the target row, but has a 40% of poisoning all targets.",
+    },
     "m483": {
         "name": "Quiver Dance",
         "type": types.BUG,
@@ -1194,6 +1544,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
         "description": "The user lightly performs a beautiful, mystic dance. This boosts the user's Special Attack, Special Defense, and Speed stats for 2 turns.",
+    },
+    "m506": {
+        "name": "Hex",
+        "type": types.GHOST,
+        "power": 30,
+        "accuracy": 100,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user places a curse on the target. If the target is debuffed or has a status condition, this move's base power is increased by 25.",
     },
     "m525": {
         "name": "Dragon Tail",
@@ -1211,7 +1574,7 @@ const moveConfig = {
     "m540": {
         "name": "Psystrke",
         "type": types.PSYCHIC,
-        "power": 90,
+        "power": 95,
         "accuracy": 100,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -1237,7 +1600,7 @@ const moveConfig = {
     "m565": {
         "name": "Fell Stinger",
         "type": types.BUG,
-        "power": 80,
+        "power": 90,
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -1513,6 +1876,40 @@ const moveExecutes = {
             }
         }
     },
+    "m89": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m89";
+        const moveData = moveConfig[moveId];
+        // deal less damage if more targets
+        const numTargets = allTargets.length;
+        const power = moveData.power - (numTargets - 1) * 5;
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss, {
+                power: power
+            });
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
+    "m93": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m93";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 25% to confuse
+            if (!miss && Math.random() < 0.25) {
+                target.addEffect("confused", 1, source);
+            }
+        }
+    },
     "m97": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveData = moveConfig["m97"];
         for (const target of allTargets) {
@@ -1535,6 +1932,23 @@ const moveExecutes = {
 
         // boost cr by 30
         source.boostCombatReadiness(source, 30);
+    },
+    "m134": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m134";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, apply accDown
+            if (!miss) {
+                target.addEffect("accDown", 1, source);
+            }
+        }
     },
     "m143": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m143";
@@ -1640,6 +2054,31 @@ const moveExecutes = {
             target.addEffect("immortal", 2, source);
         }
     },
+    "m205": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m205";
+        const moveData = moveConfig[moveId];
+        let targetHit = false;
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const hasRollout = source.effectIds.rollout !== undefined;
+            const damageToDeal = calculateDamage(moveData, source, target, miss, {
+                power: moveData.power * (hasRollout ? 2 : 1)
+            });
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            if (!miss) {
+                targetHit = true;
+            }
+        }
+
+        if (targetHit) {
+            // add rollout for 1 turn
+            source.addEffect("rollout", 2, source);
+        }
+    },
     "m215": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m215";
         const moveData = moveConfig[moveId];
@@ -1654,6 +2093,23 @@ const moveExecutes = {
                     type: "move",
                     moveId: moveId
                 });
+            }
+        }
+    },
+    "m223": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m223";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if hit, confuse for 3 turns
+            if (!miss) {
+                target.addEffect("confused", 3, source);
             }
         }
     },
@@ -1683,6 +2139,19 @@ const moveExecutes = {
 
                 ally.dispellEffect(effectId);
             }
+        }
+    },
+    "m238": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m238";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            // deal half damage if target is not primary target
+            source.dealDamage(Math.round(damageToDeal * (primaryTarget !== target ? 0.5 : 1)), target, {
+                type: "move",
+                moveId: moveId
+            });
         }
     },
     "m239": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -1756,6 +2225,79 @@ const moveExecutes = {
                 break;
         }
     },
+    "m247": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m247";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 85% chance to reduce sp def
+            if (!miss && Math.random() < 0.85) {
+                target.addEffect("spdDown", 2, source);
+            }
+        }
+    },
+    "m248": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m248";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            if (miss) {
+                continue;
+            }
+
+            // apply 2 turns future sight
+            target.addEffect("futureSight", 2, source);
+        }
+    },
+    "m269": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m269";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            if (miss) {
+                continue;
+            }
+
+            // add taunt for 3 turns
+            target.addEffect("taunt", 3, source);
+        }
+    },
+    "m282": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m282";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+
+            let buffsRemoved = 0;
+            // if not miss, remove all buffs
+            if (!miss) {
+                for (const effectId of Object.keys(target.effectIds)) {
+                    const effectData = effectConfig[effectId];
+                    if (effectData.type != effectTypes.BUFF) {
+                        continue;
+                    }
+
+                    if (target.dispellEffect(effectId)) {
+                        buffsRemoved++;
+                    }
+                }
+            }
+
+            // damage bonus = 0.25 * buffs up to 0.75
+            const damageBonus = Math.min(0.75, 0.25 * buffsRemoved);
+            const damageToDeal = Math.floor(calculateDamage(moveData, source, target, miss) * (1 + damageBonus));
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },       
     "m283": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m283";
         const moveData = moveConfig[moveId];
@@ -1841,7 +2383,7 @@ const moveExecutes = {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             const damageToDeal = calculateDamage(moveData, source, target, miss);
-            // deal half damage if target is primary target
+            // deal half damage if target is not primary target
             damageDealt += source.dealDamage(Math.round(damageToDeal * (primaryTarget !== target ? 0.5 : 1)), target, {
                 type: "move",
                 moveId: moveId
@@ -1871,8 +2413,8 @@ const moveExecutes = {
                 moveId: moveId
             });
 
-            // 50% chance to poison
-            if (!miss && Math.random() < 0.5) {
+            // 80% chance to poison
+            if (!miss && Math.random() < 0.8) {
                 target.applyStatus(statusConditions.POISON, source);
             }
         }
@@ -1901,6 +2443,21 @@ const moveExecutes = {
             // sharply raise spatk
             target.addEffect("greaterSpaUp", 4, source);
         }
+    },
+    "m418": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m418";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+
+        // boost self cr by 30
+        source.boostCombatReadiness(source, 30);
     },
     "m420": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m420";
@@ -1934,6 +2491,55 @@ const moveExecutes = {
             }
         }
     },
+    "m444": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m444";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
+    "m446": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m446";
+        const moveData = moveConfig[moveId];
+        // stealth rock log
+        battle.addToLog(`Sharp rocks were scattered on the ground near ${source.teamName}'s side!`);
+        for (const target of allTargets) {
+            // give target stealthRock
+            target.addEffect("stealthRock", 3, source);
+        }
+    },
+    "m482": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m482";
+        const moveData = moveConfig[moveId];
+
+        // get only target row
+        const targetParty = battle.parties[primaryTarget.teamName];
+        const targetRow = Math.floor((primaryTarget.position - 1) / targetParty.cols);
+        const targetCol = (primaryTarget.position - 1) % targetParty.cols;
+        const damageTargets = source.getPatternTargets(targetParty, targetPatterns.ROW, targetRow, targetCol);
+
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            // only deal damage if target is primary target row
+            if (damageTargets.includes(target)) {
+                const damageToDeal = calculateDamage(moveData, source, target, miss);
+                source.dealDamage(damageToDeal, target, {
+                    type: "move",
+                    moveId: moveId
+                });
+            }
+
+            // if not miss, 40% chance to poison
+            if (!miss && Math.random() < 0.4) {
+                target.applyStatus(statusConditions.POISON, source);
+            }
+        }
+    },
     "m483": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m483";
         const moveData = moveConfig[moveId];
@@ -1942,6 +2548,30 @@ const moveExecutes = {
             target.addEffect("spaUp", 3, source);
             target.addEffect("spdUp", 3, source);
             target.addEffect("speUp", 3, source);
+        }
+    },
+    "m506": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m506";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+
+            let hasDebuff = false;
+            for (const effect of Object.keys(target.effectIds)) {
+                const effectData = effectConfig[effect];
+                if (effectData.type === effectTypes.DEBUFF) {
+                    hasDebuff = true;
+                    break;
+                }
+            }
+            const hasStatus = target.status.statusId !== null;
+            const damageToDeal = calculateDamage(moveData, source, target, miss, {
+                power: (hasDebuff || hasStatus) ? moveData.power + 25 : moveData.power
+            });
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
         }
     },
     "m525": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -1967,7 +2597,7 @@ const moveExecutes = {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             const damageToDeal = calculateDamage(moveData, source, target, miss, { defStat: damageTypes.PHYSICAL });
-            // deal half damage if target is primary target
+            // deal half damage if target is not primary target
             source.dealDamage(Math.round(damageToDeal * (primaryTarget !== target ? 0.5 : 1)), target, {
                 type: "move",
                 moveId: moveId

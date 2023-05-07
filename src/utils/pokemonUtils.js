@@ -75,9 +75,22 @@ const calculateEffectiveSpeed = (speed) => {
     }
 }
 
+const calculateEffectiveAccuracy = (accuracy) => {
+    // use formula:
+    // if acc <= 20: acc = 0.2
+    // else: acc = acc/100
+
+    if (accuracy <= 20) {
+        return 0.2;
+    } else {
+        return accuracy / 100;
+    }
+}
+
 module.exports = {
     getPokemonExpNeeded,
     calculateWorth,
     buildPokemonStatString,
-    calculateEffectiveSpeed
+    calculateEffectiveSpeed,
+    calculateEffectiveAccuracy
 };

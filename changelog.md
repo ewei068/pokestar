@@ -2,6 +2,7 @@
 
 ### 0.5.6
 
+* Add new battle-eligible Pokemon: Alakazam, Machamp, Golem, and Gengar!
 * Patch a few party and damage calculation bugs.
 * Reduce rate limit to 0.75 seconds.
 * Added more helpful command feedback!
