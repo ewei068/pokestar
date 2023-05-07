@@ -123,7 +123,7 @@ const getPokemon = async (trainer, pokemonId) => {
         const res = await query.findOne();
         
         if (!res) {
-            return { data: null, err: "Pokemon not found." };
+            return { data: null, err: "Pokemon not found or Pokemon not owned by you." };
         } else {
             return await calculateAndUpdatePokemonStats(res, pokemonConfig[res.speciesId]);
         }

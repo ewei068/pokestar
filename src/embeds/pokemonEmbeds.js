@@ -56,7 +56,7 @@ const buildPokemonListEmbed = (trainer, pokemons, page) => {
     embed.setTitle(`Trainer ${trainer.user.username}'s Pokemon`);
     embed.setColor(0xffffff);
     embed.setDescription(pokemonString);
-    embed.setFooter({ text: `Page ${page} | Use \`/info <id>\` to inspect a Pokemon!` });
+    embed.setFooter({ text: `Page ${page} | Select a Pokemon or use /info <id> to inspect it!` });
 
     return embed;
 }

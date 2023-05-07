@@ -1,25 +1,29 @@
 const { getState  } = require("../services/state");
+const { getTrainer } = require("../services/trainer");
+const { getPokemon } = require("../services/pokemon");
+const { buildPokemonEmbed } = require("../embeds/pokemonEmbeds");
 
 const pokemonListSelect = async (interaction, data) => {
-    // get state
-    const state = getState(data.stateId);
-    if (!state) {
-        await interaction.update({ 
-            components: [] 
-        });
-        return { err: "This interaction has expired." };
-    }
-
-    // if data has userId component, verify interaction was done by that user
-    if (state.userId && interaction.user.id !== state.userId) {
-        return { err: "This interaction was not initiated by you." };
-    }
+    // get state to refresh it if possible
+    getState(data.stateId);
 
     const pokemonId = interaction.values[0];
-    await interaction.update({ 
+
+    // get trainer
+    const trainer = await getTrainer(interaction.user);
+
+    // get pokemon
+    const pokemon = await getPokemon(trainer.data, pokemonId);
+    if (pokemon.err) {
+        return { embed: null, err: pokemon.err };
+    }
+
+    // build pokemon embed
+    const embed = buildPokemonEmbed(trainer.data, pokemon.data);
+
+    await interaction.reply({ 
         content: `${pokemonId}`, 
-        embeds: interaction.message.embeds, 
-        components: interaction.message.components
+        embeds: [embed],
     });
 }
 
