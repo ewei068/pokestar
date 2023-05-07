@@ -22,10 +22,14 @@ const back = async (interaction, data) => {
     }
 
     // get message prior to last message
-    const message = state.messageStack[state.messageStack.length - 1];
-
-    // update message
-    await interaction.update(message);
+    // message config = { execute, args}
+    const messageConfig = state.messageStack[state.messageStack.length - 1];
+    const { send, err } = await messageConfig.execute(messageConfig.args);
+    if (err) {
+        return { err: err };
+    } else {
+        await interaction.update(send);
+    }
 }
 
 module.exports = back;

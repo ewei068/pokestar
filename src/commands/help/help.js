@@ -1,8 +1,6 @@
-const { buildIdConfigSelectRow } = require('../../components/idConfigSelectRow');
-const { commandConfig, commandCategoryConfig } = require('../../config/commandConfig');
-const { eventNames } = require('../../config/eventConfig');
-const { buildHelpEmbed, buildHelpCommandEmbed } = require('../../embeds/helpEmbeds');
-const { setState, getState } = require('../../services/state');
+const { commandConfig } = require('../../config/commandConfig');
+const { buildHelpCommandEmbed, buildHelpSend } = require('../../embeds/helpEmbeds');
+const { setState } = require('../../services/state');
 
 /**
  * Parses the command config, returning an embed that allows users to browse for commands.
@@ -16,28 +14,17 @@ const help = async (command) => {
         const stateId = setState({
             messageStack: []
         }, ttl=150);
-        const categorySelectRowData = {
+        
+        const { send, err } = await buildHelpSend({
             stateId: stateId,
-            select: "category"
+            view: "help",
+            option: null
+        });
+        if (err) {
+            return { err: err };
+        } else {
+            return send;
         }
-        const categorySelectRow = buildIdConfigSelectRow(
-            Object.keys(commandCategoryConfig),
-            commandCategoryConfig,
-            "Select a category:",
-            categorySelectRowData,
-            eventNames.HELP_SELECT,
-            false
-        )
-
-        const send = {
-            embeds: [buildHelpEmbed()],
-            components: [categorySelectRow]
-        }
-        
-        // add state to stack for back button
-        getState(stateId).messageStack.push(send);
-        
-        return send;
     }
 
     // if args, send help message for specific command

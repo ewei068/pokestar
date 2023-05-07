@@ -1,9 +1,5 @@
 const { getState } = require("../services/state");
-const { buildShopCategoryEmbed, buildShopItemEmbed } = require("../embeds/shopEmbeds");
-const { buildBackButtonRow } = require("../components/backButtonRow");
-const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
-const { shopCategoryConfig, shopItemConfig } = require("../config/shopConfig");
-const { eventNames } = require("../config/eventConfig");
+const { buildShopSend } = require("../services/shop");
 
 const shopSelect = async (interaction, data) => {
     // get state
@@ -20,51 +16,29 @@ const shopSelect = async (interaction, data) => {
         return { err: "This interaction was not initiated by you." };
     }
 
-    // get trainer
-    const trainer = state.trainer;
-    if (!trainer) {
-        return { err: "No trainer data." };
-    }
-
     // get which select menu was used
     const select = data.select;
+    if (!select) {
+        return { err: "No select menu was used." };
+    }
 
     // get which option was selected
     const option = interaction.values[0];
-
-    const send = {
-        embeds: [],
-        components: []
-    }
-    // if select is category, update embed to selected category
-    if (select === "category") {
-        const embed = buildShopCategoryEmbed(trainer, option);
-        send.embeds.push(embed);
-        
-        const categorySelectRowData = {
-            stateId: data.stateId,
-            select: "item"
-        }
-        const categorySelectRow = buildIdConfigSelectRow(
-            shopCategoryConfig[option].items,
-            shopItemConfig,
-            "Select an item:",
-            categorySelectRowData,
-            eventNames.SHOP_SELECT
-        )
-        send.components.push(categorySelectRow);
-    } else if (select === "item") {
-        // if select is item, update embed to selected item
-        const embed = buildShopItemEmbed(trainer, option);
-        send.embeds.push(embed);
+    if (!option) {
+        return { err: "No option was selected." };
     }
 
-    // get back button
-    const backButton = buildBackButtonRow(data.stateId);
-    send.components.push(backButton);
-
-    state.messageStack.push(send);
-    await interaction.update(send);
+    const { send, err } = await buildShopSend({
+        stateId: data.stateId,
+        user: interaction.user,
+        view: select,
+        option: option
+    });
+    if (err) {
+        return { err: err };
+    } else {
+        await interaction.update(send);
+    }
 }
 
 module.exports = shopSelect;

@@ -1,5 +1,10 @@
 # Pokestar Changelog
 
+## 0.6.0 - First Beta Release
+
+* Selecting a Pokemon from a list now displays Pokemon information.
+* You can now purchase items directly from the `/pokemart`!
+
 ### 0.5.6 (5/6)
 
 * Add new battle-eligible Pokemon: Alakazam, Machamp, Golem, and Gengar!

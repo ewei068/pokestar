@@ -5,6 +5,7 @@ const eventNames = {
     POKEMON_EVOLVE_SELECT: "pokemonEvolveSelect",
     POKEMON_EVOLVE_CONFIRM: "pokemonEvolveConfirm",
     SHOP_SELECT: "shopSelect",
+    SHOP_BUY: "shopBuy",
     HELP_SELECT: "helpSelect",
     PVP_ACCEPT: "pvpAccept",
     BATTLE_INFO: "battleInfo",
@@ -25,6 +26,8 @@ const eventConfig = {
     [eventNames.POKEMON_LIST_SELECT]: {
         "name": "Pokemon List Select",
         "execute": "pokemonListSelect.js",
+        "exp": 10,
+        "money": 25,
     },
     [eventNames.POKEMON_EVOLVE_SELECT]: {
         "name": "Pokemon Evolve Select",
@@ -39,6 +42,11 @@ const eventConfig = {
     [eventNames.SHOP_SELECT]: {
         "name": "Shop Select",
         "execute": "shopSelect.js",
+    },
+    [eventNames.SHOP_BUY]: {
+        "name": "Shop Buy",
+        "execute": "shopBuy.js",
+        "exp": 15,
     },
     [eventNames.HELP_SELECT]: {
         "name": "Help Select",

@@ -2,6 +2,11 @@ const { EmbedBuilder } = require("discord.js");
 const { buildYesNoActionRow } = require("../../components/yesNoActionRow");
 const { setState } = require("../../services/state");
 
+const test2 = ({arg1 = null, arg2 = null} = {}) => {
+    console.log(arg1);
+    console.log(arg2);
+}
+
 const test = async (channel, interaction=false) => {
     /* const sendResult = await channel.send("test1");
     console.log(sendResult);
@@ -13,6 +18,13 @@ const test = async (channel, interaction=false) => {
         stateId: stateId,
     }
     const components = buildYesNoActionRow(data, "test", false); */
+
+    const testArgs = {
+        arg1: "test1",
+        arg2: "test2"
+    }
+
+    test2(testArgs);
 
     const embed1 = new EmbedBuilder();
     embed1.setTitle("test1");

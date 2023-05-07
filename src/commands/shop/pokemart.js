@@ -1,9 +1,5 @@
-const { getTrainer } = require('../../services/trainer');
-const { buildShopEmbed } = require('../../embeds/shopEmbeds');
-const { setState, getState } = require('../../services/state');
-const { buildIdConfigSelectRow } = require('../../components/idConfigSelectRow');
-const { shopCategoryConfig } = require('../../config/shopConfig');
-const { eventNames } = require('../../config/eventConfig');
+const { setState } = require('../../services/state');
+const { buildShopSend } = require('../../services/shop');
 
 /**
  * Parses the shop config, returning an interactive embed for the user to
@@ -12,41 +8,18 @@ const { eventNames } = require('../../config/eventConfig');
  * @returns Embed with shop options.
  */
 const pokemart = async (user) => {
-    // get trainer
-    const trainer = await getTrainer(user);
-    if (trainer.err) {
-        return { embed: null, err: trainer.err };
-    }
-    
-    // build shop embed
-    const embed = buildShopEmbed(trainer.data);
-
     // build selection list of shop categories
     const stateId = setState({
         userId: user.id,
-        trainer: trainer.data,
         messageStack: []
     }, ttl=150);
-    const categorySelectRowData = {
+    
+    return await buildShopSend({
         stateId: stateId,
-        select: "category"
-    }
-    const categorySelectRow = buildIdConfigSelectRow(
-        Object.keys(shopCategoryConfig),
-        shopCategoryConfig,
-        "Select a category:",
-        categorySelectRowData,
-        eventNames.SHOP_SELECT
-    )
-
-    const send = {
-        embeds: [embed],
-        components: [categorySelectRow]
-    }
-
-    // add message to stack for back button
-    getState(stateId).messageStack.push(send);
-    return { send: send, err: null };
+        user: user,
+        view: "shop",
+        option: null
+    });
 }
 
 const pokemartMessageCommand = async (message) => {
