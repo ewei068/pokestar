@@ -2382,7 +2382,7 @@ const moveExecutes = {
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             // deal half targets health as damage
-            const damageToDeal = Math.floor(target.maxHp * 0.5);
+            const damageToDeal = Math.floor(target.hp * 0.5);
             source.dealDamage(damageToDeal, target, {
                 type: "move",
                 moveId: moveId
