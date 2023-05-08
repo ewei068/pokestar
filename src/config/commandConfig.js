@@ -33,13 +33,13 @@ const commandCategoryConfig = {
         "name": "Social",
         "description": "Social commands",
         "folder": "social",
-        "commands": ["leaderboard"]
+        "commands": ["leaderboard", "invite"]
     },
     "help": {
         "name": "Help",
         "description": "Help commands",
         "folder": "help",
-        "commands": ["help"]
+        "commands": ["help", "tutorial", "changelog"]
     },
     "heartbeat": {
         "name": "Heartbeat",
@@ -420,6 +420,30 @@ const commandConfig = {
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
         "money": 10
+    },
+    "tutorial": {
+        "name": "Tutorial",
+        "aliases": ["tutorial"],
+        "description": "Get a tutorial on how to play",
+        "execute": "tutorial.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    },
+    "changelog": {
+        "name": "Changelog",
+        "aliases": ["changelog"],
+        "description": "View all the update changes!",
+        "execute": "changelog.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    },
+    "invite": {
+        "name": "Invite",
+        "aliases": ["invite"],
+        "description": "Invite the bot to your server",
+        "execute": "invite.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },
     "give": {
         "name": "Give",

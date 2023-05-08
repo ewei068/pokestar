@@ -80,7 +80,7 @@ client.on(Events.GuildCreate, (guild) => {
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, c => {
 	logger.info(`Ready! Logged in as ${c.user.tag}`);
-    client.user.setActivity(`${prefix}help | ${prefix}d | ${prefix}g`);
+    client.user.setActivity(`/tutorial /help`);
     // log connected guilds
     let guildString = "";
     client.guilds.cache.forEach(guild => {

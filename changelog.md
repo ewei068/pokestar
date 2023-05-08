@@ -2,6 +2,9 @@
 
 ## 0.6.0 - First Beta Release
 
+* `/tutorial`: Added a beginner tutorial!
+* `/invite`: Invite the bot to your server!
+* `/changelog`: See the complete update history!
 * Selecting a Pokemon from a list now displays Pokemon information.
 * You can now purchase items directly from the `/pokemart`!
 
