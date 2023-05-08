@@ -5,7 +5,9 @@ const LEADERBOARD_SIZE = 10;
 const getLeaderboard = async (categoryData, subset) => {
     const filter = {};
     if (subset) {
-        filter.userId.$in = subset;
+        filter.userId = {
+            $in: subset
+        }
     }
 
     const query = new QueryBuilder(categoryData.collection)

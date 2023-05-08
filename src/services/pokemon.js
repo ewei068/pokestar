@@ -193,6 +193,9 @@ const getEvolvedPokemon = (pokemon, evolutionSpeciesId) => {
         }
     }
 
+    // update battle eligibility
+    pokemon.battleEligible = evolutionSpeciesData.battleEligible;
+
     // TODO: change moves
 
     return pokemon;

@@ -1308,7 +1308,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
-        "description": "A second-turn attack move. If this defeats the target, surrounding Pokemon have a 30% chance to flinch.",
+        "description": "A second-turn attack move. If this defeats the target, all enemies have a 30% chance to flinch, boosted by 10% of the user's speed, up to a max of 75%.",
         "silenceIf": function(battle, pokemon) {
             return pokemon.effectIds.skyCharge === undefined;
         }
@@ -1428,7 +1428,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.ALL,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user makes a soothing bell chime to heal the status conditions of all the party Pokémon. If a condition is removed, also heals the target for 10% of their max HP.",
+        "description": "The user makes a soothing bell chime to heal the status conditions of all the party Pokémon. Also heals targets for 10% of their max HP, boosted to 20% if a condition is removed.",
     },
     "m216": {
         "name": "Return",
@@ -1542,10 +1542,10 @@ const moveConfig = {
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.ANY,
-        "targetPattern": targetPatterns.ALL,
+        "targetPattern": targetPatterns.SQUARE,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.SPECIAL,
-        "description": "Two turns after this move is used, a hunk of psychic energy attacks the target. If the Future Sight debuff is cleansed early, deals less damage.",
+        "description": "Two turns after this move is used, a hunk of psychic energy attacks targets. If the Future Sight debuff is cleansed early, deals less damage.",
     },
     "m269": {
         "name": "Taunt",
@@ -1662,7 +1662,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.ALL,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.OTHER,
-        "description": "The user whips up a turbulent whirlwind that sharply raises the Speed of all party Pokémon for 2 turns.",
+        "description": "The user whips up a turbulent whirlwind that sharply raises the Speed of all party Pokémon for 2 turns and boosting combat readiness by 15%.",
     },
     "m369": {
         "name": "U-Turn",
@@ -1685,10 +1685,10 @@ const moveConfig = {
         "cooldown": 6,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.ANY,
-        "targetPattern": targetPatterns.ALL,
+        "targetPattern": targetPatterns.SQUARE,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.OTHER,
-        "description": "The user envelops all allies in a veil made of water, restoring 15% of the user's max HP for 3 turns and boosting defense for 2 turns.",
+        "description": "The user envelops allies in a veil made of water, restoring 25% of the user's max HP for 3 turns and boosting defense for 2 turns.",
     },
     "m394": {
         "name": "Flare Blitz",
@@ -2340,9 +2340,12 @@ const moveExecutes = {
         const targetParty = battle.parties[primaryTarget.teamName];
         const targetRow = Math.floor((primaryTarget.position - 1) / targetParty.cols);
         const targetCol = (primaryTarget.position - 1) % targetParty.cols;
-        const surroundingTargets = source.getPatternTargets(targetParty, targetPatterns.SQUARE, targetRow, targetCol);
+        const surroundingTargets = source.getPatternTargets(targetParty, targetPatterns.ALL, targetRow, targetCol);
         for (const target of surroundingTargets) {
-            if (Math.random() < 0.3) {
+            // flinch chance = (30 + source speed/10)
+            const flinchChance = Math.min(0.3 + (source.spe / 10)/100, .75);
+            console.log(flinchChance)
+            if (Math.random() < flinchChance) {
                 target.addEffect("flinched", 1, source);
             }
         }
@@ -2541,14 +2544,12 @@ const moveExecutes = {
             // remove status conditions
             const statusRemoved = target.removeStatus();
 
-            // if status removed, heal target 10% hp
-            if (statusRemoved) {
-                const healAmount = Math.floor(target.maxHp * 0.1);
-                source.giveHeal(healAmount, target, {
-                    type: "move",
-                    moveId: moveId
-                });
-            }
+            // heal 10% max HP, boosted to 20% if condition removed
+            const healAmount = Math.floor(target.maxHp * (statusRemoved ? 0.2 : 0.1));
+            source.giveHeal(healAmount, target, {
+                type: "move",
+                moveId: moveId
+            });
         }
     },
     "m216": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -2847,10 +2848,12 @@ const moveExecutes = {
         const moveId = "m366";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
-            // grant greater spe up for 4 turns
-            // grants self for 5 turns due to end-of-turn effect tick
+            // grant greater spe up for 2 turns
+            // grants self for 3 turns due to end-of-turn effect tick
             const turns = target === source ? 3 : 2;
             target.addEffect("greaterSpeUp", turns, source);
+            // boost cr by 15%
+            target.boostCombatReadiness(source, 15);
         }
     },
     "m369": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -2878,7 +2881,7 @@ const moveExecutes = {
         for (const target of allTargets) {
             // add regeneration and def up
             target.addEffect("regeneration", 3, source, {
-                healAmount: Math.floor(source.maxHp * 0.15),
+                healAmount: Math.floor(source.maxHp * 0.25),
             });
             target.addEffect("defUp", source == target ? 3 : 2, source);
         }

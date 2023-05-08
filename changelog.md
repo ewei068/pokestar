@@ -1,6 +1,6 @@
 # Pokestar Changelog
 
-## 0.6.0 - First Beta Release
+## 0.6.0 (5/8) - First Beta Release
 
 Added a few quality of life and easy of use features as we gear up for a public beta release. Also implemented moves for some popular Pokemon!
 
