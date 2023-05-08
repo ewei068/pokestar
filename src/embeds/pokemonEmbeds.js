@@ -82,7 +82,7 @@ const buildPokemonEmbed = (trainer, pokemon) => {
     // TODO: display original owner?
     const embed = new EmbedBuilder();
     embed.setTitle(`${trainer.user.username}'s ${pokemon.name}`);
-    embed.setDescription(`${pokemon.shiny ? "✨" : ""}**[Lv. ${pokemon.level}]** ${speciesData.name} (#${pokemon.speciesId})\n${linebreakString(speciesData.description, 50)}`);
+    embed.setDescription(`${pokemon.shiny ? "✨" : ""}**[Lv. ${pokemon.level}]** ${speciesData.name} (#${pokemon.speciesId})\n${speciesData.description}`);
     embed.setColor(rarityConfig[speciesData.rarity].color);
     embed.addFields(
         { name: "Type", value: typeString, inline: true },

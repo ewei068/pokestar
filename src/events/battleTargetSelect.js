@@ -1,5 +1,6 @@
 const { getState } = require("../services/state");
 const { getStartTurnSend } = require("../services/battle");
+const { logger } = require("../log");
 
 const battleTargetSelect = async (interaction, data) => {
     // get state
@@ -22,6 +23,8 @@ const battleTargetSelect = async (interaction, data) => {
         return { err: "It's not your turn." };
     }
 
+    // TEMP: measure execution time
+    const start = Date.now();
     // if skip turn, skip turn
     if (data.skipTurn) {
         const result = battle.activePokemon.skipTurn();
@@ -42,8 +45,11 @@ const battleTargetSelect = async (interaction, data) => {
         // TODO: do something with result?
         const result = battle.activePokemon.useMove(moveId, targetId);
     }
+    const send = await getStartTurnSend(battle, data.stateId);
+    const end = Date.now();
+    logger.info(`Execution time: ${end - start} ms`);
 
-    await interaction.update(await getStartTurnSend(battle, data.stateId));
+    await interaction.update(send);
 }
 
 module.exports = battleTargetSelect;

@@ -2,6 +2,9 @@
 
 ## 0.6.0 - First Beta Release
 
+Added a few quality of life and easy of use features as we gear up for a public beta release. Also implemented moves for some popular Pokemon!
+
+* Added more battle eligible Pokemon: Lapras, Vaporeon, Jolteon, Flareon, and Snorlax!
 * `/tutorial`: Added a beginner tutorial!
 * `/invite`: Invite the bot to your server!
 * `/changelog`: See the complete update history!

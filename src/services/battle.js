@@ -466,6 +466,10 @@ class Pokemon {
                     }
                     break;
                 case statusConditions.SLEEP:
+                    // ignore if sleep talk is used
+                    if (moveId === "m214") {
+                        break;
+                    }
                     // sleep wakeup chance: 0 turns: 0%, 1 turn: 66%, 2 turns: 100%
                     const wakeupChance = this.status.turns * 0.66;
                     const wakeupRoll = Math.random();
@@ -863,7 +867,7 @@ class Pokemon {
         return combatReadinessLost;
     }
 
-    addEffect(effectId, duration, source) {
+    addEffect(effectId, duration, source, args) {
         // if faint, do nothing
         if (this.isFainted) {
             return;
@@ -889,7 +893,10 @@ class Pokemon {
             duration: duration,
             source: source,
         };
-        const args = effectData.effectAdd(this.battle, source, this);
+        args = {
+            ...effectData.effectAdd(this.battle, source, this, args),
+            ...args,
+        };
         
         // if effect still exists, add args
         if (this.effectIds[effectId]) {

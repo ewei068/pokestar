@@ -12,7 +12,7 @@ const buildPartyString = (pokemons, rows, cols, reverse=false, hp=false, emphPos
         let rowString = '`';
         globalIndex = i * cols;
         for (let j = 0; j < cols; j++) {
-            const lplus = emphPosition && (emphPosition - 1 == globalIndex || emphPosition == globalIndex) ? '╬' : '+';
+            const lplus = emphPosition && (emphPosition - 1 == globalIndex || (emphPosition == globalIndex && j != 0)) ? '╬' : '+';
             const rplus = emphPosition && emphPosition - 1 == globalIndex ? '╬' : '+';
             const border = emphPosition && emphPosition - 1 == globalIndex ? '=' : '-';
             const pokemon = pokemons[globalIndex];
@@ -49,7 +49,7 @@ const buildPartyString = (pokemons, rows, cols, reverse=false, hp=false, emphPos
         // build pokemon line
         rowString = '`';
         for (let j = 0; j < cols; j++) {
-            const lborder = emphPosition && (emphPosition - 1 == globalIndex || emphPosition == globalIndex) ? '║' : '|';
+            const lborder = emphPosition && (emphPosition - 1 == globalIndex || (emphPosition == globalIndex && j != 0)) ? '║' : '|';
             const rborder = emphPosition && emphPosition - 1 == globalIndex ? '║' : '|';
             const pokemon = pokemons[globalIndex];
             const emoji = pokemon ? pokemonConfig[pokemon.speciesId].emoji : '⬛';
@@ -67,7 +67,7 @@ const buildPartyString = (pokemons, rows, cols, reverse=false, hp=false, emphPos
         // build bottom line with position
         rowString = '`';
         for (let j = 0; j < cols; j++) {
-            const lplus = emphPosition && (emphPosition - 1 == globalIndex || emphPosition == globalIndex) ? '╬' : '+';
+            const lplus = emphPosition && (emphPosition - 1 == globalIndex || (emphPosition == globalIndex && j != 0)) ? '╬' : '+';
             const rplus = emphPosition && emphPosition - 1 == globalIndex ? '╬' : '+';
             const border = emphPosition && emphPosition - 1 == globalIndex ? '=' : '-';
             const position = globalIndex + 1;
