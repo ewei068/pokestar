@@ -588,6 +588,8 @@ const pokemonConfig = {
             "98": 0.45,
             "109": 0.1
         },
+        "moveIds": ["m118", "m266", "m361", "m585"],
+        "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
@@ -624,6 +626,8 @@ const pokemonConfig = {
             "172": 0.45,
             "119": 0.1
         },
+        "moveIds": ["m574", "m47", "m186", "m304"],
+        "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
@@ -1026,6 +1030,8 @@ const pokemonConfig = {
             "22": 0.8,
             "153": 0.2
         },
+        "moveIds": ["m175", "m127", "m349", "m416"],
+        "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },

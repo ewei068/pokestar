@@ -2,6 +2,7 @@
 
 ### 0.6.1
 
+* Added battle moves for: Clefable, Wigglytuff, Gyarados!
 * `/pokedex`: View Pokemon species data, such as base stats and moves!
 * Balance changes:
     * Buffed: Agility (now grants 15% CR), Sky Attack (now flinches all enemies), and Heal Bell (more healing)

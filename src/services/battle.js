@@ -237,6 +237,17 @@ class Battle {
     getEligibleTargets(source, moveId) {
         const moveData = moveConfig[moveId];
         const eligibleTargets = [];
+        const eventArgs = {
+            user: source,
+            moveId: moveId,
+            eligibleTargets: eligibleTargets,
+            shouldReturn: false
+        };
+        this.eventHandler.emit(battleEventNames.GET_ELIGIBLE_TARGETS, eventArgs);
+        if (eventArgs.shouldReturn) {
+            return eligibleTargets;
+        }
+
         let targetParty = null;
         // use target type to get party
         switch (moveData.targetType) {
@@ -256,7 +267,7 @@ class Battle {
                 for (const teamName in this.parties) {
                     const party = this.parties[teamName];
                     for (const pokemon of party.pokemons) {
-                        if (pokemon && !pokemon.isFainted) {
+                        if (this.isPokemonTargetable(pokemon)) {
                             eligibleTargets.push(pokemon);
                         }
                     }
@@ -272,7 +283,7 @@ class Battle {
                 break;
             case targetPositions.NON_SELF:
                 for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted && pokemon !== source) {
+                    if (this.isPokemonTargetable(pokemon) && pokemon !== source) {
                         eligibleTargets.push(pokemon);
                     }
                 }
@@ -287,7 +298,7 @@ class Battle {
                     let pokemonFound = false;
                     for (let j = 0; j < targetParty.cols; j++) {
                         const pokemon = targetParty.pokemons[index];
-                        if (pokemon && !pokemon.isFainted) {
+                        if (this.isPokemonTargetable(pokemon)) {
                             pokemonFound = true;
                             eligibleTargets.push(pokemon);
                         }
@@ -307,7 +318,7 @@ class Battle {
                     let pokemonFound = false;
                     for (let j = targetParty.cols - 1; j >= 0; j--) {
                         const pokemon = targetParty.pokemons[index];
-                        if (pokemon && !pokemon.isFainted) {
+                        if (this.isPokemonTargetable(pokemon)) {
                             pokemonFound = true;
                             eligibleTargets.push(pokemon);
                         }
@@ -321,7 +332,7 @@ class Battle {
             default:
                 // return all pokemon in party
                 for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted) {
+                    if (this.isPokemonTargetable(pokemon)) {
                         eligibleTargets.push(pokemon);
                     }
                 }
@@ -329,6 +340,10 @@ class Battle {
         }
 
         return eligibleTargets;
+    }
+
+    isPokemonTargetable(pokemon) {
+        return pokemon && !pokemon.isFainted && pokemon.targetable;
     }
 
     clearLog() {
@@ -375,6 +390,8 @@ class Pokemon {
     combatReadiness;
     position;
     isFainted;
+    targetable;
+    incapacitated;
 
     constructor(battle, trainer, pokemonData, teamName, position) {
         this.battle = battle;
@@ -417,6 +434,8 @@ class Pokemon {
         this.combatReadiness = 0;
         this.position = position;
         this.isFainted = false;
+        this.targetable = true;
+        this.incapacitated = false;
     }
 
     useMove(moveId, targetPokemonId) {
@@ -599,9 +618,8 @@ class Pokemon {
             return false;
         }
 
-        // if flinched, return
-        // TODO: check for other impairments
-        if (this.effectIds.flinched !== undefined) {
+        // if incapacitated, return
+        if (this.incapacitated) {
             return false;
         }
 
@@ -627,7 +645,7 @@ class Pokemon {
             case targetPatterns.ALL:
                 // return all pokemon in party
                 for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted) {
+                    if (this.battle.isPokemonTargetable(pokemon)) {
                         targets.push(pokemon);
                     }
                 }
@@ -635,7 +653,7 @@ class Pokemon {
             case targetPatterns.ALL_EXCEPT_SELF:
                 // return all pokemon in party except self
                 for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted && pokemon !== this) {
+                    if (this.battle.isPokemonTargetable(pokemon) && pokemon !== this) {
                         targets.push(pokemon);
                     }
                 }
@@ -643,7 +661,7 @@ class Pokemon {
             case targetPatterns.COLUMN:
                 // return all pokemon in column
                 for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted && (pokemon.position - 1)% targetParty.cols === targetCol) {
+                    if (this.battle.isPokemonTargetable(pokemon) && (pokemon.position - 1)% targetParty.cols === targetCol) {
                         targets.push(pokemon);
                     }
                 }
@@ -651,7 +669,7 @@ class Pokemon {
             case targetPatterns.ROW:
                 // return all pokemon in row
                 for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted && Math.floor((pokemon.position - 1) / targetParty.cols) === targetRow) {
+                    if (this.battle.isPokemonTargetable(pokemon) && Math.floor((pokemon.position - 1) / targetParty.cols) === targetRow) {
                         targets.push(pokemon);
                     }
                 }
@@ -660,7 +678,7 @@ class Pokemon {
                 // return random pokemon in party
                 const validPokemons = [];
                 for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted) {
+                    if (this.battle.isPokemonTargetable(pokemon)) {
                         validPokemons.push(pokemon);
                     }
                 }
@@ -669,7 +687,7 @@ class Pokemon {
             case targetPatterns.SQUARE:
                 // if row index or column index within 1 of target, add to targets
                 for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted) {
+                    if (this.battle.isPokemonTargetable(pokemon)) {
                         const pokemonRow = Math.floor((pokemon.position - 1) / targetParty.cols);
                         const pokemonCol = (pokemon.position - 1) % targetParty.cols;
                         if (Math.abs(targetRow - pokemonRow) <= 1 && Math.abs(targetCol - pokemonCol) <= 1) {
@@ -681,7 +699,7 @@ class Pokemon {
             case targetPatterns.CROSS:
                 // target manhattan distance <= 1, add to targets
                 for (const pokemon of targetParty.pokemons) {
-                    if (pokemon && !pokemon.isFainted) {
+                    if (this.battle.isPokemonTargetable(pokemon)) {
                         const pokemonRow = Math.floor((pokemon.position - 1) / targetParty.cols);
                         const pokemonCol = (pokemon.position - 1) % targetParty.cols;
                         if (Math.abs(targetRow - pokemonRow) + Math.abs(targetCol - pokemonCol) <= 1) {
@@ -695,7 +713,7 @@ class Pokemon {
 
                 // get target pokemon
                 const targetPokemon = targetParty.pokemons[targetRow * targetParty.cols + targetCol];
-                if (targetPokemon && !targetPokemon.isFainted) {
+                if (this.battle.isPokemonTargetable(targetPokemon)) {
                     targets.push(targetPokemon);
                 }
 

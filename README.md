@@ -34,7 +34,12 @@ Pokestar tries to be a fluid and responsive experience. Components and UI are a 
 
 ### Getting Started
 
-**If you're ever lost or would like more information about commands or a command, use `/help` or `/help <command>` for more information!** Note that the bot also supports legacy message commands with the `psb!` prefix, but it's recommended to use slash commands.
+**[IMPORTANT] Bot Usage**
+
+* This bot supports both slash commands and legacy message commands with the `psb!` prefix, but it's recommended to use slash commands.
+* User's are rate limited to 1 interaction every 0.75 seconds. This normally isn't an issue, but could result in interactions occasionally being dropped.
+* For security purposes, some (not all) button interactions are limited to only the initial user, and may expire after periods of inactivity.
+* **If you're ever lost or would like more information about commands or a command, use `/help` or `/help <command>` for more information!**
 
 **---**
 
@@ -157,7 +162,7 @@ This will bring up a selection menu where you can preview and confirm your Pokem
 
 **Eligible Pokemon**
 
-Temporarily while all Pokemon's moves are being implemented, only certain Pokemon are eligible for battle. **This list currently includes: Venusaur, Charizard, Blastoise, Butterfree, Beedrill, Pidgeot, Ratticate, Alakazam, Machamp, Golem, Gengar, Lapras, Vaporeon, Jolteon, Flareon, Snorlax, Articuno, Zapdos, Moltres, and Mewtwo.** We are working hard to implement all of the other Pokemon. **You can view your battle eligible Pokemon with this command (copy/paste it) `/list filterby: battleEligible filtervalue: True`.**
+Temporarily while all Pokemon's moves are being implemented, only certain Pokemon are eligible for battle. **This list currently includes: Venusaur, Charizard, Blastoise, Butterfree, Beedrill, Pidgeot, Ratticate, Alakazam, Machamp, Golem, Gengar, Wigglytuff, Clefable, Gyarados, Lapras, Vaporeon, Jolteon, Flareon, Snorlax, Articuno, Zapdos, Moltres, and Mewtwo.** We are working hard to implement all of the other Pokemon. **You can view your battle eligible Pokemon with this command (copy/paste it) `/list filterby: battleEligible filtervalue: True`.**
 
 <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/battle-eligible.png" height="300">
 
