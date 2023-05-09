@@ -23,13 +23,8 @@ const pokemonScroll = async (interaction, data) => {
 
     const listOptions = state.listOptions;
 
-    let page = listOptions.page;
-    if (data.isLeft) {
-        page -= 1;
-    } else {
-        page += 1;
-    }
-    if (page < 1 || (!data.isLeft && state.lastPage)) {
+    const page = data.page;
+    if (!page || page < 1) {
         return { err: "Invalid page." };
     }
     listOptions.page = page;

@@ -1,4 +1,4 @@
-const { growthRates, rarityConfig, pokemonConfig } = require('../config/pokemonConfig');
+const { growthRates, rarityConfig, pokemonConfig, growthRateConfig } = require('../config/pokemonConfig');
 const { getPBar, getWhitespace } = require('./utils');
 
 const getPokemonExpNeeded = (level, growthRate) => {
@@ -6,21 +6,7 @@ const getPokemonExpNeeded = (level, growthRate) => {
         return 0;
     }
 
-    if (growthRate == growthRates.FAST) {
-        // (1/2) x ^ 2.5
-        return Math.floor(0.5 * Math.pow(level, 2.5));
-    } else if (growthRate == growthRates.MEDIUMFAST) {
-        // (4/5) x ^ 2.5
-        return Math.floor(0.8 * Math.pow(level, 2.5));
-    } else if (growthRate == growthRates.MEDIUMSLOW) {
-        // x ^ 2.5
-        return Math.floor(Math.pow(level, 2.5));
-    } else if (growthRate == growthRates.SLOW) {
-        // (3/2) x ^ 2.5
-        return Math.floor(1.5 * Math.pow(level, 2.5));
-    }
-
-    return 0;
+    return growthRateConfig[growthRate].growthFn(level);
 }
 
 const calculateWorth = (pokemons=null, speciesIds=null) => {
@@ -60,6 +46,28 @@ const buildPokemonStatString = (pokemon, size=20, compact=false) => {
     return statString;
 }
 
+const buildPokemonBaseStatString = (speciesData, size=20) => {
+    const statArray = [
+        `${speciesData.baseStats[0]}`,
+        `${speciesData.baseStats[1]}`,
+        `${speciesData.baseStats[2]}`,
+        `${speciesData.baseStats[3]}`,
+        `${speciesData.baseStats[4]}`,
+        `${speciesData.baseStats[5]}`
+    ];
+    const whitespace = getWhitespace(statArray);
+    let statString = "";
+    statString += `\` HP ${whitespace[0]}${statArray[0]}\` ${getPBar(speciesData.baseStats[0] * 100 / 200, size=size)}\n`;
+    statString += `\`Atk ${whitespace[1]}${statArray[1]}\` ${getPBar(speciesData.baseStats[1] * 100 / 200, size=size)}\n`;
+    statString += `\`Def ${whitespace[2]}${statArray[2]}\` ${getPBar(speciesData.baseStats[2] * 100 / 200, size=size)}\n`;
+    statString += `\`SpA ${whitespace[3]}${statArray[3]}\` ${getPBar(speciesData.baseStats[3] * 100 / 200, size=size)}\n`;
+    statString += `\`SpD ${whitespace[4]}${statArray[4]}\` ${getPBar(speciesData.baseStats[4] * 100 / 200, size=size)}\n`;
+    statString += `\`Spe ${whitespace[5]}${statArray[5]}\` ${getPBar(speciesData.baseStats[5] * 100 / 200, size=size)}\n`;
+    statString += `Total: ${speciesData.baseStats.reduce((a, b) => a + b, 0)}`;
+
+    return statString;
+}
+
 const calculateEffectiveSpeed = (speed) => {
     // use formula:
     // y\ =\ 50\ \left\{x\ \le\ 0\right\}
@@ -91,6 +99,7 @@ module.exports = {
     getPokemonExpNeeded,
     calculateWorth,
     buildPokemonStatString,
+    buildPokemonBaseStatString,
     calculateEffectiveSpeed,
     calculateEffectiveAccuracy
 };

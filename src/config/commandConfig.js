@@ -15,7 +15,7 @@ const commandCategoryConfig = {
         "name": "Pokemon",
         "description": "Commands to catch, train, and inspect Pokemon",
         "folder": "pokemon",
-        "commands": ["gacha", "info", "list", "train", "evolve", "release"]
+        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "release"]
     },
     "shop": {
         "name": "Shop",
@@ -229,6 +229,22 @@ const commandConfig = {
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 10,
         "money": 25
+    },
+    "pokedex": {
+        "name": "Pokedex",
+        "aliases": ["pokedex", "dex"],
+        "description": "Get info about a Pokemon species",
+        "longDescription": "Browse all information about a Pokedex species, including its general information, base stats, and moves. Specify a species to skip to that species.",
+        "execute": "pokedex.js",
+        "args": {
+            "species": {
+                "type": "string",
+                "description": "species name OR id number",
+                "optional": true,
+                "variable": false
+            }
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },
     "release": {
         "name": "Release",

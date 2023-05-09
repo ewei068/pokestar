@@ -1,8 +1,8 @@
-const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig } = require('../config/pokemonConfig');
+const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig, growthRateConfig } = require('../config/pokemonConfig');
 const { moveConfig } = require('../config/battleConfig');
 const { EmbedBuilder } = require('discord.js');
 const { getWhitespace, getPBar, linebreakString } = require('../utils/utils');
-const { getPokemonExpNeeded, buildPokemonStatString } = require('../utils/pokemonUtils');
+const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString } = require('../utils/pokemonUtils');
 const { buildMoveString } = require('../utils/battleUtils');
 
 // pokemon: user's pokemon data
@@ -125,10 +125,95 @@ const buildPokemonEmbed = (trainer, pokemon) => {
     return embed;
 }
 
+const buildSpeciesDexEmbed = (id, speciesData, tab) => {
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${speciesData.emoji} #${id} ${speciesData.name}`);
+    embed.setColor(rarityConfig[speciesData.rarity].color);
+    
+    if (tab === "info") {
+        // display: description, type, abilities, rarity, battleEligibility, evolvable, growth rate
+        let typeString = "";
+        for (let i = 0; i < speciesData.type.length; i++) {
+            typeString += typeConfig[speciesData.type[i]].name;
+            if (i < speciesData.type.length - 1) {
+                typeString += "/";
+            }
+        }
 
+        let abilityString = "";
+        for (let i = 0; i < Object.keys(speciesData.abilities).length; i++) {
+            const abilityId = Object.keys(speciesData.abilities)[i];
+            const abilityProbability = speciesData.abilities[abilityId];
+            abilityString += `${abilityId} (${abilityProbability}%)`;
+            if (i < Object.keys(speciesData.abilities).length - 1) {
+                abilityString += "\n";
+            }
+        }
+
+        embed.setDescription(`${linebreakString(speciesData.description, 40)}`);
+        embed.addFields(
+            { name: "Type", value: typeString, inline: true },
+            { name: "Abilities", value: abilityString, inline: true },
+            { name: "Battle Eligibile", value: speciesData.battleEligible ? "True" : "False", inline: true },
+            { name: "Rarity", value: speciesData.rarity, inline: true },
+            { name: "Evolvable", value: speciesData.evolution ? "True" : "False", inline: true },
+            { name: "Growth Rate", value: growthRateConfig[speciesData.growthRate].name, inline: true },
+        );
+        embed.setImage(speciesData.sprite);
+    } else if (tab === "growth") {
+        // display: growth rate, base stats, total, evolutions
+        let evolutionString = "";
+        if (speciesData.evolution) {
+            for (let i = 0; i < speciesData.evolution.length; i++) {
+                const evolution = speciesData.evolution[i];
+                evolutionString += `Lv. ${evolution.level}: #${evolution.id} ${pokemonConfig[evolution.id].name}`;
+                if (i < speciesData.evolution.length - 1) {
+                    evolutionString += "\n";
+                }
+            }
+        } else {
+            evolutionString = "No evolutions!";
+        }
+        
+        embed.setDescription(`Growth information for #${id} ${speciesData.name}:`);
+        embed.addFields(
+            { name: "Growth Rate", value: growthRateConfig[speciesData.growthRate].name, inline: true },
+            { name: "Base Stats", value: buildPokemonBaseStatString(speciesData), inline: false },
+            { name: "Evolutions", value: evolutionString, inline: false },
+        );
+    } else if (tab === "moves") {
+        // display: move strings
+        if (!speciesData.moveIds) {
+            embed.setDescription(`No moves!`);
+        } else {
+            const fields = speciesData.moveIds.map((moveId) => {
+                const moveData = moveConfig[moveId];
+                const { moveHeader, moveString } = buildMoveString(moveData);
+                return {
+                    name: moveHeader,
+                    value: moveString,
+                    inline: true,
+                };
+            });
+
+            // every 2 fields, add a blank field
+            if (fields.length > 2) {
+                for (let i = 2; i < fields.length; i += 3) {
+                    fields.splice(i, 0, { name: '** **', value: '** **', inline: false });
+                }
+            }
+
+            embed.setDescription(`Moves for #${id} ${speciesData.name}:`);
+            embed.addFields(fields);
+        }
+    }
+
+    return embed;
+}
 
 module.exports = {
     buildNewPokemonEmbed,
     buildPokemonListEmbed,
     buildPokemonEmbed,
+    buildSpeciesDexEmbed,
 }

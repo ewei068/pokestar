@@ -1,5 +1,13 @@
 # Pokestar Changelog
 
+### 0.6.1
+
+* `/pokedex`: View Pokemon species data, such as base stats and moves!
+* Balance changes:
+    * Buffed: Agility (now grants 15% CR), Sky Attack (now flinches all enemies), and Heal Bell (more healing)
+    * Reworked: Aqua Ring (now gives increased healing to fewer targets)
+    * Nerfed: Future Sight (hits fewer targets)
+
 ## 0.6.0 (5/8) - First Beta Release
 
 Added a few quality of life and easy of use features as we gear up for a public beta release. Also implemented moves for some popular Pokemon!

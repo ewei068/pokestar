@@ -99,6 +99,46 @@ const growthRates = {
     FLUCTUATING: 5,
 }
 
+const growthRateConfig = {
+    [growthRates.ERRATIC]: {
+        "name": "Erratic",
+        "growthFn": function (level) {
+            // TODO: change?
+            return Math.floor(0.5 * Math.pow(level, 2.5));
+        }
+    },
+    [growthRates.FAST]: {
+        "name": "Fast",
+        "growthFn": function (level) {
+            return Math.floor(0.5 * Math.pow(level, 2.5));
+        }
+    },
+    [growthRates.MEDIUMFAST]: {
+        "name": "Medium Fast",
+        "growthFn": function (level) {
+            return Math.floor(0.8 * Math.pow(level, 2.5));
+        }
+    },
+    [growthRates.MEDIUMSLOW]: {
+        "name": "Medium Slow",
+        "growthFn": function (level) {
+            return Math.floor(Math.pow(level, 2.5));
+        }
+    },
+    [growthRates.SLOW]: {
+        "name": "Slow",
+        "growthFn": function (level) {
+            return Math.floor(1.5 * Math.pow(level, 2.5));
+        }
+    },
+    [growthRates.FLUCTUATING]: {
+        "name": "Fluctuating",
+        "growthFn": function (level) {
+            // TODO: change?
+            return Math.floor(1.5 * Math.pow(level, 2.5));
+        }
+    },
+}
 const rarities = {
     COMMON: "Common",
     RARE: "Rare",
@@ -247,10 +287,10 @@ const pokemonConfig = {
         "baseStats": [59, 63, 80, 65, 80, 58],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/8.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/8.png",
-        "evolution": {
+        "evolution": [{
             "level": 36,
             "id": "9",
-        },
+        }],
         "abilities": {
             "67": 0.8,
             "44": 0.2
@@ -1283,6 +1323,7 @@ module.exports = {
     types,
     typeConfig,
     growthRates,
+    growthRateConfig,
     natureConfig,
     MAX_TOTAL_EVS,
     MAX_SINGLE_EVS,
