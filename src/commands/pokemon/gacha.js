@@ -1,7 +1,7 @@
 const { getTrainer } = require ('../../services/trainer') ;
 const { usePokeball } = require ('../../services/gacha') ;
 const { buildNewPokemonEmbed } = require('../../embeds/pokemonEmbeds');
-const { backpackItems } = require('../../config/backpackConfig');
+const { backpackItems, backpackCategories } = require('../../config/backpackConfig');
 
 /**
  * Attempts to use a pokeball to spin the gacha for a random pokemon.
@@ -32,7 +32,12 @@ const gacha = async (user, pokeball) => {
     }
 
     // build Pokemon embed
-    embed = buildNewPokemonEmbed(gacha.data.pokemon, gacha.data.speciesData);
+    embed = buildNewPokemonEmbed(
+        gacha.data.pokemon, 
+        gacha.data.speciesData, 
+        pokeballId, 
+        trainer.data.backpack[backpackCategories.POKEBALLS][pokeballId]
+    );
     const send = {
         content: `${gacha.data.id}`,
         embeds: [embed]

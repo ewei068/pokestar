@@ -7,6 +7,7 @@
     * Buffed: Agility (now grants 15% CR), Sky Attack (now flinches all enemies), and Heal Bell (more healing)
     * Reworked: Aqua Ring (now gives increased healing to fewer targets)
     * Nerfed: Future Sight (hits fewer targets)
+* You can now see how many Pokeballs you have left when using `/gacha`!
 
 ## 0.6.0 (5/8) - First Beta Release
 

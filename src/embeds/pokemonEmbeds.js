@@ -4,10 +4,14 @@ const { EmbedBuilder } = require('discord.js');
 const { getWhitespace, getPBar, linebreakString } = require('../utils/utils');
 const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString } = require('../utils/pokemonUtils');
 const { buildMoveString } = require('../utils/battleUtils');
+const { backpackItems, backpackItemConfig } = require('../config/backpackConfig');
 
 // pokemon: user's pokemon data
 // speciesData: pokemon species config data
-const buildNewPokemonEmbed = (pokemon, speciesData) => {
+const buildNewPokemonEmbed = (pokemon, speciesData, pokeballId=backpackItems.POKEBALL, remaining=0) => {
+    const pokeballData = backpackItemConfig[pokeballId];
+    const pokeballString = `${pokeballData.emoji} You have ${remaining} ${pokeballData.name}s remaining.`;
+    
     let typeString = "";
     for (let i = 0; i < speciesData.type.length; i++) {
         typeString += typeConfig[speciesData.type[i]].name;
@@ -21,9 +25,9 @@ const buildNewPokemonEmbed = (pokemon, speciesData) => {
     const embed = new EmbedBuilder();
     embed.setTitle(`${speciesData.name} (#${pokemon.speciesId})`);
     if (speciesData.rarity == rarities.LEGENDARY) {
-        embed.setDescription(`You caught the LEGENDARY ${speciesData.name}!`);
+        embed.setDescription(`You caught the LEGENDARY ${speciesData.name}!\n${pokeballString}`);
     } else {
-        embed.setDescription(`You caught a ${speciesData.rarity} ${speciesData.name}!`);
+        embed.setDescription(`You caught a ${speciesData.rarity} ${speciesData.name}!\n${pokeballString}`);
     }
 
     embed.setColor(rarityConfig[speciesData.rarity].color);
@@ -174,7 +178,7 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
         } else {
             evolutionString = "No evolutions!";
         }
-        
+
         embed.setDescription(`Growth information for #${id} ${speciesData.name}:`);
         embed.addFields(
             { name: "Growth Rate", value: growthRateConfig[speciesData.growthRate].name, inline: true },
