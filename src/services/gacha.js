@@ -10,6 +10,7 @@ const { MAX_POKEMON } = require('../config/trainerConfig');
 const { logger } = require('../log');
 const { getOrSetDefault } = require('../utils/utils');
 const { calculatePokemonStats, getBattleEligible } = require('./pokemon');
+const { getPokemonExpNeeded } = require('../utils/pokemonUtils');
 
 const DAILY_MONEY = 300;
 
@@ -56,51 +57,58 @@ const drawDaily = async (trainer) => {
     return { data: rv, err: null };
 }
 
+const generateRandomPokemon = (userId, pokemonId, level=1) => {
+    const speciesData = pokemonConfig[pokemonId];
+
+    const ivs = drawUniform(0, 31, 6);
+    // if legendary, set 3 random IVs to 31
+    if (speciesData.rarity == rarities.LEGENDARY) {
+        let indices = drawUniform(0, 5, 3);
+
+        // while dupes, reroll indices
+        // TODO: make this better lol im lazy
+        while (indices[0] == indices[1] || indices[0] == indices[2] || indices[1] == indices[2]) {
+            indices = drawUniform(0, 5, 3);
+        }
+
+        for (const index of indices) {
+            ivs[index] = 31;
+        }
+    }
+
+    const pokemon = {
+        "userId": userId,
+        "speciesId": pokemonId,
+        "name": speciesData.name,
+        "level": level,
+        "exp": level == 1 ? 0 : getPokemonExpNeeded(level, speciesData.growthRate),
+        "evs": [0, 0, 0, 0, 0, 0],
+        "ivs": ivs,
+        "natureId": `${drawUniform(0, 24, 1)[0]}`,
+        "abilityId": `${drawDiscrete(speciesData.abilities, 1)[0]}`,
+        "item": "",
+        "moves": [],
+        "shiny": drawUniform(0, 8192, 1)[0] == 0,
+        "dateAcquired": (new Date()).getTime(),
+        "ivTotal": ivs.reduce((a, b) => a + b, 0),
+        "originalOwner": userId,
+        "rarity": speciesData.rarity,
+    }
+
+    // calculate stats
+    calculatePokemonStats(pokemon, speciesData);
+
+    // get battle eligible
+    pokemon["battleEligible"] = getBattleEligible(pokemonConfig, pokemon);
+
+    return pokemon;
+}
+
+
 const giveNewPokemons = async (trainer, pokemonIds) => {
     const pokemons = [];
     for (const pokemonId of pokemonIds) {
-        const speciesData = pokemonConfig[pokemonId];
-
-        const ivs = drawUniform(0, 31, 6);
-        // if legendary, set 3 random IVs to 31
-        if (speciesData.rarity == rarities.LEGENDARY) {
-            let indices = drawUniform(0, 5, 3);
-
-            // while dupes, reroll indices
-            // TODO: make this better lol im lazy
-            while (indices[0] == indices[1] || indices[0] == indices[2] || indices[1] == indices[2]) {
-                indices = drawUniform(0, 5, 3);
-            }
-
-            for (const index of indices) {
-                ivs[index] = 31;
-            }
-        }
-
-        const pokemon = {
-            "userId": trainer.userId,
-            "speciesId": pokemonId,
-            "name": speciesData.name,
-            "level": 1,
-            "exp": 0,
-            "evs": [0, 0, 0, 0, 0, 0],
-            "ivs": ivs,
-            "natureId": `${drawUniform(0, 24, 1)[0]}`,
-            "abilityId": `${drawDiscrete(speciesData.abilities, 1)[0]}`,
-            "item": "",
-            "moves": [],
-            "shiny": drawUniform(0, 8192, 1)[0] == 0,
-            "dateAcquired": (new Date()).getTime(),
-            "ivTotal": ivs.reduce((a, b) => a + b, 0),
-            "originalOwner": trainer.userId,
-            "rarity": speciesData.rarity,
-        }
-
-        // calculate stats
-        calculatePokemonStats(pokemon, speciesData);
-
-        // get battle eligible
-        pokemon["battleEligible"] = getBattleEligible(pokemonConfig, pokemon);
+        const pokemon = generateRandomPokemon(trainer.userId, pokemonId);
         pokemons.push(pokemon);
     }
 
@@ -219,4 +227,5 @@ module.exports = {
     drawDaily,
     giveNewPokemons,
     usePokeball,
+    generateRandomPokemon,
 };

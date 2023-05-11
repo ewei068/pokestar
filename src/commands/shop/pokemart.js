@@ -1,4 +1,4 @@
-const { setState } = require('../../services/state');
+const { setState, deleteState } = require('../../services/state');
 const { buildShopSend } = require('../../services/shop');
 
 /**
@@ -13,13 +13,18 @@ const pokemart = async (user) => {
         userId: user.id,
         messageStack: []
     }, ttl=150);
-    
-    return await buildShopSend({
+
+    const { send, err } = await buildShopSend({
         stateId: stateId,
         user: user,
-        view: "shop",
+        view: "list",
         option: null
     });
+    if (err) {
+        deleteState(stateId);
+    }
+
+    return { send: send, err: err };
 }
 
 const pokemartMessageCommand = async (message) => {

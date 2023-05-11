@@ -1,4 +1,5 @@
 const { effectConfig, statusConditions } = require('../config/battleConfig');
+const { difficultyConfig } = require('../config/npcConfig');
 const { pokemonConfig, typeConfig } = require('../config/pokemonConfig');
 const { getPBar } = require('./utils');
 
@@ -161,8 +162,34 @@ const buildBattlePokemonString = (pokemon) => {
     }
 }
 
+const buildNpcDifficultyString = (difficulty, npcDifficultyData) => {
+    const difficultyData = difficultyConfig[difficulty];
+    // + 1 here because ace pokemon is one level higher than max level
+    const difficultyHeader = `[Lv. ${npcDifficultyData.minLevel}-${npcDifficultyData.maxLevel + 1}] ${difficultyData.name}`;
+
+    const rewardMultipliers = npcDifficultyData.rewardMultipliers || difficultyData.rewardMultipliers;
+    const pokemonIds = npcDifficultyData.pokemonIds;
+
+    let difficultyString = '';
+    difficultyString += `**Possible Pokemon:** ${npcDifficultyData.numPokemon}x`;
+    for (let i = 0; i < pokemonIds.length; i++) {
+        const pokemonId = pokemonIds[i];
+        const pokemonData = pokemonConfig[pokemonId];
+        difficultyString += ` ${pokemonData.emoji}`;
+    }
+    difficultyString += pokemonIds.includes(npcDifficultyData.aceId) ? '' : ` ${pokemonConfig[npcDifficultyData.aceId].emoji}`;
+    difficultyString += '\n';
+    difficultyString += `**Multipliers:** Money: ${rewardMultipliers.moneyMultiplier} | EXP: ${rewardMultipliers.expMultiplier} | Pkmn. EXP: ${rewardMultipliers.pokemonExpMultiplier}`;
+
+    return {
+        difficultyHeader,
+        difficultyString,
+    }
+}
+
 module.exports = {
     buildPartyString,
     buildMoveString,
     buildBattlePokemonString,
+    buildNpcDifficultyString,
 };

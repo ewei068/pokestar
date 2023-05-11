@@ -1,8 +1,9 @@
 const { EmbedBuilder } = require("discord.js");
 const { moveConfig } = require("../config/battleConfig");
-const { buildPartyString, buildMoveString, buildBattlePokemonString } = require("../utils/battleUtils");
+const { buildPartyString, buildMoveString, buildBattlePokemonString, buildNpcDifficultyString } = require("../utils/battleUtils");
 const { buildPokemonStatString } = require("../utils/pokemonUtils");
 const { setTwoInline } = require("../utils/utils");
+const { npcConfig  } = require("../config/npcConfig");
 
 const buildPartyEmbed = (trainer, pokemons, detailed=false) => {
     const party = trainer.party;
@@ -129,9 +130,50 @@ const buildBattleTeamEmbed = (battle, teamName) => {
     return embed;
 }
 
+const buildPveListEmbed = (npcIds, page) => {
+    let npcString = "";
+    npcIds.forEach((npcId) => {
+        const npc = npcConfig[npcId];
+        npcString += `${npc.emoji} ${npc.name} (${npcId})\n`;
+    });
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`NPCs`);
+    embed.setColor(0xffffff);
+    embed.setDescription(npcString);
+    embed.setFooter({ text: `Page ${page} | Use the buttons to select an NPC` });
+
+    return embed;
+}
+
+const buildPveNpcEmbed = (npcId) => {
+    const npc = npcConfig[npcId];
+    const fields = Object.entries(npc.difficulties).map(([difficulty, difficultyData]) => {
+        const { difficultyHeader, difficultyString } = buildNpcDifficultyString(difficulty, difficultyData);
+        return {
+            name: difficultyHeader,
+            value: difficultyString,
+            inline: false,
+        };
+    });
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${npc.emoji} ${npc.name} (${npcId})`);
+    embed.setColor(0xffffff);
+    embed.setDescription(npc.catchphrase);
+    embed.addFields(fields);
+    embed.setImage(npc.sprite);
+    embed.setFooter({ text: "Use the buttons to select a difficulty" });
+
+    return embed;
+}
+    
+
 module.exports = {
     buildPartyEmbed,
     buildBattleEmbed,
     buildBattleMovesetEmbed,
     buildBattleTeamEmbed,
+    buildPveListEmbed,
+    buildPveNpcEmbed,
 };

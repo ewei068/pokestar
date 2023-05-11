@@ -12,7 +12,7 @@ const buildIdConfigSelectRow = (ids, config, placeholder, data, eventName, showI
         .addOptions(ids.map(id => {
             const data = config[id];
             return {
-                label: `${data.name}${showId ? "#" + id.toString() : ""}`,
+                label: `${data.name}${showId ? " #" + id.toString() : ""}`,
                 value: `${id}`,
             }
         }));

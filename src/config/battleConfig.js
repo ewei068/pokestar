@@ -3889,11 +3889,13 @@ module.exports = {
     battleEventNames,
     moveConfig,
     moveExecutes,
+    moveTiers,
     targetTypes,
     targetPositions,
     targetPatterns,
     getTypeDamageMultiplier,
     effectConfig,
     effectTypes,
-    statusConditions
+    statusConditions,
+    calculateDamage
 };

@@ -1,8 +1,8 @@
 const { getOrSetDefault } = require("../utils/utils");
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4, v4 } = require('uuid');
 const { pokemonConfig, types } = require('../config/pokemonConfig');
-const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, getTypeDamageMultiplier, effectConfig, statusConditions } = require("../config/battleConfig");
-const { buildBattleEmbed, buildBattleMovesetEmbed } = require("../embeds/battleEmbeds");
+const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, getTypeDamageMultiplier, effectConfig, statusConditions, moveTiers, calculateDamage } = require("../config/battleConfig");
+const { buildBattleEmbed, buildBattleMovesetEmbed, buildPveListEmbed, buildPveNpcEmbed } = require("../embeds/battleEmbeds");
 const { buildSelectBattleMoveRow } = require("../components/selectBattleMoveRow");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildBattleInfoActionRow } = require("../components/battleInfoActionRow");
@@ -12,6 +12,166 @@ const { logger } = require("../log");
 const { buildNextTurnActionRow } = require("../components/battleNextTurnRow");
 const { deleteState } = require("./state");
 const { calculateEffectiveSpeed, calculateEffectiveAccuracy } = require("../utils/pokemonUtils");
+const { npcConfig, difficultyConfig } = require("../config/npcConfig");
+const { buildScrollActionRow } = require("../components/scrollActionRow");
+const { getState } = require("./state");
+const { eventNames } = require("../config/eventConfig");
+const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
+const { drawIterable, drawUniform } = require("../utils/gachaUtils");
+const { generateRandomPokemon } = require("./gacha");
+
+class NPC {
+    userId;
+    user;
+    party;
+
+    constructor(npcData, difficulty) {
+        const difficultyData = difficultyConfig[difficulty];
+        const npcDifficultyData = npcData.difficulties[difficulty];
+        this.userId = uuidv4();
+        this.user = {
+            username: npcData.name,
+            discriminator: uuidv4().slice(0, 4),
+            npc: this,
+            id: this.userId,
+        };
+        this.party = {
+            rows: 3,
+            cols: 4,
+            pokemons: [
+                null, null, null, null, 
+                null, null, null, null, 
+                null, null, null, null
+            ],
+        };
+        
+        // generate party
+        // generate numPokemon - 1 pokemon, then 1 for the ace
+        const numPokemon = npcDifficultyData.numPokemon;
+        const pokemons = [];
+        const pokemonIds = drawIterable(npcDifficultyData.pokemonIds, numPokemon - 1);
+        for (const pokemonId of pokemonIds) {
+            const pokemon = generateRandomPokemon(pokemonId, drawUniform(npcDifficultyData.minLevel, npcDifficultyData.maxLevel, 1)[0]);
+            // give random id
+            pokemon.id = uuidv4();
+            pokemons.push(pokemon);
+        }
+        // push ace
+        const acePokemon = generateRandomPokemon(npcDifficultyData.aceId, npcDifficultyData.maxLevel + 1);
+        acePokemon.id = uuidv4();
+        pokemons.push(acePokemon);
+
+        // put parties in random indices with no overlap
+        let i = 0;
+        while (i < numPokemon) {
+            const index = drawUniform(0, this.party.rows * this.party.cols - 1, 1)[0];
+            if (this.party.pokemons[index] === null) {
+                this.party.pokemons[index] = pokemons[i];
+                i++;
+            }
+        }
+    }
+
+    action(battle) {
+        const activePokemon = battle.activePokemon;
+        if (activePokemon.userId === this.userId) {
+            return;
+        }
+
+        /* steps:
+        if cant move, skip turn
+        get all moves filtered by those with eligible targets and usable
+        if any moves are not basic, only consider those moves
+        else, consider basic moves
+        for all considered moves, get the best move
+        best move/target: for all targets:
+            get how many targets would be hit by AoE
+            calculate heuristic
+                if move does damage, calculate damage that would be dealt
+                else, calculate heuristic = numTargets * source level * 3, or * 5 for ultimate (may change)
+            normalize heuristic by move accuracy, or *1.2 if move has no accuracy
+        choose best move & target based off heuristic
+        use move */
+
+        // if cant move, skip turn
+        if (!activePokemon.canMove()) {
+            battle.skipTurn();
+            return;
+        }
+
+        // get all moves filtered by those with eligible targets and usable
+        const moveIds = activePokemon.moveIds;
+        const validMoveIdsToTargets = {};
+        Object.entries(moveIds).forEach(([moveId, move]) => {
+            if (move.disabled || move.cooldown > 0) {
+                return;
+            }
+
+            const eligibleTargets = battle.getEligibleTargets(activePokemon, moveId);
+            if (eligibleTargets.length > 0) {
+                validMoveIdsToTargets[moveId] = eligibleTargets;
+            }
+        });
+
+        // if any moves are not basic, only consider those moves
+        // else, consider basic moves
+        let onlyBasicMoves = true;
+        for (const moveId in validMoveIdsToTargets) {
+            if (!moveConfig[moveId].tier !== moveTiers.BASIC) {
+                onlyBasicMoves = false;
+                break;
+            }
+        }
+        if (!onlyBasicMoves) {
+            for (const moveId in validMoveIdsToTargets) {
+                if (moveConfig[moveId].tier === moveTiers.BASIC) {
+                    delete validMoveIdsToTargets[moveId];
+                }
+            }
+        }
+
+        // for all considered moves, get the best move
+        const bestMoveId = null;
+        const bestTarget = null;
+        let bestHeuristic = 0;
+        for (const moveId in validMoveIdsToTargets) {
+            for (const target in validMoveIdsToTargets[moveId]) {
+                const targetsHit = source.getTargets(moveId, target);
+                const numTargets = targetsHit.length;
+                const source = activePokemon;
+                const heuristic = this.calculateHeuristic(moveId, source, targetsHit);
+                if (heuristic > bestHeuristic) {
+                    bestMoveId = moveId;
+                    bestTarget = target;
+                    bestHeuristic = heuristic;
+                }
+            }
+        }
+
+        // use move
+        activePokemon.useMove(bestMoveId, bestTarget.id);
+    }
+
+    calculateHeuristic(moveId, source, targetsHit) {
+        const moveData = moveConfig[moveId];
+
+        heuristic = 0;
+        if (moveData.power !== null) {
+            // if move does damage, calculate damage that would be dealt
+            for (const target of targetsHit) {
+                const damage = calculateDamage(moveData, source, target, false);
+                heuristic += damage;
+            }
+        } else {
+            // else, calculate heuristic = numTargets * source level * 3, or * 5 for ultimate (may change)
+            heuristic = targetsHit.length * source.level * (moveData.tier === moveTiers.ULTIMATE ? 5 : 3);
+        }
+        // normalize heuristic by move accuracy, or *1.2 if move has no accuracy
+        const accuracy = moveData.accuracy;
+        heuristic *= accuracy === null ? 1.2 : accuracy;
+        return heuristic;
+    }
+}
 
 class Battle {
     baseMoney=100;
@@ -1351,10 +1511,142 @@ const getStartTurnSend = async (battle, stateId) => {
     }
 }
 
+const buildPveSend = async ({ stateId=null, user=null, view="list", option=null, page=1 } = {}) => {
+    // get state
+    const state = getState(stateId);
+
+    // get trainer
+    let trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { embed: null, err: trainer.err };
+    }
+    trainer = trainer.data;
+
+    const send = {
+        embeds: [],
+        components: []
+    }
+    const pageSize = 10;
+    const npcIds = Object.keys(npcConfig);
+    if (view === "list") {
+        const maxPages = Math.ceil(npcIds.length / pageSize);
+        if (page < 1 || page > maxPages) {
+            return { embed: null, err: `Invalid page!` };
+        }
+        // get npc ids for page
+        const npcIdsForPage = npcIds.slice((page - 1) * pageSize, page * pageSize);
+
+        // build list embed
+        const embed = buildPveListEmbed(npcIdsForPage, page);
+        send.embeds.push(embed);
+
+        // build scroll buttons
+        const scrollData = {
+            stateId: stateId,
+        }
+        const scrollRow = buildScrollActionRow(
+            page, 
+            page == maxPages, 
+            scrollData,
+            eventNames.PVE_SCROLL
+        );
+        send.components.push(scrollRow);
+
+        // build npc select menu
+        const npcSelectRowData = {
+            stateId: stateId,
+        };
+        const npcSelectRow = buildIdConfigSelectRow(
+            npcIdsForPage,
+            npcConfig,
+            "Select an NPC to battle:",
+            npcSelectRowData,
+            eventNames.PVE_SELECT,
+            false
+        );
+        send.components.push(npcSelectRow);
+    } else if (view === "npc") {
+        // validate npc id
+        const npcData = npcConfig[option];
+        if (npcData === undefined) {
+            return { embed: null, err: `Invalid NPC!` };
+        }
+
+        // build npc embed
+        const embed = buildPveNpcEmbed(option);
+        send.embeds.push(embed);
+
+        // build difficulty row
+        const difficultySelectData = {
+            stateId: stateId,
+        }
+        const difficultyButtonConfigs = Object.keys(npcData.difficulties).map(difficulty => {
+            return {
+                label: difficultyConfig[difficulty].name,
+                disabled: false,
+                data: {
+                    ...difficultySelectData,
+                    difficulty: difficulty,
+                }
+            }
+        });
+        const difficultyRow = buildButtonActionRow(
+            difficultyButtonConfigs,
+            eventNames.PVE_ACCEPT,
+        );
+        send.components.push(difficultyRow);
+
+        // build return button
+        const index = npcIds.indexOf(option);
+        const page = Math.floor(index / pageSize) + 1;
+        const returnData = {
+            stateId: stateId,
+            page: page,
+        }
+        const returnButtonConfigs = [
+            {
+                label: "Return",
+                disabled: false,
+                data: returnData,
+            }
+        ]
+        const returnRow = buildButtonActionRow(
+            returnButtonConfigs,
+            eventNames.PVE_SCROLL,
+        );
+
+        state.npcId = option;
+        send.components.push(returnRow);
+    } else if (view === "difficulty") {
+        // validate npc id
+        const npcData = npcConfig[state.npcId];
+        if (npcData === undefined) {
+            return { embed: null, err: `Invalid NPC!` };
+        }
+
+        // validate difficulty
+        const npcDifficultyData = npcData.difficulties[option];
+        if (npcDifficultyData === undefined) {
+            return { embed: null, err: `Difficulty doesn't exist for ${npcData.name}!` };
+        }
+
+        // TEMP: return with npc name and difficulty
+        return {
+            send: {
+                content: `You have selected ${npcData.name} on ${difficultyConfig[option].name}!`,
+            },
+            err: null,
+        }
+    }
+
+    return { send: send, err: null };
+} 
+
 
 module.exports = {
     Battle,
     // BattleEventHandler,
     // Pokemon,
-    getStartTurnSend
+    getStartTurnSend,
+    buildPveSend,
 }

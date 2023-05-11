@@ -9,6 +9,9 @@ const eventNames = {
     SHOP_BUY: "shopBuy",
     HELP_SELECT: "helpSelect",
     PVP_ACCEPT: "pvpAccept",
+    PVE_SCROLL: "pveScroll",
+    PVE_SELECT: "pveSelect",
+    PVE_ACCEPT: "pveAccept",
     BATTLE_INFO: "battleInfo",
     BATTLE_MOVE_SELECT: "battleMoveSelect",
     BATTLE_TARGET_SELECT: "battleTargetSelect",
@@ -64,6 +67,20 @@ const eventConfig = {
     [eventNames.PVP_ACCEPT]: {
         "name": "PVP Accept",
         "execute": "pvpAccept.js",
+        "exp": 10,
+        "money": 25,
+    },
+    [eventNames.PVE_SCROLL]: {
+        "name": "PVE Scroll",
+        "execute": "pveScroll.js",
+    },
+    [eventNames.PVE_SELECT]: {
+        "name": "PVE Select",
+        "execute": "pveSelect.js",
+    },
+    [eventNames.PVE_ACCEPT]: {
+        "name": "PVE Accept",
+        "execute": "pveAccept.js",
         "exp": 10,
         "money": 25,
     },

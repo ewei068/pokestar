@@ -27,7 +27,7 @@ const commandCategoryConfig = {
         "name": "Battle",
         "description": "Battle commands",
         "folder": "battle",
-        "commands": ["pvp", "partyinfo", "partyadd", "partyremove"]
+        "commands": ["pvp", "pve", "partyinfo", "partyadd", "partyremove"]
     },
     "social": {
         "name": "Social",
@@ -384,6 +384,34 @@ const commandConfig = {
                 "description": "@mention an opponent to battle",
                 "optional": true,
                 "variable": false
+            }
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    },
+    "pve": {
+        "name": "PvE",
+        "aliases": ["pve", "battleai"],
+        "description": "Battle an AI",
+        "longDescription": "Browse a list of NPC trainers to battle! Specify an NPC and difficulty to directly battle them.",
+        "execute": "pve.js",
+        "args": {
+            "npcid": {
+                "type": "string",
+                "description": "NPC ID to battle",
+                "optional": true,
+                "variable": false,
+                "enum": [
+                    "bugCatcher"
+                ]
+            },
+            "difficulty": {
+                "type": "string",
+                "description": "difficulty to battle at",
+                "optional": true,
+                "variable": false,
+                "enum": [
+                    "veryEasy", "easy", "medium", "hard"
+                ]
             }
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
