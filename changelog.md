@@ -2,6 +2,7 @@
 
 ### 0.6.2 - Gacha Patch
 
+* Added battle moves for: Golbat, Dugtrio, Arcanine, Magneton. Now all currently added final-evoution Pokemon are battle-eligible!
 * Gacha improvements:
     * You can now specifiy the quantity of Pokeballs you want to use, up to 10!
     * Beginner trainers are luckier for their first few Pokeball rolls!

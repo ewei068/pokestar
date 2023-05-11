@@ -267,7 +267,7 @@ class Battle {
                 for (const teamName in this.parties) {
                     const party = this.parties[teamName];
                     for (const pokemon of party.pokemons) {
-                        if (this.isPokemonTargetable(pokemon)) {
+                        if (this.isPokemonTargetable(pokemon, moveId)) {
                             eligibleTargets.push(pokemon);
                         }
                     }
@@ -283,7 +283,7 @@ class Battle {
                 break;
             case targetPositions.NON_SELF:
                 for (const pokemon of targetParty.pokemons) {
-                    if (this.isPokemonTargetable(pokemon) && pokemon !== source) {
+                    if (this.isPokemonTargetable(pokemon, moveId) && pokemon !== source) {
                         eligibleTargets.push(pokemon);
                     }
                 }
@@ -298,7 +298,7 @@ class Battle {
                     let pokemonFound = false;
                     for (let j = 0; j < targetParty.cols; j++) {
                         const pokemon = targetParty.pokemons[index];
-                        if (this.isPokemonTargetable(pokemon)) {
+                        if (this.isPokemonTargetable(pokemon, moveId)) {
                             pokemonFound = true;
                             eligibleTargets.push(pokemon);
                         }
@@ -318,7 +318,7 @@ class Battle {
                     let pokemonFound = false;
                     for (let j = targetParty.cols - 1; j >= 0; j--) {
                         const pokemon = targetParty.pokemons[index];
-                        if (this.isPokemonTargetable(pokemon)) {
+                        if (this.isPokemonTargetable(pokemon, moveId)) {
                             pokemonFound = true;
                             eligibleTargets.push(pokemon);
                         }
@@ -332,7 +332,7 @@ class Battle {
             default:
                 // return all pokemon in party
                 for (const pokemon of targetParty.pokemons) {
-                    if (this.isPokemonTargetable(pokemon)) {
+                    if (this.isPokemonTargetable(pokemon, moveId)) {
                         eligibleTargets.push(pokemon);
                     }
                 }
@@ -342,8 +342,44 @@ class Battle {
         return eligibleTargets;
     }
 
-    isPokemonTargetable(pokemon) {
-        return pokemon && !pokemon.isFainted && pokemon.targetable;
+    isPokemonTargetable(pokemon, moveId=null) {
+        if (!pokemon || pokemon.isFainted) {
+            return false;
+        }
+
+        if (!pokemon.targetable) {
+            // special cases
+            // TODO: should this be an event listener?
+
+            // eq + dig
+            if (moveId === "m89" && pokemon.effectIds.burrowed !== undefined) {
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    isPokemonHittable(pokemon, moveId=null) {
+        if (!pokemon || pokemon.isFainted) {
+            return false;
+        }
+
+        if (!pokemon.hittable) {
+            // special cases
+            // TODO: should this be an event listener?
+
+            // eq + dig
+            if (moveId === "m89" && pokemon.effectIds.burrowed !== undefined) {
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     clearLog() {
@@ -391,6 +427,7 @@ class Pokemon {
     position;
     isFainted;
     targetable;
+    hittable;
     incapacitated;
 
     constructor(battle, trainer, pokemonData, teamName, position) {
@@ -435,6 +472,7 @@ class Pokemon {
         this.position = position;
         this.isFainted = false;
         this.targetable = true;
+        this.hittable = true;
         this.incapacitated = false;
     }
 
@@ -466,6 +504,12 @@ class Pokemon {
         if (this.status.statusId !== null) {
             switch (this.status.statusId) {
                 case statusConditions.FREEZE:
+                    // if move is flare blitz, thaw out
+                    if (moveId === "m394") {
+                        this.removeStatus();
+                        break;
+                    }
+
                     // thaw chance (turns => chance): 0 => 0%, 1 => 40%, 2 => 80%, 3 => 100%
                     const thawChance = this.status.turns * 0.4;
                     const thawRoll = Math.random();
@@ -638,14 +682,14 @@ class Pokemon {
         return false;
     }
 
-    getPatternTargets(targetParty, targetPattern, targetRow, targetCol) {
+    getPatternTargets(targetParty, targetPattern, targetRow, targetCol, moveId=null) {
         const targets = [];
 
         switch (targetPattern) {
             case targetPatterns.ALL:
                 // return all pokemon in party
                 for (const pokemon of targetParty.pokemons) {
-                    if (this.battle.isPokemonTargetable(pokemon)) {
+                    if (this.battle.isPokemonHittable(pokemon, moveId)) {
                         targets.push(pokemon);
                     }
                 }
@@ -653,7 +697,7 @@ class Pokemon {
             case targetPatterns.ALL_EXCEPT_SELF:
                 // return all pokemon in party except self
                 for (const pokemon of targetParty.pokemons) {
-                    if (this.battle.isPokemonTargetable(pokemon) && pokemon !== this) {
+                    if (this.battle.isPokemonHittable(pokemon, moveId) && pokemon !== this) {
                         targets.push(pokemon);
                     }
                 }
@@ -661,7 +705,7 @@ class Pokemon {
             case targetPatterns.COLUMN:
                 // return all pokemon in column
                 for (const pokemon of targetParty.pokemons) {
-                    if (this.battle.isPokemonTargetable(pokemon) && (pokemon.position - 1)% targetParty.cols === targetCol) {
+                    if (this.battle.isPokemonHittable(pokemon, moveId) && (pokemon.position - 1)% targetParty.cols === targetCol) {
                         targets.push(pokemon);
                     }
                 }
@@ -669,7 +713,7 @@ class Pokemon {
             case targetPatterns.ROW:
                 // return all pokemon in row
                 for (const pokemon of targetParty.pokemons) {
-                    if (this.battle.isPokemonTargetable(pokemon) && Math.floor((pokemon.position - 1) / targetParty.cols) === targetRow) {
+                    if (this.battle.isPokemonHittable(pokemon, moveId) && Math.floor((pokemon.position - 1) / targetParty.cols) === targetRow) {
                         targets.push(pokemon);
                     }
                 }
@@ -678,7 +722,7 @@ class Pokemon {
                 // return random pokemon in party
                 const validPokemons = [];
                 for (const pokemon of targetParty.pokemons) {
-                    if (this.battle.isPokemonTargetable(pokemon)) {
+                    if (this.battle.isPokemonHittable(pokemon, moveId)) {
                         validPokemons.push(pokemon);
                     }
                 }
@@ -687,7 +731,7 @@ class Pokemon {
             case targetPatterns.SQUARE:
                 // if row index or column index within 1 of target, add to targets
                 for (const pokemon of targetParty.pokemons) {
-                    if (this.battle.isPokemonTargetable(pokemon)) {
+                    if (this.battle.isPokemonHittable(pokemon, moveId)) {
                         const pokemonRow = Math.floor((pokemon.position - 1) / targetParty.cols);
                         const pokemonCol = (pokemon.position - 1) % targetParty.cols;
                         if (Math.abs(targetRow - pokemonRow) <= 1 && Math.abs(targetCol - pokemonCol) <= 1) {
@@ -699,7 +743,7 @@ class Pokemon {
             case targetPatterns.CROSS:
                 // target manhattan distance <= 1, add to targets
                 for (const pokemon of targetParty.pokemons) {
-                    if (this.battle.isPokemonTargetable(pokemon)) {
+                    if (this.battle.isPokemonHittable(pokemon, moveId)) {
                         const pokemonRow = Math.floor((pokemon.position - 1) / targetParty.cols);
                         const pokemonCol = (pokemon.position - 1) % targetParty.cols;
                         if (Math.abs(targetRow - pokemonRow) + Math.abs(targetCol - pokemonCol) <= 1) {
@@ -713,7 +757,7 @@ class Pokemon {
 
                 // get target pokemon
                 const targetPokemon = targetParty.pokemons[targetRow * targetParty.cols + targetCol];
-                if (this.battle.isPokemonTargetable(targetPokemon)) {
+                if (this.battle.isPokemonHittable(targetPokemon, moveId)) {
                     targets.push(targetPokemon);
                 }
 
@@ -724,7 +768,6 @@ class Pokemon {
     }
 
     getTargets(moveId, targetPokemonId) {
-        const allTargets = [];
         const moveData = moveConfig[moveId];
         // make sure target exists and is alive
         const target = this.battle.allPokemon[targetPokemonId];
@@ -738,7 +781,8 @@ class Pokemon {
         const targetRow = Math.floor((target.position - 1) / targetParty.cols);
         const targetCol = (target.position - 1) % targetParty.cols;
 
-        return this.getPatternTargets(targetParty, moveData.targetPattern, targetRow, targetCol);
+        const allTargets = []
+        return [...allTargets, ...this.getPatternTargets(targetParty, moveData.targetPattern, targetRow, targetCol, moveId)];
     }
 
     getMisses(moveId, targetPokemons) {
@@ -1028,6 +1072,18 @@ class Pokemon {
                 }
                 this.battle.addToLog(`${this.name} fell asleep!`);
                 break;
+            case statusConditions.BADLY_POISON:
+                if (this.type1 === types.POISON || this.type2 === types.POISON) {
+                    this.battle.addToLog(`${this.name}'s Poison type renders it immune to poison!`);
+                    break;
+                }
+
+                this.status = {
+                    statusId: statusId,
+                    turns: 0,
+                }
+                this.battle.addToLog(`${this.name} was badly poisoned!`);
+                break;
             default:
                 break;
         }
@@ -1041,11 +1097,9 @@ class Pokemon {
             return;
         }
 
-        this.status.turns += 1;
-
         switch (this.status.statusId) {
             case statusConditions.POISON:
-                const damage = Math.round(this.maxHp / 8);
+                const damage = Math.round(this.maxHp / 10);
                 this.battle.addToLog(`${this.name} is hurt by poison!`);
                 this.takeDamage(damage, null, {
                     type: "statusCondition",
@@ -1059,9 +1113,19 @@ class Pokemon {
                     type: "statusCondition",
                     statusId: statusConditions.BURN,
                 });
+                break;
+            case statusConditions.BADLY_POISON:
+                const badlyPoisonDamage = Math.round(this.maxHp / 10) * Math.pow(2, this.status.turns);
+                this.battle.addToLog(`${this.name} is hurt by poison!`);
+                this.takeDamage(badlyPoisonDamage, null, {
+                    type: "statusCondition",
+                    statusId: statusConditions.BADLY_POISON,
+                });
             default:
                 break;
         }
+
+        this.status.turns += 1;
     }
 
     removeStatus() {

@@ -162,7 +162,7 @@ This will bring up a selection menu where you can preview and confirm your Pokem
 
 **Eligible Pokemon**
 
-Temporarily while all Pokemon's moves are being implemented, only certain Pokemon are eligible for battle. **This list currently includes: Venusaur, Charizard, Blastoise, Butterfree, Beedrill, Pidgeot, Ratticate, Alakazam, Machamp, Golem, Gengar, Wigglytuff, Clefable, Gyarados, Lapras, Vaporeon, Jolteon, Flareon, Snorlax, Articuno, Zapdos, Moltres, and Mewtwo.** We are working hard to implement all of the other Pokemon. **You can view your battle eligible Pokemon with this command (copy/paste it) `/list filterby: battleEligible filtervalue: True`.**
+Temporarily while all Pokemon's moves are being implemented, only certain Pokemon are eligible for battle. **This list currently includes: All currently implemented final-evolution Pokemon.** We are working hard to implement all of the other Pokemon. **You can view your battle eligible Pokemon with this command (copy/paste it) `/list filterby: battleEligible filtervalue: True`.**
 
 <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/battle-eligible.png" height="300">
 

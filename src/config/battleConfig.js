@@ -1020,6 +1020,35 @@ const effectConfig = {
             }
         }
     },
+    "burrowed": {
+        "name": "Burrowed",
+        "description": "The target has burrowed underground.",
+        "type": effectTypes.BUFF,
+        "dispellable": false,
+        "effectAdd": function(battle, source, target) {
+            battle.addToLog(`${target.name} burrows underground!`);
+            // disable non-sky dig moves
+            for (const moveId in target.moveIds) {
+                if (moveId !== "m91") {
+                    target.disableMove(moveId, target);
+                }
+            }
+            // make untargetable and unhittable
+            target.targetable = false;
+            target.hittable = false;
+        },
+        "effectRemove": function(battle, target, args) {
+            // enable non-dig moves
+            for (const moveId in target.moveIds) {
+                if (moveId !== "m91") {
+                    target.enableMove(moveId, target);
+                }
+            }
+            // make targetable and hittable
+            target.targetable = true;
+            target.hittable = true;
+        }
+    },
     "outrage": {
         "name": "Outrage",
         "description": "The target is enraged, attacking wildly.",
@@ -1178,6 +1207,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The target is stabbed with a toxic barb, poisoning with a 50% chance.",
     },
+    "m46": {
+        "name": "Roar",
+        "type": types.NORMAL,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The target is scared off, fully reducing its combat readiness and removing all buffs.",
+    },
     "m47": {
         "name": "Sing",
         "type": types.NORMAL,
@@ -1324,6 +1366,19 @@ const moveConfig = {
         "damageType": damageTypes.SPECIAL,
         "description": "A jolt of electricity is hurled at the target to inflict damage. This has a 10% chance to paralyze the target.",
     },
+    "m85": {
+        "name": "Thunderbolt",
+        "type": types.ELECTRIC,
+        "power": 90,
+        "accuracy": 100,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "A strong electric blast is loosed at the target. This has a 25% chance to paralyze the target.",
+    },
     "m86": {
         "name": "Thunder Wave",
         "type": types.ELECTRIC,
@@ -1363,6 +1418,22 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user sets off an earthquake that hits all the Pokémon in the battle. Has 5 less base power for each additional enemy targetted (not including the first).",
     },
+    "m91": {
+        "name": "Dig",
+        "type": types.GROUND,
+        "power": 80,
+        "accuracy": 100,
+        "cooldown": 3,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user burrows into the ground, becoming untargetable and unhittable 1 turn. The user then attacks on the next turn.",
+        "silenceIf": function(battle, pokemon) {
+            return pokemon.effectIds.burrowed === undefined;
+        }
+    },
     "m93": {
         "name": "Confusion",
         "type": types.PSYCHIC,
@@ -1401,6 +1472,19 @@ const moveConfig = {
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user lunges at the target at a speed that makes it almost invisible. Also boosts the user's combat readiness by 30%.",
+    },
+    "m103": {
+        "name": "Screech",
+        "type": types.NORMAL,
+        "power": null,
+        "accuracy": 85,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.ROW,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user emits a screech harsh enough to sharply lower the targets' Defense for 2 turns.",
     },
     "m118": {
         "name": "Metronome",
@@ -1534,6 +1618,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.SPECIAL,
         "description": "Unsanitary sludge is hurled at the target. This has a 30% poison the targets.",
+    },
+    "m189": {
+        "name": "Mud Slap",
+        "type": types.GROUND,
+        "power": 20,
+        "accuracy": 100,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user hurls mud in the target's face to inflict damage and lower its accuracy for 1 turn.",
     },
     "m200": {
         "name": "Outrage",
@@ -1808,6 +1905,19 @@ const moveConfig = {
         "damageType": damageTypes.SPECIAL,
         "description": "The user lets loose a horribly echoing shout with the power to inflict damage.",
     },
+    "m305": {
+        "name": "Poison Fang",
+        "type": types.POISON,
+        "power": 50,
+        "accuracy": 100,
+        "cooldown": 3,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user bites the target with toxic fangs. This may also leave the target badly poisoned with a 50% chance.",
+    },
     "m334": {
         "name": "Iron Defense",
         "type": types.STEEL,
@@ -1910,7 +2020,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.CROSS,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
-        "description": "The user cloaks itself in fire and charges at the target, and damaging it and dealing 50% damage to surrounding targets. This also damages the user by a third of the damage dealt, and has a 10% chance to leave targets with a burn.",
+        "description": "The user cloaks itself in fire and charges at the target, and damaging it and dealing 50% damage to adjacent targets. This also damages the user by a third of the damage dealt, and has a 10% chance to leave targets with a burn.",
     },
     "m398": {
         "name": "Poison Jab",
@@ -1989,6 +2099,19 @@ const moveConfig = {
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user launches sharp icicles at the target, dealing damage and increasing its own combat readiness by 30%.",
+    },
+    "m430": {
+        "name": "Flash Cannon",
+        "type": types.STEEL,
+        "power": 65,
+        "accuracy": 100,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.COLUMN,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user gathers all its light energy and releases it at once, dealing damage and has a 20% chance to lower targets Sp. Defense for two turns.",
     },
     "m435": {
         "name": "Discharge",
@@ -2287,6 +2410,21 @@ const moveExecutes = {
             }
         }
     },
+    "m46": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m46";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // remove all buffs
+            for (const effectId of Object.keys(target.effectIds)) {
+                const effectData = effectConfig[effectId];
+                if (effectData.type === effectTypes.BUFF) {
+                    target.dispellEffect(effectId);
+                }
+            }
+            // decrease combat readiness fully
+            target.reduceCombatReadiness(source, 100);
+        }
+    },
     "m47": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m47";
         const moveData = moveConfig[moveId];
@@ -2462,6 +2600,23 @@ const moveExecutes = {
             }
         }
     },
+    "m85": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m84";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 25% chance to paralyze
+            if (!miss && Math.random() < 0.25) {
+                target.applyStatus(statusConditions.PARALYSIS, source);
+            }
+        }
+    },
     "m86": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m86";
         const moveData = moveConfig[moveId];
@@ -2498,14 +2653,36 @@ const moveExecutes = {
         const numTargets = allTargets.length;
         const power = moveData.power - (numTargets - 1) * 5;
         for (const target of allTargets) {
+            const dig = target.effectIds.burrowed !== undefined;
             const miss = missedTargets.includes(target);
-            const damageToDeal = calculateDamage(moveData, source, target, miss, {
-                power: power
+            const damageToDeal = calculateDamage(moveData, source, target, dig ? false : miss, {
+                power: power * (dig ? 2 : 1)
             });
             source.dealDamage(damageToDeal, target, {
                 type: "move",
                 moveId: moveId
             });
+        }
+    },
+    "m91": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m91";
+        const moveData = moveConfig[moveId];
+        // if pokemon doesnt have "burrowed" buff, apply it
+        if (source.effectIds.burrowed === undefined) {
+            source.addEffect("burrowed", 2, source);
+            // remove dig cd
+            source.moveIds[moveId].cooldown = 0;
+        } else {
+            // if pokemon has "burrowed" buff, remove it and deal damage
+            source.removeEffect("burrowed");
+            for (const target of allTargets) {
+                const miss = missedTargets.includes(target);
+                const damageToDeal = calculateDamage(moveData, source, target, miss);
+                source.dealDamage(damageToDeal, target, {
+                    type: "move",
+                    moveId: moveId
+                });
+            }
         }
     },
     "m93": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -2547,6 +2724,17 @@ const moveExecutes = {
 
         // boost cr by 30
         source.boostCombatReadiness(source, 30);
+    },
+    "m103": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m103";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            if (!miss) {
+                // greater def down for 2 turns
+                target.addEffect("greaterDefDown", 2, source);
+            }
+        }
     },
     "m118": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m118";
@@ -2750,6 +2938,23 @@ const moveExecutes = {
             // if not missed, 30% chance to poison
             if (!miss && Math.random() < 0.3) {
                 target.applyStatus(statusConditions.POISON, source);
+            }
+        }
+    },
+    "m189": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m189";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not missed, acc down
+            if (!miss) {
+                target.addEffect("accDown", 1, source);
             }
         }
     },
@@ -3158,6 +3363,23 @@ const moveExecutes = {
             });
         }
     },
+    "m305": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m305";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, badly poison 50% chance
+            if (!miss && Math.random() < 0.5) {
+                target.applyStatus(statusConditions.BADLY_POISON, source);
+            }
+        }
+    },
     "m334": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveData = moveConfig["m334"];
         for (const target of allTargets) {
@@ -3354,6 +3576,23 @@ const moveExecutes = {
 
         // boost self cr by 30
         source.boostCombatReadiness(source, 30);
+    },
+    "m430": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m430";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 20% to spd down
+            if (!miss && Math.random() < 0.2) {
+                target.addEffect("spdDown", 2, source);
+            }
+        }
     },
     "m435": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m435";
@@ -3577,7 +3816,7 @@ const moveExecutes = {
             let damageToDeal = calculateDamage(moveData, source, primaryTarget, false);
 
             // if target poisoned, 1.5x damage
-            if (primaryTarget.statusCondition === statusConditions.POISON) {
+            if (primaryTarget.statusCondition === statusConditions.POISON || primaryTarget.statusCondition === statusConditions.BADLY_POISON) {
                 damageToDeal = Math.round(damageToDeal * 1.5);
             }
 
