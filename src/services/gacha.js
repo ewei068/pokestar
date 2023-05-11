@@ -165,7 +165,7 @@ const beginnerRoll = (trainer, quantity) => {
 const usePokeball = async (trainer, pokeballId, quantity=1) => {
     // validate quantity
     if (quantity < 1 || quantity > 10) {
-        return { data: null, err: "You may only draw between 1-10 times at once!" };
+        return { data: null, err: "You may only catch between 1-10 Pokemon at once!" };
     }
 
     // check for max pokemon

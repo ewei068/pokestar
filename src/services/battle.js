@@ -89,7 +89,7 @@ class NPC {
             get how many targets would be hit by AoE
             calculate heuristic
                 if move does damage, calculate damage that would be dealt
-                else, calculate heuristic = numTargets * source level * 3, or * 5 for ultimate (may change)
+                else, calculate heuristic = numTargets * source level * 2, or * 3 for ultimate (may change)
             normalize heuristic by move accuracy, or *1.2 if move has no accuracy
         choose best move & target based off heuristic
         use move */
@@ -134,7 +134,7 @@ class NPC {
         // for all considered moves, get the best move
         let bestMoveId = null;
         let bestTarget = null;
-        let bestHeuristic = 0;
+        let bestHeuristic = -1;
         for (const moveId in validMoveIdsToTargets) {
             for (const target of validMoveIdsToTargets[moveId]) {
                 const source = activePokemon;
@@ -163,12 +163,12 @@ class NPC {
                 heuristic += damage;
             }
         } else {
-            // else, calculate heuristic = numTargets * source level * 3, or * 5 for ultimate (may change)
-            heuristic = targetsHit.length * source.level * (moveData.tier === moveTiers.ULTIMATE ? 5 : 3);
+            // else, calculate heuristic = numTargets * source level * 2, or * 3 for ultimate (may change)
+            heuristic = targetsHit.length * source.level * (moveData.tier === moveTiers.ULTIMATE ? 3 : 2);
         }
         // normalize heuristic by move accuracy, or *1.2 if move has no accuracy
         const accuracy = moveData.accuracy;
-        heuristic *= accuracy === null ? 1.2 : accuracy;
+        heuristic *= accuracy === null ? 1.2 : accuracy / 100;
         return heuristic;
     }
 }
@@ -309,7 +309,9 @@ class Battle {
         this.eventHandler.emit(battleEventNames.TURN_BEGIN);
 
         // log
-        this.log.push(`[Turn ${this.turn}] It is <@${this.activePokemon.userId}>'s ${this.activePokemon.name}'s turn.`);
+        const userIsNpc = this.isNpc(this.activePokemon.userId);
+        const userString = userIsNpc ? this.users[this.activePokemon.userId].username : `<@${this.activePokemon.userId}>`;
+        this.log.push(`[Turn ${this.turn}] It is ${userString}'s ${this.activePokemon.name}'s turn.`);
     }
 
     nextTurn() {

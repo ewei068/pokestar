@@ -133,8 +133,15 @@ const buildBattleTeamEmbed = (battle, teamName) => {
 const buildPveListEmbed = (npcIds, page) => {
     let npcString = "";
     npcIds.forEach((npcId) => {
-        const npc = npcConfig[npcId];
-        npcString += `${npc.emoji} ${npc.name} (${npcId})\n`;
+        const npcData = npcConfig[npcId];
+        let levelString = "**[Lv. ";
+        for (let difficultyConfig of Object.values(npcData.difficulties)) {
+            const level = Math.ceil((difficultyConfig.minLevel + difficultyConfig.maxLevel) / 2);
+            levelString += `${level}/`;
+        }
+        levelString = levelString.slice(0, -1);
+        levelString += "]**";
+        npcString += `${npcData.emoji} ${levelString} ${npcData.name} (${npcId})\n`;
     });
 
     const embed = new EmbedBuilder();
