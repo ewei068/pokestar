@@ -1,5 +1,5 @@
 const { getTrainer } = require('../../services/trainer');
-const { giveNewPokemon } = require('../../services/gacha');
+const { giveNewPokemons } = require('../../services/gacha');
 const { buildNewPokemonEmbed } = require('../../embeds/pokemonEmbeds');
 
 const give = async (user, pokemonId) => {
@@ -12,14 +12,14 @@ const give = async (user, pokemonId) => {
     }
 
     // give pokemon
-    const give = await giveNewPokemon(trainer.data, pokemonId);
+    const give = await giveNewPokemons(trainer.data, [pokemonId]);
     if (give.err) {
         return { send: null, err: give.err };
     }
 
-    const embed = buildNewPokemonEmbed(give.data.pokemon, give.data.speciesData);
+    const embed = buildNewPokemonEmbed(give.data.pokemons[0]);
     const send = {
-        content: `${give.data.id}`,
+        content: `${give.data.pokemons[0]._id}`,
         embeds: [embed]
     }
 

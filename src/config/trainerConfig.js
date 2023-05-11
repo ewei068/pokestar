@@ -76,7 +76,11 @@ const trainerFields = {
             "rows": 3,
             "cols": 4,
         },
-    }
+    },
+    "beginnerRolls": {
+        "type": "number",
+        "default": 0,
+    },
 }
 
 const levelConfig = {

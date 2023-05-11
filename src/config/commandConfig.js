@@ -155,6 +155,12 @@ const commandConfig = {
                 "enum": [
                     "pokeball", "greatball", "ultraball", "masterball",
                 ]
+            },
+            "quantity": {
+                "type": "int",
+                "description": "number of Pokemon to roll (1-10)",
+                "optional": true,
+                "variable": false
             }
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],

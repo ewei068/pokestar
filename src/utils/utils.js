@@ -98,6 +98,16 @@ const buildCommandUsageString = (prefix, commandData) => {
     return usageString;
 }
 
+const setTwoInline = (fields) => {
+    // every 2 fields, add a blank field
+    if (fields.length > 2) {
+        for (let i = 2; i < fields.length; i += 3) {
+            fields.splice(i, 0, { name: '** **', value: '** **', inline: false });
+        }
+    }
+    return fields;
+}
+
 
 module.exports = {
     getOrSetDefault,
@@ -109,5 +119,6 @@ module.exports = {
     matrixLoc,
     matrixIndexOf,
     getUserId,
-    buildCommandUsageString
+    buildCommandUsageString,
+    setTwoInline
 }

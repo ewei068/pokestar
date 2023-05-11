@@ -2,6 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 const { moveConfig } = require("../config/battleConfig");
 const { buildPartyString, buildMoveString, buildBattlePokemonString } = require("../utils/battleUtils");
 const { buildPokemonStatString } = require("../utils/pokemonUtils");
+const { setTwoInline } = require("../utils/utils");
 
 const buildPartyEmbed = (trainer, pokemons, detailed=false) => {
     const party = trainer.party;
@@ -32,11 +33,7 @@ const buildPartyEmbed = (trainer, pokemons, detailed=false) => {
             };
         });
         // every 2 fields, add a blank field
-        if (pokemonFields.length > 2) {
-            for (let i = 2; i < pokemonFields.length; i += 3) {
-                pokemonFields.splice(i, 0, { name: '** **', value: '** **', inline: false });
-            }
-        }
+        setTwoInline(pokemonFields);
         embed.addFields(pokemonFields);
     }
 
@@ -97,12 +94,7 @@ const buildBattleMovesetEmbed = (pokemon) => {
         };
     });
 
-    // every 2 fields, add a blank field
-    if (fields.length > 2) {
-        for (let i = 2; i < fields.length; i += 3) {
-            fields.splice(i, 0, { name: '** **', value: '** **', inline: false });
-        }
-    }
+    setTwoInline(fields);
 
     const embed = new EmbedBuilder();
     embed.setTitle(`[${pokemon.position}] ${pokemon.name}'s Moveset`);

@@ -1,6 +1,12 @@
 # Pokestar Changelog
 
-### 0.6.1
+### 0.6.2 - Gacha Patch
+
+* Gacha improvements:
+    * You can now specifiy the quantity of Pokeballs you want to use, up to 10!
+    * Beginner trainers are luckier for their first few Pokeball rolls!
+
+### 0.6.1 (5/9)
 
 * Added battle moves for: Clefable, Wigglytuff, Gyarados!
 * `/pokedex`: View Pokemon species data, such as base stats and moves!

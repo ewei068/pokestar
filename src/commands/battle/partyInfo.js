@@ -32,9 +32,7 @@ const partyInfo = async (user) => {
         userId: user.id, 
     }, ttl=150);
     // build selection row for pokemon Ids
-    const selectRowData = {
-        stateId: stateId,
-    }
+    const selectRowData = {}
     const pokemonSelectRow = buildPokemonSelectRow(partyPokemonsFiltered, selectRowData, eventNames.POKEMON_LIST_SELECT);
 
     const send = {

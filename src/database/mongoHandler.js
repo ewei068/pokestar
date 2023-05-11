@@ -99,6 +99,11 @@ class QueryBuilder {
         return this;
     }
 
+    setInsert(documents) {
+        this.documents = documents;
+        return this;
+    }
+
     async aggregate() {
         let query = await getCollection(this.collectionName);
         query = query.aggregate(this.aggregatePipeline);
@@ -144,6 +149,13 @@ class QueryBuilder {
     async countDocuments() {
         let query = await getCollection(this.collectionName);
         query = query.countDocuments(this.filter);
+
+        return await query;
+    }
+
+    async insertMany() {
+        let query = await getCollection(this.collectionName);
+        query = query.insertMany(this.documents);
 
         return await query;
     }

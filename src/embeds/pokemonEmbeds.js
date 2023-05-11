@@ -1,14 +1,15 @@
 const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig, growthRateConfig } = require('../config/pokemonConfig');
 const { moveConfig } = require('../config/battleConfig');
 const { EmbedBuilder } = require('discord.js');
-const { getWhitespace, getPBar, linebreakString } = require('../utils/utils');
+const { getWhitespace, getPBar, linebreakString, setTwoInline } = require('../utils/utils');
 const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString } = require('../utils/pokemonUtils');
 const { buildMoveString } = require('../utils/battleUtils');
 const { backpackItems, backpackItemConfig } = require('../config/backpackConfig');
 
 // pokemon: user's pokemon data
 // speciesData: pokemon species config data
-const buildNewPokemonEmbed = (pokemon, speciesData, pokeballId=backpackItems.POKEBALL, remaining=0) => {
+const buildNewPokemonEmbed = (pokemon, pokeballId=backpackItems.POKEBALL, remaining=0) => {
+    const speciesData = pokemonConfig[pokemon.speciesId];
     const pokeballData = backpackItemConfig[pokeballId];
     const pokeballString = `${pokeballData.emoji} You have ${remaining} ${pokeballData.name}s remaining.`;
     
@@ -42,6 +43,27 @@ const buildNewPokemonEmbed = (pokemon, speciesData, pokeballId=backpackItems.POK
     const lbHelp = '/info <id> to inspect this Pokemon\n/train <id> to train this Pokemon\n/list to see all your Pokemon';
     const footerText= `ID: ${pokemon._id}\n${lbHelp}`;
     embed.setFooter({ text: footerText });
+
+    return embed;
+}
+
+const buildNewPokemonListEmbed = (pokemons, pokeballId=backpackItems.POKEBALL, remaining=0) => {
+    let pokemonString = "You caught the following Pokemon:\n\n";
+    for (let i = 0; i < pokemons.length; i++) {
+        const pokemon = pokemons[i];
+        const speciesData = pokemonConfig[pokemons[i].speciesId];
+        const ivPercent = pokemon.ivTotal * 100 / (31 * 6);
+
+        pokemonString += `${pokemon.shiny ? "✨" : ""}${speciesData.emoji} **[${speciesData.rarity}] [IV ${Math.round(ivPercent)}%]** ${pokemon.name} (${pokemon._id})\n`;
+    }
+    const pokeballData = backpackItemConfig[pokeballId];
+    const pokeballString = `${pokeballData.emoji} You have ${remaining} ${pokeballData.name}s remaining.`;
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`Gacha Results`);
+    embed.setColor(0xffffff);
+    embed.setDescription(`${pokemonString}\n${pokeballString}`);
+    embed.setFooter({ text: `Select a Pokemon or use /info <id> to inspect it!` });
 
     return embed;
 }
@@ -201,11 +223,7 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
             });
 
             // every 2 fields, add a blank field
-            if (fields.length > 2) {
-                for (let i = 2; i < fields.length; i += 3) {
-                    fields.splice(i, 0, { name: '** **', value: '** **', inline: false });
-                }
-            }
+            setTwoInline(fields);
 
             embed.setDescription(`Moves for #${id} ${speciesData.name}:`);
             embed.addFields(fields);
@@ -217,6 +235,7 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
 
 module.exports = {
     buildNewPokemonEmbed,
+    buildNewPokemonListEmbed,
     buildPokemonListEmbed,
     buildPokemonEmbed,
     buildSpeciesDexEmbed,
