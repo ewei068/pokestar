@@ -19,6 +19,7 @@ const { eventNames } = require("../config/eventConfig");
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const { drawIterable, drawUniform } = require("../utils/gachaUtils");
 const { generateRandomPokemon } = require("./gacha");
+const { validateParty } = require("./party");
 
 class NPC {
     userId;
@@ -51,14 +52,14 @@ class NPC {
         const pokemons = [];
         const pokemonIds = drawIterable(npcDifficultyData.pokemonIds, numPokemon - 1);
         for (const pokemonId of pokemonIds) {
-            const pokemon = generateRandomPokemon(pokemonId, drawUniform(npcDifficultyData.minLevel, npcDifficultyData.maxLevel, 1)[0]);
+            const pokemon = generateRandomPokemon(this.userId, pokemonId, drawUniform(npcDifficultyData.minLevel, npcDifficultyData.maxLevel, 1)[0]);
             // give random id
-            pokemon.id = uuidv4();
+            pokemon._id = uuidv4();
             pokemons.push(pokemon);
         }
         // push ace
-        const acePokemon = generateRandomPokemon(npcDifficultyData.aceId, npcDifficultyData.maxLevel + 1);
-        acePokemon.id = uuidv4();
+        const acePokemon = generateRandomPokemon(this.userId, npcDifficultyData.aceId, npcDifficultyData.maxLevel + 1);
+        acePokemon._id = uuidv4();
         pokemons.push(acePokemon);
 
         // put parties in random indices with no overlap
@@ -74,7 +75,7 @@ class NPC {
 
     action(battle) {
         const activePokemon = battle.activePokemon;
-        if (activePokemon.userId === this.userId) {
+        if (activePokemon.userId !== this.userId) {
             return;
         }
 
@@ -131,14 +132,13 @@ class NPC {
         }
 
         // for all considered moves, get the best move
-        const bestMoveId = null;
-        const bestTarget = null;
+        let bestMoveId = null;
+        let bestTarget = null;
         let bestHeuristic = 0;
         for (const moveId in validMoveIdsToTargets) {
-            for (const target in validMoveIdsToTargets[moveId]) {
-                const targetsHit = source.getTargets(moveId, target);
-                const numTargets = targetsHit.length;
+            for (const target of validMoveIdsToTargets[moveId]) {
                 const source = activePokemon;
+                const targetsHit = source.getTargets(moveId, target.id);
                 const heuristic = this.calculateHeuristic(moveId, source, targetsHit);
                 if (heuristic > bestHeuristic) {
                     bestMoveId = moveId;
@@ -155,7 +155,7 @@ class NPC {
     calculateHeuristic(moveId, source, targetsHit) {
         const moveData = moveConfig[moveId];
 
-        heuristic = 0;
+        let heuristic = 0;
         if (moveData.power !== null) {
             // if move does damage, calculate damage that would be dealt
             for (const target of targetsHit) {
@@ -360,19 +360,22 @@ class Battle {
             this.activePokemon.tickMoveCooldowns();
         }
 
-        // TODO: deal with NPC case
         // log
+        const userIsNpc = this.isNpc(this.activePokemon.userId);
+        const userString = userIsNpc ? this.users[this.activePokemon.userId].username : `<@${this.activePokemon.userId}>`;
         if (this.activePokemon.canMove()) {
-            this.log.push(`[Turn ${this.turn}] It is <@${this.activePokemon.userId}>'s ${this.activePokemon.name}'s turn.`);
+            this.log.push(`[Turn ${this.turn}] It is ${userString}'s ${this.activePokemon.name}'s turn.`);
         } else {
-            this.log.push(`[Turn ${this.turn}] <@${this.activePokemon.userId}>'s ${this.activePokemon.name} is unable to move.`);
+            this.log.push(`[Turn ${this.turn}] ${userString}'s ${this.activePokemon.name} is unable to move.`);
         }
     }
 
     endBattle() {
         if (this.winner) {
-            // TODO: deal with NPC case
-            const winnerMentions = this.teams[this.winner].userIds.map(userId => `<@${userId}>`).join(" ");
+            let winnerMentions = "";
+            if (!this.teams[this.winner].isNpc) {
+                winnerMentions = this.teams[this.winner].userIds.map(userId => `<@${userId}>`).join(" ");
+            }
             this.addToLog(`Team ${this.winner} has won! ${winnerMentions}`);
         } else {
             this.addToLog("The battle has ended in a draw!");
@@ -393,6 +396,10 @@ class Battle {
         this.addToLog(`Winners recieved ₽${this.moneyReward}, ${this.expReward} exp, and ${this.pokemonExpReward} BASE Pokemon exp. Losers recieved half the amount.`);
     }
         
+    isNpc(userId) {
+        const user = this.users[userId];
+        return user.npc !== undefined;
+    }
 
     getEligibleTargets(source, moveId) {
         const moveData = moveConfig[moveId];
@@ -1451,7 +1458,7 @@ const getStartTurnSend = async (battle, stateId) => {
 
         // check if active pokemon can move
         // TODO: deal with NPC case
-        if (battle.activePokemon.canMove()) {
+        if (battle.activePokemon.canMove() && !battle.isNpc(battle.activePokemon.userId)) {
             const selectMoveComponent = buildSelectBattleMoveRow(battle, stateId);
             components.push(selectMoveComponent);
         } else {
@@ -1630,11 +1637,37 @@ const buildPveSend = async ({ stateId=null, user=null, view="list", option=null,
             return { embed: null, err: `Difficulty doesn't exist for ${npcData.name}!` };
         }
 
-        // TEMP: return with npc name and difficulty
+        // get trainer
+        const trainer = await getTrainer(user);
+        if (trainer.err) {
+            return { embed: null, err: trainer.err };
+        }
+
+        // validate party
+        const validate = await validateParty(trainer.data);
+        if (validate.err) {
+            return { err: validate.err };
+        }
+
+        // add npc to battle
+        const npc = new NPC(npcData, option);
+        const rewardMultipliers = npcData.difficulties[option].rewardMultipliers || difficultyConfig[option].rewardMultipliers;
+        const battle = new Battle(
+            moneyMultiplier=rewardMultipliers.moneyMultiplier,
+            expMultiplier=rewardMultipliers.expMultiplier,
+            pokemonExpMultiplier=rewardMultipliers.pokemonExpMultiplier,
+        );
+        battle.addTeam("NPC", true);
+        battle.addTrainer(npc, npc.party.pokemons, "NPC");
+        battle.addTeam("Player", false);
+        battle.addTrainer(trainer.data, validate.data, "Player");
+
+        // start battle and add to state
+        battle.start();
+        state.battle = battle;
+
         return {
-            send: {
-                content: `You have selected ${npcData.name} on ${difficultyConfig[option].name}!`,
-            },
+            send: await getStartTurnSend(battle, stateId),
             err: null,
         }
     }

@@ -22,8 +22,14 @@ const battleInfo = async (interaction, data) => {
     }
     const pokemon = battle.activePokemon;
 
+    // if npc turn, anyone in battle can press buttons
+    if (battle.isNpc(battle.activePokemon.userId)) {
+        if (!battle.userIds.includes(interaction.user.id)) {
+            return { err: "You're not a participant in this battle." };
+        }
+    }
     // make sure it's the player's turn
-    if (battle.activePokemon.userId !== interaction.user.id) {
+    else if (battle.activePokemon.userId !== interaction.user.id) {
         return { err: "It's not your turn." };
     }
  

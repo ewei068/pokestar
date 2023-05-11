@@ -18,8 +18,14 @@ const battleTargetSelect = async (interaction, data) => {
         return { err: "No battle data." };
     }
 
+    // if npc turn, anyone in battle can press buttons
+    if (battle.isNpc(battle.activePokemon.userId)) {
+        if (!battle.userIds.includes(interaction.user.id)) {
+            return { err: "You're not a participant in this battle." };
+        }
+    }
     // make sure it's the player's turn
-    if (battle.activePokemon.userId !== interaction.user.id) {
+    else if (battle.activePokemon.userId !== interaction.user.id) {
         return { err: "It's not your turn." };
     }
 
@@ -27,7 +33,13 @@ const battleTargetSelect = async (interaction, data) => {
     const start = Date.now();
     // if skip turn, skip turn
     if (data.skipTurn) {
-        const result = battle.activePokemon.skipTurn();
+        // if npc turn. have npc use move
+        if (battle.isNpc(battle.activePokemon.userId)) {
+            const npc = battle.users[battle.activePokemon.userId].npc;
+            npc.action(battle);
+        } else {
+            const result = battle.activePokemon.skipTurn();
+        }
     } else {
         // get move ID from data
         const moveId = data.moveId;
