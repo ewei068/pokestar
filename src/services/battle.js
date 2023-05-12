@@ -390,6 +390,12 @@ class Battle {
         }
         this.ended = true;
 
+        // if winner is npc, no rewards
+        if (this.teams[this.winner].isNpc) {
+            this.addToLog("No rewards were given because the winner is an NPC.");
+            return;
+        }
+
         this.moneyReward = Math.floor(this.baseMoney * this.moneyMultiplier);
         this.expReward = Math.floor(this.baseExp * this.expMultiplier);
         // calculate pokemon exp by summing defeated pokemon's levels
@@ -1489,38 +1495,41 @@ const getStartTurnSend = async (battle, stateId) => {
         // if game ended, add rewards to trainers and pokemon
         // for non-NPC teams, for all trainers, add rewards
         try {
-            for (const teamName in battle.teams) {
-                const team = battle.teams[teamName];
-                if (team.isNpc) {
-                    continue;
-                }
-
-                const moneyReward = teamName === battle.winner ? battle.moneyReward : Math.floor(battle.moneyReward / 2);
-                const expReward = teamName === battle.winner ? battle.expReward : Math.floor(battle.expReward / 2);
-                const pokemonExpReward = teamName === battle.winner ? battle.pokemonExpReward : Math.floor(battle.pokemonExpReward / 2);
-
-                for (const userId of team.userIds) {
-                    const user = battle.users[userId];
-                    // get trainer
-                    const trainer = await getTrainer(user);
-                    if (trainer.err) {
-                        logger.warn(`Failed to get trainer for user ${user.id} after battle`);
+            // if winner is NPC, no rewards
+            if (!battle.teams[battle.winner].isNpc) {
+                for (const teamName in battle.teams) {
+                    const team = battle.teams[teamName];
+                    if (team.isNpc) {
                         continue;
                     }
 
-                    // add trainer rewards
-                    await addExpAndMoney(user, moneyReward, expReward);
+                    const moneyReward = teamName === battle.winner ? battle.moneyReward : Math.floor(battle.moneyReward / 2);
+                    const expReward = teamName === battle.winner ? battle.expReward : Math.floor(battle.expReward / 2);
+                    const pokemonExpReward = teamName === battle.winner ? battle.pokemonExpReward : Math.floor(battle.pokemonExpReward / 2);
 
-                    // add pokemon rewards
-                    for (const pokemon of Object.values(battle.allPokemon).filter(p => p.userId === trainer.data.userId)) {
-                        // get db pokemon
-                        const dbPokemon = await getPokemon(trainer.data, pokemon.id);
-                        if (dbPokemon.err) {
-                            logger.warn(`Failed to get pokemon ${pokemon.id} after battle`);
+                    for (const userId of team.userIds) {
+                        const user = battle.users[userId];
+                        // get trainer
+                        const trainer = await getTrainer(user);
+                        if (trainer.err) {
+                            logger.warn(`Failed to get trainer for user ${user.id} after battle`);
                             continue;
                         }
-                        
-                        await addPokemonExpAndEVs(trainer.data, dbPokemon.data, pokemonExpReward);
+
+                        // add trainer rewards
+                        await addExpAndMoney(user, moneyReward, expReward);
+
+                        // add pokemon rewards
+                        for (const pokemon of Object.values(battle.allPokemon).filter(p => p.userId === trainer.data.userId)) {
+                            // get db pokemon
+                            const dbPokemon = await getPokemon(trainer.data, pokemon.id);
+                            if (dbPokemon.err) {
+                                logger.warn(`Failed to get pokemon ${pokemon.id} after battle`);
+                                continue;
+                            }
+                            
+                            await addPokemonExpAndEVs(trainer.data, dbPokemon.data, pokemonExpReward);
+                        }
                     }
                 }
             }

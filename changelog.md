@@ -2,10 +2,16 @@
 
 ## 0,7,0 - PvE Update
 
+The PvE update is here! Use `/pve` to jump into a battle vs an NPC! NPCs come in different difficulties and varieties, adding for interesting and different battles. NPC battling is also a great way to level up your Pokemon!
+
+* `/pve`: Initiate a battle vs an AI NPC!
+    * Use the selection menu to select an NPC.
+    * Select a difficulty close to your Pokemon level.
+    * To battle an NPC directly, use `/pve <npcid> <difficulty>`.
 * Added battle moves for: Bulbasaur, Ivysaur, Charmander, Charmeleon, Squirtle, Wartortle, Caterpie, Metapod, Weedle, Kakuna, Magikarp!
-* `/pve`
+* Gacha Pokemon now start out at level 5!
 * Increased max number of Pokemon to 500.
-* Decreased the evolution level for some beginner Pokemon.
+* Decreased the evolution level requirement for some beginner Pokemon.
 * Improved `README.md`.
 
 ### 0.6.2 - Gacha Patch

@@ -206,15 +206,15 @@ const difficultyConfig = {
         rewardMultipliers: {
             moneyMultiplier: 2,
             expMultiplier: 2,
-            pokemonExpMultiplier: 0.5,
+            pokemonExpMultiplier: 0.6,
         }
     },
     [difficulties.VERY_HARD]: {
         name: "Very Hard",
         rewardMultipliers: {
-            moneyMultiplier: 3,
-            expMultiplier: 3,
-            pokemonExpMultiplier: 0.5,
+            moneyMultiplier: 3.5,
+            expMultiplier: 3.5,
+            pokemonExpMultiplier: 0.75,
         }
     },
 }

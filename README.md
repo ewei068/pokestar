@@ -192,6 +192,12 @@ If you would like to remove Pokemon, **use `/partyremove <id|position|ALL>`.**
 
 Note the last argument can have many different options. If a Pokemon ID is specified, that Pokemon will be removed if it exists. If a position is specified, the Pokemon at that position will be removed if it exists. If "ALL" is specified, then all Pokemon will be removed. **Using `/partyremove ALL` also resets your party if it ever glitches out and can't be used.**
 
+**PvE**
+
+PvE is a great way to hone your battle mechanics and level up your Pokemon quickly! **To start a PvE battle, use `/pve`,** and select an NPC you wish to battle.
+
+The trainer selection information contains information about the different difficulties, levels, and Pokemon an NPC has. Select a difficulty around your level and begin the battle! **You can also use `/pve <npcid> <difficulty>` to jump straight into the battle,** skipping the selection menus.
+
 **PvP**
 
 To initiate a friendly battle within your server, **use `/pvp`.**

@@ -34,10 +34,8 @@ const pokeballChanceConfig = {
     }
 }
 
-
 module.exports = {
     dailyRewardChances,
     NUM_DAILY_REWARDS,
     pokeballChanceConfig,
 };
-
