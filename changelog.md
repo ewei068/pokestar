@@ -1,6 +1,6 @@
 # Pokestar Changelog
 
-## 0,7,0 - PvE Update
+## 0.7.0 (5/12) - PvE Update
 
 The PvE update is here! Use `/pve` to jump into a battle vs an NPC! NPCs come in different difficulties and varieties, adding for interesting and different battles. NPC battling is also a great way to level up your Pokemon!
 
@@ -14,7 +14,7 @@ The PvE update is here! Use `/pve` to jump into a battle vs an NPC! NPCs come in
 * Decreased the evolution level requirement for some beginner Pokemon.
 * Improved `README.md`.
 
-### 0.6.2 - Gacha Patch
+### 0.6.2 (5/10) - Gacha Patch
 
 * Added battle moves for: Golbat, Dugtrio, Arcanine, Magneton. Now all currently added final-evoution Pokemon are battle-eligible!
 * Gacha improvements:
