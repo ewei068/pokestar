@@ -12,7 +12,7 @@
 const { backpackCategories, backpackItems } = require('./backpackConfig');
 
 const MAX_TRAINER_LEVEL = 25;
-const MAX_POKEMON = 200;
+const MAX_POKEMON = 500;
 const MAX_RELEASE = 10;
 
 const trainerFields = {

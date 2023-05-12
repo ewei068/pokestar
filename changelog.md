@@ -1,5 +1,12 @@
 # Pokestar Changelog
 
+## 0,7,0 - PvE Update
+
+* Added battle moves for: Bulbasaur, Ivysaur, Charmander, Charmeleon, Squirtle, Wartortle!
+* `/pve`
+* Increased max number of Pokemon to 500
+* Improved `README.md`
+
 ### 0.6.2 - Gacha Patch
 
 * Added battle moves for: Golbat, Dugtrio, Arcanine, Magneton. Now all currently added final-evoution Pokemon are battle-eligible!

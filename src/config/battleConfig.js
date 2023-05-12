@@ -1129,6 +1129,19 @@ const statusConditions = {
 };
 
 const moveConfig = {
+    "m10": {
+        "name": "Scratch",
+        "type": types.NORMAL,
+        "power": 40,
+        "accuracy": 100,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "Hard, pointed, sharp claws rake the target to inflict damage.",
+    },
     "m16": {
         "name": "Gust",
         "type": types.FLYING,
@@ -1167,6 +1180,19 @@ const moveConfig = {
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.PHYSICAL,
         "description": "The target is struck with slender, whiplike vines to inflict damage.",
+    },
+    "m33": {
+        "name": "Tackle",
+        "type": types.NORMAL,
+        "power": 40,
+        "accuracy": 100,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "A physical attack in which the user charges and slams into the target with its whole ass body.",
     },
     "m34": {
         "name": "Body Slam",
@@ -1486,6 +1512,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user emits a screech harsh enough to sharply lower the targets' Defense for 2 turns.",
     },
+    "m110": {
+        "name": "Withdraw",
+        "type": types.WATER,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 0,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.OTHER,
+        "description": "The user withdraws its body into its hard shell, raising its Defense for 2 turns.",
+    },
     "m118": {
         "name": "Metronome",
         "type": types.NORMAL,
@@ -1644,6 +1683,19 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user rampages and attacks randomly for 3 turns. The user then becomes confused for 2 turns.",
+    },
+    "m202": {
+        "name": "Giga Drain",
+        "type": types.GRASS,
+        "power": 75,
+        "accuracy": 100,
+        "cooldown": 3,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "A nutrient-draining attack. The user's HP is restored by half the damage taken by the target.",
     },
     "m203": {
         "name": "Endure",
@@ -1943,6 +1995,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
         "description": "The user vigorously performs a mystic, powerful dance that raises its Attack and Speed stats for 3 turns.",
+    },
+    "m352": {
+        "name": "Water Pulse",
+        "type": types.WATER,
+        "power": 60,
+        "accuracy": 100,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.COLUMN,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user attacks the target with a pulsing blast of water. This has a 25% chance to confuse targets for 2 turns.",
     },
     "m355": {
         "name": "Roost",
@@ -2324,6 +2389,17 @@ const moveConfig = {
 };
 
 const moveExecutes = {
+    "m10": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m16";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const damageToDeal = calculateDamage(moveData, source, target, missedTargets.includes(target));
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId,
+            });
+        }
+    },
     "m16": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m16";
         const moveData = moveConfig[moveId];
@@ -2348,6 +2424,18 @@ const moveExecutes = {
     },
     "m22": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m22";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
+    "m33": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m33";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
@@ -2736,6 +2824,14 @@ const moveExecutes = {
             }
         }
     },
+    "m110": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m110";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // def up for 2 turns
+            target.addEffect("defUp", 3, source);
+        }
+    },
     "m118": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m118";
         const moveData = moveConfig[moveId];
@@ -2984,6 +3080,25 @@ const moveExecutes = {
             // confuse self
             source.addEffect("confused", 3, source);
         }
+    },
+    "m202": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m202";
+        const moveData = moveConfig[moveId];
+        let damageDealt = 0;
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            damageDealt += source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+
+        // heal half damage dealt
+        source.giveHeal(Math.floor(damageDealt / 2), source, {
+            type: "move",
+            moveId: moveId
+        });
     },
     "m203": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m203";
@@ -3393,6 +3508,23 @@ const moveExecutes = {
             // raise attack and speed
             target.addEffect("atkUp", 4, source);
             target.addEffect("speUp", 4, source);
+        }
+    },
+    "m352": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m352";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, confuse with 25% chance
+            if (!miss && Math.random() < 0.25) {
+                target.addEffect("confused", 2, source);
+            }
         }
     },
     "m355": function (battle, source, primaryTarget, allTargets) {
