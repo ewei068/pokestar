@@ -8,13 +8,14 @@
   <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/starmie.png" width="300" height="300">
 </p>
 
-<p style="text-align: center;">
-    A Pokemon Discord bot. Currently open for beta testing! <b><a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>Invite Pokestar to your server.</a></b>
-</p>
-<p style="text-align: center;">
-    <b><a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>👾 Discord</a> • <a href=https://github.com/ewei068/pokestar#tutorial>📝 Tutorial</a> • <a href=https://github.com/ewei068/pokestar#all-commands>💬 Commands</a> • <a href=https://github.com/ewei068/pokestar#credits>©️ Credits</a></b>
-</p>
-</br>
+<div align="center">
+    <p style="text-align: center;">
+        A Pokemon Discord bot. Currently open for beta testing! <b><a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>Invite Pokestar to your server.</a></b>
+    </p>
+    <p style="text-align: center;">
+        <b><a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>👾 Discord</a> • <a href=https://github.com/ewei068/pokestar#tutorial>📝 Tutorial</a> • <a href=https://github.com/ewei068/pokestar#all-commands>💬 Commands</a> • <a href=https://github.com/ewei068/pokestar#credits>©️ Credits</a></b>
+    </p>
+</div>
 
 ## Why Pokestar?
 
