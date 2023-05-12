@@ -1,8 +1,10 @@
-<h1 style="text-align: center;">
-    <a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>
-        Pokestar
-    </a>
-</h1>
+<div align="center">
+    <h1 style="text-align: center;">
+        <a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>
+            Pokestar
+        </a>
+    </h1>
+</div>
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/starmie.png" width="300" height="300">
