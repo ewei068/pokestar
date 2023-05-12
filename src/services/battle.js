@@ -118,7 +118,7 @@ class NPC {
         // else, consider basic moves
         let onlyBasicMoves = true;
         for (const moveId in validMoveIdsToTargets) {
-            if (!moveConfig[moveId].tier !== moveTiers.BASIC) {
+            if (moveConfig[moveId].tier !== moveTiers.BASIC) {
                 onlyBasicMoves = false;
                 break;
             }
@@ -129,6 +129,12 @@ class NPC {
                     delete validMoveIdsToTargets[moveId];
                 }
             }
+        }
+
+        // if for some reason no moves exist, skip turn
+        if (Object.keys(validMoveIdsToTargets).length === 0) {
+            battle.skipTurn();
+            return;
         }
 
         // for all considered moves, get the best move
@@ -525,6 +531,13 @@ class Battle {
                 return true;
             }
 
+            console.log(moveId)
+            console.log(pokemon.effectIds.sprungUp)
+            // bounce + thunder or gust
+            if ((moveId === "m87" || moveId === "m16") && pokemon.effectIds.sprungUp !== undefined) {
+                return true;
+            }
+
             return false;
         }
 
@@ -542,6 +555,11 @@ class Battle {
 
             // eq + dig
             if (moveId === "m89" && pokemon.effectIds.burrowed !== undefined) {
+                return true;
+            }
+
+            // bounce + thunder or gust
+            if ((moveId === "m87" || moveId === "m16") && pokemon.effectIds.sprungUp !== undefined) {
                 return true;
             }
 

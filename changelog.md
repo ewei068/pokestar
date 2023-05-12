@@ -2,10 +2,11 @@
 
 ## 0,7,0 - PvE Update
 
-* Added battle moves for: Bulbasaur, Ivysaur, Charmander, Charmeleon, Squirtle, Wartortle!
+* Added battle moves for: Bulbasaur, Ivysaur, Charmander, Charmeleon, Squirtle, Wartortle, Caterpie, Metapod, Weedle, Kakuna, Magikarp!
 * `/pve`
-* Increased max number of Pokemon to 500
-* Improved `README.md`
+* Increased max number of Pokemon to 500.
+* Decreased the evolution level for some beginner Pokemon.
+* Improved `README.md`.
 
 ### 0.6.2 - Gacha Patch
 
