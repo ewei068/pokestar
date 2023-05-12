@@ -20,6 +20,7 @@ The PvE update is here! Use `/pve` to jump into a battle vs an NPC! NPCs come in
 * Gacha improvements:
     * You can now specifiy the quantity of Pokeballs you want to use, up to 10!
     * Beginner trainers are luckier for their first few Pokeball rolls!
+* Patch skip turn failing when having status condition.
 
 ### 0.6.1 (5/9)
 
