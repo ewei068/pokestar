@@ -789,7 +789,7 @@ class Pokemon {
         this.combatReadiness = 0;
 
         // check pre-move status conditions that tick regardless of move
-        if (this.status.statusId !== null && canUseMove) {
+        if (this.status.statusId !== null) {
             switch (this.status.statusId) {
                 case statusConditions.FREEZE:
                     // thaw chance (turns => chance): 0 => 0%, 1 => 40%, 2 => 80%, 3 => 100%

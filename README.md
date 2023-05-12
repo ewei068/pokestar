@@ -1,12 +1,22 @@
-# [pokestar](https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot)
+<h1 style="text-align: center;">
+    <a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>
+        Pokestar
+    </a>
+</h1>
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/starmie.png" width="300" height="300">
 </p>
 
-A Pokemon Discord bot. Currently open for beta testing! **[Invite Pokestar to your server.](https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot)**
+<p style="text-align: center;">
+    A Pokemon Discord bot. Currently open for beta testing! <b><a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>Invite Pokestar to your server.</a></b>
+</p>
+<p style="text-align: center;">
+    <b><a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>👾 Discord</a> • <a href=https://github.com/ewei068/pokestar#tutorial>📝 Tutorial</a> • <a href=https://github.com/ewei068/pokestar#all-commands>💬 Commands</a> • <a href=https://github.com/ewei068/pokestar#credits>©️ Credits</a></b>
+</p>
+</br>
 
-### Why Pokestar?
+## Why Pokestar?
 
 Pokestar focuses on a few key features that sets it apart from other Pokemon Discord bots, making for a fresh, fun experience.
 
@@ -32,7 +42,7 @@ Pokestar tries to be a fluid and responsive experience. Components and UI are a 
 
 ## Tutorial
 
-### Getting Started
+### 👉 Getting Started
 
 **[IMPORTANT] Bot Usage**
 
@@ -53,7 +63,7 @@ As you can see, you don't have much yet. All trainers start off with some starte
 
 You will use these Pokeballs to get your first few Pokemon!
 
-### Pokemon
+### ⚡ Pokemon
 
 **Gacha**
 
@@ -63,8 +73,8 @@ The only way to get new Pokemon currently is with the Gacha system. The gacha co
 
 New Pokemon come at level 1 and have a few randomized attributes, such as IVs and nature. Note that these Pokemon also have a rarity! Rare Pokemon are harder to get, but tend to be better. **You can increase the chances of getting a rare Pokemon by using a better Pokeball;** however, these Pokeballs are harder to come by. The exact gacha rates are as follows (Common/Rare/Epic/Legendary):
 
-* Pokeball: 70/20/9/1
-* Greatball: 30/50/17/3
+* Pokeball: 70/25/4/1
+* Greatball: 30/55/12/3
 * Ultraball: 0/45/50/5
 * Masterball: 0/0/90/10
 
@@ -102,7 +112,7 @@ Mobile play is a bit more difficult because Discord makes it hard to copy text. 
 
 You can now paste the Pokemon's ID into the commands that need it. If you want to copy and ID from the `/list` command, use the selection menu to bring up that Pokemon's info, then copy the ID from there.
 
-### Progression
+### 💪 Progression
 
 **Daily Rewards**
 
@@ -158,7 +168,7 @@ Once you get enough EXP, use **/evolve <id>** to evolve your Pokemon.
 
 This will bring up a selection menu where you can preview and confirm your Pokemon's evolution. Right now, all Pokemon evolve via levels.
 
-### Battling
+### ⚔️ Battling
 
 **Eligible Pokemon**
 
@@ -192,7 +202,7 @@ An opponent may now accept your challenge and the battle is on! You can also pro
 
 At the end of your battle, both players will recieve trainer experience and money. Pokemon will also gain experience based on the levels of fainted Pokemon. Note that this experience is boosted by the trainer level exp multiplier.
 
-### Battle Mechanics
+### 🔧 Battle Mechanics
 
 **Important Note:** Sometimes battles may glitch, where the battle is processed by the server but not displayed correctly on Discord (typically occurs when network is spotty). In this case, all players may be unable to take actions without glitching. **If this happens, all players should spam the "refresh" button to reload the data from the server, and try to continue battling.** If still experiencing bugs, please let me know or create an issue in this repository. Battles are currently very new and very prone to glitches.
 
@@ -325,6 +335,8 @@ For more information about what commands do, use the `/help` command to browse c
 All of the commands are also listed below for your convenience:
 
 ## All Commands
+
+Still building!
 
 ## Credits
 
