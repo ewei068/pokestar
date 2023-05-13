@@ -7,7 +7,7 @@ const { buildSelectBattleMoveRow } = require("../components/selectBattleMoveRow"
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildBattleInfoActionRow } = require("../components/battleInfoActionRow");
 const { getTrainer, addExpAndMoney } = require("./trainer");
-const { addPokemonExpAndEVs, getPokemon } = require("./pokemon");
+const { addPokemonExpAndEVs, getPokemon, calculatePokemonStats } = require("./pokemon");
 const { logger } = require("../log");
 const { buildNextTurnActionRow } = require("../components/battleNextTurnRow");
 const { deleteState } = require("./state");
@@ -192,11 +192,14 @@ class Battle {
     turn;
     winner;
     ended;
+    minLevel;
+    level;
 
     constructor({ 
         moneyMultiplier=1, 
         expMultiplier=1, 
         pokemonExpMultiplier=0.2,
+        level=null
     } = {}) {
         this.moneyMultiplier = moneyMultiplier;
         this.expMultiplier = expMultiplier;
@@ -219,6 +222,13 @@ class Battle {
         this.turn = 0;
         this.winner = null;
         this.ended = false;
+        if (level) {
+            if (level < 1 || level > 100) {
+                throw new Error("Invalid level");
+            }
+            this.level = level;
+            this.minLevel = level;
+        }
     }
     
     addTeam(teamName, isNpc) {
@@ -399,7 +409,7 @@ class Battle {
         // calculate pokemon exp by summing defeated pokemon's levels
         this.pokemonExpReward = Math.floor(Object.values(this.allPokemon).reduce((acc, pokemon) => {
             if (pokemon.isFainted) {
-                return acc + pokemon.level;
+                return acc + (this.minLevel || pokemon.level);
             } else {
                 return acc;
             }
@@ -623,9 +633,15 @@ class Pokemon {
 
     constructor(battle, trainer, pokemonData, teamName, position) {
         this.battle = battle;
-        this.pokemonData = pokemonData;
         this.speciesId = pokemonData.speciesId;
         this.speciesData = pokemonConfig[this.speciesId];
+        // if battle has a set level, scale pokemon to that level
+        if (battle.level) {
+            battle.minLevel = Math.min(battle.minLevel, pokemonData.level);
+            pokemonData.level = battle.level;
+            pokemonData = calculatePokemonStats(pokemonData, this.speciesData);
+        }
+        this.pokemonData = pokemonData;
         this.id = pokemonData._id.toString();
         this.userId = trainer.userId;
         this.teamName = teamName;

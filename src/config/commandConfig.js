@@ -376,12 +376,18 @@ const commandConfig = {
         "name": "PvP",
         "aliases": ["pvp", "battle"],
         "description": "Battle another player",
-        "longDescription": "Initiates a battle in the channel. Another player may choose to accept the battle. If opponent is specified, only the opponent may accept the battle.",
+        "longDescription": "Initiates a battle in the channel. Another player may choose to accept the battle. If opponent is specified, only the opponent may accept the battle. If level is specified, all Pokemon will be scaled to that level.",
         "execute": "pvp.js",
         "args": {
             "opponent": {
                 "type": "user",
                 "description": "@mention an opponent to battle",
+                "optional": true,
+                "variable": false
+            },
+            "level": {
+                "type": "int",
+                "description": "level to battle at",
                 "optional": true,
                 "variable": false
             }

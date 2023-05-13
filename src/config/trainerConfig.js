@@ -11,7 +11,7 @@
 
 const { backpackCategories, backpackItems } = require('./backpackConfig');
 
-const MAX_TRAINER_LEVEL = 25;
+const MAX_TRAINER_LEVEL = 100;
 const MAX_POKEMON = 500;
 const MAX_RELEASE = 10;
 
@@ -353,6 +353,65 @@ const levelConfig = {
         }
     },
     25: {
+        "rewards": {
+            "money": 7500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.ULTRABALL]: 5,
+                    [backpackItems.MASTERBALL]: 5,
+                }
+            }
+        }
+    },
+    26: {
+        "rewards": {
+            "money": 1500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                },
+            }
+        }
+    },
+    27: {
+        "rewards": {
+            "money": 1500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                },
+            }
+        }
+    },
+    28: {
+        "rewards": {
+            "money": 1500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                },
+            }
+        }
+    },
+    29: {
+        "rewards": {
+            "money": 1500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                },
+            }
+        }
+    },
+    30: {
         "rewards": {
             "money": 7500,
             "backpack": {

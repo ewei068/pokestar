@@ -386,7 +386,7 @@ For example, you can sort by combat power by using `psb!list 1 none none combatP
 
 ### ⚔️ Battle Commands
 
-**`/pvp <opponent?: user>`**: Initiates a battle in the channel. Another player may choose to accept the battle. If opponent is specified, only the opponent may accept the battle.
+**`/pvp <opponent?: user>`**: Initiates a battle in the channel. Another player may choose to accept the battle. If opponent is specified, only the opponent may accept the battle. If a level is specified, all Pokemon are scaled to that level.
 
 **`/pve <npcid?: string> <difficulty?: string>`**: Browse a list of NPC trainers to battle! Specify an NPC and difficulty to directly battle them.
 
@@ -416,5 +416,9 @@ If `option` is ALL, removes all Pokemon from your party.
 
 ## Credits
 
-* Emojis: https://veekun.com/dex/downloads
+* Emojis & Sprites: 
+    * https://veekun.com/dex/downloads
+    * https://github.com/msikma/pokesprite/tree/master
+    * PokeAPI
+    * Bulbapedia
 * Pokemon Data: PokeAPI

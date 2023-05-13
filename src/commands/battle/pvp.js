@@ -7,10 +7,15 @@ const { buildTrainerEmbed } = require('../../embeds/trainerEmbeds');
 const { eventNames } = require('../../config/eventConfig');
 const { getUserId } = require('../../utils/utils');
 
-const pvp = async (user, opponentUserId) => {
+const pvp = async (user, opponentUserId, level) => {
     // if opponent user ID equals user ID, return error
     if (opponentUserId === user.id) {
         return { send: null, err: "You can't challenge yourself!" };
+    }
+
+    // if level not between 1 and 100, return error
+    if (level && (level < 1 || level > 100)) {
+        return { send: null, err: "Level must be between 1 and 100." };
     }
 
     // get trainer
@@ -26,7 +31,9 @@ const pvp = async (user, opponentUserId) => {
     }
 
     // create battle
-    const battle = new Battle();
+    const battle = new Battle({
+        level: level,
+    });
     battle.addTeam("Team1", false);
     battle.addTrainer(trainer.data, validate.data, "Team1");
 
@@ -69,8 +76,9 @@ const pvp = async (user, opponentUserId) => {
 const pvpMessageCommand = async (message) => {
     const args = message.content.split(' ');
     const opponentUserId = getUserId(args[1]) || null;
+    const level = parseInt(args[2]) || null;
 
-    const { send, err } = await pvp(message.author, opponentUserId);
+    const { send, err } = await pvp(message.author, opponentUserId, level);
     if (err) {
         await message.channel.send(`${err}`);
         return { err: err };
@@ -81,8 +89,9 @@ const pvpMessageCommand = async (message) => {
 
 const pvpSlashCommand = async (interaction) => {
     const opponentUserId = interaction.options.getUser('opponent') ? interaction.options.getUser('opponent').id : null;
-    
-    const { send, err } = await pvp(interaction.user, opponentUserId);
+    const level = interaction.options.getInteger('level') || null;
+
+    const { send, err } = await pvp(interaction.user, opponentUserId, level);
     if (err) {
         await interaction.reply(`${err}`);
         return { err: err };
