@@ -35,6 +35,8 @@ class NPC {
             discriminator: uuidv4().slice(0, 4),
             npc: this,
             id: this.userId,
+            // data: npcData,
+            // difficulty: difficulty,
         };
         this.party = {
             rows: 3,
@@ -191,7 +193,11 @@ class Battle {
     winner;
     ended;
 
-    constructor(moneyMultiplier=1, expMultiplier=1, pokemonExpMultiplier=0.2) {
+    constructor({ 
+        moneyMultiplier=1, 
+        expMultiplier=1, 
+        pokemonExpMultiplier=0.2,
+    } = {}) {
         this.moneyMultiplier = moneyMultiplier;
         this.expMultiplier = expMultiplier;
         this.pokemonExpMultiplier = pokemonExpMultiplier;
@@ -376,9 +382,9 @@ class Battle {
             if (!this.teams[this.winner].isNpc) {
                 winnerMentions = this.teams[this.winner].userIds.map(userId => `<@${userId}>`).join(" ");
             }
-            this.addToLog(`Team ${this.winner} has won! ${winnerMentions}`);
+            this.addToLog(`**Team ${this.winner} has won! ${winnerMentions}**`);
         } else {
-            this.addToLog("The battle has ended in a draw!");
+            this.addToLog("**The battle has ended in a draw!**");
         }
         this.ended = true;
 
@@ -1465,7 +1471,7 @@ class BattleEventHandler {
 }
 
 const getStartTurnSend = async (battle, stateId) => {
-    const content = battle.log.join('\n');
+    let content = battle.log.join('\n');
 
     const stateEmbed = buildBattleEmbed(battle);
     
@@ -1489,6 +1495,7 @@ const getStartTurnSend = async (battle, stateId) => {
         try {
             // if winner is NPC, no rewards
             if (!battle.teams[battle.winner].isNpc) {
+                content += `\n**The following Pokemon leveled up:**`;
                 for (const teamName in battle.teams) {
                     const team = battle.teams[teamName];
                     if (team.isNpc) {
@@ -1511,6 +1518,7 @@ const getStartTurnSend = async (battle, stateId) => {
                         // add trainer rewards
                         await addExpAndMoney(user, moneyReward, expReward);
 
+                        const levelUps = [];
                         // add pokemon rewards
                         for (const pokemon of Object.values(battle.allPokemon).filter(p => p.userId === trainer.data.userId)) {
                             // get db pokemon
@@ -1520,7 +1528,23 @@ const getStartTurnSend = async (battle, stateId) => {
                                 continue;
                             }
                             
-                            await addPokemonExpAndEVs(trainer.data, dbPokemon.data, pokemonExpReward);
+                            const oldLevel = dbPokemon.data.level;
+                            const trainResult = await addPokemonExpAndEVs(trainer.data, dbPokemon.data, pokemonExpReward);
+                            if (trainResult.err) {
+                                continue;
+                            }
+                            const newLevel = trainResult.data.level;
+
+                            if (newLevel > oldLevel) {
+                                levelUps.push({
+                                    pokemonName: dbPokemon.data.name,
+                                    oldLevel: oldLevel,
+                                    newLevel: newLevel
+                                });
+                            }
+                        }
+                        if (levelUps.length > 0) {
+                            content += `\n${user.username}'s Pokemon: ${levelUps.map(l => `${l.pokemonName} (${l.oldLevel} -> ${l.newLevel})`).join(', ')}`;
                         }
                     }
                 }
@@ -1529,7 +1553,13 @@ const getStartTurnSend = async (battle, stateId) => {
             logger.error(`Failed to add battle rewards: ${err}`);
         }
 
-        deleteState(stateId);
+        // if state has an NPC id, add a replay button
+        const state = getState(stateId);
+        if (state && state.replayComponent) {
+            components.push(state.replayComponent);
+        } else {
+            deleteState(stateId);
+        }
     }
 
     return {
@@ -1645,7 +1675,7 @@ const buildPveSend = async ({ stateId=null, user=null, view="list", option=null,
 
         state.npcId = option;
         send.components.push(returnRow);
-    } else if (view === "difficulty") {
+    } else if (view === "battle") {
         // validate npc id
         const npcData = npcConfig[state.npcId];
         if (npcData === undefined) {
@@ -1653,7 +1683,7 @@ const buildPveSend = async ({ stateId=null, user=null, view="list", option=null,
         }
 
         // validate difficulty
-        const npcDifficultyData = npcData.difficulties[option];
+        const npcDifficultyData = npcData.difficulties[state.difficulty];
         if (npcDifficultyData === undefined) {
             return { embed: null, err: `Difficulty doesn't exist for ${npcData.name}!` };
         }
@@ -1671,12 +1701,10 @@ const buildPveSend = async ({ stateId=null, user=null, view="list", option=null,
         }
 
         // add npc to battle
-        const npc = new NPC(npcData, option);
-        const rewardMultipliers = npcData.difficulties[option].rewardMultipliers || difficultyConfig[option].rewardMultipliers;
+        const npc = new NPC(npcData, state.difficulty);
+        const rewardMultipliers = npcDifficultyData.rewardMultipliers || difficultyConfig[state.difficulty].rewardMultipliers;
         const battle = new Battle(
-            moneyMultiplier=rewardMultipliers.moneyMultiplier,
-            expMultiplier=rewardMultipliers.expMultiplier,
-            pokemonExpMultiplier=rewardMultipliers.pokemonExpMultiplier,
+            rewardMultipliers
         );
         battle.addTeam("NPC", true);
         battle.addTrainer(npc, npc.party.pokemons, "NPC");
@@ -1686,6 +1714,23 @@ const buildPveSend = async ({ stateId=null, user=null, view="list", option=null,
         // start battle and add to state
         battle.start();
         state.battle = battle;
+
+        // add a replay button to state for later
+        // build difficulty row
+        const difficultySelectData = {
+            stateId: stateId,
+            difficulty: state.difficulty,
+        }
+        const difficultyButtonConfigs = [{
+            label: "Replay",
+            disabled: false,
+            data: difficultySelectData,
+        }];
+        const difficultyRow = buildButtonActionRow(
+            difficultyButtonConfigs,
+            eventNames.PVE_ACCEPT,
+        );
+        state.replayComponent = difficultyRow;
 
         return {
             send: await getStartTurnSend(battle, stateId),

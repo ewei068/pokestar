@@ -38,12 +38,12 @@ const pve = async (user, npcId, difficulty) => {
         const stateId = setState({
             userId: user.id,
             npcId: npcId,
+            difficulty: difficulty,
         }, ttl=300);
         const { send, err } = await buildPveSend({
             stateId: stateId,
             user: user,
-            view: "difficulty",
-            option: difficulty,
+            view: "battle"
         });
         if (err) {
             deleteState(stateId);
