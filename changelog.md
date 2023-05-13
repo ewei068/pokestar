@@ -1,5 +1,10 @@
 # Pokestar Changelog
 
+### 0.7.1
+
+* Patched NPC needing to skip turns causing crash.
+* Patched Pokemart crashing everything.
+
 ## 0.7.0 (5/12) - PvE Update
 
 The PvE update is here! Use `/pve` to jump into a battle vs an NPC! NPCs come in different difficulties and varieties, adding for interesting and different battles. NPC battling is also a great way to level up your Pokemon!

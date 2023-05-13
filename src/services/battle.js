@@ -96,7 +96,7 @@ class NPC {
 
         // if cant move, skip turn
         if (!activePokemon.canMove()) {
-            battle.skipTurn();
+            activePokemon.skipTurn();
             return;
         }
 
@@ -133,7 +133,7 @@ class NPC {
 
         // if for some reason no moves exist, skip turn
         if (Object.keys(validMoveIdsToTargets).length === 0) {
-            battle.skipTurn();
+            activePokemon.skipTurn();
             return;
         }
 

@@ -26,9 +26,14 @@ client.on(Events.MessageCreate, async (message) => {
     runMessageCommand(message, client).then(() => {
         // do nothing
     }).catch((error) => {
-        logger.error(`Error in message command: ${message.content}`);
-        logger.error(error);
-        message.reply("There was an error trying to execute that command!");
+        try {
+            logger.error(`Error in message command: ${message.content}`);
+            logger.error(error);
+            message.reply("There was an error trying to execute that command!");
+        } catch (error) {
+            logger.error(`Error in message command: ${message.content}`);
+            logger.error(error);
+        }
     });
 });
 
@@ -49,7 +54,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
         try {
             await interaction.reply("There was an error trying to execute that command!");
         } catch (error) {
-            interaction.followUp("There was an error trying to execute that command!");
+            try {
+                interaction.followUp("There was an error trying to execute that command!");
+            } catch (error) {
+                logger.error(`Error in slash command: ${interaction.commandName}`);
+                logger.error(error);
+            }
         }
     });
 });

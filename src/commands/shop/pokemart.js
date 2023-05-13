@@ -17,7 +17,7 @@ const pokemart = async (user) => {
     const { send, err } = await buildShopSend({
         stateId: stateId,
         user: user,
-        view: "list",
+        view: "shop",
         option: null
     });
     if (err) {
