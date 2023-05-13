@@ -87,7 +87,7 @@ const getUserId = (string) => {
 }
 
 const buildCommandUsageString = (prefix, commandData) => {
-    let usageString = `\`${prefix}${commandData.aliases[0]}`;
+    let usageString = `\`/${commandData.aliases[0]}`;
     if (commandData.args) {
         for (const arg in commandData.args) {
             const argConfig = commandData.args[arg];

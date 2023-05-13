@@ -173,7 +173,7 @@ const commandConfig = {
         "description": "List your Pokemon",
         "execute": "list.js",
         "longDescription": `List your Pokemon. For more complicated functionality, you can filter and sort the list.
-        For example, you can filter for Pokemon named 'Pikachu' by using \`${prefix}list 1 name Pikachu\`
+        For example, you can filter for Pokemon named 'Pikachu' by using \`/list 1 name Pikachu\`
         If using message commands and you want to sort but not filter, pass 'none' as the \`filterby\` argument.
         For example, you can sort by combat power by using \`${prefix}list 1 none none combatPower\``,
         "args": {

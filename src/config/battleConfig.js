@@ -3971,7 +3971,7 @@ const moveExecutes = {
         const moveId = "m446";
         const moveData = moveConfig[moveId];
         // stealth rock log
-        battle.addToLog(`Sharp rocks were scattered on the ground near ${source.teamName}'s side!`);
+        battle.addToLog(`Sharp rocks were scattered on the ground near ${primaryTarget.teamName}'s side!`);
         for (const target of allTargets) {
             // give target stealthRock
             target.addEffect("stealthRock", 3, source);

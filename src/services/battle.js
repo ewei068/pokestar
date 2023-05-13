@@ -82,15 +82,14 @@ class NPC {
         /* steps:
         if cant move, skip turn
         get all moves filtered by those with eligible targets and usable
-        if any moves are not basic, only consider those moves
-        else, consider basic moves
         for all considered moves, get the best move
         best move/target: for all targets:
             get how many targets would be hit by AoE
             calculate heuristic
                 if move does damage, calculate damage that would be dealt
-                else, calculate heuristic = numTargets * source level * 2, or * 3 for ultimate (may change)
+                else, calculate heuristic = numTargets * source level * 1.5
             normalize heuristic by move accuracy, or *1.2 if move has no accuracy
+            normalize heuristic by move tier
         choose best move & target based off heuristic
         use move */
 
@@ -113,23 +112,6 @@ class NPC {
                 validMoveIdsToTargets[moveId] = eligibleTargets;
             }
         });
-
-        // if any moves are not basic, only consider those moves
-        // else, consider basic moves
-        let onlyBasicMoves = true;
-        for (const moveId in validMoveIdsToTargets) {
-            if (moveConfig[moveId].tier !== moveTiers.BASIC) {
-                onlyBasicMoves = false;
-                break;
-            }
-        }
-        if (!onlyBasicMoves) {
-            for (const moveId in validMoveIdsToTargets) {
-                if (moveConfig[moveId].tier === moveTiers.BASIC) {
-                    delete validMoveIdsToTargets[moveId];
-                }
-            }
-        }
 
         // if for some reason no moves exist, skip turn
         if (Object.keys(validMoveIdsToTargets).length === 0) {
@@ -162,6 +144,11 @@ class NPC {
         const moveData = moveConfig[moveId];
 
         let heuristic = 0;
+        // special case: if asleep and sleep talk, use sleep talk
+        if (source.status.statusId === statusConditions.SLEEP && moveId === "m214") {
+            return 1000000;
+        }
+
         if (moveData.power !== null) {
             // if move does damage, calculate damage that would be dealt
             for (const target of targetsHit) {
@@ -169,12 +156,17 @@ class NPC {
                 heuristic += damage;
             }
         } else {
-            // else, calculate heuristic = numTargets * source level * 2, or * 3 for ultimate (may change)
-            heuristic = targetsHit.length * source.level * (moveData.tier === moveTiers.ULTIMATE ? 3 : 2);
+            // else, calculate heuristic = numTargets * source level * 1.5
+            heuristic = targetsHit.length * source.level * 1.5;
         }
         // normalize heuristic by move accuracy, or *1.2 if move has no accuracy
         const accuracy = moveData.accuracy;
         heuristic *= accuracy === null ? 1.2 : accuracy / 100;
+
+        // multiply heuristic by move tier. basic = 0.7, power = 1, ultimate = 1.5
+        const moveTier = moveData.tier;
+        heuristic *= moveTier === moveTiers.BASIC ? 0.7 : (moveTier === moveTiers.POWER ? 1 : 1.5);
+
         return heuristic;
     }
 }

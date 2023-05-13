@@ -345,7 +345,74 @@ All of the commands are also listed below for your convenience:
 
 ## All Commands
 
-Still building!
+The command usages for all commands are listed below. **If a command argument has a ?, it means the argument is optional.**
+
+### 🧢 Trainer Commands
+
+**`/trainerinfo`**: Displays your trainer card with information such as number of Pokemon, Pokedollars, and level progress.
+
+**`/daily`**: Get your daily rewards, including Pokedollars and Pokeballs. You can get your daily rewards once every 24 hours, resetting at 00:00 UTC.
+
+**`/backpack`**: Get info about your backpack items.
+
+**`/levelrewards`**: Claim your level rewards, including Pokedollars and Pokeballs. You can claim your level rewards once every level, starting at level 2.
+
+**`/locations`**: Displays a list of locations you own and the levels of each location.
+
+### ⚡ Pokemon Commands
+
+**`/gacha <pokeball: string> <quantity?: int>`**: Roll the gacha to get a random Pokemon. You can use different Pokeballs to increase your chances of getting a rare Pokemon. Get Pokeballs at the `/pokemart`, daily rewards, or level rewards.
+
+**`/info <pokemonid: string>`**: Display info about a Pokemon, including its stats, EVs/IVs, and level progress.
+
+**`/list <page?: int> <filterby?: string> <filtervalue?: string> <sortby?: string> <descending?: bool>`**: List your Pokemon. For more complicated functionality, you can filter and sort the list.
+For example, you can filter for Pokemon named 'Pikachu' by using `/list 1 name Pikachu`.
+If using message commands and you want to sort but not filter, pass 'none' as the filterby argument.
+For example, you can sort by combat power by using `psb!list 1 none none combatPower`.
+
+**`/pokedex <species?: string>`**: Browse all information about a Pokedex species, including its general information, base stats, and moves. Specify a species to skip to that species.
+
+**`/train <pokemonid: string> <location?: string>`**: Train a Pokemon to increase its level or EVs. If a location is specified, you will get more EVs but less EXP. Level up your locations to increase their EV and EXP bonuses.
+
+**`/evolve <pokemonid: string>`**: Evolve a Pokemon. You must meet the requirements to evolve said Pokemon. Once done, a list of possible evolutions will be displayed. You can then choose which evolution you want.
+
+**`/release <pokemonids: string>`**: Release up to 10 Pokemon, separated by a space. You will get Pokedollars for each Pokemon you release based on their rarity.
+
+### 🛒 Shop Commands
+
+**`/pokemart`**: Browse and buy the items in stock in the Pokemart.
+
+**`/buy <itemid: string> <quantity?: int>`**: Buy an item from the Pokemart. You can buy up to 10 items at a time. Certain items may also have daily limits, reset at midnight UTC.
+
+### ⚔️ Battle Commands
+
+**`/pvp <opponent?: user>`**: Initiates a battle in the channel. Another player may choose to accept the battle. If opponent is specified, only the opponent may accept the battle.
+
+**`/pve <npcid?: string> <difficulty?: string>`**: Browse a list of NPC trainers to battle! Specify an NPC and difficulty to directly battle them.
+
+**`/partyinfo`**: Get detailed information about your party.
+
+**`/partyadd <pokemonid: string> <position: int>`**: Add a Pokemon to your party at a specified position. If the Pokemon is in the party already, swaps with another Pokemon. If the position is full, removes the Pokemon at that position first.
+
+**`/partyremove <option: string>`**: Remove Pokemon(s) from your party depending on `option`:
+If `option` is a number, attempts to remove a Pokemon at that position,
+If `option` is a Pokemon ID, attempts to remove Pokemon with that ID,
+If `option` is ALL, removes all Pokemon from your party.
+
+### 💬 Social Commands
+
+**`/leaderboard <category: string> <scope?: string>`**: Get the leaderboards. How well do you stack up?
+
+**`/invite`**: Invite the bot to your server.
+
+### ❓ Help Commands
+
+**`/help <command?: string>`**: Help with command usage. If no command is specified, shows an interactive embed to browse commands. If a command is specified, shows usage information for that command.
+
+**`/tutorial`**: Get a tutorial on how to play.
+
+**`/changelog`**: View all the update changes!
+
 
 ## Credits
 
