@@ -15,9 +15,9 @@ const buildNewPokemonEmbed = (pokemon, pokeballId=backpackItems.POKEBALL, remain
     
     let typeString = "";
     for (let i = 0; i < speciesData.type.length; i++) {
-        typeString += typeConfig[speciesData.type[i]].name;
+        typeString += typeConfig[speciesData.type[i]].emoji;
         if (i < speciesData.type.length - 1) {
-            typeString += "/";
+            typeString += " ";
         }
     }
 
@@ -92,9 +92,9 @@ const buildPokemonEmbed = (trainer, pokemon) => {
 
     let typeString = "";
     for (let i = 0; i < speciesData.type.length; i++) {
-        typeString += typeConfig[speciesData.type[i]].name;
+        typeString += typeConfig[speciesData.type[i]].emoji;
         if (i < speciesData.type.length - 1) {
-            typeString += "/";
+            typeString += " ";
         }
     }
 
@@ -160,9 +160,9 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
         // display: description, type, abilities, rarity, battleEligibility, evolvable, growth rate
         let typeString = "";
         for (let i = 0; i < speciesData.type.length; i++) {
-            typeString += typeConfig[speciesData.type[i]].name;
+            typeString += typeConfig[speciesData.type[i]].emoji;
             if (i < speciesData.type.length - 1) {
-                typeString += "/";
+                typeString += " ";
             }
         }
 

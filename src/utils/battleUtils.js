@@ -96,7 +96,7 @@ const buildMoveString = (moveData, cooldown=0) => {
     if (cooldown) {
         moveHeader += `[ON COOLDOWN: ${cooldown} TURNS]\n`;
     }
-    moveHeader += `**${moveData.name}** | ${typeConfig[moveData.type].name} | ${moveData.damageType} `;
+    moveHeader += `${typeConfig[moveData.type].emoji} **${moveData.name}** | ${moveData.damageType} `;
 
     let moveString = '';
     moveString += `**[${moveData.tier}]** PWR: ${moveData.power || "-"} | ACC: ${moveData.accuracy || "-"} | CD: ${moveData.cooldown}\n`;
