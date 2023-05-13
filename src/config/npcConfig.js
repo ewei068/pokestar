@@ -182,7 +182,7 @@ const difficultyConfig = {
         rewardMultipliers: {
             moneyMultiplier: 0.5,
             expMultiplier: 0.5,
-            pokemonExpMultiplier: 0.5,
+            pokemonExpMultiplier: 0.15,
         }
     },
     [difficulties.EASY]: {
@@ -190,7 +190,7 @@ const difficultyConfig = {
         rewardMultipliers: {
             moneyMultiplier: 1,
             expMultiplier: 1,
-            pokemonExpMultiplier: 0.5,
+            pokemonExpMultiplier: 0.15,
         }
     },
     [difficulties.MEDIUM]: {
@@ -198,7 +198,7 @@ const difficultyConfig = {
         rewardMultipliers: {
             moneyMultiplier: 1.5,
             expMultiplier: 1.5,
-            pokemonExpMultiplier: 0.5,
+            pokemonExpMultiplier: 0.175,
         }
     },
     [difficulties.HARD]: {
@@ -206,7 +206,7 @@ const difficultyConfig = {
         rewardMultipliers: {
             moneyMultiplier: 2,
             expMultiplier: 2,
-            pokemonExpMultiplier: 0.6,
+            pokemonExpMultiplier: 0.2,
         }
     },
     [difficulties.VERY_HARD]: {
@@ -214,7 +214,7 @@ const difficultyConfig = {
         rewardMultipliers: {
             moneyMultiplier: 3.5,
             expMultiplier: 3.5,
-            pokemonExpMultiplier: 0.75,
+            pokemonExpMultiplier: 0.25,
         }
     },
 }

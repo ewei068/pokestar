@@ -199,7 +199,7 @@ class Battle {
     winner;
     ended;
 
-    constructor(moneyMultiplier=1, expMultiplier=1, pokemonExpMultiplier=0.5) {
+    constructor(moneyMultiplier=1, expMultiplier=1, pokemonExpMultiplier=0.2) {
         this.moneyMultiplier = moneyMultiplier;
         this.expMultiplier = expMultiplier;
         this.pokemonExpMultiplier = pokemonExpMultiplier;
