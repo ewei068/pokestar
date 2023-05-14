@@ -1,7 +1,13 @@
 # Pokestar Changelog
 
-### 0.7.1
+### 0.7.1 - Battle QoL Patch
 
+* Added battle moves for: Pidgey, Pidgeotto, Rattata, Pikachu, Eevee, Dratini, Dragonair! Also added the Dragon Trainer NPC!
+* Add a replay button to PvE battles.
+* Add Pokemon level-up text to end-battle information.
+* Added a level option to friendly PvP battles.
+* Raised max trainer level to 100, add level rewards to level 30.
+* Added type icons.
 * Patched NPC needing to skip turns causing crash.
 * Patched Pokemart crashing everything.
 

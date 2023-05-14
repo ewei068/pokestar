@@ -62,10 +62,11 @@ const pvp = async (user, opponentUserId, level) => {
     )
 
     const opponentString = opponentUserId ? `<@${opponentUserId}> has ` : "You have ";
+    const levelString = level !== null ? ` **All Pokemon will be set to level ${level}.**` : "";
 
     const send = {
         // TODO: mentions
-        content: `${opponentString}been challenged to a battle by ${user.username}!`,
+        content: `${opponentString}been challenged to a battle by ${user.username}!${levelString}`,
         embeds: [embed],
         components: [confirmButtonRow]
     }

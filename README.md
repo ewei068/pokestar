@@ -175,7 +175,7 @@ This will bring up a selection menu where you can preview and confirm your Pokem
 
 **Eligible Pokemon**
 
-Temporarily while all Pokemon's moves are being implemented, only certain Pokemon are eligible for battle. **This list currently includes: All currently implemented final-evolution Pokemon, Bulbasaur, Ivysaur, Charmander, Charmeleon, Squirtle, Wartortle, Caterpie, Metapod, Weedle, Kakuna, Magikarp.** We are working hard to implement all of the other Pokemon. **You can view your battle eligible Pokemon with this command (copy/paste it) `/list filterby: battleEligible filtervalue: True`.**
+Temporarily while all Pokemon's moves are being implemented, only certain Pokemon are eligible for battle. **This list currently includes: All currently implemented final-evolution Pokemon, Bulbasaur, Ivysaur, Charmander, Charmeleon, Squirtle, Wartortle, Caterpie, Metapod, Weedle, Kakuna, Magikarp, Pidgey, Pidgeotto, Rattata, Pikachu, Eevee, Dratini, Dragonair.** We are working hard to implement all of the other Pokemon. **You can view your battle eligible Pokemon with this command (copy/paste it) `/list filterby: battleEligible filtervalue: True`.**
 
 <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/battle-eligible.png" height="300">
 

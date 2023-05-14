@@ -4,6 +4,7 @@ const npcs = {
     LASS: "lass",
     RED: "red",
     FISHERMAN: "fisherman",
+    DRAGON_TAMER: "dragonTamer",
 }
 
 const difficulties = {
@@ -61,22 +62,22 @@ const npcConfig = {
                 minLevel: 5,
                 maxLevel: 7,
                 numPokemon: 3,
-                pokemonIds: ["4", "18", "20"],
-                aceId: "18",
+                pokemonIds: ["4", "16", "19"],
+                aceId: "16",
             },
             [difficulties.EASY]: {
                 minLevel: 15,
                 maxLevel: 18,
                 numPokemon: 4,
-                pokemonIds: ["4", "18", "20", "76"],
-                aceId: "18",
+                pokemonIds: ["4", "16", "19", "133"],
+                aceId: "16",
             },
             [difficulties.MEDIUM]: {
                 minLevel: 27,
                 maxLevel: 33,
                 numPokemon: 5,
-                pokemonIds: ["5", "18", "20", "76", "135"],
-                aceId: "18",
+                pokemonIds: ["5", "17", "20", "76", "135"],
+                aceId: "17",
             },
             [difficulties.HARD]: {
                 minLevel: 46,
@@ -104,21 +105,21 @@ const npcConfig = {
                 minLevel: 16,
                 maxLevel: 20,
                 numPokemon: 4,
-                pokemonIds: ["1", "11", "36", "40"],
+                pokemonIds: ["1", "11", "36", "40", "133"],
                 aceId: "40",
             },
             [difficulties.MEDIUM]: {
                 minLevel: 29,
                 maxLevel: 36,
                 numPokemon: 5,
-                pokemonIds: ["2", "12", "36", "40", "136"],
+                pokemonIds: ["2", "12", "25", "36", "40", "136"],
                 aceId: "40",
             },
             [difficulties.HARD]: {
                 minLevel: 49,
                 maxLevel: 59,
                 numPokemon: 6,
-                pokemonIds: ["3", "12", "40", "136", "143"],
+                pokemonIds: ["3", "12", "26", "40", "136", "143"],
                 aceId: "40",
             },
         }
@@ -156,6 +157,42 @@ const npcConfig = {
                 numPokemon: 6,
                 pokemonIds: ["9", "130", "131", "134"],
                 aceId: "130",
+            },
+        }
+    },
+    [npcs.DRAGON_TAMER]: {
+        name: "Dragon Tamer",
+        sprite: "https://archives.bulbagarden.net/media/upload/7/70/Spr_DP_Dragon_Tamer.png",
+        emoji: "🐉",
+        catchphrase: "Dragons are totally my thing!",
+        difficulties: {
+            [difficulties.EASY]: {
+                minLevel: 20,
+                maxLevel: 24,
+                numPokemon: 4,
+                pokemonIds: ["4", "147"],
+                aceId: "147",
+            },
+            [difficulties.MEDIUM]: {
+                minLevel: 32,
+                maxLevel: 38,
+                numPokemon: 5,
+                pokemonIds: ["5", "148"],
+                aceId: "148",
+            },
+            [difficulties.HARD]: {
+                minLevel: 52,
+                maxLevel: 59,
+                numPokemon: 6,
+                pokemonIds: ["6", "130", "149"],
+                aceId: "149",
+            },
+            [difficulties.VERY_HARD]: {
+                minLevel: 70,
+                maxLevel: 78,
+                numPokemon: 6,
+                pokemonIds: ["6", "130", "149"],
+                aceId: "149",
             },
         }
     },
