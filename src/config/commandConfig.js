@@ -407,7 +407,7 @@ const commandConfig = {
                 "optional": true,
                 "variable": false,
                 "enum": [
-                    "bugCatcher", "youngster", "lass", "fisherman", "dragonTamer", "red"
+                    "bugCatcher", "youngster", "lass", "fisherman", "hiker", "dragonTamer", "red"
                 ]
             },
             "difficulty": {

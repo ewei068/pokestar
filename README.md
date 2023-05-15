@@ -155,13 +155,13 @@ Once you purchase a location, **you can train a Pokemon there with `/train <id> 
 
 **Different locations provide different benefits, increasing EXP gained and providing EVs** based on the location's level. NOTE: if a location isn't specified while training, the location will default to "Home", which provides boosted EXP. The exact boosts are listed below (lv.1/lv.2/lv.3):
 
-* Home: (2 EXP / 4 EXP/ 6 EXP)
-* Restaurant: (1 EXP, 2 HP / 1.5 EXP, 4 HP / 2 EXP, 6 HP)
-* Gym: (1 EXP, 2 Atk / 1.5 EXP, 4 Atk / 2 EXP, 6 Atk)
-* Dojo: (1 EXP, 2 Def / 1.5 EXP, 4 Def / 2 EXP, 6 Def)
-* Temple: (1 EXP, 2 SpA / 1.5 EXP, 4 SpA / 2 EXP, 6 SpA)
-* School: (1 EXP, 2 SpD / 1.5 EXP, 4 SpD / 2 EXP, 6 SpD)
-* Track: (1 EXP, 2 Spe / 1.5 EXP, 4 Spe / 2 EXP, 6 Spe)
+* Home: (4 EXP / 7 EXP/ 10 EXP)
+* Restaurant: (3 EXP, 4 HP / 4.5 EXP, 8 HP / 6 EXP, 12 HP)
+* Gym: (3 EXP, 4 Atk / 4.5 EXP, 8 Atk / 6 EXP, 12 Atk)
+* Dojo: (3 EXP, 4 Def / 4.5 EXP, 8 Def / 6 EXP, 12 Def)
+* Temple: (3 EXP, 4 SpA / 4.5 EXP, 8 SpA / 6 EXP, 12 SpA)
+* School: (3 EXP, 4 SpD / 4.5 EXP, 8 SpD / 6 EXP, 12 SpD)
+* Track: (3 EXP, 4 Spe / 4.5 EXP, 8 Spe / 6 EXP, 12 Spe)
 
 **Evolution**
 
@@ -175,7 +175,7 @@ This will bring up a selection menu where you can preview and confirm your Pokem
 
 **Eligible Pokemon**
 
-Temporarily while all Pokemon's moves are being implemented, only certain Pokemon are eligible for battle. **This list currently includes: All currently implemented final-evolution Pokemon, Bulbasaur, Ivysaur, Charmander, Charmeleon, Squirtle, Wartortle, Caterpie, Metapod, Weedle, Kakuna, Magikarp, Pidgey, Pidgeotto, Rattata, Pikachu, Eevee, Dratini, Dragonair.** We are working hard to implement all of the other Pokemon. **You can view your battle eligible Pokemon with this command (copy/paste it) `/list filterby: battleEligible filtervalue: True`.**
+Temporarily while all Pokemon's moves are being implemented, only certain Pokemon are eligible for battle. **This list currently includes: All currently implemented final-evolution Pokemon, Bulbasaur, Ivysaur, Charmander, Charmeleon, Squirtle, Wartortle, Caterpie, Metapod, Weedle, Kakuna, Magikarp, Pidgey, Pidgeotto, Rattata, Pikachu, Eevee, Dratini, Dragonair, Clefairy, Jigglypuff, Zubat, Diglett, Growlithe, Geodude, Graveler, Magnemite.** We are working hard to implement all of the other Pokemon. **You can view your battle eligible Pokemon with this command (copy/paste it) `/list filterby: battleEligible filtervalue: True`.**
 
 <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/battle-eligible.png" height="300">
 

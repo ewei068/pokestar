@@ -4,6 +4,7 @@ const npcs = {
     LASS: "lass",
     RED: "red",
     FISHERMAN: "fisherman",
+    HIKER: "hiker",
     DRAGON_TAMER: "dragonTamer",
 }
 
@@ -62,21 +63,21 @@ const npcConfig = {
                 minLevel: 5,
                 maxLevel: 7,
                 numPokemon: 3,
-                pokemonIds: ["4", "16", "19"],
+                pokemonIds: ["16", "19", "74"],
                 aceId: "16",
             },
             [difficulties.EASY]: {
                 minLevel: 15,
                 maxLevel: 18,
                 numPokemon: 4,
-                pokemonIds: ["4", "16", "19", "133"],
+                pokemonIds: ["4", "16", "19", "74", "133"],
                 aceId: "16",
             },
             [difficulties.MEDIUM]: {
                 minLevel: 27,
                 maxLevel: 33,
                 numPokemon: 5,
-                pokemonIds: ["5", "17", "20", "76", "135"],
+                pokemonIds: ["5", "17", "20", "75", "135"],
                 aceId: "17",
             },
             [difficulties.HARD]: {
@@ -157,6 +158,42 @@ const npcConfig = {
                 numPokemon: 6,
                 pokemonIds: ["9", "130", "131", "134"],
                 aceId: "130",
+            },
+        }
+    },
+    [npcs.HIKER]: {
+        name: "Hiker",
+        sprite: "https://archives.bulbagarden.net/media/upload/b/bc/Spr_BW_Hiker.png",
+        emoji: "🧗",
+        catchphrase: "I'm a Hiker, and I'm more than a match for you!",
+        difficulties: {
+            [difficulties.VERY_EASY]: {
+                minLevel: 7,
+                maxLevel: 9,
+                numPokemon: 3,
+                pokemonIds: ["50", "74"],
+                aceId: "74",
+            },
+            [difficulties.EASY]: {
+                minLevel: 17,
+                maxLevel: 21,
+                numPokemon: 4,
+                pokemonIds: ["50", "74", "81"],
+                aceId: "74",
+            },
+            [difficulties.MEDIUM]: {
+                minLevel: 30,
+                maxLevel: 36,
+                numPokemon: 5,
+                pokemonIds: ["51", "75", "82"],
+                aceId: "75",
+            },
+            [difficulties.HARD]: {
+                minLevel: 50,
+                maxLevel: 59,
+                numPokemon: 6,
+                pokemonIds: ["51", "68", "76", "82"],
+                aceId: "76",
             },
         }
     },

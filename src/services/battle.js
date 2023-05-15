@@ -545,8 +545,6 @@ class Battle {
                 return true;
             }
 
-            console.log(moveId)
-            console.log(pokemon.effectIds.sprungUp)
             // bounce + thunder or gust
             if ((moveId === "m87" || moveId === "m16") && pokemon.effectIds.sprungUp !== undefined) {
                 return true;

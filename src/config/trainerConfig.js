@@ -431,8 +431,8 @@ const getTrainerLevelExp = (level) => {
 }
 
 const expMultiplier = (level) => {
-    // 4 * x ^ (1/2)
-    return 4 * (Math.pow(level, 1/2));
+    // 3 * x ^ (1/2)
+    return 3 * (Math.pow(level, 1/2));
 }
 
 module.exports = { 

@@ -1501,6 +1501,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The target is jabbed with a sharply pointed beak or horn.",
     },
+    "m71": {
+        "name": "Absorb",
+        "type": types.GRASS,
+        "power": 20,
+        "accuracy": 100,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The target is attacked with a peculiar ray. The user gains 50% of the damage dealt as HP.",
+    },
     "m76": {
         "name": "Solar Beam",
         "type": types.GRASS,
@@ -2186,6 +2199,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user bites the target with toxic fangs. This may also leave the target badly poisoned with a 50% chance.",
     },
+    "m309": {
+        "name": "Meteor Mash",
+        "type": types.STEEL,
+        "power": 90,
+        "accuracy": 90,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The target is hit with a hard punch fired like a meteor. This also raises the users attack for 1 turn.",
+    },
     "m334": {
         "name": "Iron Defense",
         "type": types.STEEL,
@@ -2420,6 +2446,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user launches sharp icicles at the target, dealing damage and increasing its own combat readiness by 30%.",
     },
+    "m424": {
+        "name": "Fire Fang",
+        "type": types.FIRE,
+        "power": 65,
+        "accuracy": 95,
+        "cooldown": 2,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user bites the target with flame-cloaked fangs, dealing damage and has a 10% chance to flinch and 10% chance to leave the target with a burn.",
+    },
     "m430": {
         "name": "Flash Cannon",
         "type": types.STEEL,
@@ -2549,6 +2588,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.SPECIAL,
         "description": "After dealing damage, the user switches, increasing the combat readiness of a random ally to 100%.",
+    },
+    "m523": {
+        "name": "Bulldoze",
+        "type": types.GROUND,
+        "power": 25,
+        "accuracy": 100,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user stomps down on the ground and attacks everything in the area. This lowers the Speed of all targets for 1 turn.",
     },
     "m525": {
         "name": "Dragon Tail",
@@ -2954,6 +3006,25 @@ const moveExecutes = {
                 moveId: moveId
             });
         }
+    },
+    "m71": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m71";
+        const moveData = moveConfig[moveId];
+        let damageDealt = 0;
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            damageDealt += source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+
+        // heal half damage dealt
+        source.giveHeal(Math.floor(damageDealt / 2), source, {
+            type: "move",
+            moveId: moveId
+        });
     },
     "m76": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m76";
@@ -3878,6 +3949,21 @@ const moveExecutes = {
             }
         }
     },
+    "m309": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m309";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+
+        // raise user atk for 1 turn
+        source.addEffect("atkUp", 2, source);
+    },
     "m334": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveData = moveConfig["m334"];
         for (const target of allTargets) {
@@ -4152,6 +4238,27 @@ const moveExecutes = {
         // boost self cr by 30
         source.boostCombatReadiness(source, 30);
     },
+    "m424": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m424";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 10% chance to burn
+            if (!miss && Math.random() < 0.1) {
+                target.applyStatus(statusConditions.BURN, source);
+            }
+            // if not miss, 10% chance to flinch for 1 turn
+            if (!miss && Math.random() < 0.1) {
+                target.addEffect("flinched", 1, source);
+            }
+        }
+    },
     "m430": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m430";
         const moveData = moveConfig[moveId];
@@ -4348,6 +4455,23 @@ const moveExecutes = {
             const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
             pokemon.boostCombatReadiness(source, 100);
         } 
+    },
+    "m523": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m523";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if hit, reduce targets speed for 1 turn
+            if (!miss) {
+                target.addEffect("speDown", 1, source);
+            }
+        }
     },
     "m525": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m525";
