@@ -218,12 +218,12 @@ const effectConfig = {
                 }
             } else {
                 battle.addToLog(`${target.name}'s Attack fell!`);
-                target.atk -= Math.floor(target.batk * 0.4);
+                target.atk -= Math.floor(target.batk * 0.33);
             }
         },
         "effectRemove": function(battle, target) {
             battle.addToLog(`${target.name}'s Attack drop faded!`);
-            target.atk += Math.floor(target.batk * 0.4);
+            target.atk += Math.floor(target.batk * 0.33);
         },
     },
     "greaterAtkDown": {
@@ -241,12 +241,12 @@ const effectConfig = {
                 }
             } else {
                 battle.addToLog(`${target.name}'s Attack fell sharply!`);
-                target.atk -= Math.floor(target.batk * 0.6);
+                target.atk -= Math.floor(target.batk * 0.5);
             }
         },
         "effectRemove": function(battle, target) {
             battle.addToLog(`${target.name}'s Attack drop faded!`);
-            target.atk += Math.floor(target.batk * 0.6);
+            target.atk += Math.floor(target.batk * 0.5);
         },
     },
     "defUp": {
@@ -310,12 +310,12 @@ const effectConfig = {
                 }
             } else {
                 battle.addToLog(`${target.name}'s Defense fell!`);
-                target.def -= Math.floor(target.bdef * 0.4);
+                target.def -= Math.floor(target.bdef * 0.33);
             }
         },
         "effectRemove": function(battle, target) {
             battle.addToLog(`${target.name}'s Defense drop faded!`);
-            target.def += Math.floor(target.bdef * 0.4);
+            target.def += Math.floor(target.bdef * 0.33);
         },
     },
     "greaterDefDown": {
@@ -332,13 +332,13 @@ const effectConfig = {
                 if (target.effectIds.greaterDefDown.duration < currentDuration) {
                     target.effectIds.greaterDefDown.duration = currentDuration;
                 }
-                target.def += Math.floor(target.bdef * 0.4);
+                target.def += Math.floor(target.bdef * 0.33);
             }
-            target.def -= Math.floor(target.bdef * 0.6);
+            target.def -= Math.floor(target.bdef * 0.5);
         },
         "effectRemove": function(battle, target) {
             battle.addToLog(`${target.name}'s Defense drop faded!`);
-            target.def += Math.floor(target.bdef * 0.6);
+            target.def += Math.floor(target.bdef * 0.5);
         },
     },
     "spaUp": {
@@ -402,12 +402,12 @@ const effectConfig = {
                 }
             } else {
                 battle.addToLog(`${target.name}'s Special Attack fell!`);
-                target.spa -= Math.floor(target.bspa * 0.4);
+                target.spa -= Math.floor(target.bspa * 0.33);
             }
         },
         "effectRemove": function(battle, target) {
             battle.addToLog(`${target.name}'s Special Attack drop faded!`);
-            target.spa += Math.floor(target.bspa * 0.4);
+            target.spa += Math.floor(target.bspa * 0.33);
         },
     },
     "greaterSpaDown": {
@@ -424,13 +424,13 @@ const effectConfig = {
                 if (target.effectIds.greaterSpaDown.duration < currentDuration) {
                     target.effectIds.greaterSpaDown.duration = currentDuration;
                 }
-                target.spa += Math.floor(target.bspa * 0.4);
+                target.spa += Math.floor(target.bspa * 0.33);
             }
-            target.spa -= Math.floor(target.bspa * 0.6);
+            target.spa -= Math.floor(target.bspa * 0.5);
         },
         "effectRemove": function(battle, target) {
             battle.addToLog(`${target.name}'s Special Attack drop faded!`);
-            target.spa += Math.floor(target.bspa * 0.6);
+            target.spa += Math.floor(target.bspa * 0.5);
         },
     },
     "spdUp": {
@@ -494,12 +494,12 @@ const effectConfig = {
                 }
             } else {
                 battle.addToLog(`${target.name}'s Special Defense fell!`);
-                target.spd -= Math.floor(target.bspd * 0.4);
+                target.spd -= Math.floor(target.bspd * 0.33);
             }
         },
         "effectRemove": function(battle, target) {
             battle.addToLog(`${target.name}'s Special Defense drop faded!`);
-            target.spd += Math.floor(target.bspd * 0.4);
+            target.spd += Math.floor(target.bspd * 0.33);
         },
     },
     "greaterSpdDown": {
@@ -516,13 +516,13 @@ const effectConfig = {
                 if (target.effectIds.greaterSpdDown.duration < currentDuration) {
                     target.effectIds.greaterSpdDown.duration = currentDuration;
                 }
-                target.spd += Math.floor(target.bspd * 0.4);
+                target.spd += Math.floor(target.bspd * 0.33);
             }
-            target.spd -= Math.floor(target.bspd * 0.6);
+            target.spd -= Math.floor(target.bspd * 0.5);
         },
         "effectRemove": function(battle, target) {
             battle.addToLog(`${target.name}'s Special Defense drop faded!`);
-            target.spd += Math.floor(target.bspd * 0.6);
+            target.spd += Math.floor(target.bspd * 0.5);
         },
     },
     "speUp": {
@@ -586,12 +586,12 @@ const effectConfig = {
                 }
             } else {
                 battle.addToLog(`${target.name}'s Speed fell!`);
-                target.spe -= Math.floor(target.bspe * 0.4);
+                target.spe -= Math.floor(target.bspe * 0.33);
             }
         },
         "effectRemove": function(battle, target) {
             battle.addToLog(`${target.name}'s Speed drop faded!`);
-            target.spe += Math.floor(target.bspe * 0.4);
+            target.spe += Math.floor(target.bspe * 0.33);
         },
     },
     "greaterSpeDown": {
@@ -608,13 +608,13 @@ const effectConfig = {
                 if (target.effectIds.greaterSpeDown.duration < currentDuration) {
                     target.effectIds.greaterSpeDown.duration = currentDuration;
                 }
-                target.spe += Math.floor(target.bspe * 0.4);
+                target.spe += Math.floor(target.bspe * 0.33);
             }
-            target.spe -= Math.floor(target.bspe * 0.6);
+            target.spe -= Math.floor(target.bspe * 0.5);
         },
         "effectRemove": function(battle, target) {
             battle.addToLog(`${target.name}'s Speed drop faded!`);
-            target.spe += Math.floor(target.bspe * 0.6);
+            target.spe += Math.floor(target.bspe * 0.5);
         },
     },
     "accDown": {
@@ -2577,7 +2577,7 @@ const moveConfig = {
         "description": "The user shrouds itself in electricity and smashes into the target, increasing base power by 10% of user's speed. This also damages the user by 25% of damage dealt.",
     },
     "m540": {
-        "name": "Psystrke",
+        "name": "Psystrike",
         "type": types.PSYCHIC,
         "power": 95,
         "accuracy": 100,

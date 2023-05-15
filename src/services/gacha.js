@@ -88,7 +88,7 @@ const generateRandomPokemon = (userId, pokemonId, level=1) => {
         "abilityId": `${drawDiscrete(speciesData.abilities, 1)[0]}`,
         "item": "",
         "moves": [],
-        "shiny": drawUniform(0, 8192, 1)[0] == 0,
+        "shiny": drawUniform(0, 1024, 1)[0] == 0,
         "dateAcquired": (new Date()).getTime(),
         "ivTotal": ivs.reduce((a, b) => a + b, 0),
         "originalOwner": userId,

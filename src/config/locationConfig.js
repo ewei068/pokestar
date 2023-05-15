@@ -15,15 +15,15 @@ const locationConfig = {
         "description": "Used to train your Pokemon's EXP! Higher level = more EXP!\nUse the \`/help train\` command to learn more!",
         "levelConfig": {
             1: {
-                "exp": 2,
+                "exp": 4,
                 "evs": [0, 0, 0, 0, 0, 0],
             },
             2: {
-                "exp": 3,
+                "exp": 7,
                 "evs": [0, 0, 0, 0, 0, 0],
             },
             3: {
-                "exp": 4,
+                "exp": 10,
                 "evs": [0, 0, 0, 0, 0, 0],
             },
         }
@@ -34,15 +34,15 @@ const locationConfig = {
         "description": "Used to train your Pokemon's HP! Higher level = more HP!\nUse the \`/help train\` command to learn more!",
         "levelConfig": {
             1: {
-                "exp": 1,
+                "exp": 3,
                 "evs": [2, 0, 0, 0, 0, 0],
             },
             2: {
-                "exp": 1.5,
+                "exp": 4.5,
                 "evs": [4, 0, 0, 0, 0, 0],
             },
             3: {
-                "exp": 2,
+                "exp": 6,
                 "evs": [6, 0, 0, 0, 0, 0],
             },
         }
@@ -53,15 +53,15 @@ const locationConfig = {
         "description": "Used to train your Pokemon's ATK! Higher level = more ATK!\nUse the \`/help train\` command to learn more!",
         "levelConfig": {
             1: {
-                "exp": 1,
+                "exp": 3,
                 "evs": [0, 2, 0, 0, 0, 0],
             },
             2: {
-                "exp": 1.5,
+                "exp": 4.5,
                 "evs": [0, 4, 0, 0, 0, 0],
             },
             3: {
-                "exp": 2,
+                "exp": 6,
                 "evs": [0, 6, 0, 0, 0, 0],
             },
         }
@@ -72,15 +72,15 @@ const locationConfig = {
         "description": "Used to train your Pokemon's DEF! Higher level = more DEF!\nUse the \`/help train\` command to learn more!",
         "levelConfig": {
             1: {
-                "exp": 1,
+                "exp": 3,
                 "evs": [0, 0, 2, 0, 0, 0],
             },
             2: {
-                "exp": 1.5,
+                "exp": 4.5,
                 "evs": [0, 0, 4, 0, 0, 0],
             },
             3: {
-                "exp": 2,
+                "exp": 6,
                 "evs": [0, 0, 6, 0, 0, 0],
             },
         }
@@ -91,15 +91,15 @@ const locationConfig = {
         "description": "Used to train your Pokemon's SPA! Higher level = more SPA!\nUse the \`/help train\` command to learn more!",
         "levelConfig": {
             1: {
-                "exp": 1,
+                "exp": 3,
                 "evs": [0, 0, 0, 2, 0, 0],
             },
             2: {
-                "exp": 1.5,
+                "exp": 4.5,
                 "evs": [0, 0, 0, 4, 0, 0],
             },
             3: {
-                "exp": 2,
+                "exp": 6,
                 "evs": [0, 0, 0, 6, 0, 0],
             },
         }
@@ -110,15 +110,15 @@ const locationConfig = {
         "description": "Used to train your Pokemon's SPD! Higher level = more SPD!\nUse the \`/help train\` command to learn more!",
         "levelConfig": {
             1: {
-                "exp": 1,
+                "exp": 3,
                 "evs": [0, 0, 0, 0, 2, 0],
             },
             2: {
-                "exp": 1.5,
+                "exp": 4.5,
                 "evs": [0, 0, 0, 0, 4, 0],
             },
             3: {
-                "exp": 2,
+                "exp": 6,
                 "evs": [0, 0, 0, 0, 6, 0],
             },
         }
@@ -129,15 +129,15 @@ const locationConfig = {
         "description": "Used to train your Pokemon's SPE! Higher level = more SPE!\nUse the \`/help train\` command to learn more!",
         "levelConfig": {
             1: {
-                "exp": 1,
+                "exp": 3,
                 "evs": [0, 0, 0, 0, 0, 2],
             },
             2: {
-                "exp": 1.5,
+                "exp": 4.5,
                 "evs": [0, 0, 0, 0, 0, 4],
             },
             3: {
-                "exp": 2,
+                "exp": 6,
                 "evs": [0, 0, 0, 0, 0, 6],
             },
         }

@@ -306,7 +306,7 @@ const trainPokemon = async (trainer, pokemon, locationId) => {
     // get trainer location level
     const locationLevel = trainer.locations[locationId];
 
-    let exp = 1;
+    let exp = 2;
     let evs = [0, 0, 0, 0, 0, 0];
     // get exp and evs based on location
     if (!locationLevel) {
