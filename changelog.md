@@ -1,6 +1,6 @@
 # Pokestar Changelog
 
-### 0.7.2 - Gacha Overhaul
+### 0.7.2 (5/16) - Gacha Overhaul
 
 * Gacha Overhaul: The `/gacha` now has banners with **rate-up Pokemon** and a **pity system!**
 * Added battle moves for Pokemon: Clefairy, Jigglypuff, Zubat, Diglett, Growlithe, Geodude, Graveler, Magnemite!
