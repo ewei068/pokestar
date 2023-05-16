@@ -1,14 +1,15 @@
 # Pokestar Changelog
 
-### 0.7.2 - Gacha Overall
+### 0.7.2 - Gacha Overhaul
 
+* Gacha Overhaul: The `/gacha` now has banners with **rate-up Pokemon** and a **pity system!**
 * Added battle moves for Pokemon: Clefairy, Jigglypuff, Zubat, Diglett, Growlithe, Geodude, Graveler, Magnemite!
 * Increased shiny rate!
 * Small balance tweaks.
 * Buff the `/train` EXP and EV gain.
 * Slightly nerfed overall EXP gain.
 
-### 0.7.1 - Battle QoL Patch
+### 0.7.1 (5/13) - Battle QoL Patch
 
 * Added battle moves for: Pidgey, Pidgeotto, Rattata, Pikachu, Eevee, Dratini, Dragonair! Also added the Dragon Trainer NPC!
 * Add a replay button to PvE battles.

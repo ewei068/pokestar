@@ -361,7 +361,7 @@ The command usages for all commands are listed below. **If a command argument ha
 
 ### ⚡ Pokemon Commands
 
-**`/gacha <pokeball: string> <quantity?: int>`**: Roll the gacha to get a random Pokemon. You can use different Pokeballs to increase your chances of getting a rare Pokemon. Get Pokeballs at the `/pokemart`, daily rewards, or level rewards.
+**`/gacha`**: Roll the gacha to get a random Pokemon. You can use different Pokeballs to increase your chances of getting a rare Pokemon. Get Pokeballs at the `/pokemart`, daily rewards, or level rewards.
 
 **`/info <pokemonid: string>`**: Display info about a Pokemon, including its stats, EVs/IVs, and level progress.
 

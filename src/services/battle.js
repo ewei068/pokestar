@@ -1590,7 +1590,7 @@ const buildPveSend = async ({ stateId=null, user=null, view="list", option=null,
     // get trainer
     let trainer = await getTrainer(user);
     if (trainer.err) {
-        return { embed: null, err: trainer.err };
+        return { send: null, err: trainer.err };
     }
     trainer = trainer.data;
 

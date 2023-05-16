@@ -15,6 +15,9 @@ const eventNames = {
     BATTLE_INFO: "battleInfo",
     BATTLE_MOVE_SELECT: "battleMoveSelect",
     BATTLE_TARGET_SELECT: "battleTargetSelect",
+    BANNER_SCROLL: "bannerScroll",
+    BANNER_BUTTON: "bannerButton",
+    BANNER_GACHA: "bannerGacha",
     BACK: "back",
 };
 
@@ -97,6 +100,20 @@ const eventConfig = {
         "execute": "battleTargetSelect.js",
         "exp": 15,
         "money": 30,
+    },
+    [eventNames.BANNER_SCROLL]: {
+        "name": "Gacha Scroll",
+        "execute": "bannerScroll.js",
+    },
+    [eventNames.BANNER_BUTTON]: {
+        "name": "Gacha Button",
+        "execute": "bannerButton.js",
+    },
+    [eventNames.BANNER_GACHA]: {
+        "name": "Gacha",
+        "execute": "bannerGacha.js",
+        "exp": 25,
+        "money": 50,
     },
     "test": {
         "name": "Test",

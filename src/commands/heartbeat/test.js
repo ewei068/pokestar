@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
+const seedrandom = require("seedrandom");
 const { buildYesNoActionRow } = require("../../components/yesNoActionRow");
 const { setState } = require("../../services/state");
 
@@ -32,8 +33,12 @@ const test = async (channel, interaction=false) => {
     const embed2 = new EmbedBuilder();
     embed2.setTitle("test2");
 
+    // seedrandom using date 
+    const date = new Date().getDate();
+    const rng = seedrandom(date);
+
     const send = {
-        content: "test",
+        content: `${rng()}`,
         embeds: [embed1, embed2],
         // components: [components]
     }

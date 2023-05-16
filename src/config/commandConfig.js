@@ -144,28 +144,10 @@ const commandConfig = {
         "name": "Gacha",
         "aliases": ["gacha", "g", "roll", "draw"],
         "description": "Roll the gacha",
-        "longDescription": "Roll the gacha to get a random Pokemon. You can use different Pokeballs to increase your chances of getting a rare Pokemon. Get Pokeballs at the `/pokemart`, daily rewards, or level rewards.",
+        "longDescription": "Roll the gacha to get a random Pokemon. You can use different Pokeballs to increase your chances of getting a rare Pokemon. For more information, use this command and press the \"Info\" button. Get Pokeballs at the `/pokemart`, daily rewards, or level rewards.",
         "execute": "gacha.js",
-        "args": {
-            "pokeball": {
-                "type": "string",
-                "description": "pokeball to use",
-                "optional": false,
-                "variable": false,
-                "enum": [
-                    "pokeball", "greatball", "ultraball", "masterball",
-                ]
-            },
-            "quantity": {
-                "type": "int",
-                "description": "number of Pokemon to roll (1-10)",
-                "optional": true,
-                "variable": false
-            }
-        },
+        "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-        "exp": 20,
-        "money": 50
     },
     "list": {
         "name": "List",

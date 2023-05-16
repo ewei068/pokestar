@@ -10,6 +10,7 @@
 */
 
 const { backpackCategories, backpackItems } = require('./backpackConfig');
+const { bannerTypes } = require('./gachaConfig');
 
 const MAX_TRAINER_LEVEL = 100;
 const MAX_POKEMON = 500;
@@ -80,6 +81,20 @@ const trainerFields = {
     "beginnerRolls": {
         "type": "number",
         "default": 0,
+    },
+    "banners": {
+        "type": "object",
+        "default": {
+            [bannerTypes.STANDARD]: {
+                "pity": 0,
+            },
+            [bannerTypes.ROTATING]: {
+                "pity": 0,
+            },
+            [bannerTypes.SPECIAL]: {
+                "pity": 0,
+            },
+        },
     },
 }
 

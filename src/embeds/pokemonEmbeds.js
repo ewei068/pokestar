@@ -1,10 +1,77 @@
 const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig, growthRateConfig } = require('../config/pokemonConfig');
 const { moveConfig } = require('../config/battleConfig');
 const { EmbedBuilder } = require('discord.js');
-const { getWhitespace, getPBar, linebreakString, setTwoInline } = require('../utils/utils');
+const { getWhitespace, getPBar, linebreakString, setTwoInline, getOrSetDefault } = require('../utils/utils');
 const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString } = require('../utils/pokemonUtils');
 const { buildMoveString } = require('../utils/battleUtils');
 const { backpackItems, backpackItemConfig } = require('../config/backpackConfig');
+const { trainerFields } = require('../config/trainerConfig');
+const { bannerTypeConfig, pokeballConfig } = require('../config/gachaConfig');
+const { getPokeballsString } = require('../utils/trainerUtils');
+
+const buildBannerEmbed = (trainer, bannerData) => {
+    const type = bannerData.bannerType;
+    const rateUp = bannerData.rateUp() || {};
+    const pity = getOrSetDefault(trainer, "banners", trainerFields.banners.default)[type].pity;
+
+    let displayPokemon = pokemonConfig["25"];
+    if (rateUp[rarities.LEGENDARY]) {
+        displayPokemon = pokemonConfig[rateUp[rarities.LEGENDARY][0]];
+    }
+
+    const rateUpRarities = Object.keys(rateUp);
+    const rateUpWhitespace = getWhitespace(rateUpRarities);
+
+    let rateUpString = "";
+    for (let i = 0; i < rateUpRarities.length; i++) {
+        const rarity = rateUpRarities[i];
+        if (rateUp[rarity].length <= 0) {
+            continue;
+        }
+        rateUpString += `\`${rateUpWhitespace[i]} ${rarity} \``;
+        for (const speciesId of rateUp[rarity]) {
+            const speciesData = pokemonConfig[speciesId];
+            rateUpString += ` ${speciesData.emoji}`;
+        }
+        rateUpString += "\n";
+    }
+    if (rateUpString == "") {
+        rateUpString = "None";
+    }
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${displayPokemon.emoji} ${bannerData.name}`);
+    embed.setDescription(`${linebreakString(bannerData.description, 40)}`);
+    embed.setColor(0xffffff);
+    embed.setThumbnail(`${displayPokemon.sprite}`);
+    embed.addFields(
+        { name: "Type", value: `${bannerTypeConfig[type].name}`, inline: true },
+        { name: "Pity", value: `${pity}/100`, inline: true },
+        { name: "Rate Up", value: `${rateUpString}`, inline: false },
+        { name: "Your Pokeballs", value: getPokeballsString(trainer), inline: false }
+    );
+
+    return embed;
+}
+
+const buildGachaInfoString = () => {
+    let infoString = "**Gacha Info**\nUse Pokeballs to draw Pokemon from the Gacha! Each Pokeball has a different chance of drawing a Pokemon, with **better Pokeballs being more likely to draw rarer Pokemon.** The higher the rarity, the lower the chance of drawing that Pokemon.\n\n";
+    infoString += "**Banners**\n";
+    infoString += "Scroll through the banners using the buttons. Each banner has a different set of rate-up Pokemon. **When a rarity is drawn, there is a 50% chance to get a random rate-up Pokemon of that rarity instead.** If there are no rate-ups for that rarity, the Pokemon is random. There are also 3 banner types: Standard, Rotating, and Special.\n\n";
+    infoString += "**Pity**\n";
+    infoString += "Each banner has a pity counter. When a Pokemon is drawn, the pity counter increases according to the Pokeball used. **When the pity counter reaches 100, the next Pokemon drawn will be a random rate-up Legendary Pokemon,** or a random availible Legendary if no rate up. The pity counter resets when a rate-up Legendary Pokemon is drawn. Additionally, **pity is shared between all banners of the same type, and does not reset when rotating.**\n\n";
+    infoString += "**Pokeballs**\n";
+    for (const pokeball in pokeballConfig) {
+        const chances = pokeballConfig[pokeball].chances;
+        const pity = pokeballConfig[pokeball].pity;
+        infoString += `${backpackItemConfig[pokeball].emoji} ${backpackItemConfig[pokeball].name}:`;
+        for (const rarity in chances) {
+            infoString += ` ${rarity}: ${Math.floor(chances[rarity] * 100)}% | `;
+        }
+        infoString += `Pity: ${pity}\n`;
+    }
+    return infoString;
+}
 
 // pokemon: user's pokemon data
 // speciesData: pokemon species config data
@@ -234,9 +301,11 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
 }
 
 module.exports = {
+    buildBannerEmbed,
     buildNewPokemonEmbed,
     buildNewPokemonListEmbed,
     buildPokemonListEmbed,
     buildPokemonEmbed,
     buildSpeciesDexEmbed,
+    buildGachaInfoString
 }
