@@ -1,15 +1,18 @@
 const { logger } = require("../log");
-const { findDocuments, updateDocument, deleteDocuments, QueryBuilder } = require("../database/mongoHandler");
+const { updateDocument, deleteDocuments, QueryBuilder } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { getOrSetDefault, idFrom } = require("../utils/utils");
 const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS } = require("../config/pokemonConfig");
-const { expMultiplier } = require("../config/trainerConfig");
-const { getPokemonExpNeeded, calculateEffectiveSpeed } = require("../utils/pokemonUtils");
+const { expMultiplier, MAX_RELEASE } = require("../config/trainerConfig");
+const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
-const { buildSpeciesDexEmbed } = require("../embeds/pokemonEmbeds");
+const { buildSpeciesDexEmbed, buildPokemonListEmbed } = require("../embeds/pokemonEmbeds");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
+const { getTrainer } = require("./trainer");
+const { setState } = require("./state");
+const { buildYesNoActionRow } = require("../components/yesNoActionRow");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
@@ -444,6 +447,58 @@ const buildPokedexSend = async ({ id="1", tab="info" } = {}) => {
     return { send: send, err: null };
 }
 
+const buildReleaseSend = async (user, pokemonIds) => {
+    // check if pokemonIds has too many ids
+    if (pokemonIds.length > MAX_RELEASE || pokemonIds.length < 1) {
+        return { err: `You can only release up to ${MAX_RELEASE} pokemons at a time!` };
+    }
+
+    // get trainer
+    const trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { err: trainer.err };
+    }
+
+    // get pokemon to release
+    const toRelease = await listPokemons(
+        trainer.data, 
+        { page: 1, filter: { _id: { $in: pokemonIds.map(idFrom)} } }
+    );
+    if (toRelease.err) {
+        return { err: toRelease.err };
+    } else if (toRelease.data.length !== pokemonIds.length) {
+        return { err: `You don't have all the Pokemon you want to release!` };
+    }
+
+    // see if any pokemon are in a team
+    for (const pokemon of toRelease.data) {
+        if (trainer.data.party.pokemonIds.includes(pokemon._id.toString())) {
+            return { err: `You can't release ${pokemon.name} because it's in your party!` };
+        }
+    }
+
+    // calculate total worth of pokemon
+    const totalWorth = calculateWorth(toRelease.data, null);
+
+    // build list embed
+    const embed = buildPokemonListEmbed(trainer.data, toRelease.data, 1);
+
+    // build confirmation prompt
+    const stateId = setState({ userId: user.id, pokemonIds: pokemonIds }, ttl=150);
+    const releaseData = {
+        stateId: stateId,
+    }
+    const actionRow = buildYesNoActionRow(releaseData, eventNames.POKEMON_RELEASE, true);
+
+    const send = {
+        content: `Do you really want to release the following Pokemon for ₽${totalWorth}?`,
+        embeds: [embed],
+        components: [actionRow],
+    }
+
+    return { send: send, err: null };
+}
+
 module.exports = {
     listPokemons,
     getPokemon,
@@ -457,4 +512,5 @@ module.exports = {
     setBattleEligible,
     getBattleEligible,
     buildPokedexSend,
+    buildReleaseSend,
 };

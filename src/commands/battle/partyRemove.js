@@ -1,6 +1,5 @@
 const { getTrainer } = require('../../services/trainer');
 const { updateParty, getPartyPokemons } = require('../../services/party');
-const { getPokemon } = require('../../services/pokemon');
 const { buildPartyEmbed } = require('../../embeds/battleEmbeds');
 
 const partyRemove = async (user, option) => {

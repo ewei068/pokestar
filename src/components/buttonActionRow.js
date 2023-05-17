@@ -1,5 +1,5 @@
 const { buildSingleButton } = require("./singleButton");
-const { ActionRowBuilder } = require("discord.js");
+const { ActionRowBuilder, ButtonStyle } = require("discord.js");
 
 // buttonConfigs = [{
 //  label,
@@ -17,9 +17,8 @@ const { ActionRowBuilder } = require("discord.js");
  * @param {*} eventName 
  * @returns 
  */
-const buildButtonActionRow = (buttonConfigs, eventName) => {
-
-    let primary = buttonConfigs.length === 1;
+const buildButtonActionRow = (buttonConfigs, eventName, danger=false) => {
+    const style = danger ? ButtonStyle.Danger : (buttonConfigs.length == 1 ? ButtonStyle.Primary : ButtonStyle.Secondary);
 
     const actionRow = new ActionRowBuilder()
         .addComponents(buttonConfigs.map(buttonConfig => {
@@ -27,7 +26,7 @@ const buildButtonActionRow = (buttonConfigs, eventName) => {
                 buttonConfig.label, 
                 buttonConfig.emoji,
                 buttonConfig.data, 
-                primary, 
+                style,
                 buttonConfig.disabled, 
                 eventName
             );

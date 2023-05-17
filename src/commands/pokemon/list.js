@@ -5,6 +5,7 @@ const { buildScrollActionRow } = require('../../components/scrollActionRow');
 const { eventNames } = require('../../config/eventConfig');
 const { setState } = require('../../services/state');
 const { buildPokemonSelectRow } = require('../../components/pokemonSelectRow');
+const { buildButtonActionRow } = require('../../components/buttonActionRow');
 
 /**
  * Fetches a list of a trainer's Pokemon, returning an embed with the list.
@@ -71,7 +72,7 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
     const pokemons = await listPokemons(trainer.data, listOptions);
     if (pokemons.err) {
         return { embed: null, err: pokemons.err };
-    } 
+    }
 
     // build list embed
     const embed = buildPokemonListEmbed(trainer.data, pokemons.data, page);
@@ -80,7 +81,8 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
     const stateId = setState({ 
         userId: user.id, 
         listOptions: listOptions,
-        lastPage: pokemons.lastPage 
+        lastPage: pokemons.lastPage,
+        pokemonIds: pokemons.data.map(pokemon => pokemon._id.toString())
     }, ttl=300);
     const scrollRowData = {
         stateId: stateId,
@@ -93,10 +95,20 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
     }
     const pokemonSelectRow = buildPokemonSelectRow(pokemons.data, selectRowData, eventNames.POKEMON_LIST_SELECT);
 
+    // build releast page
+    const releasePageData = {
+        stateId: stateId,
+    }
+    const releasePageRow = buildButtonActionRow([{
+        label: "Release Page",
+        disabled: false,
+        data: releasePageData,
+    }], eventNames.POKEMON_RELEASE_PAGE, danger=true);
+
     const send = {
         content: "**[MOBILE USERS]** Select a pokemon to copy its ID (Hold message -> Copy Text).",
         embeds: [embed],
-        components: [scrollActionRow, pokemonSelectRow]
+        components: [scrollActionRow, pokemonSelectRow, releasePageRow],
     }
     return { send: send, err: null };
 }

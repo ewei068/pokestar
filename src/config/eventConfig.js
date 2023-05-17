@@ -4,6 +4,7 @@ const eventNames = {
     POKEMON_LIST_SELECT: "pokemonSelect",
     POKEMON_EVOLVE_SELECT: "pokemonEvolveSelect",
     POKEMON_EVOLVE_CONFIRM: "pokemonEvolveConfirm",
+    POKEMON_RELEASE_PAGE: "pokemonReleasePage",
     POKEDEX_BUTTON: "pokedexButton",
     SHOP_SELECT: "shopSelect",
     SHOP_BUY: "shopBuy",
@@ -46,6 +47,10 @@ const eventConfig = {
         "execute": "pokemonEvolveConfirm.js",
         "exp": 25,
         "money": 200,
+    },
+    [eventNames.POKEMON_RELEASE_PAGE]: {
+        "name": "Pokemon Release Page",
+        "execute": "pokemonReleasePage.js",
     },
     [eventNames.POKEDEX_BUTTON]: {
         "name": "Pokedex Button",

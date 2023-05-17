@@ -195,7 +195,7 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity=1) => {
     try {
         const numPokemon = await countDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId });
         if (numPokemon + quantity > MAX_POKEMON) {
-            return { data: null, err: "Max pokemon reached! Use `/release` to release some pokemon." };
+            return { data: null, err: "Max pokemon reached! Use `/release` to release some pokemon, or release pages of Pokemon with `/list`." };
         }
     } catch (error) {
         logger.error(error);

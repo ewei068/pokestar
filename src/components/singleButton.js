@@ -1,6 +1,6 @@
-const { ButtonBuilder, ButtonStyle } = require('discord.js');
+const { ButtonBuilder } = require('discord.js');
 
-const buildSingleButton = (label, emoji, data, primary, disabled, eventName) => {
+const buildSingleButton = (label, emoji, data, style, disabled, eventName) => {
     const buttonId = {
         eventName: eventName,
         ...data,
@@ -8,7 +8,7 @@ const buildSingleButton = (label, emoji, data, primary, disabled, eventName) => 
     
     const button = new ButtonBuilder()
         .setCustomId(`${JSON.stringify(buttonId)}`)
-        .setStyle(primary ? ButtonStyle.Primary : ButtonStyle.Secondary)
+        .setStyle(style)
         .setDisabled(disabled);
     if (label) {
         button.setLabel(label);

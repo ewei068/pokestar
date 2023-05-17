@@ -5,6 +5,7 @@ const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
 const { eventNames } = require("../config/eventConfig");
 const { getState } = require("../services/state");
+const { buildButtonActionRow } = require("../components/buttonActionRow");
 
 const pokemonScroll = async (interaction, data) => {
     // get state
@@ -39,6 +40,7 @@ const pokemonScroll = async (interaction, data) => {
     if (pokemons.err) {
         return { err: pokemons.err };
     } 
+    state.pokemonIds = pokemons.data.map(pokemon => pokemon._id.toString())
 
     const embed = buildPokemonListEmbed(trainer.data, pokemons.data, page);
     const scrollRowData = {
@@ -51,10 +53,20 @@ const pokemonScroll = async (interaction, data) => {
     }
     const pokemonSelectRow = buildPokemonSelectRow(pokemons.data, selectRowData, eventNames.POKEMON_LIST_SELECT);
     
+    // build releast page
+    const releasePageData = {
+        stateId: data.stateId,
+    }
+    const releasePageRow = buildButtonActionRow([{
+        label: "Release Page",
+        disabled: false,
+        data: releasePageData,
+    }], eventNames.POKEMON_RELEASE_PAGE, danger=true);
+
     await interaction.update({ 
         content: interaction.message.content,
         embeds: [embed], 
-        components: [scrollActionRow, pokemonSelectRow] 
+        components: [scrollActionRow, pokemonSelectRow, releasePageRow],
     });
 }
 
