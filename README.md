@@ -70,16 +70,18 @@ You will use these Pokeballs to get your first few Pokemon!
 
 **Gacha**
 
-The only way to get new Pokemon currently is with the Gacha system. The gacha costs 1 Pokeball of the type you want to use. **Use `/gacha <pokeball>` to get your first Pokemon!**
+The only way to get new Pokemon currently is with the Gacha system. The gacha costs 1 Pokeball of the type you want to use. **Use `/gacha` to get your first Pokemon!** Use the buttons to choose your Pokeball to use. **I would recommend using 10 Pokeballs on the Standard banner.**
 
-<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/gacha.png" height="300">
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/gacha.gif" height="300">
 
-New Pokemon come at level 1 and have a few randomized attributes, such as IVs and nature. Note that these Pokemon also have a rarity! Rare Pokemon are harder to get, but tend to be better. **You can increase the chances of getting a rare Pokemon by using a better Pokeball;** however, these Pokeballs are harder to come by. The exact gacha rates are as follows (Common/Rare/Epic/Legendary):
+New Pokemon come at level 5 and have a few randomized attributes, such as IVs and nature. Note that these Pokemon also have a rarity! Rare Pokemon are harder to get, but tend to be better. **You can increase the chances of getting a rare Pokemon by using a better Pokeball;** however, these Pokeballs are harder to come by. The exact gacha rates are as follows (Common/Rare/Epic/Legendary):
 
 * Pokeball: 70/25/4/1
 * Greatball: 30/55/12/3
 * Ultraball: 0/45/50/5
 * Masterball: 0/0/90/10
+
+The gacha also features other mechanics such as rate-up Pokemon, banners, and a pity system. To learn more, select the "Info" tab when using the gacha.
 
 **Pokemon Info**
 
@@ -199,7 +201,9 @@ Note the last argument can have many different options. If a Pokemon ID is speci
 
 PvE is a great way to hone your battle mechanics and level up your Pokemon quickly! **To start a PvE battle, use `/pve`,** and select an NPC you wish to battle.
 
-The trainer selection information contains information about the different difficulties, levels, and Pokemon an NPC has. Select a difficulty around your level and begin the battle! **You can also use `/pve <npcid> <difficulty>` to jump straight into the battle,** skipping the selection menus.
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif" height="300">
+
+The trainer selection information contains information about the different difficulties, levels, and Pokemon an NPC has. Select a difficulty around your level and begin the battle! **You can also use `/pve <npcid> <difficulty>` to jump straight into the battle,** skipping the selection menus. **PvE is a great way to grind Pokemon EXP and money,** especially at higher levels.
 
 **PvP**
 
