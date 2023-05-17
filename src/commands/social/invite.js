@@ -1,9 +1,11 @@
 const { buildUrlButton } = require("../../components/urlButton");
-
-const INVITE_URL = "https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot";
+const { INVITE_URL } = require("../../config/socialConfig");
 
 const invite = async () => {
-    const button = buildUrlButton("Invite", INVITE_URL);
+    const button = buildUrlButton([{
+        label: "Invite",
+        url: INVITE_URL
+    }]);
     const send = {
         content: "Invite me to your server!",
         components: [button]

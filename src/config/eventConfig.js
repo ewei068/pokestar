@@ -18,6 +18,7 @@ const eventNames = {
     BANNER_SCROLL: "bannerScroll",
     BANNER_BUTTON: "bannerButton",
     BANNER_GACHA: "bannerGacha",
+    VOTE_REWARDS: "voteRewards",
     BACK: "back",
 };
 
@@ -114,6 +115,11 @@ const eventConfig = {
         "execute": "bannerGacha.js",
         "exp": 25,
         "money": 50,
+    },
+    [eventNames.VOTE_REWARDS]: {
+        "name": "Vote Rewards",
+        "execute": "voteRewards.js",
+        "exp": 25,
     },
     "test": {
         "name": "Test",

@@ -17,6 +17,7 @@ const { buildBannerEmbed } = require('../embeds/pokemonEmbeds');
 const { buildScrollActionRow } = require('../components/scrollActionRow');
 const { eventNames } = require('../config/eventConfig');
 const { buildButtonActionRow } = require('../components/buttonActionRow');
+const { addPokeballs } = require('../utils/trainerUtils');
 
 const DAILY_MONEY = 300;
 
@@ -31,11 +32,20 @@ const drawDaily = async (trainer) => {
     }
 
     const results = drawDiscrete(dailyRewardChances, NUM_DAILY_REWARDS);
-    const pokeballs = getOrSetDefault(trainer.backpack, backpackCategories.POKEBALLS, {});
+    const reducedResults = results.reduce((acc, curr) => {
+        if (acc[curr] == undefined) {
+            acc[curr] = 1;
+        } else {
+            acc[curr]++;
+        }
+        return acc;
+    }, {});
+            
+    // const pokeballs = getOrSetDefault(trainer.backpack, backpackCategories.POKEBALLS, {});
     trainer.money += DAILY_MONEY;
-    for (const result of results) {
-        pokeballs[result] = getOrSetDefault(pokeballs, result, 0) + 1;
-    }
+    Object.entries(reducedResults).forEach(([key, value]) => {
+        addPokeballs(trainer, key, value);
+    });
     try {
         res = await updateDocument(
             collectionNames.USERS, 
@@ -57,7 +67,7 @@ const drawDaily = async (trainer) => {
 
     const rv = {
         money: DAILY_MONEY,
-        backpack: results
+        backpack: reducedResults,
     }
 
     return { data: rv, err: null };

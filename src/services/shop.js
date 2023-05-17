@@ -15,6 +15,7 @@ const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildBackButtonRow } = require("../components/backButtonRow");
+const { getRewardsString, getPokeballsString, addPokeballs } = require("../utils/trainerUtils");
 
 const canBuyItem = (trainer, itemId, quantity) => {
     // get item data
@@ -129,23 +130,28 @@ const buyItem = async (trainer, itemId, quantity) => {
 
         // roll random pokeballs
         const results = drawDiscrete(dailyRewardChances, quantity);
-
+        const reducedResults = results.reduce((acc, curr) => {
+            if (acc[curr] == undefined) {
+                acc[curr] = 1;
+            } else {
+                acc[curr]++;
+            }
+            return acc;
+        }, {});
+                
         // add pokeballs to trainer's backpack
-        const pokeballs = getOrSetDefault(trainer.backpack, backpackCategories.POKEBALLS, {});
-        for (const result of results) {
-            pokeballs[result] = getOrSetDefault(pokeballs, result, 0) + 1;
-        }
+        Object.entries(reducedResults).forEach(([key, value]) => {
+            addPokeballs(trainer, key, value);
+        });
 
-        returnString = `You purchased ${quantity} random pokeballs for ₽${cost}.`;
+        returnString = `You purchased ${quantity} random pokeballs for ₽${cost}.\n`;
         // build itemized rewards string
-        returnString += "\n**You received:**";
-        for (const result of results) {
-            returnString += `\n${backpackItemConfig[result].emoji} ${backpackItemConfig[result].name}`;
-        }
-        returnString += "\n**You now own:**";
-        for (const result in pokeballs) {
-            returnString += `\n${backpackItemConfig[result].emoji} ${pokeballs[result]}x ${backpackItemConfig[result].name}`;
-        }
+        returnString += getRewardsString({
+            backpack: reducedResults,
+        });
+        returnString += "\n\n**You now own:**";
+        returnString += `\n₽${trainer.money}`;
+        returnString += getPokeballsString(trainer);
     } else if (item.category === shopCategories.LOCATIONS) {
         // if quantity is not 1, return error
         if (quantity !== 1) {

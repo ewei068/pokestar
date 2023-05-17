@@ -1,13 +1,17 @@
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 
-const buildUrlButton = (label, url) => {
-    const button = new ButtonBuilder()
-        .setStyle(ButtonStyle.Link)
-        .setLabel(label)
-        .setURL(url);
+const buildUrlButton = (buttonConfigs) => {
+    const buttons = [];
+    for (const buttonConfig of buttonConfigs) {
+        const button = new ButtonBuilder()
+            .setLabel(buttonConfig.label)
+            .setStyle(ButtonStyle.Link)
+            .setURL(buttonConfig.url);
+        buttons.push(button);
+    }
     
     const actionRow = new ActionRowBuilder()
-        .addComponents(button);
+        .addComponents(buttons);
 
     return actionRow;
 }

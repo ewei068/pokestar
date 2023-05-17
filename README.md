@@ -1,7 +1,7 @@
 <div align="center">
     <h1 style="text-align: center;">
         <a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>
-            Pokestar
+            Pokéstar
         </a>
     </h1>
 </div>
@@ -12,36 +12,36 @@
 
 <div align="center">
     <p style="text-align: center;">
-        A Pokemon Discord bot. Currently open for beta testing! <b><a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>Invite Pokestar to your server.</a></b>
+        A Pokémon Discord bot. Currently open for beta testing! <b><a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>Invite Pokéstar to your server.</a></b>
     </p>
     <p style="text-align: center;">
         <b><a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>👾 Discord</a> • <a href=https://github.com/ewei068/pokestar#tutorial>📝 Tutorial</a> • <a href=https://github.com/ewei068/pokestar#all-commands>💬 Commands</a> • <a href=https://github.com/ewei068/pokestar#credits>©️ Credits</a></b>
     </p>
 </div>
 
-## Why Pokestar?
+## Why Pokéstar?
 
-Pokestar focuses on a few key features that sets it apart from other Pokemon Discord bots, making for a fresh, fun experience.
+Pokéstar focuses on a few key features that sets it apart from other Pokemon Discord bots, making for a fresh, fun experience.
 
 **Battling**
 
-The main focus of Pokestar is the unique 6v6 battling system. Battles involve *all 6 Pokemon* on each side battling at once, a new system designed specially for this bot. 
+The main focus of Pokéstar is the unique 6v6 battling system. Battles involve *all 6 Pokemon* on each side battling at once, a new system designed specially for this bot. 
 
 <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/battle.gif" height="500">
 
 The new format makes for fun and exciting teamplay among Pokemon, while keeping or adapting many mechanics from the original Pokemon games to stay true to the original, competitve format.
 
-Right now, only PvP battles are implemented. In the future, we plan to implement more battle formats such as PvE, server raids, and Co-op. Additionally, original Pokemon mechanics such as abilities and held items will be adapted as well. The future for battling in Pokestar is very exciting, so join now and stay tuned!
+Right now, only PvP battles are implemented. In the future, we plan to implement more battle formats such as PvE, server raids, and Co-op. Additionally, original Pokemon mechanics such as abilities and held items will be adapted as well. The future for battling in Pokéstar is very exciting, so join now and stay tuned!
 
 **Socialization**
 
-Pokestar aims to take advantage of Discord's inherently social nature by adding social mechanics to the game. Already, functions such as battling and leaderboards exist for this. However, we plan make the bot more social-focused by adding features such as trading, server gifts, and co-op raids.
+Pokéstar aims to take advantage of Discord's inherently social nature by adding social mechanics to the game. Already, functions such as battling and leaderboards exist for this. However, we plan make the bot more social-focused by adding features such as trading, server gifts, and co-op raids.
 
 **Interactivity**
 
-Pokestar tries to be a fluid and responsive experience. Components and UI are a core focus of Pokestar to make the bot easy to interact with and fun to use. (NOTE: I am not a UI designer whatsover so this is definitely a WIP)
+Pokéstar tries to be a fluid and responsive experience. Components and UI are a core focus of Pokéstar to make the bot easy to interact with and fun to use. (NOTE: I am not a UI designer whatsover so this is definitely a WIP)
 
-**Convinced? [Invite Pokestar to your server!](https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot)**
+**Convinced? [Invite Pokéstar to your server!](https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot)**
 
 ## Tutorial
 
@@ -124,6 +124,10 @@ You can now paste the Pokemon's ID into the commands that need it. If you want t
 Make sure to claim your daily rewards every day! This is a very easy way to get some free resources. **Use `/daily` to claim your daily rewards!** These rewards reset at 00:00 UTC.
 
 <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/daily.png" height="250">
+
+**Voting**
+
+Use `/vote` to vote and get rewards! Every vote gives ₽200 and 2 Pokeballs, and can be done every 12 hours. Once voted, press "Claim Rewards" to get your rewards. Using all your votes would be a great source of extra Pokeballs and money!
 
 **Trainer Experience**
 
@@ -404,6 +408,8 @@ If `option` is a Pokemon ID, attempts to remove Pokemon with that ID,
 If `option` is ALL, removes all Pokemon from your party.
 
 ### 💬 Social Commands
+
+**`/vote`**: Vote for the bot and claim rewards, ₽200 and 2 Pokeballs per-vote! You can vote on every site once every 12 hours.
 
 **`/leaderboard <category: string> <scope?: string>`**: Get the leaderboards. How well do you stack up?
 

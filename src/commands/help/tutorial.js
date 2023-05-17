@@ -3,7 +3,10 @@ const { buildUrlButton } = require("../../components/urlButton");
 const TUTORIAL_URL = "https://github.com/ewei068/pokestar/blob/main/README.md#tutorial";
 
 const tutorial = async () => {
-    const button = buildUrlButton("Tutorial", TUTORIAL_URL);
+    const button = buildUrlButton([{
+        label: "Tutorial",
+        url: TUTORIAL_URL
+    }]);
     const send = {
         content: "View the beginner tutorial here!",
         components: [button]

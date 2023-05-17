@@ -96,6 +96,10 @@ const trainerFields = {
             },
         },
     },
+    "votes": {
+        "type": "number",
+        "default": 0,
+    }
 }
 
 const levelConfig = {

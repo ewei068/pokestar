@@ -33,7 +33,7 @@ const commandCategoryConfig = {
         "name": "Social",
         "description": "Social commands",
         "folder": "social",
-        "commands": ["leaderboard", "invite"]
+        "commands": ["vote", "leaderboard", "invite"]
     },
     "help": {
         "name": "Help",
@@ -129,6 +129,15 @@ const commandConfig = {
         "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 50
+    },
+    "vote": {
+        "name": "Vote",
+        "aliases": ["vote", "v"],
+        "description": "Vote for the bot and claim rewards!",
+        "longDescription": "Vote for the bot and claim rewards, ₽200 and 2 Pokeballs per-vote! You can vote on every site once every 12 hours.",
+        "execute": "vote.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },
     "levelrewards": {
         "name": "Level Rewards",

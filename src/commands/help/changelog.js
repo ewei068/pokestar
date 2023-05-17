@@ -3,7 +3,10 @@ const { buildUrlButton } = require("../../components/urlButton");
 const CHANGELOG_URL = "https://github.com/ewei068/pokestar/blob/main/changelog.md";
 
 const changelog = async () => {
-    const button = buildUrlButton("Changelog", CHANGELOG_URL);
+    const button = buildUrlButton([{
+        label: "Changelog",
+        url: CHANGELOG_URL
+    }]);
     const send = {
         content: "Visit for a full update history!",
         components: [button]

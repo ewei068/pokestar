@@ -1,4 +1,4 @@
-# pokestar
+# pokéstar
 
 ## Running
 
@@ -32,7 +32,7 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 ### Environment
 
 * `brew install tmux`
-* Export `DISCORD_TOKEN`, `STAGE`, `MONGODB_URL`, `CLIENT_ID` in profile
+* Export `DISCORD_TOKEN`, `STAGE`, `MONGODB_URL`, `CLIENT_ID`, `DBL_TOKEN`, `DBL_SECRET` in profile
 * Upload commands: `node commands/deployCommands.js`
 
 ### Database
@@ -54,6 +54,10 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 **Run Migration**
 
 * `node database/migration.js`
+
+### Voting
+
+* Add webhook URL to appropriate voting sites (DBL)
 
 ### Run Bot
 

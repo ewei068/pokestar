@@ -1,5 +1,14 @@
 const { collectionNames } = require("./databaseConfig");
 
+const INVITE_URL = "https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot";
+
+const voteConfig = [
+    {
+        "label": "DBL",
+        "url": "https://discordbotlist.com/bots/pokestar"
+    }
+]
+
 const leaderboardConfig = {
     "level": {
         "name": "Trainer Level",
@@ -24,5 +33,7 @@ const leaderboardConfig = {
 }
 
 module.exports = {
-    leaderboardConfig
+    leaderboardConfig,
+    INVITE_URL,
+    voteConfig
 }

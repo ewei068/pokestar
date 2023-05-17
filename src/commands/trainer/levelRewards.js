@@ -1,5 +1,6 @@
 const { getLevelRewards } = require("../../services/trainer");
 const { backpackItemConfig } = require("../../config/backpackConfig");
+const { getRewardsString } = require("../../utils/trainerUtils");
 
 /**
  * Grants any unclaimed level rewards to the user.
@@ -14,15 +15,7 @@ const levelRewards = async (user) => {
     }
 
     // build itemized rewards string
-    let rewardsString = "**You received:**";
-    if (rewards.data.money) {
-        rewardsString += `\n₽${rewards.data.money}`;
-    }
-    if (rewards.data.backpack) {
-        for (const itemId in rewards.data.backpack) {
-            rewardsString += `\n${backpackItemConfig[itemId].emoji} ${rewards.data.backpack[itemId]}x ${backpackItemConfig[itemId].name}`;
-        }
-    }
+    let rewardsString = getRewardsString(rewards.data);
 
     return { data: rewardsString, err: null };
 }

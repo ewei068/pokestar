@@ -1,7 +1,7 @@
 const { drawDaily } = require('../../services/gacha');
 const { getTrainer } = require('../../services/trainer');
 const { backpackCategories, backpackItemConfig } = require('../../config/backpackConfig');
-const { getPokeballsString } = require('../../utils/trainerUtils');
+const { getPokeballsString, getRewardsString } = require('../../utils/trainerUtils');
 
 /**
  * Attempts to grant the user their daily rewards. If the user has 
@@ -24,13 +24,7 @@ const daily = async (user) => {
     const { money, backpack } = rewards.data;
 
     // build itemized rewards string
-    let rewardsString = "**You received:**";
-    if (money) {
-        rewardsString += `\n₽${money}`;
-    }
-    for (let i = 0; i < backpack.length; i++) {
-        rewardsString += `\n${backpackItemConfig[backpack[i]].emoji} ${backpackItemConfig[backpack[i]].name}`;
-    }
+    let rewardsString = getRewardsString(rewards.data);
     rewardsString += "\n\n**You now own:**";
     if (money) {
         rewardsString += `\n₽${trainer.data.money}`;
