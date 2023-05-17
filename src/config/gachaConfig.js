@@ -2,8 +2,9 @@ const seedrandom = require("seedrandom");
 const { backpackItems } = require('./backpackConfig');
 const { rarities, rarityBins } = require('./pokemonConfig');
 const { drawIterable } = require("../utils/gachaUtils");
+const { stageNames } = require("./stageConfig");
 
-const NUM_DAILY_REWARDS = 3;
+const NUM_DAILY_REWARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 3;
 
 const dailyRewardChances = {
     [backpackItems.POKEBALL]: 0.7,

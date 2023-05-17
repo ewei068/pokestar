@@ -232,7 +232,7 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity=1) => {
             }
 
             // reset pity
-            trainerBannerInfo.pity -= MAX_PITY + 1;
+            trainerBannerInfo.pity = -1;
         } else {
             // if rate up and 50% chance
             if (rarityRateUp) {
@@ -240,7 +240,7 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity=1) => {
                     pokemonIds.push(drawIterable(rarityRateUp, 1)[0]);
                     if (rarity === rarities.LEGENDARY) {
                         // reset pity
-                        trainerBannerInfo.pity -= MAX_PITY + 1;
+                        trainerBannerInfo.pity = -1;
                     }
                 } else {
                     pokemonIds.push(drawIterable(nonRateUps[rarity], 1)[0]);
@@ -249,7 +249,7 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity=1) => {
                 pokemonIds.push(drawIterable(nonRateUps[rarity], 1)[0]);
                 if (rarity === rarities.LEGENDARY) {
                     // reset pity
-                    trainerBannerInfo.pity -= MAX_PITY + 1;
+                    trainerBannerInfo.pity = -1;
                 }
             }
         }
