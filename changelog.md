@@ -1,6 +1,6 @@
 # Pokéstar Changelog
 
-### 0.7.3 - Bot Rollout
+### 0.7.3 (5/17) - Bot Rollout
 
 * `/vote`: Vote for the bot on listing websites every 12 hours to claim rewards!
 * ALL POKEMON are now battle eligible! Hooray!

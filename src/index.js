@@ -113,6 +113,8 @@ client.once(Events.ClientReady, c => {
         const dbl = createDjsClient(process.env.DBL_TOKEN, client);
         dbl.startPosting();
         logger.info(`Connected to discordbotlist.com`);
+
+        //TODO: post botlist stats every hour
     }
 });
 

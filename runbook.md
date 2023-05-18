@@ -57,7 +57,8 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 
 ### Voting
 
-* Add webhook URL to appropriate voting sites (DBL)
+* Add webhook URL to appropriate voting sites (DBL, Botlist)
+* On cloud, run nginx reverse proxy: https://javascript.plainenglish.io/deploy-a-node-js-server-using-google-cloud-compute-engine-87268919de20
 
 ### Run Bot
 
