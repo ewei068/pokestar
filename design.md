@@ -507,15 +507,15 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 * Basic training: train, evolve (DONE)
 * Basic money: money acquisition & shop (DONE)
 * Leaderboards, sort/filter, shinies (DONE)
-* Take care of other issues: help revamp, documentation, code qc, add emojis?
-* Basic battling: placement, teams, moves (no abilities/held items)
+* Take care of other issues: help revamp, documentation, code qc, add emojis? (sorta DONE)
+* Basic battling: placement, teams, moves (no abilities/held items) (DONE)
 * Database schema validation ?
 * Automate stage deployment pipeline and testing
 
 ### Future Feature Ideas
 
 * Abilities & battle items
-* PvE training
+* PvE training (DONE)
 * Raid boss
 * Co-op
 * Non-real-time arena

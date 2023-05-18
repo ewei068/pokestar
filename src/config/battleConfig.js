@@ -1254,6 +1254,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "Hard, pointed, sharp claws rake the target to inflict damage.",
     },
+    "m14": {
+        "name": "Swords Dance",
+        "type": types.NORMAL,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 5,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "A frenetic dance to uplift the fighting spirit. This sharply raises the user's Attack stat for 3 turns.",
+    },
     "m16": {
         "name": "Gust",
         "type": types.FLYING,
@@ -1284,7 +1297,7 @@ const moveConfig = {
         "name": "Slam",
         "type": types.NORMAL,
         "power": 80,
-        "accuracy": 75,
+        "accuracy": 85,
         "cooldown": 2,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
@@ -1547,7 +1560,7 @@ const moveConfig = {
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.FRONT,
+        "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.SPECIAL,
@@ -1688,6 +1701,19 @@ const moveConfig = {
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.SPECIAL,
         "description": "The target is hit by a weak telekinetic force. This has a 25% chance to confuse the target for 1 turn.",
+    },
+    "m94": {
+        "name": "Psychic",
+        "type": types.PSYCHIC,
+        "power": 70,
+        "accuracy": 90,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.ROW,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The target is hit by a strong telekinetic force. This has a 60% chance to lower the targets' Special Defense for 1 turn.",
     },
     "m97": {
         "name": "Agility",
@@ -2315,6 +2341,9 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user bounces up high, then drops on the target on the second turn. This has a 30% chance to leave the target with paralysis.",
+        "silenceIf": function(battle, pokemon) {
+            return pokemon.effectIds.sprungUp === undefined;
+        }
     },
     "m349": {
         "name": "Dragon Dance",
@@ -2375,11 +2404,11 @@ const moveConfig = {
         "accuracy": null,
         "cooldown": 6,
         "targetType": targetTypes.ALLY,
-        "targetPosition": targetPositions.ANY,
+        "targetPosition": targetPositions.BACK,
         "targetPattern": targetPatterns.ALL,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.OTHER,
-        "description": "The user whips up a turbulent whirlwind that sharply raises the Speed of all party Pokémon for 2 turns and boosting combat readiness by 15%.",
+        "description": "The user whips up a turbulent whirlwind that sharply raises the Speed of all party Pokémon for 2 turns and boosting combat readiness of the target row by 15%.",
     },
     "m369": {
         "name": "U-Turn",
@@ -2440,11 +2469,24 @@ const moveConfig = {
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.BACK,
+        "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user stabs the target with a poisonous stinger. This has a 80% chance to poison the target.",
+    },
+    "m402": {
+        "name": "Seed Bomb",
+        "type": types.GRASS,
+        "power": 80,
+        "accuracy": 80,
+        "cooldown": 3,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.CROSS,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user slams a barrage of hard-shelled seeds down on the target from above. Adjacent targets take 50% damage.",
     },
     "m405": {
         "name": "Bug Buzz",
@@ -2550,6 +2592,19 @@ const moveConfig = {
         "damageType": damageTypes.SPECIAL,
         "description": "The user gathers all its light energy and releases it at once, dealing damage and has a 20% chance to lower targets Sp. Defense for two turns.",
     },
+    "m433": {
+        "name": "Trick Room",
+        "type": types.PSYCHIC,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 5,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "The user creates a bizarre area in which Pokemon recieve speed buffs or debuffs inversely based on how fast they are for 2 turns.",
+    },
     "m435": {
         "name": "Discharge",
         "type": types.ELECTRIC,
@@ -2568,7 +2623,7 @@ const moveConfig = {
         "type": types.ROCK,
         "power": 80,
         "accuracy": 80,
-        "cooldown": 5,
+        "cooldown": 4,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.COLUMN,
@@ -2601,6 +2656,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user bites the target with its sharp teeth, dealing damage and stealing one buff from the target.",
+    },
+    "m479": {
+        "name": "Smack Down",
+        "type": types.ROCK,
+        "power": 40,
+        "accuracy": 100,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user throws a stone or projectile to the target, dealing damage and knocking the target to the ground. Able to hit flying targets.",
     },
     "m482": {
         "name": "Sludge Wave",
@@ -2706,6 +2774,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user shrouds itself in electricity and smashes into the target, increasing base power by 10% of user's speed. This also damages the user by 25% of damage dealt.",
     },
+    "m529": {
+        "name": "Drill Run",
+        "type": types.GROUND,
+        "power": 80,
+        "accuracy": 95,
+        "cooldown": 2,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user crashes into its target while rotating its body like a drill.",
+    },
     "m540": {
         "name": "Psystrike",
         "type": types.PSYCHIC,
@@ -2796,6 +2877,14 @@ const moveExecutes = {
                 type: "move",
                 moveId: moveId,
             });
+        }
+    },
+    "m14": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m14";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // apply greater atk up for 3 turns
+            target.addEffect("greaterAtkUp", 4, source);
         }
     },
     "m16": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -3322,6 +3411,23 @@ const moveExecutes = {
             }
         }
     },
+    "m94": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m94";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 60% chance to spd down 1 turn
+            if (!miss && Math.random() < 0.6) {
+                target.addEffect("spdDown", 1, source);
+            }
+        }
+    },
     "m97": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveData = moveConfig["m97"];
         for (const target of allTargets) {
@@ -3348,7 +3454,7 @@ const moveExecutes = {
     "m100": function (battle, source, primaryTarget, allTargets, missedTargets) {
         // boost highest cr non-self party pokemon cr to 100
         const party = battle.parties[source.teamName];
-        const pokemons = source.getPatternTargets(party, targetPatterns.ALL_EXCEPT_SELF, 0, 0);
+        const pokemons = source.getPatternTargets(party, targetPatterns.ALL_EXCEPT_SELF, 1);
         if (pokemons.length > 0) {
             const pokemon = pokemons.reduce((a, b) => a.combatReadiness > b.combatReadiness ? a : b);
             pokemon.boostCombatReadiness(source, 100);
@@ -3504,9 +3610,7 @@ const moveExecutes = {
             return;
         }
         const targetParty = battle.parties[primaryTarget.teamName];
-        const targetRow = Math.floor((primaryTarget.position - 1) / targetParty.cols);
-        const targetCol = (primaryTarget.position - 1) % targetParty.cols;
-        const surroundingTargets = source.getPatternTargets(targetParty, targetPatterns.ALL, targetRow, targetCol);
+        const surroundingTargets = source.getPatternTargets(targetParty, targetPatterns.ALL, primaryTarget.position);
         for (const target of surroundingTargets) {
             // flinch chance = (30 + source speed/10)
             const flinchChance = Math.min(0.3 + (source.spe / 10)/100, .75);
@@ -3849,9 +3953,7 @@ const moveExecutes = {
 
         // for all adjacent allies and self, dispell all debuffs
         const allyParty = battle.parties[source.teamName];
-        const sourceRow = Math.floor((source.position - 1) / allyParty.cols);
-        const sourceCol = (source.position - 1) % allyParty.cols;
-        const allyTargets = source.getPatternTargets(allyParty, targetPatterns.CROSS, sourceRow, sourceCol);
+        const allyTargets = source.getPatternTargets(allyParty, targetPatterns.CROSS, source.position);
         for (const ally of allyTargets) {
             for (const effectId of Object.keys(ally.effectIds)) {
                 const effectData = effectConfig[effectId];
@@ -4208,13 +4310,21 @@ const moveExecutes = {
     "m366": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m366";
         const moveData = moveConfig[moveId];
+
+        // get only target row
+        const targetParty = battle.parties[primaryTarget.teamName];
+        const boostTargets = source.getPatternTargets(targetParty, targetPatterns.ROW, primaryTarget.position);
+
         for (const target of allTargets) {
             // grant greater spe up for 2 turns
             // grants self for 3 turns due to end-of-turn effect tick
             const turns = target === source ? 3 : 2;
             target.addEffect("greaterSpeUp", turns, source);
-            // boost cr by 15%
-            target.boostCombatReadiness(source, 15);
+
+            // grant 15% CR to backmost row
+            if (boostTargets.includes(target)) {
+                target.boostCombatReadiness(source, 15);
+            }
         }
     },
     "m369": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -4230,7 +4340,7 @@ const moveExecutes = {
 
         // boost random non-self party pokemon cr to 100
         const party = battle.parties[source.teamName];
-        const pokemons = source.getPatternTargets(party, targetPatterns.ALL_EXCEPT_SELF, 0, 0);
+        const pokemons = source.getPatternTargets(party, targetPatterns.ALL_EXCEPT_SELF, 1);
         if (pokemons.length > 0) {
             const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
             pokemon.boostCombatReadiness(source, 100);
@@ -4307,6 +4417,19 @@ const moveExecutes = {
             }
         }
     },
+    "m402": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m402";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            // deal half damage if target is not primary target
+            source.dealDamage(Math.round(damageToDeal * (primaryTarget !== target ? 0.5 : 1)), target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },      
     "m405": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m405";
         const moveData = moveConfig[moveId];
@@ -4432,6 +4555,36 @@ const moveExecutes = {
             }
         }
     },
+    "m433": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m433";
+        // get all non-fainted, hitable pokemon
+        const targets = Object.values(battle.allPokemon).filter(p => battle.isPokemonHittable(p, moveId));
+        // if no targets, return
+        if (targets.length === 0) {
+            return;
+        }
+        
+        // get mean spe of all targets
+        const meanSpe = targets.reduce((acc, p) => acc + p.spe, 0) / targets.length;
+        // for all targets apply effect: 
+        // if spe > 1.4 * meanSpe, greater spe down
+        // if spe > meanSpe, spe down
+        // if spe < meanSpe, spe up
+        // if spe < 0.60 * meanSpe, greater spe up
+        for (const target of targets) {
+            const spe = target.spe;
+            const duration = target === source ? 3 : 2;
+            if (spe > 1.4 * meanSpe) {
+                target.addEffect("greaterSpeDown", duration, source);
+            } else if (spe > meanSpe) {
+                target.addEffect("speDown", duration, source);
+            } else if (spe > meanSpe * 0.60) {
+                target.addEffect("speUp", duration, source);
+            } else {
+                target.addEffect("greaterSpeUp", duration, source);
+            }
+        }
+    },
     "m435": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m435";
         const moveData = moveConfig[moveId];
@@ -4505,15 +4658,30 @@ const moveExecutes = {
             }
         }
     },
+    "m479": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m479";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss and target has flying type, apply loseFlying to target
+            if (!miss && (target.type1 === types.FLYING || target.type2 === types.FLYING)) {
+                target.addEffect("loseFlying", 1, source);
+            }
+        }
+    },
     "m482": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m482";
         const moveData = moveConfig[moveId];
 
         // get only target row
         const targetParty = battle.parties[primaryTarget.teamName];
-        const targetRow = Math.floor((primaryTarget.position - 1) / targetParty.cols);
-        const targetCol = (primaryTarget.position - 1) % targetParty.cols;
-        const damageTargets = source.getPatternTargets(targetParty, targetPatterns.ROW, targetRow, targetCol);
+        const damageTargets = source.getPatternTargets(targetParty, targetPatterns.ROW, primaryTarget.position);
 
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
@@ -4606,7 +4774,7 @@ const moveExecutes = {
 
         // boost random non-self party pokemon cr to 100
         const party = battle.parties[source.teamName];
-        const pokemons = source.getPatternTargets(party, targetPatterns.ALL_EXCEPT_SELF, 0, 0);
+        const pokemons = source.getPatternTargets(party, targetPatterns.ALL_EXCEPT_SELF, 1);
         if (pokemons.length > 0) {
             const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
             pokemon.boostCombatReadiness(source, 100);
@@ -4665,6 +4833,18 @@ const moveExecutes = {
         source.dealDamage(damageToDeal, source, {
             type: "recoil"
         });
+    },
+    "m529": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m529";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
     },
     "m540": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m540";

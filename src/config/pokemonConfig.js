@@ -1063,6 +1063,84 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "102": {
+        "name": "Exeggcute",
+        "emoji": "<:102:1100290181124337685>",
+        "description": "Often mistaken for eggs. When disturbed, they quickly gather and attack in swarms.",
+        "type": [types.GRASS, types.PSYCHIC],
+        "baseStats": [60, 40, 80, 60, 45, 40],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/102.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/102.png",
+        "evolution": [{
+            "level": 35,
+            "id": "103",
+        }],
+        "abilities": {
+            "34": 0.8,
+            "139": 0.2
+        },
+        "moveIds": ["m71", "m94", "m188", "m202"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "103": {
+        "name": "Exeggutor",
+        "emoji": "<:103:1100290182420369419>",
+        "description": "Legend has it that on rare occasions, one of its heads will drop off and continue on as an EXEGGCUTE.",
+        "type": [types.GRASS, types.PSYCHIC],
+        "baseStats": [95, 95, 85, 125, 65, 55],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/103.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/103.png",
+        "abilities": {
+            "34": 0.8,
+            "139": 0.2
+        },
+        "moveIds": ["m71", "m94", "m402", "m433"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "111": {
+        "name": "Rhyhorn",
+        "emoji": "<:111:1100290441380888576>",
+        "description": "Its massive bones are 1000 times harder than human bones. It can easily knock a trailer flying.",
+        "type": [types.GROUND, types.ROCK],
+        "baseStats": [80, 85, 95, 30, 30, 25],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/111.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/111.png",
+        "evolution": [{
+            "level": 42,
+            "id": "112",
+        }],
+        "abilities": {
+            "31": 0.45,
+            "69": 0.45,
+            "120": 0.1
+        },
+        "moveIds": ["m33", "m479", "m444", "m529"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "112": {
+        "name": "Rhydon",
+        "emoji": "<:112:1100290443150901320>",
+        "description": "Protected by an armor-like hide, it is capable of living in molten lava of 3,600 degrees.",
+        "type": [types.GROUND, types.ROCK],
+        "baseStats": [105, 130, 120, 45, 45, 40],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/112.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/112.png",
+        "abilities": {
+            "31": 0.45,
+            "69": 0.45,
+            "120": 0.1
+        },
+        "moveIds": ["m479", "m14", "m444", "m529"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
     "129": {
         "name": "Magikarp",
         "emoji": "<:129:1100290837092515870>",

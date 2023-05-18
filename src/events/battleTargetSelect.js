@@ -29,8 +29,6 @@ const battleTargetSelect = async (interaction, data) => {
         return { err: "It's not your turn." };
     }
 
-    // TEMP: measure execution time
-    const start = Date.now();
     // if skip turn, skip turn
     if (data.skipTurn) {
         // if npc turn. have npc use move
@@ -58,8 +56,6 @@ const battleTargetSelect = async (interaction, data) => {
         const result = battle.activePokemon.useMove(moveId, targetId);
     }
     const send = await getStartTurnSend(battle, data.stateId);
-    const end = Date.now();
-    logger.info(`Execution time: ${end - start} ms`);
 
     await interaction.update(send);
 }

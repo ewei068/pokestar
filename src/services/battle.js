@@ -545,8 +545,8 @@ class Battle {
                 return true;
             }
 
-            // bounce + thunder or gust
-            if ((moveId === "m87" || moveId === "m16") && pokemon.effectIds.sprungUp !== undefined) {
+            // bounce + thunder or gust or smackdown
+            if ((moveId === "m87" || moveId === "m16" || moveId === "m479") && pokemon.effectIds.sprungUp !== undefined) {
                 return true;
             }
 
@@ -570,8 +570,8 @@ class Battle {
                 return true;
             }
 
-            // bounce + thunder or gust
-            if ((moveId === "m87" || moveId === "m16") && pokemon.effectIds.sprungUp !== undefined) {
+            // bounce + thunder or gust or smackdown
+            if ((moveId === "m87" || moveId === "m16" || moveId === "m479") && pokemon.effectIds.sprungUp !== undefined) {
                 return true;
             }
 
@@ -728,6 +728,8 @@ class Pokemon {
                 case statusConditions.PARALYSIS:
                     // 25% chance to be paralyzed
                     const paralysisRoll = Math.random();
+                    // TEMP: log paralysis roll
+                    logger.info(`paralysis roll: ${paralysisRoll}`);
                     if (paralysisRoll < 0.25) {
                         this.battle.addToLog(`${this.name} is paralyzed and can't move!`);
                         canUseMove = false;
@@ -887,7 +889,9 @@ class Pokemon {
         return false;
     }
 
-    getPatternTargets(targetParty, targetPattern, targetRow, targetCol, moveId=null) {
+    getPatternTargets(targetParty, targetPattern, targetPosition, moveId=null) {
+        const targetRow = Math.floor((targetPosition - 1) / targetParty.cols);
+        const targetCol = (targetPosition - 1) % targetParty.cols;
         const targets = [];
 
         switch (targetPattern) {
@@ -983,11 +987,8 @@ class Pokemon {
         // get party of target
         const targetParty = this.battle.parties[target.teamName];
 
-        const targetRow = Math.floor((target.position - 1) / targetParty.cols);
-        const targetCol = (target.position - 1) % targetParty.cols;
-
         const allTargets = []
-        return [...allTargets, ...this.getPatternTargets(targetParty, moveData.targetPattern, targetRow, targetCol, moveId)];
+        return [...allTargets, ...this.getPatternTargets(targetParty, moveData.targetPattern, target.position, moveId)];
     }
 
     getMisses(moveId, targetPokemons) {
