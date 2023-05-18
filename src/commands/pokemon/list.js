@@ -47,15 +47,6 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
             return { embed: null, err: "Filter value must be provided if filterBy is provided." };
         }
 
-        // temporary fill-on-demand battle eligible
-        // TODO: remove this when all pokemon have battleEligible
-        if (filterBy == "battleEligible") {
-            const res = await setBattleEligible(trainer.data);
-            if (res.err) {
-                return { embed: null, err: res.err };
-            }
-        }
-
         listOptions.filter = {
             [filterBy]: filterValue
         }

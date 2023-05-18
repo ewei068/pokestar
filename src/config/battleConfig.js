@@ -1384,6 +1384,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The target is stabbed with a toxic barb, poisoning with a 50% chance.",
     },
+    "m43": {
+        "name": "Leer",
+        "type": types.NORMAL,
+        "power": null,
+        "accuracy": 100,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.OTHER,
+        "description": "The target is stared down with intimidating eyes, lowering its defense for 2 turns.",
+    },
     "m46": {
         "name": "Roar",
         "type": types.NORMAL,
@@ -1488,6 +1501,19 @@ const moveConfig = {
         "damageType": damageTypes.SPECIAL,
         "description": "The target is struck with an icy-cold beam of energy. This has a 35% chance to freeze the target.",
     },
+    "m60": {
+        "name": "Psybeam",
+        "type": types.PSYCHIC,
+        "power": 65,
+        "accuracy": 100,
+        "cooldown": 2,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The target is attacked with a peculiar ray. This has a 50% chance to confuse the target for 1 turn.",
+    },
     "m64": {
         "name": "Peck",
         "type": types.FLYING,
@@ -1500,6 +1526,19 @@ const moveConfig = {
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.PHYSICAL,
         "description": "The target is jabbed with a sharply pointed beak or horn.",
+    },
+    "m70": {
+        "name": "Strength",
+        "type": types.NORMAL,
+        "power": 65,
+        "accuracy": 100,
+        "cooldown": 2,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The target is attacked with a powerful blow. This deals a small amount of additional true damage based on user's attack.",
     },
     "m71": {
         "name": "Absorb",
@@ -1676,6 +1715,32 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user lunges at the target at a speed that makes it almost invisible. Also boosts the user's combat readiness by 30%.",
     },
+    "m100": {
+        "name": "Teleport",
+        "type": types.PSYCHIC,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 0,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.OTHER,
+        "description": "The user teleports away, boosting the ally with the most combat readiness to 100.",
+    },
+    "m101": {
+        "name": "Night Shade",
+        "type": types.GHOST,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 2,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user attacks the target with a shadowy blob. The damage dealt is equal to the user's level.",
+    },
     "m103": {
         "name": "Screech",
         "type": types.NORMAL,
@@ -1740,6 +1805,19 @@ const moveConfig = {
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.OTHER,
         "description": "The user waggles a finger and stimulates its brain into randomly using any basic move.",
+    },
+    "m122": {
+        "name": "Lick",
+        "type": types.GHOST,
+        "power": 20,
+        "accuracy": 100,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user licks the target with its tongue, dealing damage and having a 30% to paralyze it.",
     },
     "m127": {
         "name": "Waterfall",
@@ -2873,6 +2951,17 @@ const moveExecutes = {
             }
         }
     },
+    "m43": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m43";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            if (!miss) {
+                // def down 2 turns
+                target.addEffect("defDown", 2, source);
+            }
+        }
+    },
     "m46": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m46";
         const moveData = moveConfig[moveId];
@@ -2995,12 +3084,42 @@ const moveExecutes = {
             }
         }
     },
+    "m60": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m60";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 50% chance to confuse for 1 turn
+            if (!miss && Math.random() < 0.5) {
+                target.addEffect("confused", 1, source);
+            }
+        }
+    },
     "m64": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m64";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
+    "m70": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m70";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            // 5% of atk true damage
+            const damageToDeal = calculateDamage(moveData, source, target, miss) + Math.floor(source.atk * 0.05);
             source.dealDamage(damageToDeal, target, {
                 type: "move",
                 moveId: moveId
@@ -3226,6 +3345,26 @@ const moveExecutes = {
         // boost cr by 30
         source.boostCombatReadiness(source, 30);
     },
+    "m100": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        // boost highest cr non-self party pokemon cr to 100
+        const party = battle.parties[source.teamName];
+        const pokemons = source.getPatternTargets(party, targetPatterns.ALL_EXCEPT_SELF, 0, 0);
+        if (pokemons.length > 0) {
+            const pokemon = pokemons.reduce((a, b) => a.combatReadiness > b.combatReadiness ? a : b);
+            pokemon.boostCombatReadiness(source, 100);
+        } 
+    },
+    "m101": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m101";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const damageToDeal = source.level;
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
     "m103": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m103";
         const moveData = moveConfig[moveId];
@@ -3281,6 +3420,23 @@ const moveExecutes = {
         // get random target & use move
         const randomTarget = eligibleTargets[Math.floor(Math.random() * eligibleTargets.length)];
         moveExecutes[randomMoveId](battle, source, randomTarget, [randomTarget], []);
+    },
+    "m122": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m122";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 30% chance to paralyze
+            if (!miss && Math.random() < 0.3) {
+                target.applyStatus(statusConditions.PARALYSIS, source);
+            }
+        }
     },
     "m127": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m127";
@@ -4073,8 +4229,8 @@ const moveExecutes = {
         }
 
         // boost random non-self party pokemon cr to 100
-        const party = battle.parties[source.teamName].pokemons;
-        const pokemons = Object.values(party).filter(p => p !== null && !p.isFainted && p !== source);
+        const party = battle.parties[source.teamName];
+        const pokemons = source.getPatternTargets(party, targetPatterns.ALL_EXCEPT_SELF, 0, 0);
         if (pokemons.length > 0) {
             const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
             pokemon.boostCombatReadiness(source, 100);
@@ -4449,8 +4605,8 @@ const moveExecutes = {
         }
 
         // boost random non-self party pokemon cr to 100
-        const party = battle.parties[source.teamName].pokemons;
-        const pokemons = Object.values(party).filter(p => p !== null && !p.isFainted && p !== source);
+        const party = battle.parties[source.teamName];
+        const pokemons = source.getPatternTargets(party, targetPatterns.ALL_EXCEPT_SELF, 0, 0);
         if (pokemons.length > 0) {
             const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
             pokemon.boostCombatReadiness(source, 100);

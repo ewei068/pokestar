@@ -1,4 +1,11 @@
-# Pokestar Changelog
+# Pokéstar Changelog
+
+### 0.7.3 - Bot Rollout
+
+* `/vote`: Vote for the bot on listing websites every 12 hours to claim rewards!
+* ALL POKEMON are now battle eligible! Hooray!
+* Added a release all on page button when listing.
+* Fixed a few gacha bugs.
 
 ### 0.7.2 (5/16) - Gacha Overhaul
 

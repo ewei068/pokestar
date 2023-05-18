@@ -798,6 +798,8 @@ const pokemonConfig = {
             "39": 0.45,
             "98": 0.1
         },
+        "moveIds": ["m93", "m100", "m247", "m417"],
+        "battleEligible": true,
         "rarity": rarities.COMMON,
         "growthRate": growthRates.MEDIUMSLOW
     },
@@ -818,6 +820,8 @@ const pokemonConfig = {
             "39": 0.45,
             "98": 0.1
         },
+        "moveIds": ["m134", "m60", "m247", "m417"],
+        "battleEligible": true,
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMSLOW
     },
@@ -856,6 +860,8 @@ const pokemonConfig = {
             "99": 0.45,
             "80": 0.1
         },
+        "moveIds": ["m43", "m418", "m70", "m238"],
+        "battleEligible": true,
         "rarity": rarities.COMMON,
         "growthRate": growthRates.MEDIUMFAST
     },
@@ -876,6 +882,8 @@ const pokemonConfig = {
             "99": 0.45,
             "80": 0.1
         },
+        "moveIds": ["m418", "m70", "m238", "m282"],
+        "battleEligible": true,
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST
     },
@@ -1014,6 +1022,8 @@ const pokemonConfig = {
         "abilities": {
             "26": 1
         },
+        "moveIds": ["m122", "m506", "m101", "m247"],
+        "battleEligible": true,
         "rarity": rarities.COMMON,
         "growthRate": growthRates.MEDIUMSLOW
     },
@@ -1032,6 +1042,8 @@ const pokemonConfig = {
         "abilities": {
             "26": 1
         },
+        "moveIds": ["m506", "m101", "m247", "m269"],
+        "battleEligible": true,
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMSLOW
     },
