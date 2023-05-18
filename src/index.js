@@ -137,7 +137,17 @@ app.post("/vote", async (req, res) => {
             if (!err) {
                 success = true;
             }
+        } else if (req.header("Authorization") === process.env.BOTLIST_SECRET) {
+            const user = {
+                id: req.body.user,
+            }
+            logger.info(`Received BOTLIST vote from ${user.id}`);
+            const { data, err } = await addVote(user);
+            if (!err) {
+                success = true;
+            }
         }
+
         if (success) {
             res.sendStatus(200);
         } else {

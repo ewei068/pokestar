@@ -6,7 +6,11 @@ const voteConfig = [
     {
         "label": "DBL",
         "url": "https://discordbotlist.com/bots/pokestar"
-    }
+    },
+    {
+        "label": "Botlist",
+        "url": "https://botlist.me/bots/1093411444877439066"
+    },
 ]
 
 const leaderboardConfig = {
