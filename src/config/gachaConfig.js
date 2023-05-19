@@ -3,6 +3,7 @@ const { backpackItems } = require('./backpackConfig');
 const { rarities, rarityBins } = require('./pokemonConfig');
 const { drawIterable } = require("../utils/gachaUtils");
 const { stageNames } = require("./stageConfig");
+const { getFullUTCDate } = require("../utils/utils");
 
 const NUM_DAILY_REWARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 3;
 
@@ -83,7 +84,7 @@ const bannerConfig = [
         "description": "Banner which rotates rate-up Pokemon randomly every day.",
         "rateUp": () => {
             // seedrandom using date 
-            const date = new Date().getUTCDate();
+            const date = getFullUTCDate();
             const rng = seedrandom(date);
             return {
                 [rarities.LEGENDARY]: drawIterable(rarityBins[rarities.LEGENDARY], 1, {
@@ -100,15 +101,6 @@ const bannerConfig = [
 ]
 
 const MAX_PITY = 100;
-
-/*const date = new Date();
-date.setUTCMilliseconds(0);
-date.setUTCSeconds(0);
-date.setUTCMinutes(0);
-date.setUTCHours(0);
-console.log(date.toUTCString());
-console.log(date.getTime() / 86400000);
-console.log(Math.floor(new Date().getTime() / 86400000));*/
 
 module.exports = {
     dailyRewardChances,

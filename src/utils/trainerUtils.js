@@ -9,8 +9,8 @@ const getPokeballsString = (trainer) => {
     return pokeballsString;
 }
 
-const getRewardsString = (rewards) => {
-    let rewardsString = "**You received:**";
+const getRewardsString = (rewards, received=true) => {
+    let rewardsString = received ? "**You received:**" : "";
     if (rewards.money) {
         rewardsString += `\n₽${rewards.money}`;
     }
@@ -21,6 +21,45 @@ const getRewardsString = (rewards) => {
         }
     }
     return rewardsString;
+}
+
+const flattenCategories = (backpack) => {
+    const flattenedBackpack = {};
+    for (const categoryId in backpack) {
+        for (const itemId in backpack[categoryId]) {
+            flattenedBackpack[itemId] = getOrSetDefault(flattenedBackpack, itemId, 0) + backpack[categoryId][itemId];
+        }
+    }
+    return flattenedBackpack;
+}
+
+const flattenRewards = (rewards) => {
+    const flattenedRewards = {
+        ...rewards,
+    }
+    if (rewards.backpack) {
+        flattenedRewards.backpack = flattenCategories(rewards.backpack);
+    }
+    return flattenedRewards;
+}
+
+const addRewards = (trainer, rewards, accumulator={}) => {
+    if (rewards.money) {
+        accumulator.money = (accumulator.money || 0) + rewards.money;
+        trainer.money += rewards.money;
+    }
+    if (rewards.backpack) {
+        const backpack = getOrSetDefault(accumulator, "backpack", {});
+        for (const categoryId in rewards.backpack) {
+            const trainerBackpackCategory = getOrSetDefault(trainer.backpack, categoryId, {});
+            for (const itemId in rewards.backpack[categoryId]) {
+                backpack[itemId] = getOrSetDefault(backpack, itemId, 0) + rewards.backpack[categoryId][itemId];
+                trainerBackpackCategory[itemId] = getOrSetDefault(trainerBackpackCategory, itemId, 0) + rewards.backpack[categoryId][itemId];
+            }
+        }
+    }
+
+    return accumulator;
 }
 
 const getPokeballs = (trainer, pokeballId) => {
@@ -47,6 +86,9 @@ const removePokeballs = (trainer, pokeballId, quantity=1) => {
 module.exports = {
     getPokeballsString,
     getRewardsString,
+    flattenCategories,
+    flattenRewards,
+    addRewards,
     getPokeballs,
     setPokeballs,
     addPokeballs,

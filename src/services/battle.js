@@ -6,7 +6,7 @@ const { buildBattleEmbed, buildBattleMovesetEmbed, buildPveListEmbed, buildPveNp
 const { buildSelectBattleMoveRow } = require("../components/selectBattleMoveRow");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildBattleInfoActionRow } = require("../components/battleInfoActionRow");
-const { getTrainer, addExpAndMoney } = require("./trainer");
+const { getTrainer, addExpAndMoney, updateTrainer } = require("./trainer");
 const { addPokemonExpAndEVs, getPokemon, calculatePokemonStats } = require("./pokemon");
 const { logger } = require("../log");
 const { buildNextTurnActionRow } = require("../components/battleNextTurnRow");
@@ -20,6 +20,7 @@ const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const { drawIterable, drawUniform } = require("../utils/gachaUtils");
 const { generateRandomPokemon } = require("./gacha");
 const { validateParty } = require("./party");
+const { addRewards, getRewardsString, flattenCategories, flattenRewards } = require("../utils/trainerUtils");
 
 class NPC {
     userId;
@@ -194,12 +195,18 @@ class Battle {
     ended;
     minLevel;
     level;
+    dailyRewards;
+    npcId;
+    difficulty;
 
     constructor({ 
         moneyMultiplier=1, 
         expMultiplier=1, 
         pokemonExpMultiplier=0.2,
-        level=null
+        level=null,
+        dailyRewards=null,
+        npcId=null,
+        difficulty=null,
     } = {}) {
         this.moneyMultiplier = moneyMultiplier;
         this.expMultiplier = expMultiplier;
@@ -229,6 +236,9 @@ class Battle {
             this.level = level;
             this.minLevel = level;
         }
+        this.dailyRewards = dailyRewards;
+        this.npcId = npcId;
+        this.difficulty = difficulty;
     }
     
     addTeam(teamName, isNpc) {
@@ -1510,6 +1520,7 @@ const getStartTurnSend = async (battle, stateId) => {
         try {
             // if winner is NPC, no rewards
             if (!battle.teams[battle.winner].isNpc) {
+                const dailyRecipients = [];
                 content += `\n**The following Pokemon leveled up:**`;
                 for (const teamName in battle.teams) {
                     const team = battle.teams[teamName];
@@ -1521,6 +1532,7 @@ const getStartTurnSend = async (battle, stateId) => {
                     const expReward = teamName === battle.winner ? battle.expReward : Math.floor(battle.expReward / 2);
                     const pokemonExpReward = teamName === battle.winner ? battle.pokemonExpReward : Math.floor(battle.pokemonExpReward / 2);
 
+                    // TODO: optimize this it makes too many db calls
                     for (const userId of team.userIds) {
                         const user = battle.users[userId];
                         // get trainer
@@ -1532,6 +1544,19 @@ const getStartTurnSend = async (battle, stateId) => {
 
                         // add trainer rewards
                         await addExpAndMoney(user, moneyReward, expReward);
+                        const defeatedDifficultiesToday = trainer.data.defeatedNPCsToday[battle.npcId];
+                        if (battle.dailyRewards && (!defeatedDifficultiesToday || !defeatedDifficultiesToday.includes(battle.difficulty))) {
+                            // add daily rewards
+                            addRewards(trainer.data, battle.dailyRewards);
+                            getOrSetDefault(trainer.data.defeatedNPCsToday, battle.npcId, []).push(battle.difficulty);
+                            const {data, err} = await updateTrainer(trainer.data);
+                            if (err) {
+                                logger.warn(`Failed to update daily trainer for user ${user.id} after battle`);
+                                continue;
+                            } else {
+                                dailyRecipients.push(user.username);
+                            }
+                        }
 
                         const levelUps = [];
                         // add pokemon rewards
@@ -1562,6 +1587,12 @@ const getStartTurnSend = async (battle, stateId) => {
                             content += `\n${user.username}'s Pokemon: ${levelUps.map(l => `${l.pokemonName} (${l.oldLevel} -> ${l.newLevel})`).join(', ')}`;
                         }
                     }
+
+                    if (dailyRecipients.length > 0) {
+                        content += `\n**${dailyRecipients.join(', ')} received daily rewards for their victory:**`;
+                        content += getRewardsString(flattenRewards(battle.dailyRewards), received=false);
+                    }
+
                 }
             }
         } catch (err) {
@@ -1718,9 +1749,12 @@ const buildPveSend = async ({ stateId=null, user=null, view="list", option=null,
         // add npc to battle
         const npc = new NPC(npcData, state.difficulty);
         const rewardMultipliers = npcDifficultyData.rewardMultipliers || difficultyConfig[state.difficulty].rewardMultipliers;
-        const battle = new Battle(
-            rewardMultipliers
-        );
+        const battle = new Battle({
+            ...rewardMultipliers,
+            dailyRewards: npcDifficultyData.dailyRewards,
+            npcId: state.npcId,
+            difficulty: state.difficulty,
+        });
         battle.addTeam("NPC", true);
         battle.addTrainer(npc, npc.party.pokemons, "NPC");
         battle.addTeam("Player", false);

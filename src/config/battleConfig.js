@@ -2111,7 +2111,7 @@ const moveConfig = {
     "m229": {
         "name": "Rapid Spin",
         "type": types.NORMAL,
-        "power": 20,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -2119,7 +2119,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.ROW,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
-        "description": "A spin attack that can also dispells debuffs from the user and adjacent allies.",
+        "description": "A spin attack that can also dispells debuffs from the user and surrounding allies.",
     },
     "m238": {
         "name": "Cross Chop",
@@ -3614,7 +3614,6 @@ const moveExecutes = {
         for (const target of surroundingTargets) {
             // flinch chance = (30 + source speed/10)
             const flinchChance = Math.min(0.3 + (source.spe / 10)/100, .75);
-            console.log(flinchChance)
             if (Math.random() < flinchChance) {
                 target.addEffect("flinched", 1, source);
             }
@@ -3953,7 +3952,7 @@ const moveExecutes = {
 
         // for all adjacent allies and self, dispell all debuffs
         const allyParty = battle.parties[source.teamName];
-        const allyTargets = source.getPatternTargets(allyParty, targetPatterns.CROSS, source.position);
+        const allyTargets = source.getPatternTargets(allyParty, targetPatterns.SQUARE, source.position);
         for (const ally of allyTargets) {
             for (const effectId of Object.keys(ally.effectIds)) {
                 const effectData = effectConfig[effectId];

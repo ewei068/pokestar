@@ -1,6 +1,7 @@
 const { effectConfig, statusConditions } = require('../config/battleConfig');
 const { difficultyConfig } = require('../config/npcConfig');
 const { pokemonConfig, typeConfig } = require('../config/pokemonConfig');
+const { getRewardsString, flattenRewards } = require('./trainerUtils');
 const { getPBar } = require('./utils');
 
 const buildPartyString = (pokemons, rows, cols, reverse=false, hp=false, emphPosition=null) => {
@@ -180,6 +181,9 @@ const buildNpcDifficultyString = (difficulty, npcDifficultyData) => {
     difficultyString += pokemonIds.includes(npcDifficultyData.aceId) ? '' : ` ${pokemonConfig[npcDifficultyData.aceId].emoji}`;
     difficultyString += '\n';
     difficultyString += `**Multipliers:** Money: ${rewardMultipliers.moneyMultiplier} | EXP: ${rewardMultipliers.expMultiplier} | Pkmn. EXP: ${rewardMultipliers.pokemonExpMultiplier}`;
+    if (npcDifficultyData.dailyRewards) {
+        difficultyString += `\n**Daily Rewards:** ${getRewardsString(flattenRewards(npcDifficultyData.dailyRewards), received=false)}`;
+    }
 
     return {
         difficultyHeader,

@@ -24,13 +24,6 @@ const canBuyItem = (trainer, itemId, quantity) => {
         return { data: null, err: "Item does not exist." };
     }
 
-    // check last purchase date
-    const lastShopPurchase = new Date(trainer.lastShopPurchase);
-    const today = new Date();
-    if (lastShopPurchase.getDate() !== today.getDate()) {
-        trainer.purchasedShopItemsToday = {};
-    }
-
     let cost = 0;
 
     // functionality dependent on item
@@ -94,13 +87,6 @@ const buyItem = async (trainer, itemId, quantity) => {
     const item = shopItemConfig[itemId];
     if (!item) {
         return { data: null, err: "Item does not exist." };
-    }
-
-    // check last purchase date
-    const lastShopPurchase = new Date(trainer.lastShopPurchase);
-    const today = new Date();
-    if (lastShopPurchase.getDate() !== today.getDate()) {
-        trainer.purchasedShopItemsToday = {};
     }
 
     let cost = 0;
@@ -198,8 +184,7 @@ const buyItem = async (trainer, itemId, quantity) => {
             { userId: trainer.userId }, 
             { 
                 $set: { 
-                    backpack: trainer.backpack, 
-                    lastShopPurchase: today.getTime(), 
+                    backpack: trainer.backpack,
                     purchasedShopItemsToday: trainer.purchasedShopItemsToday,
                     locations: trainer.locations
                 },

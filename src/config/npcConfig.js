@@ -1,7 +1,10 @@
+const { backpackCategories, backpackItems } = require("./backpackConfig")
+
 const npcs = {
     BUG_CATCHER: "bugCatcher",
     YOUNGSTER: "youngster",
     LASS: "lass",
+    BLUE: "blue",
     RED: "red",
     FISHERMAN: "fisherman",
     HIKER: "hiker",
@@ -63,28 +66,28 @@ const npcConfig = {
                 minLevel: 5,
                 maxLevel: 7,
                 numPokemon: 3,
-                pokemonIds: ["16", "19", "74"],
+                pokemonIds: ["16", "19", "74", "102"],
                 aceId: "16",
             },
             [difficulties.EASY]: {
                 minLevel: 15,
                 maxLevel: 18,
                 numPokemon: 4,
-                pokemonIds: ["4", "16", "19", "74", "133"],
+                pokemonIds: ["4", "16", "19", "74", "102", "133"],
                 aceId: "16",
             },
             [difficulties.MEDIUM]: {
                 minLevel: 27,
                 maxLevel: 33,
                 numPokemon: 5,
-                pokemonIds: ["5", "17", "20", "75", "135"],
+                pokemonIds: ["5", "17", "20", "75", "103", "135"],
                 aceId: "17",
             },
             [difficulties.HARD]: {
                 minLevel: 46,
                 maxLevel: 57,
                 numPokemon: 6,
-                pokemonIds: ["6", "18", "20", "76", "135"],
+                pokemonIds: ["6", "18", "20", "76", "103", "135"],
                 aceId: "18",
             },
         }
@@ -171,28 +174,28 @@ const npcConfig = {
                 minLevel: 7,
                 maxLevel: 9,
                 numPokemon: 3,
-                pokemonIds: ["50", "66", "74"],
+                pokemonIds: ["50", "66", "74", "111"],
                 aceId: "74",
             },
             [difficulties.EASY]: {
                 minLevel: 17,
                 maxLevel: 21,
                 numPokemon: 4,
-                pokemonIds: ["50", "66", "74", "81"],
+                pokemonIds: ["50", "66", "74", "81", "111"],
                 aceId: "74",
             },
             [difficulties.MEDIUM]: {
                 minLevel: 30,
                 maxLevel: 36,
                 numPokemon: 5,
-                pokemonIds: ["51", "67", "75", "82"],
+                pokemonIds: ["51", "67", "75", "82", "112"],
                 aceId: "75",
             },
             [difficulties.HARD]: {
                 minLevel: 50,
                 maxLevel: 59,
                 numPokemon: 6,
-                pokemonIds: ["51", "68", "76", "82"],
+                pokemonIds: ["51", "68", "76", "82", "112"],
                 aceId: "76",
             },
         }
@@ -233,6 +236,56 @@ const npcConfig = {
             },
         }
     },
+    [npcs.BLUE]: {
+        name: "Blue",
+        sprite: "https://archives.bulbagarden.net/media/upload/f/f4/Spr_B2W2_Blue.png",
+        emoji: "🕶️",
+        catchphrase: "Smell ya later!",
+        difficulties: {
+            [difficulties.EASY]: {
+                minLevel: 15,
+                maxLevel: 18,
+                numPokemon: 4,
+                pokemonIds: ["17", "20", "63"],
+                aceId: "8",
+                dailyRewards: {
+                    backpack: {
+                        [backpackCategories.POKEBALLS]: {
+                            [backpackItems.POKEBALL]: 1,
+                        },
+                    }
+                }
+            },
+            [difficulties.MEDIUM]: {
+                minLevel: 35,
+                maxLevel: 39,
+                numPokemon: 5,
+                pokemonIds: ["18", "58", "65", "102"],
+                aceId: "9",
+                dailyRewards: {
+                    backpack: {
+                        [backpackCategories.POKEBALLS]: {
+                            [backpackItems.POKEBALL]: 1,
+                        },
+                    }
+                }
+            },
+            [difficulties.HARD]: {
+                minLevel: 59,
+                maxLevel: 64,
+                numPokemon: 6,
+                pokemonIds: ["18", "59", "65", "103", "112"],
+                aceId: "9",
+                dailyRewards: {
+                    backpack: {
+                        [backpackCategories.POKEBALLS]: {
+                            [backpackItems.POKEBALL]: 1,
+                        },
+                    }
+                }
+            },
+        }
+    },    
     [npcs.RED]: {
         name: "Red",
         sprite: "https://www.serebii.net/heartgoldsoulsilver/gym/red.png",
@@ -245,6 +298,13 @@ const npcConfig = {
                 numPokemon: 6,
                 pokemonIds: ["3", "6", "9", "131", "143"],
                 aceId: "26",
+                dailyRewards: {
+                    backpack: {
+                        [backpackCategories.POKEBALLS]: {
+                            [backpackItems.POKEBALL]: 2,
+                        },
+                    }
+                }
             },
         }
     },

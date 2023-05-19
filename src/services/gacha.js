@@ -23,10 +23,8 @@ const DAILY_MONEY = 300;
 
 const drawDaily = async (trainer) => {
     // check if new day; if in alpha, ignore
-    const now = new Date();
-    const lastDaily = new Date(trainer.lastDaily);
-    if (now.getDate() != lastDaily.getDate() || process.env.STAGE == stageNames.ALPHA) {
-        trainer.lastDaily = now.getTime();
+    if (!trainer.claimedDaily || process.env.STAGE == stageNames.ALPHA) {
+        trainer.claimedDaily = true;
     } else {
         return { data: null, err: "You already claimed your daily rewards today!" };
     }
@@ -41,7 +39,6 @@ const drawDaily = async (trainer) => {
         return acc;
     }, {});
             
-    // const pokeballs = getOrSetDefault(trainer.backpack, backpackCategories.POKEBALLS, {});
     trainer.money += DAILY_MONEY;
     Object.entries(reducedResults).forEach(([key, value]) => {
         addPokeballs(trainer, key, value);
@@ -51,7 +48,7 @@ const drawDaily = async (trainer) => {
             collectionNames.USERS, 
             { userId: trainer.userId }, 
             { 
-                $set: { backpack: trainer.backpack, lastDaily: trainer.lastDaily },
+                $set: { backpack: trainer.backpack, claimedDaily: true },
                 $inc: { money: DAILY_MONEY }
             }
         );

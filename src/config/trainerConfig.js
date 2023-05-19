@@ -39,6 +39,11 @@ const trainerFields = {
         "type": "number",
         "default": (new Date(0)).getTime(),
     },
+    "claimedDaily": {
+        "type": "boolean",
+        "default": false,
+        "daily": true,
+    },
     "backpack": {
         "type": "object",
         "default": {
@@ -57,10 +62,7 @@ const trainerFields = {
     "purchasedShopItemsToday": {
         "type": "object",
         "default": {},
-    },
-    "lastShopPurchase": {
-        "type": "number",
-        "default": (new Date(0)).getTime(),
+        "daily": true,
     },
     "locations": {
         "type": "object",
@@ -99,7 +101,12 @@ const trainerFields = {
     "votes": {
         "type": "number",
         "default": 0,
-    }
+    },
+    "defeatedNPCsToday": {
+        "type": "object",
+        "default": {},
+        "daily": true,
+    },
 }
 
 const levelConfig = {

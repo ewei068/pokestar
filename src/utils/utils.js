@@ -108,6 +108,13 @@ const setTwoInline = (fields) => {
     return fields;
 }
 
+const getFullUTCDate = (date=null) => {
+    if (!date) {
+        date = new Date();
+    }
+    const time = date.getTime();
+    return Math.floor(time / 86400000);
+}
 
 module.exports = {
     getOrSetDefault,
@@ -120,5 +127,6 @@ module.exports = {
     matrixIndexOf,
     getUserId,
     buildCommandUsageString,
-    setTwoInline
+    setTwoInline,
+    getFullUTCDate
 }

@@ -2,9 +2,10 @@ const { findDocuments, insertDocument, updateDocument, QueryBuilder } = require(
 const { collectionNames } = require("../config/databaseConfig");
 const { trainerFields, getTrainerLevelExp, MAX_TRAINER_LEVEL, levelConfig } = require("../config/trainerConfig");
 const { logger } = require("../log");
-const { getOrSetDefault } = require("../utils/utils");
-const { backpackItems } = require("../config/backpackConfig");
-const { getRewardsString, getPokeballsString } = require("../utils/trainerUtils");
+const { getOrSetDefault, getFullUTCDate } = require("../utils/utils");
+const { backpackItems, backpackCategories } = require("../config/backpackConfig");
+const { getRewardsString, getPokeballsString, addRewards } = require("../utils/trainerUtils");
+const { stageNames } = require("../config/stageConfig");
 
 /* 
 "user": {
@@ -96,6 +97,20 @@ const getTrainer = async (user, refresh=true) => {
         }
     }
 
+    // attempt to reset daily rewards
+    today = getFullUTCDate();
+    lastDaily = getFullUTCDate(new Date(trainer.lastDaily));
+    if (today > lastDaily) {
+        trainer.lastDaily = new Date().getTime();
+        // reset daily rewards
+        for (const field in trainerFields) {
+            if (trainerFields[field].daily) {
+                trainer[field] = trainerFields[field].default;
+            }
+        }
+        modified = true;
+    }
+
     if (modified) {
         try {
             const res = await updateDocument(
@@ -104,10 +119,10 @@ const getTrainer = async (user, refresh=true) => {
                 { $set: trainer }
             );
             if (res.modifiedCount === 0) {
-                logger.error(`Failed to update trainer ${user.username}.`)
+                logger.error(`Failed to update trainer ${trainer.user.username}.`)
                 return { data: null, err: "Error updating trainer." };
             }
-            logger.info(`Updated trainer ${user.username}.`);
+            logger.info(`Updated trainer ${trainer.user.username}.`);
         } catch (error) {
             logger.error(error);
             return { data: null, err: "Error updating trainer." };
@@ -223,21 +238,7 @@ const getLevelRewards = async (user) => {
             continue;
         }
         
-        if (rewards.money) {
-            allRewards.money = (allRewards.money || 0) + rewards.money;
-            trainer.money += rewards.money;
-        }
-        if (rewards.backpack) {
-            const backpack = getOrSetDefault(allRewards, "backpack", {});
-            for (const categoryId in rewards.backpack) {
-                const trainerBackpackCategory = getOrSetDefault(trainer.backpack, categoryId, {});
-                for (const itemId in rewards.backpack[categoryId]) {
-                    backpack[itemId] = getOrSetDefault(backpack, itemId, 0) + rewards.backpack[categoryId][itemId];
-                    trainerBackpackCategory[itemId] = getOrSetDefault(trainerBackpackCategory, itemId, 0) + rewards.backpack[categoryId][itemId];
-                }
-            }
-        }
-
+        addRewards(trainer, rewards, allRewards);
         trainer.claimedLevelRewards.push(level);
     }
 
@@ -295,16 +296,21 @@ const getVoteRewards = async (user) => {
     }
     trainer = trainer.data;
 
-    const votes = trainer.votes;
+    // set votes in alpha for testing
+    const votes = process.env.STAGE == stageNames.ALPHA ? 3 : trainer.votes;
     if (votes < 1) {
         return { data: null, err: "No rewards to claim! Use `/vote` to vote and try again!" };
     }
 
     // add vote rewards: 200 pokedollars and 2 pokeballs per vote
-    const money = votes * 200;
-    const backpack = {
-        [backpackItems.POKEBALL]: votes * 2
-    }
+    const receivedRewards = addRewards(trainer, {
+        money: votes * 200,
+        backpack: {
+            [backpackCategories.POKEBALLS]: {
+                [backpackItems.POKEBALL]: votes * 2
+            }
+        }
+    });
 
     // reset votes
     trainer.votes = 0;
@@ -315,8 +321,7 @@ const getVoteRewards = async (user) => {
             collectionNames.USERS, 
             { userId: trainer.userId }, 
             { 
-                $set: { backpack: trainer.backpack, votes: trainer.votes },
-                $inc: { money: money },
+                $set: { backpack: trainer.backpack, votes: trainer.votes, money: trainer.money },
             }
         );
         if (res.modifiedCount === 0) {
@@ -330,18 +335,33 @@ const getVoteRewards = async (user) => {
 
     // build itemized rewards string
     let rewardsString = `You claimed **${votes}** vote rewards! **Thank you for voting!** Remember to vote again in 12 hours!\n\n`;
-    rewardsString += getRewardsString({
-        money: money,
-        backpack: backpack,
-    });
+    rewardsString += getRewardsString(receivedRewards);
     rewardsString += "\n\n**You now own:**";
-    if (money) {
+    if (receivedRewards.money) {
         rewardsString += `\n₽${trainer.money}`;
     }
     rewardsString += getPokeballsString(trainer);
     rewardsString += "\nSpend your Pokedollars at the \`/pokemart\` | Use \`/gacha\` to use your Pokeballs";
 
     return { data: rewardsString, err: null };
+}
+
+const updateTrainer = async (trainer) => {
+    try {
+        const res = await updateDocument(
+            collectionNames.USERS,
+            { userId: trainer.userId },
+            { $set: trainer }
+        );
+        if (res.modifiedCount === 0) {
+            logger.error(`Failed to update trainer ${trainer.user.username}.`);
+            return { data: null, err: "Error updating trainer." };
+        }
+        return { data: null, err: null };
+    } catch (error) {
+        logger.error(error);
+        return { data: null, err: "Error updating trainer." };
+    }
 }
 
 module.exports = {
@@ -352,4 +372,5 @@ module.exports = {
     getLevelRewards,
     addVote,
     getVoteRewards,
+    updateTrainer
 }
