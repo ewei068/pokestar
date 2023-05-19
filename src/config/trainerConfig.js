@@ -448,6 +448,39 @@ const levelConfig = {
             }
         }
     },
+    35: {
+        "rewards": {
+            "money": 10000,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.ULTRABALL]: 5,
+                    [backpackItems.MASTERBALL]: 5,
+                }
+            }
+        }
+    },
+    40: {
+        "rewards": {
+            "money": 10000,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.ULTRABALL]: 5,
+                    [backpackItems.MASTERBALL]: 5,
+                }
+            }
+        }
+    },
+    45: {
+        "rewards": {
+            "money": 10000,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.ULTRABALL]: 5,
+                    [backpackItems.MASTERBALL]: 5,
+                }
+            }
+        }
+    },
 }
 
 // TODO: move?

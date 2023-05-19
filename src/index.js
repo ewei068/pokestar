@@ -11,6 +11,7 @@ const express = require('express');
 const cors = require('cors');
 const { addVote } = require('./services/trainer.js');
 const { stageNames } = require('./config/stageConfig.js');
+const { poll } = require('./utils/utils.js');
 
 const corsOptions = {
     origin: true,
@@ -114,7 +115,24 @@ client.once(Events.ClientReady, c => {
         dbl.startPosting();
         logger.info(`Connected to discordbotlist.com`);
 
-        //TODO: post botlist stats every hour
+        // post botlist stats every hour (may not work)
+        poll(async () => {
+            console.log("Posting botlist stats");
+            try {
+                fetch(`https://api.botlist.me/api/v1/bots/${process.env.CLIENT_ID}/stats`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": process.env.BOTLIST_TOKEN,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        "server_count": client.guilds.cache.size
+                    })
+                });
+            } catch (error) {
+                logger.error(error);
+            }
+        }, 1000 * 60 * 60);
     }
 });
 

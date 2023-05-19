@@ -116,6 +116,11 @@ const getFullUTCDate = (date=null) => {
     return Math.floor(time / 86400000);
 }
 
+const poll = async (fn, interval=60*1000) => {
+    fn();
+    setTimeout(() => poll(fn, interval), interval);
+}
+
 module.exports = {
     getOrSetDefault,
     getPBar,
@@ -128,5 +133,6 @@ module.exports = {
     getUserId,
     buildCommandUsageString,
     setTwoInline,
-    getFullUTCDate
+    getFullUTCDate,
+    poll
 }

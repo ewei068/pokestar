@@ -18,6 +18,7 @@ const buildPartyString = (pokemons, rows, cols, reverse=false, hp=false, emphPos
             const rplus = emphPosition && emphPosition - 1 == globalIndex ? '╬' : '+';
             const border = emphPosition && emphPosition - 1 == globalIndex ? '=' : '-';
             const pokemon = pokemons[globalIndex];
+            let headerString = "";
             if (hp && pokemon) {
                 // get hp percent
                 let hpPercent = 0;
@@ -27,19 +28,23 @@ const buildPartyString = (pokemons, rows, cols, reverse=false, hp=false, emphPos
                     hpPercent = 0;
                 }
                 // make string
-                const hpString = `${hpPercent}%`;
-                // add to row string based on length of hp string
-                const hpLength = hpString.length;
-                if (hpLength === 2) {
-                    rowString += `${lplus}${border}${border}${hpString}${border}`;
-                } else if (hpLength === 3) {
-                    rowString += `${lplus}${border}${hpString}${border}`;
-                } else if (hpLength === 4) {
-                    rowString += `${lplus}${border}${hpString}`;
-                }
-            } else {
-                rowString += `${lplus}${border}${border}${border}${border}${border}`;
+                headerString = `${hpPercent}%`;
+            } else if (pokemon) {
+                headerString = `L${pokemon.level}`;
             }
+
+            // add to row string based on length of hp string
+            const headerLength = headerString.length;
+            if (headerLength === 0) {
+                rowString += `${lplus}${border}${border}${border}${border}${border}`;
+            } else if (headerLength === 2) {
+                rowString += `${lplus}${border}${border}${headerString}${border}`;
+            } else if (headerLength === 3) {
+                rowString += `${lplus}${border}${headerString}${border}`;
+            } else if (headerLength === 4) {
+                rowString += `${lplus}${border}${headerString}`;
+            }
+
             if (j == cols - 1) {
                 rowString += `${rplus}\``;
             }

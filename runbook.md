@@ -32,7 +32,7 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 ### Environment
 
 * `brew install tmux`
-* Export `DISCORD_TOKEN`, `STAGE`, `MONGODB_URL`, `CLIENT_ID`, `DBL_TOKEN`, `DBL_SECRET`, `BOTLIST_SECRET` in profile
+* Export `DISCORD_TOKEN`, `STAGE`, `MONGODB_URL`, `CLIENT_ID`, `DBL_TOKEN`, `DBL_SECRET`, `BOTLIST_SECRET`, `BOTLIST_TOKEN` in profile
 * Upload commands: `node commands/deployCommands.js`
 
 ### Database

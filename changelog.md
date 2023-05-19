@@ -1,5 +1,18 @@
 # Pokéstar Changelog
 
+### 0.7.4
+
+* Added more Pokemon: Exeggcute, Exeggutor, Rhyhorn, Rhydon!
+* Added NPC Blue!
+* Nerfed Tailwind: now only increases CR of backmost row.
+* Buffed Rapid Spin: now cleanses diagonal allies and deals more damage to enemies.
+* Few more minor move adjustments.
+* Some trainers (Red and Blue) now give daily rewards for defeating them!
+* Added more level rewards!
+* Added level display in party when HP isn't shown.
+* Patch Pokeballs not being added in vote rewards.
+* Added stats posting to Botlist.me.
+
 ### 0.7.3 (5/17) - Bot Rollout
 
 * `/vote`: Vote for the bot on listing websites every 12 hours to claim rewards!
