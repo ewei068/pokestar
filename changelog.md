@@ -1,6 +1,6 @@
 # Pokéstar Changelog
 
-### 0.7.4
+### 0.7.4 (5/18)
 
 * Added more Pokemon: Exeggcute, Exeggutor, Rhyhorn, Rhydon!
 * Added NPC Blue!

@@ -23,6 +23,7 @@ const buildHelpEmbed = () => {
     embed.addFields(
         { name: "Categories", value: categoriesString, inline: true }
     );
+    embed.setFooter({ text: `If you're just starting, please take the /tutorial!` });
     return embed;
 }
 
@@ -44,6 +45,7 @@ const buildHelpCategoryEmbed = (category) => {
     embed.addFields(
         { name: "Commands", value: commandsString, inline: true }
     );
+    embed.setFooter({ text: `If you're just starting, please take the /tutorial!` });
     return embed;
 }
 
@@ -73,6 +75,7 @@ const buildHelpCommandEmbed = (commandName) => {
         { name: "Usage", value: usageString, inline: false },
         { name: "Arguments", value: argsString, inline: false }
     );
+    embed.setFooter({ text: `If you're just starting, please take the /tutorial!` });
     return embed;
 }
 

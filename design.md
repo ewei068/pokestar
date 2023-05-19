@@ -284,7 +284,7 @@ The state and management of a battle will be kept with a special `Battle` class:
 * `eventHandler`: event handler for this battle. Various entities may register event listeners to the handler.
 * `winner`: the winner of the battle, if there is one. Once the battle is won, no further actions will take place.
 * `constructor()`: fills in all relevant fields, creates the event handler and Pokemon grid.
-* `battleStart()`: begins the battle. Triggers any `onBattleStart` events.
+* `battleStart()`: begins the battle. Applies all ability effects. Triggers any `onBattleStart` events.
 * `nextTurn()`: ticks the next turn of the battle, to be used after `battleStart` or after a party's move. Executes the following functionality:
 	* Turn end functionality: triggers any `onTurnEnd` events, then ticks down all buffs and debuffs for the Pokemon who's turn it is.  Also ticks up status effects.
 	* Battle win: check if the battle has been won or tied. If so, ignore next steps and end game.
@@ -320,6 +320,7 @@ The state and management of a battle will be kept with a special `Battle` class:
 * `effectIds`: mapping of effect (buff, debuff, neutral) => cooldown
 * `moveIds`: mapping of moves => cooldown
 * `statusId`: Pokemon's current status effect, if any, + how many turns its been active
+* `ability`: Map with ID and other important information.
 * `combatReadiness`: combat readiness of Pokemon
 * `position`: grid position of Pokemon
 * `fainted`: if the Pokemon has fainted
@@ -497,6 +498,13 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 	* Description
 	* onEffectAdd
 	* onEffectRemove
+
+**Ability Config**
+
+* Ability ID
+	* Name
+	* Description
+	* abilityAdd
 
 ## Starting Roadmap
 

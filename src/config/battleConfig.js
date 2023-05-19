@@ -5,8 +5,13 @@ const battleEventNames = {
     TURN_END: "turnEnd",
     TURN_BEGIN: "turnBegin",
     MOVE_BEGIN: "moveBegin",
+    BEFORE_DAMAGE_DEALT: "beforeDamageDealt",
+    AFTER_DAMAGE_DEALT: "afterDamageDealt",
     BEFORE_DAMAGE_TAKEN: "beforeDamageTaken",
+    AFTER_DAMAGE_TAKEN: "afterDamageTaken",
     AFTER_CR_GAINED: "afterCRGained",
+    BEFORE_EFFECT_ADD: "beforeEffectAdd",
+    AFTER_EFFECT_ADD: "afterEffectAdd",
     GET_ELIGIBLE_TARGETS: "getEligibleTargets",
 }
 
@@ -811,16 +816,16 @@ const effectConfig = {
         "description": "The target will be healed at the end of the duration.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target, args) {
+        "effectAdd": function(battle, source, target, initialArgs) {
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function(battle, target, args, initialArgs) {
             const effect = target.effectIds.delayedHeal;
             if (effect && effect.duration > 0) {
                 return;
             }
 
             battle.addToLog(`${target.name} was healed by ${effect.source.name}!`);
-            const healAmount = args.healAmount;
+            const healAmount = initialArgs.healAmount;
             effect.source.giveHeal(healAmount, target, {
                 "type": "delayedHeal",
             });
@@ -831,11 +836,11 @@ const effectConfig = {
         "description": "The target will be healed at the end of each turn.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target, args) {
+        "effectAdd": function(battle, source, target, initialArgs) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
-                    healAmount: args.healAmount,
+                    healAmount: initialArgs.healAmount,
                 },
                 execute: function(initialArgs, args) {
                     const regenPokemon = initialArgs.pokemon;
@@ -4653,7 +4658,7 @@ const moveExecutes = {
                     return;
                 }
                 // apply buff to self
-                source.addEffect(buffIdToSteal, buffToSteal.duration, source);
+                source.addEffect(buffIdToSteal, buffToSteal.duration + 1, source, buffToSteal.initialArgs);
             }
         }
     },
@@ -4953,6 +4958,333 @@ const moveExecutes = {
     },
 };
 
+const abilityConfig = {
+    "14": {
+        "name": "Compound Eyes",
+        "description": "Increases accuracy of moves by 30%.",
+        "abilityAdd": function (battle, source, target) {
+            battle.addToLog(`${source.name}'s Compound Eyes ability increases its accuracy!`)
+            target.acc += 30;
+        }
+    },
+    "46": {
+        "name": "Pressure",
+        "description": "When the user takes or deals damage, increase the cooldown of the target's moves by 1 if they can have a cooldown. Can only be triggered once per-target.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    // check who should be affected
+                    let targetPokemon = null;
+                    if (initialArgs.pokemon === args.source) {
+                        targetPokemon = args.target;
+                    } else if (initialArgs.pokemon === args.target) {
+                        targetPokemon = args.source;
+                    } else {
+                        return;
+                    }
+
+                    // attempt to get ability data
+                    const ability = initialArgs.pokemon.ability;
+                    if (!ability || ability.abilityId !== "46" || !ability.data) {
+                        return;
+                    }
+                    const abilityData = ability.data;
+
+                    // if target already affected or fainted, return
+                    if (targetPokemon.isFainted || abilityData.affectedPokemons.includes(targetPokemon)) {
+                        return;
+                    } else {
+                        abilityData.affectedPokemons.push(targetPokemon);
+                    }
+
+                    targetPokemon.battle.addToLog(`${initialArgs.pokemon.name} is exerting Pressure against ${targetPokemon.name}!`)
+                    // find all target moves that can have cooldown and increase cooldown by 1
+                    const targetMoveIds = targetPokemon.moveIds;
+                    for (const moveId in targetMoveIds) {
+                        const moveData = moveConfig[moveId];
+                        if (moveData.cooldown) {
+                            targetMoveIds[moveId].cooldown += 1;
+                        }
+                    }
+                }
+            }
+
+            // add listener to after damage dealt and after damage taken
+            const dealtListenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_DAMAGE_DEALT, listener);
+            const takenListenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_DAMAGE_TAKEN, listener);
+
+            return {
+                dealtListenerId: dealtListenerId,
+                takenListenerId: takenListenerId,
+                affectedPokemons: [target],
+            }
+        },
+    },
+    "47": {
+        "name": "Thick Fat",
+        "description": "Reduces damage taken from fire and ice moves by 50%.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+
+                    const targetPokemon = args.target;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+                    
+                    // if move type === fire or ice, reduce damage by 50%
+                    const moveData = moveConfig[args.damageInfo.moveId];
+                    if (moveData.type === types.FIRE || moveData.type === types.ICE) {
+                        targetPokemon.battle.addToLog(`${targetPokemon.name}'s Thick Fat reduces damage taken!`);
+                        args.damage = Math.round(args.damage * 0.5);
+                    }
+                }
+            }
+
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, listener);
+
+            return {
+                listenerId: listenerId,
+            }
+        }
+    },
+    "50": {
+        "name": "Run Away",
+        "description": "The first time this Pokemon's HP is reduced below 25%, increase its combat readiness to 100%.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    if (targetPokemon.isFainted || targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    // attempt to get ability data
+                    const ability = initialArgs.pokemon.ability;
+                    if (!ability || ability.abilityId !== "50" || !ability.data) {
+                        return;
+                    }
+                    const abilityData = ability.data;
+
+                    // if hp < 25%, increase combat readiness to 100%
+                    if (targetPokemon.hp < targetPokemon.maxHp / 1) {
+                        targetPokemon.battle.addToLog(`${targetPokemon.name}'s Run Away increases its combat readiness!`);
+                        targetPokemon.boostCombatReadiness(targetPokemon, 100);
+                    }
+
+                    // remove event listener
+                    targetPokemon.battle.eventHandler.unregisterListener(abilityData.listenerId);
+                }
+            }
+
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_DAMAGE_TAKEN, listener);
+
+            return {
+                listenerId: listenerId,
+            }
+        }
+    },
+    "65": {
+        "name": "Overgrow",
+        "description": "Increases damage of grass moves by 50% when HP is below 1/3.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+
+                    const userPokemon = args.source;
+                    if (userPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+                    
+                    // if move type === grass and hp < 1/3, increase damage by 50%
+                    const moveData = moveConfig[args.damageInfo.moveId];
+                    if (moveData.type === types.GRASS && userPokemon.hp < userPokemon.maxHp / 3) {
+                        userPokemon.battle.addToLog(`${userPokemon.name}'s Overgrow increases damage!`);
+                        args.damage = Math.round(args.damage * 1.5);
+                    }
+                }
+            }
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_DEALT, listener);
+            return {
+                "listenerId": listenerId,
+            };
+        },
+    },
+    "66": {
+        "name": "Blaze",
+        "description": "Increases damage of fire moves by 50% when HP is below 1/3.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+
+                    const userPokemon = args.source;
+                    if (userPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+                    
+                    // if move type === fire and hp < 1/3, increase damage by 50%
+                    const moveData = moveConfig[args.damageInfo.moveId];
+                    if (moveData.type === types.FIRE && userPokemon.hp < userPokemon.maxHp / 3) {
+                        userPokemon.battle.addToLog(`${userPokemon.name}'s Blaze increases damage!`);
+                        args.damage = Math.round(args.damage * 1.5);
+                    }
+                }
+            }
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_DEALT, listener);
+            return {
+                "listenerId": listenerId,
+            };
+        },
+    },
+    "67": {
+        "name": "Torrent",
+        "description": "Increases damage of water moves by 50% when HP is below 1/3.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+
+                    const userPokemon = args.source;
+                    if (userPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+                    
+                    // if move type === water and hp < 1/3, increase damage by 50%
+                    const moveData = moveConfig[args.damageInfo.moveId];
+                    if (moveData.type === types.WATER && userPokemon.hp < userPokemon.maxHp / 3) {
+                        userPokemon.battle.addToLog(`${userPokemon.name}'s Torrent increases damage!`);
+                        args.damage = Math.round(args.damage * 1.5);
+                    }
+                }
+            }
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_DEALT, listener);
+            return {
+                "listenerId": listenerId,
+            };
+        },
+    },
+    "97": {
+        "name": "Sniper",
+        "description": "Increases damage dealt by user to the BACKMOST row by 50%.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+
+                    const userPokemon = args.source;
+                    const targetPokemon = args.target;
+                    if (userPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+                    
+                    // if target is backmost row, increase damage by 50%
+                    const { party, row, col } = targetPokemon.getPartyRowColumn();
+                    if (row === party.rows - 1) {
+                        args.damage = Math.round(args.damage * 1.5);
+                    }
+                }
+            }
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_DEALT, listener);
+            return {
+                "listenerId": listenerId,
+            };
+        },
+    },
+    "138": {
+        "name": "Multiscale",
+        "description": "Reduces damage taken by 50% when HP is full.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+
+                    const targetPokemon = args.target;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+                    
+                    // if hp is full, reduce damage by 50%
+                    if (targetPokemon.hp === targetPokemon.maxHp) {
+                        targetPokemon.battle.addToLog(`${targetPokemon.name}'s Multiscale reduces damage taken!`);
+                        args.damage = Math.round(args.damage * 0.5);
+                    }
+                }
+            }
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, listener);
+            return {
+                "listenerId": listenerId,
+            };
+        },
+    },
+    "145": {
+        "name": "Big Pecks",
+        "description": "Immune to Def. Down and Greater Def. Down.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.effectId !== "defDown" && args.effectId !== "greaterDefDown") {
+                        return;
+                    }
+
+                    const targetPokemon = args.target;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+                    
+                    targetPokemon.battle.addToLog(`${targetPokemon.name}'s Big Pecks prevents the defense drop!`);
+                    args.canAdd = false;
+                }
+            }
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_EFFECT_ADD, listener);
+            return {
+                "listenerId": listenerId,
+            };
+        },
+    },
+};
+
 module.exports = {
     battleEventNames,
     moveConfig,
@@ -4965,5 +5297,6 @@ module.exports = {
     effectConfig,
     effectTypes,
     statusConditions,
-    calculateDamage
+    calculateDamage,
+    abilityConfig,
 };

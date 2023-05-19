@@ -2,7 +2,7 @@ const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig, growthR
 const { moveConfig } = require('../config/battleConfig');
 const { EmbedBuilder } = require('discord.js');
 const { getWhitespace, getPBar, linebreakString, setTwoInline, getOrSetDefault } = require('../utils/utils');
-const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString } = require('../utils/pokemonUtils');
+const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString, getAbilityName } = require('../utils/pokemonUtils');
 const { buildMoveString } = require('../utils/battleUtils');
 const { backpackItems, backpackItemConfig } = require('../config/backpackConfig');
 const { trainerFields } = require('../config/trainerConfig');
@@ -105,7 +105,7 @@ const buildNewPokemonEmbed = (pokemon, pokeballId=backpackItems.POKEBALL, remain
     embed.addFields(
         { name: "Type", value: typeString, inline: true },
         { name: "Nature", value: `${natureConfig[pokemon.natureId].name} (${natureConfig[pokemon.natureId].description})`, inline: true },
-        { name: "Ability", value: pokemon.abilityId, inline: true },
+        { name: "Ability", value: getAbilityName(pokemon.abilityId), inline: true },
         { name: "Shiny", value: pokemon.shiny ? "True" : "False", inline: true },
         { name: "IVs", value: ivString, inline: false },
     );
@@ -182,7 +182,7 @@ const buildPokemonEmbed = (trainer, pokemon) => {
     embed.setColor(rarityConfig[speciesData.rarity].color);
     embed.addFields(
         { name: "Type", value: typeString, inline: true },
-        { name: "Ability", value: pokemon.abilityId, inline: true },
+        { name: "Ability", value: getAbilityName(pokemon.abilityId), inline: true },
         { name: "Nature", value: `${natureConfig[pokemon.natureId].name} (${natureConfig[pokemon.natureId].description})`, inline: true },
         { name: "Rarity", value: speciesData.rarity, inline: true },
         { name: "Shiny", value: pokemon.shiny ? "True" : "False", inline: true },
@@ -240,7 +240,7 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
         for (let i = 0; i < Object.keys(speciesData.abilities).length; i++) {
             const abilityId = Object.keys(speciesData.abilities)[i];
             const abilityProbability = speciesData.abilities[abilityId];
-            abilityString += `${abilityId} (${abilityProbability}%)`;
+            abilityString += `${getAbilityName(abilityId)} (${abilityProbability}%)`;
             if (i < Object.keys(speciesData.abilities).length - 1) {
                 abilityString += "\n";
             }

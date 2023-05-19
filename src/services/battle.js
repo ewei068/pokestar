@@ -1,7 +1,7 @@
 const { getOrSetDefault } = require("../utils/utils");
 const { v4: uuidv4, v4 } = require('uuid');
 const { pokemonConfig, types } = require('../config/pokemonConfig');
-const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, getTypeDamageMultiplier, effectConfig, statusConditions, moveTiers, calculateDamage } = require("../config/battleConfig");
+const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, getTypeDamageMultiplier, effectConfig, statusConditions, moveTiers, calculateDamage, abilityConfig } = require("../config/battleConfig");
 const { buildBattleEmbed, buildBattleMovesetEmbed, buildPveListEmbed, buildPveNpcEmbed } = require("../embeds/battleEmbeds");
 const { buildSelectBattleMoveRow } = require("../components/selectBattleMoveRow");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
@@ -323,7 +323,19 @@ class Battle {
     }
 
     start() {
-        this.log.push("Battle started.");
+        this.log.push("The battle begins!");
+
+        // add all abilities
+        Object.entries(this.allPokemon).forEach(([pokemonId, pokemon]) => {
+            const abilityId = pokemon.ability.abilityId;
+            const abilityData = abilityConfig[abilityId];
+            if (!abilityData || !abilityData.abilityAdd) {
+                return;
+            }
+
+            pokemon.ability.data = abilityData.abilityAdd(this, pokemon, pokemon);
+        });
+
         this.eventHandler.emit(battleEventNames.BATTLE_BEGIN);
 
         // increase combat readiness for all pokemon
@@ -350,6 +362,12 @@ class Battle {
         // tick effects
         if (!this.activePokemon.isFainted) {
             this.activePokemon.tickEffectDurations();
+        }
+
+        // tick move cooldowns
+        // TODO: I moved this from begin turn to end turn, but I'm not sure if this is correct
+        if (!this.activePokemon.isFainted) {
+            this.activePokemon.tickMoveCooldowns();
         }
 
         // increase turn and check for game end
@@ -382,9 +400,6 @@ class Battle {
 
         // begin turn
         this.eventHandler.emit(battleEventNames.TURN_BEGIN);
-        if (!this.activePokemon.isFainted) {
-            this.activePokemon.tickMoveCooldowns();
-        }
 
         // log
         const userIsNpc = this.isNpc(this.activePokemon.userId);
@@ -626,12 +641,14 @@ class Pokemon {
     acc;
     type1;
     type2;
-    // effectId => duration
+    // effectId => { duration, args }
     effectIds;
     // moveId => { cooldown, disabled }
     moveIds;
     // { statusId. tuns active }
     status;
+    // { abilityId, args }
+    ability;
     combatReadiness;
     position;
     isFainted;
@@ -682,6 +699,9 @@ class Pokemon {
         this.status = {
             statusId: null,
             turns: 0,
+        }
+        this.ability = {
+            abilityId: pokemonData.abilityId,
         }
         this.combatReadiness = 0;
         this.position = position;
@@ -1032,13 +1052,30 @@ class Pokemon {
 
 
     dealDamage(damage, target, damageInfo) {
-        // TODO: use type to trigger any events
+        // console.log(damage)
 
-        // TODO: trigger damage begin
+        const eventArgs = {
+            target: target,
+            damage: damage,
+            source: this,
+            damageInfo: damageInfo,
+        };
+
+        this.battle.eventHandler.emit(battleEventNames.BEFORE_DAMAGE_DEALT, eventArgs);
+        damage = eventArgs.damage;
+        // console.log(damage)
 
         const damageDealt = target.takeDamage(damage, this, damageInfo);
 
-        // TODO: trigger damage end
+        if (damageDealt > 0) {
+            const afterDamageArgs = {
+                target: target,
+                damage: damageDealt,
+                source: this,
+                damageInfo: damageInfo,
+            };
+            this.battle.eventHandler.emit(battleEventNames.AFTER_DAMAGE_DEALT, afterDamageArgs);
+        }
 
         return damageDealt;
     }
@@ -1058,8 +1095,8 @@ class Pokemon {
                 damage = Math.floor(damage * 1.5);
             }
         }
+        // console.log(damage)
 
-        // TODO: trigger damage taken begin & type events
         const eventArgs = {
             target: this,
             damage: damage,
@@ -1069,6 +1106,7 @@ class Pokemon {
 
         this.battle.eventHandler.emit(battleEventNames.BEFORE_DAMAGE_TAKEN, eventArgs);
         damage = eventArgs.damage;
+        // console.log(damage)
 
         const oldHp = this.hp;
         if (oldHp <= 0 || this.isFainted) {
@@ -1082,7 +1120,15 @@ class Pokemon {
             this.faint();
         }
 
-        // TODO: trigger damage taken end
+        if (damageTaken > 0) {
+            const afterDamageArgs = {
+                target: this,
+                damage: damageTaken,
+                source: source,
+                damageInfo: damageInfo,
+            };
+            this.battle.eventHandler.emit(battleEventNames.AFTER_DAMAGE_TAKEN, afterDamageArgs);
+        }
         
         return damageTaken;
     }
@@ -1165,21 +1211,26 @@ class Pokemon {
             return;
         }
 
-        // TODO: trigger before add effect events
+        // trigger before effect add events
+        const beforeAddArgs = {
+            target: this,
+            source: source,
+            effectId: effectId,
+            duration: duration,
+            initialArgs: args,
+            canAdd: true,
+        };
+        this.battle.eventHandler.emit(battleEventNames.BEFORE_EFFECT_ADD, beforeAddArgs);
+        if (!beforeAddArgs.canAdd) {
+            return;
+        }
 
         this.effectIds[effectId] = {
             duration: duration,
             source: source,
+            initialArgs: args,
         };
-        args = {
-            ...effectData.effectAdd(this.battle, source, this, args),
-            ...args,
-        };
-        
-        // if effect still exists, add args
-        if (this.effectIds[effectId]) {
-            this.effectIds[effectId].args = args;
-        }
+        this.effectIds[effectId].args = effectData.effectAdd(this.battle, source, this, args);
 
         // TODO: trigger after add effect events
     }
@@ -1208,7 +1259,7 @@ class Pokemon {
             return false;
         }
 
-        effectData.effectRemove(this.battle, this, this.effectIds[effectId].args);
+        effectData.effectRemove(this.battle, this, this.effectIds[effectId].args, this.effectIds[effectId].initialArgs);
 
         delete this.effectIds[effectId];
         return true;
@@ -1434,6 +1485,18 @@ class Pokemon {
 
     effectiveSpeed() {
         return calculateEffectiveSpeed(this.spe);
+    }
+
+    getRowAndColumn() {
+        const party = this.battle.parties[this.teamName];
+        const row = Math.floor((this.position - 1) / party.cols);
+        const col = (this.position - 1) % party.cols;
+        return { row, col };
+    }
+
+    getPartyRowColumn() {
+        const party = this.battle.parties[this.teamName];
+        return {party, ...this.getRowAndColumn()};
     }
 
 }

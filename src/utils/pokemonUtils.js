@@ -1,5 +1,6 @@
 const { growthRates, rarityConfig, pokemonConfig, growthRateConfig } = require('../config/pokemonConfig');
 const { getPBar, getWhitespace } = require('./utils');
+const { abilityConfig } = require('../config/battleConfig');
 
 const getPokemonExpNeeded = (level, growthRate) => {
     if (level <= 1) {
@@ -95,11 +96,20 @@ const calculateEffectiveAccuracy = (accuracy) => {
     }
 }
 
+const getAbilityName = (abilityId) => {
+    if (abilityConfig[abilityId]) {
+        return `#${abilityId} ${abilityConfig[abilityId].name}`;
+    } else {
+        return `#${abilityId}`;
+    }
+}
+
 module.exports = {
     getPokemonExpNeeded,
     calculateWorth,
     buildPokemonStatString,
     buildPokemonBaseStatString,
     calculateEffectiveSpeed,
-    calculateEffectiveAccuracy
+    calculateEffectiveAccuracy,
+    getAbilityName
 };
