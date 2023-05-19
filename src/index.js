@@ -118,7 +118,7 @@ client.once(Events.ClientReady, c => {
 
         // post botlist stats every hour (may not work)
         poll(async () => {
-            console.log("Posting botlist stats");
+            logger.info("Posting botlist stats");
             try {
                 const botlistUrl = `https://api.botlist.me/api/v1/bots/${process.env.CLIENT_ID}/stats`;
                 const botlistData = {
