@@ -12,7 +12,7 @@ const cors = require('cors');
 const { addVote } = require('./services/trainer.js');
 const { stageNames } = require('./config/stageConfig.js');
 const { poll } = require('./utils/utils.js');
-const fetch = require('node-fetch');
+const axios = require('axios');
 
 const corsOptions = {
     origin: true,
@@ -120,16 +120,15 @@ client.once(Events.ClientReady, c => {
         poll(async () => {
             console.log("Posting botlist stats");
             try {
-                fetch(`https://api.botlist.me/api/v1/bots/${process.env.CLIENT_ID}/stats`, {
-                    method: "POST",
-                    headers: {
-                        "Authorization": process.env.BOTLIST_TOKEN,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        "server_count": client.guilds.cache.size
-                    })
-                });
+                const botlistUrl = `https://api.botlist.me/api/v1/bots/${process.env.CLIENT_ID}/stats`;
+                const botlistData = {
+                    "server_count": client.guilds.cache.size
+                }
+                const botlistHeaders = {
+                    "Authorization": process.env.BOTLIST_TOKEN,
+                    "Content-Type": "application/json"
+                }
+                await axios.post(botlistUrl, botlistData, { headers: botlistHeaders });
             } catch (error) {
                 logger.error(error);
             }
