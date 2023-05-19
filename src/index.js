@@ -12,6 +12,7 @@ const cors = require('cors');
 const { addVote } = require('./services/trainer.js');
 const { stageNames } = require('./config/stageConfig.js');
 const { poll } = require('./utils/utils.js');
+const fetch = require('node-fetch');
 
 const corsOptions = {
     origin: true,
