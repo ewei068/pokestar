@@ -1,5 +1,15 @@
 # Pokéstar Changelog
 
+## 0.8.0 - Abilities and Events
+
+* Abilities have been added!
+    * Use `/pokedex` to see what a Pokemon's ability does!
+* Launch event
+* Event Pokemon
+* Pokemon tabs?
+* Ephemeral tutorial
+* Shiny Pokemon are now worth 100x their original value!
+
 ### 0.7.4 (5/18)
 
 * Added more Pokemon: Exeggcute, Exeggutor, Rhyhorn, Rhydon!

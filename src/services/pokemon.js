@@ -422,6 +422,14 @@ const buildPokedexSend = async ({ id="1", tab="info" } = {}) => {
                 tab: "moves"
             }
         },
+        {
+            label: "Abilities",
+            disabled: tab === "abilities" ? true : false,
+            data: {
+                page: index + 1,
+                tab: "abilities"
+            }
+        },
     ]
     const tabActionRow = buildButtonActionRow(
         buttonConfigs,

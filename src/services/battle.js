@@ -336,7 +336,9 @@ class Battle {
             pokemon.ability.data = abilityData.abilityAdd(this, pokemon, pokemon);
         });
 
-        this.eventHandler.emit(battleEventNames.BATTLE_BEGIN);
+        this.eventHandler.emit(battleEventNames.BATTLE_BEGIN, {
+            battle: this,
+        });
 
         // increase combat readiness for all pokemon
         this.increaseCombatReadiness();
@@ -362,12 +364,6 @@ class Battle {
         // tick effects
         if (!this.activePokemon.isFainted) {
             this.activePokemon.tickEffectDurations();
-        }
-
-        // tick move cooldowns
-        // TODO: I moved this from begin turn to end turn, but I'm not sure if this is correct
-        if (!this.activePokemon.isFainted) {
-            this.activePokemon.tickMoveCooldowns();
         }
 
         // increase turn and check for game end
@@ -397,6 +393,11 @@ class Battle {
 
         // push cr
         this.increaseCombatReadiness();
+
+        // tick move cooldowns
+        if (!this.activePokemon.isFainted) {
+            this.activePokemon.tickMoveCooldowns();
+        }
 
         // begin turn
         this.eventHandler.emit(battleEventNames.TURN_BEGIN);
@@ -655,6 +656,7 @@ class Pokemon {
     targetable;
     hittable;
     incapacitated;
+    restricted;
 
     constructor(battle, trainer, pokemonData, teamName, position) {
         this.battle = battle;
@@ -709,6 +711,7 @@ class Pokemon {
         this.targetable = true;
         this.hittable = true;
         this.incapacitated = false;
+        this.restricted = false;
     }
 
     useMove(moveId, targetPokemonId) {
@@ -1043,7 +1046,14 @@ class Pokemon {
                 hitChance *= 0.8;
             }
 
-            if (Math.random() > hitChance / 100) {
+            const calculateMissArgs = {
+                target: target,
+                hitChance: hitChance,
+                source: this,
+            }
+            this.battle.eventHandler.emit(battleEventNames.CALCULATE_MISS, calculateMissArgs);
+
+            if (Math.random() > calculateMissArgs.hitChance / 100) {
                 misses.push(target);
             }
         }
@@ -1163,17 +1173,31 @@ class Pokemon {
             return 0;
         }
 
+        if (this.restricted) {
+            this.battle.addToLog(`${this.name} is restricted and cannot gain combat readiness!`);
+            return 0;
+        }
+
+        const beforeBoostArgs = {
+            target: this,
+            source: source,
+            amount: amount,
+        };
+        this.battle.eventHandler.emit(battleEventNames.BEFORE_CR_GAINED, beforeBoostArgs);
+
         const oldCombatReadiness = this.combatReadiness;
-        this.combatReadiness = Math.min(100, this.combatReadiness + amount);
+        this.combatReadiness = Math.min(100, this.combatReadiness + beforeBoostArgs.amount);
         const combatReadinessGained = this.combatReadiness - oldCombatReadiness;
         this.battle.addToLog(`${this.name} gained ${Math.round(combatReadinessGained)} combat readiness!`);
         
-        const eventArgs = {
-            target: this,
-            source: source,
-            combatReadinessGained: amount,
-        };
-        this.battle.eventHandler.emit(battleEventNames.AFTER_CR_GAINED, eventArgs);
+        if (combatReadinessGained > 0) {
+            const eventArgs = {
+                target: this,
+                source: source,
+                combatReadinessGained: amount,
+            };
+            this.battle.eventHandler.emit(battleEventNames.AFTER_CR_GAINED, eventArgs);
+        }
 
         return combatReadinessGained;
     }
@@ -1226,7 +1250,7 @@ class Pokemon {
         }
 
         this.effectIds[effectId] = {
-            duration: duration,
+            duration: this.battle.activePokemon === this ? duration + 1 : duration,
             source: source,
             initialArgs: args,
         };
@@ -1277,6 +1301,7 @@ class Pokemon {
             return;
         }
 
+        let statusApplied = false;
         // TODO: trigger before apply status events
 
         switch (statusId) {
@@ -1292,6 +1317,7 @@ class Pokemon {
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was burned!`);
+                statusApplied = true;
                 break;
             case statusConditions.FREEZE:
                 if (this.type1 === types.ICE || this.type2 === types.ICE) {
@@ -1304,6 +1330,7 @@ class Pokemon {
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was frozen!`);
+                statusApplied = true;
                 break;
             case statusConditions.PARALYSIS:
                 if (this.type1 === types.ELECTRIC || this.type2 === types.ELECTRIC) {
@@ -1319,6 +1346,7 @@ class Pokemon {
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was paralyzed!`);
+                statusApplied = true;
                 break;
             case statusConditions.POISON:
                 if (this.type1 === types.POISON || this.type2 === types.POISON) {
@@ -1331,6 +1359,7 @@ class Pokemon {
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was poisoned!`);
+                statusApplied = true;
                 break;
             case statusConditions.SLEEP:
                 this.status = {
@@ -1338,6 +1367,7 @@ class Pokemon {
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} fell asleep!`);
+                statusApplied = true;
                 break;
             case statusConditions.BADLY_POISON:
                 if (this.type1 === types.POISON || this.type2 === types.POISON) {
@@ -1350,12 +1380,20 @@ class Pokemon {
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was badly poisoned!`);
+                statusApplied = true;
                 break;
             default:
                 break;
         }
 
-        // TODO: trigger after apply status events
+        if (statusApplied) {
+            const afterStatusArgs = {
+                target: this,
+                source: source,
+                statusId: statusId,
+            };
+            this.battle.eventHandler.emit(battleEventNames.AFTER_STATUS_APPLY, afterStatusArgs);
+        }
     }
 
     tickStatus() {

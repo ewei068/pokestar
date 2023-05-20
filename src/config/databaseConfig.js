@@ -4,8 +4,8 @@ const shinyAggregate = function(shiny) {
     return shiny ? 1 : 0;
 }
 
-const worthAggregate = function(rarityConfig, rarity) {
-    return rarityConfig[rarity].money;
+const worthAggregate = function(rarityConfig, rarity, shiny) {
+    return rarityConfig[rarity].money * (shiny ? 100 : 1);
 }
 
 const DB_NAME = 'pokestar';
@@ -42,7 +42,7 @@ const collectionConfig = {
                     "userId": 1,
                     "worth": { $function: { 
                         body: worthAggregate.toString(),
-                        args: [rarityConfig, "$rarity"], 
+                        args: [rarityConfig, "$rarity", "$shiny"], 
                         lang: "js" 
                     } },
                     "shiny": { $function: { 

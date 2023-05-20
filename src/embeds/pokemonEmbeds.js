@@ -1,5 +1,5 @@
 const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig, growthRateConfig } = require('../config/pokemonConfig');
-const { moveConfig } = require('../config/battleConfig');
+const { moveConfig, abilityConfig } = require('../config/battleConfig');
 const { EmbedBuilder } = require('discord.js');
 const { getWhitespace, getPBar, linebreakString, setTwoInline, getOrSetDefault } = require('../utils/utils');
 const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString, getAbilityName } = require('../utils/pokemonUtils');
@@ -240,7 +240,7 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
         for (let i = 0; i < Object.keys(speciesData.abilities).length; i++) {
             const abilityId = Object.keys(speciesData.abilities)[i];
             const abilityProbability = speciesData.abilities[abilityId];
-            abilityString += `${getAbilityName(abilityId)} (${abilityProbability}%)`;
+            abilityString += `${getAbilityName(abilityId)} (${Math.floor(abilityProbability * 100)}%)`;
             if (i < Object.keys(speciesData.abilities).length - 1) {
                 abilityString += "\n";
             }
@@ -298,6 +298,21 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
             embed.setDescription(`Moves for #${id} ${speciesData.name}:`);
             embed.addFields(fields);
         }
+    } else if (tab === "abilities") {
+        // display: ability strings
+        const fields = Object.entries(speciesData.abilities).map(([abilityId, abilityProbability]) => {
+            const abilityData = abilityConfig[abilityId];
+            const abilityHeader = `${getAbilityName(abilityId)} (${Math.floor(abilityProbability * 100)}%)`;
+            const abilityString = abilityData ? abilityData.description : "Not yet implemented!";
+            return {
+                name: abilityHeader,
+                value: abilityString,
+                inline: false,
+            };
+        });
+
+        embed.setDescription(`Abilities for #${id} ${speciesData.name}:`);
+        embed.addFields(fields);
     }
 
     return embed;

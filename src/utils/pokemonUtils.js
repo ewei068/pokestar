@@ -14,7 +14,7 @@ const calculateWorth = (pokemons=null, speciesIds=null) => {
     let worth = 0;
     if (pokemons) {
         pokemons.forEach(pokemon => {
-            worth += rarityConfig[pokemonConfig[pokemon.speciesId].rarity].money;
+            worth += rarityConfig[pokemonConfig[pokemon.speciesId].rarity].money * (pokemon.shiny ? 100 : 1);
         });
     } else if (speciesIds) {
         speciesIds.forEach(speciesId => {
