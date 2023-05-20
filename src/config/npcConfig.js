@@ -261,7 +261,7 @@ const npcConfig = {
                 maxLevel: 39,
                 numPokemon: 5,
                 pokemonIds: ["18", "58", "65", "102"],
-                aceId: "9",
+                aceId: "9-1",
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
@@ -275,7 +275,7 @@ const npcConfig = {
                 maxLevel: 64,
                 numPokemon: 6,
                 pokemonIds: ["18", "59", "65", "103", "112"],
-                aceId: "9",
+                aceId: "9-1",
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {

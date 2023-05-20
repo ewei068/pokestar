@@ -1,6 +1,6 @@
 const { collectionNames } = require("./databaseConfig");
 
-const INVITE_URL = "https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot";
+const INVITE_URL = "https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands";
 
 const voteConfig = [
     {

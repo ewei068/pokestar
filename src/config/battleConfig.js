@@ -1510,6 +1510,19 @@ const moveConfig = {
         "damageType": damageTypes.SPECIAL,
         "description": "The target row is blasted by a huge volume of water launched under great pressure, reducing their combat readiness by 15%.",
     },
+    "m56-1": {
+        "name": "Hydro Artilery Pump",
+        "type": types.WATER,
+        "power": 90,
+        "accuracy": 80,
+        "cooldown": 6,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SQUARE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The target area is blasted by a huge volume of water launched precisely under great pressure, reducing their combat readiness by 15%. This move is 1.5x effective if there's only one target.",
+    },
     "m57": {
         "name": "Surf",
         "type": types.WATER,
@@ -2351,6 +2364,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user hardens its body's surface like iron, sharply raising its Defense stat for 2 turns.",
     },
+    "m334-1": {
+        "name": "Titanium Defense",
+        "type": types.STEEL,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 5,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SQUARE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user hardens its body's surface like iron to protect its teammates, sharply raising its Defense stat for 2 turns and raising surrounding allies Defense stat for 2 turns.",
+    },
     "m340": {
         "name": "Bounce",
         "type": types.FLYING,
@@ -2366,6 +2392,19 @@ const moveConfig = {
         "silenceIf": function(battle, pokemon) {
             return pokemon.effectIds.sprungUp === undefined;
         }
+    },
+    "m344": {
+        "name": "Volt Tackle",
+        "type": types.ELECTRIC,
+        "power": 90,
+        "accuracy": 80,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.COLUMN,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user electrifies itself, then charges. This also damages the user by a third of the damage dealt. This may leave the target with paralysis with a 20% chance.",
     },
     "m349": {
         "name": "Dragon Dance",
@@ -2887,6 +2926,19 @@ const moveConfig = {
         "damageType": damageTypes.SPECIAL,
         "description": "The user attacks the target with a moonblast. This also lowers the target's special attack for 2 turns with a 70% chance.",
     },
+    "m719": {
+        "name": "10,000,000 Volt Thunderbolt",
+        "type": types.ELECTRIC,
+        "power": 100,
+        "accuracy": 100,
+        "cooldown": 7,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user unleashes a powerful beam of electricity. This ONLY deals damage to the primary target and 2 additional random enemies, but has a 10% chance to paralyze all targets.",
+    }
 };
 
 const moveExecutes = {
@@ -3158,6 +3210,24 @@ const moveExecutes = {
             // if not miss, reduce cr by 15%
             if (!miss) {
                 target.reduceCombatReadiness(source, 15);
+            }
+        }
+    },
+    "m56-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m56-1";
+        const moveData = moveConfig[moveId];
+        const multiplier = allTargets.length === 1 ? 1.5 : 1;
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(Math.floor(damageToDeal * multiplier), target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, reduce cr by 15%
+            if (!miss) {
+                target.reduceCombatReadiness(source, Math.floor(15 * multiplier));
             }
         }
     },
@@ -4250,6 +4320,17 @@ const moveExecutes = {
             target.addEffect("greaterDefUp", 2, source);
         }
     },
+    "m334-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveData = moveConfig["m334-1"];
+        for (const target of allTargets) {
+            // if primary target, greater def up, else def up
+            if (target === primaryTarget) {
+                target.addEffect("greaterDefUp", 2, source);
+            } else {
+                target.addEffect("defUp", 2, source);
+            }
+        }
+    },
     "m340": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m340";
         const moveData = moveConfig[moveId];
@@ -4275,6 +4356,30 @@ const moveExecutes = {
                 }
             }
         }
+    },
+    "m344": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m344";
+        const moveData = moveConfig[moveId];
+        let damageDealt = 0;
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            damageDealt += source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 20% chance to paralyze
+            if (!miss && Math.random() < 0.2) {
+                target.applyStatus(statusConditions.PARALYSIS, source);
+            }
+        }
+
+        battle.addToLog(`${source.name} is affected by recoil!`);
+        const damageToDeal = Math.max(Math.floor(damageDealt / 3), 1);
+        source.dealDamage(damageToDeal, source, {
+            type: "recoil"
+        });
     },
     "m349": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveData = moveConfig["m349"];
@@ -4970,6 +5075,39 @@ const moveExecutes = {
             }
         }
     },
+    "m719": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m719";
+        const moveData = moveConfig[moveId];
+        // filter out allTargets => just the primary target and up to 2 random other targets
+        let damagedTargets = [];
+        if (allTargets.length > 3) {
+            const newTargets = [primaryTarget];
+            const otherTargets = allTargets.filter(t => t !== primaryTarget);
+            for (let i = 0; i < 2; i++) {
+                const randomIndex = Math.floor(Math.random() * otherTargets.length);
+                newTargets.push(otherTargets[randomIndex]);
+                otherTargets.splice(randomIndex, 1);
+            }
+            damagedTargets = newTargets;
+        } else {
+            damagedTargets = allTargets;
+        }
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            if (damagedTargets.includes(target)) {
+                const damageToDeal = calculateDamage(moveData, source, target, miss);
+                source.dealDamage(damageToDeal, target, {
+                    type: "move",
+                    moveId: moveId
+                });
+            }
+
+            // if not miss, 10% chance to paralysis
+            if (!miss && Math.random() < 0.1) {
+                target.applyStatus(statusConditions.PARALYSIS, source);
+            }
+        }
+    },
 };
 
 const abilityConfig = {
@@ -5625,6 +5763,35 @@ const abilityConfig = {
                 }
             }
             const listenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_DAMAGE_DEALT, listener);
+            return {
+                "listenerId": listenerId,
+            };
+        }
+    },
+    "75": {
+        "name": "Shell Armor",
+        "description": "Reduces damage taken from moves by 12.5%.",
+        "abilityAdd": function (battle, source, target) {
+            battle.addToLog(`${target.name}'s Shell Armor is reducing its damage taken!`);
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+
+                    const targetPokemon = args.target;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+                    
+                    // reduce damage taken by 12.5%
+                    args.damage = Math.round(args.damage * 0.875);
+                }
+            }
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, listener);
             return {
                 "listenerId": listenerId,
             };

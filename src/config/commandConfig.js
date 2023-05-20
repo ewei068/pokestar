@@ -238,7 +238,7 @@ const commandConfig = {
                 "type": "string",
                 "description": "species name OR id number",
                 "optional": true,
-                "variable": false
+                "variable": true
             }
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],

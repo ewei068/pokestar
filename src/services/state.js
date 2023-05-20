@@ -1,5 +1,6 @@
-const { v4: uuidv4 } = require('uuid');
+const shortid = require('shortid');
 const { logger } = require('../log');
+
 
 const states = {};
 const ttls = {};
@@ -26,7 +27,7 @@ const handleTimeout = (stateId) => {
 
 const setState = (state, ttl=60) => {
     // generate random state UUID
-    const stateId = uuidv4();
+    const stateId = shortid.generate();
     // add state to states object
     states[stateId] = state;
     
