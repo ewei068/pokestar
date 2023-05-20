@@ -114,7 +114,7 @@ client.once(Events.ClientReady, c => {
     if (process.env.STAGE === stageNames.BETA || process.env.STAGE === stageNames.PROD) {
         const dbl = createDjsClient(process.env.DBL_TOKEN, client);
         dbl.on("posted", (stats) => {
-            logger.info(`Posted stats to discordbotlist.com: ${stats}`);
+            logger.info(`Posted stats to discordbotlist.com: ${JSON.stringify(stats)}`);
         });
         dbl.startPosting();
         logger.info(`Connected to discordbotlist.com`);
@@ -126,7 +126,7 @@ client.once(Events.ClientReady, c => {
                 const botlistData = {
                     "server_count": client.guilds.cache.size
                 }
-                logger.info(`Posting botlist.me stats: ${botlistData}`);
+                logger.info(`Posting botlist.me stats: ${JSON.stringify(botlistData)}`);
                 const botlistHeaders = {
                     "Authorization": process.env.BOTLIST_TOKEN,
                     "Content-Type": "application/json"
