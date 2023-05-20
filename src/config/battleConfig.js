@@ -5044,12 +5044,116 @@ const abilityConfig = {
             }
         },
     },
+    "10": {
+        "name": "Volt Absorb",
+        "description": "When the user takes damage from an electric move, negate the damage and heal 25% of max HP.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+
+                    const targetPokemon = args.target;
+                    if (targetPokemon.isFainted || initialArgs.pokemon !== targetPokemon) {
+                        return;
+                    }
+
+                    // if electric, negate damage and heal 25% of max hp
+                    const moveData = moveConfig[args.damageInfo.moveId];
+                    if (moveData.type === types.ELECTRIC) {
+                        targetPokemon.battle.addToLog(`${targetPokemon.name} is healed by Volt Absorb!`);
+                        targetPokemon.giveHeal(Math.floor(targetPokemon.maxHp * 0.25), targetPokemon, {
+                            "type": "waterAbsorb"
+                        });
+                        args.damage = 0;
+                    }
+                }
+            };
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, listener);
+            return {
+                "listenerId": listenerId
+            }
+        }
+    },
+    "11": {
+        "name": "Water Absorb",
+        "description": "When the user takes damage from a water move, negate the damage and heal 25% of max HP.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+
+                    const targetPokemon = args.target;
+                    if (targetPokemon.isFainted || initialArgs.pokemon !== targetPokemon) {
+                        return;
+                    }
+
+                    // if water, negate damage and heal 25% of max hp
+                    const moveData = moveConfig[args.damageInfo.moveId];
+                    if (moveData.type === types.WATER) {
+                        targetPokemon.battle.addToLog(`${targetPokemon.name} is healed by Water Absorb!`);
+                        targetPokemon.giveHeal(Math.floor(targetPokemon.maxHp * 0.25), targetPokemon, {
+                            "type": "waterAbsorb"
+                        });
+                        args.damage = 0;
+                    }
+                }
+            };
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, listener);
+            return {
+                "listenerId": listenerId
+            }
+        }
+    },
     "14": {
         "name": "Compound Eyes",
         "description": "Increases accuracy of moves by 30%.",
         "abilityAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Compound Eyes ability increases its accuracy!`)
             target.acc += 30;
+        }
+    },
+    "18": {
+        "name": "Flash Fire",
+        "description": "When the user takes damage from a fire move, negate the damage grant Atk. Up and Spa. Up. for 1 turn.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+
+                    const targetPokemon = args.target;
+                    if (targetPokemon.isFainted || initialArgs.pokemon !== targetPokemon) {
+                        return;
+                    }
+
+                    // if fire, negate damage and grant atk up, spa up
+                    const moveData = moveConfig[args.damageInfo.moveId];
+                    if (moveData.type === types.FIRE) {
+                        targetPokemon.battle.addToLog(`${targetPokemon.name}'s Flash Fire was activated by the Fire attack!`);
+                        targetPokemon.addEffect("atkUp", 1, targetPokemon);
+                        targetPokemon.addEffect("spaUp", 1, targetPokemon);
+                        args.damage = 0;
+                    }
+                }
+            };
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, listener);
+            return {
+                "listenerId": listenerId
+            }
         }
     },
     "22": {

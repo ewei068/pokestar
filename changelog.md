@@ -9,6 +9,7 @@
 * Pokemon tabs?
 * Ephemeral tutorial
 * Shiny Pokemon are now worth 100x their original value!
+* Possibly fixed battle start edge case bug on slow wifi.
 
 ### 0.7.4 (5/18)
 

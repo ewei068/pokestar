@@ -40,11 +40,14 @@ const pvpAccept = async (interaction, data) => {
     if (!battle) {
         return { err: "No battle data." };
     }
-    battle.addTeam("Team2", false);
-    battle.addTrainer(trainer.data, validate.data, "Team2");
+    
+    if (!battle.hasStarted) {
+        battle.addTeam("Team2", false);
+        battle.addTrainer(trainer.data, validate.data, "Team2");
 
-    // start battle
-    battle.start();
+        // start battle
+        battle.start();
+    }
 
     await interaction.update(await getStartTurnSend(battle, data.stateId));
 }

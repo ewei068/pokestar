@@ -183,6 +183,7 @@ class Battle {
     moneyReward;
     expReward;
     pokemonExpReward;
+    hasStarted;
     userIds;
     users;
     teams;
@@ -214,6 +215,7 @@ class Battle {
         this.moneyReward = 0;
         this.expReward = 0;
         this.pokemonExpReward = 0;
+        this.hasStarted = false;
         this.userIds = [];
         // map userId to user
         this.users = {};
@@ -324,6 +326,7 @@ class Battle {
 
     start() {
         this.log.push("The battle begins!");
+        this.hasStarted = true;
 
         // add all abilities
         Object.entries(this.allPokemon).forEach(([pokemonId, pokemon]) => {
