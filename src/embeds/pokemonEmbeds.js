@@ -2,7 +2,7 @@ const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig, growthR
 const { moveConfig, abilityConfig } = require('../config/battleConfig');
 const { EmbedBuilder } = require('discord.js');
 const { getWhitespace, getPBar, linebreakString, setTwoInline, getOrSetDefault } = require('../utils/utils');
-const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString, getAbilityName } = require('../utils/pokemonUtils');
+const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString, getAbilityName, getAbilityOrder } = require('../utils/pokemonUtils');
 const { buildMoveString } = require('../utils/battleUtils');
 const { backpackItems, backpackItemConfig } = require('../config/backpackConfig');
 const { trainerFields } = require('../config/trainerConfig');
@@ -157,7 +157,7 @@ const buildPokemonListEmbed = (trainer, pokemons, page) => {
     return embed;
 }
 
-const buildPokemonEmbed = (trainer, pokemon) => {
+const buildPokemonEmbed = (trainer, pokemon, tab="all") => {
     const speciesData = pokemonConfig[pokemon.speciesId];
 
     let typeString = "";
@@ -178,21 +178,24 @@ const buildPokemonEmbed = (trainer, pokemon) => {
     // TODO: display original owner?
     const embed = new EmbedBuilder();
     embed.setTitle(`${trainer.user.username}'s ${pokemon.name}`);
-    embed.setDescription(`${pokemon.shiny ? "✨" : ""}**[Lv. ${pokemon.level}]** ${speciesData.name} (#${pokemon.speciesId})\n${speciesData.description}`);
+    embed.setDescription(`${pokemon.shiny ? "✨" : ""}**[Lv. ${pokemon.level}]** ${speciesData.name} (#${pokemon.speciesId})\n${linebreakString(speciesData.description, 50)}`);
     embed.setColor(rarityConfig[speciesData.rarity].color);
-    embed.addFields(
-        { name: "Type", value: typeString, inline: true },
-        { name: "Ability", value: getAbilityName(pokemon.abilityId), inline: true },
-        { name: "Nature", value: `${natureConfig[pokemon.natureId].name} (${natureConfig[pokemon.natureId].description})`, inline: true },
-        { name: "Rarity", value: speciesData.rarity, inline: true },
-        { name: "Shiny", value: pokemon.shiny ? "True" : "False", inline: true },
-        { name: "Date Caught", value: new Date(pokemon.dateAcquired).toLocaleDateString(), inline: true },
-        { name: "Stats (Stat|IVs|EVs)", value: statString, inline: false },
-        { name: "Level Progress", value: progressBar, inline: false }
-    );
+    
+    if (tab === "info" || tab === "all") {
+        embed.addFields(
+            { name: "Type", value: typeString, inline: true },
+            { name: "Ability", value: getAbilityName(pokemon.abilityId), inline: true },
+            { name: "Nature", value: `${natureConfig[pokemon.natureId].name} (${natureConfig[pokemon.natureId].description})`, inline: true },
+            { name: "Rarity", value: speciesData.rarity, inline: true },
+            { name: "Shiny", value: pokemon.shiny ? "True" : "False", inline: true },
+            { name: "Date Caught", value: new Date(pokemon.dateAcquired).toLocaleDateString(), inline: true },
+            { name: "Stats (Stat|IVs|EVs)", value: statString, inline: false },
+            { name: "Level Progress", value: progressBar, inline: false }
+        );
+    }
 
     // if pokemon has moves, display them
-    if (speciesData.moveIds) {
+    if (tab === "battle" || tab === "all") {
         const fields = speciesData.moveIds.map((moveId) => {
             const moveData = moveConfig[moveId];
             const { moveHeader, moveString } = buildMoveString(moveData);
@@ -210,7 +213,15 @@ const buildPokemonEmbed = (trainer, pokemon) => {
             }
         }
 
-        embed.addFields(fields);
+        if (fields.length > 0) {
+            embed.addFields(fields);
+        }
+
+        // add ability field
+        const abilityData = abilityConfig[pokemon.abilityId];
+        embed.addFields(
+            { name: `Ability: ${getAbilityName(pokemon.abilityId)}`, value: abilityData ? abilityData.description : "Not yet implemented!", inline: false }
+        )
     }
 
     embed.setImage(pokemon.shiny ? speciesData.shinySprite : speciesData.sprite);
@@ -237,11 +248,12 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
         }
 
         let abilityString = "";
-        for (let i = 0; i < Object.keys(speciesData.abilities).length; i++) {
-            const abilityId = Object.keys(speciesData.abilities)[i];
+        const abilityIds = getAbilityOrder(speciesData.abilities);
+        for (let i = 0; i < abilityIds.length; i++) {
+            const abilityId = abilityIds[i];
             const abilityProbability = speciesData.abilities[abilityId];
             abilityString += `${getAbilityName(abilityId)} (${Math.floor(abilityProbability * 100)}%)`;
-            if (i < Object.keys(speciesData.abilities).length - 1) {
+            if (i < abilityIds.length - 1) {
                 abilityString += "\n";
             }
         }
@@ -300,7 +312,8 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
         }
     } else if (tab === "abilities") {
         // display: ability strings
-        const fields = Object.entries(speciesData.abilities).map(([abilityId, abilityProbability]) => {
+        const fields = getAbilityOrder(speciesData.abilities).map((abilityId) => {
+            const abilityProbability = speciesData.abilities[abilityId];
             const abilityData = abilityConfig[abilityId];
             const abilityHeader = `${getAbilityName(abilityId)} (${Math.floor(abilityProbability * 100)}%)`;
             const abilityString = abilityData ? abilityData.description : "Not yet implemented!";

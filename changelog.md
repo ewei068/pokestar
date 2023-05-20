@@ -4,6 +4,7 @@
 
 * Abilities have been added!
     * Use `/pokedex` to see what a Pokemon's ability does!
+    * Fixed evolutions giving incorrect abilities.
 * Launch event
 * Event Pokemon
 * Pokemon tabs?

@@ -104,6 +104,28 @@ const getAbilityName = (abilityId) => {
     }
 }
 
+// speciesAbilities = abilityId => probability
+const getAbilityOrder = (speciesAbilities) => {
+    if (Object.keys(speciesAbilities).length === 1) {
+        return Object.keys(speciesAbilities);
+    }
+
+    // sort abilities: primary sort by probability (desc), secondary sort by id (asc)
+    const sortedAbilities = Object.keys(speciesAbilities).sort((a, b) => {
+        if (speciesAbilities[a] > speciesAbilities[b]) {
+            return -1;
+        } else if (speciesAbilities[a] < speciesAbilities[b]) {
+            return 1;
+        } else {
+            a = parseInt(a);
+            b = parseInt(b);
+            return a - b;
+        }
+    })
+
+    return sortedAbilities;
+}
+
 module.exports = {
     getPokemonExpNeeded,
     calculateWorth,
@@ -111,5 +133,6 @@ module.exports = {
     buildPokemonBaseStatString,
     calculateEffectiveSpeed,
     calculateEffectiveAccuracy,
-    getAbilityName
+    getAbilityName,
+    getAbilityOrder
 };

@@ -1,7 +1,5 @@
 const { getState  } = require("../services/state");
-const { getTrainer } = require("../services/trainer");
-const { getPokemon } = require("../services/pokemon");
-const { buildPokemonEmbed } = require("../embeds/pokemonEmbeds");
+const { buildPokemonInfoSend } = require("../services/pokemon");
 
 const pokemonListSelect = async (interaction, data) => {
     // get state to refresh it if possible
@@ -9,22 +7,15 @@ const pokemonListSelect = async (interaction, data) => {
 
     const pokemonId = interaction.values[0];
 
-    // get trainer
-    const trainer = await getTrainer(interaction.user);
-
-    // get pokemon
-    const pokemon = await getPokemon(trainer.data, pokemonId);
-    if (pokemon.err) {
-        return { embed: null, err: pokemon.err };
+    const { send, err } = await buildPokemonInfoSend({
+        user: interaction.user,
+        pokemonId: pokemonId
+    });
+    if (err) {
+        return { err: err };
     }
 
-    // build pokemon embed
-    const embed = buildPokemonEmbed(trainer.data, pokemon.data);
-
-    await interaction.reply({ 
-        content: `${pokemonId}`, 
-        embeds: [embed],
-    });
+    await interaction.reply(send);
 }
 
 module.exports = pokemonListSelect;
