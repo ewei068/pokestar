@@ -1,8 +1,9 @@
 const { pokemonConfig } = require("../config/pokemonConfig");
 const { buildPokedexSend } = require("../services/pokemon");
+const { getPokemonOrder } = require("../utils/pokemonUtils");
 
 const pokedexButton = async (interaction, data) => {
-    const allIds = Object.keys(pokemonConfig);
+    const allIds = getPokemonOrder();
 
     // attempt to get page number
     const page = data.page;

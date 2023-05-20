@@ -4,7 +4,7 @@ const { collectionNames } = require("../config/databaseConfig");
 const { getOrSetDefault, idFrom } = require("../utils/utils");
 const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS } = require("../config/pokemonConfig");
 const { expMultiplier, MAX_RELEASE } = require("../config/trainerConfig");
-const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth, getAbilityOrder } = require("../utils/pokemonUtils");
+const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth, getAbilityOrder, getPokemonOrder } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
 const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed } = require("../embeds/pokemonEmbeds");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
@@ -423,7 +423,7 @@ const buildPokedexSend = async ({ id="1", tab="info" } = {}) => {
         embeds: [],
         components: []
     }
-    const allIds = Object.keys(pokemonConfig);
+    const allIds = getPokemonOrder();
 
     if (pokemonConfig[id] === undefined) {
         // if ID undefined, check all species for name match

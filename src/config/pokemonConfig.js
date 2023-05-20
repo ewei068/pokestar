@@ -545,7 +545,7 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.FAST
     },
-    "25" : {
+    "25": {
         "name": "Pikachu",
         "emoji": "<:25:1100282072003772457>",
         "description": "When several of these POKéMON gather, their electricity could build and cause lightning storms.",
@@ -566,7 +566,24 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST
     },
-    "26" : {
+    "25-1": {
+        "name": "Ash's Pikachu",
+        "emoji": "<:25:1100282072003772457>",
+        "description": "This Pikachu wears its partner's cap, which is brimming with memories of traveling through many different regions.",
+        "type": [types.ELECTRIC],
+        "baseStats": [85, 120, 70, 115, 80, 130],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/ash-pikachu-small.gif",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/ash-pikachu-shiny-small.gif",
+        "abilities": {
+            "9": 1,
+        },
+        "moveIds": ["m84", "m57", "m85", "m417"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
+    },
+    "26": {
         "name": "Raichu",
         "emoji": "<:26:1100282073509527672>",
         "description": "Its long tail serves as a ground to protect itself from its own high-voltage power.",
@@ -1436,6 +1453,10 @@ const rarityBins = {
 
 for (const id in pokemonConfig) {
     const speciesData = pokemonConfig[id];
+    if (speciesData.noGacha) {
+        continue;
+    }
+
     rarityBins[speciesData.rarity].push(id);
 }
 

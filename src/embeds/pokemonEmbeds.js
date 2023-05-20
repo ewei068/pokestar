@@ -41,7 +41,7 @@ const buildBannerEmbed = (trainer, bannerData) => {
 
     const embed = new EmbedBuilder();
     embed.setTitle(`${displayPokemon.emoji} ${bannerData.name}`);
-    embed.setDescription(`${linebreakString(bannerData.description, 40)}`);
+    embed.setDescription(`${linebreakString(bannerData.description, 50)}`);
     embed.setColor(0xffffff);
     embed.setThumbnail(`${displayPokemon.sprite}`);
     embed.addFields(
@@ -51,6 +51,10 @@ const buildBannerEmbed = (trainer, bannerData) => {
         { name: "Your Pokeballs", value: getPokeballsString(trainer), inline: false }
     );
     embed.setFooter( { text: "Get more Pokeballs with /daily, /vote, /levelrewards, /pokemart" } );
+
+    if (bannerData.image) {
+        embed.setImage(bannerData.image);
+    }
 
     return embed;
 }
@@ -94,11 +98,12 @@ const buildNewPokemonEmbed = (pokemon, pokeballId=backpackItems.POKEBALL, remain
     const ivString = `HP: ${pokemon.ivs[0]} | Atk: ${pokemon.ivs[1]} | Def: ${pokemon.ivs[2]} | SpA: ${pokemon.ivs[3]} | SpD: ${pokemon.ivs[4]} | Spe: ${pokemon.ivs[5]}`
 
     const embed = new EmbedBuilder();
-    embed.setTitle(`${speciesData.name} (#${pokemon.speciesId})`);
+    embed.setTitle(`${pokemon.shiny ? "✨" : ""}${speciesData.name} (#${pokemon.speciesId})`);
+    const shinyString = pokemon.shiny? "SHINY " : "";
     if (speciesData.rarity == rarities.LEGENDARY) {
-        embed.setDescription(`You caught the LEGENDARY ${speciesData.name}!\n${pokeballString}`);
+        embed.setDescription(`You caught the ${shinyString}LEGENDARY ${speciesData.name}!\n${pokeballString}`);
     } else {
-        embed.setDescription(`You caught a ${speciesData.rarity} ${speciesData.name}!\n${pokeballString}`);
+        embed.setDescription(`You caught a ${shinyString}${speciesData.rarity} ${speciesData.name}!\n${pokeballString}`);
     }
 
     embed.setColor(rarityConfig[speciesData.rarity].color);
@@ -258,7 +263,7 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
             }
         }
 
-        embed.setDescription(`${linebreakString(speciesData.description, 40)}`);
+        embed.setDescription(`${linebreakString(speciesData.description, 50)}`);
         embed.addFields(
             { name: "Type", value: typeString, inline: true },
             { name: "Abilities", value: abilityString, inline: true },

@@ -7,8 +7,8 @@
     * Fixed evolutions giving incorrect abilities.
 * Launch event
 * Event Pokemon
-* Pokemon tabs?
-* Ephemeral tutorial
+* Pokemon tabs: getting Pokemon info now has tabs for general info and battle info!
+* Using `/tutorial` now also displays a short quickstart guide!
 * Shiny Pokemon are now worth 100x their original value!
 * Possibly fixed battle start edge case bug on slow wifi.
 

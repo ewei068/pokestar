@@ -297,7 +297,7 @@ const npcConfig = {
                 maxLevel: 87,
                 numPokemon: 6,
                 pokemonIds: ["3", "6", "9", "131", "143"],
-                aceId: "26",
+                aceId: "25-1",
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {

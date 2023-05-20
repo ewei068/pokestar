@@ -73,10 +73,17 @@ const bannerTypeConfig = {
 
 const bannerConfig = [
     {
-        "bannerType": bannerTypes.STANDARD,
-        "name": "Standard",
-        "description": "Standard banner with all currently available gacha Pokemon.",
-        "rateUp": () => {},
+        "bannerType": bannerTypes.SPECIAL,
+        "name": "[EVENT] Ash's Banner",
+        "description": "The launch celebration has arrived! Pull for some of Ash and Red's best Pokemon, as well as a powerful limited Pikachu variant! For more information, use `/event`.",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["25-1"],
+                [rarities.EPIC]: ["3", "6", "9", "131", "143"],
+                [rarities.RARE]: ["1", "4", "7"]
+            }
+        },
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-launch-banner.png"
     },
     {
         "bannerType": bannerTypes.ROTATING,
@@ -97,6 +104,12 @@ const bannerConfig = [
                 }),
             }
         }
+    },
+    {
+        "bannerType": bannerTypes.STANDARD,
+        "name": "Standard",
+        "description": "Standard banner with all currently available gacha Pokemon.",
+        "rateUp": () => {},
     },
 ]
 

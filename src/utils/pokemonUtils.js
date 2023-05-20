@@ -126,6 +126,24 @@ const getAbilityOrder = (speciesAbilities) => {
     return sortedAbilities;
 }
 
+const getPokemonOrder = (pokemons=pokemonConfig) => {
+    // sort: split by dash and sort accordingly
+    return Object.keys(pokemons).sort((a, b) => {
+        aSplit = a.split("-");
+        bSplit = b.split("-");
+        for (let i = 0; i < 5; i++) {
+            ai = aSplit[i] ? parseInt(aSplit[i]) : 0;
+            bi = bSplit[i] ? parseInt(bSplit[i]) : 0;
+            if (ai < bi) {
+                return -1;
+            } else if (ai > bi) {
+                return 1;
+            }
+        }
+        return 0;
+    });
+}
+
 module.exports = {
     getPokemonExpNeeded,
     calculateWorth,
@@ -134,5 +152,6 @@ module.exports = {
     calculateEffectiveSpeed,
     calculateEffectiveAccuracy,
     getAbilityName,
-    getAbilityOrder
+    getAbilityOrder,
+    getPokemonOrder
 };
