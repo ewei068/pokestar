@@ -2375,7 +2375,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SQUARE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user hardens its body's surface like iron to protect its teammates, sharply raising its Defense stat for 2 turns and raising surrounding allies Defense stat for 2 turns.",
+        "description": "The user hardens its body's surface like titanium to protect its teammates, sharply raising its Defense stat for 2 turns and raising surrounding allies Defense stat for 2 turns.",
     },
     "m340": {
         "name": "Bounce",
@@ -5136,10 +5136,9 @@ const abilityConfig = {
                     if (args.damage > targetPokemon.hp) {
                         args.damage = targetPokemon.hp - 1;
                         targetPokemon.battle.addToLog(`${targetPokemon.name} hung on with Sturdy!`);
+                        // remove event listener
+                        targetPokemon.battle.eventHandler.unregisterListener(abilityData.listenerId);
                     }
-
-                    // remove event listener
-                    targetPokemon.battle.eventHandler.unregisterListener(abilityData.listenerId);
                 }
             };
 
@@ -5593,13 +5592,12 @@ const abilityConfig = {
                     const abilityData = ability.data;
 
                     // if hp < 25%, increase combat readiness to 100%
-                    if (targetPokemon.hp < targetPokemon.maxHp / 1) {
+                    if (targetPokemon.hp < targetPokemon.maxHp / 4) {
                         targetPokemon.battle.addToLog(`${targetPokemon.name}'s Run Away increases its combat readiness!`);
                         targetPokemon.boostCombatReadiness(targetPokemon, 100);
+                        // remove event listener
+                        targetPokemon.battle.eventHandler.unregisterListener(abilityData.listenerId);
                     }
-
-                    // remove event listener
-                    targetPokemon.battle.eventHandler.unregisterListener(abilityData.listenerId);
                 }
             }
 

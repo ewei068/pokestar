@@ -1,6 +1,6 @@
 # Pokéstar Changelog
 
-## 0.8.0 - Abilities and Events
+## 0.8.0 (5/20) - Abilities and Events
 
 To celebrate the roll-out of Pokestar, we are throwing a launch event! Additionally, abilities have been implemented to greatly affect the tide of battle!
 

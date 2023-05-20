@@ -75,7 +75,7 @@ const bannerConfig = [
     {
         "bannerType": bannerTypes.SPECIAL,
         "name": "[EVENT] Ash's Banner",
-        "description": "The launch celebration has arrived! Pull for some of Ash and Red's best Pokemon, as well as a powerful limited Pikachu variant! For more information, use `/event`.",
+        "description": "The launch celebration has arrived! Pull for some of Ash and Red's best Pokemon, as well as a powerful limited Pikachu variant! For more information, use `/events`.",
         "rateUp": () => {
             return {
                 [rarities.LEGENDARY]: ["25-1"],
@@ -88,7 +88,7 @@ const bannerConfig = [
     {
         "bannerType": bannerTypes.SPECIAL,
         "name": "[EVENT] Gary's Banner",
-        "description": "The launch celebration has arrived! Pull for some of Gar and Blue's best Pokemon, as well as a powerful limited Blastoise variant! For more information, use `/event`.",
+        "description": "The launch celebration has arrived! Pull for some of Gary and Blue's best Pokemon, as well as a powerful limited Blastoise variant! For more information, use `/events`.",
         "rateUp": () => {
             return {
                 [rarities.LEGENDARY]: ["9-1"],
