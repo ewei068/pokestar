@@ -39,7 +39,7 @@ const commandCategoryConfig = {
         "name": "Help",
         "description": "Help commands",
         "folder": "help",
-        "commands": ["help", "tutorial", "changelog"]
+        "commands": ["help", "tutorial", "events", "changelog"]
     },
     "heartbeat": {
         "name": "Heartbeat",
@@ -473,6 +473,14 @@ const commandConfig = {
         "aliases": ["tutorial"],
         "description": "Get a tutorial on how to play",
         "execute": "tutorial.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    },
+    "events": {
+        "name": "Events",
+        "aliases": ["events"],
+        "description": "View all the events!",
+        "execute": "events.js",
         "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },

@@ -21,6 +21,7 @@ const eventNames = {
     BANNER_BUTTON: "bannerButton",
     BANNER_GACHA: "bannerGacha",
     VOTE_REWARDS: "voteRewards",
+    EVENT_BUTTON: "eventButton",
     BACK: "back",
 };
 
@@ -130,6 +131,10 @@ const eventConfig = {
         "name": "Vote Rewards",
         "execute": "voteRewards.js",
         "exp": 25,
+    },
+    [eventNames.EVENT_BUTTON]: {
+        "name": "Event Button",
+        "execute": "eventButton.js",
     },
     "test": {
         "name": "Test",

@@ -2,15 +2,17 @@
 
 ## 0.8.0 - Abilities and Events
 
-* Abilities have been added!
+To celebrate the roll-out of Pokestar, we are throwing a launch event! Additionally, abilities have been implemented to greatly affect the tide of battle!
+
+* Abilities have been added! Abilities are powerful passive effects! Not all abilities are added yet, but most Pokemon should have at least one working ability.
     * Use `/pokedex` to see what a Pokemon's ability does!
     * Fixed evolutions giving incorrect abilities.
-* Launch event
-* Event Pokemon
+* Launch Celebration! Use `/events` for more details.
+* Event Pokemon are here! Use `/gacha` to collect limited-time custom event Pokemon!
 * Pokemon tabs: getting Pokemon info now has tabs for general info and battle info!
 * Using `/tutorial` now also displays a short quickstart guide!
 * Shiny Pokemon are now worth 100x their original value!
-* Possibly fixed battle start edge case bug on slow wifi.
+* Possibly fixed battle start edge case bug on slow connection.
 
 ### 0.7.4 (5/18)
 
