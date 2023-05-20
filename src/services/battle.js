@@ -1,7 +1,7 @@
 const { getOrSetDefault } = require("../utils/utils");
 const { v4: uuidv4, v4 } = require('uuid');
 const { pokemonConfig, types } = require('../config/pokemonConfig');
-const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, getTypeDamageMultiplier, effectConfig, statusConditions, moveTiers, calculateDamage } = require("../config/battleConfig");
+const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, getTypeDamageMultiplier, effectConfig, statusConditions, moveTiers, calculateDamage, abilityConfig } = require("../config/battleConfig");
 const { buildBattleEmbed, buildBattleMovesetEmbed, buildPveListEmbed, buildPveNpcEmbed } = require("../embeds/battleEmbeds");
 const { buildSelectBattleMoveRow } = require("../components/selectBattleMoveRow");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
@@ -183,6 +183,7 @@ class Battle {
     moneyReward;
     expReward;
     pokemonExpReward;
+    hasStarted;
     userIds;
     users;
     teams;
@@ -214,6 +215,7 @@ class Battle {
         this.moneyReward = 0;
         this.expReward = 0;
         this.pokemonExpReward = 0;
+        this.hasStarted = false;
         this.userIds = [];
         // map userId to user
         this.users = {};
@@ -323,8 +325,23 @@ class Battle {
     }
 
     start() {
-        this.log.push("Battle started.");
-        this.eventHandler.emit(battleEventNames.BATTLE_BEGIN);
+        this.log.push("The battle begins!");
+        this.hasStarted = true;
+
+        // add all abilities
+        Object.entries(this.allPokemon).forEach(([pokemonId, pokemon]) => {
+            const abilityId = pokemon.ability.abilityId;
+            const abilityData = abilityConfig[abilityId];
+            if (!abilityData || !abilityData.abilityAdd) {
+                return;
+            }
+
+            pokemon.ability.data = abilityData.abilityAdd(this, pokemon, pokemon);
+        });
+
+        this.eventHandler.emit(battleEventNames.BATTLE_BEGIN, {
+            battle: this,
+        });
 
         // increase combat readiness for all pokemon
         this.increaseCombatReadiness();
@@ -380,11 +397,13 @@ class Battle {
         // push cr
         this.increaseCombatReadiness();
 
-        // begin turn
-        this.eventHandler.emit(battleEventNames.TURN_BEGIN);
+        // tick move cooldowns
         if (!this.activePokemon.isFainted) {
             this.activePokemon.tickMoveCooldowns();
         }
+
+        // begin turn
+        this.eventHandler.emit(battleEventNames.TURN_BEGIN);
 
         // log
         const userIsNpc = this.isNpc(this.activePokemon.userId);
@@ -626,18 +645,21 @@ class Pokemon {
     acc;
     type1;
     type2;
-    // effectId => duration
+    // effectId => { duration, args }
     effectIds;
     // moveId => { cooldown, disabled }
     moveIds;
     // { statusId. tuns active }
     status;
+    // { abilityId, args }
+    ability;
     combatReadiness;
     position;
     isFainted;
     targetable;
     hittable;
     incapacitated;
+    restricted;
 
     constructor(battle, trainer, pokemonData, teamName, position) {
         this.battle = battle;
@@ -683,12 +705,16 @@ class Pokemon {
             statusId: null,
             turns: 0,
         }
+        this.ability = {
+            abilityId: pokemonData.abilityId,
+        }
         this.combatReadiness = 0;
         this.position = position;
         this.isFainted = false;
         this.targetable = true;
         this.hittable = true;
         this.incapacitated = false;
+        this.restricted = false;
     }
 
     useMove(moveId, targetPokemonId) {
@@ -1023,7 +1049,14 @@ class Pokemon {
                 hitChance *= 0.8;
             }
 
-            if (Math.random() > hitChance / 100) {
+            const calculateMissArgs = {
+                target: target,
+                hitChance: hitChance,
+                source: this,
+            }
+            this.battle.eventHandler.emit(battleEventNames.CALCULATE_MISS, calculateMissArgs);
+
+            if (Math.random() > calculateMissArgs.hitChance / 100) {
                 misses.push(target);
             }
         }
@@ -1032,13 +1065,30 @@ class Pokemon {
 
 
     dealDamage(damage, target, damageInfo) {
-        // TODO: use type to trigger any events
+        // console.log(damage)
 
-        // TODO: trigger damage begin
+        const eventArgs = {
+            target: target,
+            damage: damage,
+            source: this,
+            damageInfo: damageInfo,
+        };
+
+        this.battle.eventHandler.emit(battleEventNames.BEFORE_DAMAGE_DEALT, eventArgs);
+        damage = eventArgs.damage;
+        // console.log(damage)
 
         const damageDealt = target.takeDamage(damage, this, damageInfo);
 
-        // TODO: trigger damage end
+        if (damageDealt > 0) {
+            const afterDamageArgs = {
+                target: target,
+                damage: damageDealt,
+                source: this,
+                damageInfo: damageInfo,
+            };
+            this.battle.eventHandler.emit(battleEventNames.AFTER_DAMAGE_DEALT, afterDamageArgs);
+        }
 
         return damageDealt;
     }
@@ -1058,8 +1108,8 @@ class Pokemon {
                 damage = Math.floor(damage * 1.5);
             }
         }
+        // console.log(damage)
 
-        // TODO: trigger damage taken begin & type events
         const eventArgs = {
             target: this,
             damage: damage,
@@ -1069,6 +1119,7 @@ class Pokemon {
 
         this.battle.eventHandler.emit(battleEventNames.BEFORE_DAMAGE_TAKEN, eventArgs);
         damage = eventArgs.damage;
+        // console.log(damage)
 
         const oldHp = this.hp;
         if (oldHp <= 0 || this.isFainted) {
@@ -1082,7 +1133,15 @@ class Pokemon {
             this.faint();
         }
 
-        // TODO: trigger damage taken end
+        if (damageTaken > 0) {
+            const afterDamageArgs = {
+                target: this,
+                damage: damageTaken,
+                source: source,
+                damageInfo: damageInfo,
+            };
+            this.battle.eventHandler.emit(battleEventNames.AFTER_DAMAGE_TAKEN, afterDamageArgs);
+        }
         
         return damageTaken;
     }
@@ -1117,17 +1176,31 @@ class Pokemon {
             return 0;
         }
 
+        if (this.restricted) {
+            this.battle.addToLog(`${this.name} is restricted and cannot gain combat readiness!`);
+            return 0;
+        }
+
+        const beforeBoostArgs = {
+            target: this,
+            source: source,
+            amount: amount,
+        };
+        this.battle.eventHandler.emit(battleEventNames.BEFORE_CR_GAINED, beforeBoostArgs);
+
         const oldCombatReadiness = this.combatReadiness;
-        this.combatReadiness = Math.min(100, this.combatReadiness + amount);
+        this.combatReadiness = Math.min(100, this.combatReadiness + beforeBoostArgs.amount);
         const combatReadinessGained = this.combatReadiness - oldCombatReadiness;
         this.battle.addToLog(`${this.name} gained ${Math.round(combatReadinessGained)} combat readiness!`);
         
-        const eventArgs = {
-            target: this,
-            source: source,
-            combatReadinessGained: amount,
-        };
-        this.battle.eventHandler.emit(battleEventNames.AFTER_CR_GAINED, eventArgs);
+        if (combatReadinessGained > 0) {
+            const eventArgs = {
+                target: this,
+                source: source,
+                combatReadinessGained: amount,
+            };
+            this.battle.eventHandler.emit(battleEventNames.AFTER_CR_GAINED, eventArgs);
+        }
 
         return combatReadinessGained;
     }
@@ -1165,21 +1238,26 @@ class Pokemon {
             return;
         }
 
-        // TODO: trigger before add effect events
+        // trigger before effect add events
+        const beforeAddArgs = {
+            target: this,
+            source: source,
+            effectId: effectId,
+            duration: duration,
+            initialArgs: args,
+            canAdd: true,
+        };
+        this.battle.eventHandler.emit(battleEventNames.BEFORE_EFFECT_ADD, beforeAddArgs);
+        if (!beforeAddArgs.canAdd) {
+            return;
+        }
 
         this.effectIds[effectId] = {
-            duration: duration,
+            duration: this.battle.activePokemon === this ? duration + 1 : duration,
             source: source,
+            initialArgs: args,
         };
-        args = {
-            ...effectData.effectAdd(this.battle, source, this, args),
-            ...args,
-        };
-        
-        // if effect still exists, add args
-        if (this.effectIds[effectId]) {
-            this.effectIds[effectId].args = args;
-        }
+        this.effectIds[effectId].args = effectData.effectAdd(this.battle, source, this, args);
 
         // TODO: trigger after add effect events
     }
@@ -1208,7 +1286,7 @@ class Pokemon {
             return false;
         }
 
-        effectData.effectRemove(this.battle, this, this.effectIds[effectId].args);
+        effectData.effectRemove(this.battle, this, this.effectIds[effectId].args, this.effectIds[effectId].initialArgs);
 
         delete this.effectIds[effectId];
         return true;
@@ -1226,6 +1304,7 @@ class Pokemon {
             return;
         }
 
+        let statusApplied = false;
         // TODO: trigger before apply status events
 
         switch (statusId) {
@@ -1241,6 +1320,7 @@ class Pokemon {
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was burned!`);
+                statusApplied = true;
                 break;
             case statusConditions.FREEZE:
                 if (this.type1 === types.ICE || this.type2 === types.ICE) {
@@ -1253,6 +1333,7 @@ class Pokemon {
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was frozen!`);
+                statusApplied = true;
                 break;
             case statusConditions.PARALYSIS:
                 if (this.type1 === types.ELECTRIC || this.type2 === types.ELECTRIC) {
@@ -1268,6 +1349,7 @@ class Pokemon {
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was paralyzed!`);
+                statusApplied = true;
                 break;
             case statusConditions.POISON:
                 if (this.type1 === types.POISON || this.type2 === types.POISON) {
@@ -1280,6 +1362,7 @@ class Pokemon {
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was poisoned!`);
+                statusApplied = true;
                 break;
             case statusConditions.SLEEP:
                 this.status = {
@@ -1287,6 +1370,7 @@ class Pokemon {
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} fell asleep!`);
+                statusApplied = true;
                 break;
             case statusConditions.BADLY_POISON:
                 if (this.type1 === types.POISON || this.type2 === types.POISON) {
@@ -1299,12 +1383,20 @@ class Pokemon {
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was badly poisoned!`);
+                statusApplied = true;
                 break;
             default:
                 break;
         }
 
-        // TODO: trigger after apply status events
+        if (statusApplied) {
+            const afterStatusArgs = {
+                target: this,
+                source: source,
+                statusId: statusId,
+            };
+            this.battle.eventHandler.emit(battleEventNames.AFTER_STATUS_APPLY, afterStatusArgs);
+        }
     }
 
     tickStatus() {
@@ -1434,6 +1526,18 @@ class Pokemon {
 
     effectiveSpeed() {
         return calculateEffectiveSpeed(this.spe);
+    }
+
+    getRowAndColumn() {
+        const party = this.battle.parties[this.teamName];
+        const row = Math.floor((this.position - 1) / party.cols);
+        const col = (this.position - 1) % party.cols;
+        return { row, col };
+    }
+
+    getPartyRowColumn() {
+        const party = this.battle.parties[this.teamName];
+        return {party, ...this.getRowAndColumn()};
     }
 
 }

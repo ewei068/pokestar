@@ -261,11 +261,11 @@ const npcConfig = {
                 maxLevel: 39,
                 numPokemon: 5,
                 pokemonIds: ["18", "58", "65", "102"],
-                aceId: "9",
+                aceId: "9-1",
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.POKEBALL]: 1,
+                            [backpackItems.POKEBALL]: 2,
                         },
                     }
                 }
@@ -275,11 +275,11 @@ const npcConfig = {
                 maxLevel: 64,
                 numPokemon: 6,
                 pokemonIds: ["18", "59", "65", "103", "112"],
-                aceId: "9",
+                aceId: "9-1",
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.POKEBALL]: 1,
+                            [backpackItems.GREATBALL]: 1,
                         },
                     }
                 }
@@ -297,11 +297,11 @@ const npcConfig = {
                 maxLevel: 87,
                 numPokemon: 6,
                 pokemonIds: ["3", "6", "9", "131", "143"],
-                aceId: "26",
+                aceId: "25-1",
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.POKEBALL]: 2,
+                            [backpackItems.GREATBALL]: 2,
                         },
                     }
                 }

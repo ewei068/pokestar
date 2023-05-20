@@ -327,6 +327,23 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW,
     },
+    "9-1": {
+        "name": "Gary's Blastoise",
+        "emoji": "<:garyblastoise:1109522094645063810>",
+        "description": "The ultimate evolution of the Water-type Squirtle. Known for its exceptional power and formidable presence, this Pokémon has rightfully earned its place as one of the most respected members of its trainer's esteemed team.",
+        "type": [types.WATER],
+        "baseStats": [95, 70, 120, 90, 125, 80],
+        "sprite": "https://archives.bulbagarden.net/media/upload/2/2c/Spr_1b_009.png",
+        "shinySprite": "https://archives.bulbagarden.net/media/upload/4/43/Spr_2g_009_s.png",
+        "abilities": {
+            "75": 1
+        },
+        "moveIds": ["m55", "m229", "m334-1", "m56-1"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
+    },
     "10": {
         "name": "Caterpie",
         "emoji": "<:10:1100279993835196418>",
@@ -545,7 +562,7 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.FAST
     },
-    "25" : {
+    "25": {
         "name": "Pikachu",
         "emoji": "<:25:1100282072003772457>",
         "description": "When several of these POKéMON gather, their electricity could build and cause lightning storms.",
@@ -566,7 +583,24 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST
     },
-    "26" : {
+    "25-1": {
+        "name": "Ash's Pikachu",
+        "emoji": "<:ashpikachu:1109522092283658250>",
+        "description": "This Pikachu wears its partner's cap, which is brimming with memories of traveling through many different regions.",
+        "type": [types.ELECTRIC],
+        "baseStats": [85, 120, 70, 115, 80, 130],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/ash-pikachu-small.gif",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/ash-pikachu-shiny-small.gif",
+        "abilities": {
+            "9": 1,
+        },
+        "moveIds": ["m98", "m57", "m344", "m719"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
+    },
+    "26": {
         "name": "Raichu",
         "emoji": "<:26:1100282073509527672>",
         "description": "Its long tail serves as a ground to protect itself from its own high-voltage power.",
@@ -1436,6 +1470,10 @@ const rarityBins = {
 
 for (const id in pokemonConfig) {
     const speciesData = pokemonConfig[id];
+    if (speciesData.noGacha) {
+        continue;
+    }
+
     rarityBins[speciesData.rarity].push(id);
 }
 

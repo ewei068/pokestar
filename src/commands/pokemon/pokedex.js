@@ -7,8 +7,9 @@ const pokedex = async (id) => {
 }
 
 const pokedexMessageCommand = async (interaction) => {
-    const args = interaction.content.split(' ');
-    const id = args[1] || "1";
+    const args = interaction.content.split(' ')
+    args.shift();
+    const id = !args[0] ? "1" : args.join(" ");
     const { send, err } = await pokedex(id);
     if (err) {
         await interaction.channel.send(`${err}`);

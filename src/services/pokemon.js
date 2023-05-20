@@ -4,9 +4,9 @@ const { collectionNames } = require("../config/databaseConfig");
 const { getOrSetDefault, idFrom } = require("../utils/utils");
 const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS } = require("../config/pokemonConfig");
 const { expMultiplier, MAX_RELEASE } = require("../config/trainerConfig");
-const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth } = require("../utils/pokemonUtils");
+const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth, getAbilityOrder, getPokemonOrder } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
-const { buildSpeciesDexEmbed, buildPokemonListEmbed } = require("../embeds/pokemonEmbeds");
+const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed } = require("../embeds/pokemonEmbeds");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
@@ -174,8 +174,8 @@ const getEvolvedPokemon = (pokemon, evolutionSpeciesId) => {
     // 2 abilities => slot 1, 3
     // 3 abilities => slot 1, 2, 3
     // first convert abilities (map id => probability) into lists
-    const abilities = Object.keys(speciesData.abilities);
-    const evolutionAbilities = Object.keys(evolutionSpeciesData.abilities);
+    const abilities = getAbilityOrder(speciesData.abilities);
+    const evolutionAbilities = getAbilityOrder(evolutionSpeciesData.abilities);
     if (evolutionAbilities.length === 1) {
         pokemon.abilityId = evolutionAbilities[0];
     } else {
@@ -202,8 +202,6 @@ const getEvolvedPokemon = (pokemon, evolutionSpeciesId) => {
 
     // update battle eligibility
     pokemon.battleEligible = evolutionSpeciesData.battleEligible;
-
-    // TODO: change moves
 
     return pokemon;
 }
@@ -375,12 +373,57 @@ const setBattleEligible = async (trainer) => {
     return { data: null, err: null };
 }
 
+const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info" } = {}) => {
+    const send = {
+        content: pokemonId,
+        embeds: [],
+        components: []
+    }
+
+    // get trainer
+    const trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { embed: null, err: trainer.err };
+    }
+
+    // get pokemon
+    const pokemon = await getPokemon(trainer.data, pokemonId);
+    if (pokemon.err) {
+        return { embed: null, err: pokemon.err };
+    }
+
+    // build pokemon embed
+    const embed = buildPokemonEmbed(trainer.data, pokemon.data, tab);
+    send.embeds.push(embed);
+
+    // build tab selection
+    const buttonConfigs = [
+        {
+            label: "Info",
+            disabled: tab === "info",
+            data: { id: pokemonId, tab: "info" }
+        },
+        {
+            label: "Battle",
+            disabled: tab === "battle",
+            data: { id: pokemonId, tab: "battle" }
+        }
+    ];
+    const tabActionRow = buildButtonActionRow(
+        buttonConfigs,
+        eventNames.POKEMON_INFO_BUTTON
+    )
+    send.components.push(tabActionRow);
+
+    return { send: send, err: null };
+}
+
 const buildPokedexSend = async ({ id="1", tab="info" } = {}) => {
     const send = {
         embeds: [],
         components: []
     }
-    const allIds = Object.keys(pokemonConfig);
+    const allIds = getPokemonOrder();
 
     if (pokemonConfig[id] === undefined) {
         // if ID undefined, check all species for name match
@@ -422,6 +465,14 @@ const buildPokedexSend = async ({ id="1", tab="info" } = {}) => {
             data: {
                 page: index + 1,
                 tab: "moves"
+            }
+        },
+        {
+            label: "Abilities",
+            disabled: tab === "abilities" ? true : false,
+            data: {
+                page: index + 1,
+                tab: "abilities"
             }
         },
     ]
@@ -511,6 +562,7 @@ module.exports = {
     trainPokemon,
     setBattleEligible,
     getBattleEligible,
+    buildPokemonInfoSend,
     buildPokedexSend,
     buildReleaseSend,
 };

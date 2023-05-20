@@ -6,6 +6,8 @@ const { buildIdConfigSelectRow } = require('../components/idConfigSelectRow');
 const { buildBackButtonRow } = require('../components/backButtonRow');
 const { getState } = require('../services/state');
 const { eventNames } = require('../config/eventConfig');
+const { gameEventConfig } = require('../config/gameEventConfig');
+const { buildScrollActionRow } = require('../components/scrollActionRow');
 
 const prefix = stageConfig[process.env.STAGE].prefix;
 
@@ -23,6 +25,7 @@ const buildHelpEmbed = () => {
     embed.addFields(
         { name: "Categories", value: categoriesString, inline: true }
     );
+    embed.setFooter({ text: `If you're just starting, please take the /tutorial!` });
     return embed;
 }
 
@@ -44,6 +47,7 @@ const buildHelpCategoryEmbed = (category) => {
     embed.addFields(
         { name: "Commands", value: commandsString, inline: true }
     );
+    embed.setFooter({ text: `If you're just starting, please take the /tutorial!` });
     return embed;
 }
 
@@ -73,6 +77,21 @@ const buildHelpCommandEmbed = (commandName) => {
         { name: "Usage", value: usageString, inline: false },
         { name: "Arguments", value: argsString, inline: false }
     );
+    embed.setFooter({ text: `If you're just starting, please take the /tutorial!` });
+    return embed;
+}
+
+const buildEventEmbed = (eventData) => {
+    const embed = new EmbedBuilder();
+    embed.setTitle(`[Event] ${eventData.name}`)
+    embed.setColor("#FFFFFF")
+    embed.setDescription(eventData.description)
+    embed.setFooter({ text: `If you're just starting, please take the /tutorial!` });
+
+    if (eventData.image) {
+        embed.setImage(eventData.image);
+    }
+
     return embed;
 }
 
@@ -148,9 +167,41 @@ const buildHelpSend = async ({ stateId=null, view="help", option=null, back=true
     return { send: send, err: null };
 }
 
+const buildEventsSend = async ({ page=1 } = {}) => {
+    const events = gameEventConfig;
+    const index = page - 1;
+    if (index < 0 || index >= events.length) {
+        return { send: null, err: "Invalid event page." };
+    }
+
+    const send = {
+        embeds: [],
+        components: []
+    }
+
+    const eventData = events[index];
+    const embed = buildEventEmbed(eventData);
+    send.embeds.push(embed);
+
+    // build scroll row
+    const scrollData = {
+    }
+    const scrollActionRow = buildScrollActionRow(
+        // page = index of id + 1
+        index + 1,
+        index >= events.length - 1 ? true : false,
+        scrollData,
+        eventNames.EVENT_BUTTON
+    )
+    send.components.push(scrollActionRow);
+
+    return { send: send, err: null };
+}
+
 module.exports = {
     buildHelpEmbed,
     buildHelpCategoryEmbed,
     buildHelpCommandEmbed,
-    buildHelpSend
+    buildHelpSend,
+    buildEventsSend
 }

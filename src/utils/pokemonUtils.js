@@ -1,5 +1,6 @@
 const { growthRates, rarityConfig, pokemonConfig, growthRateConfig } = require('../config/pokemonConfig');
 const { getPBar, getWhitespace } = require('./utils');
+const { abilityConfig } = require('../config/battleConfig');
 
 const getPokemonExpNeeded = (level, growthRate) => {
     if (level <= 1) {
@@ -13,7 +14,7 @@ const calculateWorth = (pokemons=null, speciesIds=null) => {
     let worth = 0;
     if (pokemons) {
         pokemons.forEach(pokemon => {
-            worth += rarityConfig[pokemonConfig[pokemon.speciesId].rarity].money;
+            worth += rarityConfig[pokemonConfig[pokemon.speciesId].rarity].money * (pokemon.shiny ? 100 : 1);
         });
     } else if (speciesIds) {
         speciesIds.forEach(speciesId => {
@@ -95,11 +96,62 @@ const calculateEffectiveAccuracy = (accuracy) => {
     }
 }
 
+const getAbilityName = (abilityId) => {
+    if (abilityConfig[abilityId]) {
+        return `#${abilityId} ${abilityConfig[abilityId].name}`;
+    } else {
+        return `#${abilityId}`;
+    }
+}
+
+// speciesAbilities = abilityId => probability
+const getAbilityOrder = (speciesAbilities) => {
+    if (Object.keys(speciesAbilities).length === 1) {
+        return Object.keys(speciesAbilities);
+    }
+
+    // sort abilities: primary sort by probability (desc), secondary sort by id (asc)
+    const sortedAbilities = Object.keys(speciesAbilities).sort((a, b) => {
+        if (speciesAbilities[a] > speciesAbilities[b]) {
+            return -1;
+        } else if (speciesAbilities[a] < speciesAbilities[b]) {
+            return 1;
+        } else {
+            a = parseInt(a);
+            b = parseInt(b);
+            return a - b;
+        }
+    })
+
+    return sortedAbilities;
+}
+
+const getPokemonOrder = (pokemons=pokemonConfig) => {
+    // sort: split by dash and sort accordingly
+    return Object.keys(pokemons).sort((a, b) => {
+        aSplit = a.split("-");
+        bSplit = b.split("-");
+        for (let i = 0; i < 5; i++) {
+            ai = aSplit[i] ? parseInt(aSplit[i]) : 0;
+            bi = bSplit[i] ? parseInt(bSplit[i]) : 0;
+            if (ai < bi) {
+                return -1;
+            } else if (ai > bi) {
+                return 1;
+            }
+        }
+        return 0;
+    });
+}
+
 module.exports = {
     getPokemonExpNeeded,
     calculateWorth,
     buildPokemonStatString,
     buildPokemonBaseStatString,
     calculateEffectiveSpeed,
-    calculateEffectiveAccuracy
+    calculateEffectiveAccuracy,
+    getAbilityName,
+    getAbilityOrder,
+    getPokemonOrder
 };

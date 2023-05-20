@@ -303,11 +303,12 @@ const getVoteRewards = async (user) => {
     }
 
     // add vote rewards: 200 pokedollars and 2 pokeballs per vote
+    // TEMP x2 for launch event
     const receivedRewards = addRewards(trainer, {
-        money: votes * 200,
+        money: votes * 400,
         backpack: {
             [backpackCategories.POKEBALLS]: {
-                [backpackItems.POKEBALL]: votes * 2
+                [backpackItems.POKEBALL]: votes * 4
             }
         }
     });

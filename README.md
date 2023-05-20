@@ -7,7 +7,7 @@
 </div>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/starmie.png" width="300" height="300">
+  <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images//events/pokestar-launch-banner.png" height="300">
 </p>
 
 <div align="center">

@@ -1,6 +1,6 @@
 {
   "name": "pokestar",
-  "version": "0.7.4",
+  "version": "0.8.0",
   "description": "",
   "main": "src/index.js",
   "scripts": {
@@ -25,6 +25,7 @@
     "log4js": "^6.9.1",
     "mongodb": "^5.2.0",
     "seedrandom": "^3.0.5",
+    "shortid": "^2.2.16",
     "uuid": "^9.0.0"
   }
 }
