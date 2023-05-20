@@ -113,17 +113,20 @@ client.once(Events.ClientReady, c => {
     // connect to discordbotlist.com
     if (process.env.STAGE === stageNames.BETA || process.env.STAGE === stageNames.PROD) {
         const dbl = createDjsClient(process.env.DBL_TOKEN, client);
+        dbl.on("posted", (stats) => {
+            logger.info(`Posted stats to discordbotlist.com: ${stats}`);
+        });
         dbl.startPosting();
         logger.info(`Connected to discordbotlist.com`);
 
         // post botlist stats every hour (may not work)
         poll(async () => {
-            logger.info("Posting botlist stats");
             try {
                 const botlistUrl = `https://api.botlist.me/api/v1/bots/${process.env.CLIENT_ID}/stats`;
                 const botlistData = {
                     "server_count": client.guilds.cache.size
                 }
+                logger.info(`Posting botlist.me stats: ${botlistData}`);
                 const botlistHeaders = {
                     "Authorization": process.env.BOTLIST_TOKEN,
                     "Content-Type": "application/json"
