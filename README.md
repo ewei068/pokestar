@@ -12,10 +12,10 @@
 
 <div align="center">
     <p style="text-align: center;">
-        A Pokémon Discord bot. Currently open for beta testing! <b><a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>Invite Pokéstar to your server.</a></b>
+        A Pokémon Discord bot. Currently open for beta testing! <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>Invite Pokéstar to your server.</a></b>
     </p>
     <p style="text-align: center;">
-        <b><a href=https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot>👾 Discord</a> • <a href=https://github.com/ewei068/pokestar#tutorial>📝 Tutorial</a> • <a href=https://github.com/ewei068/pokestar#all-commands>💬 Commands</a> • <a href=https://github.com/ewei068/pokestar#credits>©️ Credits</a></b>
+        <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>👾 Discord</a> • <a href=https://github.com/ewei068/pokestar#tutorial>📝 Tutorial</a> • <a href=https://github.com/ewei068/pokestar#all-commands>💬 Commands</a> • <a href=https://github.com/ewei068/pokestar#credits>©️ Credits</a></b>
     </p>
 </div>
 
@@ -41,7 +41,7 @@ Pokéstar aims to take advantage of Discord's inherently social nature by adding
 
 Pokéstar tries to be a fluid and responsive experience. Components and UI are a core focus of Pokéstar to make the bot easy to interact with and fun to use. (NOTE: I am not a UI designer whatsover so this is definitely a WIP)
 
-**Convinced? [Invite Pokéstar to your server!](https://discord.com/oauth2/authorize?client_id=1093411444877439066&permissions=18136036801601&scope=applications.commands%20bot)**
+**Convinced? [Invite Pokéstar to your server!](https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands)**
 
 ## Tutorial
 

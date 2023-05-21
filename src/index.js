@@ -1,6 +1,5 @@
-// Require the necessary discord.js classes
-const fs = require('node:fs');
-const path = require('node:path');
+require('dotenv').config();
+
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 const { runMessageCommand, runSlashCommand, prefix } = require('./handlers/commandHandler.js');
 const { handleEvent } = require('./handlers/eventHandler.js');
@@ -119,7 +118,7 @@ client.once(Events.ClientReady, c => {
         dbl.startPosting();
         logger.info(`Connected to discordbotlist.com`);
 
-        // post botlist stats every hour (may not work)
+        // post botlist stats every hour
         poll(async () => {
             try {
                 const botlistUrl = `https://api.botlist.me/api/v1/bots/${process.env.CLIENT_ID}/stats`;
@@ -132,6 +131,24 @@ client.once(Events.ClientReady, c => {
                     "Content-Type": "application/json"
                 }
                 await axios.post(botlistUrl, botlistData, { headers: botlistHeaders });
+            } catch (error) {
+                logger.error(error);
+            }
+        }, 1000 * 60 * 60);
+
+        // post discordlist stats every hour (may not work)
+        poll(async () => {
+            try {
+                const discordlistUrl = `https://api.discordlist.gg/v0/bots/${process.env.CLIENT_ID}/guilds`;
+                const discordlistData = {
+                    "count": client.guilds.cache.size
+                }
+                logger.info(`Posting discordlist.gg stats: ${JSON.stringify(discordlistData)}`);
+                const discordlistHeaders = {
+                    "Authorization": process.env.DISCORDLIST_TOKEN,
+                    "Content-Type": "application/json"
+                }
+                await axios.post(discordlistUrl, discordlistData, { headers: discordlistHeaders });
             } catch (error) {
                 logger.error(error);
             }
