@@ -154,6 +154,43 @@ client.once(Events.ClientReady, c => {
             }
         }, 1000 * 60 * 60);
 
+        // post top.gg stats every hour (may not work)
+        poll(async () => {
+            try {
+                const discordlistUrl = `https://api.discordlist.gg/v0/bots/${process.env.CLIENT_ID}/stats`;
+                const topggData = {
+                    "server_count": client.guilds.cache.size
+                }
+                logger.info(`Posting top.gg stats: ${JSON.stringify(topggData)}`);
+                const topggHeaders = {
+                    "Authorization": `Bearer ${process.env.DISCORDLIST_TOKEN}`,
+                    "Content-Type": "application/json"
+                }
+                await axios.post(topggUrl, topggData, { headers: topggHeaders });
+            } catch (error) {
+                logger.error(error);
+            }
+        }, 1000 * 60 * 60);
+
+        // post top.gg stats every hour (may not work)
+        poll(async () => {
+            try {
+                const discordlistUrl = `https://api.discordlist.gg/v0/bots/${process.env.CLIENT_ID}/stats`;
+                const topggData = {
+                    "server_count": client.guilds.cache.size
+                }
+                logger.info(`Posting top.gg stats: ${JSON.stringify(topggData)}`);
+                const topggHeaders = {
+                    "Authorization": `Bearer ${process.env.DISCORDLIST_TOKEN}`,
+                    "Content-Type": "application/json"
+                }
+                await axios.post(topggUrl, topggData, { headers: topggHeaders });
+            } catch (error) {
+                logger.error(error);
+        console.log(req)
+            }
+        }, 1000 * 60 * 60);
+
         // post discordlist stats every hour (may not work)
         poll(async () => {
             try {
@@ -169,6 +206,7 @@ client.once(Events.ClientReady, c => {
                 await axios.post(discordlistUrl, discordlistData, { headers: discordlistHeaders });
             } catch (error) {
                 logger.error(error);
+        console.log(req)
             }
         }, 1000 * 60 * 60);
     }
@@ -187,7 +225,6 @@ app.options('*', cors(corsOptions)); // preflight OPTIONS; put before other rout
 
 app.post("/vote", async (req, res) => {
     try {
-        console.log(req)
         let success = false;
         if (req.header("Authorization") === process.env.DBL_SECRET) {
             const user = req.body;
@@ -205,7 +242,7 @@ app.post("/vote", async (req, res) => {
             if (!err) {
                 success = true;
             }
-        } else if (req.header("Authorization") === process.env.TOPGG_SECRET) {
+        } else if (req.header("authorization") === process.env.TOPGG_SECRET) {
             const user = {
                 id: req.body.user,
             }
