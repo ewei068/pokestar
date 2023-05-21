@@ -15,7 +15,7 @@
         A Pokémon Discord bot. Currently open for beta testing! <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>Invite Pokéstar to your server.</a></b>
     </p>
     <p style="text-align: center;">
-        <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>👾 Discord</a> • <a href=https://github.com/ewei068/pokestar#tutorial>📝 Tutorial</a> • <a href=https://github.com/ewei068/pokestar#all-commands>💬 Commands</a> • <a href=https://github.com/ewei068/pokestar#credits>©️ Credits</a></b>
+        <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>👾 Discord</a> • <a href=https://github.com/ewei068/pokestar#tutorial>📝 Tutorial</a> • <a href=https://github.com/ewei068/pokestar#all-commands>💬 Commands</a> • <a href=https://github.com/ewei068/pokestar#privacy>🔒 Privacy</a> • <a href=https://github.com/ewei068/pokestar#credits>©️ Credits</a></b>
     </p>
 </div>
 
@@ -417,6 +417,21 @@ If `option` is ALL, removes all Pokemon from your party.
 
 **`/changelog`**: View all the update changes!
 
+## Privacy
+
+User data is stored whenever Pokemon-related commands are used in order to keep track of user-related data such as Pokemon and inventory. The following Discord User data is stored and used:
+
+* User ID: Used to uniquely identify a user and retrieve/store their Pokemon data.
+* Username and discriminator: Used to customize messages (ex: username#discriminator's Pokemon) and in the leaderboard.
+* Avatar ID: Used to display avatar in trainer info, can only be accessed by the original user.
+
+Whenever any of these fields change, the old data is removed. Pokemon data for each user is also stored, but can only be accessed by the original user. The data is stored on Google Cloud.
+
+For questions or to remove your data, DM me on Discord (`140671879227768832`) or on the support server (TBD). If you would like your data to be deleted, note that this will remove all your progress.
+
+Also see [Discord's Privacy Policy](https://discord.com/privacy).
+
+Thank you for playing Pokestar!
 
 ## Credits
 
