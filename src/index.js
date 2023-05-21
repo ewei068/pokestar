@@ -187,8 +187,6 @@ app.options('*', cors(corsOptions)); // preflight OPTIONS; put before other rout
 
 app.post("/vote", async (req, res) => {
     try {
-        console.log(req.header("Authorization"))
-        console.log(req.header("authorization"))
         let success = false;
         if (req.header("Authorization") === process.env.DBL_SECRET) {
             const user = req.body;
@@ -206,7 +204,7 @@ app.post("/vote", async (req, res) => {
             if (!err) {
                 success = true;
             }
-        } else if (req.header("authorization") === process.env.TOPGG_SECRET) {
+        } else if (req.header("Authorization") === process.env.TOPGG_SECRET) {
             const user = {
                 id: req.body.user,
             }
