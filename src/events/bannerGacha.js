@@ -1,4 +1,3 @@
-const { buildBannerSend } = require("../services/gacha");
 const { getState } = require("../services/state");
 const { usePokeball } = require("../services/gacha");
 const { buildNewPokemonEmbed, buildNewPokemonListEmbed } = require("../embeds/pokemonEmbeds");
@@ -6,6 +5,7 @@ const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
 const { eventNames } = require("../config/eventConfig");
 const { getTrainer } = require("../services/trainer");
 const { backpackCategories } = require("../config/backpackConfig");
+const { buildButtonActionRow } = require("../components/buttonActionRow");
 
 const bannerGacha = async (interaction, data) => {
     // get state
@@ -39,7 +39,10 @@ const bannerGacha = async (interaction, data) => {
         return { embed: null, err: gacha.err };
     }
 
-    let gachaSend = null;
+    const gachaSend = {
+        embeds: [],
+        components: []
+    }
     if (gacha.data.pokemons.length === 1) {
         // build Pokemon embed
         const pokemon = gacha.data.pokemons[0];
@@ -48,10 +51,8 @@ const bannerGacha = async (interaction, data) => {
             pokeballId, 
             trainer.data.backpack[backpackCategories.POKEBALLS][pokeballId]
         );
-        gachaSend = {
-            content: `${pokemon._id}`,
-            embeds: [embed]
-        }
+        gachaSend.content = `${pokemon._id}`;
+        gachaSend.embeds.push(embed);
     } else {
         // build Pokemon embed
         embed = buildNewPokemonListEmbed(
@@ -67,23 +68,24 @@ const bannerGacha = async (interaction, data) => {
             selectRowData, 
             eventNames.POKEMON_LIST_SELECT
         );
-        gachaSend = {
-            embeds: [embed],
-            components: [pokemonSelectRow]
-        }
+        gachaSend.embeds.push(embed);
+        gachaSend.components.push(pokemonSelectRow);
     }
 
-    // update banner message
-    const { send, err } = await buildBannerSend({
+    // push a return button
+    const returnData = {
         stateId: data.stateId,
-        user: interaction.user,
-    });
-    if (err) {
-        return { err: err };
+        pokeballId: pokeballId,
     }
+    const returnButtonConfig = [{
+        label: "Return",
+        disabled: false,
+        data: returnData,
+    }]
+    const returnButton = buildButtonActionRow(returnButtonConfig, eventNames.BANNER_BUTTON);
+    gachaSend.components.push(returnButton);
 
-    await interaction.update(send);
-    await interaction.followUp(gachaSend);
+    await interaction.update(gachaSend);
 }
 
 module.exports = bannerGacha;
