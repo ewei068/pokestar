@@ -157,13 +157,13 @@ client.once(Events.ClientReady, c => {
         // post discordlist stats every hour (may not work)
         poll(async () => {
             try {
-                const discordlistUrl = `https://api.discordlist.gg/v0/bots/${process.env.CLIENT_ID}/guilds`;
+                const discordlistUrl = `https://api.discordlist.gg/v0/bots/${process.env.CLIENT_ID}/stats`;
                 const discordlistData = {
-                    "count": client.guilds.cache.size
+                    "server_count": client.guilds.cache.size
                 }
                 logger.info(`Posting discordlist.gg stats: ${JSON.stringify(discordlistData)}`);
                 const discordlistHeaders = {
-                    "Authorization": process.env.DISCORDLIST_TOKEN,
+                    "Authorization": `Bearer ${process.env.DISCORDLIST_TOKEN}`,
                     "Content-Type": "application/json"
                 }
                 await axios.post(discordlistUrl, discordlistData, { headers: discordlistHeaders });
