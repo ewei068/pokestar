@@ -2,13 +2,12 @@
 
 ### 0.8.1 (5/21)
 
-* Gacha QOL
-* Privacy policy
-* Discordlist stuff
-* Top.gg stuff
-* \[Experimental\] New speed balancing! Changed effective speed calculations. See [old speed](https://github.com/ewei068/pokestar/blob/f0dcfd358bd9d5172fec6fd25f2ea8e103b5f9fb/src/utils/pokemonUtils.js#L72) and [new speed](https://github.com/ewei068/pokestar/blob/a55e00e335e9ae6a1750cd8e20dba014e2857b63/src/utils/pokemonUtils.js#L72).
+* Gacha QOL: now rolling the gacha doesn't create a new message.
+* Top.gg voting is now added and **counts twice!!**
+* \[Experimental\] New speed balancing! Changed effective speed calculations. See [old speed](https://github.com/ewei068/pokestar/blob/608b7db946f2d9f927ad25077a0cd778b94138dd/src/utils/pokemonUtils.js#L72) and [new speed](https://github.com/ewei068/pokestar/blob/a55e00e335e9ae6a1750cd8e20dba014e2857b63/src/utils/pokemonUtils.js#L72).
 * Patched a few ability bugs.
-* Depreciating message commands in non-alpha.
+* Added a privacy policy.
+* All prefix message commands will be depreciated soon in favor of slash commands.
 
 ## 0.8.0 (5/20) - Abilities and Events
 
