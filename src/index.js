@@ -187,6 +187,7 @@ app.options('*', cors(corsOptions)); // preflight OPTIONS; put before other rout
 
 app.post("/vote", async (req, res) => {
     try {
+        console.log(req)
         let success = false;
         if (req.header("Authorization") === process.env.DBL_SECRET) {
             const user = req.body;
