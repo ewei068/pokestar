@@ -136,6 +136,24 @@ client.once(Events.ClientReady, c => {
             }
         }, 1000 * 60 * 60);
 
+        // post top.gg stats every hour (may not work)
+        poll(async () => {
+            try {
+                const topggUrl = `https://top.gg/api/bots/${process.env.CLIENT_ID}/stats`;
+                const topggData = {
+                    "server_count": client.guilds.cache.size
+                }
+                logger.info(`Posting top.gg stats: ${JSON.stringify(topggData)}`);
+                const topggHeaders = {
+                    "Authorization": process.env.TOPGG_TOKEN,
+                    "Content-Type": "application/json"
+                }
+                await axios.post(topggUrl, topggData, { headers: topggHeaders });
+            } catch (error) {
+                logger.error(error);
+            }
+        }, 1000 * 60 * 60);
+
         // post discordlist stats every hour (may not work)
         poll(async () => {
             try {
@@ -183,6 +201,15 @@ app.post("/vote", async (req, res) => {
             }
             logger.info(`Received BOTLIST vote from ${user.id}`);
             const { data, err } = await addVote(user);
+            if (!err) {
+                success = true;
+            }
+        } else if (req.header("Authorization") === process.env.TOPGG_SECRET) {
+            const user = {
+                id: req.body.user,
+            }
+            logger.info(`Received TOP.GG vote from ${user.id}`);
+            const { data, err } = await addVote(user, 2);
             if (!err) {
                 success = true;
             }

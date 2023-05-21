@@ -4,6 +4,10 @@ const INVITE_URL = "https://discord.com/api/oauth2/authorize?client_id=109341144
 
 const voteConfig = [
     {
+        "label": "Top.gg",
+        "url": "https://top.gg/bot/1093411444877439066"
+    },
+    {
         "label": "DBL",
         "url": "https://discordbotlist.com/bots/pokestar"
     },

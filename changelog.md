@@ -1,5 +1,15 @@
 # Pokéstar Changelog
 
+### 0.8.1
+
+* Gacha QOL
+* Privacy policy
+* Discordlist stuff
+* Top.gg stuff
+* \[Experimental\] New speed balancing! Changed effective speed calculations. See [old speed](https://github.com/ewei068/pokestar/blob/f0dcfd358bd9d5172fec6fd25f2ea8e103b5f9fb/src/utils/pokemonUtils.js#L72) and [new speed](tbd).
+* Patched a few ability bugs.
+* Depreciating message commands in non-alpha.
+
 ## 0.8.0 (5/20) - Abilities and Events
 
 To celebrate the roll-out of Pokestar, we are throwing a launch event! Additionally, abilities have been implemented to greatly affect the tide of battle!

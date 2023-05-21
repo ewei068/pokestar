@@ -266,7 +266,7 @@ const getLevelRewards = async (user) => {
     return { data: allRewards, err: null };
 }
 
-const addVote = async (user) => {
+const addVote = async (user, votes=1) => {
     const trainer = await getTrainer(user, refresh=false);
     if (trainer.err) {
         return { data: null, err: trainer.err };
@@ -276,7 +276,7 @@ const addVote = async (user) => {
         const res = await updateDocument(
             collectionNames.USERS,
             { userId: user.id },
-            { $inc: { votes: 1 } }
+            { $inc: { votes: votes } }
         );
         if (res.modifiedCount === 0) {
             logger.error(`Failed to add vote to trainer ${user.username}.`);

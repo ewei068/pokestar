@@ -14,7 +14,7 @@ const vote = async (user) => {
     }], eventNames.VOTE_REWARDS);
 
     const send = {
-        content: "Vote on the following sites every 12 hours, then press \"Claim Rewards\" to claim your accumulated vote rewards!",
+        content: "Vote on the following sites every 12 hours, then press \"Claim Rewards\" to claim your accumulated vote rewards! **Top.gg votes count twice!**",
         components: [voteButtons, rewardsButton]
     }
 
