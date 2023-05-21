@@ -136,7 +136,7 @@ client.once(Events.ClientReady, c => {
             }
         }, 1000 * 60 * 60);
 
-        // post top.gg stats every hour (may not work)
+        // post top.gg stats every hour
         poll(async () => {
             try {
                 const topggUrl = `https://top.gg/api/bots/${process.env.CLIENT_ID}/stats`;
@@ -154,44 +154,7 @@ client.once(Events.ClientReady, c => {
             }
         }, 1000 * 60 * 60);
 
-        // post top.gg stats every hour (may not work)
-        poll(async () => {
-            try {
-                const discordlistUrl = `https://api.discordlist.gg/v0/bots/${process.env.CLIENT_ID}/stats`;
-                const topggData = {
-                    "server_count": client.guilds.cache.size
-                }
-                logger.info(`Posting top.gg stats: ${JSON.stringify(topggData)}`);
-                const topggHeaders = {
-                    "Authorization": `Bearer ${process.env.DISCORDLIST_TOKEN}`,
-                    "Content-Type": "application/json"
-                }
-                await axios.post(topggUrl, topggData, { headers: topggHeaders });
-            } catch (error) {
-                logger.error(error);
-            }
-        }, 1000 * 60 * 60);
-
-        // post top.gg stats every hour (may not work)
-        poll(async () => {
-            try {
-                const discordlistUrl = `https://api.discordlist.gg/v0/bots/${process.env.CLIENT_ID}/stats`;
-                const topggData = {
-                    "server_count": client.guilds.cache.size
-                }
-                logger.info(`Posting top.gg stats: ${JSON.stringify(topggData)}`);
-                const topggHeaders = {
-                    "Authorization": `Bearer ${process.env.DISCORDLIST_TOKEN}`,
-                    "Content-Type": "application/json"
-                }
-                await axios.post(topggUrl, topggData, { headers: topggHeaders });
-            } catch (error) {
-                logger.error(error);
-        console.log(req)
-            }
-        }, 1000 * 60 * 60);
-
-        // post discordlist stats every hour (may not work)
+        // post discordlist stats every hour
         poll(async () => {
             try {
                 const discordlistUrl = `https://api.discordlist.gg/v0/bots/${process.env.CLIENT_ID}/stats`;
@@ -206,7 +169,6 @@ client.once(Events.ClientReady, c => {
                 await axios.post(discordlistUrl, discordlistData, { headers: discordlistHeaders });
             } catch (error) {
                 logger.error(error);
-        console.log(req)
             }
         }, 1000 * 60 * 60);
     }
