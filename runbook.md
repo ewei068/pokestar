@@ -64,3 +64,14 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 
 * `tmux`
 * `node index.js`
+
+
+## Update Steps
+
+* Pull `git pull`
+* Backup DB (TODO)
+* If necessary: add other environment variables to `.env`
+* If necessary: `npm install`
+* If necessary: `node commands/deployCommands.js`
+* If necessary: Run migrations `node database/migration.js` or other migrations in `database/migrations`
+* Run but `node index.js`

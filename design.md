@@ -522,6 +522,18 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 
 ### Future Feature Ideas
 
+**Upcoming Roadmap**
+
+* More abilities
+* Gen 1 Pokemon
+* Training Rework
+* Equipment & Dungeons
+* Server-wide Raids
+* Arena
+* Trading
+
+**Other Features**
+
 * Abilities & battle items
 * PvE training (DONE)
 * Raid boss

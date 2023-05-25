@@ -228,6 +228,7 @@ const getLevelRewards = async (user) => {
     }
     
     const allRewards = {};
+    const currentClaimedLevels = [];
     for (const level in levelConfig) {
         const rewards = levelConfig[level].rewards;
         if (!rewards) {
@@ -240,6 +241,7 @@ const getLevelRewards = async (user) => {
         
         addRewards(trainer, rewards, allRewards);
         trainer.claimedLevelRewards.push(level);
+        currentClaimedLevels.push(level);
     }
 
     if (Object.keys(allRewards).length === 0) {
@@ -263,7 +265,17 @@ const getLevelRewards = async (user) => {
         return { data: null, err: "Error updating trainer." };
     }
 
-    return { data: allRewards, err: null };
+    // build itemized rewards string
+    let rewardsString = `You claimed rewards for levels: ${currentClaimedLevels.join(', ')}. **Thank you for playing Pokestar!**\n\n`;
+    rewardsString += getRewardsString(allRewards);
+    rewardsString += "\n\n**You now own:**";
+    if (allRewards.money) {
+        rewardsString += `\n₽${trainer.money}`;
+    }
+    rewardsString += getPokeballsString(trainer);
+    rewardsString += "\nSpend your Pokedollars at the \`/pokemart\` | Use \`/gacha\` to use your Pokeballs";
+
+    return { data: rewardsString, err: null };
 }
 
 const addVote = async (user, votes=1) => {

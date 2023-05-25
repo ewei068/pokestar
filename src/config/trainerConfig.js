@@ -215,268 +215,456 @@ const levelConfig = {
     },
     11: {
         "rewards": {
-            "money": 750,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.GREATBALL]: 1,
                 }
             }
         }
     },
     12: {
         "rewards": {
-            "money": 750,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.GREATBALL]: 1,
                 }
             }
         }
     },
     13: {
         "rewards": {
-            "money": 750,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.GREATBALL]: 1,
                 }
             }
         }
     },
     14: {
         "rewards": {
-            "money": 750,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.GREATBALL]: 1,
                 }
             }
         }
     },
     15: {
         "rewards": {
-            "money": 3000,
+            "money": 1500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
-                    [backpackItems.MASTERBALL]: 3,
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.MASTERBALL]: 1,
                 }
             }
         }
     },
     16: {
         "rewards": {
-            "money": 1000,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
-                },
+                    [backpackItems.GREATBALL]: 1,
+                }
             }
         }
     },
     17: {
         "rewards": {
-            "money": 1000,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
-                },
+                    [backpackItems.GREATBALL]: 1,
+                }
             }
         }
     },
     18: {
         "rewards": {
-            "money": 1000,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
-                },
+                    [backpackItems.GREATBALL]: 1,
+                }
             }
         }
     },
     19: {
         "rewards": {
-            "money": 1000,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
-                },
+                    [backpackItems.GREATBALL]: 1,
+                }
             }
         }
     },
     20: {
         "rewards": {
-            "money": 5000,
+            "money": 2000,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
-                    [backpackItems.ULTRABALL]: 5,
-                    [backpackItems.MASTERBALL]: 3,
+                    [backpackItems.POKEBALL]: 3,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.MASTERBALL]: 1,
                 }
             }
         }
     },
     21: {
         "rewards": {
-            "money": 1500,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
-                },
+                    [backpackItems.GREATBALL]: 1,
+                }
             }
         }
     },
     22: {
         "rewards": {
-            "money": 1500,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
-                },
+                    [backpackItems.GREATBALL]: 1,
+                }
             }
         }
     },
     23: {
         "rewards": {
-            "money": 1500,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
-                },
+                    [backpackItems.GREATBALL]: 1,
+                }
             }
         }
     },
     24: {
         "rewards": {
-            "money": 1500,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
-                },
+                    [backpackItems.GREATBALL]: 1,
+                }
             }
         }
     },
     25: {
         "rewards": {
-            "money": 7500,
+            "money": 2500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
-                    [backpackItems.ULTRABALL]: 5,
-                    [backpackItems.MASTERBALL]: 5,
+                    [backpackItems.POKEBALL]: 5,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.MASTERBALL]: 1,
                 }
             }
         }
     },
     26: {
         "rewards": {
-            "money": 1500,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
-                },
+                    [backpackItems.GREATBALL]: 1,
+                }
             }
         }
     },
     27: {
         "rewards": {
-            "money": 1500,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
-                },
+                    [backpackItems.GREATBALL]: 1,
+                }
             }
         }
     },
     28: {
         "rewards": {
-            "money": 1500,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
-                },
+                    [backpackItems.GREATBALL]: 1,
+                }
             }
         }
     },
     29: {
         "rewards": {
-            "money": 1500,
+            "money": 500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
                     [backpackItems.POKEBALL]: 2,
-                    [backpackItems.GREATBALL]: 2,
-                    [backpackItems.ULTRABALL]: 1,
-                },
+                    [backpackItems.GREATBALL]: 1,
+                }
             }
         }
     },
     30: {
         "rewards": {
-            "money": 7500,
+            "money": 2500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
-                    [backpackItems.ULTRABALL]: 5,
-                    [backpackItems.MASTERBALL]: 5,
+                    [backpackItems.POKEBALL]: 5,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.MASTERBALL]: 1,
+                }
+            }
+        }
+    },
+    31: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    32: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    33: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    34: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
                 }
             }
         }
     },
     35: {
         "rewards": {
-            "money": 10000,
+            "money": 2500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
-                    [backpackItems.ULTRABALL]: 5,
-                    [backpackItems.MASTERBALL]: 5,
+                    [backpackItems.POKEBALL]: 5,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.MASTERBALL]: 1,
+                }
+            }
+        }
+    },
+    36: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    37: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    38: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    39: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
                 }
             }
         }
     },
     40: {
         "rewards": {
-            "money": 10000,
+            "money": 2500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
-                    [backpackItems.ULTRABALL]: 5,
-                    [backpackItems.MASTERBALL]: 5,
+                    [backpackItems.POKEBALL]: 5,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.MASTERBALL]: 1,
+                }
+            }
+        }
+    },
+    41: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    42: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    43: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    44: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
                 }
             }
         }
     },
     45: {
         "rewards": {
-            "money": 10000,
+            "money": 2500,
             "backpack": {
                 [backpackCategories.POKEBALLS]: {
-                    [backpackItems.ULTRABALL]: 5,
-                    [backpackItems.MASTERBALL]: 5,
+                    [backpackItems.POKEBALL]: 5,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.MASTERBALL]: 1,
+                }
+            }
+        }
+    },
+    46: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    47: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    48: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    49: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    50: {
+        "rewards": {
+            "money": 5000,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 10,
+                    [backpackItems.GREATBALL]: 5,
+                    [backpackItems.ULTRABALL]: 3,
+                    [backpackItems.MASTERBALL]: 3,
                 }
             }
         }

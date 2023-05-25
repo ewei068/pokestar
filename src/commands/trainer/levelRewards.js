@@ -9,15 +9,7 @@ const { getRewardsString } = require("../../utils/trainerUtils");
  */
 const levelRewards = async (user) => {
     // get level rewards
-    const rewards = await getLevelRewards(user);
-    if (rewards.err) {
-        return { data: null, err: rewards.err };
-    }
-
-    // build itemized rewards string
-    let rewardsString = getRewardsString(rewards.data);
-
-    return { data: rewardsString, err: null };
+    return await getLevelRewards(user);
 }
 
 const levelRewardsMessageCommand = async (message) => {
