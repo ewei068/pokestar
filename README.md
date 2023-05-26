@@ -15,7 +15,7 @@
         A Pokémon Discord bot. Currently open for beta testing! <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>Invite Pokéstar to your server.</a></b>
     </p>
     <p style="text-align: center;">
-        <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>👾 Discord</a> • <a href=https://github.com/ewei068/pokestar#tutorial>📝 Tutorial</a> • <a href=https://github.com/ewei068/pokestar#all-commands>💬 Commands</a> • <a href=https://github.com/ewei068/pokestar#privacy>🔒 Privacy</a> • <a href=https://github.com/ewei068/pokestar#credits>©️ Credits</a></b>
+        <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>👾 Discord</a> • <a href= https://discord.gg/ygVPUXeJXZ>💻 Server</a> • <a href=https://github.com/ewei068/pokestar#tutorial>📝 Tutorial</a> • <a href=https://github.com/ewei068/pokestar#all-commands>💬 Commands</a>
     </p>
 </div>
 

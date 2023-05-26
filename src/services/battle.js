@@ -1,7 +1,7 @@
 const { getOrSetDefault } = require("../utils/utils");
 const { v4: uuidv4, v4 } = require('uuid');
 const { pokemonConfig, types } = require('../config/pokemonConfig');
-const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, getTypeDamageMultiplier, effectConfig, statusConditions, moveTiers, calculateDamage, abilityConfig } = require("../config/battleConfig");
+const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, effectConfig, statusConditions, moveTiers, calculateDamage, abilityConfig, typeAdvantages } = require("../config/battleConfig");
 const { buildBattleEmbed, buildBattleMovesetEmbed, buildPveListEmbed, buildPveNpcEmbed } = require("../embeds/battleEmbeds");
 const { buildSelectBattleMoveRow } = require("../components/selectBattleMoveRow");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
@@ -925,6 +925,23 @@ class Pokemon {
         return false;
     }
 
+    getTypeDamageMultiplier(moveType, targetPokemon) {
+        let mult = 1;
+        if (typeAdvantages[moveType]) {
+            let adv = typeAdvantages[moveType][targetPokemon.type1];
+            if (adv !== undefined) {
+                mult *= adv;
+            }
+    
+            adv = typeAdvantages[moveType][targetPokemon.type2];
+            if (adv !== undefined) {
+                mult *= adv;
+            }
+        }
+    
+        return mult;
+    };
+
     getPatternTargets(targetParty, targetPattern, targetPosition, moveId=null) {
         const targetRow = Math.floor((targetPosition - 1) / targetParty.cols);
         const targetCol = (targetPosition - 1) % targetParty.cols;
@@ -1036,7 +1053,7 @@ class Pokemon {
         for (const target of targetPokemons) {
             // TODO: account for target evasion
             let hitChance = moveData.accuracy * calculateEffectiveAccuracy(this.acc);
-            const damageMult = getTypeDamageMultiplier(moveData.type, target);
+            const damageMult = this.getTypeDamageMultiplier(moveData.type, target);
             if (damageMult >= 4) {
                 hitChance *= 1.4;
             } else if (damageMult >= 2) {

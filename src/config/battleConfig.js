@@ -75,24 +75,6 @@ const typeAdvantages = {
     [types.FAIRY]: { [types.FIRE]: 0.5, [types.FIGHTING]: 2, [types.POISON]: 0.5, [types.DRAGON]: 2, [types.DARK]: 2, [types.STEEL]: 0.5 }
 };
 
-const getTypeDamageMultiplier = (moveType, targetPokemon) => {
-    let mult = 1;
-    if (typeAdvantages[moveType]) {
-        let adv = typeAdvantages[moveType][targetPokemon.type1];
-        if (adv !== undefined) {
-            mult *= adv;
-        }
-
-        adv = typeAdvantages[moveType][targetPokemon.type2];
-        if (adv !== undefined) {
-            mult *= adv;
-        }
-    }
-
-    return mult;
-};
-
-
 const calculateDamage = (move, source, target, miss=false, { atkStat = null, defStat = null, power = null, type = null } = {}) => {
     // TODO: handle miss
 
@@ -104,7 +86,7 @@ const calculateDamage = (move, source, target, miss=false, { atkStat = null, def
     const defense = defStat === damageTypes.PHYSICAL ? target.def : target.spd;
     const stab = source.type1 === move.type || source.type2 === move.type ? 1.5 : 1;
     const missMult = miss ? 0.7 : 1;
-    type = type !== null ? type : getTypeDamageMultiplier(move.type, target);
+    type = type !== null ? type : source.getTypeDamageMultiplier(move.type, target);
     // balance type
     if (type >= 4) {
         type = 2;
@@ -937,7 +919,7 @@ const effectConfig = {
                     }
 
                     // get damage multiplier
-                    let mult = getTypeDamageMultiplier(types.ROCK, targetPokemon);
+                    let mult = targetPokemon.getTypeDamageMultiplier(types.ROCK, targetPokemon);
                     if (mult >= 4) {
                         mult = 2;
                     } else if (mult >= 2) {
@@ -5949,6 +5931,7 @@ const abilityConfig = {
 };
 
 module.exports = {
+    typeAdvantages,
     battleEventNames,
     moveConfig,
     moveExecutes,
@@ -5956,7 +5939,6 @@ module.exports = {
     targetTypes,
     targetPositions,
     targetPatterns,
-    getTypeDamageMultiplier,
     effectConfig,
     effectTypes,
     statusConditions,
