@@ -251,7 +251,7 @@ class Battle {
         }
     }
 
-    addTrainer(trainer, pokemons, teamName) {
+    addTrainer(trainer, pokemons, teamName, rows=3, cols=4) {
         // if user already exists, return
         if (this.users[trainer.userId]) {
             return;
@@ -273,11 +273,11 @@ class Battle {
                 partyPokemons.push(null);
             }
         }
-        // TODO: modify if parties can have different sizes and different num players
+        // TODO: modify if parties can have different num players
         this.parties[teamName] = {
             pokemons: partyPokemons,
-            rows: 3,
-            cols: 4,
+            rows: rows,
+            cols: cols,
         }
     }
 
@@ -330,6 +330,9 @@ class Battle {
 
         // add all abilities
         Object.entries(this.allPokemon).forEach(([pokemonId, pokemon]) => {
+            if (pokemon.ability.applied) {
+                return;
+            }
             const abilityId = pokemon.ability.abilityId;
             const abilityData = abilityConfig[abilityId];
             if (!abilityData || !abilityData.abilityAdd) {
@@ -337,14 +340,25 @@ class Battle {
             }
 
             pokemon.ability.data = abilityData.abilityAdd(this, pokemon, pokemon);
+            pokemon.ability.applied = true;
         });
 
         this.eventHandler.emit(battleEventNames.BATTLE_BEGIN, {
             battle: this,
         });
 
-        // increase combat readiness for all pokemon
+        // begin turn
+        this.beginTurn();
+    }
+
+    beginTurn() {
+        // push cr
         this.increaseCombatReadiness();
+
+        // tick move cooldowns
+        if (!this.activePokemon.isFainted) {
+            this.activePokemon.tickMoveCooldowns();
+        }
 
         // begin turn
         this.eventHandler.emit(battleEventNames.TURN_BEGIN);
@@ -352,7 +366,11 @@ class Battle {
         // log
         const userIsNpc = this.isNpc(this.activePokemon.userId);
         const userString = userIsNpc ? this.users[this.activePokemon.userId].username : `<@${this.activePokemon.userId}>`;
-        this.log.push(`[Turn ${this.turn}] It is ${userString}'s ${this.activePokemon.name}'s turn.`);
+        if (this.activePokemon.canMove()) {
+            this.log.push(`[Turn ${this.turn}] It is ${userString}'s ${this.activePokemon.name}'s turn.`);
+        } else {
+            this.log.push(`[Turn ${this.turn}] ${userString}'s ${this.activePokemon.name} is unable to move.`);
+        }
     }
 
     nextTurn() {
@@ -394,25 +412,8 @@ class Battle {
             return this.endBattle();
         }
 
-        // push cr
-        this.increaseCombatReadiness();
-
-        // tick move cooldowns
-        if (!this.activePokemon.isFainted) {
-            this.activePokemon.tickMoveCooldowns();
-        }
-
         // begin turn
-        this.eventHandler.emit(battleEventNames.TURN_BEGIN);
-
-        // log
-        const userIsNpc = this.isNpc(this.activePokemon.userId);
-        const userString = userIsNpc ? this.users[this.activePokemon.userId].username : `<@${this.activePokemon.userId}>`;
-        if (this.activePokemon.canMove()) {
-            this.log.push(`[Turn ${this.turn}] It is ${userString}'s ${this.activePokemon.name}'s turn.`);
-        } else {
-            this.log.push(`[Turn ${this.turn}] ${userString}'s ${this.activePokemon.name} is unable to move.`);
-        }
+        this.beginTurn();
     }
 
     endBattle() {
@@ -794,13 +795,13 @@ class Pokemon {
         if (canUseMove) {
             const eventArgs = {
                 canUseMove: canUseMove,
-                user: this,
+                source: this,
                 primaryTarget: primaryTarget,
-                move: moveId,
+                moveId: moveId,
             };
 
             // trigger before move events
-            this.battle.eventHandler.emit(battleEventNames.MOVE_BEGIN, eventArgs);
+            this.battle.eventHandler.emit(battleEventNames.BEFORE_MOVE, eventArgs);
 
             canUseMove = eventArgs.canUseMove;
         }
@@ -834,7 +835,16 @@ class Pokemon {
             // execute move
             moveExecutes[moveId](this.battle, this, primaryTarget, allTargets, missedTargets);
 
-            // TODO: trigger move end
+            // after move event
+            const eventArgs = {
+                source: this,
+                primaryTarget: primaryTarget,
+                targets: allTargets,
+                missedTargets: missedTargets,
+                moveId: moveId,
+            };
+            this.battle.eventHandler.emit(battleEventNames.AFTER_MOVE, eventArgs);
+
         }
 
 
@@ -1166,6 +1176,12 @@ class Pokemon {
     faint() {
         this.hp = 0;
         this.isFainted = true;
+        // remove ability effects
+        const abilityId = this.ability.abilityId;
+        const abilityData = abilityConfig[abilityId];
+        if (abilityData && abilityData.abilityRemove) {
+            abilityData.abilityRemove(this.battle, this, this);
+        }
         this.battle.addToLog(`${this.name} fainted!`);
     }
 

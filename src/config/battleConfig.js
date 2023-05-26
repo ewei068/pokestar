@@ -4,7 +4,8 @@ const battleEventNames = {
     BATTLE_BEGIN: "battleStart",
     TURN_END: "turnEnd",
     TURN_BEGIN: "turnBegin",
-    MOVE_BEGIN: "moveBegin",
+    BEFORE_MOVE: "beforeMove",
+    AFTER_MOVE: "afterMove",
     BEFORE_DAMAGE_DEALT: "beforeDamageDealt",
     AFTER_DAMAGE_DEALT: "afterDamageDealt",
     BEFORE_DAMAGE_TAKEN: "beforeDamageTaken",
@@ -666,8 +667,8 @@ const effectConfig = {
                 },
                 execute: function(initialArgs, args) {
                     const inflictedPokemon = initialArgs.pokemon;
-                    const moveUser = args.user;
-                    if (inflictedPokemon !== moveUser) {
+                    const sourcePokemon = args.source;
+                    if (inflictedPokemon !== sourcePokemon) {
                         return;
                     }
                     // 33% chance to hurt self
@@ -688,7 +689,7 @@ const effectConfig = {
                 }
             }
             battle.addToLog(`${target.name} became confused!`);
-            const listenerId = battle.eventHandler.registerListener(battleEventNames.MOVE_BEGIN, listener);
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_MOVE, listener);
             return {
                 "listenerId": listenerId,
             };
@@ -1823,6 +1824,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user withdraws its body into its hard shell, raising its Defense for 2 turns.",
     },
+    "m113": {
+        "name": "Light Screen",
+        "type": types.PSYCHIC,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 6,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ROW,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user creates a wall of light, sharply raising the Defense of targeted allies for 3 turns.",
+    },
     "m116": {
         "name": "Focus Energy",
         "type": types.NORMAL,
@@ -1887,6 +1901,19 @@ const moveConfig = {
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.SPECIAL,
         "description": "The user distracts the target by bending a spoon. This lowers the target's accuracy for 1 turn.",
+    },
+    "m135": {
+        "name": "Soft-Boiled",
+        "type": types.NORMAL,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 3,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "The user sacrifices 20% of its HP to heal the target by 50% of the user's max HP. If the target is fully healed, reduce this cooldown by 1.",
     },
     "m143": {
         "name": "Sky Attack",
@@ -2752,6 +2779,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user slams into the target with its heavy body. Power increases in proportion to how slow the user is and user max HP.",
     },
+    "m505": {
+        "name": "Heal Pulse",
+        "type": types.PSYCHIC,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 2,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.NON_SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user emits a healing pulse which restores the target's HP by 50%.",
+    },
     "m506": {
         "name": "Hex",
         "type": types.GHOST,
@@ -3572,6 +3612,14 @@ const moveExecutes = {
             target.addEffect("defUp", 2, source);
         }
     },
+    "m113": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m113";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // greater spd up for 3 turns
+            target.addEffect("greaterSpdUp", 3, source);
+        }
+    },
     "m116": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m116";
         const moveData = moveConfig[moveId];
@@ -3650,6 +3698,28 @@ const moveExecutes = {
             // if not miss, apply accDown
             if (!miss) {
                 target.addEffect("accDown", 1, source);
+            }
+        }
+    },
+    "m135": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m135";
+        const moveData = moveConfig[moveId];
+        // sac 20% hp
+        const damageToDeal = Math.floor(source.hp * 0.2);
+        source.dealDamage(damageToDeal, source, {
+            type: "sacrifice",
+        });
+        for (const target of allTargets) {
+            // heal 50% of source max hp
+            const healAmount = Math.floor(source.maxHp * 0.5);
+            source.giveHeal(healAmount, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if target hp is max, reduce cd by 1
+            if (target.hp === target.maxHp) {
+                source.moveIds[moveId].cooldown -= 1;
             }
         }
     },
@@ -4842,6 +4912,18 @@ const moveExecutes = {
             });
         }
     },
+    "m505": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m505";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // heal 50%
+            const healAmount = Math.floor(target.maxHp / 2);
+            source.giveHeal(healAmount, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
     "m506": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m506";
         const moveData = moveConfig[moveId];
@@ -5128,6 +5210,14 @@ const abilityConfig = {
             return {
                 listenerId: listenerId,
             }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "5" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "9": {
@@ -5162,6 +5252,14 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "9" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
     },
     "10": {
         "name": "Volt Absorb",
@@ -5196,6 +5294,14 @@ const abilityConfig = {
             return {
                 "listenerId": listenerId
             }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "10" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "11": {
@@ -5231,6 +5337,14 @@ const abilityConfig = {
             return {
                 "listenerId": listenerId
             }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "11" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "14": {
@@ -5239,6 +5353,9 @@ const abilityConfig = {
         "abilityAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Compound Eyes ability increases its accuracy!`)
             target.acc += 30;
+        },
+        "abilityRemove": function (battle, source, target) {
+            target.acc -= 30;
         }
     },
     "18": {
@@ -5273,6 +5390,14 @@ const abilityConfig = {
             return {
                 "listenerId": listenerId
             }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "18" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "22": {
@@ -5326,6 +5451,14 @@ const abilityConfig = {
             return {
                 "listenerId": listenerId,
             }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "22" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "28": {
@@ -5356,6 +5489,64 @@ const abilityConfig = {
             return {
                 "listenerId": listenerId
             }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "28" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
+    },
+    "30": {
+        "name": "Natural Cure",
+        "description": "After the user targets an ally with a move, heal their status conditions. If the move is ULTIMATE, also dispell their debuffs.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const sourcePokemon = args.source;
+                    const targetPokemons = args.targets;
+                    if (initialArgs.pokemon !== sourcePokemon) {
+                        return;
+                    }
+                    for (const target of targetPokemons) {
+                        if (target.teamName !== sourcePokemon.teamName) {
+                            continue;
+                        }
+                        if (target.isFainted) {
+                            continue;
+                        }
+
+                        target.battle.addToLog(`${sourcePokemon.name}'s Natural Cure remedies ${target.name}!`);
+                        target.removeStatus();
+                        const moveData = moveConfig[args.moveId];
+                        if (moveData && moveData.tier == moveTiers.ULTIMATE) {
+                            for (const effectId in target.effectIds) {
+                                const effectData = effectConfig[effectId];
+                                if (effectData.type === effectTypes.DEBUFF) {
+                                    target.dispellEffect(effectId);
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_MOVE, listener);
+            return {
+                "listenerId": listenerId
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "30" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "31": {
@@ -5421,6 +5612,15 @@ const abilityConfig = {
                 "listenerId1": listenerId1,
                 "listenerId2": listenerId2,
             }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "31" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId1);
+            battle.eventHandler.unregisterListener(abilityData.listenerId2);
         }
     },
     "34": {
@@ -5429,6 +5629,9 @@ const abilityConfig = {
         "abilityAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Chlorophyll increases its speed!`);
             target.spe += Math.floor(target.spe * 0.25);
+        },
+        "abilityRemove": function (battle, source, target) {
+            target.spe -= Math.floor(target.spe * 0.25);
         }
     },
     "39": {
@@ -5457,6 +5660,14 @@ const abilityConfig = {
             return {
                 "listenerId": listenerId,
             };
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "39" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "46": {
@@ -5517,6 +5728,15 @@ const abilityConfig = {
                 affectedPokemons: [target],
             }
         },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "46" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.dealtListenerId);
+            battle.eventHandler.unregisterListener(abilityData.takenListenerId);
+        }
     },
     "47": {
         "name": "Thick Fat",
@@ -5550,6 +5770,14 @@ const abilityConfig = {
             return {
                 listenerId: listenerId,
             }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "47" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "50": {
@@ -5588,6 +5816,14 @@ const abilityConfig = {
             return {
                 listenerId: listenerId,
             }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "50" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "56": {
@@ -5623,6 +5859,14 @@ const abilityConfig = {
             return {
                 listenerId: listenerId,
             }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "56" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "65": {
@@ -5656,6 +5900,14 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "65" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
     },
     "66": {
         "name": "Blaze",
@@ -5688,6 +5940,14 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "66" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
     },
     "67": {
         "name": "Torrent",
@@ -5720,10 +5980,18 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "67" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
     },
     "71": {
         "name": "Arena Trap",
-        "description": "Whenever the user damages a target, restrict their combat readiness boosts for 2 turns. Doesn't affect Flying types.",
+        "description": "Whenever the user damages a target, restrict their combat readiness boosts for 2 turns. Doesn't affect Pokemon in the air.",
         "abilityAdd": function (battle, source, target) {
             const listener = {
                 initialArgs: {
@@ -5736,8 +6004,8 @@ const abilityConfig = {
                         return;
                     }
                     
-                    // if target is not flying type, restrict combat readiness boosts for 2 turns
-                    if (targetPokemon.type1 !== types.FLYING && targetPokemon.type2 !== types.FLYING) {
+                    // if target is not flying, restrict combat readiness boosts for 2 turns
+                    if (sourcePokemon.getTypeDamageMultiplier(types.GROUND, targetPokemon) !== 0) {
                         targetPokemon.addEffect("arenaTrap", 2, sourcePokemon);
                     }
                 }
@@ -5746,6 +6014,14 @@ const abilityConfig = {
             return {
                 "listenerId": listenerId,
             };
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "71" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "75": {
@@ -5775,6 +6051,14 @@ const abilityConfig = {
             return {
                 "listenerId": listenerId,
             };
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "75" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "97": {
@@ -5808,6 +6092,14 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "97" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
     },
     "99": {
         "name": "No Guard",
@@ -5831,6 +6123,14 @@ const abilityConfig = {
             return {
                 "listenerId": listenerId,
             };
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "99" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "130": {
@@ -5867,6 +6167,14 @@ const abilityConfig = {
             return {
                 "listenerId": listenerId,
             };
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "130" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "138": {
@@ -5899,6 +6207,14 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "138" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
     },
     "145": {
         "name": "Big Pecks",
@@ -5927,6 +6243,14 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "145" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
     },
 };
 

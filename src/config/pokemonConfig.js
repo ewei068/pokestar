@@ -1175,6 +1175,24 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "113": {
+        "name": "Chansey",
+        "emoji": "<:113:1100290444249804800>",
+        "description": "A rare and elusive POKéMON that is said to bring happiness to those who manage to get it.",
+        "type": [types.NORMAL],
+        "baseStats": [250, 5, 5, 35, 105, 50],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/113.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/113.png",
+        "abilities": {
+            "30": 0.45,
+            "32": 0.45,
+            "131": 0.1
+        },
+        "moveIds": ["m574", "m113", "m505", "m135"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "129": {
         "name": "Magikarp",
         "emoji": "<:129:1100290837092515870>",
