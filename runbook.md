@@ -53,6 +53,7 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 
 **Run Migration**
 
+* Create a backup folder `src/backups`
 * `node database/migration.js`
 
 ### Voting
@@ -69,9 +70,14 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 ## Update Steps
 
 * Pull `git pull`
-* Backup DB (TODO)
+* Backup DB `mongodump  --db=pokestar --out=backups/{BACKUP_NAME}`
+    * Optionally: remove some old backups
 * If necessary: add other environment variables to `.env`
-* If necessary: `npm install`
-* If necessary: `node commands/deployCommands.js`
-* If necessary: Run migrations `node database/migration.js` or other migrations in `database/migrations`
-* Run but `node index.js`
+* If necessary: install new packages `npm install`
+* If necessary: deploy commands `node commands/deployCommands.js`
+* If necessary: run migrations 
+    * General metadata `node database/migration.js`
+    * Other migrations in `database/migrations`
+* Run bot `node index.js`
+* Test that bot works in sandboxed environment
+* If DB errors, restore DB `mongorestore --drop backups/{BACKUP_NAME}/`
