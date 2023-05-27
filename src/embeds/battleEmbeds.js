@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const { moveConfig } = require("../config/battleConfig");
 const { buildPartyString, buildMoveString, buildBattlePokemonString, buildNpcDifficultyString } = require("../utils/battleUtils");
-const { buildPokemonStatString } = require("../utils/pokemonUtils");
+const { buildPokemonStatString, getAbilityName } = require("../utils/pokemonUtils");
 const { setTwoInline } = require("../utils/utils");
 const { npcConfig  } = require("../config/npcConfig");
 
@@ -29,7 +29,7 @@ const buildPartyEmbed = (trainer, pokemons, detailed=false) => {
             const statString = buildPokemonStatString(pokemon, size=10, compact=true)
             return {
                 name: `[${pokemons.indexOf(pokemon) + 1}] [Lv. ${pokemon.level}] ${pokemon.name}`,
-                value: `${pokemon._id}\n${statString}`,
+                value: `${pokemon._id}\n${statString}\nAbility: ${getAbilityName(pokemon.abilityId)}`,
                 inline: true,
             };
         });

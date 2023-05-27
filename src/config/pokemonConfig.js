@@ -657,6 +657,44 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "37": {
+        "name": "Vulpix",
+        "emoji": "<:37:1100282816270438432>",
+        "description": "At the time of birth, it has just one tail. The tail splits from its tip as it grows older.",
+        "type": [types.FIRE],
+        "baseStats": [38, 41, 40, 65, 65, 65],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/37.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/37.png",
+        "evolution": [{
+            "level": 26,
+            "id": "38",
+        }],
+        "abilities": {
+            "18": 0.8,
+            "70": 0.2
+        },
+        "moveIds": ["m52", "m53", "m219", "m288"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "38": {
+        "name": "Ninetales",
+        "emoji": "<:38:1100282817818144809>",
+        "description": "Very smart and very vengeful. Grabbing one of its many tails could result in a 1000-year curse.",
+        "type": [types.FIRE],
+        "baseStats": [73, 76, 75, 100, 100, 100],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/38.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/38.png",
+        "abilities": {
+            "18": 0.8,
+            "70": 0.2
+        },
+        "moveIds": ["m52", "m219", "m288", "m257"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "39" : {
         "name": "Jigglypuff",
         "emoji": "<:39:1100282819411972116>",
@@ -735,6 +773,65 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "43": {
+        "name": "Oddish",
+        "emoji": "<:43:1100283653122170963>",
+        "description": "During the day, it keeps its face buried in the ground. At night, it wanders around sowing its seeds.",
+        "type": [types.GRASS, types.POISON],
+        "baseStats": [45, 50, 55, 30, 75, 65],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/43.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/43.png",
+        "evolution": [{
+            "level": 21,
+            "id": "44",
+        }],
+        "abilities": {
+            "34": 0.8,
+            "50": 0.2
+        },
+        "moveIds": ["m51", "m71", "m73", "m79"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "44": {
+        "name": "Gloom",
+        "emoji": "<:44:1100283654749552771>",
+        "description": "The fluid that oozes from its mouth isn't drool. It is a nectar that is used to attract prey.",
+        "type": [types.GRASS, types.POISON],
+        "baseStats": [60, 65, 70, 40, 85, 75],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/44.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/44.png",
+        "evolution": [{
+            "level": 31,
+            "id": "45",
+        }],
+        "abilities": {
+            "34": 0.8,
+            "1": 0.2
+        },
+        "moveIds": ["m71", "m73", "m79", "m202"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "45": {
+        "name": "Vileplume",
+        "emoji": "<:45:1100283656561512509>",
+        "description": "The larger its petals, the more toxic pollen it contains. Its big head is heavy and hard to hold up.",
+        "type": [types.GRASS, types.POISON],
+        "baseStats": [130, 80, 85, 90, 100, 50],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/45.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/45.png",
+        "abilities": {
+            "34": 0.8,
+            "27": 0.2
+        },
+        "moveIds": ["m71", "m73", "m79", "m572"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "50": {
         "name": "Diglett",
         "emoji": "<:50:1100283701142757397>",
@@ -774,6 +871,46 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
+    },
+    "52": {
+        "name": "Meowth",
+        "emoji": "<:52:1100285028157640704>",
+        "description": "Adores circular objects. Wanders the streets on a nightly basis to look for dropped loose change.",
+        "type": [types.NORMAL],
+        "baseStats": [40, 45, 35, 40, 40, 90],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/52.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/52.png",
+        "evolution": [{
+            "level": 18,
+            "id": "53",
+        }],
+        "abilities": {
+            "7": 0.45,
+            "101": 0.45,
+            "127": 0.1
+        },
+        "moveIds": ["m6", "m10", "m269", "m369"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.FAST
+    },
+    "53": {
+        "name": "Persian",
+        "emoji": "<:53:1100285029122318406>",
+        "description": "Although its fur has many admirers, it is tough to raise as a pet because of its fickle meanness.",
+        "type": [types.NORMAL],
+        "baseStats": [65, 70, 60, 65, 65, 115],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/53.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/53.png",
+        "abilities": {
+            "7": 0.45,
+            "101": 0.45,
+            "127": 0.1
+        },
+        "moveIds": ["m6", "m252", "m269", "m369"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.FAST
     },
     "58": {
         "name": "Growlithe",
@@ -1041,6 +1178,46 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "88": {
+        "name": "Grimer",
+        "emoji": "<:88:1100288386092245062>",
+        "description": "Appears in filthy areas. Thrives by sucking up polluted sludge that is pumped out of factories.",
+        "type": [types.POISON],
+        "baseStats": [80, 80, 50, 40, 50, 25],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/88.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/88.png",
+        "evolution": [{
+            "level": 38,
+            "id": "89",
+        }],
+        "abilities": {
+            "1": 0.45,
+            "60": 0.45,
+            "143": 0.1
+        },
+        "moveIds": ["m876", "m92", "m398", "m441"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "89": {
+        "name": "Muk",
+        "emoji": "<:89:1100288387363119235>",
+        "description": "Thickly covered with a filthy, vile sludge. It is so toxic, even its footprints contain poison.",
+        "type": [types.POISON],
+        "baseStats": [105, 105, 75, 65, 100, 50],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/89.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/89.png",
+        "abilities": {
+            "1": 0.45,
+            "60": 0.45,
+            "143": 0.1
+        },
+        "moveIds": ["m876", "m92", "m441", "m482"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "92": {
         "name": "Gastly",
         "emoji": "<:92:1100288967909322783>",
@@ -1193,6 +1370,78 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "120": {
+        "name": "Staryu",
+        "emoji": "<:120:1100290515284525177>",
+        "description": "An enigmatic POKéMON that can effortlessly regenerate any appendage it loses in battle.",
+        "type": [types.WATER],
+        "baseStats": [30, 45, 55, 70, 55, 85],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/120.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/120.png",
+        "abilities": {
+            "35": 0.45,
+            "30": 0.45,
+            "148": 0.1
+        },
+        "moveIds": ["m106", "m94", "m229", "m352"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "121": {
+        "name": "Starmie",
+        "emoji": "<:121:1100290825935671307>",
+        "description": "Its central core glows with the seven colors of the rainbow. Some people value the core as a gem.",
+        "type": [types.WATER, types.PSYCHIC],
+        "baseStats": [60, 75, 85, 100, 85, 115],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/121.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/121.png",
+        "abilities": {
+            "35": 0.45,
+            "30": 0.45,
+            "148": 0.1
+        },
+        "moveIds": ["m106", "m94", "m229", "m56"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "124": {
+        "name": "Jynx",
+        "emoji": "<:124:1100290830440333374>",
+        "description": "It seductively wiggles its hips as it walks. It can cause people to dance in unison with it.",
+        "type": [types.ICE, types.PSYCHIC],
+        "baseStats": [65, 50, 35, 115, 95, 95],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/124.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/124.png",
+        "abilities": {
+            "12": 0.45,
+            "108": 0.45,
+            "87": 0.1
+        },
+        "moveIds": ["m93", "m47", "m58", "m195"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "127": {
+        "name": "Pinsir",
+        "emoji": "<:127:1100290834290720798>",
+        "description": "If it fails to crush the victim in its pincers, it will swing it around and toss it hard.",
+        "type": [types.BUG],
+        "baseStats": [65, 125, 100, 55, 70, 85],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/127.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/127.png",
+        "abilities": {
+            "52": 0.45,
+            "104": 0.45,
+            "153": 0.1
+        },
+        "moveIds": ["m116", "m450", "m276", "m416"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
     "129": {
         "name": "Magikarp",
         "emoji": "<:129:1100290837092515870>",
@@ -1310,7 +1559,7 @@ const pokemonConfig = {
             "10": 0.8,
             "95": 0.2
         },
-        "moveIds": ["m98", "m97", "m521", "m528"],
+        "moveIds": ["m98", "m97", "m226", "m528"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
@@ -1328,6 +1577,24 @@ const pokemonConfig = {
             "62": 0.2
         },
         "moveIds": ["m98", "m216", "m276", "m394"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "142": {
+        "name": "Aerodactyl",
+        "emoji": "<:142:1100294776689004546>",
+        "description": "A ferocious, prehistoric POKéMON that goes for the enemy's throat with its serrated saw-like fangs.",
+        "type": [types.ROCK, types.FLYING],
+        "baseStats": [80, 105, 65, 60, 75, 130],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/142.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/142.png",
+        "abilities": {
+            "69": 0.45,
+            "46": 0.45,
+            "127": 0.1
+        },
+        "moveIds": ["m17", "m317", "m446", "m157"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW

@@ -27,10 +27,6 @@ const partyInfo = async (user) => {
     // build embed
     const partyEmbed = buildPartyEmbed(trainer.data, partyPokemons.data, detailed=true);
 
-    // set state
-    const stateId = setState({ 
-        userId: user.id, 
-    }, ttl=150);
     // build selection row for pokemon Ids
     const selectRowData = {}
     const pokemonSelectRow = buildPokemonSelectRow(partyPokemonsFiltered, selectRowData, eventNames.POKEMON_LIST_SELECT);

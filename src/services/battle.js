@@ -11,7 +11,7 @@ const { addPokemonExpAndEVs, getPokemon, calculatePokemonStats } = require("./po
 const { logger } = require("../log");
 const { buildNextTurnActionRow } = require("../components/battleNextTurnRow");
 const { deleteState } = require("./state");
-const { calculateEffectiveSpeed, calculateEffectiveAccuracy } = require("../utils/pokemonUtils");
+const { calculateEffectiveSpeed, calculateEffectiveAccuracy, calculateEffectiveEvasion } = require("../utils/pokemonUtils");
 const { npcConfig, difficultyConfig } = require("../config/npcConfig");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { getState } = require("./state");
@@ -644,6 +644,7 @@ class Pokemon {
     spe;
     bspe;
     acc;
+    eva;
     type1;
     type2;
     // effectId => { duration, args }
@@ -691,6 +692,7 @@ class Pokemon {
         this.spe = pokemonData.stats[5];
         this.bspe = pokemonData.stats[5];
         this.acc = 100;
+        this.eva = 100;
         this.type1 = this.speciesData.type[0];
         this.type2 = this.speciesData.type[1] || null;
         // map effectId => effect data (duration, args)
@@ -1061,8 +1063,7 @@ class Pokemon {
             return misses;
         }
         for (const target of targetPokemons) {
-            // TODO: account for target evasion
-            let hitChance = moveData.accuracy * calculateEffectiveAccuracy(this.acc);
+            let hitChance = moveData.accuracy * calculateEffectiveAccuracy(this.acc) / calculateEffectiveEvasion(target.eva);
             const damageMult = this.getTypeDamageMultiplier(moveData.type, target);
             if (damageMult >= 4) {
                 hitChance *= 1.4;
@@ -1142,10 +1143,11 @@ class Pokemon {
             damage: damage,
             source: source,
             damageInfo: damageInfo,
+            maxDamage: Number.MAX_SAFE_INTEGER,
         };
 
         this.battle.eventHandler.emit(battleEventNames.BEFORE_DAMAGE_TAKEN, eventArgs);
-        damage = eventArgs.damage;
+        damage = Math.min(eventArgs.damage, eventArgs.maxDamage);
         // console.log(damage)
 
         const oldHp = this.hp;
@@ -1157,7 +1159,7 @@ class Pokemon {
         this.battle.addToLog(`${this.name} took ${damageTaken} damage!`);
         if (this.hp <= 0) {
             this.hp = 0;
-            this.faint();
+            this.faint(source);
         }
 
         if (damageTaken > 0) {
@@ -1173,7 +1175,13 @@ class Pokemon {
         return damageTaken;
     }
 
-    faint() {
+    causeFaint(source) {
+        this.faint(source);
+    }
+
+    faint(source) {
+        // TODO: trigger before faint effects
+
         this.hp = 0;
         this.isFainted = true;
         // remove ability effects
@@ -1183,6 +1191,13 @@ class Pokemon {
             abilityData.abilityRemove(this.battle, this, this);
         }
         this.battle.addToLog(`${this.name} fainted!`);
+
+        // trigger after faint effects
+        const afterFaintArgs = {
+            target: this,
+            source: source,
+        };
+        this.battle.eventHandler.emit(battleEventNames.AFTER_FAINT, afterFaintArgs);
     }
 
     giveHeal(heal, target, healInfo) {
@@ -1292,7 +1307,16 @@ class Pokemon {
         };
         this.effectIds[effectId].args = effectData.effectAdd(this.battle, source, this, args);
 
-        // TODO: trigger after add effect events
+        // trigger after add effect events
+        const afterAddArgs = {
+            target: this,
+            source: source,
+            effectId: effectId,
+            duration: duration,
+            initialArgs: args,
+            args: this.effectIds[effectId].args,
+        };
+        this.battle.eventHandler.emit(battleEventNames.AFTER_EFFECT_ADD, afterAddArgs);
     }
 
     dispellEffect(effectId) {
@@ -1337,9 +1361,19 @@ class Pokemon {
             return;
         }
 
-        let statusApplied = false;
-        // TODO: trigger before apply status events
+        // trigger before apply status events
+        const beforeApplyArgs = {
+            target: this,
+            source: source,
+            statusId: statusId,
+            canApply: true,
+        };
+        this.battle.eventHandler.emit(battleEventNames.BEFORE_STATUS_APPLY, beforeApplyArgs);
+        if (!beforeApplyArgs.canApply) {
+            return;
+        }
 
+        let statusApplied = false;
         switch (statusId) {
             // TODO: other status effects
             case statusConditions.BURN:
@@ -1555,6 +1589,29 @@ class Pokemon {
                 this.moveIds[moveId].cooldown--;
             }
         }
+    }
+
+    reduceMoveCooldown(moveId, amount, source) {
+        // check that move exists
+        if (!this.moveIds[moveId]) {
+            return;
+        }
+
+        // check that the move is on cooldown
+        if (this.moveIds[moveId].cooldown === 0) {
+            return;
+        }
+
+        // reduce cooldown
+        const oldCooldown = this.moveIds[moveId].cooldown;
+        this.moveIds[moveId].cooldown -= amount;
+        if (this.moveIds[moveId].cooldown < 0) {
+            this.moveIds[moveId].cooldown = 0;
+        }
+        const newCooldown = this.moveIds[moveId].cooldown;
+
+        this.battle.addToLog(`${this.name}'s ${moveConfig[moveId].name}'s cooldown was reduced by ${oldCooldown - newCooldown} turns!`);
+        return oldCooldown - newCooldown;
     }
 
     effectiveSpeed() {

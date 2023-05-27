@@ -99,6 +99,18 @@ const calculateEffectiveAccuracy = (accuracy) => {
     }
 }
 
+const calculateEffectiveEvasion = (evasion) => {
+    // use formula:
+    // if eva <= 20: eva = 0.2
+    // else: eva = eva/100
+
+    if (evasion <= 20) {
+        return 0.2;
+    } else {
+        return evasion / 100;
+    }
+}
+
 const getAbilityName = (abilityId) => {
     if (abilityConfig[abilityId]) {
         return `#${abilityId} ${abilityConfig[abilityId].name}`;
@@ -154,6 +166,7 @@ module.exports = {
     buildPokemonBaseStatString,
     calculateEffectiveSpeed,
     calculateEffectiveAccuracy,
+    calculateEffectiveEvasion,
     getAbilityName,
     getAbilityOrder,
     getPokemonOrder

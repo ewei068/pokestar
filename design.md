@@ -528,6 +528,7 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 * Gen 1 Pokemon
 * Training Rework
 * Equipment & Dungeons
+* Mew
 * Server-wide Raids
 * Arena
 * Trading

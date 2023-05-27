@@ -1,5 +1,28 @@
 # Pokéstar Changelog
 
+### 0.8.2 - Pokemon and Abilities
+
+* Add more Pokemon, abilities, and NPCs!
+    * Pokemon: 
+        * Vulpix, Ninetales: A fast tank with great supporting moves!
+        * Oddish, Gloom, Vileplume: An all-rounder with tanking and attacking capabilities!
+        * Meowth, Persian: A speedy early-game support with great utility and the ability to earn Pokedollars!
+        * Grimer, Muk: A solid tank that punishes fast-moving enemies with poison!
+        * Staryu, Starmie: A fast attacker with supportive capabilities!
+        * Jynx: An annoying support with lots of CC and a deadly Perish Song!
+        * Chansey: A high-health healer/support that cleanses status and debuffs!
+        * Aerodactyl: A fast lead with utility and damage moves to cripple enemies!
+        * Pinsir: An impactful attacker that sets up for high-damaging moves!
+    * Abilities: Illuminate, Natural Cure, Hyper Cutter, Poison Touch, Technician
+* Adjustments:
+    * Rework Stealth Rock: deals less damage but also deals damage upon receiving buffs.
+    * Replace Jolteon's Volt Switch with Baton Pass.
+    * Reduced the cooldown of Thunder Wave from 4 to 3.
+* Nerfed level rewards, but spread them out more evenly.
+* Add ability display to `/partyinfo`
+* Add inventory display to level rewards.
+* Fix trainer daily shop limits not updating properly.
+
 ### 0.8.1 (5/21)
 
 * Gacha QOL: now rolling the gacha doesn't create a new message.
