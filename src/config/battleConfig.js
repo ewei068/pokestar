@@ -2472,7 +2472,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user switches places with a party Pokémon in waiting, passing along ALL dispellable effects.",
+        "description": "The user boosts an ally's combat readiness to 100%, passing along ALL dispellable effects.",
     },
     "m229": {
         "name": "Rapid Spin",

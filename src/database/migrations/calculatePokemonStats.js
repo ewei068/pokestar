@@ -17,7 +17,8 @@ const calculateStats = function(pokemon, pokemonConfig, natureConfig, speedFn, f
 
 /**
  * Re-calculate Pokemon stats every time stat calculation changes
- * Usages:
+ * Usages: 
+ * 2023-05-27: update pokemon effective speed
 **/
 
 const calculateAllStats = async () => {

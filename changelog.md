@@ -1,6 +1,6 @@
 # Pokéstar Changelog
 
-### 0.8.2 - Pokemon and Abilities
+### 0.8.2 (5/27) - Pokemon and Abilities
 
 * Add more Pokemon, abilities, and NPCs!
     * Pokemon: 
