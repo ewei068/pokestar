@@ -1,4 +1,8 @@
-const { backpackCategories, backpackItems } = require("./backpackConfig")
+const { backpackCategories, backpackItems } = require("./backpackConfig");
+const { getFullUTCDate } = require("../utils/utils");
+const { rarities, rarityBins } = require("./pokemonConfig");
+const { drawIterable } = require("../utils/gachaUtils");
+const seedrandom = require("seedrandom");
 
 const npcs = {
     BUG_CATCHER: "bugCatcher",
@@ -9,6 +13,7 @@ const npcs = {
     FISHERMAN: "fisherman",
     HIKER: "hiker",
     DRAGON_TAMER: "dragonTamer",
+    ACE_TRAINER: "aceTrainer",
 }
 
 const difficulties = {
@@ -18,6 +23,9 @@ const difficulties = {
     HARD: "hard",
     VERY_HARD: "veryHard",
 }
+
+// seed in case of changing days
+const seed = getFullUTCDate();
 
 const npcConfig = {
     [npcs.BUG_CATCHER]: {
@@ -51,7 +59,7 @@ const npcConfig = {
                 minLevel: 42,
                 maxLevel: 51,
                 numPokemon: 6,
-                pokemonIds: ["12", "15"],
+                pokemonIds: ["12", "15", "127"],
                 aceId: "15",
             },
         }
@@ -138,28 +146,28 @@ const npcConfig = {
                 minLevel: 9,
                 maxLevel: 11,
                 numPokemon: 3,
-                pokemonIds: ["129"],
+                pokemonIds: ["120", "129"],
                 aceId: "7",
             },
             [difficulties.EASY]: {
                 minLevel: 21,
                 maxLevel: 26,
                 numPokemon: 4,
-                pokemonIds: ["7", "129"],
+                pokemonIds: ["7", "120", "129"],
                 aceId: "7",
             },
             [difficulties.MEDIUM]: {
                 minLevel: 34,
                 maxLevel: 41,
                 numPokemon: 5,
-                pokemonIds: ["8", "130", "134"],
+                pokemonIds: ["8", "121", "130", "134"],
                 aceId: "130",
             },
             [difficulties.HARD]: {
                 minLevel: 54,
                 maxLevel: 62,
                 numPokemon: 6,
-                pokemonIds: ["9", "130", "131", "134"],
+                pokemonIds: ["9", "121", "130", "131", "134"],
                 aceId: "130",
             },
         }
@@ -195,7 +203,7 @@ const npcConfig = {
                 minLevel: 50,
                 maxLevel: 59,
                 numPokemon: 6,
-                pokemonIds: ["51", "68", "76", "82", "112"],
+                pokemonIds: ["51", "68", "76", "82", "112", "142"],
                 aceId: "76",
             },
         }
@@ -232,6 +240,44 @@ const npcConfig = {
                 maxLevel: 78,
                 numPokemon: 6,
                 pokemonIds: ["6", "130", "149"],
+                aceId: "149",
+            },
+        }
+    },
+    [npcs.ACE_TRAINER]: {
+        name: "Ace Trainer",
+        sprite: "https://archives.bulbagarden.net/media/upload/c/c9/Spr_BW_Ace_Trainer_F.png",
+        emoji: "👩‍🎤",
+        catchphrase: "I'm an Ace Trainer, got it?",
+        difficulties: {
+            [difficulties.MEDIUM]: {
+                minLevel: 33,
+                maxLevel: 38,
+                numPokemon: 5,
+                pokemonIds: drawIterable(rarityBins[rarities.RARE], 10, {
+                    replacement: false, 
+                    rng: seedrandom(seed)
+                }),
+                aceId: "25",
+            },
+            [difficulties.HARD]: {
+                minLevel: 53,
+                maxLevel: 60,
+                numPokemon: 6,
+                pokemonIds: drawIterable(rarityBins[rarities.EPIC], 10, {
+                    replacement: false, 
+                    rng: seedrandom(seed)
+                }),
+                aceId: "149",
+            },
+            [difficulties.VERY_HARD]: {
+                minLevel: 75,
+                maxLevel: 83,
+                numPokemon: 6,
+                pokemonIds: drawIterable(rarityBins[rarities.EPIC], 10, {
+                    replacement: false, 
+                    rng: seedrandom(seed)
+                }),
                 aceId: "149",
             },
         }

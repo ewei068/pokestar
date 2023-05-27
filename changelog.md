@@ -14,12 +14,13 @@
         * Aerodactyl: A fast lead with utility and damage moves to cripple enemies!
         * Pinsir: An impactful attacker that sets up for high-damaging moves!
     * Abilities: Illuminate, Natural Cure, Hyper Cutter, Poison Touch, Technician
+    * NPCs: Ace Trainer (changes Pokemon depending on day)
 * Adjustments:
     * Rework Stealth Rock: deals less damage but also deals damage upon receiving buffs.
     * Replace Jolteon's Volt Switch with Baton Pass.
     * Reduced the cooldown of Thunder Wave from 4 to 3.
 * Nerfed level rewards, but spread them out more evenly.
-* Add ability display to `/partyinfo`
+* Add ability display to `/partyinfo`.
 * Add inventory display to level rewards.
 * Fix trainer daily shop limits not updating properly.
 
