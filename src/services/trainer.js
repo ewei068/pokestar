@@ -127,6 +127,22 @@ const getTrainer = async (user, refresh=true) => {
             logger.error(error);
             return { data: null, err: "Error updating trainer." };
         }
+
+        // re-retrieve trainer to flush pointers
+        // TODO: possibly better way to do this
+        try {
+            // check if trainer exists
+            trainers = await findDocuments(collectionNames.USERS, { "userId": user.id });
+            if (trainers.length === 0) {
+                return { data: null, err: "Error finding trainer." };
+            } else {
+                trainer = trainers[0];
+                return { data: trainer, err: null };
+            }
+        } catch (error) {
+            logger.error(error);
+            return { data: null, err: "Error finding trainer." };
+        }
     }
 
     return { data: trainer, err: null };
