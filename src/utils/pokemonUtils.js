@@ -1,6 +1,7 @@
 const { growthRates, rarityConfig, pokemonConfig, growthRateConfig } = require('../config/pokemonConfig');
 const { getPBar, getWhitespace } = require('./utils');
 const { abilityConfig } = require('../config/battleConfig');
+const { equipmentConfig, modifierSlotConfig, modifierConfig, modifierTypes } = require('../config/equipmentConfig');
 
 const getPokemonExpNeeded = (level, growthRate) => {
     if (level <= 1) {
@@ -36,12 +37,12 @@ const buildPokemonStatString = (pokemon, size=20, compact=false) => {
     ];
     const whitespace = getWhitespace(statArray);
     let statString = "";
-    statString += `\` HP (${whitespace[0]}${statArray[0]})\` ${getPBar(pokemon.stats[0] * 100 / 300, size=size)}\n`;
-    statString += `\`Atk (${whitespace[1]}${statArray[1]})\` ${getPBar(pokemon.stats[1] * 100 / 300, size=size)}\n`;
-    statString += `\`Def (${whitespace[2]}${statArray[2]})\` ${getPBar(pokemon.stats[2] * 100 / 300, size=size)}\n`;
-    statString += `\`SpA (${whitespace[3]}${statArray[3]})\` ${getPBar(pokemon.stats[3] * 100 / 300, size=size)}\n`;
-    statString += `\`SpD (${whitespace[4]}${statArray[4]})\` ${getPBar(pokemon.stats[4] * 100 / 300, size=size)}\n`;
-    statString += `\`Spe (${whitespace[5]}${statArray[5]})\` ${getPBar(pokemon.stats[5] * 100 / 300, size=size)}\n`;
+    statString += `\` HP (${whitespace[0]}${statArray[0]})\` ${getPBar(pokemon.stats[0] * 100 / 800, size=size)}\n`;
+    statString += `\`Atk (${whitespace[1]}${statArray[1]})\` ${getPBar(pokemon.stats[1] * 100 / 800, size=size)}\n`;
+    statString += `\`Def (${whitespace[2]}${statArray[2]})\` ${getPBar(pokemon.stats[2] * 100 / 800, size=size)}\n`;
+    statString += `\`SpA (${whitespace[3]}${statArray[3]})\` ${getPBar(pokemon.stats[3] * 100 / 800, size=size)}\n`;
+    statString += `\`SpD (${whitespace[4]}${statArray[4]})\` ${getPBar(pokemon.stats[4] * 100 / 800, size=size)}\n`;
+    statString += `\`Spe (${whitespace[5]}${statArray[5]})\` ${getPBar(pokemon.stats[5] * 100 / 800, size=size)}\n`;
     statString += `Power: ${pokemon.combatPower}`;
 
     return statString;
@@ -159,6 +160,57 @@ const getPokemonOrder = (pokemons=pokemonConfig) => {
     });
 }
 
+const buildEquipmentString = (equipmentType, equipment) => {
+    const { level=1, slots={} } = equipment;
+    const equipmentData = equipmentConfig[equipmentType];
+    const equipmentHeader = `${equipmentData.emoji} [Lv. ${level}] ${equipmentData.name}`;
+
+    const modifierNames = [];
+    const modifierValues = [];
+    for (const [slotId, slot] of Object.entries(slots)) {
+        const slotData = modifierSlotConfig[slotId];
+        const modifierData = modifierConfig[slot.modifier];
+        const { type, min, max } = modifierData;
+
+        const baseValue = slot.quality / 100 * (max - min) + min;
+        const value = Math.round(baseValue * (slotData.level ? level : 1));
+
+        modifierNames.push(`[${slotData.abbreviation}] ${modifierData.name}`);
+        modifierValues.push(`${value}${type === modifierTypes.PERCENT ? "%" : ""}`);
+    }
+    const whitespace = getWhitespace(modifierNames, 20);
+    const equipmentString = modifierNames.map((name, i) => {
+        let str = `\`${name}${whitespace[i]}${modifierValues[i]}\``;
+        // bold primary / secondary stats
+        if (i <= 1) {
+            name = str = `**${str}**`;
+        }
+        return str;
+    }).join("\n");
+
+    return {
+        equipmentHeader,
+        equipmentString
+    }
+}
+
+const buildBoostString = (oldPokemon, newPokemon) => {
+    const boostStrings = ["HP", "Atk", "Def", "SpA", "SpD", "Spe", "Power"];
+    const boostValues = [];
+    for (let i = 0; i < 6; i++) {
+        const oldStat = oldPokemon.stats[i];
+        const newStat = newPokemon.stats[i];
+        boostValues.push(`${oldStat} -> ${newStat} (+${newStat - oldStat})`);
+    }
+    boostValues.push(`${oldPokemon.combatPower} -> ${newPokemon.combatPower} (+${newPokemon.combatPower - oldPokemon.combatPower})`);
+    const whitespace = getWhitespace(boostStrings, 10);
+    const boostString = boostStrings.map((name, i) => {
+        return `\`${name}${whitespace[i]}${boostValues[i]}\``;
+    }).join("\n");
+
+    return boostString;
+}
+
 module.exports = {
     getPokemonExpNeeded,
     calculateWorth,
@@ -169,5 +221,7 @@ module.exports = {
     calculateEffectiveEvasion,
     getAbilityName,
     getAbilityOrder,
-    getPokemonOrder
+    getPokemonOrder,
+    buildEquipmentString,
+    buildBoostString
 };

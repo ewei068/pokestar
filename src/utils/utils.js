@@ -17,8 +17,8 @@ const getPBar = (percent, size = 20) => {
     return `${"▓".repeat(progress)}${"░".repeat(size - progress)}`;
 }
 
-const getWhitespace = (strings) => {
-    const maxLen = Math.max(...strings.map(s => s.length));
+const getWhitespace = (strings, len=0) => {
+    const maxLen = len ||  Math.max(...strings.map(s => s.length));
     let whitespace = [];
     for (let i = 0; i < strings.length; i++) {
         whitespace.push(" ".repeat(maxLen - strings[i].length));

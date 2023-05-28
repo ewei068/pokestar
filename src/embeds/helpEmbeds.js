@@ -6,7 +6,7 @@ const { buildIdConfigSelectRow } = require('../components/idConfigSelectRow');
 const { buildBackButtonRow } = require('../components/backButtonRow');
 const { getState } = require('../services/state');
 const { eventNames } = require('../config/eventConfig');
-const { gameEventConfig } = require('../config/gameEventConfig');
+const { gameEventConfig } = require('../config/helpConfig');
 const { buildScrollActionRow } = require('../components/scrollActionRow');
 
 const prefix = stageConfig[process.env.STAGE].prefix;

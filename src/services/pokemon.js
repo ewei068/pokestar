@@ -13,6 +13,7 @@ const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { getTrainer } = require("./trainer");
 const { setState } = require("./state");
 const { buildYesNoActionRow } = require("../components/yesNoActionRow");
+const { modifierConfig, modifierTypes, modifierSlotConfig } = require("../config/equipmentConfig");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
@@ -48,24 +49,62 @@ const listPokemons = async (trainer, listOptions) => {
     }
 }
 
+const calculatePokemonStatsNoEquip = (pokemon, speciesData) => {
+    // copy pokemon
+    const newPokemon = { ...pokemon };
+    newPokemon.equipments = {};
+    return calculatePokemonStats(newPokemon, speciesData);
+}
+
 const calculatePokemonStats = (pokemon, speciesData) => {
-    // get nature, IVs, EVs, level, base stats
-    const { natureId, ivs, evs, level } = pokemon;
-    const { baseStats } = speciesData;
+    // get nature, IVs, EVs, level, base stats, equips
+    const { natureId, ivs, evs, level, equipments={} } = pokemon;
+    // copy base stats
+    const baseStats = [...speciesData.baseStats];
     const nature = natureConfig[natureId].stats;
+
+    const flatModifiers = [0, 0, 0, 0, 0, 0];
+    const percentModifiers = [100, 100, 100, 100, 100, 100];
+    // get equipment modifiers
+    for (const equipment of Object.values(equipments)) {
+        const { level=1, slots={} } = equipment;
+        for (const [slotId, slot] of Object.entries(slots)) {
+            const slotData = modifierSlotConfig[slotId];
+            const modifierData = modifierConfig[slot.modifier];
+            const { stat, type, min, max } = modifierData;
+
+            const baseValue = slot.quality / 100 * (max - min) + min;
+            const value = Math.round(baseValue * (slotData.level ? level : 1));
+            if (type === modifierTypes.FLAT) {
+                flatModifiers[stat] += value;
+            } else if (type === modifierTypes.PERCENT) {
+                percentModifiers[stat] += value;
+            } else {
+                baseStats[stat] += value;
+            }
+        }
+    }
 
     // calculate new stats
     const newStats = [];
-    // HP
-    newStats.push(Math.floor((2 * baseStats[0] + ivs[0] + Math.floor(evs[0] / 4)) * level / 100) + level + 10);
-    // other stats
-    for (let i = 1; i < 6; i++) {
+    // stat calculations
+    for (let i = 0; i < 6; i++) {
+        // base calculations
         let stat = Math.floor((2 * baseStats[i] + ivs[i] + Math.floor(evs[i] / 4)) * level / 100) + 5;
+        if (i === 0) {
+            // hp special case
+            stat = Math.floor((2 * baseStats[0] + ivs[0] + Math.floor(evs[0] / 4)) * level / 100) + level + 10;
+        }
         if (nature[i] > 0) {
             stat = Math.floor(stat * 1.1);
         } else if (nature[i] < 0) {
             stat = Math.floor(stat * 0.9);
         }
+
+        // apply modifiers
+        stat = Math.floor(stat * percentModifiers[i] / 100);
+        stat += flatModifiers[i];
+
         newStats.push(stat);
     }
 
@@ -391,9 +430,10 @@ const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info" } = 
     if (pokemon.err) {
         return { embed: null, err: pokemon.err };
     }
+    const pokemonNoEquip = calculatePokemonStatsNoEquip(pokemon.data, pokemonConfig[pokemon.data.speciesId])
 
     // build pokemon embed
-    const embed = buildPokemonEmbed(trainer.data, pokemon.data, tab);
+    const embed = buildPokemonEmbed(trainer.data, pokemon.data, tab, pokemonNoEquip);
     send.embeds.push(embed);
 
     // build tab selection
@@ -407,7 +447,12 @@ const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info" } = 
             label: "Battle",
             disabled: tab === "battle",
             data: { id: pokemonId, tab: "battle" }
-        }
+        },
+        {
+            label: "Equipment",
+            disabled: tab === "equipment",
+            data: { id: pokemonId, tab: "equipment" }
+        },
     ];
     const tabActionRow = buildButtonActionRow(
         buttonConfigs,
@@ -555,6 +600,7 @@ module.exports = {
     getPokemon,
     getEvolvedPokemon,
     evolvePokemon,
+    calculatePokemonStatsNoEquip,
     calculatePokemonStats,
     calculateAndUpdatePokemonStats,
     releasePokemons,

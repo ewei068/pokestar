@@ -1,5 +1,7 @@
 # Pokéstar Changelog
 
+### 0.9.0 - Dungeons and Equipment
+
 ### 0.8.2 (5/27) - Pokemon and Abilities
 
 * Add more Pokemon, abilities, and NPCs!

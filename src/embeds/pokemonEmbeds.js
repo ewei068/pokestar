@@ -2,7 +2,7 @@ const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig, growthR
 const { moveConfig, abilityConfig } = require('../config/battleConfig');
 const { EmbedBuilder } = require('discord.js');
 const { getWhitespace, getPBar, linebreakString, setTwoInline, getOrSetDefault } = require('../utils/utils');
-const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString, getAbilityName, getAbilityOrder } = require('../utils/pokemonUtils');
+const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString, getAbilityName, getAbilityOrder, buildEquipmentString, buildBoostString } = require('../utils/pokemonUtils');
 const { buildMoveString } = require('../utils/battleUtils');
 const { backpackItems, backpackItemConfig } = require('../config/backpackConfig');
 const { trainerFields } = require('../config/trainerConfig');
@@ -162,7 +162,7 @@ const buildPokemonListEmbed = (trainer, pokemons, page) => {
     return embed;
 }
 
-const buildPokemonEmbed = (trainer, pokemon, tab="all") => {
+const buildPokemonEmbed = (trainer, pokemon, tab="all", oldPokemon=null) => {
     const speciesData = pokemonConfig[pokemon.speciesId];
 
     let typeString = "";
@@ -199,7 +199,7 @@ const buildPokemonEmbed = (trainer, pokemon, tab="all") => {
         );
     }
 
-    // if pokemon has moves, display them
+    // moves & abilities
     if (tab === "battle" || tab === "all") {
         const fields = speciesData.moveIds.map((moveId) => {
             const moveData = moveConfig[moveId];
@@ -212,11 +212,7 @@ const buildPokemonEmbed = (trainer, pokemon, tab="all") => {
         });
     
         // every 2 fields, add a blank field
-        if (fields.length > 2) {
-            for (let i = 2; i < fields.length; i += 3) {
-                fields.splice(i, 0, { name: '** **', value: '** **', inline: false });
-            }
-        }
+        setTwoInline(fields);
 
         if (fields.length > 0) {
             embed.addFields(fields);
@@ -227,6 +223,32 @@ const buildPokemonEmbed = (trainer, pokemon, tab="all") => {
         embed.addFields(
             { name: `Ability: ${getAbilityName(pokemon.abilityId)}`, value: abilityData ? abilityData.description : "Not yet implemented!", inline: false }
         )
+    }
+
+    // equipment
+    if (tab === "equipment") {
+        const fields = Object.entries(pokemon.equipments).map(([equipmentType, equipment]) => {
+            const { equipmentHeader, equipmentString } = buildEquipmentString(equipmentType, equipment);
+            return {
+                name: equipmentHeader,
+                value: equipmentString,
+                inline: true,
+            };
+        });
+
+        // every 2 fields, add a blank field
+        setTwoInline(fields);
+
+        if (fields.length > 0) {
+            embed.addFields(fields);
+        }
+
+        // add stat boost field
+        if (oldPokemon) {
+            embed.addFields(
+                { name: "Stat Boost", value: buildBoostString(oldPokemon, pokemon), inline: false }
+            );
+        }
     }
 
     embed.setImage(pokemon.shiny ? speciesData.shinySprite : speciesData.sprite);

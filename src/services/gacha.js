@@ -18,6 +18,7 @@ const { buildScrollActionRow } = require('../components/scrollActionRow');
 const { eventNames } = require('../config/eventConfig');
 const { buildButtonActionRow } = require('../components/buttonActionRow');
 const { addPokeballs } = require('../utils/trainerUtils');
+const { equipmentConfig } = require('../config/equipmentConfig');
 
 const DAILY_MONEY = 300;
 
@@ -70,6 +71,29 @@ const drawDaily = async (trainer) => {
     return { data: rv, err: null };
 }
 
+const generateRandomEquipments = () => {
+    const equipments = {};
+    for (equipmentType in equipmentConfig) {
+        const equipmentData = equipmentConfig[equipmentType];
+        const equipment = {
+            "level": 1,
+            "slots": {},
+        }
+        for (const slot in equipmentData.slots) {
+            const slotData = equipmentData.slots[slot];
+            equipment["slots"][slot] = {
+                "modifier": drawIterable(slotData.modifiers, 1)[0],
+                "quality": drawUniform(0, 100, 1)[0],
+            }
+        }
+
+        equipments[equipmentType] = equipment;
+    }
+    // console.log(JSON.stringify(equipments));
+
+    return equipments;
+}
+
 const generateRandomPokemon = (userId, pokemonId, level=1) => {
     const speciesData = pokemonConfig[pokemonId];
 
@@ -106,6 +130,7 @@ const generateRandomPokemon = (userId, pokemonId, level=1) => {
         "ivTotal": ivs.reduce((a, b) => a + b, 0),
         "originalOwner": userId,
         "rarity": speciesData.rarity,
+        "equipments": generateRandomEquipments(),
     }
 
     // calculate stats
@@ -431,6 +456,7 @@ const buildBannerSend = async ({ stateId=null, user=null, button=null, page=null
 
 module.exports = {
     drawDaily,
+    generateRandomEquipments,
     giveNewPokemons,
     usePokeball,
     generateRandomPokemon,
