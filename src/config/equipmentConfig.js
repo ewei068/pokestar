@@ -244,7 +244,7 @@ const equipmentConfig = {
     [equipmentTypes.POWER_WEIGHT]: {
         "name": "Power Weight",
         "description": "Increases HP",
-        "emoji": "⚖️",
+        "emoji": "<:powerweight:1112557998234148874>",
         "sprite": "https://archives.bulbagarden.net/media/upload/8/80/Dream_Power_Weight_Sprite.png",
         "material": backpackItems.EMOTION_SHARD,
         "slots": {
@@ -274,7 +274,7 @@ const equipmentConfig = {
     [equipmentTypes.POWER_BRACER]: {
         "name": "Power Bracer",
         "description": "Increases Attack",
-        "emoji": "💪",
+        "emoji": "<:powerbracer:1112557995629490237>",
         "sprite": "https://archives.bulbagarden.net/media/upload/1/18/Dream_Power_Bracer_Sprite.png",
         "material": backpackItems.WILLPOWER_SHARD,
         "slots": {
@@ -303,7 +303,7 @@ const equipmentConfig = {
     [equipmentTypes.POWER_BELT]: {
         "name": "Power Belt",
         "description": "Increases Defense",
-        "emoji": "🥋",
+        "emoji": "<:powerbelt:1112557994576711761>",
         "sprite": "https://archives.bulbagarden.net/media/upload/9/9a/Dream_Power_Belt_Sprite.png",
         "material": backpackItems.KNOWLEDGE_SHARD,
         "slots": {
@@ -332,7 +332,7 @@ const equipmentConfig = {
     [equipmentTypes.POWER_LENS]: {
         "name": "Power Lens",
         "description": "Increases Special Attack",
-        "emoji": "🔎",
+        "emoji": "<:powerlens:1112557996585783356>",
         "sprite": "https://archives.bulbagarden.net/media/upload/a/ac/Dream_Power_Lens_Sprite.png",
         "material": backpackItems.WILLPOWER_SHARD,
         "slots": {
@@ -343,8 +343,8 @@ const equipmentConfig = {
                 "modifiers": [
                     modifiers.PERCENT_ATK,
                     modifiers.PERCENT_SPA,
-                    modifiers.FLAT_DEF,
-                    modifiers.FLAT_SPD,
+                    modifiers.FLAT_ATK,
+                    modifiers.FLAT_SPA,
                 ],
             },
             [modifierSlots.SUBSTAT1]: {
@@ -361,7 +361,7 @@ const equipmentConfig = {
     [equipmentTypes.POWER_BAND]: {
         "name": "Power Band",
         "description": "Increases Special Defense",
-        "emoji": "🎸",
+        "emoji": "<:powerband:1112557992987066409>",
         "sprite": "https://archives.bulbagarden.net/media/upload/9/99/Dream_Power_Band_Sprite.png",
         "material": backpackItems.KNOWLEDGE_SHARD,
         "slots": {
@@ -390,7 +390,7 @@ const equipmentConfig = {
     [equipmentTypes.POWER_ANKLET]: {
         "name": "Power Anklet",
         "description": "Increases Speed",
-        "emoji": "👣",
+        "emoji": "<:poweranklet:1112557991510675456>",
         "sprite": "https://archives.bulbagarden.net/media/upload/1/1c/Dream_Power_Anklet_Sprite.png",
         "material": backpackItems.EMOTION_SHARD,
         "slots": {

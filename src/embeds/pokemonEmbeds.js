@@ -301,7 +301,7 @@ const buildEquipmentEmbed = (pokemon, oldPokemon) => {
     return embed;
 }
 
-const buildEquipmentUpgradeEmbed = (trainer, pokemon, equipmentType, equipment, upgrade=false) => {
+const buildEquipmentUpgradeEmbed = (trainer, pokemon, equipmentType, equipment, upgrade=false, slotReroll=false) => {
     const equipmentData = equipmentConfig[equipmentType];
     const material = equipmentData.material;
     const materialData = backpackItemConfig[material];
@@ -325,11 +325,18 @@ const buildEquipmentUpgradeEmbed = (trainer, pokemon, equipmentType, equipment, 
         const upgradeValue = Math.round(baseValue * (slotData.level && upgrade ? equipment.level + 1 : 1));
 
         const header = `${slotData.name}`
-        let valueString = `${modifierData.name}: ${value}${type === "percent" ? "%" : ""}`;
+        const rerollingString = slotReroll === slotId ? "[REROLLING] " : "";
+        const modifierString = modifierData.name + (slotReroll === slotId ? " -> ???" : '');
+        let valueString = `${rerollingString}${modifierString}: ${value}${type === "percent" ? "%" : ""}`;
         if (value !== upgradeValue) {
             valueString += ` -> ${upgradeValue}${type === "percent" ? "%" : ""}`;
+        } else if (slotReroll === slotId) {
+            valueString += ` -> ???`;
         }
         valueString += ` | Quality: ${slot.quality}%`;
+        if (slotReroll === slotId) {
+            valueString += ` -> ???%`;
+        }
 
         return {
             name: header,

@@ -18,6 +18,7 @@ const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const { buildBackButtonRow } = require("../components/backButtonRow");
 const { getItems, removeItems } = require("../utils/trainerUtils");
 const { backpackItemConfig } = require("../config/backpackConfig");
+const { drawIterable, drawUniform } = require("../utils/gachaUtils");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
@@ -148,7 +149,6 @@ const calculateAndUpdatePokemonStats = async (pokemon, speciesData) => {
                 logger.warn(`Failed to update Pokemon ${pokemon._id}.`)
                 return { data: null, err: "Error updating Pokemon." };
             }
-            logger.info(`Updated stats for Pokemon ${pokemon._id}.`);
         } catch (error) {
             logger.error(error);
             return { data: null, err: "Error updating Pokemon." };
@@ -452,6 +452,54 @@ const upgradeEquipmentLevel = async (trainer, pokemon, equipmentType) => {
     }
 }
 
+const rerollStatSlot = async (trainer, pokemon, equipmentType, slotId) => {
+    const equipment = pokemon.equipments[equipmentType];
+    if (!equipment) {
+        return { data: null, err: "Error rerolling stat slot." };
+    }
+    if (!canUpgradeEquipment(trainer, pokemon, equipmentType, false, true)) {
+        return { data: null, err: "You can't reroll that stat slot right now!" };
+    }
+    const equipmentData = equipmentConfig[equipmentType];
+    const material = equipmentData.material;
+    const materialData = backpackItemConfig[material];
+    const slotData = equipmentData.slots[slotId];
+
+    // withdraw cost from trainer
+    const moneyCost = STAT_REROLL_COST * POKEDOLLAR_MULTIPLIER;
+    const materialCost = STAT_REROLL_COST;
+    removeItems(trainer, material, materialCost);
+    try {
+        const res = await updateDocument(
+            collectionNames.USERS,
+            { _id: idFrom(trainer._id) },
+            { $inc: { money: -moneyCost }, $set: { backpack: trainer.backpack } }
+        );
+        if (res.modifiedCount === 0) {
+            logger.warn(`Failed to update trainer ${trainer._id} money.`);
+            return { data: null, err: "Error rerolling stat slot." };
+        }
+    } catch (error) {
+        logger.error(error);
+        return { data: null, err: "Error rerolling stat slot." };
+    }
+
+    // update equipment
+    equipment.slots[slotId] = {
+        "modifier": drawIterable(slotData.modifiers, 1)[0],
+        "quality": drawUniform(0, 100, 1)[0],
+    }
+    const slot = equipment.slots[slotId];
+
+    const { data, err } = await calculateAndUpdatePokemonStats(pokemon, pokemonConfig[pokemon.speciesId]);
+    if (err) {
+        return { data: null, err: err };
+    } else {
+        return { data: `Stat slot ${slotId} rerolled to ${modifierConfig[slot.modifier].name} (${slot.quality}%) for ₽${moneyCost} and ${materialData.emoji} x${materialCost}!`, err: null };
+    }
+}
+
+
 // to be used in mongo aggregate or other
 function getBattleEligible(pokemonConfig, pokemon) {
     return pokemonConfig[pokemon.speciesId].battleEligible ? true : false;
@@ -746,6 +794,8 @@ const buildEquipmentUpgradeSend = async ({ stateId=null, user=null } = {}) => {
     }
 
     const button = state.button;
+    const slotId = state.slotId;
+    const slotData = modifierSlotConfig[slotId];
 
     const send = {
         embeds: [],
@@ -753,7 +803,7 @@ const buildEquipmentUpgradeSend = async ({ stateId=null, user=null } = {}) => {
     }
 
     // embed
-    const embed = buildEquipmentUpgradeEmbed(trainer, pokemon, equipmentType, equipment, button === "upgrade");
+    const embed = buildEquipmentUpgradeEmbed(trainer, pokemon, equipmentType, equipment, button === "upgrade", button === "slot" && slotId);
     send.embeds.push(embed);
 
     // upgrade select buttons
@@ -763,10 +813,18 @@ const buildEquipmentUpgradeSend = async ({ stateId=null, user=null } = {}) => {
     const buttonConfigs = [
         {
             label: "Upgrade",
-            disabled: button === "upgrade" || !canUpgradeEquipment(trainer, pokemon, equipmentType, upgrade=true),
+            disabled: button === "upgrade" || !canUpgradeEquipment(trainer, pokemon, equipmentType, true),
             data: {
                 ...buttonData,
                 button: "upgrade",
+            },
+        },
+        {
+            label: "Reroll",
+            disabled: button === "slot" || !canUpgradeEquipment(trainer, pokemon, equipmentType, false, true),
+            data: {
+                ...buttonData,
+                button: "slot",
             },
         },
         {
@@ -781,6 +839,22 @@ const buildEquipmentUpgradeSend = async ({ stateId=null, user=null } = {}) => {
     const buttonActionRow = buildButtonActionRow(buttonConfigs, eventNames.EQUIPMENT_BUTTON);
     send.components.push(buttonActionRow);
 
+    if (button === "slot") {
+        const rerollData = {
+            stateId: stateId,
+            select: "slot"
+        }
+        const rerollSelectRow = buildIdConfigSelectRow(
+            Object.keys(equipment.slots),
+            modifierSlotConfig,
+            "Select stat slot to reroll",
+            rerollData,
+            eventNames.EQUIPMENT_SELECT,
+            false
+        )
+        send.components.push(rerollSelectRow);
+    }
+
     // if button is upgrade or slot, add upgrade confirm button
     if (button === "upgrade" || button === "slot") {
         const upgradeData = {
@@ -788,8 +862,8 @@ const buildEquipmentUpgradeSend = async ({ stateId=null, user=null } = {}) => {
         }
         const upgradeButtonConfigs = [
             {
-                label: "Confirm" + (button === "slot" ? " Reroll" : " Upgrade"),
-                disabled: !canUpgradeEquipment(trainer, pokemon, equipmentType, upgrade=button === "upgrade", slot=button === "slot"),
+                label: button === "upgrade" ? "Confirm Upgrade" : `Reroll ${slotData.name}`,
+                disabled: !canUpgradeEquipment(trainer, pokemon, equipmentType, button === "upgrade", button === "slot"),
                 data: {
                     ...upgradeData,
                 },
@@ -831,6 +905,7 @@ module.exports = {
     getBattleEligible,
     canUpgradeEquipment,
     upgradeEquipmentLevel,
+    rerollStatSlot,
     buildPokemonInfoSend,
     buildPokedexSend,
     buildReleaseSend,

@@ -27,6 +27,9 @@ const equipmentButton = async (interaction, data) => {
     if (button === "upgrade") {
         state.button = button;
         fn = buildEquipmentUpgradeSend;
+    } else if (button === "slot") {
+        state.button = button;
+        fn = buildEquipmentUpgradeSend;
     } else if (button === "back") {
         state.button = null;
         fn = buildEquipmentSend;

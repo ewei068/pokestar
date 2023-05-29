@@ -27,8 +27,7 @@ const backpackCategoryConfig = {
     }, 
     [backpackCategories.MATERIALS]: {
         "name": "Materials",
-        // TODO: change
-        "emoji": "<:pokeball:1100296136931156008>",
+        "emoji": "<:materials:1112557472759160852>",
         "description": "Used to upgrade equipment!",
         "items": [
             backpackItems.KNOWLEDGE_SHARD,
@@ -65,19 +64,19 @@ const backpackItemConfig = {
     },
     [backpackItems.KNOWLEDGE_SHARD]: {
         "name": "Knowledge Shard",
-        "emoji": "<:knowledge_shard:1100296057998333440>",
+        "emoji": "<:knowledgeshard:1112557606637162537>",
         "description": "Used to upgrade equipment!",
         "category": backpackCategories.MATERIALS,
     },
     [backpackItems.EMOTION_SHARD]: {
         "name": "Emotion Shard",
-        "emoji": "<:emotion_shard:1100296079734010880>",
+        "emoji": "<:emotionshard:1112557605517275147>",
         "description": "Used to upgrade equipment!",
         "category": backpackCategories.MATERIALS,
     },
     [backpackItems.WILLPOWER_SHARD]: {
         "name": "Willpower Shard",
-        "emoji": "<:willpower_shard:1100296099734010880>",
+        "emoji": "<:willpowershard:1112557603617259540>",
         "description": "Used to upgrade equipment!",
         "category": backpackCategories.MATERIALS,
     },

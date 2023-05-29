@@ -30,8 +30,8 @@ const equipmentSelect = async (interaction, data) => {
 
     if (select === "equipment") {
         state.equipmentType = option;
-    } else if (select === "substat") {
-        state.substat = option;
+    } else if (select === "slot") {
+        state.slotId = option;
     } else {
         return { err: "Invalid select menu." };
     }

@@ -3,6 +3,8 @@
  * Should be used sparingly after testing.
  */
 
+require('dotenv').config();
+
 const { REST, Routes } = require('discord.js');
 const { commandConfig, commandCategoryConfig } = require('../config/commandConfig');
 const { buildSlashCommand } = require('../handlers/commandHandler');

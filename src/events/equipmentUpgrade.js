@@ -1,5 +1,5 @@
 const { getState } = require("../services/state");
-const { buildEquipmentUpgradeSend, buildEquipmentSend, upgradeEquipmentLevel, getPokemon } = require("../services/pokemon");
+const { buildEquipmentUpgradeSend, buildEquipmentSend, upgradeEquipmentLevel, getPokemon, rerollStatSlot } = require("../services/pokemon");
 const { getTrainer } = require("../services/trainer");
 
 const equipmentUpgrade = async (interaction, data) => {
@@ -27,7 +27,7 @@ const equipmentUpgrade = async (interaction, data) => {
         return { err: trainer.err };
     }
     trainer = trainer.data;
-    
+
     let pokemon = await getPokemon(trainer, state.pokemonId);
     if (pokemon.err) {
         return { err: pokemon.err };
@@ -42,7 +42,11 @@ const equipmentUpgrade = async (interaction, data) => {
         }
         followUpString = res.data;
     } else if (button === "slot") {
-        // TODO
+        const res = await rerollStatSlot(trainer, pokemon, state.equipmentType, state.slotId);
+        if (res.err) {
+            return { err: res.err };
+        }
+        followUpString = res.data;
     }
 
     const { send, err } = await buildEquipmentUpgradeSend({

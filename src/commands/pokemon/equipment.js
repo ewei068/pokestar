@@ -7,7 +7,7 @@ const equipment = async (user, pokemonId) => {
     const stateId = setState({
         userId: user.id,
         pokemonId: pokemonId,
-        slot: modifierSlots.PRIMARY,
+        slotId: modifierSlots.PRIMARY,
         messageStack: []
     }, ttl=150);
 
