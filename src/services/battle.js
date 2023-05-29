@@ -29,7 +29,6 @@ class NPC {
 
     constructor(npcData, difficulty) {
         const difficultyData = difficultyConfig[difficulty];
-        const npcDifficultyData = npcData.difficulties[difficulty];
         this.userId = uuidv4();
         this.user = {
             username: npcData.name,
@@ -39,6 +38,12 @@ class NPC {
             // data: npcData,
             // difficulty: difficulty,
         };
+
+        // this.setPokemon(npcData, difficulty);
+    }
+
+    setPokemon(npcData, difficulty) {
+        const npcDifficultyData = npcData.difficulties[difficulty];
         this.party = {
             rows: 3,
             cols: 4,
@@ -174,6 +179,52 @@ class NPC {
     }
 }
 
+class DungeonNPC extends NPC {
+    constructor(dungeonData, difficulty) {
+        super(dungeonData, difficulty);
+        this.phaseNumber = 0;
+        this.phases = dungeonData.difficulties[difficulty].phases;
+        this.dungeonData = dungeonData;
+        this.difficulty = difficulty;
+        // suuper hacky, probably a better way to do this
+        this.user.nextPhase = (battle) => this.nextPhase(battle);
+    }
+
+    setPokemon(dungeonData, difficulty) {
+        const dungeonDifficultyData = dungeonData.difficulties[difficulty];
+        const phase = this.phases[this.phaseNumber];
+        if (phase === undefined) {
+            return;
+        }
+        this.party = {
+            rows: phase.rows,
+            cols: phase.cols,
+            pokemons: Array(phase.rows * phase.cols).fill(null)
+        };
+        
+        // generate party
+        for (const pokemonData of phase.pokemons) {
+            const pokemon = generateRandomPokemon(this.userId, pokemonData.speciesId, pokemonData.level);
+            // give random id
+            pokemon._id = uuidv4();
+            this.party.pokemons[pokemonData.position - 1] = pokemon;
+        }
+    }
+
+    nextPhase(battle) {
+        this.phaseNumber++;
+        if (this.phaseNumber >= this.phases.length) {
+            return false;
+        }
+        this.setPokemon(this.dungeonData, this.difficulty);
+
+        return {
+            trainer: this,
+            ...this.party
+        }
+    }
+}
+
 class Battle {
     baseMoney=100;
     baseExp=50;
@@ -196,6 +247,7 @@ class Battle {
     ended;
     minLevel;
     level;
+    rewards;
     dailyRewards;
     npcId;
     difficulty;
@@ -206,6 +258,7 @@ class Battle {
         pokemonExpMultiplier=0.2,
         level=null,
         equipmentLevel=null,
+        rewards=null,
         dailyRewards=null,
         npcId=null,
         difficulty=null,
@@ -245,6 +298,7 @@ class Battle {
             this.level = level;
             this.minLevel = level;
         }
+        this.rewards = rewards;
         this.dailyRewards = dailyRewards;
         this.npcId = npcId;
         this.difficulty = difficulty;
@@ -270,6 +324,11 @@ class Battle {
             ...trainer.user
         }
         this.userIds.push(trainer.userId);
+
+        this.addPokemons(trainer, pokemons, teamName, rows, cols);
+    }
+
+    addPokemons(trainer, pokemons, teamName, rows, cols) {
         const partyPokemons = []
         for (const pokemonData of pokemons) {
             if (pokemonData) {
@@ -333,6 +392,7 @@ class Battle {
 
     start() {
         this.log.push("The battle begins!");
+        this.turn = 0;
         this.hasStarted = true;
 
         // add all abilities
@@ -374,9 +434,9 @@ class Battle {
         const userIsNpc = this.isNpc(this.activePokemon.userId);
         const userString = userIsNpc ? this.users[this.activePokemon.userId].username : `<@${this.activePokemon.userId}>`;
         if (this.activePokemon.canMove()) {
-            this.log.push(`[Turn ${this.turn}] It is ${userString}'s ${this.activePokemon.name}'s turn.`);
+            this.log.push(`**[Turn ${this.turn}] It is ${userString}'s ${this.activePokemon.name}'s turn.**`);
         } else {
-            this.log.push(`[Turn ${this.turn}] ${userString}'s ${this.activePokemon.name} is unable to move.`);
+            this.log.push(`**[Turn ${this.turn}] ${userString}'s ${this.activePokemon.name} is unable to move.**`);
         }
     }
 
@@ -425,6 +485,34 @@ class Battle {
 
     endBattle() {
         if (this.winner) {
+            // get loser, and if any loser has next phase, initialize next phase.
+            const loser = Object.keys(this.teams)[0] == this.winner ? Object.keys(this.teams)[1] : Object.keys(this.teams)[0];
+            let nextPhase = false;
+            for (const userId of this.teams[loser].userIds) {
+                const user = this.users[userId];
+                if (user.nextPhase !== undefined) {
+                    const userNextPhase = user.nextPhase(this);
+                    if (!userNextPhase) {
+                        continue;
+                    }
+                    const { trainer, pokemons, rows, cols } = userNextPhase;
+
+                    // clear out all of user's pokemon
+                    for (const [pokemonId, pokemon] of Object.entries(this.allPokemon)) {
+                        if (pokemon.userId === userId) {
+                            delete this.allPokemon[pokemonId];
+                        }
+                    }
+                    // add new pokemon
+                    this.addPokemons(trainer, pokemons, loser, rows, cols);
+                    nextPhase = true;
+                }
+            }
+            if (nextPhase) {
+                this.addToLog(`**[Phase Complete] A new battle phase begins!**`);
+                return this.start();
+            }
+
             let winnerMentions = "";
             if (!this.teams[this.winner].isNpc) {
                 winnerMentions = this.teams[this.winner].userIds.map(userId => `<@${userId}>`).join(" ");
@@ -1725,7 +1813,7 @@ const getStartTurnSend = async (battle, stateId) => {
         try {
             // if winner is NPC, no rewards
             if (!battle.teams[battle.winner].isNpc) {
-                const dailyRecipients = [];
+                const rewardRecipients = [];
                 content += `\n**The following Pokemon leveled up:**`;
                 for (const teamName in battle.teams) {
                     const team = battle.teams[teamName];
@@ -1750,16 +1838,30 @@ const getStartTurnSend = async (battle, stateId) => {
                         // add trainer rewards
                         await addExpAndMoney(user, moneyReward, expReward);
                         const defeatedDifficultiesToday = trainer.data.defeatedNPCsToday[battle.npcId];
+                        const allRewards = {};
+                        // add battle rewards
+                        if (battle.rewards) {
+                            addRewards(trainer.data, battle.rewards, allRewards);
+                        }
+                        // add daily rewards
                         if (battle.dailyRewards && (!defeatedDifficultiesToday || !defeatedDifficultiesToday.includes(battle.difficulty))) {
                             // add daily rewards
-                            addRewards(trainer.data, battle.dailyRewards);
+                            addRewards(trainer.data, battle.dailyRewards, allRewards);
                             getOrSetDefault(trainer.data.defeatedNPCsToday, battle.npcId, []).push(battle.difficulty);
+                        }
+
+                        // attempt to add rewards
+                        if (Object.keys(allRewards).length > 0) {
                             const {data, err} = await updateTrainer(trainer.data);
                             if (err) {
                                 logger.warn(`Failed to update daily trainer for user ${user.id} after battle`);
                                 continue;
                             } else {
-                                dailyRecipients.push(user.username);
+                                // this is kinda hacky there may be a better way to do this
+                                rewardRecipients.push({
+                                    username: user.username,
+                                    rewards: allRewards
+                                });
                             }
                         }
 
@@ -1793,9 +1895,9 @@ const getStartTurnSend = async (battle, stateId) => {
                         }
                     }
 
-                    if (dailyRecipients.length > 0) {
-                        content += `\n**${dailyRecipients.join(', ')} received daily rewards for their victory:**`;
-                        content += getRewardsString(flattenRewards(battle.dailyRewards), received=false);
+                    if (rewardRecipients.length > 0) {
+                        content += `\n**${rewardRecipients.map(r => r.username).join(', ')} received rewards for their victory:**`;
+                        content += getRewardsString(rewardRecipients[0].rewards, received=false);
                     }
 
                 }
@@ -1953,6 +2055,7 @@ const buildPveSend = async ({ stateId=null, user=null, view="list", option=null,
 
         // add npc to battle
         const npc = new NPC(npcData, state.difficulty);
+        npc.setPokemon(npcData, state.difficulty);
         const rewardMultipliers = npcDifficultyData.rewardMultipliers || difficultyConfig[state.difficulty].rewardMultipliers;
         const battle = new Battle({
             ...rewardMultipliers,
@@ -1961,7 +2064,7 @@ const buildPveSend = async ({ stateId=null, user=null, view="list", option=null,
             difficulty: state.difficulty,
         });
         battle.addTeam("NPC", true);
-        battle.addTrainer(npc, npc.party.pokemons, "NPC");
+        battle.addTrainer(npc, npc.party.pokemons, "NPC", npc.party.rows, npc.party.cols);
         battle.addTeam("Player", false);
         battle.addTrainer(trainer.data, validate.data, "Player");
 
@@ -2056,7 +2159,7 @@ const buildDungeonSend = async ({ stateId=null, user=null, view="list", option=n
         });
         const difficultyRow = buildButtonActionRow(
             difficultyButtonConfigs,
-            eventNames.PVE_ACCEPT,
+            eventNames.DUNGEON_ACCEPT,
         );
         send.components.push(difficultyRow);
 
@@ -2073,22 +2176,23 @@ const buildDungeonSend = async ({ stateId=null, user=null, view="list", option=n
         ]
         const returnRow = buildButtonActionRow(
             returnButtonConfigs,
-            eventNames.PVE_ACCEPT,
+            // im lazy and using the same event name
+            eventNames.DUNGEON_ACCEPT,
         );
 
         state.dungeonId = option;
         send.components.push(returnRow);
     } else if (view === "battle") {
         // validate npc id
-        const npcData = dungeonConfig[state.npcId];
-        if (npcData === undefined) {
-            return { embed: null, err: `Invalid NPC!` };
+        const dungeonData = dungeonConfig[state.dungeonId];
+        if (dungeonData === undefined) {
+            return { embed: null, err: `Invalid Dungeon!` };
         }
 
         // validate difficulty
-        const npcDifficultyData = npcData.difficulties[state.difficulty];
-        if (npcDifficultyData === undefined) {
-            return { embed: null, err: `Difficulty doesn't exist for ${npcData.name}!` };
+        const dungeonDifficultyData = dungeonData.difficulties[state.difficulty];
+        if (dungeonDifficultyData === undefined) {
+            return { embed: null, err: `Difficulty doesn't exist for ${dungeonData.name}!` };
         }
 
         // get trainer
@@ -2104,16 +2208,17 @@ const buildDungeonSend = async ({ stateId=null, user=null, view="list", option=n
         }
 
         // add npc to battle
-        const npc = new NPC(npcData, state.difficulty);
-        const rewardMultipliers = npcDifficultyData.rewardMultipliers || difficultyConfig[state.difficulty].rewardMultipliers;
+        const npc = new DungeonNPC(dungeonData, state.difficulty);
+        npc.setPokemon(dungeonData, state.difficulty);
+        const rewardMultipliers = dungeonDifficultyData.rewardMultipliers || difficultyConfig[state.difficulty].rewardMultipliers;
         const battle = new Battle({
             ...rewardMultipliers,
-            dailyRewards: npcDifficultyData.dailyRewards,
+            rewards: dungeonDifficultyData.rewards,
             npcId: state.npcId,
             difficulty: state.difficulty,
         });
-        battle.addTeam("NPC", true);
-        battle.addTrainer(npc, npc.party.pokemons, "NPC");
+        battle.addTeam("Dungeon", true);
+        battle.addTrainer(npc, npc.party.pokemons, "Dungeon", npc.party.rows, npc.party.cols);
         battle.addTeam("Player", false);
         battle.addTrainer(trainer.data, validate.data, "Player");
 
@@ -2134,7 +2239,7 @@ const buildDungeonSend = async ({ stateId=null, user=null, view="list", option=n
         }];
         const difficultyRow = buildButtonActionRow(
             difficultyButtonConfigs,
-            eventNames.PVE_ACCEPT,
+            eventNames.DUNGEON_ACCEPT,
         );
         state.replayComponent = difficultyRow;
 

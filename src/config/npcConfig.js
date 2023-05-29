@@ -386,6 +386,22 @@ const dungeonConfig = {
                                 position: 11,
                             },
                         ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "25",
+                                level: 10,
+                                position: 3
+                            },
+                            {
+                                speciesId: "25",
+                                level: 10,
+                                position: 14,
+                            },
+                        ]
                     }
                 ],
                 rewards: {

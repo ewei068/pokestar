@@ -209,6 +209,7 @@ const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
     let difficultyString = '';
     const uniqueSpeciesIds = [...new Set(allDungeonPokemons.map((pokemon) => pokemon.speciesId))];
     const pokemonEmojis = uniqueSpeciesIds.map((speciesId) => pokemonConfig[speciesId].emoji);
+    difficultyString += `**Phases:** ${dungeonDifficultyData.phases.length}\n`;
     difficultyString += `**Pokemon:** ${pokemonEmojis.join(' ')}\n`;
     difficultyString += `**Rewards:** ${getRewardsString(flattenRewards(rewards), received=false)}`;
 

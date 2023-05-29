@@ -18,6 +18,7 @@ const eventNames = {
     PVE_SELECT: "pveSelect",
     PVE_ACCEPT: "pveAccept",
     DUNGEON_SELECT: "dungeonSelect",
+    DUNGEON_ACCEPT: "dungeonAccept",
     BATTLE_INFO: "battleInfo",
     BATTLE_MOVE_SELECT: "battleMoveSelect",
     BATTLE_TARGET_SELECT: "battleTargetSelect",
@@ -119,6 +120,12 @@ const eventConfig = {
     [eventNames.DUNGEON_SELECT]: {
         "name": "Dungeon Select",
         "execute": "dungeonSelect.js",
+    },
+    [eventNames.DUNGEON_ACCEPT]: {
+        "name": "Dungeon Accept",
+        "execute": "dungeonAccept.js",
+        "exp": 10,
+        "money": 25,
     },
     [eventNames.BATTLE_INFO]: {
         "name": "Battle Info",

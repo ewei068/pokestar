@@ -15,10 +15,8 @@ const pveAccept = async (interaction, data) => {
     if (state.userId && interaction.user.id !== state.userId) {
         return { err: "This interaction was not initiated by you." };
     }
-    if (state.difficulty === undefined) {
-        state.difficulty = data.difficulty;
-    }
-
+    state.difficulty = data.difficulty;
+    
     const { send, err } = await buildPveSend({
         stateId: data.stateId,
         user: interaction.user,
