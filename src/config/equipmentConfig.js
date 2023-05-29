@@ -34,144 +34,144 @@ const modifierConfig = {
         "description": "Base HP",
         "type": modifierTypes.BASE,
         "stat": stats.HP,
-        "min": 3,
-        "max": 4,
+        "min": 1,
+        "max": 2,
     },
     [modifiers.BASE_ATK]: {
         "name": "Base Atk",
         "description": "Base Attack",
         "type": modifierTypes.BASE,
         "stat": stats.ATTACK,
-        "min": 2,
-        "max": 3,
+        "min": 1.5,
+        "max": 2.5,
     },
     [modifiers.BASE_DEF]: {
         "name": "Base Def",
         "description": "Base Defense",
         "type": modifierTypes.BASE,
         "stat": stats.DEFENSE,
-        "min": 2,
-        "max": 3,
+        "min": 1.5,
+        "max": 2.5,
     },
     [modifiers.BASE_SPA]: {
         "name": "Base SpA",
         "description": "Base Special Attack",
         "type": modifierTypes.BASE,
         "stat": stats.SPATK,
-        "min": 2,
-        "max": 3,
+        "min": 1.5,
+        "max": 2.5,
     },
     [modifiers.BASE_SPD]: {
         "name": "Base SpD",
         "description": "Base Special Defense",
         "type": modifierTypes.BASE,
         "stat": stats.SPDEF,
-        "min": 2,
-        "max": 3,
+        "min": 1.5,
+        "max": 2.5,
     },
     [modifiers.BASE_SPE]: {
         "name": "Base Spe",
         "description": "Base Speed",
         "type": modifierTypes.BASE,
         "stat": stats.SPEED,
-        "min": 4,
-        "max": 7,
+        "min": 1.5,
+        "max": 2.5,
     },
     [modifiers.PERCENT_HP]: {
         "name": "% HP",
         "description": "Percent HP",
         "type": modifierTypes.PERCENT,
         "stat": stats.HP,
-        "min": 5,
-        "max": 8,
+        "min": 2,
+        "max": 4,
     },
     [modifiers.PERCENT_ATK]: {
         "name": "% Atk",
         "description": "Percent Attack",
         "type": modifierTypes.PERCENT,
         "stat": stats.ATTACK,
-        "min": 4,
-        "max": 7,
+        "min": 3,
+        "max": 5,
     },
     [modifiers.PERCENT_DEF]: {
         "name": "% Def",
         "description": "Percent Defense",
         "type": modifierTypes.PERCENT,
         "stat": stats.DEFENSE,
-        "min": 4,
-        "max": 7,
+        "min": 3,
+        "max": 5,
     },
     [modifiers.PERCENT_SPA]: {
         "name": "% SpA",
         "description": "Percent Special Attack",
         "type": modifierTypes.PERCENT,
         "stat": stats.SPATK,
-        "min": 4,
-        "max": 7,
+        "min": 3,
+        "max": 5,
     },
     [modifiers.PERCENT_SPD]: {
         "name": "% SpD",
         "description": "Percent Special Defense",
         "type": modifierTypes.PERCENT,
         "stat": stats.SPDEF,
-        "min": 4,
-        "max": 7,
+        "min": 3,
+        "max": 5,
     },
     [modifiers.PERCENT_SPE]: {
         "name": "% Spe",
         "description": "Percent Speed",
         "type": modifierTypes.PERCENT,
         "stat": stats.SPEED,
-        "min": 4,
-        "max": 7,
+        "min": 3,
+        "max": 5,
     }, 
     [modifiers.FLAT_HP]: {
         "name": "Flat HP",
         "description": "Flat HP",
         "type": modifierTypes.FLAT,
         "stat": stats.HP,
-        "min": 12,
-        "max": 17,
+        "min": 5,
+        "max": 8,
     },
     [modifiers.FLAT_ATK]: {
         "name": "Flat Atk",
         "description": "Flat Attack",
         "type": modifierTypes.FLAT,
         "stat": stats.ATTACK,
-        "min": 10,
-        "max": 15,
+        "min": 6,
+        "max": 10,
     },
     [modifiers.FLAT_DEF]: {
         "name": "Flat Def",
         "description": "Flat Defense",
         "type": modifierTypes.FLAT,
         "stat": stats.DEFENSE,
-        "min": 10,
-        "max": 15,
+        "min": 6,
+        "max": 10,
     },
     [modifiers.FLAT_SPA]: {
         "name": "Flat SpA",
         "description": "Flat Special Attack",
         "type": modifierTypes.FLAT,
         "stat": stats.SPATK,
-        "min": 10,
-        "max": 15,
+        "min": 6,
+        "max": 10,
     },
     [modifiers.FLAT_SPD]: {
         "name": "Flat SpD",
         "description": "Flat Special Defense",
         "type": modifierTypes.FLAT,
         "stat": stats.SPDEF,
-        "min": 10,
-        "max": 15,
+        "min": 6,
+        "max": 10,
     },
     [modifiers.FLAT_SPE]: {
         "name": "Flat Spe",
         "description": "Flat Speed",
         "type": modifierTypes.FLAT,
         "stat": stats.SPEED,
-        "min": 10,
-        "max": 15,
+        "min": 6,
+        "max": 10,
     },
 }
 
@@ -237,7 +237,6 @@ const SUBSTAT_MODIFIERS = [
     modifiers.PERCENT_DEF,
     modifiers.PERCENT_SPA,
     modifiers.PERCENT_SPD,
-    modifiers.PERCENT_SPE,
 ]
 
 const equipmentConfig = {
@@ -422,9 +421,30 @@ const equipmentConfig = {
 const MAX_EQUIPMENT_LEVEL = 10;
 const STAT_REROLL_COST = 5;
 const levelUpCost = (level) => level + 1;
-const POKEDOLLAR_MULTIPLIER = 100;
+const POKEDOLLAR_MULTIPLIER = 250;
 
-const equipmentInfoString = "TODO";
+let equipmentInfoString = "**Equipment Info**\n\n";
+equipmentInfoString += "**Stat Modifiers**\n"
+equipmentInfoString += "Equipment is used to boost the stats of your Pokemon. Each piece of equipment has 5 stat slots: primary, secondary, and 3 substats. **Primary and secondary stats scale with the equipment level, while substats don't.**\n\n";
+equipmentInfoString += "Equipment stats also come with a quality, that changes the value of the stat modifier. Modifiers and stats can be changed with stat rerolls. \n\n";
+equipmentInfoString += "Each equipment stat modifies your Pokemon's stat in different ways. **There are three types of modifiers: Base, Percent, and Flat.** They work in the following ways:\n"
+equipmentInfoString += "* Base: Adds a flat amount to the original base Pokemon stat, which scales with level and nature.\n";
+equipmentInfoString += "* Percent: After the original stat is calculated with the traditional Pokemon stat calculation formula, increase that stat by the given percentage.\n";
+equipmentInfoString += "* Flat: Adds a flat amount to the final stat, after all other modifiers have been applied.\n\n";
+equipmentInfoString += "**Equipment Types**\n";
+equipmentInfoString += "Each Pokemon equips 1 of each equipment type, which determines what stats the equipment may have. There are 6 different types of equipment, each with their own primary stat that increases the base stat. **Each type of equipment also has different possible secondary stats**, shown below:";
+for (const equipmentData of Object.values(equipmentConfig)) {
+    const modifiers = equipmentData.slots[modifierSlots.SECONDARY].modifiers;
+    const modifierNames = modifiers.map(modifier => modifierConfig[modifier].name);
+    equipmentInfoString += `\n* ${equipmentData.name}: ${modifierNames.join(", ")}`;
+}
+equipmentInfoString += "\nAll substats have the same possible modifiers. The modifiers are all flat and percent modifiers, minus percent speed.\n\n";
+
+let equipmentInfoString2 = "**Equipment Info (cont.)**\n\n";
+equipmentInfoString2 += "**Upgrading and Tuning**\n";
+equipmentInfoString2 += "There are two ways to modify a piece of equipment: **level upgrades and rerolling.** All modifications cost Pokedollars and Shards. Shards can be obtained from the `/dungeon`.\n\n";
+equipmentInfoString2 += "Level upgrades increase the level of the equipment, which increases the primary and secondary stats. The cost of upgrading increases with the level of the equipment. Equipment can be leveled to level 10.\n\n";
+equipmentInfoString2 += "Rerolling changes the modifiers of a given stat slot. Rerolling chooses a random (possibly duplicate) modifier as well as randomly rolls the quality of the stat.";
 
 module.exports = {
     equipmentTypes,
@@ -439,5 +459,6 @@ module.exports = {
     levelUpCost,
     POKEDOLLAR_MULTIPLIER,
     equipmentInfoString,
+    equipmentInfoString2,
 };
 

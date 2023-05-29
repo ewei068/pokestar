@@ -20,7 +20,7 @@ const { buildButtonActionRow } = require('../components/buttonActionRow');
 const { addItems: addItems } = require('../utils/trainerUtils');
 const { equipmentConfig } = require('../config/equipmentConfig');
 
-const DAILY_MONEY = 300;
+const DAILY_MONEY = process.env.STAGE == stageNames.ALPHA ? 100000 : 300;
 
 const drawDaily = async (trainer) => {
     // check if new day; if in alpha, ignore

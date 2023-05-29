@@ -196,9 +196,32 @@ const buildNpcDifficultyString = (difficulty, npcDifficultyData) => {
     }
 }
 
+const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
+    const difficultyData = difficultyConfig[difficulty];
+    const allDungeonPokemons = dungeonDifficultyData.phases.reduce((acc, phase) => {
+        return acc.concat(phase.pokemons);
+    }, []);
+    const rewards = dungeonDifficultyData.rewards;
+
+    const maxLevel = Math.max(...allDungeonPokemons.map((pokemon) => pokemon.level));
+    const difficultyHeader = `[Lv. ${maxLevel}] ${difficultyData.name}`;
+
+    let difficultyString = '';
+    const uniqueSpeciesIds = [...new Set(allDungeonPokemons.map((pokemon) => pokemon.speciesId))];
+    const pokemonEmojis = uniqueSpeciesIds.map((speciesId) => pokemonConfig[speciesId].emoji);
+    difficultyString += `**Pokemon:** ${pokemonEmojis.join(' ')}\n`;
+    difficultyString += `**Rewards:** ${getRewardsString(flattenRewards(rewards), received=false)}`;
+
+    return {
+        difficultyHeader,
+        difficultyString,
+    }
+}
+
 module.exports = {
     buildPartyString,
     buildMoveString,
     buildBattlePokemonString,
     buildNpcDifficultyString,
+    buildDungeonDifficultyString,
 };

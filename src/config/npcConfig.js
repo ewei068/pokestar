@@ -1,4 +1,4 @@
-const { backpackCategories, backpackItems } = require("./backpackConfig");
+const { backpackCategories, backpackItems, backpackItemConfig } = require("./backpackConfig");
 const { getFullUTCDate } = require("../utils/utils");
 const { rarities, rarityBins } = require("./pokemonConfig");
 const { drawIterable } = require("../utils/gachaUtils");
@@ -356,6 +356,51 @@ const npcConfig = {
     },
 }
 
+const dungeons = {
+    MIND_TEMPLE: "mindTemple",
+    //SPIRIT_ALTAR: "spiritAltar",
+    //SOUL_CAVE: "soulCave",
+}
+
+const dungeonConfig = {
+    [dungeons.MIND_TEMPLE]: {
+        name: "Mind Temple",
+        sprite: "https://archives.bulbagarden.net/media/upload/thumb/1/17/LA_Temple_of_Sinnoh.png/500px-LA_Temple_of_Sinnoh.png",
+        emoji: "🏛️",
+        description: `An ancient sanctuary of knowledge and wisdom. Defeat its guardians to earn ${backpackItemConfig[backpackItems.KNOWLEDGE_SHARD].emoji} ${backpackItemConfig[backpackItems.KNOWLEDGE_SHARD].name}s.`,
+        difficulties: {
+            [difficulties.MEDIUM]: {
+                phases: [
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "25",
+                                level: 10,
+                                position: 2
+                            },
+                            {
+                                speciesId: "25",
+                                level: 10,
+                                position: 11,
+                            },
+                        ]
+                    }
+                ],
+                rewards: {
+                    backpack: {
+                        [backpackCategories.MATERIALS]: {
+                            [backpackItems.KNOWLEDGE_SHARD]: 3,
+                        },
+                    }
+                }
+            },
+        }
+    },
+}
+
+
 const difficultyConfig = {
     [difficulties.VERY_EASY]: {
         name: "Very Easy",
@@ -403,5 +448,7 @@ module.exports = {
     npcs,
     difficulties,
     npcConfig,
+    dungeons,
+    dungeonConfig,
     difficultyConfig,
 }

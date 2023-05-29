@@ -1,9 +1,9 @@
 const { EmbedBuilder } = require("discord.js");
 const { moveConfig } = require("../config/battleConfig");
-const { buildPartyString, buildMoveString, buildBattlePokemonString, buildNpcDifficultyString } = require("../utils/battleUtils");
+const { buildPartyString, buildMoveString, buildBattlePokemonString, buildNpcDifficultyString, buildDungeonDifficultyString } = require("../utils/battleUtils");
 const { buildPokemonStatString, getAbilityName } = require("../utils/pokemonUtils");
 const { setTwoInline } = require("../utils/utils");
-const { npcConfig  } = require("../config/npcConfig");
+const { npcConfig, dungeonConfig  } = require("../config/npcConfig");
 
 const buildPartyEmbed = (trainer, pokemons, detailed=false) => {
     const party = trainer.party;
@@ -174,6 +174,43 @@ const buildPveNpcEmbed = (npcId) => {
 
     return embed;
 }
+
+const buildDungeonListEmbed = () => {
+    let dungeonString = "";
+    Object.entries(dungeonConfig).forEach(([dungeonId, dungeonData]) => {
+        dungeonString += `**${dungeonData.emoji} ${dungeonData.name}** • ${dungeonData.description}\n\n`;
+    });
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`Dungeons`);
+    embed.setColor(0xffffff);
+    embed.setDescription(dungeonString);
+    embed.setFooter({ text: `Defeat dungeons to power up your /equipment!` });
+
+    return embed;
+}
+
+const buildDungeonEmbed = (dungeonId) => {
+    const dungeonData = dungeonConfig[dungeonId];
+    const fields = Object.entries(dungeonData.difficulties).map(([difficulty, difficultyData]) => {
+        const { difficultyHeader, difficultyString } = buildDungeonDifficultyString(difficulty, difficultyData);
+        return {
+            name: difficultyHeader,
+            value: difficultyString,
+            inline: false,
+        };
+    });
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${dungeonData.emoji} ${dungeonData.name}`);
+    embed.setColor(0xffffff);
+    embed.setDescription(dungeonData.description);
+    embed.addFields(fields);
+    embed.setImage(dungeonData.sprite);
+    embed.setFooter({ text: "Use the buttons to select a difficulty" });
+
+    return embed;
+}
     
 
 module.exports = {
@@ -183,4 +220,6 @@ module.exports = {
     buildBattleTeamEmbed,
     buildPveListEmbed,
     buildPveNpcEmbed,
+    buildDungeonListEmbed,
+    buildDungeonEmbed,
 };

@@ -17,6 +17,7 @@ const eventNames = {
     PVE_SCROLL: "pveScroll",
     PVE_SELECT: "pveSelect",
     PVE_ACCEPT: "pveAccept",
+    DUNGEON_SELECT: "dungeonSelect",
     BATTLE_INFO: "battleInfo",
     BATTLE_MOVE_SELECT: "battleMoveSelect",
     BATTLE_TARGET_SELECT: "battleTargetSelect",
@@ -115,6 +116,10 @@ const eventConfig = {
         "exp": 10,
         "money": 25,
     },
+    [eventNames.DUNGEON_SELECT]: {
+        "name": "Dungeon Select",
+        "execute": "dungeonSelect.js",
+    },
     [eventNames.BATTLE_INFO]: {
         "name": "Battle Info",
         "execute": "battleInfo.js",
@@ -126,8 +131,8 @@ const eventConfig = {
     [eventNames.BATTLE_TARGET_SELECT]: {
         "name": "Battle Target Select",
         "execute": "battleTargetSelect.js",
-        "exp": 15,
-        "money": 30,
+        "exp": 10,
+        "money": 25,
     },
     [eventNames.BANNER_SCROLL]: {
         "name": "Gacha Scroll",

@@ -16,7 +16,6 @@ const handleTimeout = (stateId) => {
     if (now - ttl.lastCalled > ttl.ttl * 1000) {
         delete states[stateId];
         delete ttls[stateId];
-        logger.warn(`State ${stateId} timed out!`);
     } else {
         setTimeout(() => {
             handleTimeout(stateId);

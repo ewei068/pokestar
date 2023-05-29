@@ -83,6 +83,8 @@ const canBuyItem = (trainer, itemId, quantity) => {
 }
 
 const buyItem = async (trainer, itemId, quantity) => {
+    getOrSetDefault(trainer.purchasedShopItemsToday, itemId, 0);
+
     // get item data
     const item = shopItemConfig[itemId];
     if (!item) {

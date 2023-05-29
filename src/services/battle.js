@@ -2,7 +2,7 @@ const { getOrSetDefault } = require("../utils/utils");
 const { v4: uuidv4, v4 } = require('uuid');
 const { pokemonConfig, types } = require('../config/pokemonConfig');
 const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, effectConfig, statusConditions, moveTiers, calculateDamage, abilityConfig, typeAdvantages } = require("../config/battleConfig");
-const { buildBattleEmbed, buildBattleMovesetEmbed, buildPveListEmbed, buildPveNpcEmbed } = require("../embeds/battleEmbeds");
+const { buildBattleEmbed, buildBattleMovesetEmbed, buildPveListEmbed, buildPveNpcEmbed, buildDungeonListEmbed, buildDungeonEmbed } = require("../embeds/battleEmbeds");
 const { buildSelectBattleMoveRow } = require("../components/selectBattleMoveRow");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildBattleInfoActionRow } = require("../components/battleInfoActionRow");
@@ -12,7 +12,7 @@ const { logger } = require("../log");
 const { buildNextTurnActionRow } = require("../components/battleNextTurnRow");
 const { deleteState } = require("./state");
 const { calculateEffectiveSpeed, calculateEffectiveAccuracy, calculateEffectiveEvasion } = require("../utils/pokemonUtils");
-const { npcConfig, difficultyConfig } = require("../config/npcConfig");
+const { npcConfig, difficultyConfig, dungeons, dungeonConfig } = require("../config/npcConfig");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { getState } = require("./state");
 const { eventNames } = require("../config/eventConfig");
@@ -205,6 +205,7 @@ class Battle {
         expMultiplier=1, 
         pokemonExpMultiplier=0.2,
         level=null,
+        equipmentLevel=null,
         dailyRewards=null,
         npcId=null,
         difficulty=null,
@@ -231,6 +232,12 @@ class Battle {
         this.turn = 0;
         this.winner = null;
         this.ended = false;
+        if (equipmentLevel) {
+            if (equipmentLevel < 1 || equipmentLevel > 10) {
+                throw new Error("Invalid equipment level");
+            }
+            this.equipmentLevel = equipmentLevel;
+        }
         if (level) {
             if (level < 1 || level > 100) {
                 throw new Error("Invalid level");
@@ -671,8 +678,14 @@ class Pokemon {
         if (battle.level) {
             battle.minLevel = Math.min(battle.minLevel, pokemonData.level);
             pokemonData.level = battle.level;
-            pokemonData = calculatePokemonStats(pokemonData, this.speciesData);
         }
+        // if battle has an equipment level, set all pokemons equipments to that level
+        if (battle.equipmentLevel) {
+            for (const equipment of Object.values(pokemonData.equipments)) {
+                equipment.level = battle.equipmentLevel;
+            }
+        }
+        pokemonData = calculatePokemonStats(pokemonData, this.speciesData);
         this.pokemonData = pokemonData;
         this.id = pokemonData._id.toString();
         this.userId = trainer.userId;
@@ -767,8 +780,6 @@ class Pokemon {
                 case statusConditions.PARALYSIS:
                     // 25% chance to be paralyzed
                     const paralysisRoll = Math.random();
-                    // TEMP: log paralysis roll
-                    logger.info(`paralysis roll: ${paralysisRoll}`);
                     if (paralysisRoll < 0.25) {
                         this.battle.addToLog(`${this.name} is paralyzed and can't move!`);
                         canUseMove = false;
@@ -1984,6 +1995,158 @@ const buildPveSend = async ({ stateId=null, user=null, view="list", option=null,
     return { send: send, err: null };
 } 
 
+const buildDungeonSend = async ({ stateId=null, user=null, view="list", option=null } = {}) => {
+    // get state
+    const state = getState(stateId);
+
+    // get trainer
+    let trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { send: null, err: trainer.err };
+    }
+    trainer = trainer.data;
+
+    const send = {
+        embeds: [],
+        components: []
+    }
+    if (view === "list") {
+        // build list embed
+        const embed = buildDungeonListEmbed();
+        send.embeds.push(embed);
+        
+        
+        // build dungeon select menu
+        const dungeonSelectRowData = {
+            stateId: stateId,
+        };
+        const dungeonSelectRow = buildIdConfigSelectRow(
+            Object.values(dungeons),
+            dungeonConfig,
+            "Select a Dungeon to battle:",
+            dungeonSelectRowData,
+            eventNames.DUNGEON_SELECT,
+            false
+        );
+        send.components.push(dungeonSelectRow);
+    } else if (view === "dungeon") {
+        // validate npc id
+        const dungeonData = dungeonConfig[option];
+        if (dungeonData === undefined) {
+            return { embed: null, err: `Invalid Dungeon!` };
+        }
+
+        // build npc embed
+        const embed = buildDungeonEmbed(option);
+        send.embeds.push(embed);
+
+        // build difficulty row
+        const difficultySelectData = {
+            stateId: stateId,
+        }
+        const difficultyButtonConfigs = Object.keys(dungeonData.difficulties).map(difficulty => {
+            return {
+                label: difficultyConfig[difficulty].name,
+                disabled: false,
+                data: {
+                    ...difficultySelectData,
+                    difficulty: difficulty,
+                }
+            }
+        });
+        const difficultyRow = buildButtonActionRow(
+            difficultyButtonConfigs,
+            eventNames.PVE_ACCEPT,
+        );
+        send.components.push(difficultyRow);
+
+        // build return button
+        const returnData = {
+            stateId: stateId,
+        }
+        const returnButtonConfigs = [
+            {
+                label: "Return",
+                disabled: false,
+                data: returnData,
+            }
+        ]
+        const returnRow = buildButtonActionRow(
+            returnButtonConfigs,
+            eventNames.PVE_ACCEPT,
+        );
+
+        state.dungeonId = option;
+        send.components.push(returnRow);
+    } else if (view === "battle") {
+        // validate npc id
+        const npcData = dungeonConfig[state.npcId];
+        if (npcData === undefined) {
+            return { embed: null, err: `Invalid NPC!` };
+        }
+
+        // validate difficulty
+        const npcDifficultyData = npcData.difficulties[state.difficulty];
+        if (npcDifficultyData === undefined) {
+            return { embed: null, err: `Difficulty doesn't exist for ${npcData.name}!` };
+        }
+
+        // get trainer
+        const trainer = await getTrainer(user);
+        if (trainer.err) {
+            return { embed: null, err: trainer.err };
+        }
+
+        // validate party
+        const validate = await validateParty(trainer.data);
+        if (validate.err) {
+            return { err: validate.err };
+        }
+
+        // add npc to battle
+        const npc = new NPC(npcData, state.difficulty);
+        const rewardMultipliers = npcDifficultyData.rewardMultipliers || difficultyConfig[state.difficulty].rewardMultipliers;
+        const battle = new Battle({
+            ...rewardMultipliers,
+            dailyRewards: npcDifficultyData.dailyRewards,
+            npcId: state.npcId,
+            difficulty: state.difficulty,
+        });
+        battle.addTeam("NPC", true);
+        battle.addTrainer(npc, npc.party.pokemons, "NPC");
+        battle.addTeam("Player", false);
+        battle.addTrainer(trainer.data, validate.data, "Player");
+
+        // start battle and add to state
+        battle.start();
+        state.battle = battle;
+
+        // add a replay button to state for later
+        // build difficulty row
+        const difficultySelectData = {
+            stateId: stateId,
+            difficulty: state.difficulty,
+        }
+        const difficultyButtonConfigs = [{
+            label: "Replay",
+            disabled: false,
+            data: difficultySelectData,
+        }];
+        const difficultyRow = buildButtonActionRow(
+            difficultyButtonConfigs,
+            eventNames.PVE_ACCEPT,
+        );
+        state.replayComponent = difficultyRow;
+
+        return {
+            send: await getStartTurnSend(battle, stateId),
+            err: null,
+        }
+    }
+
+    return { send: send, err: null };
+} 
+
 
 module.exports = {
     Battle,
@@ -1991,4 +2154,5 @@ module.exports = {
     // Pokemon,
     getStartTurnSend,
     buildPveSend,
+    buildDungeonSend,
 }

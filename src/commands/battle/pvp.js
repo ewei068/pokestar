@@ -31,8 +31,10 @@ const pvp = async (user, opponentUserId, level) => {
     }
 
     // create battle
+    const equipmentLevel = level !== null ? Math.max(Math.round(level/10), 1) : null;
     const battle = new Battle({
         level: level,
+        equipmentLevel: equipmentLevel
     });
     battle.addTeam("Team1", false);
     battle.addTrainer(trainer.data, validate.data, "Team1");
@@ -62,7 +64,7 @@ const pvp = async (user, opponentUserId, level) => {
     )
 
     const opponentString = opponentUserId ? `<@${opponentUserId}> has ` : "You have ";
-    const levelString = level !== null ? ` **All Pokemon will be set to level ${level}.**` : "";
+    const levelString = level !== null ? ` **All Pokemon will be set to level ${level} and equipment set to level ${equipmentLevel}.**` : "";
 
     const send = {
         // TODO: mentions

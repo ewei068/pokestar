@@ -27,7 +27,7 @@ const commandCategoryConfig = {
         "name": "Battle",
         "description": "Battle commands",
         "folder": "battle",
-        "commands": ["pvp", "pve", "partyinfo", "partyadd", "partyremove"]
+        "commands": ["pvp", "pve", "dungeons", "partyinfo", "partyadd", "partyremove"]
     },
     "social": {
         "name": "Social",
@@ -428,6 +428,15 @@ const commandConfig = {
                 ]
             }
         },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    },
+    "dungeons": {
+        "name": "Dungeons",
+        "aliases": ["dungeons", "dungeon"],
+        "description": "Browse a list of dungeons",
+        "longDescription": "Browse a list of dungeons, defeat them to get equipment upgrade materials!",
+        "execute": "dungeons.js",
+        "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },
     "partyinfo": {

@@ -123,7 +123,7 @@ const calculatePokemonStats = (pokemon, speciesData) => {
     return pokemon;
 }
 
-const calculateAndUpdatePokemonStats = async (pokemon, speciesData) => {
+const calculateAndUpdatePokemonStats = async (pokemon, speciesData, force=false) => {
     // get old stats and combat power
     const oldStats = getOrSetDefault(pokemon, "stats", [0, 0, 0, 0, 0, 0]);
     const oldCombatPower = getOrSetDefault(pokemon, "combatPower", 0);
@@ -132,7 +132,7 @@ const calculateAndUpdatePokemonStats = async (pokemon, speciesData) => {
     pokemon = calculatePokemonStats(pokemon, speciesData);
 
     // check if old stats and combat power are the same
-    if (oldStats[0] !== pokemon.stats[0] 
+    if (force || oldStats[0] !== pokemon.stats[0] 
         || oldStats[1] !== pokemon.stats[1] 
         || oldStats[2] !== pokemon.stats[2] 
         || oldStats[3] !== pokemon.stats[3] 
@@ -490,8 +490,8 @@ const rerollStatSlot = async (trainer, pokemon, equipmentType, slotId) => {
         "quality": drawUniform(0, 100, 1)[0],
     }
     const slot = equipment.slots[slotId];
-
-    const { data, err } = await calculateAndUpdatePokemonStats(pokemon, pokemonConfig[pokemon.speciesId]);
+    
+    const { data, err } = await calculateAndUpdatePokemonStats(pokemon, pokemonConfig[pokemon.speciesId], force=true);
     if (err) {
         return { data: null, err: err };
     } else {

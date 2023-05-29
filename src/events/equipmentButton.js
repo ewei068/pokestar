@@ -1,6 +1,6 @@
 const { getState } = require("../services/state");
 const { buildEquipmentUpgradeSend, buildEquipmentSend } = require("../services/pokemon");
-const { equipmentInfoString } = require("../config/equipmentConfig");
+const { equipmentInfoString, equipmentInfoString2 } = require("../config/equipmentConfig");
 
 const equipmentButton = async (interaction, data) => {
     // get state
@@ -36,6 +36,10 @@ const equipmentButton = async (interaction, data) => {
     } else if (button === "info" ) {
         await interaction.reply({
             content: equipmentInfoString,
+            ephemeral: true
+        });
+        await interaction.followUp({
+            content: equipmentInfoString2,
             ephemeral: true
         });
         return;
