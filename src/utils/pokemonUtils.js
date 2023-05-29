@@ -73,18 +73,15 @@ const buildPokemonBaseStatString = (speciesData, size=20) => {
 const calculateEffectiveSpeed = (speed) => {
     // use formula:
     // y\ =\ 100\ \left\{x\ \le\ 0\right\}
-    // y=\frac{1}{2}x\ +\ 100\ \left\{0\ <x\ \le\ 200\right\}
-    // y\ =\ \frac{1}{3}x\ +134\ \left\{200\ <\ x\ \le400\right\}
-    // y\ =\ \frac{1}{4}x\ +\ 168\ \left\{400<x\right\}
+    // y=\frac{1}{2}x\ +\ 100\ \left\{0\ <x\ \le\ 400\right\}
+    // y\ =\ \frac{1}{3}x\ +166\left\{400\ <\ x\ \right\}
 
     if (speed <= 0) {
         return 100;
-    } else if (speed <= 200) {
-        return Math.floor(speed / 2 + 100);
     } else if (speed <= 400) {
-        return Math.floor(speed / 3 + 134);
+        return Math.floor(speed / 2 + 100);
     } else {
-        return Math.floor(speed / 4 + 168);
+        return Math.floor(speed / 3 + 166);
     }
 }
 

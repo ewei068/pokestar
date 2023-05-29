@@ -15,7 +15,7 @@ const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildBackButtonRow } = require("../components/backButtonRow");
-const { getRewardsString, getPokeballsString, addPokeballs } = require("../utils/trainerUtils");
+const { getRewardsString, getPokeballsString, addItems: addItems } = require("../utils/trainerUtils");
 
 const canBuyItem = (trainer, itemId, quantity) => {
     // get item data
@@ -127,7 +127,7 @@ const buyItem = async (trainer, itemId, quantity) => {
                 
         // add pokeballs to trainer's backpack
         Object.entries(reducedResults).forEach(([key, value]) => {
-            addPokeballs(trainer, key, value);
+            addItems(trainer, key, value);
         });
 
         returnString = `You purchased ${quantity} random pokeballs for ₽${cost}.\n`;
@@ -212,7 +212,7 @@ const buildShopSend = async ({ stateId=null, user=null, view="shop", option=null
     // get trainer
     let trainer = await getTrainer(user);
     if (trainer.err) {
-        return { embed: null, err: trainer.err };
+        return { send: null, err: trainer.err };
     }
     trainer = trainer.data;
 

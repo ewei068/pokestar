@@ -24,6 +24,11 @@ const back = async (interaction, data) => {
     // get message prior to last message
     // message config = { execute, args}
     const messageConfig = state.messageStack[state.messageStack.length - 1];
+    if (messageConfig.state) {
+        for (const key in messageConfig.state) {
+            state[key] = messageConfig.state[key];
+        }
+    }
     const { send, err } = await messageConfig.execute(messageConfig.args);
     if (err) {
         return { err: err };

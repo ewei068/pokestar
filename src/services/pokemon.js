@@ -6,14 +6,18 @@ const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS } = require("
 const { expMultiplier, MAX_RELEASE } = require("../config/trainerConfig");
 const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth, getAbilityOrder, getPokemonOrder } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
-const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed } = require("../embeds/pokemonEmbeds");
+const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed, buildEquipmentEmbed, buildEquipmentUpgradeEmbed } = require("../embeds/pokemonEmbeds");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { getTrainer } = require("./trainer");
-const { setState } = require("./state");
+const { setState, getState } = require("./state");
 const { buildYesNoActionRow } = require("../components/yesNoActionRow");
-const { modifierConfig, modifierTypes, modifierSlotConfig } = require("../config/equipmentConfig");
+const { modifierConfig, modifierTypes, modifierSlotConfig, equipmentConfig, MAX_EQUIPMENT_LEVEL, levelUpCost, STAT_REROLL_COST, POKEDOLLAR_MULTIPLIER } = require("../config/equipmentConfig");
+const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
+const { buildBackButtonRow } = require("../components/backButtonRow");
+const { getItems, removeItems } = require("../utils/trainerUtils");
+const { backpackItemConfig } = require("../config/backpackConfig");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
@@ -364,6 +368,90 @@ const trainPokemon = async (trainer, pokemon, locationId) => {
     return await addPokemonExpAndEVs(trainer, pokemon, exp, evs);
 }
 
+const canUpgradeEquipment = (trainer, pokemon, equipmentType, upgrade=false, slot=false) => {
+    const equipment = pokemon.equipments[equipmentType];
+    if (!equipment) {
+        return false;
+    }
+    const equipmentData = equipmentConfig[equipmentType];
+    const material = equipmentData.material;
+    if (upgrade) {
+        // check level
+        if (equipment.level >= MAX_EQUIPMENT_LEVEL) {
+            return false;
+        }
+
+        // check cost
+        const moneyCost = levelUpCost(equipment.level) * POKEDOLLAR_MULTIPLIER;
+        if (trainer.money < moneyCost) {
+            return false;
+        }
+
+        // check material
+        const materialCost = levelUpCost(equipment.level);
+        if (getItems(trainer, material) < materialCost) {
+            return false;
+        }
+    } else if (slot) {
+        // check cost
+        const moneyCost = STAT_REROLL_COST * POKEDOLLAR_MULTIPLIER;
+        if (trainer.money < moneyCost) {
+            return false;
+        }
+
+        // check material
+        const materialCost = STAT_REROLL_COST;
+        if (getItems(trainer, material) < materialCost) {
+            return false;
+        }
+    } else {
+        return false;
+    }
+
+    return true;
+}
+
+const upgradeEquipmentLevel = async (trainer, pokemon, equipmentType) => {
+    const equipment = pokemon.equipments[equipmentType];
+    if (!equipment) {
+        return { data: null, err: "Error upgrading equipment." };
+    }
+    if (!canUpgradeEquipment(trainer, pokemon, equipmentType, true)) {
+        return { data: null, err: "You can't upgrade that equipment right now!" };
+    }
+    const equipmentData = equipmentConfig[equipmentType];
+    const material = equipmentData.material;
+    const materialData = backpackItemConfig[material];
+
+    // withdraw cost from trainer
+    const moneyCost = levelUpCost(equipment.level) * POKEDOLLAR_MULTIPLIER;
+    const materialCost = levelUpCost(equipment.level);
+    removeItems(trainer, material, materialCost);
+    try {
+        const res = await updateDocument(
+            collectionNames.USERS,
+            { _id: idFrom(trainer._id) },
+            { $inc: { money: -moneyCost }, $set: { backpack: trainer.backpack } }
+        );
+        if (res.modifiedCount === 0) {
+            logger.warn(`Failed to update trainer ${trainer._id} money.`);
+            return { data: null, err: "Error upgrading equipment." };
+        }
+    } catch (error) {
+        logger.error(error);
+        return { data: null, err: "Error upgrading equipment." };
+    }
+
+    // update equipment
+    equipment.level++;
+    const { data, err } = await calculateAndUpdatePokemonStats(pokemon, pokemonConfig[pokemon.speciesId]);
+    if (err) {
+        return { data: null, err: err };
+    } else {
+        return { data: `Equipment upgraded to level ${equipment.level} for ₽${moneyCost} and ${materialData.emoji} x${materialCost}!`, err: null };
+    }
+}
+
 // to be used in mongo aggregate or other
 function getBattleEligible(pokemonConfig, pokemon) {
     return pokemonConfig[pokemon.speciesId].battleEligible ? true : false;
@@ -595,6 +683,139 @@ const buildReleaseSend = async (user, pokemonIds) => {
     return { send: send, err: null };
 }
 
+const buildEquipmentSend = async ({ stateId=null, user=null } = {}) => {
+    const state = getState(stateId);
+    
+    let trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { err: trainer.err };
+    }
+    trainer = trainer.data;
+
+    let pokemon = await getPokemon(trainer, state.pokemonId);
+    if (pokemon.err) {
+        return { err: pokemon.err };
+    }
+    pokemon = pokemon.data;
+
+    // embed info
+    const oldPokemon = calculatePokemonStatsNoEquip(pokemon, pokemonConfig[pokemon.speciesId]);
+    const equipmentEmbed = buildEquipmentEmbed(pokemon, oldPokemon);
+
+    // equipment selection row
+    const selectData = {
+        stateId: stateId,
+        select: "equipment"
+    }
+    const selectActionRow = buildIdConfigSelectRow(
+        Object.keys(pokemon.equipments),
+        equipmentConfig,
+        "Select equipment to upgrade",
+        selectData,
+        eventNames.EQUIPMENT_SELECT,
+        false
+    )
+
+    const send = {
+        embeds: [equipmentEmbed],
+        components: [selectActionRow],
+    }
+    
+    return { send: send, err: null };
+}
+
+const buildEquipmentUpgradeSend = async ({ stateId=null, user=null } = {}) => {
+    const state = getState(stateId);
+    
+    let trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { err: trainer.err };
+    }
+    trainer = trainer.data;
+
+    let pokemon = await getPokemon(trainer, state.pokemonId);
+    if (pokemon.err) {
+        return { err: pokemon.err };
+    }
+    pokemon = pokemon.data;
+
+    const equipmentType = state.equipmentType;
+    const equipment = pokemon.equipments[equipmentType];
+    if (!equipment) {
+        return { err: `Pokemon doesn't have ${equipmentType} equipment!` };
+    }
+
+    const button = state.button;
+
+    const send = {
+        embeds: [],
+        components: [],
+    }
+
+    // embed
+    const embed = buildEquipmentUpgradeEmbed(trainer, pokemon, equipmentType, equipment, button === "upgrade");
+    send.embeds.push(embed);
+
+    // upgrade select buttons
+    const buttonData = {
+        stateId: stateId,
+    }
+    const buttonConfigs = [
+        {
+            label: "Upgrade",
+            disabled: button === "upgrade" || !canUpgradeEquipment(trainer, pokemon, equipmentType, upgrade=true),
+            data: {
+                ...buttonData,
+                button: "upgrade",
+            },
+        },
+        {
+            label: "Info",
+            disabled: false,
+            data: {
+                ...buttonData,
+                button: "info",
+            },
+        },
+    ]
+    const buttonActionRow = buildButtonActionRow(buttonConfigs, eventNames.EQUIPMENT_BUTTON);
+    send.components.push(buttonActionRow);
+
+    // if button is upgrade or slot, add upgrade confirm button
+    if (button === "upgrade" || button === "slot") {
+        const upgradeData = {
+            stateId: stateId,
+        }
+        const upgradeButtonConfigs = [
+            {
+                label: "Confirm" + (button === "slot" ? " Reroll" : " Upgrade"),
+                disabled: !canUpgradeEquipment(trainer, pokemon, equipmentType, upgrade=button === "upgrade", slot=button === "slot"),
+                data: {
+                    ...upgradeData,
+                },
+            }
+        ]
+        const upgradeActionRow = buildButtonActionRow(upgradeButtonConfigs, eventNames.EQUIPMENT_UPGRADE);
+        send.components.push(upgradeActionRow);
+    }
+
+    // back button
+    const backButtonConfigs = [
+        {
+            label: "Return",
+            disabled: false,
+            data: {
+                ...buttonData,
+                button: "back",
+            },
+        }
+    ]
+    const backButtonActionRow = buildButtonActionRow(backButtonConfigs, eventNames.EQUIPMENT_BUTTON);
+    send.components.push(backButtonActionRow);
+
+    return { send: send, err: null };
+}
+
 module.exports = {
     listPokemons,
     getPokemon,
@@ -608,7 +829,11 @@ module.exports = {
     trainPokemon,
     setBattleEligible,
     getBattleEligible,
+    canUpgradeEquipment,
+    upgradeEquipmentLevel,
     buildPokemonInfoSend,
     buildPokedexSend,
     buildReleaseSend,
+    buildEquipmentSend,
+    buildEquipmentUpgradeSend,
 };

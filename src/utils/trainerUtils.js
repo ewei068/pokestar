@@ -9,6 +9,16 @@ const getPokeballsString = (trainer) => {
     return pokeballsString;
 }
 
+const getBackpackItemsString = (trainer) => {
+    let backpackItemsString = "";
+    for (const category in trainer.backpack) {
+        for (const item in trainer.backpack[category]) {
+            backpackItemsString += `\n${backpackItemConfig[item].emoji} ${trainer.backpack[category][item]}x ${backpackItemConfig[item].name}`;
+        }
+    }
+    return backpackItemsString;
+}
+
 const getRewardsString = (rewards, received=true) => {
     let rewardsString = received ? "**You received:**" : "";
     if (rewards.money) {
@@ -62,35 +72,40 @@ const addRewards = (trainer, rewards, accumulator={}) => {
     return accumulator;
 }
 
-const getPokeballs = (trainer, pokeballId) => {
-    const pokeballs = getOrSetDefault(trainer.backpack, backpackCategories.POKEBALLS, {});
-    return getOrSetDefault(pokeballs, pokeballId, 0);
+const getItems = (trainer, itemId) => {
+    const category = backpackItemConfig[itemId].category;
+    const items = getOrSetDefault(trainer.backpack, category, {});
+    return getOrSetDefault(items, itemId, 0);
 }
 
-const setPokeballs = (trainer, pokeballId, quantity) => {
-    const pokeballs = getOrSetDefault(trainer.backpack, backpackCategories.POKEBALLS, {});
-    pokeballs[pokeballId] = quantity;
+const setItems = (trainer, itemId, quantity) => {
+    const category = backpackItemConfig[itemId].category;
+    const items = getOrSetDefault(trainer.backpack, category, {});
+    items[itemId] = quantity;
 }
 
-const addPokeballs = (trainer, pokeballId, quantity=1) => {
-    const pokeballs = getOrSetDefault(trainer.backpack, backpackCategories.POKEBALLS, {});
-    pokeballs[pokeballId] = getOrSetDefault(pokeballs, pokeballId, 0) + quantity;
+const addItems = (trainer, itemId, quantity=1) => {
+    const category = backpackItemConfig[itemId].category;
+    const items = getOrSetDefault(trainer.backpack, category, {});
+    items[itemId] = getOrSetDefault(items, itemId, 0) + quantity;
 }
 
-const removePokeballs = (trainer, pokeballId, quantity=1) => {
-    const pokeballs = getOrSetDefault(trainer.backpack, backpackCategories.POKEBALLS, {});
-    pokeballs[pokeballId] = getOrSetDefault(pokeballs, pokeballId, 0) - quantity;
+const removeItems = (trainer, itemId, quantity=1) => {
+    const category = backpackItemConfig[itemId].category;
+    const items = getOrSetDefault(trainer.backpack, category, {});
+    items[itemId] = getOrSetDefault(items, itemId, 0) - quantity;
 }
 
 
 module.exports = {
     getPokeballsString,
+    getBackpackItemsString,
     getRewardsString,
     flattenCategories,
     flattenRewards,
     addRewards,
-    getPokeballs,
-    setPokeballs,
-    addPokeballs,
-    removePokeballs,
+    getItems: getItems,
+    setItems: setItems,
+    addItems: addItems,
+    removeItems: removeItems,
 };

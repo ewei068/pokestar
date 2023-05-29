@@ -7,7 +7,8 @@ const { buildMoveString } = require('../utils/battleUtils');
 const { backpackItems, backpackItemConfig } = require('../config/backpackConfig');
 const { trainerFields } = require('../config/trainerConfig');
 const { bannerTypeConfig, pokeballConfig } = require('../config/gachaConfig');
-const { getPokeballsString } = require('../utils/trainerUtils');
+const { getPokeballsString, getItems } = require('../utils/trainerUtils');
+const { MAX_EQUIPMENT_LEVEL, levelUpCost, STAT_REROLL_COST: STAT_REROLL_COST, POKEDOLLAR_MULTIPLIER, modifierSlotConfig, modifierConfig, equipmentConfig } = require('../config/equipmentConfig');
 
 const buildBannerEmbed = (trainer, bannerData) => {
     const type = bannerData.bannerType;
@@ -186,6 +187,7 @@ const buildPokemonEmbed = (trainer, pokemon, tab="all", oldPokemon=null) => {
     embed.setDescription(`${pokemon.shiny ? "✨" : ""}**[Lv. ${pokemon.level}]** ${speciesData.name} (#${pokemon.speciesId})\n${linebreakString(speciesData.description, 50)}`);
     embed.setColor(rarityConfig[speciesData.rarity].color);
     
+    const footerHelp = [];
     if (tab === "info" || tab === "all") {
         embed.addFields(
             { name: "Type", value: typeString, inline: true },
@@ -197,6 +199,8 @@ const buildPokemonEmbed = (trainer, pokemon, tab="all", oldPokemon=null) => {
             { name: "Stats (Stat|IVs|EVs)", value: statString, inline: false },
             { name: "Level Progress", value: progressBar, inline: false }
         );
+
+        footerHelp.push("/train <id> to train this Pokemon");
     }
 
     // moves & abilities
@@ -223,6 +227,8 @@ const buildPokemonEmbed = (trainer, pokemon, tab="all", oldPokemon=null) => {
         embed.addFields(
             { name: `Ability: ${getAbilityName(pokemon.abilityId)}`, value: abilityData ? abilityData.description : "Not yet implemented!", inline: false }
         )
+
+        footerHelp.push("/partyadd <id> <position> to add this Pokemon to your party");
     }
 
     // equipment
@@ -249,12 +255,91 @@ const buildPokemonEmbed = (trainer, pokemon, tab="all", oldPokemon=null) => {
                 { name: "Stat Boost", value: buildBoostString(oldPokemon, pokemon), inline: false }
             );
         }
+
+        footerHelp.push("/equipment <id> to upgrade equipment");
     }
 
     embed.setImage(pokemon.shiny ? speciesData.shinySprite : speciesData.sprite);
 
-    const lbHelp = '/train <id> to train this Pokemon' + (pokemon.battleEligible ? '\n/partyadd <id> <position> to add this Pokemon to your party' : '');
+    const lbHelp = footerHelp.join("\n");
     embed.setFooter({ text: `ID: ${pokemon._id}\n${lbHelp}` });
+
+    return embed;
+}
+
+const buildEquipmentEmbed = (pokemon, oldPokemon) => {
+    const speciesData = pokemonConfig[pokemon.speciesId];
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${pokemon.name}'s Equipment`);
+    embed.setColor(rarityConfig[speciesData.rarity].color);
+    
+    // equipment
+    const fields = Object.entries(pokemon.equipments).map(([equipmentType, equipment]) => {
+        const { equipmentHeader, equipmentString } = buildEquipmentString(equipmentType, equipment);
+        return {
+            name: equipmentHeader,
+            value: equipmentString,
+            inline: true,
+        };
+    });
+
+    // every 2 fields, add a blank field
+    setTwoInline(fields);
+
+    if (fields.length > 0) {
+        embed.addFields(fields);
+    }
+
+    // add stat boost field
+    if (oldPokemon) {
+        embed.addFields(
+            { name: "Stat Boost", value: buildBoostString(oldPokemon, pokemon), inline: false }
+        );
+    }
+    embed.setFooter({ text: `Select an equipment below to upgrade it!` });
+
+    return embed;
+}
+
+const buildEquipmentUpgradeEmbed = (trainer, pokemon, equipmentType, equipment, upgrade=false) => {
+    const equipmentData = equipmentConfig[equipmentType];
+    const material = equipmentData.material;
+    const materialData = backpackItemConfig[material];
+    const levelUpgradeString = equipment.level >= MAX_EQUIPMENT_LEVEL ? "**This equipment is max level.**" : `**₽${levelUpCost(equipment.level) * POKEDOLLAR_MULTIPLIER}, ${materialData.emoji} x${levelUpCost(equipment.level)} to upgrade level.**`;
+    const substatUpgradeString = `**₽${STAT_REROLL_COST * POKEDOLLAR_MULTIPLIER}, ${materialData.emoji} x${STAT_REROLL_COST} to reroll stats.**`;
+
+    const embed = new EmbedBuilder();
+    const upgradeString = upgrade ? ` -> ${equipment.level + 1}` : "";
+    embed.setTitle(`${equipmentData.emoji} [Lv. ${equipment.level}${upgradeString}] ${equipmentData.name} (${pokemon.name})`);
+    embed.setColor("#FFFFFF");
+    embed.setDescription(`${equipmentData.description}\n\n${levelUpgradeString}\n${substatUpgradeString}`);
+
+    // add substat fields
+    const fields = Object.entries(equipment.slots).map(([slotId, slot]) => {
+        const slotData = modifierSlotConfig[slotId];
+        const modifierData = modifierConfig[slot.modifier];
+        const { type, min, max } = modifierData;
+
+        const baseValue = slot.quality / 100 * (max - min) + min;
+        const value = Math.round(baseValue * (slotData.level ? equipment.level : 1));
+        const upgradeValue = Math.round(baseValue * (slotData.level && upgrade ? equipment.level + 1 : 1));
+
+        const header = `${slotData.name}`
+        let valueString = `${modifierData.name}: ${value}${type === "percent" ? "%" : ""}`;
+        if (value !== upgradeValue) {
+            valueString += ` -> ${upgradeValue}${type === "percent" ? "%" : ""}`;
+        }
+        valueString += ` | Quality: ${slot.quality}%`;
+
+        return {
+            name: header,
+            value: valueString,
+            inline: false,
+        };
+    });
+    embed.addFields(fields);
+    embed.setImage(equipmentData.sprite);
+    embed.setFooter({ text: `You have ₽${trainer.money} and ${getItems(trainer, material)} ${materialData.name}s` });
 
     return embed;
 }
@@ -364,6 +449,8 @@ module.exports = {
     buildNewPokemonListEmbed,
     buildPokemonListEmbed,
     buildPokemonEmbed,
+    buildEquipmentEmbed,
+    buildEquipmentUpgradeEmbed,
     buildSpeciesDexEmbed,
     buildGachaInfoString
 }

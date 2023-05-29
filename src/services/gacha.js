@@ -17,7 +17,7 @@ const { buildBannerEmbed } = require('../embeds/pokemonEmbeds');
 const { buildScrollActionRow } = require('../components/scrollActionRow');
 const { eventNames } = require('../config/eventConfig');
 const { buildButtonActionRow } = require('../components/buttonActionRow');
-const { addPokeballs } = require('../utils/trainerUtils');
+const { addItems: addItems } = require('../utils/trainerUtils');
 const { equipmentConfig } = require('../config/equipmentConfig');
 
 const DAILY_MONEY = 300;
@@ -39,11 +39,17 @@ const drawDaily = async (trainer) => {
         }
         return acc;
     }, {});
+    // in alpha, give a bunch of shards
+    if (process.env.STAGE == stageNames.ALPHA) {
+        reducedResults[backpackItems.KNOWLEDGE_SHARD] = 100;
+        reducedResults[backpackItems.EMOTION_SHARD] = 100;
+        reducedResults[backpackItems.WILLPOWER_SHARD] = 100;
+    }
             
     trainer.money += DAILY_MONEY;
     Object.entries(reducedResults).forEach(([key, value]) => {
-        addPokeballs(trainer, key, value);
-    });
+        addItems(trainer, key, value);
+    }); 
     try {
         res = await updateDocument(
             collectionNames.USERS, 

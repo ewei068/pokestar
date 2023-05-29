@@ -1,3 +1,4 @@
+const { backpackItems } = require('./backpackConfig');
 const { stats, statConfig } = require('./pokemonConfig');
 
 const modifiers = {
@@ -245,6 +246,7 @@ const equipmentConfig = {
         "description": "Increases HP",
         "emoji": "⚖️",
         "sprite": "https://archives.bulbagarden.net/media/upload/8/80/Dream_Power_Weight_Sprite.png",
+        "material": backpackItems.EMOTION_SHARD,
         "slots": {
             [modifierSlots.PRIMARY]: {
                 "modifiers": [modifiers.BASE_HP],
@@ -254,9 +256,7 @@ const equipmentConfig = {
                     modifiers.PERCENT_HP,
                     modifiers.FLAT_SPE,
                     modifiers.FLAT_HP,
-                    modifiers.FLAT_ATK,
                     modifiers.FLAT_DEF,
-                    modifiers.FLAT_SPA,
                     modifiers.FLAT_SPD,
                 ],
             },
@@ -276,6 +276,7 @@ const equipmentConfig = {
         "description": "Increases Attack",
         "emoji": "💪",
         "sprite": "https://archives.bulbagarden.net/media/upload/1/18/Dream_Power_Bracer_Sprite.png",
+        "material": backpackItems.WILLPOWER_SHARD,
         "slots": {
             [modifierSlots.PRIMARY]: {
                 "modifiers": [modifiers.BASE_ATK],
@@ -284,11 +285,8 @@ const equipmentConfig = {
                 "modifiers": [
                     modifiers.PERCENT_ATK,
                     modifiers.PERCENT_SPA,
-                    modifiers.FLAT_HP,
                     modifiers.FLAT_ATK,
-                    modifiers.FLAT_DEF,
                     modifiers.FLAT_SPA,
-                    modifiers.FLAT_SPD,
                 ],
             },
             [modifierSlots.SUBSTAT1]: {
@@ -307,6 +305,7 @@ const equipmentConfig = {
         "description": "Increases Defense",
         "emoji": "🥋",
         "sprite": "https://archives.bulbagarden.net/media/upload/9/9a/Dream_Power_Belt_Sprite.png",
+        "material": backpackItems.KNOWLEDGE_SHARD,
         "slots": {
             [modifierSlots.PRIMARY]: {
                 "modifiers": [modifiers.BASE_DEF],
@@ -315,10 +314,7 @@ const equipmentConfig = {
                 "modifiers": [
                     modifiers.PERCENT_DEF,
                     modifiers.PERCENT_SPD,
-                    modifiers.FLAT_HP,
-                    modifiers.FLAT_ATK,
                     modifiers.FLAT_DEF,
-                    modifiers.FLAT_SPA,
                     modifiers.FLAT_SPD,
                 ],
             },
@@ -338,6 +334,7 @@ const equipmentConfig = {
         "description": "Increases Special Attack",
         "emoji": "🔎",
         "sprite": "https://archives.bulbagarden.net/media/upload/a/ac/Dream_Power_Lens_Sprite.png",
+        "material": backpackItems.WILLPOWER_SHARD,
         "slots": {
             [modifierSlots.PRIMARY]: {
                 "modifiers": [modifiers.BASE_SPA],
@@ -346,10 +343,7 @@ const equipmentConfig = {
                 "modifiers": [
                     modifiers.PERCENT_ATK,
                     modifiers.PERCENT_SPA,
-                    modifiers.FLAT_HP,
-                    modifiers.FLAT_ATK,
                     modifiers.FLAT_DEF,
-                    modifiers.FLAT_SPA,
                     modifiers.FLAT_SPD,
                 ],
             },
@@ -369,6 +363,7 @@ const equipmentConfig = {
         "description": "Increases Special Defense",
         "emoji": "🎸",
         "sprite": "https://archives.bulbagarden.net/media/upload/9/99/Dream_Power_Band_Sprite.png",
+        "material": backpackItems.KNOWLEDGE_SHARD,
         "slots": {
             [modifierSlots.PRIMARY]: {
                 "modifiers": [modifiers.BASE_SPD],
@@ -377,10 +372,7 @@ const equipmentConfig = {
                 "modifiers": [
                     modifiers.PERCENT_DEF,
                     modifiers.PERCENT_SPD,
-                    modifiers.FLAT_HP,
-                    modifiers.FLAT_ATK,
                     modifiers.FLAT_DEF,
-                    modifiers.FLAT_SPA,
                     modifiers.FLAT_SPD,
                 ],
             },
@@ -400,6 +392,7 @@ const equipmentConfig = {
         "description": "Increases Speed",
         "emoji": "👣",
         "sprite": "https://archives.bulbagarden.net/media/upload/1/1c/Dream_Power_Anklet_Sprite.png",
+        "material": backpackItems.EMOTION_SHARD,
         "slots": {
             [modifierSlots.PRIMARY]: {
                 "modifiers": [modifiers.BASE_SPE],
@@ -407,12 +400,10 @@ const equipmentConfig = {
             [modifierSlots.SECONDARY]: {
                 "modifiers": [
                     modifiers.PERCENT_HP,
-                    modifiers.PERCENT_SPE,
+                    modifiers.FLAT_SPE,
                     modifiers.FLAT_HP,
                     modifiers.FLAT_ATK,
-                    modifiers.FLAT_DEF,
                     modifiers.FLAT_SPA,
-                    modifiers.FLAT_SPD,
                 ],
             },
             [modifierSlots.SUBSTAT1]: {
@@ -428,6 +419,13 @@ const equipmentConfig = {
     },
 };
 
+const MAX_EQUIPMENT_LEVEL = 10;
+const STAT_REROLL_COST = 5;
+const levelUpCost = (level) => level + 1;
+const POKEDOLLAR_MULTIPLIER = 100;
+
+const equipmentInfoString = "TODO";
+
 module.exports = {
     equipmentTypes,
     modifierConfig,
@@ -435,6 +433,11 @@ module.exports = {
     modifiers,
     modifierSlotConfig,
     modifierTypes,
-    equipmentConfig
+    equipmentConfig,
+    MAX_EQUIPMENT_LEVEL,
+    STAT_REROLL_COST: STAT_REROLL_COST,
+    levelUpCost,
+    POKEDOLLAR_MULTIPLIER,
+    equipmentInfoString,
 };
 

@@ -7,6 +7,9 @@ const eventNames = {
     POKEMON_RELEASE_PAGE: "pokemonReleasePage",
     POKEMON_INFO_BUTTON: "pokemonInfoButton",
     POKEDEX_BUTTON: "pokedexButton",
+    EQUIPMENT_SELECT: "equipmentSelect",
+    EQUIPMENT_BUTTON: "equipmentButton",
+    EQUIPMENT_UPGRADE: "equipmentUpgrade",
     SHOP_SELECT: "shopSelect",
     SHOP_BUY: "shopBuy",
     HELP_SELECT: "helpSelect",
@@ -61,6 +64,19 @@ const eventConfig = {
     [eventNames.POKEDEX_BUTTON]: {
         "name": "Pokedex Button",
         "execute": "pokedexButton.js",
+    },
+    [eventNames.EQUIPMENT_SELECT]: {
+        "name": "Equipment Select",
+        "execute": "equipmentSelect.js",
+    },
+    [eventNames.EQUIPMENT_BUTTON]: {
+        "name": "Equipment Button",
+        "execute": "equipmentButton.js",
+    },
+    [eventNames.EQUIPMENT_UPGRADE]: {
+        "name": "Equipment Upgrade",
+        "execute": "equipmentUpgrade.js",
+        "exp": 15,
     },
     [eventNames.SHOP_SELECT]: {
         "name": "Shop Select",

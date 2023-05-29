@@ -15,7 +15,7 @@ const commandCategoryConfig = {
         "name": "Pokemon",
         "description": "Commands to catch, train, and inspect Pokemon",
         "folder": "pokemon",
-        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "release"]
+        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "release"]
     },
     "shop": {
         "name": "Shop",
@@ -300,6 +300,23 @@ const commandConfig = {
                 "optional": false,
                 "variable": false
             }
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 0,
+    },
+    "equipment": {
+        "name": "Equipment",
+        "aliases": ["equipment", "equip", "eq"],
+        "description": "Manage a Pokemon's equipment",
+        "longDescription": "Manage a Pokemon's equipment, upgrade it, and modify its stats.",
+        "execute": "equipment.js",
+        "args": {
+            "pokemonid": {
+                "type": "string",
+                "description": "unique ID for Pokemon to manage equipment for",
+                "optional": false,
+                "variable": false
+            },
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 0,
