@@ -346,7 +346,7 @@ const buildEquipmentUpgradeEmbed = (trainer, pokemon, equipmentType, equipment, 
     });
     embed.addFields(fields);
     embed.setImage(equipmentData.sprite);
-    embed.setFooter({ text: `You have ₽${trainer.money} and ${getItems(trainer, material)} ${materialData.name}s` });
+    embed.setFooter({ text: `You have ₽${trainer.money} and ${getItems(trainer, material)} ${materialData.name}s\nGet more in the /dungeons` });
 
     return embed;
 }

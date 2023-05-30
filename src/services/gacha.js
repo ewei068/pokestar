@@ -1,11 +1,11 @@
 const { backpackCategories, backpackItemConfig, backpackItems } = require('../config/backpackConfig');
-const { dailyRewardChances, NUM_DAILY_REWARDS, pokeballConfig, bannerConfig, bannerTypes, MAX_PITY } = require('../config/gachaConfig');
+const { dailyRewardChances, pokeballConfig, bannerConfig, bannerTypes, MAX_PITY } = require('../config/gachaConfig');
 const { rarityBins, pokemonConfig, rarities, rarityConfig } = require('../config/pokemonConfig');
 const { collectionNames } = require('../config/databaseConfig');
 const { updateDocument, insertDocument, countDocuments, QueryBuilder } = require('../database/mongoHandler');
 const { stageNames } = require('../config/stageConfig');
 const { drawDiscrete, drawIterable, drawUniform } = require('../utils/gachaUtils');
-const { MAX_POKEMON, trainerFields } = require('../config/trainerConfig');
+const { MAX_POKEMON, trainerFields, NUM_DAILY_SHARDS, NUM_DAILY_REWARDS } = require('../config/trainerConfig');
 const { getTrainer } = require('./trainer');
 const { getState } = require('./state');
 
@@ -39,12 +39,11 @@ const drawDaily = async (trainer) => {
         }
         return acc;
     }, {});
-    // in alpha, give a bunch of shards
-    if (process.env.STAGE == stageNames.ALPHA) {
-        reducedResults[backpackItems.KNOWLEDGE_SHARD] = 100;
-        reducedResults[backpackItems.EMOTION_SHARD] = 100;
-        reducedResults[backpackItems.WILLPOWER_SHARD] = 100;
-    }
+    
+    // add shards
+    reducedResults[backpackItems.KNOWLEDGE_SHARD] = NUM_DAILY_SHARDS;
+    reducedResults[backpackItems.EMOTION_SHARD] = NUM_DAILY_SHARDS;
+    reducedResults[backpackItems.WILLPOWER_SHARD] = NUM_DAILY_SHARDS;
             
     trainer.money += DAILY_MONEY;
     Object.entries(reducedResults).forEach(([key, value]) => {

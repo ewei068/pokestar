@@ -368,6 +368,7 @@ const dungeonConfig = {
         sprite: "https://archives.bulbagarden.net/media/upload/thumb/1/17/LA_Temple_of_Sinnoh.png/500px-LA_Temple_of_Sinnoh.png",
         emoji: "🏛️",
         description: `An ancient sanctuary of knowledge and wisdom. Defeat its guardians to earn ${backpackItemConfig[backpackItems.KNOWLEDGE_SHARD].emoji} ${backpackItemConfig[backpackItems.KNOWLEDGE_SHARD].name}s.`,
+        bosses: ["20091", "20144"],
         difficulties: {
             [difficulties.MEDIUM]: {
                 phases: [
@@ -673,6 +674,7 @@ const dungeonConfig = {
         sprite: "https://archives.bulbagarden.net/media/upload/0/06/Echo_Cave_RTDX.png",
         emoji: "⛰",
         description: `An ancient cavern containing the primordial energy that birthed the souls of all Pokemon. Defeat its dwellers to earn ${backpackItemConfig[backpackItems.EMOTION_SHARD].emoji} ${backpackItemConfig[backpackItems.EMOTION_SHARD].name}s.`,
+        bosses: ["20101", "20113"],
         difficulties: {
             [difficulties.MEDIUM]: {
                 phases: [
@@ -977,7 +979,8 @@ const dungeonConfig = {
         name: "Spirit Altar",
         sprite: "https://static.wikia.nocookie.net/victoryroad/images/a/ab/Altar_of_the_Moone_TCG.png/revision/latest?cb=20190329010127",
         emoji: "⛩️",
-        description: `An ancient shrine dedicated to the sacred spirits of Pokemonn. Defeat its worshippers to earn ${backpackItemConfig[backpackItems.WILLPOWER_SHARD].emoji} ${backpackItemConfig[backpackItems.WILLPOWER_SHARD].name}s.`,
+        description: `An ancient shrine dedicated to the sacred spirits of Pokemon. Defeat its worshippers to earn ${backpackItemConfig[backpackItems.WILLPOWER_SHARD].emoji} ${backpackItemConfig[backpackItems.WILLPOWER_SHARD].name}s.`,
+        bosses: ["20149", "20150"],
         difficulties: {
             [difficulties.MEDIUM]: {
                 phases: [

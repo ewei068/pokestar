@@ -2,9 +2,39 @@
 
 ### 0.9.0 - Dungeons and Equipment
 
-* Equipment
-* Dungeons
+* **Equipment:** You can now power-up your Pokemon with equipment! Use `/equipment <pokemonid>` to learn more!
+  * Equipment provides boosts in stats to your Pokemon, allowing you to customize and fine-tune your Pokemon's battle abilities.
+  * All Pokemon start out with Level 1 base equipment and can be upgraded in level.
+  * Equipment also has stat quality and random modifiers which can be rerolled!
+  * Equipment upgrades require Pokedollars and shards (see below).
+* **Shard Materials**
+  * Shards are used to upgrade equipment! Different shards upgrade different equipment.
+  * Daily shards can be obtained from `/daily` and from the `/pokemart`.
+  * Shards can be farmed from the dungeon (see below).
+* **Dungeons:** New endgame content to farm shards! Use `/dungeons` to learn more!
+  * Dungeons are difficult, multi-stage endgame battles.
+  * Three dungeons are currently available with custom boss Pokemon.
+    * You can view these boss Pokemon at the end of the `/pokedex`.
+  * Defeat dungeons to gain shards and upgrade your equipment!
+* **More Pokemon and Abilities!**
+  * Pokemon:
+    * Shellder/Cloyster: A tank with absurdly high defense, and also scales off defense!
+    * Onix: A high-defense Endure tank that protects its allies from AoE attacks!
+    * Krabby/Kingler: A hard-hitting pure physical attacker!
+    * Voltorb/Electrode: The fastest Taunt user in the game with a devastating explosion!
+    * Hitmonchan: A solid bruiser with a powerful counter!
+    * Mr. Mime: A bulky support with tons of tricks up its sleeve! Can mimic ultimates!
+  * Abilities: Iron Fist, Filter
+* **Adjustments:**
+  * Ice beam now hits a column, but deals less damage with less chance to freeze.
+  * Nerfed taunt to 2 turn duration.
+  * Nerf stealth rock damage from 1/10th HP to 1/12th HP.
+* Added more level rewards: up to level 75!
+* Slightly improved `/list` filtering! Now is case-insensitive and will partially match. Search is still a WIP and will be worked on in the future.
+* Switched the Legendary/Mythical colors.
 * Modified effective speed calculation to account for equipment.
+* Fixed bug allowing purchase of too many Pokeballs from the shop.
+* Fixed bug with status condition damage breaking abilities.
 
 ### 0.8.2 (5/27) - Pokemon and Abilities
 

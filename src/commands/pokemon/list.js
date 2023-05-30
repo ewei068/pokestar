@@ -47,8 +47,19 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
             return { embed: null, err: "Filter value must be provided if filterBy is provided." };
         }
 
-        listOptions.filter = {
-            [filterBy]: filterValue
+        // if filtervalue is string , use regex
+        if (typeof filterValue === "string") {
+            listOptions.filter = {
+                // fuzzy search for value
+                [filterBy]: {
+                    $regex: RegExp(filterValue),
+                    $options: "i"
+                }
+            }
+        } else {
+            listOptions.filter = {
+                [filterBy]: filterValue
+            }
         }
     }
     // build sort

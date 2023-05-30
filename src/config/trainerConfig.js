@@ -11,6 +11,7 @@
 
 const { backpackCategories, backpackItems } = require('./backpackConfig');
 const { bannerTypes } = require('./gachaConfig');
+const { stageNames } = require('./stageConfig');
 
 const MAX_TRAINER_LEVEL = 100;
 const MAX_POKEMON = 500;
@@ -669,6 +670,291 @@ const levelConfig = {
             }
         }
     },
+    51: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    52: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    53: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    54: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    55: {
+        "rewards": {
+            "money": 2500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 5,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.MASTERBALL]: 1,
+                }
+            }
+        }
+    },
+    56: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    57: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    58: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    59: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    60: {
+        "rewards": {
+            "money": 2500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 5,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.MASTERBALL]: 1,
+                }
+            }
+        }
+    },
+    61: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    62: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    63: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    64: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    65: {
+        "rewards": {
+            "money": 2500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 5,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.MASTERBALL]: 1,
+                }
+            }
+        }
+    },
+    66: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    67: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    68: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    69: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    70: {
+        "rewards": {
+            "money": 2500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 5,
+                    [backpackItems.GREATBALL]: 2,
+                    [backpackItems.ULTRABALL]: 1,
+                    [backpackItems.MASTERBALL]: 1,
+                }
+            }
+        }
+    },
+    71: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    72: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    73: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    74: {
+        "rewards": {
+            "money": 500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 2,
+                    [backpackItems.GREATBALL]: 1,
+                }
+            }
+        }
+    },
+    75: {
+        "rewards": {
+            "money": 7500,
+            "backpack": {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 10,
+                    [backpackItems.GREATBALL]: 5,
+                    [backpackItems.ULTRABALL]: 3,
+                    [backpackItems.MASTERBALL]: 3,
+                }
+            }
+        }
+    },
 }
 
 // TODO: move?
@@ -682,6 +968,9 @@ const expMultiplier = (level) => {
     return 3 * (Math.pow(level, 1/2));
 }
 
+const NUM_DAILY_REWARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 3;
+const NUM_DAILY_SHARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 5;
+
 module.exports = { 
     trainerFields, 
     getTrainerLevelExp,
@@ -689,5 +978,7 @@ module.exports = {
     MAX_POKEMON,
     MAX_RELEASE,
     levelConfig,
-    expMultiplier
+    expMultiplier,
+    NUM_DAILY_REWARDS,
+    NUM_DAILY_SHARDS,
 };

@@ -4,6 +4,7 @@ const { buildPartyString, buildMoveString, buildBattlePokemonString, buildNpcDif
 const { buildPokemonStatString, getAbilityName } = require("../utils/pokemonUtils");
 const { setTwoInline } = require("../utils/utils");
 const { npcConfig, dungeonConfig  } = require("../config/npcConfig");
+const { pokemonConfig } = require("../config/pokemonConfig");
 
 const buildPartyEmbed = (trainer, pokemons, detailed=false) => {
     const party = trainer.party;
@@ -192,6 +193,11 @@ const buildDungeonListEmbed = () => {
 
 const buildDungeonEmbed = (dungeonId) => {
     const dungeonData = dungeonConfig[dungeonId];
+    let bossString = '';
+    for (bossId of dungeonData.bosses) {
+        const bossData = pokemonConfig[bossId];
+        bossString += `${bossData.emoji} #${bossId} **${bossData.name}** \`/pokedex ${bossId}\`\n`;
+    }
     const fields = Object.entries(dungeonData.difficulties).map(([difficulty, difficultyData]) => {
         const { difficultyHeader, difficultyString } = buildDungeonDifficultyString(difficulty, difficultyData);
         return {
@@ -205,6 +211,7 @@ const buildDungeonEmbed = (dungeonId) => {
     embed.setTitle(`${dungeonData.emoji} ${dungeonData.name}`);
     embed.setColor(0xffffff);
     embed.setDescription(dungeonData.description);
+    embed.addFields({ name: "Bosses", value: bossString, inline: false });
     embed.addFields(fields);
     embed.setImage(dungeonData.sprite);
     embed.setFooter({ text: "Use the buttons to select a difficulty" });

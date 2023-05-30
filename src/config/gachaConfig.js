@@ -5,8 +5,6 @@ const { drawIterable } = require("../utils/gachaUtils");
 const { stageNames } = require("./stageConfig");
 const { getFullUTCDate } = require("../utils/utils");
 
-const NUM_DAILY_REWARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 3;
-
 const dailyRewardChances = {
     [backpackItems.POKEBALL]: 0.7,
     [backpackItems.GREATBALL]: 0.25,
@@ -130,7 +128,6 @@ const MAX_PITY = 100;
 
 module.exports = {
     dailyRewardChances,
-    NUM_DAILY_REWARDS,
     pokeballConfig,
     bannerTypes,
     bannerTypeConfig,

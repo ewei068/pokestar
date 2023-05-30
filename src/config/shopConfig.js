@@ -1,6 +1,9 @@
+const { backpackItems } = require("./backpackConfig")
+
 const shopCategories = {
     GACHA: "0",
     LOCATIONS: "1",
+    MATERIALS: "2",
 }
 
 const shopItems = {
@@ -11,7 +14,9 @@ const shopItems = {
     DOJO: "4",
     TEMPLE: "5",
     SCHOOL: "6",
-    TRACK: "7",
+    KNOWLEDGE_SHARD: "7",
+    EMOTION_SHARD: "8",
+    WILLPOWER_SHARD: "9",
 }
     
 
@@ -47,6 +52,16 @@ const shopCategoryConfig = {
             shopItems.SCHOOL,
             shopItems.TRACK,
         ]        
+    },
+    [shopCategories.MATERIALS]: {
+        "name": "Materials",
+        "emoji": "<:materials:1112557472759160852>",
+        "description": "Used to upgrade equipment!",
+        "items": [
+            shopItems.KNOWLEDGE_SHARD,
+            shopItems.EMOTION_SHARD,
+            shopItems.WILLPOWER_SHARD,
+        ]
     },
 }
 
@@ -107,6 +122,33 @@ const shopItemConfig = {
         "description": "Train your Pokemon to gain SPE! Higher level = more SPE! Use the \`/help train\` command to learn more!",
         "category": shopCategories.LOCATIONS,
         "price": [1000, 5000, 25000],
+    },
+    [shopItems.KNOWLEDGE_SHARD]: {
+        "name": "Knowledge Shard",
+        "emoji": "<:knowledgeshard:1112557606637162537>",
+        "description": "Used to upgrade equipment!",
+        "category": shopCategories.MATERIALS,
+        "price": [250],
+        "limit": 10,
+        "backpackItem": backpackItems.KNOWLEDGE_SHARD,
+    },
+    [shopItems.EMOTION_SHARD]: {
+        "name": "Emotion Shard",
+        "emoji": "<:emotionshard:1112557605517275147>",
+        "description": "Used to upgrade equipment!",
+        "category": shopCategories.MATERIALS,
+        "price": [250],
+        "limit": 10,
+        "backpackItem": backpackItems.EMOTION_SHARD,
+    },
+    [shopItems.WILLPOWER_SHARD]: {
+        "name": "Willpower Shard",
+        "emoji": "<:willpowershard:1112557603617259540>",
+        "description": "Used to upgrade attack equipment!",
+        "category": shopCategories.MATERIALS,
+        "price": [250],
+        "limit": 10,
+        "backpackItem": backpackItems.WILLPOWER_SHARD,
     },
 }
 

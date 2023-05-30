@@ -1,6 +1,6 @@
 const { shopItems, shopItemConfig, shopCategories, shopCategoryConfig } = require("../config/shopConfig");
 const { getOrSetDefault } = require("../utils/utils");
-const { dailyRewardChances, NUM_DAILY_REWARDS } = require('../config/gachaConfig');
+const { dailyRewardChances } = require('../config/gachaConfig');
 const { drawDiscrete } = require('../utils/gachaUtils');
 const { backpackCategories, backpackItems, backpackItemConfig } = require('../config/backpackConfig');
 const { updateDocument } = require('../database/mongoHandler');
@@ -15,19 +15,18 @@ const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildBackButtonRow } = require("../components/backButtonRow");
-const { getRewardsString, getPokeballsString, addItems: addItems } = require("../utils/trainerUtils");
+const { getRewardsString, getPokeballsString, addItems: addItems, getBackpackItemsString, getItems } = require("../utils/trainerUtils");
 
 const canBuyItem = (trainer, itemId, quantity) => {
+    getOrSetDefault(trainer.purchasedShopItemsToday, itemId, 0);
+
     // get item data
     const item = shopItemConfig[itemId];
     if (!item) {
         return { data: null, err: "Item does not exist." };
     }
 
-    let cost = 0;
-
-    // functionality dependent on item
-    if (itemId === shopItems.RANDOM_POKEBALL) {
+    if (item.limit) {
         // check if limit has been reached
         if (trainer.purchasedShopItemsToday[itemId] >= item.limit) {
             return { data: null, err: "You have reached the daily limit for this item." };
@@ -37,7 +36,12 @@ const canBuyItem = (trainer, itemId, quantity) => {
         if (trainer.purchasedShopItemsToday[itemId] + quantity > item.limit) {
             return { data: null, err: `You can only purchase ${item.limit - trainer.purchasedShopItemsToday[itemId]} more of this item today.` };
         }
+    }
 
+    let cost = 0;
+
+    // functionality dependent on item
+    if (itemId === shopItems.RANDOM_POKEBALL) {
         // check if trainer has enough money
         cost = item.price[0] * quantity;
         if (trainer.money < cost) {
@@ -74,6 +78,12 @@ const canBuyItem = (trainer, itemId, quantity) => {
         if (trainer.money < cost) {
             return { data: null, err: "You do not have enough money." };
         }
+    } else if (item.category === shopCategories.MATERIALS) {
+        // check if trainer has enough money
+        cost = item.price[0] * quantity;
+        if (trainer.money < cost) {
+            return { data: null, err: "You do not have enough money." };
+        }
     }
 
     return {
@@ -91,11 +101,7 @@ const buyItem = async (trainer, itemId, quantity) => {
         return { data: null, err: "Item does not exist." };
     }
 
-    let cost = 0;
-    let returnString = "";
-
-    // functionality dependent on item
-    if (itemId === shopItems.RANDOM_POKEBALL) {
+    if (item.limit) {
         // check if limit has been reached
         if (trainer.purchasedShopItemsToday[itemId] >= item.limit) {
             return { data: null, err: "You have reached the daily limit for this item." };
@@ -105,7 +111,13 @@ const buyItem = async (trainer, itemId, quantity) => {
         if (trainer.purchasedShopItemsToday[itemId] + quantity > item.limit) {
             return { data: null, err: `You can only purchase ${item.limit - trainer.purchasedShopItemsToday[itemId]} more of this item today.` };
         }
+    }
 
+    let cost = 0;
+    let returnString = "";
+
+    // functionality dependent on item
+    if (itemId === shopItems.RANDOM_POKEBALL) {
         // check if trainer has enough money
         cost = item.price[0] * quantity;
         if (trainer.money < cost) {
@@ -177,6 +189,22 @@ const buyItem = async (trainer, itemId, quantity) => {
         trainer.locations[locationId] = level + 1;
 
         returnString = `You purchased a level ${level + 1} ${locationData.name} for ₽${cost}. View your locations with \`/locations\`.`;
+    } else if (item.category === shopCategories.MATERIALS) {
+        // check if trainer has enough money
+        cost = item.price[0] * quantity;
+        if (trainer.money < cost) {
+            return { data: null, err: "You do not have enough money." };
+        }
+
+        // purchase item
+        trainer.money -= cost;
+        trainer.purchasedShopItemsToday[itemId] = getOrSetDefault(trainer.purchasedShopItemsToday, itemId, 0) + quantity;
+
+        // add item
+        addItems(trainer, item.backpackItem, quantity);
+
+        returnString = `You purchased ${quantity} ${item.name}s for ₽${cost}.\n`;
+        returnString += `**You now own: ${getItems(trainer, item.backpackItem)} ${item.name}s.**`;
     }
 
     // update trainer
