@@ -16,7 +16,7 @@ const giveEquips = async () => {
     let count = 0;
     for (let i = 0; i < numPokemon; i++) {
         const pokemon = pokemons[i];
-        pokemon.equipments = generateRandomEquipments(pokemon);
+        pokemon.equipments = generateRandomEquipments();
         const speciesData = pokemonConfig[pokemon.speciesId];
         const newPokemon = calculatePokemonStats(pokemon, speciesData);
         const updateRes = await updateDocument(collectionNames.USER_POKEMON, { _id: pokemon._id }, { $set: newPokemon });

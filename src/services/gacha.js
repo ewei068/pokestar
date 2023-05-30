@@ -94,7 +94,6 @@ const generateRandomEquipments = (equipmentLevel=1) => {
 
         equipments[equipmentType] = equipment;
     }
-    // console.log(JSON.stringify(equipments));
 
     return equipments;
 }
