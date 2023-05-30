@@ -358,8 +358,8 @@ const npcConfig = {
 
 const dungeons = {
     MIND_TEMPLE: "mindTemple",
-    //SPIRIT_ALTAR: "spiritAltar",
-    //SOUL_CAVE: "soulCave",
+    SOUL_CAVE: "soulCave",
+    SPIRIT_ALTAR: "spiritAltar",
 }
 
 const dungeonConfig = {
@@ -376,13 +376,49 @@ const dungeonConfig = {
                         cols: 4,
                         pokemons: [
                             {
-                                speciesId: "25",
-                                level: 10,
-                                position: 2
+                                speciesId: "76",
+                                level: 55,
+                                position: 1
                             },
                             {
-                                speciesId: "25",
-                                level: 10,
+                                speciesId: "76",
+                                level: 55,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "95",
+                                level: 60,
+                                position: 9,
+                            },
+                            {
+                                speciesId: "95",
+                                level: 60,
+                                position: 12,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "107",
+                                level: 55,
+                                position: 1
+                            },
+                            {
+                                speciesId: "107",
+                                level: 55,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "122",
+                                level: 60,
+                                position: 10,
+                            },
+                            {
+                                speciesId: "122",
+                                level: 60,
                                 position: 11,
                             },
                         ]
@@ -392,17 +428,37 @@ const dungeonConfig = {
                         cols: 5,
                         pokemons: [
                             {
-                                speciesId: "25",
-                                level: 10,
-                                position: 3
+                                speciesId: "76",
+                                level: 60,
+                                position: 1,
                             },
                             {
-                                speciesId: "25",
-                                level: 10,
+                                speciesId: "122",
+                                level: 65,
+                                position: 2
+                            },
+                            {
+                                speciesId: "95",
+                                level: 65,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "107",
+                                level: 60,
+                                position: 5,
+                            },
+                            {
+                                speciesId: "20091",
+                                level: 70,
+                                position: 12,
+                            },
+                            {
+                                speciesId: "20144",
+                                level: 70,
                                 position: 14,
                             },
                         ]
-                    }
+                    },
                 ],
                 rewards: {
                     backpack: {
@@ -412,7 +468,815 @@ const dungeonConfig = {
                     }
                 }
             },
+            [difficulties.HARD]: {
+                phases: [
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "76",
+                                level: 85,
+                                position: 1
+                            },
+                            {
+                                speciesId: "76",
+                                level: 85,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "95",
+                                level: 90,
+                                position: 9,
+                            },
+                            {
+                                speciesId: "95",
+                                level: 90,
+                                position: 12,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "107",
+                                level: 85,
+                                position: 1
+                            },
+                            {
+                                speciesId: "107",
+                                level: 85,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "122",
+                                level: 90,
+                                position: 10,
+                            },
+                            {
+                                speciesId: "122",
+                                level: 90,
+                                position: 11,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "76",
+                                level: 90,
+                                position: 1,
+                            },
+                            {
+                                speciesId: "122",
+                                level: 95,
+                                position: 2
+                            },
+                            {
+                                speciesId: "95",
+                                level: 95,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "107",
+                                level: 90,
+                                position: 5,
+                            },
+                            {
+                                speciesId: "20091",
+                                level: 100,
+                                position: 12,
+                            },
+                            {
+                                speciesId: "20144",
+                                level: 100,
+                                position: 14,
+                            },
+                        ]
+                    },
+                ],
+                rewards: {
+                    backpack: {
+                        [backpackCategories.MATERIALS]: {
+                            [backpackItems.KNOWLEDGE_SHARD]: 6,
+                        },
+                    }
+                }
+            },
+            [difficulties.VERY_HARD]: {
+                phases: [
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "76",
+                                level: 115,
+                                position: 1
+                            },
+                            {
+                                speciesId: "76",
+                                level: 115,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "95",
+                                level: 120,
+                                position: 9,
+                            },
+                            {
+                                speciesId: "95",
+                                level: 120,
+                                position: 12,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "107",
+                                level: 115,
+                                position: 1
+                            },
+                            {
+                                speciesId: "107",
+                                level: 115,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "122",
+                                level: 120,
+                                position: 10,
+                            },
+                            {
+                                speciesId: "122",
+                                level: 120,
+                                position: 11,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "76",
+                                level: 115,
+                                position: 1,
+                            },
+                            {
+                                speciesId: "122",
+                                level: 120,
+                                position: 2
+                            },
+                            {
+                                speciesId: "95",
+                                level: 120,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "107",
+                                level: 115,
+                                position: 5,
+                            },
+                            {
+                                speciesId: "20091",
+                                level: 130,
+                                position: 12,
+                            },
+                            {
+                                speciesId: "20144",
+                                level: 130,
+                                position: 14,
+                            },
+                        ]
+                    },
+                ],
+                rewards: {
+                    backpack: {
+                        [backpackCategories.MATERIALS]: {
+                            [backpackItems.KNOWLEDGE_SHARD]: 10,
+                        },
+                    }
+                }
+            },
         }
+    },
+    [dungeons.SOUL_CAVE]: {
+        name: "Soul Cave",
+        sprite: "https://archives.bulbagarden.net/media/upload/0/06/Echo_Cave_RTDX.png",
+        emoji: "⛰",
+        description: `An ancient cavern containing the primordial energy that birthed the souls of all Pokemon. Defeat its dwellers to earn ${backpackItemConfig[backpackItems.EMOTION_SHARD].emoji} ${backpackItemConfig[backpackItems.EMOTION_SHARD].name}s.`,
+        difficulties: {
+            [difficulties.MEDIUM]: {
+                phases: [
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "131",
+                                level: 55,
+                                position: 2
+                            },
+                            {
+                                speciesId: "131",
+                                level: 55,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "51",
+                                level: 60,
+                                position: 9,
+                            },
+                            {
+                                speciesId: "51",
+                                level: 60,
+                                position: 12,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "40",
+                                level: 55,
+                                position: 2
+                            },
+                            {
+                                speciesId: "40",
+                                level: 55,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "135",
+                                level: 60,
+                                position: 10,
+                            },
+                            {
+                                speciesId: "135",
+                                level: 60,
+                                position: 11,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "142",
+                                level: 60,
+                                position: 1,
+                            },
+                            {
+                                speciesId: "143",
+                                level: 65,
+                                position: 2
+                            },
+                            {
+                                speciesId: "143",
+                                level: 65,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "142",
+                                level: 60,
+                                position: 5,
+                            },
+                            {
+                                speciesId: "20113",
+                                level: 70,
+                                position: 8,
+                            },
+                            {
+                                speciesId: "20101",
+                                level: 70,
+                                position: 13,
+                            },
+                        ]
+                    },
+                ],
+                rewards: {
+                    backpack: {
+                        [backpackCategories.MATERIALS]: {
+                            [backpackItems.EMOTION_SHARD]: 3,
+                        },
+                    }
+                }
+            },
+            [difficulties.HARD]: {
+                phases: [
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "131",
+                                level: 85,
+                                position: 2
+                            },
+                            {
+                                speciesId: "131",
+                                level: 85,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "51",
+                                level: 90,
+                                position: 9,
+                            },
+                            {
+                                speciesId: "51",
+                                level: 90,
+                                position: 12,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "40",
+                                level: 85,
+                                position: 2
+                            },
+                            {
+                                speciesId: "40",
+                                level: 85,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "135",
+                                level: 90,
+                                position: 10,
+                            },
+                            {
+                                speciesId: "135",
+                                level: 90,
+                                position: 11,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "142",
+                                level: 90,
+                                position: 1,
+                            },
+                            {
+                                speciesId: "143",
+                                level: 95,
+                                position: 2
+                            },
+                            {
+                                speciesId: "143",
+                                level: 95,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "142",
+                                level: 90,
+                                position: 5,
+                            },
+                            {
+                                speciesId: "20113",
+                                level: 100,
+                                position: 8,
+                            },
+                            {
+                                speciesId: "20101",
+                                level: 100,
+                                position: 13,
+                            },
+                        ]
+                    },
+                ],
+                rewards: {
+                    backpack: {
+                        [backpackCategories.MATERIALS]: {
+                            [backpackItems.EMOTION_SHARD]: 6,
+                        },
+                    }
+                }
+            },
+            [difficulties.VERY_HARD]: {
+                phases: [
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "131",
+                                level: 110,
+                                position: 2
+                            },
+                            {
+                                speciesId: "131",
+                                level: 110,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "51",
+                                level: 110,
+                                position: 9,
+                            },
+                            {
+                                speciesId: "51",
+                                level: 110,
+                                position: 12,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "40",
+                                level: 115,
+                                position: 2
+                            },
+                            {
+                                speciesId: "40",
+                                level: 115,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "135",
+                                level: 115,
+                                position: 10,
+                            },
+                            {
+                                speciesId: "135",
+                                level: 115,
+                                position: 11,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "142",
+                                level: 115,
+                                position: 1,
+                            },
+                            {
+                                speciesId: "143",
+                                level: 120,
+                                position: 2
+                            },
+                            {
+                                speciesId: "143",
+                                level: 120,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "142",
+                                level: 115,
+                                position: 5,
+                            },
+                            {
+                                speciesId: "20113",
+                                level: 130,
+                                position: 8,
+                            },
+                            {
+                                speciesId: "20101",
+                                level: 130,
+                                position: 13,
+                            },
+                        ]
+                    },
+                ],
+                rewards: {
+                    backpack: {
+                        [backpackCategories.MATERIALS]: {
+                            [backpackItems.EMOTION_SHARD]: 10,
+                        },
+                    }
+                }
+            },
+        }
+    },
+    [dungeons.SPIRIT_ALTAR]: {
+        name: "Spirit Altar",
+        sprite: "https://static.wikia.nocookie.net/victoryroad/images/a/ab/Altar_of_the_Moone_TCG.png/revision/latest?cb=20190329010127",
+        emoji: "⛩️",
+        description: `An ancient shrine dedicated to the sacred spirits of Pokemonn. Defeat its worshippers to earn ${backpackItemConfig[backpackItems.WILLPOWER_SHARD].emoji} ${backpackItemConfig[backpackItems.WILLPOWER_SHARD].name}s.`,
+        difficulties: {
+            [difficulties.MEDIUM]: {
+                phases: [
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "99",
+                                level: 55,
+                                position: 2
+                            },
+                            {
+                                speciesId: "99",
+                                level: 55,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "136",
+                                level: 60,
+                                position: 10,
+                            },
+                            {
+                                speciesId: "136",
+                                level: 60,
+                                position: 11,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "94",
+                                level: 55,
+                                position: 2
+                            },
+                            {
+                                speciesId: "94",
+                                level: 55,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "65",
+                                level: 60,
+                                position: 9,
+                            },
+                            {
+                                speciesId: "65",
+                                level: 60,
+                                position: 12,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "99",
+                                level: 60,
+                                position: 2,
+                            },
+                            {
+                                speciesId: "94",
+                                level: 60,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "65",
+                                level: 65,
+                                position: 6,
+                            },
+                            {
+                                speciesId: "136",
+                                level: 65,
+                                position: 10,
+                            },
+                            {
+                                speciesId: "20149",
+                                level: 70,
+                                position: 12,
+                            },
+                            {
+                                speciesId: "20150",
+                                level: 70,
+                                position: 14,
+                            },
+                        ]
+                    },
+                ],
+                rewards: {
+                    backpack: {
+                        [backpackCategories.MATERIALS]: {
+                            [backpackItems.WILLPOWER_SHARD]: 3,
+                        },
+                    }
+                }
+            },
+            [difficulties.HARD]: {
+                phases: [
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "99",
+                                level: 85,
+                                position: 2
+                            },
+                            {
+                                speciesId: "99",
+                                level: 85,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "136",
+                                level: 90,
+                                position: 10,
+                            },
+                            {
+                                speciesId: "136",
+                                level: 90,
+                                position: 11,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "94",
+                                level: 85,
+                                position: 2
+                            },
+                            {
+                                speciesId: "94",
+                                level: 85,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "65",
+                                level: 90,
+                                position: 9,
+                            },
+                            {
+                                speciesId: "65",
+                                level: 90,
+                                position: 12,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "99",
+                                level: 70,
+                                position: 2,
+                            },
+                            {
+                                speciesId: "94",
+                                level: 70,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "65",
+                                level: 95,
+                                position: 6,
+                            },
+                            {
+                                speciesId: "136",
+                                level: 95,
+                                position: 10,
+                            },
+                            {
+                                speciesId: "20149",
+                                level: 100,
+                                position: 12,
+                            },
+                            {
+                                speciesId: "20150",
+                                level: 100,
+                                position: 14,
+                            },
+                        ]
+                    },
+                ],
+                rewards: {
+                    backpack: {
+                        [backpackCategories.MATERIALS]: {
+                            [backpackItems.WILLPOWER_SHARD]: 6,
+                        },
+                    }
+                }
+            },
+            [difficulties.VERY_HARD]: {
+                phases: [
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "99",
+                                level: 115,
+                                position: 2
+                            },
+                            {
+                                speciesId: "99",
+                                level: 115,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "136",
+                                level: 120,
+                                position: 10,
+                            },
+                            {
+                                speciesId: "136",
+                                level: 120,
+                                position: 11,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 4,
+                        pokemons: [
+                            {
+                                speciesId: "94",
+                                level: 115,
+                                position: 2
+                            },
+                            {
+                                speciesId: "94",
+                                level: 115,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "65",
+                                level: 120,
+                                position: 9,
+                            },
+                            {
+                                speciesId: "65",
+                                level: 120,
+                                position: 12,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "99",
+                                level: 115,
+                                position: 2,
+                            },
+                            {
+                                speciesId: "94",
+                                level: 115,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "65",
+                                level: 120,
+                                position: 6,
+                            },
+                            {
+                                speciesId: "136",
+                                level: 120,
+                                position: 10,
+                            },
+                            {
+                                speciesId: "20149",
+                                level: 130,
+                                position: 12,
+                            },
+                            {
+                                speciesId: "20150",
+                                level: 130,
+                                position: 14,
+                            },
+                        ]
+                    },
+                ],
+                rewards: {
+                    backpack: {
+                        [backpackCategories.MATERIALS]: {
+                            [backpackItems.WILLPOWER_SHARD]: 10,
+                        },
+                    }
+                }
+            },
+        },
     },
 }
 

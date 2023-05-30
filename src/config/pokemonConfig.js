@@ -1918,6 +1918,108 @@ const pokemonConfig = {
         "rarity": rarities.LEGENDARY,
         "growthRate": growthRates.SLOW
     },
+    "20091": {
+        "name": "Temple Guardian Cloyster",
+        "emoji": "<:91:1100288966881718342>",
+        "description": "Faithful guardian of the ancient Mind Temple. It's said to be untouchable through centuries of perfecting its mind.",
+        "type": [types.WATER, types.ICE],
+        "baseStats": [160, 105, 180, 90, 75, 90],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/91.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/91.png",
+        "abilities": {
+            "20001": 1
+        },
+        "moveIds": ["m420", "m191", "m334", "m534"],
+        "battleEligible": true,
+        "rarity": rarities.MYTHICAL,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "unobtainable": true,
+    },
+    "20101": {
+        "name": "Cave Dweller Electrode",
+        "emoji": "<:101:1100290179073331240>",
+        "description": "The provider and powerhouse of the Soul Cave's primordial energy. It's said to harness the energy from every emotion ever experienced.",
+        "type": [types.ELECTRIC],
+        "baseStats": [115, 90, 75, 115, 80, 225],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/101.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/101.png",
+        "abilities": {
+            "20003": 1
+        },
+        "moveIds": ["m84", "m269", "m435", "m528"],
+        "battleEligible": true,
+        "rarity": rarities.MYTHICAL,
+        "growthRate": growthRates.MEDIUMFAST,
+        "unobtainable": true,
+    },
+    "20113": {
+        "name": "Cave Dweller Chansey",
+        "emoji": "<:113:1100290444249804800>",
+        "description": "The first inhabitant of the Soul Cave. A millenia of harnessing soul energy has made it an unbreakable guardian.",
+        "type": [types.NORMAL],
+        "baseStats": [350, 40, 45, 80, 100, 85],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/113.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/113.png",
+        "abilities": {
+            "20002": 1
+        },
+        "moveIds": ["m574", "m113", "m505", "m585"],
+        "battleEligible": true,
+        "rarity": rarities.MYTHICAL,
+        "growthRate": growthRates.MEDIUMFAST,
+        "unobtainable": true,
+    },
+    "20144" : {
+        "name": "Temple Guardian Articuno",
+        "emoji": "<:144:1100294779419504680>",
+        "description": "Stalwart guardian of the Mind Temple. It's been bestowed wisdom from the ancient gods.",
+        "type": [types.ICE, types.FLYING],
+        "baseStats": [170, 85, 90, 100, 160, 95],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/144.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/144.png",
+        "abilities": {
+            "20001": 1
+        },
+        "moveIds": ["m420", "m58", "m215", "m542"],
+        "battleEligible": true,
+        "rarity": rarities.MYTHICAL,
+        "growthRate": growthRates.SLOW,
+        "unobtainable": true,
+    },
+    "20149": {
+        "name": "Spirit Priest Dragonite",
+        "emoji": "<:149:1100294787996860508>",
+        "description": "The protector and most devout follower of the Spirit Altar. Its unstoppable will has been hardened through communion with the ancient gods.",
+        "type": [types.DRAGON, types.FLYING],
+        "baseStats": [120, 165, 80, 100, 90, 145],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/149.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/149.png",
+        "abilities": {
+            "20004": 1
+        },
+        "moveIds": ["m239", "m245", "m349", "m200"],
+        "battleEligible": true,
+        "rarity": rarities.MYTHICAL,
+        "growthRate": growthRates.SLOW,
+        "unobtainable": true,
+    },
+    "20150": {
+        "name": "Spirit Priest Mewtwo",
+        "emoji": "<:150:1100294789867520052>",
+        "description": "The sole founder of the Spirit Altar. It was created by the gods after centuries of meditation and prayer.",
+        "type": [types.PSYCHIC],
+        "baseStats": [125, 85, 85, 170, 85, 150],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/150.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/150.png",
+        "abilities": {
+            "20004": 1
+        },
+        "moveIds": ["m246", "m53", "m58", "m540"],
+        "battleEligible": true,
+        "rarity": rarities.MYTHICAL,
+        "growthRate": growthRates.SLOW,
+        "unobtainable": true,
+    },
 }
 
 const rarityBins = {
@@ -1929,7 +2031,10 @@ const rarityBins = {
 
 for (const id in pokemonConfig) {
     const speciesData = pokemonConfig[id];
-    if (speciesData.noGacha) {
+    if (speciesData.noGacha || speciesData.unobtainable) {
+        continue;
+    }
+    if (speciesData.rarity === rarities.MYTHICAL) {
         continue;
     }
 
@@ -1955,12 +2060,12 @@ const rarityConfig = {
     },
     [rarities.LEGENDARY]: {
         pokemon: [],
-        color: 0xff0000,
+        color: 0xffff00,
         money: 200,
     },
     [rarities.MYTHICAL]: {
         pokemon: [],
-        color: 0xffff00,
+        color: 0xff0000,
         money: 1000,
     },
 }

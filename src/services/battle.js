@@ -1275,6 +1275,17 @@ class Pokemon {
     }
 
     causeFaint(source) {
+        // trigger before cause faint effects
+        const beforeCauseFaintArgs = {
+            target: this,
+            source: source,
+            canFaint: true,
+        };
+        this.battle.eventHandler.emit(battleEventNames.BEFORE_CAUSE_FAINT, beforeCauseFaintArgs);
+        if (!beforeCauseFaintArgs.canFaint) {
+            return;
+        }
+
         this.faint(source);
     }
 
@@ -1317,7 +1328,7 @@ class Pokemon {
         return healTaken;
     }
     
-    boostCombatReadiness(source, amount) {
+    boostCombatReadiness(source, amount, triggerEvents=true) {
         // if faint, do nothing
         if (this.isFainted) {
             return 0;
@@ -1333,14 +1344,16 @@ class Pokemon {
             source: source,
             amount: amount,
         };
-        this.battle.eventHandler.emit(battleEventNames.BEFORE_CR_GAINED, beforeBoostArgs);
+        if (triggerEvents) {
+            this.battle.eventHandler.emit(battleEventNames.BEFORE_CR_GAINED, beforeBoostArgs);
+        }
 
         const oldCombatReadiness = this.combatReadiness;
         this.combatReadiness = Math.min(100, this.combatReadiness + beforeBoostArgs.amount);
         const combatReadinessGained = this.combatReadiness - oldCombatReadiness;
         this.battle.addToLog(`${this.name} gained ${Math.round(combatReadinessGained)} combat readiness!`);
         
-        if (combatReadinessGained > 0) {
+        if (combatReadinessGained > 0 && triggerEvents) {
             const eventArgs = {
                 target: this,
                 source: source,
@@ -1406,16 +1419,18 @@ class Pokemon {
         };
         this.effectIds[effectId].args = effectData.effectAdd(this.battle, source, this, args);
 
-        // trigger after add effect events
-        const afterAddArgs = {
-            target: this,
-            source: source,
-            effectId: effectId,
-            duration: duration,
-            initialArgs: args,
-            args: this.effectIds[effectId].args,
-        };
-        this.battle.eventHandler.emit(battleEventNames.AFTER_EFFECT_ADD, afterAddArgs);
+        if (this.effectIds[effectId] !== undefined) {
+            // trigger after add effect events
+            const afterAddArgs = {
+                target: this,
+                source: source,
+                effectId: effectId,
+                duration: duration,
+                initialArgs: args,
+                args: this.effectIds[effectId].args,
+            };
+            this.battle.eventHandler.emit(battleEventNames.AFTER_EFFECT_ADD, afterAddArgs);
+        }
     }
 
     dispellEffect(effectId) {
@@ -1483,6 +1498,7 @@ class Pokemon {
 
                 this.status = {
                     statusId: statusId,
+                    source: source,
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was burned!`);
@@ -1496,6 +1512,7 @@ class Pokemon {
 
                 this.status = {
                     statusId: statusId,
+                    source: source,
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was frozen!`);
@@ -1512,6 +1529,7 @@ class Pokemon {
 
                 this.status = {
                     statusId: statusId,
+                    source: source,
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was paralyzed!`);
@@ -1525,6 +1543,7 @@ class Pokemon {
 
                 this.status = {
                     statusId: statusId,
+                    source: source,
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was poisoned!`);
@@ -1533,6 +1552,7 @@ class Pokemon {
             case statusConditions.SLEEP:
                 this.status = {
                     statusId: statusId,
+                    source: source,
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} fell asleep!`);
@@ -1546,6 +1566,7 @@ class Pokemon {
 
                 this.status = {
                     statusId: statusId,
+                    source: source,
                     turns: 0,
                 }
                 this.battle.addToLog(`${this.name} was badly poisoned!`);
@@ -1575,7 +1596,7 @@ class Pokemon {
             case statusConditions.POISON:
                 const damage = Math.round(this.maxHp / 10);
                 this.battle.addToLog(`${this.name} is hurt by poison!`);
-                this.takeDamage(damage, null, {
+                this.takeDamage(damage, this.status.source, {
                     type: "statusCondition",
                     statusId: statusConditions.POISON,
                 });
@@ -1583,7 +1604,7 @@ class Pokemon {
             case statusConditions.BURN:
                 const burnDamage = Math.round(this.maxHp / 16);
                 this.battle.addToLog(`${this.name} is hurt by its burn!`);
-                this.takeDamage(burnDamage, null, {
+                this.takeDamage(burnDamage, this.status.source, {
                     type: "statusCondition",
                     statusId: statusConditions.BURN,
                 });
@@ -1591,7 +1612,7 @@ class Pokemon {
             case statusConditions.BADLY_POISON:
                 const badlyPoisonDamage = Math.round(this.maxHp / 10) * Math.pow(2, this.status.turns);
                 this.battle.addToLog(`${this.name} is hurt by poison!`);
-                this.takeDamage(badlyPoisonDamage, null, {
+                this.takeDamage(badlyPoisonDamage, this.status.source, {
                     type: "statusCondition",
                     statusId: statusConditions.BADLY_POISON,
                 });

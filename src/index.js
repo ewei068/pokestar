@@ -132,7 +132,7 @@ client.once(Events.ClientReady, c => {
                 }
                 await axios.post(botlistUrl, botlistData, { headers: botlistHeaders });
             } catch (error) {
-                logger.error(error);
+                logger.warn("Error posting botlist.me stats");
             }
         }, 1000 * 60 * 60);
 
@@ -150,7 +150,7 @@ client.once(Events.ClientReady, c => {
                 }
                 await axios.post(topggUrl, topggData, { headers: topggHeaders });
             } catch (error) {
-                logger.error(error);
+                logger.warn("Error posting top.gg stats");
             }
         }, 1000 * 60 * 60);
 
@@ -168,7 +168,7 @@ client.once(Events.ClientReady, c => {
                 }
                 await axios.post(discordlistUrl, discordlistData, { headers: discordlistHeaders });
             } catch (error) {
-                logger.error(error);
+                logger.warn("Error posting discordlist.gg stats");
             }
         }, 1000 * 60 * 60);
     }

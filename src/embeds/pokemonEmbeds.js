@@ -381,7 +381,7 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
         embed.addFields(
             { name: "Type", value: typeString, inline: true },
             { name: "Abilities", value: abilityString, inline: true },
-            { name: "Battle Eligibile", value: speciesData.battleEligible ? "True" : "False", inline: true },
+            { name: "Obtainable", value: speciesData.unobtainable ? "False" : "True", inline: true },
             { name: "Rarity", value: speciesData.rarity, inline: true },
             { name: "Evolvable", value: speciesData.evolution ? "True" : "False", inline: true },
             { name: "Growth Rate", value: growthRateConfig[speciesData.growthRate].name, inline: true },

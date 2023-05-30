@@ -77,12 +77,12 @@ const drawDaily = async (trainer) => {
     return { data: rv, err: null };
 }
 
-const generateRandomEquipments = () => {
+const generateRandomEquipments = (equipmentLevel=1) => {
     const equipments = {};
     for (equipmentType in equipmentConfig) {
         const equipmentData = equipmentConfig[equipmentType];
         const equipment = {
-            "level": 1,
+            "level": equipmentLevel,
             "slots": {},
         }
         for (const slot in equipmentData.slots) {
@@ -100,7 +100,7 @@ const generateRandomEquipments = () => {
     return equipments;
 }
 
-const generateRandomPokemon = (userId, pokemonId, level=1) => {
+const generateRandomPokemon = (userId, pokemonId, level=5, equipmentLevel=1) => {
     const speciesData = pokemonConfig[pokemonId];
 
     const ivs = drawUniform(0, 31, 6);
@@ -136,7 +136,7 @@ const generateRandomPokemon = (userId, pokemonId, level=1) => {
         "ivTotal": ivs.reduce((a, b) => a + b, 0),
         "originalOwner": userId,
         "rarity": speciesData.rarity,
-        "equipments": generateRandomEquipments(),
+        "equipments": generateRandomEquipments(equipmentLevel),
     }
 
     // calculate stats
@@ -149,10 +149,10 @@ const generateRandomPokemon = (userId, pokemonId, level=1) => {
 }
 
 
-const giveNewPokemons = async (trainer, pokemonIds) => {
+const giveNewPokemons = async (trainer, pokemonIds, level=5, equipmentLevel=1) => {
     const pokemons = [];
     for (const pokemonId of pokemonIds) {
-        const pokemon = generateRandomPokemon(trainer.userId, pokemonId, level=5);
+        const pokemon = generateRandomPokemon(trainer.userId, pokemonId, level, equipmentLevel);
         pokemons.push(pokemon);
     }
 

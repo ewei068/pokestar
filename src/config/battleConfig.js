@@ -16,6 +16,7 @@ const battleEventNames = {
     AFTER_EFFECT_ADD: "afterEffectAdd",
     BEFORE_STATUS_APPLY: "beforeStatusApply",
     AFTER_STATUS_APPLY: "afterStatusApply",
+    BEFORE_CAUSE_FAINT: "beforeCauseFaint",
     BEFORE_FAINT: "beforeFaint",
     AFTER_FAINT: "afterFaint",
     CALCULATE_MISS: "calculateMiss",
@@ -469,7 +470,7 @@ const effectConfig = {
             target.spd += Math.floor(target.bspd * 0.75);
         },
         "effectRemove": function(battle, target) {
-            battle.addToLog(`${target.name}'s Special Defense drop faded!`);
+            battle.addToLog(`${target.name}'s Special Defense boost faded!`);
             target.spd -= Math.floor(target.bspd * 0.75);
         },
     },
@@ -1180,7 +1181,7 @@ const effectConfig = {
 
                     // calculate damage
                     battle.addToLog(`${targetPokemon.name} was hurt by Stealth Rock!`);
-                    const damage = Math.floor(targetPokemon.maxHp * mult / 10);
+                    const damage = Math.floor(targetPokemon.maxHp * mult / 12);
                     initialArgs.source.dealDamage(damage, affectedPokemon, {
                         "type": "stealthRock",
                     });
@@ -1221,7 +1222,7 @@ const effectConfig = {
 
                     // calculate damage
                     battle.addToLog(`${targetPokemon.name} was hurt by Spikes!`);
-                    const damage = Math.floor(targetPokemon.maxHp / 10);
+                    const damage = Math.floor(targetPokemon.maxHp / 12);
                     initialArgs.source.dealDamage(damage, affectedPokemon, {
                         "type": "spikes",
                     });
@@ -1241,7 +1242,7 @@ const effectConfig = {
 
                     // calculate damage
                     battle.addToLog(`${sourcePokemon.name} was hurt by Spikes!`);
-                    const damage = Math.floor(sourcePokemon.maxHp / 10);
+                    const damage = Math.floor(sourcePokemon.maxHp / 12);
                     initialArgs.source.dealDamage(damage, affectedPokemon, {
                         "type": "spikes",
                     });
@@ -4636,7 +4637,7 @@ const moveExecutes = {
         
         // also deal 1/3rd damage to surrounding allies
         const allyParty = battle.parties[source.teamName];
-        const allyTargets = source.getPatternTargets(allyParty, targetPatterns.ALL, source.position);
+        const allyTargets = source.getPatternTargets(allyParty, targetPatterns.SQUARE, source.position);
         for (const target of allyTargets) {
             if (target !== source) {
                 const damageToDeal = Math.floor(calculateDamage(moveData, source, target, false, {
@@ -7655,6 +7656,312 @@ const abilityConfig = {
             }
             const abilityData = ability.data;
             battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
+    },
+    "20001": {
+        "name": "Mind Presence",
+        "description": "Whenever an enemy ends a turn, increase the user's combat readiness by 10% attacking stats by 2% without triggering effects. The user cannot be damaged by more than 35% of its max HP at a time. The user is immune to instant-faint effects.",
+        "abilityAdd": function (battle, source, target) {
+            const turnListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const pokemon = initialArgs.pokemon;
+                    const activePokemon = pokemon.battle.activePokemon;
+                    if (activePokemon.teamName === pokemon.teamName) {
+                        return;
+                    }
+
+                    pokemon.battle.addToLog(`${pokemon.name}'s Mind Presence increases its combat readiness and attacking stats!`);
+                    pokemon.boostCombatReadiness(pokemon, 10, false);
+                    pokemon.atk += Math.round(pokemon.atk * 0.02);
+                    pokemon.spa += Math.round(pokemon.spa * 0.02);
+                }
+            }
+            const damageListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    const damage = args.damage;
+                    const maxHp = targetPokemon.maxHp;
+                    if (damage > maxHp * 0.35) {
+                        args.damage = Math.floor(maxHp * 0.35);
+                        args.maxDamage = Math.min(args.maxDamage, args.damage);
+                        targetPokemon.battle.addToLog(`${targetPokemon.name}'s Mind Presence reduces damage taken!`);
+                    }
+                }
+            }
+            const faintListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    args.canFaint = false;
+                    targetPokemon.battle.addToLog(`${targetPokemon.name}'s Mind Presence prevents it from fainting!`);
+                }
+            }
+
+            const turnListenerId = battle.eventHandler.registerListener(battleEventNames.TURN_END, turnListener);
+            const damageListenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, damageListener);
+            const faintListenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_CAUSE_FAINT, faintListener);
+            return {
+                "turnListenerId": turnListenerId,
+                "damageListenerId": damageListenerId,
+                "faintListenerId": faintListenerId,
+            };
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "20001" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.turnListenerId);
+            battle.eventHandler.unregisterListener(abilityData.damageListenerId);
+            battle.eventHandler.unregisterListener(abilityData.faintListenerId);
+        }
+    },
+    "20002": {
+        "name": "Soul Body",
+        "description": "Whenever the user survives damage, increase its combat readiness by 15% without triggering effects, and heal all allies by 5% of its max HP. The user cannot be damaged by more than 35% of its max HP at a time. The user is immune to instant-faint effects.",
+        "abilityAdd": function (battle, source, target) {
+            const afterDamageListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    if (targetPokemon.isFainted || targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    targetPokemon.battle.addToLog(`${targetPokemon.name}'s Soul Body increases its combat readiness and heals its allies!`);
+                    targetPokemon.boostCombatReadiness(targetPokemon, 15, false);
+                    const allyParty = targetPokemon.battle.parties[targetPokemon.teamName];
+                    const allyPokemons = targetPokemon.getPatternTargets(allyParty, targetPatterns.ALL_EXCEPT_SELF, targetPokemon.position);
+                    for (const allyPokemon of allyPokemons) {
+                        targetPokemon.giveHeal(Math.round(targetPokemon.maxHp * 0.05), allyPokemon, {
+                            "type": "soulBody"
+                        });
+                    }
+                }
+            }
+            const damageListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    const damage = args.damage;
+                    const maxHp = targetPokemon.maxHp;
+                    if (damage > maxHp * 0.35) {
+                        args.damage = Math.floor(maxHp * 0.35);
+                        args.maxDamage = Math.min(args.maxDamage, args.damage);
+                        targetPokemon.battle.addToLog(`${targetPokemon.name}'s Soul Body reduces damage taken!`);
+                    }
+                }
+            }
+            const faintListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    args.canFaint = false;
+                    targetPokemon.battle.addToLog(`${targetPokemon.name}'s Soul Body prevents it from fainting!`);
+                }
+            }
+
+            const afterDamageListenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_DAMAGE_TAKEN, afterDamageListener);
+            const damageListenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, damageListener);
+            const faintListenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_CAUSE_FAINT, faintListener);
+            return {
+                "afterDamageListenerId": afterDamageListenerId,
+                "damageListenerId": damageListenerId,
+                "faintListenerId": faintListenerId,
+            };
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "20002" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.afterDamageListenerId);
+            battle.eventHandler.unregisterListener(abilityData.damageListenerId);
+            battle.eventHandler.unregisterListener(abilityData.faintListenerId);
+        }
+    },
+    "20003": {
+        "name": "Soul Energy",
+        "description": "Whenever the user's turn ends, increase the combat readiness of all allies by 15% without triggering effects. The user cannot be damaged by more than 55% of its max HP at a time. The user is immune to instant-faint effects.",
+        "abilityAdd": function (battle, source, target) {
+            const turnListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const pokemon = initialArgs.pokemon;
+                    const activePokemon = pokemon.battle.activePokemon;
+                    if (activePokemon !== pokemon) {
+                        return;
+                    }
+
+                    pokemon.battle.addToLog(`${pokemon.name}'s Soul Energy increases its allies' combat readiness!`);
+                    const allyParty = pokemon.battle.parties[pokemon.teamName];
+                    const allyPokemons = pokemon.getPatternTargets(allyParty, targetPatterns.ALL, pokemon.position);
+                    for (const allyPokemon of allyPokemons) {
+                        allyPokemon.boostCombatReadiness(pokemon, 15, false);
+                    }
+                }
+            }
+            const damageListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    const damage = args.damage;
+                    const maxHp = targetPokemon.maxHp;
+                    if (damage > maxHp * 0.55) {
+                        args.damage = Math.floor(maxHp * 0.55);
+                        args.maxDamage = Math.min(args.maxDamage, args.damage);
+                        targetPokemon.battle.addToLog(`${targetPokemon.name}'s Soul Energy reduces damage taken!`);
+                    }
+                }
+            }
+            const faintListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    args.canFaint = false;
+                    targetPokemon.battle.addToLog(`${targetPokemon.name}'s Soul Energy prevents it from fainting!`);
+                }
+            }
+
+            const turnListenerId = battle.eventHandler.registerListener(battleEventNames.TURN_END, turnListener);
+            const damageListenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, damageListener);
+            const faintListenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_CAUSE_FAINT, faintListener);
+            return {
+                "turnListenerId": turnListenerId,
+                "damageListenerId": damageListenerId,
+                "faintListenerId": faintListenerId,
+            };
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "20003" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.turnListenerId);
+            battle.eventHandler.unregisterListener(abilityData.damageListenerId);
+            battle.eventHandler.unregisterListener(abilityData.faintListenerId);
+        }
+    },
+    "20004": {
+        "name": "Spirit Power",
+        "description": "Whenever a Pokemon faints, permanently incease the user's attacking stats and speed by 20% without triggering effects. The user cannot be damaged by more than 55% of its max HP at a time. The user is immune to instant-faint effects.",
+        "abilityAdd": function (battle, source, target) {
+            const afterFaintListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const pokemon = initialArgs.pokemon;
+                    const targetPokemon = args.target;
+                    if (targetPokemon === pokemon) {
+                        return;
+                    }
+
+                    pokemon.battle.addToLog(`${pokemon.name}'s Spirit Power increases its attacking stats and speed!`);
+                    pokemon.atk += Math.floor(pokemon.atk * 0.2);
+                    pokemon.spa += Math.floor(pokemon.spa * 0.2);
+                    pokemon.spe += Math.floor(pokemon.spe * 0.2);
+                }
+            }
+            const damageListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    const damage = args.damage;
+                    const maxHp = targetPokemon.maxHp;
+                    if (damage > maxHp * 0.55) {
+                        args.damage = Math.floor(maxHp * 0.55);
+                        args.maxDamage = Math.min(args.maxDamage, args.damage);
+                        targetPokemon.battle.addToLog(`${targetPokemon.name}'s Spirit Power reduces damage taken!`);
+                    }
+                }
+            }
+            const faintListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    args.canFaint = false;
+                    targetPokemon.battle.addToLog(`${targetPokemon.name}'s Spirit Power prevents it from fainting!`);
+                }
+            }
+
+            const afterFaintListenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_FAINT, afterFaintListener);
+            const damageListenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, damageListener);
+            const faintListenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_CAUSE_FAINT, faintListener);
+            return {
+                "afterFaintListenerId": afterFaintListenerId,
+                "damageListenerId": damageListenerId,
+                "faintListenerId": faintListenerId,
+            };
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "20004" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.afterFaintListenerId);
+            battle.eventHandler.unregisterListener(abilityData.damageListenerId);
+            battle.eventHandler.unregisterListener(abilityData.faintListenerId);
         }
     },
 };

@@ -539,6 +539,18 @@ const commandConfig = {
                 "optional": false,
                 "variable": false
             },
+            "level": {
+                "type": "int",
+                "description": "level to give Pokemon at",
+                "optional": true,
+                "variable": false
+            },
+            "equipmentlevel": {
+                "type": "int",
+                "description": "equipment level to give Pokemon at",
+                "optional": true,
+                "variable": false
+            }
         },
         "stages": [stageNames.ALPHA],
         "exp": 0,
