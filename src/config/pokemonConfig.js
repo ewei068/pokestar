@@ -1218,6 +1218,46 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "90": {
+        "name": "Shellder",
+        "emoji": "<:90:1100288411937546250>",
+        "description": "Its hard shell repels any kind of attack. It is vulnerable only when its shell is open.",
+        "type": [types.WATER],
+        "baseStats": [30, 65, 100, 45, 25, 40],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/90.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/90.png",
+        "evolution": [{
+            "level": 38,
+            "id": "91",
+        }],
+        "abilities": {
+            "75": 0.45,
+            "91": 0.45,
+            "142": 0.1,
+        },
+        "moveIds": ["m43", "m420", "m191", "m334"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "91": {
+        "name": "Cloyster",
+        "emoji": "<:91:1100288966881718342>",
+        "description": "When attacked, it launches its horns in quick volleys. Its innards have never been seen.",
+        "type": [types.WATER, types.ICE],
+        "baseStats": [50, 95, 180, 85, 45, 70],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/91.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/91.png",
+        "abilities": {
+            "75": 0.45,
+            "91": 0.45,
+            "142": 0.1,
+        },
+        "moveIds": ["m420", "m191", "m334", "m534"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
     "92": {
         "name": "Gastly",
         "emoji": "<:92:1100288967909322783>",
@@ -1274,6 +1314,104 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "95": {
+        "name": "Onix",
+        "emoji": "<:95:1100288972938285177>",
+        "description": "As it grows, the stone portions of its body harden to become similar to a diamond, but colored black.",
+        "type": [types.ROCK, types.GROUND],
+        "baseStats": [35, 45, 160, 70, 30, 45],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/95.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/95.png",
+        "abilities": {
+            "69": 0.45,
+            "5": 0.45,
+            "133": 0.1
+        },
+        "moveIds": ["m175", "m203", "m469", "m157"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "98": {
+        "name": "Krabby",
+        "emoji": "<:98:1100288977631711252>",
+        "description": "Its pincers are not only powerful weapons, they are used for balance when walking sideways.",
+        "type": [types.WATER],
+        "baseStats": [30, 105, 90, 25, 25, 50],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/98.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/98.png",
+        "evolution": [{
+            "level": 28,
+            "id": "99",
+        }],
+        "abilities": {
+            "52": 0.45,
+            "75": 0.45,
+            "125": 0.1
+        },
+        "moveIds": ["m175", "m14", "m70", "m127"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "99": {
+        "name": "Kingler",
+        "emoji": "<:99:1100288979040993314>",
+        "description": "The large pincer has 10000 hp of crushing power. However, its huge size makes it unwieldy to use.",
+        "type": [types.WATER],
+        "baseStats": [55, 130, 115, 75, 50, 75],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/99.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/99.png",
+        "abilities": {
+            "52": 0.45,
+            "75": 0.45,
+            "125": 0.1
+        },
+        "moveIds": ["m175", "m14", "m282", "m152"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "100": {
+        "name": "Voltorb",
+        "emoji": "<:100:1100288981884751922>",
+        "description": "Usually found in power plants. Easily mistaken for a POKé BALL, they have zapped many people.",
+        "type": [types.ELECTRIC],
+        "baseStats": [40, 30, 50, 55, 55, 100],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/100.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/100.png",
+        "evolution": [{
+            "level": 30,
+            "id": "101",
+        }],
+        "abilities": {
+            "43": 0.45,
+            "9": 0.45,
+            "106": 0.1
+        },
+        "moveIds": ["m84", "m269", "m435", "m153"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "101": {
+        "name": "Electrode",
+        "emoji": "<:101:1100290179073331240>",
+        "description": "It stores electric energy under very high pressure. It often explodes with little or no provocation.",
+        "type": [types.ELECTRIC],
+        "baseStats": [60, 50, 70, 80, 80, 150],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/101.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/101.png",
+        "abilities": {
+            "43": 0.45,
+            "9": 0.45,
+            "106": 0.1
+        },
+        "moveIds": ["m84", "m269", "m435", "m153"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "102": {
         "name": "Exeggcute",
         "emoji": "<:102:1100290181124337685>",
@@ -1311,6 +1449,24 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
+    },
+    "107": {
+        "name": "Hitmonchan",
+        "emoji": "<:107:1100290188539854898>",
+        "description": "While apparently doing nothing, it fires punches in lightning fast volleys that are impossible to see.",
+        "type": [types.FIGHTING],
+        "baseStats": [50, 105, 79, 35, 110, 76],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/107.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/107.png",
+        "abilities": {
+            "51": 0.45,
+            "89": 0.45,
+            "39": 0.1
+        },
+        "moveIds": ["m418", "m68", "m409", "m157"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
     },
     "111": {
         "name": "Rhyhorn",
@@ -1405,6 +1561,24 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
+    },
+    "122": {
+        "name": "Mr. Mime",
+        "emoji": "<:122:1100290827466575914>",
+        "description": "If interrupted while it is miming, it will slap around the offender with its broad hands.",
+        "type": [types.PSYCHIC, types.FAIRY],
+        "baseStats": [40, 45, 65, 100, 120, 90],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/122.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/122.png",
+        "abilities": {
+            "43": 0.45,
+            "111": 0.45,
+            "101": 0.1
+        },
+        "moveIds": ["m102", "m113", "m115", "m433"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
     },
     "124": {
         "name": "Jynx",
