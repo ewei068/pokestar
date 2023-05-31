@@ -14,9 +14,10 @@ const shopItems = {
     DOJO: "4",
     TEMPLE: "5",
     SCHOOL: "6",
-    KNOWLEDGE_SHARD: "7",
-    EMOTION_SHARD: "8",
-    WILLPOWER_SHARD: "9",
+    TRACK: "7",
+    KNOWLEDGE_SHARD: "8",
+    EMOTION_SHARD: "9",
+    WILLPOWER_SHARD: "10",
 }
     
 

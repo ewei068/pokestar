@@ -1,6 +1,6 @@
 # Pokéstar Changelog
 
-### 0.9.0 - Dungeons and Equipment
+### 0.9.0 (5/30) - Dungeons and Equipment
 
 * **Equipment:** You can now power-up your Pokemon with equipment! Use `/equipment <pokemonid>` to learn more!
   * Equipment provides boosts in stats to your Pokemon, allowing you to customize and fine-tune your Pokemon's battle abilities.
