@@ -499,7 +499,14 @@ const commandConfig = {
         "aliases": ["tutorial"],
         "description": "Get a tutorial on how to play",
         "execute": "tutorial.js",
-        "args": {},
+        "args": {
+            "page": {
+                "type": "int",
+                "description": "tutorial page number to view",
+                "optional": true,
+                "variable": false
+            }
+        },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },
     "events": {

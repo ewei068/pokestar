@@ -6,7 +6,7 @@ const { buildIdConfigSelectRow } = require('../components/idConfigSelectRow');
 const { buildBackButtonRow } = require('../components/backButtonRow');
 const { getState } = require('../services/state');
 const { eventNames } = require('../config/eventConfig');
-const { gameEventConfig } = require('../config/helpConfig');
+const { gameEventConfig, tutorialConfig } = require('../config/helpConfig');
 const { buildScrollActionRow } = require('../components/scrollActionRow');
 
 const prefix = stageConfig[process.env.STAGE].prefix;
@@ -90,6 +90,20 @@ const buildEventEmbed = (eventData) => {
 
     if (eventData.image) {
         embed.setImage(eventData.image);
+    }
+
+    return embed;
+}
+
+const buildTutorialEmbed = (tutorialData, pageNumber) => {
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${tutorialData.name}`)
+    embed.setColor("#FFFFFF")
+    embed.setDescription(tutorialData.description)
+    embed.setFooter({ text: `Page ${pageNumber} | To return to this page, use /tutorial ${pageNumber}` });
+
+    if (tutorialData.image) {
+        embed.setImage(tutorialData.image);
     }
 
     return embed;
@@ -198,10 +212,42 @@ const buildEventsSend = async ({ page=1 } = {}) => {
     return { send: send, err: null };
 }
 
+const buildTutorialSend = async ({ page=1 } = {}) => {
+    const tutorialPages = tutorialConfig;
+    const index = page - 1;
+    if (index < 0 || index >= tutorialPages.length) {
+        return { send: null, err: "Invalid tutorial page." };
+    }
+
+    const send = {
+        embeds: [],
+        components: []
+    }
+
+    const tutorialData = tutorialPages[index];
+    const embed = buildTutorialEmbed(tutorialData, page);
+    send.embeds.push(embed);
+
+    // build scroll row
+    const scrollData = {
+    }
+    const scrollActionRow = buildScrollActionRow(
+        // page = index of id + 1
+        index + 1,
+        index >= tutorialPages.length - 1 ? true : false,
+        scrollData,
+        eventNames.TUTORIAL_BUTTON
+    )
+    send.components.push(scrollActionRow);
+
+    return { send: send, err: null };
+}
+
 module.exports = {
     buildHelpEmbed,
     buildHelpCategoryEmbed,
     buildHelpCommandEmbed,
     buildHelpSend,
-    buildEventsSend
+    buildEventsSend,
+    buildTutorialSend
 }

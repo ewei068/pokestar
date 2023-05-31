@@ -1955,7 +1955,7 @@ const pokemonConfig = {
     "20113": {
         "name": "Cave Dweller Chansey",
         "emoji": "<:113:1100290444249804800>",
-        "description": "The first inhabitant of the Soul Cave. A millenia of harnessing soul energy has made it an unbreakable guardian.",
+        "description": "The life force of the Soul Cave. A millenia of harnessing soul energy has made it an unbreakable guardian.",
         "type": [types.NORMAL],
         "baseStats": [350, 40, 45, 80, 100, 85],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/113.png",
