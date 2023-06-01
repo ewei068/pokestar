@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const { moveConfig } = require("../config/battleConfig");
-const { buildPartyString, buildMoveString, buildBattlePokemonString, buildNpcDifficultyString, buildDungeonDifficultyString } = require("../utils/battleUtils");
+const { buildPartyString, buildMoveString, buildBattlePokemonString, buildNpcDifficultyString, buildDungeonDifficultyString, buildCompactPartyString } = require("../utils/battleUtils");
 const { buildPokemonStatString, getAbilityName } = require("../utils/pokemonUtils");
 const { setTwoInline } = require("../utils/utils");
 const { npcConfig, dungeonConfig  } = require("../config/npcConfig");
@@ -41,6 +41,39 @@ const buildPartyEmbed = (trainer, pokemons, detailed=false) => {
 
     const footerString = 'Modify your party with /partyadd and /partyremove';
     embed.setFooter({ text: footerString });
+
+    return embed;
+}
+
+const buildPartiesEmbed = (trainer, pokemonMap) => {
+    // active party field
+    const activeParty = trainer.party;
+    const { partyHeader: activePartyHeader, partyString: activePartyString } = buildCompactPartyString(activeParty, "active", pokemonMap, true);
+    const activePartyField = {
+        name: activePartyHeader,
+        value: activePartyString,
+        inline: true,
+    };
+    const fields = [activePartyField];
+
+    // saved parties fields
+    const savedParties = trainer.savedParties;
+    for (const [partyId, party] of Object.entries(savedParties)) {
+        const { partyHeader, partyString } = buildCompactPartyString(party, partyId, pokemonMap);
+        const field = {
+            name: partyHeader,
+            value: partyString,
+            inline: true,
+        };
+        fields.push(field);
+    }
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${trainer.user.username}'s Parties`);
+    embed.setColor(0xffffff);
+    embed.setThumbnail(`https://cdn.discordapp.com/avatars/${trainer.userId}/${trainer.user.avatar}.webp`);
+    embed.addFields(fields);
+    embed.setFooter({ text: "Use /partyload <id> to load a party" });
 
     return embed;
 }
@@ -222,6 +255,7 @@ const buildDungeonEmbed = (dungeonId) => {
 
 module.exports = {
     buildPartyEmbed,
+    buildPartiesEmbed,
     buildBattleEmbed,
     buildBattleMovesetEmbed,
     buildBattleTeamEmbed,

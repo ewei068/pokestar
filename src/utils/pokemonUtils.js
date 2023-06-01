@@ -208,6 +208,15 @@ const buildBoostString = (oldPokemon, newPokemon) => {
     return boostString;
 }
 
+const getPartyPokemonIds = (trainer) => {
+    // get unique pokemon ids in all parties
+    const allIds = trainer.party.pokemonIds;
+    const savedPartyIds = Object.values(trainer.savedParties).map(party => party.pokemonIds).flat();
+    const uniqueIds = [...new Set([...allIds, ...savedPartyIds])];
+
+    return uniqueIds;
+}
+
 module.exports = {
     getPokemonExpNeeded,
     calculateWorth,
@@ -220,5 +229,6 @@ module.exports = {
     getAbilityOrder,
     getPokemonOrder,
     buildEquipmentString,
-    buildBoostString
+    buildBoostString,
+    getPartyPokemonIds
 };

@@ -26,7 +26,7 @@ const buildSlashCommand = (commandConfig) => {
             if (argConfig.enum) {
                 for (const enumOption of argConfig.enum) {
                     option.addChoices({
-                        name: enumOption,
+                        name: enumOption.toString(),
                         value: enumOption
                     });
                 }

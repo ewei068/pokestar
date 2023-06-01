@@ -27,7 +27,7 @@ const commandCategoryConfig = {
         "name": "Battle",
         "description": "Battle commands",
         "folder": "battle",
-        "commands": ["pvp", "pve", "dungeons", "partyinfo", "partyadd", "partyremove"]
+        "commands": ["pvp", "pve", "dungeons", "partyinfo", "partyadd", "partyremove", "parties", "partyload"]
     },
     "social": {
         "name": "Social",
@@ -489,6 +489,36 @@ const commandConfig = {
                 "optional": false,
                 "variable": false,
             },
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10
+    },
+    "parties": {
+        "name": "Parties",
+        "aliases": ["parties"],
+        "description": "Browse a list of your parties",
+        "longDescription": "Browse a list of your parties. Parties are saved presets of Pokemon that can be loaded into your party.",
+        "execute": "parties.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10
+    },
+    "partyload": {
+        "name": "Party Load",
+        "aliases": ["partyload", "pl"],
+        "description": "Load a party from a preset",
+        "longDescription": "Load a party from a preset. This swaps the current active party with the party preset.",
+        "execute": "partyLoad.js",
+        "args": {
+            "preset": {
+                "type": "int",
+                "description": "preset number (1-9) to load",
+                "optional": false,
+                "variable": false,
+                "enum": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+            }
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,

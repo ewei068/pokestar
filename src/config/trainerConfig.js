@@ -81,6 +81,92 @@ const trainerFields = {
             "cols": 4,
         },
     },
+    "savedParties": {
+        "type": "object",
+        "default": {
+            "1": {
+                "pokemonIds": [
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                ],
+                "rows": 3,
+                "cols": 4,
+            },
+            "2": {
+                "pokemonIds": [
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                ],
+                "rows": 3,
+                "cols": 4,
+            },
+            "3": {
+                "pokemonIds": [
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                ],
+                "rows": 3,
+                "cols": 4,
+            },
+            "4": {
+                "pokemonIds": [
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                ],
+                "rows": 3,
+                "cols": 4,
+            },
+            "5": {
+                "pokemonIds": [
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                ],
+                "rows": 3,
+                "cols": 4,
+            },
+            "6": {
+                "pokemonIds": [
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                ],
+                "rows": 3,
+                "cols": 4,
+            },
+            "7": {
+                "pokemonIds": [
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                ],
+                "rows": 3,
+                "cols": 4,
+            },
+            "8": {
+                "pokemonIds": [
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                ],
+                "rows": 3,
+                "cols": 4,
+            },
+            "9": {
+                "pokemonIds": [
+                    null, null, null, null,
+                    null, null, null, null,
+                    null, null, null, null,
+                ],
+                "rows": 3,
+                "cols": 4,
+            },
+        },    
+    },
     "beginnerRolls": {
         "type": "number",
         "default": 0,

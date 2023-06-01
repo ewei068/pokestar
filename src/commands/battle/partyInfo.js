@@ -2,7 +2,6 @@ const { getTrainer } = require('../../services/trainer');
 const { getPartyPokemons } = require('../../services/party');
 const { buildPartyEmbed } = require('../../embeds/battleEmbeds');
 const { buildPokemonSelectRow } = require('../../components/pokemonSelectRow');
-const { setState } = require('../../services/state');
 const { eventNames } = require('../../config/eventConfig');
 
 const partyInfo = async (user) => {

@@ -97,6 +97,33 @@ const buildPartyString = (pokemons, rows, cols, reverse=false, hp=false, emphPos
     return partyString;
 }
 
+const buildCompactPartyString = (party, id, pokemonMap, active=false) => {
+    const partyHeader = active ? "Active Party" : `Party ${id} \`/partyload ${id}\``;
+
+    const pokemons = party.pokemonIds.map(pokemonId => pokemonMap[pokemonId] || null);
+    const rows = party.rows;
+    const cols = party.cols;
+    const power = pokemons.reduce((acc, pokemon) => acc + (pokemon ? pokemon.combatPower : 0), 0);
+    
+    let partyString = `Power: ${power}\n`;
+    let partyIndex = 0;
+    for (let i = 0; i < rows; i++) {
+        let rowString = '';
+        for (let j = 0; j < cols; j++) {
+            const pokemon = pokemons[partyIndex];
+            const emoji = pokemon ? pokemonConfig[pokemon.speciesId].emoji : '⬛';
+            rowString += `${emoji}`;
+            partyIndex++;
+        }
+        partyString += rowString + '\n';
+    }
+    
+    return {
+        partyHeader,
+        partyString,
+    }
+}
+
 const buildMoveString = (moveData, cooldown=0) => {
     let moveHeader = '';
     if (cooldown) {
@@ -221,6 +248,7 @@ const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
 
 module.exports = {
     buildPartyString,
+    buildCompactPartyString,
     buildMoveString,
     buildBattlePokemonString,
     buildNpcDifficultyString,

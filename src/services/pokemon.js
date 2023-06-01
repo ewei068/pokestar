@@ -4,7 +4,7 @@ const { collectionNames } = require("../config/databaseConfig");
 const { getOrSetDefault, idFrom } = require("../utils/utils");
 const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS } = require("../config/pokemonConfig");
 const { expMultiplier, MAX_RELEASE } = require("../config/trainerConfig");
-const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth, getAbilityOrder, getPokemonOrder } = require("../utils/pokemonUtils");
+const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth, getAbilityOrder, getPokemonOrder, getPartyPokemonIds } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
 const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed, buildEquipmentEmbed, buildEquipmentUpgradeEmbed } = require("../embeds/pokemonEmbeds");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
@@ -703,9 +703,10 @@ const buildReleaseSend = async (user, pokemonIds) => {
     }
 
     // see if any pokemon are in a team
+    const partyUniqueIds = getPartyPokemonIds(trainer.data);
     for (const pokemon of toRelease.data) {
-        if (trainer.data.party.pokemonIds.includes(pokemon._id.toString())) {
-            return { err: `You can't release ${pokemon.name} because it's in your party!` };
+        if (partyUniqueIds.includes(pokemon._id.toString())) {
+            return { err: `You can't release ${pokemon.name} (${pokemon._id}) because it's in one of your parties!` };
         }
     }
 
