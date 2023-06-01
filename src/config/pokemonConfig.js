@@ -617,6 +617,69 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "32": {
+        "name": "Nidoran ♂",
+        "emoji": "<:32:1100282808032833536>",
+        "description": "It scans its surroundings by raising its ears out of the grass. Its toxic horn is for protection.",
+        "type": [types.POISON],
+        "baseStats": [46, 57, 40, 40, 40, 50],
+        // not sure why this is broken but im too lazy to fix this sprite
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/33.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/32.png",
+        "evolution": [{
+            "level": 16,
+            "id": "33",
+        }],
+        "abilities": {
+            "38": 0.45,
+            "79": 0.45,
+            "55": 0.1
+        },
+        "moveIds": ["m40", "m43", "m398", "m414"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "33": {
+        "name": "Nidorino",
+        "emoji": "<:33:1100282809089785948>",
+        "description": "An aggressive POKéMON that is quick to attack. The horn on its head secretes a powerful venom.",
+        "type": [types.POISON],
+        "baseStats": [61, 72, 57, 55, 55, 65],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/33.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/33.png",
+        "evolution": [{
+            "level": 36,
+            "id": "34",
+        }],
+        "abilities": {
+            "38": 0.45,
+            "79": 0.45,
+            "55": 0.1
+        },
+        "moveIds": ["m40", "m30", "m398", "m414"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "34": {
+        "name": "Nidoking",
+        "emoji": "<:34:1100282810960449576>",
+        "description": "It is recognized by its rock-hard hide and its extended horn. Be careful with the horn as it contains venom.",
+        "type": [types.POISON, types.GROUND],
+        "baseStats": [81, 102, 77, 85, 75, 85],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/34.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/34.png",
+        "abilities": {
+            "38": 0.45,
+            "79": 0.45,
+            "125": 0.1
+        },
+        "moveIds": ["m40", "m224", "m414", "m482"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
     "35": {
         "name": "Clefairy",
         "emoji": "<:35:1100282812810137600>",
@@ -830,6 +893,46 @@ const pokemonConfig = {
         "moveIds": ["m71", "m73", "m79", "m572"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "48": {
+        "name": "Venonat",
+        "emoji": "<:48:1100283660852273213>",
+        "description": "Its big eyes are actually clusters of tiny eyes. At night, its kind is drawn by light.",
+        "type": [types.BUG, types.POISON],
+        "baseStats": [60, 55, 50, 45, 40, 55],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/48.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/48.png",
+        "evolution": [{
+            "level": 21,
+            "id": "49",
+        }],
+        "abilities": {
+            "14": 0.45,
+            "110": 0.45,
+            "50": 0.1
+        },
+        "moveIds": ["m77", "m50", "m188", "m450"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "49": {
+        "name": "Venomoth",
+        "emoji": "<:49:1100283661900861541>",
+        "description": "The dust-like scales covering its wings are color coded to indicate the kinds of poison it has.",
+        "type": [types.BUG, types.POISON],
+        "baseStats": [70, 65, 60, 90, 75, 90],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/49.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/49.png",
+        "abilities": {
+            "19": 0.45,
+            "110": 0.45,
+            "147": 0.1
+        },
+        "moveIds": ["m77", "m50", "m188", "m405"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST
     },
     "50": {
@@ -1174,6 +1277,24 @@ const pokemonConfig = {
             "148": 0.1
         },
         "moveIds": ["m84", "m85", "m430", "m521"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "83": {
+        "name": "Farfetch'd",
+        "emoji": "<:83:1100288378076942449>",
+        "description": "The sprig of green onions it holds is its weapon. It is used much like a metal sword.",
+        "type": [types.NORMAL, types.FLYING],
+        "baseStats": [52, 90, 55, 58, 62, 60],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/83.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/83.png",
+        "abilities": {
+            "51": 0.45,
+            "39": 0.45,
+            "128": 0.1
+        },
+        "moveIds": ["m64", "m14", "m348", "m413"],
         "battleEligible": true,
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST
@@ -1751,6 +1872,42 @@ const pokemonConfig = {
             "62": 0.2
         },
         "moveIds": ["m98", "m216", "m276", "m394"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "138": {
+        "name": "Omanyte",
+        "emoji": "<:138:1100291607103819806>",
+        "description": "Although long extinct, in rare cases, it can be genetically resurrected from fossils.",
+        "type": [types.ROCK, types.WATER],
+        "baseStats": [35, 40, 100, 90, 55, 35],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/138.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/138.png",
+        "abilities": {
+            "33": 0.45,
+            "75": 0.45,
+            "133": 0.1
+        },
+        "moveIds": ["m110", "m57", "m182", "m317"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "139": {
+        "name": "Omastar",
+        "emoji": "<:139:1100291608139796490>",
+        "description": "A prehistoric POKéMON that died out when its heavy shell made it impossible to catch prey.",
+        "type": [types.ROCK, types.WATER],
+        "baseStats": [70, 60, 125, 115, 70, 55],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/139.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/139.png",
+        "abilities": {
+            "33": 0.45,
+            "75": 0.45,
+            "133": 0.1
+        },
+        "moveIds": ["m110", "m182", "m317", "m56"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW

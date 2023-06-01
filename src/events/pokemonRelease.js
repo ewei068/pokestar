@@ -1,5 +1,5 @@
 const { getTrainer, addExpAndMoneyTrainer } = require("../services/trainer");
-const { releasePokemons, listPokemons } = require("../services/pokemon");
+const { releasePokemons, listPokemons, canRelease } = require("../services/pokemon");
 const { getState, deleteState } = require("../services/state");
 const { idFrom } = require("../utils/utils");
 const { calculateWorth } = require("../utils/pokemonUtils");
@@ -32,29 +32,13 @@ const pokemonRelease = async (interaction, data) => {
         return { err: trainer.err };
     }
 
-    // make sure they have all pokemon still
-    const toRelease = await listPokemons(
-        trainer.data, 
-        { page: 1, filter: { _id: { $in: state.pokemonIds.map(idFrom)} } }
-    );
-    if (toRelease.err) {
-        return { err: toRelease.err };
-    } else if (toRelease.data.length !== state.pokemonIds.length) {
-        await interaction.update({ 
-            content: "One or more of the pokemon you selected to release are no longer in your box.",
-            components: []
-        });
+    // make sure can release
+    const checkRelease = await canRelease(trainer.data, state.pokemonIds);
+    if (checkRelease.err) {
         deleteState(data.stateId);
-        return { err: "One or more of the pokemon you selected to release are no longer in your box." };
+        return { err: checkRelease.err };
     }
-
-    // see if any pokemon are in a team
-    for (const pokemon of toRelease.data) {
-        if (trainer.data.party.pokemonIds.includes(pokemon._id.toString())) {
-            deleteState(data.stateId);
-            return { err: `You can't release ${pokemon.name} because it's in your party!` };
-        }
-    }
+    const toRelease = checkRelease.toRelease;
 
     const releaseResult = await releasePokemons(trainer.data, state.pokemonIds);
     if (releaseResult.err) {

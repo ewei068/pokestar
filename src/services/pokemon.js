@@ -679,6 +679,29 @@ const buildPokedexSend = async ({ id="1", tab="info" } = {}) => {
     return { send: send, err: null };
 }
 
+const canRelease = async (trainer, pokemonIds) => {
+    // get pokemon to release
+    const toRelease = await listPokemons(
+        trainer, 
+        { page: 1, filter: { _id: { $in: pokemonIds.map(idFrom)} } }
+    );
+    if (toRelease.err) {
+        return { err: toRelease.err };
+    } else if (toRelease.data.length !== pokemonIds.length) {
+        return { err: `You don't have all the Pokemon you want to release!` };
+    }
+
+    // see if any pokemon are in a team
+    const partyUniqueIds = getPartyPokemonIds(trainer);
+    for (const pokemon of toRelease.data) {
+        if (partyUniqueIds.includes(pokemon._id.toString())) {
+            return { err: `You can't release ${pokemon.name} (${pokemon._id}) because it's in one of your parties!` };
+        }
+    }
+
+    return { toRelease: toRelease, err: null };
+}
+
 const buildReleaseSend = async (user, pokemonIds) => {
     // check if pokemonIds has too many ids
     if (pokemonIds.length > MAX_RELEASE || pokemonIds.length < 1) {
@@ -691,24 +714,11 @@ const buildReleaseSend = async (user, pokemonIds) => {
         return { err: trainer.err };
     }
 
-    // get pokemon to release
-    const toRelease = await listPokemons(
-        trainer.data, 
-        { page: 1, filter: { _id: { $in: pokemonIds.map(idFrom)} } }
-    );
-    if (toRelease.err) {
-        return { err: toRelease.err };
-    } else if (toRelease.data.length !== pokemonIds.length) {
-        return { err: `You don't have all the Pokemon you want to release!` };
+    const checkRelease = await canRelease(trainer.data, pokemonIds);
+    if (checkRelease.err) {
+        return { err: checkRelease.err };
     }
-
-    // see if any pokemon are in a team
-    const partyUniqueIds = getPartyPokemonIds(trainer.data);
-    for (const pokemon of toRelease.data) {
-        if (partyUniqueIds.includes(pokemon._id.toString())) {
-            return { err: `You can't release ${pokemon.name} (${pokemon._id}) because it's in one of your parties!` };
-        }
-    }
+    const toRelease = checkRelease.toRelease;
 
     // calculate total worth of pokemon
     const totalWorth = calculateWorth(toRelease.data, null);
@@ -900,6 +910,7 @@ module.exports = {
     calculatePokemonStats,
     calculateAndUpdatePokemonStats,
     releasePokemons,
+    canRelease,
     addPokemonExpAndEVs,
     trainPokemon,
     setBattleEligible,
