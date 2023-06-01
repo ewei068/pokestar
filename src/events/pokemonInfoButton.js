@@ -7,7 +7,7 @@ const pokemonInfoButton = async (interaction, data) => {
     const { send, err } = await buildPokemonInfoSend({
         user: interaction.user,
         pokemonId: data.id,
-        tab: data.tab
+        tab: tab
     })
     if (err) {
         return { err: err };

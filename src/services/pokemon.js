@@ -2,7 +2,7 @@ const { logger } = require("../log");
 const { updateDocument, deleteDocuments, QueryBuilder } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { getOrSetDefault, idFrom } = require("../utils/utils");
-const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS } = require("../config/pokemonConfig");
+const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS, rarities } = require("../config/pokemonConfig");
 const { expMultiplier, MAX_RELEASE } = require("../config/trainerConfig");
 const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth, getAbilityOrder, getPokemonOrder, getPartyPokemonIds } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
@@ -452,6 +452,26 @@ const upgradeEquipmentLevel = async (trainer, pokemon, equipmentType) => {
     }
 }
 
+const toggleLock = async (pokemon) => {
+    pokemon.locked = !pokemon.locked;
+    try {
+        const res = await updateDocument(
+            collectionNames.USER_POKEMON,
+            { _id: idFrom(pokemon._id) },
+            { $set: { locked: pokemon.locked } }
+        );
+        if (res.modifiedCount === 0) {
+            logger.warn(`Failed to update Pokemon ${pokemon._id}.`)
+            return { data: null, err: "Error locking Pokemon." };
+        }
+    } catch (error) {
+        logger.error(error);
+        return { data: null, err: "Error locking Pokemon." };
+    }
+
+    return { err: null };
+}
+
 const rerollStatSlot = async (trainer, pokemon, equipmentType, slotId) => {
     const equipment = pokemon.equipments[equipmentType];
     if (!equipment) {
@@ -566,7 +586,15 @@ const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info" } = 
     if (pokemon.err) {
         return { embed: null, err: pokemon.err };
     }
-    const pokemonNoEquip = calculatePokemonStatsNoEquip(pokemon.data, pokemonConfig[pokemon.data.speciesId])
+    const pokemonNoEquip = calculatePokemonStatsNoEquip(pokemon.data, pokemonConfig[pokemon.data.speciesId]);
+
+    if (tab === "lock") {
+        const { err } = await toggleLock(pokemon.data);
+        if (err) {
+            return { embed: null, err: err };
+        }
+        tab = "info";
+    }
 
     // build pokemon embed
     const embed = buildPokemonEmbed(trainer.data, pokemon.data, tab, pokemonNoEquip);
@@ -588,6 +616,11 @@ const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info" } = 
             label: "Equipment",
             disabled: tab === "equipment",
             data: { id: pokemonId, tab: "equipment" }
+        },
+        {
+            label: pokemon.data.locked ? "Unlock" : "Lock",
+            disabled: false,
+            data: { id: pokemonId, tab: "lock" }
         },
     ];
     const tabActionRow = buildButtonActionRow(
@@ -689,6 +722,20 @@ const canRelease = async (trainer, pokemonIds) => {
         return { err: toRelease.err };
     } else if (toRelease.data.length !== pokemonIds.length) {
         return { err: `You don't have all the Pokemon you want to release!` };
+    }
+
+    // see if any pokemon are mythical
+    for (const pokemon of toRelease.data) {
+        if (pokemon.rarity === rarities.MYTHICAL) {
+            return { err: `You can't release ${pokemon.name} (${pokemon._id}) because it's mythical!` };
+        }
+    }
+
+    // see if any pokemon are locked
+    for (const pokemon of toRelease.data) {
+        if (pokemon.locked) {
+            return { err: `You can't release ${pokemon.name} (${pokemon._id}) because it's locked!` };
+        }
     }
 
     // see if any pokemon are in a team

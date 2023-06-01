@@ -117,6 +117,7 @@ const generateRandomPokemon = (userId, pokemonId, level=5, equipmentLevel=1) => 
         }
     }
 
+    const isShiny = drawUniform(0, 1024, 1)[0] == 0;
     const pokemon = {
         "userId": userId,
         "speciesId": pokemonId,
@@ -129,12 +130,13 @@ const generateRandomPokemon = (userId, pokemonId, level=5, equipmentLevel=1) => 
         "abilityId": `${drawDiscrete(speciesData.abilities, 1)[0]}`,
         "item": "",
         "moves": [],
-        "shiny": drawUniform(0, 1024, 1)[0] == 0,
+        "shiny": isShiny,
         "dateAcquired": (new Date()).getTime(),
         "ivTotal": ivs.reduce((a, b) => a + b, 0),
         "originalOwner": userId,
         "rarity": speciesData.rarity,
         "equipments": generateRandomEquipments(equipmentLevel),
+        "locked": (speciesData.rarity == rarities.LEGENDARY || isShiny) ? true : false,
     }
 
     // calculate stats
