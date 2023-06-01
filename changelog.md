@@ -1,6 +1,23 @@
 # Pokéstar Changelog
 
-### 0.9.0 (5/30) - Dungeons and Equipment
+### 0.9.1 - QoL Patch
+
+* New Pokemon and abilities:
+  * Pokemon:
+    * Nidoran/Nidorino/Nidoking: An all-round attacker with great coverage!
+    * Venonat/Venomoth: A good beginner Pokemon with solid debuffing & status moves!
+    * Farfetch'd: A mediocre physical attacker (plz wait for Sirfetch'd).
+    * Omanyte/Omastar: A defensive Protect tank with good utility!
+  * Abilities: Poison Point and Shield Dust.
+* Revamped the `/tutorial`!
+* Party saving: You can now save party configurations to use for later!
+  * Use `/parties` to view your saved parties.
+  * Use `/partyload` to swap your active party with one of your saved parties.
+* `/partyauto`: Autofill your party with your strongest Pokemon!
+* Lock Pokemon: You can now lock your Pokemon in the `/info` panel to prevent them from being accidentally released! Legendary and shiny Pokemon are automatically locked.
+* Update README.md
+
+## 0.9.0 (5/30) - Dungeons and Equipment
 
 * **Equipment:** You can now power-up your Pokemon with equipment! Use `/equipment <pokemonid>` to learn more!
   * Equipment provides boosts in stats to your Pokemon, allowing you to customize and fine-tune your Pokemon's battle abilities.

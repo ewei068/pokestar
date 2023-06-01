@@ -27,7 +27,7 @@ const commandCategoryConfig = {
         "name": "Battle",
         "description": "Battle commands",
         "folder": "battle",
-        "commands": ["pvp", "pve", "dungeons", "partyinfo", "partyadd", "partyremove", "parties", "partyload"]
+        "commands": ["pvp", "pve", "dungeons", "partyinfo", "partyadd", "partyremove", "partyauto", "parties", "partyload"]
     },
     "social": {
         "name": "Social",
@@ -490,6 +490,17 @@ const commandConfig = {
                 "variable": false,
             },
         },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10
+    },
+    "partyauto": {
+        "name": "Party Auto",
+        "aliases": ["partyauto", "pauto"],
+        "description": "Automatically fill your party with Pokemon",
+        "longDescription": "Automatically fill your party with Pokemon. NOTE: Removes all current party Pokemon from the party.",
+        "execute": "partyAuto.js",
+        "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
         "money": 10
