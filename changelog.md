@@ -1,6 +1,6 @@
 # Pokéstar Changelog
 
-### 0.9.1 - QoL Patch
+### 0.9.1 (6/1) - QoL Patch
 
 * New Pokemon and abilities:
   * Pokemon:
@@ -15,7 +15,6 @@
   * Use `/partyload` to swap your active party with one of your saved parties.
 * `/partyauto`: Autofill your party with your strongest Pokemon!
 * Lock Pokemon: You can now lock your Pokemon in the `/info` panel to prevent them from being accidentally released! Legendary and shiny Pokemon are automatically locked.
-* Update README.md
 
 ## 0.9.0 (5/30) - Dungeons and Equipment
 

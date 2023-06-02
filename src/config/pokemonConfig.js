@@ -623,8 +623,7 @@ const pokemonConfig = {
         "description": "It scans its surroundings by raising its ears out of the grass. Its toxic horn is for protection.",
         "type": [types.POISON],
         "baseStats": [46, 57, 40, 40, 40, 50],
-        // not sure why this is broken but im too lazy to fix this sprite
-        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/33.png",
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/32.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/32.png",
         "evolution": [{
             "level": 16,
