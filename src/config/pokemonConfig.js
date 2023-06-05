@@ -1875,6 +1875,23 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "136-1": {
+        "name": "False Prophet",
+        "emoji": "<:falseprophet:1114045843369119785>",
+        "description": "The Deceptive Pokémon known as the False Prophet, its fiery appearance belies its controversial actions and mysterious intentions.",
+        "type": [types.FIRE, types.DARK],
+        "baseStats": [90, 140, 75, 80, 120, 95],
+        "sprite": "https://archives.bulbagarden.net/media/upload/1/1f/Spr_1b_136.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/false-prophet-shiny-resized.png",
+        "abilities": {
+            "20005": 1
+        },
+        "moveIds": ["m98", "m276", "m20001", "m394-1"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
+    },
     "138": {
         "name": "Omanyte",
         "emoji": "<:138:1100291607103819806>",
@@ -1910,6 +1927,23 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
+    },
+    "139-1": {
+        "name": "Lord Helix",
+        "emoji": "<:lordhelix:1114224346873991268>",
+        "description": "The Divine Fossil Pokémon revered as a symbol of balance and divine intervention, worshipped for its guidance and miracles during tumultuous times of anarchy.",
+        "type": [types.ROCK, types.PSYCHIC],
+        "baseStats": [120, 80, 140, 115, 80, 65],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/lord-helix-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/lord-helix-shiny-resized.png",
+        "abilities": {
+            "20006": 1
+        },
+        "moveIds": ["m110", "m182", "m317-1", "m56-2"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
     },
     "142": {
         "name": "Aerodactyl",
@@ -1980,6 +2014,23 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.LEGENDARY,
         "growthRate": growthRates.SLOW
+    },
+    "145-1" : {
+        "name": "AA-j",
+        "emoji": "<:aaj:1114223240047493241>",
+        "description": "Known for its unpredictability and immense power, many were sacrificed to bring this electrifying Pokemon into being.",
+        "type": [types.ELECTRIC, types.FLYING],
+        "baseStats": [90, 95, 85, 130, 90, 90],
+        "sprite": "https://archives.bulbagarden.net/media/upload/d/dd/Spr_1b_145.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/aaj-shiny-resized.png",
+        "abilities": {
+            "20007": 1
+        },
+        "moveIds": ["m84", "m65", "m435-1", "m87-1"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW,
+        "noGacha": true
     },
     "146" : {
         "name": "Moltres",

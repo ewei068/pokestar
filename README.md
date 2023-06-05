@@ -19,6 +19,12 @@
     </p>
 </div>
 
+<p align="center">
+  <a href="https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands" target="_blank">
+    <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pokestar-main.png">
+  </a>
+</p>
+
 ## Why Pokéstar?
 
 Pokéstar focuses on a few key features that sets it apart from other Pokemon Discord bots, making for a fresh, fun experience.

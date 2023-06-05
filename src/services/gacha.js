@@ -117,7 +117,8 @@ const generateRandomPokemon = (userId, pokemonId, level=5, equipmentLevel=1) => 
         }
     }
 
-    const isShiny = drawUniform(0, 1024, 1)[0] == 0;
+    const shinyChance = process.env.STAGE == stageNames.ALPHA ? 1 : 1024;
+    const isShiny = drawUniform(0, shinyChance, 1)[0] == 0;
     const pokemon = {
         "userId": userId,
         "speciesId": pokemonId,
