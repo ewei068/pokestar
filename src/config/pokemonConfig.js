@@ -522,6 +522,23 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "18-1" : {
+        "name": "aaabaaajss",
+        "emoji": "<:bjs:1114223245349109830>",
+        "description": "The mythical avian given the nickname Bird Jesus, revered for its unwavering guidance and miraculous feats against impossible odds.",
+        "type": [types.NORMAL, types.FLYING],
+        "baseStats": [85, 120, 80, 80, 75, 110],
+        "sprite": "https://archives.bulbagarden.net/media/upload/c/c0/Spr_1b_018.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/bjs-shiny-resized.png",
+        "abilities": {
+            "20008": 1
+        },
+        "moveIds": ["m98", "m355", "m369", "m143"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST,
+        "noGacha": true
+    },
     "19" : {
         "name": "Rattata",
         "emoji": "<:19:1100280992297664552>",
@@ -678,6 +695,23 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
+    },
+    "34-1": {
+        "name": "AAAAAAAAAA",
+        "emoji": "<:fonz:1114223247601455204>",
+        "description": "A majestic Pokemon whos fierce power and commanding presence earns its title as King.",
+        "type": [types.POISON, types.GROUND],
+        "baseStats": [95, 120, 80, 90, 75, 90],
+        "sprite": "https://archives.bulbagarden.net/media/upload/b/b8/Spr_1b_034.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/fonz-shiny-resized.png",
+        "abilities": {
+            "20009": 1
+        },
+        "moveIds": ["m40", "m57", "m414", "m482"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
     },
     "35": {
         "name": "Clefairy",
@@ -933,6 +967,23 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST
+    },
+    "49-1": {
+        "name": "AATTVVV",
+        "emoji": "<:atv:1114223244363431996>",
+        "description": "An oddly mechanical Pokemon; its mere presence is rumored to completely prevent Pokemon attacks.",
+        "type": [types.BUG, types.STEEL],
+        "baseStats": [80, 75, 105, 90, 85, 115],
+        "sprite": "https://archives.bulbagarden.net/media/upload/2/28/Spr_1b_049.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/atv-shiny-resized.png",
+        "abilities": {
+            "19": 1,
+        },
+        "moveIds": ["m77", "m269-1", "m430", "m405"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST,
+        "noGacha": true
     },
     "50": {
         "name": "Diglett",
@@ -1791,6 +1842,23 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
+    },
+    "131-1": {
+        "name": "AIIIIIIRRR",
+        "emoji": "<:air:1114223243075801198>",
+        "description": "A POKéMON that has been overhunted almost to extinction. It helps people traverse harsh terrain of any variety.",
+        "type": [types.WATER, types.ICE],
+        "baseStats": [130, 90, 80, 90, 95, 65],
+        "sprite": "https://archives.bulbagarden.net/media/upload/7/77/Spr_1b_131.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/air-shiny-resized.png",
+        "abilities": {
+            "11": 1,
+        },
+        "moveIds": ["m420", "m57", "m70", "m20002"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
     },
     "133": {
         "name": "Eevee",

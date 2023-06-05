@@ -1330,6 +1330,35 @@ const effectConfig = {
             }
         }
     },
+    "reverseTaunt": {
+        "name": "Reverse Taunt",
+        "description": "The target is reverse-taunted.",
+        "type": effectTypes.DEBUFF,
+        "dispellable": true,
+        "effectAdd": function(battle, source, target) {
+            battle.addToLog(`${target.name} was reverse-taunted!`);
+            // disable moves with power
+            for (const moveId of Object.keys(target.moveIds)) {
+                const moveData = moveConfig[moveId];
+                if (moveData.power) {
+                    target.disableMove(moveId, source);
+                }
+            }
+            return {
+                "source": source,
+            }
+        },
+        "effectRemove": function(battle, target, args) {
+            battle.addToLog(`${target.name} is no longer reverse-taunted!`);
+            // enable moves with no power
+            for (const moveId of Object.keys(target.moveIds)) {
+                const moveData = moveConfig[moveId];
+                if (moveData.power) {
+                    target.enableMove(moveId, args.source);
+                }
+            }
+        }
+    },
     "redirect": {
         "name": "Redirect",
         "description": "Moves are redirected to this target.",
@@ -3012,6 +3041,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user taunts the target into only using moves with base power for 2 turns.",
     },
+    "m269-1": {
+        "name": "Reverse Taunt",
+        "type": types.DARK,
+        "power": null,
+        "accuracy": 100,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user taunts the target into only using moves WITHOUT base power for 2 turns.",
+    },
     "m273": {
         "name": "Wish",
         "type": types.NORMAL,
@@ -3898,6 +3940,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
         "description": "The user votes for the primary target, causing it to gain 100% combat readiness and increased speed for 2 turns. All other enemies lose 30% combat readiness and have decreased speed for 1 turn. Ignores miss on the primary target.",
+    },
+    "m20002": {
+        "name": "HM Master",
+        "type": types.NORMAL,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "The user uses all available HM moves against the target. If the HM move is on cooldown, reset the cooldown instead of using the move.",
     }
 };
 
@@ -5552,6 +5607,19 @@ const moveExecutes = {
             target.addEffect("taunt", 2, source);
         }
     },
+    "m269-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m269-1";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            if (miss) {
+                continue;
+            }
+
+            // add reverse taunt for 2 turns
+            target.addEffect("reverseTaunt", 2, source);
+        }
+    },
     "m266": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m266";
         const moveData = moveConfig[moveId];
@@ -6755,6 +6823,35 @@ const moveExecutes = {
 
                 target.reduceCombatReadiness(source, 30);
                 target.addEffect("speDown", 1, source);
+            }
+        }
+    },
+    "m20002": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m20002";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // use all HM moves
+            const hmMoveIds = ["m57", "m70", "m127"];
+            for (const [moveId, move] of Object.entries(source.moveIds)) {
+                if (!hmMoveIds.includes(moveId)) {
+                    continue;
+                }
+
+                // if on cooldown, reset cooldown
+                if (move.cooldown > 0) {
+                    source.reduceMoveCooldown(moveId, move.cooldown, source);
+                } else {
+                    const moveData = moveConfig[moveId];
+                    // else, use move and set cooldown
+                    battle.addToLog(`${source.name} used ${moveData.name}!`);
+                    // get target
+                    const targetParty = battle.parties[target.teamName];
+                    const targets = source.getPatternTargets(targetParty, moveData.targetPattern, target.position, moveId);
+                    moveExecutes[moveId](battle, source, target, targets, []);
+
+                    // set cd
+                    move.cooldown = moveData.cooldown;
+                }
             }
         }
     },
@@ -8669,7 +8766,66 @@ const abilityConfig = {
             battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
+    "20008": {
+        "name": "Resurrection",
+        "description": "The first time the user would take lethal damage, prevent it and set its combat readiness to 100%.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    if (initialArgs.pokemon !== targetPokemon) {
+                        return;
+                    }
 
+                    // attempt to get ability data
+                    const ability = initialArgs.pokemon.ability;
+                    if (!ability || ability.abilityId !== "20008" || !ability.data) {
+                        return;
+                    }
+                    const abilityData = ability.data;
+
+                    // if fatal damage, prevent it and set cr to 100
+                    if (args.damage > targetPokemon.hp) {
+                        args.damage = 0;
+                        args.maxDamage= Math.min(args.maxDamage, args.damage);
+                        targetPokemon.battle.addToLog(`${targetPokemon.name} resurrects!`);
+                        targetPokemon.boostCombatReadiness(targetPokemon, 100);
+                        // remove event listener
+                        targetPokemon.battle.eventHandler.unregisterListener(abilityData.listenerId);
+                    }
+                }
+            };
+
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, listener);
+            return {
+                listenerId: listenerId,
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "20008" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
+    },
+    "20009": {
+        "name": "Royalty",
+        "description": "Boosts the user's Special Attack by 25% of its Attack.",
+        "abilityAdd": function (battle, source, target) {
+            const batk = target.batk;
+            target.spa += Math.floor(batk * 0.25);
+            battle.addToLog(`${target.name}'s Royalty boosted its Special Attack!`);
+            return {};
+        },
+        "abilityRemove": function (battle, source, target) {
+            target.spa -= Math.floor(target.batk * 0.25);
+        }
+    },
 };
 
 module.exports = {
