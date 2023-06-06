@@ -6,10 +6,6 @@
     </h1>
 </div>
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images//events/pokestar-launch-banner.png" height="300">
-</p>
-
 <div align="center">
     <p style="text-align: center;">
         A Pokémon Discord bot. Currently open for beta testing! <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>Invite Pokéstar to your server.</a></b>
@@ -23,6 +19,10 @@
   <a href="https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands" target="_blank">
     <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pokestar-main.png">
   </a>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images//events/pokestar-tpp-banner.png" height="300">
 </p>
 
 ## Why Pokéstar?

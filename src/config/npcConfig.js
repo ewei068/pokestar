@@ -10,6 +10,7 @@ const npcs = {
     LASS: "lass",
     BLUE: "blue",
     RED: "red",
+    TWITCH_PLAYS_RED: "tppRed",
     FISHERMAN: "fisherman",
     HIKER: "hiker",
     DRAGON_TAMER: "dragonTamer",
@@ -354,12 +355,35 @@ const npcConfig = {
             },
         }
     },
+    [npcs.TWITCH_PLAYS_RED]: {
+        name: "Twitch Plays Red",
+        sprite: "https://archives.bulbagarden.net/media/upload/6/66/Spr_RG_Red_1.png",
+        emoji: "꩜",
+        catchphrase: "⬆⬆⬇⬇⬅➔⬅➔BAAAAAAAAAAAAAAAAA",
+        difficulties: {
+            [difficulties.VERY_HARD]: {
+                minLevel: 90,
+                maxLevel: 100,
+                numPokemon: 6,
+                pokemonIds: ["18-1", "34-1", "49-1", "131-1", "145-1"],
+                aceId: "139-1",
+                dailyRewards: {
+                    backpack: {
+                        [backpackCategories.POKEBALLS]: {
+                            [backpackItems.GREATBALL]: 2,
+                        },
+                    }
+                }
+            },
+        }
+    },
 }
 
 const dungeons = {
     MIND_TEMPLE: "mindTemple",
     SOUL_CAVE: "soulCave",
     SPIRIT_ALTAR: "spiritAltar",
+    BLOODY_SUNDAY: "bloodySunday",
 }
 
 const dungeonConfig = {
@@ -1275,6 +1299,130 @@ const dungeonConfig = {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
                             [backpackItems.WILLPOWER_SHARD]: 10,
+                        },
+                    }
+                }
+            },
+        },
+    },
+    [dungeons.BLOODY_SUNDAY]: {
+        name: "Bloody Sunday",
+        sprite: "https://external-preview.redd.it/mJjUWHxEKQ674NI4m7hUSJ108UlpTgTH2vWSmwMHfdA.jpg?auto=webp&s=6c0601add4b5a74185844ebaff16bebb3ada41a5",
+        emoji: "🖥️",
+        description: `The site of the terrifying massacre and sacrifice known as Bloody Sunday. First, capture Zapdos from the Power Plant. Then, retrieve it from the PC...`,
+        bosses: ["136-1", "145-1"],
+        difficulties: {
+            [difficulties.HARD]: {
+                phases: [
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "145",
+                                level: 90,
+                                position: 8,
+                            },
+                            {
+                                speciesId: "101",
+                                level: 85,
+                                position: 11,
+                            },
+                            {
+                                speciesId: "82",
+                                level: 85,
+                                position: 12,
+                            },
+                            {
+                                speciesId: "26",
+                                level: 85,
+                                position: 13,
+                            },
+                            {
+                                speciesId: "82",
+                                level: 85,
+                                position: 14,
+                            },
+                            {
+                                speciesId: "101",
+                                level: 85,
+                                position: 15,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "32",
+                                level: 95,
+                                position: 1,
+                            },
+                            {
+                                speciesId: "44",
+                                level: 95,
+                                position: 2,
+                            },
+                            {
+                                speciesId: "20",
+                                level: 95,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "83",
+                                level: 95,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "32",
+                                level: 95,
+                                position: 5,
+                            },
+                            {
+                                speciesId: "48",
+                                level: 95,
+                                position: 6,
+                            },
+                            {
+                                speciesId: "46",
+                                level: 95,
+                                position: 7,
+                            },
+                            {
+                                speciesId: "74",
+                                level: 95,
+                                position: 8,
+                            },
+                            {
+                                speciesId: "102",
+                                level: 95,
+                                position: 9,
+                            },
+                            {
+                                speciesId: "48",
+                                level: 95,
+                                position: 10,
+                            },
+                            {
+                                speciesId: "136-1",
+                                level: 100,
+                                position: 12,
+                            },
+                            {
+                                speciesId: "145-1",
+                                level: 100,
+                                position: 14,
+                            },
+                        ]
+                    },
+                ],
+                rewards: {
+                    backpack: {
+                        [backpackCategories.MATERIALS]: {
+                            [backpackItems.KNOWLEDGE_SHARD]: 2,
+                            [backpackItems.EMOTION_SHARD]: 2,
+                            [backpackItems.WILLPOWER_SHARD]: 2,
                         },
                     }
                 }

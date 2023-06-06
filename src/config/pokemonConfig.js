@@ -928,6 +928,46 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "46": {
+        "name": "Paras",
+        "emoji": "<:46:1100283657832386611>",
+        "description": "Burrows to suck tree roots. The mushrooms on its back grow by drawing nutrients from the bug host.",
+        "type": [types.BUG, types.GRASS],
+        "baseStats": [35, 70, 55, 25, 55, 25],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/46.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/46.png",
+        "evolution": [{
+            "level": 24,
+            "id": "47",
+        }],
+        "abilities": {
+            "27": 0.45,
+            "87": 0.45,
+            "6": 0.1
+        },
+        "moveIds": ["m71", "m77", "m450", "m147"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "47": {
+        "name": "Parasect",
+        "emoji": "<:47:1100283658994200637>",
+        "description": "A host-parasite pair in which the parasite mushroom has taken over the host bug. Prefers damp places.",
+        "type": [types.BUG, types.GRASS],
+        "baseStats": [60, 95, 80, 30, 80, 30],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/47.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/47.png",
+        "abilities": {
+            "27": 0.45,
+            "87": 0.45,
+            "6": 0.1
+        },
+        "moveIds": ["m77", "m202", "m450", "m147"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "48": {
         "name": "Venonat",
         "emoji": "<:48:1100283660852273213>",

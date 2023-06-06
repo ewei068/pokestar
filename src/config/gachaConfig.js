@@ -72,6 +72,43 @@ const bannerTypeConfig = {
 const bannerConfig = [
     {
         "bannerType": bannerTypes.SPECIAL,
+        "name": "[EVENT] God of Anarchy",
+        "description": "The Lord Helix has graced Pokestar with its presence! Pull for the powerful limited Lord Helix, as well as Twitch Plays Red's other Pokemon! For more information, use `/events`.",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["139-1"],
+                [rarities.EPIC]: ["18-1", "34-1", "49-1", "131-1"]
+            }
+        },
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-tpp-banner.png"
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
+        "name": "[EVENT] False Prophet",
+        "description": "To rival the Lord Helix, the False Prophet of Democracy comes to challenge! Pull for the powerful limited False Prophet, as well as the Eeveelutions who could have been! For more information, use `/events`.",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["136-1"],
+                [rarities.EPIC]: ["134", "135", "136"]
+            }
+        },
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-tpp-banner.png"
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
+        "name": "[EVENT] Bloody Sunday",
+        "description": "Sacrifices must be made to gain powerful Pokemon! Pull for the powerful limited AA-j Zapdos, as well as those who passed in Bloody Sunday! For more information, use `/events`.",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["145-1"],
+                [rarities.EPIC]: ["34", "45", "76", "103"],
+                [rarities.RARE]: ["20", "47", "49"]
+            }
+        },
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-tpp-banner.png"
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
         "name": "[EVENT] Ash's Banner",
         "description": "The launch celebration has arrived! Pull for some of Ash and Red's best Pokemon, as well as a powerful limited Pikachu variant! For more information, use `/events`.",
         "rateUp": () => {

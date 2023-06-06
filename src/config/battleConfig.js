@@ -2573,6 +2573,19 @@ const moveConfig = {
             return pokemon.effectIds.skyCharge === undefined;
         }
     },
+    "m147": {
+        "name": "Spore",
+        "type": types.GRASS,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "The user scatters bursts of spores that can't miss and cause the target to fall asleep.",
+    },
     "m150": {
         "name": "Splash",
         "type": types.WATER,
@@ -4954,6 +4967,24 @@ const moveExecutes = {
             }
         }
     },
+    "m147": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m147";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // check if target is grass type
+            if (target.type1 === types.GRASS || target.type2 === types.GRASS) {
+                battle.addToLog(`${target.name}'s Grass type renders it immune to spore moves!`);
+                continue;
+            }
+
+            const miss = missedTargets.includes(target);
+            if (miss) {
+                continue;
+            }
+
+            target.applyStatus(statusConditions.SLEEP, source);
+        }
+    },
     "m150": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m150";
         const moveData = moveConfig[moveId];
@@ -7191,6 +7222,50 @@ const abilityConfig = {
             battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
+    "27": {
+        "name": "Effect Spore",
+        "description": "When the user is damaged by a physical move, the Pokemon that hit the user has a 30% chance of being inflicted with Poison, Paralysis, or Sleep.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+
+                    const targetPokemon = args.target;
+                    const sourcePokemon = args.source;
+                    if (targetPokemon.isFainted || initialArgs.pokemon !== targetPokemon) {
+                        return;
+                    }
+
+                    // if physical, 30% chance to status
+                    const moveData = moveConfig[args.damageInfo.moveId];
+                    if (moveData.damageType === damageTypes.PHYSICAL && Math.random() < 0.3) {
+                        targetPokemon.battle.addToLog(`${targetPokemon.name}'s Effect Spore affects ${sourcePokemon.name}!`);
+                        // get status randomly
+                        const possibleStatusConditions = [statusConditions.POISON, statusConditions.PARALYSIS, statusConditions.SLEEP];
+                        const status = possibleStatusConditions[Math.floor(Math.random() * possibleStatusConditions.length)];
+                        sourcePokemon.applyStatus(status, targetPokemon);
+                    }
+                }
+            };
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_DAMAGE_TAKEN, listener);
+            return {
+                "listenerId": listenerId
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "27" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
+    },      
     "28": {
         "name": "Synchronize",
         // TODO: this functionality is different from the game, may need to nerf
