@@ -116,6 +116,20 @@ const getFullUTCDate = (date=null) => {
     return Math.floor(time / 86400000);
 }
 
+const getTimeToNextDay = (date=null) => {
+    if (!date) {
+        date = new Date();
+    }
+    const time = date.getTime();
+    const timeToNextDay = 86400000 - (time % 86400000);
+    // return hours, minutes, seconds
+    return {
+        hours: Math.floor(timeToNextDay / 3600000),
+        minutes: Math.floor((timeToNextDay % 3600000) / 60000),
+        seconds: Math.floor((timeToNextDay % 60000) / 1000)
+    }
+}
+
 const poll = async (fn, interval=60*1000) => {
     fn();
     setTimeout(() => poll(fn, interval), interval);
@@ -134,5 +148,6 @@ module.exports = {
     buildCommandUsageString,
     setTwoInline,
     getFullUTCDate,
+    getTimeToNextDay,
     poll
 }

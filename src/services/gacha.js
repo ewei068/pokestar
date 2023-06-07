@@ -10,7 +10,7 @@ const { getTrainer } = require('./trainer');
 const { getState } = require('./state');
 
 const { logger } = require('../log');
-const { getOrSetDefault } = require('../utils/utils');
+const { getOrSetDefault, getTimeToNextDay } = require('../utils/utils');
 const { calculatePokemonStats, getBattleEligible } = require('./pokemon');
 const { getPokemonExpNeeded } = require('../utils/pokemonUtils');
 const { buildBannerEmbed } = require('../embeds/pokemonEmbeds');
@@ -27,7 +27,8 @@ const drawDaily = async (trainer) => {
     if (!trainer.claimedDaily || process.env.STAGE == stageNames.ALPHA) {
         trainer.claimedDaily = true;
     } else {
-        return { data: null, err: "You already claimed your daily rewards today!" };
+        const { hours, minutes, seconds } = getTimeToNextDay();
+        return { data: null, err: `You already claimed your daily rewards today! You can claim your next reward in ${hours}:${minutes}:${seconds}.` };
     }
 
     const results = drawDiscrete(dailyRewardChances, NUM_DAILY_REWARDS);
