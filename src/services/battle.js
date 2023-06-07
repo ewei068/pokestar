@@ -671,7 +671,7 @@ class Battle {
             }
 
             // bounce + thunder or gust or smackdown
-            if ((moveId === "m87" || moveId === "m16" || moveId === "m479") && pokemon.effectIds.sprungUp !== undefined) {
+            if ((moveId === "m87" || moveId === "m87-1" || moveId === "m16" || moveId === "m479") && pokemon.effectIds.sprungUp !== undefined) {
                 return true;
             }
 
@@ -696,7 +696,7 @@ class Battle {
             }
 
             // bounce + thunder or gust or smackdown
-            if ((moveId === "m87" || moveId === "m16" || moveId === "m479") && pokemon.effectIds.sprungUp !== undefined) {
+            if ((moveId === "m87" || moveId === "m87-1" || moveId === "m16" || moveId === "m479") && pokemon.effectIds.sprungUp !== undefined) {
                 return true;
             }
 
@@ -850,7 +850,7 @@ class Pokemon {
             switch (this.status.statusId) {
                 case statusConditions.FREEZE:
                     // if move is flare blitz, thaw out
-                    if (moveId === "m394") {
+                    if (moveId === "m394" || moveId === "m394-1") {
                         this.removeStatus();
                         break;
                     }

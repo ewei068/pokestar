@@ -351,6 +351,21 @@ const buildEquipmentUpgradeEmbed = (trainer, pokemon, equipmentType, equipment, 
     return embed;
 }
 
+const buildDexListEmbed = (speciesIds, page) => {
+    const pokedexString = speciesIds.map(id => {
+        const speciesData = pokemonConfig[id];
+        return `${speciesData.emoji} #${id} ${speciesData.name}`;
+    }).join("\n");
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`Pokédex Entries ${speciesIds[0]} - ${speciesIds[speciesIds.length - 1]}`);
+    embed.setColor("#FFFFFF");
+    embed.setDescription(pokedexString);
+    embed.setFooter({ text: `Page ${page}` });
+
+    return embed;
+}
+
 const buildSpeciesDexEmbed = (id, speciesData, tab) => {
     const embed = new EmbedBuilder();
     embed.setTitle(`${speciesData.emoji} #${id} ${speciesData.name}`);
@@ -458,6 +473,7 @@ module.exports = {
     buildPokemonEmbed,
     buildEquipmentEmbed,
     buildEquipmentUpgradeEmbed,
+    buildDexListEmbed,
     buildSpeciesDexEmbed,
     buildGachaInfoString
 }

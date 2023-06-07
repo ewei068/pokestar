@@ -14,7 +14,27 @@ Welcome to Pokestar! To celebrate the launch and the bot rollout, we're throwing
 * Shiny Hat Pikachu: https://www.deviantart.com/lukethefoxen/art/Pikachu-with-Ash-s-Hat-923733788
 `
 
+const TPP_DESCRIPTION = `🎮**Twitch Plays Pokemon**🎮
+
+The Twitch Plays Pokemon mini-event has arrived! Including new PvE content and limited custom Pokemon!
+
+🧢 **Twitch Plays Red:** Fight the limited-time event trainer Twitch Plays Red! Defeat him every day to get 2 free <:greatball:1100296107759779840> Greatballs! Use \`/pve tppRed\` to challenge him!
+
+🖥️ **Bloody Sunday:** Re-live the historic Bloody Sunday with the new limited-time dungeon, giving 2 of each equipment shards! Use \`/dungeons\` to challenge it!
+
+<:lordhelix:1114224346873991268> **Event Pokemon:** Powerful custom event Pokemon from Twitch Plays Pokemon are now available for a limited time! Use \`/gacha\` to try your luck!
+
+🖌️ **Art Credits**:
+* Shiny Event Pokemon Sprites: [hamigakimomo](https://hamigakimomo.tumblr.com/post/77911455524/i-decided-to-make-custom-rb-sprites-for-the)
+* Bloody Sunday Art: https://imgur.com/70oeGPX
+`
+
 const gameEventConfig = [
+    {
+        "name": "Twitch Plays Pokemon",
+        "description": TPP_DESCRIPTION,
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-tpp-banner.png",
+    },
     {
         "name": "Launch Celebration",
         "description": LAUNCH_CELEBRATION_DESCRIPTION,

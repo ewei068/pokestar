@@ -6,6 +6,7 @@ const eventNames = {
     POKEMON_EVOLVE_CONFIRM: "pokemonEvolveConfirm",
     POKEMON_RELEASE_PAGE: "pokemonReleasePage",
     POKEMON_INFO_BUTTON: "pokemonInfoButton",
+    POKEDEX_LIST_BUTTON: "pokedexListButton",
     POKEDEX_BUTTON: "pokedexButton",
     EQUIPMENT_SELECT: "equipmentSelect",
     EQUIPMENT_BUTTON: "equipmentButton",
@@ -63,6 +64,10 @@ const eventConfig = {
     [eventNames.POKEMON_INFO_BUTTON]: {
         "name": "Pokemon Info Button",
         "execute": "pokemonInfoButton.js",
+    },
+    [eventNames.POKEDEX_LIST_BUTTON]: {
+        "name": "Pokedex List Button",
+        "execute": "pokedexListButton.js",
     },
     [eventNames.POKEDEX_BUTTON]: {
         "name": "Pokedex Button",

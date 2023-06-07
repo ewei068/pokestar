@@ -27,9 +27,10 @@ const buildPartyEmbed = (trainer, pokemons, detailed=false) => {
 
     if (detailed) {
         const pokemonFields = pokemons.filter(p => p !== null).map((pokemon, index) => {
-            const statString = buildPokemonStatString(pokemon, size=10, compact=true)
+            const statString = buildPokemonStatString(pokemon, size=10, compact=true);
+            const pokemonData = pokemonConfig[pokemon.speciesId];
             return {
-                name: `[${pokemons.indexOf(pokemon) + 1}] [Lv. ${pokemon.level}] ${pokemon.name}`,
+                name: `${pokemonData.emoji} [${pokemons.indexOf(pokemon) + 1}] [Lv. ${pokemon.level}] ${pokemon.name}`,
                 value: `${pokemon._id}\n${statString}\nAbility: ${getAbilityName(pokemon.abilityId)}`,
                 inline: true,
             };

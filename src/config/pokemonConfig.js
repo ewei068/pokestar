@@ -522,6 +522,23 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "18-1" : {
+        "name": "aaabaaajss",
+        "emoji": "<:bjs:1114223245349109830>",
+        "description": "The mythical avian given the nickname Bird Jesus, revered for its unwavering guidance and miraculous feats against impossible odds.",
+        "type": [types.NORMAL, types.FLYING],
+        "baseStats": [85, 120, 80, 80, 75, 110],
+        "sprite": "https://archives.bulbagarden.net/media/upload/c/c0/Spr_1b_018.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/bjs-shiny-resized.png",
+        "abilities": {
+            "20008": 1
+        },
+        "moveIds": ["m98", "m355", "m369", "m143"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST,
+        "noGacha": true
+    },
     "19" : {
         "name": "Rattata",
         "emoji": "<:19:1100280992297664552>",
@@ -678,6 +695,23 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
+    },
+    "34-1": {
+        "name": "AAAAAAAAAA",
+        "emoji": "<:fonz:1114223247601455204>",
+        "description": "A majestic Pokemon whos fierce power and commanding presence earns its title as King.",
+        "type": [types.POISON, types.GROUND],
+        "baseStats": [95, 120, 80, 90, 75, 90],
+        "sprite": "https://archives.bulbagarden.net/media/upload/b/b8/Spr_1b_034.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/fonz-shiny-resized.png",
+        "abilities": {
+            "20009": 1
+        },
+        "moveIds": ["m40", "m57", "m414", "m482"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
     },
     "35": {
         "name": "Clefairy",
@@ -894,6 +928,46 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "46": {
+        "name": "Paras",
+        "emoji": "<:46:1100283657832386611>",
+        "description": "Burrows to suck tree roots. The mushrooms on its back grow by drawing nutrients from the bug host.",
+        "type": [types.BUG, types.GRASS],
+        "baseStats": [35, 70, 55, 25, 55, 25],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/46.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/46.png",
+        "evolution": [{
+            "level": 24,
+            "id": "47",
+        }],
+        "abilities": {
+            "27": 0.45,
+            "87": 0.45,
+            "6": 0.1
+        },
+        "moveIds": ["m71", "m77", "m450", "m147"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "47": {
+        "name": "Parasect",
+        "emoji": "<:47:1100283658994200637>",
+        "description": "A host-parasite pair in which the parasite mushroom has taken over the host bug. Prefers damp places.",
+        "type": [types.BUG, types.GRASS],
+        "baseStats": [60, 95, 80, 30, 80, 30],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/47.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/47.png",
+        "abilities": {
+            "27": 0.45,
+            "87": 0.45,
+            "6": 0.1
+        },
+        "moveIds": ["m77", "m202", "m450", "m147"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "48": {
         "name": "Venonat",
         "emoji": "<:48:1100283660852273213>",
@@ -933,6 +1007,23 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST
+    },
+    "49-1": {
+        "name": "AATTVVV",
+        "emoji": "<:atv:1114223244363431996>",
+        "description": "An oddly mechanical Pokemon; its mere presence is rumored to completely prevent Pokemon attacks.",
+        "type": [types.BUG, types.STEEL],
+        "baseStats": [80, 75, 105, 90, 85, 115],
+        "sprite": "https://archives.bulbagarden.net/media/upload/2/28/Spr_1b_049.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/atv-shiny-resized.png",
+        "abilities": {
+            "19": 1,
+        },
+        "moveIds": ["m77", "m269-1", "m430", "m405"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST,
+        "noGacha": true
     },
     "50": {
         "name": "Diglett",
@@ -1792,6 +1883,23 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "131-1": {
+        "name": "AIIIIIIRRR",
+        "emoji": "<:air:1114223243075801198>",
+        "description": "A POKéMON that has been overhunted almost to extinction. It helps people traverse harsh terrain of any variety.",
+        "type": [types.WATER, types.ICE],
+        "baseStats": [130, 90, 80, 90, 95, 65],
+        "sprite": "https://archives.bulbagarden.net/media/upload/7/77/Spr_1b_131.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/air-shiny-resized.png",
+        "abilities": {
+            "11": 1,
+        },
+        "moveIds": ["m420", "m57", "m70", "m20002"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
+    },
     "133": {
         "name": "Eevee",
         "emoji": "<:133:1100291598564204634>",
@@ -1875,6 +1983,23 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "136-1": {
+        "name": "False Prophet",
+        "emoji": "<:falseprophet:1114045843369119785>",
+        "description": "The Deceptive Pokémon known as the False Prophet, its fiery appearance belies its controversial actions and mysterious intentions.",
+        "type": [types.FIRE, types.DARK],
+        "baseStats": [90, 140, 75, 80, 120, 95],
+        "sprite": "https://archives.bulbagarden.net/media/upload/1/1f/Spr_1b_136.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/false-prophet-shiny-resized.png",
+        "abilities": {
+            "20005": 1
+        },
+        "moveIds": ["m98", "m276", "m20001", "m394-1"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
+    },
     "138": {
         "name": "Omanyte",
         "emoji": "<:138:1100291607103819806>",
@@ -1910,6 +2035,23 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
+    },
+    "139-1": {
+        "name": "Lord Helix",
+        "emoji": "<:lordhelix:1114224346873991268>",
+        "description": "The Divine Fossil Pokémon revered as a symbol of balance and divine intervention, worshipped for its guidance and miracles during tumultuous times of anarchy.",
+        "type": [types.ROCK, types.PSYCHIC],
+        "baseStats": [120, 80, 140, 115, 80, 65],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/lord-helix-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/lord-helix-shiny-resized.png",
+        "abilities": {
+            "20006": 1
+        },
+        "moveIds": ["m110", "m182", "m317-1", "m56-2"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
     },
     "142": {
         "name": "Aerodactyl",
@@ -1980,6 +2122,23 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.LEGENDARY,
         "growthRate": growthRates.SLOW
+    },
+    "145-1" : {
+        "name": "AA-j",
+        "emoji": "<:aaj:1114223240047493241>",
+        "description": "Known for its unpredictability and immense power, many were sacrificed to bring this electrifying Pokemon into being.",
+        "type": [types.ELECTRIC, types.FLYING],
+        "baseStats": [90, 95, 85, 130, 90, 90],
+        "sprite": "https://archives.bulbagarden.net/media/upload/d/dd/Spr_1b_145.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/aaj-shiny-resized.png",
+        "abilities": {
+            "20007": 1
+        },
+        "moveIds": ["m84", "m65", "m435-1", "m87-1"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW,
+        "noGacha": true
     },
     "146" : {
         "name": "Moltres",

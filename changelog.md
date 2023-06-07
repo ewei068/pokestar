@@ -1,5 +1,26 @@
 # Pokéstar Changelog
 
+### 0.9.2 - Twitch Plays Pokemon Mini Event
+
+* New Twitch Plays Pokemon mini-event! Use `/events` for more details!
+  * New limited NPC: Twitch Plays Red!
+  * New limited Dungeon: Bloody Sunday!
+  * New limited event Pokemon:
+    * aaabaaajss (Epic, Pidgeot): A fast physical attacker with utility and the ability to revive!
+    * AAAAAAAAAA (Epic, Nidoking): A strong special attacker who gains value out of its attack stat!
+    * AATTVVV (Epic, Venomoth): A fast support Pokemon that can prevent enemies from using attack moves!
+    * AIIIIIIRRR (Epic, Lapras): A bulky hybrid attacker who can manipulate how its moves are used!
+    * False Prophet (Legendary, Flareon): An incredibly powerful physical attacker with great coverage! Also has a devestating utility move and an ability which punishes CR gain!
+    * Lord Helix (Legendary, Omastar): A highly durable protect tank that spreads debuffs! Has two different modes!
+    * AA-j (Legendary, Zapdos): A powerful area attacker that can spread its own debuffs onto enemies!
+* New Pokemon/Abilities:
+  * Paras/Parasect: A support Pokemon specializing in spreading status conditions!
+  * Ability: Effect Spore.
+* The `/pokedex` now supports faster browsing! Press the "Return" button to view a list a Pokemon to scroll through!
+* You can now sort by Pokedex number in `/list`! Use `/list sortOrder: pokedexOrder`!
+* `/daily` now displays a timer until next reward if you've already claimed today!
+* **The Launch Celebration Event will be ending in 1 week! Make sure to pick up your perfect set of launch event legendaries before they go away!**
+
 ### 0.9.1 (6/1) - QoL Patch
 
 * New Pokemon and abilities:
