@@ -6,17 +6,23 @@ const pokedexButton = async (interaction, data) => {
     const allIds = getPokemonOrder();
 
     // attempt to get page number
-    const page = data.page;
-    if (!page || page < 1 || page > allIds.length) {
-        return { err: `Couldn't find page!` };
+    let id = "1";
+    if (data.page) {
+        const page = data.page;
+        if (!page || page < 1 || page > allIds.length) {
+            return { err: `Couldn't find page!` };
+        }
+        id = allIds[page - 1];
+    } else if (interaction.values) {
+        id = interaction.values[0];
     }
-    const id = allIds[page - 1];
 
     const tab = data.tab;
 
     const { send, err } = await buildPokedexSend({
         id: id,
-        tab: tab
+        tab: tab,
+        view: "species",
     });
     if (err) {
         return { err: err };

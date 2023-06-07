@@ -6,7 +6,7 @@ const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS, rarities } =
 const { expMultiplier, MAX_RELEASE } = require("../config/trainerConfig");
 const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth, getAbilityOrder, getPokemonOrder, getPartyPokemonIds } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
-const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed, buildEquipmentEmbed, buildEquipmentUpgradeEmbed } = require("../embeds/pokemonEmbeds");
+const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed, buildEquipmentEmbed, buildEquipmentUpgradeEmbed, buildDexListEmbed } = require("../embeds/pokemonEmbeds");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
@@ -632,82 +632,132 @@ const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info" } = 
     return { send: send, err: null };
 }
 
-const buildPokedexSend = async ({ id="1", tab="info" } = {}) => {
+const buildPokedexSend = async ({ id="1", tab="info", view="list", page=1 } = {}) => {
     const send = {
         embeds: [],
         components: []
     }
     const allIds = getPokemonOrder();
 
-    if (pokemonConfig[id] === undefined) {
-        // if ID undefined, check all species for name match
-        const speciesId = allIds.find(speciesId => pokemonConfig[speciesId].name.toLowerCase() === id.toLowerCase());
-        if (speciesId) {
-            id = speciesId;
-        } else {
-            return { send: null, err: "Invalid Pokemon species or Pokemon not added yet!" };
+    if (view === "list") {
+        if (page < 1 || page > Math.ceil(allIds.length / 10)) {
+            return { send: null, err: "Invalid page number." };
         }
+
+        const start = (page - 1) * 10;
+        const end = start + 10;
+        const ids = allIds.slice(start, end);
+
+        const embed = buildDexListEmbed(ids, page);
+        send.embeds.push(embed);
+
+        const scrollData = {};
+        const scrollActionRow = buildScrollActionRow(
+            page,
+            page === Math.ceil(allIds.length / 10),
+            scrollData,
+            eventNames.POKEDEX_LIST_BUTTON,
+        );
+        send.components.push(scrollActionRow);
+
+        const selectData = {};
+        const selectActionRow = buildIdConfigSelectRow(
+            ids,
+            pokemonConfig,
+            "Select a Pokemon to view",
+            selectData,
+            eventNames.POKEDEX_BUTTON,
+        );
+        send.components.push(selectActionRow);
+    } else if (view === "species") {
+        if (pokemonConfig[id] === undefined) {
+            // if ID undefined, check all species for name match
+            const speciesId = allIds.find(speciesId => pokemonConfig[speciesId].name.toLowerCase() === id.toLowerCase());
+            if (speciesId) {
+                id = speciesId;
+            } else {
+                return { send: null, err: "Invalid Pokemon species or Pokemon not added yet!" };
+            }
+        }
+        
+        const speciesData = pokemonConfig[id];
+        const embed = buildSpeciesDexEmbed(id, speciesData, tab);
+        send.embeds.push(embed);
+
+        const index = allIds.indexOf(id);
+
+        // build tab selection
+        const buttonConfigs = [
+            {
+                label: "Info",
+                disabled: tab === "info" ? true : false,
+                data: {
+                    page: index + 1,
+                    tab: "info"
+                }
+            },
+            {
+                label: "Growth",
+                disabled: tab === "growth" ? true : false,
+                data: {
+                    page: index + 1,
+                    tab: "growth"
+                }
+            },
+            {
+                label: "Moves",
+                disabled: tab === "moves" ? true : false,
+                data: {
+                    page: index + 1,
+                    tab: "moves"
+                }
+            },
+            {
+                label: "Abilities",
+                disabled: tab === "abilities" ? true : false,
+                data: {
+                    page: index + 1,
+                    tab: "abilities"
+                }
+            },
+        ]
+        const tabActionRow = buildButtonActionRow(
+            buttonConfigs,
+            eventNames.POKEDEX_BUTTON
+        )
+        send.components.push(tabActionRow);
+
+        // build scroll row
+        const scrollData = {
+            tab: tab,
+        }
+        const scrollActionRow = buildScrollActionRow(
+            // page = index of id + 1
+            index + 1,
+            index >= allIds.length - 1 ? true : false,
+            scrollData,
+            eventNames.POKEDEX_BUTTON
+        )
+        send.components.push(scrollActionRow);
+
+        // build return button
+        const returnButtonData = {
+            // page = index of id / 10 + 1
+            page: Math.floor(index / 10) + 1,
+        }
+        const returnButtonConfig = [
+            {
+                label: "Return",
+                disabled: false,
+                data: returnButtonData
+            }
+        ]
+        const returnActionRow = buildButtonActionRow(
+            returnButtonConfig,
+            eventNames.POKEDEX_LIST_BUTTON,
+        );
+        send.components.push(returnActionRow);
     }
-    
-    const speciesData = pokemonConfig[id];
-    const embed = buildSpeciesDexEmbed(id, speciesData, tab);
-    send.embeds.push(embed);
-
-    const index = allIds.indexOf(id);
-
-    // build tab selection
-    const buttonConfigs = [
-        {
-            label: "Info",
-            disabled: tab === "info" ? true : false,
-            data: {
-                page: index + 1,
-                tab: "info"
-            }
-        },
-        {
-            label: "Growth",
-            disabled: tab === "growth" ? true : false,
-            data: {
-                page: index + 1,
-                tab: "growth"
-            }
-        },
-        {
-            label: "Moves",
-            disabled: tab === "moves" ? true : false,
-            data: {
-                page: index + 1,
-                tab: "moves"
-            }
-        },
-        {
-            label: "Abilities",
-            disabled: tab === "abilities" ? true : false,
-            data: {
-                page: index + 1,
-                tab: "abilities"
-            }
-        },
-    ]
-    const tabActionRow = buildButtonActionRow(
-        buttonConfigs,
-        eventNames.POKEDEX_BUTTON
-    )
-    send.components.push(tabActionRow);
-
-    // build scroll row
-    const scrollData = {
-        tab: tab,
-    }
-    const scrollActionRow = buildScrollActionRow(
-        // page = index of id + 1
-        index + 1,
-        index >= allIds.length - 1 ? true : false,
-        scrollData,
-        eventNames.POKEDEX_BUTTON
-    )
-    send.components.push(scrollActionRow);
 
     return { send: send, err: null };
 }

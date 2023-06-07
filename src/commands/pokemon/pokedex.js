@@ -2,7 +2,8 @@ const { buildPokedexSend } = require("../../services/pokemon")
 
 const pokedex = async (id) => {
     return await buildPokedexSend({
-        id: id
+        id: id,
+        view: "species"
     });
 }
 
