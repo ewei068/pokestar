@@ -17,7 +17,7 @@
   * Paras/Parasect: A support Pokemon specializing in spreading status conditions!
   * Ability: Effect Spore.
 * The `/pokedex` now supports faster browsing! Press the "Return" button to view a list a Pokemon to scroll through!
-* Sort by dex number
+* You can now sort by Pokedex number in `/list`! Use `/list sortOrder: pokedexOrder`!
 * **The Launch Celebration Event will be ending in 1 week! Make sure to pick up your perfect set of launch event legendaries before they go away!**
 
 ### 0.9.1 (6/1) - QoL Patch

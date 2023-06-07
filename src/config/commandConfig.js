@@ -195,7 +195,7 @@ const commandConfig = {
                 "optional": true,
                 "variable": false,
                 "enum": [
-                    "name", "ivTotal", "combatPower", "level", "dateAcquired"
+                    "name", "ivTotal", "combatPower", "level", "dateAcquired", "pokedexOrder"
                 ]
             },
             "descending": {

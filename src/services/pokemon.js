@@ -33,7 +33,7 @@ const listPokemons = async (trainer, listOptions) => {
 
     // get pokemon with pagination
     try {
-        const query = new QueryBuilder(collectionNames.USER_POKEMON)
+        const query = new QueryBuilder(collectionNames.LIST_POKEMON)
             .setFilter(filter)
             .setLimit(pageSize)
             .setPage(page - 1)

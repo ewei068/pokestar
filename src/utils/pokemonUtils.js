@@ -157,6 +157,15 @@ const getPokemonOrder = (pokemons=pokemonConfig) => {
     });
 }
 
+const getPokemonIdToIndex = (pokemons=pokemonConfig) => {
+    const pokemonOrder = getPokemonOrder(pokemons);
+    const pokemonIdToIndex = {};
+    for (let i = 0; i < pokemonOrder.length; i++) {
+        pokemonIdToIndex[pokemonOrder[i]] = i;
+    }
+    return pokemonIdToIndex;
+}
+
 const buildEquipmentString = (equipmentType, equipment) => {
     const { level=1, slots={} } = equipment;
     const equipmentData = equipmentConfig[equipmentType];
@@ -228,6 +237,7 @@ module.exports = {
     getAbilityName,
     getAbilityOrder,
     getPokemonOrder,
+    getPokemonIdToIndex,
     buildEquipmentString,
     buildBoostString,
     getPartyPokemonIds

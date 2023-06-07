@@ -1,3 +1,4 @@
+const { getPokemonIdToIndex } = require('../utils/pokemonUtils');
 const { rarityConfig } = require('./pokemonConfig');
 
 const shinyAggregate = function(shiny) {
@@ -8,11 +9,16 @@ const worthAggregate = function(rarityConfig, rarity, shiny) {
     return rarityConfig[rarity].money * (shiny ? 100 : 1);
 }
 
+const getPokedexOrder = function(idToIndex, speciesId) {
+    return idToIndex[speciesId];
+}
+
 const DB_NAME = 'pokestar';
 
 const collectionNames = {
     USERS: 'users',
     USER_POKEMON: 'userPokemon',
+    LIST_POKEMON: 'listPokemon',
     POKEMON_GROUPED: 'pokemonGrouped',
     POKEMON_AND_USERS: 'pokemonAndUsers',
 };
@@ -32,6 +38,22 @@ const collectionConfig = {
                 key: { userId: 1 },
                 unique: false
             }
+        ]
+    },
+    [collectionNames.LIST_POKEMON]: {
+        viewOn: collectionNames.USER_POKEMON,
+        pipeline: [
+            {
+                $set: {
+                    "pokedexOrder": {
+                        $function: {
+                            body: getPokedexOrder.toString(),
+                            args: [getPokemonIdToIndex(), "$speciesId"],
+                            lang: "js"
+                        }
+                    }
+                }
+            },
         ]
     },
     [collectionNames.POKEMON_GROUPED]: {
