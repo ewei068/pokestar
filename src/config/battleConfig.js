@@ -6346,7 +6346,7 @@ const moveExecutes = {
                     return effectData.type === effectTypes.DEBUFF && effectData.dispellable;
                 });
                 if (possibleDebuffs.length == 0) {
-                    return;
+                    continue;
                 }
 
                 // get random debuff
