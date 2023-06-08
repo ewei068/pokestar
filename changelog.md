@@ -1,6 +1,12 @@
 # Pokéstar Changelog
 
-### 0.9.2 - Twitch Plays Pokemon Mini Event
+### 0.9.3
+
+* Patch equipment reroll display
+* Reduced Pokedollar cost of equipment upgrades by 20%
+* Modify username display for new Discord usernames
+
+### 0.9.2 (6/7) - Twitch Plays Pokemon Mini Event
 
 * New Twitch Plays Pokemon mini-event! Use `/events` for more details!
   * New limited NPC: Twitch Plays Red!

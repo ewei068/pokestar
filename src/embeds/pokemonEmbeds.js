@@ -322,7 +322,8 @@ const buildEquipmentUpgradeEmbed = (trainer, pokemon, equipmentType, equipment, 
 
         const baseValue = slot.quality / 100 * (max - min) + min;
         const value = Math.round(baseValue * (slotData.level ? equipment.level : 1));
-        const upgradeValue = Math.round(baseValue * (slotData.level && upgrade ? equipment.level + 1 : 1));
+        const upgradeLevel = upgrade ? equipment.level + 1 : equipment.level;
+        const upgradeValue = Math.round(baseValue * (slotData.level ? upgradeLevel : 1));
 
         const header = `${slotData.name}`
         const rerollingString = slotReroll === slotId ? "[REROLLING] " : "";

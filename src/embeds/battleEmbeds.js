@@ -5,6 +5,7 @@ const { buildPokemonStatString, getAbilityName } = require("../utils/pokemonUtil
 const { setTwoInline } = require("../utils/utils");
 const { npcConfig, dungeonConfig  } = require("../config/npcConfig");
 const { pokemonConfig } = require("../config/pokemonConfig");
+const { getFullUsername } = require("../utils/trainerUtils");
 
 const buildPartyEmbed = (trainer, pokemons, detailed=false) => {
     const party = trainer.party;
@@ -91,11 +92,11 @@ const buildBattleEmbed = (battle) => {
     // TODO: deal with NPCs
     const team1UserString = team1.userIds.map((userId) => {
         const user = battle.users[userId];
-        return `${user.username}#${user.discriminator}`;
+        return `${getFullUsername(user)}`;
     }).join(" ");
     const team2UserString = team2.userIds.map((userId) => {
         const user = battle.users[userId];
-        return `${user.username}#${user.discriminator}`;
+        return `${getFullUsername(user)}`;
     }).join(" ");
 
     const embed = new EmbedBuilder();
@@ -146,7 +147,7 @@ const buildBattleTeamEmbed = (battle, teamName) => {
     const teamPokemons = battle.parties[teamName].pokemons;
     const teamUserString = teamUserIds.map((userId) => {
         const user = battle.users[userId];
-        return `${user.username}#${user.discriminator}`;
+        return `${getFullUsername(user)}`;
     }).join(" ");
 
     const embed = new EmbedBuilder();

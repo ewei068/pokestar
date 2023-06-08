@@ -96,6 +96,10 @@ const removeItems = (trainer, itemId, quantity=1) => {
     items[itemId] = getOrSetDefault(items, itemId, 0) - quantity;
 }
 
+const getFullUsername = (user) => {
+    const discriminator = user.discriminator == '0' || user.discriminator == '0000' ? '' : `#${user.discriminator}`;
+    return `${user.username}${discriminator}`;
+}
 
 module.exports = {
     getPokeballsString,
@@ -108,4 +112,5 @@ module.exports = {
     setItems: setItems,
     addItems: addItems,
     removeItems: removeItems,
+    getFullUsername,
 };

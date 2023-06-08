@@ -421,7 +421,7 @@ const equipmentConfig = {
 const MAX_EQUIPMENT_LEVEL = 10;
 const STAT_REROLL_COST = 5;
 const levelUpCost = (level) => level + 1;
-const POKEDOLLAR_MULTIPLIER = 250;
+const POKEDOLLAR_MULTIPLIER = 200;
 
 let equipmentInfoString = "**Equipment Info**\n\n";
 equipmentInfoString += "**Stat Modifiers**\n"

@@ -32,7 +32,7 @@ class NPC {
         this.userId = uuidv4();
         this.user = {
             username: npcData.name,
-            discriminator: uuidv4().slice(0, 4),
+            discriminator: '0',
             npc: this,
             id: this.userId,
             // data: npcData,

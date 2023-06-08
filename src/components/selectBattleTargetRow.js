@@ -1,6 +1,7 @@
 const { ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const { eventNames } = require("../config/eventConfig");
 const { moveConfig } = require("../config/battleConfig");
+const { getFullUsername } = require("../utils/trainerUtils");
 
 const buildSelectBattleTargetRow = (battle, eligibleTargets, moveId, stateId) => {
     const selectMenu = new StringSelectMenuBuilder()
@@ -14,7 +15,7 @@ const buildSelectBattleTargetRow = (battle, eligibleTargets, moveId, stateId) =>
             const user = battle.users[target.userId];
 
             return {
-                label: `[${user.username}#${user.discriminator}] [${target.position}] ${target.name}`,
+                label: `[${getFullUsername(user)}] [${target.position}] ${target.name}`,
                 value: `${target.id}`,
             }
         }));

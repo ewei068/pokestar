@@ -1685,7 +1685,6 @@ const effectConfig = {
             if (!moveData) return;
 
             const oldMoveId = initialArgs.oldMoveId;
-            console.log("oldMoveId", oldMoveId)
             if (!oldMoveId) return;
 
             delete target.moveIds[oldMoveId];
