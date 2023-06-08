@@ -524,7 +524,7 @@ class Battle {
         this.ended = true;
 
         // if winner is npc, no rewards
-        if (this.teams[this.winner].isNpc) {
+        if (this.teams[this.winner] && this.teams[this.winner].isNpc) {
             this.addToLog("No rewards were given because the winner is an NPC.");
             return;
         }
@@ -1049,8 +1049,16 @@ class Pokemon {
                 mult *= adv;
             }
         }
+
+        const eventArgs = {
+            source: this,
+            target: targetPokemon,
+            moveType: moveType,
+            multiplier: mult,
+        };
+        this.battle.eventHandler.emit(battleEventNames.CALCULATE_TYPE_MULTIPLIER, eventArgs);
     
-        return mult;
+        return eventArgs.multiplier;
     };
 
     getPatternTargets(targetParty, targetPattern, targetPosition, moveId=null) {
@@ -1274,7 +1282,10 @@ class Pokemon {
         return damageTaken;
     }
 
-    causeFaint(source) {
+    takeFaint(source) {
+        if (this.isFainted) {
+            return;
+        }
         // trigger before cause faint effects
         const beforeCauseFaintArgs = {
             target: this,

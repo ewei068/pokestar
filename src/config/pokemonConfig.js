@@ -579,6 +579,46 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.FAST
     },
+    "23": {
+        "name": "Ekans",
+        "emoji": "<:23:1100282068837081109>",
+        "description": "It can freely detach its jaw to swallow large prey whole. It can become too heavy to move, however.",
+        "type": [types.POISON],
+        "baseStats": [35, 60, 44, 40, 54, 55],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/23.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/23.png",
+        "evolution": [{
+            "level": 22,
+            "id": "24",
+        }],
+        "abilities": {
+            "22": 0.45,
+            "61": 0.45,
+            "127": 0.1
+        },
+        "moveIds": ["m40", "m43", "m137", "m398"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.FAST
+    },
+    "24": {
+        "name": "Arbok",
+        "emoji": "<:24:1100282070082801670>",
+        "description": "The pattern on its belly appears to be a frightening face. Weak foes will flee just at the sight of the pattern.",
+        "type": [types.POISON],
+        "baseStats": [60, 95, 69, 65, 79, 80],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/24.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/24.png",
+        "abilities": {
+            "22": 0.45,
+            "61": 0.45,
+            "127": 0.1
+        },
+        "moveIds": ["m40", "m137", "m398", "m157"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.FAST
+    },
     "25": {
         "name": "Pikachu",
         "emoji": "<:25:1100282072003772457>",
@@ -633,6 +673,68 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
+    },
+    "29": {
+        "name": "Nidoran ♀",
+        "emoji": "<:29:1100282077531865088>",
+        "description": "While this Pokémon does not prefer to fight, even one drop of the venom it secretes from its barbs can be fatal.",
+        "type": [types.POISON],
+        "baseStats": [55, 47, 52, 40, 40, 41],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/29.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/29.png",
+        "evolution": [{
+            "level": 16,
+            "id": "30",
+        }],
+        "abilities": {
+            "38": 0.45,
+            "79": 0.45,
+            "55": 0.1
+        },
+        "moveIds": ["m10", "m270", "m188", "m414"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "30": {
+        "name": "Nidorina",
+        "emoji": "<:30:1100282100952858664>",
+        "description": "When it senses danger, it raises all the barbs on its body. These barbs grow more slowly than Nidorino's.",
+        "type": [types.POISON],
+        "baseStats": [70, 62, 67, 55, 55, 56],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/30.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/30.png",
+        "evolution": [{
+            "level": 36,
+            "id": "31",
+        }],
+        "abilities": {
+            "38": 0.45,
+            "79": 0.45,
+            "55": 0.1
+        },
+        "moveIds": ["m270", "m188", "m276", "m414"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "31": {
+        "name": "Nidoqueen",
+        "emoji": "<:31:1100282806065696768>",
+        "description": "Its hard scales provide strong protection. It uses its hefty bulk to execute powerful moves.",
+        "type": [types.POISON, types.GROUND],
+        "baseStats": [90, 92, 87, 75, 85, 76],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/31.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/31.png",
+        "abilities": {
+            "38": 0.45,
+            "79": 0.45,
+            "125": 0.1
+        },
+        "moveIds": ["m270", "m188", "m276", "m89"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
     },
     "32": {
         "name": "Nidoran ♂",
@@ -948,7 +1050,7 @@ const pokemonConfig = {
         "moveIds": ["m71", "m77", "m450", "m147"],
         "battleEligible": true,
         "rarity": rarities.COMMON,
-        "growthRate": growthRates.MEDIUMFAST
+        "growthRate": growthRates.FAST
     },
     "47": {
         "name": "Parasect",
@@ -966,7 +1068,7 @@ const pokemonConfig = {
         "moveIds": ["m77", "m202", "m450", "m147"],
         "battleEligible": true,
         "rarity": rarities.RARE,
-        "growthRate": growthRates.MEDIUMFAST
+        "growthRate": growthRates.FAST
     },
     "48": {
         "name": "Venonat",
@@ -988,7 +1090,7 @@ const pokemonConfig = {
         "moveIds": ["m77", "m50", "m188", "m450"],
         "battleEligible": true,
         "rarity": rarities.COMMON,
-        "growthRate": growthRates.MEDIUMFAST
+        "growthRate": growthRates.FAST
     },
     "49": {
         "name": "Venomoth",
@@ -1006,7 +1108,7 @@ const pokemonConfig = {
         "moveIds": ["m77", "m50", "m188", "m405"],
         "battleEligible": true,
         "rarity": rarities.RARE,
-        "growthRate": growthRates.MEDIUMFAST
+        "growthRate": growthRates.FAST
     },
     "49-1": {
         "name": "AATTVVV",
@@ -1268,6 +1370,65 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
+    },
+    "69": {
+        "name": "Bellsprout",
+        "emoji": "<:69:1100286243637559316>",
+        "description": "A carnivorous Pokémon that traps and eats bugs. It uses its root feet to soak up needed moisture.",
+        "type": [types.GRASS, types.POISON],
+        "baseStats": [50, 75, 35, 70, 30, 40],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/69.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/69.png",
+        "evolution": [{
+            "level": 21,
+            "id": "70",
+        }],
+        "abilities": {
+            "34": 0.8,
+            "82": 0.2,
+        },
+        "moveIds": ["m22", "m51", "m202", "m398"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "70": {
+        "name": "Weepinbell",
+        "emoji": "<:70:1100286274746716230>",
+        "description": "It spits out PoisonPowder to immobilize the enemy and then finishes it with a spray of Acid.",
+        "type": [types.GRASS, types.POISON],
+        "baseStats": [65, 90, 50, 85, 45, 55],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/70.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/70.png",
+        "evolution": [{
+            "level": 36,
+            "id": "71",
+        }],
+        "abilities": {
+            "34": 0.8,
+            "82": 0.2,
+        },
+        "moveIds": ["m51", "m202", "m398", "m668"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "71": {
+        "name": "Victreebel",
+        "emoji": "<:71:1100287549051777144>",
+        "description": "Said to live in huge colonies deep in jungles, although no one has ever returned from there.",
+        "type": [types.GRASS, types.POISON],
+        "baseStats": [80, 105, 65, 100, 60, 70],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/71.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/71.png",
+        "abilities": {
+            "34": 0.8,
+            "82": 0.2,
+        },
+        "moveIds": ["m51", "m398", "m668", "m437"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
     },
     "74": {
         "name": "Geodude",
@@ -1679,6 +1840,64 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "108": {
+        "name": "Lickitung",
+        "emoji": "<:108:1100290190532169819>",
+        "description": "Its tongue can be extended like a chameleon's. It leaves a tingling sensation when it licks enemies.",
+        "type": [types.NORMAL],
+        "baseStats": [90, 55, 75, 60, 75, 30],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/108.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/108.png",
+        "abilities": {
+            "20": 0.45,
+            "12": 0.45,
+            "13": 0.1
+        },
+        "moveIds": ["m122", "m23", "m34", "m428"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "109": {
+        "name": "Koffing",
+        "emoji": "<:109:1100290191874347008>",
+        "description": "Because it stores several kinds of toxic gases in its body, it is prone to exploding without warning.",
+        "type": [types.POISON],
+        "baseStats": [40, 65, 95, 60, 45, 35],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/109.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/109.png",
+        "evolution": [{
+            "level": 35,
+            "id": "110",
+        }],
+        "abilities": {
+            "26": 0.45,
+            "256": 0.45,
+            "1": 0.1
+        },
+        "moveIds": ["m33", "m123", "m108", "m194"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "110": {
+        "name": "Weezing",
+        "emoji": "<:110:1100290193061318686>",
+        "description": "Where two kinds of poison gases meet, 2 KOFFINGs can fuse into a WEEZING over many years.",
+        "type": [types.POISON],
+        "baseStats": [65, 90, 120, 85, 70, 60],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/110.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/110.png",
+        "abilities": {
+            "26": 0.45,
+            "256": 0.45,
+            "1": 0.1
+        },
+        "moveIds": ["m123", "m108", "m194", "m153"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "111": {
         "name": "Rhyhorn",
         "emoji": "<:111:1100290441380888576>",
@@ -1745,6 +1964,10 @@ const pokemonConfig = {
         "baseStats": [30, 45, 55, 70, 55, 85],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/120.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/120.png",
+        "evolution": [{
+            "level": 36,
+            "id": "121",
+        }],
         "abilities": {
             "35": 0.45,
             "30": 0.45,

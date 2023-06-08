@@ -1,10 +1,24 @@
 # Pokéstar Changelog
 
-### 0.9.3
+### 0.9.3 - Bug Fixes and Minor Content
 
-* Patch equipment reroll display
-* Reduced Pokedollar cost of equipment upgrades by 20%
-* Modify username display for new Discord usernames
+* New Pokemon and Abilities:
+  * Pokemon:
+    * Ekans/Arbok: An early-game Pokemon with offensive and support capabilities!
+    * Nidoran/Nidorina/Nidoqueen: A hybrid attacker with the ability to boost its allies!
+    * Bellsprout/Weepinbell/Victreebel: A hybrid attacker who punishes enemies with high attack!
+    * Lickitung: A bulky Pokemon that specializes in incapacitating enemies!
+    * Koffing/Weezing: A strong physical tank with a deadly Explosion + Destiny Bond combo!
+  * Abilities: Own Tempo, Levitate
+* Game Adjusstments:
+  * Made some Pokemon level-up faster!
+  * Reduced Pokedollar cost of equipment upgrades by 20%!
+* Bug fixes:
+  * Patched equipment reroll display.
+  * Modify username display for new Discord usernames (no discriminator).
+  * Patched issues with tie battles breaking.
+  * Gave Staryu an evolution to Starmie (whoops).
+  * Fixed Sleep Talk not properly registering AoE moves.
 
 ### 0.9.2 (6/7) - Twitch Plays Pokemon Mini Event
 
