@@ -1,7 +1,7 @@
-const { getState } = require("../services/state");
-const { buildDungeonSend } = require("../services/battle");
+const { getState } = require("../../services/state");
+const { buildPveSend } = require("../../services/battle");
 
-const dungeonSelect = async (interaction, data) => {
+const pveScroll = async (interaction, data) => {
     // get state
     const state = getState(data.stateId);
     if (!state) {
@@ -16,11 +16,12 @@ const dungeonSelect = async (interaction, data) => {
         return { err: "This interaction was not initiated by you." };
     }
 
-    const { send, err } = await buildDungeonSend({
+    const { send, err } = await buildPveSend({
         stateId: data.stateId,
         user: interaction.user,
-        view: "dungeon",
-        option: interaction.values[0],
+        view: "list",
+        option: null,
+        page: data.page,
     });
     if (err) {
         return { err: err };
@@ -29,4 +30,4 @@ const dungeonSelect = async (interaction, data) => {
     }
 }
 
-module.exports = dungeonSelect;
+module.exports = pveScroll;

@@ -1,7 +1,7 @@
-const { getStartTurnSend } = require("../services/battle");
-const { validateParty } = require("../services/party");
-const { getState } = require("../services/state");
-const { getTrainer } = require("../services/trainer");
+const { getStartTurnSend } = require("../../services/battle");
+const { validateParty } = require("../../services/party");
+const { getState } = require("../../services/state");
+const { getTrainer } = require("../../services/trainer");
 
 const pvpAccept = async (interaction, data) => {
     // get state

@@ -1,11 +1,11 @@
-const { getTrainer } = require("../services/trainer");
-const { listPokemons } = require("../services/pokemon");
-const { buildPokemonListEmbed } = require("../embeds/pokemonEmbeds");
-const { buildScrollActionRow } = require("../components/scrollActionRow");
-const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
-const { eventNames } = require("../config/eventConfig");
-const { getState } = require("../services/state");
-const { buildButtonActionRow } = require("../components/buttonActionRow");
+const { getTrainer } = require("../../services/trainer");
+const { listPokemons } = require("../../services/pokemon");
+const { buildPokemonListEmbed } = require("../../embeds/pokemonEmbeds");
+const { buildScrollActionRow } = require("../../components/scrollActionRow");
+const { buildPokemonSelectRow } = require("../../components/pokemonSelectRow");
+const { eventNames } = require("../../config/eventConfig");
+const { getState } = require("../../services/state");
+const { buildButtonActionRow } = require("../../components/buttonActionRow");
 
 const pokemonScroll = async (interaction, data) => {
     // get state

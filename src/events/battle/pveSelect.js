@@ -1,7 +1,7 @@
-const { getState } = require("../services/state");
-const { buildPveSend } = require("../services/battle");
+const { getState } = require("../../services/state");
+const { buildPveSend } = require("../../services/battle");
 
-const pveAccept = async (interaction, data) => {
+const pveSelect = async (interaction, data) => {
     // get state
     const state = getState(data.stateId);
     if (!state) {
@@ -15,12 +15,12 @@ const pveAccept = async (interaction, data) => {
     if (state.userId && interaction.user.id !== state.userId) {
         return { err: "This interaction was not initiated by you." };
     }
-    state.difficulty = data.difficulty;
-    
+
     const { send, err } = await buildPveSend({
         stateId: data.stateId,
         user: interaction.user,
-        view: "battle",
+        view: "npc",
+        option: interaction.values[0],
     });
     if (err) {
         return { err: err };
@@ -29,4 +29,4 @@ const pveAccept = async (interaction, data) => {
     }
 }
 
-module.exports = pveAccept;
+module.exports = pveSelect;

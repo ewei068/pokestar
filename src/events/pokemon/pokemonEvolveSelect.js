@@ -1,9 +1,9 @@
-const { getPokemon, getEvolvedPokemon } = require('../services/pokemon');
-const { getState } = require('../services/state');
-const { getTrainer } = require('../services/trainer');
-const { buildPokemonEmbed } = require('../embeds/pokemonEmbeds');
-const { buildButtonActionRow } = require('../components/buttonActionRow');
-const { eventNames } = require('../config/eventConfig');
+const { getPokemon, getEvolvedPokemon } = require('../../services/pokemon');
+const { getState } = require('../../services/state');
+const { getTrainer } = require('../../services/trainer');
+const { buildPokemonEmbed } = require('../../embeds/pokemonEmbeds');
+const { buildButtonActionRow } = require('../../components/buttonActionRow');
+const { eventNames } = require('../../config/eventConfig');
 
 const pokemonEvolveSelect = async (interaction, data) => {
     // get state

@@ -1,5 +1,5 @@
-const { buildReleaseSend } = require("../services/pokemon");
-const { getState } = require("../services/state");
+const { buildReleaseSend } = require("../../services/pokemon");
+const { getState } = require("../../services/state");
 
 const pokemonReleasePage = async (interaction, data) => {
     // get state

@@ -1,5 +1,5 @@
-const { buildHelpSend } = require("../embeds/helpEmbeds");
-const { getState } = require("../services/state");
+const { buildHelpSend } = require("../../embeds/helpEmbeds");
+const { getState } = require("../../services/state");
 
 const helpSelect = async (interaction, data) => {
     // get state

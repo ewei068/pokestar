@@ -1,8 +1,8 @@
-const { getTrainer, addExpAndMoneyTrainer } = require("../services/trainer");
-const { releasePokemons, listPokemons, canRelease } = require("../services/pokemon");
-const { getState, deleteState } = require("../services/state");
-const { idFrom } = require("../utils/utils");
-const { calculateWorth } = require("../utils/pokemonUtils");
+const { getTrainer, addExpAndMoneyTrainer } = require("../../services/trainer");
+const { releasePokemons, listPokemons, canRelease } = require("../../services/pokemon");
+const { getState, deleteState } = require("../../services/state");
+const { idFrom } = require("../../utils/utils");
+const { calculateWorth } = require("../../utils/pokemonUtils");
 
 const pokemonRelease = async (interaction, data) => {
     // get state

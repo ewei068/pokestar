@@ -1,5 +1,5 @@
-const { getState } = require("../services/state");
-const { buildDungeonSend } = require("../services/battle");
+const { getState } = require("../../services/state");
+const { buildDungeonSend } = require("../../services/battle");
 
 const dungeonAccept = async (interaction, data) => {
     // get state

@@ -4,10 +4,19 @@ const { addExpAndMoney: addExpAndMoney } = require("../services/trainer");
 const path = require("path");
 
 const eventHandlers = {};
+const eventsDirectory = path.join(__dirname, "../events");
 
 for (const eventName in eventConfig) { 
     const config = eventConfig[eventName];
-    const filePath = path.join(__dirname, "../events", config.execute);
+    if (!config.execute) {
+        continue;
+    }
+
+    let filePath = eventsDirectory;
+    if (config.directory) {
+        filePath = path.join(filePath, config.directory);
+    }
+    filePath = path.join(filePath, config.execute);
     eventHandlers[eventName] = require(filePath);
 }
 

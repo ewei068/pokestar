@@ -1,7 +1,7 @@
-const { getState } = require("../services/state");
-const { getStartTurnSend } = require("../services/battle");
-const { logger } = require("../log");
-const { stageNames } = require("../config/stageConfig");
+const { getState } = require("../../services/state");
+const { getStartTurnSend } = require("../../services/battle");
+const { logger } = require("../../log");
+const { stageNames } = require("../../config/stageConfig");
 
 const battleTargetSelect = async (interaction, data) => {
     // get state

@@ -1,5 +1,5 @@
-const { pokemonConfig } = require("../config/pokemonConfig");
-const { buildPokemonInfoSend } = require("../services/pokemon");
+const { pokemonConfig } = require("../../config/pokemonConfig");
+const { buildPokemonInfoSend } = require("../../services/pokemon");
 
 const pokemonInfoButton = async (interaction, data) => {
     const tab = data.tab;

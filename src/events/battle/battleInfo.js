@@ -1,9 +1,9 @@
-const { getState } = require("../services/state");
-const { buildBattleInfoActionRow } = require("../components/battleInfoActionRow");
-const { buildBattleMovesetEmbed, buildBattleTeamEmbed } = require("../embeds/battleEmbeds");
-const { getStartTurnSend } = require("../services/battle");
-const { stageNames } = require("../config/stageConfig");
-const { logger } = require("../log");
+const { getState } = require("../../services/state");
+const { buildBattleInfoActionRow } = require("../../components/battleInfoActionRow");
+const { buildBattleMovesetEmbed, buildBattleTeamEmbed } = require("../../embeds/battleEmbeds");
+const { getStartTurnSend } = require("../../services/battle");
+const { stageNames } = require("../../config/stageConfig");
+const { logger } = require("../../log");
 
 const battleInfo = async (interaction, data) => {
     // get state

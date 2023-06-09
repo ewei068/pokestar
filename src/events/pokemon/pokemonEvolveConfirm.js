@@ -1,7 +1,7 @@
-const { getState, deleteState } = require('../services/state');
-const { getTrainer } = require('../services/trainer');
-const { getPokemon, evolvePokemon } = require('../services/pokemon');
-const { buildPokemonEmbed } = require('../embeds/pokemonEmbeds');
+const { getState, deleteState } = require('../../services/state');
+const { getTrainer } = require('../../services/trainer');
+const { getPokemon, evolvePokemon } = require('../../services/pokemon');
+const { buildPokemonEmbed } = require('../../embeds/pokemonEmbeds');
 
 const pokemonEvolveConfirm = async (interaction, data) => {
     // get state

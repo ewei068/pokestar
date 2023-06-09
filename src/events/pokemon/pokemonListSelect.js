@@ -1,5 +1,5 @@
-const { getState  } = require("../services/state");
-const { buildPokemonInfoSend } = require("../services/pokemon");
+const { getState  } = require("../../services/state");
+const { buildPokemonInfoSend } = require("../../services/pokemon");
 
 const pokemonListSelect = async (interaction, data) => {
     // get state to refresh it if possible

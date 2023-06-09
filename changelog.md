@@ -1,6 +1,6 @@
 # Pokéstar Changelog
 
-### 0.9.3 - Bug Fixes and Minor Content
+### 0.9.3 (6/8) - Bug Fixes and Minor Content
 
 * New Pokemon and Abilities:
   * Pokemon:
@@ -10,7 +10,7 @@
     * Lickitung: A bulky Pokemon that specializes in incapacitating enemies!
     * Koffing/Weezing: A strong physical tank with a deadly Explosion + Destiny Bond combo!
   * Abilities: Own Tempo, Levitate
-* Game Adjusstments:
+* Game Adjustments:
   * Made some Pokemon level-up faster!
   * Reduced Pokedollar cost of equipment upgrades by 20%!
 * Bug fixes:

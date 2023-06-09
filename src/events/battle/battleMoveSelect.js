@@ -1,6 +1,6 @@
-const { buildSelectBattleTargetRow } = require("../components/selectBattleTargetRow");
-const { moveConfig } = require("../config/battleConfig");
-const { getState } = require("../services/state");
+const { buildSelectBattleTargetRow } = require("../../components/selectBattleTargetRow");
+const { moveConfig } = require("../../config/battleConfig");
+const { getState } = require("../../services/state");
 
 const battleMoveSelect = async (interaction, data) => {
     // get state

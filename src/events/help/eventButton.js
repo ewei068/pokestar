@@ -1,4 +1,4 @@
-const { buildEventsSend } = require("../embeds/helpEmbeds");
+const { buildEventsSend } = require("../../embeds/helpEmbeds");
 
 const eventButton = async (interaction, data) => {
     const page = data.page;

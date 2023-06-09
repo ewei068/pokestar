@@ -1,4 +1,4 @@
-const { buildTutorialSend } = require("../embeds/helpEmbeds");
+const { buildTutorialSend } = require("../../embeds/helpEmbeds");
 
 const tutorialButton = async (interaction, data) => {
     const page = data.page;

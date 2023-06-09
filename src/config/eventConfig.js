@@ -36,42 +36,51 @@ const eventConfig = {
     [eventNames.POKEMON_SCROLL]: {
         "name": "Pokemon Scroll",
         "execute": "pokemonScroll.js",
+        "directory": "pokemon",
     },
     [eventNames.POKEMON_RELEASE]: {
         "name": "Pokemon Release",
         "execute": "pokemonRelease.js",
+        "directory": "pokemon",
     },
     [eventNames.POKEMON_LIST_SELECT]: {
         "name": "Pokemon List Select",
         "execute": "pokemonListSelect.js",
+        "directory": "pokemon",
         "exp": 10,
         "money": 25,
     },
     [eventNames.POKEMON_EVOLVE_SELECT]: {
         "name": "Pokemon Evolve Select",
         "execute": "pokemonEvolveSelect.js",
+        "directory": "pokemon",
     },
     [eventNames.POKEMON_EVOLVE_CONFIRM]: {
         "name": "Pokemon Evolve Confirm",
         "execute": "pokemonEvolveConfirm.js",
+        "directory": "pokemon",
         "exp": 25,
         "money": 200,
     },
     [eventNames.POKEMON_RELEASE_PAGE]: {
         "name": "Pokemon Release Page",
         "execute": "pokemonReleasePage.js",
+        "directory": "pokemon",
     },
     [eventNames.POKEMON_INFO_BUTTON]: {
         "name": "Pokemon Info Button",
         "execute": "pokemonInfoButton.js",
+        "directory": "pokemon",
     },
     [eventNames.POKEDEX_LIST_BUTTON]: {
         "name": "Pokedex List Button",
         "execute": "pokedexListButton.js",
+        "directory": "pokemon",
     },
     [eventNames.POKEDEX_BUTTON]: {
         "name": "Pokedex Button",
         "execute": "pokedexButton.js",
+        "directory": "pokemon",
     },
     [eventNames.EQUIPMENT_SELECT]: {
         "name": "Equipment Select",
@@ -98,6 +107,7 @@ const eventConfig = {
     [eventNames.HELP_SELECT]: {
         "name": "Help Select",
         "execute": "helpSelect.js",
+        "directory": "help",
     },
     [eventNames.BACK]: {
         "name": "Back",
@@ -106,44 +116,53 @@ const eventConfig = {
     [eventNames.PVP_ACCEPT]: {
         "name": "PVP Accept",
         "execute": "pvpAccept.js",
+        "directory": "battle",
         "exp": 10,
         "money": 25,
     },
     [eventNames.PVE_SCROLL]: {
         "name": "PVE Scroll",
         "execute": "pveScroll.js",
+        "directory": "battle",
     },
     [eventNames.PVE_SELECT]: {
         "name": "PVE Select",
         "execute": "pveSelect.js",
+        "directory": "battle",
     },
     [eventNames.PVE_ACCEPT]: {
         "name": "PVE Accept",
         "execute": "pveAccept.js",
+        "directory": "battle",
         "exp": 10,
         "money": 25,
     },
     [eventNames.DUNGEON_SELECT]: {
         "name": "Dungeon Select",
         "execute": "dungeonSelect.js",
+        "directory": "battle",
     },
     [eventNames.DUNGEON_ACCEPT]: {
         "name": "Dungeon Accept",
         "execute": "dungeonAccept.js",
+        "directory": "battle",
         "exp": 10,
         "money": 25,
     },
     [eventNames.BATTLE_INFO]: {
         "name": "Battle Info",
         "execute": "battleInfo.js",
+        "directory": "battle",
     },
     [eventNames.BATTLE_MOVE_SELECT]: {
         "name": "Battle Move Select",
         "execute": "battleMoveSelect.js",
+        "directory": "battle",
     },
     [eventNames.BATTLE_TARGET_SELECT]: {
         "name": "Battle Target Select",
         "execute": "battleTargetSelect.js",
+        "directory": "battle",
         "exp": 10,
         "money": 25,
     },
@@ -169,10 +188,12 @@ const eventConfig = {
     [eventNames.EVENT_BUTTON]: {
         "name": "Event Button",
         "execute": "eventButton.js",
+        "directory": "help",
     },
     [eventNames.TUTORIAL_BUTTON]: {
         "name": "Tutorial Button",
         "execute": "tutorialButton.js",
+        "directory": "help",
     },
     "test": {
         "name": "Test",

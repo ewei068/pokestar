@@ -1,4 +1,4 @@
-const { buildPokedexSend } = require("../services/pokemon");
+const { buildPokedexSend } = require("../../services/pokemon");
 
 
 const pokedexListButton = async (interaction, data) => {
