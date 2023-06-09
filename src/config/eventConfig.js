@@ -26,6 +26,8 @@ const eventNames = {
     BANNER_SCROLL: "bannerScroll",
     BANNER_BUTTON: "bannerButton",
     BANNER_GACHA: "bannerGacha",
+    MEW_BUTTON: "mewButton",
+    MEW_SELECT: "mewSelect",
     VOTE_REWARDS: "voteRewards",
     EVENT_BUTTON: "eventButton",
     TUTORIAL_BUTTON: "tutorialButton",
@@ -179,6 +181,18 @@ const eventConfig = {
         "execute": "bannerGacha.js",
         "exp": 25,
         "money": 50,
+    },
+    [eventNames.MEW_BUTTON]: {
+        "name": "Mew Button",
+        "execute": "mewButton.js",
+        "directory": "mythic",
+    },
+    [eventNames.MEW_SELECT]: {
+        "name": "Mew Select",
+        "execute": "mewSelect.js",
+        "directory": "mythic",
+        "exp": 5,
+        "money": 10,
     },
     [eventNames.VOTE_REWARDS]: {
         "name": "Vote Rewards",

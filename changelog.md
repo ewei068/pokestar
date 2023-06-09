@@ -1,5 +1,12 @@
 # Pokéstar Changelog
 
+### 0.10.0
+
+* Mew
+* Rocket Event
+* EV tuning
+* Fixed Mimic bugs when mimicking already known move.
+
 ### 0.9.3 (6/8) - Bug Fixes and Minor Content
 
 * New Pokemon and Abilities:

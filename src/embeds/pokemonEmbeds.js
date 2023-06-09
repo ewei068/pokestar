@@ -2,7 +2,7 @@ const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig, growthR
 const { moveConfig, abilityConfig } = require('../config/battleConfig');
 const { EmbedBuilder } = require('discord.js');
 const { getWhitespace, getPBar, linebreakString, setTwoInline, getOrSetDefault } = require('../utils/utils');
-const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString, getAbilityName, getAbilityOrder, buildEquipmentString, buildBoostString } = require('../utils/pokemonUtils');
+const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString, getAbilityName, getAbilityOrder, buildEquipmentString, buildBoostString, getMoveIds } = require('../utils/pokemonUtils');
 const { buildMoveString } = require('../utils/battleUtils');
 const { backpackItems, backpackItemConfig } = require('../config/backpackConfig');
 const { trainerFields } = require('../config/trainerConfig');
@@ -205,7 +205,7 @@ const buildPokemonEmbed = (trainer, pokemon, tab="all", oldPokemon=null) => {
 
     // moves & abilities
     if (tab === "battle" || tab === "all") {
-        const fields = speciesData.moveIds.map((moveId) => {
+        const fields = getMoveIds(pokemon).map((moveId) => {
             const moveData = moveConfig[moveId];
             const { moveHeader, moveString } = buildMoveString(moveData);
             return {

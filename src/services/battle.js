@@ -11,7 +11,7 @@ const { addPokemonExpAndEVs, getPokemon, calculatePokemonStats } = require("./po
 const { logger } = require("../log");
 const { buildNextTurnActionRow } = require("../components/battleNextTurnRow");
 const { deleteState } = require("./state");
-const { calculateEffectiveSpeed, calculateEffectiveAccuracy, calculateEffectiveEvasion } = require("../utils/pokemonUtils");
+const { calculateEffectiveSpeed, calculateEffectiveAccuracy, calculateEffectiveEvasion, getMoveIds } = require("../utils/pokemonUtils");
 const { npcConfig, difficultyConfig, dungeons, dungeonConfig } = require("../config/npcConfig");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { getState } = require("./state");
@@ -798,7 +798,7 @@ class Pokemon {
         this.type2 = this.speciesData.type[1] || null;
         // map effectId => effect data (duration, args)
         this.effectIds = {};
-        this.moveIds = this.speciesData.moveIds.reduce((acc, moveId) => {
+        this.moveIds = getMoveIds(pokemonData).reduce((acc, moveId) => {
             acc[moveId] = {
                 cooldown: 0,
                 disabled: false,
@@ -1428,7 +1428,7 @@ class Pokemon {
             source: source,
             initialArgs: args,
         };
-        this.effectIds[effectId].args = effectData.effectAdd(this.battle, source, this, args);
+        this.effectIds[effectId].args = effectData.effectAdd(this.battle, source, this, args) || {};
 
         if (this.effectIds[effectId] !== undefined) {
             // trigger after add effect events

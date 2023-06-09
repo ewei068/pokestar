@@ -1433,6 +1433,8 @@ const effectConfig = {
                 return {
                     "typeSlot": "type2",
                 }
+            } else {
+                return {};
             }
         },
         "effectRemove": function(battle, target, args) {
@@ -1719,6 +1721,13 @@ const effectConfig = {
             const moveData = moveConfig[mimicMoveId];
             if (!mimicMoveId) return;
             if (!moveData) return;
+            // if target already knows move, ignore
+            if (target.moveIds[mimicMoveId]) {
+                battle.addToLog(`${target.name} already knows ${moveData.name}!`);
+                initialArgs.noRemove = true;
+                target.removeEffect("mimic");
+                return;
+            }
 
             const oldMoveId = initialArgs.oldMoveId;
             if (!oldMoveId) return;
@@ -1731,6 +1740,7 @@ const effectConfig = {
             battle.addToLog(`${target.name} is mimicking ${moveData.name}!`);
         },
         "effectRemove": function(battle, target, args, initialArgs) {
+            if (initialArgs.noRemove) return;
             const mimicMoveId = initialArgs.moveId;
             const oldMoveId = initialArgs.oldMoveId;
 
@@ -1924,7 +1934,7 @@ const moveConfig = {
         "description": "A reckless, full-body charge attack for slamming into the target. This also damages the user by a fourth of the damage dealt."
     },
     "m38": {
-        "name": "Double Edge",
+        "name": "Double-Edge",
         "type": types.NORMAL,
         "power": 125,
         "accuracy": 100,
@@ -2130,6 +2140,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.SPECIAL,
         "description": "The target is attacked with a peculiar ray. This has a 50% chance to confuse the target for 1 turn.",
+    },
+    "m63": {
+        "name": "Hyper Beam",
+        "type": types.NORMAL,
+        "power": 130,
+        "accuracy": 90,
+        "cooldown": 6,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.COLUMN,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The target is attacked with a powerful beam. This does 50% damage to non-primary targets. The user must rest on the next turn.",
     },
     "m64": {
         "name": "Peck",
@@ -3508,6 +3531,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user cloaks itself in sinister flames and charges at the target. Type effectiveness is calculated as the best of Fire and Dark. This also damages the user by a third of the damage dealt.",
     },
+    "m396": {
+        "name": "Aura Sphere",
+        "type": types.FIGHTING,
+        "power": 80,
+        "accuracy": null,
+        "cooldown": 3,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user lets loose a blast of aura power from deep within its body at the target. This move never misses.",
+    },
     "m398": {
         "name": "Poison Jab",
         "type": types.POISON,
@@ -4558,6 +4594,21 @@ const moveExecutes = {
                 target.addEffect("confused", 1, source);
             }
         }
+    },
+    "m63": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m63";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            // deal 50% to non primary target
+            source.dealDamage(Math.round(damageToDeal * (primaryTarget !== target ? 0.5 : 1)), target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+        // apply recharge to self
+        source.addEffect("recharge", 1, source);
     },
     "m64": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m64";
@@ -6300,6 +6351,18 @@ const moveExecutes = {
         source.dealDamage(damageToDeal, source, {
             type: "recoil"
         });
+    },
+    "m396": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m398";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // ignore miss
+            const damageToDeal = calculateDamage(moveData, source, target, false);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
     },
     "m398": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m398";

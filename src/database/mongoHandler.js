@@ -159,6 +159,20 @@ class QueryBuilder {
 
         return await query;
     }
+
+    async insertOne() {
+        let query = await getCollection(this.collectionName);
+        query = query.insertOne(this.documents);
+
+        return await query;
+    }
+
+    async upsertOne() {
+        let query = await getCollection(this.collectionName);
+        query = query.updateOne(this.filter, this.upsert, { upsert: true });
+
+        return await query;
+    }
 }
 
 module.exports = {
