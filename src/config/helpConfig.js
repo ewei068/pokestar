@@ -29,17 +29,39 @@ The Twitch Plays Pokemon mini-event has arrived! Including new PvE content and l
 * Bloody Sunday Art: https://imgur.com/70oeGPX
 `
 
+const ROCKET_DESCRIPTION = `🚀**Team Rocket Takeover**🚀
+
+As we wrap up Gen 1, Team Rocket has taken over Pokestar! Defeat special stages, collect limited Pokemon, and catch the Mythical Mew!
+
+<:armoredmewtwo:1117130461282578535> **Event Pokemon:** Limited event Pokemon owned by Team Rocket are now available! Use \`/gacha\` to try your luck!
+
+👨‍🚀 **Team Rocket Stages:** Two new limited \`/pve\` stages have been added! Defeat the Team Rocket Trio for daily rewards, and defeat the Gold Rush stage for increased Pokedollars!
+
+🏝️ **Permanent Dungeon:** The New Island from Mewtwo Strikes Back is permanently available as a dungeon! Defeat Giovanni and Mewtwo to catch the Mythical Mew in \`/dungeons\`!
+
+<:151:1116755839919853670> **Mew:** Mew is the first Mythical Pokemon to be added to Pokestar! Mew is a special Pokemon whose moves and nature can be modified. Use \`/mew\` after defeating New Island to catch and configure your Mew!
+
+🖌️ **Art Credits**:
+* Armored Mewtwo Sprites: https://www.deviantart.com/pclaydon/art/Armoured-Mewtwo-624981861
+* Armored Mewtwo Icon: https://www.deviantart.com/nathaniel98643/art/Armor-Mewtwo-682857643
+`
+
 const gameEventConfig = [
+    {
+        "name": "Team Rocket Takeover",
+        "description": ROCKET_DESCRIPTION,
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-rocket-banner.png",
+    },
     {
         "name": "Twitch Plays Pokemon",
         "description": TPP_DESCRIPTION,
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-tpp-banner.png",
     },
-    {
+    /* {
         "name": "Launch Celebration",
         "description": LAUNCH_CELEBRATION_DESCRIPTION,
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-launch-banner.png",
-    }
+    } */
 ]
 
 SUPPORT_SERVER_INVITE = "https://discord.gg/ygVPUXeJXZ";

@@ -3,6 +3,7 @@ const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const { moveConfig } = require("../config/battleConfig");
 const { collectionNames } = require("../config/databaseConfig");
 const { eventNames } = require("../config/eventConfig");
+const { dungeons } = require("../config/npcConfig");
 const { pokemonConfig, rarities, natureConfig } = require("../config/pokemonConfig");
 const { QueryBuilder } = require("../database/mongoHandler");
 const { buildPokemonEmbed } = require("../embeds/pokemonEmbeds");
@@ -92,6 +93,11 @@ const getMew = async (trainer) => {
     let mew = mewRes.data;
     let modified = false;
     if (!mew) {
+        // if trainer hasn't defeated the newIsland, return err
+        if (!trainer.defeatedNPCs[dungeons.NEW_ISLAND]) {
+            return { err: "You must defeat the New Island in the `/dungeons` before you can get Mew!" };
+        }
+        
         mew = generateRandomPokemon(trainer.userId, speciesId, level=1);
         // set ivs to 31
         mew.ivs = [31, 31, 31, 31, 31, 31];
@@ -123,7 +129,7 @@ const getMew = async (trainer) => {
                 // return { err: "Error updating Mew" };
             }
             if (res.upsertedId) {
-                mew._id = upsertedId;
+                mew._id = res.upsertedId;
             }
             logger.info(`Updated Mew for ${trainer.user.username}`);
         } catch (err) {

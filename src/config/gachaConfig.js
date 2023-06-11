@@ -72,6 +72,30 @@ const bannerTypeConfig = {
 const bannerConfig = [
     {
         "bannerType": bannerTypes.SPECIAL,
+        "name": "[EVENT] Team Rocket Trio",
+        "description": "Prepare for trouble... and make it double! Pull for the Team Rocket Trio's limited signature Pokemon as well as the limited legendary Meowth! For more information, use `/events`.",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["52-1"],
+                [rarities.EPIC]: ["24-1", "110-1"]
+            }
+        },
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-rocket-banner.png"
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
+        "name": "[EVENT] Mewtwo Strikes Back",
+        "description": "Mewtwo has returned to Pokestar! Pull for the powerful limited Armored Mewtwo, as well as the (non-limited) other clones! For more information, use `/events`.",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["150-1"],
+                [rarities.EPIC]: ["3", "6", "9"]
+            }
+        },
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-rocket-banner.png"
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
         "name": "[EVENT] God of Anarchy",
         "description": "The Lord Helix has graced Pokestar with its presence! Pull for the powerful limited Lord Helix, as well as Twitch Plays Red's other Pokemon! For more information, use `/events`.",
         "rateUp": () => {
@@ -107,7 +131,7 @@ const bannerConfig = [
         },
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-tpp-banner.png"
     },
-    {
+    /* {
         "bannerType": bannerTypes.SPECIAL,
         "name": "[EVENT] Ash's Banner",
         "description": "The launch celebration has arrived! Pull for some of Ash and Red's best Pokemon, as well as a powerful limited Pikachu variant! For more information, use `/events`.",
@@ -132,7 +156,7 @@ const bannerConfig = [
             }
         },
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-launch-banner.png"
-    },
+    }, */
     {
         "bannerType": bannerTypes.ROTATING,
         "name": "Rotating",

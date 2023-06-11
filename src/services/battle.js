@@ -156,6 +156,13 @@ class NPC {
         if (source.status.statusId === statusConditions.SLEEP && moveId === "m214") {
             return 1000000;
         }
+        // special case: if move is rocket thievery and enemy team has no fainted pokemon, return 0
+        if (moveId === "m20003") {
+            const enemyParty = source.getEnemyParty();
+            if (enemyParty && enemyParty.pokemons && enemyParty.pokemons.filter(p => p && p.fainted).length === 0) {
+                return 0;
+            }
+        }
 
         if (moveData.power !== null) {
             // if move does damage, calculate damage that would be dealt
@@ -248,6 +255,7 @@ class Battle {
     minLevel;
     level;
     rewards;
+    rewardString;
     dailyRewards;
     npcId;
     difficulty;
@@ -259,6 +267,7 @@ class Battle {
         level=null,
         equipmentLevel=null,
         rewards=null,
+        rewardString=null,
         dailyRewards=null,
         npcId=null,
         difficulty=null,
@@ -299,6 +308,7 @@ class Battle {
             this.minLevel = level;
         }
         this.rewards = rewards;
+        this.rewardString = rewardString;
         this.dailyRewards = dailyRewards;
         this.npcId = npcId;
         this.difficulty = difficulty;
@@ -1958,6 +1968,9 @@ const getStartTurnSend = async (battle, stateId) => {
         try {
             // if winner is NPC, no rewards
             if (!battle.teams[battle.winner].isNpc) {
+                if (battle.rewardString) {
+                    content += `\n${battle.rewardString}`;
+                }
                 const rewardRecipients = [];
                 content += `\n**The following Pokemon leveled up:**`;
                 for (const teamName in battle.teams) {
@@ -1983,20 +1996,28 @@ const getStartTurnSend = async (battle, stateId) => {
                         // add trainer rewards
                         await addExpAndMoney(user, moneyReward, expReward);
                         const defeatedDifficultiesToday = trainer.data.defeatedNPCsToday[battle.npcId];
+                        const defeatedDifficulties = trainer.data.defeatedNPCs[battle.npcId];
                         const allRewards = {};
+                        let modified = false;
                         // add battle rewards
                         if (battle.rewards) {
                             addRewards(trainer.data, battle.rewards, allRewards);
+                            modified = true;
                         }
                         // add daily rewards
                         if (battle.dailyRewards && (!defeatedDifficultiesToday || !defeatedDifficultiesToday.includes(battle.difficulty))) {
-                            // add daily rewards
                             addRewards(trainer.data, battle.dailyRewards, allRewards);
                             getOrSetDefault(trainer.data.defeatedNPCsToday, battle.npcId, []).push(battle.difficulty);
+                            modified = true;
+                        }
+                        // add to defeated difficulties if not already there
+                        if (!defeatedDifficulties || !defeatedDifficulties.includes(battle.difficulty)) {
+                            getOrSetDefault(trainer.data.defeatedNPCs, battle.npcId, []).push(battle.difficulty);
+                            modified = true;
                         }
 
                         // attempt to add rewards
-                        if (Object.keys(allRewards).length > 0) {
+                        if (modified) {
                             const {data, err} = await updateTrainer(trainer.data);
                             if (err) {
                                 logger.warn(`Failed to update daily trainer for user ${user.id} after battle`);
@@ -2359,7 +2380,8 @@ const buildDungeonSend = async ({ stateId=null, user=null, view="list", option=n
         const battle = new Battle({
             ...rewardMultipliers,
             rewards: dungeonDifficultyData.rewards,
-            npcId: state.npcId,
+            rewardString: dungeonDifficultyData.rewardString,
+            npcId: state.dungeonId,
             difficulty: state.difficulty,
         });
         battle.addTeam("Dungeon", true);

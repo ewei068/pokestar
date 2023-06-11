@@ -2,22 +2,25 @@
 
 ### 0.10.0
 
-* Mew
-* Rocket Event:
-  * Rocket Trio event pve
-  * Gold Farm event pve
-  * PERM Mewtwo Strikes Back dungeon
-  * PERM Mew
-  * Event Pokemon:
+* New Event: Team Rocket Takeover! Use `/events` for more details:
+  * Two limited event `/pve` stages: Team Rocket and Gold Rush!
+  * New Permanent Dungeon: New Island from Mewtwo Strikes Back!
+  * New limited event Pokemon:
     * Jessie's Arbok (Epic): A fast physical attacker with a terrifying glare!
     * James's Weezing (Epic): A self-destructive tank whos smoke helps allies evade attacks!
     * Rocket Meowth (Legendary): A super speedy support who can reduce cooldowns and steal enemy Pokemon!
     * Armored Mewtwo (Legendary): A bulky variation of Mewtwo that trades off some offenses for tankiness!
+* **Mew:** Mew is the first Mythical Pokemon in Pokestar! 
+  * Mythical Pokemon are special Pokemon with unique effects, and can only be obtained once.
+  * Mew's gimick is the ability to freely customize its moves and nature to fit any role!
+  * Use `/mew` to configure your mew. You must defeat New Island in `/dungeons` first.
 * EV tuning
 * Fixed Mimic bugs when mimicking already known move.
 * Fixed bug where Lord Helix's Holy Pump was calculated as Water type instead of Psychic type.
 * If time: trainer icons
+* Filter by locked
 * End the Launch Celebration event.
+* **The Twitch Plays Pokemon event will end in a week!**
 
 ### 0.9.3 (6/8) - Bug Fixes and Minor Content
 
