@@ -3,9 +3,21 @@
 ### 0.10.0
 
 * Mew
-* Rocket Event
+* Rocket Event:
+  * Rocket Trio event pve
+  * Gold Farm event pve
+  * PERM Mewtwo Strikes Back dungeon
+  * PERM Mew
+  * Event Pokemon:
+    * Jessie's Arbok (Epic): A fast physical attacker with a terrifying glare!
+    * James's Weezing (Epic): A self-destructive tank whos smoke helps allies evade attacks!
+    * Rocket Meowth (Legendary): A super speedy support who can reduce cooldowns and steal enemy Pokemon!
+    * Armored Mewtwo (Legendary): A bulky variation of Mewtwo that trades off some offenses for tankiness!
 * EV tuning
 * Fixed Mimic bugs when mimicking already known move.
+* Fixed bug where Lord Helix's Holy Pump was calculated as Water type instead of Psychic type.
+* If time: trainer icons
+* End the Launch Celebration event.
 
 ### 0.9.3 (6/8) - Bug Fixes and Minor Content
 

@@ -401,13 +401,7 @@ class Battle {
                 return;
             }
             const abilityId = pokemon.ability.abilityId;
-            const abilityData = abilityConfig[abilityId];
-            if (!abilityData || !abilityData.abilityAdd) {
-                return;
-            }
-
-            pokemon.ability.data = abilityData.abilityAdd(this, pokemon, pokemon);
-            pokemon.ability.applied = true;
+            pokemon.addAbility(abilityId);
         });
 
         this.eventHandler.emit(battleEventNames.BATTLE_BEGIN, {
@@ -723,6 +717,7 @@ class Pokemon {
     speciesData;
     id;
     userId;
+    originalUserId;
     teamName;
     name;
     level;
@@ -777,6 +772,7 @@ class Pokemon {
         this.pokemonData = pokemonData;
         this.id = pokemonData._id.toString();
         this.userId = trainer.userId;
+        this.originalUserId = trainer.userId;
         this.teamName = teamName;
         this.name = pokemonData.name;
         this.hp = pokemonData.stats[0];
@@ -1198,6 +1194,76 @@ class Pokemon {
         return misses;
     }
 
+    switchUsers(userId) {
+        if (this.userId === userId) {
+            return false;
+        }
+        // get user info from battle
+        const user = this.battle.users[userId];
+        if (!user) {
+            return false;
+        }
+        const teamName = user.teamName;
+        if (!teamName) {
+            return false;
+        }
+
+        // set teamName and userId
+        this.teamName = teamName;
+        this.userId = userId;
+
+        this.battle.addToLog(`${this.name} switched to ${user.username}'s team!`);
+
+        return true;
+    }
+
+    switchPositions(userId, newPosition, source) {
+        const currentIndex = this.position - 1;
+        const newIndex = newPosition - 1;
+
+        // get user info from battle
+        const user = this.battle.users[userId];
+        if (!user) {
+            return false;
+        }
+        const newTeamName = user.teamName;
+        if (!newTeamName) {
+            return false;
+        }
+
+        const oldParty = this.battle.parties[this.teamName];
+        const newParty = this.battle.parties[newTeamName];
+        if (!newParty) {
+            return false;
+        }
+
+        // check if position is valid
+        if (newPosition < 1 || newPosition > newParty.pokemons.length) {
+            return false;
+        }
+        // if pokemon exists in new position, return false
+        if (newParty.pokemons[newIndex]) {
+            return false;
+        }
+
+        // if new team, attempt to switch teams
+        if (this.teamName !== newTeamName) {
+            if (!this.switchUsers(userId)) {
+                return false;
+            }
+        }
+
+        // remove from old position
+        oldParty.pokemons[currentIndex] = null;
+
+        // add to new position
+        newParty.pokemons[newIndex] = this;
+        this.position = newPosition;
+
+        this.battle.addToLog(`${this.name} switched to position to ${newPosition}!`);
+
+        return true;
+    }
 
     dealDamage(damage, target, damageInfo) {
         // console.log(damage)
@@ -1319,6 +1385,33 @@ class Pokemon {
             source: source,
         };
         this.battle.eventHandler.emit(battleEventNames.AFTER_FAINT, afterFaintArgs);
+    }
+
+    beRevived(reviveHp, source) {
+        if (!this.isFainted) {
+            return;
+        }
+        if (reviveHp <= 0) {
+            return;
+        }
+
+        this.hp = Math.min(this.maxHp, reviveHp);
+        this.isFainted = false;
+        this.battle.addToLog(`${this.name} was revived!`);
+
+        // re-add ability
+        const abilityId = this.ability.abilityId;
+        this.addAbility(abilityId);
+    }
+
+    addAbility(abilityId) {
+        const abilityData = abilityConfig[abilityId];
+        if (!abilityData || !abilityData.abilityAdd) {
+            return;
+        }
+
+        this.ability.data = abilityData.abilityAdd(this.battle, this, this);
+        this.ability.applied = true;
     }
 
     giveHeal(heal, target, healInfo) {
@@ -1469,6 +1562,18 @@ class Pokemon {
         }
 
         effectData.effectRemove(this.battle, this, this.effectIds[effectId].args, this.effectIds[effectId].initialArgs);
+
+        if (this.effectIds[effectId] !== undefined) {
+            const afterRemoveArgs = {
+                target: this,
+                source: this.effectIds[effectId].source,
+                effectId: effectId,
+                duration: this.effectIds[effectId].duration,
+                initialArgs: this.effectIds[effectId].initialArgs,
+                args: this.effectIds[effectId].args,
+            };
+            this.battle.eventHandler.emit(battleEventNames.AFTER_EFFECT_REMOVE, afterRemoveArgs);
+        }
 
         delete this.effectIds[effectId];
         return true;
@@ -1722,7 +1827,7 @@ class Pokemon {
         }
     }
 
-    reduceMoveCooldown(moveId, amount, source) {
+    reduceMoveCooldown(moveId, amount, source, silenced=false) {
         // check that move exists
         if (!this.moveIds[moveId]) {
             return;
@@ -1741,7 +1846,9 @@ class Pokemon {
         }
         const newCooldown = this.moveIds[moveId].cooldown;
 
-        this.battle.addToLog(`${this.name}'s ${moveConfig[moveId].name}'s cooldown was reduced by ${oldCooldown - newCooldown} turns!`);
+        if (!silenced) {
+            this.battle.addToLog(`${this.name}'s ${moveConfig[moveId].name}'s cooldown was reduced by ${oldCooldown - newCooldown} turns!`);
+        }
         return oldCooldown - newCooldown;
     }
 
@@ -1759,6 +1866,12 @@ class Pokemon {
     getPartyRowColumn() {
         const party = this.battle.parties[this.teamName];
         return {party, ...this.getRowAndColumn()};
+    }
+
+    getEnemyParty() {
+        const teamNames = Object.keys(this.battle.parties);
+        const enemyTeamName = teamNames[0] === this.teamName ? teamNames[1] : teamNames[0];
+        return this.battle.parties[enemyTeamName];
     }
 
 }
@@ -1899,7 +2012,7 @@ const getStartTurnSend = async (battle, stateId) => {
 
                         const levelUps = [];
                         // add pokemon rewards
-                        for (const pokemon of Object.values(battle.allPokemon).filter(p => p.userId === trainer.data.userId)) {
+                        for (const pokemon of Object.values(battle.allPokemon).filter(p => p.originalUserId === trainer.data.userId)) {
                             // get db pokemon
                             const dbPokemon = await getPokemon(trainer.data, pokemon.id);
                             if (dbPokemon.err) {

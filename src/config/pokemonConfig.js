@@ -619,6 +619,23 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.FAST
     },
+    "24-1": {
+        "name": "Jessie's Arbok",
+        "emoji": "<:jessiearbok:1117130466479325225>",
+        "description": "Jessie's loyal and nefarious partner. Foes are frozen with fear at the sight of it.",
+        "type": [types.POISON],
+        "baseStats": [75, 125, 70, 70, 80, 110],
+        "sprite": "https://archives.bulbagarden.net/media/upload/3/39/Spr_1b_024.png",
+        "shinySprite": "https://archives.bulbagarden.net/media/upload/0/00/Spr_2c_024_s.png",
+        "abilities": {
+            "22": 1,
+        },
+        "moveIds": ["m40", "m137-1", "m398", "m157"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST,
+        "noGacha": true
+    },
     "25": {
         "name": "Pikachu",
         "emoji": "<:25:1100282072003772457>",
@@ -1180,7 +1197,7 @@ const pokemonConfig = {
             "id": "53",
         }],
         "abilities": {
-            "7": 0.45,
+            "53": 0.45,
             "101": 0.45,
             "127": 0.1
         },
@@ -1188,6 +1205,23 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.COMMON,
         "growthRate": growthRates.FAST
+    },
+    "52-1": {
+        "name": "Rocket Meowth",
+        "emoji": "<:rocketmeowth:1117130468014428293>",
+        "description": "A cunning member of the notorious Team Rocket, known for its iconic ability to speak human language.",
+        "type": [types.NORMAL],
+        "baseStats": [85, 100, 75, 90, 90, 140],
+        "sprite": "https://archives.bulbagarden.net/media/upload/4/4d/Spr_1b_052.png",
+        "shinySprite": "https://archives.bulbagarden.net/media/upload/9/95/Spr_2c_052_s.png",
+        "abilities": {
+            "53": 1,
+        },
+        "moveIds": ["m6", "m6-1", "m252", "m20003"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
     },
     "53": {
         "name": "Persian",
@@ -1898,6 +1932,23 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "110-1": {
+        "name": "James's Weezing",
+        "emoji": "<:jamesweezing:1117130463186800640>",
+        "description": "James's loyal and formidable companion. Its noxious fumes can incapacitate fields of foes.",
+        "type": [types.POISON],
+        "baseStats": [75, 95, 125, 85, 80, 70],
+        "sprite": "https://archives.bulbagarden.net/media/upload/1/1b/Spr_1b_110.png",
+        "shinySprite": "https://archives.bulbagarden.net/media/upload/3/3f/Spr_2c_110_s.png",
+        "abilities": {
+            "26": 1
+        },
+        "moveIds": ["m123", "m108-1", "m194", "m153"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST,
+        "noGacha": true
+    },
     "111": {
         "name": "Rhyhorn",
         "emoji": "<:111:1100290441380888576>",
@@ -2455,6 +2506,23 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.LEGENDARY,
         "growthRate": growthRates.SLOW
+    },
+    "150-1": {
+        "name": "Armored Mewtwo",
+        "emoji": "<:armoredmewtwo:1117130461282578535>",
+        "description": "A genetic clone donning inpenetrable armor. Its powers are dedicated to battling.",
+        "type": [types.PSYCHIC, types.STEEL],
+        "baseStats": [120, 95, 120, 135, 105, 105],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/armored-mewtwo.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/armored-mewtwo-shiny.png",
+        "abilities": {
+            "46": 1
+        },
+        "moveIds": ["m246", "m334-2", "m430", "m540"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW,
+        "noGacha": true
     },
     "151": {
         "name": "Mew",

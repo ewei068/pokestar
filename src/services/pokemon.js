@@ -224,7 +224,10 @@ const getEvolvedPokemon = (pokemon, evolutionSpeciesId) => {
     } else {
         // get current ability slot
         let slot = 1;
-        const index = abilities.indexOf(pokemon.abilityId);
+        let index = abilities.indexOf(pokemon.abilityId);
+        if (index === -1) {
+            index = 0;
+        }
         if (abilities.length === 2) {
             slot = index === 0 ? 1 : 3;
         } else if (abilities.length === 3) {
