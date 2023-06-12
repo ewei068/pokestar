@@ -20,6 +20,8 @@ const train = async (user, pokemonId, location) => {
         "temple": locations.TEMPLE,
         "school": locations.SCHOOL,
         "track": locations.TRACK,
+        "berryBush": locations.BERRY_BUSH,
+        "berryFarm": locations.BERRY_FARM,
     }
     const locationId = map[location];
 
@@ -45,11 +47,11 @@ const train = async (user, pokemonId, location) => {
 
     // build message
     let message = `Trained ${pokemon.data.name} and gained ${exp} exp.`;
-    if (evs[0] > 0 || evs[1] > 0 || evs[2] > 0 || evs[3] > 0 || evs[4] > 0 || evs[5] > 0) {
+    if (evs[0] != 0 || evs[1] != 0 || evs[2] != 0 || evs[3] != 0 || evs[4] != 0 || evs[5] != 0) {
         message += ` ${pokemon.data.name} gained the following EVs:`;
         // format evs for all that exist
         for (const ev in evs) {
-            if (evs[ev] > 0) {
+            if (evs[ev] != 0) {
                 message += ` ${evs[ev]} ${statConfig[ev].name},`;
             }
         }

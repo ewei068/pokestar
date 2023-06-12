@@ -145,7 +145,6 @@ const buildMoveString = (moveData, cooldown=0) => {
 const buildBattlePokemonString = (pokemon) => {
     let pokemonHeader = ""
     if (pokemon.isFainted) {
-        // TODO: check for other status conditions
         pokemonHeader += "[FNT] ";
     } else {
         switch (pokemon.status.statusId) {

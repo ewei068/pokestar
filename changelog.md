@@ -14,11 +14,12 @@
   * Mythical Pokemon are special Pokemon with unique effects, and can only be obtained once.
   * Mew's gimick is the ability to freely customize its moves and nature to fit any role!
   * Use `/mew` to configure your mew. You must defeat New Island in `/dungeons` first.
-* EV tuning
+* EV reduction and tuning: train your Pokemon at the Berry Bush and Berry Farm to reduce their EVs by 1 or 10 respectively!
 * Fixed Mimic bugs when mimicking already known move.
 * Fixed bug where Lord Helix's Holy Pump was calculated as Water type instead of Psychic type.
 * If time: trainer icons
-* Filter by locked
+* Removed the `battleEligible` filter in `/list` and replaced it with the `locked` filter.
+* Updated `/daily` to take advantage of Discord's dynamic time display.
 * End the Launch Celebration event.
 * **The Twitch Plays Pokemon event will end in a week!**
 

@@ -24,11 +24,15 @@ const DAILY_MONEY = process.env.STAGE == stageNames.ALPHA ? 100000 : 300;
 
 const drawDaily = async (trainer) => {
     // check if new day; if in alpha, ignore
-    if (!trainer.claimedDaily || process.env.STAGE == stageNames.ALPHA) {
+    if (!trainer.claimedDaily){//|| process.env.STAGE == stageNames.ALPHA) {
         trainer.claimedDaily = true;
     } else {
-        const { hours, minutes, seconds } = getTimeToNextDay();
-        return { data: null, err: `You already claimed your daily rewards today! You can claim your next reward in ${hours}:${minutes}:${seconds}.` };
+        // get tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setUTCHours(0, 0, 0, 0);
+        const tomorrowTime = tomorrow.getTime();
+        return { data: null, err: `You already claimed your daily rewards today! You can claim your next reward <t:${Math.floor(tomorrowTime / 1000)}:R>.` };
     }
 
     const results = drawDiscrete(dailyRewardChances, NUM_DAILY_REWARDS);

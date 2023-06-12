@@ -180,7 +180,7 @@ const commandConfig = {
                 "optional": true,
                 "variable": false,
                 "enum": [
-                    "shiny", "name", "rarity", "battleEligible", "none"
+                    "shiny", "name", "rarity", "locked", "none"
                 ]
             },
             "filtervalue": {
@@ -279,7 +279,7 @@ const commandConfig = {
                 "optional": true,
                 "variable": false,
                 "enum": [
-                    "home", "restaurant", "gym", "dojo", "temple", "school", "track"
+                    "home", "restaurant", "gym", "dojo", "temple", "school", "track", "berryBush", "berryFarm"
                 ]
             }
         },
