@@ -161,7 +161,7 @@ const locationConfig = {
         "description": "Used to reset your Pokemon's EVs! Reduces all EVs by 10!\nUse the \`/help train\` command to learn more!",
         "levelConfig": {
             1: {
-                "exp": 10,
+                "exp": 8,
                 "evs": [-10, -10, -10, -10, -10, -10],
             },
         }

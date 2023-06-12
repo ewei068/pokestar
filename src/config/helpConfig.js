@@ -35,7 +35,7 @@ As we wrap up Gen 1, Team Rocket has taken over Pokestar! Defeat special stages,
 
 <:armoredmewtwo:1117130461282578535> **Event Pokemon:** Limited event Pokemon owned by Team Rocket are now available! Use \`/gacha\` to try your luck!
 
-👨‍🚀 **Team Rocket Stages:** Two new limited \`/pve\` stages have been added! Defeat the Team Rocket Trio for daily rewards, and defeat the Gold Rush stage for increased Pokedollars!
+<:rocketmeowth:1117873583537016832> **Team Rocket Stages:** Two new limited \`/pve\` stages have been added! Defeat the Team Rocket Trio for daily rewards, and defeat the Gold Rush stage for increased Pokedollars!
 
 🏝️ **Permanent Dungeon:** The New Island from Mewtwo Strikes Back is permanently available as a dungeon! Defeat Giovanni and Mewtwo to catch the Mythical Mew in \`/dungeons\`!
 

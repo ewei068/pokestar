@@ -1208,7 +1208,7 @@ const pokemonConfig = {
     },
     "52-1": {
         "name": "Rocket Meowth",
-        "emoji": "<:rocketmeowth:1117130468014428293>",
+        "emoji": "<:rocketmeowth:1117873583537016832>",
         "description": "A cunning member of the notorious Team Rocket, known for its iconic ability to speak human language.",
         "type": [types.NORMAL],
         "baseStats": [85, 100, 75, 90, 90, 140],
@@ -2550,7 +2550,7 @@ const pokemonConfig = {
             "powerMoveIds": [
                 "m14", "m34", "m36", "m46",  "m53", "m57", "m58", "m60", "m65", "m68",
                 "m70", "m85", "m86", "m91", "m92", "m94", "m113", "m115", "m127", "m182", "m188", "m191",
-                "m203", "m215",  "m216", "m219", "m226", "m247", "m269", "m202", "m276", "m283",
+                "m203", "m215",  "m216", "m219", "m226", "m247", "m269", "m202", "m252", "m276", "m283",
                 "m317", "m334", "m340", "m352", "m355", "m369", "m387", "m396", "m398", "m402",
                 "m409", "m414", "m417", "m424", "m430", "m441", "m444", "m446", "m450", "m521", "m523",
                 "m525", "m529"
