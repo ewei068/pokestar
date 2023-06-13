@@ -1430,9 +1430,9 @@ const dungeonConfig = {
                 rewards: {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
-                            [backpackItems.KNOWLEDGE_SHARD]: 2,
-                            [backpackItems.EMOTION_SHARD]: 2,
-                            [backpackItems.WILLPOWER_SHARD]: 2,
+                            [backpackItems.KNOWLEDGE_SHARD]: 1,
+                            [backpackItems.EMOTION_SHARD]: 1,
+                            [backpackItems.WILLPOWER_SHARD]: 1,
                         },
                     }
                 },

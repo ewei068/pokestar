@@ -21,8 +21,8 @@
 * Bug Fixes:
   * Fixed Mimic bugs when mimicking already known move.
   * Fixed bug where Lord Helix's Holy Pump was calculated as Water type instead of Psychic type.
-* End the Launch Celebration event.
-* **The Twitch Plays Pokemon event will end in a week!**
+* Ended the Launch Celebration event.
+* **The Twitch Plays Pokemon event will end in a week! Make sure to pick up the limited event Pokemon!**
 
 ### 0.9.3 (6/8) - Bug Fixes and Minor Content
 
