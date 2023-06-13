@@ -15,7 +15,7 @@ const commandCategoryConfig = {
         "name": "Pokemon",
         "description": "Commands to catch, train, and inspect Pokemon",
         "folder": "pokemon",
-        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "release"]
+        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "release", "mew"]
     },
     "shop": {
         "name": "Shop",
@@ -180,7 +180,7 @@ const commandConfig = {
                 "optional": true,
                 "variable": false,
                 "enum": [
-                    "shiny", "name", "rarity", "battleEligible", "none"
+                    "shiny", "name", "rarity", "locked", "none"
                 ]
             },
             "filtervalue": {
@@ -279,7 +279,7 @@ const commandConfig = {
                 "optional": true,
                 "variable": false,
                 "enum": [
-                    "home", "restaurant", "gym", "dojo", "temple", "school", "track"
+                    "home", "restaurant", "gym", "dojo", "temple", "school", "track", "berryBush", "berryFarm"
                 ]
             }
         },
@@ -415,7 +415,8 @@ const commandConfig = {
                 "optional": true,
                 "variable": false,
                 "enum": [
-                    "bugCatcher", "youngster", "lass", "fisherman", "hiker", "dragonTamer", "aceTrainer", "blue", "red", "tppRed"
+                    "bugCatcher", "youngster", "lass", "fisherman", "hiker", "dragonTamer", "aceTrainer", 
+                    "blue", "red", "tppRed", "teamRocket", "goldRush"
                 ]
             },
             "difficulty": {
@@ -531,6 +532,17 @@ const commandConfig = {
                 "enum": [1, 2, 3, 4, 5, 6, 7, 8, 9]
             }
         },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10
+    },
+    "mew": {
+        "name": "Mew",
+        "aliases": ["mew"],
+        "description": "View and modify your Mew!",
+        "longDescription": "View and modify your Mew! Mew is a special Pokemon that can be customized to your liking.",
+        "execute": "mew.js",
+        "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
         "money": 10

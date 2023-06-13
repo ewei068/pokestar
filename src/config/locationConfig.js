@@ -6,6 +6,8 @@ const locations = {
     TEMPLE: "4",
     SCHOOL: "5",
     TRACK: "6",
+    BERRY_BUSH: "7",
+    BERRY_FARM: "8",
 }
 
 const locationConfig = {
@@ -139,6 +141,28 @@ const locationConfig = {
             3: {
                 "exp": 6,
                 "evs": [0, 0, 0, 0, 0, 12],
+            },
+        }
+    },
+    [locations.BERRY_BUSH]: {
+        "name": "Berry Bush",
+        "emoji": "🌳",
+        "description": "Used to fine-tune your Pokemon's EVs! Reduces all EVs by 1!\nUse the \`/help train\` command to learn more!",
+        "levelConfig": {
+            1: {
+                "exp": 5,
+                "evs": [-1, -1, -1, -1, -1, -1],
+            },
+        }
+    },
+    [locations.BERRY_FARM]: {
+        "name": "Berry Farm",
+        "emoji": "🚜",
+        "description": "Used to reset your Pokemon's EVs! Reduces all EVs by 10!\nUse the \`/help train\` command to learn more!",
+        "levelConfig": {
+            1: {
+                "exp": 8,
+                "evs": [-10, -10, -10, -10, -10, -10],
             },
         }
     },

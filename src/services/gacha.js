@@ -24,11 +24,15 @@ const DAILY_MONEY = process.env.STAGE == stageNames.ALPHA ? 100000 : 300;
 
 const drawDaily = async (trainer) => {
     // check if new day; if in alpha, ignore
-    if (!trainer.claimedDaily || process.env.STAGE == stageNames.ALPHA) {
+    if (!trainer.claimedDaily){//|| process.env.STAGE == stageNames.ALPHA) {
         trainer.claimedDaily = true;
     } else {
-        const { hours, minutes, seconds } = getTimeToNextDay();
-        return { data: null, err: `You already claimed your daily rewards today! You can claim your next reward in ${hours}:${minutes}:${seconds}.` };
+        // get tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setUTCHours(0, 0, 0, 0);
+        const tomorrowTime = tomorrow.getTime();
+        return { data: null, err: `You already claimed your daily rewards today! You can claim your next reward <t:${Math.floor(tomorrowTime / 1000)}:R>.` };
     }
 
     const results = drawDiscrete(dailyRewardChances, NUM_DAILY_REWARDS);
@@ -131,7 +135,7 @@ const generateRandomPokemon = (userId, pokemonId, level=5, equipmentLevel=1) => 
         "natureId": `${drawUniform(0, 24, 1)[0]}`,
         "abilityId": `${drawDiscrete(speciesData.abilities, 1)[0]}`,
         "item": "",
-        "moves": [],
+        "moveIds": [],
         "shiny": isShiny,
         "dateAcquired": (new Date()).getTime(),
         "ivTotal": ivs.reduce((a, b) => a + b, 0),
@@ -224,7 +228,7 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity=1) => {
     // check for max pokemon
     try {
         const numPokemon = await countDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId });
-        if (numPokemon + quantity > MAX_POKEMON) {
+        if (numPokemon + quantity > MAX_POKEMON && process.env.STAGE !== stageNames.ALPHA) {
             return { data: null, err: "Max pokemon reached! Use `/release` to release some pokemon, or release pages of Pokemon with `/list`." };
         }
     } catch (error) {

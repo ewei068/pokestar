@@ -194,6 +194,10 @@ const trainerFields = {
         "default": {},
         "daily": true,
     },
+    "defeatedNPCs": {
+        "type": "object",
+        "default": {},
+    },
 }
 
 const levelConfig = {

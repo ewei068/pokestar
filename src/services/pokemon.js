@@ -224,7 +224,10 @@ const getEvolvedPokemon = (pokemon, evolutionSpeciesId) => {
     } else {
         // get current ability slot
         let slot = 1;
-        const index = abilities.indexOf(pokemon.abilityId);
+        let index = abilities.indexOf(pokemon.abilityId);
+        if (index === -1) {
+            index = 0;
+        }
         if (abilities.length === 2) {
             slot = index === 0 ? 1 : 3;
         } else if (abilities.length === 3) {
@@ -290,12 +293,21 @@ const addPokemonExpAndEVs = async (trainer, pokemon, exp, evs=[0, 0, 0, 0, 0, 0]
         }
 
         // check to see if pokemon has max single EVs
-        if (pokemon.evs[i] >= MAX_SINGLE_EVS) {
+        if (pokemon.evs[i] >= MAX_SINGLE_EVS && evs[i] > 0) {
+            pokemon.evs[i] = MAX_SINGLE_EVS;
+            continue;
+        }
+        // check for min evs
+        if (pokemon.evs[i] <= 0 && evs[i] < 0) {
+            pokemon.evs[i] = 0;
             continue;
         }
 
         // new evs to add = min(evs[i], remaining single, remainin total)
-        const newEvs = Math.min(evs[i], MAX_SINGLE_EVS - pokemon.evs[i], MAX_TOTAL_EVS - total);
+        let newEvs = Math.min(evs[i], MAX_SINGLE_EVS - pokemon.evs[i], MAX_TOTAL_EVS - total);
+        if (pokemon.evs[i] + newEvs < 0) {
+            newEvs = -pokemon.evs[i];
+        }
         pokemon.evs[i] += newEvs;
         gainedEvs[i] = newEvs;
     }

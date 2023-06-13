@@ -1,5 +1,29 @@
 # Pokéstar Changelog
 
+### 0.10.0 - Team Rocket & Mew
+
+* **New Event: Team Rocket Takeover!** Use `/events` for more details:
+  * Two limited event `/pve` stages: Team Rocket and Gold Rush!
+  * New Permanent Dungeon: New Island from Mewtwo Strikes Back!
+  * New limited event Pokemon:
+    * Jessie's Arbok (Epic): A fast physical attacker with a terrifying glare!
+    * James's Weezing (Epic): A self-destructive tank whose smoke helps allies evade attacks!
+    * Rocket Meowth (Legendary): A super speedy support who can reduce cooldowns and steal enemy Pokemon!
+    * Armored Mewtwo (Legendary): A bulky variation of Mewtwo that trades off some offenses for tankiness!
+* **Mew: the first Mythical Pokemon in Pokestar!**
+  * Mythical Pokemon are special Pokemon with unique effects, and can only be obtained once.
+  * Mew's gimick is the ability to freely customize its moves and nature to fit any role!
+  * Use `/mew` to configure your mew. You must defeat New Island in `/dungeons` first.
+* EV reduction and tuning: train your Pokemon at the Berry Bush or Berry Farm to reduce their EVs by 1 or 10 respectively!
+* Added trainer icons to `/pve`!
+* Removed the `battleEligible` filter in `/list` and replaced it with the `locked` filter.
+* Updated `/daily` to take advantage of Discord's dynamic time display.
+* Bug Fixes:
+  * Fixed Mimic bugs when mimicking already known move.
+  * Fixed bug where Lord Helix's Holy Pump was calculated as Water type instead of Psychic type.
+* Ended the Launch Celebration event.
+* **The Twitch Plays Pokemon event will end in a week! Make sure to pick up the limited event Pokemon!**
+
 ### 0.9.3 (6/8) - Bug Fixes and Minor Content
 
 * New Pokemon and Abilities:

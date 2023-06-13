@@ -18,6 +18,8 @@ const shopItems = {
     KNOWLEDGE_SHARD: "8",
     EMOTION_SHARD: "9",
     WILLPOWER_SHARD: "10",
+    BERRY_BUSH: "11",
+    BERRY_FARM: "12",
 }
     
 
@@ -52,6 +54,8 @@ const shopCategoryConfig = {
             shopItems.TEMPLE,
             shopItems.SCHOOL,
             shopItems.TRACK,
+            shopItems.BERRY_BUSH,
+            shopItems.BERRY_FARM,
         ]        
     },
     [shopCategories.MATERIALS]: {
@@ -123,6 +127,20 @@ const shopItemConfig = {
         "description": "Train your Pokemon to gain SPE! Higher level = more SPE! Use the \`/help train\` command to learn more!",
         "category": shopCategories.LOCATIONS,
         "price": [1000, 5000, 25000],
+    },
+    [shopItems.BERRY_BUSH]: {
+        "name": "Berry Bush",
+        "emoji": "🌳",
+        "description": "Used to fine-tune your Pokemon's EVs! Reduces all EVs by 1! Use the \`/help train\` command to learn more!",
+        "category": shopCategories.LOCATIONS,
+        "price": [5000],
+    },
+    [shopItems.BERRY_FARM]: {
+        "name": "Berry Farm",
+        "emoji": "🚜",
+        "description": "Used to reset your Pokemon's EVs! Reduces all EVs by 10! Use the \`/help train\` command to learn more!",
+        "category": shopCategories.LOCATIONS,
+        "price": [10000],
     },
     [shopItems.KNOWLEDGE_SHARD]: {
         "name": "Knowledge Shard",

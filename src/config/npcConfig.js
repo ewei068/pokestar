@@ -15,6 +15,8 @@ const npcs = {
     HIKER: "hiker",
     DRAGON_TAMER: "dragonTamer",
     ACE_TRAINER: "aceTrainer",
+    TEAM_ROCKET: "teamRocket",
+    GOLD_RUSH: "goldRush",
 }
 
 const difficulties = {
@@ -32,7 +34,7 @@ const npcConfig = {
     [npcs.BUG_CATCHER]: {
         name: "Bug Catcher",
         sprite: "https://archives.bulbagarden.net/media/upload/0/0b/Spr_DP_Bug_Catcher.png",
-        emoji: "🐛",
+        emoji: "<:bugcatcher:1117871382399815812>",
         catchphrase: "I caught a bunch of bugs! Let's battle with them!",
         difficulties: {
             [difficulties.VERY_EASY]: {
@@ -68,7 +70,7 @@ const npcConfig = {
     [npcs.YOUNGSTER]: {
         name: "Youngster",
         sprite: "https://archives.bulbagarden.net/media/upload/c/cd/Spr_B2W2_Youngster.png",
-        emoji: "👦",
+        emoji: "<:youngster:1117871511844421662>",
         catchphrase: "I like shorts! They're comfy and easy to wear!",
         difficulties: {
             [difficulties.VERY_EASY]: {
@@ -104,7 +106,7 @@ const npcConfig = {
     [npcs.LASS]: {
         name: "Lass",
         sprite: "https://archives.bulbagarden.net/media/upload/f/f9/Spr_B2W2_Lass.png",
-        emoji: "👧",
+        emoji: "<:lass:1117871390087991458>",
         catchphrase: "I'm cute, but deadly!",
         difficulties: {
             [difficulties.VERY_EASY]: {
@@ -140,7 +142,7 @@ const npcConfig = {
     [npcs.FISHERMAN]: {
         name: "Fisherman",
         sprite: "https://archives.bulbagarden.net/media/upload/c/c2/Spr_DP_Fisherman.png",
-        emoji: "🎣",
+        emoji: "<:fisherman:1117871385264533604>",
         catchphrase: "I'm a natural born fisherman!",
         difficulties: {
             [difficulties.VERY_EASY]: {
@@ -176,7 +178,7 @@ const npcConfig = {
     [npcs.HIKER]: {
         name: "Hiker",
         sprite: "https://archives.bulbagarden.net/media/upload/b/bc/Spr_BW_Hiker.png",
-        emoji: "🧗",
+        emoji: "<:hiker:1117871386535407827>",
         catchphrase: "I'm a Hiker, and I'm more than a match for you!",
         difficulties: {
             [difficulties.VERY_EASY]: {
@@ -212,7 +214,7 @@ const npcConfig = {
     [npcs.DRAGON_TAMER]: {
         name: "Dragon Tamer",
         sprite: "https://archives.bulbagarden.net/media/upload/7/70/Spr_DP_Dragon_Tamer.png",
-        emoji: "🐉",
+        emoji: "<:dragontamer:1117871383599382650>",
         catchphrase: "Dragons are totally my thing!",
         difficulties: {
             [difficulties.EASY]: {
@@ -248,7 +250,7 @@ const npcConfig = {
     [npcs.ACE_TRAINER]: {
         name: "Ace Trainer",
         sprite: "https://archives.bulbagarden.net/media/upload/c/c9/Spr_BW_Ace_Trainer_F.png",
-        emoji: "👩‍🎤",
+        emoji: "<:acetrainer:1117871378855645295>",
         catchphrase: "I'm an Ace Trainer, got it?",
         difficulties: {
             [difficulties.MEDIUM]: {
@@ -286,7 +288,7 @@ const npcConfig = {
     [npcs.BLUE]: {
         name: "Blue",
         sprite: "https://archives.bulbagarden.net/media/upload/f/f4/Spr_B2W2_Blue.png",
-        emoji: "🕶️",
+        emoji: "<:blue:1117871380172648600>",
         catchphrase: "Smell ya later!",
         difficulties: {
             [difficulties.EASY]: {
@@ -312,7 +314,7 @@ const npcConfig = {
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.POKEBALL]: 2,
+                            [backpackItems.POKEBALL]: 1,
                         },
                     }
                 }
@@ -326,7 +328,7 @@ const npcConfig = {
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.GREATBALL]: 1,
+                            [backpackItems.POKEBALL]: 1,
                         },
                     }
                 }
@@ -336,7 +338,7 @@ const npcConfig = {
     [npcs.RED]: {
         name: "Red",
         sprite: "https://www.serebii.net/heartgoldsoulsilver/gym/red.png",
-        emoji: "🧢",
+        emoji: "<:red:1117871509185249280>",
         catchphrase: "...!",
         difficulties: {
             [difficulties.VERY_HARD]: {
@@ -348,7 +350,7 @@ const npcConfig = {
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.GREATBALL]: 2,
+                            [backpackItems.POKEBALL]: 2,
                         },
                     }
                 }
@@ -358,7 +360,7 @@ const npcConfig = {
     [npcs.TWITCH_PLAYS_RED]: {
         name: "Twitch Plays Red",
         sprite: "https://archives.bulbagarden.net/media/upload/6/66/Spr_RG_Red_1.png",
-        emoji: "꩜",
+        emoji: "<:tppRed:1117871510804254760>",
         catchphrase: "⬆⬆⬇⬇⬅➔⬅➔BAAAAAAAAAAAAAAAAA",
         difficulties: {
             [difficulties.VERY_HARD]: {
@@ -377,12 +379,55 @@ const npcConfig = {
             },
         }
     },
+    [npcs.TEAM_ROCKET]: {
+        name: "Team Rocket",
+        sprite: "https://archives.bulbagarden.net/media/upload/8/8f/Spr_Y_Jessie_James.png",
+        emoji: "<:james:1117871387399426090><:jessie:1117871388653531167>",
+        catchphrase: "Prepare for trouble... and make it double!",
+        difficulties: {
+            [difficulties.HARD]: {
+                minLevel: 59,
+                maxLevel: 68,
+                numPokemon: 6,
+                pokemonIds: ["24-1", "71", "108", "110-1"],
+                aceId: "52-1",
+                dailyRewards: {
+                    backpack: {
+                        [backpackCategories.POKEBALLS]: {
+                            [backpackItems.GREATBALL]: 1,
+                        },
+                    }
+                }
+            },
+        }
+    },
+    [npcs.GOLD_RUSH]: {
+        name: "Gold Rush",
+        sprite: "https://archives.bulbagarden.net/media/upload/9/95/Spr_2c_052_s.png",
+        emoji: "<:rocketmeowth:1117873583537016832>",
+        catchphrase: "Meow...",
+        difficulties: {
+            [difficulties.HARD]: {
+                minLevel: 49,
+                maxLevel: 55,
+                numPokemon: 6,
+                pokemonIds: ["52", "52-1", "53"],
+                aceId: "52-1",
+                rewardMultipliers: {
+                    moneyMultiplier: 5,
+                    expMultiplier: 1.5,
+                    pokemonExpMultiplier: 0.15,
+                }
+            },
+        }
+    },      
 }
 
 const dungeons = {
     MIND_TEMPLE: "mindTemple",
     SOUL_CAVE: "soulCave",
     SPIRIT_ALTAR: "spiritAltar",
+    NEW_ISLAND: "newIsland",
     BLOODY_SUNDAY: "bloodySunday",
 }
 
@@ -1304,6 +1349,96 @@ const dungeonConfig = {
                 }
             },
         },
+    },
+    [dungeons.NEW_ISLAND]: {
+        name: "New Island",
+        sprite: "https://e0.pxfuel.com/wallpapers/343/331/desktop-wallpaper-pokemon-the-movie-mewtwo-strikes-back-anime-board-pokemon-the-first-movie-mewtwo-strikes-back.jpg",
+        emoji: "🏝️",
+        description: `The secret Team Rocket hideout and the birthplace of Mewtwo. Defeat Giovanni, Armored Mewtwo, and his clones to receive the Mythical <:151:1116755839919853670> Mew!`,
+        bosses: ["25-1", "52-1", "150-1"],
+        difficulties: {
+            [difficulties.HARD]: {
+                phases: [
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "31",
+                                level: 85,
+                                position: 2,
+                            },
+                            {
+                                speciesId: "34",
+                                level: 85,
+                                position: 4,
+                            },
+                            {
+                                speciesId: "51",
+                                level: 85,
+                                position: 6,
+                            },
+                            {
+                                speciesId: "112",
+                                level: 85,
+                                position: 10,
+                            },
+                            {
+                                speciesId: "53",
+                                level: 90,
+                                position: 13,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "3",
+                                level: 95,
+                                position: 1,
+                            },
+                            {
+                                speciesId: "6",
+                                level: 95,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "9",
+                                level: 95,
+                                position: 5,
+                            },
+                            {
+                                speciesId: "25-1",
+                                level: 100,
+                                position: 7,
+                            },
+                            {
+                                speciesId: "52-1",
+                                level: 100,
+                                position: 9,
+                            },
+                            {
+                                speciesId: "150-1",
+                                level: 110,
+                                position: 13,
+                            },
+                        ]
+                    },
+                ],
+                rewards: {
+                    backpack: {
+                        [backpackCategories.MATERIALS]: {
+                            [backpackItems.KNOWLEDGE_SHARD]: 1,
+                            [backpackItems.EMOTION_SHARD]: 1,
+                            [backpackItems.WILLPOWER_SHARD]: 1,
+                        },
+                    }
+                },
+                rewardString: "**Congratulations! If this is your first time defeating New Island, use `/mew` to obtain your Mew!**",
+            },
+        }
     },
     [dungeons.BLOODY_SUNDAY]: {
         name: "Bloody Sunday",

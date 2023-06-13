@@ -226,6 +226,14 @@ const getPartyPokemonIds = (trainer) => {
     return uniqueIds;
 }
 
+const getMoveIds = (pokemon) => {
+    if (pokemon.moveIds && pokemon.moveIds.length > 0) {
+        return pokemon.moveIds;
+    } else {
+        return pokemonConfig[pokemon.speciesId].moveIds;
+    }
+}
+
 module.exports = {
     getPokemonExpNeeded,
     calculateWorth,
@@ -240,5 +248,6 @@ module.exports = {
     getPokemonIdToIndex,
     buildEquipmentString,
     buildBoostString,
-    getPartyPokemonIds
+    getPartyPokemonIds,
+    getMoveIds
 };

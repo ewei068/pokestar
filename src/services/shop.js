@@ -62,6 +62,8 @@ const canBuyItem = (trainer, itemId, quantity) => {
             [shopItems.TEMPLE]: locations.TEMPLE,
             [shopItems.SCHOOL]: locations.SCHOOL,
             [shopItems.TRACK]: locations.TRACK,
+            [shopItems.BERRY_BUSH]: locations.BERRY_BUSH,
+            [shopItems.BERRY_FARM]: locations.BERRY_FARM,
         }
 
         const locationId = itemIdToLocationId[itemId];
@@ -69,7 +71,7 @@ const canBuyItem = (trainer, itemId, quantity) => {
 
         // check what level location is
         const level = getOrSetDefault(trainer.locations, locationId, 0);
-        if (level >= 3) {
+        if (level >= Object.keys(locationData.levelConfig).length) {
             return { data: null, err: "You have already purchased the maximum level for this location." };
         }
 
@@ -167,6 +169,8 @@ const buyItem = async (trainer, itemId, quantity) => {
             [shopItems.TEMPLE]: locations.TEMPLE,
             [shopItems.SCHOOL]: locations.SCHOOL,
             [shopItems.TRACK]: locations.TRACK,
+            [shopItems.BERRY_BUSH]: locations.BERRY_BUSH,
+            [shopItems.BERRY_FARM]: locations.BERRY_FARM,
         }
 
         const locationId = itemIdToLocationId[itemId];
@@ -174,7 +178,7 @@ const buyItem = async (trainer, itemId, quantity) => {
 
         // check what level location is
         const level = getOrSetDefault(trainer.locations, locationId, 0);
-        if (level >= 3) {
+        if (level >= Object.keys(locationData.levelConfig).length) {
             return { data: null, err: "You have already purchased the maximum level for this location." };
         }
 

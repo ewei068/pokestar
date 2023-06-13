@@ -619,6 +619,23 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.FAST
     },
+    "24-1": {
+        "name": "Jessie's Arbok",
+        "emoji": "<:jessiearbok:1117130466479325225>",
+        "description": "Jessie's loyal and nefarious partner. Foes are frozen with fear at the sight of it.",
+        "type": [types.POISON],
+        "baseStats": [75, 125, 70, 70, 80, 110],
+        "sprite": "https://archives.bulbagarden.net/media/upload/3/39/Spr_1b_024.png",
+        "shinySprite": "https://archives.bulbagarden.net/media/upload/0/00/Spr_2c_024_s.png",
+        "abilities": {
+            "22": 1,
+        },
+        "moveIds": ["m40", "m137-1", "m398", "m157"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST,
+        "noGacha": true
+    },
     "25": {
         "name": "Pikachu",
         "emoji": "<:25:1100282072003772457>",
@@ -1180,7 +1197,7 @@ const pokemonConfig = {
             "id": "53",
         }],
         "abilities": {
-            "7": 0.45,
+            "53": 0.45,
             "101": 0.45,
             "127": 0.1
         },
@@ -1188,6 +1205,23 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.COMMON,
         "growthRate": growthRates.FAST
+    },
+    "52-1": {
+        "name": "Rocket Meowth",
+        "emoji": "<:rocketmeowth:1117873583537016832>",
+        "description": "A cunning member of the notorious Team Rocket, known for its iconic ability to speak human language.",
+        "type": [types.NORMAL],
+        "baseStats": [85, 100, 75, 90, 90, 140],
+        "sprite": "https://archives.bulbagarden.net/media/upload/4/4d/Spr_1b_052.png",
+        "shinySprite": "https://archives.bulbagarden.net/media/upload/9/95/Spr_2c_052_s.png",
+        "abilities": {
+            "53": 1,
+        },
+        "moveIds": ["m6", "m6-1", "m252", "m20003"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
     },
     "53": {
         "name": "Persian",
@@ -1898,6 +1932,23 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "110-1": {
+        "name": "James's Weezing",
+        "emoji": "<:jamesweezing:1117130463186800640>",
+        "description": "James's loyal and formidable companion. Its noxious fumes can incapacitate fields of foes.",
+        "type": [types.POISON],
+        "baseStats": [75, 95, 125, 85, 80, 70],
+        "sprite": "https://archives.bulbagarden.net/media/upload/1/1b/Spr_1b_110.png",
+        "shinySprite": "https://archives.bulbagarden.net/media/upload/3/3f/Spr_2c_110_s.png",
+        "abilities": {
+            "26": 1
+        },
+        "moveIds": ["m123", "m108-1", "m194", "m153"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST,
+        "noGacha": true
+    },
     "111": {
         "name": "Rhyhorn",
         "emoji": "<:111:1100290441380888576>",
@@ -2456,6 +2507,61 @@ const pokemonConfig = {
         "rarity": rarities.LEGENDARY,
         "growthRate": growthRates.SLOW
     },
+    "150-1": {
+        "name": "Armored Mewtwo",
+        "emoji": "<:armoredmewtwo:1117130461282578535>",
+        "description": "A genetic clone donning inpenetrable armor. Its powers are dedicated to battling.",
+        "type": [types.PSYCHIC, types.STEEL],
+        "baseStats": [120, 95, 120, 135, 105, 105],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/armored-mewtwo.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/armored-mewtwo-shiny.png",
+        "abilities": {
+            "46": 1
+        },
+        "moveIds": ["m246", "m334-2", "m430", "m540"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW,
+        "noGacha": true
+    },
+    "151": {
+        "name": "Mew",
+        "emoji": "<:151:1116755839919853670>",
+        "description": "So rare that it is still said to be a mirage by many experts. Only a few people have seen it worldwide.",
+        "type": [types.PSYCHIC],
+        "baseStats": [100, 100, 100, 100, 100, 100],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/151.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/151.png",
+        "abilities": {
+            "28": 1
+        },
+        "moveIds": ["m246", "m94", "m396", "m63"],
+        "battleEligible": true,
+        "rarity": rarities.MYTHICAL,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true,
+        "mythicConfig": {
+            "basicMoveIds": [
+                "m16", "m17", "m22", "m35", "m40", "m43", "m51", "m52", "m55", "m71", "m77", "m81", 
+                "m84", "m93", "m98", "m100", "m102", "m106", "m116", "m118", "m122", "m123", "m175", 
+                "m189", "m205", "m214", "m239", "m246", "m270", "m418", "m420", "m479", "m506",
+                "m574", "m876"
+            ],
+            "powerMoveIds": [
+                "m14", "m34", "m36", "m46",  "m53", "m57", "m58", "m60", "m65", "m68",
+                "m70", "m85", "m86", "m91", "m92", "m94", "m113", "m115", "m127", "m182", "m188", "m191",
+                "m203", "m215",  "m216", "m219", "m226", "m247", "m269", "m202", "m252", "m276", "m283",
+                "m317", "m334", "m340", "m352", "m355", "m369", "m387", "m396", "m398", "m402",
+                "m409", "m414", "m417", "m424", "m430", "m441", "m444", "m446", "m450", "m521", "m523",
+                "m525", "m529"
+            ],
+            "ultimateMoveIds": [
+                "m38", "m56", "m63", "m76", "m87", "m89", "m135", "m143", "m153", "m156", "m157", 
+                "m162", "m200", "m223", "m257", "m304", "m366", "m394", "m405", "m413", "m416", 
+                "m428", "m433", "m437", "m482", "m528", "m542"
+            ]
+        }
+    },
     "20091": {
         "name": "Temple Guardian Cloyster",
         "emoji": "<:91:1100288966881718342>",
@@ -2604,7 +2710,7 @@ const rarityConfig = {
     [rarities.MYTHICAL]: {
         pokemon: [],
         color: 0xff0000,
-        money: 1000,
+        money: 10000,
     },
 }
 
