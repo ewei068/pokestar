@@ -1994,7 +1994,7 @@ const getStartTurnSend = async (battle, stateId) => {
                         }
 
                         // add trainer rewards
-                        await addExpAndMoney(user, moneyReward, expReward);
+                        await addExpAndMoney(user, expReward, moneyReward);
                         const defeatedDifficultiesToday = trainer.data.defeatedNPCsToday[battle.npcId];
                         const defeatedDifficulties = trainer.data.defeatedNPCs[battle.npcId];
                         const allRewards = {};
