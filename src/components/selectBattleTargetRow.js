@@ -2,6 +2,7 @@ const { ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const { eventNames } = require("../config/eventConfig");
 const { moveConfig } = require("../config/battleConfig");
 const { getFullUsername } = require("../utils/trainerUtils");
+const { pokemonConfig } = require("../config/pokemonConfig");
 
 const buildSelectBattleTargetRow = (battle, eligibleTargets, moveId, stateId) => {
     const selectMenu = new StringSelectMenuBuilder()
@@ -13,10 +14,12 @@ const buildSelectBattleTargetRow = (battle, eligibleTargets, moveId, stateId) =>
         .setPlaceholder("Select a target")
         .addOptions(eligibleTargets.map(target => {
             const user = battle.users[target.userId];
+            const speciesData = pokemonConfig[target.speciesId];
 
             return {
                 label: `[${getFullUsername(user)}] [${target.position}] ${target.name}`,
                 value: `${target.id}`,
+                emoji: speciesData.emoji,
             }
         }));
 

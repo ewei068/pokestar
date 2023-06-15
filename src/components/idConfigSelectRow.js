@@ -14,10 +14,14 @@ const buildIdConfigSelectRow = (ids, config, placeholder, data, eventName, showI
             const extra = extraFields.map(field => {
                 return data[field];
             }).join(" | ");
-            return {
+            const option = {
                 label: `${data.name}${extra ? " | " + extra : ""}${showId ? " #" + id.toString() : ""}`,
                 value: `${id}`,
+            };
+            if (data.emoji) {
+                option.emoji = data.emoji;
             }
+            return option;
         }));
 
     const actionRow = new ActionRowBuilder()

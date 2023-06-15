@@ -18,8 +18,9 @@ const buildSelectBattleMoveRow = (battle, stateId) => {
             const disabled = battle.activePokemon.moveIds[moveId].disabled;
             const disabledString = disabled ? "[DISABLED] " : "";
             return {
-                label: `${disabledString}${cdString}[${typeConfig[moveData.type].name.toUpperCase()}] ${moveData.name}`,
+                label: `${disabledString}${cdString} ${moveData.name}`,
                 value: `${moveId}`,
+                emoji: typeConfig[moveData.type].emoji,
             }
         }));
 

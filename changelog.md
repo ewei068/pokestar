@@ -2,6 +2,7 @@
 
 ### 0.10.1
 
+* Added emojis to select rows!
 * Slightly increased New Island's difficulty.
 * Bug fixes:
   * Fixed money and EXP being incorrectly added after battles.

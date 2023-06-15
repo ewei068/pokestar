@@ -194,7 +194,7 @@ const pokemonConfig = {
     },
     "3": {
         "name": "Venusaur",
-        "emoji": "<:3:1100279986012819536>",
+        "emoji": "<:3_:1100279986012819536>",
         "description": "The plant blooms when it is absorbing solar energy. It stays on the move to seek sunlight.",
         "type": [types.GRASS, types.POISON],
         "baseStats": [80, 82, 83, 100, 100, 80],
@@ -211,7 +211,7 @@ const pokemonConfig = {
     },
     "4": {
         "name": "Charmander",
-        "emoji": "<:4:1100279987057209364>",
+        "emoji": "<:4_:1100279987057209364>",
         "description": "Obviously prefers hot places. When it rains, steam is said to spout from the tip of its tail.",
         "type": [types.FIRE],
         "baseStats": [39, 52, 43, 60, 50, 65],
@@ -232,7 +232,7 @@ const pokemonConfig = {
     },
     "5": {
         "name": "Charmeleon",
-        "emoji": "<:5:1100279988156104774>",
+        "emoji": "<:5_:1100279988156104774>",
         "description": "When it swings its burning tail, it elevates the temperature to unbearably high levels.",
         "type": [types.FIRE],
         "baseStats": [58, 64, 58, 80, 65, 80],
@@ -253,7 +253,7 @@ const pokemonConfig = {
     },
     "6": {
         "name": "Charizard",
-        "emoji": "<:6:1100279989703819264>",
+        "emoji": "<:6_:1100279989703819264>",
         "description": "Spits fire that is hot enough to melt boulders. Known to cause forest fires unintentionally.",
         "type": [types.FIRE, types.FLYING],
         "baseStats": [78, 84, 78, 109, 85, 100],
@@ -270,7 +270,7 @@ const pokemonConfig = {
     },
     "7": {
         "name": "Squirtle",
-        "emoji": "<:7:1100279990806904882>",
+        "emoji": "<:7_:1100279990806904882>",
         "description": "After birth, its back swells and hardens into a shell. Powerfully sprays foam from its mouth.",
         "type": [types.WATER],
         "baseStats": [44, 48, 65, 50, 64, 43],
@@ -291,7 +291,7 @@ const pokemonConfig = {
     },
     "8": {
         "name": "Wartortle",
-        "emoji": "<:8:1100279991813558332>",
+        "emoji": "<:8_:1100279991813558332>",
         "description": "Often hides in water to stalk unwary prey. For swimming fast, it moves its ears to maintain balance.",
         "type": [types.WATER],
         "baseStats": [59, 63, 80, 65, 80, 58],
