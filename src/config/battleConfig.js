@@ -8391,7 +8391,7 @@ const abilityConfig = {
 
                     // 20% chance to gain buff
                     if (Math.random() < 0.2) {
-                        targetPokemon.battle.addToLog(`${targetPokemon.name}'s Pickup gains ${effectData.name}!`);
+                        targetPokemon.battle.addToLog(`${initialArgs.pokemon.name}'s Pickup gains ${effectData.name}!`);
                         // apply buff to self
                         source.addEffect(args.effectId, 1, args.source, args.initialArgs);
                     }

@@ -119,6 +119,7 @@ const calculatePokemonStats = (pokemon, speciesData) => {
     
     pokemon.stats = newStats;
     pokemon.combatPower = newCombatPower;
+    pokemon.ivTotal = ivs.reduce((a, b) => a + b, 0);
 
     return pokemon;
 }
@@ -127,6 +128,7 @@ const calculateAndUpdatePokemonStats = async (pokemon, speciesData, force=false)
     // get old stats and combat power
     const oldStats = getOrSetDefault(pokemon, "stats", [0, 0, 0, 0, 0, 0]);
     const oldCombatPower = getOrSetDefault(pokemon, "combatPower", 0);
+    const oldIvTotal = getOrSetDefault(pokemon, "ivTotal", 0);
 
     // get updated pokemon 
     pokemon = calculatePokemonStats(pokemon, speciesData);
@@ -138,7 +140,8 @@ const calculateAndUpdatePokemonStats = async (pokemon, speciesData, force=false)
         || oldStats[3] !== pokemon.stats[3] 
         || oldStats[4] !== pokemon.stats[4] 
         || oldStats[5] !== pokemon.stats[5] 
-        || oldCombatPower !== pokemon.combatPower) {
+        || oldCombatPower !== pokemon.combatPower
+        || oldIvTotal !== pokemon.ivTotal) {
         try {
             const res = await updateDocument(
                 collectionNames.USER_POKEMON,

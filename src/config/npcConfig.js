@@ -1365,27 +1365,27 @@ const dungeonConfig = {
                         pokemons: [
                             {
                                 speciesId: "31",
-                                level: 85,
+                                level: 90,
                                 position: 2,
                             },
                             {
                                 speciesId: "34",
-                                level: 85,
+                                level: 90,
                                 position: 4,
                             },
                             {
                                 speciesId: "51",
-                                level: 85,
+                                level: 90,
                                 position: 6,
                             },
                             {
                                 speciesId: "112",
-                                level: 85,
+                                level: 90,
                                 position: 10,
                             },
                             {
                                 speciesId: "53",
-                                level: 90,
+                                level: 100,
                                 position: 13,
                             },
                         ]
@@ -1396,27 +1396,27 @@ const dungeonConfig = {
                         pokemons: [
                             {
                                 speciesId: "3",
-                                level: 95,
+                                level: 100,
                                 position: 1,
                             },
                             {
                                 speciesId: "6",
-                                level: 95,
+                                level: 100,
                                 position: 3,
                             },
                             {
                                 speciesId: "9",
-                                level: 95,
+                                level: 100,
                                 position: 5,
                             },
                             {
                                 speciesId: "25-1",
-                                level: 100,
+                                level: 105,
                                 position: 7,
                             },
                             {
                                 speciesId: "52-1",
-                                level: 100,
+                                level: 105,
                                 position: 9,
                             },
                             {

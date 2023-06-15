@@ -1,6 +1,14 @@
 # Pokéstar Changelog
 
-### 0.10.0 - Team Rocket & Mew
+### 0.10.1
+
+* Slightly increased New Island's difficulty.
+* Bug fixes:
+  * Fixed money and EXP being incorrectly added after battles.
+  * Fixed Pickup's battle information messages.
+  * Fixed Mew's IV total not displaying properly in `/list`. You may need to refresh your Mew with `/mew` for this to update.
+
+## 0.10.0 (6/13) - Team Rocket & Mew
 
 * **New Event: Team Rocket Takeover!** Use `/events` for more details:
   * Two limited event `/pve` stages: Team Rocket and Gold Rush!
