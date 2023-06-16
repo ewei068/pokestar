@@ -3,7 +3,7 @@ const { eventNames } = require("../config/eventConfig");
 const { moveConfig } = require("../config/battleConfig");
 const { typeConfig } = require("../config/pokemonConfig");
 
-const buildSelectBattleMoveRow = (battle, stateId) => {
+const buildSelectBattleMoveRow = (battle, stateId, selectedMoveId = null) => {
     const selectMenu = new StringSelectMenuBuilder()
         .setCustomId(JSON.stringify({
             eventName: eventNames.BATTLE_MOVE_SELECT,
@@ -21,6 +21,7 @@ const buildSelectBattleMoveRow = (battle, stateId) => {
                 label: `${disabledString}${cdString} ${moveData.name}`,
                 value: `${moveId}`,
                 emoji: typeConfig[moveData.type].emoji,
+                default: selectedMoveId === moveId,
             }
         }));
 

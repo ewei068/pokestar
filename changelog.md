@@ -2,7 +2,10 @@
 
 ### 0.10.1
 
-* Added emojis to select rows!
+* Minor UI improvements:
+  * Added emojis to some selection rows!
+  * Starting to replace buttons names with emojis!
+  * Some selection rows will now have default selections!
 * Slightly increased New Island's difficulty.
 * Bug fixes:
   * Fixed money and EXP being incorrectly added after battles.

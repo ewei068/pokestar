@@ -1,3 +1,4 @@
+const { buildSelectBattleMoveRow } = require("../../components/selectBattleMoveRow");
 const { buildSelectBattleTargetRow } = require("../../components/selectBattleTargetRow");
 const { moveConfig } = require("../../config/battleConfig");
 const { getState } = require("../../services/state");
@@ -57,10 +58,9 @@ const battleMoveSelect = async (interaction, data) => {
         interaction.message.components.pop();
     }
 
-    // set placeholder of last component to move name
-    // pop move select menu
-    const moveSelectMenu = interaction.message.components.pop();
-    moveSelectMenu.components[0].data.placeholder = moveConfig[moveId].name;
+    // pop move select menu and set default move
+    interaction.message.components.pop();
+    const moveSelectMenu = buildSelectBattleMoveRow(battle, data.stateId, moveId);
 
     // update message
     await interaction.update({

@@ -15,7 +15,7 @@ const commandCategoryConfig = {
         "name": "Pokemon",
         "description": "Commands to catch, train, and inspect Pokemon",
         "folder": "pokemon",
-        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "release", "mew"]
+        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "nature", "release", "mew"]
     },
     "shop": {
         "name": "Shop",
@@ -320,6 +320,24 @@ const commandConfig = {
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 0,
+    },
+    "nature": {
+        "name": "Nature",
+        "aliases": ["nature"],
+        "description": "Spend a mint to change a Pokemon's nature",
+        "longDescription": "Spend a mint to change a Pokemon's nature. Mints can be earned from the `/dungeons`.",
+        "execute": "nature.js",
+        "args": {
+            "pokemonid": {
+                "type": "string",
+                "description": "unique ID for Pokemon to change nature for",
+                "optional": false,
+                "variable": false
+            },
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10,
     },
     "pokemart": {
         "name": "Pokemart",

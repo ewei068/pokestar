@@ -1013,6 +1013,74 @@ const buildEquipmentUpgradeSend = async ({ stateId=null, user=null } = {}) => {
     return { send: send, err: null };
 }
 
+const buildNatureSend = async ({ stateId=null, user=null } = {}) => {
+    const state = getState(stateId);
+
+    let trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { err: trainer.err };
+    }
+    trainer = trainer.data;
+
+    let pokemon = await getPokemon(trainer, state.pokemonId);
+    if (pokemon.err) {
+        return { err: pokemon.err };
+    }
+    pokemon = pokemon.data;
+
+    const natureId = state.natureId;
+    const natureData = natureConfig[natureId];
+    // if nature exists, change pokemon nature for display
+    if (natureData) {
+        pokemon.natureId = natureId;
+        pokemon = calculatePokemonStats(pokemon, pokemonConfig[pokemon.speciesId]);
+    }
+
+    const send = {
+        embeds: [],
+        components: [],
+    }
+
+    // embed
+    const embed = buildPokemonEmbed(trainer, pokemon, "info");
+    send.embeds.push(embed);
+
+    // nature select row
+    const selectData = {
+        stateId: stateId,
+    }
+    const selectActionRow = buildIdConfigSelectRow(
+        Object.keys(natureConfig),
+        natureConfig,
+        "Select Nature to change to",
+        selectData,
+        eventNames.NATURE_SELECT,
+        false,
+        ["description"],
+        pokemon.natureId
+    );
+    send.components.push(selectActionRow);
+
+    // if nature exists, add confirm button
+    if (natureData) {
+        const confirmData = {
+            stateId: stateId,
+        }
+        const confirmButtonConfigs = [
+            {
+                label: `Confirm: ${natureData.name}`,
+                disabled: false,
+                data: confirmData,
+                // TODO: add mint emoji
+            }
+        ]
+        const confirmActionRow = buildButtonActionRow(confirmButtonConfigs, eventNames.NATURE_CONFIRM);
+        send.components.push(confirmActionRow);
+    }
+
+    return { send: send, err: null };     
+}
+
 module.exports = {
     listPokemons,
     getPokemon,
@@ -1035,4 +1103,5 @@ module.exports = {
     buildReleaseSend,
     buildEquipmentSend,
     buildEquipmentUpgradeSend,
+    buildNatureSend,
 };
