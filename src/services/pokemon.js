@@ -973,7 +973,9 @@ const buildEquipmentUpgradeSend = async ({ stateId=null, user=null } = {}) => {
             "Select stat slot to reroll",
             rerollData,
             eventNames.EQUIPMENT_SELECT,
-            false
+            false,
+            [],
+            slotId
         )
         send.components.push(rerollSelectRow);
     }

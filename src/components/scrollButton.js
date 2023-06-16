@@ -9,7 +9,7 @@ const buildScrollButton = (isLeft, data, page, disabled, eventName) => {
 
     const button = new ButtonBuilder()
         .setCustomId(`${JSON.stringify(buttonId)}`)
-        .setLabel(isLeft ? 'Previous' : 'Next')
+        .setLabel(isLeft ? '◄' : '►')
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(disabled);
     return button;
