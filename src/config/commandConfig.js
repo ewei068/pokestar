@@ -325,7 +325,7 @@ const commandConfig = {
         "name": "Nature",
         "aliases": ["nature"],
         "description": "Spend a mint to change a Pokemon's nature",
-        "longDescription": "Spend a mint to change a Pokemon's nature. Mints can be earned from the `/dungeons`.",
+        "longDescription": "Spend a mint to change a Pokemon's nature. Mints can be earned daily from `/pve palmer`.",
         "execute": "nature.js",
         "args": {
             "pokemonid": {
@@ -434,7 +434,7 @@ const commandConfig = {
                 "variable": false,
                 "enum": [
                     "bugCatcher", "youngster", "lass", "fisherman", "hiker", "dragonTamer", "aceTrainer", 
-                    "blue", "red", "tppRed", "teamRocket", "goldRush"
+                    "blue", "red", "palmer", "tppRed", "teamRocket", "goldRush"
                 ]
             },
             "difficulty": {

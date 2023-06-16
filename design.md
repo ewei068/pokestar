@@ -524,14 +524,15 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 
 **Upcoming Roadmap**
 
-* More abilities
-* Gen 1 Pokemon
+* Gen 2
 * Training Rework
-* Equipment & Dungeons
-* Mew
 * Server-wide Raids
 * Arena
 * Trading
+* More abilities (DONE)
+* Gen 1 Pokemon (DONE)
+* Equipment & Dungeons (DONE)
+* Mew (DONE)
 
 **Other Features**
 
@@ -542,4 +543,5 @@ Once the data schema gets more set-in-stone, JSON schema validation will be impl
 * Non-real-time arena
 * Trading
 * More moves/pokemon
-* Special mythic pokemon
+* Battle tower
+* Special mythic pokemon (DONE)

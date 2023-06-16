@@ -49,7 +49,7 @@ const natureConfirm = async (interaction, data) => {
     // check for mint
     const mintCount = getItems(trainer, backpackItems.MINT);
     if (mintCount < 1) {
-        return { err: "You do not have a mint! Get them from the `/dungeons`." };
+        return { err: "You do not have a mint! Get them daily from `/pve palmer`." };
     }
 
     // reduce mint count

@@ -15,6 +15,7 @@ const npcs = {
     HIKER: "hiker",
     DRAGON_TAMER: "dragonTamer",
     ACE_TRAINER: "aceTrainer",
+    PALMER: "palmer",
     TEAM_ROCKET: "teamRocket",
     GOLD_RUSH: "goldRush",
 }
@@ -351,6 +352,28 @@ const npcConfig = {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
                             [backpackItems.POKEBALL]: 2,
+                        },
+                    }
+                }
+            },
+        }
+    },
+    [npcs.PALMER]: {
+        name: "Tower Tycoon Palmer",
+        sprite: "https://archives.bulbagarden.net/media/upload/f/f4/Spr_DP_Palmer.png",
+        emoji: "<:palmer:1119396349604020294>",
+        catchphrase: "Show me the skill you've acquired as a Trainer!",
+        difficulties: {
+            [difficulties.VERY_HARD]: {
+                minLevel: 100,
+                maxLevel: 119,
+                numPokemon: 6,
+                pokemonIds: ["9-1", "52-1", "136-1", "144", "145-1", "150", "150-1"],
+                aceId: "20101",
+                dailyRewards: {
+                    backpack: {
+                        [backpackCategories.MATERIALS]: {
+                            [backpackItems.MINT]: 1,
                         },
                     }
                 }

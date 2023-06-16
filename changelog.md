@@ -2,6 +2,8 @@
 
 ### 0.10.1
 
+* `/nature`: You can now change your Pokemon's nature with Mints! Get Mints daily from battling Tower Tycoon Palmer!
+* Added NPC Tower Tycoon Palmer: a Legendary Pokemon trainer and the boss of the Pokemon Tower! 
 * Minor UI improvements:
   * Added emojis to some selection rows!
   * Starting to replace buttons names with emojis!
