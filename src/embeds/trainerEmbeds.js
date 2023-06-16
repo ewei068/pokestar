@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const { getTrainerLevelExp: getTrainerLevelExp, MAX_TRAINER_LEVEL } = require('../config/trainerConfig');
 const { backpackCategories, backpackItems, backpackCategoryConfig, backpackItemConfig } = require('../config/backpackConfig');
-const { getPBar } = require("../utils/utils");
+const { getPBar, getWhitespace } = require("../utils/utils");
 const { locationConfig } = require("../config/locationConfig");
 
 /*
@@ -45,21 +45,39 @@ const buildTrainerEmbed = (trainerInfo) => {
 const buildBackpackEmbed = (trainer) => {
     // create string with backpack categories and their item quantities
     let backpackString = " ";
-    for (const category in trainer.backpack) {
-        backpackString += `**${backpackCategoryConfig[category].emoji} ${backpackCategoryConfig[category].name}**\n`;
+    const fields = Object.entries(trainer.backpack).map(([category, items]) => {
+        const categoryConfig = backpackCategoryConfig[category];
+        let categoryString = '';
+        for (const item in items) {
+            if (items[item] == 0) {
+                continue;
+            }
+            const itemConfig = backpackItemConfig[item];
+            const whitespaceName = getWhitespace([itemConfig.name], 20)[0];
+            categoryString += `${itemConfig.emoji} \`${itemConfig.name}${whitespaceName}${items[item]}\`\n`;
+        }
+        if (categoryString == '') {
+            categoryString = 'No items found!';
+        }
+
+        return { name: `=== ${categoryConfig.emoji} ${categoryConfig.name} ===`, value: categoryString, inline: false };
+    });
+    /* for (const category in trainer.backpack) {
+        backpackString += `**=== ${backpackCategoryConfig[category].emoji} ${backpackCategoryConfig[category].name}** ===\n`;
         for (const item in trainer.backpack[category]) {
             if (trainer.backpack[category][item] == 0) {
                 continue;
             }
             backpackString += `${backpackItemConfig[item].name}: ${trainer.backpack[category][item]}\n`;
         }
-    }
+    } */
 
     const embed = new EmbedBuilder()
     embed.setTitle(`Trainer ${trainer.user.username}'s Backpack`);
     embed.setColor(0xffffff);
     embed.setThumbnail(`https://cdn.discordapp.com/avatars/${trainer.userId}/${trainer.user.avatar}.webp`);
-    embed.setDescription(backpackString);
+    embed.setDescription(`You have ₽${trainer.money} Pokédollars.`);
+    embed.addFields(...fields);
 
     return embed;
 }

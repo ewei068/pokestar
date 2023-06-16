@@ -11,6 +11,7 @@ const backpackItems = {
     KNOWLEDGE_SHARD: '4',
     EMOTION_SHARD: '5',
     WILLPOWER_SHARD: '6',
+    MINT: '7',
 }
 
 const backpackCategoryConfig = {
@@ -28,11 +29,12 @@ const backpackCategoryConfig = {
     [backpackCategories.MATERIALS]: {
         "name": "Materials",
         "emoji": "<:materials:1112557472759160852>",
-        "description": "Used to upgrade equipment!",
+        "description": "Used to upgrade Pokemon and equipment!",
         "items": [
             backpackItems.KNOWLEDGE_SHARD,
             backpackItems.EMOTION_SHARD,
             backpackItems.WILLPOWER_SHARD,
+            backpackItems.MINT,
         ]
     },
 }
@@ -78,6 +80,12 @@ const backpackItemConfig = {
         "name": "Willpower Shard",
         "emoji": "<:willpowershard:1112557603617259540>",
         "description": "Used to upgrade equipment!",
+        "category": backpackCategories.MATERIALS,
+    },
+    [backpackItems.MINT]: {
+        "name": "Mint",
+        "emoji": "<:mint:1119381176398913576>",
+        "description": "Used to change a Pokemon's nature!",
         "category": backpackCategories.MATERIALS,
     },
 }

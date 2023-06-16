@@ -17,7 +17,7 @@ const { modifierConfig, modifierTypes, modifierSlotConfig, equipmentConfig, MAX_
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const { buildBackButtonRow } = require("../components/backButtonRow");
 const { getItems, removeItems } = require("../utils/trainerUtils");
-const { backpackItemConfig } = require("../config/backpackConfig");
+const { backpackItemConfig, backpackItems } = require("../config/backpackConfig");
 const { drawIterable, drawUniform } = require("../utils/gachaUtils");
 
 // TODO: move this?
@@ -1039,6 +1039,7 @@ const buildNatureSend = async ({ stateId=null, user=null } = {}) => {
     }
 
     const send = {
+        content: `You have ${getItems(trainer, backpackItems.MINT)} ${backpackItemConfig[backpackItems.MINT].emoji}.`,
         embeds: [],
         components: [],
     }
@@ -1073,7 +1074,7 @@ const buildNatureSend = async ({ stateId=null, user=null } = {}) => {
                 label: `Confirm: ${natureData.name}`,
                 disabled: false,
                 data: confirmData,
-                // TODO: add mint emoji
+                emoji: backpackItemConfig[backpackItems.MINT].emoji
             }
         ]
         const confirmActionRow = buildButtonActionRow(confirmButtonConfigs, eventNames.NATURE_CONFIRM);

@@ -49,6 +49,11 @@ const drawDaily = async (trainer) => {
     reducedResults[backpackItems.KNOWLEDGE_SHARD] = NUM_DAILY_SHARDS;
     reducedResults[backpackItems.EMOTION_SHARD] = NUM_DAILY_SHARDS;
     reducedResults[backpackItems.WILLPOWER_SHARD] = NUM_DAILY_SHARDS;
+
+    // if alpha, give 10 mints
+    if (process.env.STAGE == stageNames.ALPHA) {
+        reducedResults[backpackItems.MINT] = 10;
+    }
             
     trainer.money += DAILY_MONEY;
     Object.entries(reducedResults).forEach(([key, value]) => {

@@ -1,7 +1,9 @@
 const { getState } = require("../services/state");
 const { getPokemon, calculateAndUpdatePokemonStats } = require("../services/pokemon");
 const { natureConfig, pokemonConfig } = require("../config/pokemonConfig");
-const { getTrainer } = require("../services/trainer");
+const { getTrainer, updateTrainer } = require("../services/trainer");
+const { backpackItemConfig, backpackItems } = require("../config/backpackConfig");
+const { getItems, removeItems } = require("../utils/trainerUtils");
 
 const natureConfirm = async (interaction, data) => {
     // get state
@@ -44,7 +46,18 @@ const natureConfirm = async (interaction, data) => {
         return { err: "This pokemon already has this nature." };
     }
 
-    // TODO: check for mint and reduce it from trainer bp
+    // check for mint
+    const mintCount = getItems(trainer, backpackItems.MINT);
+    if (mintCount < 1) {
+        return { err: "You do not have a mint! Get them from the `/dungeons`." };
+    }
+
+    // reduce mint count
+    removeItems(trainer, backpackItems.MINT, 1);
+    const reduceMint = await updateTrainer(trainer);
+    if (reduceMint.err) {
+        return { err: reduceMint.err };
+    }
 
     // set pokemon nature
     pokemon.natureId = natureId;
@@ -54,8 +67,7 @@ const natureConfirm = async (interaction, data) => {
     }
 
     await interaction.update({ 
-        // TODO: emoji
-        content: `Changed ${pokemon.name}'s nature to ${natureData.name} for 1 mint!`,
+        content: `Changed ${pokemon.name}'s nature to ${natureData.name} for 1 ${backpackItemConfig[backpackItems.MINT].emoji}!`,
         components: [] 
     });
 }

@@ -83,8 +83,6 @@ const typeAdvantages = {
 };
 
 const calculateDamage = (move, source, target, miss=false, { atkStat = null, defStat = null, power = null, type = null } = {}) => {
-    // TODO: handle miss
-
     power = power || move.power;
     const level = source.level;
     atkStat = atkStat || move.damageType;
