@@ -2562,6 +2562,183 @@ const pokemonConfig = {
             ]
         }
     },
+    "152": {
+        "name": "Chikorita",
+        "emoji": "<:152:1116755846769168434>",
+        "description": "It waves its leaf around to keep foes at bay. However, a sweet fragrance also wafts from the leaf, creating a friendly atmosphere that becalms the battlers.",
+        "type": [types.GRASS],
+        "baseStats": [45, 49, 65, 49, 65, 45],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/152.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/152.png",
+        "evolution": [{
+            "level": 16,
+            "id": "153"
+        }],
+        "abilities": {
+            "65": 0.8,
+            "102": 0.2,
+        },
+        "moveIds": ["m22", "m77", "m73", "m202"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW,
+    },
+    "153": {
+        "name": "Bayleef",
+        "emoji": "<:153:1116755847712870470>",
+        "description": "The scent that wafts from the leaves on its neck causes anyone who smells it to become energetic.",
+        "type": [types.GRASS],
+        "baseStats": [60, 62, 80, 63, 80, 60],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/153.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/153.png",
+        "evolution": [{
+            "level": 32,
+            "id": "154"
+        }],
+        "abilities": {
+            "65": 0.8,
+            "102": 0.2,
+        },
+        "moveIds": ["m77", "m73", "m202", "m525"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+    },
+    "154": {
+        "name": "Meganium",
+        "emoji": "<:154:1116755848803405936>",
+        "description": "The flower on its back blooms when it is absorbing solar energy. It stays on the move to seek sunlight.",
+        "type": [types.GRASS],
+        "baseStats": [80, 82, 100, 83, 100, 80],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/154.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/154.png",
+        "abilities": {
+            "65": 0.8,
+            "102": 0.2,
+        },
+        "moveIds": ["m77", "m202", "m525", "m316"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "155": {
+        "name": "Cyndaquil",
+        "emoji": "<:155:1116755850229456969>",
+        "description": "It has a timid nature. If it is startled, the flames on its back burn more vigorously.",
+        "type": [types.FIRE],
+        "baseStats": [39, 52, 43, 60, 50, 65],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/155.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/155.png",
+        "evolution": [{
+            "level": 14,
+            "id": "156"
+        }],
+        "abilities": {
+            "66": 0.8,
+            "18": 0.2,
+        },
+        "moveIds": ["m43", "m52", "m53", "m424"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "156": {
+        "name": "Quilava",
+        "emoji": "<:156:1116755851542274099>",
+        "description": "It intimidates foes with the heat of its flames. The fire burns more strongly when it readies to fight.",
+        "type": [types.FIRE],
+        "baseStats": [58, 64, 58, 80, 65, 80],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/156.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/156.png",
+        "evolution": [{
+            "level": 36,
+            "id": "157"
+        }],
+        "abilities": {
+            "66": 0.8,
+            "18": 0.2,
+        },
+        "moveIds": ["m52", "m53", "m36", "m424"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "157": {
+        "name": "Typhlosion",
+        "emoji": "<:157:1116755852565696594>",
+        "description": "If its rage peaks, it becomes so hot that anything that touches it will instantly go up in flames.",
+        "type": [types.FIRE],
+        "baseStats": [78, 84, 78, 109, 85, 100],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/157.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/157.png",
+        "abilities": {
+            "66": 0.8,
+            "18": 0.2,
+        },
+        "moveIds": ["m52", "m53", "m247", "m284"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "158": {
+        "name": "Totodile",
+        "emoji": "<:158:1116755865123442739>",
+        "description": "Its well-developed jaws are powerful and capable of crushing anything. Even its trainer must be careful.",
+        "type": [types.WATER],
+        "baseStats": [50, 65, 64, 43, 44, 48],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/158.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/158.png",
+        "evolution": [{
+            "level": 18,
+            "id": "159"
+        }],
+        "abilities": {
+            "67": 0.8,
+            "125": 0.2,
+        },
+        "moveIds": ["m10", "m43", "m127", "m242"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "159": {
+        "name": "Croconaw",
+        "emoji": "<:159:1116755866650153051>",
+        "description": "Once it bites down, it won't let go until it loses its fangs. New fangs quickly grow into place, so it tries to bite on everything.",
+        "type": [types.WATER],
+        "baseStats": [65, 80, 80, 58, 59, 63],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/159.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/159.png",
+        "evolution": [{
+            "level": 30,
+            "id": "160"
+        }],
+        "abilities": {
+            "67": 0.8,
+            "125": 0.2,
+        },
+        "moveIds": ["m10", "m70", "m127", "m242"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "160": {
+        "name": "Feraligatr",
+        "emoji": "<:160:1116756250579959858>",
+        "description": "It opens its huge mouth to intimidate enemies. In battle, it runs using its thick and powerful hind legs to charge the foe with incredible speed.",
+        "type": [types.WATER],
+        "baseStats": [85, 105, 100, 78, 79, 83],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/160.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/160.png",
+        "abilities": {
+            "67": 0.8,
+            "125": 0.2,
+        },
+        "moveIds": ["m10", "m127", "m242", "m416"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
     "20091": {
         "name": "Temple Guardian Cloyster",
         "emoji": "<:91:1100288966881718342>",

@@ -1,6 +1,12 @@
 # Pokéstar Changelog
 
-### 0.10.1
+## 0.11.0 - Generation II
+
+* Gen 2:
+  * Pokemon: Chikorita, Bayleef, Meganium, Cyndaquil, Quilava, Typhlosion, Totodile, Croconaw, Feraligatr
+  * Abilities: Sheer Force
+
+### 0.10.1 (6/17)
 
 * `/nature`: You can now change your Pokemon's nature with Mints! Get Mints daily from battling Tower Tycoon Palmer!
 * Added NPC Tower Tycoon Palmer: a Legendary Pokemon trainer and the boss of the Pokemon Tower! 
