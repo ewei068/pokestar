@@ -2739,6 +2739,57 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "243": {
+        "name": "Raikou",
+        "emoji": "<:243:1119803757895618650>",
+        "description": "The rain clouds it carries let it fire thunderbolts at will. They say that it descended with lightning.",
+        "type": [types.ELECTRIC],
+        "baseStats": [90, 85, 75, 115, 100, 115],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/243.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/243.png",
+        "abilities": {
+            "46": 0.8,
+            "39": 0.2,
+        },
+        "moveIds": ["m268", "m336", "m521", "m87"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW
+    },
+    "244": {
+        "name": "Entei",
+        "emoji": "<:244:1119803759007109190>",
+        "description": "Volcanoes erupt when it barks. Unable to restrain its extreme power, it races headlong around the land.",
+        "type": [types.FIRE],
+        "baseStats": [115, 115, 85, 90, 75, 100],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/244.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/244.png",
+        "abilities": {
+            "46": 0.8,
+            "39": 0.2,
+        },
+        "moveIds": ["m52", "m46", "m444", "m221"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW
+    },
+    "245": {
+        "name": "Suicune",
+        "emoji": "<:245:1119803760080863314>",
+        "description": "Said to be the reincarnation of north winds, it can instantly purify filthy, murky water.",
+        "type": [types.WATER],
+        "baseStats": [100, 75, 115, 90, 115, 85],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/245.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/245.png",
+        "abilities": {
+            "46": 0.8,
+            "39": 0.2,
+        },
+        "moveIds": ["m16", "m182", "m243", "m56"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW
+    },   
     "20091": {
         "name": "Temple Guardian Cloyster",
         "emoji": "<:91:1100288966881718342>",

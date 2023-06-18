@@ -845,6 +845,55 @@ const effectConfig = {
             battle.eventHandler.unregisterListener(listenerId);
         },
     },
+    "mirrorCoat": {
+        "name": "Mirror Coat",
+        "description": "The target will reflect special moves used against it.",
+        "type": effectTypes.BUFF,
+        "dispellable": true,
+        "effectAdd": function(battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    // filter for special moves
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+                    const moveData = moveConfig[args.damageInfo.moveId];
+                    if (!moveData || moveData.damageType !== damageTypes.SPECIAL) {
+                        return;
+                    }
+
+                    const sourcePokemon = args.source;
+                    const targetPokemon = args.target;
+                    if (targetPokemon.isFainted || targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    const damage = calculateDamage({
+                        "power": moveData.power * 1.5,
+                        "damageType": damageTypes.SPECIAL,
+                        "type": types.PSYCHIC,
+                    }, targetPokemon, sourcePokemon, false);
+                    battle.addToLog(`${targetPokemon.name} reflected ${sourcePokemon.name}'s ${moveData.name}!`);
+                    targetPokemon.dealDamage(damage, sourcePokemon, {
+                        "type": "mirrorCoat",
+                    });
+                }
+            }
+            battle.addToLog(`${target.name} puts up a reflective field!`);
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_DAMAGE_TAKEN, listener);
+            return {
+                "listenerId": listenerId,
+            };
+        },
+        "effectRemove": function(battle, target, args) {
+            battle.addToLog(`${target.name}'s reflective field fades!`);
+            const listenerId = args.listenerId;
+            battle.eventHandler.unregisterListener(listenerId);
+        },
+    },
     "flinched": {
         "name": "Flinched",
         "description": "The target flinched.",
@@ -1450,6 +1499,50 @@ const effectConfig = {
             battle.eventHandler.unregisterListener(listenerId);
         }
     },
+    "charge": {
+        "name": "Charge",
+        "description": "The target is charging its Electric moves.",
+        "type": effectTypes.BUFF,
+        "dispellable": true,
+        "effectAdd": function(battle, source, target) {
+            battle.addToLog(`${target.name} is charging its Electric moves!`);
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const type = args.damageInfo.type;
+                    if (type !== "move") {
+                        return;
+                    }
+                    const moveId = args.damageInfo.moveId;
+                    const moveData = moveConfig[moveId];
+                    if (moveData.type !== types.ELECTRIC) {
+                        return;
+                    }
+
+                    const sourcePokemon = args.source;
+                    if (sourcePokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    args.damage = Math.floor(args.damage * 1.5);
+                    return;
+                }
+            }
+
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_DEALT, listener);
+            return {
+                "listenerId": listenerId,
+            }
+        },
+        "effectRemove": function(battle, target, args) {
+            battle.addToLog(`${target.name} is no longer charging!`);
+            const listenerId = args.listenerId;
+            battle.eventHandler.unregisterListener(listenerId);
+        }
+    },
+
     "loseFlying": {
         "name": "No Flying Type",
         "description": "The target loses its Flying type.",
@@ -3080,6 +3173,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user creates a protective field that prevents allies from receiving status conditions for 3 turns.",
     },
+    "m221": {
+        "name": "Sacred Fire",
+        "type": types.FIRE,
+        "power": 100,
+        "accuracy": 90,
+        "cooldown": 6,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SQUARE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The target is razed with a mystical fire of great intensity. This only damages up to 3 random targets in the area, but has a 50% chance of burning all targets.",
+    },
     "m223": {
         "name": "Dynamic Punch",
         "type": types.FIGHTING,
@@ -3171,6 +3277,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user crunches up the target with sharp fangs. This may also lower the target's defense for 2 turns with a 85% chance.",
     },
+    "m243": {
+        "name": "Mirror Coat",
+        "type": types.PSYCHIC,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 3,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user creates a reflective field for 1 turn. When dmaged by a Special move, deals damage back to the target with 1.5x base power.",
+    },
     "m245": {
         "name": "Extreme Speed",
         "type": types.NORMAL,
@@ -3261,6 +3380,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
         "description": "The user redirects all enemy attacks to itself for 1 turn.",
+    },
+    "m268": {
+        "name": "Charge",
+        "type": types.ELECTRIC,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 0,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.OTHER,
+        "description": "The user boosts its Special Defense and Electric moves for 1 turn.",
     },
     "m269": {
         "name": "Taunt",
@@ -3495,6 +3627,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
         "description": "The user hardens its genetic code and experimental armor, sacrificing speed but sharply raising its Defense and Special Defense for 2 turns.",
+    },
+    "m336": {
+        "name": "Howl",
+        "type": types.NORMAL,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 4,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user howls loudly to raise the spirit of itself and its allies, boosting their combat readiness by 15% and raising Attack for 1 turn.",
     },
     "m340": {
         "name": "Bounce",
@@ -5864,6 +6009,39 @@ const moveExecutes = {
             target.addEffect("statusImmunity", 3, source);
         }
     },
+    "m221": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m221";
+        const moveData = moveConfig[moveId];
+        // filter out allTargets => just the primary target and up to 2 random other targets
+        let damagedTargets = [];
+        if (allTargets.length > 3) {
+            const newTargets = [primaryTarget];
+            const otherTargets = allTargets.filter(t => t !== primaryTarget);
+            for (let i = 0; i < 2; i++) {
+                const randomIndex = Math.floor(Math.random() * otherTargets.length);
+                newTargets.push(otherTargets[randomIndex]);
+                otherTargets.splice(randomIndex, 1);
+            }
+            damagedTargets = newTargets;
+        } else {
+            damagedTargets = allTargets;
+        }
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            if (damagedTargets.includes(target)) {
+                const damageToDeal = calculateDamage(moveData, source, target, miss);
+                source.dealDamage(damageToDeal, target, {
+                    type: "move",
+                    moveId: moveId
+                });
+            }
+
+            // if not miss, 50% chance to burn
+            if (!miss && Math.random() < 0.5) {
+                target.applyStatus(statusConditions.BURN, source);
+            }
+        }
+    },
     "m223": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m223";
         const moveData = moveConfig[moveId];
@@ -5986,6 +6164,14 @@ const moveExecutes = {
             if (!miss && Math.random() < 0.85) {
                 target.addEffect("defDown", 2, source);
             }
+        }
+    },
+    "m243": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m243";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // apply mirror coat 1 turn
+            target.addEffect("mirrorCoat", 1, source);
         }
     },
     "m245": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -6123,6 +6309,16 @@ const moveExecutes = {
         for (const target of allTargets) {
             // apply redirect for 1 turn
             target.addEffect("redirect", 1, source);
+        }
+    },
+    "m268": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m266";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // apply charge for 1 turn
+            target.addEffect("charge", 1, source);
+            // apply spd up for 1 turn
+            target.addEffect("spdUp", 1, source);
         }
     },
     "m269": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -6388,6 +6584,17 @@ const moveExecutes = {
             target.addEffect("greaterSpdUp", 2, source);
             // lower spe
             target.addEffect("speDown", 2, source);
+        }
+    },
+    "m336": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m336";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // grant atk up 1 turn
+            target.addEffect("atkUp", 1, source);
+
+            // grant 15% CR
+            target.boostCombatReadiness(source, 15);
         }
     },
     "m340": function (battle, source, primaryTarget, allTargets, missedTargets) {
