@@ -2129,7 +2129,7 @@ const moveConfig = {
         "type": types.NORMAL,
         "power": null,
         "accuracy": null,
-        "cooldown": 4,
+        "cooldown": 3,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
@@ -3030,6 +3030,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user lays a trap of spikes at the opposing team's feet. The trap hurts opposing Pokémon that have their combat readiness boosted and before they move.",
     },
+    "m192": {
+        "name": "Zap Cannon",
+        "type": types.ELECTRIC,
+        "power": 120,
+        "accuracy": 50,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user fires an electric blast like a cannon to inflict damage and paralyze the target if hit.",
+    },
     "m194": {
         "name": "Destiny Bond",
         "type": types.GHOST,
@@ -3852,6 +3865,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user slams a barrage of hard-shelled seeds down on the target from above. Adjacent targets take 50% damage.",
     },
+    "m403": {
+        "name": "Air Slash",
+        "type": types.FLYING,
+        "power": 65,
+        "accuracy": 90,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.COLUMN,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user attacks with a blade of air that slices even the sky. This has a 25% chance to flinch the target.",
+    },
     "m405": {
         "name": "Bug Buzz",
         "type": types.BUG,
@@ -4125,6 +4151,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user and its allies take 50% damage from non-single-target attacks until the user's next turn.",
     },
+    "m476": {
+        "name": "Rage Powder",
+        "type": types.BUG,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 4,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user scatters a cloud of irritating powder to draw attention to itself. Enemies can only attack the user for a turn.",
+    },
     "m479": {
         "name": "Smack Down",
         "type": types.ROCK,
@@ -4219,7 +4258,7 @@ const moveConfig = {
     "m523": {
         "name": "Bulldoze",
         "type": types.GROUND,
-        "power": 25,
+        "power": 35,
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -4241,6 +4280,32 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "The target is knocked away, reducing its combat readiness by 30%.",
+    },
+    "m526": {
+        "name": "Work Up",
+        "type": types.NORMAL,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 0,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.OTHER,
+        "description": "The user is roused, raising its Attack and Special Attack for 2 turns.",
+    },
+    "m527": {
+        "name": "Electroweb",
+        "type": types.ELECTRIC,
+        "power": 50,
+        "accuracy": 90,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SQUARE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user captures and attacks everything in the area with electricity. This lowers the Speed of targets for 2 turns.",
     },
     "m528": {
         "name": "Wild Charge",
@@ -5807,6 +5872,23 @@ const moveExecutes = {
             }
         }
     },
+    "m192": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m192";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not missed, paralyze
+            if (!miss) {
+                target.applyStatus(statusConditions.PARALYSIS, source);
+            }
+        }
+    },
     "m194": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m194";
         const moveData = moveConfig[moveId];
@@ -6870,7 +6952,24 @@ const moveExecutes = {
                 moveId: moveId
             });
         }
-    },      
+    },
+    "m403": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m403";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+            
+            // if not miss, 25% to flinch 1 turn
+            if (!miss && Math.random() < 0.25) {
+                target.addEffect("flinched", 1, source);
+            }
+        }
+    },
     "m405": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m405";
         const moveData = moveConfig[moveId];
@@ -7252,6 +7351,14 @@ const moveExecutes = {
             target.addEffect("wideGuard", 1, source);
         }
     },
+    "m476": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m476";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // apply redirect for 1 turn
+            target.addEffect("redirect", 1, source);
+        }
+    },
     "m479": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m479";
         const moveData = moveConfig[moveId];
@@ -7417,6 +7524,32 @@ const moveExecutes = {
             // if hit, reduce target's cr by 30
             if (!miss) {
                 target.reduceCombatReadiness(source, 30);
+            }
+        }
+    },
+    "m526": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m526";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // give atk up and spa up 2 turns
+            target.addEffect("atkUp", 2, source);
+            target.addEffect("spaUp", 2, source);
+        }
+    },
+    "m527": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m527";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if hit, reduce targets speed for 2 turn
+            if (!miss) {
+                target.addEffect("speDown", 2, source);
             }
         }
     },
@@ -7926,6 +8059,42 @@ const abilityConfig = {
         },
         "abilityRemove": function (battle, source, target) {
             target.acc -= 30;
+        }
+    },
+    "15": {
+        "name": "Insomnia",
+        "description": "Prevents the user from sleep.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.statusId !== statusConditions.SLEEP) {
+                        return;
+                    }
+
+                    const targetPokemon = args.target;
+                    if (targetPokemon.isFainted || initialArgs.pokemon !== targetPokemon) {
+                        return;
+                    }
+
+                    targetPokemon.battle.addToLog(`${targetPokemon.name}'s Insomnia prevents it from falling asleep!`);
+                    args.canApply = false;
+                }
+            };
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_STATUS_APPLY, listener);
+            return {
+                "listenerId": listenerId
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "15" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
     "18": {

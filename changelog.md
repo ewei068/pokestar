@@ -3,8 +3,10 @@
 ## 0.11.0 - Generation II
 
 * Gen 2:
-  * Pokemon: Chikorita, Bayleef, Meganium, Cyndaquil, Quilava, Typhlosion, Totodile, Croconaw, Feraligatr, Raikou, Entei, Suicune
-  * Abilities: Sheer Force
+  * Pokemon: Chikorita, Bayleef, Meganium, Cyndaquil, Quilava, Typhlosion, Totodile, Croconaw, Feraligatr, Sentret, Furret, Hoothoot, Noctowl, Crobat, Mareep, Flaffy, Ampharos, Hoppip, Skiploom, Jumpluff, Raikou, Entei, Suicune
+  * Abilities: Insomnia, Sheer Force
+* Increase level rewards to 100
+* Flat equipment scaling
 
 ### 0.10.1 (6/17)
 

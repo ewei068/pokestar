@@ -979,6 +979,10 @@ const pokemonConfig = {
         "baseStats": [75, 80, 70, 65, 75, 90],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/42.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/42.png",
+        "evolution": [{
+            "level": 42,
+            "id": "169",
+        }],
         "abilities": {
             "39": 0.8,
             "16": 0.2
@@ -2544,7 +2548,7 @@ const pokemonConfig = {
             "basicMoveIds": [
                 "m16", "m17", "m22", "m35", "m40", "m43", "m51", "m52", "m55", "m71", "m77", "m81", 
                 "m84", "m93", "m98", "m100", "m102", "m106", "m116", "m118", "m122", "m123", "m175", 
-                "m189", "m205", "m214", "m239", "m246", "m270", "m418", "m420", "m479", "m506",
+                "m189", "m205", "m214", "m239", "m246", "m270", "m418", "m420", "m479", "m506", "m526",
                 "m574", "m876"
             ],
             "powerMoveIds": [
@@ -2557,7 +2561,7 @@ const pokemonConfig = {
             ],
             "ultimateMoveIds": [
                 "m38", "m56", "m63", "m76", "m87", "m89", "m135", "m143", "m153", "m156", "m157", 
-                "m162", "m200", "m223", "m257", "m304", "m366", "m394", "m405", "m413", "m416", 
+                "m162", "m192", "m200", "m223", "m257", "m304", "m366", "m394", "m405", "m413", "m416", 
                 "m428", "m433", "m437", "m482", "m528", "m542"
             ]
         }
@@ -2738,6 +2742,241 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
+    },
+    "161": {
+        "name": "Sentret",
+        "emoji": "<:161:1116755922249846924>",
+        "description": "When acting as a lookout, it warns others of danger by screeching and hitting the ground with its tail.",
+        "type": [types.NORMAL],
+        "baseStats": [35, 46, 34, 35, 45, 20],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/161.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/161.png",
+        "evolution": [{
+            "level": 15,
+            "id": "162"
+        }],
+        "abilities": {
+            "50": 0.45,
+            "51": 0.45,
+            "119": 0.1,
+        },
+        "moveIds": ["m270", "m21", "m97", "m226"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.FAST
+    },
+    "162": {
+        "name": "Furret",
+        "emoji": "<:162:1116755923642363924>",
+        "description": "It makes a nest to suit its long and skinny body. The nest is impossible for other Pokémon to enter.",
+        "type": [types.NORMAL],
+        "baseStats": [85, 76, 64, 45, 45, 90],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/162.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/162.png",
+        "abilities": {
+            "50": 0.45,
+            "51": 0.45,
+            "119": 0.1,
+        },
+        "moveIds": ["m270", "m97", "m226", "m38"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.FAST
+    },
+    "163": {
+        "name": "Hoothoot",
+        "emoji": "<:163:1116755924858703932>",
+        "description": "It has an internal organ that senses the earth's rotation. Using this special organ, a Hoothoot begins hooting at precisely the same time every day.",
+        "type": [types.NORMAL, types.FLYING],
+        "baseStats": [60, 30, 30, 50, 50, 50],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/163.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/163.png",
+        "evolution": [{
+            "level": 16,
+            "id": "164"
+        }],
+        "abilities": {
+            "15": 0.45,
+            "51": 0.45,
+            "110": 0.1,
+        },
+        "moveIds": ["m526", "m97", "m355", "m403"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.FAST
+    },
+    "164": {
+        "name": "Noctowl",
+        "emoji": "<:164:1116755926037311490>",
+        "description": "Its eyes are specially adapted. They concentrate even faint light and enable it to see in the dark.",
+        "type": [types.NORMAL, types.FLYING],
+        "baseStats": [100, 50, 50, 76, 96, 70],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/164.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/164.png",
+        "abilities": {
+            "15": 0.45,
+            "51": 0.45,
+            "110": 0.1,
+        },
+        "moveIds": ["m526", "m97", "m355", "m542"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.FAST
+    },
+    "169": {
+        "name": "Crobat",
+        "emoji": "<:169:1116755982895304805>",
+        "description": "It flies so silently through the dark on its four wings that it may not be noticed even when nearby.",
+        "type": [types.POISON, types.FLYING],
+        "baseStats": [85, 90, 80, 70, 80, 130],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/169.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/169.png",
+        "abilities": {
+            "39": 0.8,
+            "151": 0.2,
+        },
+        "moveIds": ["m17", "m269", "m305", "m366"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "179": {
+        "name": "Mareep",
+        "emoji": "<:179:1116756067767029843>",
+        "description": "Its fluffy wool rubs together and builds a static charge. The more energy is charged, the more brightly the lightbulb at the tip of its tail glows.",
+        "type": [types.ELECTRIC],
+        "baseStats": [55, 40, 40, 65, 45, 35],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/179.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/179.png",
+        "evolution": [{
+            "level": 15,
+            "id": "180"
+        }],
+        "abilities": {
+            "9": 0.8,
+            "57": 0.2,
+        },
+        "moveIds": ["m33", "m84", "m85", "m527"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "180": {
+        "name": "Flaaffy",
+        "emoji": "<:180:1116756068941443193>",
+        "description": "As a result of storing too much electricity, it developed patches where even downy wool won't grow.",
+        "type": [types.ELECTRIC],
+        "baseStats": [70, 55, 55, 80, 60, 45],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/180.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/180.png",
+        "evolution": [{
+            "level": 30,
+            "id": "181"
+        }],
+        "abilities": {
+            "9": 0.8,
+            "57": 0.2,
+        },
+        "moveIds": ["m84", "m85", "m215", "m527"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "181": {
+        "name": "Ampharos",
+        "emoji": "<:181:1116756069931302972>",
+        "description": "The tail's tip shines brightly and can be seen from far away. It acts as a beacon for lost people.",
+        "type": [types.ELECTRIC],
+        "baseStats": [90, 75, 85, 115, 90, 55],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/181.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/181.png",
+        "abilities": {
+            "9": 0.8,
+            "57": 0.2,
+        },
+        "moveIds": ["m84", "m215", "m527", "m192"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "182": {
+        "name": "Bellossom",
+        "emoji": "<:182:1116756070740799509>",
+        "description": "When Bellossom gets exposed to plenty of sunlight, the leaves ringing its body begin to spin around. This Pokémon's dancing is renowned in the southern lands.",
+        "type": [types.GRASS],
+        "baseStats": [75, 80, 95, 90, 100, 50],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/182.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/182.png",
+        "abilities": {
+            "34": 0.8,
+            "131": 0.2,
+        },
+        "moveIds": ["m71", "m73", "m483", "m585"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "187": {
+        "name": "Hoppip",
+        "emoji": "<:187:1116756122334929037>",
+        "description": "This Pokémon drifts and floats with the wind. If it senses the approach of strong winds, Hoppip links its leaves with other Hoppip to prepare against being blown away.",
+        "type": [types.GRASS, types.FLYING],
+        "baseStats": [35, 35, 40, 35, 55, 50],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/187.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/187.png",
+        "evolution": [{
+            "level": 18,
+            "id": "188"
+        }],
+        "abilities": {
+            "34": 0.45,
+            "102": 0.45,
+            "151": 0.1,
+        },
+        "moveIds": ["m33", "m270", "m79", "m476"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "188": {
+        "name": "Skiploom",
+        "emoji": "<:188:1116756124989915270>",
+        "description": "Skiploom's flower blossoms when the temperature rises above 64 degrees Fahrenheit. How much the flower opens depends on the temperature. For that reason, this Pokémon is sometimes used as a thermometer.",
+        "type": [types.GRASS, types.FLYING],
+        "baseStats": [55, 45, 50, 45, 65, 80],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/188.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/188.png",
+        "evolution": [{
+            "level": 27,
+            "id": "189"
+        }],
+        "abilities": {
+            "34": 0.45,
+            "102": 0.45,
+            "151": 0.1,
+        },
+        "moveIds": ["m270", "m79", "m340", "m476"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "189": {
+        "name": "Jumpluff",
+        "emoji": "<:189:1116756126747336754>",
+        "description": "Jumpluff rides warm southern winds to cross the sea and fly to foreign lands. The Pokémon descends to the ground when it encounters cold air while it is floating.",
+        "type": [types.GRASS, types.FLYING],
+        "baseStats": [75, 55, 70, 55, 85, 110],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/189.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/189.png",
+        "abilities": {
+            "34": 0.45,
+            "102": 0.45,
+            "151": 0.1,
+        },
+        "moveIds": ["m270", "m79", "m476", "m366"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
     },
     "243": {
         "name": "Raikou",
