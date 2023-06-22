@@ -75,9 +75,8 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 * If necessary: add other environment variables to `.env`
 * If necessary: install new packages `npm install`
 * If necessary: deploy commands `node commands/deployCommands.js`
-* If necessary: run migrations 
-    * General metadata `node database/migration.js`
-    * Other migrations in `database/migrations`
+* Run migration: `node database/migration.js`
+* If necessary: run other migrations in `database/migrations`
 * Run bot `node index.js`
 * Test that bot works in sandboxed environment
 * If DB errors, restore DB `mongorestore --drop backups/{BACKUP_NAME}/`

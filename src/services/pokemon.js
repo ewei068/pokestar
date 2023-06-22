@@ -19,6 +19,7 @@ const { buildBackButtonRow } = require("../components/backButtonRow");
 const { getItems, removeItems } = require("../utils/trainerUtils");
 const { backpackItemConfig, backpackItems } = require("../config/backpackConfig");
 const { drawIterable, drawUniform } = require("../utils/gachaUtils");
+const { partyAddRow } = require("../components/partyAddRow");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
@@ -108,7 +109,8 @@ const calculatePokemonStats = (pokemon, speciesData) => {
 
         // apply modifiers
         stat = Math.floor(stat * percentModifiers[i] / 100);
-        stat += flatModifiers[i];
+        // account for pokemon level
+        stat += Math.floor(flatModifiers[i] * level / 100);
 
         newStats.push(stat);
     }
@@ -583,7 +585,7 @@ const setBattleEligible = async (trainer) => {
     return { data: null, err: null };
 }
 
-const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info" } = {}) => {
+const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info", action=null } = {}) => {
     const send = {
         content: pokemonId,
         embeds: [],
@@ -603,12 +605,11 @@ const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info" } = 
     }
     const pokemonNoEquip = calculatePokemonStatsNoEquip(pokemon.data, pokemonConfig[pokemon.data.speciesId]);
 
-    if (tab === "lock") {
+    if (action === "lock") {
         const { err } = await toggleLock(pokemon.data);
         if (err) {
             return { embed: null, err: err };
         }
-        tab = "info";
     }
 
     // build pokemon embed
@@ -632,17 +633,36 @@ const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info" } = 
             disabled: tab === "equipment",
             data: { id: pokemonId, tab: "equipment" }
         },
-        {
-            label: pokemon.data.locked ? "Unlock" : "Lock",
-            disabled: false,
-            data: { id: pokemonId, tab: "lock" }
-        },
     ];
     const tabActionRow = buildButtonActionRow(
         buttonConfigs,
         eventNames.POKEMON_INFO_BUTTON
     )
     send.components.push(tabActionRow);
+
+    // build action selection
+    const actionButtonConfigs = [
+        {
+            label: pokemon.data.locked ? "Unlock" : "Lock",
+            disabled: false,
+            data: { id: pokemonId, action: "lock" }
+        },
+        {
+            label: "Add to Party",
+            disabled: false,
+            data: { id: pokemonId, action: "add" }
+        },
+    ]
+    const actionActionRow = buildButtonActionRow(
+        actionButtonConfigs,
+        eventNames.POKEMON_ACTION_BUTTON
+    )
+    send.components.push(actionActionRow);
+
+    if (action === "add") {
+        const partySelectRow = partyAddRow(pokemonId, trainer.data.party.pokemonIds.length);
+        send.components.push(partySelectRow);
+    }
 
     return { send: send, err: null };
 }

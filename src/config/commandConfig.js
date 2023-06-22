@@ -519,7 +519,17 @@ const commandConfig = {
         "description": "Automatically fill your party with Pokemon",
         "longDescription": "Automatically fill your party with Pokemon. NOTE: Removes all current party Pokemon from the party.",
         "execute": "partyAuto.js",
-        "args": {},
+        "args": {
+            "option": {
+                "type": "string",
+                "description": "option to fill party based on",
+                "optional": true,
+                "variable": false,
+                "enum": [
+                    "combatPower", "ivTotal", "level"
+                ]
+            },
+        },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
         "money": 10

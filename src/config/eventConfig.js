@@ -6,6 +6,7 @@ const eventNames = {
     POKEMON_EVOLVE_CONFIRM: "pokemonEvolveConfirm",
     POKEMON_RELEASE_PAGE: "pokemonReleasePage",
     POKEMON_INFO_BUTTON: "pokemonInfoButton",
+    POKEMON_ACTION_BUTTON: "pokemonActionButton",
     POKEDEX_LIST_BUTTON: "pokedexListButton",
     POKEDEX_BUTTON: "pokedexButton",
     EQUIPMENT_SELECT: "equipmentSelect",
@@ -16,6 +17,7 @@ const eventNames = {
     SHOP_SELECT: "shopSelect",
     SHOP_BUY: "shopBuy",
     HELP_SELECT: "helpSelect",
+    PARTY_ADD: "partyAdd",
     PVP_ACCEPT: "pvpAccept",
     PVE_SCROLL: "pveScroll",
     PVE_SELECT: "pveSelect",
@@ -76,6 +78,11 @@ const eventConfig = {
         "execute": "pokemonInfoButton.js",
         "directory": "pokemon",
     },
+    [eventNames.POKEMON_ACTION_BUTTON]: {
+        "name": "Pokemon Action Button",
+        "execute": "pokemonActionButton.js",
+        "directory": "pokemon",
+    },
     [eventNames.POKEDEX_LIST_BUTTON]: {
         "name": "Pokedex List Button",
         "execute": "pokedexListButton.js",
@@ -126,6 +133,13 @@ const eventConfig = {
     [eventNames.BACK]: {
         "name": "Back",
         "execute": "back.js",
+    },
+    [eventNames.PARTY_ADD]: {
+        "name": "Party Add",
+        "execute": "partyAdd.js",
+        "directory": "battle",
+        "exp": 5,
+        "money": 10,
     },
     [eventNames.PVP_ACCEPT]: {
         "name": "PVP Accept",

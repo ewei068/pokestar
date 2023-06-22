@@ -4,7 +4,7 @@ const { getPokemon, listPokemons } = require('../../services/pokemon');
 const { buildPartyEmbed } = require('../../embeds/battleEmbeds');
 const { pokemonConfig } = require('../../config/pokemonConfig');
 
-const partyAuto = async (user) => {
+const partyAuto = async (user, option) => {
     // get trainer
     const trainer = await getTrainer(user);
     if (trainer.err) {
@@ -23,7 +23,7 @@ const partyAuto = async (user) => {
         battleEligible: true,
     };
     const sort = {
-        combatPower: -1
+        [option]: -1
     };
     const bestPokemons = await listPokemons(trainer.data, {
         filter: filter,
@@ -74,7 +74,8 @@ const partyAuto = async (user) => {
 }
 
 const partyAutoMessageCommand = async (message) => {
-    const { send, err } = await partyAuto(message.author);
+    const option = message.content.split(" ")[1] || "combatPower";
+    const { send, err } = await partyAuto(message.author, option);
     if (err) {
         await message.channel.send(`${err}`);
         return { err: err };
@@ -84,7 +85,8 @@ const partyAutoMessageCommand = async (message) => {
 }
 
 const partyAutoSlashCommand = async (interaction) => {
-    const { send, err } = await partyAuto(interaction.user);
+    const option = interaction.options.getString("option") || "combatPower";
+    const { send, err } = await partyAuto(interaction.user, option);
     if (err) {
         await interaction.reply(`${err}`);
         return { err: err };

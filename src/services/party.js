@@ -1,9 +1,11 @@
 const { collectionNames } = require('../config/databaseConfig');
 const { logger } = require('../log');
 const { updateDocument } = require('../database/mongoHandler');
-const { listPokemons } = require('../services/pokemon');
+const { listPokemons, getPokemon } = require('../services/pokemon');
 const { idFrom } = require('../utils/utils');
 const { pokemonConfig } = require('../config/pokemonConfig');
+const { getTrainer } = require('./trainer');
+const { buildPartyEmbed } = require('../embeds/battleEmbeds');
 
 const updateParty = async (trainer, party) => {
     try {
@@ -108,8 +110,73 @@ const validateParty = async (trainer) => {
     return partyPokemons;
 }
 
+const buildPartyAddSend = async ({user=null, pokemonId=null, position=1}={}) => {
+    const index = position - 1;
+    // get trainer
+    const trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { send: null, err: trainer.err };
+    }
+    const partyPokemon = trainer.data.party.pokemonIds;
+
+    // check if position is valid
+    if (index < 0 || index >= trainer.data.party.pokemonIds.length) {
+        return { send: null, err: `Invalid position! Must be between 1 and ${trainer.data.party.pokemonIds.length}.` };
+    }
+
+    // get pokemon
+    const pokemon = await getPokemon(trainer.data, pokemonId);
+    if (pokemon.err) {
+        return { send: null, err: pokemon.err };
+    }
+
+    // temp: check battle elibility
+    if (!pokemonConfig[pokemon.data.speciesId].battleEligible) {
+        return { send: null, err: `We have not implemented ${pokemon.data.name}'s battle moves yet; look forward to a future update! Use \`/list filterby: battleEligible filtervalue: True\` to find your battle eligible Pokemon!` };
+    }
+
+    // if pokemon in party, swap pokemon from both indices
+    const existingIndex = partyPokemon.indexOf(pokemon.data._id.toString());
+    if (existingIndex !== -1) {
+        if (existingIndex === index) {
+            return { send: null, err: `${pokemon.data.name} is already in that position!` };
+        }
+        partyPokemon[index] = partyPokemon.splice(existingIndex, 1, partyPokemon[index])[0];
+    } else {
+        // check if party is full
+        if (partyPokemon[index] == null && partyPokemon.reduce((acc, curr) => acc + (curr ? 1 : 0), 0) >= 6) {
+            return { send: null, err: `Your party is full! Remove a Pokemon with \`/partyremove\`` };
+        }
+
+        // insert pokemon into index
+        partyPokemon[index] = pokemon.data._id.toString();
+    }
+
+    // update trainer
+    const update = await updateParty(trainer.data, trainer.data.party);
+    if (update.err) {
+        return { send: null, err: update.err };
+    }
+
+    // get party pokemons
+    const partyPokemons = await getPartyPokemons(trainer.data);
+    if (partyPokemons.err) {
+        return { send: null, err: partyPokemons.err };
+    }
+
+    // build pokemon embed
+    const embed = buildPartyEmbed(trainer.data, partyPokemons.data);
+
+    const send = {
+        content: `${pokemon.data.name} was added to your party!`,
+        embeds: [embed]
+    }
+    return { send: send, err: null };
+}
+
 module.exports = {
     updateParty,
     getPartyPokemons,
     validateParty,
+    buildPartyAddSend,
 };

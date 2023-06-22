@@ -1,4 +1,4 @@
-const { QueryBuilder } = require('../mongoHandler');
+const { QueryBuilder, updateDocument } = require('../mongoHandler');
 const { collectionNames } = require('../../config/databaseConfig');
 const { calculatePokemonStats } = require('../../services/pokemon');
 const { natureConfig, pokemonConfig } = require('../../config/pokemonConfig');
@@ -22,37 +22,28 @@ const calculateStats = function(pokemon, pokemonConfig, natureConfig, speedFn, f
 **/
 
 const calculateAllStats = async () => {
-    const aggregationPipeline = [
-        {
-            $replaceRoot: {
-                newRoot: {
-                    $function: {
-                        body: calculateStats.toString(),
-                        args: [
-                            "$$ROOT", 
-                            pokemonConfig, 
-                            natureConfig, 
-                            calculateEffectiveSpeed.toString(), 
-                            calculatePokemonStats.toString()
-                        ],
-                        lang: "js"
-                    }
-                }
-            }
-        },
-        {
-            $merge: {
-                into: collectionNames.USER_POKEMON,
-                on: "_id",
-                whenMatched: "replace",
-                whenNotMatched: "insert"
-            }
-        }
-    ];
-    const query = new QueryBuilder(collectionNames.USER_POKEMON)
-        .setAggregate(aggregationPipeline);
+    // get all pokemon
+    const getQuery = new QueryBuilder(collectionNames.USER_POKEMON)
+        .setFilter({});
+    const pokemons = await getQuery.find();
 
-    return await query.aggregate();
+    const numPokemon = pokemons.length;
+    const promises = [];
+    let count = 0;
+    for (let i = 0; i < numPokemon; i++) {
+        const pokemon = pokemons[i];
+        const speciesData = pokemonConfig[pokemon.speciesId];
+        const newPokemon = calculatePokemonStats(pokemon, speciesData);
+        const updateRes = updateDocument(collectionNames.USER_POKEMON, { _id: pokemon._id }, { $set: newPokemon });
+        promises.push(updateRes);
+    }
+    const res = await Promise.all(promises);
+    for (const result of res) {
+        if (result.modifiedCount === 1) {
+            count++;
+        }
+    }
+    return `Updated ${count}/${numPokemon} pokemon`;
 }
 
 calculateAllStats().then((res) => {

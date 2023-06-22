@@ -2,13 +2,14 @@
 
 ## 0.11.0 - Generation II
 
-* Gen 2:
+* **Generation 2**
   * Pokemon: Chikorita, Bayleef, Meganium, Cyndaquil, Quilava, Typhlosion, Totodile, Croconaw, Feraligatr, Sentret, Furret, Hoothoot, Noctowl, Crobat, Mareep, Flaffy, Ampharos, Bellossom, Hoppip, Skiploom, Jumpluff, Espeon, Umbreon, Steelix, Heracross, Blissey, Raikou, Entei, Suicune
   * Abilities: Insomnia, Sheer Force, Guts, Magic Bounce
   * Some dungeons now have Gen 2 Pokemon!
-* Increase level rewards to 100
-* Flat equipment scaling
-* Party add button
+* Added level rewards up to level 100!
+* Flat equipment modifiers now scale with Pokemon level. Equipment is the same strength at level 100, but is less powerful if your Pokemon is lower level.
+* Party auto options: You now have a few more options for how your party is filled!
+* Party add button: You can now add Pokemon to your party from their `/info` screen!
 
 ### 0.10.1 (6/17)
 
