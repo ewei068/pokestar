@@ -2,10 +2,13 @@
 
 ## 0.11.0 - Generation II
 
+Generation 2 has arrived! Many Generation 2 Pokemon will be released over 2 updates bringing many new features!
+
 * **Generation 2**
   * Pokemon: Chikorita, Bayleef, Meganium, Cyndaquil, Quilava, Typhlosion, Totodile, Croconaw, Feraligatr, Sentret, Furret, Hoothoot, Noctowl, Crobat, Mareep, Flaffy, Ampharos, Bellossom, Hoppip, Skiploom, Jumpluff, Espeon, Umbreon, Steelix, Heracross, Blissey, Raikou, Entei, Suicune
   * Abilities: Insomnia, Sheer Force, Guts, Magic Bounce
   * Some dungeons now have Gen 2 Pokemon!
+  * A small Gen 2 celebration event is taking place! Use `/events` for more info.
 * Added level rewards up to level 100!
 * Flat equipment modifiers now scale with Pokemon level. Equipment is the same strength at level 100, but is less powerful if your Pokemon is lower level.
 * Party auto options: You now have a few more options for how your party is filled!

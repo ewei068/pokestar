@@ -46,7 +46,22 @@ As we wrap up Gen 1, Team Rocket has taken over Pokestar! Defeat special stages,
 * Armored Mewtwo Icon: https://www.deviantart.com/nathaniel98643/art/Armor-Mewtwo-682857643
 `
 
+const GEN_2_DESCRIPTION = `🌟**Generation II**🌟
+
+Generation 2 Pokemon have arrived! Generation 2 Pokemon will be releasing over the course of 2 updates, bringing many new Pokemon, moves, and abilities!
+
+<:152:1116755846769168434> **New Pokemon:** Many new Pokemon have been added, and are available in the Gacha! You may also start seeing these Pokemon in NPC and Dungeon battles!
+
+<:243:1119803757895618650> **Legendary Banners:** Gen 2 Legendary Pokemon will have special rate-up banners! Note that these Pokemon are NOT limited and are available in all banners.
+
+<:pokeball:1100296136931156008> **More Rewards:** The amount of Pokeballs you get from \`/daily\` and \`/pokemart\` have doubled for the duration of this event!
+`
+
 const gameEventConfig = [
+    {
+        "name": "Generation II",
+        "description": GEN_2_DESCRIPTION,
+    },
     {
         "name": "Team Rocket Takeover",
         "description": ROCKET_DESCRIPTION,

@@ -77,7 +77,8 @@ const shopItemConfig = {
         "description": "Gain a random Pokeball used to catch Pokemon! Use the \`/help gacha\` command to learn more! Limit 5 per day.",
         "category": shopCategories.GACHA,
         "price": [200],
-        "limit": 5,
+        // TEMP: gen 2 event
+        "limit": 5 * 2,
     },
     [shopItems.HOME]: {
         "name": "Home",

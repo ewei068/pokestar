@@ -72,6 +72,42 @@ const bannerTypeConfig = {
 const bannerConfig = [
     {
         "bannerType": bannerTypes.SPECIAL,
+        "name": "[GEN 2] Raikou's Banner",
+        "description": "Gen 2 has arrived! Pull for the legendary Raikou, as well as other Gen 2 Pokemon! NOTE: Raikou is NOT limited and is available in all banners.",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["243"],
+                [rarities.EPIC]: ["154", "157", "160", "181", "189", "214"],
+                [rarities.RARE]: ["133", "152", "155", "158", "162", "164"]
+            }
+        }
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
+        "name": "[GEN 2] Entei's Banner",
+        "description": "Gen 2 has arrived! Pull for the legendary Entei, as well as other Gen 2 Pokemon! NOTE: Entei is NOT limited and is available in all banners.",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["244"],
+                [rarities.EPIC]: ["154", "157", "160", "181", "189", "214"],
+                [rarities.RARE]: ["133", "152", "155", "158", "162", "164"]
+            }
+        }
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
+        "name": "[GEN 2] Suicune's Banner",
+        "description": "Gen 2 has arrived! Pull for the legendary Suicune, as well as other Gen 2 Pokemon! NOTE: Suicune is NOT limited and is available in all banners.",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["245"],
+                [rarities.EPIC]: ["154", "157", "160", "181", "189", "214"],
+                [rarities.RARE]: ["133", "152", "155", "158", "162", "164"]
+            }
+        }
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
         "name": "[EVENT] Team Rocket Trio",
         "description": "Prepare for trouble... and make it double! Pull for the Team Rocket Trio's limited signature Pokemon as well as the limited legendary Meowth! For more information, use `/events`.",
         "rateUp": () => {
