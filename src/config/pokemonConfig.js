@@ -1021,10 +1021,16 @@ const pokemonConfig = {
         "baseStats": [60, 65, 70, 40, 85, 75],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/44.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/44.png",
-        "evolution": [{
-            "level": 31,
-            "id": "45",
-        }],
+        "evolution": [
+            {
+                "level": 31,
+                "id": "45",
+            },
+            {
+                "level": 31,
+                "id": "182",
+            }
+        ],
         "abilities": {
             "34": 0.8,
             "1": 0.2
@@ -1732,6 +1738,10 @@ const pokemonConfig = {
         "baseStats": [35, 45, 160, 70, 30, 45],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/95.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/95.png",
+        "evolution": [{
+            "id": "208",
+            "level": 40
+        }],
         "abilities": {
             "69": 0.45,
             "5": 0.45,
@@ -2001,6 +2011,10 @@ const pokemonConfig = {
         "baseStats": [250, 5, 5, 35, 105, 50],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/113.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/113.png",
+        "evolution": [{
+            "level": 50,
+            "id": "242",
+        }],
         "abilities": {
             "30": 0.45,
             "32": 0.45,
@@ -2198,6 +2212,14 @@ const pokemonConfig = {
             {
                 "level": 25,
                 "id": "136",
+            },
+            {
+                "level": 25,
+                "id": "196",
+            },
+            {
+                "level": 25,
+                "id": "197",
             },
         ],
         "abilities": {
@@ -2555,8 +2577,8 @@ const pokemonConfig = {
                 "m14", "m34", "m36", "m46",  "m53", "m57", "m58", "m60", "m65", "m68",
                 "m70", "m85", "m86", "m91", "m92", "m94", "m113", "m115", "m127", "m182", "m188", "m191",
                 "m203", "m215",  "m216", "m219", "m226", "m247", "m269", "m202", "m252", "m276", "m283",
-                "m317", "m334", "m340", "m352", "m355", "m369", "m387", "m396", "m398", "m402",
-                "m409", "m414", "m417", "m424", "m430", "m441", "m444", "m446", "m450", "m521", "m523",
+                "m317", "m334", "m340", "m347", "m352", "m355", "m369", "m387", "m396", "m398", "m402",
+                "m409", "m414", "m417", "m424", "m430", "m441", "m444", "m446", "m450", "m492", "m521", "m523",
                 "m525", "m529"
             ],
             "ultimateMoveIds": [
@@ -2974,6 +2996,94 @@ const pokemonConfig = {
             "151": 0.1,
         },
         "moveIds": ["m270", "m79", "m476", "m366"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "196": {
+        "name": "Espeon",
+        "emoji": "<:196:1116756190685319258>",
+        "description": "Espeon is extremely loyal to any Trainer it considers to be worthy. It is said that this Pokémon developed its precognitive powers to protect its Trainer from harm.",
+        "type": [types.PSYCHIC],
+        "baseStats": [65, 65, 60, 130, 95, 110],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/196.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/196.png",
+        "abilities": {
+            "28": 0.8,
+            "156": 0.2,
+        },
+        "moveIds": ["m98", "m226", "m347", "m248"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "197": {
+        "name": "Umbreon",
+        "emoji": "<:197:1116756191922630680>",
+        "description": "Umbreon evolved as a result of exposure to the moon's waves. It hides silently in darkness and waits for its foes to make a move. The rings on its body glow when it leaps to attack.",
+        "type": [types.DARK],
+        "baseStats": [95, 65, 110, 60, 130, 65],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/197.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/197.png",
+        "abilities": {
+            "28": 0.8,
+            "39": 0.2,
+        },
+        "moveIds": ["m98", "m236", "m492", "m212"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "208": {
+        "name": "Steelix",
+        "emoji": "<:208:1119803395272871946>",
+        "description": "Steelix lives even further underground than Onix. This Pokémon is known to dig toward the earth's core. There are records of this Pokémon reaching a depth of over six-tenths of a mile underground.",
+        "type": [types.STEEL, types.GROUND],
+        "baseStats": [75, 85, 200, 55, 65, 30],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/208.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/208.png",
+        "abilities": {
+            "69": 0.45,
+            "5": 0.45,
+            "125": 0.1,
+        },
+        "moveIds": ["m175", "m203", "m469", "m231"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "214": {
+        "name": "Heracross",
+        "emoji": "<:214:1119803488688410655>",
+        "description": "Heracross charges in a straight line at its foe, slips beneath the foe's grasp, and then scoops up and hurls the opponent with its mighty horn. This Pokémon even has enough power to topple a massive tree.",
+        "type": [types.BUG, types.FIGHTING],
+        "baseStats": [80, 125, 75, 40, 95, 85],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/214.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/214.png",
+        "abilities": {
+            "68": 0.45,
+            "62": 0.45,
+            "153": 0.1,
+        },
+        "moveIds": ["m175", "m14", "m224", "m370"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+    },
+    "242": {
+        "name": "Blissey",
+        "emoji": "<:242:1119803756150796309>",
+        "description": "Blissey senses sadness with its fluffy coat of fur. If it does so, this Pokémon will rush over to a sad person, no matter how far away, to share a Lucky Egg that brings a smile to any face.",
+        "type": [types.NORMAL],
+        "baseStats": [255, 10, 10, 75, 135, 55],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/242.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/242.png",
+        "abilities": {
+            "30": 0.45,
+            "32": 0.45,
+            "131": 0.1
+        },
+        "moveIds": ["m574", "m113", "m505", "m135"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST

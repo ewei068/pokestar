@@ -479,12 +479,12 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "95",
+                                speciesId: "208",
                                 level: 60,
                                 position: 9,
                             },
                             {
-                                speciesId: "95",
+                                speciesId: "208",
                                 level: 60,
                                 position: 12,
                             },
@@ -495,12 +495,12 @@ const dungeonConfig = {
                         cols: 4,
                         pokemons: [
                             {
-                                speciesId: "107",
+                                speciesId: "197",
                                 level: 55,
                                 position: 1
                             },
                             {
-                                speciesId: "107",
+                                speciesId: "197",
                                 level: 55,
                                 position: 4,
                             },
@@ -531,12 +531,12 @@ const dungeonConfig = {
                                 position: 2
                             },
                             {
-                                speciesId: "95",
+                                speciesId: "208",
                                 level: 65,
                                 position: 4,
                             },
                             {
-                                speciesId: "107",
+                                speciesId: "197",
                                 level: 60,
                                 position: 5,
                             },
@@ -578,12 +578,12 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "95",
+                                speciesId: "208",
                                 level: 90,
                                 position: 9,
                             },
                             {
-                                speciesId: "95",
+                                speciesId: "208",
                                 level: 90,
                                 position: 12,
                             },
@@ -594,12 +594,12 @@ const dungeonConfig = {
                         cols: 4,
                         pokemons: [
                             {
-                                speciesId: "107",
+                                speciesId: "197",
                                 level: 85,
                                 position: 1
                             },
                             {
-                                speciesId: "107",
+                                speciesId: "197",
                                 level: 85,
                                 position: 4,
                             },
@@ -630,12 +630,12 @@ const dungeonConfig = {
                                 position: 2
                             },
                             {
-                                speciesId: "95",
+                                speciesId: "208",
                                 level: 95,
                                 position: 4,
                             },
                             {
-                                speciesId: "107",
+                                speciesId: "197",
                                 level: 90,
                                 position: 5,
                             },
@@ -677,12 +677,12 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "95",
+                                speciesId: "208",
                                 level: 120,
                                 position: 9,
                             },
                             {
-                                speciesId: "95",
+                                speciesId: "208",
                                 level: 120,
                                 position: 12,
                             },
@@ -693,12 +693,12 @@ const dungeonConfig = {
                         cols: 4,
                         pokemons: [
                             {
-                                speciesId: "107",
+                                speciesId: "197",
                                 level: 115,
                                 position: 1
                             },
                             {
-                                speciesId: "107",
+                                speciesId: "197",
                                 level: 115,
                                 position: 4,
                             },
@@ -729,12 +729,12 @@ const dungeonConfig = {
                                 position: 2
                             },
                             {
-                                speciesId: "95",
+                                speciesId: "208",
                                 level: 120,
                                 position: 4,
                             },
                             {
-                                speciesId: "107",
+                                speciesId: "197",
                                 level: 115,
                                 position: 5,
                             },
@@ -842,7 +842,7 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "142",
+                                speciesId: "169",
                                 level: 60,
                                 position: 5,
                             },
@@ -941,7 +941,7 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "142",
+                                speciesId: "169",
                                 level: 90,
                                 position: 5,
                             },
@@ -1040,7 +1040,7 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "142",
+                                speciesId: "169",
                                 level: 115,
                                 position: 5,
                             },

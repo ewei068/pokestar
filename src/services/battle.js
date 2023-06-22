@@ -939,6 +939,16 @@ class Pokemon {
             // set cooldown
             this.moveIds[moveId].cooldown = moveData.cooldown;
 
+            // trigger before execute move events
+            const executeEventArgs = {
+                source: this,
+                primaryTarget: primaryTarget,
+                targets: allTargets,
+                missedTargets: missedTargets,
+                moveId: moveId,
+            };
+            this.battle.eventHandler.emit(battleEventNames.BEFORE_MOVE_EXECUTE, executeEventArgs);
+
             // execute move
             moveExecutes[moveId](this.battle, this, primaryTarget, allTargets, missedTargets);
 

@@ -3,10 +3,12 @@
 ## 0.11.0 - Generation II
 
 * Gen 2:
-  * Pokemon: Chikorita, Bayleef, Meganium, Cyndaquil, Quilava, Typhlosion, Totodile, Croconaw, Feraligatr, Sentret, Furret, Hoothoot, Noctowl, Crobat, Mareep, Flaffy, Ampharos, Hoppip, Skiploom, Jumpluff, Raikou, Entei, Suicune
-  * Abilities: Insomnia, Sheer Force
+  * Pokemon: Chikorita, Bayleef, Meganium, Cyndaquil, Quilava, Typhlosion, Totodile, Croconaw, Feraligatr, Sentret, Furret, Hoothoot, Noctowl, Crobat, Mareep, Flaffy, Ampharos, Bellossom, Hoppip, Skiploom, Jumpluff, Espeon, Umbreon, Steelix, Heracross, Blissey, Raikou, Entei, Suicune
+  * Abilities: Insomnia, Sheer Force, Guts, Magic Bounce
+  * Some dungeons now have Gen 2 Pokemon!
 * Increase level rewards to 100
 * Flat equipment scaling
+* Party add button
 
 ### 0.10.1 (6/17)
 
