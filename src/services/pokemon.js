@@ -20,6 +20,7 @@ const { getItems, removeItems } = require("../utils/trainerUtils");
 const { backpackItemConfig, backpackItems } = require("../config/backpackConfig");
 const { drawIterable, drawUniform } = require("../utils/gachaUtils");
 const { partyAddRow } = require("../components/partyAddRow");
+const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
@@ -188,6 +189,89 @@ const getPokemon = async (trainer, pokemonId) => {
     }
 }
 
+const getIdFromNameOrId = async (user, nameOrId, interaction) => {
+    await interaction.deferReply();
+
+    // if BSON-able, return id
+    try {
+        return { data: idFrom(nameOrId).toString(), err: null };
+    } catch (error) {
+        // pass
+    }
+
+    // try to get pokemon from listPokemons, if one return ID, if multiple await a selection menu
+    const trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { data: null, err: trainer.err };
+    }
+
+    let selection = undefined;
+    let page = 1;
+    while (true) {
+        const listOptions = {
+            filter: {
+                // fuzzy search for value
+                "name": {
+                    $regex: RegExp(nameOrId),
+                    $options: "i"
+                }
+            },
+            page: page,
+        }
+        const pokemons = await listPokemons(trainer.data, listOptions);
+        if (pokemons.err) {
+            return { data: null, err: pokemons.err };
+        }
+    
+        if (pokemons.data.length === 1) {
+            return { data: pokemons.data[0]._id.toString(), err: null };
+        }
+    
+        const pokemonEmbed = buildPokemonListEmbed(trainer.data, pokemons.data, page);
+        // build pagination row
+        const scrollRowData = {
+        }
+        const scrollActionRow = buildScrollActionRow(
+            page, 
+            pokemons.lastPage, 
+            scrollRowData, 
+            eventNames.POKEMON_ID_SELECT
+        );
+        
+        // build select row
+        const selectRowData = {
+        }
+        const pokemonSelectRow = buildPokemonSelectRow(
+            pokemons.data, 
+            selectRowData, 
+            eventNames.POKEMON_ID_SELECT
+        );
+    
+        const response = await interaction.editReply({
+            content: "Multiple Pokemon found; Select a Pokemon.",
+            embeds: [pokemonEmbed],
+            components: [scrollActionRow, pokemonSelectRow],
+        });
+    
+        const collectorFilter = i => i.user.id === user.id;
+        try {
+            const confirmation = await response.awaitMessageComponent({ filter: collectorFilter, time: 60000 });
+            confirmation.deferUpdate();
+            if (confirmation.values) {
+                selection = confirmation.values[0];
+                break;
+            }
+
+            const data = JSON.parse(confirmation.customId);
+            page = data.page || 1;
+        } catch (e) {
+            await interaction.editReply({ content: 'ID not received within 1 minute, cancelling', components: [] });
+        }
+    }
+
+    return { data: selection, err: null };
+}
+
 const releasePokemons = async (trainer, pokemonIds) => {
     // remove pokemon from trainer's collection
     try {
@@ -293,7 +377,7 @@ const addPokemonExpAndEVs = async (trainer, pokemon, exp, evs=[0, 0, 0, 0, 0, 0]
     for (let i = 0; i < 6; i++) {
         const total = pokemon.evs.reduce((a, b) => a + b, 0);
         // check to see if pokemon has max total EVs
-        if (total >= MAX_TOTAL_EVS) {
+        if (total >= MAX_TOTAL_EVS && evs[i] > 0) {
             break;
         }
 
@@ -1112,6 +1196,7 @@ module.exports = {
     calculatePokemonStatsNoEquip,
     calculatePokemonStats,
     calculateAndUpdatePokemonStats,
+    getIdFromNameOrId,
     releasePokemons,
     canRelease,
     addPokemonExpAndEVs,

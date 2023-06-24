@@ -475,7 +475,7 @@ const commandConfig = {
         "longDescription": "Add a Pokemon to your party at a specified position. If the Pokemon is in the party already, swaps with another Pokemon. If the position is full, removes the Pokemon at that position first.",
         "execute": "partyAdd.js",
         "args": {
-            "pokemonid": {
+            "name_or_id": {
                 "type": "string",
                 "description": "unique ID for Pokemon to add to party",
                 "optional": false,

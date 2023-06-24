@@ -36,6 +36,7 @@ const eventNames = {
     EVENT_BUTTON: "eventButton",
     TUTORIAL_BUTTON: "tutorialButton",
     BACK: "back",
+    POKEMON_ID_SELECT: "pokemonIdSelect",
 };
 
 const eventConfig = {
@@ -234,6 +235,9 @@ const eventConfig = {
         "name": "Tutorial Button",
         "execute": "tutorialButton.js",
         "directory": "help",
+    },
+    [eventNames.POKEMON_ID_SELECT]: {
+        "name": "Pokemon ID Select",
     },
     "test": {
         "name": "Test",

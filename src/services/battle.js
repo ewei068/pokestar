@@ -159,7 +159,7 @@ class NPC {
         // special case: if move is rocket thievery and enemy team has no fainted pokemon, return 0
         if (moveId === "m20003") {
             const enemyParty = source.getEnemyParty();
-            if (enemyParty && enemyParty.pokemons && enemyParty.pokemons.filter(p => p && p.fainted).length === 0) {
+            if (enemyParty && enemyParty.pokemons && enemyParty.pokemons.filter(p => p && p.isFainted).length === 0) {
                 return 0;
             }
         }

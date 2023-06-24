@@ -26,7 +26,7 @@ const handleEvent = async (interaction, client) => {
 
     // if event not in handler, return
     if (!eventHandlers[eventName]) {
-        logger.warn(`Event ${eventName} not found in event handlers`);
+        // logger.warn(`Event ${eventName} not found in event handlers`);
         return;
     }
 

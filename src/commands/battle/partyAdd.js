@@ -1,4 +1,5 @@
 const { buildPartyAddSend } = require('../../services/party');
+const { getIdFromNameOrId } = require('../../services/pokemon');
 
 const partyAdd = async (user, pokemonId, position) => {
     return await buildPartyAddSend({
@@ -22,14 +23,19 @@ const partyAddMessageCommand = async (message) => {
 }
 
 const partyAddSlashCommand = async (interaction) => {
-    const pokemonId = interaction.options.getString('pokemonid');
+    const nameOrId = interaction.options.getString('name_or_id');
+    const idRes = await getIdFromNameOrId(interaction.user, nameOrId, interaction);
+    if (idRes.err) {
+        await interaction.reply(`${idRes.err}`);
+        return { err: idRes.err };
+    }
     const position = interaction.options.getInteger('position');
-    const { send, err } = await partyAdd(interaction.user, pokemonId, position);
+    const { send, err } = await partyAdd(interaction.user, idRes.data, position);
     if (err) {
-        await interaction.reply(`${err}`);
+        await interaction.editReply(`${err}`);
         return { err: err };
     } else {
-        await interaction.reply(send);
+        await interaction.editReply(send);
     }
 }
 
