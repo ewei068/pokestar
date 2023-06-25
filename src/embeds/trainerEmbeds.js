@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const { getTrainerLevelExp: getTrainerLevelExp, MAX_TRAINER_LEVEL } = require('../config/trainerConfig');
 const { backpackCategories, backpackItems, backpackCategoryConfig, backpackItemConfig } = require('../config/backpackConfig');
-const { getPBar, getWhitespace } = require("../utils/utils");
+const { getPBar, getWhitespace, formatMoney } = require("../utils/utils");
 const { locationConfig } = require("../config/locationConfig");
 
 /*
@@ -28,10 +28,10 @@ const buildTrainerEmbed = (trainerInfo) => {
     embed.setThumbnail(`https://cdn.discordapp.com/avatars/${trainerInfo.userId}/${trainerInfo.user.avatar}.webp`);
     embed.addFields(
         { name: "Level", value: `${trainerInfo.level}`, inline: true },
-        { name: "Money", value: `₽${trainerInfo.money}`, inline: true },
+        { name: "Money", value: `${formatMoney(trainerInfo.money)}`, inline: true },
         { name: "Pokemon", value: `${trainerInfo.numPokemon}`, inline: true },
         { name: "Power", value: `${trainerInfo.totalPower}`, inline: true },
-        { name: "Worth", value: `₽${trainerInfo.totalWorth}`, inline: true },
+        { name: "Worth", value: `${formatMoney(trainerInfo.totalWorth)}`, inline: true },
         { name: "Shinies", value: `${trainerInfo.totalShiny}`, inline: true },
         { name: "Level Progress", value: `${progressBar}`, inline: false },
     );
@@ -76,7 +76,7 @@ const buildBackpackEmbed = (trainer) => {
     embed.setTitle(`Trainer ${trainer.user.username}'s Backpack`);
     embed.setColor(0xffffff);
     embed.setThumbnail(`https://cdn.discordapp.com/avatars/${trainer.userId}/${trainer.user.avatar}.webp`);
-    embed.setDescription(`You have ₽${trainer.money} Pokédollars.`);
+    embed.setDescription(`You have ${formatMoney(trainer.money)} Pokédollars.`);
     embed.addFields(...fields);
 
     return embed;

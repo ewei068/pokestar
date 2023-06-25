@@ -24,7 +24,7 @@ const DAILY_MONEY = process.env.STAGE == stageNames.ALPHA ? 100000 : 300;
 
 const drawDaily = async (trainer) => {
     // check if new day; if in alpha, ignore
-    if (!trainer.claimedDaily){//|| process.env.STAGE == stageNames.ALPHA) {
+    if (!trainer.claimedDaily || process.env.STAGE == stageNames.ALPHA) {
         trainer.claimedDaily = true;
     } else {
         // get tomorrow

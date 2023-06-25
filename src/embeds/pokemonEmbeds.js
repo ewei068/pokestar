@@ -1,7 +1,7 @@
 const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig, growthRateConfig } = require('../config/pokemonConfig');
 const { moveConfig, abilityConfig } = require('../config/battleConfig');
 const { EmbedBuilder } = require('discord.js');
-const { getWhitespace, getPBar, linebreakString, setTwoInline, getOrSetDefault } = require('../utils/utils');
+const { getWhitespace, getPBar, linebreakString, setTwoInline, getOrSetDefault, formatMoney } = require('../utils/utils');
 const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString, getAbilityName, getAbilityOrder, buildEquipmentString, buildBoostString, getMoveIds } = require('../utils/pokemonUtils');
 const { buildMoveString } = require('../utils/battleUtils');
 const { backpackItems, backpackItemConfig } = require('../config/backpackConfig');
@@ -305,8 +305,8 @@ const buildEquipmentUpgradeEmbed = (trainer, pokemon, equipmentType, equipment, 
     const equipmentData = equipmentConfig[equipmentType];
     const material = equipmentData.material;
     const materialData = backpackItemConfig[material];
-    const levelUpgradeString = equipment.level >= MAX_EQUIPMENT_LEVEL ? "**This equipment is max level.**" : `**₽${levelUpCost(equipment.level) * POKEDOLLAR_MULTIPLIER}, ${materialData.emoji} x${levelUpCost(equipment.level)} to upgrade level.**`;
-    const substatUpgradeString = `**₽${STAT_REROLL_COST * POKEDOLLAR_MULTIPLIER}, ${materialData.emoji} x${STAT_REROLL_COST} to reroll stats.**`;
+    const levelUpgradeString = equipment.level >= MAX_EQUIPMENT_LEVEL ? "**This equipment is max level.**" : `**${formatMoney(levelUpCost(equipment.level) * POKEDOLLAR_MULTIPLIER)}, ${materialData.emoji} x${levelUpCost(equipment.level)} to upgrade level.**`;
+    const substatUpgradeString = `**${formatMoney(STAT_REROLL_COST * POKEDOLLAR_MULTIPLIER)}, ${materialData.emoji} x${STAT_REROLL_COST} to reroll stats.**`;
 
     const embed = new EmbedBuilder();
     const upgradeString = upgrade ? ` -> ${equipment.level + 1}` : "";
@@ -347,7 +347,7 @@ const buildEquipmentUpgradeEmbed = (trainer, pokemon, equipmentType, equipment, 
     });
     embed.addFields(fields);
     embed.setImage(equipmentData.sprite);
-    embed.setFooter({ text: `You have ₽${trainer.money} and ${getItems(trainer, material)} ${materialData.name}s\nGet more in the /dungeons` });
+    embed.setFooter({ text: `You have ${formatMoney(trainer.money)} and ${getItems(trainer, material)} ${materialData.name}s\nGet more in the /dungeons` });
 
     return embed;
 }

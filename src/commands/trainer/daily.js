@@ -2,6 +2,7 @@ const { drawDaily } = require('../../services/gacha');
 const { getTrainer } = require('../../services/trainer');
 const { backpackCategories, backpackItemConfig } = require('../../config/backpackConfig');
 const { getPokeballsString, getRewardsString, getBackpackItemsString } = require('../../utils/trainerUtils');
+const { formatMoney } = require('../../utils/utils');
 
 /**
  * Attempts to grant the user their daily rewards. If the user has 
@@ -27,7 +28,7 @@ const daily = async (user) => {
     let rewardsString = getRewardsString(rewards.data);
     rewardsString += "\n\n**You now own:**";
     if (money) {
-        rewardsString += `\n₽${trainer.data.money}`;
+        rewardsString += `\n${formatMoney(trainer.data.money)}`;
     }
     rewardsString += getBackpackItemsString(trainer.data);
     rewardsString += "\nSpend your Pokedollars at the \`/pokemart\` | Use \`/gacha\` to use your Pokeballs";

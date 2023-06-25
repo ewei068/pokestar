@@ -135,6 +135,22 @@ const poll = async (fn, interval=60*1000) => {
     setTimeout(() => poll(fn, interval), interval);
 }
 
+const formatMoney = (amount) => {
+    // break into commas
+    let str = amount.toString();
+    // reverse string
+    str = str.split("").reverse().join("");
+    let formatted = "";
+    for (let i = 0; i < str.length; i++) {
+        const char = str[i];
+        if (i % 3 === 0 && i !== 0) {
+            formatted = "," + formatted;
+        }
+        formatted = char + formatted;
+    }
+    return "₽" + formatted;
+}
+
 module.exports = {
     getOrSetDefault,
     getPBar,
@@ -149,5 +165,6 @@ module.exports = {
     setTwoInline,
     getFullUTCDate,
     getTimeToNextDay,
-    poll
+    poll,
+    formatMoney
 }

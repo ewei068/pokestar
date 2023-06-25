@@ -2,7 +2,7 @@ const { findDocuments, insertDocument, updateDocument, QueryBuilder } = require(
 const { collectionNames } = require("../config/databaseConfig");
 const { trainerFields, getTrainerLevelExp, MAX_TRAINER_LEVEL, levelConfig } = require("../config/trainerConfig");
 const { logger } = require("../log");
-const { getOrSetDefault, getFullUTCDate } = require("../utils/utils");
+const { getOrSetDefault, getFullUTCDate, formatMoney } = require("../utils/utils");
 const { backpackItems, backpackCategories } = require("../config/backpackConfig");
 const { getRewardsString, getPokeballsString, addRewards } = require("../utils/trainerUtils");
 const { stageNames } = require("../config/stageConfig");
@@ -286,7 +286,7 @@ const getLevelRewards = async (user) => {
     rewardsString += getRewardsString(allRewards);
     rewardsString += "\n\n**You now own:**";
     if (allRewards.money) {
-        rewardsString += `\n₽${trainer.money}`;
+        rewardsString += `\n${formatMoney(trainer.money)}`;
     }
     rewardsString += getPokeballsString(trainer);
     rewardsString += "\nSpend your Pokedollars at the \`/pokemart\` | Use \`/gacha\` to use your Pokeballs";
@@ -366,7 +366,7 @@ const getVoteRewards = async (user) => {
     rewardsString += getRewardsString(receivedRewards);
     rewardsString += "\n\n**You now own:**";
     if (receivedRewards.money) {
-        rewardsString += `\n₽${trainer.money}`;
+        rewardsString += `\n${formatMoney(trainer.money)}`;
     }
     rewardsString += getPokeballsString(trainer);
     rewardsString += "\nSpend your Pokedollars at the \`/pokemart\` | Use \`/gacha\` to use your Pokeballs";

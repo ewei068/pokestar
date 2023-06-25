@@ -1,5 +1,5 @@
 const { backpackCategories, backpackItemConfig } = require("../config/backpackConfig");
-const { getOrSetDefault } = require("./utils");
+const { getOrSetDefault, formatMoney } = require("./utils");
 
 const getPokeballsString = (trainer) => {
     let pokeballsString = "";
@@ -22,7 +22,7 @@ const getBackpackItemsString = (trainer) => {
 const getRewardsString = (rewards, received=true) => {
     let rewardsString = received ? "**You received:**" : "";
     if (rewards.money) {
-        rewardsString += `\n₽${rewards.money}`;
+        rewardsString += `\n${formatMoney(rewards.money)}`;
     }
     if (rewards.backpack) {
         // console.log(rewards.backpack)

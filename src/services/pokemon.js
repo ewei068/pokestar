@@ -1,7 +1,7 @@
 const { logger } = require("../log");
 const { updateDocument, deleteDocuments, QueryBuilder } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
-const { getOrSetDefault, idFrom } = require("../utils/utils");
+const { getOrSetDefault, idFrom, formatMoney } = require("../utils/utils");
 const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS, rarities } = require("../config/pokemonConfig");
 const { expMultiplier, MAX_RELEASE } = require("../config/trainerConfig");
 const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth, getAbilityOrder, getPokemonOrder, getPartyPokemonIds } = require("../utils/pokemonUtils");
@@ -549,7 +549,7 @@ const upgradeEquipmentLevel = async (trainer, pokemon, equipmentType) => {
     if (err) {
         return { data: null, err: err };
     } else {
-        return { data: `Equipment upgraded to level ${equipment.level} for ₽${moneyCost} and ${materialData.emoji} x${materialCost}!`, err: null };
+        return { data: `Equipment upgraded to level ${equipment.level} for ${formatMoney(moneyCost)} and ${materialData.emoji} x${materialCost}!`, err: null };
     }
 }
 
@@ -616,7 +616,7 @@ const rerollStatSlot = async (trainer, pokemon, equipmentType, slotId) => {
     if (err) {
         return { data: null, err: err };
     } else {
-        return { data: `Stat slot ${slotId} rerolled to ${modifierConfig[slot.modifier].name} (${slot.quality}%) for ₽${moneyCost} and ${materialData.emoji} x${materialCost}!`, err: null };
+        return { data: `Stat slot ${slotId} rerolled to ${modifierConfig[slot.modifier].name} (${slot.quality}%) for ${formatMoney(moneyCost)} and ${materialData.emoji} x${materialCost}!`, err: null };
     }
 }
 
@@ -950,7 +950,7 @@ const buildReleaseSend = async (user, pokemonIds) => {
     const actionRow = buildYesNoActionRow(releaseData, eventNames.POKEMON_RELEASE, true);
 
     const send = {
-        content: `Do you really want to release the following Pokemon for ₽${totalWorth}?`,
+        content: `Do you really want to release the following Pokemon for ${formatMoney(totalWorth)}?`,
         embeds: [embed],
         components: [actionRow],
     }

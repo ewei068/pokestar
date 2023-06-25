@@ -10,7 +10,7 @@ const express = require('express');
 const cors = require('cors');
 const { addVote } = require('./services/trainer.js');
 const { stageNames } = require('./config/stageConfig.js');
-const { poll } = require('./utils/utils.js');
+const { poll, formatMoney } = require('./utils/utils.js');
 const axios = require('axios');
 
 const corsOptions = {

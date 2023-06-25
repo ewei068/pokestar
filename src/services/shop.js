@@ -1,5 +1,5 @@
 const { shopItems, shopItemConfig, shopCategories, shopCategoryConfig } = require("../config/shopConfig");
-const { getOrSetDefault } = require("../utils/utils");
+const { getOrSetDefault, formatMoney } = require("../utils/utils");
 const { dailyRewardChances } = require('../config/gachaConfig');
 const { drawDiscrete } = require('../utils/gachaUtils');
 const { backpackCategories, backpackItems, backpackItemConfig } = require('../config/backpackConfig');
@@ -146,13 +146,13 @@ const buyItem = async (trainer, itemId, quantity) => {
             addItems(trainer, key, value);
         });
 
-        returnString = `You purchased ${quantity} random pokeballs for ₽${cost}.\n`;
+        returnString = `You purchased ${quantity} random pokeballs for ${formatMoney(cost)}.\n`;
         // build itemized rewards string
         returnString += getRewardsString({
             backpack: reducedResults,
         });
         returnString += "\n\n**You now own:**";
-        returnString += `\n₽${trainer.money}`;
+        returnString += `\n${formatMoney(trainer.money)}`;
         returnString += getPokeballsString(trainer);
     } else if (item.category === shopCategories.LOCATIONS) {
         // if quantity is not 1, return error
@@ -192,7 +192,7 @@ const buyItem = async (trainer, itemId, quantity) => {
         trainer.money -= cost;
         trainer.locations[locationId] = level + 1;
 
-        returnString = `You purchased a level ${level + 1} ${locationData.name} for ₽${cost}. View your locations with \`/locations\`.`;
+        returnString = `You purchased a level ${level + 1} ${locationData.name} for ${formatMoney(cost)}. View your locations with \`/locations\`.`;
     } else if (item.category === shopCategories.MATERIALS) {
         // check if trainer has enough money
         cost = item.price[0] * quantity;
@@ -207,7 +207,7 @@ const buyItem = async (trainer, itemId, quantity) => {
         // add item
         addItems(trainer, item.backpackItem, quantity);
 
-        returnString = `You purchased ${quantity} ${item.name}s for ₽${cost}.\n`;
+        returnString = `You purchased ${quantity} ${item.name}s for ${formatMoney(cost)}.\n`;
         returnString += `**You now own: ${getItems(trainer, item.backpackItem)} ${item.name}s.**`;
     }
 

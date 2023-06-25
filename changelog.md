@@ -1,5 +1,13 @@
 # Pokéstar Changelog
 
+### 0.11.1
+
+* Select by name
+* Bug fixes:
+  * Rocket Meowth NPC
+  * Max level Berry Bush/Farm
+* Money display
+
 ## 0.11.0 - Generation II
 
 Generation 2 has arrived! Many Generation 2 Pokemon will be released over 2 updates bringing many new features!

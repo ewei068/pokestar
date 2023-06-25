@@ -1,4 +1,4 @@
-const { getOrSetDefault } = require("../utils/utils");
+const { getOrSetDefault, formatMoney } = require("../utils/utils");
 const { v4: uuidv4, v4 } = require('uuid');
 const { pokemonConfig, types } = require('../config/pokemonConfig');
 const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, effectConfig, statusConditions, moveTiers, calculateDamage, abilityConfig, typeAdvantages } = require("../config/battleConfig");
@@ -544,7 +544,7 @@ class Battle {
             }
         }, 0) * this.pokemonExpMultiplier);
 
-        this.addToLog(`Winners recieved ₽${this.moneyReward}, ${this.expReward} exp, and ${this.pokemonExpReward} BASE Pokemon exp. Losers recieved half the amount.`);
+        this.addToLog(`Winners recieved ${formatMoney(this.moneyReward)}, ${this.expReward} exp, and ${this.pokemonExpReward} BASE Pokemon exp. Losers recieved half the amount.`);
     }
         
     isNpc(userId) {

@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const { shopCategoryConfig, shopItemConfig } = require("../config/shopConfig");
+const { formatMoney } = require("../utils/utils");
 
 const buildShopEmbed = (trainer) => {
     let shopString = " ";
@@ -14,7 +15,7 @@ const buildShopEmbed = (trainer) => {
     embed.addFields(
         { name: "Categories", value: shopString, inline: true },
     )
-    embed.setFooter({ text: `You have ₽${trainer.money} Pokédollars.` });
+    embed.setFooter({ text: `You have ${formatMoney(trainer.money)} Pokédollars.` });
 
     return embed;
 }
@@ -26,13 +27,13 @@ const buildShopCategoryEmbed = (trainer, categoryId) => {
     for (let i = 0; i < items.length; i++) {
         const item = shopItemConfig[items[i]];
         if (item.price.length == 1) {
-            shopString += `${item.emoji} **#${items[i]} ${item.name}** - ₽${item.price}\n`;
+            shopString += `${item.emoji} **#${items[i]} ${item.name}** - ${formatMoney(item.price)}\n`;
         } else {
             // multi-price items
             // TODO: make this better or remove if multi-prices are too many
-            shopString += `${item.emoji} **#${items[i]} ${item.name}** - ₽`;
+            shopString += `${item.emoji} **#${items[i]} ${item.name}** - `;
             for (let j = 0; j < item.price.length; j++) {
-                shopString += `${item.price[j]}`;
+                shopString += `${formatMoney(item.price[j])}`;
                 if (j < item.price.length - 1) {
                     shopString += "/";
                 }
@@ -48,7 +49,7 @@ const buildShopCategoryEmbed = (trainer, categoryId) => {
     embed.addFields(
         { name: "Items", value: shopString, inline: true },
     )
-    embed.setFooter({ text: `You have ₽${trainer.money} Pokédollars | Use /buy <itemid> <qty?> to buy an item!` });
+    embed.setFooter({ text: `You have ${formatMoney(trainer.money)} Pokédollars | Use /buy <itemid> <qty?> to buy an item!` });
 
     return embed;
 }
@@ -58,11 +59,11 @@ const buildShopItemEmbed = (trainer, itemId) => {
     
     let priceString = "";
     if (itemData.price.length == 1) {
-        priceString = `₽${itemData.price}`;
+        priceString = `${formatMoney(itemData.price)}`;
     } else {
         // multi-price items are based on upgrade level (for now)
         for (let i = 0; i < itemData.price.length; i++) {
-            priceString += `Level ${i + 1}: ₽${itemData.price[i]}`;
+            priceString += `Level ${i + 1}: ${formatMoney(itemData.price[i])}`;
             if (i < itemData.price.length - 1) {
                 priceString += "\n";
             }
@@ -77,7 +78,7 @@ const buildShopItemEmbed = (trainer, itemId) => {
         { name: "Price", value: priceString, inline: true },
         { name: "Daily Limit", value: `${itemData.limit || "None"}`, inline: true },
     )
-    embed.setFooter({ text: `You have ₽${trainer.money} Pokédollars | Use /buy ${itemId} <qty?> to buy this item!` });
+    embed.setFooter({ text: `You have ${formatMoney(trainer.money)} Pokédollars | Use /buy ${itemId} <qty?> to buy this item!` });
 
     return embed;
 }
