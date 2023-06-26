@@ -185,10 +185,6 @@ const trainerFields = {
             },
         },
     },
-    "votes": {
-        "type": "number",
-        "default": 0,
-    },
     "defeatedNPCsToday": {
         "type": "object",
         "default": {},
@@ -198,6 +194,15 @@ const trainerFields = {
         "type": "object",
         "default": {},
     },
+    "voting": {
+        "type": "object",
+        "default": {
+            "lastVoted": (new Date(0)).getTime(),
+            // TEMP: start at 5
+            "streak": 5,
+            "rewards": 0,
+        },
+    }
 }
 
 const levelConfig = {

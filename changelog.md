@@ -2,7 +2,17 @@
 
 ### 0.11.1
 
-* Select by name
+* **Reworked Voting:** Voting has some new changes now, including streaks!
+  * Every vote contributes to the voting streak.
+  * You can get up to a 5x reward multiplier through streaks. The exact numbers are as follows:
+    * 0 streak -> 1x rewards, 5 streak -> 2x rewards, 15 streak -> 3x rewards, 30 streak -> 4x rewards, 50 streak -> 5x rewards
+  * To compensate for the rework, **everyone is temporarily starting at 5 streak!**
+  * The base voting rewards are now $100, 1 Pokeball, and 1 of each shard. This reward starts off less than previously, but can get much higher through streaks.
+  * Removed Botlist voting because that site hasn't really gotten traction.
+* **Name Selection:** We are experimenting with easier ways to select Pokemon.
+  * **For only `/partyadd`,** we are experimenting with an approach that allows you to enter either and ID or name of a Pokemon to add to your party.
+  * If multiple Pokemon are found, a selection list will be brought up to select a specific Pokemon.
+  * This system may be buggy or unintuitive, so please test it out and give your feedback! We will roll this system out to more commands once we verify that it's good, so your feedback is important here.
 * Bug fixes:
   * Rocket Meowth NPC
   * Max level Berry Bush/Farm

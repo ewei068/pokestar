@@ -5,17 +5,31 @@ const INVITE_URL = "https://discord.com/api/oauth2/authorize?client_id=109341144
 const voteConfig = [
     {
         "label": "Top.gg",
-        "url": "https://top.gg/bot/1093411444877439066"
+        "url": "https://top.gg/bot/1093411444877439066/vote"
     },
     {
         "label": "DBL",
-        "url": "https://discordbotlist.com/bots/pokestar"
+        "url": "https://discordbotlist.com/bots/pokestar/upvote"
     },
-    {
+    /* {
         "label": "Botlist",
         "url": "https://botlist.me/bots/1093411444877439066"
-    },
+    }, */
 ]
+
+const getVoteMultiplier = (streak) => {
+    if (streak < 5) {
+        return 1;
+    } else if (streak < 15) {
+        return 2;
+    } else if (streak < 30) {
+        return 3;
+    } else if (streak < 50) {
+        return 4;
+    } else {
+        return 5;
+    }
+}
 
 const leaderboardConfig = {
     "level": {
@@ -43,5 +57,6 @@ const leaderboardConfig = {
 module.exports = {
     leaderboardConfig,
     INVITE_URL,
-    voteConfig
+    voteConfig,
+    getVoteMultiplier,
 }

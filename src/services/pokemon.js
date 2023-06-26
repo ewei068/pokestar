@@ -43,7 +43,7 @@ const listPokemons = async (trainer, listOptions) => {
 
         const res = await query.find();
         if (res.length === 0 && !allowNone) {
-            return { data: null, err: "No Pokemon found. Use `/gacha` to catch some Pokemon!" };
+            return { data: null, err: "No Pokemon found. Check your filter, or use `/gacha` to catch some Pokemon!" };
         } else if (res.length > pageSize) {
             res.pop();
             return { data: res, lastPage: false, err: null };

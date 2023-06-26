@@ -2,8 +2,17 @@ const { buildButtonActionRow } = require("../../components/buttonActionRow");
 const { buildUrlButton } = require("../../components/urlButton");
 const { eventNames } = require("../../config/eventConfig");
 const { voteConfig } = require("../../config/socialConfig");
+const { buildVoteEmbed } = require("../../embeds/socialEmbeds");
+const { getTrainer } = require("../../services/trainer");
 
 const vote = async (user) => {
+    const trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { send: null, err: trainer.err };
+    }
+
+    const voteEmbed = buildVoteEmbed(trainer.data);
+
     const voteButtons = buildUrlButton(voteConfig);
     const rewardsButton = buildButtonActionRow([{
         label: "Claim Rewards!",
@@ -14,7 +23,7 @@ const vote = async (user) => {
     }], eventNames.VOTE_REWARDS);
 
     const send = {
-        content: "Vote on the following sites every 12 hours, then press \"Claim Rewards\" to claim your accumulated vote rewards! **Top.gg votes count twice!**",
+        embeds: [voteEmbed],
         components: [voteButtons, rewardsButton]
     }
 

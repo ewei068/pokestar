@@ -4,8 +4,9 @@ const { trainerFields, getTrainerLevelExp, MAX_TRAINER_LEVEL, levelConfig } = re
 const { logger } = require("../log");
 const { getOrSetDefault, getFullUTCDate, formatMoney } = require("../utils/utils");
 const { backpackItems, backpackCategories } = require("../config/backpackConfig");
-const { getRewardsString, getPokeballsString, addRewards } = require("../utils/trainerUtils");
+const { getRewardsString, getPokeballsString, addRewards, getBackpackItemsString } = require("../utils/trainerUtils");
 const { stageNames } = require("../config/stageConfig");
+const { getVoteMultiplier } = require("../config/socialConfig");
 
 /* 
 "user": {
@@ -300,11 +301,24 @@ const addVote = async (user, votes=1) => {
         return { data: null, err: trainer.err };
     }
 
+    // { lastVoted, streak, rewards }
+    const voting = trainer.data.voting;
+    const now = Date.now();
+    // if last voted 48 hours ago, reset streak
+    if (voting.lastVoted < now - 48 * 60 * 60 * 1000) {
+        voting.streak = 0;
+    }
+    voting.streak += 1;
+    voting.lastVoted = now;
+
+    // add rewards based on streak
+    voting.rewards += votes * getVoteMultiplier(voting.streak);
+
     try {
         const res = await updateDocument(
             collectionNames.USERS,
             { userId: user.id },
-            { $inc: { votes: votes } }
+            { $set: { voting: voting } }
         );
         if (res.modifiedCount === 0) {
             logger.error(`Failed to add vote to trainer ${user.username}.`);
@@ -324,24 +338,28 @@ const getVoteRewards = async (user) => {
     }
     trainer = trainer.data;
 
-    // set votes in alpha for testing
-    const votes = process.env.STAGE == stageNames.ALPHA ? 3 : trainer.votes;
-    if (votes < 1) {
+    const rewards = trainer.voting.rewards;
+    if (rewards < 1) {
         return { data: null, err: "No rewards to claim! Use `/vote` to vote and try again!" };
     }
 
-    // add vote rewards: 200 pokedollars and 2 pokeballs per vote
+    // add vote rewards
     const receivedRewards = addRewards(trainer, {
-        money: votes * 200,
+        money: rewards * 100,
         backpack: {
             [backpackCategories.POKEBALLS]: {
-                [backpackItems.POKEBALL]: votes * 2
+                [backpackItems.POKEBALL]: rewards * 1
+            }, 
+            [backpackCategories.MATERIALS]: {
+                [backpackItems.KNOWLEDGE_SHARD]: rewards * 1,
+                [backpackItems.EMOTION_SHARD]: rewards * 1,
+                [backpackItems.WILLPOWER_SHARD]: rewards * 1,
             }
         }
     });
 
-    // reset votes
-    trainer.votes = 0;
+    // reset rewards
+    trainer.voting.rewards = 0;
 
     // update trainer
     try {
@@ -349,7 +367,7 @@ const getVoteRewards = async (user) => {
             collectionNames.USERS, 
             { userId: trainer.userId }, 
             { 
-                $set: { backpack: trainer.backpack, votes: trainer.votes, money: trainer.money },
+                $set: { backpack: trainer.backpack, voting: trainer.voting, money: trainer.money },
             }
         );
         if (res.modifiedCount === 0) {
@@ -362,13 +380,13 @@ const getVoteRewards = async (user) => {
     }
 
     // build itemized rewards string
-    let rewardsString = `You claimed **${votes}** vote rewards! **Thank you for voting!** Remember to vote again in 12 hours!\n\n`;
+    let rewardsString = `You claimed **${rewards}** vote rewards! **Thank you for voting!** Remember to vote again in 12 hours!\n\n`;
     rewardsString += getRewardsString(receivedRewards);
     rewardsString += "\n\n**You now own:**";
     if (receivedRewards.money) {
         rewardsString += `\n${formatMoney(trainer.money)}`;
     }
-    rewardsString += getPokeballsString(trainer);
+    rewardsString += getBackpackItemsString(trainer);
     rewardsString += "\nSpend your Pokedollars at the \`/pokemart\` | Use \`/gacha\` to use your Pokeballs";
 
     return { data: rewardsString, err: null };

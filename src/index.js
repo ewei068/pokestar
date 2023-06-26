@@ -195,7 +195,7 @@ app.post("/vote", async (req, res) => {
             if (!err) {
                 success = true;
             }
-        } else if (req.header("Authorization") === process.env.BOTLIST_SECRET) {
+        /* } else if (req.header("Authorization") === process.env.BOTLIST_SECRET) {
             const user = {
                 id: req.body.user,
             }
@@ -203,7 +203,7 @@ app.post("/vote", async (req, res) => {
             const { data, err } = await addVote(user);
             if (!err) {
                 success = true;
-            }
+            } */
         } else if (req.header("Authorization") === process.env.TOPGG_SECRET) {
             const user = {
                 id: req.body.user,
