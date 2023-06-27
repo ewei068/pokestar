@@ -1,6 +1,6 @@
 # Pokéstar Changelog
 
-### 0.11.1
+### 0.11.1 (6/27)
 
 * **Reworked Voting:** Voting has some new changes now, including streaks!
   * Every vote contributes to the voting streak.
@@ -17,8 +17,9 @@
 * Bug fixes:
   * Fixed Rocket Meowth NPC not using correct moves
   * Fixed Berry Bush/Farm not deducting EVs if at max EVs
+* Ended the Twitch Plays Pokemon event
 
-## 0.11.0 - Generation II
+## 0.11.0 (6/21) - Generation II
 
 Generation 2 has arrived! Many Generation 2 Pokemon will be released over 2 updates bringing many new features!
 
