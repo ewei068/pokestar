@@ -13,10 +13,10 @@
   * **For only `/partyadd`,** we are experimenting with an approach that allows you to enter either and ID or name of a Pokemon to add to your party.
   * If multiple Pokemon are found, a selection list will be brought up to select a specific Pokemon.
   * This system may be buggy or unintuitive, so please test it out and give your feedback! We will roll this system out to more commands once we verify that it's good, so your feedback is important here.
+* Added commas to all Pokedollar displays
 * Bug fixes:
-  * Rocket Meowth NPC
-  * Max level Berry Bush/Farm
-* Money display
+  * Fixed Rocket Meowth NPC not using correct moves
+  * Fixed Berry Bush/Farm not deducting EVs if at max EVs
 
 ## 0.11.0 - Generation II
 
