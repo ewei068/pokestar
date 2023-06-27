@@ -305,7 +305,7 @@ const addVote = async (user, votes=1) => {
     const voting = trainer.data.voting;
     const now = Date.now();
     // if last voted 48 hours ago, reset streak
-    if (voting.lastVoted < now - 48 * 60 * 60 * 1000) {
+    if (voting.lastVoted && voting.lastVoted < now - 48 * 60 * 60 * 1000) {
         voting.streak = 0;
     }
     voting.streak += 1;
