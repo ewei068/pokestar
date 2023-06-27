@@ -67,7 +67,7 @@ const gameEventConfig = [
         "description": ROCKET_DESCRIPTION,
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-rocket-banner.png",
     },
-    {
+    /*{
         "name": "Twitch Plays Pokemon",
         "description": TPP_DESCRIPTION,
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-tpp-banner.png",

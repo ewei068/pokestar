@@ -10,7 +10,7 @@ const npcs = {
     LASS: "lass",
     BLUE: "blue",
     RED: "red",
-    TWITCH_PLAYS_RED: "tppRed",
+    // TWITCH_PLAYS_RED: "tppRed",
     FISHERMAN: "fisherman",
     HIKER: "hiker",
     DRAGON_TAMER: "dragonTamer",
@@ -380,7 +380,7 @@ const npcConfig = {
             },
         }
     },
-    [npcs.TWITCH_PLAYS_RED]: {
+    /*[npcs.TWITCH_PLAYS_RED]: {
         name: "Twitch Plays Red",
         sprite: "https://archives.bulbagarden.net/media/upload/6/66/Spr_RG_Red_1.png",
         emoji: "<:tppRed:1117871510804254760>",
@@ -401,7 +401,7 @@ const npcConfig = {
                 }
             },
         }
-    },
+    },*/
     [npcs.TEAM_ROCKET]: {
         name: "Team Rocket",
         sprite: "https://archives.bulbagarden.net/media/upload/8/8f/Spr_Y_Jessie_James.png",
@@ -451,7 +451,7 @@ const dungeons = {
     SOUL_CAVE: "soulCave",
     SPIRIT_ALTAR: "spiritAltar",
     NEW_ISLAND: "newIsland",
-    BLOODY_SUNDAY: "bloodySunday",
+    //BLOODY_SUNDAY: "bloodySunday",
 }
 
 const dungeonConfig = {
@@ -1463,7 +1463,7 @@ const dungeonConfig = {
             },
         }
     },
-    [dungeons.BLOODY_SUNDAY]: {
+    /*[dungeons.BLOODY_SUNDAY]: {
         name: "Bloody Sunday",
         sprite: "https://external-preview.redd.it/mJjUWHxEKQ674NI4m7hUSJ108UlpTgTH2vWSmwMHfdA.jpg?auto=webp&s=6c0601add4b5a74185844ebaff16bebb3ada41a5",
         emoji: "🖥️",
@@ -1586,7 +1586,7 @@ const dungeonConfig = {
                 }
             },
         },
-    },
+    },*/
 }
 
 

@@ -130,7 +130,7 @@ const bannerConfig = [
         },
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-rocket-banner.png"
     },
-    {
+    /*{
         "bannerType": bannerTypes.SPECIAL,
         "name": "[EVENT] God of Anarchy",
         "description": "The Lord Helix has graced Pokestar with its presence! Pull for the powerful limited Lord Helix, as well as Twitch Plays Red's other Pokemon! For more information, use `/events`.",
