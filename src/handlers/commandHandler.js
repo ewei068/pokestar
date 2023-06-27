@@ -5,6 +5,8 @@ const { addExpAndMoney: addExpAndMoney } = require('../services/trainer');
 const { logger } = require('../log');
 const path = require('node:path');
 const { buildCommandUsageString } = require('../utils/utils');
+const { QueryBuilder } = require('../database/mongoHandler');
+const { collectionNames } = require('../config/databaseConfig');
 
 const prefix = stageConfig[process.env.STAGE].prefix;
 
@@ -149,6 +151,17 @@ const runMessageCommand = async (message, client) => {
     // if not a command, return
     if (!command.startsWith(prefix)) return;
 
+    try {
+        const query = new QueryBuilder(collectionNames.GUILDS)
+            .setFilter({ guildId: message.guildId })
+            .setUpsert({ $set: { guildId: message.guildId, lastCommand: Date.now() }});
+
+        await query.upsertOne();
+    } catch (err) {
+        logger.warn(err);
+        // pass
+    }
+
     // if command not in commands, return
     const commandData = getCommand(command);
     if (!(command in messageCommands) || !commandData) {
@@ -190,6 +203,17 @@ const runMessageCommand = async (message, client) => {
 }
 
 const runSlashCommand = async (interaction, client) => {
+    try {
+        const query = new QueryBuilder(collectionNames.GUILDS)
+            .setFilter({ guildId: interaction.guildId })
+            .setUpsert({ $set: { guildId: interaction.guildId, lastCommand: Date.now() }});
+
+        await query.upsertOne();
+    } catch (err) {
+        logger.warn(err);
+        // pass
+    }
+
     // get command name
     const command = interaction.commandName;
 

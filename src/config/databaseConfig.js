@@ -18,6 +18,7 @@ const DB_NAME = 'pokestar';
 const collectionNames = {
     USERS: 'users',
     USER_POKEMON: 'userPokemon',
+    GUILDS: 'guilds',
     LIST_POKEMON: 'listPokemon',
     POKEMON_GROUPED: 'pokemonGrouped',
     POKEMON_AND_USERS: 'pokemonAndUsers',
@@ -37,6 +38,14 @@ const collectionConfig = {
             {
                 key: { userId: 1 },
                 unique: false
+            }
+        ]
+    },
+    [collectionNames.GUILDS]: {
+        indexes: [
+            {
+                key: { guildId: 1 },
+                unique: true
             }
         ]
     },
