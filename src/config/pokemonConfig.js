@@ -3138,7 +3138,24 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.LEGENDARY,
         "growthRate": growthRates.SLOW
-    },   
+    },
+    "248": {
+        "name": "Tyranitar",
+        "emoji": "<:248:1119803830880702506>",
+        "description": "Its body can't be harmed by any sort of attack, so it is very eager to make challenges against enemies.",
+        "type": [types.ROCK, types.DARK],
+        "baseStats": [100, 134, 110, 95, 100, 61],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/248.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/248.png",
+        "abilities": {
+            "45": 0.8,
+            "127": 0.2,
+        },
+        "moveIds": ["m43", "m242", "m444", "m157"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.SLOW
+    },
     "20091": {
         "name": "Temple Guardian Cloyster",
         "emoji": "<:91:1100288966881718342>",

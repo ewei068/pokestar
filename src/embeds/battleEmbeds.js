@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const { moveConfig } = require("../config/battleConfig");
+const { moveConfig, weatherConditions } = require("../config/battleConfig");
 const { buildPartyString, buildMoveString, buildBattlePokemonString, buildNpcDifficultyString, buildDungeonDifficultyString, buildCompactPartyString } = require("../utils/battleUtils");
 const { buildPokemonStatString, getAbilityName } = require("../utils/pokemonUtils");
 const { setTwoInline } = require("../utils/utils");
@@ -103,6 +103,23 @@ const buildBattleEmbed = (battle) => {
     embed.setTitle(`Battle State`);
     embed.setColor(0xffffff);
     embed.setDescription(battle.log[battle.log.length - 1] || "No log yet.");
+    // build weather field
+    if (battle.weather.weatherId) {
+        switch (battle.weather.weatherId) {
+            case weatherConditions.SUN:
+                embed.addFields({ name: "Weather", value: `Harsh Sun (${battle.weather.duration})`, inline: true });
+                break;
+            case weatherConditions.RAIN:
+                embed.addFields({ name: "Weather", value: `Rain (${battle.weather.duration})`, inline: true });
+                break;
+            case weatherConditions.SANDSTORM:
+                embed.addFields({ name: "Weather", value: `Sandstorm (${battle.weather.duration})`, inline: true });
+                break;
+            case weatherConditions.HAIL:
+                embed.addFields({ name: "Weather", value: `Hail (${battle.weather.duration})`, inline: true });
+                break;
+        }
+    }
     embed.addFields(
         { 
             name: `${team1.name} | ${team1UserString}`, 

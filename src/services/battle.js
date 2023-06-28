@@ -1,7 +1,7 @@
 const { getOrSetDefault, formatMoney } = require("../utils/utils");
 const { v4: uuidv4, v4 } = require('uuid');
 const { pokemonConfig, types } = require('../config/pokemonConfig');
-const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, effectConfig, statusConditions, moveTiers, calculateDamage, abilityConfig, typeAdvantages } = require("../config/battleConfig");
+const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, effectConfig, statusConditions, moveTiers, calculateDamage, abilityConfig, typeAdvantages, weatherConditions } = require("../config/battleConfig");
 const { buildBattleEmbed, buildBattleMovesetEmbed, buildPveListEmbed, buildPveNpcEmbed, buildDungeonListEmbed, buildDungeonEmbed } = require("../embeds/battleEmbeds");
 const { buildSelectBattleMoveRow } = require("../components/selectBattleMoveRow");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
@@ -247,6 +247,8 @@ class Battle {
     teams;
     activePokemon;
     parties;
+    // { weatherId, duration, source }
+    weather;
     log;
     eventHandler;
     turn;
@@ -289,6 +291,11 @@ class Battle {
         this.parties = {};
         // map pokemonId to pokemon
         this.allPokemon = {};
+        this.weather = {
+            weatherId: null,
+            duration: 0,
+            source: null
+        }
         this.log = [];
         this.eventHandler = new BattleEventHandler(this);
         this.turn = 0;
@@ -458,6 +465,11 @@ class Battle {
             this.activePokemon.tickEffectDurations();
         }
 
+        // tick weather
+        if (this.weather) {
+            this.tickWeather();
+        }
+
         // increase turn and check for game end
         this.turn++;
         if (this.turn > 100) {
@@ -545,6 +557,113 @@ class Battle {
         }, 0) * this.pokemonExpMultiplier);
 
         this.addToLog(`Winners recieved ${formatMoney(this.moneyReward)}, ${this.expReward} exp, and ${this.pokemonExpReward} BASE Pokemon exp. Losers recieved half the amount.`);
+    }
+
+    createWeather(weatherId, source) {
+        // calculate turns = 10 + number of non-fainted Pokemon
+        const duration = 10 + Object.values(this.allPokemon).reduce((acc, pokemon) => {
+            if (!pokemon.isFainted) {
+                return acc + 1;
+            } else {
+                return acc;
+            }
+        }, 0);
+
+        // if weather exists and is same, refresh duration if possible
+        if (this.weather.weatherId === weatherId) {
+            if (this.weather.duration < duration) {
+                this.weather.duration = duration;
+                this.weather.source = source;
+                this.addToLog(`The weather intensified!`);
+                return true;
+            }
+            return false;
+        }
+
+
+        // apply weather
+        this.weather = {
+            weatherId: weatherId,
+            duration: duration,
+            source: source
+        };
+        switch (weatherId) {
+            case weatherConditions.SUN:
+                this.addToLog(`The sunlight turned harsh!`);
+                break;
+            case weatherConditions.RAIN:
+                this.addToLog(`It started to rain!`);
+                break;
+            case weatherConditions.SANDSTORM:
+                this.addToLog(`A sandstorm kicked up!`);
+                break;
+            case weatherConditions.HAIL:
+                this.addToLog(`It started to hail!`);
+                break;
+        }
+
+        return true;
+    }
+
+    clearWeather() {
+        if (this.weather.weatherId) {
+            this.addToLog(`The weather cleared up!`);
+        }
+        this.weather = {
+            weatherId: null,
+            duration: 0,
+            source: null
+        };
+    }
+
+    tickWeather() {
+        if (!this.weather.weatherId) {
+            return;
+        }
+
+        switch (this.weather.weatherId) {
+            case weatherConditions.SANDSTORM:
+                // if active pokemon not rock, steel, or ground, damage 1/12 of max hp
+                if (
+                    this.activePokemon.type1 !== types.ROCK &&
+                    this.activePokemon.type1 !== types.STEEL &&
+                    this.activePokemon.type1 !== types.GROUND &&
+                    this.activePokemon.type2 !== types.ROCK &&
+                    this.activePokemon.type2 !== types.STEEL &&
+                    this.activePokemon.type2 !== types.GROUND
+                ) {
+                    this.addToLog(`${this.activePokemon.name} is buffeted by the sandstorm!`);
+                    this.activePokemon.takeDamage(
+                        Math.floor(this.activePokemon.maxHp / 12), 
+                        this.weather.source,
+                        {
+                            "type": "weather",
+                        }
+                    );
+                }
+                break;
+            case weatherConditions.HAIL:
+                // if active pokemon not ice, damage 1/12 of max hp
+                if (
+                    this.activePokemon.type1 !== types.ICE &&
+                    this.activePokemon.type2 !== types.ICE
+                ) {
+                    this.addToLog(`${this.activePokemon.name} is buffeted by the hail!`);
+                    this.activePokemon.takeDamage(
+                        Math.floor(this.activePokemon.maxHp / 12),
+                        this.weather.source,
+                        {
+                            "type": "weather",
+                        }
+                    );
+                }
+                break;
+        }
+
+        this.weather.duration--;
+        if (this.weather.duration <= 0) {
+            this.clearWeather();
+        }
     }
         
     isNpc(userId) {
@@ -1892,6 +2011,20 @@ class Pokemon {
         const teamNames = Object.keys(this.battle.parties);
         const enemyTeamName = teamNames[0] === this.teamName ? teamNames[1] : teamNames[0];
         return this.battle.parties[enemyTeamName];
+    }
+
+    getSpd() {
+        let spd = this.spd;
+
+        // if sandstorm and rock, spd * 1.5
+        if (
+            this.battle.weather.weatherId === weatherConditions.SANDSTORM && 
+            (this.type1 === types.ROCK || this.type2 === types.ROCK)
+        ) {
+            spd *= 1.5;
+        }
+
+        return spd;
     }
 
 }

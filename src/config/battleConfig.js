@@ -89,7 +89,7 @@ const calculateDamage = (move, source, target, miss=false, { atkStat = null, att
     atkStat = atkStat || move.damageType;
     attack = attack || (atkStat === damageTypes.PHYSICAL ? source.atk : source.spa);
     defStat = defStat || move.damageType;
-    const defense = defStat === damageTypes.PHYSICAL ? target.def : target.spd;
+    const defense = defStat === damageTypes.PHYSICAL ? target.def : target.getSpd();
     const stab = source.type1 === move.type || source.type2 === move.type ? 1.5 : 1;
     const missMult = miss ? 0.7 : 1;
     type = type !== null ? type : source.getTypeDamageMultiplier(move.type, target);
@@ -1903,6 +1903,14 @@ const statusConditions = {
     BADLY_POISON: "Badly Poison",
 };
 
+// unique weather conditions
+const weatherConditions = {
+    RAIN: "Rain",
+    SUN: "Sun",
+    SANDSTORM: "Sandstorm",
+    HAIL: "Hail",
+}
+
 const moveConfig = {
     "m6": {
         "name": "Pay Day",
@@ -3289,7 +3297,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user restores its own HP by 50% (no weather yet).",
+        "description": "The user restores its own HP by 50%. In sun, this restores 66% HP. In other weather, this restores 25% HP",
     },
     "m238": {
         "name": "Cross Chop",
@@ -5178,7 +5186,10 @@ const moveExecutes = {
             source.removeEffect("absorbLight");
             for (const target of allTargets) {
                 const miss = missedTargets.includes(target);
-                const damageToDeal = calculateDamage(moveData, source, target, miss);
+                const mult = battle.weather.weatherId !== weatherConditions.SUN && battle.weather.weatherId !== null ? 0.5 : 1;
+                const damageToDeal = calculateDamage(moveData, source, target, miss, {
+                    power: Math.floor(moveData.power * mult)
+                });
                 source.dealDamage(damageToDeal, target, {
                     type: "move",
                     moveId: moveId
@@ -6319,7 +6330,16 @@ const moveExecutes = {
     "m236": function (battle, source, primaryTarget, allTargets) {
         const moveId = "m236";
         for (const target of allTargets) {
-            source.giveHeal(Math.floor(target.maxHp / 2), target, {
+            let fraction = 0.5;
+            // fraction based on weather
+            if (battle.weather.weatherId === null) {
+                fraction = 0.5;
+            } else if (battle.weather.weatherId === weatherConditions.SUN) {
+                fraction = 0.67;
+            } else {
+                fraction = 0.33;
+            }
+            source.giveHeal(Math.floor(target.maxHp * fraction), target, {
                 type: "move",
                 moveId: moveId
             });
@@ -8810,6 +8830,37 @@ const abilityConfig = {
             battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
+    "45": {
+        "name": "Sand Stream",
+        "description": "At the start of battle, kick up a Sandstorm.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (initialArgs.pokemon.isFainted) {
+                        return;
+                    }
+
+                    initialArgs.pokemon.battle.createWeather(weatherConditions.SANDSTORM, initialArgs.pokemon);
+                }
+            }
+
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BATTLE_BEGIN, listener);
+            return {
+                "listenerId": listenerId,
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "45" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
+    },
     "46": {
         "name": "Pressure",
         "description": "When the user takes or deals damage, put a random available move for the target on cooldown for 2 turns, if it can have a cooldown. Can only be triggered once per-target.",
@@ -10358,6 +10409,7 @@ module.exports = {
     effectConfig,
     effectTypes,
     statusConditions,
+    weatherConditions,
     calculateDamage,
     abilityConfig,
 };
