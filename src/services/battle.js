@@ -1319,6 +1319,13 @@ class Pokemon {
                 hitChance *= 0.8;
             }
 
+            // weather check
+            if (this.battle.weather.weatherId === weatherConditions.SUN) {
+                if (moveId === "m87" || moveId === "m87-1" || moveId === "m542") {
+                    hitChance *= 0.75;
+                }
+            }
+
             const calculateMissArgs = {
                 target: target,
                 hitChance: hitChance,
@@ -1765,6 +1772,11 @@ class Pokemon {
                     break;
                 }
 
+                if (this.battle.weather.weatherId === weatherConditions.SUN) {
+                    this.battle.addToLog(`${this.name} was protected from freezing by the sun!`);
+                    break;
+                }
+
                 this.status = {
                     statusId: statusId,
                     source: source,
@@ -1992,7 +2004,7 @@ class Pokemon {
     }
 
     effectiveSpeed() {
-        return calculateEffectiveSpeed(this.spe);
+        return calculateEffectiveSpeed(this.getSpe());
     }
 
     getRowAndColumn() {
@@ -2021,10 +2033,22 @@ class Pokemon {
             this.battle.weather.weatherId === weatherConditions.SANDSTORM && 
             (this.type1 === types.ROCK || this.type2 === types.ROCK)
         ) {
-            spd *= 1.5;
+            spd = Math.floor(spd * 1.5);
         }
 
         return spd;
+    }
+
+    getSpe() {
+        let spe = this.spe;
+
+        if (this.battle.weather.weatherId === weatherConditions.SUN) {
+            if (this.ability && this.ability.abilityId === "34") {
+                spe = Math.floor(spe * 1.5);
+            }
+        }
+
+        return spe;
     }
 
 }

@@ -110,6 +110,22 @@ const calculateDamage = (move, source, target, miss=false, { atkStat = null, att
     const random = Math.random() * (1 - 0.85) + 0.85;
     const burn = source.status.statusId === statusConditions.BURN && move.damageType === damageTypes.PHYSICAL ? 0.5 : 1;
 
+    let weatherMult = 1;
+    const weather = source.battle.weather;
+    if (weather.weatherId === weatherConditions.SUN) {
+        if (move.type === types.FIRE) {
+            weatherMult = 1.5;
+        } else if (move.type === types.WATER) {
+            weatherMult = 0.5;
+        }
+    } else if (weather.weatherId === weatherConditions.RAIN) {
+        if (move.type === types.FIRE) {
+            weatherMult = 0.5;
+        } else if (move.type === types.WATER) {
+            weatherMult = 1.5;
+        }
+    }
+
     /* console.log("power", power)
     console.log("level", level)
     console.log("attack", attack)
@@ -118,7 +134,7 @@ const calculateDamage = (move, source, target, miss=false, { atkStat = null, att
     console.log("type", type)
     console.log("random", random) */
 
-    const damage = Math.floor((((2 * level / 5 + 2) * power * attack / defense) / 50 + 2) * stab * type * random * burn * missMult);
+    const damage = Math.floor((((2 * level / 5 + 2) * power * attack / defense) / 50 + 2) * stab * type * random * burn * weatherMult * missMult);
 
     return Math.max(damage, 1);
 };
@@ -2406,7 +2422,7 @@ const moveConfig = {
         "damageType": damageTypes.SPECIAL,
         "description": "A two-turn attack. The user gathers light, then blasts a bundled beam on the next turn.",
         "silenceIf": function(battle, pokemon) {
-            return pokemon.effectIds.absorbLight === undefined;
+            return pokemon.effectIds.absorbLight === undefined && battle.weather.weatherId !== weatherConditions.SUN;
         }
     },
     "m77": {
@@ -5177,7 +5193,7 @@ const moveExecutes = {
         const moveId = "m76";
         const moveData = moveConfig[moveId];
         // if pokemon doesnt have "abosrb light" buff, apply it
-        if (source.effectIds.absorbLight === undefined) {
+        if (source.effectIds.absorbLight === undefined && battle.weather.weatherId !== weatherConditions.SUN) {
             source.addEffect("absorbLight", 1, source);
             // remove solar beam cd
             source.moveIds[moveId].cooldown = 0;
@@ -5724,7 +5740,7 @@ const moveExecutes = {
         const surroundingTargets = source.getPatternTargets(targetParty, targetPatterns.ALL, primaryTarget.position);
         for (const target of surroundingTargets) {
             // flinch chance = (30 + source speed/10)
-            const flinchChance = Math.min(0.3 + (source.spe / 10)/100, .75);
+            const flinchChance = Math.min(0.3 + (source.getSpe() / 10)/100, .75);
             if (Math.random() < flinchChance) {
                 target.addEffect("flinched", 1, source);
             }
@@ -7347,14 +7363,14 @@ const moveExecutes = {
         }
         
         // get mean spe of all targets
-        const meanSpe = targets.reduce((acc, p) => acc + p.spe, 0) / targets.length;
+        const meanSpe = targets.reduce((acc, p) => acc + p.getSpe(), 0) / targets.length;
         // for all targets apply effect: 
         // if spe > 1.4 * meanSpe, greater spe down
         // if spe > meanSpe, spe down
         // if spe < meanSpe, spe up
         // if spe < 0.60 * meanSpe, greater spe up
         for (const target of targets) {
-            const spe = target.spe;
+            const spe = target.getSpe();
             if (spe > 1.4 * meanSpe) {
                 target.addEffect("greaterSpeDown", 2, source);
             } else if (spe > meanSpe) {
@@ -7585,11 +7601,11 @@ const moveExecutes = {
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             let speedPower = 0;
-            if (source.spe < 150) {
+            if (source.getSpe() < 150) {
                 speedPower = 35;
-            } else if (source.spe < 300) {
+            } else if (source.getSpe() < 300) {
                 speedPower = 25;
-            } else if (source.spe < 450) {
+            } else if (source.getSpe() < 450) {
                 speedPower = 15;
             } else {
                 speedPower = 5;
@@ -7743,7 +7759,7 @@ const moveExecutes = {
         let damageDealt = 0;
         for (const target of allTargets) {
             const damageToDeal = calculateDamage(moveData, source, target, missedTargets.includes(target), {
-                power: Math.floor(moveData.power + (source.spe * 0.1))
+                power: Math.floor(moveData.power + (source.getSpe() * 0.1))
             });
             damageDealt += source.dealDamage(damageToDeal, target, {
                 type: "move",
@@ -8434,11 +8450,11 @@ const abilityConfig = {
 
                     // get pokemon with highest spe
                     let highestSpePokemon = enemyPokemons[0];
-                    let maxSpe = enemyPokemons[0].spe;
+                    let maxSpe = enemyPokemons[0].getSpe();
                     for (const pokemon of enemyPokemons) {
-                        if (pokemon.spe > maxSpe) {
+                        if (pokemon.getSpe() > maxSpe) {
                             highestSpePokemon = pokemon;
-                            maxSpe = pokemon.spe;
+                            maxSpe = pokemon.getSpe();
                         }
                     }
                     if (highestAtkPokemon === highestSpePokemon) {
@@ -8705,13 +8721,13 @@ const abilityConfig = {
     },
     "34": {
         "name": "Chlorophyll",
-        "description": "Weather hasn't been implemented yet, so increases user speed by 25%.",
+        "description": "Increases user's speed by 20%. Increases speed by 50% (multiplicative with initial buff) in harsh sunlight.",
         "abilityAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Chlorophyll increases its speed!`);
-            target.spe += Math.floor(target.spe * 0.25);
+            target.spe += Math.floor(target.spe * 0.2);
         },
         "abilityRemove": function (battle, source, target) {
-            target.spe -= Math.floor(target.spe * 0.25);
+            target.spe -= Math.floor(target.spe * 0.2);
         }
     },
     "35": {
@@ -9288,6 +9304,37 @@ const abilityConfig = {
         "abilityRemove": function (battle, source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "67" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
+    },
+    "70": {
+        "name": "Drought",
+        "description": "At the start of battle, the weather becomes sunny.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (initialArgs.pokemon.isFainted) {
+                        return;
+                    }
+
+                    initialArgs.pokemon.battle.createWeather(weatherConditions.SUN, initialArgs.pokemon);
+                }
+            }
+
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BATTLE_BEGIN, listener);
+            return {
+                "listenerId": listenerId,
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "70" || !ability.data) {
                 return;
             }
             const abilityData = ability.data;

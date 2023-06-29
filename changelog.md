@@ -1,5 +1,15 @@
 # Pokéstar Changelog
 
+### 0.11.2
+
+* Gen 2 Phase 2:
+  * Pokemon: Larvitar, Pupitar, Tyranitar
+  * Abilities: Drought, Sand Stream, Chlorophyll
+  * Weather: Lasts 10 + numPokemon turns
+    * Current Weather: Sand, Sun
+* Fixed bug where refreshing a battle may crash the bot
+
+
 ### 0.11.1 (6/27)
 
 * **Reworked Voting:** Voting has some new changes now, including streaks!

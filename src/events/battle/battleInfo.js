@@ -64,7 +64,7 @@ const battleInfo = async (interaction, data) => {
             logger.info(battle)
         }
         // refresh battle display
-        interaction.update(await getStartTurnSend(battle, data.stateId));
+        await interaction.update(await getStartTurnSend(battle, data.stateId));
         return;
     } else {
         return { err: "Invalid selection." };

@@ -3139,6 +3139,39 @@ const pokemonConfig = {
         "rarity": rarities.LEGENDARY,
         "growthRate": growthRates.SLOW
     },
+    "246": {
+        "name": "Larvitar",
+        "emoji": "<:246:1119803828120866886>",
+        "description": "It feeds on soil. After it has eaten a large mountain, it will fall asleep so it can grow.",
+        "type": [types.ROCK, types.GROUND],
+        "baseStats": [50, 64, 50, 45, 50, 41],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/246.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/246.png",
+        "abilities": {
+            "62": 0.8,
+            "8": 0.2,
+        },
+        "moveIds": ["m33", "m43", "m242", "m444"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.SLOW
+    },
+    "247": {
+        "name": "Pupitar",
+        "emoji": "<:247:1119803829676937267>",
+        "description": "Its shell is as hard as sheet rock, and it is also very strong. Its thrashing can topple a mountain.",
+        "type": [types.ROCK, types.GROUND],
+        "baseStats": [70, 84, 70, 65, 70, 51],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/247.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/247.png",
+        "abilities": {
+            "61": 1,
+        },
+        "moveIds": ["m43", "m36", "m242", "m444"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.SLOW
+    },
     "248": {
         "name": "Tyranitar",
         "emoji": "<:248:1119803830880702506>",

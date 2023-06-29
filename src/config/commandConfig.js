@@ -91,7 +91,7 @@ const commandConfig = {
     },
     "trainerinfo": {
         "name": "Trainer Info",
-        "aliases": ["trainerinfo", "trainer", "ti", "userinfo", "user"],
+        "aliases": ["trainerinfo", "trainer", "ti", "profile", "user"],
         "description": "Get information about your trainer",
         "longDescription": "Displays your trainer card with information such as number of Pokemon, Pokedollars, and level progress.",
         "execute": "trainerInfo.js",
@@ -460,7 +460,7 @@ const commandConfig = {
     },
     "partyinfo": {
         "name": "Party Info",
-        "aliases": ["partyinfo"],
+        "aliases": ["partyinfo", "party"],
         "description": "Get info about your party",
         "execute": "partyInfo.js",
         "args": {},
