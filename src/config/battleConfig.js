@@ -83,7 +83,7 @@ const typeAdvantages = {
     [types.FAIRY]: { [types.FIRE]: 0.5, [types.FIGHTING]: 2, [types.POISON]: 0.5, [types.DRAGON]: 2, [types.DARK]: 2, [types.STEEL]: 0.5 }
 };
 
-const calculateDamage = (move, source, target, miss=false, { atkStat = null, attack = null, defStat = null, power = null, type = null } = {}) => {
+const calculateDamage = (move, source, target, miss=false, { atkStat = null, attack = null, defStat = null, power = null, type = null, moveType = null } = {}) => {
     power = power || move.power;
     const level = source.level;
     atkStat = atkStat || move.damageType;
@@ -92,7 +92,8 @@ const calculateDamage = (move, source, target, miss=false, { atkStat = null, att
     const defense = defStat === damageTypes.PHYSICAL ? target.def : target.getSpd();
     const stab = source.type1 === move.type || source.type2 === move.type ? 1.5 : 1;
     const missMult = miss ? 0.7 : 1;
-    type = type !== null ? type : source.getTypeDamageMultiplier(move.type, target);
+    moveType = moveType || move.type;
+    type = type !== null ? type : source.getTypeDamageMultiplier(moveType, target);
     // balance type
     if (type >= 4) {
         type = 2;
@@ -2990,6 +2991,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user flails about aimlessly to attack. This move's power increases the lower the user's HP.",
     },
+    "m177": {
+        "name": "Aeroblast",
+        "type": types.FLYING,
+        "power": 100,
+        "accuracy": 90,
+        "cooldown": 6,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SQUARE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "A vortex of air is shot to inflict damage. This only deals most damage to up to 3 random targets in the area, deals extra true damage proportional to the user's HP to any targets hit.",
+    },
     "m182": {
         "name": "Protect",
         "type": types.NORMAL,
@@ -3640,6 +3654,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The target is hit with a hard punch fired like a meteor. This also raises the users attack for 1 turn.",
     },
+    "m311": {
+        "name": "Weather Ball",
+        "type": types.NORMAL,
+        "power": 40,
+        "accuracy": 100,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.SPECIAL,
+        "description": "This move's type changes depending on the weather, and power is doubled in any weather.",
+    },
     "m316": {
         "name": "Aromatherapy",
         "type": types.GRASS,
@@ -3678,6 +3705,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "Boulders of biblical proportion are hurled at the target. This also lowers the target's Speed stat for 2 turns, even when the attack misses.",
+    },
+    "m332": {
+        "name": "Aerial Ace",
+        "type": types.FLYING,
+        "power": 65,
+        "accuracy": null,
+        "cooldown": 2,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user confounds the target with speed, then slashes. This attack never misses.",
     },
     "m334": {
         "name": "Iron Defense",
@@ -5926,6 +5966,42 @@ const moveExecutes = {
             });
         }
     },
+    "m177": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m177";
+        const moveData = moveConfig[moveId];
+        // filter out allTargets => just the primary target and up to 2 random other targets
+        let damagedTargets = [];
+        if (allTargets.length > 3) {
+            const newTargets = [primaryTarget];
+            const otherTargets = allTargets.filter(t => t !== primaryTarget);
+            for (let i = 0; i < 2; i++) {
+                const randomIndex = Math.floor(Math.random() * otherTargets.length);
+                newTargets.push(otherTargets[randomIndex]);
+                otherTargets.splice(randomIndex, 1);
+            }
+            damagedTargets = newTargets;
+        } else {
+            damagedTargets = allTargets;
+        }
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            let damageToDeal = 0;
+            if (damagedTargets.includes(target)) {
+                damageToDeal += calculateDamage(moveData, source, target, miss);
+            }
+            if (!miss) {
+                // true damage based on 1/10 self hp
+                damageToDeal += Math.floor(source.hp * 0.1);
+            }
+
+            if (damageToDeal > 0) {
+                source.dealDamage(damageToDeal, target, {
+                    type: "move",
+                    moveId: moveId
+                });
+            }
+        }
+    },
     "m182": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m182";
         const moveData = moveConfig[moveId];
@@ -6774,6 +6850,31 @@ const moveExecutes = {
         // raise user atk for 1 turn
         source.addEffect("atkUp", 1, source);
     },
+    "m311": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m311";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            let type = moveData.type;
+            if (battle.weather.weatherId === weatherConditions.SUN) {
+                type = types.FIRE;
+            } else if (battle.weather.weatherId === weatherConditions.RAIN) {
+                type = types.WATER;
+            } else if (battle.weather.weatherId === weatherConditions.SANDSTORM) {
+                type = types.ROCK;
+            } else if (battle.weather.weatherId === weatherConditions.HAIL) {
+                type = types.ICE;
+            }
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss, {
+                "moveType": type,
+                "power": moveData.power * (battle.weather.weatherId !== null ? 2 : 1)
+            });
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
     "m316": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m316";
         const moveData = moveConfig[moveId];
@@ -6828,6 +6929,18 @@ const moveExecutes = {
 
             // spe down 2 turns
             target.addEffect("speDown", 2, source);
+        }
+    },
+    "m332": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m332";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // ignore miss
+            const damageToDeal = calculateDamage(moveData, source, target, false);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
         }
     },
     "m334": function (battle, source, primaryTarget, allTargets, missedTargets) {

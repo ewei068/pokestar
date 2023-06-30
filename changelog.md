@@ -3,7 +3,7 @@
 ### 0.11.2
 
 * Gen 2 Phase 2:
-  * Pokemon: Poliwag, Poliwhirl, Poliwrath, Politoed, Larvitar, Pupitar, Tyranitar
+  * Pokemon: Poliwag, Poliwhirl, Poliwrath, Politoed, Larvitar, Pupitar, Tyranitar, Lugia, Ho-Oh
   * Abilities: Drizzle, Drought, Sand Stream, Swift Swim, Chlorophyll
   * Weather: Lasts 10 + numPokemon turns
     * Current Weather: Sand, Sun, Rain

@@ -3283,6 +3283,40 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.SLOW
     },
+    "249": {
+        "name": "Lugia",
+        "emoji": "<:249:1119803832050921523>",
+        "description": "It is said that it quietly spends its time deep at the bottom of the sea because its powers are too strong.",
+        "type": [types.PSYCHIC, types.FLYING],
+        "baseStats": [106, 90, 130, 110, 154, 110],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/249.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/249.png",
+        "abilities": {
+            "46": 0.8,
+            "136": 0.2,
+        },
+        "moveIds": ["m311", "m94", "m355", "m177"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW
+    },
+    "250": {
+        "name": "Ho-Oh",
+        "emoji": "<:250:1119803833187569735>",
+        "description": "It will reveal itself before a pure-hearted trainer by shining its bright rainbow-colored wings.",
+        "type": [types.FIRE, types.FLYING],
+        "baseStats": [106, 130, 90, 110, 154, 90],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/250.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/250.png",
+        "abilities": {
+            "46": 0.8,
+            "144": 0.2,
+        },
+        "moveIds": ["m311", "m92", "m332", "m221"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW
+    },
     "20091": {
         "name": "Temple Guardian Cloyster",
         "emoji": "<:91:1100288966881718342>",
