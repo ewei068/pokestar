@@ -3016,6 +3016,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user kisses the target with a sweet, angelic cuteness that causes confusion for 3 turns.",
     },
+    "m187": {
+        "name": "Belly Drum",
+        "type": types.NORMAL,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 5,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user permanently doubles its Attack stat in exchange for HP equal to half its max HP.",
+    },
     "m188": {
         "name": "Sludge Bomb",
         "type": types.POISON,
@@ -5932,6 +5945,23 @@ const moveExecutes = {
             }
         }
     },
+    "m187": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m187";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const halfHp = Math.floor(target.maxHp * 0.5);
+            if (target.hp <= halfHp) {
+                battle.addToLog("But it failed!");
+                return;
+            }
+
+            target.dealDamage(halfHp, target, {
+                "type": "bellyDrum"
+            });
+            target.atk += target.batk;
+            battle.addToLog(`${target.name} doubled its attack!`);
+        }
+    },
     "m188": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m188";
         const moveData = moveConfig[moveId];
@@ -8075,6 +8105,37 @@ const moveExecutes = {
 };
 
 const abilityConfig = {
+    "2": {
+        "name": "Drizzle",
+        "description": "At the start of battle, stir up a rainy storm.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (initialArgs.pokemon.isFainted) {
+                        return;
+                    }
+
+                    initialArgs.pokemon.battle.createWeather(weatherConditions.RAIN, initialArgs.pokemon);
+                }
+            }
+
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BATTLE_BEGIN, listener);
+            return {
+                "listenerId": listenerId,
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "2" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
+    },
     "5": {
         "name": "Sturdy",
         "description": "The first time the user takes fatal damage, the user instead survives with 1 HP.",
@@ -8717,6 +8778,17 @@ const abilityConfig = {
             const abilityData = ability.data;
             battle.eventHandler.unregisterListener(abilityData.listenerId1);
             battle.eventHandler.unregisterListener(abilityData.listenerId2);
+        }
+    },
+    "33": {
+        "name": "Swift Swim",
+        "description": "Increases user's speed by 20%. Increases speed by 50% (multiplicative with initial buff) in rain.",
+        "abilityAdd": function (battle, source, target) {
+            battle.addToLog(`${target.name}'s Swift Swim increases its speed!`);
+            target.spe += Math.floor(target.spe * 0.2);
+        },
+        "abilityRemove": function (battle, source, target) {
+            target.spe -= Math.floor(target.spe * 0.2);
         }
     },
     "34": {

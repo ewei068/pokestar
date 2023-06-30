@@ -3,10 +3,10 @@
 ### 0.11.2
 
 * Gen 2 Phase 2:
-  * Pokemon: Larvitar, Pupitar, Tyranitar
-  * Abilities: Drought, Sand Stream, Chlorophyll
+  * Pokemon: Poliwag, Poliwhirl, Poliwrath, Politoed, Larvitar, Pupitar, Tyranitar
+  * Abilities: Drizzle, Drought, Sand Stream, Swift Swim, Chlorophyll
   * Weather: Lasts 10 + numPokemon turns
-    * Current Weather: Sand, Sun
+    * Current Weather: Sand, Sun, Rain
 * Fixed bug where refreshing a battle may crash the bot
 
 

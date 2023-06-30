@@ -1324,6 +1324,10 @@ class Pokemon {
                 if (moveId === "m87" || moveId === "m87-1" || moveId === "m542") {
                     hitChance *= 0.75;
                 }
+            } else if (this.battle.weather.weatherId === weatherConditions.RAIN) {
+                if (moveId === "m87" || moveId === "m87-1" || moveId === "m542") {
+                    hitChance = 1.5;
+                }
             }
 
             const calculateMissArgs = {
@@ -2044,6 +2048,10 @@ class Pokemon {
 
         if (this.battle.weather.weatherId === weatherConditions.SUN) {
             if (this.ability && this.ability.abilityId === "34") {
+                spe = Math.floor(spe * 1.5);
+            }
+        } else if (this.battle.weather.weatherId === weatherConditions.RAIN) {
+            if (this.ability && this.ability.abilityId === "33") {
                 spe = Math.floor(spe * 1.5);
             }
         }

@@ -1291,6 +1291,74 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "60": {
+        "name": "Poliwag",
+        "emoji": "<:60:1100285079281991781>",
+        "description": "Its newly grown legs prevent it from running. It appears to prefer swimming than trying to stand.",
+        "type": [types.WATER],
+        "baseStats": [40, 50, 40, 40, 40, 90],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/60.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/60.png",
+        "evolution": [{
+            "level": 25,
+            "id": "61",
+        }],
+        "abilities": {
+            "11": 0.45,
+            "6": 0.45,
+            "33": 0.1
+        },
+        "moveIds": ["m55", "m876", "m34", "m127"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST,
+    },
+    "61": {
+        "name": "Poliwhirl",
+        "emoji": "<:61:1100286232086454313>",
+        "description": "Capable of living in or out of water. When out of water, it sweats to keep its body slimy.",
+        "type": [types.WATER],
+        "baseStats": [65, 65, 65, 50, 50, 90],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/61.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/61.png",
+        "evolution": [
+            {
+                "level": 36,
+                "id": "62",
+            },
+            {
+                "level": 36,
+                "id": "186",
+            },
+        ],
+        "abilities": {
+            "11": 0.45,
+            "6": 0.45,
+            "33": 0.1
+        },
+        "moveIds": ["m876", "m34", "m127", "m187"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "62": {
+        "name": "Poliwrath",
+        "emoji": "<:62:1100286233449611336>",
+        "description": "An adept swimmer at both the front crawl and breast stroke. Easily overtakes the best human swimmers.",
+        "type": [types.WATER, types.FIGHTING],
+        "baseStats": [90, 95, 95, 70, 90, 70],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/62.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/62.png",
+        "abilities": {
+            "11": 0.45,
+            "6": 0.45,
+            "33": 0.1
+        },
+        "moveIds": ["m876", "m127", "m187", "m223"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "63": {
         "name": "Abra",
         "emoji": "<:63:1100286235064414279>",
@@ -2938,6 +3006,24 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "186": {
+        "name": "Politoed",
+        "emoji": "<:186:1116756077007085618>",
+        "description": "Whenever three or more of these get together, they sing in a loud voice that sounds like bellowing.",
+        "type": [types.WATER],
+        "baseStats": [90, 75, 75, 90, 100, 70],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/186.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/186.png",
+        "abilities": {
+            "11": 0.45,
+            "6": 0.45,
+            "2": 0.1
+        },
+        "moveIds": ["m270", "m57", "m58", "m195"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "187": {
         "name": "Hoppip",
         "emoji": "<:187:1116756122334929037>",
@@ -3147,6 +3233,10 @@ const pokemonConfig = {
         "baseStats": [50, 64, 50, 45, 50, 41],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/246.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/246.png",
+        "evolution": [{
+            "level": 30,
+            "id": "247"
+        }],
         "abilities": {
             "62": 0.8,
             "8": 0.2,
@@ -3164,6 +3254,10 @@ const pokemonConfig = {
         "baseStats": [70, 84, 70, 65, 70, 51],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/247.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/247.png",
+        "evolution": [{
+            "level": 55,
+            "id": "248"
+        }],
         "abilities": {
             "61": 1,
         },
