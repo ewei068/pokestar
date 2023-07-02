@@ -841,7 +841,7 @@ const effectConfig = {
                     }
 
                     const damage = calculateDamage({
-                        "power": moveData.power * 1.5,
+                        "power": moveData.power ? moveData.power * 1.5 : 40,
                         "damageType": damageTypes.PHYSICAL,
                         "type": types.FIGHTING,
                     }, targetPokemon, sourcePokemon, false);
@@ -890,7 +890,7 @@ const effectConfig = {
                     }
 
                     const damage = calculateDamage({
-                        "power": moveData.power * 1.5,
+                        "power": moveData.power ? moveData.power * 1.5 : 40,
                         "damageType": damageTypes.SPECIAL,
                         "type": types.PSYCHIC,
                     }, targetPokemon, sourcePokemon, false);
@@ -2806,6 +2806,19 @@ const moveConfig = {
         "damageType": damageTypes.SPECIAL,
         "description": "The user emits a cloud of poison gas. This may also poison the target with a 40% chance.",
     },
+    "m126": {
+        "name": "Fire Blast",
+        "type": types.FIRE,
+        "power": 90,
+        "accuracy": 85,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.CROSS,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user launches a huge fireball at the target. This may also burn targets with a 20% chance.",
+    },
     "m127": {
         "name": "Waterfall",
         "type": types.WATER,
@@ -3016,6 +3029,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
         "description": "The user becomes invulnerable to moves for 1 turn.",
+    },
+    "m183": {
+        "name": "Mach Punch",
+        "type": types.FIGHTING,
+        "power": 40,
+        "accuracy": 100,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user throws a punch at blinding speed, increasing the user's combat readiness by 30%.",
     },
     "m186": {
         "name": "Sweet Kiss",
@@ -3367,6 +3393,32 @@ const moveConfig = {
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.SPECIAL,
         "description": "The user whips up a vicious twister to tear at the opposing team. This may also make the target flinch with a 30% chance.",
+    },
+    "m240": {
+        "name": "Rain Dance",
+        "type": types.WATER,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 5,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user summons a heavy rain, powering up Water-type moves.",
+    },
+    "m241": {
+        "name": "Sunny Day",
+        "type": types.FIRE,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 5,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user intensifies the sun, powering up Fire-type moves.",
     },
     "m242": {
         "name": "Crunch",
@@ -3995,6 +4047,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user stabs the target with a poisonous stinger. This has a 80% chance to poison the target.",
     },
+    "m399": {
+        "name": "Dark Pulse",
+        "type": types.DARK,
+        "power": 65,
+        "accuracy": 100,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.ROW,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user releases a horrible aura imbued with dark thoughts. This has a 25% chance to flinch targets for 1 turn.",
+    },
     "m402": {
         "name": "Seed Bomb",
         "type": types.GRASS,
@@ -4528,6 +4593,19 @@ const moveConfig = {
         "damageType": damageTypes.SPECIAL,
         "description": "The user attacks by wrapping opponents in a fierce wind that flies up into the sky. This also has a 30% chance to leave targets confused for 2 turns.",
     },
+    "m564": {
+        "name": "Sticky Web",
+        "type": types.BUG,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user weaves a sticky net around the opposing team, which lowers their Speed stat and restricts them for 2 turns.",
+    },
     "m565": {
         "name": "Fell Stinger",
         "type": types.BUG,
@@ -4605,6 +4683,32 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
         "description": "The user restores its HP by the same amount as the target's Attack stat. This also lowers the target's Attack stat for 2 turns.",
+    },
+    "m672": {
+        "name": "Toxic Thread",
+        "type": types.POISON,
+        "power": null,
+        "accuracy": 100,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.COLUMN,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "The user shoots poisonous threads to badly poison targets and lower their combat readiness by 100%.",
+    },
+    "m710": {
+        "name": "Liquidation",
+        "type": types.WATER,
+        "power": 80,
+        "accuracy": 100,
+        "cooldown": 3,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user slams into the target using a full-force blast of water. This may also lower the target's defense stat for 2 turns with a 85% chance.",
     },
     "m719": {
         "name": "10,000,000 Volt Thunderbolt",
@@ -5024,8 +5128,8 @@ const moveExecutes = {
                 moveId: moveId
             });
 
-            // 10% chance to burn
-            if (!miss && Math.random() < 0.1) {
+            // 20% chance to burn
+            if (!miss && Math.random() < 0.2) {
                 target.applyStatus(statusConditions.BURN, source);
             }
         }
@@ -5678,6 +5782,23 @@ const moveExecutes = {
             }
         }
     },
+    "m126": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m126";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // 20% chance to burn
+            if (!miss && Math.random() < 0.2) {
+                target.applyStatus(statusConditions.BURN, source);
+            }
+        }
+    },
     "m127": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m127";
         const moveData = moveConfig[moveId];
@@ -6009,6 +6130,21 @@ const moveExecutes = {
             // apply move invulnerable
             target.addEffect("moveInvulnerable", 1, source);
         }
+    },
+    "m183": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m183";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+
+        // boost self cr by 30
+        source.boostCombatReadiness(source, 30);
     },
     "m186": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m186";
@@ -6496,6 +6632,20 @@ const moveExecutes = {
                 target.addEffect("flinched", 1, source);
             }
         }
+    },
+    "m240": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m240";
+        const moveData = moveConfig[moveId];
+
+        // rain weather
+        battle.createWeather(weatherConditions.RAIN, source);
+    },
+    "m241": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m241";
+        const moveData = moveConfig[moveId];
+
+        // sun weather
+        battle.createWeather(weatherConditions.SUN, source);
     },
     "m242": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m242";
@@ -7268,6 +7418,23 @@ const moveExecutes = {
             }
         }
     },
+    "m399": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m399";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // 25% chance to flinch 1 turn
+            if (!miss && Math.random() < 0.35) {
+                target.addEffect("flinched", 1, source);
+            }
+        }
+    },
     "m402": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m402";
         const moveData = moveConfig[moveId];
@@ -7977,6 +8144,19 @@ const moveExecutes = {
             }
         }
     },
+    "m564": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m564";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+
+            // if not miss, spe down and restrict 2 turns
+            if (!miss) {
+                target.addEffect("speDown", 2, source);
+                target.addEffect("restricted", 2, source);
+            }
+        }
+    },  
     "m565": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m565";
         const moveData = moveConfig[moveId];
@@ -8085,6 +8265,35 @@ const moveExecutes = {
             // if not miss, apply atk down to target 2 turns
             if (!miss) {
                 target.addEffect("atkDown", 2, source);
+            }
+        }
+    },
+    "m672": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m672";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            // if not miss, badly poison and fully reduce cr
+            if (!miss) {
+                target.applyStatus(statusConditions.BADLY_POISON, source);
+                target.reduceCombatReadiness(source, 100);
+            }
+        }
+    },
+    "m710": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m710";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 85% chance to reduce def
+            if (!miss && Math.random() < 0.85) {
+                target.addEffect("defDown", 2, source);
             }
         }
     },
@@ -9489,6 +9698,46 @@ const abilityConfig = {
         "abilityRemove": function (battle, source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "67" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
+    },
+    "68": {
+        "name": "Swarm",
+        "description": "Increases damage of bug moves by 50% when HP is below 1/3.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+
+                    const userPokemon = args.source;
+                    if (userPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+                    
+                    // if move type === bug and hp < 1/3, increase damage by 50%
+                    const moveData = moveConfig[args.damageInfo.moveId];
+                    if (moveData.type === types.BUG && userPokemon.hp < userPokemon.maxHp / 3) {
+                        userPokemon.battle.addToLog(`${userPokemon.name}'s Swarm increases damage!`);
+                        args.damage = Math.round(args.damage * 1.5);
+                    }
+                }
+            }
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_DEALT, listener);
+            return {
+                "listenerId": listenerId,
+            };
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "68" || !ability.data) {
                 return;
             }
             const abilityData = ability.data;

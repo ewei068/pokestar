@@ -1045,6 +1045,7 @@ class Pokemon {
                 const targetString = moveData.targetPattern === targetPatterns.ALL 
                 || moveData.targetPattern === targetPatterns.ALL_EXCEPT_SELF
                 || moveData.targetPattern === targetPatterns.RANDOM
+                || moveData.targetPosition === targetPositions.SELF
                 ? "!" : ` against ${primaryTarget.name}!`
                 this.battle.addToLog(`${this.name} used ${moveData.name}${targetString}`);
             }

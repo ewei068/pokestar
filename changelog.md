@@ -3,12 +3,16 @@
 ### 0.11.2
 
 * Gen 2 Phase 2:
-  * Pokemon: Poliwag, Poliwhirl, Poliwrath, Politoed, Larvitar, Pupitar, Tyranitar, Lugia, Ho-Oh
-  * Abilities: Drizzle, Drought, Sand Stream, Swift Swim, Chlorophyll
+  * Pokemon: Poliwag, Poliwhirl, Poliwrath, Ledyba, Ledian, Spinarak, Ariados, Sunkern, Sunflora, Wooper, Quagsire, Politoed, Skarmory, Houndour, Houndoom, Phanpy, Donphan, Larvitar, Pupitar, Tyranitar, Lugia, Ho-Oh
+  * Abilities: Drizzle, Drought, Sand Stream, Swift Swim, Chlorophyll, Swarm
   * Weather: Lasts 10 + numPokemon turns
     * Current Weather: Sand, Sun, Rain
+  * NPC adjustments + new NPCs
 * Fixed bug where refreshing a battle may crash the bot
-
+* Migrate to @ commands
+* Add by name to other commands
+  * Remove compenents after adding
+* End starting at 5 streak
 
 ### 0.11.1 (6/27)
 

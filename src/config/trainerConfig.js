@@ -198,8 +198,7 @@ const trainerFields = {
         "type": "object",
         "default": {
             "lastVoted": (new Date(0)).getTime(),
-            // TEMP: start at 5
-            "streak": 5,
+            "streak": 0,
             "rewards": 0,
         },
     }

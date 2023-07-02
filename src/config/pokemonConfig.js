@@ -2638,7 +2638,7 @@ const pokemonConfig = {
             "basicMoveIds": [
                 "m16", "m17", "m22", "m35", "m40", "m43", "m51", "m52", "m55", "m71", "m77", "m81", 
                 "m84", "m93", "m98", "m100", "m102", "m106", "m116", "m118", "m122", "m123", "m175", 
-                "m189", "m205", "m214", "m239", "m246", "m270", "m418", "m420", "m479", "m506", "m526",
+                "m189", "m205", "m214", "m239", "m246", "m270", "m311", "m418", "m420", "m479", "m506", "m526",
                 "m574", "m876"
             ],
             "powerMoveIds": [
@@ -2650,7 +2650,7 @@ const pokemonConfig = {
                 "m525", "m529"
             ],
             "ultimateMoveIds": [
-                "m38", "m56", "m63", "m76", "m87", "m89", "m135", "m143", "m153", "m156", "m157", 
+                "m38", "m56", "m63", "m76", "m87", "m89", "m126", "m135", "m143", "m153", "m156", "m157", 
                 "m162", "m192", "m200", "m223", "m257", "m304", "m366", "m394", "m405", "m413", "m416", 
                 "m428", "m433", "m437", "m482", "m528", "m542"
             ]
@@ -2913,6 +2913,86 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.FAST
     },
+    "165": {
+        "name": "Ledyba",
+        "emoji": "<:165:1116755928121868298>",
+        "description": "It is very timid. It will be afraid to move if it is alone. But it will be active if it is in a group.",
+        "type": [types.BUG, types.FLYING],
+        "baseStats": [40, 20, 30, 40, 80, 55],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/165.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/165.png",
+        "evolution": [{
+            "level": 18,
+            "id": "166"
+        }],
+        "abilities": {
+            "68": 0.45,
+            "48": 0.45,
+            "155": 0.1,
+        },
+        "moveIds": ["m33", "m183", "m226", "m450"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.FAST
+    },
+    "166": {
+        "name": "Ledian",
+        "emoji": "<:166:1116755929082363985>",
+        "description": "When the stars flicker in the night sky, it flutters about, scattering a glowing powder.",
+        "type": [types.BUG, types.FLYING],
+        "baseStats": [55, 35, 50, 55, 110, 85],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/166.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/166.png",
+        "abilities": {
+            "68": 0.45,
+            "48": 0.45,
+            "89": 0.1,
+        },
+        "moveIds": ["m183", "m226", "m450", "m405"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.FAST
+    },
+    "167": {
+        "name": "Spinarak",
+        "emoji": "<:167:1116755930084818967>",
+        "description": "It spins a web using fine--but durable--thread. It then waits patiently for prey to be trapped.",
+        "type": [types.BUG, types.POISON],
+        "baseStats": [40, 60, 40, 40, 40, 30],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/167.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/167.png",
+        "evolution": [{
+            "level": 18,
+            "id": "168"
+        }],
+        "abilities": {
+            "68": 0.45,
+            "15": 0.45,
+            "97": 0.1,
+        },
+        "moveIds": ["m40", "m81", "m224", "m564"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.FAST
+    },
+    "168": {
+        "name": "Ariados",
+        "emoji": "<:168:1116755931053707316>",
+        "description": "It spins string not only from its rear but also from its mouth. It's hard to tell which end is which.",
+        "type": [types.BUG, types.POISON],
+        "baseStats": [70, 90, 70, 60, 70, 40],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/168.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/168.png",
+        "abilities": {
+            "68": 0.45,
+            "15": 0.45,
+            "97": 0.1,
+        },
+        "moveIds": ["m40", "m224", "m564", "m672"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.FAST
+    },
     "169": {
         "name": "Crobat",
         "emoji": "<:169:1116755982895304805>",
@@ -3086,6 +3166,86 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "191": {
+        "name": "Sunkern",
+        "emoji": "<:191:1116756130018906232>",
+        "description": "Sunkern tries to move as little as it possibly can. It does so because it tries to conserve all the nutrients it has stored in its body for its evolution. It will not eat a thing, subsisting only on morning dew.",
+        "type": [types.GRASS],
+        "baseStats": [30, 30, 30, 30, 30, 30],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/191.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/191.png",
+        "evolution": [{
+            "level": 18,
+            "id": "192"
+        }],
+        "abilities": {
+            "34": 0.45,
+            "94": 0.45,
+            "48": 0.1,
+        },
+        "moveIds": ["m71", "m202", "m241", "m414"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "192": {
+        "name": "Sunflora",
+        "emoji": "<:192:1116756131990208564>",
+        "description": "Sunflora converts solar energy into nutrition. It moves around actively in the daytime when it is warm. It stops moving as soon as the sun goes down for the night.",
+        "type": [types.GRASS],
+        "baseStats": [75, 75, 55, 105, 85, 30],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/192.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/192.png",
+        "abilities": {
+            "34": 0.45,
+            "94": 0.45,
+            "48": 0.1,
+        },
+        "moveIds": ["m71", "m241", "m414", "m76"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "194": {
+        "name": "Wooper",
+        "emoji": "<:194:1116756135303717024>",
+        "description": "Wooper usually live in water but come out onto land seeking food occasionally. On land, they coat their bodies with a gooey, toxic film.",
+        "type": [types.WATER, types.GROUND],
+        "baseStats": [55, 45, 45, 25, 25, 15],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/194.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/194.png",
+        "evolution": [{
+            "level": 20,
+            "id": "195"
+        }],
+        "abilities": {
+            "6": 0.45,
+            "11": 0.45,
+            "109": 0.1
+        },
+        "moveIds": ["m189", "m240", "m414", "m710"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "195": {
+        "name": "Quagsire",
+        "emoji": "<:195:1116756137149202493>",
+        "description": "Quagsire hunts for food by leaving its mouth wide open in water and waiting for its prey to blunder in unaware. Because the Pokémon does not move, it does not get very hungry.",
+        "type": [types.WATER, types.GROUND],
+        "baseStats": [95, 85, 85, 65, 65, 35],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/195.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/195.png",
+        "abilities": {
+            "6": 0.45,
+            "11": 0.45,
+            "109": 0.1
+        },
+        "moveIds": ["m189", "m240", "m710", "m89"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "196": {
         "name": "Espeon",
         "emoji": "<:196:1116756190685319258>",
@@ -3155,6 +3315,94 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW,
+    },
+    "227": {
+        "name": "Skarmory",
+        "emoji": "<:227:1119803619605233664>",
+        "description": "Skarmory is entirely encased in hard, protective armor. This Pokémon flies at close to 190 mph. It slashes foes with its wings that possess swordlike cutting edges.",
+        "type": [types.STEEL, types.FLYING],
+        "baseStats": [65, 80, 140, 40, 70, 70],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/227.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/227.png",
+        "abilities": {
+            "51": 0.45,
+            "5": 0.45,
+            "133": 0.1,
+        },
+        "moveIds": ["m64", "m68", "m191", "m355"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.SLOW,
+    },
+    "228": {
+        "name": "Houndour",
+        "emoji": "<:228:1119803620993552464>",
+        "description": "Houndour hunt as a coordinated pack. They communicate with each other using a variety of cries to corner their prey. This Pokémon's remarkable teamwork is unparalleled.",
+        "type": [types.DARK, types.FIRE],
+        "baseStats": [45, 60, 30, 65, 50, 80],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/228.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/228.png",
+        "abilities": {
+            "48": 0.45,
+            "39": 0.45,
+            "127": 0.1,
+        },
+        "moveIds": ["m52", "m53", "m399", "m417"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "229": {
+        "name": "Houndoom",
+        "emoji": "<:229:1119803622809665556>",
+        "description": "Houndoom's entire body generates heat when it Mega Evolves. Its fearsome fiery breath turns its opponents to ash. Houndoom stores the toxic gases it had previously inhaled in its body. The toxic gases ignite when exposed to air, causing flames to shoot from its back.",
+        "type": [types.DARK, types.FIRE],
+        "baseStats": [75, 90, 50, 110, 80, 95],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/229.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/229.png",
+        "abilities": {
+            "48": 0.45,
+            "39": 0.45,
+            "127": 0.1,
+        },
+        "moveIds": ["m52", "m399", "m417", "m126"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+    },
+    "231": {
+        "name": "Phanpy",
+        "emoji": "<:231:1119803681806753833>",
+        "description": "Phanpy's big ears serve as broad fans. When it becomes hot, it flaps the ears busily to cool down. Even the young are very strong.",
+        "type": [types.GROUND],
+        "baseStats": [90, 60, 60, 40, 40, 40],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/231.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/231.png",
+        "abilities": {
+            "53": 0.8,
+            "8": 0.2,
+        },
+        "moveIds": ["m420", "m229", "m282", "m523"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "232": {
+        "name": "Donphan",
+        "emoji": "<:232:1119803683287351377>",
+        "description": "Donphan's favorite attack is curling its body into a ball, then charging at its foe while rolling at high speed. Once it starts rolling, this Pokémon can't stop very easily.",
+        "type": [types.GROUND],
+        "baseStats": [90, 120, 120, 50, 60, 50],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/232.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/232.png",
+        "abilities": {
+            "5": 0.8,
+            "8": 0.2,
+        },
+        "moveIds": ["m420", "m229", "m282", "m89"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
     },
     "242": {
         "name": "Blissey",
