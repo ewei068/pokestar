@@ -3,8 +3,8 @@
 ### 0.11.2
 
 * Gen 2 Phase 2:
-  * Pokemon: Poliwag, Poliwhirl, Poliwrath, Ledyba, Ledian, Spinarak, Ariados, Sunkern, Sunflora, Wooper, Quagsire, Politoed, Skarmory, Houndour, Houndoom, Phanpy, Donphan, Larvitar, Pupitar, Tyranitar, Lugia, Ho-Oh
-  * Abilities: Drizzle, Drought, Sand Stream, Swift Swim, Chlorophyll, Swarm
+  * Pokemon: Poliwag, Poliwhirl, Poliwrath, Scyther, Ledyba, Ledian, Spinarak, Ariados, Sunkern, Sunflora, Wooper, Quagsire, Marill, Azumarill, Politoed, Wobbuffet, Pineco, Forretress, Skarmory, Houndour, Houndoom, Phanpy, Donphan, Scizor, Miltank, Larvitar, Pupitar, Tyranitar, Lugia, Ho-Oh
+  * Abilities: Drizzle, Drought, Sand Stream, Swift Swim, Chlorophyll, Swarm, Huge Power, Shadow Tag
   * Weather: Lasts 10 + numPokemon turns
     * Current Weather: Sand, Sun, Rain
   * NPC adjustments + new NPCs
@@ -13,6 +13,7 @@
 * Add by name to other commands
   * Remove compenents after adding
 * End starting at 5 streak
+* Info party add cleanup
 
 ### 0.11.1 (6/27)
 

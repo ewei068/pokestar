@@ -169,7 +169,8 @@ const buildPartyAddSend = async ({user=null, pokemonId=null, position=1}={}) => 
 
     const send = {
         content: `${pokemon.data.name} was added to your party!`,
-        embeds: [embed]
+        embeds: [embed],
+        components: []
     }
     return { send: send, err: null };
 }

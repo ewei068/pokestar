@@ -2151,6 +2151,28 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "123": {
+        "name": "Scyther",
+        "emoji": "<:123:1100290829127516160>",
+        "description": "With ninja-like agility and speed, it can create the illusion that there is more than one.",
+        "type": [types.BUG, types.FLYING],
+        "baseStats": [70, 110, 80, 55, 80, 105],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/123.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/123.png",
+        "evolution": [{
+            "level": 50,
+            "id": "212",
+        }],
+        "abilities": {
+            "68": 0.45,
+            "101": 0.45,
+            "80": 0.1
+        },
+        "moveIds": ["m98", "m14", "m332", "m404"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+    },
     "124": {
         "name": "Jynx",
         "emoji": "<:124:1100290830440333374>",
@@ -2638,16 +2660,16 @@ const pokemonConfig = {
             "basicMoveIds": [
                 "m16", "m17", "m22", "m35", "m40", "m43", "m51", "m52", "m55", "m71", "m77", "m81", 
                 "m84", "m93", "m98", "m100", "m102", "m106", "m116", "m118", "m122", "m123", "m175", 
-                "m189", "m205", "m214", "m239", "m246", "m270", "m311", "m418", "m420", "m479", "m506", "m526",
+                "m189", "m205", "m214", "m239", "m246", "m270", "m311", "m418", "m420", "m453", "m479", "m506", "m526",
                 "m574", "m876"
             ],
             "powerMoveIds": [
                 "m14", "m34", "m36", "m46",  "m53", "m57", "m58", "m60", "m65", "m68",
                 "m70", "m85", "m86", "m91", "m92", "m94", "m113", "m115", "m127", "m182", "m188", "m191",
-                "m203", "m215",  "m216", "m219", "m226", "m247", "m269", "m202", "m252", "m276", "m283",
+                "m203", "m215",  "m216", "m219", "m226", "m240", "m241", "m247", "m269", "m202", "m252", "m276", "m283",
                 "m317", "m334", "m340", "m347", "m352", "m355", "m369", "m387", "m396", "m398", "m402",
                 "m409", "m414", "m417", "m424", "m430", "m441", "m444", "m446", "m450", "m492", "m521", "m523",
-                "m525", "m529"
+                "m525", "m529", "m583", "m710"
             ],
             "ultimateMoveIds": [
                 "m38", "m56", "m63", "m76", "m87", "m89", "m126", "m135", "m143", "m153", "m156", "m157", 
@@ -3086,6 +3108,46 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "183": {
+        "name": "Marill",
+        "emoji": "<:183:1116756072523378743>",
+        "description": "Marill's oil-filled tail acts much like a life preserver. If you see just its tail bobbing on the water's surface, it's a sure indication that this Pokémon is diving beneath the water to feed on aquatic plants.",
+        "type": [types.WATER, types.FAIRY],
+        "baseStats": [70, 20, 50, 20, 50, 40],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/183.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/183.png",
+        "evolution": [{
+            "level": 30,
+            "id": "184"
+        }],
+        "abilities": {
+            "47": 0.45,
+            "37": 0.45,
+            "157": 0.1,
+        },
+        "moveIds": ["m453", "m36", "m187", "m583"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "184": {
+        "name": "Azumarill",
+        "emoji": "<:184:1116756074121408693>",
+        "description": "Azumarill's long ears are indispensable sensors. By focusing its hearing, this Pokémon can identify what kinds of prey are around, even in rough and fast-running rivers.",
+        "type": [types.WATER, types.FAIRY],
+        "baseStats": [100, 50, 80, 50, 80, 50],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/184.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/184.png",
+        "abilities": {
+            "47": 0.45,
+            "37": 0.45,
+            "157": 0.1,
+        },
+        "moveIds": ["m453", "m187", "m583", "m38"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "186": {
         "name": "Politoed",
         "emoji": "<:186:1116756077007085618>",
@@ -3280,6 +3342,61 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "202": {
+        "name": "Wobbuffet",
+        "emoji": "<:202:1119803387874119821>",
+        "description": "If two or more Wobbuffet meet, they will turn competitive and try to outdo each other's endurance. However, they may try to see which one can endure the longest without food. Trainers need to beware of this habit.",
+        "type": [types.PSYCHIC],
+        "baseStats": [190, 33, 58, 33, 58, 33],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/202.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/202.png",
+        "abilities": {
+            "23": 0.8,
+            "140": 0.2,
+        },
+        "moveIds": ["m68", "m194", "m219", "m243"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "204": {
+        "name": "Pineco",
+        "emoji": "<:204:1119803389744775209>",
+        "description": "Pineco hangs from a tree branch and patiently waits for prey to come along. If the Pokémon is disturbed while eating by someone shaking its tree, it drops down to the ground and explodes with no warning.",
+        "type": [types.BUG],
+        "baseStats": [50, 65, 90, 35, 35, 15],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/204.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/204.png",
+        "evolution": [{
+            "level": 31,
+            "id": "205",
+        }],
+        "abilities": {
+            "5": 0.8,
+            "142": 0.2,
+        },
+        "moveIds": ["m33", "m36", "m191", "m229"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "205": {
+        "name": "Forretress",
+        "emoji": "<:205:1119803390772383858>",
+        "description": "Forretress conceals itself inside its hardened steel shell. The shell is opened when the Pokémon is catching prey, but it does so at such a quick pace that the shell's inside cannot be seen.",
+        "type": [types.BUG, types.STEEL],
+        "baseStats": [75, 90, 140, 60, 60, 40],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/205.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/205.png",
+        "abilities": {
+            "5": 0.8,
+            "142": 0.2,
+        },
+        "moveIds": ["m33", "m191", "m229", "m153"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "208": {
         "name": "Steelix",
         "emoji": "<:208:1119803395272871946>",
@@ -3297,6 +3414,42 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
+    },
+    "212": {
+        "name": "Scizor",
+        "emoji": "<:212:1119803485857267794>",
+        "description": "Scizor has a body with the hardness of steel. It is not easily fazed by ordinary sorts of attacks. This Pokémon flaps its wings to regulate its body temperature.",
+        "type": [types.BUG, types.STEEL],
+        "baseStats": [70, 130, 100, 55, 80, 65],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/212.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/212.png",
+        "abilities": {
+            "68": 0.45,
+            "101": 0.45,
+            "135": 0.1,
+        },
+        "moveIds": ["m418", "m14", "m450", "m404"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "213": {
+        "name": "Shuckle",
+        "emoji": "<:213:1119803487191044206>",
+        "description": "Shuckle quietly hides itself under rocks, keeping its body concealed inside its hard shell while eating berries it has stored away. The berries mix with its body fluids to become a juice.",
+        "type": [types.BUG, types.ROCK],
+        "baseStats": [20, 10, 230, 10, 230, 5],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/213.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/213.png",
+        "abilities": {
+            "5": 0.45,
+            "82": 0.45,
+            "126": 0.1,
+        },
+        "moveIds": ["m205", "m446", "m564", "m157"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
     },
     "214": {
         "name": "Heracross",
@@ -3400,6 +3553,24 @@ const pokemonConfig = {
             "8": 0.2,
         },
         "moveIds": ["m420", "m229", "m282", "m89"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "241": {
+        "name": "Miltank",
+        "emoji": "<:241:1119803755014144051>",
+        "description": "Miltank gives over five gallons of milk on a daily basis. Its sweet milk is enjoyed by children and grown-ups alike. People who can't drink milk turn it into yogurt and eat it instead.",
+        "type": [types.NORMAL],
+        "baseStats": [95, 80, 105, 40, 70, 100],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/241.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/241.png",
+        "abilities": {
+            "47": 0.45,
+            "113": 0.45,
+            "157": 0.1
+        },
+        "moveIds": ["m205", "m34", "m111", "m208"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
