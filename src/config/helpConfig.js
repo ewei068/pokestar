@@ -52,7 +52,7 @@ Generation 2 Pokemon have arrived! Generation 2 Pokemon will be releasing over t
 
 <:152:1116755846769168434> **New Pokemon:** Many new Pokemon have been added, and are available in the Gacha! You may also start seeing these Pokemon in NPC and Dungeon battles!
 
-<:243:1119803757895618650> **Legendary Banners:** Gen 2 Legendary Pokemon will have special rate-up banners! Note that these Pokemon are NOT limited and are available in all banners.
+<:249:1119803832050921523> **Legendary Banners:** Gen 2 Legendary Pokemon will have special rate-up banners! Note that these Pokemon are NOT limited and are available in all banners.
 
 <:pokeball:1100296136931156008> **More Rewards:** The amount of Pokeballs you get from \`/daily\` and \`/pokemart\` have doubled for the duration of this event!
 `

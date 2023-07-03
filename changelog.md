@@ -1,13 +1,15 @@
 # Pokéstar Changelog
 
-### 0.11.2
+### 0.11.2 - Gen 2 Phase 2
 
 * Gen 2 Phase 2:
   * Pokemon: Poliwag, Poliwhirl, Poliwrath, Scyther, Ledyba, Ledian, Spinarak, Ariados, Sunkern, Sunflora, Wooper, Quagsire, Marill, Azumarill, Politoed, Wobbuffet, Pineco, Forretress, Skarmory, Houndour, Houndoom, Phanpy, Donphan, Scizor, Miltank, Larvitar, Pupitar, Tyranitar, Lugia, Ho-Oh
   * Abilities: Drizzle, Drought, Sand Stream, Swift Swim, Chlorophyll, Swarm, Huge Power, Shadow Tag
-  * Weather: Lasts 10 + numPokemon turns
-    * Current Weather: Sand, Sun, Rain
-  * NPC adjustments + new NPCs
+  * **Weather conditions have been added to the game!** Weather conditions are passive effects that affect all Pokemon. 
+    * When created, weather lasts 10 turns, +1 turn for each non-fainted Pokemon on the battlefield.
+    * Current Weather coditions: Sandstorm, Harsh Sun, Rain
+  * Gave NPCs and dungeons more Gen 2 Pokemon.
+  * Added NPCs: Aroma Lady and Gold. Defeat Gold daily for Pokeballs!
 * Fixed bug where refreshing a battle may crash the bot
 * Migrate to @ commands
 * Add by name to other commands
