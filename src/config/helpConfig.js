@@ -153,7 +153,7 @@ const quickstartString =
 * Manage your **party** with \`/partyadd\` and \`/partyremove\`
 * **Battle** with \`/pve\`, \`/pvp\`, and \`/dungeons\` (gains lots of EXP too)
 * **Usage notes [PLEASE READ]:**
-  * The bot supports slash commands (\`/\`) and legacy message commands with prefix \`psb!\`, but slash commands are recommended
+  * The bot supports slash commands (\`/\`) and legacy message commands with prefix \`<@1093411444877439066>\`, but slash commands are recommended
   * Users have a small rate limit so some interactions may be dropped
   * The bot is still in early development and may be buggy
 * **For more information, please view the tutorial below or use \`/help\`!**`;

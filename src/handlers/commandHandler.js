@@ -58,8 +58,8 @@ for (const commandGroup in commandCategoryConfig) {
             const commandExecute = require(filePath);
             for (const alias of commandData.aliases) {
                 if (commandExecute.message) {
-                    messageCommands[`${prefix}${alias}`] = commandExecute.message;
-                    commandLookup[`${prefix}${alias}`] = commandData;
+                    messageCommands[`${alias}`] = commandExecute.message;
+                    commandLookup[`${alias}`] = commandData;
                 } else {
                     logger.warn(`No message command for ${commandName}!`);
                     break;
@@ -145,11 +145,17 @@ const validateArgs = (command, args) => {
 }
             
 const runMessageCommand = async (message, client) => {
-    // get first word of message
-    let command = message.content.split(" ")[0];
+    // console.log(message.content)
+    // console.log(message.content.split(" "));
+
+    // get first two words of message
+    let firstWord = message.content.split(" ")[0];
+    let command = message.content.split(" ")[1];
 
     // if not a command, return
-    if (!command.startsWith(prefix)) return;
+    if (!firstWord.startsWith(prefix)) {
+        return;
+    }
 
     try {
         const query = new QueryBuilder(collectionNames.GUILDS)
@@ -165,21 +171,22 @@ const runMessageCommand = async (message, client) => {
     // if command not in commands, return
     const commandData = getCommand(command);
     if (!(command in messageCommands) || !commandData) {
-        message.reply(`Invalid command! Try \`${prefix}help\` to view all commands.`);
+        message.reply(`Invalid command! Try \`${prefix} help\` to view all commands.`);
         return;
     }
 
     // validate args
-    const args = message.content.split(" ").slice(1);
+    const args = message.content.split(" ").slice(2);
     if (!validateArgs(command, args)) {
         // remove command prefix
-        command = command.slice(prefix.length);
-        message.reply(`Invalid arguments! The correct usage is ${buildCommandUsageString(prefix, commandData)}. Try \`${prefix}help ${command}\` for more info.`);
+        // command = command.slice(prefix.length);
+        message.reply(`Invalid arguments! The correct usage is ${buildCommandUsageString(prefix, commandData)}. Try \`${prefix} help ${command}\` for more info.`);
         return;
     }
 
     // execute command
     try {
+        message.content = message.content.split(" ").slice(1).join(" ");
         const res = await messageCommands[command](message, client);
         if (res && res.err) {
             return;
@@ -228,8 +235,8 @@ const runSlashCommand = async (interaction, client) => {
         }
 
         // add exp & money if possible
-        const exp = commandLookup[`${prefix}${command}`].exp || 0;
-        const money = commandLookup[`${prefix}${command}`].money || 0;
+        const exp = commandLookup[`${command}`].exp || 0;
+        const money = commandLookup[`${command}`].money || 0;
         if (exp > 0 || money > 0) {
             const { level, err } = await addExpAndMoney(interaction.user, exp, money);
             if (err) {

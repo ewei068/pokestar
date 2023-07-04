@@ -6,10 +6,10 @@ const stageNames = {
 
 const stageConfig = {
     [stageNames.ALPHA]: {
-        prefix: 'psa!'
+        prefix: '<@1093393531860688916>'
     },
     [stageNames.BETA]: {
-        prefix: 'psb!'
+        prefix: '<@1093411444877439066>'
     },
     [stageNames.PROD]: {
         prefix: 'ps!'
