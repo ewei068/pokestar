@@ -1,5 +1,5 @@
 const { getTrainer } = require('../../services/trainer');
-const { buildPokemonInfoSend } = require('../../services/pokemon');
+const { buildPokemonInfoSend, getIdFromNameOrId } = require('../../services/pokemon');
 
 /**
  * Gets information about a Pokemon, returning an embed with the Pokemon's info.
@@ -26,13 +26,19 @@ const infoMessageCommand = async (message) => {
 }
 
 const infoSlashCommand = async (interaction) => {
-    const pokemonId = interaction.options.getString('pokemonid');
+    const nameOrId = interaction.options.getString('name_or_id');
+    const idRes = await getIdFromNameOrId(interaction.user, nameOrId, interaction);
+    if (idRes.err) {
+        await interaction.editReply(`${idRes.err}`);
+        return { err: idRes.err };
+    }
+    const pokemonId = idRes.data;
     const { send, err } = await info(interaction.user, pokemonId);
     if (err) {
-        await interaction.reply(`${err}`);
+        await interaction.editReply(`${err}`);
         return { err: err };
     } else {
-        await interaction.reply(send);
+        await interaction.editReply(send);
     }
 }
 

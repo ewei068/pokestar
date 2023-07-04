@@ -1,4 +1,4 @@
-const { getPokemon } = require('../../services/pokemon');
+const { getPokemon, getIdFromNameOrId } = require('../../services/pokemon');
 const { getTrainer } = require('../../services/trainer');
 const { pokemonConfig } = require('../../config/pokemonConfig');
 const { setState } = require('../../services/state');
@@ -90,14 +90,20 @@ const evolveMessageCommand = async (message) => {
 }
 
 const evolveSlashCommand = async (interaction) => {
-    const pokemonId = interaction.options.getString("pokemonid");
+    const nameOrId = interaction.options.getString('name_or_id');
+    const idRes = await getIdFromNameOrId(interaction.user, nameOrId, interaction);
+    if (idRes.err) {
+        await interaction.editReply(`${idRes.err}`);
+        return { err: idRes.err };
+    }
+    const pokemonId = idRes.data;
     const { send, err } = await evolve(interaction.user, pokemonId);
     if (err) {
-        await interaction.reply(`${err}`);
+        await interaction.editReply(`${err}`);
         return { err: err };
     }
     else {
-        await interaction.reply(send);
+        await interaction.editReply(send);
     }
 }
 

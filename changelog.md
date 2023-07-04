@@ -2,7 +2,7 @@
 
 ### 0.11.2 - Gen 2 Phase 2
 
-* Gen 2 Phase 2:
+* **Gen 2 Phase 2:**
   * Pokemon: Poliwag, Poliwhirl, Poliwrath, Scyther, Ledyba, Ledian, Spinarak, Ariados, Sunkern, Sunflora, Wooper, Quagsire, Marill, Azumarill, Politoed, Wobbuffet, Pineco, Forretress, Skarmory, Houndour, Houndoom, Phanpy, Donphan, Scizor, Miltank, Larvitar, Pupitar, Tyranitar, Lugia, Ho-Oh
   * Abilities: Drizzle, Drought, Sand Stream, Swift Swim, Chlorophyll, Swarm, Huge Power, Shadow Tag
   * **Weather conditions have been added to the game!** Weather conditions are passive effects that affect all Pokemon. 
@@ -10,12 +10,11 @@
     * Current Weather coditions: Sandstorm, Harsh Sun, Rain
   * Gave NPCs and dungeons more Gen 2 Pokemon.
   * Added NPCs: Aroma Lady and Gold. Defeat Gold daily for Pokeballs!
-* Fixed bug where refreshing a battle may crash the bot
-* Migrate to @ commands
-* Add by name to other commands
-  * Remove compenents after adding
-* End starting at 5 streak
-* Info party add cleanup
+* **Due to Discord Support being shitty, we have to remove prefix message commands.** Now, you can mention Pokestar instead to get the same effect. For example, `psb!trainerinfo` will turn into `<@1093411444877439066> trainerinfo`.
+* You can now use Pokemon name instead of ID in the following commands: `/equipment`, `/evolve`, `/info`, `/nature`! This only works for slash commands, not message commands.
+* Fixed bug where refreshing a battle may crash the bot.
+* Vote streaks now start at 0 again.
+* Minor UI cleanup.
 
 ### 0.11.1 (6/27)
 

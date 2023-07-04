@@ -1,4 +1,4 @@
-const { buildNatureSend } = require("../../services/pokemon");
+const { buildNatureSend, getIdFromNameOrId } = require("../../services/pokemon");
 const { setState, deleteState } = require("../../services/state");
 
 const nature = async (user, pokemonId) => {
@@ -33,14 +33,20 @@ const natureMessageCommand = async (message) => {
 }
 
 const natureSlashCommand = async (interaction) => {
-    const pokemonId = interaction.options.getString("pokemonid");
+    const nameOrId = interaction.options.getString('name_or_id');
+    const idRes = await getIdFromNameOrId(interaction.user, nameOrId, interaction);
+    if (idRes.err) {
+        await interaction.editReply(`${idRes.err}`);
+        return { err: idRes.err };
+    }
+    const pokemonId = idRes.data;
     const { send, err } = await nature(interaction.user, pokemonId);
     if (err) {
-        await interaction.reply(`${err}`);
+        await interaction.editReply(`${err}`);
         return { err: err };
     }
     else {
-        await interaction.reply(send);
+        await interaction.editReply(send);
     }
 }
 

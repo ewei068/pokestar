@@ -216,9 +216,9 @@ const commandConfig = {
         "longDescription": "Display info about a Pokemon, including its stats, EVs/IVs, and level progress.",
         "execute": "info.js",
         "args": {
-            "pokemonid": {
+            "name_or_id": {
                 "type": "string",
-                "description": "unique ID for pokemon",
+                "description": "unique ID or name for pokemon",
                 "optional": false,
                 "variable": false
             }
@@ -294,9 +294,9 @@ const commandConfig = {
         "longDescription": "Evolve a Pokemon. You must meet the requirements to evolve said Pokemon. Once done, a list of possible evolutions will be displayed. You can then choose which evolution you want.",
         "execute": "evolve.js",
         "args": {
-            "pokemonid": {
+            "name_or_id": {
                 "type": "string",
-                "description": "unique ID for Pokemon to evolve",
+                "description": "unique ID or name for Pokemon to evolve",
                 "optional": false,
                 "variable": false
             }
@@ -311,7 +311,7 @@ const commandConfig = {
         "longDescription": "Manage a Pokemon's equipment, upgrade it, and modify its stats.",
         "execute": "equipment.js",
         "args": {
-            "pokemonid": {
+            "name_or_id": {
                 "type": "string",
                 "description": "unique ID for Pokemon to manage equipment for",
                 "optional": false,
@@ -328,9 +328,9 @@ const commandConfig = {
         "longDescription": "Spend a mint to change a Pokemon's nature. Mints can be earned daily from `/pve palmer`.",
         "execute": "nature.js",
         "args": {
-            "pokemonid": {
+            "name_or_id": {
                 "type": "string",
-                "description": "unique ID for Pokemon to change nature for",
+                "description": "unique ID or name for Pokemon to change nature for",
                 "optional": false,
                 "variable": false
             },
@@ -477,7 +477,7 @@ const commandConfig = {
         "args": {
             "name_or_id": {
                 "type": "string",
-                "description": "unique ID for Pokemon to add to party",
+                "description": "unique ID or name for Pokemon to add to party",
                 "optional": false,
                 "variable": false
             },

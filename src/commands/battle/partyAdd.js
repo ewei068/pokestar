@@ -26,11 +26,12 @@ const partyAddSlashCommand = async (interaction) => {
     const nameOrId = interaction.options.getString('name_or_id');
     const idRes = await getIdFromNameOrId(interaction.user, nameOrId, interaction);
     if (idRes.err) {
-        await interaction.reply(`${idRes.err}`);
+        await interaction.editReply(`${idRes.err}`);
         return { err: idRes.err };
     }
+    const pokemonId = idRes.data;
     const position = interaction.options.getInteger('position');
-    const { send, err } = await partyAdd(interaction.user, idRes.data, position);
+    const { send, err } = await partyAdd(interaction.user, pokemonId, position);
     if (err) {
         await interaction.editReply(`${err}`);
         return { err: err };

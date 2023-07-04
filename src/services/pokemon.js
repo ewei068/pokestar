@@ -256,11 +256,12 @@ const getIdFromNameOrId = async (user, nameOrId, interaction) => {
         const collectorFilter = i => i.user.id === user.id;
         try {
             const confirmation = await response.awaitMessageComponent({ filter: collectorFilter, time: 60000 });
-            confirmation.deferUpdate();
             if (confirmation.values) {
                 selection = confirmation.values[0];
+                await confirmation.update({ content: "** **", embeds: [], components: [] })
                 break;
             }
+            confirmation.deferUpdate();
 
             const data = JSON.parse(confirmation.customId);
             page = data.page || 1;
