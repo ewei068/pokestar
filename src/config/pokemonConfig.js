@@ -3707,7 +3707,7 @@ const pokemonConfig = {
         "emoji": "<:249:1119803832050921523>",
         "description": "It is said that it quietly spends its time deep at the bottom of the sea because its powers are too strong.",
         "type": [types.PSYCHIC, types.FLYING],
-        "baseStats": [106, 90, 130, 110, 154, 110],
+        "baseStats": [106, 90, 130, 90, 154, 110],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/249.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/249.png",
         "abilities": {

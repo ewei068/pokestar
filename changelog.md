@@ -1,6 +1,6 @@
 # Pokéstar Changelog
 
-### 0.11.2 - Gen 2 Phase 2
+### 0.11.2 (7/4) - Gen 2 Phase 2
 
 * **Gen 2 Phase 2:**
   * Pokemon: Poliwag, Poliwhirl, Poliwrath, Scyther, Ledyba, Ledian, Spinarak, Ariados, Sunkern, Sunflora, Wooper, Quagsire, Marill, Azumarill, Politoed, Wobbuffet, Pineco, Forretress, Skarmory, Houndour, Houndoom, Phanpy, Donphan, Scizor, Miltank, Larvitar, Pupitar, Tyranitar, Lugia, Ho-Oh
