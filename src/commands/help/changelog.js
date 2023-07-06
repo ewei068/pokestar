@@ -1,5 +1,7 @@
 const { buildUrlButton } = require("../../components/urlButton");
 
+//changelog.js allows the user to find and interact with the changelog using the bot.
+
 const CHANGELOG_URL = "https://github.com/ewei068/pokestar/blob/main/changelog.md";
 
 const changelog = async () => {

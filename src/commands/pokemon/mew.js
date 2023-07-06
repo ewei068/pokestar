@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * mew.js mew.
+*/
 const { buildMewSend } = require('../../services/mythic');
 
 const mew = async (user) => {

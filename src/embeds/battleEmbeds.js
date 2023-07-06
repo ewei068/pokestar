@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * battleEmbeds.js Handles all embedded instructions for battles.
+*/
 const { EmbedBuilder } = require("discord.js");
 const { moveConfig, weatherConditions } = require("../config/battleConfig");
 const { buildPartyString, buildMoveString, buildBattlePokemonString, buildNpcDifficultyString, buildDungeonDifficultyString, buildCompactPartyString } = require("../utils/battleUtils");
@@ -7,6 +15,13 @@ const { npcConfig, dungeonConfig  } = require("../config/npcConfig");
 const { pokemonConfig } = require("../config/pokemonConfig");
 const { getFullUsername } = require("../utils/trainerUtils");
 
+/**
+ * Handles building the party embedded instructions for building a party.
+ * @param {*} trainer the trainer to build the party for.
+ * @param {*} pokemons the pokemon the trainer has.
+ * @param {*} detailed whether it's a detailed party formation.
+ * @returns an embeded.
+ */
 const buildPartyEmbed = (trainer, pokemons, detailed=false) => {
     const party = trainer.party;
 
@@ -46,7 +61,12 @@ const buildPartyEmbed = (trainer, pokemons, detailed=false) => {
 
     return embed;
 }
-
+/**
+ * Shows the built parties of the user.
+ * @param {*} trainer the trainer who's parties we're showing.
+ * @param {*} pokemonMap the map of pokemon the user has?
+ * @returns an embeded.
+ */
 const buildPartiesEmbed = (trainer, pokemonMap) => {
     // active party field
     const activeParty = trainer.party;
@@ -79,7 +99,11 @@ const buildPartiesEmbed = (trainer, pokemonMap) => {
 
     return embed;
 }
-
+/**
+ * Builds the battle the players/players and npcs will use.
+ * @param {*} battle the battle itself.
+ * @returns an embeded.
+ */
 const buildBattleEmbed = (battle) => {
     // assume two teams
     const team1 = Object.values(battle.teams)[0];
@@ -136,6 +160,11 @@ const buildBattleEmbed = (battle) => {
     return embed;
 }
 
+/**
+ * Builds the moveset of the pokemon in the battle.
+ * @param {*} pokemon the pokemon to build the moves for.
+ * @returns an embeded
+ */
 const buildBattleMovesetEmbed = (pokemon) => {
     const fields = Object.keys(pokemon.moveIds).map((moveId, index) => {
         const cooldown = pokemon.moveIds[moveId].cooldown;
@@ -158,7 +187,12 @@ const buildBattleMovesetEmbed = (pokemon) => {
 
     return embed;
 }
-
+/**
+ * Builds the team for the battle to be embeded.
+ * @param {*} battle the battle itself.
+ * @param {*} teamName the name of the team we're looking at. (a specific user's team)
+ * @returns an embeded.
+ */
 const buildBattleTeamEmbed = (battle, teamName) => {
     const teamUserIds = battle.teams[teamName].userIds;
     const teamPokemons = battle.parties[teamName].pokemons;
@@ -183,6 +217,12 @@ const buildBattleTeamEmbed = (battle, teamName) => {
     return embed;
 }
 
+/**
+ * Builds the list of pve options as an embeded.
+ * @param {*} npcIds the npc's available for battle.
+ * @param {*} page the page number.
+ * @returns an embeded
+ */
 const buildPveListEmbed = (npcIds, page) => {
     let npcString = "";
     npcIds.forEach((npcId) => {
@@ -205,7 +245,11 @@ const buildPveListEmbed = (npcIds, page) => {
 
     return embed;
 }
-
+/**
+ * Builds a specific npc for pve.
+ * @param {*} npcId the id of the npc we're building.
+ * @returns an embeded
+ */
 const buildPveNpcEmbed = (npcId) => {
     const npc = npcConfig[npcId];
     const fields = Object.entries(npc.difficulties).map(([difficulty, difficultyData]) => {
@@ -228,6 +272,10 @@ const buildPveNpcEmbed = (npcId) => {
     return embed;
 }
 
+/**
+ * Builds the list of Dungeons as an embeded.
+ * @returns an embeded list of the dungeons.
+ */
 const buildDungeonListEmbed = () => {
     let dungeonString = "";
     Object.entries(dungeonConfig).forEach(([dungeonId, dungeonData]) => {
@@ -242,7 +290,11 @@ const buildDungeonListEmbed = () => {
 
     return embed;
 }
-
+/**
+ * Builds a specific dungeon for the embeded dungeon list.
+ * @param {*} dungeonId the Id of the specific dungeon we're building.
+ * @returns an embeded dungeon.
+ */
 const buildDungeonEmbed = (dungeonId) => {
     const dungeonData = dungeonConfig[dungeonId];
     let bossString = '';

@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * evolve.js looks up a pokemon, returning an embed with the pokemon's valid evolution options.
+*/
 const { getPokemon, getIdFromNameOrId } = require('../../services/pokemon');
 const { getTrainer } = require('../../services/trainer');
 const { pokemonConfig } = require('../../config/pokemonConfig');

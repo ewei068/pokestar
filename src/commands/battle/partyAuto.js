@@ -1,9 +1,23 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * partyAuto.js is used to automatically make a party.
+*/
 const { getTrainer } = require('../../services/trainer');
 const { updateParty, getPartyPokemons } = require('../../services/party');
 const { getPokemon, listPokemons } = require('../../services/pokemon');
 const { buildPartyEmbed } = require('../../embeds/battleEmbeds');
 const { pokemonConfig } = require('../../config/pokemonConfig');
 
+/**
+ * creates an automatic party for the given user, uses dependencies to get other relevant data.
+ * @param {*} user the user given to get the relevant data from.
+ * @param {*} option the option type for making the automatic party.
+ * @returns Error or message to send.
+ */
 const partyAuto = async (user, option) => {
     // get trainer
     const trainer = await getTrainer(user);

@@ -1,5 +1,18 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * pokedex.js shows the pokedex entry of the pokemon id.
+*/
 const { buildPokedexSend } = require("../../services/pokemon")
 
+/**
+ * Shows the pokedex entry of the pokemon id.
+ * @param {*} id the id of the pokemon 
+ * @returns 
+ */
 const pokedex = async (id) => {
     return await buildPokedexSend({
         id: id,

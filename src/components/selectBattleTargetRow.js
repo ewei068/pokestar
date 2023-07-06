@@ -1,9 +1,25 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * selectBattleTargetRow.js Creates the option to select the target for an attack in battle.
+*/
 const { ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const { eventNames } = require("../config/eventConfig");
 const { moveConfig } = require("../config/battleConfig");
 const { getFullUsername } = require("../utils/trainerUtils");
 const { pokemonConfig } = require("../config/pokemonConfig");
 
+/**
+ * Creates the option to select the target for an attack in battle.
+ * @param {*} battle the current battle.
+ * @param {*} eligibleTargets the targets the user's pokemon's attack can hit.
+ * @param {*} moveId the move Id of the attack.
+ * @param {*} stateId the Id of the current state.
+ * @returns ActionRowBuilder
+ */
 const buildSelectBattleTargetRow = (battle, eligibleTargets, moveId, stateId) => {
     const selectMenu = new StringSelectMenuBuilder()
         .setCustomId(JSON.stringify({

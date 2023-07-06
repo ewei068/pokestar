@@ -1,6 +1,22 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * partyAdd.js is used to add pokemon to the user's party.
+*/
 const { buildPartyAddSend } = require('../../services/party');
 const { getIdFromNameOrId } = require('../../services/pokemon');
 
+/**
+ * Adds the given pokemon via ID to the position in the given user's party.
+ * @param user user required for getting specific user's data.
+ * @param pokemonId the Id of the pokemon the user wants to add to their party
+ * @param position the position the user wants to add the pokemon to
+ * @returns Error or message to send.
+ */
+//partyAdd sends off the relevent user, pokemonId and position to buildPartyAddSend from the party.js dependency and waits for it to return.
 const partyAdd = async (user, pokemonId, position) => {
     return await buildPartyAddSend({
         user: user,
@@ -9,6 +25,7 @@ const partyAdd = async (user, pokemonId, position) => {
     });
 }
 
+//turns the message into the relevant info and calls partyAdd for message commands. returns the result.
 const partyAddMessageCommand = async (message) => {
     const args = message.content.split(' ');
     const pokemonId = args[1];
@@ -22,6 +39,7 @@ const partyAddMessageCommand = async (message) => {
     }
 }
 
+//using the inbuilt commands from the slash interactions, this grabs the pertinent information necessary to run partyAdd. returns the result.
 const partyAddSlashCommand = async (interaction) => {
     const nameOrId = interaction.options.getString('name_or_id');
     const idRes = await getIdFromNameOrId(interaction.user, nameOrId, interaction);
