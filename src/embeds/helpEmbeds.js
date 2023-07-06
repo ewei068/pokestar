@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * helpEmbeds.js Handles all of the embeded options for help.
+*/
 const { EmbedBuilder } = require('discord.js');
 const { commandConfig, commandCategoryConfig } = require('../config/commandConfig');
 const { stageConfig } = require('../config/stageConfig');
@@ -11,7 +19,10 @@ const { buildScrollActionRow } = require('../components/scrollActionRow');
 
 const prefix = stageConfig[process.env.STAGE].prefix;
 
-// help for no command name (show categories and descriptions)
+/**
+ * help for no command name (show categories and descriptions)
+ * @returns an embeded
+ */
 const buildHelpEmbed = () => {
     let categoriesString = "";
     for (const commandCategory in commandCategoryConfig) {
@@ -28,7 +39,11 @@ const buildHelpEmbed = () => {
     embed.setFooter({ text: `If you're just starting, please take the /tutorial!` });
     return embed;
 }
-
+/**
+ * Builds an embeded section for a selected category.
+ * @param {*} category the category to add to the help.
+ * @returns an embed
+ */
 const buildHelpCategoryEmbed = (category) => {
     let commandsString = "";
     for (const commandName of commandCategoryConfig[category].commands) {

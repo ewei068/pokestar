@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * trainerEmbeds.js Creates the embed for the trainer and their backpack and interactions to show them and the trainer's owned locations.
+*/
 const { EmbedBuilder } = require("discord.js");
 const { getTrainerLevelExp: getTrainerLevelExp, MAX_TRAINER_LEVEL } = require('../config/trainerConfig');
 const { backpackCategories, backpackItems, backpackCategoryConfig, backpackItemConfig } = require('../config/backpackConfig');

@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * leaderboard.js is used as a way to interact with users more and give users a goal. It displas the top 10 leaderboard for a given category and scope.
+*/
 const { getLeaderboard } = require('../../services/social');
 const { leaderboardConfig } = require('../../config/socialConfig');
 const { buildLeaderboardEmbed } = require('../../embeds/socialEmbeds');

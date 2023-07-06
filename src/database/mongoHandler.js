@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * mongoHandler.js Handles all connections to the mongo database.
+*/
 const { MongoClient, ObjectId} = require("mongodb");
 const { DB_NAME, collectionNames } = require("../config/databaseConfig");
 const { logger } = require("../log");

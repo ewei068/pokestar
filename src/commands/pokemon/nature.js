@@ -1,6 +1,20 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * nature.js shows the nature of the pokemon.
+*/
 const { buildNatureSend, getIdFromNameOrId } = require("../../services/pokemon");
 const { setState, deleteState } = require("../../services/state");
 
+/**
+ * shows the nature of the pokemon via buildNatureSend from pokemon.js.
+ * @param {*} user the user making the call.
+ * @param {*} pokemonId the id of the pokemon the user gave.
+ * @returns 
+ */
 const nature = async (user, pokemonId) => {
     // build selection list of shop categories
     const stateId = setState({

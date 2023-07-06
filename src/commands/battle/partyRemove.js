@@ -1,7 +1,21 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * partyRemove.js removes a pokemon from a saved party.
+*/
 const { getTrainer } = require('../../services/trainer');
 const { updateParty, getPartyPokemons } = require('../../services/party');
 const { buildPartyEmbed } = require('../../embeds/battleEmbeds');
 
+/**
+ * removes a specific pokemon from a saved party.
+ * @param {*} user the user given to get the relevant data from.
+ * @param {*} option the pokemon specific to remove (can be position, ID, or all).
+ * @returns Error or message to send.
+ */
 const partyRemove = async (user, option) => {
     // get trainer
     const trainer = await getTrainer(user);

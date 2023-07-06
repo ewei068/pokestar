@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * backpack.js Creates a system to display the user's backpack for them.
+*/
 const { getTrainer } = require('../../services/trainer');
 const { buildBackpackEmbed } = require('../../embeds/trainerEmbeds');
 

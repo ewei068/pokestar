@@ -1,8 +1,16 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * buy.js created for users to buy items.
+*/
 const { buyItem } = require('../../services/shop');
 const { getTrainer } = require('../../services/trainer');
 
 /**
- * Attends to execute user's request to buy an item at a given quantity.
+ * Attempts to execute user's request to buy an item at a given quantity.
  * @param {Object} user User who initiated the command.
  * @param {String} itemId ID of the item to buy.
  * @param {Number} quantity Quantity of the item to buy.

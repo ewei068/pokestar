@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * migration.js Only run once. Migrates all of the necessary components for new use.
+*/
 const { DB_NAME, collectionConfig } = require("../config/databaseConfig");
 const { MongoClient } = require("mongodb");
 const { logger } = require("../log");

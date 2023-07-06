@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * levelRewards.js Creates a system to dispaly and grant unclaimed level rewards to the user.
+*/
 const { getLevelRewards } = require("../../services/trainer");
 const { backpackItemConfig } = require("../../config/backpackConfig");
 const { getRewardsString } = require("../../utils/trainerUtils");

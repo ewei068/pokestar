@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * shopEmbeds.js Creates the embeded options for the shop for user interaction.
+*/
 const { EmbedBuilder } = require("discord.js");
 const { shopCategoryConfig, shopItemConfig } = require("../config/shopConfig");
 const { formatMoney } = require("../utils/utils");
