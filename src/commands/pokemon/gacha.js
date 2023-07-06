@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * gacha.js is the backbone of the game concept. Using a modified standard gacha system it uses pokeballs to spin the gacha for a/many random pokemon.
+*/
 const { buildBannerSend } = require ('../../services/gacha') ;
 const { setState, deleteState } = require('../../services/state');
 

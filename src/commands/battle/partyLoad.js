@@ -1,9 +1,23 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * partyLoad.js loads a saved party into the active party for the user.
+*/
 const { getTrainer, updateTrainer } = require('../../services/trainer');
 const { updateParty, getPartyPokemons } = require('../../services/party');
 const { getPokemon } = require('../../services/pokemon');
 const { buildPartyEmbed } = require('../../embeds/battleEmbeds');
 const { pokemonConfig } = require('../../config/pokemonConfig');
 
+/**
+ * loads a saved party into the active party for the user.
+ * @param {*} user the user given to get the relevant data from.
+ * @param {*} preset the saved preset to load.
+ * @returns Error or message to send.
+ */
 const partyLoad = async (user, preset) => {
     // get trainer
     const trainer = await getTrainer(user);

@@ -1,3 +1,5 @@
+//echo.js is simply used as the echo function for displaying given commands etc. 'echoing' back what was sent. Can be used in debugging or for displaying to the user.
+
 const echoMessageCommand = async (message) => {
     const args = message.content.split(" ");
     args.shift();

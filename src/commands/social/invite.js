@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * invite.js server invite magic.
+*/
 const { buildUrlButton } = require("../../components/urlButton");
 const { INVITE_URL } = require("../../config/socialConfig");
 

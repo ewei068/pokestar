@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * info.js is used to allow the user to get information about a specific pokemon.
+*/
 const { getTrainer } = require('../../services/trainer');
 const { buildPokemonInfoSend, getIdFromNameOrId } = require('../../services/pokemon');
 

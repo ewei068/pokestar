@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * train.js The system for users to train their pokemon. Allows them to train a pokemon at a given location, boosting its exp and ev.
+*/
 const { getPokemon, trainPokemon } = require("../../services/pokemon");
 const { getTrainer } = require("../../services/trainer");
 const { locations } = require("../../config/locationConfig");

@@ -1,7 +1,21 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * equipment.js is used to show the equipment on a given pokemon
+*/
 const { modifierSlots } = require("../../config/equipmentConfig");
 const { buildEquipmentSend, getIdFromNameOrId } = require("../../services/pokemon");
 const { setState, deleteState } = require("../../services/state");
 
+/**
+ * Used to show the equipment on a given pokemon
+ * @param {*} user the user we're getting the data from.
+ * @param {*} pokemonId the Id of the user's pokemon we're looking at.
+ * @returns 
+ */
 const equipment = async (user, pokemonId) => {
     // build selection list of shop categories
     const stateId = setState({

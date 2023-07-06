@@ -1,8 +1,23 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * selectBattleMoveRow.js Creates the action row for selecting a move during a battle.
+*/
 const { ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const { eventNames } = require("../config/eventConfig");
 const { moveConfig } = require("../config/battleConfig");
 const { typeConfig } = require("../config/pokemonConfig");
 
+/**
+ * Creates the action row for selecting a move during a battle.
+ * @param {*} battle the battle that is occurring.
+ * @param {*} stateId the current state of the battle
+ * @param {*} selectedMoveId the Id of the move selected. starts as null
+ * @returns ActionRowBuilder
+ */
 const buildSelectBattleMoveRow = (battle, stateId, selectedMoveId = null) => {
     const selectMenu = new StringSelectMenuBuilder()
         .setCustomId(JSON.stringify({

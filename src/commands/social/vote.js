@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * vote.js is used to help the bot gain more visibility within the discord bot microcosm. Sets up the outline for easing the voting process for users.
+*/
 const { buildButtonActionRow } = require("../../components/buttonActionRow");
 const { buildUrlButton } = require("../../components/urlButton");
 const { eventNames } = require("../../config/eventConfig");
@@ -5,6 +13,12 @@ const { voteConfig } = require("../../config/socialConfig");
 const { buildVoteEmbed } = require("../../embeds/socialEmbeds");
 const { getTrainer } = require("../../services/trainer");
 
+
+/**
+ * Syncs the voting to the discord user to give rewards on successful voting.
+ * @param {*} user the user who decided to vote.
+ * @returns 
+ */
 const vote = async (user) => {
     const trainer = await getTrainer(user);
     if (trainer.err) {

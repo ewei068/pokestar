@@ -1,6 +1,21 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * pve.js is the encapsulating program for the PVE system.
+*/
 const { setState, deleteState } = require("../../services/state");
 const { buildPveSend } = require("../../services/battle");
 
+/**
+ * the encapsulating program for the PVE system.
+ * @param {*} user the user given to get the relevant data from.
+ * @param {*} npcId the Id of the npc to fight.
+ * @param {*} difficulty the difficulty of the npc you're fighting.
+ * @returns Error or message to send.
+ */
 const pve = async (user, npcId, difficulty) => {
     // if no npc, build list
     if (!npcId) {
@@ -35,6 +50,7 @@ const pve = async (user, npcId, difficulty) => {
         }
         return { send: send, err: err };
     } else {
+        //otherwise build with given npc and difficulty
         const stateId = setState({
             userId: user.id,
             npcId: npcId,

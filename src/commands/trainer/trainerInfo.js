@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * trainerInfo.js Created to display the trainer card, or info, of the current user.
+*/
 const { getTrainerInfo } = require('../../services/trainer');
 const { buildTrainerEmbed } = require('../../embeds/trainerEmbeds');
 const { getPartyPokemons } = require('../../services/party');

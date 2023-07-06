@@ -2,13 +2,17 @@ const { getTrainer } = require('../../services/trainer');
 const { giveNewPokemons } = require('../../services/gacha');
 const { buildNewPokemonEmbed } = require('../../embeds/pokemonEmbeds');
 
+//give.js is used to give a user a pokemon of any level within the limits and any equipment. Anyone can use in Alpha, no one can use in beta onwards.
+
 const give = async (user, pokemonId, level, equipmentLevel) => {
     // TODO: restrict users who can use?
-
+    
+    //restrict level
     if (level < 1 || level > 100) {
         return { send: null, err: "Invalid level" };
     }
 
+    //restrict equipment level
     if (equipmentLevel < 1 || equipmentLevel > 10) {
         return { send: null, err: "Invalid equipment level" };
     }

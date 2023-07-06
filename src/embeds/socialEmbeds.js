@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * socialEmbeds.js Creates the embed's for social interactions such as the leaderboards and voting.
+*/
 const { EmbedBuilder } = require('discord.js');
 const { getFullUsername } = require('../utils/trainerUtils');
 const { getVoteMultiplier } = require('../config/socialConfig');

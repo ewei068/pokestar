@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * list.js fetches a list of a trainer's pokemon, returning an embed with the list.
+*/
 const { listPokemons: listPokemons, setBattleEligible } = require('../../services/pokemon');
 const { getTrainer } = require('../../services/trainer');
 const { buildPokemonListEmbed } = require('../../embeds/pokemonEmbeds');

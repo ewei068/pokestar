@@ -1,9 +1,23 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * partyInfo.js returns the info of the party for the user.
+*/
+
 const { getTrainer } = require('../../services/trainer');
 const { getPartyPokemons } = require('../../services/party');
 const { buildPartyEmbed } = require('../../embeds/battleEmbeds');
 const { buildPokemonSelectRow } = require('../../components/pokemonSelectRow');
 const { eventNames } = require('../../config/eventConfig');
 
+/**
+ * partyInfo reads the given user's data in order to output the information on the party of the user.
+ * @param {*} user the user given to get the relevant data from.
+ * @returns Error or message to send.
+ */
 const partyInfo = async (user) => {
     // get trainer
     const trainer = await getTrainer(user);

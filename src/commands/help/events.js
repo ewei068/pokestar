@@ -1,5 +1,7 @@
 const { buildEventsSend } = require("../../embeds/helpEmbeds")
 
+//events.js is a small parent script that encapsulates buildEventsSend from helpEmbeds.
+
 const events = async () => {
     return await buildEventsSend({
         page: 1

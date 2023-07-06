@@ -1,7 +1,22 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * battleInfoActionRow.js creates the battle info action row for the players in the battle.
+*/
 const { eventNames } = require('../config/eventConfig');
 const { stageNames } = require('../config/stageConfig');
 const { buildButtonActionRow } = require('./buttonActionRow');
 
+/**
+ * build a row showing the battle action info
+ * @param {*} battle the relevant battle for the information
+ * @param {*} stateId the Id of the state the current battle is in.
+ * @param {*} selectionIndex always 0.
+ * @returns ActionRowBuilder
+ */
 const buildBattleInfoActionRow = (battle, stateId, selectionIndex=0) => {
     const infoRowData = {
         stateId: stateId

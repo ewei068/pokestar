@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * pokemart.js Is file that creates an interactive pokemart for the user to buy items from.
+*/
 const { setState, deleteState } = require('../../services/state');
 const { buildShopSend } = require('../../services/shop');
 

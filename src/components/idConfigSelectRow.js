@@ -1,5 +1,25 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * idConfigSelectRow.js <Insert description here>
+*/
 const { StringSelectMenuBuilder, ActionRowBuilder } = require("discord.js");
 
+/**
+ * 
+ * @param {*} ids 
+ * @param {*} config 
+ * @param {*} placeholder 
+ * @param {*} data 
+ * @param {*} eventName 
+ * @param {*} showId 
+ * @param {*} extraFields 
+ * @param {*} defaultId 
+ * @returns 
+ */
 const buildIdConfigSelectRow = (ids, config, placeholder, data, eventName, showId=true, extraFields=[], defaultId=null) => {
     const menuId = {
         eventName: eventName,

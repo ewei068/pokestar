@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * releases.js is used to release pokemon the trainer has.
+*/
 const { buildReleaseSend } = require('../../services/pokemon');
 
 /**
