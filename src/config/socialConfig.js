@@ -54,9 +54,14 @@ const leaderboardConfig = {
     }
 }
 
+const MAX_TRADE_POKEMON = 3;
+const MAX_TRADE_MONEY = 3000;
+
 module.exports = {
     leaderboardConfig,
     INVITE_URL,
     voteConfig,
     getVoteMultiplier,
+    MAX_TRADE_POKEMON,
+    MAX_TRADE_MONEY,
 }

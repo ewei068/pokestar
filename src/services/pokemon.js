@@ -886,25 +886,25 @@ const canRelease = async (trainer, pokemonIds) => {
     // get pokemon to release
     const toRelease = await listPokemons(
         trainer, 
-        { page: 1, filter: { _id: { $in: pokemonIds.map(idFrom)} } }
+        { page: 1, filter: { _id: { $in: pokemonIds.map(idFrom)} }, allowNone: true },
     );
     if (toRelease.err) {
         return { err: toRelease.err };
     } else if (toRelease.data.length !== pokemonIds.length) {
-        return { err: `You don't have all the Pokemon you want to release!` };
+        return { err: `You don't have all the Pokemon you want to release or trade!` };
     }
 
     // see if any pokemon are mythical
     for (const pokemon of toRelease.data) {
         if (pokemon.rarity === rarities.MYTHICAL) {
-            return { err: `You can't release ${pokemon.name} (${pokemon._id}) because it's mythical!` };
+            return { err: `You can't release or trade ${pokemon.name} (${pokemon._id}) because it's mythical!` };
         }
     }
 
     // see if any pokemon are locked
     for (const pokemon of toRelease.data) {
         if (pokemon.locked) {
-            return { err: `You can't release ${pokemon.name} (${pokemon._id}) because it's locked!` };
+            return { err: `You can't release or trade ${pokemon.name} (${pokemon._id}) because it's locked!` };
         }
     }
 
@@ -912,7 +912,7 @@ const canRelease = async (trainer, pokemonIds) => {
     const partyUniqueIds = getPartyPokemonIds(trainer);
     for (const pokemon of toRelease.data) {
         if (partyUniqueIds.includes(pokemon._id.toString())) {
-            return { err: `You can't release ${pokemon.name} (${pokemon._id}) because it's in one of your parties!` };
+            return { err: `You can't release or trade ${pokemon.name} (${pokemon._id}) because it's in one of your parties!` };
         }
     }
 

@@ -201,6 +201,13 @@ const trainerFields = {
             "streak": 0,
             "rewards": 0,
         },
+    },
+    "trade": {
+        "type": "object",
+        "default": {
+            "money": 0,
+            "pokemonIds": [],
+        },
     }
 }
 
