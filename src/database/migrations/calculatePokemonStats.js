@@ -19,6 +19,8 @@ const calculateStats = function(pokemon, pokemonConfig, natureConfig, speedFn, f
  * Re-calculate Pokemon stats every time stat calculation changes
  * Usages: 
  * 2023-05-27: update pokemon effective speed
+ * 2023-06-21: update pokemon equipment calculation
+ * 2023-07-04: patch lugia's base stats
 **/
 
 const calculateAllStats = async () => {

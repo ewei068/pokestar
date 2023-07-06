@@ -2599,7 +2599,7 @@ const pokemonConfig = {
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/149.png",
         "abilities": {
             "39": 0.8,
-            "138": 0.2
+            "136": 0.2
         },
         "moveIds": ["m239", "m245", "m349", "m200"],
         "battleEligible": true,
@@ -3495,6 +3495,10 @@ const pokemonConfig = {
         "baseStats": [45, 60, 30, 65, 50, 80],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/228.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/228.png",
+        "evolution": [{
+            "level": 24,
+            "id": "229",
+        }],
         "abilities": {
             "48": 0.45,
             "39": 0.45,
@@ -3531,6 +3535,10 @@ const pokemonConfig = {
         "baseStats": [90, 60, 60, 40, 40, 40],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/231.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/231.png",
+        "evolution": [{
+            "level": 25,
+            "id": "232"
+        }],
         "abilities": {
             "53": 0.8,
             "8": 0.2,

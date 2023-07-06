@@ -10397,7 +10397,7 @@ const abilityConfig = {
             battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
     },
-    "138": {
+    "136": {
         "name": "Multiscale",
         "description": "Reduces damage taken by 50% when HP is full.",
         "abilityAdd": function (battle, source, target) {
