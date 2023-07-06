@@ -1,5 +1,12 @@
 # Pokéstar Changelog
 
+### 0.11.3
+
+* Bug fixes:
+  * Patched Lugia's incorrect stats
+  * Patched Multiscale's incorrect ID
+  * Fixed a few Pokemon not having correct evolutions
+
 ### 0.11.2 (7/4) - Gen 2 Phase 2
 
 * **Gen 2 Phase 2:**
