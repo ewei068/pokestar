@@ -201,7 +201,16 @@ const trainerFields = {
             "streak": 0,
             "rewards": 0,
         },
-    }
+    },
+    "hasCelebi": {
+        "type": "boolean",
+        "default": false,
+    },
+    "usedTimeTravel": {
+        "type": "boolean",
+        "default": false,
+        "daily": true,
+    },
 }
 
 const levelConfig = {

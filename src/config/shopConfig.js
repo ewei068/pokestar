@@ -20,6 +20,7 @@ const shopItems = {
     WILLPOWER_SHARD: "10",
     BERRY_BUSH: "11",
     BERRY_FARM: "12",
+    ILEX_SHRINE: "13",
 }
     
 
@@ -56,6 +57,7 @@ const shopCategoryConfig = {
             shopItems.TRACK,
             shopItems.BERRY_BUSH,
             shopItems.BERRY_FARM,
+            shopItems.ILEX_SHRINE,
         ]        
     },
     [shopCategories.MATERIALS]: {
@@ -142,6 +144,13 @@ const shopItemConfig = {
         "description": "Used to reset your Pokemon's EVs! Reduces all EVs by 10! Use the \`/help train\` command to learn more!",
         "category": shopCategories.LOCATIONS,
         "price": [10000],
+    },
+    [shopItems.ILEX_SHRINE]: {
+        "name": "Ilex Shrine",
+        "emoji": "<:ilexshrine:1126662153466806303>",
+        "description": "May beckon a special Pokemon at level 75...",
+        "category": shopCategories.LOCATIONS,
+        "price": [250000],
     },
     [shopItems.KNOWLEDGE_SHARD]: {
         "name": "Knowledge Shard",

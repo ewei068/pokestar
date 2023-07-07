@@ -3,14 +3,16 @@ const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const { moveConfig } = require("../config/battleConfig");
 const { collectionNames } = require("../config/databaseConfig");
 const { eventNames } = require("../config/eventConfig");
+const { locations } = require("../config/locationConfig");
 const { dungeons } = require("../config/npcConfig");
 const { pokemonConfig, rarities, natureConfig } = require("../config/pokemonConfig");
+const { stageNames } = require("../config/stageConfig");
 const { QueryBuilder } = require("../database/mongoHandler");
 const { buildPokemonEmbed } = require("../embeds/pokemonEmbeds");
 const { logger } = require("../log");
 const { generateRandomPokemon } = require("./gacha");
 const { listPokemons, getPokemon, calculatePokemonStats, calculateAndUpdatePokemonStats } = require("./pokemon");
-const { getTrainer } = require("./trainer");
+const { getTrainer, updateTrainer } = require("./trainer");
 
 const getMythic = async (trainer, speciesId) => {
     const speciesData = pokemonConfig[speciesId];
@@ -329,8 +331,109 @@ const buildMewSend = async ({ user=null, tab="basic" } = {}) => {
     return { send: send, err: null };
 }
 
+const getCelebi = async (trainer) => {
+    const speciesId = "251";
+    const celebiData = pokemonConfig[speciesId];
+
+    const celebiRes = await getMythic(trainer, speciesId);
+    if (celebiRes.err) {
+        return { err: celebiRes.err };
+    }
+
+    let celebi = celebiRes.data;
+    let modified = false;
+    if (!celebi) {
+        // if trainer isn't level 75, return error
+        const levelReq = process.env.STAGE === stageNames.ALPHA ? 40 : 75;
+        if (trainer.level < levelReq) {
+            return { err: `Celebi is busy time travelling! Wait a bit (until you're level ${levelReq}) and try again!` };
+        }
+
+        // if trainer doesn't have ilex shrine location, return error
+        if (trainer.locations[locations.ILEX_SHRINE] === undefined) {
+            return { err: "Celebi is currently at a special location (check the `/pokemart`)! Purchase it and try again!" };
+        }
+        
+        celebi = generateRandomPokemon(trainer.userId, speciesId, level=1);
+        // set ivs to 31
+        celebi.ivs = [31, 31, 31, 31, 31, 31];
+        // set shiny to false
+        celebi.shiny = false;
+        // set locked to true
+        celebi.locked = true;
+        // set nature to 0
+        celebi.natureId = "0";
+        // recalculate stats
+        calculatePokemonStats(celebi, celebiData);
+        modified = true;
+
+        if (!trainer.hasCelebi) {
+            trainer.hasCelebi = true;
+            trainerRes = await updateTrainer(trainer);
+            if (trainerRes.err) {
+                return { err: trainerRes.err };
+            }
+        }
+    }
+
+    // update celebi if modified
+    if (modified) {
+        try {
+            const query = new QueryBuilder(collectionNames.USER_POKEMON)
+                .setFilter({ userId: celebi.userId, speciesId: speciesId })
+                .setUpsert({ $set: celebi });
+            const res = await query.upsertOne();
+
+            if (res.upsertedCount !== 1) {
+                logger.warn(`Error updating Celebi for ${trainer.user.username}`);
+            }
+            if (res.upsertedId) {
+                celebi._id = res.upsertedId;
+            }
+            logger.info(`Updated Celebi for ${trainer.user.username}`);
+        } catch (err) {
+            logger.error(err);
+            return { err: "Error updating Celebi" };
+        }
+    }
+
+    return { data: celebi };
+}
+
+const buildCelebiSend = async (user) => {
+    let trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { err: trainer.err };
+    }
+    trainer = trainer.data;
+
+    const celebiId = "251";
+    const celebiData = pokemonConfig[celebiId];
+    const mythicConfig = celebiData.mythicConfig;
+
+    const celebiRes = await getCelebi(trainer);
+    if (celebiRes.err) {
+        return { err: celebiRes.err };
+    }
+    const celebi = celebiRes.data;
+
+    const send = {
+        content: celebi._id.toString(),
+        embeds: [],
+        components: [],
+    }
+
+    // build pokemon embed
+    const embed = buildPokemonEmbed(trainer, celebi, "all");
+    send.embeds.push(embed);
+
+    return { send: send, err: null };
+}
+
 module.exports = {
     getMew,
     updateMew,
     buildMewSend,
+    getCelebi,
+    buildCelebiSend,
 }

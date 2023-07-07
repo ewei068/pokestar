@@ -130,8 +130,8 @@ const modifierConfig = {
         "description": "Flat HP",
         "type": modifierTypes.FLAT,
         "stat": stats.HP,
-        "min": 5,
-        "max": 8,
+        "min": 7,
+        "max": 12,
     },
     [modifiers.FLAT_ATK]: {
         "name": "Flat Atk",

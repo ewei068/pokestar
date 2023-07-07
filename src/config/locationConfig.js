@@ -8,6 +8,7 @@ const locations = {
     TRACK: "6",
     BERRY_BUSH: "7",
     BERRY_FARM: "8",
+    ILEX_SHRINE: "50",
 }
 
 const locationConfig = {
@@ -164,6 +165,14 @@ const locationConfig = {
                 "exp": 8,
                 "evs": [-10, -10, -10, -10, -10, -10],
             },
+        }
+    },
+    [locations.ILEX_SHRINE]: {
+        "name": "Ilex Shrine",
+        "emoji": "<:ilexshrine:1126662153466806303>",
+        "description": "May beckon a special Pokemon at level 75...",
+        "levelConfig": {
+            1: {}
         }
     },
 }
