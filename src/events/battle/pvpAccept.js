@@ -1,8 +1,22 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * pvpAccept.js Builds the battle with the given users after the second user accepts the battle.
+*/
 const { getStartTurnSend } = require("../../services/battle");
 const { validateParty } = require("../../services/party");
 const { getState } = require("../../services/state");
 const { getTrainer } = require("../../services/trainer");
 
+/**
+ * Builds the battle with the given users after the second user accepts the battle.
+ * @param {*} interaction the interaction from the second user to start the battle.
+ * @param {*} data the data with the relevant state information for building the battle.
+ * @returns 
+ */
 const pvpAccept = async (interaction, data) => {
     // get state
     const state = getState(data.stateId);

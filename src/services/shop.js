@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * shop.js runs all base level shop items, logic and interactions.
+*/
 const { shopItems, shopItemConfig, shopCategories, shopCategoryConfig } = require("../config/shopConfig");
 const { getOrSetDefault, formatMoney } = require("../utils/utils");
 const { dailyRewardChances } = require('../config/gachaConfig');

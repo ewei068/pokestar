@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * battleInfo.js Grabs the battle info from the current state and updates the embeds with the relevant information.
+*/
 const { getState } = require("../../services/state");
 const { buildBattleInfoActionRow } = require("../../components/battleInfoActionRow");
 const { buildBattleMovesetEmbed, buildBattleTeamEmbed } = require("../../embeds/battleEmbeds");
@@ -5,6 +13,12 @@ const { getStartTurnSend } = require("../../services/battle");
 const { stageNames } = require("../../config/stageConfig");
 const { logger } = require("../../log");
 
+/**
+ * Grabs the battle info from the current state and updates the embeds with the relevant information.
+ * @param {*} interaction the interaction from the trainer.
+ * @param {*} data get the data from the interaction.
+ * @returns 
+ */
 const battleInfo = async (interaction, data) => {
     // get state
     const state = getState(data.stateId);

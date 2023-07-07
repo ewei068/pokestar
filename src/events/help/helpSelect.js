@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * helpSelect.js Creates the selection menu for the help menu.
+*/
 const { buildHelpSend } = require("../../embeds/helpEmbeds");
 const { getState } = require("../../services/state");
 

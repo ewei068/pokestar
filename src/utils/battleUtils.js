@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * battleUtils.js the lowest level of code for battles used by the battle.js
+*/
 const { effectConfig, statusConditions } = require('../config/battleConfig');
 const { difficultyConfig } = require('../config/npcConfig');
 const { pokemonConfig, typeConfig } = require('../config/pokemonConfig');

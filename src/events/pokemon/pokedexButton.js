@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * pokedexButton.js via the user's interaction calls the creation of the pokedex.
+*/
 const { pokemonConfig } = require("../../config/pokemonConfig");
 const { buildPokedexSend } = require("../../services/pokemon");
 const { getPokemonOrder } = require("../../utils/pokemonUtils");

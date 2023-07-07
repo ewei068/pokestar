@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * pokemonUtils.js the lowest level of pokemon code used by pokemonUtils.js
+*/
 const { growthRates, rarityConfig, pokemonConfig, growthRateConfig } = require('../config/pokemonConfig');
 const { getPBar, getWhitespace } = require('./utils');
 const { abilityConfig } = require('../config/battleConfig');

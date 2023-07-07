@@ -1,8 +1,22 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * battleMoveSelect.js Gets the relevant information from the user interaction and sets up for target selection.
+*/
 const { buildSelectBattleMoveRow } = require("../../components/selectBattleMoveRow");
 const { buildSelectBattleTargetRow } = require("../../components/selectBattleTargetRow");
 const { moveConfig } = require("../../config/battleConfig");
 const { getState } = require("../../services/state");
 
+/**
+ * Gets the relevant information from the user interaction and sets up for target selection.
+ * @param {*} interaction the interaction from the trainer, move selected.
+ * @param {*} data used to get the state. data from the interaction.
+ * @returns 
+ */
 const battleMoveSelect = async (interaction, data) => {
     // get state
     const state = getState(data.stateId);

@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * bannerGacha.js runs the gacha for the specific banner the user selected.
+*/
 const { getState } = require("../services/state");
 const { usePokeball } = require("../services/gacha");
 const { buildNewPokemonEmbed, buildNewPokemonListEmbed } = require("../embeds/pokemonEmbeds");

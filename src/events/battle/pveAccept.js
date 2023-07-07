@@ -1,6 +1,20 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * pveAccept.js calls buildPveSend from the interaction from the user to start a pve battle.
+*/
 const { getState } = require("../../services/state");
 const { buildPveSend } = require("../../services/battle");
 
+/**
+ * calls buildPveSend from the interaction from the user to start a pve battle.
+ * @param {*} interaction the selection of the accept button from the pve embed.
+ * @param {*} data the relevant data for the state information from the pve embed.
+ * @returns 
+ */
 const pveAccept = async (interaction, data) => {
     // get state
     const state = getState(data.stateId);

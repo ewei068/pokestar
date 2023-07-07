@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * natureConfirm.js Builds the confirmation menu for the nature selected for the pokemon.
+*/
 const { getState } = require("../services/state");
 const { getPokemon, calculateAndUpdatePokemonStats } = require("../services/pokemon");
 const { natureConfig, pokemonConfig } = require("../config/pokemonConfig");

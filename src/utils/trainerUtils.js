@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * trainerUtils.js the lowest level of trainer code used by trainer.js
+*/
 const { backpackCategories, backpackItemConfig } = require("../config/backpackConfig");
 const { getOrSetDefault, formatMoney } = require("./utils");
 
