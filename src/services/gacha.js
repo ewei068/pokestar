@@ -35,6 +35,9 @@ const drawDaily = async (trainer) => {
         return { data: null, err: `You already claimed your daily rewards today! You can claim your next reward <t:${Math.floor(tomorrowTime / 1000)}:R>.` };
     }
 
+    // triple shards and money if have celebi
+    const mult = trainer.hasCelebi ? 3 : 1;
+
     const results = drawDiscrete(dailyRewardChances, NUM_DAILY_REWARDS);
     const reducedResults = results.reduce((acc, curr) => {
         if (acc[curr] == undefined) {
@@ -46,16 +49,17 @@ const drawDaily = async (trainer) => {
     }, {});
     
     // add shards
-    reducedResults[backpackItems.KNOWLEDGE_SHARD] = NUM_DAILY_SHARDS;
-    reducedResults[backpackItems.EMOTION_SHARD] = NUM_DAILY_SHARDS;
-    reducedResults[backpackItems.WILLPOWER_SHARD] = NUM_DAILY_SHARDS;
+    reducedResults[backpackItems.KNOWLEDGE_SHARD] = NUM_DAILY_SHARDS * mult;
+    reducedResults[backpackItems.EMOTION_SHARD] = NUM_DAILY_SHARDS * mult;
+    reducedResults[backpackItems.WILLPOWER_SHARD] = NUM_DAILY_SHARDS * mult;
 
     // if alpha, give 10 mints
     if (process.env.STAGE == stageNames.ALPHA) {
         reducedResults[backpackItems.MINT] = 10;
     }
             
-    trainer.money += DAILY_MONEY;
+    const moneyInc = DAILY_MONEY * mult;
+    trainer.money += moneyInc;
     Object.entries(reducedResults).forEach(([key, value]) => {
         addItems(trainer, key, value);
     }); 
@@ -65,7 +69,7 @@ const drawDaily = async (trainer) => {
             { userId: trainer.userId }, 
             { 
                 $set: { backpack: trainer.backpack, claimedDaily: true },
-                $inc: { money: DAILY_MONEY }
+                $inc: { money: moneyInc },
             }
         );
         if (res.modifiedCount === 0) {
@@ -79,7 +83,7 @@ const drawDaily = async (trainer) => {
     }
 
     const rv = {
-        money: DAILY_MONEY,
+        money: moneyInc,
         backpack: reducedResults,
     }
 
@@ -217,6 +221,21 @@ const beginnerRoll = (trainer, quantity) => {
     return rolls;
 }
 
+const checkNumPokemon = async (trainer, quantity) => {
+    // check for max pokemon
+    try {
+        const numPokemon = await countDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId });
+        if (numPokemon + quantity > MAX_POKEMON && process.env.STAGE !== stageNames.ALPHA) {
+            return { err: "Max pokemon reached! Use `/release` to release some pokemon, or release pages of Pokemon with `/list`." };
+        }
+    } catch (error) {
+        logger.error(error);
+        return { err: "Error checking max Pokemon." };
+    }
+
+    return { err: null };
+}
+
 const usePokeball = async (trainer, pokeballId, bannerIndex, quantity=1) => {
     // validate quantity
     if (quantity < 1 || quantity > 10) {
@@ -231,14 +250,9 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity=1) => {
     const bannerType = bannerData.bannerType;
 
     // check for max pokemon
-    try {
-        const numPokemon = await countDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId });
-        if (numPokemon + quantity > MAX_POKEMON && process.env.STAGE !== stageNames.ALPHA) {
-            return { data: null, err: "Max pokemon reached! Use `/release` to release some pokemon, or release pages of Pokemon with `/list`." };
-        }
-    } catch (error) {
-        logger.error(error);
-        return { data: null, err: "Error checking max Pokemon." };
+    const checkNumPokemonRes = await checkNumPokemon(trainer, quantity);
+    if (checkNumPokemonRes.err) {
+        return { data: null, err: checkNumPokemonRes.err };
     }
     
     // validate number of pokeballs
@@ -477,5 +491,6 @@ module.exports = {
     giveNewPokemons,
     usePokeball,
     generateRandomPokemon,
+    checkNumPokemon,
     buildBannerSend,
 };

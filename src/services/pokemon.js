@@ -403,7 +403,9 @@ const addPokemonExpAndEVs = async (trainer, pokemon, exp, evs=[0, 0, 0, 0, 0, 0]
     }
 
     // calculate exp based on trainer level
-    exp = Math.max(Math.floor(exp * expMultiplier(trainer.level)), 1);
+    // multiply by 2 if trainer has celebi
+    const mult = trainer.hasCelebi ? 2 : 1;
+    exp = Math.max(Math.floor(exp * expMultiplier(trainer.level) * mult), 1);
     if (!pokemon.exp) {
         pokemon.exp = 0;
     }

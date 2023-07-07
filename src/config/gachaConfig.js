@@ -1,6 +1,6 @@
 const seedrandom = require("seedrandom");
 const { backpackItems } = require('./backpackConfig');
-const { rarities, rarityBins } = require('./pokemonConfig');
+const { rarities, rarityBins, pokemonConfig } = require('./pokemonConfig');
 const { drawIterable } = require("../utils/gachaUtils");
 const { stageNames } = require("./stageConfig");
 const { getFullUTCDate } = require("../utils/utils");
@@ -209,6 +209,24 @@ const bannerConfig = [
     },
 ]
 
+const getCelebiPool = () => {
+    const celebiId = "251";
+    const celebiConfig = pokemonConfig[celebiId];
+    // seedrandom using date 
+    const date = getFullUTCDate();
+    const rng = seedrandom(date);
+    return {
+        [rarities.LEGENDARY]: drawIterable(celebiConfig.mythicConfig[rarities.LEGENDARY], 3, {
+            replacement: false,
+            rng: rng,
+        }),
+        [rarities.EPIC]: drawIterable(celebiConfig.mythicConfig[rarities.EPIC], 3, {
+            replacement: false,
+            rng: rng,
+        }),
+    }
+}
+
 const MAX_PITY = 100;
 
 module.exports = {
@@ -218,4 +236,5 @@ module.exports = {
     bannerTypeConfig,
     bannerConfig,
     MAX_PITY,
+    getCelebiPool,
 };

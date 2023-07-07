@@ -8,13 +8,13 @@
 */
 const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig, growthRateConfig } = require('../config/pokemonConfig');
 const { moveConfig, abilityConfig } = require('../config/battleConfig');
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, time } = require('discord.js');
 const { getWhitespace, getPBar, linebreakString, setTwoInline, getOrSetDefault, formatMoney } = require('../utils/utils');
 const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString, getAbilityName, getAbilityOrder, buildEquipmentString, buildBoostString, getMoveIds } = require('../utils/pokemonUtils');
 const { buildMoveString } = require('../utils/battleUtils');
 const { backpackItems, backpackItemConfig } = require('../config/backpackConfig');
 const { trainerFields } = require('../config/trainerConfig');
-const { bannerTypeConfig, pokeballConfig } = require('../config/gachaConfig');
+const { bannerTypeConfig, pokeballConfig, getCelebiPool } = require('../config/gachaConfig');
 const { getPokeballsString, getItems } = require('../utils/trainerUtils');
 const { MAX_EQUIPMENT_LEVEL, levelUpCost, STAT_REROLL_COST: STAT_REROLL_COST, POKEDOLLAR_MULTIPLIER, modifierSlotConfig, modifierConfig, equipmentConfig } = require('../config/equipmentConfig');
 
@@ -474,6 +474,30 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
     return embed;
 }
 
+const buildCelebiAbilityEmbed = (trainer) => {
+    let timeTravelString = "Celebi's time powers allow it to travel back in time. Every day, you can sacrifice 10 Pokeballs to get a random event Pokemon from the past (options change daily).";
+    timeTravelString += "\n\n**Today's options:**";
+    timeTravelString += "\nLegendary (10%): ";
+    timeTravelString += getCelebiPool()[rarities.LEGENDARY].map((pokemonId) => {
+        return `#${pokemonId} ${pokemonConfig[pokemonId].emoji}`;
+    }).join(", ");
+    timeTravelString += "\nEpic (90%): ";
+    timeTravelString += getCelebiPool()[rarities.EPIC].map((pokemonId) => {
+        return `#${pokemonId} ${pokemonConfig[pokemonId].emoji}`;
+    }).join(", ");
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`Celebi's Abilities`);
+    embed.setColor("#FFFFFF");
+    embed.setDescription(`Celebi has two special abilities!`);
+    embed.addFields(
+        { name: "Time Acceleration", value: "Celebi's time powers allow it to accelerate time, tripling money & shards from `/daily`, and doubling Pokemon EXP gain!", inline: false },
+        { name: "Time Travel", value: timeTravelString, inline: false },
+    );
+
+    return embed;
+}
+
 module.exports = {
     buildBannerEmbed,
     buildNewPokemonEmbed,
@@ -484,5 +508,6 @@ module.exports = {
     buildEquipmentUpgradeEmbed,
     buildDexListEmbed,
     buildSpeciesDexEmbed,
-    buildGachaInfoString
+    buildGachaInfoString,
+    buildCelebiAbilityEmbed,
 }

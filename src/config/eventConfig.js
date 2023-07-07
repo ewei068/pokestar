@@ -32,6 +32,7 @@ const eventNames = {
     BANNER_GACHA: "bannerGacha",
     MEW_BUTTON: "mewButton",
     MEW_SELECT: "mewSelect",
+    CELEBI_TIME_TRAVEL: "celebiTimeTravel",
     VOTE_REWARDS: "voteRewards",
     EVENT_BUTTON: "eventButton",
     TUTORIAL_BUTTON: "tutorialButton",
@@ -220,6 +221,13 @@ const eventConfig = {
         "directory": "mythic",
         "exp": 5,
         "money": 10,
+    },
+    [eventNames.CELEBI_TIME_TRAVEL]: {
+        "name": "Celebi Time Travel",
+        "execute": "celebiTimeTravel.js",
+        "directory": "mythic",
+        "exp": 25,
+        "money": 50,
     },
     [eventNames.VOTE_REWARDS]: {
         "name": "Vote Rewards",

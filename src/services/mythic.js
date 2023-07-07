@@ -1,16 +1,20 @@
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
+const { backpackItemConfig, backpackItems } = require("../config/backpackConfig");
 const { moveConfig } = require("../config/battleConfig");
 const { collectionNames } = require("../config/databaseConfig");
 const { eventNames } = require("../config/eventConfig");
+const { getCelebiPool } = require("../config/gachaConfig");
 const { locations } = require("../config/locationConfig");
 const { dungeons } = require("../config/npcConfig");
 const { pokemonConfig, rarities, natureConfig } = require("../config/pokemonConfig");
 const { stageNames } = require("../config/stageConfig");
 const { QueryBuilder } = require("../database/mongoHandler");
-const { buildPokemonEmbed } = require("../embeds/pokemonEmbeds");
+const { buildPokemonEmbed, buildCelebiAbilityEmbed, buildNewPokemonEmbed } = require("../embeds/pokemonEmbeds");
 const { logger } = require("../log");
-const { generateRandomPokemon } = require("./gacha");
+const { drawDiscrete, drawIterable } = require("../utils/gachaUtils");
+const { getItems, removeItems } = require("../utils/trainerUtils");
+const { generateRandomPokemon, checkNumPokemon, giveNewPokemons } = require("./gacha");
 const { listPokemons, getPokemon, calculatePokemonStats, calculateAndUpdatePokemonStats } = require("./pokemon");
 const { getTrainer, updateTrainer } = require("./trainer");
 
@@ -366,13 +370,13 @@ const getCelebi = async (trainer) => {
         // recalculate stats
         calculatePokemonStats(celebi, celebiData);
         modified = true;
+    }
 
-        if (!trainer.hasCelebi) {
-            trainer.hasCelebi = true;
-            trainerRes = await updateTrainer(trainer);
-            if (trainerRes.err) {
-                return { err: trainerRes.err };
-            }
+    if (!trainer.hasCelebi) {
+        trainer.hasCelebi = true;
+        trainerRes = await updateTrainer(trainer);
+        if (trainerRes.err) {
+            return { err: trainerRes.err };
         }
     }
 
@@ -400,6 +404,23 @@ const getCelebi = async (trainer) => {
     return { data: celebi };
 }
 
+const canTimeTravel = async (trainer) => {
+    if (!trainer.hasCelebi) {
+        return { err: "You need to have Celebi to time travel!" };
+    }
+    if (trainer.usedTimeTravel) {
+        return { err: "You've already used time travel today!" };
+    }
+
+    // check if trainer has at least 10 pokeballs
+    if (getItems(trainer, backpackItems.POKEBALL) < 10) {
+        return { err: "You need at least 10 Pokeballs to time travel!" };
+    }
+
+    // check for max pokemon
+    return await checkNumPokemon(trainer, 1);
+}
+
 const buildCelebiSend = async (user) => {
     let trainer = await getTrainer(user);
     if (trainer.err) {
@@ -424,8 +445,79 @@ const buildCelebiSend = async (user) => {
     }
 
     // build pokemon embed
-    const embed = buildPokemonEmbed(trainer, celebi, "all");
+    const embed = buildPokemonEmbed(trainer, celebi, "info");
     send.embeds.push(embed);
+    const abilityEmbed = buildCelebiAbilityEmbed(trainer);
+    send.embeds.push(abilityEmbed);
+
+    // build time travel button
+    const canTimeTravelRes = await canTimeTravel(trainer);
+    const timeTravelDisabled = canTimeTravelRes.err !== null;
+    const timeTravelButton = buildButtonActionRow(
+        [{
+            label: "x10 Time Travel",
+            disabled: timeTravelDisabled,
+            emoji: backpackItemConfig[backpackItems.POKEBALL].emoji,
+            data: {}
+        }],
+        eventNames.CELEBI_TIME_TRAVEL,
+    );
+    send.components.push(timeTravelButton);
+
+    return { send: send, err: null };
+}
+
+const buildTimeTravelSend = async (user) => {
+    let trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { err: trainer.err };
+    }
+    trainer = trainer.data;
+
+    const celebiId = "251";
+    const celebiData = pokemonConfig[celebiId];
+    const mythicConfig = celebiData.mythicConfig;
+
+    const canTimeTravelRes = await canTimeTravel(trainer);
+    if (canTimeTravelRes.err) {
+        return { err: canTimeTravelRes.err };
+    }
+
+    // reduce trainer pokeballs by 10, set time travel to true
+    removeItems(trainer, backpackItems.POKEBALL, 10);
+    trainer.usedTimeTravel = true;
+    const updateRes = await updateTrainer(trainer);
+    if (updateRes.err) {
+        return { err: updateRes.err };
+    }
+
+    // get rarity: epic 90%, legendary 10%
+    const dist = {
+        [rarities.EPIC]: 0.9,
+        [rarities.LEGENDARY]: 0.1
+    }
+    const rarity = drawDiscrete(dist, 1)[0];
+    const possiblePokemons = getCelebiPool()[rarity];
+    const pokemonId = drawIterable(possiblePokemons, 1)[0];
+
+    // get new pokemon
+    const pokemons = await giveNewPokemons(trainer, [pokemonId]);
+    if (pokemons.err) {
+        return { err: pokemons.err };
+    }
+    const pokemon = pokemons.data.pokemons[0];
+
+    const embed = buildNewPokemonEmbed(
+        pokemon, 
+        backpackItems.POKEBALL, 
+        getItems(trainer, backpackItems.POKEBALL)
+    );
+
+    const send = {
+        content: pokemon._id.toString(),
+        embeds: [embed],
+        components: [],
+    }
 
     return { send: send, err: null };
 }
@@ -436,4 +528,5 @@ module.exports = {
     buildMewSend,
     getCelebi,
     buildCelebiSend,
+    buildTimeTravelSend,
 }
