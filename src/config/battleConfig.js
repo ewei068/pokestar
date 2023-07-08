@@ -4840,7 +4840,20 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.OTHER,
         "description": "The user attempts to steal a random fainted enemy Pokemon, reviving it with 50% HP. Fails if the enemy has no fainted Pokemon, or if the user's party has no empty positions.",
-    }
+    },
+    "m20004": {
+        "name": "Time Dilation",
+        "type": types.PSYCHIC,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 5,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "The user distorts time, increasing ally speed for 2 turns and decreasing enemy speed for 2 turns. The user gains another turn.",
+    },
 };
 
 const moveExecutes = {
@@ -8579,6 +8592,23 @@ const moveExecutes = {
 
         // revive fainted pokemon with 50% hp
         randomFaintedPokemon.beRevived(Math.floor(randomFaintedPokemon.maxHp / 2), source);
+    },
+    "m20004": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m20004";
+        const moveData = moveConfig[moveId];
+        // get all non-fainted, hitable pokemon
+        const targets = Object.values(battle.allPokemon).filter(p => battle.isPokemonHittable(p, moveId));
+        // if no targets, return
+        if (targets.length === 0) {
+            return;
+        }
+        for (const target of targets) {
+            const effectId = target.teamName === source.teamName ? "speUp" : "speDown";
+            target.addEffect(effectId, 2, source);
+        }
+
+        // source cr 100%
+        source.boostCombatReadiness(source, 100);
     },
 };
 

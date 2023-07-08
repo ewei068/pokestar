@@ -475,7 +475,7 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
 }
 
 const buildCelebiAbilityEmbed = (trainer) => {
-    let timeTravelString = "Celebi's time powers allow it to travel back in time. Every day, you can sacrifice 10 Pokeballs to get a random event Pokemon from the past (options change daily).";
+    let timeTravelString = "Celebi's time powers allow it to travel back in time. Every day, you can sacrifice **20 Pokeballs** to get a random event Pokemon from the past (options change daily).";
     timeTravelString += "\n\n**Today's options:**";
     timeTravelString += "\nLegendary (10%): ";
     timeTravelString += getCelebiPool()[rarities.LEGENDARY].map((pokemonId) => {
@@ -494,6 +494,7 @@ const buildCelebiAbilityEmbed = (trainer) => {
         { name: "Time Acceleration", value: "Celebi's time powers allow it to accelerate time, tripling money & shards from `/daily`, and doubling Pokemon EXP gain!", inline: false },
         { name: "Time Travel", value: timeTravelString, inline: false },
     );
+    embed.setThumbnail("https://primary.jwwb.nl/public/h/t/i/temp-zjpebgcobmaxydcmrfwb/vrhcr6/image-542.png");
 
     return embed;
 }

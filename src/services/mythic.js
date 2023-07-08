@@ -420,9 +420,9 @@ const canTimeTravel = async (trainer) => {
         return { err: "You've already used time travel today!" };
     }
 
-    // check if trainer has at least 10 pokeballs
-    if (getItems(trainer, backpackItems.POKEBALL) < 10) {
-        return { err: "You need at least 10 Pokeballs to time travel!" };
+    // check if trainer has at least 20 pokeballs
+    if (getItems(trainer, backpackItems.POKEBALL) < 20) {
+        return { err: "You need at least 20 Pokeballs to time travel!" };
     }
 
     // check for max pokemon
@@ -463,7 +463,7 @@ const buildCelebiSend = async (user) => {
     const timeTravelDisabled = canTimeTravelRes.err !== null;
     const timeTravelButton = buildButtonActionRow(
         [{
-            label: "x10 Time Travel",
+            label: "x20 Time Travel",
             disabled: timeTravelDisabled,
             emoji: backpackItemConfig[backpackItems.POKEBALL].emoji,
             data: {}
@@ -491,8 +491,8 @@ const buildTimeTravelSend = async (user) => {
         return { err: canTimeTravelRes.err };
     }
 
-    // reduce trainer pokeballs by 10, set time travel to true
-    removeItems(trainer, backpackItems.POKEBALL, 10);
+    // reduce trainer pokeballs by 20, set time travel to true
+    removeItems(trainer, backpackItems.POKEBALL, 20);
     trainer.usedTimeTravel = true;
     const updateRes = await updateTrainer(trainer);
     if (updateRes.err) {

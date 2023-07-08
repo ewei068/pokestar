@@ -3746,7 +3746,7 @@ const pokemonConfig = {
     },
     "251": {
         "name": "Celebi",
-        "emoji": "<:251:1119803834246635526>",
+        "emoji": "<:251:1126680965905915944>",
         "description": "This Pokémon came from the future by crossing over time. It is thought that so long as Celebi appears, a bright and shining future awaits us.",
         "type": [types.PSYCHIC, types.GRASS],
         "baseStats": [100, 100, 100, 100, 100, 100],
@@ -3755,7 +3755,7 @@ const pokemonConfig = {
         "abilities": {
             "30": 1,
         },
-        "moveIds": ["m270", "m94", "m202"],
+        "moveIds": ["m270", "m94", "m202", "m20004"],
         "battleEligible": true,
         "rarity": rarities.MYTHICAL,
         "growthRate": growthRates.FAST,

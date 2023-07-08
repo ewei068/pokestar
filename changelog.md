@@ -2,6 +2,10 @@
 
 ### 0.11.3
 
+* Gen 2 Wrapup
+* Celebi
+* Equipment swapping
+* Buy more Pokemon Storage
 * Bug fixes:
   * Patched Lugia's incorrect stats
   * Patched Multiscale's incorrect ID
