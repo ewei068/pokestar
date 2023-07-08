@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * eventButton.js Builds the event from the interaction.
+*/
 const { buildEventsSend } = require("../../embeds/helpEmbeds");
 
 const eventButton = async (interaction, data) => {

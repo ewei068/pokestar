@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * PokemonRelease.js tries to release the pokemon that the user selected from the release menu.
+*/
 const { getTrainer, addExpAndMoneyTrainer } = require("../../services/trainer");
 const { releasePokemons, listPokemons, canRelease } = require("../../services/pokemon");
 const { getState, deleteState } = require("../../services/state");

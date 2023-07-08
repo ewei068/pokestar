@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * natureSelect.js Builds the selection menu for the possible natures for the pokemon.
+*/
 const { getState } = require("../services/state");
 const { buildNatureSend } = require("../services/pokemon");
 

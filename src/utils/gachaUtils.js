@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * gachaUtils.js the lowest level of gacha code used by gacha.js
+*/
 const drawDiscrete = (probabilityDistribution, times) => {
     const results = [];
     for (let i = 0; i < times; i++) {

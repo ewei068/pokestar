@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * party.js all basic logic for parties.
+*/
 const { collectionNames } = require('../config/databaseConfig');
 const { logger } = require('../log');
 const { updateDocument } = require('../database/mongoHandler');

@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * pokemonEvolveSelect.js Builds the confirmation menu from the selection of the user in their pokemon's evolution.
+*/
 const { getPokemon, getEvolvedPokemon } = require('../../services/pokemon');
 const { getState } = require('../../services/state');
 const { getTrainer } = require('../../services/trainer');

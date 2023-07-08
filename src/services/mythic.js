@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * mythic.js Creates all mythic pokemon information, moves etc.
+*/
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const { moveConfig } = require("../config/battleConfig");
