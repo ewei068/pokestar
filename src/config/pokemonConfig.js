@@ -2796,6 +2796,23 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "157-1": {
+        "name": "Gold's Typhlosion",
+        "emoji": "<:goldtyphlosion:1127276634853101688>",
+        "description": "Gold's Typhlosion obscures itself behind a shimmering heat haze that it creates using its intensely hot flames. This Pokémon creates blazing explosive blasts that burn everything to cinders.",
+        "type": [types.FIRE],
+        "baseStats": [90, 70, 78, 115, 85, 102],
+        "sprite": "https://archives.bulbagarden.net/media/upload/b/b9/Spr_2g_157.png",
+        "shinySprite": "https://archives.bulbagarden.net/media/upload/6/6c/Spr_2g_157_s.png",
+        "abilities": {
+            "94": 1,
+        },
+        "moveIds": ["m52", "m53", "m20005", "m284"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
+    },
     "158": {
         "name": "Totodile",
         "emoji": "<:158:1116755865123442739>",
@@ -3710,6 +3727,23 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.SLOW
     },
+    "248-1": {
+        "name": "Dark Tyranitar",
+        "emoji": "<:darktyranitar:1127276632831447091>",
+        "description": "Corrupted by Team Rocket's Dark Ball, it has converted its inpenetrable armor into a destructive offense.",
+        "type": [types.GROUND, types.DARK],
+        "baseStats": [90, 154, 80, 115, 70, 91],
+        "sprite": "https://archives.bulbagarden.net/media/upload/b/bb/Spr_2g_248.png",
+        "shinySprite": "https://archives.bulbagarden.net/media/upload/1/1c/Spr_2g_248_s.png",
+        "abilities": {
+            "71": 1,
+        },
+        "moveIds": ["m479", "m242", "m20006", "m89"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.SLOW,
+        "noGacha": true
+    },
     "249": {
         "name": "Lugia",
         "emoji": "<:249:1119803832050921523>",
@@ -3726,6 +3760,23 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.LEGENDARY,
         "growthRate": growthRates.SLOW
+    },
+    "249-1": {
+        "name": "Shadow Lugia",
+        "emoji": "<:shadowlugia:1127311851278061608>",
+        "description": "The legendary Lugia under the influence of a dark organization; it radiates a malevolent aura of corruption.",
+        "type": [types.GHOST, types.FLYING],
+        "baseStats": [100, 130, 90, 154, 90, 116],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/shadow-lugia.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/shadow-lugia-shiny.png",
+        "abilities": {
+            "46": 1,
+        },
+        "moveIds": ["m311", "m94", "m542-1", "m177-1"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW,
+        "noGacha": true
     },
     "250": {
         "name": "Ho-Oh",

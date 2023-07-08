@@ -2,7 +2,12 @@
 
 ### 0.11.3
 
-* Gen 2 Wrapup
+* Gen 2 Wrap-up:
+  * Event Pokemon:
+    * Gold's Typhlosion (Epic): Gold's powerful Typhlosion which sacrifices some utility for more damage!
+    * Shadow Lugia: A corrupted Lugia which inverts its offenses and defenses, as well as having more damaging moves!
+  * New Pokemon:
+  * Abilities: Solar Power
 * Celebi
 * Equipment swapping
 * Buy more Pokemon Storage
@@ -10,6 +15,7 @@
   * Patched Lugia's incorrect stats
   * Patched Multiscale's incorrect ID
   * Fixed a few Pokemon not having correct evolutions
+* Expire events
 
 ### 0.11.2 (7/4) - Gen 2 Phase 2
 

@@ -1330,11 +1330,11 @@ class Pokemon {
 
             // weather check
             if (this.battle.weather.weatherId === weatherConditions.SUN) {
-                if (moveId === "m87" || moveId === "m87-1" || moveId === "m542") {
+                if (moveId === "m87" || moveId === "m87-1" || moveId === "m542" || moveId === "m542-1") {
                     hitChance *= 0.75;
                 }
             } else if (this.battle.weather.weatherId === weatherConditions.RAIN) {
-                if (moveId === "m87" || moveId === "m87-1" || moveId === "m542") {
+                if (moveId === "m87" || moveId === "m87-1" || moveId === "m542" || moveId === "m542-1") {
                     hitChance = 1.5;
                 }
             }
