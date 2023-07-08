@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * pokemonEvolveConfirm.js builds the after-confirmation menu for the relevant user's pokemon evolution.
+*/
 const { getState, deleteState } = require('../../services/state');
 const { getTrainer } = require('../../services/trainer');
 const { getPokemon, evolvePokemon } = require('../../services/pokemon');

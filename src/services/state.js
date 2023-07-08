@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * state.js the base state logic for holding information for the current state of the user's interactions with the bot.
+*/
 const shortid = require('shortid');
 const { logger } = require('../log');
 

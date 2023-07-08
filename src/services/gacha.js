@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * gacha.js handles all basic gacha logic, draws, dailies etc.
+*/
 const { backpackCategories, backpackItemConfig, backpackItems } = require('../config/backpackConfig');
 const { dailyRewardChances, pokeballConfig, bannerConfig, bannerTypes, MAX_PITY } = require('../config/gachaConfig');
 const { rarityBins, pokemonConfig, rarities, rarityConfig } = require('../config/pokemonConfig');

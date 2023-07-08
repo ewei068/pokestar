@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * equipmentSelect.js builds the menu for the selected equipment.
+*/
 const { getState } = require("../services/state");
 const { buildEquipmentUpgradeSend } = require("../services/pokemon");
 

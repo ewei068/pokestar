@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * utils.js functions used by most Utils and other files, most relating to converting information from the mongo database.
+*/
 const { ObjectId } = require("mongodb");
 
 const getOrSetDefault = (obj, key, defaultValue) => {

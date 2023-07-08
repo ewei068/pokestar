@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * rateLimit.js get rateLimited kid, next time get a better isp. (Rate limits the user's requests to stop bots or rampaging users)
+*/
 const userLastRequest = {}
 
 // TODO: cleanup userLastRequest to remove old entries
