@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * eventHandler.js Handles all events the user can create while playing the game.
+*/
 const { eventNames, eventConfig } = require("../config/eventConfig.js");
 const { logger } = require("../log");
 const { addExpAndMoney: addExpAndMoney } = require("../services/trainer");

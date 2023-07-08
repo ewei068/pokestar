@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * PokemonReleasePage.js displays the current page of pokemon that the user selected to release from their list of pokemon.
+*/
 const { buildReleaseSend } = require("../../services/pokemon");
 const { getState } = require("../../services/state");
 

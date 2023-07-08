@@ -1,7 +1,16 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * social.js Runs all base level logic for social interactions. Currently only Leaderboards.
+*/
 const { QueryBuilder } = require("../database/mongoHandler");
 
 const LEADERBOARD_SIZE = 10;
 
+//gets the relevant leaderboard the user selected
 const getLeaderboard = async (categoryData, subset) => {
     const filter = {};
     if (subset) {

@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * commandHandler.js handles all commands and command types the user can use.
+*/
 const { SlashCommandBuilder } = require('discord.js');
 const { commandCategoryConfig, commandConfig } = require('../config/commandConfig');
 const { stageNames, stageConfig } = require('../config/stageConfig');

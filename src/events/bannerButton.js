@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * bannerButton.js builds the banner for the gacha for users.
+*/
 const { buildBannerSend } = require("../services/gacha");
 const { getState } = require("../services/state");
 const { buildGachaInfoString } = require("../embeds/pokemonEmbeds");

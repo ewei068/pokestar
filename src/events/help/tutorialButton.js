@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * tutorialButton.js the button from the help embed to create the tutorial page.
+*/
 const { buildTutorialSend } = require("../../embeds/helpEmbeds");
 
 const tutorialButton = async (interaction, data) => {

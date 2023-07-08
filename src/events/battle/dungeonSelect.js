@@ -1,6 +1,20 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * dungeonSelect.js Creates the pre-made dungeon that was selected.
+*/
 const { getState } = require("../../services/state");
 const { buildDungeonSend } = require("../../services/battle");
 
+/**
+ * Creates the pre-made dungeon that was selected.
+ * @param {*} interaction the select interaction by the user.
+ * @param {*} data the data with the relevant state info from the interaction.
+ * @returns 
+ */
 const dungeonSelect = async (interaction, data) => {
     // get state
     const state = getState(data.stateId);

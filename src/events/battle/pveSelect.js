@@ -1,6 +1,20 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * pveSelect.js After the user selects an npc, creates the pve selection menu for the user to select the difficulty of the npc displayed.
+*/
 const { getState } = require("../../services/state");
 const { buildPveSend } = require("../../services/battle");
 
+/**
+ * creates the pve selection menu for the user to select the difficulty of the npc displayed.
+ * @param {*} interaction the interaction from the user to select the npc.
+ * @param {*} data the relevant data to get the state and information from the state to build the display.
+ * @returns 
+ */
 const pveSelect = async (interaction, data) => {
     // get state
     const state = getState(data.stateId);
