@@ -58,7 +58,7 @@ Generation 2 Pokemon have arrived! Generation 2 Pokemon will be releasing over t
 `
 
 const gameEventConfig = [
-    {
+    /*{
         "name": "Generation II",
         "description": GEN_2_DESCRIPTION,
     },

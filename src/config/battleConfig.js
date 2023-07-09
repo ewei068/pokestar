@@ -2872,6 +2872,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user sacrifices 20% of its HP to heal the target by 50% of the user's max HP. If the target is fully healed, reduce this cooldown by 1.",
     },
+    "m136": {
+        "name": "High Jump Kick",
+        "type": types.FIGHTING,
+        "power": 140,
+        "accuracy": 80,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user jumps high into the air and slams down on the target. If the user misses, it takes 50% damage as recoil.",
+    },
     "m137": {
         "name": "Glare",
         "type": types.NORMAL,
@@ -3004,6 +3017,19 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user chomps hard on the target with its sharp front fangs. This deals damage equal to 50% of the target's current HP and can't miss.",
+    },
+    "m167": {
+        "name": "Triple Kick",
+        "type": types.FIGHTING,
+        "power": 33,
+        "accuracy": 90,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.ROW,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "A consecutive spinning three-kick attack. Deals damage 3 times.",
     },
     "m175": {
         "name": "Flail",
@@ -3706,6 +3732,32 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
         "description": "If the user faints in the next turn, silence all enemies for 1 turn.",
+    },
+    "m299": {
+        "name": "Blaze Kick",
+        "type": types.FIRE,
+        "power": 85,
+        "accuracy": 90,
+        "cooldown": 3,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user launches a fiery kick that leaves the target with a burn.",
+    },
+    "m303": {
+        "name": "Slack Off",
+        "type": types.NORMAL,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 3,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "The user slacks off, restoring 50% of its max HP and increasing its defense for 2 turns.",
     },
     "m304": {
         "name": "Hyper Voice",
@@ -4502,6 +4554,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user attacks the target using the target's own power. Calculates damage using the target's attack stat.",
+    },
+    "m503": {
+        "name": "Scald",
+        "type": types.WATER,
+        "power": 80,
+        "accuracy": 100,
+        "cooldown": 3,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user shoots boiling hot water at its target. This may also leave the target with a burn with a 50% chance.",
     },
     "m505": {
         "name": "Heal Pulse",
@@ -5997,6 +6062,26 @@ const moveExecutes = {
             }
         }
     },
+    "m136": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m136";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            const damageDealt = source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if miss, take 50% damage recoil
+            if (miss) {
+                const recoilDamage = Math.floor(damageDealt * 0.5);
+                source.dealDamage(recoilDamage, source, {
+                    type: "recoil",
+                });
+            }
+        }
+    },  
     "m137": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m137";
         const moveData = moveConfig[moveId];
@@ -6193,6 +6278,28 @@ const moveExecutes = {
         for (const target of allTargets) {
             // deal half targets health as damage
             const damageToDeal = Math.floor(target.hp * 0.5);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
+    "m167": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m167";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            let damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+            damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+            damageToDeal = calculateDamage(moveData, source, target, miss);
             source.dealDamage(damageToDeal, target, {
                 type: "move",
                 moveId: moveId
@@ -7138,6 +7245,38 @@ const moveExecutes = {
         for (const target of allTargets) {
             // apply grudge for 1 turn
             target.addEffect("grudge", 1, source);
+        }
+    },
+    "m299": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m299";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, apply burn
+            if (!miss) {
+                target.applyStatus(statusConditions.BURN, source);
+            }
+        }
+    },
+    "m303": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m303";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // heal 50%
+            const healAmount = Math.floor(source.maxHp * 0.5);
+            source.giveHeal(healAmount, source, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // apply def up 2 turns
+            source.addEffect("defUp", 2, source);
         }
     },
     "m304": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -8167,6 +8306,23 @@ const moveExecutes = {
             });
         }
     },
+    "m503": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m503";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // 50% chance to burn
+            if (!miss && Math.random() < 0.5) {
+                target.applyStatus(statusConditions.BURN, source);
+            }
+        }
+    },
     "m505": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m505";
         const moveData = moveConfig[moveId];
@@ -8812,6 +8968,42 @@ const abilityConfig = {
         "abilityRemove": function (battle, source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "5" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
+    },
+    "7": {
+        "name": "Limber",
+        "description": "Prevents the user from paralysis.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.statusId !== statusConditions.PARALYSIS) {
+                        return;
+                    }
+
+                    const targetPokemon = args.target;
+                    if (targetPokemon.isFainted || initialArgs.pokemon !== targetPokemon) {
+                        return;
+                    }
+
+                    targetPokemon.battle.addToLog(`${targetPokemon.name}'s Limber prevents it from being paralyzed!`);
+                    args.canApply = false;
+                }
+            };
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_STATUS_APPLY, listener);
+            return {
+                "listenerId": listenerId
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "7" || !ability.data) {
                 return;
             }
             const abilityData = ability.data;
@@ -10676,6 +10868,43 @@ const abilityConfig = {
         "abilityRemove": function (battle, source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "143" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
+    },
+    "144": {
+        "name": "Regenerator",
+        "description": "After the user's turn, heal 15% of its max HP.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const battle = initialArgs.pokemon.battle;
+                    const activePokemon = battle.activePokemon;
+                    if (activePokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    // heal 15% of max hp
+                    battle.addToLog(`${activePokemon.name}'s Regenerator restores its health!`);
+                    const healAmount = Math.floor(activePokemon.maxHp * 0.15);
+                    activePokemon.giveHeal(healAmount, activePokemon, {
+                        "type": "regenerator",
+                    });
+                }
+            };
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.TURN_END, listener);
+            return {
+                "listenerId": listenerId
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "144" || !ability.data) {
                 return;
             }
             const abilityData = ability.data;

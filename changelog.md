@@ -6,11 +6,12 @@
   * Event Pokemon:
     * Gold's Typhlosion (Epic): Gold's powerful Typhlosion which sacrifices some utility for more damage!
     * Shadow Lugia: A corrupted Lugia which inverts its offenses and defenses, as well as having more damaging moves!
-  * New Pokemon:
-  * Abilities: Solar Power
+  * New Pokemon: Slowpoke, Slowbro, Slowking, Hitmonlee, Tyrogue, Hitmontop
+  * Abilities: Solar Power, Regenerator
 * Celebi
 * Equipment swapping
 * Buy more Pokemon Storage
+* Buff dungeons
 * Bug fixes:
   * Patched Lugia's incorrect stats
   * Patched Multiscale's incorrect ID

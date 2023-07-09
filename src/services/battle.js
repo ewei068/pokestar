@@ -1458,11 +1458,11 @@ class Pokemon {
             return 0;
         }
 
-        // if frozen and fire type, thaw and deal 1.5x damage
+        // if frozen and fire type or scald, thaw and deal 1.5x damage
         const freezeCheck = this.status.statusId === statusConditions.FREEZE
         && damageInfo.type === "move"
         && moveConfig[damageInfo.moveId] !== undefined
-        && moveConfig[damageInfo.moveId].type === types.FIRE;
+        && (moveConfig[damageInfo.moveId].type === types.FIRE || damageInfo.moveId === "m503");
         if (freezeCheck) {
             if(this.removeStatus()) {
                 damage = Math.floor(damage * 1.5);

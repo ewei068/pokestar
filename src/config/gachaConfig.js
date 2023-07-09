@@ -70,7 +70,7 @@ const bannerTypeConfig = {
 }
 
 const bannerConfig = [
-    {
+    /*{
         "bannerType": bannerTypes.SPECIAL,
         "name": "[GEN 2] Lugia's Banner",
         "description": "Gen 2 has arrived! Pull for the legendary Lugia, as well as other Gen 2 Pokemon! NOTE: Lugia is NOT limited and is available in all banners.",

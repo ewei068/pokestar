@@ -434,7 +434,7 @@ const commandConfig = {
                 "variable": false,
                 "enum": [
                     "bugCatcher", "youngster", "lass", "fisherman", "hiker", "aromaLady", "dragonTamer", "aceTrainer", 
-                    "blue", "red", "gold", "palmer", "teamRocket", "goldRush"
+                    "blue", "red", "gold", "palmer"
                 ]
             },
             "difficulty": {

@@ -18,8 +18,8 @@ const npcs = {
     DRAGON_TAMER: "dragonTamer",
     ACE_TRAINER: "aceTrainer",
     PALMER: "palmer",
-    TEAM_ROCKET: "teamRocket",
-    GOLD_RUSH: "goldRush",
+    //TEAM_ROCKET: "teamRocket",
+    //GOLD_RUSH: "goldRush",
 }
 
 const difficulties = {
@@ -475,7 +475,7 @@ const npcConfig = {
                 }
             },
         }
-    },*/
+    },
     [npcs.TEAM_ROCKET]: {
         name: "Team Rocket",
         sprite: "https://archives.bulbagarden.net/media/upload/8/8f/Spr_Y_Jessie_James.png",
@@ -517,7 +517,7 @@ const npcConfig = {
                 }
             },
         }
-    },      
+    },      */
 }
 
 const dungeons = {
