@@ -70,6 +70,17 @@ const bannerTypeConfig = {
 }
 
 const bannerConfig = [
+    {
+        "bannerType": bannerTypes.SPECIAL,
+        "name": "[EVENT] Shadow Lugia",
+        "description": "Shadow Lugia has arrived! Pull for the legendary Shadow Lugia, as well as powerful limited variations of other Gen 2 Pokemon!",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["249-1"],
+                [rarities.EPIC]: ["157-1", "248-1"],
+            }
+        }
+    },
     /*{
         "bannerType": bannerTypes.SPECIAL,
         "name": "[GEN 2] Lugia's Banner",

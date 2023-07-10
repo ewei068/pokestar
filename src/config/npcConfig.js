@@ -407,11 +407,11 @@ const npcConfig = {
                 maxLevel: 45,
                 numPokemon: 5,
                 pokemonIds: ["180", "184", "231", "247"],
-                aceId: "156",
+                aceId: "157-1",
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.POKEBALL]: 1,
+                            [backpackItems.POKEBALL]: 2,
                         },
                     }
                 }
@@ -420,12 +420,12 @@ const npcConfig = {
                 minLevel: 85,
                 maxLevel: 99,
                 numPokemon: 6,
-                pokemonIds: ["157", "181", "184", "232", "248"],
-                aceId: "249",
+                pokemonIds: ["157-1", "181", "184", "232", "248-1"],
+                aceId: "249-1",
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.POKEBALL]: 2,
+                            [backpackItems.POKEBALL]: 5,
                         },
                     }
                 }
