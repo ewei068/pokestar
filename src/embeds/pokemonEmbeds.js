@@ -16,7 +16,7 @@ const { backpackItems, backpackItemConfig } = require('../config/backpackConfig'
 const { trainerFields } = require('../config/trainerConfig');
 const { bannerTypeConfig, pokeballConfig, getCelebiPool } = require('../config/gachaConfig');
 const { getPokeballsString, getItems } = require('../utils/trainerUtils');
-const { MAX_EQUIPMENT_LEVEL, levelUpCost, STAT_REROLL_COST: STAT_REROLL_COST, POKEDOLLAR_MULTIPLIER, modifierSlotConfig, modifierConfig, equipmentConfig } = require('../config/equipmentConfig');
+const { MAX_EQUIPMENT_LEVEL, levelUpCost, STAT_REROLL_COST: STAT_REROLL_COST, POKEDOLLAR_MULTIPLIER, modifierSlotConfig, modifierConfig, equipmentConfig, SWAP_COST } = require('../config/equipmentConfig');
 
 const buildBannerEmbed = (trainer, bannerData) => {
     const type = bannerData.bannerType;
@@ -360,6 +360,33 @@ const buildEquipmentUpgradeEmbed = (trainer, pokemon, equipmentType, equipment, 
     return embed;
 }
 
+const buildEquipmentSwapEmbed = (trainer, pokemon1, pokemon2, equipmentType) => {
+    const equipmentData = equipmentConfig[equipmentType];
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${equipmentData.emoji} Swap ${equipmentData.name}`);
+    embed.setColor("#FFFFFF");
+    embed.setDescription(`Confirm swap of ${equipmentData.name} between ${pokemon1.name} and ${pokemon2.name}.`);
+
+    const pokemonEmoji1 = pokemonConfig[pokemon1.speciesId].emoji;
+    const pokemonEmoji2 = pokemonConfig[pokemon2.speciesId].emoji;
+    const { equipmentHeader: equipmentHeader1, equipmentString: equipmentString1 } = buildEquipmentString(equipmentType, pokemon1.equipments[equipmentType]);
+    const { equipmentHeader: equipmentHeader2, equipmentString: equipmentString2 } = buildEquipmentString(equipmentType, pokemon2.equipments[equipmentType]);
+    embed.addFields(
+        { name: `${pokemonEmoji1} ${equipmentHeader1}`, value: equipmentString1, inline: true },
+        { name: "** **", value: "** **\n➡️\n\n⬅️", inline: true},
+        { name: `${pokemonEmoji2} ${equipmentHeader2}`, value: equipmentString2, inline: true },
+    );
+    
+    const material = equipmentData.material;
+    const materialData = backpackItemConfig[material];
+    const costString = `${formatMoney(SWAP_COST * POKEDOLLAR_MULTIPLIER)}\n${materialData.emoji} x${SWAP_COST}`;
+    embed.addFields(
+        { name: "Cost", value: costString, inline: true },
+    );
+
+    return embed;
+}
+
 const buildDexListEmbed = (speciesIds, page) => {
     const pokedexString = speciesIds.map(id => {
         const speciesData = pokemonConfig[id];
@@ -507,6 +534,7 @@ module.exports = {
     buildPokemonEmbed,
     buildEquipmentEmbed,
     buildEquipmentUpgradeEmbed,
+    buildEquipmentSwapEmbed,
     buildDexListEmbed,
     buildSpeciesDexEmbed,
     buildGachaInfoString,

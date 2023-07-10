@@ -15,7 +15,7 @@ const commandCategoryConfig = {
         "name": "Pokemon",
         "description": "Commands to catch, train, and inspect Pokemon",
         "folder": "pokemon",
-        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "nature", "release", "mew", "celebi"]
+        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "equipmentswap", "nature", "release", "mew", "celebi"]
     },
     "shop": {
         "name": "Shop",
@@ -319,7 +319,39 @@ const commandConfig = {
             },
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-        "exp": 0,
+        "exp": 5,
+    },
+    "equipmentswap": {
+        "name": "Equipment Swap",
+        "aliases": ["equipmentswap", "eqswap", "eqs"],
+        "description": "Swap a Pokemon's equipment",
+        "longDescription": "Swap a Pokemon's equipment with another.",
+        "execute": "equipmentswap.js",
+        "args": {
+            "name_or_id": {
+                "type": "string",
+                "description": "unique ID for Pokemon to swap equipment for",
+                "optional": false,
+                "variable": false
+            },
+            "name_or_id2": {
+                "type": "string",
+                "description": "unique ID for Pokemon to swap equipment with",
+                "optional": false,
+                "variable": false
+            },
+            "equipment_type": {
+                "type": "string",
+                "description": "equipment to swap",
+                "optional": false,
+                "variable": false,
+                "enum": [
+                    "powerWeight", "powerBracer", "powerBelt", "powerLens", "powerBand", "powerAnklet", 
+                ]
+            },
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
     },
     "nature": {
         "name": "Nature",

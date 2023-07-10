@@ -14,14 +14,14 @@ const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS, rarities } =
 const { expMultiplier, MAX_RELEASE } = require("../config/trainerConfig");
 const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth, getAbilityOrder, getPokemonOrder, getPartyPokemonIds } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
-const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed, buildEquipmentEmbed, buildEquipmentUpgradeEmbed, buildDexListEmbed } = require("../embeds/pokemonEmbeds");
+const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed, buildEquipmentEmbed, buildEquipmentUpgradeEmbed, buildDexListEmbed, buildEquipmentSwapEmbed } = require("../embeds/pokemonEmbeds");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
-const { getTrainer } = require("./trainer");
+const { getTrainer, updateTrainer } = require("./trainer");
 const { setState, getState } = require("./state");
 const { buildYesNoActionRow } = require("../components/yesNoActionRow");
-const { modifierConfig, modifierTypes, modifierSlotConfig, equipmentConfig, MAX_EQUIPMENT_LEVEL, levelUpCost, STAT_REROLL_COST, POKEDOLLAR_MULTIPLIER } = require("../config/equipmentConfig");
+const { modifierConfig, modifierTypes, modifierSlotConfig, equipmentConfig, MAX_EQUIPMENT_LEVEL, levelUpCost, STAT_REROLL_COST, POKEDOLLAR_MULTIPLIER, SWAP_COST } = require("../config/equipmentConfig");
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const { buildBackButtonRow } = require("../components/backButtonRow");
 const { getItems, removeItems } = require("../utils/trainerUtils");
@@ -197,8 +197,10 @@ const getPokemon = async (trainer, pokemonId) => {
     }
 }
 
-const getIdFromNameOrId = async (user, nameOrId, interaction) => {
-    await interaction.deferReply();
+const getIdFromNameOrId = async (user, nameOrId, interaction, defer=true) => {
+    if (defer) {
+        await interaction.deferReply();
+    }
 
     // if BSON-able, return id
     try {
@@ -929,6 +931,23 @@ const canRelease = async (trainer, pokemonIds) => {
     return { toRelease: toRelease, err: null };
 }
 
+const canSwap = async (trainer, equipmentType) => {
+    // see if has enough money
+    if (trainer.money < SWAP_COST * POKEDOLLAR_MULTIPLIER) {
+        return { err: "You don't have enough money to swap your equipment!" };
+    }
+
+    // see if trainer has enough materials
+    const equipmentData = equipmentConfig[equipmentType];
+    const material = equipmentData.material;
+    const materialData = backpackItemConfig[material];
+    if (getItems(trainer, material) < SWAP_COST) {
+        return { err: `You don't have enough ${materialData.name} to swap your equipment!` };
+    }
+
+    return { err: null };
+}
+
 const buildReleaseSend = async (user, pokemonIds) => {
     // check if pokemonIds has too many ids
     if (pokemonIds.length > MAX_RELEASE || pokemonIds.length < 1) {
@@ -1130,6 +1149,108 @@ const buildEquipmentUpgradeSend = async ({ stateId=null, user=null } = {}) => {
     return { send: send, err: null };
 }
 
+const buildEquipmentSwapSend = async ({ stateId=null, user=null, swap=false } = {}) => {
+    const state = getState(stateId);
+
+    // if state pokemonid and pokemonid 2 are the same, return error
+    if (state.pokemonId === state.pokemonId2) {
+        return { err: "Cannot swap equipment with itself!" };
+    }
+
+    // if equipmentId not part of ids, return error
+    const equipmentType = state.equipmentType;
+    const ids = Object.keys(equipmentConfig);
+    if (!ids.includes(equipmentType)) {
+        return { err: "Invalid equipment type!" };
+    }
+    const material = equipmentConfig[equipmentType].material;
+    const materialData = backpackItemConfig[material];
+    
+    let trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { err: trainer.err };
+    }
+    trainer = trainer.data;
+
+    let pokemon = await getPokemon(trainer, state.pokemonId);
+    if (pokemon.err) {
+        return { err: pokemon.err };
+    }
+    pokemon = pokemon.data;
+
+    let pokemon2 = await getPokemon(trainer, state.pokemonId2);
+    if (pokemon2.err) {
+        return { err: pokemon2.err };
+    }
+    pokemon2 = pokemon2.data;
+
+    // embed info
+    const equipmentEmbed = buildEquipmentSwapEmbed(trainer, pokemon, pokemon2, equipmentType);
+
+    if (swap) {
+        const canSwapResult = await canSwap(trainer, equipmentType);
+        if (canSwapResult.err) {
+            return { err: canSwapResult.err };
+        }
+
+        // swap equipment
+        const temp = pokemon.equipments[equipmentType];
+        pokemon.equipments[equipmentType] = pokemon2.equipments[equipmentType];
+        pokemon2.equipments[equipmentType] = temp;
+
+        // reduce trainer money and materials
+        trainer.money -= SWAP_COST * POKEDOLLAR_MULTIPLIER;
+        removeItems(trainer, material, SWAP_COST);
+        const updateRes = await updateTrainer(trainer);
+        if (updateRes.err) {
+            return { err: updateRes.err };
+        }
+        
+        // save pokemon
+        const pokemonUpdate = await calculateAndUpdatePokemonStats(
+            pokemon,
+            pokemonConfig[pokemon.speciesId],
+            true
+        );
+        if (pokemonUpdate.err) {
+            return { err: pokemonUpdate.err };
+        }
+        const pokemon2Update = await calculateAndUpdatePokemonStats(
+            pokemon2,
+            pokemonConfig[pokemon2.speciesId],
+            true
+        );
+
+        return {
+            send: { content: "Swap complete!", embeds: [equipmentEmbed], components: [] },
+            err: null,
+        }
+    } else {
+        // equipment swap button
+        const swapData = {
+            stateId: stateId,
+        }
+        const swapButtonConfigs = [
+            {
+                label: "Confirm Swap",
+                disabled: (await canSwap(trainer, equipmentType)).err !== null,
+                data: {
+                    ...swapData,
+                },
+                emoji: materialData.emoji,
+            }
+        ]
+        const swapActionRow = buildButtonActionRow(swapButtonConfigs, eventNames.EQUIPMENT_SWAP);
+
+        const send = {
+            embeds: [equipmentEmbed],
+            components: [swapActionRow],
+        }
+        
+        return { send: send, err: null };
+    }
+}
+
 const buildNatureSend = async ({ stateId=null, user=null } = {}) => {
     const state = getState(stateId);
 
@@ -1222,5 +1343,6 @@ module.exports = {
     buildReleaseSend,
     buildEquipmentSend,
     buildEquipmentUpgradeSend,
+    buildEquipmentSwapSend,
     buildNatureSend,
 };

@@ -79,7 +79,8 @@ const bannerConfig = [
                 [rarities.LEGENDARY]: ["249-1"],
                 [rarities.EPIC]: ["157-1", "248-1"],
             }
-        }
+        },
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-gen2-banner.png"
     },
     /*{
         "bannerType": bannerTypes.SPECIAL,

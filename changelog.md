@@ -5,7 +5,8 @@
 * Gen 2 Wrap-up:
   * Event Pokemon:
     * Gold's Typhlosion (Epic): Gold's powerful Typhlosion which sacrifices some utility for more damage!
-    * Shadow Lugia: A corrupted Lugia which inverts its offenses and defenses, as well as having more damaging moves!
+    * Dark Tyranitar (Epic): A corrupted Tyranitar which is more offensive-focussed!
+    * Shadow Lugia (Legendary): A corrupted Lugia which inverts its offenses and defenses, as well as having more damaging moves!
   * New Pokemon: Slowpoke, Slowbro, Slowking, Hitmonlee, Tyrogue, Hitmontop
   * Abilities: Solar Power, Regenerator
 * Celebi
