@@ -5,7 +5,7 @@ const celebiTimeTravel = async (interaction, data) => {
     if (err) {
         return { err: err };
     } else {
-        await interaction.reply(send);
+        await interaction.update(send);
     }
 }
 

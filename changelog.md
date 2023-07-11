@@ -1,23 +1,28 @@
 # Pokéstar Changelog
 
-### 0.11.3
+### 0.11.3 - Gen 2 Wrap-up
 
-* Gen 2 Wrap-up:
+* **Gen 2 Wrap-up Event:**
   * Event Pokemon:
     * Gold's Typhlosion (Epic): Gold's powerful Typhlosion which sacrifices some utility for more damage!
     * Dark Tyranitar (Epic): A corrupted Tyranitar which is more offensive-focussed!
     * Shadow Lugia (Legendary): A corrupted Lugia which inverts its offenses and defenses, as well as having more damaging moves!
+  * New limited-time event! Check out `/events` to learn more!
   * New Pokemon: Slowpoke, Slowbro, Slowking, Hitmonlee, Tyrogue, Hitmontop
   * Abilities: Solar Power, Regenerator
-* Celebi
-* Equipment swapping
-* Buy more Pokemon Storage
-* Buff dungeons
+* **Celebi:** The second Mythical Pokemon in Pokestar! Celebi is designed to be a grindy Pokemon, that rewards mid-game players with a less grindy experience!
+  * Use `/celebi` and follow the steps in order to obtain!
+  * Celebi has two abilities:
+    * Time Acceleration: Gain increased daily rewards and faster Pokemon experience gain!
+    * Time Travel: Sacrifice Pokeballs daily to get unavailable limited Pokemon!
+* Equipment swapping: Use `/equipmentswap` to change equipment between Pokemon!
+* Buy more Pokemon Storage by purchasing the Computer Lab location!
+* Greatly increased dungeon rewards and Very Hard difficulty dungeon rewards!
 * Bug fixes:
   * Patched Lugia's incorrect stats
   * Patched Multiscale's incorrect ID
   * Fixed a few Pokemon not having correct evolutions
-* Expire events
+* Expired the Gen 2 and Team Rocket events.
 
 ### 0.11.2 (7/4) - Gen 2 Phase 2
 

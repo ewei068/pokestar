@@ -27,6 +27,7 @@ const { eventNames } = require('../config/eventConfig');
 const { buildButtonActionRow } = require('../components/buttonActionRow');
 const { addItems: addItems } = require('../utils/trainerUtils');
 const { equipmentConfig } = require('../config/equipmentConfig');
+const { locationConfig, locations } = require('../config/locationConfig');
 
 const DAILY_MONEY = process.env.STAGE == stageNames.ALPHA ? 100000 : 300;
 
@@ -230,11 +231,18 @@ const beginnerRoll = (trainer, quantity) => {
 }
 
 const checkNumPokemon = async (trainer, quantity) => {
+    let pokemonLimit = MAX_POKEMON;
+    // if trainer has computer lab locations, increase pokemon limit
+    const labLevel = trainer.locations[locations.COMPUTER_LAB];
+    if (labLevel) {
+        pokemonLimit = locationConfig[locations.COMPUTER_LAB].levelConfig[labLevel].storage;
+    }
+
     // check for max pokemon
     try {
         const numPokemon = await countDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId });
-        if (numPokemon + quantity > MAX_POKEMON && process.env.STAGE !== stageNames.ALPHA) {
-            return { err: "Max pokemon reached! Use `/release` to release some pokemon, or release pages of Pokemon with `/list`." };
+        if (numPokemon + quantity > pokemonLimit && process.env.STAGE !== stageNames.ALPHA) {
+            return { err: "Max pokemon reached! Use `/release` or `/list` to release some pokemon, or get more storage by purchasing the Computer Lab location in the `/pokemart`!" };
         }
     } catch (error) {
         logger.error(error);

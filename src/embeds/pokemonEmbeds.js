@@ -384,6 +384,8 @@ const buildEquipmentSwapEmbed = (trainer, pokemon1, pokemon2, equipmentType) => 
         { name: "Cost", value: costString, inline: true },
     );
 
+    embed.setFooter({ text: `You have ${formatMoney(trainer.money)} and ${getItems(trainer, material)} ${materialData.name}s\nGet more in the /dungeons` });
+
     return embed;
 }
 
@@ -513,13 +515,15 @@ const buildCelebiAbilityEmbed = (trainer) => {
         return `#${pokemonId} ${pokemonConfig[pokemonId].emoji}`;
     }).join(", ");
 
+    const timeTravelCooldown = trainer.usedTimeTravel ? "[USED] " : "";
+
     const embed = new EmbedBuilder();
     embed.setTitle(`Celebi's Abilities`);
     embed.setColor("#FFFFFF");
     embed.setDescription(`Celebi has two special abilities!`);
     embed.addFields(
         { name: "Time Acceleration", value: "Celebi's time powers allow it to accelerate time, tripling money & shards from `/daily`, and doubling Pokemon EXP gain!", inline: false },
-        { name: "Time Travel", value: timeTravelString, inline: false },
+        { name: `${timeTravelCooldown}Time Travel`, value: timeTravelString, inline: false },
     );
     embed.setThumbnail("https://primary.jwwb.nl/public/h/t/i/temp-zjpebgcobmaxydcmrfwb/vrhcr6/image-542.png");
 

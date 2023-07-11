@@ -20,7 +20,8 @@ const shopItems = {
     WILLPOWER_SHARD: "10",
     BERRY_BUSH: "11",
     BERRY_FARM: "12",
-    ILEX_SHRINE: "13",
+    COMPUTER_LAB: "13",
+    ILEX_SHRINE: "14",
 }
     
 
@@ -57,6 +58,7 @@ const shopCategoryConfig = {
             shopItems.TRACK,
             shopItems.BERRY_BUSH,
             shopItems.BERRY_FARM,
+            shopItems.COMPUTER_LAB,
             shopItems.ILEX_SHRINE,
         ]        
     },
@@ -143,6 +145,13 @@ const shopItemConfig = {
         "description": "Used to reset your Pokemon's EVs! Reduces all EVs by 10! Use the \`/help train\` command to learn more!",
         "category": shopCategories.LOCATIONS,
         "price": [10000],
+    },
+    [shopItems.COMPUTER_LAB]: {
+        "name": "Computer Lab",
+        "emoji": "💻",
+        "description": "Each level of the computer lab grants 500 more Pokemon storage!",
+        "category": shopCategories.LOCATIONS,
+        "price": [10000, 50000, 250000],
     },
     [shopItems.ILEX_SHRINE]: {
         "name": "Ilex Shrine",
