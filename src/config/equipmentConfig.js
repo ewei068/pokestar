@@ -130,8 +130,8 @@ const modifierConfig = {
         "description": "Flat HP",
         "type": modifierTypes.FLAT,
         "stat": stats.HP,
-        "min": 5,
-        "max": 8,
+        "min": 7,
+        "max": 12,
     },
     [modifiers.FLAT_ATK]: {
         "name": "Flat Atk",
@@ -421,6 +421,7 @@ const equipmentConfig = {
 const MAX_EQUIPMENT_LEVEL = 10;
 const STAT_REROLL_COST = 5;
 const levelUpCost = (level) => level + 1;
+const SWAP_COST = 50;
 const POKEDOLLAR_MULTIPLIER = 200;
 
 let equipmentInfoString = "**Equipment Info**\n\n";
@@ -456,6 +457,7 @@ module.exports = {
     equipmentConfig,
     MAX_EQUIPMENT_LEVEL,
     STAT_REROLL_COST: STAT_REROLL_COST,
+    SWAP_COST,
     levelUpCost,
     POKEDOLLAR_MULTIPLIER,
     equipmentInfoString,

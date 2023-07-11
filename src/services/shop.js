@@ -72,6 +72,8 @@ const canBuyItem = (trainer, itemId, quantity) => {
             [shopItems.TRACK]: locations.TRACK,
             [shopItems.BERRY_BUSH]: locations.BERRY_BUSH,
             [shopItems.BERRY_FARM]: locations.BERRY_FARM,
+            [shopItems.COMPUTER_LAB]: locations.COMPUTER_LAB,
+            [shopItems.ILEX_SHRINE]: locations.ILEX_SHRINE,
         }
 
         const locationId = itemIdToLocationId[itemId];
@@ -179,6 +181,8 @@ const buyItem = async (trainer, itemId, quantity) => {
             [shopItems.TRACK]: locations.TRACK,
             [shopItems.BERRY_BUSH]: locations.BERRY_BUSH,
             [shopItems.BERRY_FARM]: locations.BERRY_FARM,
+            [shopItems.COMPUTER_LAB]: locations.COMPUTER_LAB,
+            [shopItems.ILEX_SHRINE]: locations.ILEX_SHRINE,
         }
 
         const locationId = itemIdToLocationId[itemId];

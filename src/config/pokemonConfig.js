@@ -1604,6 +1604,52 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "79": {
+        "name": "Slowpoke",
+        "emoji": "<:79:1100287560393183233>",
+        "description": "Incredibly slow and dopey. It takes 5 seconds for it to feel pain when under attack.",
+        "type": [types.WATER, types.PSYCHIC],
+        "baseStats": [90, 65, 65, 40, 40, 15],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/79.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/79.png",
+        "evolution": [
+            {
+                "level": 37,
+                "id": "80",
+            },
+            {
+                "level": 37,
+                "id": "199",
+            }
+        ],
+        "abilities": {
+            "12": 0.45,
+            "20": 0.45,
+            "144": 0.1
+        },
+        "moveIds": ["m93", "m58", "m94", "m503"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "80": {
+        "name": "Slowbro",
+        "emoji": "<:80:1100287586657902654>",
+        "description": "The SHELLDER that is latched onto SLOWPOKE's tail is said to feed on the host's left over scraps.",
+        "type": [types.WATER, types.PSYCHIC],
+        "baseStats": [95, 75, 110, 100, 80, 30],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/80.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/80.png",
+        "abilities": {
+            "12": 0.45,
+            "20": 0.45,
+            "144": 0.1
+        },
+        "moveIds": ["m93", "m58", "m503", "m303"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "81": {
         "name": "Magnemite",
         "emoji": "<:81:1100288375589699594>",
@@ -1937,6 +1983,24 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
+    },
+    "106": {
+        "name": "Hitmonlee",
+        "emoji": "<:106:1100290187147362405>",
+        "description": "When in a hurry, its legs lengthen progressively. It runs smoothly with extra long, loping strides.",
+        "type": [types.FIGHTING],
+        "baseStats": [50, 120, 53, 35, 110, 87],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/106.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/106.png",
+        "abilities": {
+            "7": 0.45,
+            "120": 0.45,
+            "84": 0.1
+        },
+        "moveIds": ["m116", "m68", "m299", "m136"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
     },
     "107": {
         "name": "Hitmonchan",
@@ -2668,7 +2732,7 @@ const pokemonConfig = {
                 "m70", "m85", "m86", "m91", "m92", "m94", "m113", "m115", "m127", "m182", "m188", "m191",
                 "m203", "m215",  "m216", "m219", "m226", "m240", "m241", "m247", "m269", "m202", "m252", "m276", "m283",
                 "m317", "m334", "m340", "m347", "m352", "m355", "m369", "m387", "m396", "m398", "m402",
-                "m409", "m414", "m417", "m424", "m430", "m441", "m444", "m446", "m450", "m492", "m521", "m523",
+                "m409", "m414", "m417", "m424", "m430", "m441", "m444", "m446", "m450", "m492", "m503", "m521", "m523",
                 "m525", "m529", "m583", "m710"
             ],
             "ultimateMoveIds": [
@@ -2795,6 +2859,23 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
+    },
+    "157-1": {
+        "name": "Gold's Typhlosion",
+        "emoji": "<:goldtyphlosion:1127276634853101688>",
+        "description": "Gold's Typhlosion obscures itself behind a shimmering heat haze that it creates using its intensely hot flames. This Pokémon creates blazing explosive blasts that burn everything to cinders.",
+        "type": [types.FIRE],
+        "baseStats": [90, 70, 78, 115, 85, 102],
+        "sprite": "https://archives.bulbagarden.net/media/upload/b/b9/Spr_2g_157.png",
+        "shinySprite": "https://archives.bulbagarden.net/media/upload/6/6c/Spr_2g_157_s.png",
+        "abilities": {
+            "94": 1,
+        },
+        "moveIds": ["m52", "m53", "m20005", "m284"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
     },
     "158": {
         "name": "Totodile",
@@ -3342,6 +3423,24 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "199": {
+        "name": "Slowking",
+        "emoji": "<:199:1116756194565050408>",
+        "description": "Slowking undertakes research every day in an effort to solve the mysteries of the world. However, this Pokémon apparently forgets everything it has learned if the Shellder on its head comes off.",
+        "type": [types.WATER, types.PSYCHIC],
+        "baseStats": [95, 75, 80, 100, 110, 30],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/199.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/199.png",
+        "abilities": {
+            "12": 0.45,
+            "20": 0.45,
+            "144": 0.1
+        },
+        "moveIds": ["m55", "m94", "m347", "m303"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "202": {
         "name": "Wobbuffet",
         "emoji": "<:202:1119803387874119821>",
@@ -3565,6 +3664,56 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "236": {
+        "name": "Tyrogue",
+        "emoji": "<:236:1119803689545240667>",
+        "description": "Tyrogue becomes stressed out if it does not get to train every day. When raising this Pokémon, the Trainer must establish and uphold various training methods.",
+        "type": [types.FIGHTING],
+        "baseStats": [35, 35, 35, 35, 35, 35],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/236.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/236.png",
+        "evolution": [
+            {
+                "level": 20,
+                "id": "106",
+            },
+            {
+                "level": 20,
+                "id": "107",
+            },
+            {
+                "level": 20,
+                "id": "237",
+            },
+        ],
+        "abilities": {
+            "62": 0.45,
+            "80": 0.45,
+            "72": 0.1,
+        },
+        "moveIds": ["m33", "m116", "m418", "m68"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST
+    },
+    "237": {
+        "name": "Hitmontop",
+        "emoji": "<:237:1119803691885674619>",
+        "description": "Hitmontop spins on its head at high speed, all the while delivering kicks. This technique is a remarkable mix of both offense and defense at the same time. The Pokémon travels faster spinning than it does walking.",
+        "type": [types.FIGHTING],
+        "baseStats": [50, 95, 95, 35, 110, 70],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/237.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/237.png",
+        "abilities": {
+            "22": 0.45,
+            "101": 0.45,
+            "80": 0.1,
+        },
+        "moveIds": ["m33", "m68", "m229", "m167"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST
+    },
     "241": {
         "name": "Miltank",
         "emoji": "<:241:1119803755014144051>",
@@ -3710,6 +3859,23 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.SLOW
     },
+    "248-1": {
+        "name": "Dark Tyranitar",
+        "emoji": "<:darktyranitar:1127276632831447091>",
+        "description": "Corrupted by Team Rocket's Dark Ball, it has converted its inpenetrable armor into a destructive offense.",
+        "type": [types.GROUND, types.DARK],
+        "baseStats": [90, 154, 80, 115, 70, 91],
+        "sprite": "https://archives.bulbagarden.net/media/upload/b/bb/Spr_2g_248.png",
+        "shinySprite": "https://archives.bulbagarden.net/media/upload/1/1c/Spr_2g_248_s.png",
+        "abilities": {
+            "71": 1,
+        },
+        "moveIds": ["m479", "m242", "m20006", "m89"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.SLOW,
+        "noGacha": true
+    },
     "249": {
         "name": "Lugia",
         "emoji": "<:249:1119803832050921523>",
@@ -3727,6 +3893,23 @@ const pokemonConfig = {
         "rarity": rarities.LEGENDARY,
         "growthRate": growthRates.SLOW
     },
+    "249-1": {
+        "name": "Shadow Lugia",
+        "emoji": "<:shadowlugia:1127311851278061608>",
+        "description": "The legendary Lugia under the influence of a dark organization; it radiates a malevolent aura of corruption.",
+        "type": [types.GHOST, types.FLYING],
+        "baseStats": [100, 130, 90, 154, 90, 116],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/shadow-lugia.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/shadow-lugia-shiny.png",
+        "abilities": {
+            "46": 1,
+        },
+        "moveIds": ["m311", "m94", "m542-1", "m177-1"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW,
+        "noGacha": true
+    },
     "250": {
         "name": "Ho-Oh",
         "emoji": "<:250:1119803833187569735>",
@@ -3743,6 +3926,27 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.LEGENDARY,
         "growthRate": growthRates.SLOW
+    },
+    "251": {
+        "name": "Celebi",
+        "emoji": "<:251:1126680965905915944>",
+        "description": "This Pokémon came from the future by crossing over time. It is thought that so long as Celebi appears, a bright and shining future awaits us.",
+        "type": [types.PSYCHIC, types.GRASS],
+        "baseStats": [100, 100, 100, 100, 100, 100],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/251.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/251.png",
+        "abilities": {
+            "30": 1,
+        },
+        "moveIds": ["m270", "m94", "m202", "m20004"],
+        "battleEligible": true,
+        "rarity": rarities.MYTHICAL,
+        "growthRate": growthRates.FAST,
+        "noGacha": true,
+        "mythicConfig": {
+            [rarities.LEGENDARY]: ["9-1", "25-1", "52-1", "136-1", "139-1", "145-1", "150-1"],
+            [rarities.EPIC]: ["18-1", "24-1", "34-1", "49-1", "110-1", "131-1"]
+        }
     },
     "20091": {
         "name": "Temple Guardian Cloyster",

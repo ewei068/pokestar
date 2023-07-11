@@ -1330,11 +1330,11 @@ class Pokemon {
 
             // weather check
             if (this.battle.weather.weatherId === weatherConditions.SUN) {
-                if (moveId === "m87" || moveId === "m87-1" || moveId === "m542") {
+                if (moveId === "m87" || moveId === "m87-1" || moveId === "m542" || moveId === "m542-1") {
                     hitChance *= 0.75;
                 }
             } else if (this.battle.weather.weatherId === weatherConditions.RAIN) {
-                if (moveId === "m87" || moveId === "m87-1" || moveId === "m542") {
+                if (moveId === "m87" || moveId === "m87-1" || moveId === "m542" || moveId === "m542-1") {
                     hitChance = 1.5;
                 }
             }
@@ -1458,11 +1458,11 @@ class Pokemon {
             return 0;
         }
 
-        // if frozen and fire type, thaw and deal 1.5x damage
+        // if frozen and fire type or scald, thaw and deal 1.5x damage
         const freezeCheck = this.status.statusId === statusConditions.FREEZE
         && damageInfo.type === "move"
         && moveConfig[damageInfo.moveId] !== undefined
-        && moveConfig[damageInfo.moveId].type === types.FIRE;
+        && (moveConfig[damageInfo.moveId].type === types.FIRE || damageInfo.moveId === "m503");
         if (freezeCheck) {
             if(this.removeStatus()) {
                 damage = Math.floor(damage * 1.5);

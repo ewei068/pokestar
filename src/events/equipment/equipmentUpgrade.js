@@ -6,9 +6,9 @@
  * 
  * equipmentUpgrade.js Builds the upgrade menu for the selected equipment and waits for interactions.
 */
-const { getState } = require("../services/state");
-const { buildEquipmentUpgradeSend, buildEquipmentSend, upgradeEquipmentLevel, getPokemon, rerollStatSlot } = require("../services/pokemon");
-const { getTrainer } = require("../services/trainer");
+const { getState } = require("../../services/state");
+const { buildEquipmentUpgradeSend, buildEquipmentSend, upgradeEquipmentLevel, getPokemon, rerollStatSlot } = require("../../services/pokemon");
+const { getTrainer } = require("../../services/trainer");
 
 const equipmentUpgrade = async (interaction, data) => {
     // get state

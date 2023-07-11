@@ -201,7 +201,16 @@ const trainerFields = {
             "streak": 0,
             "rewards": 0,
         },
-    }
+    },
+    "hasCelebi": {
+        "type": "boolean",
+        "default": false,
+    },
+    "usedTimeTravel": {
+        "type": "boolean",
+        "default": false,
+        "daily": true,
+    },
 }
 
 const levelConfig = {
@@ -1347,8 +1356,7 @@ const expMultiplier = (level) => {
     return 3 * (Math.pow(level, 1/2));
 }
 
-// TEMP: gen 2 event
-const NUM_DAILY_REWARDS = (process.env.STAGE === stageNames.ALPHA ? 100 : 3) * 2;
+const NUM_DAILY_REWARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 3;
 const NUM_DAILY_SHARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 5;
 
 module.exports = { 

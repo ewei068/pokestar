@@ -8,6 +8,8 @@ const locations = {
     TRACK: "6",
     BERRY_BUSH: "7",
     BERRY_FARM: "8",
+    COMPUTER_LAB: "9",
+    ILEX_SHRINE: "50",
 }
 
 const locationConfig = {
@@ -164,6 +166,30 @@ const locationConfig = {
                 "exp": 8,
                 "evs": [-10, -10, -10, -10, -10, -10],
             },
+        }
+    },
+    [locations.COMPUTER_LAB]: {
+        "name": "Computer Lab",
+        "emoji": "💻",
+        "description": "Each level of the computer lab grants 500 more Pokemon storage!",
+        "levelConfig": {
+            1: {
+                "storage": 1000,
+            },
+            2: {
+                "storage": 1500,
+            },
+            3: {
+                "storage": 2000,
+            },
+        }
+    },
+    [locations.ILEX_SHRINE]: {
+        "name": "Ilex Shrine",
+        "emoji": "<:ilexshrine:1126662153466806303>",
+        "description": "May beckon a special Pokemon at level 75...",
+        "levelConfig": {
+            1: {}
         }
     },
 }
