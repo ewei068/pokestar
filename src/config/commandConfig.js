@@ -326,7 +326,7 @@ const commandConfig = {
         "aliases": ["equipmentswap", "eqswap", "eqs"],
         "description": "Swap a Pokemon's equipment",
         "longDescription": "Swap a Pokemon's equipment with another.",
-        "execute": "equipmentswap.js",
+        "execute": "equipmentSwap.js",
         "args": {
             "name_or_id": {
                 "type": "string",
