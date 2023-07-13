@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * shop.js runs all base level shop items, logic and interactions.
+*/
 const { shopItems, shopItemConfig, shopCategories, shopCategoryConfig } = require("../config/shopConfig");
 const { getOrSetDefault, formatMoney } = require("../utils/utils");
 const { dailyRewardChances } = require('../config/gachaConfig');
@@ -64,6 +72,8 @@ const canBuyItem = (trainer, itemId, quantity) => {
             [shopItems.TRACK]: locations.TRACK,
             [shopItems.BERRY_BUSH]: locations.BERRY_BUSH,
             [shopItems.BERRY_FARM]: locations.BERRY_FARM,
+            [shopItems.COMPUTER_LAB]: locations.COMPUTER_LAB,
+            [shopItems.ILEX_SHRINE]: locations.ILEX_SHRINE,
         }
 
         const locationId = itemIdToLocationId[itemId];
@@ -171,6 +181,8 @@ const buyItem = async (trainer, itemId, quantity) => {
             [shopItems.TRACK]: locations.TRACK,
             [shopItems.BERRY_BUSH]: locations.BERRY_BUSH,
             [shopItems.BERRY_FARM]: locations.BERRY_FARM,
+            [shopItems.COMPUTER_LAB]: locations.COMPUTER_LAB,
+            [shopItems.ILEX_SHRINE]: locations.ILEX_SHRINE,
         }
 
         const locationId = itemIdToLocationId[itemId];

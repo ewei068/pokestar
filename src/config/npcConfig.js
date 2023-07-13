@@ -18,8 +18,8 @@ const npcs = {
     DRAGON_TAMER: "dragonTamer",
     ACE_TRAINER: "aceTrainer",
     PALMER: "palmer",
-    TEAM_ROCKET: "teamRocket",
-    GOLD_RUSH: "goldRush",
+    //TEAM_ROCKET: "teamRocket",
+    //GOLD_RUSH: "goldRush",
 }
 
 const difficulties = {
@@ -407,11 +407,11 @@ const npcConfig = {
                 maxLevel: 45,
                 numPokemon: 5,
                 pokemonIds: ["180", "184", "231", "247"],
-                aceId: "156",
+                aceId: "157-1",
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.POKEBALL]: 1,
+                            [backpackItems.POKEBALL]: 2,
                         },
                     }
                 }
@@ -420,12 +420,12 @@ const npcConfig = {
                 minLevel: 85,
                 maxLevel: 99,
                 numPokemon: 6,
-                pokemonIds: ["157", "181", "184", "232", "248"],
-                aceId: "249",
+                pokemonIds: ["157-1", "181", "184", "232", "248-1"],
+                aceId: "249-1",
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.POKEBALL]: 2,
+                            [backpackItems.POKEBALL]: 5,
                         },
                     }
                 }
@@ -475,7 +475,7 @@ const npcConfig = {
                 }
             },
         }
-    },*/
+    },
     [npcs.TEAM_ROCKET]: {
         name: "Team Rocket",
         sprite: "https://archives.bulbagarden.net/media/upload/8/8f/Spr_Y_Jessie_James.png",
@@ -517,7 +517,7 @@ const npcConfig = {
                 }
             },
         }
-    },      
+    },      */
 }
 
 const dungeons = {
@@ -630,7 +630,7 @@ const dungeonConfig = {
                 rewards: {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
-                            [backpackItems.KNOWLEDGE_SHARD]: 3,
+                            [backpackItems.KNOWLEDGE_SHARD]: 6,
                         },
                     }
                 }
@@ -729,7 +729,7 @@ const dungeonConfig = {
                 rewards: {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
-                            [backpackItems.KNOWLEDGE_SHARD]: 6,
+                            [backpackItems.KNOWLEDGE_SHARD]: 12,
                         },
                     }
                 }
@@ -828,7 +828,7 @@ const dungeonConfig = {
                 rewards: {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
-                            [backpackItems.KNOWLEDGE_SHARD]: 10,
+                            [backpackItems.KNOWLEDGE_SHARD]: 24,
                         },
                     }
                 }
@@ -936,7 +936,7 @@ const dungeonConfig = {
                 rewards: {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
-                            [backpackItems.EMOTION_SHARD]: 3,
+                            [backpackItems.EMOTION_SHARD]: 12,
                         },
                     }
                 }
@@ -1035,7 +1035,7 @@ const dungeonConfig = {
                 rewards: {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
-                            [backpackItems.EMOTION_SHARD]: 6,
+                            [backpackItems.EMOTION_SHARD]: 12,
                         },
                     }
                 }
@@ -1134,7 +1134,7 @@ const dungeonConfig = {
                 rewards: {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
-                            [backpackItems.EMOTION_SHARD]: 10,
+                            [backpackItems.EMOTION_SHARD]: 24,
                         },
                     }
                 }
@@ -1242,7 +1242,7 @@ const dungeonConfig = {
                 rewards: {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
-                            [backpackItems.WILLPOWER_SHARD]: 3,
+                            [backpackItems.WILLPOWER_SHARD]: 6,
                         },
                     }
                 }
@@ -1341,7 +1341,7 @@ const dungeonConfig = {
                 rewards: {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
-                            [backpackItems.WILLPOWER_SHARD]: 6,
+                            [backpackItems.WILLPOWER_SHARD]: 12,
                         },
                     }
                 }
@@ -1440,7 +1440,7 @@ const dungeonConfig = {
                 rewards: {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
-                            [backpackItems.WILLPOWER_SHARD]: 10,
+                            [backpackItems.WILLPOWER_SHARD]: 24,
                         },
                     }
                 }
@@ -1527,9 +1527,9 @@ const dungeonConfig = {
                 rewards: {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
-                            [backpackItems.KNOWLEDGE_SHARD]: 1,
-                            [backpackItems.EMOTION_SHARD]: 1,
-                            [backpackItems.WILLPOWER_SHARD]: 1,
+                            [backpackItems.KNOWLEDGE_SHARD]: 3,
+                            [backpackItems.EMOTION_SHARD]: 3,
+                            [backpackItems.WILLPOWER_SHARD]: 3,
                         },
                     }
                 },

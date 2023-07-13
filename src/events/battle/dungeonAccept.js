@@ -1,6 +1,20 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * dungeonAccept.js the event that occurs after the user accepts the creation of a dungeon.
+*/
 const { getState } = require("../../services/state");
 const { buildDungeonSend } = require("../../services/battle");
 
+/**
+ * Create the dungeon the user selected in the embed menu.
+ * @param {*} interaction the accept menu interaction from the user.
+ * @param {*} data the data with the current state information.
+ * @returns 
+ */
 const dungeonAccept = async (interaction, data) => {
     // get state
     const state = getState(data.stateId);

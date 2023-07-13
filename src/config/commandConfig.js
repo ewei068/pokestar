@@ -15,7 +15,7 @@ const commandCategoryConfig = {
         "name": "Pokemon",
         "description": "Commands to catch, train, and inspect Pokemon",
         "folder": "pokemon",
-        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "nature", "release", "mew"]
+        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "equipmentswap", "nature", "release", "mew", "celebi"]
     },
     "shop": {
         "name": "Shop",
@@ -319,7 +319,39 @@ const commandConfig = {
             },
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-        "exp": 0,
+        "exp": 5,
+    },
+    "equipmentswap": {
+        "name": "Equipment Swap",
+        "aliases": ["equipmentswap", "eqswap", "eqs"],
+        "description": "Swap a Pokemon's equipment",
+        "longDescription": "Swap a Pokemon's equipment with another.",
+        "execute": "equipmentSwap.js",
+        "args": {
+            "name_or_id": {
+                "type": "string",
+                "description": "unique ID for Pokemon to swap equipment for",
+                "optional": false,
+                "variable": false
+            },
+            "name_or_id2": {
+                "type": "string",
+                "description": "unique ID for Pokemon to swap equipment with",
+                "optional": false,
+                "variable": false
+            },
+            "equipment_type": {
+                "type": "string",
+                "description": "equipment to swap",
+                "optional": false,
+                "variable": false,
+                "enum": [
+                    "powerWeight", "powerBracer", "powerBelt", "powerLens", "powerBand", "powerAnklet", 
+                ]
+            },
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
     },
     "nature": {
         "name": "Nature",
@@ -452,7 +484,7 @@ const commandConfig = {
                 "variable": false,
                 "enum": [
                     "bugCatcher", "youngster", "lass", "fisherman", "hiker", "aromaLady", "dragonTamer", "aceTrainer", 
-                    "blue", "red", "gold", "palmer", "teamRocket", "goldRush"
+                    "blue", "red", "gold", "palmer"
                 ]
             },
             "difficulty": {
@@ -588,6 +620,17 @@ const commandConfig = {
         "description": "View and modify your Mew!",
         "longDescription": "View and modify your Mew! Mew is a special Pokemon that can be customized to your liking.",
         "execute": "mew.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10
+    },
+    "celebi": {
+        "name": "Celebi",
+        "aliases": ["celebi"],
+        "description": "View you Celebi and activate its powers!",
+        "longDescription": "Use your Celebi's time powers for some powerful effects!",
+        "execute": "celebi.js",
         "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,

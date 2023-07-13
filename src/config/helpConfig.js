@@ -57,8 +57,27 @@ Generation 2 Pokemon have arrived! Generation 2 Pokemon will be releasing over t
 <:pokeball:1100296136931156008> **More Rewards:** The amount of Pokeballs you get from \`/daily\` and \`/pokemart\` have doubled for the duration of this event!
 `
 
+const GEN_2_WRAPUP_DESCRIPTION = `🌟**Generation II Wrap-Up**🌟
+
+Pokestar is wrapping up Generation 2 with a fun mini event!
+
+<:shadowlugia:1127311851278061608> **Event Pokemon:** New powerful variations of Gen 2 Pokemon are available for a limited time! Use \`/gacha\` to try your luck!
+
+<:251:1126680965905915944> **Celebi:** The Mythical Pokemon Celebi is now available with some powerful abilities! Use \`/celebi\` and follow the instructions to catch your Celebi!
+
+<:gold:1125493190900854784> **Gold:** Challenge Gold, the main character of Gen 2, for temporarily increased rewards at a higher difficulty!
+
+🖌️ **Art Credits**:
+* Shadow Lugia Sprite & Shiny: https://www.deviantart.com/theaetherplayer/art/Shadow-Lugia-Shadow-Ho-Oh-Sprites-753077798
+`
+
 const gameEventConfig = [
     {
+        "name": "Generation II Wrap-Up",
+        "description": GEN_2_WRAPUP_DESCRIPTION,
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-gen2-banner.png",
+    },
+    /*{
         "name": "Generation II",
         "description": GEN_2_DESCRIPTION,
     },

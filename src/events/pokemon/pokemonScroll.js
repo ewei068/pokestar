@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * PokemonScroll.js Creates the current page for the pokemon that can be released as a scrollmenu.
+*/
 const { getTrainer } = require("../../services/trainer");
 const { listPokemons } = require("../../services/pokemon");
 const { buildPokemonListEmbed } = require("../../embeds/pokemonEmbeds");

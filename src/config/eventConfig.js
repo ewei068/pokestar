@@ -12,6 +12,7 @@ const eventNames = {
     EQUIPMENT_SELECT: "equipmentSelect",
     EQUIPMENT_BUTTON: "equipmentButton",
     EQUIPMENT_UPGRADE: "equipmentUpgrade",
+    EQUIPMENT_SWAP: "equipmentSwap",
     NATURE_SELECT: "natureSelect",
     NATURE_CONFIRM: "natureConfirm",
     SHOP_SELECT: "shopSelect",
@@ -32,6 +33,7 @@ const eventNames = {
     BANNER_GACHA: "bannerGacha",
     MEW_BUTTON: "mewButton",
     MEW_SELECT: "mewSelect",
+    CELEBI_TIME_TRAVEL: "celebiTimeTravel",
     VOTE_REWARDS: "voteRewards",
     EVENT_BUTTON: "eventButton",
     TUTORIAL_BUTTON: "tutorialButton",
@@ -97,15 +99,24 @@ const eventConfig = {
     [eventNames.EQUIPMENT_SELECT]: {
         "name": "Equipment Select",
         "execute": "equipmentSelect.js",
+        "directory": "equipment",
     },
     [eventNames.EQUIPMENT_BUTTON]: {
         "name": "Equipment Button",
         "execute": "equipmentButton.js",
+        "directory": "equipment",
     },
     [eventNames.EQUIPMENT_UPGRADE]: {
         "name": "Equipment Upgrade",
         "execute": "equipmentUpgrade.js",
+        "directory": "equipment",
         "exp": 15,
+    },
+    [eventNames.EQUIPMENT_SWAP]: {
+        "name": "Equipment Swap",
+        "execute": "equipmentSwap.js",
+        "directory": "equipment",
+        "exp": 50,
     },
     [eventNames.NATURE_SELECT]: {
         "name": "Nature Select",
@@ -220,6 +231,13 @@ const eventConfig = {
         "directory": "mythic",
         "exp": 5,
         "money": 10,
+    },
+    [eventNames.CELEBI_TIME_TRAVEL]: {
+        "name": "Celebi Time Travel",
+        "execute": "celebiTimeTravel.js",
+        "directory": "mythic",
+        "exp": 25,
+        "money": 50,
     },
     [eventNames.VOTE_REWARDS]: {
         "name": "Vote Rewards",

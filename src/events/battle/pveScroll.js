@@ -1,6 +1,20 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * pveScroll.js Get the relevant information for creating the scroll selection embed for pve.
+*/
 const { getState } = require("../../services/state");
 const { buildPveSend } = require("../../services/battle");
 
+/**
+ *  Get the relevant information for creating the scroll selection embed for pve.
+ * @param {*} interaction the interaction from the user to change the scroll menu page (assumption)
+ * @param {*} data the relevant data with the state info for the interaction.
+ * @returns 
+ */
 const pveScroll = async (interaction, data) => {
     // get state
     const state = getState(data.stateId);

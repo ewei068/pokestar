@@ -20,6 +20,8 @@ const shopItems = {
     WILLPOWER_SHARD: "10",
     BERRY_BUSH: "11",
     BERRY_FARM: "12",
+    COMPUTER_LAB: "13",
+    ILEX_SHRINE: "14",
 }
     
 
@@ -56,6 +58,8 @@ const shopCategoryConfig = {
             shopItems.TRACK,
             shopItems.BERRY_BUSH,
             shopItems.BERRY_FARM,
+            shopItems.COMPUTER_LAB,
+            shopItems.ILEX_SHRINE,
         ]        
     },
     [shopCategories.MATERIALS]: {
@@ -77,8 +81,7 @@ const shopItemConfig = {
         "description": "Gain a random Pokeball used to catch Pokemon! Use the \`/help gacha\` command to learn more! Limit 5 per day.",
         "category": shopCategories.GACHA,
         "price": [200],
-        // TEMP: gen 2 event
-        "limit": 5 * 2,
+        "limit": 5,
     },
     [shopItems.HOME]: {
         "name": "Home",
@@ -142,6 +145,20 @@ const shopItemConfig = {
         "description": "Used to reset your Pokemon's EVs! Reduces all EVs by 10! Use the \`/help train\` command to learn more!",
         "category": shopCategories.LOCATIONS,
         "price": [10000],
+    },
+    [shopItems.COMPUTER_LAB]: {
+        "name": "Computer Lab",
+        "emoji": "💻",
+        "description": "Each level of the computer lab grants 500 more Pokemon storage!",
+        "category": shopCategories.LOCATIONS,
+        "price": [10000, 50000, 250000],
+    },
+    [shopItems.ILEX_SHRINE]: {
+        "name": "Ilex Shrine",
+        "emoji": "<:ilexshrine:1126662153466806303>",
+        "description": "May beckon a special Pokemon at level 75...",
+        "category": shopCategories.LOCATIONS,
+        "price": [250000],
     },
     [shopItems.KNOWLEDGE_SHARD]: {
         "name": "Knowledge Shard",

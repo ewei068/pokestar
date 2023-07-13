@@ -1,6 +1,14 @@
-const { getState } = require("../services/state");
-const { buildEquipmentUpgradeSend, buildEquipmentSend } = require("../services/pokemon");
-const { equipmentInfoString, equipmentInfoString2 } = require("../config/equipmentConfig");
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * equipmentButton.js gets the user's selection within the equipment menu and loads the relevant information.
+*/
+const { getState } = require("../../services/state");
+const { buildEquipmentUpgradeSend, buildEquipmentSend } = require("../../services/pokemon");
+const { equipmentInfoString, equipmentInfoString2 } = require("../../config/equipmentConfig");
 
 const equipmentButton = async (interaction, data) => {
     // get state

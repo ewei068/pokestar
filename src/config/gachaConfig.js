@@ -1,6 +1,6 @@
 const seedrandom = require("seedrandom");
 const { backpackItems } = require('./backpackConfig');
-const { rarities, rarityBins } = require('./pokemonConfig');
+const { rarities, rarityBins, pokemonConfig } = require('./pokemonConfig');
 const { drawIterable } = require("../utils/gachaUtils");
 const { stageNames } = require("./stageConfig");
 const { getFullUTCDate } = require("../utils/utils");
@@ -71,6 +71,18 @@ const bannerTypeConfig = {
 
 const bannerConfig = [
     {
+        "bannerType": bannerTypes.SPECIAL,
+        "name": "[EVENT] Shadow Lugia",
+        "description": "Shadow Lugia has arrived! Pull for the legendary Shadow Lugia, as well as powerful limited variations of other Gen 2 Pokemon!",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["249-1"],
+                [rarities.EPIC]: ["157-1", "248-1"],
+            }
+        },
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-gen2-banner.png"
+    },
+    /*{
         "bannerType": bannerTypes.SPECIAL,
         "name": "[GEN 2] Lugia's Banner",
         "description": "Gen 2 has arrived! Pull for the legendary Lugia, as well as other Gen 2 Pokemon! NOTE: Lugia is NOT limited and is available in all banners.",
@@ -209,6 +221,24 @@ const bannerConfig = [
     },
 ]
 
+const getCelebiPool = () => {
+    const celebiId = "251";
+    const celebiConfig = pokemonConfig[celebiId];
+    // seedrandom using date 
+    const date = getFullUTCDate();
+    const rng = seedrandom(date);
+    return {
+        [rarities.LEGENDARY]: drawIterable(celebiConfig.mythicConfig[rarities.LEGENDARY], 3, {
+            replacement: false,
+            rng: rng,
+        }),
+        [rarities.EPIC]: drawIterable(celebiConfig.mythicConfig[rarities.EPIC], 3, {
+            replacement: false,
+            rng: rng,
+        }),
+    }
+}
+
 const MAX_PITY = 100;
 
 module.exports = {
@@ -218,4 +248,5 @@ module.exports = {
     bannerTypeConfig,
     bannerConfig,
     MAX_PITY,
+    getCelebiPool,
 };

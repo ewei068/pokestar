@@ -1,3 +1,11 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * gacha.js handles all basic gacha logic, draws, dailies etc.
+*/
 const { backpackCategories, backpackItemConfig, backpackItems } = require('../config/backpackConfig');
 const { dailyRewardChances, pokeballConfig, bannerConfig, bannerTypes, MAX_PITY } = require('../config/gachaConfig');
 const { rarityBins, pokemonConfig, rarities, rarityConfig } = require('../config/pokemonConfig');
@@ -19,6 +27,7 @@ const { eventNames } = require('../config/eventConfig');
 const { buildButtonActionRow } = require('../components/buttonActionRow');
 const { addItems: addItems } = require('../utils/trainerUtils');
 const { equipmentConfig } = require('../config/equipmentConfig');
+const { locationConfig, locations } = require('../config/locationConfig');
 
 const DAILY_MONEY = process.env.STAGE == stageNames.ALPHA ? 100000 : 300;
 
@@ -35,6 +44,9 @@ const drawDaily = async (trainer) => {
         return { data: null, err: `You already claimed your daily rewards today! You can claim your next reward <t:${Math.floor(tomorrowTime / 1000)}:R>.` };
     }
 
+    // triple shards and money if have celebi
+    const mult = trainer.hasCelebi ? 3 : 1;
+
     const results = drawDiscrete(dailyRewardChances, NUM_DAILY_REWARDS);
     const reducedResults = results.reduce((acc, curr) => {
         if (acc[curr] == undefined) {
@@ -46,16 +58,17 @@ const drawDaily = async (trainer) => {
     }, {});
     
     // add shards
-    reducedResults[backpackItems.KNOWLEDGE_SHARD] = NUM_DAILY_SHARDS;
-    reducedResults[backpackItems.EMOTION_SHARD] = NUM_DAILY_SHARDS;
-    reducedResults[backpackItems.WILLPOWER_SHARD] = NUM_DAILY_SHARDS;
+    reducedResults[backpackItems.KNOWLEDGE_SHARD] = NUM_DAILY_SHARDS * mult;
+    reducedResults[backpackItems.EMOTION_SHARD] = NUM_DAILY_SHARDS * mult;
+    reducedResults[backpackItems.WILLPOWER_SHARD] = NUM_DAILY_SHARDS * mult;
 
     // if alpha, give 10 mints
     if (process.env.STAGE == stageNames.ALPHA) {
         reducedResults[backpackItems.MINT] = 10;
     }
             
-    trainer.money += DAILY_MONEY;
+    const moneyInc = DAILY_MONEY * mult;
+    trainer.money += moneyInc;
     Object.entries(reducedResults).forEach(([key, value]) => {
         addItems(trainer, key, value);
     }); 
@@ -65,7 +78,7 @@ const drawDaily = async (trainer) => {
             { userId: trainer.userId }, 
             { 
                 $set: { backpack: trainer.backpack, claimedDaily: true },
-                $inc: { money: DAILY_MONEY }
+                $inc: { money: moneyInc },
             }
         );
         if (res.modifiedCount === 0) {
@@ -79,7 +92,7 @@ const drawDaily = async (trainer) => {
     }
 
     const rv = {
-        money: DAILY_MONEY,
+        money: moneyInc,
         backpack: reducedResults,
     }
 
@@ -217,6 +230,28 @@ const beginnerRoll = (trainer, quantity) => {
     return rolls;
 }
 
+const checkNumPokemon = async (trainer, quantity) => {
+    let pokemonLimit = MAX_POKEMON;
+    // if trainer has computer lab locations, increase pokemon limit
+    const labLevel = trainer.locations[locations.COMPUTER_LAB];
+    if (labLevel) {
+        pokemonLimit = locationConfig[locations.COMPUTER_LAB].levelConfig[labLevel].storage;
+    }
+
+    // check for max pokemon
+    try {
+        const numPokemon = await countDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId });
+        if (numPokemon + quantity > pokemonLimit && process.env.STAGE !== stageNames.ALPHA) {
+            return { err: "Max pokemon reached! Use `/release` or `/list` to release some pokemon, or get more storage by purchasing the Computer Lab location in the `/pokemart`!" };
+        }
+    } catch (error) {
+        logger.error(error);
+        return { err: "Error checking max Pokemon." };
+    }
+
+    return { err: null };
+}
+
 const usePokeball = async (trainer, pokeballId, bannerIndex, quantity=1) => {
     // validate quantity
     if (quantity < 1 || quantity > 10) {
@@ -231,14 +266,9 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity=1) => {
     const bannerType = bannerData.bannerType;
 
     // check for max pokemon
-    try {
-        const numPokemon = await countDocuments(collectionNames.USER_POKEMON, { userId: trainer.userId });
-        if (numPokemon + quantity > MAX_POKEMON && process.env.STAGE !== stageNames.ALPHA) {
-            return { data: null, err: "Max pokemon reached! Use `/release` to release some pokemon, or release pages of Pokemon with `/list`." };
-        }
-    } catch (error) {
-        logger.error(error);
-        return { data: null, err: "Error checking max Pokemon." };
+    const checkNumPokemonRes = await checkNumPokemon(trainer, quantity);
+    if (checkNumPokemonRes.err) {
+        return { data: null, err: checkNumPokemonRes.err };
     }
     
     // validate number of pokeballs
@@ -477,5 +507,6 @@ module.exports = {
     giveNewPokemons,
     usePokeball,
     generateRandomPokemon,
+    checkNumPokemon,
     buildBannerSend,
 };

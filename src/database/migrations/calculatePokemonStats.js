@@ -21,6 +21,7 @@ const calculateStats = function(pokemon, pokemonConfig, natureConfig, speedFn, f
  * 2023-05-27: update pokemon effective speed
  * 2023-06-21: update pokemon equipment calculation
  * 2023-07-04: patch lugia's base stats
+ * 2023-07-10: increase equipment flat HP
 **/
 
 const calculateAllStats = async () => {

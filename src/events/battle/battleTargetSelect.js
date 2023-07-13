@@ -1,8 +1,22 @@
+/**
+ * @file
+ * @author Elvis Wei
+ * @date 2023
+ * @section Description
+ * 
+ * battleTargetSelect.js Gets the relevant data for the target selection for the user and calculates the results of the choice.
+*/
 const { getState } = require("../../services/state");
 const { getStartTurnSend } = require("../../services/battle");
 const { logger } = require("../../log");
 const { stageNames } = require("../../config/stageConfig");
 
+/**
+ * Gets the relevant data for the target selection for the user and calculates the results of the choice.
+ * @param {*} interaction the choice selected by the user in response to being requested to choose a target.
+ * @param {*} data the relevant data with the state information.
+ * @returns 
+ */
 const battleTargetSelect = async (interaction, data) => {
     // get state
     const state = getState(data.stateId);
