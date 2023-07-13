@@ -1,6 +1,6 @@
 # Pokéstar Changelog
 
-### 0.11.3 - Gen 2 Wrap-up
+### 0.11.3 (7/10) - Gen 2 Wrap-up
 
 * **Gen 2 Wrap-up Event:**
   * Event Pokemon:
@@ -18,6 +18,7 @@
 * Equipment swapping: Use `/equipmentswap` to change equipment between Pokemon!
 * Buy more Pokemon Storage by purchasing the Computer Lab location!
 * Greatly increased dungeon rewards and Very Hard difficulty dungeon rewards!
+* Increased flat HP modifier in equipment.
 * Bug fixes:
   * Patched Lugia's incorrect stats
   * Patched Multiscale's incorrect ID
