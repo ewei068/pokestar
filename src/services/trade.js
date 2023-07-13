@@ -1,8 +1,18 @@
 const { MAX_TRADE_POKEMON, MAX_TRADE_MONEY } = require("../config/socialConfig");
+const { stageNames } = require("../config/stageConfig");
 const { buildTradeEmbed } = require("../embeds/socialEmbeds");
 const { idFrom } = require("../utils/utils");
 const { getPokemon, canRelease, listPokemons } = require("./pokemon");
+const trainer = require("./trainer");
 const { getTrainer, updateTrainer } = require("./trainer");
+
+const canTrade = async (trainer) => {
+    const levelReq = process.env.STAGE === stageNames.ALPHA ? 30 : 50;
+    if (trainer.level < levelReq) {
+        return { data: false, err: `You must be level ${levelReq} to trade.` };
+    }
+    return { err: null };
+}
 
 const getTradePokemons = async (trainer) => {
     const pokemonIds = trainer.trade.pokemonIds;
@@ -45,6 +55,11 @@ const buildTradeAddSend = async ({user=null, pokemonId=null, money=0}={}) => {
         return { send: null, err: trainer.err };
     }
     const trade = trainer.data.trade;
+
+    const canTradeRes = await canTrade(trainer.data);
+    if (canTradeRes.err) {
+        return { send: null, err: canTradeRes.err };
+    }
 
     // if pokemon
     if (pokemonId) {
@@ -114,6 +129,36 @@ const buildTradeAddSend = async ({user=null, pokemonId=null, money=0}={}) => {
     return { send: send, err: null };
 }
 
+const buildTradeInfoSend = async ({user=null}={}) => {
+    // get trainer
+    const trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { send: null, err: trainer.err };
+    }
+    const trade = trainer.data.trade;
+
+    const canTradeRes = await canTrade(trainer.data);
+    if (canTradeRes.err) {
+        return { send: null, err: canTradeRes.err };
+    }
+
+    // get trade pokemon
+    const tradePokemons = await getTradePokemons(trainer.data);
+    if (tradePokemons.err) {
+        return { send: null, err: tradePokemons.err };
+    }
+
+    // build pokemon embed
+    const embed = buildTradeEmbed(trainer.data, tradePokemons.data, trade.money);
+
+    const send = {
+        embeds: [embed]
+    }
+
+    return { send: send, err: null };
+}
+
 module.exports = {
     buildTradeAddSend,
+    buildTradeInfoSend,
 }

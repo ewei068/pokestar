@@ -33,7 +33,7 @@ const commandCategoryConfig = {
         "name": "Social",
         "description": "Social commands",
         "folder": "social",
-        "commands": ["vote", "tradeadd", "leaderboard", "invite"]
+        "commands": ["vote", "tradeadd", "tradeinfo", "leaderboard", "invite"]
     },
     "help": {
         "name": "Help",
@@ -405,7 +405,7 @@ const commandConfig = {
     },
     "tradeadd": {
         "name": "Trade Add",
-        "aliases": ["tradeadd", "ta"],
+        "aliases": ["tradeadd", "tra"],
         "description": "Add a Pokemon or money to your trade offer",
         "longDescription": "Add a Pokemon or money to your trade offer. You can only add Pokemon that are not currently in a trade, in parties, or locked.",
         "execute": "tradeAdd.js",
@@ -420,6 +420,15 @@ const commandConfig = {
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
         "money": 10,
+    },
+    "tradeinfo": {
+        "name": "Trade Info",
+        "aliases": ["tradeinfo", "tri"],
+        "description": "Get info about your trade offer",
+        "execute": "tradeInfo.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
     },
     "leaderboard": {
         "name": "Leaderboard",

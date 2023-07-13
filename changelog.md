@@ -1,5 +1,13 @@
 # Pokéstar Changelog
 
+### 0.11.4 - Trading
+
+* Trading + Event
+* Pokemon ownership stats
+* Fix name or id bug
+* Balance Dungeons
+* NPC target randomization
+
 ### 0.11.3 (7/10) - Gen 2 Wrap-up
 
 * **Gen 2 Wrap-up Event:**
