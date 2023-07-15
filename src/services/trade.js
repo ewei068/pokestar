@@ -1,5 +1,6 @@
 const { MAX_TRADE_POKEMON, MAX_TRADE_MONEY } = require("../config/socialConfig");
 const { stageNames } = require("../config/stageConfig");
+const { trainerFields } = require("../config/trainerConfig");
 const { buildTradeEmbed } = require("../embeds/socialEmbeds");
 const { idFrom } = require("../utils/utils");
 const { getPokemon, canRelease, listPokemons } = require("./pokemon");
@@ -129,6 +130,65 @@ const buildTradeAddSend = async ({user=null, pokemonId=null, money=0}={}) => {
     return { send: send, err: null };
 }
 
+const buildTradeRemoveSend = async ({user=null, pokemonId=null, money=0}={}) => {
+    // get trainer
+    const trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { send: null, err: trainer.err };
+    }
+    let trade = trainer.data.trade;
+
+    let moneyRemoved = 0;
+    if (!pokemonId && !money) {
+        // remove everything
+        moneyRemoved = trade.money;
+        trade = {
+            ...trainerFields.trade.default
+        }
+        trainer.data.trade = trade;
+    } else if (pokemonId) {
+        // remove pokemon
+        const pokemonIndex = trade.pokemonIds.indexOf(pokemonId);
+        if (pokemonIndex === -1) {
+            return { send: null, err: "Pokemon not in trade." };
+        }
+        trade.pokemonIds.splice(pokemonIndex, 1);
+    } else {
+        // remove money
+        // if money less that 1, return
+        if (money < 1) {
+            return { send: null, err: "You must remove at least 1 money." };
+        }
+
+        const oldMoney = trade.money;
+        trade.money = Math.max(0, trade.money - money);
+        moneyRemoved = oldMoney - trade.money;
+    }
+
+    // get trade pokemon
+    const tradePokemons = await getTradePokemons(trainer.data);
+    if (tradePokemons.err) {
+        return { send: null, err: tradePokemons.err };
+    }
+
+    // update trainer
+    trainer.data.money += moneyRemoved;
+    const update = await updateTrainer(trainer.data);
+    if (update.err) {
+        return { send: null, err: update.err };
+    }
+
+    // build pokemon embed
+    const embed = buildTradeEmbed(trainer.data, tradePokemons.data, trade.money);
+
+    const send = {
+        content: `Your trade offer has been updated!`,
+        embeds: [embed],
+        components: []
+    }
+    return { send: send, err: null };
+}
+
 const buildTradeInfoSend = async ({user=null}={}) => {
     // get trainer
     const trainer = await getTrainer(user);
@@ -160,5 +220,6 @@ const buildTradeInfoSend = async ({user=null}={}) => {
 
 module.exports = {
     buildTradeAddSend,
+    buildTradeRemoveSend,
     buildTradeInfoSend,
 }

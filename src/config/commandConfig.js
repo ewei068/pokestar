@@ -33,7 +33,7 @@ const commandCategoryConfig = {
         "name": "Social",
         "description": "Social commands",
         "folder": "social",
-        "commands": ["vote", "tradeadd", "tradeinfo", "leaderboard", "invite"]
+        "commands": ["vote", "tradeadd", "tradeinfo", "traderemove", "leaderboard", "invite"]
     },
     "help": {
         "name": "Help",
@@ -413,6 +413,24 @@ const commandConfig = {
             "option": {
                 "type": "string",
                 "description": "option (money, Pokemon name, or Pokemon ID) to add",
+                "optional": false,
+                "variable": false,
+            },
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10,
+    },
+    "traderemove": {
+        "name": "Trade Remove",
+        "aliases": ["traderemove", "trrm"],
+        "description": "Remove a Pokemon or money from your trade offer",
+        "longDescription": "Remove a Pokemon or money from your trade offer.",
+        "execute": "tradeRemove.js",
+        "args": {
+            "option": {
+                "type": "string",
+                "description": "option (money, Pokemon name, or Pokemon ID) to remove",
                 "optional": false,
                 "variable": false,
             },
