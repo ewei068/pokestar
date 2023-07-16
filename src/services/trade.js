@@ -1,3 +1,5 @@
+const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
+const { eventNames } = require("../config/eventConfig");
 const { MAX_TRADE_POKEMON, MAX_TRADE_MONEY } = require("../config/socialConfig");
 const { stageNames } = require("../config/stageConfig");
 const { trainerFields } = require("../config/trainerConfig");
@@ -119,15 +121,16 @@ const buildTradeAddSend = async ({user=null, pokemonId=null, money=0}={}) => {
         return { send: null, err: update.err };
     }
 
-    // build pokemon embed
-    const embed = buildTradeEmbed(trainer.data, tradePokemons.data, trade.money);
-
-    const send = {
-        content: `Your trade offer has been updated!`,
-        embeds: [embed],
-        components: []
+    const offerSend = await buildTradeOfferSend({
+        trainer: trainer.data, 
+        tradePokemons: tradePokemons.data, 
+        money: trade.money
+    });
+    if (offerSend.err) {
+        return { send: null, err: offerSend.err };
     }
-    return { send: send, err: null };
+    offerSend.send.content = "Your trade offer has been updated."
+    return { send: offerSend.send, err: null };
 }
 
 const buildTradeRemoveSend = async ({user=null, pokemonId=null, money=0}={}) => {
@@ -178,15 +181,16 @@ const buildTradeRemoveSend = async ({user=null, pokemonId=null, money=0}={}) => 
         return { send: null, err: update.err };
     }
 
-    // build pokemon embed
-    const embed = buildTradeEmbed(trainer.data, tradePokemons.data, trade.money);
-
-    const send = {
-        content: `Your trade offer has been updated!`,
-        embeds: [embed],
-        components: []
+    const offerSend = await buildTradeOfferSend({
+        trainer: trainer.data, 
+        tradePokemons: tradePokemons.data, 
+        money: trade.money
+    });
+    if (offerSend.err) {
+        return { send: null, err: offerSend.err };
     }
-    return { send: send, err: null };
+    offerSend.send.content = "Your trade offer has been updated."
+    return { send: offerSend.send, err: null };
 }
 
 const buildTradeInfoSend = async ({user=null}={}) => {
@@ -208,11 +212,30 @@ const buildTradeInfoSend = async ({user=null}={}) => {
         return { send: null, err: tradePokemons.err };
     }
 
+    const offerSend = await buildTradeOfferSend({
+        trainer: trainer.data, 
+        tradePokemons: tradePokemons.data, 
+        money: trade.money
+    });
+    if (offerSend.err) {
+        return { send: null, err: offerSend.err };
+    }
+    return { send: offerSend.send, err: null };
+}
+
+const buildTradeOfferSend = async ({trainer=null, tradePokemons=[], money=0}={}) => {
     // build pokemon embed
-    const embed = buildTradeEmbed(trainer.data, tradePokemons.data, trade.money);
+    const embed = buildTradeEmbed(trainer, tradePokemons, money);
 
     const send = {
-        embeds: [embed]
+        embeds: [embed],
+        components: []
+    }
+
+    // if tradePokemons, build pokemon select menu
+    if (tradePokemons.length) {
+        const pokemonSelectMenu = buildPokemonSelectRow(tradePokemons, {userId: trainer.userId}, eventNames.POKEMON_LIST_SELECT);
+        send.components.push(pokemonSelectMenu);
     }
 
     return { send: send, err: null };

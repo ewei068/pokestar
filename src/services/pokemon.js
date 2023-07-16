@@ -18,7 +18,7 @@ const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed, buildEqu
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
-const { getTrainer, updateTrainer } = require("./trainer");
+const { getTrainer, updateTrainer, getTrainerFromId } = require("./trainer");
 const { setState, getState } = require("./state");
 const { buildYesNoActionRow } = require("../components/yesNoActionRow");
 const { modifierConfig, modifierTypes, modifierSlotConfig, equipmentConfig, MAX_EQUIPMENT_LEVEL, levelUpCost, STAT_REROLL_COST, POKEDOLLAR_MULTIPLIER, SWAP_COST } = require("../config/equipmentConfig");
@@ -172,7 +172,7 @@ const calculateAndUpdatePokemonStats = async (pokemon, speciesData, force=false)
     return { data: pokemon, err: null };
 }
 
-const getPokemon = async (trainer, pokemonId) => {
+const getPokemonFromUserId = async (userId, pokemonId) => {
     // find instance of pokemon in trainer's collection
     try {
         let id = null;
@@ -182,7 +182,7 @@ const getPokemon = async (trainer, pokemonId) => {
             return { data: null, err: "Invalid Pokemon ID." };
         }
         const query = new QueryBuilder(collectionNames.USER_POKEMON)
-            .setFilter({ userId: trainer.userId, _id: id });
+            .setFilter({ userId: userId, _id: id });
         
         const res = await query.findOne();
         
@@ -195,6 +195,10 @@ const getPokemon = async (trainer, pokemonId) => {
         logger.error(error);
         return { data: null, err: "Error getting Pokemon." };
     }
+}
+
+const getPokemon = async (trainer, pokemonId) => {
+    return await getPokemonFromUserId(trainer.userId, pokemonId);
 }
 
 const getIdFromNameOrId = async (user, nameOrId, interaction, defer=true) => {
@@ -680,6 +684,32 @@ const setBattleEligible = async (trainer) => {
     }
 
     return { data: null, err: null };
+}
+
+const buildPokemonAllInfoSend = async ({ userId=null, pokemonId=null}={}) => {
+    const send = {
+        content: pokemonId,
+        embeds: [],
+        components: []
+    }
+
+    // get pokemon
+    const pokemon = await getPokemonFromUserId(userId, pokemonId);
+    if (pokemon.err) {
+        return { embed: null, err: pokemon.err };
+    }
+
+    // get trainer 
+    const trainer = await getTrainerFromId(userId);
+    if (trainer.err) {
+        return { embed: null, err: trainer.err };
+    }
+
+    // build pokemon embed
+    const embed = buildPokemonEmbed(trainer.data, pokemon.data, "all");
+    send.embeds.push(embed);
+
+    return { send: send, err: null };
 }
 
 const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info", action=null } = {}) => {
@@ -1339,6 +1369,7 @@ module.exports = {
     upgradeEquipmentLevel,
     rerollStatSlot,
     buildPokemonInfoSend,
+    buildPokemonAllInfoSend,
     buildPokedexSend,
     buildReleaseSend,
     buildEquipmentSend,
