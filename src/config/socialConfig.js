@@ -56,6 +56,8 @@ const leaderboardConfig = {
 
 const MAX_TRADE_POKEMON = 3;
 const MAX_TRADE_MONEY = 3000;
+const TRADE_ACCEPT_WINDOW = 5;
+const TRADE_COMPLETE_WINDOW = 10;
 
 module.exports = {
     leaderboardConfig,
@@ -64,4 +66,6 @@ module.exports = {
     getVoteMultiplier,
     MAX_TRADE_POKEMON,
     MAX_TRADE_MONEY,
+    TRADE_ACCEPT_WINDOW,
+    TRADE_COMPLETE_WINDOW,
 }

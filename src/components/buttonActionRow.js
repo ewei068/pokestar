@@ -20,7 +20,8 @@ const { ActionRowBuilder, ButtonStyle } = require("discord.js");
  *  label?,
  *  disabled,
  *  data,
- *  emoji?
+ *  emoji?,
+ *  style?
  * }]
  * @param {*} eventName 
  * @returns 
@@ -34,7 +35,7 @@ const buildButtonActionRow = (buttonConfigs, eventName, danger=false) => {
                 buttonConfig.label, 
                 buttonConfig.emoji,
                 buttonConfig.data, 
-                style,
+                buttonConfig.style || style,
                 buttonConfig.disabled, 
                 eventName
             );

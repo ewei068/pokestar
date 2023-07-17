@@ -33,6 +33,23 @@ const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
 // TODO: move this?
 const PAGE_SIZE = 10;
 
+const updatePokemon = async (pokemon) => {
+    try {
+        const res = await updateDocument(
+            collectionNames.USER_POKEMON,
+            { _id: idFrom(pokemon._id) },
+            { $set: pokemon }
+        );
+        if (res.modifiedCount === 0) {
+            return { err: "Failed to update Pokemon." };
+        } else {
+            return { err: null };
+        }
+    } catch (err) {
+        logger.error(err);
+    }
+}
+
 const listPokemons = async (trainer, listOptions) => {
     // listOptions: { page, pageSize, filter, sort, allowNone }
     const filter = { userId: trainer.userId, ...listOptions.filter};
@@ -1351,6 +1368,7 @@ const buildNatureSend = async ({ stateId=null, user=null } = {}) => {
 }
 
 module.exports = {
+    updatePokemon,
     listPokemons,
     getPokemon,
     getEvolvedPokemon,

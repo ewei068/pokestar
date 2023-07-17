@@ -6,6 +6,7 @@
 * Pokemon ownership stats
 * Fix name or id bug
 * Balance Dungeons
+* Leaderboards adjustments
 * NPC target randomization
 
 ### 0.11.3 (7/10) - Gen 2 Wrap-up

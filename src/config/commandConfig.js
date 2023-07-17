@@ -33,7 +33,7 @@ const commandCategoryConfig = {
         "name": "Social",
         "description": "Social commands",
         "folder": "social",
-        "commands": ["vote", "tradeadd", "tradeinfo", "traderemove", "leaderboard", "invite"]
+        "commands": ["vote", "tradeadd", "tradeinfo", "traderemove", "traderequest", "leaderboard", "invite"]
     },
     "help": {
         "name": "Help",
@@ -447,6 +447,24 @@ const commandConfig = {
         "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
+    },
+    "traderequest": {
+        "name": "Trade Request",
+        "aliases": ["traderequest", "trr"],
+        "description": "Request a trade with another user or anyone in the server",
+        "longDescription": "Request a trade using your trade offer. Leave the user field blank to allow anyone to accept the trade.",
+        "execute": "tradeRequest.js",
+        "args": {
+            "user": {
+                "type": "user",
+                "description": "@mention user to request a trade with",
+                "optional": true,
+                "variable": false,
+            },
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10,
     },
     "leaderboard": {
         "name": "Leaderboard",

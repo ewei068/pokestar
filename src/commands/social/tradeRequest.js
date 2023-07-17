@@ -4,98 +4,48 @@
  * @date 2023
  * @section Description
  * 
- * pvp.js is the encapsulating program for the PVP system.
+ * tradeRequest.js is the encapsulating program for the tradeRequest system.
 */
-const { getTrainerInfo } = require('../../services/trainer');
-const { validateParty } = require('../../services/party');
-const { Battle } = require('../../services/battle');
-const { setState } = require('../../services/state');
-const { buildButtonActionRow } = require('../../components/buttonActionRow');
-const { buildTrainerEmbed } = require('../../embeds/trainerEmbeds');
-const { eventNames } = require('../../config/eventConfig');
+const { setState, deleteState } = require('../../services/state');
 const { getUserId } = require('../../utils/utils');
+const { buildTradeRequestSend } = require('../../services/trade');
 
 /**
- * The encapsulating program for the PVP system.
+ * The encapsulating program for the tradeRequest system.
  * @param {*} user the user given to get the relevant data from.
- * @param {*} opponentUserId the user you want to battle.
- * @param {*} level the balancing level of the battle for both team's pokemon.
+ * @param {*} secondUserId the user you want to trade.
  * @returns Error or message to send.
  */
-const pvp = async (user, opponentUserId, level) => {
-    // if opponent user ID equals user ID, return error
-    if (opponentUserId === user.id) {
-        return { send: null, err: "You can't challenge yourself!" };
+const tradeRequest = async (user, secondUserId) => {
+    // if second user ID equals user ID, return error
+    if (secondUserId === user.id) {
+        return { send: null, err: "You can't trade with yourself!" };
     }
 
-    // if level not between 1 and 100, return error
-    if (level && (level < 1 || level > 100)) {
-        return { send: null, err: "Level must be between 1 and 100." };
-    }
-
-    // get trainer
-    const trainer = await getTrainerInfo(user);
-    if (trainer.err) {
-        return { send: null, err: trainer.err };
-    }
-
-    // validate party
-    const validate = await validateParty(trainer.data);
-    if (validate.err) {
-        return { send: null, err: validate.err };
-    }
-
-    // create battle
-    const equipmentLevel = level !== null ? Math.max(Math.round(level/10), 1) : null;
-    const battle = new Battle({
-        level: level,
-        equipmentLevel: equipmentLevel
+    // build state
+    const stateId = setState({
+        user1: user,
+        userId1: user.id,
+        userId2: secondUserId,
+    }, ttl=300);
+    const { send, err } = await buildTradeRequestSend({
+        stateId: stateId,
+        user1: user,
+        userId2: secondUserId,
     });
-    battle.addTeam("Team1", false);
-    battle.addTrainer(trainer.data, validate.data, "Team1");
-
-    // get trainer embed
-    const embed = buildTrainerEmbed(trainer.data);
-    
-    // create state
-    const state = {
-        battle: battle,
-        userId: user.id,
-        opponentUserId: opponentUserId
-    }
-    const stateId = setState(state, 300);
-
-    // get accept challenge button
-    const rowData = {
-        stateId: stateId
-    }
-    const confirmButtonRow = buildButtonActionRow(
-        [{
-            label: 'Accept Challenge!',
-            disabled: false,
-            data: rowData
-        }],
-        eventNames.PVP_ACCEPT
-    )
-
-    const opponentString = opponentUserId ? `<@${opponentUserId}> has ` : "You have ";
-    const levelString = level !== null ? ` **All Pokemon will be set to level ${level} and equipment set to level ${equipmentLevel}.**` : "";
-
-    const send = {
-        content: `${opponentString}been challenged to a battle by ${user.username}!${levelString}`,
-        embeds: [embed],
-        components: [confirmButtonRow]
+    if (err) {
+        deleteState(stateId);
+        return { send: null, err: err };
     }
 
     return { send: send, err: null };
 }
 
-const pvpMessageCommand = async (message) => {
+const tradeRequestMessageCommand = async (message) => {
     const args = message.content.split(' ');
     const secondUserId = getUserId(args[1]) || null;
-    const level = parseInt(args[2]) || null;
 
-    const { send, err } = await pvp(message.author, secondUserId, level);
+    const { send, err } = await tradeRequest(message.author, secondUserId);
     if (err) {
         await message.channel.send(`${err}`);
         return { err: err };
@@ -104,11 +54,10 @@ const pvpMessageCommand = async (message) => {
     }
 }
 
-const pvpSlashCommand = async (interaction) => {
+const tradeRequestSlashCommand = async (interaction) => {
     const secondUserId = interaction.options.getUser('user') ? interaction.options.getUser('user').id : null;
-    const level = interaction.options.getInteger('level') || null;
 
-    const { send, err } = await pvp(interaction.user, secondUserId, level);
+    const { send, err } = await tradeRequest(interaction.user, secondUserId);
     if (err) {
         await interaction.reply(`${err}`);
         return { err: err };
@@ -118,6 +67,6 @@ const pvpSlashCommand = async (interaction) => {
 }
 
 module.exports = {
-    message: pvpMessageCommand,
-    slash: pvpSlashCommand
+    message: tradeRequestMessageCommand,
+    slash: tradeRequestSlashCommand
 };
