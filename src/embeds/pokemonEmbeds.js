@@ -404,7 +404,7 @@ const buildDexListEmbed = (speciesIds, page) => {
     return embed;
 }
 
-const buildSpeciesDexEmbed = (id, speciesData, tab) => {
+const buildSpeciesDexEmbed = (id, speciesData, tab, ownershipData) => {
     const embed = new EmbedBuilder();
     embed.setTitle(`${speciesData.emoji} #${id} ${speciesData.name}`);
     embed.setColor(rarityConfig[speciesData.rarity].color);
@@ -498,6 +498,17 @@ const buildSpeciesDexEmbed = (id, speciesData, tab) => {
 
         embed.setDescription(`Abilities for #${id} ${speciesData.name}:`);
         embed.addFields(fields);
+    } else if (tab === "rarity") {
+        // display: rarity & ownership
+        embed.setDescription(`Rarity information for #${id} ${speciesData.name}:`);
+        embed.addFields(
+            { name: "Rarity", value: speciesData.rarity, inline: false },
+            { name: "Total", value: `${ownershipData.totalOwnership[0].count}`, inline: true },
+            { name: "Shiny", value: `${ownershipData.totalOwnership[0].shinyCount}`, inline: true },
+            { name: "** **", value: "** **", inline: false },
+            { name: "Users Owned", value: `${ownershipData.uniqueOwnership[0].users}`, inline: true },
+            { name: "Users w/ Shiny", value: `${ownershipData.uniqueOwnership[0].shinyUsers}`, inline: true },
+        );
     }
 
     return embed;

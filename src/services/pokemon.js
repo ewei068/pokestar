@@ -811,6 +811,74 @@ const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info", act
     return { send: send, err: null };
 }
 
+const getPokemonOwnershipStats = async (speciesId) => {
+    try {
+        const totalOwnershipAgg = [
+            { $match: { speciesId: speciesId } },
+            {
+                $group: {
+                    _id: "$speciesId",
+                    count: { $sum: 1 },
+                    shinyCount: { $sum: { $cond: [{ $eq: ["$shiny", true] }, 1, 0] } }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    count: 1,
+                    shinyCount: 1
+                }
+            },
+        ];
+
+        const uniqueOwnershipAgg = [
+            { $match: { speciesId: speciesId } },
+            {
+                $group: {
+                    _id: "$speciesId",
+                    users: { $addToSet: "$userId" },
+                    shinyUsers: { $addToSet: { $cond: [{ $eq: ["$shiny", true] }, "$userId", null] } }
+                }
+            },
+            // if null in shinyUsers, remove it
+            {
+                $addFields: {
+                    shinyUsers: {
+                        $cond: {
+                            if: { $in: [null, "$shinyUsers"] },
+                            then: { $setDifference: ["$shinyUsers", [null]] },
+                            else: "$shinyUsers"
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    users: { $size: "$users" },
+                    shinyUsers: { $size: "$shinyUsers" }
+                }
+            },
+        ];
+
+        const query = new QueryBuilder(collectionNames.USER_POKEMON)
+            .setAggregate(totalOwnershipAgg);
+        const res = await query.aggregate();
+
+        const query2 = new QueryBuilder(collectionNames.USER_POKEMON)
+            .setAggregate(uniqueOwnershipAgg);
+        const res2 = await query2.aggregate();
+
+        return { data: {
+            totalOwnership: res,
+            uniqueOwnership: res2
+        }, err: null };
+    } catch (error) {
+        logger.error(error);
+        return { data: null, err: "Error getting ownership stats." };
+    }
+}
+
 const buildPokedexSend = async ({ id="1", tab="info", view="list", page=1 } = {}) => {
     const send = {
         embeds: [],
@@ -860,7 +928,11 @@ const buildPokedexSend = async ({ id="1", tab="info", view="list", page=1 } = {}
         }
         
         const speciesData = pokemonConfig[id];
-        const embed = buildSpeciesDexEmbed(id, speciesData, tab);
+        const ownershipData = await getPokemonOwnershipStats(id);
+        if (ownershipData.err) {
+            return { send: null, err: ownershipData.err };
+        }
+        const embed = buildSpeciesDexEmbed(id, speciesData, tab, ownershipData.data);
         send.embeds.push(embed);
 
         const index = allIds.indexOf(id);
@@ -897,6 +969,14 @@ const buildPokedexSend = async ({ id="1", tab="info", view="list", page=1 } = {}
                 data: {
                     page: index + 1,
                     tab: "abilities"
+                }
+            },
+            {
+                label: "Rarity",
+                disabled: tab === "rarity" ? true : false,
+                data: {
+                    page: index + 1,
+                    tab: "rarity"
                 }
             },
         ]
