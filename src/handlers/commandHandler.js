@@ -188,7 +188,7 @@ const runMessageCommand = async (message, client) => {
     if (!validateArgs(command, args)) {
         // remove command prefix
         // command = command.slice(prefix.length);
-        message.reply(`Invalid arguments! The correct usage is ${buildCommandUsageString(prefix, commandData)}. Try \`${prefix} help ${command}\` for more info.`);
+        await message.reply(`Invalid arguments! The correct usage is ${buildCommandUsageString(prefix, commandData)}. Try \`${prefix} help ${command}\` for more info.`);
         return;
     }
 
@@ -208,12 +208,12 @@ const runMessageCommand = async (message, client) => {
             if (err) {
                 return;
             } else if (level) {
-                message.reply(`You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`);
+                await message.reply(`You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`);
             }
         }
     } catch (error) {
         logger.error(error);
-        message.reply("There was an error trying to execute that command!");
+        await message.reply("There was an error trying to execute that command!");
     }
 }
 
