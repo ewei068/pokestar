@@ -3,11 +3,14 @@
 ### 0.11.4 - Trading
 
 * Trading + Event
+  * Event Pokemon:
+    * Scammer Thievul (Legendary): A fast support and damage-dealer that punishes fast enemies!
 * Pokemon ownership stats
 * Fix name or id bug
 * Balance Dungeons
 * Leaderboards adjustments
 * NPC target randomization
+* Adjust Celebi abilities thumbnail
 
 ### 0.11.3 (7/10) - Gen 2 Wrap-up
 

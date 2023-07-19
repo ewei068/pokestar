@@ -863,11 +863,23 @@ const getPokemonOwnershipStats = async (speciesId) => {
 
         const query = new QueryBuilder(collectionNames.USER_POKEMON)
             .setAggregate(totalOwnershipAgg);
-        const res = await query.aggregate();
+        let res = await query.aggregate();
+        if (res.length === 0) {
+            res = [{
+                count: 0,
+                shinyCount: 0
+            }]
+        }
 
         const query2 = new QueryBuilder(collectionNames.USER_POKEMON)
             .setAggregate(uniqueOwnershipAgg);
-        const res2 = await query2.aggregate();
+        let res2 = await query2.aggregate();
+        if (res2.length === 0) {
+            res2 = [{
+                users: 0,
+                shinyUsers: 0
+            }]
+        }
 
         return { data: {
             totalOwnership: res,

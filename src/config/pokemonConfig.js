@@ -2729,7 +2729,7 @@ const pokemonConfig = {
             ],
             "powerMoveIds": [
                 "m14", "m34", "m36", "m46",  "m53", "m57", "m58", "m60", "m65", "m68",
-                "m70", "m85", "m86", "m91", "m92", "m94", "m113", "m115", "m127", "m182", "m188", "m191",
+                "m70", "m85", "m86", "m91", "m92", "m94", "m113", "m115", "m127", "m168", "m182", "m188", "m191",
                 "m203", "m215",  "m216", "m219", "m226", "m240", "m241", "m247", "m269", "m202", "m252", "m276", "m283",
                 "m317", "m334", "m340", "m347", "m352", "m355", "m369", "m387", "m396", "m398", "m402",
                 "m409", "m414", "m417", "m424", "m430", "m441", "m444", "m446", "m450", "m492", "m503", "m521", "m523",
@@ -3947,6 +3947,40 @@ const pokemonConfig = {
             [rarities.LEGENDARY]: ["9-1", "25-1", "52-1", "136-1", "139-1", "145-1", "150-1"],
             [rarities.EPIC]: ["18-1", "24-1", "34-1", "49-1", "110-1", "131-1"]
         }
+    },
+    "302-1": {
+        "name": "Billionaire Sableye",
+        "emoji": "<:billionairesableye:1130698671474888815>",
+        "description": "A Sableye that has amassed a fortune through its business ventures. It is said to be the richest Pokémon in the world.",
+        "type": [types.NORMAL, types.GHOST],
+        "baseStats": [70, 100, 130, 90, 130, 60],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/billionaire-sableye-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/billionaire-sableye-shiny-resized.png",
+        "abilities": {
+            "20010": 1,
+        },
+        "moveIds": ["m6", "m105", "m203", "m20008"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
+    },
+    "828-1": {
+        "name": "Scammer Thievul",
+        "emoji": "<:scammerthievul:1130698673794338968>",
+        "description": "A devious thief whos lies have fooled countless trainers. It preys on the unaware and naive.",
+        "type": [types.DARK],
+        "baseStats": [80, 80, 60, 130, 100, 130],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/scammer-thievul-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/scammer-thievul-shiny-resized.png",
+        "abilities": {
+            "198": 1,
+        },
+        "moveIds": ["m98", "m168", "m399", "m20007"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
     },
     "20091": {
         "name": "Temple Guardian Cloyster",

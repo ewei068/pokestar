@@ -536,7 +536,7 @@ const buildCelebiAbilityEmbed = (trainer) => {
         { name: "Time Acceleration", value: "Celebi's time powers allow it to accelerate time, tripling money & shards from `/daily`, and doubling Pokemon EXP gain!", inline: false },
         { name: `${timeTravelCooldown}Time Travel`, value: timeTravelString, inline: false },
     );
-    embed.setThumbnail("https://primary.jwwb.nl/public/h/t/i/temp-zjpebgcobmaxydcmrfwb/vrhcr6/image-542.png");
+    embed.setThumbnail("https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/misc/celebi-thumbnail.png");
 
     return embed;
 }
