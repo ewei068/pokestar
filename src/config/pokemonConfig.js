@@ -2543,6 +2543,22 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "143-1": {
+        "name": "Sleeping Snorlax",
+        "emoji": "<:sleepingsnorlax:1132059622979670096>",
+        "description": "The star of Pokemon Sleep, this Snorlax is always sleeping. The more it sleeps, the more powerful it gets.",
+        "type": [types.NORMAL],
+        "baseStats": [160, 100, 70, 60, 80, 80],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/sleeping-snorlax-resized.png",
+        "shinySprite": "https://media.tenor.com/-Uz6xHwMa4gAAAAi/snorlax-snorlax-pokemon.gif",
+        "abilities": {
+            "62": 1
+        },
+        "moveIds": ["m214", "m34-1", "m281", "m156"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
     "144" : {
         "name": "Articuno",
         "emoji": "<:144:1100294779419504680>",

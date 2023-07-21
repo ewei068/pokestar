@@ -1809,6 +1809,30 @@ const effectConfig = {
             });
         }
     },
+    "yawn": {
+        "name": "Yawn",
+        "description": "The target is falling asleep.",
+        "type": effectTypes.DEBUFF,
+        "dispellable": true,
+        "effectAdd": function(battle, source, target) {
+            battle.addToLog(`${source.name} is making ${target.name} drowsy!`);
+        },
+        "effectRemove": function(battle, target, args) {
+            const effect = target.effectIds["yawn"];
+            if (!effect) return;
+            const source = effect.source;
+            if (!source) return;
+            const remainingDuration = effect.duration;
+            if (remainingDuration === undefined) return;
+
+            // if duration 0, target falls asleep
+            if (remainingDuration === 0) {
+                target.applyStatus(statusConditions.SLEEP, source);
+            } else {
+                battle.addToLog(`${target.name} is no longer drowsy!`);
+            }   
+        }
+    },
     "perishSong": {
         "name": "Perish Song",
         "description": "The target is doomed to faint in 3 turns.",
@@ -2133,6 +2157,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user drops onto the target with its full body weight. This has a 30% chance to leave the target with paralysis.",
+    },
+    "m34-1": {
+        "name": "Groggy Slam",
+        "type": types.NORMAL,
+        "power": 75,
+        "accuracy": 75,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SQUARE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user rolls over in its slumber, dropping onto targets with its full body weight. This has a 30% chance to leave the targets with paralysis.",
     },
     "m35": {
         "name": "Wrap",
@@ -3045,7 +3082,7 @@ const moveConfig = {
         "type": types.PSYCHIC,
         "power": null,
         "accuracy": null,
-        "cooldown": 6,
+        "cooldown": 5,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
@@ -3754,6 +3791,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user attacks the target with great power. However, this also lowers the user's Attack and Defense stats for 1 turn.",
+    },
+    "m281": {
+        "name": "Yawn",
+        "type": types.NORMAL,
+        "power": null,
+        "accuracy": 100,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.ROW,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user lets loose a huge yawn that lulls targets into falling asleep in 1 turn. If the user is asleep, apply sleep immediately.",
     },
     "m282": {
         "name": "Knock Off",
@@ -5260,6 +5310,23 @@ const moveExecutes = {
             }
         }
     },
+    "m34-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m34-1";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 30% chance to paralyze
+            if (!miss && Math.random() < 0.3) {
+                target.applyStatus(statusConditions.PARALYSIS, source)
+            }
+        }
+    },
     "m35": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m35";
         const moveData = moveConfig[moveId];
@@ -6363,8 +6430,8 @@ const moveExecutes = {
                 moveId: moveId
             });
 
-            // apply sleep
-            target.applyStatus(statusConditions.SLEEP, source);
+            // apply sleep for longer
+            target.applyStatus(statusConditions.SLEEP, source, { startingTurns: -1 });
         }
     },
     "m157": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -7316,6 +7383,22 @@ const moveExecutes = {
         // reduce source atk and def
         source.addEffect("atkDown", 1, source);
         source.addEffect("defDown", 1, source);
+    },
+    "m281": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m281";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // if not miss  apply yawn debuff
+            const miss = missedTargets.includes(target);
+            if (!miss) {
+                // if source is sleep, apply sleep
+                if (source.status.statusId == statusConditions.SLEEP) {
+                    target.applyStatus(statusConditions.SLEEP, source);
+                } else {
+                    target.addEffect("yawn", 1, source);
+                }
+            }
+        }
     },
     "m282": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m282";
