@@ -33,7 +33,7 @@ const commandCategoryConfig = {
         "name": "Social",
         "description": "Social commands",
         "folder": "social",
-        "commands": ["vote", "leaderboard", "invite"]
+        "commands": ["vote", "tradeadd", "tradeinfo", "traderemove", "traderequest", "leaderboard", "invite"]
     },
     "help": {
         "name": "Help",
@@ -403,6 +403,69 @@ const commandConfig = {
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 15,
     },
+    "tradeadd": {
+        "name": "Trade Add",
+        "aliases": ["tradeadd", "tra"],
+        "description": "Add a Pokemon or money to your trade offer",
+        "longDescription": "Add a Pokemon or money to your trade offer. You can only add Pokemon that are not currently in a trade, in parties, or locked.",
+        "execute": "tradeAdd.js",
+        "args": {
+            "option": {
+                "type": "string",
+                "description": "option (money, Pokemon name, or Pokemon ID) to add",
+                "optional": false,
+                "variable": false,
+            },
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10,
+    },
+    "traderemove": {
+        "name": "Trade Remove",
+        "aliases": ["traderemove", "trrm"],
+        "description": "Remove a Pokemon or money from your trade offer",
+        "longDescription": "Remove a Pokemon or money from your trade offer.",
+        "execute": "tradeRemove.js",
+        "args": {
+            "option": {
+                "type": "string",
+                "description": "option (money, Pokemon name, or Pokemon ID) to remove",
+                "optional": false,
+                "variable": false,
+            },
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10,
+    },
+    "tradeinfo": {
+        "name": "Trade Info",
+        "aliases": ["tradeinfo", "tri"],
+        "description": "Get info about your trade offer",
+        "execute": "tradeInfo.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+    },
+    "traderequest": {
+        "name": "Trade Request",
+        "aliases": ["traderequest", "trr"],
+        "description": "Request a trade with another user or anyone in the server",
+        "longDescription": "Request a trade using your trade offer. Leave the user field blank to allow anyone to accept the trade.",
+        "execute": "tradeRequest.js",
+        "args": {
+            "user": {
+                "type": "user",
+                "description": "@mention user to request a trade with",
+                "optional": true,
+                "variable": false,
+            },
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10,
+    },
     "leaderboard": {
         "name": "Leaderboard",
         "aliases": ["leaderboard", "rankings"],
@@ -415,7 +478,7 @@ const commandConfig = {
                 "optional": false,
                 "variable": false,
                 "enum": [
-                    "level", "worth", "shiny", "power"
+                    "level", "trainerExp", "pokedollars", "worth", "shiny", "power"
                 ]
             },
             "scope": {

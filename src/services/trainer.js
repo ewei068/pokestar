@@ -52,6 +52,22 @@ const initTrainer = async (user) => {
     }
 }
 
+const getTrainerFromId = async (userId) => {
+    try {
+        // check if trainer exists
+        trainers = await findDocuments(collectionNames.USERS, { "userId": userId });
+        if (trainers.length === 0) {
+            return { data: null, err: "Error finding trainer." };
+        } else {
+            trainer = trainers[0];
+            return { data: trainer, err: null };
+        }
+    } catch (error) {
+        logger.error(error);
+        return { data: null, err: "Error finding trainer." };
+    }
+}
+
 const getTrainer = async (user, refresh=true) => {
     // only keep desired fields
     let tmpUser = {
@@ -139,19 +155,7 @@ const getTrainer = async (user, refresh=true) => {
 
         // re-retrieve trainer to flush pointers
         // TODO: possibly better way to do this
-        try {
-            // check if trainer exists
-            trainers = await findDocuments(collectionNames.USERS, { "userId": user.id });
-            if (trainers.length === 0) {
-                return { data: null, err: "Error finding trainer." };
-            } else {
-                trainer = trainers[0];
-                return { data: trainer, err: null };
-            }
-        } catch (error) {
-            logger.error(error);
-            return { data: null, err: "Error finding trainer." };
-        }
+        return await getTrainerFromId(user.id);
     }
 
     return { data: trainer, err: null };
@@ -353,7 +357,8 @@ const getVoteRewards = async (user) => {
 
     // add vote rewards
     const receivedRewards = addRewards(trainer, {
-        money: rewards * 100,
+        // temp: x2 for event
+        money: rewards * 100 * 2,
         backpack: {
             [backpackCategories.POKEBALLS]: {
                 [backpackItems.POKEBALL]: rewards * 1
@@ -420,6 +425,7 @@ const updateTrainer = async (trainer) => {
 
 module.exports = {
     getTrainer,
+    getTrainerFromId,
     getTrainerInfo,
     addExpAndMoneyTrainer,
     addExpAndMoney: addExpAndMoney,

@@ -29,7 +29,8 @@ const { addItems: addItems } = require('../utils/trainerUtils');
 const { equipmentConfig } = require('../config/equipmentConfig');
 const { locationConfig, locations } = require('../config/locationConfig');
 
-const DAILY_MONEY = process.env.STAGE == stageNames.ALPHA ? 100000 : 300;
+// temp: x2 for event
+const DAILY_MONEY = process.env.STAGE == stageNames.ALPHA ? 100000 : 300 * 2;
 
 const drawDaily = async (trainer) => {
     // check if new day; if in alpha, ignore
@@ -142,6 +143,7 @@ const generateRandomPokemon = (userId, pokemonId, level=5, equipmentLevel=1) => 
 
     const shinyChance = process.env.STAGE == stageNames.ALPHA ? 1 : 1024;
     const isShiny = drawUniform(0, shinyChance, 1)[0] == 0;
+    const shouldLock = process.env.STAGE !== stageNames.ALPHA && (isShiny || speciesData.rarity == rarities.LEGENDARY);
     const pokemon = {
         "userId": userId,
         "speciesId": pokemonId,
@@ -160,7 +162,7 @@ const generateRandomPokemon = (userId, pokemonId, level=5, equipmentLevel=1) => 
         "originalOwner": userId,
         "rarity": speciesData.rarity,
         "equipments": generateRandomEquipments(equipmentLevel),
-        "locked": (speciesData.rarity == rarities.LEGENDARY || isShiny) ? true : false,
+        "locked": shouldLock,
     }
 
     // calculate stats

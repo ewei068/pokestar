@@ -9,12 +9,23 @@
 const { EmbedBuilder } = require('discord.js');
 const { getFullUsername } = require('../utils/trainerUtils');
 const { getVoteMultiplier } = require('../config/socialConfig');
+const { formatMoney } = require('../utils/utils');
+const { pokemonConfig } = require('../config/pokemonConfig');
 
 const buildLeaderboardEmbed = (leaderboardInfo, categoryData, scope) => {
     let leaderboardString = "";
+    let prevPosition = 0;
+    let prevValue = 0;
     for (let index = 0; index < leaderboardInfo.length; index++) {
         const entry = leaderboardInfo[index];
-        leaderboardString += `**${index + 1}.** ${getFullUsername(entry.user)} - ${entry.label}\n`;
+        let position = index + 1;
+        if (index > 0 && entry.label === prevValue) {
+            position = prevPosition;
+        }
+        leaderboardString += `**${position}.** ${getFullUsername(entry.user)} - ${entry.label}\n`;
+
+        prevPosition = position;
+        prevValue = entry.label;
     }
 
     const embed = new EmbedBuilder()
@@ -45,7 +56,26 @@ const buildVoteEmbed = (trainer) => {
     return embed;
 }
 
+const buildTradeEmbed = (trainer, pokemons, money) => {
+    let pokemonString = `**${formatMoney(money)}**\n\n`;
+    for (let i = 0; i < pokemons.length; i++) {
+        const pokemon = pokemons[i];
+        const speciesData = pokemonConfig[pokemons[i].speciesId];
+        const ivPercent = pokemon.ivTotal * 100 / (31 * 6);
+        
+        pokemonString += `${pokemon.shiny ? "✨" : ""}${speciesData.emoji} **[Lv. ${pokemon.level}] [IV ${Math.round(ivPercent)}%]** ${pokemon.name} (${pokemon._id})\n`;
+    }
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${trainer.user.username}'s Trade Offer`);
+    embed.setDescription(pokemonString);
+    embed.setColor("#FFFFFF");
+    embed.setThumbnail(`https://cdn.discordapp.com/avatars/${trainer.userId}/${trainer.user.avatar}.webp`);
+    
+    return embed;
+}
+
 module.exports = {
     buildLeaderboardEmbed,
     buildVoteEmbed,
+    buildTradeEmbed
 }

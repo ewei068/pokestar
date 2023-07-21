@@ -18,7 +18,7 @@ const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed, buildEqu
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
-const { getTrainer, updateTrainer } = require("./trainer");
+const { getTrainer, updateTrainer, getTrainerFromId } = require("./trainer");
 const { setState, getState } = require("./state");
 const { buildYesNoActionRow } = require("../components/yesNoActionRow");
 const { modifierConfig, modifierTypes, modifierSlotConfig, equipmentConfig, MAX_EQUIPMENT_LEVEL, levelUpCost, STAT_REROLL_COST, POKEDOLLAR_MULTIPLIER, SWAP_COST } = require("../config/equipmentConfig");
@@ -32,6 +32,23 @@ const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
+
+const updatePokemon = async (pokemon) => {
+    try {
+        const res = await updateDocument(
+            collectionNames.USER_POKEMON,
+            { _id: idFrom(pokemon._id) },
+            { $set: pokemon }
+        );
+        if (res.modifiedCount === 0) {
+            return { err: "Failed to update Pokemon." };
+        } else {
+            return { err: null };
+        }
+    } catch (err) {
+        logger.error(err);
+    }
+}
 
 const listPokemons = async (trainer, listOptions) => {
     // listOptions: { page, pageSize, filter, sort, allowNone }
@@ -172,7 +189,7 @@ const calculateAndUpdatePokemonStats = async (pokemon, speciesData, force=false)
     return { data: pokemon, err: null };
 }
 
-const getPokemon = async (trainer, pokemonId) => {
+const getPokemonFromUserId = async (userId, pokemonId) => {
     // find instance of pokemon in trainer's collection
     try {
         let id = null;
@@ -182,7 +199,7 @@ const getPokemon = async (trainer, pokemonId) => {
             return { data: null, err: "Invalid Pokemon ID." };
         }
         const query = new QueryBuilder(collectionNames.USER_POKEMON)
-            .setFilter({ userId: trainer.userId, _id: id });
+            .setFilter({ userId: userId, _id: id });
         
         const res = await query.findOne();
         
@@ -197,16 +214,19 @@ const getPokemon = async (trainer, pokemonId) => {
     }
 }
 
+const getPokemon = async (trainer, pokemonId) => {
+    return await getPokemonFromUserId(trainer.userId, pokemonId);
+}
+
 const getIdFromNameOrId = async (user, nameOrId, interaction, defer=true) => {
     if (defer) {
         await interaction.deferReply();
     }
 
-    // if BSON-able, return id
-    try {
-        return { data: idFrom(nameOrId).toString(), err: null };
-    } catch (error) {
-        // pass
+    // if can get from `getPokemon`, return ID
+    const pokemon = await getPokemonFromUserId(user.id, nameOrId);
+    if (!pokemon.err) {
+        return { data: pokemon.data._id.toString(), err: null };
     }
 
     // try to get pokemon from listPokemons, if one return ID, if multiple await a selection menu
@@ -558,7 +578,7 @@ const upgradeEquipmentLevel = async (trainer, pokemon, equipmentType) => {
 
     // update equipment
     equipment.level++;
-    const { data, err } = await calculateAndUpdatePokemonStats(pokemon, pokemonConfig[pokemon.speciesId]);
+    const { data, err } = await calculateAndUpdatePokemonStats(pokemon, pokemonConfig[pokemon.speciesId], true);
     if (err) {
         return { data: null, err: err };
     } else {
@@ -682,6 +702,32 @@ const setBattleEligible = async (trainer) => {
     return { data: null, err: null };
 }
 
+const buildPokemonAllInfoSend = async ({ userId=null, pokemonId=null}={}) => {
+    const send = {
+        content: pokemonId,
+        embeds: [],
+        components: []
+    }
+
+    // get pokemon
+    const pokemon = await getPokemonFromUserId(userId, pokemonId);
+    if (pokemon.err) {
+        return { embed: null, err: pokemon.err };
+    }
+
+    // get trainer 
+    const trainer = await getTrainerFromId(userId);
+    if (trainer.err) {
+        return { embed: null, err: trainer.err };
+    }
+
+    // build pokemon embed
+    const embed = buildPokemonEmbed(trainer.data, pokemon.data, "all");
+    send.embeds.push(embed);
+
+    return { send: send, err: null };
+}
+
 const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info", action=null } = {}) => {
     const send = {
         content: pokemonId,
@@ -764,6 +810,86 @@ const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info", act
     return { send: send, err: null };
 }
 
+const getPokemonOwnershipStats = async (speciesId) => {
+    try {
+        const totalOwnershipAgg = [
+            { $match: { speciesId: speciesId } },
+            {
+                $group: {
+                    _id: "$speciesId",
+                    count: { $sum: 1 },
+                    shinyCount: { $sum: { $cond: [{ $eq: ["$shiny", true] }, 1, 0] } }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    count: 1,
+                    shinyCount: 1
+                }
+            },
+        ];
+
+        const uniqueOwnershipAgg = [
+            { $match: { speciesId: speciesId } },
+            {
+                $group: {
+                    _id: "$speciesId",
+                    users: { $addToSet: "$userId" },
+                    shinyUsers: { $addToSet: { $cond: [{ $eq: ["$shiny", true] }, "$userId", null] } }
+                }
+            },
+            // if null in shinyUsers, remove it
+            {
+                $addFields: {
+                    shinyUsers: {
+                        $cond: {
+                            if: { $in: [null, "$shinyUsers"] },
+                            then: { $setDifference: ["$shinyUsers", [null]] },
+                            else: "$shinyUsers"
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    users: { $size: "$users" },
+                    shinyUsers: { $size: "$shinyUsers" }
+                }
+            },
+        ];
+
+        const query = new QueryBuilder(collectionNames.USER_POKEMON)
+            .setAggregate(totalOwnershipAgg);
+        let res = await query.aggregate();
+        if (res.length === 0) {
+            res = [{
+                count: 0,
+                shinyCount: 0
+            }]
+        }
+
+        const query2 = new QueryBuilder(collectionNames.USER_POKEMON)
+            .setAggregate(uniqueOwnershipAgg);
+        let res2 = await query2.aggregate();
+        if (res2.length === 0) {
+            res2 = [{
+                users: 0,
+                shinyUsers: 0
+            }]
+        }
+
+        return { data: {
+            totalOwnership: res,
+            uniqueOwnership: res2
+        }, err: null };
+    } catch (error) {
+        logger.error(error);
+        return { data: null, err: "Error getting ownership stats." };
+    }
+}
+
 const buildPokedexSend = async ({ id="1", tab="info", view="list", page=1 } = {}) => {
     const send = {
         embeds: [],
@@ -813,7 +939,11 @@ const buildPokedexSend = async ({ id="1", tab="info", view="list", page=1 } = {}
         }
         
         const speciesData = pokemonConfig[id];
-        const embed = buildSpeciesDexEmbed(id, speciesData, tab);
+        const ownershipData = await getPokemonOwnershipStats(id);
+        if (ownershipData.err) {
+            return { send: null, err: ownershipData.err };
+        }
+        const embed = buildSpeciesDexEmbed(id, speciesData, tab, ownershipData.data);
         send.embeds.push(embed);
 
         const index = allIds.indexOf(id);
@@ -850,6 +980,14 @@ const buildPokedexSend = async ({ id="1", tab="info", view="list", page=1 } = {}
                 data: {
                     page: index + 1,
                     tab: "abilities"
+                }
+            },
+            {
+                label: "Rarity",
+                disabled: tab === "rarity" ? true : false,
+                data: {
+                    page: index + 1,
+                    tab: "rarity"
                 }
             },
         ]
@@ -898,25 +1036,25 @@ const canRelease = async (trainer, pokemonIds) => {
     // get pokemon to release
     const toRelease = await listPokemons(
         trainer, 
-        { page: 1, filter: { _id: { $in: pokemonIds.map(idFrom)} } }
+        { page: 1, filter: { _id: { $in: pokemonIds.map(idFrom)} }, allowNone: true },
     );
     if (toRelease.err) {
         return { err: toRelease.err };
     } else if (toRelease.data.length !== pokemonIds.length) {
-        return { err: `You don't have all the Pokemon you want to release!` };
+        return { err: `You don't have all the Pokemon you want to release or trade!` };
     }
 
     // see if any pokemon are mythical
     for (const pokemon of toRelease.data) {
         if (pokemon.rarity === rarities.MYTHICAL) {
-            return { err: `You can't release ${pokemon.name} (${pokemon._id}) because it's mythical!` };
+            return { err: `You can't release or trade ${pokemon.name} (${pokemon._id}) because it's mythical!` };
         }
     }
 
     // see if any pokemon are locked
     for (const pokemon of toRelease.data) {
         if (pokemon.locked) {
-            return { err: `You can't release ${pokemon.name} (${pokemon._id}) because it's locked!` };
+            return { err: `You can't release or trade ${pokemon.name} (${pokemon._id}) because it's locked!` };
         }
     }
 
@@ -924,7 +1062,7 @@ const canRelease = async (trainer, pokemonIds) => {
     const partyUniqueIds = getPartyPokemonIds(trainer);
     for (const pokemon of toRelease.data) {
         if (partyUniqueIds.includes(pokemon._id.toString())) {
-            return { err: `You can't release ${pokemon.name} (${pokemon._id}) because it's in one of your parties!` };
+            return { err: `You can't release or trade ${pokemon.name} (${pokemon._id}) because it's in one of your parties!` };
         }
     }
 
@@ -1321,6 +1459,7 @@ const buildNatureSend = async ({ stateId=null, user=null } = {}) => {
 }
 
 module.exports = {
+    updatePokemon,
     listPokemons,
     getPokemon,
     getEvolvedPokemon,
@@ -1339,6 +1478,7 @@ module.exports = {
     upgradeEquipmentLevel,
     rerollStatSlot,
     buildPokemonInfoSend,
+    buildPokemonAllInfoSend,
     buildPokedexSend,
     buildReleaseSend,
     buildEquipmentSend,

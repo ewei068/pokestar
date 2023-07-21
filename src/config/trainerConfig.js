@@ -202,6 +202,13 @@ const trainerFields = {
             "rewards": 0,
         },
     },
+    "trade": {
+        "type": "object",
+        "default": {
+            "money": 0,
+            "pokemonIds": [],
+        },
+    },
     "hasCelebi": {
         "type": "boolean",
         "default": false,

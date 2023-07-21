@@ -34,6 +34,9 @@ const eventNames = {
     MEW_BUTTON: "mewButton",
     MEW_SELECT: "mewSelect",
     CELEBI_TIME_TRAVEL: "celebiTimeTravel",
+    TRADE_HELP: "tradeHelp",
+    TRADE_REQUEST_ACCEPT: "tradeRequestAccept",
+    TRADE_REQUEST_BUTTON: "tradeRequestButton",
     VOTE_REWARDS: "voteRewards",
     EVENT_BUTTON: "eventButton",
     TUTORIAL_BUTTON: "tutorialButton",
@@ -238,6 +241,23 @@ const eventConfig = {
         "directory": "mythic",
         "exp": 25,
         "money": 50,
+    },
+    [eventNames.TRADE_HELP]: {
+        "name": "Trade Help",
+        "execute": "tradeHelp.js",
+        "directory": "trade",
+    },
+    [eventNames.TRADE_REQUEST_ACCEPT]: {
+        "name": "Trade Request Accept",
+        "execute": "tradeRequestAccept.js",
+        "directory": "trade",
+        "exp": 5,
+        "money": 10,
+    },
+    [eventNames.TRADE_REQUEST_BUTTON]: {
+        "name": "Trade Request Button",
+        "execute": "tradeRequestButton.js",
+        "directory": "trade",
     },
     [eventNames.VOTE_REWARDS]: {
         "name": "Vote Rewards",

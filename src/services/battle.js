@@ -190,7 +190,9 @@ class NPC {
         const moveTier = moveData.tier;
         heuristic *= moveTier === moveTiers.BASIC ? 0.7 : (moveTier === moveTiers.POWER ? 1 : 1.5);
 
-        return heuristic;
+        // calculate nonce for small random variation
+        const nonce = Math.random();
+        return heuristic + nonce;
     }
 }
 
@@ -1738,7 +1740,9 @@ class Pokemon {
         return true;
     }
 
-    applyStatus(statusId, source) {
+    applyStatus(statusId, source, {
+        startingTurns=0
+    }=0) {
         // if faint, do nothing
         if (this.isFainted) {
             return;
@@ -1774,7 +1778,7 @@ class Pokemon {
                 this.status = {
                     statusId: statusId,
                     source: source,
-                    turns: 0,
+                    turns: startingTurns,
                 }
                 this.battle.addToLog(`${this.name} was burned!`);
                 statusApplied = true;
@@ -1793,7 +1797,7 @@ class Pokemon {
                 this.status = {
                     statusId: statusId,
                     source: source,
-                    turns: 0,
+                    turns: startingTurns,
                 }
                 this.battle.addToLog(`${this.name} was frozen!`);
                 statusApplied = true;
@@ -1810,7 +1814,7 @@ class Pokemon {
                 this.status = {
                     statusId: statusId,
                     source: source,
-                    turns: 0,
+                    turns: startingTurns,
                 }
                 this.battle.addToLog(`${this.name} was paralyzed!`);
                 statusApplied = true;
@@ -1824,7 +1828,7 @@ class Pokemon {
                 this.status = {
                     statusId: statusId,
                     source: source,
-                    turns: 0,
+                    turns: startingTurns,
                 }
                 this.battle.addToLog(`${this.name} was poisoned!`);
                 statusApplied = true;
@@ -1833,7 +1837,7 @@ class Pokemon {
                 this.status = {
                     statusId: statusId,
                     source: source,
-                    turns: 0,
+                    turns: startingTurns,
                 }
                 this.battle.addToLog(`${this.name} fell asleep!`);
                 statusApplied = true;
@@ -1847,7 +1851,7 @@ class Pokemon {
                 this.status = {
                     statusId: statusId,
                     source: source,
-                    turns: 0,
+                    turns: startingTurns,
                 }
                 this.battle.addToLog(`${this.name} was badly poisoned!`);
                 statusApplied = true;

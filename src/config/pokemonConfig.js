@@ -2543,6 +2543,22 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
     },
+    "143-1": {
+        "name": "Sleeping Snorlax",
+        "emoji": "<:sleepingsnorlax:1132059622979670096>",
+        "description": "The star of Pokemon Sleep, this Snorlax is always sleeping. The more it sleeps, the more powerful it gets.",
+        "type": [types.NORMAL],
+        "baseStats": [160, 100, 70, 60, 80, 80],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/sleeping-snorlax-resized.png",
+        "shinySprite": "https://media.tenor.com/-Uz6xHwMa4gAAAAi/snorlax-snorlax-pokemon.gif",
+        "abilities": {
+            "62": 1
+        },
+        "moveIds": ["m214", "m34-1", "m281", "m156"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
     "144" : {
         "name": "Articuno",
         "emoji": "<:144:1100294779419504680>",
@@ -2729,7 +2745,7 @@ const pokemonConfig = {
             ],
             "powerMoveIds": [
                 "m14", "m34", "m36", "m46",  "m53", "m57", "m58", "m60", "m65", "m68",
-                "m70", "m85", "m86", "m91", "m92", "m94", "m113", "m115", "m127", "m182", "m188", "m191",
+                "m70", "m85", "m86", "m91", "m92", "m94", "m113", "m115", "m127", "m168", "m182", "m188", "m191",
                 "m203", "m215",  "m216", "m219", "m226", "m240", "m241", "m247", "m269", "m202", "m252", "m276", "m283",
                 "m317", "m334", "m340", "m347", "m352", "m355", "m369", "m387", "m396", "m398", "m402",
                 "m409", "m414", "m417", "m424", "m430", "m441", "m444", "m446", "m450", "m492", "m503", "m521", "m523",
@@ -3948,12 +3964,46 @@ const pokemonConfig = {
             [rarities.EPIC]: ["18-1", "24-1", "34-1", "49-1", "110-1", "131-1"]
         }
     },
+    "302-1": {
+        "name": "Billionaire Sableye",
+        "emoji": "<:billionairesableye:1130698671474888815>",
+        "description": "A Sableye that has amassed a fortune through its business ventures. It is said to be the richest Pokémon in the world.",
+        "type": [types.NORMAL, types.GHOST],
+        "baseStats": [70, 100, 130, 90, 130, 60],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/billionaire-sableye-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/billionaire-sableye-shiny-resized.png",
+        "abilities": {
+            "20010": 1,
+        },
+        "moveIds": ["m6", "m105", "m203", "m20008"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
+    },
+    "828-1": {
+        "name": "Scammer Thievul",
+        "emoji": "<:scammerthievul:1130698673794338968>",
+        "description": "A devious thief whos lies have fooled countless trainers. It preys on the unaware and naive.",
+        "type": [types.DARK],
+        "baseStats": [80, 80, 60, 130, 100, 130],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/scammer-thievul-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/scammer-thievul-shiny-resized.png",
+        "abilities": {
+            "198": 1,
+        },
+        "moveIds": ["m98", "m168", "m399", "m20007"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
+    },
     "20091": {
         "name": "Temple Guardian Cloyster",
         "emoji": "<:91:1100288966881718342>",
         "description": "Faithful guardian of the ancient Mind Temple. It's said to be untouchable through centuries of perfecting its mind.",
         "type": [types.WATER, types.ICE],
-        "baseStats": [160, 105, 180, 90, 75, 90],
+        "baseStats": [150, 115, 180, 90, 75, 90],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/91.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/91.png",
         "abilities": {
@@ -3987,7 +4037,7 @@ const pokemonConfig = {
         "emoji": "<:113:1100290444249804800>",
         "description": "The life force of the Soul Cave. A millenia of harnessing soul energy has made it an unbreakable guardian.",
         "type": [types.NORMAL],
-        "baseStats": [350, 40, 45, 80, 100, 85],
+        "baseStats": [350, 40, 45, 90, 90, 85],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/113.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/113.png",
         "abilities": {
@@ -4004,7 +4054,7 @@ const pokemonConfig = {
         "emoji": "<:144:1100294779419504680>",
         "description": "Stalwart guardian of the Mind Temple. It's been bestowed wisdom from the ancient gods.",
         "type": [types.ICE, types.FLYING],
-        "baseStats": [170, 85, 90, 100, 160, 95],
+        "baseStats": [160, 85, 90, 110, 160, 95],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/144.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/144.png",
         "abilities": {
@@ -4021,7 +4071,7 @@ const pokemonConfig = {
         "emoji": "<:149:1100294787996860508>",
         "description": "The protector and most devout follower of the Spirit Altar. Its unstoppable will has been hardened through communion with the ancient gods.",
         "type": [types.DRAGON, types.FLYING],
-        "baseStats": [120, 165, 80, 100, 90, 145],
+        "baseStats": [125, 155, 85, 100, 95, 140],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/149.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/149.png",
         "abilities": {
@@ -4038,7 +4088,7 @@ const pokemonConfig = {
         "emoji": "<:150:1100294789867520052>",
         "description": "The sole founder of the Spirit Altar. It was created by the gods after centuries of meditation and prayer.",
         "type": [types.PSYCHIC],
-        "baseStats": [125, 85, 85, 170, 85, 150],
+        "baseStats": [125, 90, 90, 160, 90, 145],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/150.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/150.png",
         "abilities": {
