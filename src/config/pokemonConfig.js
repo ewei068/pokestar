@@ -4003,7 +4003,7 @@ const pokemonConfig = {
         "emoji": "<:91:1100288966881718342>",
         "description": "Faithful guardian of the ancient Mind Temple. It's said to be untouchable through centuries of perfecting its mind.",
         "type": [types.WATER, types.ICE],
-        "baseStats": [160, 105, 180, 90, 75, 90],
+        "baseStats": [150, 115, 180, 90, 75, 90],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/91.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/91.png",
         "abilities": {
@@ -4037,7 +4037,7 @@ const pokemonConfig = {
         "emoji": "<:113:1100290444249804800>",
         "description": "The life force of the Soul Cave. A millenia of harnessing soul energy has made it an unbreakable guardian.",
         "type": [types.NORMAL],
-        "baseStats": [350, 40, 45, 80, 100, 85],
+        "baseStats": [350, 40, 45, 90, 90, 85],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/113.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/113.png",
         "abilities": {
@@ -4054,7 +4054,7 @@ const pokemonConfig = {
         "emoji": "<:144:1100294779419504680>",
         "description": "Stalwart guardian of the Mind Temple. It's been bestowed wisdom from the ancient gods.",
         "type": [types.ICE, types.FLYING],
-        "baseStats": [170, 85, 90, 100, 160, 95],
+        "baseStats": [160, 85, 90, 110, 160, 95],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/144.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/144.png",
         "abilities": {
@@ -4071,7 +4071,7 @@ const pokemonConfig = {
         "emoji": "<:149:1100294787996860508>",
         "description": "The protector and most devout follower of the Spirit Altar. Its unstoppable will has been hardened through communion with the ancient gods.",
         "type": [types.DRAGON, types.FLYING],
-        "baseStats": [120, 165, 80, 100, 90, 145],
+        "baseStats": [125, 155, 85, 100, 95, 140],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/149.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/149.png",
         "abilities": {
@@ -4088,7 +4088,7 @@ const pokemonConfig = {
         "emoji": "<:150:1100294789867520052>",
         "description": "The sole founder of the Spirit Altar. It was created by the gods after centuries of meditation and prayer.",
         "type": [types.PSYCHIC],
-        "baseStats": [125, 85, 85, 170, 85, 150],
+        "baseStats": [125, 90, 90, 160, 90, 145],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/150.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/150.png",
         "abilities": {

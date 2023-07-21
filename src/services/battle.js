@@ -190,7 +190,9 @@ class NPC {
         const moveTier = moveData.tier;
         heuristic *= moveTier === moveTiers.BASIC ? 0.7 : (moveTier === moveTiers.POWER ? 1 : 1.5);
 
-        return heuristic;
+        // calculate nonce for small random variation
+        const nonce = Math.random();
+        return heuristic + nonce;
     }
 }
 

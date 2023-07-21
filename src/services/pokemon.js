@@ -223,11 +223,10 @@ const getIdFromNameOrId = async (user, nameOrId, interaction, defer=true) => {
         await interaction.deferReply();
     }
 
-    // if BSON-able, return id
-    try {
-        return { data: idFrom(nameOrId).toString(), err: null };
-    } catch (error) {
-        // pass
+    // if can get from `getPokemon`, return ID
+    const pokemon = await getPokemonFromUserId(user.id, nameOrId);
+    if (!pokemon.err) {
+        return { data: pokemon.data._id.toString(), err: null };
     }
 
     // try to get pokemon from listPokemons, if one return ID, if multiple await a selection menu
