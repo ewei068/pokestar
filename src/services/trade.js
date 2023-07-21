@@ -223,6 +223,18 @@ const buildTradeInfoSend = async ({user=null}={}) => {
     if (offerSend.err) {
         return { send: null, err: offerSend.err };
     }
+
+    // add trade help button
+    const buttonConfigs = [
+        {
+            label: "Trade Help",
+            emoji: "❓",
+            disabled: false,
+        }
+    ];
+    const buttonRow = buildButtonActionRow(buttonConfigs, eventNames.TRADE_HELP);
+    offerSend.send.components.push(buttonRow);
+
     return { send: offerSend.send, err: null };
 }
 
