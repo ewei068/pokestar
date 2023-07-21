@@ -14,9 +14,18 @@ const { pokemonConfig } = require('../config/pokemonConfig');
 
 const buildLeaderboardEmbed = (leaderboardInfo, categoryData, scope) => {
     let leaderboardString = "";
+    let prevPosition = 0;
+    let prevValue = 0;
     for (let index = 0; index < leaderboardInfo.length; index++) {
         const entry = leaderboardInfo[index];
-        leaderboardString += `**${index + 1}.** ${getFullUsername(entry.user)} - ${entry.label}\n`;
+        let position = index + 1;
+        if (index > 0 && entry.label === prevValue) {
+            position = prevPosition;
+        }
+        leaderboardString += `**${position}.** ${getFullUsername(entry.user)} - ${entry.label}\n`;
+
+        prevPosition = position;
+        prevValue = entry.label;
     }
 
     const embed = new EmbedBuilder()

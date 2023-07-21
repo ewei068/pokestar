@@ -478,7 +478,7 @@ const commandConfig = {
                 "optional": false,
                 "variable": false,
                 "enum": [
-                    "level", "worth", "shiny", "power"
+                    "level", "trainerExp", "pokedollars", "worth", "shiny", "power"
                 ]
             },
             "scope": {

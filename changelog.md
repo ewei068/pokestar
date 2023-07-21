@@ -2,21 +2,25 @@
 
 ### 0.11.4 - Trading
 
-* Trading + Event
-  * Event Pokemon:
+* **Trading + Event:** Trading has arrived with an accompanying event!
+  * To get started trading, reach level 50. Then, use `/tradeinfo` and press the Trade Help button for more instructions!
+    * Right now, trading is limited to 3 Pokemon & $3000 per-trade. Once I verify that the trading system is bug-free and exploit-free, I'll increase this limit.
+  * New limited event Pokemon:
     * Billionaire Sableye (Legendary): A tank that heals allies and extends buff durations!
     * Scammer Thievul (Legendary): A fast support and damage-dealer that punishes fast enemies!
     * One **SECRET** event Epic! Can be obtained in any banner for the duration of the event!
-* Pokemon ownership stats
-* Bug fixes:
-  * Fix name or id bug
-  * Fix equipment update bug
-  * Fix message command crashing bug
-* Adjustments:
-  * Balance Dungeons
-  * Leaderboards adjustments
-  * NPC target randomization
-  * Adjust Celebi abilities thumbnail
+  * Trading mini-event: use `/events` for more info!
+  * Added Pokemon ownership stats in `/pokedex`. Use this to inform how rare a Pokemon is!
+* **Bug fixes:**
+  * Fixed being unable to search up a Pokemon's name if it has 12 characters.
+  * Fix equipment leveling not working if a Pokemon's stats are too low.
+  * Fix a bug where the bot would crash rarely after message commands.
+* **Adjustments:**
+  * Small dungeon difficulty balancing on Very Hard.
+  * Added 2 `/leaderboard` categories: total trainer EXP and Pokedollars.
+  * Trainers will now have the same leaderboard rank if they're tied.
+  * NPC moves will be very slightly more random.
+  * Adjust Celebi abilities thumbnail.
   * Rest now sleeps for longer but has a shorter cooldown.
 
 ### 0.11.3 (7/10) - Gen 2 Wrap-up

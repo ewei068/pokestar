@@ -37,6 +37,16 @@ const leaderboardConfig = {
         "collection": collectionNames.USERS,
         "label": ["level"],
     },
+    "trainerExp": {
+        "name": "Total Trainer Experience",
+        "collection": collectionNames.USERS,
+        "label": ["exp"],
+    },
+    "pokedollars": {
+        "name": "Total Pokedollars",
+        "collection": collectionNames.USERS,
+        "label": ["money"],
+    },
     "worth": {
         "name": "Total Pokemon Worth",
         "collection": collectionNames.POKEMON_AND_USERS,

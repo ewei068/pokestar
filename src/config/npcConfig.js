@@ -936,7 +936,7 @@ const dungeonConfig = {
                 rewards: {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
-                            [backpackItems.EMOTION_SHARD]: 12,
+                            [backpackItems.EMOTION_SHARD]: 6,
                         },
                     }
                 }
