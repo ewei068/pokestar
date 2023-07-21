@@ -71,7 +71,28 @@ Pokestar is wrapping up Generation 2 with a fun mini event!
 * Shadow Lugia Sprite & Shiny: https://www.deviantart.com/theaetherplayer/art/Shadow-Lugia-Shadow-Ho-Oh-Sprites-753077798
 `
 
+const TRADING_DESCRIPTION = `🤝**Trading**🤝
+
+Trading is here! Get started with \`/tradeinfo\` and press the "Help" button for more information!
+
+📦 **Trading:** Trade Pokemon and Pokedollars with other players! Collect the rarest and most powerful Pokemon!
+
+<:billionairesableye:1130698671474888815> **Event Pokemon:** New limited Pokemon with the "trading" theme have arrived! Use \`/gacha\` to try your luck!
+
+💰 **Pokedollar Boost:** For a limited time, you will get 2x Pokedollars from \`/daily\` and \`/vote\`!
+
+🖌️ **Art Credits**:
+* Event Pokemon Art: carnivault
+`
+
+
+
 const gameEventConfig = [
+    {
+        "name": "Trading Event",
+        "description": TRADING_DESCRIPTION,
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-trade-banner.png",
+    },
     {
         "name": "Generation II Wrap-Up",
         "description": GEN_2_WRAPUP_DESCRIPTION,

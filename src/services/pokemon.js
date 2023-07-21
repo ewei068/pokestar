@@ -579,7 +579,7 @@ const upgradeEquipmentLevel = async (trainer, pokemon, equipmentType) => {
 
     // update equipment
     equipment.level++;
-    const { data, err } = await calculateAndUpdatePokemonStats(pokemon, pokemonConfig[pokemon.speciesId]);
+    const { data, err } = await calculateAndUpdatePokemonStats(pokemon, pokemonConfig[pokemon.speciesId], true);
     if (err) {
         return { data: null, err: err };
     } else {

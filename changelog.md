@@ -4,9 +4,12 @@
 
 * Trading + Event
   * Event Pokemon:
+    * Billionaire Sableye (Legendary): A tank that heals allies and extends buff durations!
     * Scammer Thievul (Legendary): A fast support and damage-dealer that punishes fast enemies!
 * Pokemon ownership stats
 * Fix name or id bug
+* Fix equipment update bug
+* Fix message command crashing bug
 * Balance Dungeons
 * Leaderboards adjustments
 * NPC target randomization

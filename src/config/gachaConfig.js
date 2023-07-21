@@ -72,6 +72,28 @@ const bannerTypeConfig = {
 const bannerConfig = [
     {
         "bannerType": bannerTypes.SPECIAL,
+        "name": "[EVENT] Billionaire Sableye",
+        "description": "Trading has arrived! Pull for the rich Sableye who made a fortune trading Pokemon!",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["302-1"]
+            }
+        },
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-trade-banner.png"
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
+        "name": "[EVENT] Scammer Thievul",
+        "description": "Trading has arrived! Pull for the devious Thievul who tricks trainers into taking unfavorable deals!",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["828-1"]
+            }
+        },
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-trade-banner.png"
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
         "name": "[EVENT] Shadow Lugia",
         "description": "Shadow Lugia has arrived! Pull for the legendary Shadow Lugia, as well as powerful limited variations of other Gen 2 Pokemon!",
         "rateUp": () => {
