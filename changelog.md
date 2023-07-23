@@ -1,6 +1,11 @@
 # Pokéstar Changelog
 
-### 0.11.4 - Trading
+## 0.12.0 - Gen III
+
+* Generation 3
+  * Pokemon: Treecko, Grovyle, Sceptile, Torchic, Combusken, Blaziken, Mudkip, Marshtomp, Swampert, Poochyena, Mightyena, Zigzagoon, Linoone
+
+### 0.11.4 (7/21) - Trading
 
 * **Trading + Event:** Trading has arrived with an accompanying event!
   * To get started trading, reach level 50. Then, use `/tradeinfo` and press the Trade Help button for more instructions!

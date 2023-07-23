@@ -3675,6 +3675,19 @@ const moveConfig = {
         "damageType": damageTypes.SPECIAL,
         "description": "Two turns after this move is used, a hunk of psychic energy attacks targets. If the Future Sight debuff is cleansed early, deals less damage.",
     },
+    "m249": {
+        "name": "Rock Smash",
+        "type": types.FIGHTING,
+        "power": 35,
+        "accuracy": 80,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user smashes into the target with a rock-hard fist. This may also lower the target's defense for 2 turns with a 70% chance.",
+    },
     "m252": {
         "name": "Fake Out",
         "type": types.NORMAL,
@@ -3973,6 +3986,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "Boulders of biblical proportion are hurled at the target. This also lowers the target's Speed stat for 2 turns, even when the attack misses.",
+    },
+    "m330": {
+        "name": "Muddy Water",
+        "type": types.WATER,
+        "power": 55,
+        "accuracy": 70,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user attacks by shooting a wave of muddy water at the opposing team. This may also lower their accuracy for 2 turns with a 50% chance.",
     },
     "m332": {
         "name": "Aerial Ace",
@@ -7260,6 +7286,23 @@ const moveExecutes = {
             target.addEffect("futureSight", 2, source);
         }
     },
+    "m249": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m249";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, def down 2 turns 70% chance
+            if (!miss && Math.random() < 0.7) {
+                target.addEffect("defDown", 2, source);
+            }
+        }
+    },
     "m252": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m252";
         const moveData = moveConfig[moveId];
@@ -7631,6 +7674,23 @@ const moveExecutes = {
 
             // spe down 2 turns
             target.addEffect("speDown", 2, source);
+        }
+    },
+    "m330": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m330";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 50% acc down 2 turns
+            if (!miss && Math.random() < 0.5) {
+                target.addEffect("accDown", 2, source);
+            }
         }
     },
     "m332": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -9016,7 +9076,7 @@ const moveExecutes = {
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             // use all HM moves
-            const hmMoveIds = ["m57", "m70", "m127"];
+            const hmMoveIds = ["m57", "m70", "m127", "m249"];
             for (const [moveId, move] of Object.entries(source.moveIds)) {
                 if (!hmMoveIds.includes(moveId)) {
                     continue;
@@ -9186,6 +9246,50 @@ const abilityConfig = {
         "abilityRemove": function (battle, source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "2" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
+    },
+    "3": {
+        "name": "Speed Boost",
+        "description": "At the end of each turn, increase the user's Combat Readiness by 20%, increasing by 20% each turn, up to a maximum of 60%.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const activePokemon = initialArgs.pokemon.battle.activePokemon;
+                    if (initialArgs.pokemon.isFainted ||  activePokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    // attempt to get ability data
+                    const ability = initialArgs.pokemon.ability;
+                    if (!ability || ability.abilityId !== "3" || !ability.data) {
+                        return;
+                    }
+                    const abilityData = ability.data;
+
+                    // increase cr
+                    abilityData.turns = abilityData.turns ? abilityData.turns + 1 : 1;
+                    const crBoost = Math.min(60, abilityData.turns * 20);
+                    initialArgs.pokemon.battle.addToLog(`${initialArgs.pokemon.name}'s Speed Boost increases its combat readiness!`);
+                    initialArgs.pokemon.boostCombatReadiness(initialArgs.pokemon, crBoost);
+                }
+            }
+
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.TURN_END, listener);
+            return {
+                "listenerId": listenerId,
+                "turns": 0,
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "3" || !ability.data) {
                 return;
             }
             const abilityData = ability.data;

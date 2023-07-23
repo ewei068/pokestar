@@ -2340,7 +2340,7 @@ const pokemonConfig = {
         "abilities": {
             "11": 1,
         },
-        "moveIds": ["m420", "m57", "m70", "m20002"],
+        "moveIds": ["m249", "m57", "m70", "m20002"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW,
@@ -2740,7 +2740,7 @@ const pokemonConfig = {
             "basicMoveIds": [
                 "m16", "m17", "m22", "m35", "m40", "m43", "m51", "m52", "m55", "m71", "m77", "m81", 
                 "m84", "m93", "m98", "m100", "m102", "m106", "m116", "m118", "m122", "m123", "m175", 
-                "m189", "m205", "m214", "m239", "m246", "m270", "m311", "m418", "m420", "m453", "m479", "m506", "m526",
+                "m189", "m205", "m214", "m239", "m246", "m249", "m270", "m311", "m418", "m420", "m453", "m479", "m506", "m526",
                 "m574", "m876"
             ],
             "powerMoveIds": [
@@ -3963,6 +3963,263 @@ const pokemonConfig = {
             [rarities.LEGENDARY]: ["9-1", "25-1", "52-1", "136-1", "139-1", "145-1", "150-1"],
             [rarities.EPIC]: ["18-1", "24-1", "34-1", "49-1", "110-1", "131-1"]
         }
+    },
+    "252": {
+        "name": "Treecko",
+        "emoji": "<:252:1126680967252283392>",
+        "description": "Treecko has small hooks on the bottom of its feet that enable it to scale vertical walls. This Pokémon attacks by slamming foes with its thick tail.",
+        "type": [types.GRASS],
+        "baseStats": [40, 45, 35, 65, 55, 70],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/252.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/252.png",
+        "evolution": [{
+            "level": 16,
+            "id": "253"
+        }],
+        "abilities": {
+            "65": 0.8,
+            "84": 0.2,
+        },
+        "moveIds": ["m71", "m98", "m21", "m202"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "253": {
+        "name": "Grovyle",
+        "emoji": "<:253:1126680969806622840>",
+        "description": "The leaves growing out of Grovyle's body are convenient for camouflaging it from enemies in the forest. This Pokémon is a master at climbing trees in jungles.",
+        "type": [types.GRASS],
+        "baseStats": [50, 65, 45, 85, 65, 95],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/253.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/253.png",
+        "evolution": [{
+            "level": 36,
+            "id": "254"
+        }],
+        "abilities": {
+            "65": 0.8,
+            "84": 0.2,
+        },
+        "moveIds": ["m98", "m21", "m202", "m348"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "254": {
+        "name": "Sceptile",
+        "emoji": "<:254:1126680971501109288>",
+        "description": "The leaves growing on Sceptile's body are very sharp edged. This Pokémon is very agile - it leaps all over the branches of trees and jumps on its foe from above or behind.",
+        "type": [types.GRASS],
+        "baseStats": [70, 85, 65, 105, 85, 120],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/254.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/254.png",
+        "abilities": {
+            "65": 0.8,
+            "84": 0.2,
+        },
+        "moveIds": ["m98", "m202", "m348", "m437"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+    },
+    "255": {
+        "name": "Torchic",
+        "emoji": "<:255:1126680974080614411>",
+        "description": "Torchic sticks with its Trainer, following behind with unsteady steps. This Pokémon breathes fire of over 1,800 degrees Fahrenheit, including fireballs that leave the foe scorched black.",
+        "type": [types.FIRE],
+        "baseStats": [45, 60, 40, 70, 50, 45],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/255.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/255.png",
+        "evolution": [{
+            "level": 16,
+            "id": "256"
+        }],
+        "abilities": {
+            "66": 0.8,
+            "3": 0.2,
+        },
+        "moveIds": ["m52", "m249", "m53", "m182"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "256": {
+        "name": "Combusken",
+        "emoji": "<:256:1126680975171129375>",
+        "description": "Combusken toughens up its legs and thighs by running through fields and mountains. This Pokémon's legs possess both speed and power, enabling it to dole out ten kicks in one second.",
+        "type": [types.FIRE, types.FIGHTING],
+        "baseStats": [60, 85, 60, 85, 60, 55],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/256.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/256.png",
+        "evolution": [{
+            "level": 36,
+            "id": "257"
+        }],
+        "abilities": {
+            "66": 0.8,
+            "3": 0.2,
+        },
+        "moveIds": ["m249", "m53", "m182", "m299"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "257": {
+        "name": "Blaziken",
+        "emoji": "<:257:1126680977759015013>",
+        "description": "In battle, Blaziken blows out intense flames from its wrists and attacks foes courageously. The stronger the foe, the more intensely this Pokémon's wrists burn.",
+        "type": [types.FIRE, types.FIGHTING],
+        "baseStats": [80, 120, 70, 110, 70, 80],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/257.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/257.png",
+        "abilities": {
+            "66": 0.8,
+            "3": 0.2,
+        },
+        "moveIds": ["m249", "m182", "m299", "m126"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+    },
+    "258": {
+        "name": "Mudkip",
+        "emoji": "<:258:1126680978891493448>",
+        "description": "In water, Mudkip breathes using the gills on its cheeks. If it is faced with a tight situation in battle, this Pokémon will unleash its amazing power - it can crush rocks bigger than itself.",
+        "type": [types.WATER],
+        "baseStats": [50, 70, 50, 50, 50, 40],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/258.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/258.png",
+        "evolution": [{
+            "level": 16,
+            "id": "259"
+        }],
+        "abilities": {
+            "67": 0.8,
+            "6": 0.2,
+        },
+        "moveIds": ["m55", "m189", "m91", "m276"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "259": {
+        "name": "Marshtomp",
+        "emoji": "<:259:1126681029546102935>",
+        "description": "The surface of Marshtomp's body is enveloped by a thin, sticky film that enables it to live on land. This Pokémon plays in mud on beaches when the ocean tide is low.",
+        "type": [types.WATER, types.GROUND],
+        "baseStats": [70, 85, 70, 60, 70, 50],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/259.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/259.png",
+        "evolution": [{
+            "level": 36,
+            "id": "260"
+        }],
+        "abilities": {
+            "67": 0.8,
+            "6": 0.2,
+        },
+        "moveIds": ["m189", "m91", "m276", "m330"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW
+    },
+    "260": {
+        "name": "Swampert",
+        "emoji": "<:260:1126681031202848778>",
+        "description": "Swampert is very strong. It has enough power to easily drag a boulder weighing more than a ton. This Pokémon also has powerful vision that lets it see even in murky water.",
+        "type": [types.WATER, types.GROUND],
+        "baseStats": [100, 110, 90, 85, 90, 60],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/260.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/260.png",
+        "abilities": {
+            "67": 0.8,
+            "6": 0.2,
+        },
+        "moveIds": ["m189", "m276", "m330", "m89"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+    },
+    "261": {
+        "name": "Poochyena",
+        "emoji": "<:261:1126681032498884648>",
+        "description": "At first sight, Poochyena takes a bite at anything that moves. This Pokémon chases after prey until the victim becomes exhausted. However, it may turn tail if the prey strikes back.",
+        "type": [types.DARK],
+        "baseStats": [35, 55, 35, 30, 30, 35],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/261.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/261.png",
+        "evolution": [{
+            "level": 15,
+            "id": "262"
+        }],
+        "abilities": {
+            "50": 0.45,
+            "95": 0.45,
+            "155": 0.1,
+        },
+        "moveIds": ["m33", "m189", "m242", "m269"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST,
+    },
+    "262": {
+        "name": "Mightyena",
+        "emoji": "<:262:1126681033656500275>",
+        "description": "Mightyena gives obvious signals when it is preparing to attack. It starts to growl deeply and then flattens its body. This Pokémon will bite savagely with its sharply pointed fangs.",
+        "type": [types.DARK],
+        "baseStats": [70, 90, 70, 60, 60, 70],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/262.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/262.png",
+        "abilities": {
+            "22": 0.45,
+            "95": 0.45,
+            "153": 0.1,
+        },
+        "moveIds": ["m33", "m168", "m242", "m269"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.FAST,
+    },
+    "263": {
+        "name": "Zigzagoon",
+        "emoji": "<:263:1126681035627835462>",
+        "description": "Zigzagoon restlessly wanders everywhere at all times. This Pokémon does so because it is very curious. It becomes interested in anything that it happens to see.",
+        "type": [types.NORMAL],
+        "baseStats": [38, 30, 41, 30, 41, 60],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/263.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/263.png",
+        "evolution": [{
+            "level": 15,
+            "id": "264"
+        }],
+        "abilities": {
+            "53": 0.45,
+            "82": 0.45,
+            "95": 0.1,
+        },
+        "moveIds": ["m33", "m175", "m187", "m245"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.FAST,
+    },
+    "264": {
+        "name": "Linoone",
+        "emoji": "<:264:1126681036940640317>",
+        "description": "Linoone always runs full speed and only in straight lines. If facing an obstacle, it makes a right-angle turn to evade it. This Pokémon is very challenged by gently curving roads.",
+        "type": [types.NORMAL],
+        "baseStats": [78, 70, 61, 50, 61, 100],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/264.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/264.png",
+        "abilities": {
+            "53": 0.45,
+            "82": 0.45,
+            "95": 0.1,
+        },
+        "moveIds": ["m175", "m187", "m245", "m38"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.FAST,
     },
     "302-1": {
         "name": "Billionaire Sableye",
