@@ -4000,6 +4000,19 @@ const moveConfig = {
         "damageType": damageTypes.SPECIAL,
         "description": "The user attacks by shooting a wave of muddy water at the opposing team. This may also lower their accuracy for 2 turns with a 50% chance.",
     },
+    "m331": {
+        "name": "Bullet Seed",
+        "type": types.GRASS,
+        "power": 25,
+        "accuracy": 100,
+        "cooldown": 3,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user forcefully shoots seeds at random targets, hitting 5 times.",
+    },
     "m332": {
         "name": "Aerial Ace",
         "type": types.FLYING,
@@ -4521,7 +4534,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.OTHER,
-        "description": "The user creates a bizarre area in which Pokemon recieve speed buffs or debuffs inversely based on how fast they are for 2 turns.",
+        "description": "The user creates a bizarre area in which Pokemon recieve speed buffs or debuffs inversely based on how fast they are for 3 turns.",
     },
     "m435": {
         "name": "Discharge",
@@ -5003,6 +5016,19 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.SPECIAL,
         "description": "The user attacks everything around it with the destructive power of a terrible, explosive sound. This user also sacrifices 50% of its remaining HP.",
+    },
+    "m605": {
+        "name": "Dazzling Gleam",
+        "type": types.FAIRY,
+        "power": 75,
+        "accuracy": 100,
+        "cooldown": 4,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.ROW,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user damages the targets by emitting a powerful flash.",
     },
     "m668": {
         "name": "Strength Sap",
@@ -7719,6 +7745,25 @@ const moveExecutes = {
             }
         }
     },
+    "m331": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m331";
+        const moveData = moveConfig[moveId];
+        // loop 5 times, hitting random non-fainted target
+        for (let i = 0; i < 5; i++) {
+            allTargets = allTargets.filter(target => !target.isFainted);
+            if (allTargets.length === 0) {
+                break;
+            }
+
+            const target = allTargets[Math.floor(Math.random() * allTargets.length)];
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
     "m332": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m332";
         const moveData = moveConfig[moveId];
@@ -8350,20 +8395,20 @@ const moveExecutes = {
         // get mean spe of all targets
         const meanSpe = targets.reduce((acc, p) => acc + p.getSpe(), 0) / targets.length;
         // for all targets apply effect: 
-        // if spe > 1.4 * meanSpe, greater spe down
+        // if spe > 1.25 * meanSpe, greater spe down
         // if spe > meanSpe, spe down
         // if spe < meanSpe, spe up
-        // if spe < 0.60 * meanSpe, greater spe up
+        // if spe < 0.75 * meanSpe, greater spe up
         for (const target of targets) {
             const spe = target.getSpe();
-            if (spe > 1.4 * meanSpe) {
-                target.addEffect("greaterSpeDown", 2, source);
+            if (spe > 1.25 * meanSpe) {
+                target.addEffect("greaterSpeDown", 3, source);
             } else if (spe > meanSpe) {
-                target.addEffect("speDown", 2, source);
-            } else if (spe > meanSpe * 0.60) {
-                target.addEffect("speUp", 2, source);
+                target.addEffect("speDown", 3, source);
+            } else if (spe > meanSpe * 0.75) {
+                target.addEffect("speUp", 3, source);
             } else {
-                target.addEffect("greaterSpeUp", 2, source);
+                target.addEffect("greaterSpeUp", 3, source);
             }
         }
     },
@@ -9019,6 +9064,18 @@ const moveExecutes = {
         source.dealDamage(damageToDeal, source, {
             type: "recoil",
         });
+    },
+    "m605": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m605";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
     },
     "m668": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m668";

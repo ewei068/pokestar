@@ -4484,6 +4484,148 @@ const pokemonConfig = {
         "rarity": rarities.RARE,
         "growthRate": growthRates.MEDIUMFAST,
     },
+    "278": {
+        "name": "Wingull",
+        "emoji": "<:278:1126681187994320986>",
+        "description": "Wingull has the habit of carrying prey and valuables in its beak and hiding them in all sorts of locations. This Pokémon rides the winds and flies as if it were skating across the sky.",
+        "type": [types.WATER, types.FLYING],
+        "baseStats": [40, 30, 30, 55, 30, 85],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/278.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/278.png",
+        "evolution": [{
+            "level": 25,
+            "id": "279"
+        }],
+        "abilities": {
+            "51": 0.45,
+            "93": 0.45,
+            "44": 0.1,
+        },
+        "moveIds": ["m55", "m355", "m403", "m503"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMFAST,
+    },
+    "279": {
+        "name": "Pelipper",
+        "emoji": "<:279:1126681189823041659>",
+        "description": "Pelipper is a flying transporter that carries small Pokémon and eggs inside its massive bill. This Pokémon builds its nest on steep cliffs facing the sea.",
+        "type": [types.WATER, types.FLYING],
+        "baseStats": [60, 50, 100, 85, 70, 65],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/279.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/279.png",
+        "abilities": {
+            "51": 0.45,
+            "2": 0.45,
+            "44": 0.1,
+        },
+        "moveIds": ["m55", "m355", "m503", "m542"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST,
+    },
+    "280": {
+        "name": "Ralts",
+        "emoji": "<:280:1126681191332978778>",
+        "description": "Ralts senses the emotions of people using the horns on its head. This Pokémon rarely appears before people. But when it does, it draws closer if it senses that the person has a positive disposition.",
+        "type": [types.PSYCHIC, types.FAIRY],
+        "baseStats": [28, 25, 25, 45, 35, 40],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/280.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/280.png",
+        "evolution": [{
+            "level": 20,
+            "id": "281"
+        }],
+        "abilities": {
+            "28": 0.45,
+            "36": 0.45,
+            "140": 0.1
+        },
+        "moveIds": ["m93", "m100", "m574", "m94"],
+        "battleEligible": true,
+        "rarity": rarities.COMMON,
+        "growthRate": growthRates.MEDIUMSLOW,
+    },
+    "281": {
+        "name": "Kirlia",
+        "emoji": "<:281:1126681193606299770>",
+        "description": "Kirlia uses the horns on its head to amplify its psychokinetic power. When the Pokémon uses its power, the air around it becomes distorted, creating mirages of nonexistent scenery.",
+        "type": [types.PSYCHIC, types.FAIRY],
+        "baseStats": [38, 35, 35, 65, 55, 50],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/281.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/281.png",
+        "evolution": [{
+            "level": 30,
+            "id": "282"
+        }],
+        "abilities": {
+            "28": 0.45,
+            "36": 0.45,
+            "140": 0.1
+        },
+        "moveIds": ["m93", "m574", "m94", "m605"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMSLOW,
+    },
+    "282": {
+        "name": "Gardevoir",
+        "emoji": "<:282:1126681195460186193>",
+        "description": "Gardevoir has the ability to read the future. If it senses impending danger to its Trainer, this Pokémon is said to unleash its psychokinetic energy at full power.",
+        "type": [types.PSYCHIC, types.FAIRY],
+        "baseStats": [68, 65, 65, 125, 115, 80],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/282.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/282.png",
+        "abilities": {
+            "28": 0.45,
+            "36": 0.45,
+            "140": 0.1
+        },
+        "moveIds": ["m574", "m94", "m605", "m433"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+    },
+    "285": {
+        "name": "Shroomish",
+        "emoji": "<:285:1126681261646299286>",
+        "description": "Shroomish live in damp soil in the dark depths of forests. They are often found keeping still under fallen leaves. This Pokémon feeds on compost that is made up of fallen, rotted leaves.",
+        "type": [types.GRASS],
+        "baseStats": [60, 40, 60, 40, 60, 35],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/285.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/285.png",
+        "evolution": [{
+            "level": 23,
+            "id": "286"
+        }],
+        "abilities": {
+            "27": 0.45,
+            "90": 0.45,
+            "95": 0.1
+        },
+        "moveIds": ["m33", "m71", "m147", "m331"],
+        "battleEligible": true,
+        "rarity": rarities.RARE,
+        "growthRate": growthRates.MEDIUMFAST,
+    },
+    "286": {
+        "name": "Breloom",
+        "emoji": "<:286:1126681263076548699>",
+        "description": "Breloom closes in on its foe with light and sprightly footwork, then throws punches with its stretchy arms. This Pokémon's fighting technique puts boxers to shame.",
+        "type": [types.GRASS, types.FIGHTING],
+        "baseStats": [60, 130, 80, 60, 60, 70],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/286.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/286.png",
+        "abilities": {
+            "27": 0.45,
+            "90": 0.45,
+            "101": 0.1
+        },
+        "moveIds": ["m183", "m147", "m331", "m223"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST,
+    },
     "302-1": {
         "name": "Billionaire Sableye",
         "emoji": "<:billionairesableye:1130698671474888815>",
