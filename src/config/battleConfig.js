@@ -4380,6 +4380,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "An energy-draining punch. The user's HP is restored by half the damage taken by the target.",
     },
+    "m412": {
+        "name": "Energy Ball",
+        "type": types.GRASS,
+        "power": 80,
+        "accuracy": 100,
+        "cooldown": 3,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user draws power from nature and fires it at the target. This has a 85% chance to lower the target's Sp. Defense for 2 turn.",
+    },
     "m413": {
         "name": "Brave Bird",
         "type": types.FLYING,
@@ -4977,6 +4990,19 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.SPECIAL,
         "description": "The user attacks the target with a moonblast. This also lowers the target's special attack for 2 turns with a 70% chance.",
+    },
+    "m586": {
+        "name": "Boomburst",
+        "type": types.NORMAL,
+        "power": 140,
+        "accuracy": 100,
+        "cooldown": 7,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user attacks everything around it with the destructive power of a terrible, explosive sound. This user also sacrifices 50% of its remaining HP.",
     },
     "m668": {
         "name": "Strength Sap",
@@ -8150,6 +8176,23 @@ const moveExecutes = {
             moveId: moveId
         });
     },
+    "m412": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m412";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 85% chance to reduce sp def
+            if (!miss && Math.random() < 0.85) {
+                target.addEffect("spdDown", 2, source);
+            }
+        }
+    },
     "m413": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m413";
         const moveData = moveConfig[moveId];
@@ -8958,6 +9001,24 @@ const moveExecutes = {
                 target.addEffect("spaDown", 2, source);
             }
         }
+    },
+    "m586": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m586";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+
+        // damage user 50% of remaining HP
+        const damageToDeal = Math.floor(source.hp * 0.5);
+        source.dealDamage(damageToDeal, source, {
+            type: "recoil",
+        });
     },
     "m668": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m668";
