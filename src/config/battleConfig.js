@@ -3511,7 +3511,7 @@ const moveConfig = {
         "type": types.NORMAL,
         "power": 50,
         "accuracy": 100,
-        "cooldown": 5,
+        "cooldown": 4,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.ROW,

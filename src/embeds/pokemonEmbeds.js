@@ -120,9 +120,9 @@ const buildNewPokemonEmbed = (pokemon, pokeballId=backpackItems.POKEBALL, remain
     embed.setTitle(`${pokemon.shiny ? "✨" : ""}${speciesData.name} (#${pokemon.speciesId})`);
     const shinyString = pokemon.shiny? "SHINY " : "";
     if (speciesData.rarity == rarities.LEGENDARY) {
-        embed.setDescription(`You caught the ${shinyString}LEGENDARY ${speciesData.name}!\n${pokeballString}`);
+        embed.setDescription(`<@${pokemon.userId}> caught the ${shinyString}LEGENDARY ${speciesData.name}!\n${pokeballString}`);
     } else {
-        embed.setDescription(`You caught a ${shinyString}${speciesData.rarity} ${speciesData.name}!\n${pokeballString}`);
+        embed.setDescription(`<@${pokemon.userId}> caught a ${shinyString}${speciesData.rarity} ${speciesData.name}!\n${pokeballString}`);
     }
 
     embed.setColor(rarityConfig[speciesData.rarity].color);

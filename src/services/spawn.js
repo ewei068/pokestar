@@ -185,7 +185,7 @@ const onButtonPress = async (interaction, data, state) => {
         state.caught = true;
         // generate pokemon
         const give = await giveNewPokemons(trainer.data, [state.speciesId], state.level, {
-            shiny: state.isShiny,
+            isShiny: state.isShiny,
             betterIvs: true,
         });
         if (give.err) {

@@ -12,6 +12,7 @@
 * Lift trade limit
 * Expire Gen2 Event
 * Spawn
+  * tips?
 
 ### 0.11.4 (7/21) - Trading
 
