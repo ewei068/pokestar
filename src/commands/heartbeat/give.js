@@ -24,7 +24,9 @@ const give = async (user, pokemonId, level, equipmentLevel) => {
     }
 
     // give pokemon
-    const give = await giveNewPokemons(trainer.data, [pokemonId], level, equipmentLevel);
+    const give = await giveNewPokemons(trainer.data, [pokemonId], level, {
+        equipmentLevel: equipmentLevel
+    });
     if (give.err) {
         return { send: null, err: give.err };
     }

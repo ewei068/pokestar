@@ -10,6 +10,8 @@
 * Original owner
 * Rework sableye
 * Lift trade limit
+* Expire Gen2 Event
+* Spawn
 
 ### 0.11.4 (7/21) - Trading
 

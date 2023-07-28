@@ -89,12 +89,22 @@ const buildGachaInfoString = () => {
     return infoString;
 }
 
+const buildPokemonSpawnEmbed = (speciesId, level, shiny=false) => {
+    const speciesData = pokemonConfig[speciesId];
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${speciesData.emoji} ${speciesData.name}`);
+    embed.setDescription(`A wild **Level ${level} ${speciesData.name}** has appeared!`);
+    embed.setColor(rarityConfig[speciesData.rarity].color);
+    embed.setImage(`${shiny ? speciesData.shinySprite : speciesData.sprite}`);
+    return embed;
+}
+
 // pokemon: user's pokemon data
 // speciesData: pokemon species config data
-const buildNewPokemonEmbed = (pokemon, pokeballId=backpackItems.POKEBALL, remaining=0) => {
+const buildNewPokemonEmbed = (pokemon, pokeballId=backpackItems.POKEBALL, remaining=-1) => {
     const speciesData = pokemonConfig[pokemon.speciesId];
     const pokeballData = backpackItemConfig[pokeballId];
-    const pokeballString = `${pokeballData.emoji} You have ${remaining} ${pokeballData.name}s remaining.`;
+    const pokeballString = remaining === -1 ? `` : `${pokeballData.emoji} You have ${remaining} ${pokeballData.name}s remaining.`;
     
     let typeString = "";
     for (let i = 0; i < speciesData.type.length; i++) {
@@ -543,6 +553,7 @@ const buildCelebiAbilityEmbed = (trainer) => {
 
 module.exports = {
     buildBannerEmbed,
+    buildPokemonSpawnEmbed,
     buildNewPokemonEmbed,
     buildNewPokemonListEmbed,
     buildPokemonListEmbed,

@@ -9,6 +9,7 @@ const eventNames = {
     POKEMON_ACTION_BUTTON: "pokemonActionButton",
     POKEDEX_LIST_BUTTON: "pokedexListButton",
     POKEDEX_BUTTON: "pokedexButton",
+    WILD_POKEMON_BUTTON: "wildPokemonButton",
     EQUIPMENT_SELECT: "equipmentSelect",
     EQUIPMENT_BUTTON: "equipmentButton",
     EQUIPMENT_UPGRADE: "equipmentUpgrade",
@@ -97,6 +98,11 @@ const eventConfig = {
     [eventNames.POKEDEX_BUTTON]: {
         "name": "Pokedex Button",
         "execute": "pokedexButton.js",
+        "directory": "pokemon",
+    },
+    [eventNames.WILD_POKEMON_BUTTON]: {
+        "name": "Wild Pokemon Button",
+        "execute": "wildPokemonButton.js",
         "directory": "pokemon",
     },
     [eventNames.EQUIPMENT_SELECT]: {

@@ -5186,8 +5186,8 @@ const rarityConfig = {
     },
 }
 
-MAX_TOTAL_EVS = 510;
-MAX_SINGLE_EVS = 252;
+const MAX_TOTAL_EVS = 510;
+const MAX_SINGLE_EVS = 252;
 
 module.exports = {
     pokemonConfig,

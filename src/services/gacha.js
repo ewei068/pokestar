@@ -122,12 +122,12 @@ const generateRandomEquipments = (equipmentLevel=1) => {
     return equipments;
 }
 
-const generateRandomPokemon = (userId, pokemonId, level=5, equipmentLevel=1) => {
+const generateRandomPokemon = (userId, pokemonId, level=5, { equipmentLevel=1, isShiny=false, betterIvs=false}={}) => {
     const speciesData = pokemonConfig[pokemonId];
 
     const ivs = drawUniform(0, 31, 6);
     // if legendary, set 3 random IVs to 31
-    if (speciesData.rarity == rarities.LEGENDARY) {
+    if (speciesData.rarity == rarities.LEGENDARY || betterIvs) {
         let indices = drawUniform(0, 5, 3);
 
         // while dupes, reroll indices
@@ -142,7 +142,7 @@ const generateRandomPokemon = (userId, pokemonId, level=5, equipmentLevel=1) => 
     }
 
     const shinyChance = process.env.STAGE == stageNames.ALPHA ? 1 : 1024;
-    const isShiny = drawUniform(0, shinyChance, 1)[0] == 0;
+    isShiny = isShiny || drawUniform(0, shinyChance, 1)[0] == 0;
     const shouldLock = process.env.STAGE !== stageNames.ALPHA && (isShiny || speciesData.rarity == rarities.LEGENDARY);
     const pokemon = {
         "userId": userId,
@@ -175,10 +175,10 @@ const generateRandomPokemon = (userId, pokemonId, level=5, equipmentLevel=1) => 
 }
 
 
-const giveNewPokemons = async (trainer, pokemonIds, level=5, equipmentLevel=1) => {
+const giveNewPokemons = async (trainer, pokemonIds, level=5, options) => {
     const pokemons = [];
     for (const pokemonId of pokemonIds) {
-        const pokemon = generateRandomPokemon(trainer.userId, pokemonId, level, equipmentLevel);
+        const pokemon = generateRandomPokemon(trainer.userId, pokemonId, level, options);
         pokemons.push(pokemon);
     }
 
