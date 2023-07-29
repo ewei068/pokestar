@@ -1355,7 +1355,11 @@ class Pokemon {
                     }
                 } else if (this.battle.weather.weatherId === weatherConditions.RAIN) {
                     if (moveId === "m87" || moveId === "m87-1" || moveId === "m542" || moveId === "m542-1") {
-                        hitChance = 1.5;
+                        hitChance = 150;
+                    }
+                } else if (this.battle.weather.weatherId === weatherConditions.HAIL) {
+                    if (moveId === "m59") {
+                        hitChance = 150;
                     }
                 }
             }
@@ -2059,6 +2063,21 @@ class Pokemon {
         const teamNames = Object.keys(this.battle.parties);
         const enemyTeamName = teamNames[0] === this.teamName ? teamNames[1] : teamNames[0];
         return this.battle.parties[enemyTeamName];
+    }
+
+    getDef() {
+        let def = this.def;
+
+        // if hail and ice, def * 1.5
+        if (
+            !this.battle.isWeatherNegated() &&
+            this.battle.weather.weatherId === weatherConditions.HAIL &&
+            (this.type1 === types.ICE || this.type2 === types.ICE)
+        ) {
+            def = Math.floor(def * 1.5);
+        }
+
+        return def;
     }
 
     getSpd() {
