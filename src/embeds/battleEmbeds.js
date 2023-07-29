@@ -128,19 +128,20 @@ const buildBattleEmbed = (battle) => {
     embed.setColor(0xffffff);
     embed.setDescription(battle.log[battle.log.length - 1] || "No log yet.");
     // build weather field
+    const negatedString = battle.isWeatherNegated() ? " (negated)" : "";
     if (battle.weather.weatherId) {
         switch (battle.weather.weatherId) {
             case weatherConditions.SUN:
-                embed.addFields({ name: "Weather", value: `Harsh Sun (${battle.weather.duration})`, inline: true });
+                embed.addFields({ name: "Weather", value: `Harsh Sun${negatedString} (${battle.weather.duration})`, inline: true });
                 break;
             case weatherConditions.RAIN:
-                embed.addFields({ name: "Weather", value: `Rain (${battle.weather.duration})`, inline: true });
+                embed.addFields({ name: "Weather", value: `Rain${negatedString} (${battle.weather.duration})`, inline: true });
                 break;
             case weatherConditions.SANDSTORM:
-                embed.addFields({ name: "Weather", value: `Sandstorm (${battle.weather.duration})`, inline: true });
+                embed.addFields({ name: "Weather", value: `Sandstorm${negatedString} (${battle.weather.duration})`, inline: true });
                 break;
             case weatherConditions.HAIL:
-                embed.addFields({ name: "Weather", value: `Hail (${battle.weather.duration})`, inline: true });
+                embed.addFields({ name: "Weather", value: `Hail${negatedString} (${battle.weather.duration})`, inline: true });
                 break;
         }
     }

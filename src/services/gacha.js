@@ -176,7 +176,6 @@ const generateRandomPokemon = (userId, pokemonId, level=5, { equipmentLevel=1, i
 
 
 const giveNewPokemons = async (trainer, pokemonIds, level=5, options) => {
-    console.log(options)
     const pokemons = [];
     for (const pokemonId of pokemonIds) {
         const pokemon = generateRandomPokemon(trainer.userId, pokemonId, level, options);

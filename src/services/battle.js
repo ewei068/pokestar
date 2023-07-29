@@ -631,49 +631,66 @@ class Battle {
             return;
         }
 
-        switch (this.weather.weatherId) {
-            case weatherConditions.SANDSTORM:
-                // if active pokemon not rock, steel, or ground, damage 1/12 of max hp
-                if (
-                    this.activePokemon.type1 !== types.ROCK &&
-                    this.activePokemon.type1 !== types.STEEL &&
-                    this.activePokemon.type1 !== types.GROUND &&
-                    this.activePokemon.type2 !== types.ROCK &&
-                    this.activePokemon.type2 !== types.STEEL &&
-                    this.activePokemon.type2 !== types.GROUND
-                ) {
-                    this.addToLog(`${this.activePokemon.name} is buffeted by the sandstorm!`);
-                    this.activePokemon.takeDamage(
-                        Math.floor(this.activePokemon.maxHp / 12), 
-                        this.weather.source,
-                        {
-                            "type": "weather",
-                        }
-                    );
-                }
-                break;
-            case weatherConditions.HAIL:
-                // if active pokemon not ice, damage 1/12 of max hp
-                if (
-                    this.activePokemon.type1 !== types.ICE &&
-                    this.activePokemon.type2 !== types.ICE
-                ) {
-                    this.addToLog(`${this.activePokemon.name} is buffeted by the hail!`);
-                    this.activePokemon.takeDamage(
-                        Math.floor(this.activePokemon.maxHp / 12),
-                        this.weather.source,
-                        {
-                            "type": "weather",
-                        }
-                    );
-                }
-                break;
+        if (!this.isWeatherNegated()) {
+            switch (this.weather.weatherId) {
+                case weatherConditions.SANDSTORM:
+                    // if active pokemon not rock, steel, or ground, damage 1/12 of max hp
+                    if (
+                        this.activePokemon.type1 !== types.ROCK &&
+                        this.activePokemon.type1 !== types.STEEL &&
+                        this.activePokemon.type1 !== types.GROUND &&
+                        this.activePokemon.type2 !== types.ROCK &&
+                        this.activePokemon.type2 !== types.STEEL &&
+                        this.activePokemon.type2 !== types.GROUND
+                    ) {
+                        this.addToLog(`${this.activePokemon.name} is buffeted by the sandstorm!`);
+                        this.activePokemon.takeDamage(
+                            Math.floor(this.activePokemon.maxHp / 12), 
+                            this.weather.source,
+                            {
+                                "type": "weather",
+                            }
+                        );
+                    }
+                    break;
+                case weatherConditions.HAIL:
+                    // if active pokemon not ice, damage 1/12 of max hp
+                    if (
+                        this.activePokemon.type1 !== types.ICE &&
+                        this.activePokemon.type2 !== types.ICE
+                    ) {
+                        this.addToLog(`${this.activePokemon.name} is buffeted by the hail!`);
+                        this.activePokemon.takeDamage(
+                            Math.floor(this.activePokemon.maxHp / 12),
+                            this.weather.source,
+                            {
+                                "type": "weather",
+                            }
+                        );
+                    }
+                    break;
+            }
         }
 
         this.weather.duration--;
         if (this.weather.duration <= 0) {
             this.clearWeather();
         }
+    }
+
+    isWeatherNegated() {
+        // for all non-fainted pokemon, check if they have cloud nine or air lock
+        for (const pokemon of Object.values(this.allPokemon)) {
+            if (pokemon.isFainted) {
+                continue;
+            }
+
+            if (pokemon.ability.abilityId === "13" || pokemon.ability.abilityId === "76") {
+                return true;
+            }
+        }
+
+        return false;
     }
         
     isNpc(userId) {
@@ -1331,13 +1348,15 @@ class Pokemon {
             }
 
             // weather check
-            if (this.battle.weather.weatherId === weatherConditions.SUN) {
-                if (moveId === "m87" || moveId === "m87-1" || moveId === "m542" || moveId === "m542-1") {
-                    hitChance *= 0.75;
-                }
-            } else if (this.battle.weather.weatherId === weatherConditions.RAIN) {
-                if (moveId === "m87" || moveId === "m87-1" || moveId === "m542" || moveId === "m542-1") {
-                    hitChance = 1.5;
+            if (!this.battle.isWeatherNegated()) {
+                if (this.battle.weather.weatherId === weatherConditions.SUN) {
+                    if (moveId === "m87" || moveId === "m87-1" || moveId === "m542" || moveId === "m542-1") {
+                        hitChance *= 0.75;
+                    }
+                } else if (this.battle.weather.weatherId === weatherConditions.RAIN) {
+                    if (moveId === "m87" || moveId === "m87-1" || moveId === "m542" || moveId === "m542-1") {
+                        hitChance = 1.5;
+                    }
                 }
             }
 
@@ -2047,6 +2066,7 @@ class Pokemon {
 
         // if sandstorm and rock, spd * 1.5
         if (
+            !this.battle.isWeatherNegated() &&
             this.battle.weather.weatherId === weatherConditions.SANDSTORM && 
             (this.type1 === types.ROCK || this.type2 === types.ROCK)
         ) {
@@ -2059,13 +2079,15 @@ class Pokemon {
     getSpe() {
         let spe = this.spe;
 
-        if (this.battle.weather.weatherId === weatherConditions.SUN) {
-            if (this.ability && this.ability.abilityId === "34") {
-                spe = Math.floor(spe * 1.5);
-            }
-        } else if (this.battle.weather.weatherId === weatherConditions.RAIN) {
-            if (this.ability && this.ability.abilityId === "33") {
-                spe = Math.floor(spe * 1.5);
+        if (!this.battle.isWeatherNegated()) {
+            if (this.battle.weather.weatherId === weatherConditions.SUN) {
+                if (this.ability && this.ability.abilityId === "34") {
+                    spe = Math.floor(spe * 1.5);
+                }
+            } else if (this.battle.weather.weatherId === weatherConditions.RAIN) {
+                if (this.ability && this.ability.abilityId === "33") {
+                    spe = Math.floor(spe * 1.5);
+                }
             }
         }
 
