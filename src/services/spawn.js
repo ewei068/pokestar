@@ -12,6 +12,8 @@ const { drawDiscrete, drawIterable, drawUniform } = require("../utils/gachaUtils
 const { setState } = require("./state");
 const { getTrainer } = require("./trainer");
 const { giveNewPokemons } = require("./gacha");
+const { QueryBuilder } = require("../database/mongoHandler");
+const { collectionNames } = require("../config/databaseConfig");
 
 const SPAWN_TIME = process.env.STAGE == stageNames.ALPHA ? 12 * 60 * 1000 : 120 * 60 * 1000;
 const SPAWN_TIME_VARIANCE = process.env.STAGE == stageNames.ALPHA ? 3 * 60 * 1000 : 30 * 60 * 1000;
@@ -277,6 +279,28 @@ class GuildSpawner {
         if (Math.random() > spawnProbability && !WHITELISTED_SERVERS.includes(guild.id)) {
             return {};
         } */
+
+        // check if spawn was disabled for guild
+        // get guild
+        let guildData = {
+            guildId: this.guild.id,
+            spawnDisabled: false
+        }
+        try {
+            const query = new QueryBuilder(collectionNames.GUILDS)
+                .setFilter({ guildId: this.guild.id });
+
+            const guildRes = await query.findOne();
+            if (guildRes) {
+                guildData = guildRes;
+            }
+        } catch (err) {
+            logger.warn(err);
+            // pass
+        }
+        if (guildData.spawnDisabled) {
+            return {};
+        }
 
         if (this.chachedChannels.length == 0) {
             const res = this.refreshChannels();

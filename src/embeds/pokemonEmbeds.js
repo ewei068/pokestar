@@ -96,6 +96,7 @@ const buildPokemonSpawnEmbed = (speciesId, level, shiny=false) => {
     embed.setDescription(`A wild **Level ${level} ${speciesData.name}** has appeared!`);
     embed.setColor(rarityConfig[speciesData.rarity].color);
     embed.setImage(`${shiny ? speciesData.shinySprite : speciesData.sprite}`);
+    embed.setFooter( { text: "Use /togglespawn to disable wild Pokemon spawns" } );
     return embed;
 }
 

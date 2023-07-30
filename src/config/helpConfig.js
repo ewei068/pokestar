@@ -129,7 +129,7 @@ const tutorialConfig = [
     },
     {
         "name": "Getting Started",
-        "description": "To get started, take a look at you profile and items. **Use `/trainerinfo` and `/backpack`** to find all the information you need about your trainer.",
+        "description": "To get started, take a look at your profile and items. **Use `/trainerinfo` and `/backpack`** to find all the information you need about your trainer.",
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/trainerinfo.png",
     },
     {

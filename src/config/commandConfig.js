@@ -15,7 +15,7 @@ const commandCategoryConfig = {
         "name": "Pokemon",
         "description": "Commands to catch, train, and inspect Pokemon",
         "folder": "pokemon",
-        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "equipmentswap", "nature", "release", "mew", "celebi"]
+        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "equipmentswap", "nature", "release", "mew", "celebi", "togglespawn"]
     },
     "shop": {
         "name": "Shop",
@@ -717,6 +717,14 @@ const commandConfig = {
         "aliases": ["invite"],
         "description": "Invite the bot to your server",
         "execute": "invite.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    },
+    "togglespawn": {
+        "name": "Toggle Spawn",
+        "aliases": ["togglespawn"],
+        "description": "Toggle whether Pokemon spawn in your server",
+        "execute": "toggleSpawn.js",
         "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },

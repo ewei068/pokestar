@@ -53,7 +53,7 @@ const buildShopCategoryEmbed = (trainer, categoryId) => {
     const embed = new EmbedBuilder();
     embed.setTitle(`Pokemart - ${shopCategoryConfig[categoryId].name}`);
     embed.setColor(0xffffff);
-    embed.setDescription(`${categoryData.description}\n\nSelect and item for more information.`);
+    embed.setDescription(`${categoryData.description}\n\nSelect an item for more information.`);
     embed.addFields(
         { name: "Items", value: shopString, inline: true },
     )

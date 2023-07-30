@@ -153,9 +153,6 @@ const validateArgs = (command, args) => {
 }
             
 const runMessageCommand = async (message, client) => {
-    // console.log(message.content)
-    // console.log(message.content.split(" "));
-
     // get first two words of message
     let firstWord = message.content.split(" ")[0];
     let command = message.content.split(" ")[1];
