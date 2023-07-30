@@ -3,7 +3,7 @@
 ## 0.12.0 - Gen III
 
 * Generation 3
-  * Pokemon: Treecko, Grovyle, Sceptile, Torchic, Combusken, Blaziken, Mudkip, Marshtomp, Swampert, Poochyena, Mightyena, Zigzagoon, Linoone, Wurmple, Silcoon, Beautifly, Cascoon, Dustox, Lotad, Lombre, Ludicolo, Seedot, Nuzleaf, Shiftry, Taillow, Swellow, Wingull, Pelipper, Ralts, Kirlia, Gardevoir, Shroomish, Breloom, Slakoth, Vigoroth, Slaking, Nincada, Ninjask, Shedinja, Makuhita, Hariyama, Sableye, Mawile, Aron, Lairon, Aggron, Electrike, Manectric, Carvanha, Sharpedo, Wailmer, Wailord, Torkoal, Trapinch, Vibrava, Flygon, Swablu, Altaria, Baltoy, Claydol, Lileep, Cradily, Anorith, Armaldo, Feebas, Milotic, Spheal, Sealeo, Walrein, Bagon, Shelgon, Salamence, Beldum, Metang, Metagross
+  * Pokemon: Treecko, Grovyle, Sceptile, Torchic, Combusken, Blaziken, Mudkip, Marshtomp, Swampert, Poochyena, Mightyena, Zigzagoon, Linoone, Wurmple, Silcoon, Beautifly, Cascoon, Dustox, Lotad, Lombre, Ludicolo, Seedot, Nuzleaf, Shiftry, Taillow, Swellow, Wingull, Pelipper, Ralts, Kirlia, Gardevoir, Shroomish, Breloom, Slakoth, Vigoroth, Slaking, Nincada, Ninjask, Shedinja, Makuhita, Hariyama, Sableye, Mawile, Aron, Lairon, Aggron, Electrike, Manectric, Carvanha, Sharpedo, Wailmer, Wailord, Torkoal, Trapinch, Vibrava, Flygon, Swablu, Altaria, Baltoy, Claydol, Lileep, Cradily, Anorith, Armaldo, Feebas, Milotic, Spheal, Sealeo, Walrein, Bagon, Shelgon, Salamence, Beldum, Metang, Metagross, Regirock, Regice, Registeel, Latias, Latios, Kyogre, Groudon, Rayquaza
   * Battle tower
 * Per-generation rotating banner
 * Buff shop?

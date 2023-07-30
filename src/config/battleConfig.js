@@ -3328,6 +3328,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user sings an ancient song that causes targets AND surrounding allies to faint in 3 turns.",
     },
+    "m199": {
+        "name": "Lock-On",
+        "type": types.NORMAL,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.OTHER,
+        "description": "The user takes aim at the target, forcing them to redirect moves and sharply reducing their evasion for 1 turn.",
+    },
     "m200": {
         "name": "Outrage",
         "type": types.DRAGON,
@@ -3899,6 +3912,32 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
         "description": "If the user faints in the next turn, silence all enemies for 1 turn.",
+    },
+    "m295": {
+        "name": "Luster Purge",
+        "type": types.PSYCHIC,
+        "power": 80,
+        "accuracy": 80,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.COLUMN,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user lets loose a damaging burst of light. This also lowers the target's Sp. Def for 2 turns. If an ally has Mist Ball on cooldown, this hits all enemies and ignores miss.",
+    },
+    "m296": {
+        "name": "Mist Ball",
+        "type": types.PSYCHIC,
+        "power": 60,
+        "accuracy": 80,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user creates a misty explosion around the target. This also lowers the target's Sp. Atk for 1 turn. If an ally has Luster Purge on cooldown, instead lower Atk and Sp. Atk for 2 turns, and ignore miss.",
     },
     "m299": {
         "name": "Blaze Kick",
@@ -5124,6 +5163,45 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.SPECIAL,
         "description": "The user damages the targets by emitting a powerful flash.",
+    },
+    "m618": {
+        "name": "Origin Pulse",
+        "type": types.WATER,
+        "power": 65,
+        "accuracy": 85,
+        "cooldown": 6,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user summons a huge wave that crashes down on the opposing team. Increases the user's Special Attack and Special Defense for 1 turn BEFORE dealing damage.",
+    },
+    "m619": {
+        "name": "Precipice Blades",
+        "type": types.GROUND,
+        "power": 70,
+        "accuracy": 85,
+        "cooldown": 6,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user attacks opposing Pokémon by manifesting the power of the land in fearsome blades of stone. Increases the user's Attack and Defense for 1 turn BEFORE dealing damage.",
+    },
+    "m620": {
+        "name": "Dragon Ascent",
+        "type": types.FLYING,
+        "power": 85,
+        "accuracy": 100,
+        "cooldown": 7,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.COLUMN,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user soars upward with powerful wings and charges at the target at a steep angle. This calculates damage based off the lower of the targets' defense or special defense. Grants the user another turn but lowers its defenses for 2 turns.",
     },
     "m668": {
         "name": "Strength Sap",
@@ -6952,6 +7030,15 @@ const moveExecutes = {
         // append ally targets to all targets
         allTargets.push(...allyTargets);
     },
+    "m199": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m199";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // apply redirect and greaterEvaDown 1 turn
+            target.addEffect("redirect", 1, source);
+            target.addEffect("greaterEvaDown", 1, source);
+        }
+    },
     "m200": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m200";
         const moveData = moveConfig[moveId];
@@ -7709,6 +7796,72 @@ const moveExecutes = {
         for (const target of allTargets) {
             // apply grudge for 1 turn
             target.addEffect("grudge", 1, source);
+        }
+    },
+    "m295": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m295";
+        const moveData = moveConfig[moveId];
+
+        // check if ally has mist ball on cooldown
+        const allyPokemons = Object.values(battle.allPokemon).filter(pokemon => pokemon.teamName === source.teamName);
+        let mistBallCooldown = false;
+        for (const allyPokemon of allyPokemons) {
+            const mistBall = allyPokemon.moveIds["m296"];
+            if (mistBall && mistBall.cooldown > 0) {
+                mistBallCooldown = true;
+                break;
+            }
+        }
+
+        // if mistBall, set allTargets to all enemies
+        if (mistBallCooldown) {
+            const enemyParty = source.getEnemyParty();
+            allTargets = source.getPatternTargets(enemyParty, targetPatterns.ALL, primaryTarget.position, moveId);
+        }
+
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, !mistBallCooldown && miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss or mist ball, spd down
+            if (!miss || mistBallCooldown) {
+                target.addEffect("spdDown", 2, source);
+            }
+        }
+    },
+    "m296": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m296";
+        const moveData = moveConfig[moveId];
+
+        // check if ally has luster purge on cooldown
+        const allyPokemons = Object.values(battle.allPokemon).filter(pokemon => pokemon.teamName === source.teamName);
+        let lusterPurgeCooldown = false;
+        for (const allyPokemon of allyPokemons) {
+            const lusterPurge = allyPokemon.moveIds["m295"];
+            if (lusterPurge && lusterPurge.cooldown > 0) {
+                lusterPurgeCooldown = true;
+                break;
+            }
+        }
+
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, !lusterPurgeCooldown && miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            if (lusterPurgeCooldown) {
+                target.addEffect("atkDown", 2, source);
+                target.addEffect("spaDown", 2, source);
+            } else if (!miss) {
+                target.addEffect("spaDown", 1, source);
+            }
         }
     },
     "m299": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -9320,6 +9473,59 @@ const moveExecutes = {
                 moveId: moveId
             });
         }
+    },
+    "m618": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m618";
+        const moveData = moveConfig[moveId];
+
+        // give user spa, spd up
+        source.addEffect("spaUp", 1, source);
+        source.addEffect("spdUp", 1, source);
+
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
+    "m619": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m619";
+        const moveData = moveConfig[moveId];
+
+        // give user atk, def up
+        source.addEffect("atkUp", 1, source);
+        source.addEffect("defUp", 1, source);
+
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
+    "m620": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m620";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss, {
+                defStat: target.getDef() > target.getSpd() ? damageTypes.SPECIAL : damageTypes.PHYSICAL
+            });
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+
+        // give user 100% cr, def down spd down 2 turns
+        source.boostCombatReadiness(source, 100);
+        source.addEffect("defDown", 2, source);
+        source.addEffect("spdDown", 2, source);
     },
     "m668": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m668";
@@ -11297,6 +11503,15 @@ const abilityConfig = {
             }
             const abilityData = ability.data;
             battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
+    },
+    "76": {
+        "name": "Air Lock",
+        "description": "Negates all weather effects.",
+        "abilityAdd": function (battle, source, target) {
+            battle.addToLog(`${target.name}'s Air Lock ability negates all weather effects!`)
+        },
+        "abilityRemove": function (battle, source, target) {
         }
     },
     "89": {
