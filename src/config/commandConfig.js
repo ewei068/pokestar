@@ -528,8 +528,8 @@ const commandConfig = {
                 "optional": true,
                 "variable": false,
                 "enum": [
-                    "bugCatcher", "youngster", "lass", "fisherman", "hiker", "aromaLady", "dragonTamer", "aceTrainer", 
-                    "blue", "red", "gold", "palmer"
+                    "bugCatcher", "youngster", "lass", "fisherman", "hiker", "aromaLady", "blackBelt", "dragonTamer", "aceTrainer", 
+                    "blue", "red", "gold", "steven", "palmer"
                 ]
             },
             "difficulty": {

@@ -5713,6 +5713,23 @@ const pokemonConfig = {
         "growthRate": growthRates.SLOW,
         "unobtainable": true,
     },
+    "20384": {
+        "name": "Palmer's Rayquaza",
+        "emoji": "<:384:1132497391535272016>",
+        "description": "Palmer's trusted sidekick, whose dominance in battle won Palmer the title of Battle Tower Tycoon.",
+        "type": [types.DRAGON, types.FLYING],
+        "baseStats": [125, 150, 90, 100, 90, 145],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/384.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/384.png",
+        "abilities": {
+            "76": 1,
+        },
+        "moveIds": ["m89", "m200", "m221", "m416", "m620"],
+        "battleEligible": true,
+        "rarity": rarities.MYTHICAL,
+        "growthRate": growthRates.SLOW,
+        "unobtainable": true,
+    },
 }
 
 const rarityBins = {

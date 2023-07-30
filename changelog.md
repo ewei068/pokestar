@@ -4,21 +4,24 @@
 
 * Generation 3
   * Pokemon: Treecko, Grovyle, Sceptile, Torchic, Combusken, Blaziken, Mudkip, Marshtomp, Swampert, Poochyena, Mightyena, Zigzagoon, Linoone, Wurmple, Silcoon, Beautifly, Cascoon, Dustox, Lotad, Lombre, Ludicolo, Seedot, Nuzleaf, Shiftry, Taillow, Swellow, Wingull, Pelipper, Ralts, Kirlia, Gardevoir, Shroomish, Breloom, Slakoth, Vigoroth, Slaking, Nincada, Ninjask, Shedinja, Makuhita, Hariyama, Sableye, Mawile, Aron, Lairon, Aggron, Electrike, Manectric, Carvanha, Sharpedo, Wailmer, Wailord, Torkoal, Trapinch, Vibrava, Flygon, Swablu, Altaria, Baltoy, Claydol, Lileep, Cradily, Anorith, Armaldo, Feebas, Milotic, Spheal, Sealeo, Walrein, Bagon, Shelgon, Salamence, Beldum, Metang, Metagross, Regirock, Regice, Registeel, Latias, Latios, Kyogre, Groudon, Rayquaza
+  * Gen 3 Pokemon will now appear in NPC battles and Dungeons!
+  * Added NPCs: Black Belt, Champion Steven!
   * Battle tower
-* Per-generation rotating banner
-* Buff shop?
-* Original owner
-* Rework sableye
-* Lift trade limit
-* Expire Gen2 Event
 * Spawn
-  * tips?
-* Ability order
-* Fixed weather not boosting accuracy of moves correctly
-* Fixed greater atkUp/atkDown not applying properly
-* Buffed Psystrike to Square
-* Reworked Meteor Mash
-* Replace Ho-oh's Toxic with Defog
+* Per-generation rotating banner
+* Original owner
+* Lift trade limit
+* Adjustments: 
+  * Buff shop?
+  * Buffed Psystrike to Square
+  * Reworked Meteor Mash
+  * Replace Ho-oh's Toxic with Defog
+  * Rework sableye
+  * Ability order
+* Bug Fixes:
+  * Fixed weather not boosting accuracy of moves correctly
+  * Fixed greater atkUp/atkDown not applying properly
+* Expire Gen2 Event
 
 ### 0.11.4 (7/21) - Trading
 

@@ -11,10 +11,12 @@ const npcs = {
     BLUE: "blue",
     RED: "red",
     GOLD: "gold",
+    STEVEN: "steven",
     // TWITCH_PLAYS_RED: "tppRed",
     FISHERMAN: "fisherman",
     HIKER: "hiker",
     AROMA_LADY: "aromaLady",
+    BLACK_BELT: "blackBelt",
     DRAGON_TAMER: "dragonTamer",
     ACE_TRAINER: "aceTrainer",
     PALMER: "palmer",
@@ -44,28 +46,28 @@ const npcConfig = {
                 minLevel: 3,
                 maxLevel: 5,
                 numPokemon: 3,
-                pokemonIds: ["10", "13", "165", "167"],
+                pokemonIds: ["10", "13", "165", "167", "265"],
                 aceId: "14",
             },
             [difficulties.EASY]: {
                 minLevel: 12,
                 maxLevel: 16,
                 numPokemon: 4,
-                pokemonIds: ["10", "11", "13", "14", "165", "167"],
+                pokemonIds: ["10", "11", "13", "14", "165", "167", "265", "266", "268"],
                 aceId: "14",
             },
             [difficulties.MEDIUM]: {
                 minLevel: 24,
                 maxLevel: 29,
                 numPokemon: 5,
-                pokemonIds: ["11", "12", "14", "15", "123", "166", "168"],
+                pokemonIds: ["11", "12", "14", "15", "123", "166", "168", "267", "269"],
                 aceId: "15",
             },
             [difficulties.HARD]: {
                 minLevel: 42,
                 maxLevel: 51,
                 numPokemon: 6,
-                pokemonIds: ["12", "15", "123", "127", "166", "168", "212"],
+                pokemonIds: ["12", "15", "123", "127", "166", "168", "212", "267", "269", "292"],
                 aceId: "15",
             },
         }
@@ -87,21 +89,21 @@ const npcConfig = {
                 minLevel: 15,
                 maxLevel: 18,
                 numPokemon: 4,
-                pokemonIds: ["4", "16", "19", "74", "102", "133", "164"],
+                pokemonIds: ["4", "16", "19", "74", "102", "133", "164", "304"],
                 aceId: "16",
             },
             [difficulties.MEDIUM]: {
                 minLevel: 27,
                 maxLevel: 33,
                 numPokemon: 5,
-                pokemonIds: ["5", "17", "20", "75", "103", "135", "197"],
+                pokemonIds: ["5", "17", "20", "75", "103", "135", "197", "305"],
                 aceId: "17",
             },
             [difficulties.HARD]: {
                 minLevel: 46,
                 maxLevel: 57,
                 numPokemon: 6,
-                pokemonIds: ["6", "18", "20", "76", "103", "135", "197"],
+                pokemonIds: ["6", "18", "20", "76", "103", "135", "197", "306"],
                 aceId: "18",
             },
         }
@@ -116,29 +118,29 @@ const npcConfig = {
                 minLevel: 6,
                 maxLevel: 8,
                 numPokemon: 3,
-                pokemonIds: ["1", "10", "35", "39"],
+                pokemonIds: ["1", "10", "35", "39", "270"],
                 aceId: "39",
             },
             [difficulties.EASY]: {
                 minLevel: 16,
                 maxLevel: 20,
                 numPokemon: 4,
-                pokemonIds: ["1", "11", "35", "39", "133"],
+                pokemonIds: ["1", "11", "35", "39", "133", "270"],
                 aceId: "39",
             },
             [difficulties.MEDIUM]: {
                 minLevel: 29,
                 maxLevel: 36,
                 numPokemon: 5,
-                pokemonIds: ["2", "12", "25", "36", "40", "136", "196"],
+                pokemonIds: ["2", "12", "25", "36", "40", "136", "196", "271"],
                 aceId: "40",
             },
             [difficulties.HARD]: {
                 minLevel: 49,
                 maxLevel: 59,
                 numPokemon: 6,
-                pokemonIds: ["3", "12", "26", "40", "136", "143", "196"],
-                aceId: "40",
+                pokemonIds: ["3", "12", "26", "40", "136", "143", "196", "272"],
+                aceId: "282",
             },
         }
     },
@@ -152,28 +154,28 @@ const npcConfig = {
                 minLevel: 9,
                 maxLevel: 11,
                 numPokemon: 3,
-                pokemonIds: ["120", "129", "183"],
+                pokemonIds: ["120", "129", "183", "320"],
                 aceId: "7",
             },
             [difficulties.EASY]: {
                 minLevel: 21,
                 maxLevel: 26,
                 numPokemon: 4,
-                pokemonIds: ["7", "120", "129", "183"],
+                pokemonIds: ["7", "120", "129", "183", "278", "320"],
                 aceId: "7",
             },
             [difficulties.MEDIUM]: {
                 minLevel: 34,
                 maxLevel: 41,
                 numPokemon: 5,
-                pokemonIds: ["8", "121", "130", "134", "184"],
+                pokemonIds: ["8", "121", "130", "134", "184", "279", "321"],
                 aceId: "130",
             },
             [difficulties.HARD]: {
                 minLevel: 54,
                 maxLevel: 62,
                 numPokemon: 6,
-                pokemonIds: ["9", "121", "130", "131", "134", "184"],
+                pokemonIds: ["9", "121", "130", "131", "134", "184", "279", "321", "350"],
                 aceId: "130",
             },
         }
@@ -195,21 +197,21 @@ const npcConfig = {
                 minLevel: 17,
                 maxLevel: 21,
                 numPokemon: 4,
-                pokemonIds: ["50", "66", "74", "95", "111"],
+                pokemonIds: ["50", "66", "74", "95", "111", "343"],
                 aceId: "74",
             },
             [difficulties.MEDIUM]: {
                 minLevel: 30,
                 maxLevel: 36,
                 numPokemon: 5,
-                pokemonIds: ["51", "67", "75", "95", "112"],
+                pokemonIds: ["51", "67", "75", "95", "112", "344"],
                 aceId: "75",
             },
             [difficulties.HARD]: {
                 minLevel: 50,
                 maxLevel: 59,
                 numPokemon: 6,
-                pokemonIds: ["51", "68", "76", "112", "142", "208"],
+                pokemonIds: ["51", "68", "76", "112", "142", "208", "344"],
                 aceId: "248",
             },
         }
@@ -224,29 +226,65 @@ const npcConfig = {
                 minLevel: 8,
                 maxLevel: 10,
                 numPokemon: 3,
-                pokemonIds: ["43", "187", "191"],
+                pokemonIds: ["43", "187", "191", "285"],
                 aceId: "152",
             },
             [difficulties.EASY]: {
                 minLevel: 18,
                 maxLevel: 22,
                 numPokemon: 4,
-                pokemonIds: ["43", "152", "187", "192"],
+                pokemonIds: ["43", "152", "187", "192", "285"],
                 aceId: "44",
             },
             [difficulties.MEDIUM]: {
                 minLevel: 33,
                 maxLevel: 40,
                 numPokemon: 5,
-                pokemonIds: ["44", "153", "188", "192"],
+                pokemonIds: ["44", "153", "188", "192", "286"],
                 aceId: "44",
             },
             [difficulties.HARD]: {
                 minLevel: 53,
                 maxLevel: 62,
                 numPokemon: 6,
-                pokemonIds: ["3", "45", "154", "189", "192"],
+                pokemonIds: ["3", "45", "154", "189", "192", "286"],
                 aceId: "182",
+            },
+        }
+    },
+    [npcs.BLACK_BELT]: {
+        name: "Black Belt",
+        sprite: "https://archives.bulbagarden.net/media/upload/e/eb/Spr_DP_Black_Belt.png",
+        emoji: "<:blackbelt:1135329725133365350>",
+        catchphrase: "I'm a Black Belt! I'm the strongest of all Fighting-type trainers!",
+        difficulties: {
+            [difficulties.VERY_EASY]: {
+                minLevel: 8,
+                maxLevel: 10,
+                numPokemon: 3,
+                pokemonIds: ["66", "236", "255", "296"],
+                aceId: "66",
+            },
+            [difficulties.EASY]: {
+                minLevel: 18,
+                maxLevel: 22,
+                numPokemon: 4,
+                pokemonIds: ["66", "236", "255", "296"],
+                aceId: "66",
+            },
+            [difficulties.MEDIUM]: {
+                minLevel: 33,
+                maxLevel: 40,
+                numPokemon: 5,
+                pokemonIds: ["67", "106", "107", "237", "256", "286", "297"],
+                aceId: "67",
+            },
+            [difficulties.HARD]: {
+                minLevel: 53,
+                maxLevel: 62,
+                numPokemon: 6,
+                pokemonIds: ["62", "68", "106", "107", "214", "237", "257", "286", "297"],
+                aceId: "68",
             },
         }
     },
@@ -260,28 +298,28 @@ const npcConfig = {
                 minLevel: 20,
                 maxLevel: 24,
                 numPokemon: 4,
-                pokemonIds: ["5", "147"],
+                pokemonIds: ["5", "147", "328", "333"],
                 aceId: "147",
             },
             [difficulties.MEDIUM]: {
                 minLevel: 32,
                 maxLevel: 38,
                 numPokemon: 5,
-                pokemonIds: ["6", "130", "148"],
+                pokemonIds: ["6", "130", "148", "329", "333", "371"],
                 aceId: "148",
             },
             [difficulties.HARD]: {
                 minLevel: 52,
                 maxLevel: 59,
                 numPokemon: 6,
-                pokemonIds: ["6", "130", "149"],
+                pokemonIds: ["6", "130", "149", "330", "334", "372"],
                 aceId: "149",
             },
             [difficulties.VERY_HARD]: {
                 minLevel: 70,
                 maxLevel: 78,
                 numPokemon: 6,
-                pokemonIds: ["6", "130", "149"],
+                pokemonIds: ["6", "130", "149", "330", "334", "373"],
                 aceId: "149",
             },
         }
@@ -411,7 +449,7 @@ const npcConfig = {
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.POKEBALL]: 2,
+                            [backpackItems.POKEBALL]: 1,
                         },
                     }
                 }
@@ -425,7 +463,43 @@ const npcConfig = {
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.POKEBALL]: 5,
+                            [backpackItems.POKEBALL]: 2,
+                        },
+                    }
+                }
+            },
+        }
+    },
+    [npcs.STEVEN]: {
+        name: "Champion Steven",
+        sprite: "https://archives.bulbagarden.net/media/upload/a/ad/Spr_RS_Steven.png",
+        emoji: "<:steven:1135329417015595050>",
+        catchphrase: "I'm the Champion! Do you know what that means?",
+        difficulties: {
+            [difficulties.HARD]: {
+                minLevel: 55,
+                maxLevel: 60,
+                numPokemon: 6,
+                pokemonIds: ["227", "306", "344", "346", "348"],
+                aceId: "376",
+                dailyRewards: {
+                    backpack: {
+                        [backpackCategories.POKEBALLS]: {
+                            [backpackItems.POKEBALL]: 1,
+                        },
+                    }
+                }
+            },
+            [difficulties.VERY_HARD]: {
+                minLevel: 92,
+                maxLevel: 99,
+                numPokemon: 6,
+                pokemonIds: ["227", "306", "344", "346", "348"],
+                aceId: "376",
+                dailyRewards: {
+                    backpack: {
+                        [backpackCategories.POKEBALLS]: {
+                            [backpackItems.POKEBALL]: 2,
                         },
                     }
                 }
@@ -442,8 +516,8 @@ const npcConfig = {
                 minLevel: 100,
                 maxLevel: 119,
                 numPokemon: 6,
-                pokemonIds: ["9-1", "52-1", "136-1", "144", "145-1", "150", "150-1", "249", "250"],
-                aceId: "20101",
+                pokemonIds: ["144", "145", "146", "150", "249", "250", "382", "383"],
+                aceId: "20384",
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
@@ -553,12 +627,12 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "208",
+                                speciesId: "377",
                                 level: 60,
                                 position: 9,
                             },
                             {
-                                speciesId: "208",
+                                speciesId: "377",
                                 level: 60,
                                 position: 12,
                             },
@@ -579,12 +653,12 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "122",
+                                speciesId: "378",
                                 level: 60,
                                 position: 10,
                             },
                             {
-                                speciesId: "122",
+                                speciesId: "378",
                                 level: 60,
                                 position: 11,
                             },
@@ -600,7 +674,7 @@ const dungeonConfig = {
                                 position: 1,
                             },
                             {
-                                speciesId: "122",
+                                speciesId: "197",
                                 level: 65,
                                 position: 2
                             },
@@ -610,7 +684,7 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "197",
+                                speciesId: "379",
                                 level: 60,
                                 position: 5,
                             },
@@ -652,12 +726,12 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "208",
+                                speciesId: "377",
                                 level: 90,
                                 position: 9,
                             },
                             {
-                                speciesId: "208",
+                                speciesId: "377",
                                 level: 90,
                                 position: 12,
                             },
@@ -678,12 +752,12 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "122",
+                                speciesId: "378",
                                 level: 90,
                                 position: 10,
                             },
                             {
-                                speciesId: "122",
+                                speciesId: "378",
                                 level: 90,
                                 position: 11,
                             },
@@ -699,7 +773,7 @@ const dungeonConfig = {
                                 position: 1,
                             },
                             {
-                                speciesId: "122",
+                                speciesId: "197",
                                 level: 95,
                                 position: 2
                             },
@@ -709,7 +783,7 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "197",
+                                speciesId: "379",
                                 level: 90,
                                 position: 5,
                             },
@@ -751,12 +825,12 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "208",
+                                speciesId: "377",
                                 level: 120,
                                 position: 9,
                             },
                             {
-                                speciesId: "208",
+                                speciesId: "377",
                                 level: 120,
                                 position: 12,
                             },
@@ -777,12 +851,12 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "122",
+                                speciesId: "378",
                                 level: 120,
                                 position: 10,
                             },
                             {
-                                speciesId: "122",
+                                speciesId: "378",
                                 level: 120,
                                 position: 11,
                             },
@@ -798,7 +872,7 @@ const dungeonConfig = {
                                 position: 1,
                             },
                             {
-                                speciesId: "122",
+                                speciesId: "197",
                                 level: 120,
                                 position: 2
                             },
@@ -808,7 +882,7 @@ const dungeonConfig = {
                                 position: 4,
                             },
                             {
-                                speciesId: "197",
+                                speciesId: "379",
                                 level: 115,
                                 position: 5,
                             },
@@ -885,12 +959,12 @@ const dungeonConfig = {
                                 position: 3,
                             },
                             {
-                                speciesId: "135",
+                                speciesId: "291",
                                 level: 60,
                                 position: 10,
                             },
                             {
-                                speciesId: "135",
+                                speciesId: "291",
                                 level: 60,
                                 position: 11,
                             },
@@ -984,12 +1058,12 @@ const dungeonConfig = {
                                 position: 3,
                             },
                             {
-                                speciesId: "135",
+                                speciesId: "291",
                                 level: 90,
                                 position: 10,
                             },
                             {
-                                speciesId: "135",
+                                speciesId: "291",
                                 level: 90,
                                 position: 11,
                             },
@@ -1083,12 +1157,12 @@ const dungeonConfig = {
                                 position: 3,
                             },
                             {
-                                speciesId: "135",
+                                speciesId: "291",
                                 level: 115,
                                 position: 10,
                             },
                             {
-                                speciesId: "135",
+                                speciesId: "291",
                                 level: 115,
                                 position: 11,
                             },

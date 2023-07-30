@@ -72,6 +72,42 @@ const bannerTypeConfig = {
 const bannerConfig = [
     {
         "bannerType": bannerTypes.SPECIAL,
+        "name": "[GEN 3] Legendary Golems Banner",
+        "description": "Gen 3 has arrived! Pull for the legendary Regirock, Regice, Registeel, as well as other Gen 3 Pokemon! NOTE: The Golems are NOT limited and are available in all banners.",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["377", "378", "379"],
+                [rarities.EPIC]: ["254", "257", "260", "272", "275", "282", "286", "289", "297", "306", "310", "319", "321", "330", "334", "344", "346", "348", "350", "365", "373", "376"],
+                [rarities.RARE]: ["264", "267", "269", "277", "279", "302", "303", "324"]
+            }
+        }
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
+        "name": "[GEN 3] Eon Banner",
+        "description": "Gen 3 has arrived! Pull for the legendary Latias, Latios, as well as other Gen 3 Pokemon! NOTE: The Eon Pokemon are NOT limited and are available in all banners.",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["380", "381"],
+                [rarities.EPIC]: ["254", "257", "260", "272", "275", "282", "286", "289", "297", "306", "310", "319", "321", "330", "334", "344", "346", "348", "350", "365", "373", "376"],
+                [rarities.RARE]: ["264", "267", "269", "277", "279", "302", "303", "324"]
+            }
+        }
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
+        "name": "[GEN 3] Weather Trio Banner",
+        "description": "Gen 3 has arrived! Pull for the legendary Kyogre, Groudon, Rayquaza, as well as other Gen 3 Pokemon! NOTE: The Weather Trio are NOT limited and are available in all banners.",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["382", "383", "384"],
+                [rarities.EPIC]: ["254", "257", "260", "272", "275", "282", "286", "289", "297", "306", "310", "319", "321", "330", "334", "344", "346", "348", "350", "365", "373", "376"],
+                [rarities.RARE]: ["264", "267", "269", "277", "279", "302", "303", "324"]
+            }
+        }
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
         "name": "[EVENT] Billionaire Sableye",
         "description": "Trading has arrived! Pull for the rich Sableye who made a fortune trading Pokemon!",
         "rateUp": () => {
@@ -92,7 +128,7 @@ const bannerConfig = [
         },
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-trade-banner.png"
     },
-    {
+    /*{
         "bannerType": bannerTypes.SPECIAL,
         "name": "[EVENT] Shadow Lugia",
         "description": "Shadow Lugia has arrived! Pull for the legendary Shadow Lugia, as well as powerful limited variations of other Gen 2 Pokemon!",

@@ -85,15 +85,30 @@ Trading is here! Get started with \`/tradeinfo\` and press the "Help" button for
 * Event Pokemon Art: carnivault
 `
 
+const GEN_3_DESCRIPTION = `🌟**Generation III**🌟
 
+Generation 3 Pokemon have arrived! Over 80 new Pokemon are here, plus the adition of two big features: wild Pokemon spawns and the Battle Tower!
+
+<:252:1126680967252283392> **New Pokemon:** Many new Pokemon have been added, and are available in the Gacha! You may also start seeing these Pokemon in NPC and Dungeon battles!
+
+<:384:1132497391535272016> **Legendary Banners:** Gen 3 Legendary Pokemon will have special rate-up banners! Note that these Pokemon are NOT limited and are available in all banners.
+
+🗼 **Battle Tower:** The Battle Tower is a permanent new feature! Climb the \`/battletower\` every week to earn rewards! Temporarily, money rewards from the Battle Tower is doubled!
+
+🌳 **Wild Pokemon:** Wild Pokemon now spawn every few hours in your servers! These Pokemon have better IVs and are more likely to be shiny! Temporarily, the shiny chance on these Pokemon is doubled!
+`
 
 const gameEventConfig = [
+    {
+        "name": "Generation III",
+        "description": GEN_3_DESCRIPTION, 
+    },
     {
         "name": "Trading Event",
         "description": TRADING_DESCRIPTION,
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-trade-banner.png",
     },
-    {
+    /*{
         "name": "Generation II Wrap-Up",
         "description": GEN_2_WRAPUP_DESCRIPTION,
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-gen2-banner.png",
