@@ -3960,8 +3960,8 @@ const pokemonConfig = {
         "growthRate": growthRates.FAST,
         "noGacha": true,
         "mythicConfig": {
-            [rarities.LEGENDARY]: ["9-1", "25-1", "52-1", "136-1", "139-1", "145-1", "150-1"],
-            [rarities.EPIC]: ["18-1", "24-1", "34-1", "49-1", "110-1", "131-1"]
+            [rarities.LEGENDARY]: ["9-1", "25-1", "52-1", "136-1", "139-1", "145-1", "150-1", "249-1"],
+            [rarities.EPIC]: ["18-1", "24-1", "34-1", "49-1", "110-1", "131-1", "157-1", "248-1"]
         }
     },
     "252": {
