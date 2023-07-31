@@ -176,7 +176,7 @@ const runMessageCommand = async (message, client) => {
     // if command not in commands, return
     const commandData = getCommand(command);
     if (!(command in messageCommands) || !commandData) {
-        message.reply(`Invalid command! Try \`${prefix} help\` to view all commands.`);
+        await message.reply(`Invalid command! Try \`${prefix} help\` to view all commands.`);
         return;
     }
 
