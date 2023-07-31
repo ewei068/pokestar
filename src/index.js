@@ -36,11 +36,11 @@ client.on(Events.MessageCreate, async (message) => {
 
     runMessageCommand(message, client).then(() => {
         // do nothing
-    }).catch((error) => {
+    }).catch(async (error) => {
         try {
             logger.error(`Error in message command: ${message.content}`);
             logger.error(error);
-            message.reply("There was an error trying to execute that command!");
+            await message.reply("There was an error trying to execute that command!");
         } catch (error) {
             logger.error(`Error in message command: ${message.content}`);
             logger.error(error);
