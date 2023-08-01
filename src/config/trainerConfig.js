@@ -218,6 +218,11 @@ const trainerFields = {
         "default": false,
         "daily": true,
     },
+    "lastTowerStage": {
+        "type": "number",
+        "default": 0,
+        "biweekly": true,
+    },
 }
 
 const levelConfig = {

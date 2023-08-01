@@ -10,7 +10,7 @@ const { findDocuments, insertDocument, updateDocument, QueryBuilder } = require(
 const { collectionNames } = require("../config/databaseConfig");
 const { trainerFields, getTrainerLevelExp, MAX_TRAINER_LEVEL, levelConfig } = require("../config/trainerConfig");
 const { logger } = require("../log");
-const { getOrSetDefault, getFullUTCDate, formatMoney } = require("../utils/utils");
+const { getOrSetDefault, getFullUTCDate, formatMoney, getFullUTCFortnight, getFullUTCWeek } = require("../utils/utils");
 const { backpackItems, backpackCategories } = require("../config/backpackConfig");
 const { getRewardsString, getPokeballsString, addRewards, getBackpackItemsString } = require("../utils/trainerUtils");
 const { stageNames } = require("../config/stageConfig");
@@ -124,7 +124,8 @@ const getTrainer = async (user, refresh=true) => {
 
     // attempt to reset daily rewards
     today = getFullUTCDate();
-    lastDaily = getFullUTCDate(new Date(trainer.lastDaily));
+    const lastDailyTime = new Date(trainer.lastDaily);
+    lastDaily = getFullUTCDate(lastDailyTime);
     if (today > lastDaily) {
         trainer.lastDaily = new Date().getTime();
         // reset daily rewards
@@ -133,6 +134,31 @@ const getTrainer = async (user, refresh=true) => {
                 trainer[field] = trainerFields[field].default;
             }
         }
+
+        // check other time granularities
+        // weekly
+        const week = getFullUTCWeek();
+        const lastWeekly = getFullUTCWeek(lastDailyTime);
+        if (week > lastWeekly) {
+            // reset weekly rewards
+            for (const field in trainerFields) {
+                if (trainerFields[field].weekly) {
+                    trainer[field] = trainerFields[field].default;
+                }
+            }
+        }
+        // biweekly
+        const fortnight = getFullUTCFortnight();
+        const lastBiweekly = getFullUTCFortnight(lastDailyTime);
+        if (fortnight > lastBiweekly) {
+            // reset biweekly rewards
+            for (const field in trainerFields) {
+                if (trainerFields[field].biweekly) {
+                    trainer[field] = trainerFields[field].default;
+                }
+            }
+        }
+
         modified = true;
     }
 

@@ -253,6 +253,10 @@ const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
     }
 }
 
+const getIdFromTowerStage = (towerStage) => {
+    return `battleTowerStage${towerStage}`;
+}
+
 module.exports = {
     buildPartyString,
     buildCompactPartyString,
@@ -260,4 +264,5 @@ module.exports = {
     buildBattlePokemonString,
     buildNpcDifficultyString,
     buildDungeonDifficultyString,
+    getIdFromTowerStage,
 };

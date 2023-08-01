@@ -11,6 +11,7 @@
 * Per-generation rotating banner
 * Original owner
 * Lift trade limit
+* PVE back button
 * Adjustments: 
   * Buff shop?
   * Buffed Psystrike to Square
@@ -21,6 +22,7 @@
 * Bug Fixes:
   * Fixed weather not boosting accuracy of moves correctly
   * Fixed greater atkUp/atkDown not applying properly
+  * Fixed crash again lol
 * Expire Gen2 Event
 
 ### 0.11.4 (7/21) - Trading

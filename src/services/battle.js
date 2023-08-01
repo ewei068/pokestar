@@ -10,7 +10,7 @@ const { getOrSetDefault, formatMoney } = require("../utils/utils");
 const { v4: uuidv4, v4 } = require('uuid');
 const { pokemonConfig, types } = require('../config/pokemonConfig');
 const { battleEventNames, moveExecutes, moveConfig, targetTypes, targetPatterns, targetPositions, effectConfig, statusConditions, moveTiers, calculateDamage, abilityConfig, typeAdvantages, weatherConditions } = require("../config/battleConfig");
-const { buildBattleEmbed, buildBattleMovesetEmbed, buildPveListEmbed, buildPveNpcEmbed, buildDungeonListEmbed, buildDungeonEmbed } = require("../embeds/battleEmbeds");
+const { buildBattleEmbed, buildBattleMovesetEmbed, buildPveListEmbed, buildPveNpcEmbed, buildDungeonListEmbed, buildDungeonEmbed, buildBattleTowerEmbed } = require("../embeds/battleEmbeds");
 const { buildSelectBattleMoveRow } = require("../components/selectBattleMoveRow");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildBattleInfoActionRow } = require("../components/battleInfoActionRow");
@@ -20,7 +20,7 @@ const { logger } = require("../log");
 const { buildNextTurnActionRow } = require("../components/battleNextTurnRow");
 const { deleteState } = require("./state");
 const { calculateEffectiveSpeed, calculateEffectiveAccuracy, calculateEffectiveEvasion, getMoveIds } = require("../utils/pokemonUtils");
-const { npcConfig, difficultyConfig, dungeons, dungeonConfig } = require("../config/npcConfig");
+const { npcConfig, difficultyConfig, dungeons, dungeonConfig, battleTowerConfig } = require("../config/npcConfig");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { getState } = require("./state");
 const { eventNames } = require("../config/eventConfig");
@@ -29,6 +29,7 @@ const { drawIterable, drawUniform } = require("../utils/gachaUtils");
 const { generateRandomPokemon } = require("./gacha");
 const { validateParty } = require("./party");
 const { addRewards, getRewardsString, flattenCategories, flattenRewards } = require("../utils/trainerUtils");
+const { getIdFromTowerStage } = require("../utils/battleUtils");
 
 class NPC {
     userId;
@@ -242,6 +243,53 @@ class DungeonNPC extends NPC {
     }
 }
 
+class TowerNPC extends NPC {
+    constructor(towerData, difficulty) {
+        const npcData = npcConfig[towerData.npcId];
+        super(npcData, difficulty);
+    }
+
+    setPokemon(towerData, difficulty) {
+        const npcData = npcConfig[towerData.npcId];
+        const npcDifficultyData = npcData.difficulties[difficulty];
+        this.party = {
+            rows: 3,
+            cols: 4,
+            pokemons: [
+                null, null, null, null, 
+                null, null, null, null, 
+                null, null, null, null
+            ],
+        };
+        
+        // generate party
+        // generate numPokemon - 1 pokemon, then 1 for the ace
+        const numPokemon = npcDifficultyData.numPokemon;
+        const pokemons = [];
+        const pokemonIds = drawIterable(npcDifficultyData.pokemonIds, numPokemon - 1);
+        for (const pokemonId of pokemonIds) {
+            const pokemon = generateRandomPokemon(this.userId, pokemonId, drawUniform(towerData.minLevel, towerData.maxLevel, 1)[0]);
+            // give random id
+            pokemon._id = uuidv4();
+            pokemons.push(pokemon);
+        }
+        // push ace
+        const acePokemon = generateRandomPokemon(this.userId, npcDifficultyData.aceId, towerData.maxLevel + 1);
+        acePokemon._id = uuidv4();
+        pokemons.push(acePokemon);
+
+        // put parties in random indices with no overlap
+        let i = 0;
+        while (i < numPokemon) {
+            const index = drawUniform(0, this.party.rows * this.party.cols - 1, 1)[0];
+            if (this.party.pokemons[index] === null) {
+                this.party.pokemons[index] = pokemons[i];
+                i++;
+            }
+        }
+    }
+}
+
 class Battle {
     baseMoney=100;
     baseExp=50;
@@ -251,6 +299,7 @@ class Battle {
     moneyReward;
     expReward;
     pokemonExpReward;
+    winCallback;
     hasStarted;
     userIds;
     users;
@@ -281,6 +330,7 @@ class Battle {
         rewards=null,
         rewardString=null,
         dailyRewards=null,
+        winCallback=null,
         npcId=null,
         difficulty=null,
     } = {}) {
@@ -329,6 +379,7 @@ class Battle {
         this.dailyRewards = dailyRewards;
         this.npcId = npcId;
         this.difficulty = difficulty;
+        this.winCallback = winCallback;
     }
     
     addTeam(teamName, isNpc) {
@@ -2222,6 +2273,11 @@ const getStartTurnSend = async (battle, stateId) => {
                             continue;
                         }
 
+                        // trigger battle win callback
+                        if (battle.winCallback) {
+                            await battle.winCallback(battle, trainer.data);
+                        }
+
                         // add trainer rewards
                         await addExpAndMoney(user, expReward, moneyReward);
                         const defeatedDifficultiesToday = trainer.data.defeatedNPCsToday[battle.npcId];
@@ -2646,8 +2702,171 @@ const buildDungeonSend = async ({ stateId=null, user=null, view="list", option=n
     }
 
     return { send: send, err: null };
-} 
+}
 
+const towerWinCallback = async (battle, trainer) => {
+    // validate tower stage
+    const towerStage = trainer.lastTowerStage + 1;
+    if (getIdFromTowerStage(towerStage) !== battle.npcId) {
+        battle.rewards = null;
+        return;
+    }
+
+    // make sure that stage exists
+    const battleTowerData = battleTowerConfig[towerStage];
+    if (!battleTowerData) {
+        battle.rewards = null;
+        return;
+    }
+
+    // update trainer
+    trainer.lastTowerStage = towerStage;
+    const updateRes = await updateTrainer(trainer);
+    if (updateRes.err) {
+        battle.rewards = null;
+        return;
+    }
+
+    // add rewards to battle
+    battle.rewards = {
+        ...battleTowerData.rewards
+    };
+}
+
+const onBattleTowerAccept = async ({ stateId=null, user=null } = {}) => {
+    // get state
+    const state = getState(stateId);
+
+    // get battle tower stage data
+    const towerStage = state.towerStage || 1;
+    const battleTowerData = battleTowerConfig[towerStage];
+    if (!battleTowerData) {
+        return { send: null, err: `Invalid Battle Tower stage!` };
+    }
+    // validate npc id
+    const npcData = npcConfig[battleTowerData.npcId];
+    if (npcData === undefined) {
+        return { embed: null, err: `Invalid NPC!` };
+    }
+    // validate difficulty
+    const npcDifficultyData = npcData.difficulties[battleTowerData.difficulty];
+    if (npcDifficultyData === undefined) {
+        return { embed: null, err: `Difficulty doesn't exist for ${npcData.name}!` };
+    }
+
+    // get trainer
+    const trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { embed: null, err: trainer.err };
+    }
+    // validate that last stage is correct
+    if (trainer.data.lastTowerStage !== towerStage - 1) {
+        return { embed: null, err: `You must complete the previous stage first!` };
+    }
+    // validate party
+    const validate = await validateParty(trainer.data);
+    if (validate.err) {
+        return { err: validate.err };
+    }
+
+    // add npc to battle
+    const npc = new TowerNPC(battleTowerData, battleTowerData.difficulty);
+    npc.setPokemon(battleTowerData, battleTowerData.difficulty);
+    const rewardMultipliers = npcDifficultyData.rewardMultipliers || difficultyConfig[battleTowerData.difficulty].rewardMultipliers;
+    const battle = new Battle({
+        ...rewardMultipliers,
+        npcId: getIdFromTowerStage(towerStage),
+        difficulty: battleTowerData.difficulty,
+        winCallback: towerWinCallback,
+    });
+    battle.addTeam("Battle Tower", true);
+    battle.addTrainer(npc, npc.party.pokemons, "Battle Tower", npc.party.rows, npc.party.cols);
+    battle.addTeam("Player", false);
+    battle.addTrainer(trainer.data, validate.data, "Player");
+
+    // start battle and add to state
+    battle.start();
+    state.battle = battle;
+
+    // build return button
+    const returnData = {
+        stateId: stateId,
+        page: towerStage,
+    }
+    const returnButtonConfigs = [
+        {
+            label: "Return",
+            disabled: false,
+            data: returnData,
+        }
+    ]
+    const returnRow = buildButtonActionRow(
+        returnButtonConfigs,
+        // im lazy and using the same event name
+        eventNames.TOWER_SCROLL,
+    );
+    state.replayComponent = returnRow;
+
+    return { err: null };
+}
+
+const buildBattleTowerSend = async ({ stateId=null, user=null } = {}) => {
+    // get state
+    const state = getState(stateId);
+
+    // get battle tower stage data
+    const towerStage = state.towerStage || 1;
+    const battleTowerData = battleTowerConfig[towerStage];
+    if (!battleTowerData) {
+        return { send: null, err: `Invalid Battle Tower stage!` };
+    }
+    const maxPages = Object.keys(battleTowerConfig).length;
+
+    // get trainer
+    let trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { send: null, err: trainer.err };
+    }
+    trainer = trainer.data;
+
+    const send = {
+        content: "",
+        embeds: [],
+        components: []
+    }
+
+    const embed = buildBattleTowerEmbed(towerStage);
+    send.embeds.push(embed);
+
+    // build scroll buttons
+    const scrollData = {
+        stateId: stateId,
+    }
+    const scrollRow = buildScrollActionRow(
+        towerStage, 
+        towerStage == maxPages, 
+        scrollData,
+        eventNames.TOWER_SCROLL
+    );
+    send.components.push(scrollRow);
+
+    // build battle button
+    const battleData = {
+        stateId: stateId,
+    }
+    const battleButtonConfigs = [{
+        label: "Battle",
+        disabled: towerStage !== trainer.lastTowerStage + 1,
+        data: battleData,
+    }];
+    const battleRow = buildButtonActionRow(
+        battleButtonConfigs,
+        eventNames.TOWER_ACCEPT,
+    );
+    send.components.push(battleRow);
+
+    return { send: send, err: null };
+}
 
 module.exports = {
     Battle,
@@ -2656,4 +2875,6 @@ module.exports = {
     getStartTurnSend,
     buildPveSend,
     buildDungeonSend,
+    onBattleTowerAccept,
+    buildBattleTowerSend,
 }

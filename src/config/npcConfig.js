@@ -104,7 +104,7 @@ const npcConfig = {
                 maxLevel: 57,
                 numPokemon: 6,
                 pokemonIds: ["6", "18", "20", "76", "103", "135", "197", "306"],
-                aceId: "18",
+                aceId: "306",
             },
         }
     },
@@ -592,6 +592,318 @@ const npcConfig = {
             },
         }
     },      */
+}
+
+const battleTowerConfig = {
+    1: {
+        npcId: npcs.BUG_CATCHER,
+        difficulty: difficulties.HARD,
+        minLevel: 40,
+        maxLevel: 49,
+        rewards: {
+            money: 1000,
+            backpack: {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 5.
+                }
+            }
+        }
+    },
+    2: {
+        npcId: npcs.FISHERMAN,
+        difficulty: difficulties.HARD,
+        minLevel: 48,
+        maxLevel: 57,
+        rewards: {
+            money: 1000,
+            backpack: {
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.KNOWLEDGE_SHARD]: 20,
+                }
+            }
+        }
+    },
+    3: {
+        npcId: npcs.LASS,
+        difficulty: difficulties.HARD,
+        minLevel: 56,
+        maxLevel: 65,
+        rewards: {
+            money: 1000,
+            backpack: {
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.EMOTION_SHARD]: 20,
+                }
+            }
+        }
+    },
+    4: {
+        npcId: npcs.FISHERMAN,
+        difficulty: difficulties.HARD,
+        minLevel: 64,
+        maxLevel: 73,
+        rewards: {
+            money: 1000,
+            backpack: {
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.WILLPOWER_SHARD]: 20,
+                }
+            }
+        }
+    },
+    5: {
+        npcId: npcs.PALMER,
+        difficulty: difficulties.VERY_HARD,
+        minLevel: 74,
+        maxLevel: 83,
+        rewards: {
+            money: 5000,
+            backpack: {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.MASTERBALL]: 1,
+                },
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.KNOWLEDGE_SHARD]: 50,
+                    [backpackItems.EMOTION_SHARD]: 50,
+                    [backpackItems.WILLPOWER_SHARD]: 50,
+                    [backpackItems.MINT]: 1
+                }
+            }
+        }
+    },
+    6: {
+        npcId: npcs.BUG_CATCHER,
+        difficulty: difficulties.HARD,
+        minLevel: 82,
+        maxLevel: 91,
+        rewards: {
+            money: 2000,
+            backpack: {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 10,
+                }
+            }
+        }
+    },
+    7: {
+        npcId: npcs.YOUNGSTER,
+        difficulty: difficulties.HARD,
+        minLevel: 90,
+        maxLevel: 99,
+        rewards: {
+            money: 2000,
+            backpack: {
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.KNOWLEDGE_SHARD]: 30,
+                }
+            }
+        }
+    },
+    8: {
+        npcId: npcs.HIKER,
+        difficulty: difficulties.HARD,
+        minLevel: 98,
+        maxLevel: 107,
+        rewards: {
+            money: 2000,
+            backpack: {
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.EMOTION_SHARD]: 30,
+                }
+            }
+        }
+    },
+    9: {
+        npcId: npcs.AROMA_LADY,
+        difficulty: difficulties.HARD,
+        minLevel: 106,
+        maxLevel: 115,
+        rewards: {
+            money: 2000,
+            backpack: {
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.WILLPOWER_SHARD]: 30,
+                }
+            }
+        }
+    },
+    10: {
+        npcId: npcs.PALMER,
+        difficulty: difficulties.VERY_HARD,
+        minLevel: 114,
+        maxLevel: 123,
+        rewards: {
+            money: 10000,
+            backpack: {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.MASTERBALL]: 2,
+                },
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.KNOWLEDGE_SHARD]: 100,
+                    [backpackItems.EMOTION_SHARD]: 100,
+                    [backpackItems.WILLPOWER_SHARD]: 100,
+                    [backpackItems.MINT]: 2
+                }
+            }
+        }
+    },
+    11: {
+        npcId: npcs.HIKER,
+        difficulty: difficulties.HARD,
+        minLevel: 122,
+        maxLevel: 131,
+        rewards: {
+            money: 3000,
+            backpack: {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 10,
+                }
+            }
+        }
+    },
+    12: {
+        npcId: npcs.AROMA_LADY,
+        difficulty: difficulties.HARD,
+        minLevel: 130,
+        maxLevel: 139,
+        rewards: {
+            money: 3000,
+            backpack: {
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.KNOWLEDGE_SHARD]: 30,
+                }
+            }
+        }
+    },
+    13: {
+        npcId: npcs.BLACK_BELT,
+        difficulty: difficulties.HARD,
+        minLevel: 138,
+        maxLevel: 147,
+        rewards: {
+            money: 3000,
+            backpack: {
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.EMOTION_SHARD]: 30,
+                }
+            }
+        }
+    },
+    14: {
+        npcId: npcs.DRAGON_TAMER,
+        difficulty: difficulties.VERY_HARD,
+        minLevel: 146,
+        maxLevel: 155,
+        rewards: {
+            money: 3000,
+            backpack: {
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.WILLPOWER_SHARD]: 30,
+                }
+            }
+        }
+    },
+    15: {
+        npcId: npcs.PALMER,
+        difficulty: difficulties.VERY_HARD,
+        minLevel: 154,
+        maxLevel: 163,
+        rewards: {
+            money: 15000,
+            backpack: {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.MASTERBALL]: 3,
+                },
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.KNOWLEDGE_SHARD]: 150,
+                    [backpackItems.EMOTION_SHARD]: 150,
+                    [backpackItems.WILLPOWER_SHARD]: 150,
+                    [backpackItems.MINT]: 3
+                }
+            }
+        }
+    },
+    16: {
+        npcId: npcs.BLUE,
+        difficulty: difficulties.HARD,
+        minLevel: 162,
+        maxLevel: 171,
+        rewards: {
+            money: 4000,
+            backpack: {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.POKEBALL]: 15,
+                }
+            }
+        }
+    },
+    17: {
+        npcId: npcs.RED,
+        difficulty: difficulties.VERY_HARD,
+        minLevel: 170,
+        maxLevel: 179,
+        rewards: {
+            money: 4000,
+            backpack: {
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.KNOWLEDGE_SHARD]: 40,
+                }
+            }
+        }
+    },
+    18: {
+        npcId: npcs.GOLD,
+        difficulty: difficulties.VERY_HARD,
+        minLevel: 178,
+        maxLevel: 187,
+        rewards: {
+            money: 4000,
+            backpack: {
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.EMOTION_SHARD]: 40,
+                }
+            }
+        }
+    },
+    19: {
+        npcId: npcs.STEVEN,
+        difficulty: difficulties.VERY_HARD,
+        minLevel: 186,
+        maxLevel: 195,
+        rewards: {
+            money: 4000,
+            backpack: {
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.WILLPOWER_SHARD]: 40,
+                }
+            }
+        }
+    },
+    20: {
+        npcId: npcs.PALMER,
+        difficulty: difficulties.VERY_HARD,
+        minLevel: 194,
+        maxLevel: 203,
+        rewards: {
+            money: 25000,
+            backpack: {
+                [backpackCategories.POKEBALLS]: {
+                    [backpackItems.MASTERBALL]: 5,
+                },
+                [backpackCategories.MATERIALS]: {
+                    [backpackItems.KNOWLEDGE_SHARD]: 250,
+                    [backpackItems.EMOTION_SHARD]: 250,
+                    [backpackItems.WILLPOWER_SHARD]: 250,
+                    [backpackItems.MINT]: 5
+                }
+            }
+        }
+    },
+}
+
+// TEMP: 2x money
+for (towerData of Object.values(battleTowerConfig)) {
+    towerData.rewards.money *= 2
 }
 
 const dungeons = {
@@ -1788,4 +2100,5 @@ module.exports = {
     dungeons,
     dungeonConfig,
     difficultyConfig,
+    battleTowerConfig,
 }

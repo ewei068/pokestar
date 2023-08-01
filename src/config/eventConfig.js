@@ -26,6 +26,8 @@ const eventNames = {
     PVE_ACCEPT: "pveAccept",
     DUNGEON_SELECT: "dungeonSelect",
     DUNGEON_ACCEPT: "dungeonAccept",
+    TOWER_SCROLL: "towerScroll",
+    TOWER_ACCEPT: "towerAccept",
     BATTLE_INFO: "battleInfo",
     BATTLE_MOVE_SELECT: "battleMoveSelect",
     BATTLE_TARGET_SELECT: "battleTargetSelect",
@@ -194,6 +196,18 @@ const eventConfig = {
     [eventNames.DUNGEON_ACCEPT]: {
         "name": "Dungeon Accept",
         "execute": "dungeonAccept.js",
+        "directory": "battle",
+        "exp": 10,
+        "money": 25,
+    },
+    [eventNames.TOWER_SCROLL]: {
+        "name": "Tower Scroll",
+        "execute": "towerScroll.js",
+        "directory": "battle",
+    },
+    [eventNames.TOWER_ACCEPT]: {
+        "name": "Tower Accept",
+        "execute": "towerAccept.js",
         "directory": "battle",
         "exp": 10,
         "money": 25,

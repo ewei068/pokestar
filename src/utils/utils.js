@@ -124,6 +124,35 @@ const getFullUTCDate = (date=null) => {
     return Math.floor(time / 86400000);
 }
 
+const getFullUTCWeek = (date=null) => {
+    if (!date) {
+        date = new Date();
+    }
+    const time = date.getTime();
+    return Math.floor(time / (86400000 * 7));
+}
+
+// nice fortnite
+const getFullUTCFortnight = (date=null) => {
+    if (!date) {
+        date = new Date();
+    }
+    const time = date.getTime();
+    return Math.floor(time / (86400000 * 14));
+}
+
+const fortnightToUTCTime = (fortnight) => {
+    return fortnight * 86400000 * 14;
+}
+
+/* const getFullUTCMonth = (date=null) => {
+    if (!date) {
+        date = new Date();
+    }
+    const time = date.getTime();
+    return Math.floor(time / (86400000 * 30));
+} */
+
 const getTimeToNextDay = (date=null) => {
     if (!date) {
         date = new Date();
@@ -172,6 +201,9 @@ module.exports = {
     buildCommandUsageString,
     setTwoInline,
     getFullUTCDate,
+    getFullUTCWeek,
+    getFullUTCFortnight,
+    fortnightToUTCTime,
     getTimeToNextDay,
     poll,
     formatMoney

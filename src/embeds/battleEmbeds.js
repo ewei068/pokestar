@@ -10,10 +10,10 @@ const { EmbedBuilder } = require("discord.js");
 const { moveConfig, weatherConditions } = require("../config/battleConfig");
 const { buildPartyString, buildMoveString, buildBattlePokemonString, buildNpcDifficultyString, buildDungeonDifficultyString, buildCompactPartyString } = require("../utils/battleUtils");
 const { buildPokemonStatString, getAbilityName } = require("../utils/pokemonUtils");
-const { setTwoInline } = require("../utils/utils");
-const { npcConfig, dungeonConfig  } = require("../config/npcConfig");
+const { setTwoInline, linebreakString, fortnightToUTCTime, getFullUTCFortnight } = require("../utils/utils");
+const { npcConfig, dungeonConfig, battleTowerConfig  } = require("../config/npcConfig");
 const { pokemonConfig } = require("../config/pokemonConfig");
-const { getFullUsername } = require("../utils/trainerUtils");
+const { getFullUsername, getRewardsString, flattenRewards } = require("../utils/trainerUtils");
 
 /**
  * Handles building the party embedded instructions for building a party.
@@ -323,7 +323,40 @@ const buildDungeonEmbed = (dungeonId) => {
 
     return embed;
 }
+
+const buildBattleTowerEmbed = (towerStage) => {
+    const battleTowerData = battleTowerConfig[towerStage];
+    const npcData = npcConfig[battleTowerData.npcId];
+    const npcDifficultyData = npcData.difficulties[battleTowerData.difficulty];
+
+    const nextFortnight = Math.floor(fortnightToUTCTime(getFullUTCFortnight() + 1) / 1000);
+    const towerDescription = `Climb the Battle Tower every other week to earn rewards at increasing difficulties! The Battle Tower resets <t:${nextFortnight}:R>.`
+
+    const difficultyHeader = `**[Lv. ${battleTowerData.minLevel}-${battleTowerData.maxLevel + 1}]**`;
+
+    const pokemonIds = npcDifficultyData.pokemonIds;
+    let difficultyString = '';
+    difficultyString += `**Possible Pokemon:** ${npcDifficultyData.numPokemon}x`;
+    for (let i = 0; i < pokemonIds.length; i++) {
+        const pokemonId = pokemonIds[i];
+        const pokemonData = pokemonConfig[pokemonId];
+        difficultyString += ` ${pokemonData.emoji}`;
+    }
+    difficultyString += '\n';
+    const bossData = pokemonConfig[npcDifficultyData.aceId];
+    const bossString = `**Boss**: ${bossData.emoji} #${npcDifficultyData.aceId} **${bossData.name}** \`/pokedex ${npcDifficultyData.aceId}\``;
+    difficultyString += `${bossString}\n`;
+    difficultyString += `**Rewards:** ${getRewardsString(flattenRewards(battleTowerData.rewards), received=false)}`;
     
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${npcData.emoji} Battle Tower Floor ${towerStage}: ${npcData.name}`);
+    embed.setColor(0xffffff);
+    embed.setDescription(`${linebreakString(towerDescription, 50)}\n\n${difficultyHeader}\n${difficultyString}`);
+    embed.setImage(npcData.sprite);
+
+    return embed;
+}
 
 module.exports = {
     buildPartyEmbed,
@@ -335,4 +368,5 @@ module.exports = {
     buildPveNpcEmbed,
     buildDungeonListEmbed,
     buildDungeonEmbed,
+    buildBattleTowerEmbed,
 };

@@ -27,7 +27,7 @@ const commandCategoryConfig = {
         "name": "Battle",
         "description": "Battle commands",
         "folder": "battle",
-        "commands": ["pvp", "pve", "dungeons", "partyinfo", "partyadd", "partyremove", "partyauto", "parties", "partyload"]
+        "commands": ["pvp", "pve", "dungeons",  "battletower", "partyinfo", "partyadd", "partyremove", "partyauto", "parties", "partyload"]
     },
     "social": {
         "name": "Social",
@@ -550,6 +550,15 @@ const commandConfig = {
         "description": "Browse a list of dungeons",
         "longDescription": "Browse a list of dungeons, defeat them to get equipment upgrade materials!",
         "execute": "dungeons.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    },
+    "battletower": {
+        "name": "Battle Tower",
+        "aliases": ["battletower", "bt"],
+        "description": "Battle the Battle Tower",
+        "longDescription": "Climb the Battle Tower every other week for rewards!",
+        "execute": "battleTower.js",
         "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },
