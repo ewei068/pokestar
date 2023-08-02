@@ -180,7 +180,7 @@ const commandConfig = {
                 "optional": true,
                 "variable": false,
                 "enum": [
-                    "shiny", "name", "rarity", "locked", "none"
+                    "shiny", "name", "rarity", "locked", "originalOwner", "none"
                 ]
             },
             "filtervalue": {

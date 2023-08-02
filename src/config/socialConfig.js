@@ -64,8 +64,8 @@ const leaderboardConfig = {
     }
 }
 
-const MAX_TRADE_POKEMON = 3;
-const MAX_TRADE_MONEY = 3000;
+const MAX_TRADE_POKEMON = 10;
+const MAX_TRADE_MONEY = 20000;
 const TRADE_ACCEPT_WINDOW = 5;
 const TRADE_COMPLETE_WINDOW = 10;
 

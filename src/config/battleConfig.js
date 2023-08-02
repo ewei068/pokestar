@@ -5167,7 +5167,7 @@ const moveConfig = {
     "m618": {
         "name": "Origin Pulse",
         "type": types.WATER,
-        "power": 65,
+        "power": 50,
         "accuracy": 85,
         "cooldown": 6,
         "targetType": targetTypes.ENEMY,
@@ -5180,7 +5180,7 @@ const moveConfig = {
     "m619": {
         "name": "Precipice Blades",
         "type": types.GROUND,
-        "power": 70,
+        "power": 55,
         "accuracy": 85,
         "cooldown": 6,
         "targetType": targetTypes.ENEMY,
@@ -5383,7 +5383,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.ALL,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.OTHER,
-        "description": "The user goes all-in, sacrificing all its wealth, sharply reducing its defenses for 2 turns and reducing its health by 50%. In exchange, increases the duration of all ally buffs by 2 turns.",
+        "description": "The user goes all-in, sacrificing all its wealth, sharply reducing its defenses for 1 turn and reducing its health by 50%. In exchange, increases the duration of all ally buffs by 1 turn.",
     },
 };
 
@@ -9785,23 +9785,23 @@ const moveExecutes = {
         const moveId = "m20008";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
-            // if primary, reduce hp by 50% and apply greater def down, spd down 2 turns
+            // if primary, reduce hp by 50% and apply greater def down, spd down 1 turns
             if (target === primaryTarget) {
                 source.dealDamage(Math.floor(target.hp / 2), target, {
                     type: "move",
                     moveId: moveId
                 });
 
-                target.addEffect("greaterDefDown", 2, source);
-                target.addEffect("greaterSpdDown", 2, source);
+                target.addEffect("greaterDefDown", 1, source);
+                target.addEffect("greaterSpdDown", 1, source);
             }
 
-            // increase all buff durations by 2 if dispellable
+            // increase all buff durations by 1 if dispellable
             battle.addToLog(`${target.name} is invigorated!`);
             for (const effectId of Object.keys(target.effectIds)) {
                 const effectData = effectConfig[effectId];
                 if (effectData.type === effectTypes.BUFF && effectData.dispellable) {
-                    target.effectIds[effectId].duration += 2;
+                    target.effectIds[effectId].duration += 1;
                 }
             }
         }
@@ -12959,7 +12959,7 @@ const abilityConfig = {
                 execute: function(initialArgs, args) {
                     const pokemon = initialArgs.pokemon;
                     // add moneybags buff
-                    pokemon.addEffect("moneyBags", 1, pokemon);
+                    pokemon.addEffect("moneyBags", 2, pokemon);
                 }
             };
 

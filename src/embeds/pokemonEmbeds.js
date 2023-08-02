@@ -182,7 +182,7 @@ const buildPokemonListEmbed = (trainer, pokemons, page) => {
     return embed;
 }
 
-const buildPokemonEmbed = (trainer, pokemon, tab="all", oldPokemon=null) => {
+const buildPokemonEmbed = (trainer, pokemon, tab="all", oldPokemon=null, originalOwnerId=null) => {
     const speciesData = pokemonConfig[pokemon.speciesId];
 
     let typeString = "";
@@ -191,6 +191,11 @@ const buildPokemonEmbed = (trainer, pokemon, tab="all", oldPokemon=null) => {
         if (i < speciesData.type.length - 1) {
             typeString += " ";
         }
+    }
+
+    let sixthField = { name: "Shiny", value: pokemon.shiny ? "True" : "False", inline: true };
+    if (originalOwnerId) {
+        sixthField = { name: "Original Owner", value: `<@${originalOwnerId}>`, inline: true };
     }
 
     const oldLevelExp = getPokemonExpNeeded(pokemon.level, speciesData.growthRate);
@@ -213,8 +218,8 @@ const buildPokemonEmbed = (trainer, pokemon, tab="all", oldPokemon=null) => {
             { name: "Ability", value: getAbilityName(pokemon.abilityId), inline: true },
             { name: "Nature", value: `${natureConfig[pokemon.natureId].name} (${natureConfig[pokemon.natureId].description})`, inline: true },
             { name: "Rarity", value: speciesData.rarity, inline: true },
-            { name: "Shiny", value: pokemon.shiny ? "True" : "False", inline: true },
             { name: "Date Caught", value: new Date(pokemon.dateAcquired).toLocaleDateString(), inline: true },
+            sixthField,
             { name: "Stats (Stat|IVs|EVs)", value: statString, inline: false },
             { name: "Level Progress", value: progressBar, inline: false }
         );

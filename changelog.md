@@ -2,28 +2,31 @@
 
 ## 0.12.0 - Gen III
 
-* Generation 3
-  * Pokemon: Treecko, Grovyle, Sceptile, Torchic, Combusken, Blaziken, Mudkip, Marshtomp, Swampert, Poochyena, Mightyena, Zigzagoon, Linoone, Wurmple, Silcoon, Beautifly, Cascoon, Dustox, Lotad, Lombre, Ludicolo, Seedot, Nuzleaf, Shiftry, Taillow, Swellow, Wingull, Pelipper, Ralts, Kirlia, Gardevoir, Shroomish, Breloom, Slakoth, Vigoroth, Slaking, Nincada, Ninjask, Shedinja, Makuhita, Hariyama, Sableye, Mawile, Aron, Lairon, Aggron, Electrike, Manectric, Carvanha, Sharpedo, Wailmer, Wailord, Torkoal, Trapinch, Vibrava, Flygon, Swablu, Altaria, Baltoy, Claydol, Lileep, Cradily, Anorith, Armaldo, Feebas, Milotic, Spheal, Sealeo, Walrein, Bagon, Shelgon, Salamence, Beldum, Metang, Metagross, Regirock, Regice, Registeel, Latias, Latios, Kyogre, Groudon, Rayquaza
+* **Generation 3**
+  * **Gen 3 Pokemon:** Treecko, Grovyle, Sceptile, Torchic, Combusken, Blaziken, Mudkip, Marshtomp, Swampert, Poochyena, Mightyena, Zigzagoon, Linoone, Wurmple, Silcoon, Beautifly, Cascoon, Dustox, Lotad, Lombre, Ludicolo, Seedot, Nuzleaf, Shiftry, Taillow, Swellow, Wingull, Pelipper, Ralts, Kirlia, Gardevoir, Shroomish, Breloom, Slakoth, Vigoroth, Slaking, Nincada, Ninjask, Shedinja, Makuhita, Hariyama, Sableye, Mawile, Aron, Lairon, Aggron, Electrike, Manectric, Carvanha, Sharpedo, Wailmer, Wailord, Torkoal, Trapinch, Vibrava, Flygon, Swablu, Altaria, Baltoy, Claydol, Lileep, Cradily, Anorith, Armaldo, Feebas, Milotic, Spheal, Sealeo, Walrein, Bagon, Shelgon, Salamence, Beldum, Metang, Metagross, Regirock, Regice, Registeel, Latias, Latios, Kyogre, Groudon, Rayquaza
   * Gen 3 Pokemon will now appear in NPC battles and Dungeons!
   * Added NPCs: Black Belt, Champion Steven!
-  * Battle tower
-* Spawn
-* Per-generation rotating banner
-* Original owner
-* Lift trade limit
-* PVE back button
+  * Added the **Battle Tower:** Climb the Battle Tower stages every other week for huge rewards at higher and higher difficulties!
+  * Gen 3 Event: check out `/events` for more information!
+* **Wild Pokemon Spawning:** Wild Pokemon will now randomly spawn in your servers! **You can disable this with `/togglespawn`**
+  * Wild Pokemon spawn approximately every 2 hours
+  * Wild Pokemon will have increased IVs and chance to be shiny!
+  * Note that spawning is NOT replacing gacha. It is just a way to more easily get higher IV & shiny Pokemon.
+* There's new daily rotating banner for each Generation!
+* You can now sort by a Pokemon's original owner and see original owner in `/info`!
+* Lift trade limit: You can now trade up to $20,000 and 10 Pokemon at once!
+* Added a Return button at the end of PVE battles.
 * Adjustments: 
-  * Buff shop?
   * Buffed Psystrike to Square
   * Reworked Meteor Mash
   * Replace Ho-oh's Toxic with Defog
-  * Rework sableye
-  * Ability order
+  * Reworked Billionaire Sableye: Buffs less but heal lasts longer
+  * Abilities now start in descending order of Pokemon speed
 * Bug Fixes:
   * Fixed weather not boosting accuracy of moves correctly
   * Fixed greater atkUp/atkDown not applying properly
-  * Fixed crash again lol
-* Expire Gen2 Event
+  * Fixed bot crashing bug again lol
+* Ended the Gen 2 Wrap-up event.
 
 ### 0.11.4 (7/21) - Trading
 

@@ -5780,6 +5780,18 @@ const rarityConfig = {
     },
 }
 
+const generations = [152, 252]
+
+const getGeneration = (id) => {
+    const baseNumber = parseInt(id.split("-")[0]);
+    for (let i = 0; i < generations.length; i++) {
+        if (baseNumber < generations[i]) {
+            return i + 1;
+        }
+    }
+    return generations.length + 1;
+}
+
 const MAX_TOTAL_EVS = 510;
 const MAX_SINGLE_EVS = 252;
 
@@ -5796,5 +5808,6 @@ module.exports = {
     MAX_TOTAL_EVS,
     MAX_SINGLE_EVS,
     stats,
-    statConfig
+    statConfig,
+    getGeneration,
 }

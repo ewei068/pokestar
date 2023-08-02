@@ -756,7 +756,7 @@ const buildPokemonInfoSend = async ({ user=null, pokemonId=null, tab="info", act
     }
 
     // build pokemon embed
-    const embed = buildPokemonEmbed(trainer.data, pokemon.data, tab, pokemonNoEquip);
+    const embed = buildPokemonEmbed(trainer.data, pokemon.data, tab, pokemonNoEquip, pokemon.data.originalOwner);
     send.embeds.push(embed);
 
     // build tab selection

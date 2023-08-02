@@ -14,6 +14,7 @@ const { eventNames } = require('../../config/eventConfig');
 const { setState } = require('../../services/state');
 const { buildPokemonSelectRow } = require('../../components/pokemonSelectRow');
 const { buildButtonActionRow } = require('../../components/buttonActionRow');
+const { getUserId } = require('../../utils/utils');
 
 /**
  * Fetches a list of a trainer's Pokemon, returning an embed with the list.
@@ -50,7 +51,15 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
         page: page,
     }
     // ignore filter if filterBy is not provided
-    if (filterBy != "none") {
+    if (filterBy === "originalOwner") {
+        const id = getUserId(filterValue);
+        if (id === null) {
+            return { embed: null, err: "Invalid user ID; must provide a @ mention." };
+        }
+        listOptions.filter = {
+            originalOwner: id
+        }
+    } else if (filterBy != "none") {
         if (filterValue == null) {
             return { embed: null, err: "Filter value must be provided if filterBy is provided." };
         }

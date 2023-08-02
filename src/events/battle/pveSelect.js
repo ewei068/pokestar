@@ -34,7 +34,7 @@ const pveSelect = async (interaction, data) => {
         stateId: data.stateId,
         user: interaction.user,
         view: "npc",
-        option: interaction.values[0],
+        option: interaction.values ? interaction.values[0] : state.npcId,
     });
     if (err) {
         return { err: err };

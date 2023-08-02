@@ -473,6 +473,16 @@ class Battle {
         this.turn = 0;
         this.hasStarted = true;
 
+        // sort all pokemon by speed descending
+        const sortedPokemon = Object.values(this.allPokemon);
+        sortedPokemon.sort((a, b) => {
+            return b.getSpe() - a.getSpe();
+        });
+        this.allPokemon = {};
+        for (const pokemon of sortedPokemon) {
+            this.allPokemon[pokemon.id] = pokemon;
+        }
+
         // add all abilities
         Object.entries(this.allPokemon).forEach(([pokemonId, pokemon]) => {
             if (pokemon.ability.applied) {
@@ -2359,8 +2369,8 @@ const getStartTurnSend = async (battle, stateId) => {
 
         // if state has an NPC id, add a replay button
         const state = getState(stateId);
-        if (state && state.replayComponent) {
-            components.push(state.replayComponent);
+        if (state && state.endBattleComponents) {
+            components.push(...state.endBattleComponents);
         } else {
             deleteState(stateId);
         }
@@ -2538,7 +2548,23 @@ const buildPveSend = async ({ stateId=null, user=null, view="list", option=null,
             difficultyButtonConfigs,
             eventNames.PVE_ACCEPT,
         );
-        state.replayComponent = difficultyRow;
+
+        const returnData = {
+            stateId: stateId,
+        }
+        const returnButtonConfigs = [
+            {
+                label: "Return",
+                disabled: false,
+                data: returnData,
+            }
+        ]
+        const returnRow = buildButtonActionRow(
+            returnButtonConfigs,
+            eventNames.PVE_SELECT,
+        );
+
+        state.endBattleComponents = [difficultyRow, returnRow];
 
         return {
             send: await getStartTurnSend(battle, stateId),
@@ -2693,7 +2719,7 @@ const buildDungeonSend = async ({ stateId=null, user=null, view="list", option=n
             difficultyButtonConfigs,
             eventNames.DUNGEON_ACCEPT,
         );
-        state.replayComponent = difficultyRow;
+        state.endBattleComponents = [difficultyRow];
 
         return {
             send: await getStartTurnSend(battle, stateId),
@@ -2805,7 +2831,7 @@ const onBattleTowerAccept = async ({ stateId=null, user=null } = {}) => {
         // im lazy and using the same event name
         eventNames.TOWER_SCROLL,
     );
-    state.replayComponent = returnRow;
+    state.endBattleComponents = [returnRow];
 
     return { err: null };
 }
