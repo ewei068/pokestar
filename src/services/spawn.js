@@ -44,7 +44,13 @@ const QUESTION_TYPES = [
     "pokemonType"
 ];
 
-const canSendInChannel = (guild, channel) => {
+const canSendInChannel = (guild, channel, guildData) => {
+    const blacklistedChannels = guildData.spawnDisabledChannels;
+    const channelInBlacklist = blacklistedChannels && blacklistedChannels.includes(channel.id);
+    const channelParentInBlacklist = blacklistedChannels && channel.parentId && blacklistedChannels.includes(channel.parentId);
+    if (channelInBlacklist || channelParentInBlacklist) {
+        return false;
+    }
     return guild.members.me.permissionsIn(channel).has("SendMessages");
 }
 
@@ -223,6 +229,30 @@ const onButtonPress = async (interaction, data, state) => {
     return { err: null };
 }
 
+const getGuildData = async (guildId) => {
+    let guildData = {
+        guildId: guildId,
+        spawnDisabled: false,
+        spawnDisabledChannels: [],
+    }
+    try {
+        const query = new QueryBuilder(collectionNames.GUILDS)
+            .setFilter({ guildId: guildId });
+
+        const guildRes = await query.findOne();
+        if (guildRes) {
+            guildData = guildRes;
+        }
+    } catch (err) {
+        logger.warn(err);
+        // pass
+    }
+    if (!guildData.spawnDisabledChannels) {
+        guildData.spawnDisabledChannels = [];
+    }
+    return guildData;
+}
+
 class GuildSpawner {
     client;
     guild;
@@ -244,7 +274,7 @@ class GuildSpawner {
             if (channel.type !== 0) return;
 
             // if the bot can't send messages in the channel
-            if (!canSendInChannel(this.guild, channel)) {
+            if (!canSendInChannel(this.guild, channel, this.guildData)) {
                 return;
             } 
 
@@ -282,23 +312,9 @@ class GuildSpawner {
 
         // check if spawn was disabled for guild
         // get guild
-        let guildData = {
-            guildId: this.guild.id,
-            spawnDisabled: false
-        }
-        try {
-            const query = new QueryBuilder(collectionNames.GUILDS)
-                .setFilter({ guildId: this.guild.id });
+        this.guildData = await getGuildData(guild.id);
 
-            const guildRes = await query.findOne();
-            if (guildRes) {
-                guildData = guildRes;
-            }
-        } catch (err) {
-            logger.warn(err);
-            // pass
-        }
-        if (guildData.spawnDisabled) {
+        if (this.guildData.spawnDisabled) {
             return {};
         }
 
@@ -312,7 +328,7 @@ class GuildSpawner {
         // get random cached channel
         let channel = this.chachedChannels[Math.floor(Math.random() * this.chachedChannels.length)];
         // check if able to send in channel
-        if (!canSendInChannel(guild, channel)) {
+        if (!canSendInChannel(guild, channel, this.guildData)) {
             // re-cache channels
             const res = this.refreshChannels();
             if (res.err) {

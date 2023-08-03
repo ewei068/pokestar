@@ -52,6 +52,8 @@ const buildSlashCommand = (commandConfig) => {
             slashCommand.addBooleanOption(optionFn);
         } else if (argConfig.type == "user") {
             slashCommand.addUserOption(optionFn);
+        } else if (argConfig.type == "channel") {
+            slashCommand.addChannelOption(optionFn);
         }
     }
     return slashCommand;
@@ -129,6 +131,10 @@ const validateArgs = (command, args) => {
                 }
             } else if (argConfig.type == "user") {
                 if (!providedArg.startsWith("<@") || !providedArg.endsWith(">")) {
+                    return false;
+                }
+            } else if (argConfig.type == "channel") {
+                if (!providedArg.startsWith("<#") || !providedArg.endsWith(">")) {
                     return false;
                 }
             }

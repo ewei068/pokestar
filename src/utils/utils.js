@@ -94,6 +94,18 @@ const getUserId = (string) => {
     return null;
 }
 
+const getChannelId = (string) => {
+    if (!string) {
+        return null;
+    }
+
+    const id = string.match(/<#(\d+)>/);
+    if (id) {
+        return id[1];
+    }
+    return null;
+}
+
 const buildCommandUsageString = (prefix, commandData) => {
     let usageString = `\`/${commandData.aliases[0]}`;
     if (commandData.args) {
@@ -198,6 +210,7 @@ module.exports = {
     matrixLoc,
     matrixIndexOf,
     getUserId,
+    getChannelId,
     buildCommandUsageString,
     setTwoInline,
     getFullUTCDate,

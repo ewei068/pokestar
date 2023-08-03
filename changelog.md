@@ -8,7 +8,7 @@
   * Added NPCs: Black Belt, Champion Steven!
   * Added the **Battle Tower:** Climb the Battle Tower stages every other week for huge rewards at higher and higher difficulties!
   * Gen 3 Event: check out `/events` for more information!
-* **Wild Pokemon Spawning:** Wild Pokemon will now randomly spawn in your servers! **You can disable this with `/togglespawn`**
+* **Wild Pokemon Spawning:** Wild Pokemon will now randomly spawn in your servers! **You can disable this with `/togglespawn` or `/togglespawn channel`**
   * Wild Pokemon spawn approximately every 2 hours
   * Wild Pokemon will have increased IVs and chance to be shiny!
   * Note that spawning is NOT replacing gacha. It is just a way to more easily get higher IV & shiny Pokemon.

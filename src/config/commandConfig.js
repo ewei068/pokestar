@@ -733,8 +733,16 @@ const commandConfig = {
         "name": "Toggle Spawn",
         "aliases": ["togglespawn"],
         "description": "Toggle whether Pokemon spawn in your server",
+        "longDescription": "Toggle whether Pokemon spawn in your server. If channel is provided, only toggles spawns in the channel. This command requires the Manage Roles permission.",
         "execute": "toggleSpawn.js",
-        "args": {},
+        "args": {
+            "channel": {
+                "type": "channel",
+                "description": "channel to toggle spawns in",
+                "optional": true,
+                "variable": false
+            }
+        },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },
     "give": {
