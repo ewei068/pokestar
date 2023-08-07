@@ -20,6 +20,7 @@ const npcs = {
     DRAGON_TAMER: "dragonTamer",
     ACE_TRAINER: "aceTrainer",
     PALMER: "palmer",
+    STRAW_HATS: "strawHats",
     //TEAM_ROCKET: "teamRocket",
     //GOLD_RUSH: "goldRush",
 }
@@ -528,6 +529,29 @@ const npcConfig = {
             },
         }
     },
+    [npcs.STRAW_HATS]: {
+        name: "Straw Hats",
+        sprite: "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/luffy-resized.png",
+        emoji: "<:luffy:1136890668342595654>",
+        catchphrase: "I'm gonna be the Pirate King!",
+        difficulties: {
+            [difficulties.VERY_HARD]: {
+                minLevel: 130,
+                maxLevel: 149,
+                numPokemon: 6,
+                pokemonIds: ["83", "123-1", "143", "237-1", "282"],
+                aceId: "392-2",
+                dailyRewards: {
+                    backpack: {
+                        [backpackCategories.POKEBALLS]: {
+                            [backpackItems.GREATBALL]: 2,
+                        },
+                    }
+                }
+            },
+        }
+    },
+
     /*[npcs.TWITCH_PLAYS_RED]: {
         name: "Twitch Plays Red",
         sprite: "https://archives.bulbagarden.net/media/upload/6/66/Spr_RG_Red_1.png",
@@ -911,6 +935,7 @@ const dungeons = {
     SOUL_CAVE: "soulCave",
     SPIRIT_ALTAR: "spiritAltar",
     NEW_ISLAND: "newIsland",
+    ONIGASHIMA: "onigashima",
     //BLOODY_SUNDAY: "bloodySunday",
 }
 
@@ -1920,6 +1945,165 @@ const dungeonConfig = {
                     }
                 },
                 rewardString: "**Congratulations! If this is your first time defeating New Island, use `/mew` to obtain your Mew!**",
+            },
+        }
+    },
+    [dungeons.ONIGASHIMA]: {
+        name: "Onigashima",
+        sprite: "https://i.pinimg.com/736x/61/75/09/61750983442c10bc384f5909f1c7558a.jpg",
+        emoji: "💀",
+        description: `The Legendary raid on Onigashima. Battle the emperors and end the old era of Pokemon!`,
+        bosses: ["20113", "20384", "384-1"],
+        difficulties: {
+            [difficulties.HARD]: {
+                phases: [
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "243",
+                                level: 110,
+                                position: 1,
+                            },
+                            {
+                                speciesId: "244",
+                                level: 110,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "245",
+                                level: 110,
+                                position: 5,
+                            },
+                            {
+                                speciesId: "20113",
+                                level: 120,
+                                position: 13,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "20384",
+                                level: 120,
+                                position: 1,
+                            },
+                            {
+                                speciesId: "20384",
+                                level: 120,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "20384",
+                                level: 120,
+                                position: 5,
+                            },
+                            {
+                                speciesId: "31",
+                                level: 130,
+                                position: 7,
+                            },
+                            {
+                                speciesId: "34",
+                                level: 130,
+                                position: 9,
+                            },
+                            {
+                                speciesId: "384-1",
+                                level: 130,
+                                position: 13,
+                            },
+                        ]
+                    },
+                ],
+                rewards: {
+                    backpack: {
+                        [backpackCategories.MATERIALS]: {
+                            [backpackItems.KNOWLEDGE_SHARD]: 5,
+                            [backpackItems.EMOTION_SHARD]: 5,
+                            [backpackItems.WILLPOWER_SHARD]: 5,
+                        },
+                    }
+                },
+            },
+            [difficulties.VERY_HARD]: {
+                phases: [
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "243",
+                                level: 150,
+                                position: 1,
+                            },
+                            {
+                                speciesId: "244",
+                                level: 150,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "245",
+                                level: 150,
+                                position: 5,
+                            },
+                            {
+                                speciesId: "20113",
+                                level: 160,
+                                position: 13,
+                            },
+                        ]
+                    },
+                    {
+                        rows: 3,
+                        cols: 5,
+                        pokemons: [
+                            {
+                                speciesId: "20384",
+                                level: 150,
+                                position: 1,
+                            },
+                            {
+                                speciesId: "20384",
+                                level: 150,
+                                position: 3,
+                            },
+                            {
+                                speciesId: "20384",
+                                level: 150,
+                                position: 5,
+                            },
+                            {
+                                speciesId: "31",
+                                level: 160,
+                                position: 7,
+                            },
+                            {
+                                speciesId: "34",
+                                level: 160,
+                                position: 9,
+                            },
+                            {
+                                speciesId: "384-1",
+                                level: 170,
+                                position: 13,
+                            },
+                        ]
+                    },
+                ],
+                rewards: {
+                    backpack: {
+                        [backpackCategories.MATERIALS]: {
+                            [backpackItems.KNOWLEDGE_SHARD]: 10,
+                            [backpackItems.EMOTION_SHARD]: 10,
+                            [backpackItems.WILLPOWER_SHARD]: 10,
+                        },
+                    }
+                },
             },
         }
     },

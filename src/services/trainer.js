@@ -383,8 +383,7 @@ const getVoteRewards = async (user) => {
 
     // add vote rewards
     const receivedRewards = addRewards(trainer, {
-        // temp: x2 for event
-        money: rewards * 100 * 2,
+        money: rewards * 100,
         backpack: {
             [backpackCategories.POKEBALLS]: {
                 [backpackItems.POKEBALL]: rewards * 1

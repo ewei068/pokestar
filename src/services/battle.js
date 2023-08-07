@@ -172,6 +172,14 @@ class NPC {
                 return 0;
             }
         }
+        // special case: if move is gear fifth, use if under 25% hp
+        if (moveId === "m20010") {
+            if (source.hp / source.maxHp > 0.25) {
+                return 0;
+            } else {
+                return 1000000;
+            }
+        }
 
         if (moveData.power !== null) {
             // if move does damage, calculate damage that would be dealt

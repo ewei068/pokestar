@@ -2574,7 +2574,8 @@ const pokemonConfig = {
         "moveIds": ["m214", "m34-1", "m281", "m156"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
-        "growthRate": growthRates.MEDIUMSLOW
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
     },
     "144" : {
         "name": "Articuno",
@@ -4011,8 +4012,8 @@ const pokemonConfig = {
         "growthRate": growthRates.FAST,
         "noGacha": true,
         "mythicConfig": {
-            [rarities.LEGENDARY]: ["9-1", "25-1", "52-1", "136-1", "139-1", "145-1", "150-1", "249-1"],
-            [rarities.EPIC]: ["18-1", "24-1", "34-1", "49-1", "110-1", "131-1", "157-1", "248-1"]
+            [rarities.LEGENDARY]: ["9-1", "25-1", "52-1", "136-1", "139-1", "145-1", "150-1", "249-1", "302-1", "828-1"],
+            [rarities.EPIC]: ["18-1", "24-1", "34-1", "49-1", "110-1", "131-1", "143-1", "157-1", "248-1"]
         }
     },
     "252": {

@@ -29,8 +29,7 @@ const { addItems: addItems } = require('../utils/trainerUtils');
 const { equipmentConfig } = require('../config/equipmentConfig');
 const { locationConfig, locations } = require('../config/locationConfig');
 
-// temp: x2 for event
-const DAILY_MONEY = process.env.STAGE == stageNames.ALPHA ? 100000 : 300 * 2;
+const DAILY_MONEY = process.env.STAGE == stageNames.ALPHA ? 100000 : 300;
 
 const drawDaily = async (trainer) => {
     // check if new day; if in alpha, ignore

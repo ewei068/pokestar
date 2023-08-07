@@ -98,12 +98,32 @@ Generation 3 Pokemon have arrived! Over 80 new Pokemon are here, plus the aditio
 🌳 **Wild Pokemon:** Wild Pokemon now spawn every few hours in your servers! These Pokemon have better IVs and are more likely to be shiny! Temporarily, the shiny chance on these Pokemon is doubled!
 `
 
+const ONE_PIECE_DESCRIPTION = `🏴‍☠️**One Piece**🏴‍☠️
+
+Pokestar is celebrating the animation of Gear 5 with a special event!
+
+<:kaido:1136890666442555403> **Event Pokemon:** New limited Pokemon with the "One Piece" theme have arrived! Use \`/gacha\` to try your luck!
+
+<:luffy:1136890668342595654> **Straw Hat Pirates:** Defeat the Straw Hats and Gear 5 Infernape in a limited PVE stage for daily Great Balls! Use \`/pve strawHats\` to challenge them!
+
+💀 **Onigashima:** Experience the legendary Raid on Onigashima in a new challenging dungeon for increased shard rewards! Use \`/dungeons\` to challenge it!
+
+🖌️ **Art Credits**:
+* Event Pokemon Sprites: Pokemon Infinite Fusions
+* Onigashima Banner: https://i.pinimg.com/736x/61/75/09/61750983442c10bc384f5909f1c7558a.jpg
+`
+
 const gameEventConfig = [
+    {
+        "name": "One Piece",
+        "description": ONE_PIECE_DESCRIPTION,
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-op-banner.png"
+    },
     {
         "name": "Generation III",
         "description": GEN_3_DESCRIPTION, 
     },
-    {
+    /*{
         "name": "Trading Event",
         "description": TRADING_DESCRIPTION,
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-trade-banner.png",

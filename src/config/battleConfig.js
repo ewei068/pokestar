@@ -13807,15 +13807,15 @@ const abilityConfig = {
     },
     "20009": {
         "name": "Royalty",
-        "description": "Boosts the user's Special Attack by 35% of its Attack.",
+        "description": "Boosts the user's Special Attack by 30% of its Attack.",
         "abilityAdd": function (battle, source, target) {
             const batk = target.batk;
-            target.spa += Math.floor(batk * 0.35);
-            battle.addToLog(`${target.name}'s Royalty boosted its Special Attack!`);
+            target.spa += Math.floor(batk * 0.30);
+            battle.addToLog(`${target.name}'s Royalty boosts its Special Attack!`);
             return {};
         },
         "abilityRemove": function (battle, source, target) {
-            target.spa -= Math.floor(target.batk * 0.35);
+            target.spa -= Math.floor(target.batk * 0.30);
         }
     },
     "20010": {
