@@ -4021,6 +4021,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user summons a vicious hailstorm.",
     },
+    "m262": {
+        "name": "Memento",
+        "type": types.DARK,
+        "power": null,
+        "accuracy": 100,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "The user faints, but sharply lowers the enemy teams' Attack and Special Attack for 2 turns.",
+    },
     "m266": {
         "name": "Follow Me",
         "type": types.NORMAL,
@@ -4319,6 +4332,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "Boulders of biblical proportion are hurled at the target. This also lowers the target's Speed stat for 2 turns, even when the attack misses.",
+    },
+    "m325": {
+        "name": "Shadow Punch",
+        "type": types.GHOST,
+        "power": 60,
+        "accuracy": null,
+        "cooldown": 2,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user throws a punch from the shadows. This move never misses.",
     },
     "m330": {
         "name": "Muddy Water",
@@ -8180,6 +8206,20 @@ const moveExecutes = {
             target.addEffect("redirect", 1, source);
         }
     },
+    "m262": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m262";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            if (!miss) {
+                // give 2 turns greater atk, spa down
+                target.addEffect("greaterAtkDown", 2, source);
+                target.addEffect("greaterSpaDown", 2, source);
+            }
+        }
+        // cause self to faint
+        source.takeFaint(source);
+    },
     "m268": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m266";
         const moveData = moveConfig[moveId];
@@ -8576,6 +8616,18 @@ const moveExecutes = {
 
             // spe down 2 turns
             target.addEffect("speDown", 2, source);
+        }
+    },
+    "m325": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m325";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // ignore miss
+            const damageToDeal = calculateDamage(moveData, source, target, false);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
         }
     },
     "m330": function (battle, source, primaryTarget, allTargets, missedTargets) {

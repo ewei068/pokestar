@@ -535,11 +535,25 @@ const npcConfig = {
         emoji: "<:luffy:1136890668342595654>",
         catchphrase: "I'm gonna be the Pirate King!",
         difficulties: {
+            [difficulties.HARD]: {
+                minLevel: 65,
+                maxLevel: 74,
+                numPokemon: 6,
+                pokemonIds: ["392-2", "123-1", "282", "83", "237-1", "234", "68", "289", "356", "143"],
+                aceId: "392-2",
+                dailyRewards: {
+                    backpack: {
+                        [backpackCategories.POKEBALLS]: {
+                            [backpackItems.GREATBALL]: 1,
+                        },
+                    }
+                }
+            },
             [difficulties.VERY_HARD]: {
                 minLevel: 130,
                 maxLevel: 149,
                 numPokemon: 6,
-                pokemonIds: ["83", "123-1", "143", "237-1", "282"],
+                pokemonIds: ["392-2", "123-1", "282", "83", "237-1", "234", "68", "289", "356", "143"],
                 aceId: "392-2",
                 dailyRewards: {
                     backpack: {

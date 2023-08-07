@@ -2,8 +2,8 @@
 
 ### 0.12.1
 
-* One Piece Event:
-  * Pokemon:
+* **One Piece Event: Pokestar is celebrating Gear 5 with a special event! Use `/events` to learn more!**
+  * **Limited event Pokemon:**
     * Scoro (Epic): A powerful physical attacker that deals high damage to tanks!
     * Vinsmoke Hitmontop (Epic): A super fast supporter who buffs allies!
     * Slaking D. Garp (Epic): A slow but incredibly powerful and bulky physical AoE attacker!
@@ -11,6 +11,9 @@
     * Raykaido (Legendary): A special-attacking bruiser tank with a crazy healing factor!
     * Rubber Infernape (Legendary): A powerful physical attacker who awakens at low HP!
     * One **SECRET** event Epic! Can be obtained in any banner for the duration of the event!
+  * New PVE stage: Straw Hat Pirates!
+  * New Dungeon: Raid on Onigashima!
+* New Pokemon: Stantler, Duskull, Dusclops
 * Fix spawning
 * Increase spawning window
 * Nerf chlorophyll
