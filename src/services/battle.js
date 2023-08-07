@@ -25,7 +25,7 @@ const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { getState } = require("./state");
 const { eventNames } = require("../config/eventConfig");
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
-const { drawIterable, drawUniform } = require("../utils/gachaUtils");
+const { drawIterable, drawUniform, drawDiscrete } = require("../utils/gachaUtils");
 const { generateRandomPokemon } = require("./gacha");
 const { validateParty } = require("./party");
 const { addRewards, getRewardsString, flattenCategories, flattenRewards } = require("../utils/trainerUtils");
@@ -488,8 +488,7 @@ class Battle {
             if (pokemon.ability.applied) {
                 return;
             }
-            const abilityId = pokemon.ability.abilityId;
-            pokemon.addAbility(abilityId);
+            pokemon.applyAbility();
         });
 
         this.eventHandler.emit(battleEventNames.BATTLE_BEGIN, {
@@ -1011,19 +1010,12 @@ class Pokemon {
         this.type2 = this.speciesData.type[1] || null;
         // map effectId => effect data (duration, args)
         this.effectIds = {};
-        this.moveIds = getMoveIds(pokemonData).reduce((acc, moveId) => {
-            acc[moveId] = {
-                cooldown: 0,
-                disabled: false,
-            };
-            return acc;
-        }, {});
+        // map moveId => move data (cooldown, disabled)
+        this.addMoves(pokemonData);
+        this.addAbility(pokemonData);
         this.status = {
             statusId: null,
             turns: 0,
-        }
-        this.ability = {
-            abilityId: pokemonData.abilityId,
         }
         this.combatReadiness = 0;
         this.position = position;
@@ -1033,6 +1025,69 @@ class Pokemon {
         this.incapacitated = false;
         this.restricted = false;
     }
+
+    addMoves(pokemonData) {
+        this.moveIds = getMoveIds(pokemonData).reduce((acc, moveId) => {
+            acc[moveId] = {
+                cooldown: 0,
+                disabled: false,
+            };
+            return acc;
+        }, {});
+    }
+
+    addAbility(pokemonData) {
+        this.ability = {
+            abilityId: pokemonData.abilityId,
+        }
+    }
+
+    transformInto(speciesId, { abilityId=null, moveIds=[] }={}) {
+        const oldName = this.name;
+        // remove ability
+        this.removeAbility();
+
+        // get old stat ratios (excpet hp)
+        const atkRatio = this.atk / this.batk;
+        const defRatio = this.def / this.bdef;
+        const spaRatio = this.spa / this.bspa;
+        const spdRatio = this.spd / this.bspd;
+        const speRatio = this.spe / this.bspe;
+
+        // set new species values
+        this.speciesId = speciesId;
+        this.speciesData = pokemonConfig[this.speciesId];
+        this.type1 = this.speciesData.type[0];
+        this.type2 = this.speciesData.type[1] || null;
+        this.name = this.speciesData.name;
+
+        // set pokemon data object
+        this.pokemonData.speciesId = this.speciesId;
+        this.pokemonData.name = this.speciesData.name;
+        this.pokemonData.moveIds = moveIds;
+        this.pokemonData.abilityId = abilityId || drawDiscrete(this.speciesData.abilities, 1)[0];
+        calculatePokemonStats(this.pokemonData, this.speciesData);
+
+        // set stats (except hp)
+        this.atk = Math.round(this.pokemonData.stats[1] * atkRatio);
+        this.batk = this.pokemonData.stats[1];
+        this.def = Math.round(this.pokemonData.stats[2] * defRatio);
+        this.bdef = this.pokemonData.stats[2];
+        this.spa = Math.round(this.pokemonData.stats[3] * spaRatio);
+        this.bspa = this.pokemonData.stats[3];
+        this.spd = Math.round(this.pokemonData.stats[4] * spdRatio);
+        this.bspd = this.pokemonData.stats[4];
+        this.spe = Math.round(this.pokemonData.stats[5] * speRatio);
+        this.bspe = this.pokemonData.stats[5];
+
+        // set moves and ability
+        this.addMoves(this.pokemonData);
+        this.addAbility(this.pokemonData);
+        this.applyAbility();
+
+        this.battle.addToLog(`${oldName} transformed into ${this.name}!`);
+    }
+
 
     useMove(moveId, targetPokemonId) {
         // make sure pokemon can move
@@ -1616,12 +1671,7 @@ class Pokemon {
 
         this.hp = 0;
         this.isFainted = true;
-        // remove ability effects
-        const abilityId = this.ability.abilityId;
-        const abilityData = abilityConfig[abilityId];
-        if (abilityData && abilityData.abilityRemove) {
-            abilityData.abilityRemove(this.battle, this, this);
-        }
+        this.removeAbility();
         this.battle.addToLog(`${this.name} fainted!`);
 
         // trigger after faint effects
@@ -1645,11 +1695,11 @@ class Pokemon {
         this.battle.addToLog(`${this.name} was revived!`);
 
         // re-add ability
-        const abilityId = this.ability.abilityId;
-        this.addAbility(abilityId);
+        this.applyAbility();
     }
 
-    addAbility(abilityId) {
+    applyAbility() {
+        const abilityId = this.ability.abilityId;
         const abilityData = abilityConfig[abilityId];
         if (!abilityData || !abilityData.abilityAdd) {
             return;
@@ -1657,6 +1707,15 @@ class Pokemon {
 
         this.ability.data = abilityData.abilityAdd(this.battle, this, this);
         this.ability.applied = true;
+    }
+
+    removeAbility() {
+        // remove ability effects
+        const abilityId = this.ability.abilityId;
+        const abilityData = abilityConfig[abilityId];
+        if (abilityData && abilityData.abilityRemove) {
+            abilityData.abilityRemove(this.battle, this, this);
+        }
     }
 
     giveHeal(heal, target, healInfo) {
@@ -1733,6 +1792,7 @@ class Pokemon {
             return;
         }
 
+        duration = this.battle.activePokemon === this ? duration + 1 : duration;
         const effectData = effectConfig[effectId];
 
         // if effect already exists for longer or equal duration, do nothing
@@ -1760,9 +1820,10 @@ class Pokemon {
         if (!beforeAddArgs.canAdd) {
             return;
         }
+        duration = beforeAddArgs.duration;
 
         this.effectIds[effectId] = {
-            duration: this.battle.activePokemon === this ? duration + 1 : duration,
+            duration: duration,
             source: source,
             initialArgs: args,
         };

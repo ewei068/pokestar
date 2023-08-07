@@ -2237,6 +2237,23 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW,
     },
+    "123-1": {
+        "name": "Scoro",
+        "emoji": "<:zoro:1136890672775954432>",
+        "description": "A Pokemon with another world, it has devoted its life to becomming the world's strongest Bug-type.",
+        "type": [types.BUG, types.DARK],
+        "baseStats": [80, 125, 90, 65, 90, 90],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/zoro-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/zoro-shiny-resized.png",
+        "abilities": {
+            "101": 1
+        },
+        "moveIds": ["m210", "m14", "m331-1", "m20009"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
+    },
     "124": {
         "name": "Jynx",
         "emoji": "<:124:1100290830440333374>",
@@ -2715,6 +2732,23 @@ const pokemonConfig = {
             "46": 1
         },
         "moveIds": ["m246", "m334-2", "m430", "m540"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW,
+        "noGacha": true
+    },
+    "150-2": {
+        "name": "Red Hair Mewtwo",
+        "emoji": "<:shanks:1136890671588970498>",
+        "description": "A genetic clone of a powerful emperor. Its conquering presence alone frightens Pokemon to the brink of fainting.",
+        "type": [types.PSYCHIC],
+        "baseStats": [106, 130, 90, 130, 90, 134],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/shanks-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/shanks-shiny-resized.png",
+        "abilities": {
+            "46-1": 1
+        },
+        "moveIds": ["m210", "m348", "m403", "m540-1"],
         "battleEligible": true,
         "rarity": rarities.LEGENDARY,
         "growthRate": growthRates.SLOW,
@@ -3730,6 +3764,23 @@ const pokemonConfig = {
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST
     },
+    "237-1": {
+        "name": "Vinsmoke Hitmontop",
+        "emoji": "<:sanji:1136890669735084053>",
+        "description": "A culinary expert, its meals are said to physically strengthen Pokemon who try it. It fights with its legs to avoid damaging its cooking hands.",
+        "type": [types.FIGHTING],
+        "baseStats": [65, 90, 90, 45, 100, 150],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/sanji-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/sanji-shiny-resized.png",
+        "abilities": {
+            "3": 1
+        },
+        "moveIds": ["m270", "m97-1", "m299", "m226-1"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMSLOW,
+        "noGacha": true
+    },
     "241": {
         "name": "Miltank",
         "emoji": "<:241:1119803755014144051>",
@@ -4677,10 +4728,27 @@ const pokemonConfig = {
         "abilities": {
             "54": 1,
         },
-        "moveIds": ["m10", "m68", "m303", "m416"],
+        "moveIds": ["m10", "m68", "m359", "m416"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.SLOW,
+    },
+    "289-1": {
+        "name": "Slaking D. Garp",
+        "emoji": "<:garp:1136890665003925554>",
+        "description": "An old Pokemon hero; this Slaking empowers its fists with pure willpower to launch devastating attacks that can level cities.",
+        "type": [types.NORMAL],
+        "baseStats": [125, 150, 100, 85, 65, 75],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/garp-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/garp-shiny-resized.png",
+        "abilities": {
+            "54-1": 1,
+        },
+        "moveIds": ["m88", "m68", "m359", "m416-1"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.SLOW,
+        "noGacha": true
     },
     "290": {
         "name": "Nincada",
@@ -4973,6 +5041,22 @@ const pokemonConfig = {
             "3": 0.2,
         },
         "moveIds": ["m453", "m127", "m242", "m89"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.MEDIUMFAST,
+    },
+    "319-1": {
+        "name": "Arlong",
+        "emoji": "<:arlong:1136891755908833320>",
+        "description": "If it's a 1v1 in water, ALWAYS bet on Arlong!",
+        "type": [types.WATER, types.DARK],
+        "baseStats": [70, 130, 80, 115, 60, 85],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/arlong-resized.png",
+        "shinySprite": "https://i.ytimg.com/vi/sJdQll3I-S4/maxresdefault.jpg",
+        "abilities": {
+            "20012": 1,
+        },
+        "moveIds": ["m453", "m127", "m242", "m20013"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMFAST,
@@ -5593,6 +5677,57 @@ const pokemonConfig = {
         "battleEligible": true,
         "rarity": rarities.LEGENDARY,
         "growthRate": growthRates.SLOW,
+    },
+    "384-1": {
+        "name": "Raykaido",
+        "emoji": "<:kaido:1136890666442555403>",
+        "description": "A legendary creature that has been seen in the skies of a faraway region. It is said to be the protector of the skies.",
+        "type": [types.DRAGON],
+        "baseStats": [125, 90, 150, 110, 130, 75],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/kaido-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/kaido-shiny-resized.png",
+        "abilities": {
+            "144": 1,
+        },
+        "moveIds": ["m239", "m208-1", "m85", "m620-1"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW,
+        "noGacha": true,
+    },
+    "392-1": {
+        "name": "Rubber Infernape",
+        "emoji": "<:luffy:1136890668342595654>",
+        "description": "An Infernape who ate a special poffin, granting its body the properties of rubber.",
+        "type": [types.NORMAL, types.FIGHTING],
+        "baseStats": [86, 154, 70, 104, 70, 116],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/luffy-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/luffy-shiny-resized.png",
+        "abilities": {
+            "20011": 1,
+        },
+        "moveIds": ["m183-1", "m7-1", "m370-1", "m20010"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW,
+        "noGacha": true,
+    },
+    "392-2": {
+        "name": "Sun God Infernape",
+        "emoji": "<:luffy:1136890668342595654>",
+        "description": "The Infernape that has awakened its poffin powers. Destined to liberate the world, it brings joy and freedom wherever it goes.",
+        "type": [types.FAIRY, types.FIGHTING],
+        "baseStats": [86, 154, 75, 154, 75, 136],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/luffy-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/luffy-shiny-resized.png",
+        "abilities": {
+            "20009": 1,
+        },
+        "moveIds": ["m20011", "m182-1", "m417-1", "m20012"],
+        "battleEligible": true,
+        "rarity": rarities.LEGENDARY,
+        "growthRate": growthRates.SLOW,
+        "unobtainable": true,
     },
     "828-1": {
         "name": "Scammer Thievul",

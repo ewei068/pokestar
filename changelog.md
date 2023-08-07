@@ -2,9 +2,24 @@
 
 ### 0.12.1
 
+* One Piece Event:
+  * Pokemon:
+    * Scoro (Epic): A powerful physical attacker that deals high damage to tanks!
+    * Vinsmoke Hitmontop (Epic): A super fast supporter who buffs allies!
+    * Slaking D. Garp (Epic): A slow but incredibly powerful and bulky physical AoE attacker!
+    * Red Hair Mewtwo (Legendary): A mixed attacker with great speed, AoE, and type coverage!
+    * Raykaido (Legendary): A special-attacking bruiser tank with a crazy healing factor!
+    * Rubber Infernape (Legendary): A powerful physical attacker who awakens at low HP!
+    * One **SECRET** event Epic! Can be obtained in any banner for the duration of the event!
 * Fix spawning
 * Increase spawning window
 * Nerf chlorophyll
+* Adjustments:
+  * Buff Thunderbolt
+  * Buff Hammer Arm
+  * Buff Royalty
+  * Switch Slaking Slack-off with Hammer Arm
+
 
 ## 0.12.0 (8/2) - Gen III
 
