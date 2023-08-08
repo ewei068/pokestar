@@ -44,6 +44,12 @@ const QUESTION_TYPES = [
     "pokemonType"
 ];
 
+const PERMISSIONS_NEEDED = [
+    "ViewChannel",
+    "SendMessages",
+    "EmbedLinks",
+];
+
 const canSendInChannel = (guild, channel, guildData) => {
     const blacklistedChannels = guildData.spawnDisabledChannels;
     const channelInBlacklist = blacklistedChannels && blacklistedChannels.includes(channel.id);
@@ -51,7 +57,8 @@ const canSendInChannel = (guild, channel, guildData) => {
     if (channelInBlacklist || channelParentInBlacklist) {
         return false;
     }
-    return guild.members.me.permissionsIn(channel).has("SendMessages");
+    const permissionsIn = guild.members.me.permissionsIn(channel);
+    return PERMISSIONS_NEEDED.every((permission) => permissionsIn.has(permission));
 }
 
 const buildPokemonSpawnSend = () => {
@@ -69,7 +76,7 @@ const buildPokemonSpawnSend = () => {
         speciesId: speciesId,
         isShiny: isShiny,
         level: level,
-    }, 10 * 60);
+    }, 30 * 60);
     const buttonConfigs = [{
         label: "Catch!",
         disabled: false,

@@ -1,6 +1,6 @@
 # Pokéstar Changelog
 
-### 0.12.1
+### 0.12.1 - One Piece Event
 
 * **One Piece Event: Pokestar is celebrating Gear 5 with a special event! Use `/events` to learn more!**
   * **Limited event Pokemon:**
@@ -13,9 +13,9 @@
     * One **SECRET** event Epic! Can be obtained in any banner for the duration of the event!
   * New PVE stage: Straw Hat Pirates!
   * New Dungeon: Raid on Onigashima!
-* New Pokemon: Stantler, Duskull, Dusclops
-* Fix spawning
-* Increase spawning window
+* New Pokemon: Stantler, Duskull, Dusclops!
+* Increase catch time after spawning window to 30 minutes.
+* (Attempted) to fix spawning when lacking permissions.
 * Adjustments:
   * Buff Thunderbolt
   * Buff Hammer Arm
