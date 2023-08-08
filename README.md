@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images//events/pokestar-tpp-banner.png" height="300">
+  <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images//events/pokestar-op-banner.png" height="300">
 </p>
 
 ## Why Pokéstar?
