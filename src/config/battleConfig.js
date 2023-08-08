@@ -11506,24 +11506,24 @@ const abilityConfig = {
     },
     "33": {
         "name": "Swift Swim",
-        "description": "Increases user's speed by 20%. Increases speed by 50% (multiplicative with initial buff) in rain.",
+        "description": "Increases user's speed by 1/3 of its level. Increases speed by 50% (multiplicative with initial buff) in rain.",
         "abilityAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Swift Swim increases its speed!`);
-            target.spe += Math.floor(target.spe * 0.2);
+            target.spe += Math.floor(target.level * 0.333);
         },
         "abilityRemove": function (battle, source, target) {
-            target.spe -= Math.floor(target.spe * 0.167);
+            target.spe -= Math.floor(target.level * 0.333);
         }
     },
     "34": {
         "name": "Chlorophyll",
-        "description": "Increases user's speed by 20%. Increases speed by 50% (multiplicative with initial buff) in harsh sunlight.",
+        "description": "Increases user's speed by 1/3 of its level. Increases speed by 50% (multiplicative with initial buff) in harsh sunlight.",
         "abilityAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Chlorophyll increases its speed!`);
-            target.spe += Math.floor(target.spe * 0.2);
+            target.spe += Math.floor(target.level * 0.333);
         },
         "abilityRemove": function (battle, source, target) {
-            target.spe -= Math.floor(target.spe * 0.167);
+            target.spe -= Math.floor(target.level * 0.333);
         }
     },
     "35": {

@@ -702,39 +702,53 @@ class Battle {
         if (!this.isWeatherNegated()) {
             switch (this.weather.weatherId) {
                 case weatherConditions.SANDSTORM:
-                    // if active pokemon not rock, steel, or ground, damage 1/12 of max hp
-                    if (
-                        this.activePokemon.type1 !== types.ROCK &&
-                        this.activePokemon.type1 !== types.STEEL &&
-                        this.activePokemon.type1 !== types.GROUND &&
-                        this.activePokemon.type2 !== types.ROCK &&
-                        this.activePokemon.type2 !== types.STEEL &&
-                        this.activePokemon.type2 !== types.GROUND
-                    ) {
-                        this.addToLog(`${this.activePokemon.name} is buffeted by the sandstorm!`);
-                        this.activePokemon.takeDamage(
-                            Math.floor(this.activePokemon.maxHp / 12), 
-                            this.weather.source,
-                            {
-                                "type": "weather",
-                            }
-                        );
+                    // tick weather for active Pokemon's team
+                    this.addToLog(`The sandstorm rages!`);
+                    for (const pokemon of this.parties[this.activePokemon.teamName].pokemons) {
+                        // if pokemon not targetable, skip
+                        if (this.isPokemonTargetable(pokemon) === false) {
+                            continue;
+                        }
+                        // if pokemon not rock, steel, or ground, damage 1/16 of max hp
+                        if (
+                            pokemon.type1 !== types.ROCK &&
+                            pokemon.type1 !== types.STEEL &&
+                            pokemon.type1 !== types.GROUND &&
+                            pokemon.type2 !== types.ROCK &&
+                            pokemon.type2 !== types.STEEL &&
+                            pokemon.type2 !== types.GROUND
+                        ) {
+                            pokemon.takeDamage(
+                                Math.floor(pokemon.maxHp / 16), 
+                                this.weather.source,
+                                {
+                                    "type": "weather",
+                                }
+                            );
+                        }
                     }
                     break;
                 case weatherConditions.HAIL:
-                    // if active pokemon not ice, damage 1/12 of max hp
-                    if (
-                        this.activePokemon.type1 !== types.ICE &&
-                        this.activePokemon.type2 !== types.ICE
-                    ) {
-                        this.addToLog(`${this.activePokemon.name} is buffeted by the hail!`);
-                        this.activePokemon.takeDamage(
-                            Math.floor(this.activePokemon.maxHp / 12),
-                            this.weather.source,
-                            {
-                                "type": "weather",
-                            }
-                        );
+                    // tick weather for active Pokemon's team
+                    this.addToLog(`The hail continues!`);
+                    for (const pokemon of this.parties[this.activePokemon.teamName].pokemons) {
+                        // if pokemon not targetable, skip
+                        if (this.isPokemonTargetable(pokemon) === false) {
+                            continue;
+                        }
+                        // if pokemon not ice, damage 1/16 of max hp
+                        if (
+                            pokemon.type1 !== types.ICE &&
+                            pokemon.type2 !== types.ICE
+                        ) {
+                            pokemon.takeDamage(
+                                Math.floor(pokemon.maxHp / 16), 
+                                this.weather.source,
+                                {
+                                    "type": "weather",
+                                }
+                            );
+                        }
                     }
                     break;
             }

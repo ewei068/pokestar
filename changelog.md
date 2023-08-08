@@ -16,13 +16,13 @@
 * New Pokemon: Stantler, Duskull, Dusclops
 * Fix spawning
 * Increase spawning window
-* Nerf chlorophyll
 * Adjustments:
   * Buff Thunderbolt
   * Buff Hammer Arm
   * Buff Royalty
-  * Switch Slaking Slack-off with Hammer Arm
-
+  * Switch Slaking Slack-off with Hammer Arm.
+  * Rework Sandstorm and Hail to tick the entire active Pokemon's team for damage.
+  * Nerf Chlorophyll and Swift Swim's out-of-weather speed buffs.
 
 ## 0.12.0 (8/2) - Gen III
 
