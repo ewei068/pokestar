@@ -72,6 +72,42 @@ const bannerTypeConfig = {
 const bannerConfig = [
     {
         "bannerType": bannerTypes.SPECIAL,
+        "name": "[EVENT] Rubber Infernape",
+        "description": "The One Piece Gear 5 event is here! Pull for the limited-time Rubber Infernape, a powerful attacker who can awaken, as well as other event Epics!",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["392-1"],
+                [rarities.EPIC]: ["123-1", "237-1", "289-1"]
+            }
+        },
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-op-banner.png"
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
+        "name": "[EVENT] Raykaido",
+        "description": "The One Piece Gear 5 event is here! Pull for the limited-time Raykaido, a bruiser tank with lots of healing, as well as other event Epics!",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["384-1"],
+                [rarities.EPIC]: ["123-1", "237-1", "289-1"]
+            }
+        },
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-op-banner.png"
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
+        "name": "[EVENT] Red Hair Mewtwo",
+        "description": "The One Piece Gear 5 event is here! Pull for the limited-time Red Hair Mewtwo, a super speedy AoE attacker, as well as other event Epics!",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["150-2"],
+                [rarities.EPIC]: ["123-1", "237-1", "289-1"]
+            }
+        },
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-op-banner.png"
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
         "name": "[GEN 3] Legendary Golems Banner",
         "description": "Gen 3 has arrived! Pull for the legendary Regirock, Regice, Registeel, as well as other Gen 3 Pokemon! NOTE: The Golems are NOT limited and are available in all banners.",
         "rateUp": () => {
@@ -106,7 +142,7 @@ const bannerConfig = [
             }
         }
     },
-    {
+    /*{
         "bannerType": bannerTypes.SPECIAL,
         "name": "[EVENT] Billionaire Sableye",
         "description": "Trading has arrived! Pull for the rich Sableye who made a fortune trading Pokemon!",

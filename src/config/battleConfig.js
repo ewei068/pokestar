@@ -83,13 +83,13 @@ const typeAdvantages = {
     [types.FAIRY]: { [types.FIRE]: 0.5, [types.FIGHTING]: 2, [types.POISON]: 0.5, [types.DRAGON]: 2, [types.DARK]: 2, [types.STEEL]: 0.5 }
 };
 
-const calculateDamage = (move, source, target, miss=false, { atkStat = null, attack = null, defStat = null, power = null, type = null, moveType = null } = {}) => {
+const calculateDamage = (move, source, target, miss=false, { atkStat=null, attack=null, defStat=null, defense=null, power=null, type=null, moveType=null } = {}) => {
     power = power || move.power;
     const level = source.level;
     atkStat = atkStat || move.damageType;
     attack = attack || (atkStat === damageTypes.PHYSICAL ? source.atk : source.spa);
     defStat = defStat || move.damageType;
-    const defense = defStat === damageTypes.PHYSICAL ? target.getDef() : target.getSpd();
+    defense = defense || (defStat === damageTypes.PHYSICAL ? target.getDef() : target.getSpd());
     const stab = source.type1 === move.type || source.type2 === move.type ? 1.5 : 1;
     const missMult = miss ? 0.7 : 1;
     moveType = moveType || move.type;
@@ -1027,6 +1027,65 @@ const effectConfig = {
             battle.eventHandler.unregisterListener(listenerId);
         }
     },
+    "superStretchy": {
+        "name": "Super Stretchy",
+        "description": "The target stretches to its attacks.",
+        "type": effectTypes.BUFF,
+        "dispellable": true,
+        "effectAdd": function(battle, source, target) {
+            battle.addToLog(`${target.name} stretches to its attacks!`);
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+
+                    const invulnPokemon = initialArgs.pokemon;
+                    const damagedPokemon = args.target;
+                    const sourcePokemon = args.source;
+                    if (invulnPokemon !== damagedPokemon) {
+                        return;
+                    }
+                    
+                    // set damage to 0
+                    const oldDamage = args.damage;
+                    args.damage = 0;
+                    args.maxDamage = Math.min(args.maxDamage, args.damage);
+                    invulnPokemon.battle.addToLog(`${invulnPokemon.name} is super stretchy!`);
+
+                    // get move data
+                    const moveId = args.damageInfo.moveId;
+                    const moveData = moveConfig[moveId];
+                    if (!moveData) {
+                        return;
+                    }
+                    const moveType = moveData.damageType;
+                    if (moveType === damageTypes.PHYSICAL) {
+                        // heal for the amount of damage taken
+                        const healAmount = oldDamage;
+                        invulnPokemon.giveHeal(healAmount, invulnPokemon, {
+                            "type": "superStretchy",
+                        });
+                    } else if (moveType === damageTypes.SPECIAL) {
+                        // reflect move back at attacker
+                        invulnPokemon.battle.addToLog(`${invulnPokemon.name} reflected the move back at ${sourcePokemon.name}!`);
+                        moveExecutes[moveId](invulnPokemon.battle, invulnPokemon, sourcePokemon, [sourcePokemon], []);
+                    }
+                }
+            }
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, listener);
+            return {
+                "listenerId": listenerId,
+            };
+        },
+        "effectRemove": function(battle, target, args) {
+            const listenerId = args.listenerId;
+            battle.eventHandler.unregisterListener(listenerId);
+        }
+    },
     "wideGuard": {
         "name": "Wide Guard",
         "description": "The user is protecting its allies from AoE moves.",
@@ -1079,6 +1138,7 @@ const effectConfig = {
         "effectAdd": function(battle, source, target) {
             battle.addToLog(`${source.name} is sharing the wealth!`);
             const listener = {
+
                 initialArgs: {
                     pokemon: source,
                 },
@@ -1277,6 +1337,37 @@ const effectConfig = {
         },
         "effectRemove": function(battle, target, args) {
             battle.addToLog(`${target.name} is no longer affected by Leech Seed!`);
+            const listenerId = args.listenerId;
+            battle.eventHandler.unregisterListener(listenerId);
+        }
+    },
+    "extraTurn": {
+        "name": "Extra Turn",
+        "description": "At the end of each turn, give the target an extra turn.",
+        "type": effectTypes.BUFF,
+        "dispellable": true,
+        "effectAdd": function(battle, source, target, args) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = initialArgs.pokemon;
+                    if (targetPokemon !== targetPokemon.battle.activePokemon) {
+                        return;
+                    }
+                    
+                    targetPokemon.battle.addToLog(`${targetPokemon.name} takes an additional turn!`);
+                    targetPokemon.boostCombatReadiness(targetPokemon, 100);
+                }
+            }
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.TURN_END, listener);
+            battle.addToLog(`${target.name} is taking extra turns!!`);
+            return {
+                "listenerId": listenerId,
+            };
+        },
+        "effectRemove": function(battle, target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1610,7 +1701,6 @@ const effectConfig = {
             battle.eventHandler.unregisterListener(listenerId);
         }
     },
-
     "loseFlying": {
         "name": "No Flying Type",
         "description": "The target loses its Flying type.",
@@ -1668,6 +1758,29 @@ const effectConfig = {
             // enable non-solar beam moves
             for (const moveId in target.moveIds) {
                 if (moveId !== "m76") {
+                    target.enableMove(moveId, target);
+                }
+            }
+        }
+    },
+    "projectingSpirit": {
+        "name": "Projecting Spirit",
+        "description": "The target is projecting its spirit in preparation for a powerful Ashura Bakkei.",
+        "type": effectTypes.BUFF,
+        "dispellable": false,
+        "effectAdd": function(battle, source, target) {
+            battle.addToLog(`${target.name} is projecting its spirit!`);
+            // disable non-ashura bakkei moves
+            for (const moveId in target.moveIds) {
+                if (moveId !== "m331-1") {
+                    target.disableMove(moveId, target);
+                }
+            }
+        },
+        "effectRemove": function(battle, target, args) {
+            // enable non-ashura bakkei moves
+            for (const moveId in target.moveIds) {
+                if (moveId !== "m331-1") {
                     target.enableMove(moveId, target);
                 }
             }
@@ -1866,6 +1979,17 @@ const effectConfig = {
         "effectRemove": function(battle, target, args) {
         }
     },
+    "furyCutter": {
+        "name": "Fury Cutter",
+        "description": "The target is being honing its claws.",
+        "type": effectTypes.BUFF,
+        "dispellable": false,
+        "effectAdd": function(battle, source, target) {
+            battle.addToLog(`${target.name} is honing its claws!`);
+        },
+        "effectRemove": function(battle, target, args) {
+        }
+    },
     "grudge": {
         "name": "Grudge",
         "description": "If the target faints, silence all enemies for 1 turn.",
@@ -1982,7 +2106,43 @@ const effectConfig = {
                 "disabled": false,
             }
         }
-    }
+    },
+    "gearFive": {
+        "name": "Gear 5",
+        "description": "The target has awakened Gear 5.",
+        "type": effectTypes.BUFF,
+        "dispellable": false,
+        "effectAdd": function(battle, source, target) {
+            battle.addToLog(`${target.name} has awakened Gear 5!`);
+
+            // remember old: species ID, move IDs, ability ID
+            const rv = {
+                "oldSpeciesId": target.speciesId,
+                "oldMoveIds": Object.keys(target.moveIds),
+                "oldAbilityId": target.ability.abilityId
+            }
+
+            // transform into Gear 5
+            target.transformInto("392-2");
+
+            return rv;
+        },
+        "effectRemove": function(battle, target, args) {
+            battle.addToLog(`${target.name} has lost Gear 5!`);
+
+            target.transformInto(args.oldSpeciesId, {
+                abilityId: args.oldAbilityId,
+                moveIds: args.oldMoveIds,
+            });
+
+            // if knows Gear Fifth, set cooldown to max
+            const gearFifthMoveId = "m20010";
+            const moveData = moveConfig[gearFifthMoveId];
+            if (target.moveIds[gearFifthMoveId]) {
+                target.moveIds[gearFifthMoveId].cooldown = moveData.cooldown;
+            }
+        }
+    },
 }
 
 // unqiue status conditions
@@ -2029,6 +2189,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "Coins are rained down upon all enemy targets. Reduces the cooldowns of a random ally by 1 and increases money earned after battle for each enemy hit.",
+    },
+    "m7-1": {
+        "name": "Red Hawk",
+        "type": types.FIRE,
+        "power": 70,
+        "accuracy": 100,
+        "cooldown": 3,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user ignites a stretched arm, delivering a powerful flaming punch. Removes the targets defensive buffs before dealing damage, then leaves the target with a burn.",
     },
     "m10": {
         "name": "Scratch",
@@ -2202,7 +2375,7 @@ const moveConfig = {
     "m38": {
         "name": "Double-Edge",
         "type": types.NORMAL,
-        "power": 125,
+        "power": 135,
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -2423,7 +2596,7 @@ const moveConfig = {
     "m63": {
         "name": "Hyper Beam",
         "type": types.NORMAL,
-        "power": 130,
+        "power": 160,
         "accuracy": 90,
         "cooldown": 6,
         "targetType": targetTypes.ENEMY,
@@ -2584,9 +2757,9 @@ const moveConfig = {
     "m85": {
         "name": "Thunderbolt",
         "type": types.ELECTRIC,
-        "power": 90,
+        "power": 75,
         "accuracy": 100,
-        "cooldown": 4,
+        "cooldown": 3,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
@@ -2632,6 +2805,19 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.SPECIAL,
         "description": "The user charges a wicked thunderbolt to be dropped on the target. The user suffers decreased speed for 1 turn.",
+    },
+    "m88": {
+        "name": "Rock Throw",
+        "type": types.ROCK,
+        "power": 50,
+        "accuracy": 70,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user picks up and throws a small rock at the target to inflict damage.",
     },
     "m89": {
         "name": "Earthquake",
@@ -2713,6 +2899,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
         "description": "The user relaxes and lightens its body to move faster. This sharply raises the user's Speed for 3 turns and boosts combat readiness by 60%.",
+    },
+    "m97-1": {
+        "name": "Ifrit Jambe",
+        "type": types.FIRE,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 5,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user rapidly spins its body to move blazingly fast. This raises the user's Attack and Speed for 3 turns and boosts combat readiness by 60%. If the user isn't Fire type, permanently change its secondary type to Fire.",
     },
     "m98": {
         "name": "Quick Attack",
@@ -3211,6 +3410,19 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user becomes invulnerable to moves for 1 turn.",
     },
+    "m182-1": {
+        "name": "Stretchy Defense",
+        "type": types.NORMAL,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 5,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "The user becomes invulnerable to moves for 1 turn. If hit by Physical attacks, the user stretches its body to the shape of the attack, healing what damage it would have taken. If hit by a Special attack, the user reflects the attack.",
+    },
     "m183": {
         "name": "Mach Punch",
         "type": types.FIGHTING,
@@ -3223,6 +3435,19 @@ const moveConfig = {
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user throws a punch at blinding speed, increasing the user's combat readiness by 30%.",
+    },
+    "m183-1": {
+        "name": "Mach Pistol",
+        "type": types.FIGHTING,
+        "power": 35,
+        "accuracy": 100,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user stretches its arm back, then throws a punch at blinding speed, increasing the user's combat readiness by 40%.",
     },
     "m186": {
         "name": "Sweet Kiss",
@@ -3419,6 +3644,32 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user restores the by 40% of the user's max HP, as well as cleansing all debuffs and status conditions. Increases healing by 10% for each effect cleansed.",
     },
+    "m208-1": {
+        "name": "Shuron Hakke",
+        "type": types.POISON,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 4,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "By consuming a strange liquid substance, the user raises all its stats for 1 turn and restors 25% of its max HP.",
+    },
+    "m210": {
+        "name": "Fury Cutter",
+        "type": types.BUG,
+        "power": 30,
+        "accuracy": 90,
+        "cooldown": 0,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.BASIC,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The target is slashed with scythes or claws. If it hits, the next turn's fury cutter has base 60 power.",
+    },
     "m212": {
         "name": "Mean Look",
         "type": types.NORMAL,
@@ -3535,6 +3786,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
         "description": "The user boosts an ally's combat readiness to 100%, passing along ALL dispellable effects.",
+    },
+    "m226-1": {
+        "name": "Attack Cuisine",
+        "type": types.NORMAL,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 4,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.NON_SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user prepares a delicious meal for an ally, their combat readiness to 100% and giving them sharply increased Attack and Defense for 2 turns.",
     },
     "m229": {
         "name": "Rapid Spin",
@@ -3756,6 +4020,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
         "description": "The user summons a vicious hailstorm.",
+    },
+    "m262": {
+        "name": "Memento",
+        "type": types.DARK,
+        "power": null,
+        "accuracy": 100,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "The user faints, but sharply lowers the enemy teams' Attack and Special Attack for 2 turns.",
     },
     "m266": {
         "name": "Follow Me",
@@ -4056,6 +4333,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "Boulders of biblical proportion are hurled at the target. This also lowers the target's Speed stat for 2 turns, even when the attack misses.",
     },
+    "m325": {
+        "name": "Shadow Punch",
+        "type": types.GHOST,
+        "power": 60,
+        "accuracy": null,
+        "cooldown": 2,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user throws a punch from the shadows. This move never misses.",
+    },
     "m330": {
         "name": "Muddy Water",
         "type": types.WATER,
@@ -4081,6 +4371,22 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user forcefully shoots seeds at random targets, hitting 5 times.",
+    },
+    "m331-1": {
+        "name": "Ashura Bakkei",
+        "type": types.DARK,
+        "power": 15,
+        "accuracy": 80,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user takes a turn to charge up, then forcefully slashes at random targets, hitting 9 times. Targets who are successfully hit take an additional 5% max HP true damage.",
+        "silenceIf": function(battle, pokemon) {
+            return pokemon.effectIds.projectingSpirit === undefined;
+        }
     },
     "m332": {
         "name": "Aerial Ace",
@@ -4252,7 +4558,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.COLUMN,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
-        "description": "The user swings and hits with its strong and heavy fist. This lowers the user's Speed for 2 turns.",
+        "description": "The user swings and hits with its strong and heavy fist. This lowers the user's Speed for 1 turn.",
     },
     "m361": {
         "name": "Healing Wish",
@@ -4305,6 +4611,19 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user fights the target up close without guarding itself. This also lowers the user's Defense and Special Defense for 1 turn.",
+    },
+    "m370-1": {
+        "name": "Gattling Combat",
+        "type": types.FIGHTING,
+        "power": 90,
+        "accuracy": 80,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.ROW,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user moves horizontally in a rapid fashion, sretching its fists to attack rapidly. This also sharply lowers the user's Defense and Special Defense for 1 turn.",
     },
     "m387": {
         "name": "Last Resort",
@@ -4530,7 +4849,7 @@ const moveConfig = {
     "m416": {
         "name": "Giga Impact",
         "type": types.NORMAL,
-        "power": 130,
+        "power": 160,
         "accuracy": 90,
         "cooldown": 6,
         "targetType": targetTypes.ENEMY,
@@ -4539,6 +4858,19 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user charges at the target using every bit of its power, dealing damage to the primary target and 50% damage to other targets. The user must rest on the next turn.",
+    },
+    "m416-1": {
+        "name": "Galaxy Impact",
+        "type": types.NORMAL,
+        "power": 135,
+        "accuracy": 90,
+        "cooldown": 6,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SQUARE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The launches an attack at the target using every bit of its willpower. The user's speed is greatly lowered for 1 turn.",
     },
     "m417": {
         "name": "Nasty Plot",
@@ -4552,6 +4884,19 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
         "description": "The user stimulates its brain by thinking bad thoughts. This sharply raises the user's Sp. Attack stat for 3 turns.",
+    },
+    "m417-1": {
+        "name": "Uncontrollable Joy",
+        "type": types.FAIRY,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 2,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "The user stimulates the target's brain by thinking happy thoughts. This sharply raises the target's Sp. Attack and Evasion for 2 turns, and gives it 30% combat readiness.",
     },
     "m418": {
         "name": "Bullet Punch",
@@ -5008,6 +5353,19 @@ const moveConfig = {
         "damageType": damageTypes.SPECIAL,
         "description": "The user creates a powerful blast of psychic energy, dealing damage to the target and 50% damage to surrounding Pokemon. Uses the target's Defense stat.",
     },
+    "m540-1": {
+        "name": "Divine Departure",
+        "type": types.PSYCHIC,
+        "power": 85,
+        "accuracy": 100,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.BACK,
+        "targetPattern": targetPatterns.COLUMN,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user slashes through the target at a blinding speed, dealing damage to the target and 50% damage to other Pokemon, increasing its combat readiness by 30% for each Pokemon defated. Uses the target's Defense stat.",
+    },
     "m542": {
         "name": "Hurricane",
         "type": types.FLYING,
@@ -5203,6 +5561,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user soars upward with powerful wings and charges at the target at a steep angle. This calculates damage based off the lower of the targets' defense or special defense. Grants the user another turn but lowers its defenses for 2 turns.",
     },
+    "m620-1": {
+        "name": "Bolo Breath",
+        "type": types.DRAGON,
+        "power": 95,
+        "accuracy": 100,
+        "cooldown": 6,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.COLUMN,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user launches  a blast of fire from its mouth. This calculates damage based off the lower of the targets' defense or special defense. Then, heals the user 5% of its max HP for each target hit.",
+    },
     "m668": {
         "name": "Strength Sap",
         "type": types.GRASS,
@@ -5385,6 +5756,71 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user goes all-in, sacrificing all its wealth, sharply reducing its defenses for 1 turn and reducing its health by 50%. In exchange, increases the duration of all ally buffs by 1 turn.",
     },
+    "m20009": {
+        "name": "King of Hell",
+        "type": types.DARK,
+        "power": 50,
+        "accuracy": 90,
+        "cooldown": 6,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user lets its swords draw from its own power, then slices three times at the target. Successful hits deal an additional 10% of the target's max HP true damage. If the primary target is defeated, targets random enemies without missing.",
+    },
+    "m20010": {
+        "name": "Gear Fifth",
+        "type": types.FAIRY,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 7,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "If under 25% HP, the user activates Gear Fifth, transforming into Sun God Infernape for 3 turns, then gives itself another turn and 50% HP. FAILS if the user is not under 25% HP.",
+    },
+    "m20011": {
+        "name": "Dawn Rocket",
+        "type": types.FAIRY,
+        "power": 65,
+        "accuracy": null,
+        "cooldown": 2,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user bends the environment to propel itself through the opponent. Uses the minimum of the user and opponent's Special Defense to calculate damage.",
+    },
+    "m20012": {
+        "name": "Monkey God Gun",
+        "type": types.FIGHTING,
+        "power": 85,
+        "accuracy": 100,
+        "cooldown": 6,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user inflates its fist to the size of an island, then crashes it down on the enemy team.",
+    },
+    "m20013": {
+        "name": "ZA WATER!!!",
+        "type": types.WATER,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 6,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "The user activates its Stand, ZA WATER!!!, forcing time to stop for all other Pokemon. This provides the user a buff granting it 2 extra turns.",
+    },
 };
 
 const moveExecutes = {
@@ -5443,6 +5879,35 @@ const moveExecutes = {
             // buff money multiplier
             if (source.battle.moneyMultiplier) {
                 source.battle.moneyMultiplier += 0.1;
+            }
+        }
+    },
+    "m7-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m7-1";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            // if not miss, attempt to remove defUp, greaterDefUp, spdUp, greaterSpdUp
+            if (!miss) {
+                const buffsToRemove = [
+                    "defUp",
+                    "greaterDefUp",
+                    "spdUp",
+                    "greaterSpdUp",
+                ];
+                for (const buffId of buffsToRemove) {
+                    target.dispellEffect(buffId);
+                }
+            }
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId,
+            });
+
+            // if not miss, burn
+            if (!miss) {
+                target.applyStatus(statusConditions.BURN, source);
             }
         }
     },
@@ -6151,6 +6616,18 @@ const moveExecutes = {
         // add spe down to user 1 turn
         source.addEffect("speDown", 1, source);
     },
+    "m88": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m88";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
     "m89": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m89";
         const moveData = moveConfig[moveId];
@@ -6169,6 +6646,7 @@ const moveExecutes = {
             });
         }
     },
+    
     "m91": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m91";
         const moveData = moveConfig[moveId];
@@ -6243,6 +6721,21 @@ const moveExecutes = {
             target.addEffect("greaterSpeUp", 3, source);
             // boost combat readiness by 60
             target.boostCombatReadiness(source, 60);
+        }
+    },
+    "m97-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveData = moveConfig["m97-1"];
+        for (const target of allTargets) {
+            // apply atkUp, speUp buff
+            target.addEffect("atkUp", 3, source);
+            target.addEffect("speUp", 3, source);
+
+            // boost combat readiness by 60
+            target.boostCombatReadiness(source, 60);
+        }
+        // if user not fire, change second type to fire
+        if (source.type1 !== types.FIRE && source.type2 !== types.FIRE) {
+            source.type2 = types.FIRE;
         }
     },
     "m98": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -6894,6 +7387,14 @@ const moveExecutes = {
             target.addEffect("moveInvulnerable", 1, source);
         }
     },
+    "m182-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m182-1";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // apply super stretchy
+            target.addEffect("superStretchy", 1, source);
+        }
+    },
     "m183": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m183";
         const moveData = moveConfig[moveId];
@@ -6908,6 +7409,21 @@ const moveExecutes = {
 
         // boost self cr by 30
         source.boostCombatReadiness(source, 30);
+    },
+    "m183-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m183-1";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+
+        // boost self cr by 40
+        source.boostCombatReadiness(source, 40);
     },
     "m186": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m186";
@@ -7154,6 +7670,49 @@ const moveExecutes = {
             });
         }
     },
+    "m208-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m208-1";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // give all stats up 1 turn
+            target.addEffect("atkUp", 1, source);
+            target.addEffect("defUp", 1, source);
+            target.addEffect("spaUp", 1, source);
+            target.addEffect("spdUp", 1, source);
+            target.addEffect("speUp", 1, source);
+            
+            // heal
+            source.giveHeal(Math.floor(source.maxHp * (0.25)), source, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
+    "m210": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m210";
+        const moveData = moveConfig[moveId];
+        let targetHit = false;
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const hasFuryCutter = source.effectIds.furyCutter !== undefined;
+            const damageToDeal = calculateDamage(moveData, source, target, miss, {
+                power: moveData.power * (hasFuryCutter ? 2 : 1)
+            });
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            if (!miss) {
+                targetHit = true;
+            }
+        }
+
+        if (targetHit) {
+            // add fury cutter for 1 turn
+            source.addEffect("furyCutter", 1, source);
+        }
+    },
     "m212": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m212";
         const moveData = moveConfig[moveId];
@@ -7331,6 +7890,18 @@ const moveExecutes = {
                 // apply effect to target
                 target.addEffect(effectId, effect.duration, effect.source, effect.initialArgs);
             }
+        }
+    },
+    "m226-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m226-1";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // boost cr to 100
+            target.boostCombatReadiness(source, 100);
+            
+            // give greater atkup, defup 2 turns
+            target.addEffect("greaterAtkUp", 2, source);
+            target.addEffect("greaterDefUp", 2, source);
         }
     },
     "m229": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -7634,6 +8205,20 @@ const moveExecutes = {
             // apply redirect for 1 turn
             target.addEffect("redirect", 1, source);
         }
+    },
+    "m262": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m262";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            if (!miss) {
+                // give 2 turns greater atk, spa down
+                target.addEffect("greaterAtkDown", 2, source);
+                target.addEffect("greaterSpaDown", 2, source);
+            }
+        }
+        // cause self to faint
+        source.takeFaint(source);
     },
     "m268": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m266";
@@ -8033,6 +8618,18 @@ const moveExecutes = {
             target.addEffect("speDown", 2, source);
         }
     },
+    "m325": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m325";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // ignore miss
+            const damageToDeal = calculateDamage(moveData, source, target, false);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
     "m330": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m330";
         const moveData = moveConfig[moveId];
@@ -8067,6 +8664,34 @@ const moveExecutes = {
                 type: "move",
                 moveId: moveId
             });
+        }
+    },
+    "m331-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m331-1";
+        const moveData = moveConfig[moveId];
+        // if pokemon doesnt have "projectingSpirit" buff, apply it
+        if (source.effectIds.projectingSpirit === undefined) {
+            source.addEffect("projectingSpirit", 1, source);
+            // remove cd
+            source.moveIds[moveId].cooldown = 0;
+        } else {
+            // if pokemon has "projectingSpirit" buff, remove it and deal damage
+            source.removeEffect("projectingSpirit");
+            for (let i = 0; i < 9; i++) {
+                allTargets = allTargets.filter(target => !target.isFainted);
+                if (allTargets.length === 0) {
+                    break;
+                }
+    
+                const target = allTargets[Math.floor(Math.random() * allTargets.length)];
+                const miss = missedTargets.includes(target);
+                // if not miss, deal 5% target max hp
+                const damageToDeal = calculateDamage(moveData, source, target, miss) + (miss ? 0 : Math.floor(target.maxHp * 0.05));
+                source.dealDamage(damageToDeal, target, {
+                    type: "move",
+                    moveId: moveId
+                });
+            }
         }
     },
     "m332": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -8242,8 +8867,8 @@ const moveExecutes = {
             });
         }
 
-        // source spe down 2 turns
-        source.addEffect("speDown", 2, source);
+        // source spe down 1 turns
+        source.addEffect("speDown", 1, source);
     },
     "m361": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m361";
@@ -8312,6 +8937,22 @@ const moveExecutes = {
         // lower self def, spd 1 turn
         source.addEffect("defDown", 1, source);
         source.addEffect("spdDown", 1, source);
+    },
+    "m370-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m370-1";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+
+        // sharply lower self def, spd 1 turn
+        source.addEffect("greaterDefDown", 1, source);
+        source.addEffect("greaterSpdDown", 1, source);
     },
     "m387": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m387";
@@ -8622,12 +9263,39 @@ const moveExecutes = {
         // apply recharge to self
         source.addEffect("recharge", 1, source);
     },
+    "m416-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m416-1";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            // deal 50% to non primary target
+            source.dealDamage(Math.round(damageToDeal * (primaryTarget !== target ? 0.5 : 1)), target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+        // apply greater spe down to self
+        source.addEffect("greaterSpeDown", 1, source);
+    },
     "m417": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m417";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             // sharply raise spatk
             target.addEffect("greaterSpaUp", 3, source);
+        }
+    },
+    "m417-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m417-1";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // sharply raise spatk, eva
+            target.addEffect("greaterSpaUp", 2, source);
+            target.addEffect("greaterEvaUp", 2, source);
+
+            // boost cr 30%
+            source.boostCombatReadiness(source, 30);
         }
     },
     "m418": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -9264,6 +9932,30 @@ const moveExecutes = {
             });
         }
     },
+    "m540-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m540-1";
+        const moveData = moveConfig[moveId];
+        let targetsFainted = 0;
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss, { defStat: damageTypes.PHYSICAL });
+            // deal half damage if target is not primary target
+            source.dealDamage(Math.round(damageToDeal * (primaryTarget !== target ? 0.5 : 1)), target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if target fainted, increase targets fainted
+            if (target.isFainted) {
+                targetsFainted++;
+            }
+        }
+
+        // increase cr by 30% for each target fainted
+        if (targetsFainted > 0) {
+            source.boostCombatReadiness(source, targetsFainted * 30);
+        }
+    },
     "m542": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m542";
         const moveData = moveConfig[moveId];
@@ -9526,6 +10218,32 @@ const moveExecutes = {
         source.boostCombatReadiness(source, 100);
         source.addEffect("defDown", 2, source);
         source.addEffect("spdDown", 2, source);
+    },
+    "m620-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m620-1";
+        const moveData = moveConfig[moveId];
+        let hits = 0;
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss, {
+                defStat: target.getDef() > target.getSpd() ? damageTypes.SPECIAL : damageTypes.PHYSICAL
+            });
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            hits += miss ? 0 : 1;
+        }
+
+        // heal 5% per-hit
+        if (hits > 0) {
+            const healAmount = Math.floor(source.maxHp * 0.05 * hits);
+            source.giveHeal(healAmount, source, {
+                type: "move",
+                moveId: moveId
+            });
+        }
     },
     "m668": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m668";
@@ -9804,6 +10522,89 @@ const moveExecutes = {
                     target.effectIds[effectId].duration += 1;
                 }
             }
+        }
+    },
+    "m20009": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m20009";
+        const moveData = moveConfig[moveId];
+        for (let i = 0; i < 3; i++) {
+            let target = primaryTarget;
+            if (primaryTarget.isFainted) {
+                // get random target from enemy party
+                const enemyPokemons = source.getEnemyParty().pokemons.filter(p => battle.isPokemonHittable(p, moveId));
+                if (enemyPokemons.length === 0) {
+                    break;
+                }
+                target = enemyPokemons[Math.floor(Math.random() * enemyPokemons.length)];
+            }
+
+            // deal damage
+            const miss = missedTargets.includes(target);
+            // if not miss, deal 10% of target's max hp
+            const damageToDeal = calculateDamage(moveData, source, target, miss) + (miss ? 0 : Math.floor(target.maxHp * 0.1));
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
+    "m20010": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m20010";
+        const moveData = moveConfig[moveId];
+
+        // if source not under 25% hp, do nothing
+        if (source.hp > source.maxHp * 0.25) {
+            battle.addToLog(`But it failed! ${source.name} is not under 25% HP!`);
+            return;
+        }
+        
+        for (const target of allTargets) {
+            // heal 50%
+            const healAmount = Math.floor(target.maxHp * 0.5);
+            source.giveHeal(healAmount, target, {
+                type: "move",
+                moveId: moveId
+            });
+            // apply gear five buff for 3 turns
+            target.addEffect("gearFive", 3, source);
+            // boost cr 100%
+            target.boostCombatReadiness(source, 100);
+        }
+    },
+    "m20011": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m20011";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // ignore miss
+            // def is min user, target spd
+            const defense = Math.min(source.spd, target.spd);
+            const damageToDeal = calculateDamage(moveData, source, target, false, {
+                defense: defense
+            });
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
+    "m20012": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m20012";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
+    "m20013": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m20013";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // apply extra turn buff for 1 (2) turn
+            target.addEffect("extraTurn", 1, source);
         }
     },
 };
@@ -10705,24 +11506,24 @@ const abilityConfig = {
     },
     "33": {
         "name": "Swift Swim",
-        "description": "Increases user's speed by 20%. Increases speed by 50% (multiplicative with initial buff) in rain.",
+        "description": "Increases user's speed by 1/3 of its level. Increases speed by 50% (multiplicative with initial buff) in rain.",
         "abilityAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Swift Swim increases its speed!`);
-            target.spe += Math.floor(target.spe * 0.2);
+            target.spe += Math.floor(target.level * 0.333);
         },
         "abilityRemove": function (battle, source, target) {
-            target.spe -= Math.floor(target.spe * 0.167);
+            target.spe -= Math.floor(target.level * 0.333);
         }
     },
     "34": {
         "name": "Chlorophyll",
-        "description": "Increases user's speed by 20%. Increases speed by 50% (multiplicative with initial buff) in harsh sunlight.",
+        "description": "Increases user's speed by 1/3 of its level. Increases speed by 50% (multiplicative with initial buff) in harsh sunlight.",
         "abilityAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Chlorophyll increases its speed!`);
-            target.spe += Math.floor(target.spe * 0.2);
+            target.spe += Math.floor(target.level * 0.333);
         },
         "abilityRemove": function (battle, source, target) {
-            target.spe -= Math.floor(target.spe * 0.167);
+            target.spe -= Math.floor(target.level * 0.333);
         }
     },
     "35": {
@@ -10953,6 +11754,83 @@ const abilityConfig = {
             battle.eventHandler.unregisterListener(abilityData.takenListenerId);
         }
     },
+    "46-1": {
+        "name": "Conqueror's Pressure",
+        "description": "When the user takes or deals damage from a move, attack the target with a physical attack with 30% the move's power, but use the targets Special Defense stat. Can only be triggered once per-target.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    // check move
+                    if (args.damageInfo.type !== "move") {
+                        return;
+                    }
+                    const moveId = args.damageInfo.moveId;
+                    const moveData = moveConfig[moveId];
+                    if (!moveData) {
+                        return;
+                    }
+
+                    // check who should be affected
+                    let targetPokemon = null;
+                    if (initialArgs.pokemon === args.source) {
+                        targetPokemon = args.target;
+                    } else if (initialArgs.pokemon === args.target) {
+                        targetPokemon = args.source;
+                    } else {
+                        return;
+                    }
+
+                    // attempt to get ability data
+                    const ability = initialArgs.pokemon.ability;
+                    if (!ability || ability.abilityId !== "46-1" || !ability.data) {
+                        return;
+                    }
+                    const abilityData = ability.data;
+
+                    // if target already affected or fainted, return
+                    if (targetPokemon.isFainted || abilityData.affectedPokemons.includes(targetPokemon)) {
+                        return;
+                    }
+
+                    targetPokemon.battle.addToLog(`${initialArgs.pokemon.name} is exerting Conqueror's Pressure against ${targetPokemon.name}!`)
+                    abilityData.affectedPokemons.push(targetPokemon);
+                    const power = moveData.power ? Math.floor(moveData.power * 0.3) : 15;
+                    const damage = calculateDamage({
+                        "power": power,
+                        "damageType": damageTypes.PHYSICAL,
+                        "type": types.PSYCHIC,
+                    }, initialArgs.pokemon, targetPokemon, false, {
+                        defStat: damageTypes.SPECIAL,
+                    });
+                    initialArgs.pokemon.dealDamage(damage, targetPokemon, {
+                        "type": "conquerorsPressure"
+                    });
+                }
+            }
+
+            // add listener to after damage dealt and after damage taken
+            const dealtListenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_DAMAGE_DEALT, listener);
+            const takenListenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_DAMAGE_TAKEN, listener);
+
+            return {
+                dealtListenerId: dealtListenerId,
+                takenListenerId: takenListenerId,
+                affectedPokemons: [target],
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "46-1" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.dealtListenerId);
+            battle.eventHandler.unregisterListener(abilityData.takenListenerId);
+        }
+    },
     "47": {
         "name": "Thick Fat",
         "description": "Reduces damage taken from fire and ice moves by 50%.",
@@ -11160,6 +12038,50 @@ const abilityConfig = {
         "abilityRemove": function (battle, source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "54" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
+    },
+    "54-1": {
+        "name": "Old Age",
+        "description": "Every second turn, sharply lower the user's speed for 1 turn.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const pokemon = initialArgs.pokemon;
+                    const activePokemon = pokemon.battle.activePokemon;
+                    if (pokemon !== activePokemon) {
+                        return;
+                    }
+
+                    // greater spe down every second turn
+                    const ability = pokemon.ability;
+                    if (!ability || ability.abilityId !== "54-1" || !ability.data) {
+                        return;
+                    }
+                    if (ability.data.turn % 2 === 0) {
+                        pokemon.battle.addToLog(`${pokemon.name}'s Old Age is holding it back!`);
+                        activePokemon.addEffect("greaterSpeDown", 1, activePokemon);
+                    }
+                    ability.data.turn++;
+                }
+            }
+
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.TURN_END, listener);
+
+            return {
+                listenerId: listenerId,
+                turn: 0,
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "54-1" || !ability.data) {
                 return;
             }
             const abilityData = ability.data;
@@ -12937,15 +13859,15 @@ const abilityConfig = {
     },
     "20009": {
         "name": "Royalty",
-        "description": "Boosts the user's Special Attack by 25% of its Attack.",
+        "description": "Boosts the user's Special Attack by 30% of its Attack.",
         "abilityAdd": function (battle, source, target) {
             const batk = target.batk;
-            target.spa += Math.floor(batk * 0.25);
-            battle.addToLog(`${target.name}'s Royalty boosted its Special Attack!`);
+            target.spa += Math.floor(batk * 0.30);
+            battle.addToLog(`${target.name}'s Royalty boosts its Special Attack!`);
             return {};
         },
         "abilityRemove": function (battle, source, target) {
-            target.spa -= Math.floor(target.batk * 0.25);
+            target.spa -= Math.floor(target.batk * 0.30);
         }
     },
     "20010": {
@@ -12976,7 +13898,117 @@ const abilityConfig = {
             const abilityData = ability.data;
             battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
-    }
+    },
+    "20011": {
+        "name": "Ever-beating Heart",
+        "description": "At the start of battle, the user gets Immortality for 2 turns.",
+        "abilityAdd": function (battle, source, target) {
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const pokemon = initialArgs.pokemon;
+                    // add immortality buff
+                    pokemon.addEffect("immortal", 2, pokemon);
+                }
+            };
+
+            const listenerId = battle.eventHandler.registerListener(battleEventNames.BATTLE_BEGIN, listener);
+            return {
+                listenerId: listenerId,
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "m20011" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId);
+        }
+    },
+    "20012": {
+        "name": "Blue Haki",
+        "description": "The user's buffs last 1 additional turn. When buffed, the user deals 25% more damage.",
+        "abilityAdd": function (battle, source, target) {
+            // buff listener
+            const listener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const pokemon = initialArgs.pokemon;
+                    if (pokemon !== args.target) {
+                        return;
+                    }
+
+                    const effectId = args.effectId;
+                    const effectData = effectConfig[effectId];
+                    if (!effectData) {
+                        return;
+                    }
+                    if (effectData.type !== effectTypes.BUFF) {
+                        return;
+                    }
+
+                    // increase duration
+                    pokemon.battle.addToLog(`${pokemon.name}'s Blue Haki increased the duration of ${effectData.name}!`);
+                    args.duration += 1;
+                }
+            };
+            // damage listener
+            const listener2 = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const pokemon = initialArgs.pokemon;
+                    if (pokemon !== args.source) {
+                        return;
+                    }
+
+                    // see if buff
+                    let isBuffed = false;
+                    for (const effectId of Object.keys(pokemon.effectIds)) {
+                        const effectData = effectConfig[effectId];
+                        if (!effectData) {
+                            continue;
+                        }
+                        if (effectData.type !== effectTypes.BUFF) {
+                            continue;
+                        }
+
+                        isBuffed = true;
+                        break;
+                    }
+
+                    // if buffed, increase damage
+                    if (isBuffed) {
+                        pokemon.battle.addToLog(`${pokemon.name}'s Blue Haki increased its damage!`);
+                        args.damage = Math.floor(args.damage * 1.25);
+                    }
+                }
+            };
+
+            const listenerId1 = battle.eventHandler.registerListener(battleEventNames.BEFORE_EFFECT_ADD, listener);
+            const listenerId2 = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_DEALT, listener2);
+            return {
+                listenerId1: listenerId1,
+                listenerId2: listenerId2,
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "m20012" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.listenerId1);
+            battle.eventHandler.unregisterListener(abilityData.listenerId2);
+        }
+    },
+
 };
 
 module.exports = {

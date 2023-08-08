@@ -25,7 +25,7 @@ const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { getState } = require("./state");
 const { eventNames } = require("../config/eventConfig");
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
-const { drawIterable, drawUniform } = require("../utils/gachaUtils");
+const { drawIterable, drawUniform, drawDiscrete } = require("../utils/gachaUtils");
 const { generateRandomPokemon } = require("./gacha");
 const { validateParty } = require("./party");
 const { addRewards, getRewardsString, flattenCategories, flattenRewards } = require("../utils/trainerUtils");
@@ -170,6 +170,14 @@ class NPC {
             const enemyParty = source.getEnemyParty();
             if (enemyParty && enemyParty.pokemons && enemyParty.pokemons.filter(p => p && p.isFainted).length === 0) {
                 return 0;
+            }
+        }
+        // special case: if move is gear fifth, use if under 25% hp
+        if (moveId === "m20010") {
+            if (source.hp / source.maxHp > 0.25) {
+                return 0;
+            } else {
+                return 1000000;
             }
         }
 
@@ -488,8 +496,7 @@ class Battle {
             if (pokemon.ability.applied) {
                 return;
             }
-            const abilityId = pokemon.ability.abilityId;
-            pokemon.addAbility(abilityId);
+            pokemon.applyAbility();
         });
 
         this.eventHandler.emit(battleEventNames.BATTLE_BEGIN, {
@@ -695,39 +702,53 @@ class Battle {
         if (!this.isWeatherNegated()) {
             switch (this.weather.weatherId) {
                 case weatherConditions.SANDSTORM:
-                    // if active pokemon not rock, steel, or ground, damage 1/12 of max hp
-                    if (
-                        this.activePokemon.type1 !== types.ROCK &&
-                        this.activePokemon.type1 !== types.STEEL &&
-                        this.activePokemon.type1 !== types.GROUND &&
-                        this.activePokemon.type2 !== types.ROCK &&
-                        this.activePokemon.type2 !== types.STEEL &&
-                        this.activePokemon.type2 !== types.GROUND
-                    ) {
-                        this.addToLog(`${this.activePokemon.name} is buffeted by the sandstorm!`);
-                        this.activePokemon.takeDamage(
-                            Math.floor(this.activePokemon.maxHp / 12), 
-                            this.weather.source,
-                            {
-                                "type": "weather",
-                            }
-                        );
+                    // tick weather for active Pokemon's team
+                    this.addToLog(`The sandstorm rages!`);
+                    for (const pokemon of this.parties[this.activePokemon.teamName].pokemons) {
+                        // if pokemon not targetable, skip
+                        if (this.isPokemonTargetable(pokemon) === false) {
+                            continue;
+                        }
+                        // if pokemon not rock, steel, or ground, damage 1/16 of max hp
+                        if (
+                            pokemon.type1 !== types.ROCK &&
+                            pokemon.type1 !== types.STEEL &&
+                            pokemon.type1 !== types.GROUND &&
+                            pokemon.type2 !== types.ROCK &&
+                            pokemon.type2 !== types.STEEL &&
+                            pokemon.type2 !== types.GROUND
+                        ) {
+                            pokemon.takeDamage(
+                                Math.floor(pokemon.maxHp / 16), 
+                                this.weather.source,
+                                {
+                                    "type": "weather",
+                                }
+                            );
+                        }
                     }
                     break;
                 case weatherConditions.HAIL:
-                    // if active pokemon not ice, damage 1/12 of max hp
-                    if (
-                        this.activePokemon.type1 !== types.ICE &&
-                        this.activePokemon.type2 !== types.ICE
-                    ) {
-                        this.addToLog(`${this.activePokemon.name} is buffeted by the hail!`);
-                        this.activePokemon.takeDamage(
-                            Math.floor(this.activePokemon.maxHp / 12),
-                            this.weather.source,
-                            {
-                                "type": "weather",
-                            }
-                        );
+                    // tick weather for active Pokemon's team
+                    this.addToLog(`The hail continues!`);
+                    for (const pokemon of this.parties[this.activePokemon.teamName].pokemons) {
+                        // if pokemon not targetable, skip
+                        if (this.isPokemonTargetable(pokemon) === false) {
+                            continue;
+                        }
+                        // if pokemon not ice, damage 1/16 of max hp
+                        if (
+                            pokemon.type1 !== types.ICE &&
+                            pokemon.type2 !== types.ICE
+                        ) {
+                            pokemon.takeDamage(
+                                Math.floor(pokemon.maxHp / 16), 
+                                this.weather.source,
+                                {
+                                    "type": "weather",
+                                }
+                            );
+                        }
                     }
                     break;
             }
@@ -1011,19 +1032,12 @@ class Pokemon {
         this.type2 = this.speciesData.type[1] || null;
         // map effectId => effect data (duration, args)
         this.effectIds = {};
-        this.moveIds = getMoveIds(pokemonData).reduce((acc, moveId) => {
-            acc[moveId] = {
-                cooldown: 0,
-                disabled: false,
-            };
-            return acc;
-        }, {});
+        // map moveId => move data (cooldown, disabled)
+        this.addMoves(pokemonData);
+        this.addAbility(pokemonData);
         this.status = {
             statusId: null,
             turns: 0,
-        }
-        this.ability = {
-            abilityId: pokemonData.abilityId,
         }
         this.combatReadiness = 0;
         this.position = position;
@@ -1033,6 +1047,69 @@ class Pokemon {
         this.incapacitated = false;
         this.restricted = false;
     }
+
+    addMoves(pokemonData) {
+        this.moveIds = getMoveIds(pokemonData).reduce((acc, moveId) => {
+            acc[moveId] = {
+                cooldown: 0,
+                disabled: false,
+            };
+            return acc;
+        }, {});
+    }
+
+    addAbility(pokemonData) {
+        this.ability = {
+            abilityId: pokemonData.abilityId,
+        }
+    }
+
+    transformInto(speciesId, { abilityId=null, moveIds=[] }={}) {
+        const oldName = this.name;
+        // remove ability
+        this.removeAbility();
+
+        // get old stat ratios (excpet hp)
+        const atkRatio = this.atk / this.batk;
+        const defRatio = this.def / this.bdef;
+        const spaRatio = this.spa / this.bspa;
+        const spdRatio = this.spd / this.bspd;
+        const speRatio = this.spe / this.bspe;
+
+        // set new species values
+        this.speciesId = speciesId;
+        this.speciesData = pokemonConfig[this.speciesId];
+        this.type1 = this.speciesData.type[0];
+        this.type2 = this.speciesData.type[1] || null;
+        this.name = this.speciesData.name;
+
+        // set pokemon data object
+        this.pokemonData.speciesId = this.speciesId;
+        this.pokemonData.name = this.speciesData.name;
+        this.pokemonData.moveIds = moveIds;
+        this.pokemonData.abilityId = abilityId || drawDiscrete(this.speciesData.abilities, 1)[0];
+        calculatePokemonStats(this.pokemonData, this.speciesData);
+
+        // set stats (except hp)
+        this.atk = Math.round(this.pokemonData.stats[1] * atkRatio);
+        this.batk = this.pokemonData.stats[1];
+        this.def = Math.round(this.pokemonData.stats[2] * defRatio);
+        this.bdef = this.pokemonData.stats[2];
+        this.spa = Math.round(this.pokemonData.stats[3] * spaRatio);
+        this.bspa = this.pokemonData.stats[3];
+        this.spd = Math.round(this.pokemonData.stats[4] * spdRatio);
+        this.bspd = this.pokemonData.stats[4];
+        this.spe = Math.round(this.pokemonData.stats[5] * speRatio);
+        this.bspe = this.pokemonData.stats[5];
+
+        // set moves and ability
+        this.addMoves(this.pokemonData);
+        this.addAbility(this.pokemonData);
+        this.applyAbility();
+
+        this.battle.addToLog(`${oldName} transformed into ${this.name}!`);
+    }
+
 
     useMove(moveId, targetPokemonId) {
         // make sure pokemon can move
@@ -1616,12 +1693,7 @@ class Pokemon {
 
         this.hp = 0;
         this.isFainted = true;
-        // remove ability effects
-        const abilityId = this.ability.abilityId;
-        const abilityData = abilityConfig[abilityId];
-        if (abilityData && abilityData.abilityRemove) {
-            abilityData.abilityRemove(this.battle, this, this);
-        }
+        this.removeAbility();
         this.battle.addToLog(`${this.name} fainted!`);
 
         // trigger after faint effects
@@ -1645,11 +1717,11 @@ class Pokemon {
         this.battle.addToLog(`${this.name} was revived!`);
 
         // re-add ability
-        const abilityId = this.ability.abilityId;
-        this.addAbility(abilityId);
+        this.applyAbility();
     }
 
-    addAbility(abilityId) {
+    applyAbility() {
+        const abilityId = this.ability.abilityId;
         const abilityData = abilityConfig[abilityId];
         if (!abilityData || !abilityData.abilityAdd) {
             return;
@@ -1657,6 +1729,15 @@ class Pokemon {
 
         this.ability.data = abilityData.abilityAdd(this.battle, this, this);
         this.ability.applied = true;
+    }
+
+    removeAbility() {
+        // remove ability effects
+        const abilityId = this.ability.abilityId;
+        const abilityData = abilityConfig[abilityId];
+        if (abilityData && abilityData.abilityRemove) {
+            abilityData.abilityRemove(this.battle, this, this);
+        }
     }
 
     giveHeal(heal, target, healInfo) {
@@ -1733,6 +1814,7 @@ class Pokemon {
             return;
         }
 
+        duration = this.battle.activePokemon === this ? duration + 1 : duration;
         const effectData = effectConfig[effectId];
 
         // if effect already exists for longer or equal duration, do nothing
@@ -1760,9 +1842,10 @@ class Pokemon {
         if (!beforeAddArgs.canAdd) {
             return;
         }
+        duration = beforeAddArgs.duration;
 
         this.effectIds[effectId] = {
-            duration: this.battle.activePokemon === this ? duration + 1 : duration,
+            duration: duration,
             source: source,
             initialArgs: args,
         };

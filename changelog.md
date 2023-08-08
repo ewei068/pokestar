@@ -1,10 +1,28 @@
 # Pokéstar Changelog
 
-### 0.12.1
+### 0.12.1 - One Piece Event
 
-* Fix spawning
-* Increase spawning window
-* Nerf chlorophyll
+* **One Piece Event: Pokestar is celebrating Gear 5 with a special event! Use `/events` to learn more!**
+  * **Limited event Pokemon:**
+    * Scoro (Epic): A powerful physical attacker that deals high damage to tanks!
+    * Vinsmoke Hitmontop (Epic): A super fast supporter who buffs allies!
+    * Slaking D. Garp (Epic): A slow but incredibly powerful and bulky physical AoE attacker!
+    * Red Hair Mewtwo (Legendary): A mixed attacker with great speed, AoE, and type coverage!
+    * Raykaido (Legendary): A special-attacking bruiser tank with a crazy healing factor!
+    * Rubber Infernape (Legendary): A powerful physical attacker who awakens at low HP!
+    * One **SECRET** event Epic! Can be obtained in any banner for the duration of the event!
+  * New PVE stage: Straw Hat Pirates!
+  * New Dungeon: Raid on Onigashima!
+* New Pokemon: Stantler, Duskull, Dusclops!
+* Increase catch time after spawning window to 30 minutes.
+* (Attempted) to fix spawning when lacking permissions.
+* Adjustments:
+  * Buff Thunderbolt
+  * Buff Hammer Arm
+  * Buff Royalty
+  * Switch Slaking Slack-off with Hammer Arm.
+  * Rework Sandstorm and Hail to tick the entire active Pokemon's team for damage.
+  * Nerf Chlorophyll and Swift Swim's out-of-weather speed buffs.
 
 ## 0.12.0 (8/2) - Gen III
 
