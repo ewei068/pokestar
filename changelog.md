@@ -1,6 +1,10 @@
 # Pokéstar Changelog
 
-### 0.12.1 - One Piece Event
+### 0.12.2
+
+* Fix return not clearing text in `/pve`
+
+### 0.12.1 (8/7) - One Piece Event
 
 * **One Piece Event: Pokestar is celebrating Gear 5 with a special event! Use `/events` to learn more!**
   * **Limited event Pokemon:**
@@ -23,6 +27,7 @@
   * Switch Slaking Slack-off with Hammer Arm.
   * Rework Sandstorm and Hail to tick the entire active Pokemon's team for damage.
   * Nerf Chlorophyll and Swift Swim's out-of-weather speed buffs.
+* Ended the Trading event (note that trading is still available)
 
 ## 0.12.0 (8/2) - Gen III
 

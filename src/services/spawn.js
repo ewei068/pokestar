@@ -350,7 +350,11 @@ class GuildSpawner {
         if (err) {
             return { err: err };
         }
-        await channel.send(send);
+        try {
+            await channel.send(send);
+        } catch (error) {
+            return { err: error };
+        }
 
         return {};
     }
