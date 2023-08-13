@@ -325,7 +325,8 @@ class GuildSpawner {
             return {};
         }
 
-        if (this.chachedChannels.length == 0) {
+        // TEMP: refresh channels every time
+        if (true) { // this.chachedChannels.length == 0) {
             const res = this.refreshChannels();
             if (res.err) {
                 return res;

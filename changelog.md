@@ -2,7 +2,20 @@
 
 ### 0.12.2
 
+* Balance Changes
+  * Shields
+  * Buff self-buffs
+  * Nerf high-performers
+  * Nerf AoE or buff single-target
+  * PVP:
+    * Durability buff?
+    * Dupe pentalty?
+  * Low rarity buff?
+* Subcommands
+* Equipment search
 * Fix return not clearing text in `/pve`
+* Fix Omanyte evo
+* Expire Gen 3 event
 
 ### 0.12.1 (8/7) - One Piece Event
 

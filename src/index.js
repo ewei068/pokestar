@@ -12,8 +12,10 @@ const { addVote } = require('./services/trainer.js');
 const { stageNames } = require('./config/stageConfig.js');
 const { poll, formatMoney } = require('./utils/utils.js');
 const axios = require('axios');
-const { Flags } = require('discord.js/src/util/BitField.js');
 const { startSpawning, addGuild } = require('./services/spawn.js');
+
+const FFLAG_ENABLE_SPAWN = process.env.FFLAG_ENABLE_SPAWN === "1";
+console.log(`FFLAG_ENABLE_SPAWN: ${FFLAG_ENABLE_SPAWN}`);
 
 const corsOptions = {
     origin: true,
@@ -97,7 +99,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
 // On guild join, log it
 client.on(Events.GuildCreate, (guild) => {
     logger.info(`Joined guild: ${guild.name} (${guild.id})`);
-    addGuild(client, guild);
+    if (FFLAG_ENABLE_SPAWN) {
+        addGuild(client, guild);
+    }
 });
 
 // When the client is ready, run this code (only once)
@@ -113,7 +117,9 @@ client.once(Events.ClientReady, c => {
     logger.info(`Connected to guilds: \n${guildString}`);
 
     // start spawners
-    startSpawning(client);
+    if (FFLAG_ENABLE_SPAWN) {
+        startSpawning(client);
+    }
 
     // connect to discordbotlist.com
     if (process.env.STAGE === stageNames.BETA || process.env.STAGE === stageNames.PROD) {
