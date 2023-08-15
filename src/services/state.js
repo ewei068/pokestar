@@ -82,9 +82,14 @@ const deleteState = (stateId) => {
     }
 }
 
+const getStateCount = () => {
+    return Object.keys(states).length;
+}
+
 module.exports = {
     setState: setState,
     getState: getState,
     updateState: updateState,
-    deleteState: deleteState
+    deleteState: deleteState,
+    getStateCount: getStateCount
 }
