@@ -20,7 +20,11 @@ for (const commandCategory in commandCategoryConfig) {
     for (const commandName of commandCategoryData.commands) {
         const commandData = commandConfig[commandName];
         if (commandData.stages.includes(process.env.STAGE)) {
+			console.log(commandName, commandData)
             const slashCommand = buildSlashCommand(commandData);
+			if (!slashCommand) {
+				continue;
+			}
             commands.push(slashCommand.toJSON());
         }
     }
@@ -33,7 +37,7 @@ const rest = new REST().setToken(token);
 (async () => {
 	try {
 		logger.info(`Started refreshing ${commands.length} application (/) commands.`);
-		logger.info(commands);
+		logger.info(JSON.stringify(commands, null, 2));
 
 		// The put method is used to fully refresh all commands in the guild with the current set
 		const data = await rest.put(

@@ -22,41 +22,63 @@ const messageCommands = {};
 const slashCommands = {}
 const commandLookup = {};
 
-const buildSlashCommand = (commandConfig) => {
-    const slashCommand = new SlashCommandBuilder()
-        .setName(commandConfig.aliases[0])
-        .setDescription(commandConfig.description);
-    for (const arg in commandConfig.args) {
-        const argConfig = commandConfig.args[arg];
+const buildSingleCommand = (commandData, commandObject = new SlashCommandBuilder()) => {
+    let name = commandData.aliases[0];
+    // if parent, attempt to remove the parent name from the command name
+    if (commandData.parent && name.startsWith(commandData.parent)) {
+        name = name.substring(commandData.parent.length);
+    }
 
-        const optionFn = (option) => {
-            option.setName(arg)
-                .setDescription(argConfig.description)
-                .setRequired(!argConfig.optional);
-            if (argConfig.enum) {
-                for (const enumOption of argConfig.enum) {
-                    option.addChoices({
-                        name: enumOption.toString(),
-                        value: enumOption
-                    });
-                }
-            }
-            return option;
+    const slashCommand = commandObject
+        .setName(name)
+        .setDescription(commandData.description);
+    // if parent command
+    if (commandData.subcommands) {
+        for (const subcommand of commandData.subcommands) {
+            const subcommandConfig = commandConfig[subcommand];
+            slashCommand.addSubcommand(subcommand => buildSingleCommand(subcommandConfig, subcommand));
         }
+    } else {
+        for (const arg in commandData.args) {
+            const argConfig = commandData.args[arg];
 
-        if (argConfig.type == "string") {
-            slashCommand.addStringOption(optionFn);
-        } else if (argConfig.type == "int") {
-            slashCommand.addIntegerOption(optionFn);
-        } else if (argConfig.type == "bool") {
-            slashCommand.addBooleanOption(optionFn);
-        } else if (argConfig.type == "user") {
-            slashCommand.addUserOption(optionFn);
-        } else if (argConfig.type == "channel") {
-            slashCommand.addChannelOption(optionFn);
+            const optionFn = (option) => {
+                option.setName(arg)
+                    .setDescription(argConfig.description)
+                    .setRequired(!argConfig.optional);
+                if (argConfig.enum) {
+                    for (const enumOption of argConfig.enum) {
+                        option.addChoices({
+                            name: enumOption.toString(),
+                            value: enumOption
+                        });
+                    }
+                }
+                return option;
+            }
+
+            if (argConfig.type == "string") {
+                slashCommand.addStringOption(optionFn);
+            } else if (argConfig.type == "int") {
+                slashCommand.addIntegerOption(optionFn);
+            } else if (argConfig.type == "bool") {
+                slashCommand.addBooleanOption(optionFn);
+            } else if (argConfig.type == "user") {
+                slashCommand.addUserOption(optionFn);
+            } else if (argConfig.type == "channel") {
+                slashCommand.addChannelOption(optionFn);
+            }
         }
     }
     return slashCommand;
+}
+const buildSlashCommand = (commandData) => {
+    console.log(commandData)
+    if (commandData.parent) {
+        return;
+    }
+
+    return buildSingleCommand(commandData);
 }
 
 for (const commandGroup in commandCategoryConfig) {
@@ -64,6 +86,10 @@ for (const commandGroup in commandCategoryConfig) {
     for (const commandName of commandCategoryData.commands) {
         const commandData = commandConfig[commandName];
         if (commandData.stages.includes(process.env.STAGE)) {
+            if (!commandData.execute) {
+                logger.warn(`No execute function for ${commandName}!`);
+                continue;
+            }
             const filePath = path.join(__dirname, "../commands", commandCategoryData.folder, commandData.execute);
             const commandExecute = require(filePath);
             for (const alias of commandData.aliases) {
@@ -233,7 +259,12 @@ const runSlashCommand = async (interaction, client) => {
     }
 
     // get command name
-    const command = interaction.commandName;
+    let command = interaction.commandName;
+    // check if subcommand
+    const subcommand = interaction.options.getSubcommand();
+    if (subcommand) {
+        command = `${command}${subcommand}`;
+    }
 
     // if command not in commands, return
     if (!(command in slashCommands)) return;

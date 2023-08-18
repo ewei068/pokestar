@@ -15,6 +15,7 @@
 * Equipment search
 * Fix return not clearing text in `/pve`
 * Fix Omanyte evo
+* Spawn cooldown
 * Expire Gen 3 event
 
 ### 0.12.1 (8/7) - One Piece Event

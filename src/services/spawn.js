@@ -372,6 +372,8 @@ class GuildSpawner {
             }
         } catch (error) {
             logger.warn(error);
+            // TEMP: remove guild from spawner list
+            delete guildIdToSpawner[this.guild.id];
             return;
         }
     }

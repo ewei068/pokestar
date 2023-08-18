@@ -27,13 +27,13 @@ const commandCategoryConfig = {
         "name": "Battle",
         "description": "Battle commands",
         "folder": "battle",
-        "commands": ["pvp", "pve", "dungeons",  "battletower", "partyinfo", "partyadd", "partyremove", "partyauto", "parties", "partyload"]
+        "commands": ["pvp", "pve", "dungeons",  "battletower", "party", "partyinfo", "partyadd", "partyremove", "partyauto", "partylist", "partyload"]
     },
     "social": {
         "name": "Social",
         "description": "Social commands",
         "folder": "social",
-        "commands": ["vote", "tradeadd", "tradeinfo", "traderemove", "traderequest", "leaderboard", "invite"]
+        "commands": ["vote", "trade", "tradeadd", "tradeinfo", "traderemove", "traderequest", "leaderboard", "invite"]
     },
     "help": {
         "name": "Help",
@@ -403,6 +403,14 @@ const commandConfig = {
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 15,
     },
+    "trade": {
+        "name": "Trade",
+        "aliases": ["trade"],
+        "description": "Entry point for trading",
+        "subcommands": ["tradeadd", "traderemove", "tradeinfo", "traderequest"],
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    },
     "tradeadd": {
         "name": "Trade Add",
         "aliases": ["tradeadd", "tra"],
@@ -420,6 +428,7 @@ const commandConfig = {
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
         "money": 10,
+        "parent": "trade"
     },
     "traderemove": {
         "name": "Trade Remove",
@@ -438,6 +447,7 @@ const commandConfig = {
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
         "money": 10,
+        "parent": "trade"
     },
     "tradeinfo": {
         "name": "Trade Info",
@@ -447,6 +457,8 @@ const commandConfig = {
         "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
+        "money": 10,
+        "parent": "trade"
     },
     "traderequest": {
         "name": "Trade Request",
@@ -465,6 +477,7 @@ const commandConfig = {
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
         "money": 10,
+        "parent": "trade"
     },
     "leaderboard": {
         "name": "Leaderboard",
@@ -562,6 +575,15 @@ const commandConfig = {
         "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },
+    "party": {
+        "name": "Party",
+        "aliases": ["party"],
+        "description": "Entry point for party commands",
+        // "execute": "party.js",
+        "subcommands": ["partyinfo", "partyadd", "partyremove", "partylist", "partyauto", "partyload"],
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    },
     "partyinfo": {
         "name": "Party Info",
         "aliases": ["partyinfo", "party"],
@@ -570,7 +592,8 @@ const commandConfig = {
         "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
-        "money": 10
+        "money": 10,
+        "parent": "party"
     },
     "partyadd": {
         "name": "Party Add",
@@ -594,7 +617,8 @@ const commandConfig = {
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
-        "money": 10
+        "money": 10,
+        "parent": "party"
     },
     "partyremove": {
         "name": "Party Remove",
@@ -615,7 +639,8 @@ const commandConfig = {
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
-        "money": 10
+        "money": 10,
+        "parent": "party"
     },
     "partyauto": {
         "name": "Party Auto",
@@ -636,18 +661,20 @@ const commandConfig = {
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
-        "money": 10
+        "money": 10,
+        "parent": "party"
     },
-    "parties": {
+    "partylist": {
         "name": "Parties",
-        "aliases": ["parties"],
+        "aliases": ["partylist"],
         "description": "Browse a list of your parties",
         "longDescription": "Browse a list of your parties. Parties are saved presets of Pokemon that can be loaded into your party.",
-        "execute": "parties.js",
+        "execute": "partyList.js",
         "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
-        "money": 10
+        "money": 10,
+        "parent": "party"
     },
     "partyload": {
         "name": "Party Load",
@@ -666,7 +693,8 @@ const commandConfig = {
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
-        "money": 10
+        "money": 10,
+        "parent": "party"
     },
     "mew": {
         "name": "Mew",
