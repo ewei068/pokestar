@@ -261,9 +261,13 @@ const runSlashCommand = async (interaction, client) => {
     // get command name
     let command = interaction.commandName;
     // check if subcommand
-    const subcommand = interaction.options.getSubcommand();
-    if (subcommand) {
-        command = `${command}${subcommand}`;
+    try {
+        const subcommand = interaction.options.getSubcommand();
+        if (subcommand) {
+            command = `${command}${subcommand}`;
+        }
+    } catch (err) {
+        // pass
     }
 
     // if command not in commands, return
