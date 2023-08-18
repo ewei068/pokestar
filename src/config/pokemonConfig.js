@@ -5949,16 +5949,25 @@ const rarityConfig = {
         pokemon: [],
         color: 0x00ff00,
         money: 25,
+        statMultiplier: [
+            1.15, 1.1, 1.15, 1.1, 1.15, 1.1
+        ]
     },
     [rarities.RARE]: {
         pokemon: [],
         color: 0x0000ff,
         money: 50,
+        statMultiplier: [
+            1.15, 1.1, 1.15, 1.1, 1.15, 1.1
+        ]
     },
     [rarities.EPIC]: {
         pokemon: [],
         color: 0xff00ff,
         money: 75,
+        statMultiplier: [
+            1.075, 1.05, 1.075, 1.05, 1.075, 1.05
+        ]
     },
     [rarities.LEGENDARY]: {
         pokemon: [],

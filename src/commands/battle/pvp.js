@@ -49,7 +49,8 @@ const pvp = async (user, opponentUserId, level) => {
     const equipmentLevel = level !== null ? Math.max(Math.round(level/10), 1) : null;
     const battle = new Battle({
         level: level,
-        equipmentLevel: equipmentLevel
+        equipmentLevel: equipmentLevel,
+        isPvp: true
     });
     battle.addTeam("Team1", false);
     battle.addTrainer(trainer.data, validate.data, "Team1");

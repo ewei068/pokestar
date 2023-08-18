@@ -10,7 +10,7 @@ const { logger } = require("../log");
 const { updateDocument, deleteDocuments, QueryBuilder } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { getOrSetDefault, idFrom, formatMoney } = require("../utils/utils");
-const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS, rarities } = require("../config/pokemonConfig");
+const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS, rarities, rarityConfig } = require("../config/pokemonConfig");
 const { expMultiplier, MAX_RELEASE } = require("../config/trainerConfig");
 const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth, getAbilityOrder, getPokemonOrder, getPartyPokemonIds } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
@@ -117,6 +117,10 @@ const calculatePokemonStats = (pokemon, speciesData) => {
         }
     }
 
+    // rarity stat bonus
+    const rarity = speciesData.rarity;
+    const statMultiplier = rarityConfig[rarity].statMultiplier || [1, 1, 1, 1, 1, 1];
+
     // calculate new stats
     const newStats = [];
     // stat calculations
@@ -137,6 +141,9 @@ const calculatePokemonStats = (pokemon, speciesData) => {
         stat = Math.floor(stat * percentModifiers[i] / 100);
         // account for pokemon level
         stat += Math.floor(flatModifiers[i] * level / 100);
+
+        // apply rarity multiplier
+        stat = Math.floor(stat * statMultiplier[i]);
 
         newStats.push(stat);
     }

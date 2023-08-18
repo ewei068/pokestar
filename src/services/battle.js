@@ -328,6 +328,7 @@ class Battle {
     dailyRewards;
     npcId;
     difficulty;
+    isPvp;
 
     constructor({ 
         moneyMultiplier=1, 
@@ -341,6 +342,7 @@ class Battle {
         winCallback=null,
         npcId=null,
         difficulty=null,
+        isPvp=false
     } = {}) {
         this.moneyMultiplier = moneyMultiplier;
         this.expMultiplier = expMultiplier;
@@ -388,6 +390,7 @@ class Battle {
         this.npcId = npcId;
         this.difficulty = difficulty;
         this.winCallback = winCallback;
+        this.isPvp = isPvp;
     }
     
     addTeam(teamName, isNpc) {
@@ -1588,7 +1591,14 @@ class Pokemon {
     }
 
     dealDamage(damage, target, damageInfo) {
-        // console.log(damage)
+        if (damage <= 0) {
+            return 0;
+        }
+
+        // if pvp, deal 15% less damage
+        if (this.battle.isPvp) {
+            damage = Math.max(1, Math.floor(damage * 0.85));
+        }
 
         const eventArgs = {
             target: target,
@@ -1599,7 +1609,6 @@ class Pokemon {
 
         this.battle.eventHandler.emit(battleEventNames.BEFORE_DAMAGE_DEALT, eventArgs);
         damage = eventArgs.damage;
-        // console.log(damage)
 
         const damageDealt = target.takeDamage(damage, this, damageInfo);
 
