@@ -61,6 +61,11 @@ const canSendInChannel = (guild, channel, guildData) => {
     return PERMISSIONS_NEEDED.every((permission) => permissionsIn.has(permission));
 }
 
+const calculateSpawnCooldown = (multiplier = 1) => {
+    const timeout = Math.floor((Math.random() * 2 - 1) * SPAWN_TIME_VARIANCE + SPAWN_TIME);
+    return Math.round(timeout * multiplier);
+}
+
 const buildPokemonSpawnSend = () => {
     // get random rarity
     const rarity = drawDiscrete(pokeballConfig[backpackItems.GREATBALL].chances, 1)[0];
@@ -362,12 +367,13 @@ class GuildSpawner {
 
     async startSpawning() {
         try {
+            await new Promise((resolve) => setTimeout(resolve, calculateSpawnCooldown(0.5)));
             while (true) {
                 const res = await this.spawn(this.guild);
                 if (res.err) {
                     logger.warn(res.err);
                 }
-                const timeout = Math.floor((Math.random() * 2 - 1) * SPAWN_TIME_VARIANCE + SPAWN_TIME);
+                const timeout = calculateSpawnCooldown();
                 await new Promise((resolve) => setTimeout(resolve, timeout));
             }
         } catch (error) {
