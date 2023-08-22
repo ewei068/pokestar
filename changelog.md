@@ -6,7 +6,7 @@
   * Shields
   * Buff self-buffs
   * Nerf high-performers
-  * Nerf AoE or buff single-target
+  * Nerf full AoE, buff single-target
   * PVP:
     * Durability buff
     * Dupe pentalty?

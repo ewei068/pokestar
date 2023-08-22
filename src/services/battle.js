@@ -1640,8 +1640,20 @@ class Pokemon {
                 damage = Math.floor(damage * 1.5);
             }
         }
-        // console.log(damage)
 
+        // if shield, take shield damage and return 0
+        const shieldData = this.effectIds["shield"];
+        if (shieldData && shieldData.args && shieldData.args["shield"]) {
+            const shieldDamage = Math.min(damage, shieldData.args["shield"]);
+            shieldData.args["shield"] -= shieldDamage;
+
+            this.battle.addToLog(`${this.name} took ${shieldDamage} shield damage! (${shieldData.args["shield"]} left)`);
+            if (shieldData.args["shield"] <= 0) {
+                this.removeEffect("shield");
+            }
+            return 0;
+        }
+        
         const eventArgs = {
             target: this,
             damage: damage,
@@ -1652,7 +1664,6 @@ class Pokemon {
 
         this.battle.eventHandler.emit(battleEventNames.BEFORE_DAMAGE_TAKEN, eventArgs);
         damage = Math.min(eventArgs.damage, eventArgs.maxDamage);
-        // console.log(damage)
 
         const oldHp = this.hp;
         if (oldHp <= 0 || this.isFainted) {
@@ -1826,16 +1837,20 @@ class Pokemon {
         duration = this.battle.activePokemon === this ? duration + 1 : duration;
         const effectData = effectConfig[effectId];
 
-        // if effect already exists for longer or equal duration, do nothing
-        if (this.effectIds[effectId] && this.effectIds[effectId].duration >= duration) {
+        // if effect already exists for longer or equal duration, do nothing (special case for shield)
+        if (this.effectIds[effectId] && this.effectIds[effectId].duration >= duration && effectId !== "shield") {
             return;
         }
 
         // if effect exists, refresh duration
         // TODO: should this be modified?
         if (this.effectIds[effectId]) {
+            duration = Math.max(this.effectIds[effectId].duration, duration)
             this.effectIds[effectId].duration = duration;
-            return;
+            // shield special case
+            if (effectId !== "shield") {
+                return;
+            }
         }
 
         // trigger before effect add events
@@ -1853,11 +1868,22 @@ class Pokemon {
         }
         duration = beforeAddArgs.duration;
 
+        // special case for shield
+        let oldShield = {};
+        if (effectId === "shield") {
+            // if shield already exists, keep note of it
+            if (this.effectIds[effectId]) {
+                oldShield = this.effectIds[effectId].args;
+            }
+        }
         this.effectIds[effectId] = {
             duration: duration,
             source: source,
             initialArgs: args,
         };
+        if (oldShield) {
+            this.effectIds[effectId].args = oldShield;
+        }
         this.effectIds[effectId].args = effectData.effectAdd(this.battle, source, this, args) || {};
 
         if (this.effectIds[effectId] !== undefined) {
@@ -1918,7 +1944,7 @@ class Pokemon {
 
     applyStatus(statusId, source, {
         startingTurns=0
-    }=0) {
+    }={}) {
         // if faint, do nothing
         if (this.isFainted) {
             return;
