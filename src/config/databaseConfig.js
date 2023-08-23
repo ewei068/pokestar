@@ -143,6 +143,7 @@ const collectionConfig = {
                     userId: 1,
                     speciesId: 1,
                     name: 1,
+                    pokemonLevel: "$level",
                     equipments: { 
                         $objectToArray: "$equipments" 
                     }
@@ -159,6 +160,7 @@ const collectionConfig = {
                     userId: 1,
                     speciesId: 1,
                     name: 1,
+                    pokemonLevel: 1,
                     equipmentType: "$equipments.k",
                     level: "$equipments.v.level",
                     slots: "$equipments.v.slots"

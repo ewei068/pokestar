@@ -215,7 +215,7 @@ const buildEquipmentString = (equipmentType, equipment) => {
     }
 }
 
-const buildCompactEquipmentString = (equipmentType, equipment, pokemonId=null) => {
+const buildCompactEquipmentString = (equipmentType, equipment, pokemon) => {
     const { level=1, slots={} } = equipment;
     const equipmentData = equipmentConfig[equipmentType];
     let equipmentString = `${equipmentData.emoji} **[Lv. ${level}]** `;
@@ -227,8 +227,9 @@ const buildCompactEquipmentString = (equipmentType, equipment, pokemonId=null) =
         equipmentString += `${value}${modifierData.type === modifierTypes.PERCENT ? "%" : ""} • `;
     }
     equipmentString = equipmentString.slice(0, -3);
-    if (pokemonId) {
-        equipmentString += `\n * Pokemon: ${pokemonId}`;
+    if (pokemon) {
+        const { speciesId, level: pokemonLevel, _id } = pokemon;
+        equipmentString += `\n * Equipped by: ${pokemonConfig[speciesId].emoji} Lv. ${pokemonLevel} (${_id})`;
     }
 
     return equipmentString;

@@ -12,12 +12,10 @@ const { setState, deleteState } = require("../../services/state");
 
 /**
  * Used to list the equipment 
- * @param {*} user the user we're getting the data from.
- * @param {*} pokemonId the Id of the user's pokemon we're looking at.
  * @returns 
  */
 const equipmentList = async (user, equipmentType, sortStat, includeLevel, page) => {
-    // build selection list of shop categories
+    // build selection list of equipment
     const stateId = setState({
         userId: user.id,
         equipmentType: equipmentType,
@@ -54,16 +52,17 @@ const equipmentListMessageCommand = async (message) => {
 }
 
 const equipmentListSlashCommand = async (interaction) => {
+    await interaction.deferReply();
     const equipmentType = interaction.options.getString('equipment_type');
     const sortStat = interaction.options.getString('sort_stat');
     const includeLevel = interaction.options.getBoolean('include_level') === false ? false : true;
     const page = interaction.options.getInteger('page');
     const { send, err } = await equipmentList(interaction.user, equipmentType, sortStat, includeLevel, page);
     if (err) {
-        await interaction.reply(`${err}`);
+        await interaction.editReply(`${err}`);
         return { err: err };
     } else {
-        await interaction.reply(send);
+        await interaction.editReply(send);
     }
 }
 

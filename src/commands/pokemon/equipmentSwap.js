@@ -17,7 +17,6 @@ const { setState, deleteState } = require("../../services/state");
  * @returns 
  */
 const equipmentSwap = async (user, pokemonId, pokemonId2, equipmentType) => {
-    // build selection list of shop categories
     const stateId = setState({
         userId: user.id,
         pokemonId: pokemonId,

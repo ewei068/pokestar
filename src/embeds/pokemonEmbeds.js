@@ -379,9 +379,12 @@ const buildEquipmentUpgradeEmbed = (trainer, pokemon, equipmentType, equipment, 
 const buildEquipmentListEmbed = (trainer, equipments, page) => {
     const equipmentString = equipments.map((equipment, index) => {
         const equipmentType = equipment.equipmentType;
-        const pokemonId = equipment.pokemonId;
-        return buildCompactEquipmentString(equipmentType, equipment, pokemonId);
-    }).join("\n");
+        return buildCompactEquipmentString(equipmentType, equipment, {
+            _id: equipment.pokemonId,
+            speciesId: equipment.speciesId,
+            level: equipment.pokemonLevel,
+        });
+    }).join("\n\n");
 
     const embed = new EmbedBuilder();
     embed.setTitle(`Trainer ${trainer.user.username}'s Equipment`);
