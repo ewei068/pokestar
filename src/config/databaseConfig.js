@@ -1,4 +1,5 @@
 const { getPokemonIdToIndex } = require('../utils/pokemonUtils');
+const { modifierSlotConfig, modifierConfig } = require('./equipmentConfig');
 const { rarityConfig } = require('./pokemonConfig');
 
 const shinyAggregate = function(shiny) {
@@ -13,6 +14,22 @@ const getPokedexOrder = function(idToIndex, speciesId) {
     return idToIndex[speciesId];
 }
 
+const equipmentStatAggregate = function(equipmentLevel, slots, modifierSlotConfig, modifierConfig, includeLevel) {
+    const stats = {}
+    equipmentLevel = equipmentLevel || 1;
+    for (const slotId in slots) {
+        const slot = slots[slotId];
+        const slotData = modifierSlotConfig[slotId];
+        const modifierData = modifierConfig[slot.modifier];
+        const { stat, type, min, max } = modifierData;
+
+        const baseValue = slot.quality / 100 * (max - min) + min;
+        const value = Math.round(baseValue * (slotData.level && includeLevel ? equipmentLevel : 1));
+        stats[slot.modifier] = stats[slot.modifier] ? stats[slot.modifier] + value : value;
+    }
+    return stats;
+}
+
 const DB_NAME = 'pokestar';
 
 const collectionNames = {
@@ -22,6 +39,7 @@ const collectionNames = {
     LIST_POKEMON: 'listPokemon',
     POKEMON_GROUPED: 'pokemonGrouped',
     POKEMON_AND_USERS: 'pokemonAndUsers',
+    EQUIPMENT: 'equipment',
 };
 
 const collectionConfig = {
@@ -116,6 +134,57 @@ const collectionConfig = {
             },
         ],
     },
+    [collectionNames.EQUIPMENT]: {
+        viewOn: collectionNames.USER_POKEMON,
+        pipeline: [
+            { 
+                "$project": { 
+                    _id: 1,
+                    userId: 1,
+                    speciesId: 1,
+                    name: 1,
+                    equipments: { 
+                        $objectToArray: "$equipments" 
+                    }
+                }
+            },
+            {
+                $unwind: {
+                    path: "$equipments"
+                }
+            },
+            {
+                $project: {
+                    pokemonId: "$_id",
+                    userId: 1,
+                    speciesId: 1,
+                    name: 1,
+                    equipmentType: "$equipments.k",
+                    level: "$equipments.v.level",
+                    slots: "$equipments.v.slots"
+                }
+            },
+            // add field
+            {
+                $addFields: {
+                    equipmentStats: {
+                        $function: {
+                            body: equipmentStatAggregate.toString(),
+                            args: ["$level", "$slots", modifierSlotConfig, modifierConfig, true],
+                            lang: "js"
+                        }
+                    },
+                    equipmentStatsWithoutLevel: {
+                        $function: {
+                            body: equipmentStatAggregate.toString(),
+                            args: ["$level", "$slots", modifierSlotConfig, modifierConfig, false],
+                            lang: "js"
+                        }
+                    }
+                }
+            },
+        ],
+    }
 }
 
 

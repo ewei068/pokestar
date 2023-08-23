@@ -14,7 +14,7 @@ const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS, rarities, ra
 const { expMultiplier, MAX_RELEASE } = require("../config/trainerConfig");
 const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth, getAbilityOrder, getPokemonOrder, getPartyPokemonIds } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
-const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed, buildEquipmentEmbed, buildEquipmentUpgradeEmbed, buildDexListEmbed, buildEquipmentSwapEmbed } = require("../embeds/pokemonEmbeds");
+const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed, buildEquipmentEmbed, buildEquipmentUpgradeEmbed, buildDexListEmbed, buildEquipmentSwapEmbed, buildEquipmentListEmbed } = require("../embeds/pokemonEmbeds");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
@@ -1294,6 +1294,67 @@ const buildEquipmentUpgradeSend = async ({ stateId=null, user=null } = {}) => {
     return { send: send, err: null };
 }
 
+const EQUIPMENT_LIST_PAGE_SIZE = 10;
+const buildEquipmentListSend = async ({ stateId=null, user=null } = {}) => {
+    const state = getState(stateId);
+
+    const page = state.page || 1;
+    if (page < 1) {
+        return { err: "Invalid page number!" };
+    }
+
+    let trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { err: trainer.err };
+    }
+
+    // build agg pipeline based on state
+    const aggPipeline = [
+        { $match: { 
+            userId: user.id,
+            equipmentType: state.equipmentType || { $exists: true },
+        } },
+    ]
+    // if state.stat, add stat to agg pipeline sort
+    if (state.stat) {
+        const includeLevel = state.includeLevel ? "equipmentStats" : "equipmentStatsWithoutLevel";
+        aggPipeline.push({ $sort: { [`${includeLevel}.${state.stat}`]: -1 } });
+    }
+    // paginate
+    aggPipeline.push({ $skip: (page - 1) * EQUIPMENT_LIST_PAGE_SIZE });
+    // + 1 to see if there is a next page
+    aggPipeline.push({ $limit: EQUIPMENT_LIST_PAGE_SIZE + 1 });
+
+    // get equipment
+    let equipments;
+    try {
+        const query = new QueryBuilder(collectionNames.EQUIPMENT)
+            .setAggregate(aggPipeline);
+
+        equipments = await query.aggregate();
+        if (equipments.length === 0) {
+            return { err: "No equipment found!" };
+        }
+    } catch(e) {
+        console.error(e);
+        return { err: "Failed to get equipment!" };
+    }
+    let hasNextPage = false;
+    if (equipments.length > EQUIPMENT_LIST_PAGE_SIZE) {
+        hasNextPage = true;
+        equipments.pop();
+    }
+
+    const embed = buildEquipmentListEmbed(trainer.data, equipments, page);
+
+    const send = {
+        embeds: [embed],
+        components: [],
+    }
+
+    return { send: send, err: null };
+}
+
 const buildEquipmentSwapSend = async ({ stateId=null, user=null, swap=false } = {}) => {
     const state = getState(stateId);
 
@@ -1490,6 +1551,7 @@ module.exports = {
     buildReleaseSend,
     buildEquipmentSend,
     buildEquipmentUpgradeSend,
+    buildEquipmentListSend,
     buildEquipmentSwapSend,
     buildNatureSend,
 };
