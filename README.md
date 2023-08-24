@@ -8,7 +8,7 @@
 
 <div align="center">
     <p style="text-align: center;">
-        A Pokémon Discord bot. Currently open for beta testing! <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>Invite Pokéstar to your server.</a></b>
+        A Pokémon Discord bot <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>Invite Pokéstar to your server.</a></b>
     </p>
     <p style="text-align: center;">
         <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>👾 Discord</a> • <a href= https://discord.gg/ygVPUXeJXZ>💻 Server</a> • <a href=https://github.com/ewei068/pokestar#tutorial>📝 Tutorial</a> • <a href=https://github.com/ewei068/pokestar#all-commands>💬 Commands</a>
@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images//events/pokestar-op-banner.png" height="300">
+  <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images//events/pokestar-op-banner.png">
 </p>
 
 ## Why Pokéstar?

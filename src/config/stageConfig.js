@@ -12,7 +12,7 @@ const stageConfig = {
         prefix: '<@1093411444877439066>'
     },
     [stageNames.PROD]: {
-        prefix: 'ps!'
+        prefix: '<@1093411444877439066>'
     }
 }
 

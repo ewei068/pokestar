@@ -1,6 +1,6 @@
 # Pokéstar Changelog
 
-### 0.12.2
+##  1.0.0 - Official Release
 
 * Balance Changes
   * Shields
