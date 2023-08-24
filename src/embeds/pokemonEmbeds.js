@@ -380,7 +380,7 @@ const buildEquipmentListEmbed = (trainer, equipments, page) => {
     const equipmentString = equipments.map((equipment, index) => {
         const equipmentType = equipment.equipmentType;
         return buildCompactEquipmentString(equipmentType, equipment, {
-            _id: equipment.pokemonId,
+            _id: equipment._id,
             speciesId: equipment.speciesId,
             level: equipment.pokemonLevel,
         });

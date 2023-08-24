@@ -29,6 +29,7 @@ const { backpackItemConfig, backpackItems } = require("../config/backpackConfig"
 const { drawIterable, drawUniform } = require("../utils/gachaUtils");
 const { partyAddRow } = require("../components/partyAddRow");
 const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
+const { buildEquipmentSelectRow } = require("../components/equipmentSelectRow");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
@@ -1294,6 +1295,18 @@ const buildEquipmentUpgradeSend = async ({ stateId=null, user=null } = {}) => {
     return { send: send, err: null };
 }
 
+const onEquipmentScroll = ({ stateId=null, data={} } = {}) => {
+    const state = getState(stateId);
+
+    const page = data.page || 1;
+    if (page < 1) {
+        return { err: "Invalid page number!" };
+    }
+    state.page = page;
+
+    return {};
+}
+
 const EQUIPMENT_LIST_PAGE_SIZE = 10;
 const buildEquipmentListSend = async ({ stateId=null, user=null } = {}) => {
     const state = getState(stateId);
@@ -1339,18 +1352,48 @@ const buildEquipmentListSend = async ({ stateId=null, user=null } = {}) => {
         console.error(e);
         return { err: "Failed to get equipment!" };
     }
-    let hasNextPage = false;
+    let lastPage = true;
     if (equipments.length > EQUIPMENT_LIST_PAGE_SIZE) {
-        hasNextPage = true;
+        lastPage = false;
         equipments.pop();
     }
 
-    const embed = buildEquipmentListEmbed(trainer.data, equipments, page);
-
     const send = {
-        embeds: [embed],
+        embeds: [],
         components: [],
     }
+
+    const embed = buildEquipmentListEmbed(trainer.data, equipments, page);
+    send.embeds.push(embed);
+
+    // scroll buttons
+    const scrollRowData = {
+        stateId: stateId,
+    }
+    const scrollActionRow = buildScrollActionRow(page, lastPage, scrollRowData, eventNames.EQUIPMENT_SCROLL);
+    send.components.push(scrollActionRow);
+
+    // eq select row
+    const selectRowData = {
+        stateId: stateId,
+    }
+    const equipmentSelectActionRow = buildEquipmentSelectRow(equipments, selectRowData, eventNames.EQUIPMENT_LIST_SELECT);
+    send.components.push(equipmentSelectActionRow);
+
+    // pokemon select row
+    // filter pokemon data and remove duplicates
+    const pokemons = equipments.map(e => {
+        return {
+            _id: e._id,
+            name: e.name,
+            speciesId: e.speciesId,
+        }
+    });
+    const uniquePokemons = pokemons.filter((p, i) => {
+        return pokemons.findIndex(p2 => p2.speciesId === p.speciesId) === i;
+    });
+    const pokemonSelectActionRow = buildPokemonSelectRow(uniquePokemons, selectRowData, eventNames.POKEMON_LIST_SELECT);
+    send.components.push(pokemonSelectActionRow);
 
     return { send: send, err: null };
 }
@@ -1551,6 +1594,7 @@ module.exports = {
     buildReleaseSend,
     buildEquipmentSend,
     buildEquipmentUpgradeSend,
+    onEquipmentScroll,
     buildEquipmentListSend,
     buildEquipmentSwapSend,
     buildNatureSend,

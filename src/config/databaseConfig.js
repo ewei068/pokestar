@@ -156,7 +156,6 @@ const collectionConfig = {
             },
             {
                 $project: {
-                    pokemonId: "$_id",
                     userId: 1,
                     speciesId: 1,
                     name: 1,

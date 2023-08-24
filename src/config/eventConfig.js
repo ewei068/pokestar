@@ -13,6 +13,8 @@ const eventNames = {
     EQUIPMENT_SELECT: "equipmentSelect",
     EQUIPMENT_BUTTON: "equipmentButton",
     EQUIPMENT_UPGRADE: "equipmentUpgrade",
+    EQUIPMENT_SCROLL: "equipmentScroll",
+    EQUIPMENT_LIST_SELECT: "equipmentListSelect",
     EQUIPMENT_SWAP: "equipmentSwap",
     NATURE_SELECT: "natureSelect",
     NATURE_CONFIRM: "natureConfirm",
@@ -122,6 +124,18 @@ const eventConfig = {
         "execute": "equipmentUpgrade.js",
         "directory": "equipment",
         "exp": 15,
+    },
+    [eventNames.EQUIPMENT_SCROLL]: {
+        "name": "Equipment Scroll",
+        "execute": "equipmentScroll.js",
+        "directory": "equipment",
+    },
+    [eventNames.EQUIPMENT_LIST_SELECT]: {
+        "name": "Equipment List Select",
+        "execute": "equipmentListSelect.js",
+        "directory": "equipment",
+        "exp": 10,
+        "money": 25,
     },
     [eventNames.EQUIPMENT_SWAP]: {
         "name": "Equipment Swap",
