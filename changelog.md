@@ -7,6 +7,8 @@
   * Buff self-buffs
   * Nerf high-performers
   * Nerf full AoE, buff single-target
+  * Buff status
+  * Buff mixed attackers
   * PVP:
     * Durability buff
     * Dupe pentalty?

@@ -1977,6 +1977,10 @@ class Pokemon {
                     break;
                 }
 
+                // reduce atk, spa by 25%
+                this.atk -= Math.floor(this.batk * 0.25);
+                this.spa -= Math.floor(this.bspa * 0.25);
+
                 this.status = {
                     statusId: statusId,
                     source: source,
@@ -2010,8 +2014,8 @@ class Pokemon {
                     break;
                 }
 
-                // reduce speed by 30%
-                this.spe -= Math.floor(this.bspd * 0.3);
+                // reduce speed by 45%
+                this.spe -= Math.floor(this.bspd * 0.45);
 
                 this.status = {
                     statusId: statusId,
@@ -2080,7 +2084,7 @@ class Pokemon {
 
         switch (this.status.statusId) {
             case statusConditions.POISON:
-                const damage = Math.round(this.maxHp / 10);
+                const damage = Math.round(this.maxHp / 6);
                 this.battle.addToLog(`${this.name} is hurt by poison!`);
                 this.takeDamage(damage, this.status.source, {
                     type: "statusCondition",
@@ -2088,7 +2092,7 @@ class Pokemon {
                 });
                 break;
             case statusConditions.BURN:
-                const burnDamage = Math.round(this.maxHp / 16);
+                const burnDamage = Math.round(this.maxHp / 8);
                 this.battle.addToLog(`${this.name} is hurt by its burn!`);
                 this.takeDamage(burnDamage, this.status.source, {
                     type: "statusCondition",
@@ -2096,7 +2100,7 @@ class Pokemon {
                 });
                 break;
             case statusConditions.BADLY_POISON:
-                const badlyPoisonDamage = Math.round(this.maxHp / 10) * Math.pow(2, this.status.turns);
+                const badlyPoisonDamage = Math.round(this.maxHp / 6) * Math.pow(2, this.status.turns);
                 this.battle.addToLog(`${this.name} is hurt by poison!`);
                 this.takeDamage(badlyPoisonDamage, this.status.source, {
                     type: "statusCondition",
@@ -2120,13 +2124,16 @@ class Pokemon {
         switch (this.status.statusId) {
             case statusConditions.BURN:
                 this.battle.addToLog(`${this.name} was cured of its burn!`);
+                // restore atk, spa
+                this.atk += Math.floor(this.batk * 0.25);
+                this.spa += Math.floor(this.bspa * 0.25);
                 break;
             case statusConditions.FREEZE:
                 this.battle.addToLog(`${this.name} was thawed out!`);
                 break;
             case statusConditions.PARALYSIS:
                 // restore speed
-                this.spe += Math.floor(this.bspd * 0.25);
+                this.spe += Math.floor(this.bspd * 0.45);
 
                 this.battle.addToLog(`${this.name} was cured of its paralysis!`);
                 break;

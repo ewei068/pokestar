@@ -88,6 +88,9 @@ const calculateDamage = (move, source, target, miss=false, { atkStat=null, attac
     const level = source.level;
     atkStat = atkStat || move.damageType;
     attack = attack || (atkStat === damageTypes.PHYSICAL ? source.atk : source.spa);
+    // modify attack amount -- any attack over 800 is only half as effective
+    attack = attack > 800 ? 800 + (attack - 800) / 2 : attack;
+
     defStat = defStat || move.damageType;
     defense = defense || (defStat === damageTypes.PHYSICAL ? target.getDef() : target.getSpd());
     const stab = source.type1 === move.type || source.type2 === move.type ? 1.5 : 1;
@@ -1344,7 +1347,7 @@ const effectConfig = {
                     }
                     
                     dotPokemon.battle.addToLog(`${dotPokemon.name} took damage from the Leech Seed!`);
-                    const damage = Math.floor(dotPokemon.maxHp / 8);
+                    const damage = Math.floor(dotPokemon.maxHp / 4);
                     const damageTaken = dotPokemon.takeDamage(damage, initialArgs.source, {
                         "type": "leechSeed",
                     });
@@ -2245,13 +2248,13 @@ const moveConfig = {
         "type": types.NORMAL,
         "power": null,
         "accuracy": null,
-        "cooldown": 5,
+        "cooldown": 4,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "A frenetic dance to uplift the fighting spirit. This sharply raises the user's Attack stat for 3 turns.",
+        "description": "A frenetic dance to uplift the fighting spirit. This sharply raises the user's Attack stat for 3 turns, and grants the user 60% combat readiness.",
     },
     "m16": {
         "name": "Gust",
@@ -2706,7 +2709,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.SPECIAL,
-        "description": "A seed is planted on the target for 5 turns. It steals 1/8 of the target's max HP every turn.",
+        "description": "A seed is planted on the target for 5 turns. It steals 1/4 of the target's max HP every turn.",
     },
     "m76": {
         "name": "Solar Beam",
@@ -2802,7 +2805,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "A weak electric charge is launched at the target. This has a 100% chance to paralyze the target on hit.",
+        "description": "A weak electric charge is launched at the target. This has a 100% chance to paralyze the target on hit, and grants the user 50% combat readiness.",
     },
     "m87": {
         "name": "Thunder",
@@ -2877,7 +2880,7 @@ const moveConfig = {
         "type": types.POISON,
         "power": null,
         "accuracy": 90,
-        "cooldown": 3,
+        "cooldown": 2,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
@@ -3085,26 +3088,26 @@ const moveConfig = {
         "type": types.PSYCHIC,
         "power": null,
         "accuracy": null,
-        "cooldown": 6,
+        "cooldown": 5,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.ANY,
-        "targetPattern": targetPatterns.ROW,
+        "targetPattern": targetPatterns.ALL,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user creates a wall of light, sharply raising the Special Defense of targeted allies for 3 turns.",
+        "description": "The user creates a wall of light, sharply raising the Special Defense of targeted allies for 3 turns, and raising the Special Defense of other allies.",
     },
     "m115": {
         "name": "Reflect",
         "type": types.PSYCHIC,
         "power": null,
         "accuracy": null,
-        "cooldown": 6,
+        "cooldown": 5,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.ANY,
-        "targetPattern": targetPatterns.ROW,
+        "targetPattern": targetPatterns.ALL,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user creates a wall of light, sharply raising the Defense of targeted allies for 3 turns.",
+        "description": "The user creates a wall of light, sharply raising the Defense of targeted allies for 3 turns, and raising the Defense of other allies.",
     },
     "m116": {
         "name": "Focus Energy",
@@ -3117,7 +3120,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.OTHER,
-        "description": "The user takes a deep breath and focuses, sharply raising the user's attack for 1 turn.",
+        "description": "The user takes a deep breath and focuses, sharply raising the user's attack for 1 turn and gaining 50% combat readiness.",
     },
     "m118": {
         "name": "Metronome",
@@ -3228,20 +3231,20 @@ const moveConfig = {
         "type": types.NORMAL,
         "power": null,
         "accuracy": null,
-        "cooldown": 3,
+        "cooldown": 2,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user glares at the target, paralyzing it.",
+        "description": "The user glares at the target, paralyzing it. Grants the user 60% combat readiness.",
     },
     "m137-1": {
         "name": "Rocket Glare",
         "type": types.DARK,
         "power": null,
         "accuracy": 80,
-        "cooldown": 4,
+        "cooldown": 3,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.ROW,
@@ -3270,7 +3273,7 @@ const moveConfig = {
         "type": types.GRASS,
         "power": null,
         "accuracy": null,
-        "cooldown": 4,
+        "cooldown": 3,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
@@ -3322,7 +3325,7 @@ const moveConfig = {
         "type": types.PSYCHIC,
         "power": null,
         "accuracy": null,
-        "cooldown": 5,
+        "cooldown": 4,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
@@ -3411,7 +3414,7 @@ const moveConfig = {
     "m177-1": {
         "name": "Shadowblast",
         "type": types.FLYING,
-        "power": 90,
+        "power": 80,
         "accuracy": 90,
         "cooldown": 6,
         "targetType": targetTypes.ENEMY,
@@ -3783,7 +3786,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
-        "description": "The user punches the target with full, concentrated power. If hit, this also confuses the target for 3 turns.",
+        "description": "The user punches the target with full, concentrated power. If hit, this also confuses surrounding targets for 2 turns.",
     },
     "m224": {
         "name": "Megahorn",
@@ -3849,6 +3852,19 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user slams the target with its steel-hard tail lowering the target's Defense stat for 2 turns. If the user has higher defense than the target, the effect occurs before damage is dealt.",
+    },
+    "m235": {
+        "name": "Synthesis",
+        "type": types.GRASS,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 2,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user restores its own HP by 33% and gain 50% combat readiness. In sun, boost the users Special Attack and Special Defense for 2 turns. In other weather, this restores 25% HP.",
     },
     "m236": {
         "name": "Moonlight",
@@ -4496,15 +4512,15 @@ const moveConfig = {
     "m344": {
         "name": "Volt Tackle",
         "type": types.ELECTRIC,
-        "power": 90,
+        "power": 80,
         "accuracy": 80,
-        "cooldown": 5,
+        "cooldown": 4,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.COLUMN,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
-        "description": "The user electrifies itself, then charges. This also damages the user by a third of the damage dealt. This may leave the target with paralysis with a 20% chance.",
+        "description": "The user electrifies itself, then charges. This also damages the user by 25% of the damage dealt. This may leave the target with paralysis with a 20% chance.",
     },
     "m347": {
         "name": "Calm Mind",
@@ -4691,7 +4707,7 @@ const moveConfig = {
     "m394-1": {
         "name": "Dark Blitz",
         "type": types.FIRE,
-        "power": 95,
+        "power": 90,
         "accuracy": 100,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -4719,7 +4735,7 @@ const moveConfig = {
         "type": types.POISON,
         "power": 100,
         "accuracy": 100,
-        "cooldown": 4,
+        "cooldown": 3,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
@@ -5511,7 +5527,7 @@ const moveConfig = {
     "m585": {
         "name": "Moonblast",
         "type": types.FAIRY,
-        "power": 95,
+        "power": 80,
         "accuracy": 70,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -5519,7 +5535,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.ROW,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.SPECIAL,
-        "description": "The user attacks the target with a moonblast. This also lowers the target's special attack for 2 turns with a 70% chance.",
+        "description": "The user attacks the target with a moonblast. This also sharply lowers targets' special attack for 2 turns.",
     },
     "m586": {
         "name": "Boomburst",
@@ -5604,9 +5620,9 @@ const moveConfig = {
         "type": types.GRASS,
         "power": null,
         "accuracy": 100,
-        "cooldown": 4,
+        "cooldown": 3,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.FRONT,
+        "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
@@ -5643,13 +5659,13 @@ const moveConfig = {
         "type": types.ELECTRIC,
         "power": 100,
         "accuracy": 100,
-        "cooldown": 7,
+        "cooldown": 6,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.ALL,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.SPECIAL,
-        "description": "The user unleashes a powerful beam of electricity. This ONLY deals damage to the primary target and 2 additional random enemies, but has a 10% chance to paralyze all targets.",
+        "description": "The user unleashes a powerful beam of electricity. This ONLY deals damage to the primary target and 2 additional random enemies, but has a 20% chance to paralyze all targets.",
     },
     "m814": {
         "name": "Dual Wingbeat",
@@ -5953,6 +5969,8 @@ const moveExecutes = {
         for (const target of allTargets) {
             // apply greater atk up for 3 turns
             target.addEffect("greaterAtkUp", 3, source);
+            // gain 60% cr
+            source.boostCombatReadiness(source, 60);
         }
     },
     "m16": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -6600,6 +6618,9 @@ const moveExecutes = {
 
             target.applyStatus(statusConditions.PARALYSIS, source);
         }
+
+        // give user 50 cr
+        source.boostCombatReadiness(source, 50);
     },
     "m87": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m87";
@@ -6898,17 +6919,33 @@ const moveExecutes = {
     "m113": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m113";
         const moveData = moveConfig[moveId];
+        // get target row
+        const allyParty = battle.parties[source.teamName];
+        const targetRow = source.getPatternTargets(allyParty, targetPatterns.ROW, primaryTarget.position);
         for (const target of allTargets) {
-            // greater spd up for 3 turns
-            target.addEffect("greaterSpdUp", 3, source);
+            if (targetRow.includes(target)) {
+                // greater spd up for 3 turns
+                target.addEffect("greaterSpdUp", 3, source);
+            } else {  
+                // spd up for 3 turns
+                target.addEffect("spdUp", 3, source);
+            }
         }
     },
     "m115": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m115";
         const moveData = moveConfig[moveId];
+        // get target row
+        const allyParty = battle.parties[source.teamName];
+        const targetRow = source.getPatternTargets(allyParty, targetPatterns.ROW, primaryTarget.position);
         for (const target of allTargets) {
-            // greater def up for 3 turns
-            target.addEffect("greaterDefUp", 3, source);
+            if (targetRow.includes(target)) {
+                // greater def up for 3 turns
+                target.addEffect("greaterDefUp", 3, source);
+            } else {  
+                // def up for 3 turns
+                target.addEffect("defUp", 3, source);
+            }
         }
     },
     "m116": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -6917,6 +6954,9 @@ const moveExecutes = {
         for (const target of allTargets) {
             // greater atk up for 1 turn
             target.addEffect("greaterAtkUp", 1, source);
+
+            // boost 50% cr
+            target.boostCombatReadiness(source, 50);
         }
     },
     "m118": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -7079,6 +7119,9 @@ const moveExecutes = {
 
             target.applyStatus(statusConditions.PARALYSIS, source);
         }
+
+        // give user 60% cr
+        source.boostCombatReadiness(source, 60);
     },
     "m137-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m137-1";
@@ -7891,9 +7934,13 @@ const moveExecutes = {
                 moveId: moveId
             });
 
-            // if hit, confuse for 3 turns
+            // if hit, confuse for 2 turns
             if (!miss) {
-                target.addEffect("confused", 3, source);
+                const enemyParty = source.getEnemyParty();
+                enemyTargets = source.getPatternTargets(enemyParty, targetPatterns.SQUARE, target.position, moveId);
+                for (const enemyTarget of enemyTargets) {
+                    enemyTarget.addEffect("confused", 2, source);
+                }
             }
         }
     },
@@ -7990,6 +8037,34 @@ const moveExecutes = {
                 // apply def down 2 turns
                 target.addEffect("defDown", 2, source);
             }
+        }
+    },
+    "m235": function (battle, source, primaryTarget, allTargets) {
+        const moveId = "m235";
+        for (const target of allTargets) {
+            let fraction = 0.33;
+            if (!battle.isWeatherNegated()) {
+                // fraction based on weather
+                if (battle.weather.weatherId === null) {
+                    fraction = 0.33;
+                } else if (battle.weather.weatherId === weatherConditions.SUN) {
+                    fraction = 0.33;
+
+                    // gain 2 turns spa, spd up
+                    target.addEffect("spaUp", 2, source);
+                    target.addEffect("spdUp", 2, source);
+                } else {
+                    fraction = 0.25;
+                }
+
+            }
+            source.giveHeal(Math.floor(target.maxHp * fraction), target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // gain 50% cr
+            target.boostCombatReadiness(source, 50);
         }
     },
     "m236": function (battle, source, primaryTarget, allTargets) {
@@ -8843,7 +8918,7 @@ const moveExecutes = {
         }
 
         battle.addToLog(`${source.name} is affected by recoil!`);
-        const damageToDeal = Math.max(Math.floor(damageDealt / 3), 1);
+        const damageToDeal = Math.max(Math.floor(damageDealt / 4), 1);
         source.dealDamage(damageToDeal, source, {
             type: "recoil"
         });
@@ -10192,9 +10267,9 @@ const moveExecutes = {
                 moveId: moveId
             });
 
-            // if not miss, 70% chance to lower spatk
-            if (!miss && Math.random() < 0.7) {
-                target.addEffect("spaDown", 2, source);
+            // if not miss, sharply lower spatk
+            if (!miss) {
+                target.addEffect("greaterSpaDown", 2, source);
             }
         }
     },
@@ -10381,8 +10456,8 @@ const moveExecutes = {
                 });
             }
 
-            // if not miss, 10% chance to paralysis
-            if (!miss && Math.random() < 0.1) {
+            // if not miss, 20% chance to paralysis
+            if (!miss && Math.random() < 0.2) {
                 target.applyStatus(statusConditions.PARALYSIS, source);
             }
         }

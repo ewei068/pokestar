@@ -614,7 +614,7 @@ const pokemonConfig = {
             "61": 0.45,
             "127": 0.1
         },
-        "moveIds": ["m40", "m137", "m398", "m157"],
+        "moveIds": ["m40", "m137", "m441", "m157"],
         "battleEligible": true,
         "rarity": rarities.RARE,
         "growthRate": growthRates.FAST
@@ -810,7 +810,7 @@ const pokemonConfig = {
             "79": 0.45,
             "125": 0.1
         },
-        "moveIds": ["m40", "m224", "m414", "m482"],
+        "moveIds": ["m40", "m224", "m398", "m89"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
@@ -1530,7 +1530,7 @@ const pokemonConfig = {
         "emoji": "<:71:1100287549051777144>",
         "description": "Said to live in huge colonies deep in jungles, although no one has ever returned from there.",
         "type": [types.GRASS, types.POISON],
-        "baseStats": [80, 105, 65, 100, 60, 70],
+        "baseStats": [80, 105, 65, 100, 70, 70],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/71.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/71.png",
         "abilities": {
@@ -1979,7 +1979,7 @@ const pokemonConfig = {
             "34": 0.8,
             "139": 0.2
         },
-        "moveIds": ["m71", "m94", "m402", "m433"],
+        "moveIds": ["m71", "m94", "m235", "m76"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
@@ -3062,7 +3062,7 @@ const pokemonConfig = {
             "51": 0.45,
             "110": 0.1,
         },
-        "moveIds": ["m526", "m97", "m355", "m542"],
+        "moveIds": ["m64", "m403", "m432", "m156"],
         "battleEligible": true,
         "rarity": rarities.RARE,
         "growthRate": growthRates.FAST
@@ -4350,7 +4350,7 @@ const pokemonConfig = {
             "68": 0.8,
             "79": 0.2,
         },
-        "moveIds": ["m16", "m355", "m483", "m405"],
+        "moveIds": ["m81", "m182", "m483", "m405"],
         "battleEligible": true,
         "rarity": rarities.RARE,
         "growthRate": growthRates.FAST,
@@ -4387,7 +4387,7 @@ const pokemonConfig = {
             "19": 0.8,
             "14": 0.2,
         },
-        "moveIds": ["m77", "m355", "m483", "m405"],
+        "moveIds": ["m77", "m92", "m483", "m405"],
         "battleEligible": true,
         "rarity": rarities.RARE,
         "growthRate": growthRates.FAST,
