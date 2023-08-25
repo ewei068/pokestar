@@ -2614,6 +2614,7 @@ const buildPveSend = async ({ stateId=null, user=null, view="list", option=null,
 
         state.npcId = option;
         send.components.push(returnRow);
+        send.content = "";
     } else if (view === "battle") {
         // validate npc id
         const npcData = npcConfig[state.npcId];

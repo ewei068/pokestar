@@ -2479,6 +2479,10 @@ const pokemonConfig = {
         "baseStats": [35, 40, 100, 90, 55, 35],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/138.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/138.png",
+        "evolution": [{
+            "id": "139",
+            "level": 40
+        }],
         "abilities": {
             "33": 0.45,
             "75": 0.45,
