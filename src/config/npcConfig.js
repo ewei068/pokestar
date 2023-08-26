@@ -392,7 +392,7 @@ const npcConfig = {
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.POKEBALL]: 1,
+                            [backpackItems.POKEBALL]: 1 * 2,
                         },
                     }
                 }
@@ -406,7 +406,7 @@ const npcConfig = {
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.POKEBALL]: 1,
+                            [backpackItems.POKEBALL]: 1 * 3,
                         },
                     }
                 }
@@ -428,7 +428,7 @@ const npcConfig = {
                 dailyRewards: {
                     backpack: {
                         [backpackCategories.POKEBALLS]: {
-                            [backpackItems.POKEBALL]: 2,
+                            [backpackItems.POKEBALL]: 2 * 2,
                         },
                     }
                 }
