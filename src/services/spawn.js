@@ -269,10 +269,12 @@ class GuildSpawner {
     client;
     guild;
     chachedChannels = [];
+    guildId;
 
     constructor(client, guild) {
         this.client = client;
         this.guild = guild;
+        this.guildId = guild.id;
     }
 
     cacheGuild() {
@@ -378,8 +380,12 @@ class GuildSpawner {
             }
         } catch (error) {
             logger.warn(error);
-            // TEMP: remove guild from spawner list
-            delete guildIdToSpawner[this.guild.id];
+            try {
+                // TEMP: remove guild from spawner list
+                delete guildIdToSpawner[this.guild.id];
+            } catch (error) {
+                logger.warn(error);
+            }
             return;
         }
     }
