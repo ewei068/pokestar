@@ -1373,6 +1373,7 @@ const buildEquipmentListSend = async ({ stateId=null, user=null } = {}) => {
     const scrollActionRow = buildScrollActionRow(page, lastPage, scrollRowData, eventNames.EQUIPMENT_SCROLL);
     send.components.push(scrollActionRow);
 
+    /*
     // eq select row
     const selectRowData = {
         stateId: stateId,
@@ -1393,7 +1394,7 @@ const buildEquipmentListSend = async ({ stateId=null, user=null } = {}) => {
         return pokemons.findIndex(p2 => p2.speciesId === p.speciesId) === i;
     });
     const pokemonSelectActionRow = buildPokemonSelectRow(uniquePokemons, selectRowData, eventNames.POKEMON_LIST_SELECT);
-    send.components.push(pokemonSelectActionRow);
+    send.components.push(pokemonSelectActionRow); */
 
     return { send: send, err: null };
 }
