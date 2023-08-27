@@ -24,29 +24,43 @@ const calculateStats = function(pokemon, pokemonConfig, natureConfig, speedFn, f
  * 2023-07-10: increase equipment flat HP
 **/
 
-const calculateAllStats = async () => {
-    // get all pokemon
-    const getQuery = new QueryBuilder(collectionNames.USER_POKEMON)
-        .setFilter({});
-    const pokemons = await getQuery.find();
+const PAGE_SIZE = 1000;
 
-    const numPokemon = pokemons.length;
-    const promises = [];
-    let count = 0;
-    for (let i = 0; i < numPokemon; i++) {
-        const pokemon = pokemons[i];
-        const speciesData = pokemonConfig[pokemon.speciesId];
-        const newPokemon = calculatePokemonStats(pokemon, speciesData);
-        const updateRes = updateDocument(collectionNames.USER_POKEMON, { _id: pokemon._id }, { $set: newPokemon });
-        promises.push(updateRes);
-    }
-    const res = await Promise.all(promises);
-    for (const result of res) {
-        if (result.modifiedCount === 1) {
-            count++;
+const calculateAllStats = async () => {
+    let pages = 0;
+    while (true) {
+        // get page size + 1 pokemons
+        const getQuery = new QueryBuilder(collectionNames.USER_POKEMON)
+            .setFilter({})
+            .setLimit(PAGE_SIZE + 1)
+            .setPage(pages);
+        const pokemons = await getQuery.find();
+
+        const numPokemon = pokemons.length;
+        const promises = [];
+        let count = 0;
+        for (let i = 0; i < numPokemon; i++) {
+            const pokemon = pokemons[i];
+            const speciesData = pokemonConfig[pokemon.speciesId];
+            const newPokemon = calculatePokemonStats(pokemon, speciesData);
+            const updateRes = updateDocument(collectionNames.USER_POKEMON, { _id: pokemon._id }, { $set: newPokemon });
+            promises.push(updateRes);
         }
+        const res = await Promise.all(promises);
+        for (const result of res) {
+            if (result.modifiedCount === 1) {
+                count++;
+            }
+        }
+        console.log(`Updated ${count}/${numPokemon} pokemon`);
+
+        if (numPokemon < PAGE_SIZE + 1) {
+            break;
+        }
+        pages++;
     }
-    return `Updated ${count}/${numPokemon} pokemon`;
+
+    return "Done";
 }
 
 calculateAllStats().then((res) => {
