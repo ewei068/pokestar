@@ -22,6 +22,7 @@ const calculateStats = function(pokemon, pokemonConfig, natureConfig, speedFn, f
  * 2023-06-21: update pokemon equipment calculation
  * 2023-07-04: patch lugia's base stats
  * 2023-07-10: increase equipment flat HP
+ * 2023-08-27: buff low rarity pokemon
 **/
 
 const PAGE_SIZE = 1000;

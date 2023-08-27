@@ -1,6 +1,6 @@
 # Pokéstar Changelog
 
-##  1.0.0 - Official Release
+## 1.0.0 (8/27) - Official Release
 
 Pokestar is officially released out of Beta! Thanks everyone for helping me test the bot!
 
