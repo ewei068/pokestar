@@ -614,7 +614,7 @@ const pokemonConfig = {
             "61": 0.45,
             "127": 0.1
         },
-        "moveIds": ["m40", "m137", "m398", "m157"],
+        "moveIds": ["m40", "m137", "m441", "m157"],
         "battleEligible": true,
         "rarity": rarities.RARE,
         "growthRate": growthRates.FAST
@@ -810,7 +810,7 @@ const pokemonConfig = {
             "79": 0.45,
             "125": 0.1
         },
-        "moveIds": ["m40", "m224", "m414", "m482"],
+        "moveIds": ["m40", "m224", "m398", "m89"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
@@ -1530,7 +1530,7 @@ const pokemonConfig = {
         "emoji": "<:71:1100287549051777144>",
         "description": "Said to live in huge colonies deep in jungles, although no one has ever returned from there.",
         "type": [types.GRASS, types.POISON],
-        "baseStats": [80, 105, 65, 100, 60, 70],
+        "baseStats": [80, 105, 65, 100, 70, 70],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/71.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/71.png",
         "abilities": {
@@ -1979,7 +1979,7 @@ const pokemonConfig = {
             "34": 0.8,
             "139": 0.2
         },
-        "moveIds": ["m71", "m94", "m402", "m433"],
+        "moveIds": ["m71", "m94", "m235", "m76"],
         "battleEligible": true,
         "rarity": rarities.EPIC,
         "growthRate": growthRates.MEDIUMSLOW
@@ -2479,6 +2479,10 @@ const pokemonConfig = {
         "baseStats": [35, 40, 100, 90, 55, 35],
         "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/138.png",
         "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/138.png",
+        "evolution": [{
+            "id": "139",
+            "level": 40
+        }],
         "abilities": {
             "33": 0.45,
             "75": 0.45,
@@ -3062,7 +3066,7 @@ const pokemonConfig = {
             "51": 0.45,
             "110": 0.1,
         },
-        "moveIds": ["m526", "m97", "m355", "m542"],
+        "moveIds": ["m64", "m403", "m432", "m156"],
         "battleEligible": true,
         "rarity": rarities.RARE,
         "growthRate": growthRates.FAST
@@ -4350,7 +4354,7 @@ const pokemonConfig = {
             "68": 0.8,
             "79": 0.2,
         },
-        "moveIds": ["m16", "m355", "m483", "m405"],
+        "moveIds": ["m81", "m182", "m483", "m405"],
         "battleEligible": true,
         "rarity": rarities.RARE,
         "growthRate": growthRates.FAST,
@@ -4387,7 +4391,7 @@ const pokemonConfig = {
             "19": 0.8,
             "14": 0.2,
         },
-        "moveIds": ["m77", "m355", "m483", "m405"],
+        "moveIds": ["m77", "m92", "m483", "m405"],
         "battleEligible": true,
         "rarity": rarities.RARE,
         "growthRate": growthRates.FAST,
@@ -5786,6 +5790,22 @@ const pokemonConfig = {
         "growthRate": growthRates.SLOW,
         "unobtainable": true,
     },
+    "725-1": {
+        "name": "Littenyan",
+        "emoji": "<:littenyan:1145193884817834005>",
+        "description": "A special Litten with two tails. It is said to be the mascot of another world.",
+        "type": [types.FIRE, types.FAIRY],
+        "baseStats": [65, 119, 70, 80, 65, 131],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/littenyan-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/littenyan-shiny-resized.png",
+        "abilities": {
+            "153": 1,
+        },
+        "moveIds": ["m10", "m212-1", "m583", "m154-1"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.SLOW,
+    },
     "828-1": {
         "name": "Scammer Thievul",
         "emoji": "<:scammerthievul:1130698673794338968>",
@@ -5949,16 +5969,25 @@ const rarityConfig = {
         pokemon: [],
         color: 0x00ff00,
         money: 25,
+        statMultiplier: [
+            1.15, 1.1, 1.15, 1.1, 1.15, 1.1
+        ]
     },
     [rarities.RARE]: {
         pokemon: [],
         color: 0x0000ff,
         money: 50,
+        statMultiplier: [
+            1.15, 1.1, 1.15, 1.1, 1.15, 1.1
+        ]
     },
     [rarities.EPIC]: {
         pokemon: [],
         color: 0xff00ff,
         money: 75,
+        statMultiplier: [
+            1.075, 1.05, 1.075, 1.05, 1.075, 1.05
+        ]
     },
     [rarities.LEGENDARY]: {
         pokemon: [],

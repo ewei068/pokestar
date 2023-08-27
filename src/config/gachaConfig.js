@@ -72,6 +72,19 @@ const bannerTypeConfig = {
 const bannerConfig = [
     {
         "bannerType": bannerTypes.SPECIAL,
+        "name": "[EVENT] Launch Celebration Re-Run",
+        "description": "The launch celebration is being re-run! Pull for the limited Gary's Blastoise and Ash's Pikachu, who have also received buffs! For more information, use `/events`.",
+        "rateUp": () => {
+            return {
+                [rarities.LEGENDARY]: ["9-1", "25-1"],
+                [rarities.EPIC]: ["3", "6", "9", "131", "143"],
+                [rarities.RARE]: ["1", "4", "7", "133"]
+            }
+        },
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-launch-banner.png"
+    },
+    {
+        "bannerType": bannerTypes.SPECIAL,
         "name": "[EVENT] Rubber Infernape",
         "description": "The One Piece Gear 5 event is here! Pull for the limited-time Rubber Infernape, a powerful attacker who can awaken, as well as other event Epics!",
         "rateUp": () => {
@@ -106,7 +119,7 @@ const bannerConfig = [
         },
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-op-banner.png"
     },
-    {
+    /*{
         "bannerType": bannerTypes.SPECIAL,
         "name": "[GEN 3] Legendary Golems Banner",
         "description": "Gen 3 has arrived! Pull for the legendary Regirock, Regice, Registeel, as well as other Gen 3 Pokemon! NOTE: The Golems are NOT limited and are available in all banners.",

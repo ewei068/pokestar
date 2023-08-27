@@ -10,11 +10,11 @@ const { logger } = require("../log");
 const { updateDocument, deleteDocuments, QueryBuilder } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { getOrSetDefault, idFrom, formatMoney } = require("../utils/utils");
-const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS, rarities } = require("../config/pokemonConfig");
+const { natureConfig, pokemonConfig, MAX_TOTAL_EVS, MAX_SINGLE_EVS, rarities, rarityConfig } = require("../config/pokemonConfig");
 const { expMultiplier, MAX_RELEASE } = require("../config/trainerConfig");
 const { getPokemonExpNeeded, calculateEffectiveSpeed, calculateWorth, getAbilityOrder, getPokemonOrder, getPartyPokemonIds } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
-const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed, buildEquipmentEmbed, buildEquipmentUpgradeEmbed, buildDexListEmbed, buildEquipmentSwapEmbed } = require("../embeds/pokemonEmbeds");
+const { buildSpeciesDexEmbed, buildPokemonListEmbed, buildPokemonEmbed, buildEquipmentEmbed, buildEquipmentUpgradeEmbed, buildDexListEmbed, buildEquipmentSwapEmbed, buildEquipmentListEmbed } = require("../embeds/pokemonEmbeds");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
@@ -29,6 +29,7 @@ const { backpackItemConfig, backpackItems } = require("../config/backpackConfig"
 const { drawIterable, drawUniform } = require("../utils/gachaUtils");
 const { partyAddRow } = require("../components/partyAddRow");
 const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
+const { buildEquipmentSelectRow } = require("../components/equipmentSelectRow");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
@@ -117,6 +118,10 @@ const calculatePokemonStats = (pokemon, speciesData) => {
         }
     }
 
+    // rarity stat bonus
+    const rarity = speciesData.rarity;
+    const statMultiplier = rarityConfig[rarity].statMultiplier || [1, 1, 1, 1, 1, 1];
+
     // calculate new stats
     const newStats = [];
     // stat calculations
@@ -137,6 +142,9 @@ const calculatePokemonStats = (pokemon, speciesData) => {
         stat = Math.floor(stat * percentModifiers[i] / 100);
         // account for pokemon level
         stat += Math.floor(flatModifiers[i] * level / 100);
+
+        // apply rarity multiplier
+        stat = Math.floor(stat * statMultiplier[i]);
 
         newStats.push(stat);
     }
@@ -1287,6 +1295,109 @@ const buildEquipmentUpgradeSend = async ({ stateId=null, user=null } = {}) => {
     return { send: send, err: null };
 }
 
+const onEquipmentScroll = ({ stateId=null, data={} } = {}) => {
+    const state = getState(stateId);
+
+    const page = data.page || 1;
+    if (page < 1) {
+        return { err: "Invalid page number!" };
+    }
+    state.page = page;
+
+    return {};
+}
+
+const EQUIPMENT_LIST_PAGE_SIZE = 10;
+const buildEquipmentListSend = async ({ stateId=null, user=null } = {}) => {
+    const state = getState(stateId);
+
+    const page = state.page || 1;
+    if (page < 1) {
+        return { err: "Invalid page number!" };
+    }
+
+    let trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { err: trainer.err };
+    }
+
+    // build agg pipeline based on state
+    const aggPipeline = [
+        { $match: { 
+            userId: user.id,
+            equipmentType: state.equipmentType || { $exists: true },
+        } },
+    ]
+    // if state.stat, add stat to agg pipeline sort
+    if (state.stat) {
+        const includeLevel = state.includeLevel ? "equipmentStats" : "equipmentStatsWithoutLevel";
+        aggPipeline.push({ $sort: { [`${includeLevel}.${state.stat}`]: -1 } });
+    }
+    // paginate
+    aggPipeline.push({ $skip: (page - 1) * EQUIPMENT_LIST_PAGE_SIZE });
+    // + 1 to see if there is a next page
+    aggPipeline.push({ $limit: EQUIPMENT_LIST_PAGE_SIZE + 1 });
+
+    // get equipment
+    let equipments;
+    try {
+        const query = new QueryBuilder(collectionNames.EQUIPMENT)
+            .setAggregate(aggPipeline);
+
+        equipments = await query.aggregate();
+        if (equipments.length === 0) {
+            return { err: "No equipment found!" };
+        }
+    } catch(e) {
+        console.error(e);
+        return { err: "Failed to get equipment!" };
+    }
+    let lastPage = true;
+    if (equipments.length > EQUIPMENT_LIST_PAGE_SIZE) {
+        lastPage = false;
+        equipments.pop();
+    }
+
+    const send = {
+        embeds: [],
+        components: [],
+    }
+
+    const embed = buildEquipmentListEmbed(trainer.data, equipments, page);
+    send.embeds.push(embed);
+
+    // scroll buttons
+    const scrollRowData = {
+        stateId: stateId,
+    }
+    const scrollActionRow = buildScrollActionRow(page, lastPage, scrollRowData, eventNames.EQUIPMENT_SCROLL);
+    send.components.push(scrollActionRow);
+
+    // eq select row
+    const selectRowData = {
+        stateId: stateId,
+    }
+    const equipmentSelectActionRow = buildEquipmentSelectRow(equipments, selectRowData, eventNames.EQUIPMENT_LIST_SELECT);
+    send.components.push(equipmentSelectActionRow);
+
+    // pokemon select row
+    // filter pokemon data and remove duplicates
+    const pokemons = equipments.map(e => {
+        return {
+            _id: e._id,
+            name: e.name,
+            speciesId: e.speciesId,
+        }
+    });
+    const uniquePokemons = pokemons.filter((p, i) => {
+        return pokemons.findIndex(p2 => p2.speciesId === p.speciesId) === i;
+    });
+    const pokemonSelectActionRow = buildPokemonSelectRow(uniquePokemons, selectRowData, eventNames.POKEMON_LIST_SELECT);
+    send.components.push(pokemonSelectActionRow);
+
+    return { send: send, err: null };
+}
+
 const buildEquipmentSwapSend = async ({ stateId=null, user=null, swap=false } = {}) => {
     const state = getState(stateId);
 
@@ -1483,6 +1594,8 @@ module.exports = {
     buildReleaseSend,
     buildEquipmentSend,
     buildEquipmentUpgradeSend,
+    onEquipmentScroll,
+    buildEquipmentListSend,
     buildEquipmentSwapSend,
     buildNatureSend,
 };

@@ -1,21 +1,32 @@
 # Pokéstar Changelog
 
-### 0.12.2
+##  1.0.0 - Official Release
 
-* Balance Changes
-  * Shields
-  * Buff self-buffs
-  * Nerf high-performers
-  * Nerf AoE or buff single-target
-  * PVP:
-    * Durability buff?
-    * Dupe pentalty?
-  * Low rarity buff?
-* Subcommands
-* Equipment search
-* Fix return not clearing text in `/pve`
-* Fix Omanyte evo
-* Spawn cooldown
+Pokestar is officially released out of Beta! Thanks everyone for helping me test the bot!
+
+* **Official Launch + 100 members celebration:** To celebrate the official launch and reaching 100 members in the support server, we're throwing a special event!
+  * Launch banner re-run: The old limited launch Pokemon are available again in a limited banner! Use `/gacha` to pull for them!
+  * A new secret event epic is available in all banners for a limited time!
+  * For more event details, use `/events`.
+* **Balance Changes:** We're rolling out a huge list of balance changes to make the meta more interesting!
+  * New mechanic: Shields! Shields take damage before health but only last a few turns!
+  * Low rarity buff: Common/Rare Pokemon have their stats buffed 10-15%; Epic Pokemon have their stats buffed 5-7.5%.
+  * Buffed some self-targetting moves.
+  * Buffed paralysis, burn, and poison.
+  * Nerfed full AoE, buffed single-target attacks.
+  * Single-type attacker nerf: attackers with very high ATK or SPA deal slightly less damage.
+  * Nerf high-performers; buffed some low-performers.
+  * Reduced the amount of attacks who can target ANY Pokemon.
+  * PVP ONLY: reduced the damage taken by all Pokemon by 15%.
+* Equipment search: Use `/equipmentlist` to search for your top equipment!
+* The `/trade` and `/party` commands now have subcommands!
+* Adjustments:
+  * There is now a ~1hr delay before spawning the first Pokemon in a server.
+  * Increased the number of `/daily` Pokeballs from 3 -> 5.
+  * `/gacha` now accepts a `page` parameter.
+* Bug Fixes:
+  * Fix return not clearing text in `/pve`.
+  * Fix Omanyte not having an evolution.
 * Expire Gen 3 event
 
 ### 0.12.1 (8/7) - One Piece Event

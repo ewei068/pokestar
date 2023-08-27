@@ -113,13 +113,32 @@ Pokestar is celebrating the animation of Gear 5 with a special event!
 * Onigashima Banner: https://i.pinimg.com/736x/61/75/09/61750983442c10bc384f5909f1c7558a.jpg
 `
 
+const HUNDRED_MEMBERS_DESCRIPTION = `🎉**100 Members + Official Launch**🎉
+
+Pokestar is officially out of Beta, and our support server has hit 100 members! Thank you to everyone who has been playing so far!
+
+<:ashpikachu:1109522092283658250> **Event Re-run:** The launch celebration event Pokemon are back for a limited time! Use \`/gacha\` to try your luck!
+
+<:greatball:1100296107759779840> **NPC Battles:** Red and Blue now give increased rewards for a limited time! Use \`/pve\` to challenge them!
+
+❓ **Secret Epic:** A new secret epic Pokemon has been added! They're available in all banners for the duration of the event!
+
+🖌️ **Art Credits**:
+* Shiny Hat Pikachu: https://www.deviantart.com/lukethefoxen/art/Pikachu-with-Ash-s-Hat-923733788
+`
+
 const gameEventConfig = [
+    {
+        "name": "100 Members + Official Launch",
+        "description": HUNDRED_MEMBERS_DESCRIPTION,
+        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-launch-banner.png",
+    },
     {
         "name": "One Piece",
         "description": ONE_PIECE_DESCRIPTION,
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-op-banner.png"
     },
-    {
+    /*{
         "name": "Generation III",
         "description": GEN_3_DESCRIPTION, 
     },

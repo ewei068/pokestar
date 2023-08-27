@@ -190,7 +190,12 @@ const buildBattlePokemonString = (pokemon) => {
     // build effects string
     if (Object.keys(pokemon.effectIds).length > 0) {
         pokemonString += `**Effects:** ${Object.keys(pokemon.effectIds).map((effectId) => {
-            return `${effectConfig[effectId].name} (${pokemon.effectIds[effectId].duration})`;
+            // special case for shield
+            let shieldString = '';
+            if (effectId === "shield" && pokemon.effectIds[effectId].args && pokemon.effectIds[effectId].args.shield) {
+                shieldString = `${pokemon.effectIds[effectId].args.shield} HP `;
+            }
+            return `${shieldString}${effectConfig[effectId].name} (${pokemon.effectIds[effectId].duration})`;
         }).join(', ')}`;
     } else {
         pokemonString += `**Effects:** None`;

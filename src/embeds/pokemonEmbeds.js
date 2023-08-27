@@ -10,7 +10,7 @@ const { rarities, rarityConfig, natureConfig, pokemonConfig, typeConfig, growthR
 const { moveConfig, abilityConfig } = require('../config/battleConfig');
 const { EmbedBuilder, time } = require('discord.js');
 const { getWhitespace, getPBar, linebreakString, setTwoInline, getOrSetDefault, formatMoney } = require('../utils/utils');
-const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString, getAbilityName, getAbilityOrder, buildEquipmentString, buildBoostString, getMoveIds } = require('../utils/pokemonUtils');
+const { getPokemonExpNeeded, buildPokemonStatString, buildPokemonBaseStatString, getAbilityName, getAbilityOrder, buildEquipmentString, buildBoostString, getMoveIds, buildCompactEquipmentString } = require('../utils/pokemonUtils');
 const { buildMoveString } = require('../utils/battleUtils');
 const { backpackItems, backpackItemConfig } = require('../config/backpackConfig');
 const { trainerFields } = require('../config/trainerConfig');
@@ -376,6 +376,25 @@ const buildEquipmentUpgradeEmbed = (trainer, pokemon, equipmentType, equipment, 
     return embed;
 }
 
+const buildEquipmentListEmbed = (trainer, equipments, page) => {
+    const equipmentString = equipments.map((equipment, index) => {
+        const equipmentType = equipment.equipmentType;
+        return buildCompactEquipmentString(equipmentType, equipment, {
+            _id: equipment._id,
+            speciesId: equipment.speciesId,
+            level: equipment.pokemonLevel,
+        });
+    }).join("\n\n");
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`Trainer ${trainer.user.username}'s Equipment`);
+    embed.setColor(0xffffff);
+    embed.setDescription(equipmentString);
+    embed.setFooter({ text: `Page ${page} | Select an equipment to inspect it!` });
+
+    return embed;
+}
+
 const buildEquipmentSwapEmbed = (trainer, pokemon1, pokemon2, equipmentType) => {
     const equipmentData = equipmentConfig[equipmentType];
     const embed = new EmbedBuilder();
@@ -566,6 +585,7 @@ module.exports = {
     buildPokemonEmbed,
     buildEquipmentEmbed,
     buildEquipmentUpgradeEmbed,
+    buildEquipmentListEmbed,
     buildEquipmentSwapEmbed,
     buildDexListEmbed,
     buildSpeciesDexEmbed,

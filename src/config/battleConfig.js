@@ -88,6 +88,9 @@ const calculateDamage = (move, source, target, miss=false, { atkStat=null, attac
     const level = source.level;
     atkStat = atkStat || move.damageType;
     attack = attack || (atkStat === damageTypes.PHYSICAL ? source.atk : source.spa);
+    // modify attack amount -- any attack over 800 is only half as effective
+    attack = attack > 800 ? 800 + (attack - 800) / 2 : attack;
+
     defStat = defStat || move.damageType;
     defense = defense || (defStat === damageTypes.PHYSICAL ? target.getDef() : target.getSpd());
     const stab = source.type1 === move.type || source.type2 === move.type ? 1.5 : 1;
@@ -173,6 +176,29 @@ const effectTypes = {
     NEUTRAL: "Neutral",
 };
 const effectConfig = {
+    "shield": {
+        "name": "Shield",
+        "description": "The target's takes shielded damage.",
+        "type": effectTypes.BUFF,
+        "dispellable": true,
+        "effectAdd": function(battle, source, target, initialArgs) {
+            const shield = initialArgs && initialArgs.shield;
+            if (!shield) {
+                return {};
+            }
+
+            let oldShield = target.effectIds.shield && target.effectIds.shield.args && target.effectIds.shield.args.shield;
+            oldShield = oldShield || 0;
+
+            const newShield = Math.max(oldShield, shield);
+            battle.addToLog(`${target.name} is shielded for ${newShield} damage!`);
+            initialArgs.shield = newShield;
+            return initialArgs;
+        },
+        "effectRemove": function(battle, target) {
+            battle.addToLog(`${target.name}'s shield was removed!`);
+        },
+    },
     "atkUp": {
         "name": "Atk. Up",
         "description": "The target's Attack increased.",
@@ -1102,8 +1128,9 @@ const effectConfig = {
                         return;
                     }
                     const moveData = moveConfig[args.damageInfo.moveId];
+                    let multiplier = 0.7;
                     if (moveData.targetPattern === targetPatterns.SINGLE) {
-                        return;
+                        multiplier = 0.4;
                     }
 
                     const wideGuardPokemon = initialArgs.pokemon;
@@ -1117,7 +1144,7 @@ const effectConfig = {
 
                     // set damage to half
                     wideGuardPokemon.battle.addToLog(`${wideGuardPokemon.name} is protecting its allies!`);
-                    args.damage = Math.max(Math.floor(args.damage / 2), 1);
+                    args.damage = Math.max(Math.floor(args.damage * multiplier), 1);
                 }
             }
             const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, listener);
@@ -1320,7 +1347,7 @@ const effectConfig = {
                     }
                     
                     dotPokemon.battle.addToLog(`${dotPokemon.name} took damage from the Leech Seed!`);
-                    const damage = Math.floor(dotPokemon.maxHp / 8);
+                    const damage = Math.floor(dotPokemon.maxHp / 4);
                     const damageTaken = dotPokemon.takeDamage(damage, initialArgs.source, {
                         "type": "leechSeed",
                     });
@@ -2017,7 +2044,7 @@ const effectConfig = {
                     );
                     targetPokemon.battle.addToLog(`${targetPokemon.name}'s holds a grudge!`);
                     for (const enemyPokemon of enemyPokemons) {
-                        enemyPokemon.addEffect("silenced", 1, targetPokemon);
+                        enemyPokemon.addEffect("silenced", 2, targetPokemon);
                     }
                 }
             }
@@ -2167,7 +2194,7 @@ const moveConfig = {
     "m6": {
         "name": "Pay Day",
         "type": types.NORMAL,
-        "power": 35,
+        "power": 45,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2193,7 +2220,7 @@ const moveConfig = {
     "m7-1": {
         "name": "Red Hawk",
         "type": types.FIRE,
-        "power": 70,
+        "power": 80,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -2206,7 +2233,7 @@ const moveConfig = {
     "m10": {
         "name": "Scratch",
         "type": types.NORMAL,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2221,18 +2248,18 @@ const moveConfig = {
         "type": types.NORMAL,
         "power": null,
         "accuracy": null,
-        "cooldown": 5,
+        "cooldown": 4,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "A frenetic dance to uplift the fighting spirit. This sharply raises the user's Attack stat for 3 turns.",
+        "description": "A frenetic dance to uplift the fighting spirit. This sharply raises the user's Attack stat for 3 turns, and grants the user 60% combat readiness.",
     },
     "m16": {
         "name": "Gust",
         "type": types.FLYING,
-        "power": 40,
+        "power": 45,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2245,7 +2272,7 @@ const moveConfig = {
     "m17": {
         "name": "Wing Attack",
         "type": types.FLYING,
-        "power": 45,
+        "power": 55,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2258,8 +2285,8 @@ const moveConfig = {
     "m21": {
         "name": "Slam",
         "type": types.NORMAL,
-        "power": 80,
-        "accuracy": 85,
+        "power": 90,
+        "accuracy": 80,
         "cooldown": 2,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
@@ -2271,7 +2298,7 @@ const moveConfig = {
     "m22": {
         "name": "Vine Whip",
         "type": types.GRASS,
-        "power": 45,
+        "power": 55,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2284,7 +2311,7 @@ const moveConfig = {
     "m23": {
         "name": "Stomp",
         "type": types.NORMAL,
-        "power": 65,
+        "power": 90,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -2297,7 +2324,7 @@ const moveConfig = {
     "m30": {
         "name": "Horn Attack",
         "type": types.NORMAL,
-        "power": 65,
+        "power": 75,
         "accuracy": 100,
         "cooldown": 2,
         "targetType": targetTypes.ENEMY,
@@ -2310,7 +2337,7 @@ const moveConfig = {
     "m33": {
         "name": "Tackle",
         "type": types.NORMAL,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2323,7 +2350,7 @@ const moveConfig = {
     "m34": {
         "name": "Body Slam",
         "type": types.NORMAL,
-        "power": 85,
+        "power": 95,
         "accuracy": 85,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -2349,7 +2376,7 @@ const moveConfig = {
     "m35": {
         "name": "Wrap",
         "type": types.NORMAL,
-        "power": 15,
+        "power": 20,
         "accuracy": 90,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2362,7 +2389,7 @@ const moveConfig = {
     "m36": {
         "name": "Take Down",
         "type": types.NORMAL,
-        "power": 100,
+        "power": 120,
         "accuracy": 85,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -2375,7 +2402,7 @@ const moveConfig = {
     "m38": {
         "name": "Double-Edge",
         "type": types.NORMAL,
-        "power": 135,
+        "power": 160,
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -2388,7 +2415,7 @@ const moveConfig = {
     "m40": {
         "name": "Poison Sting",
         "type": types.POISON,
-        "power": 15,
+        "power": 20,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2453,7 +2480,7 @@ const moveConfig = {
     "m51": {
         "name": "Acid",
         "type": types.POISON,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2466,7 +2493,7 @@ const moveConfig = {
     "m52": {
         "name": "Ember",
         "type": types.FIRE,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2492,7 +2519,7 @@ const moveConfig = {
     "m55": {
         "name": "Water Gun",
         "type": types.WATER,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2544,7 +2571,7 @@ const moveConfig = {
     "m57": {
         "name": "Surf",
         "type": types.WATER,
-        "power": 70,
+        "power": 65,
         "accuracy": 90,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -2561,7 +2588,7 @@ const moveConfig = {
         "accuracy": 90,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.ANY,
+        "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.COLUMN,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.SPECIAL,
@@ -2570,7 +2597,7 @@ const moveConfig = {
     "m59": {
         "name": "Blizzard",
         "type": types.ICE,
-        "power": 75,
+        "power": 70,
         "accuracy": 70,
         "cooldown": 6,
         "targetType": targetTypes.ENEMY,
@@ -2583,11 +2610,11 @@ const moveConfig = {
     "m60": {
         "name": "Psybeam",
         "type": types.PSYCHIC,
-        "power": 65,
+        "power": 80,
         "accuracy": 100,
         "cooldown": 2,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.ANY,
+        "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.SPECIAL,
@@ -2609,7 +2636,7 @@ const moveConfig = {
     "m64": {
         "name": "Peck",
         "type": types.FLYING,
-        "power": 35,
+        "power": 45,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2622,7 +2649,7 @@ const moveConfig = {
     "m65": {
         "name": "Drill Peck",
         "type": types.FLYING,
-        "power": 70,
+        "power": 85,
         "accuracy": 100,
         "cooldown": 2,
         "targetType": targetTypes.ENEMY,
@@ -2637,18 +2664,18 @@ const moveConfig = {
         "type": types.FIGHTING,
         "power": null,
         "accuracy": null,
-        "cooldown": 3,
+        "cooldown": 4,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user assumes a countering stance for 1 turn. When damaged by a physical move, the user retaliates with a physical attack 1.5x the power.",
+        "description": "The user assumes a countering stance for 2 turns. When damaged by a physical move, the user retaliates with a physical attack 1.5x the power.",
     },
     "m70": {
         "name": "Strength",
         "type": types.NORMAL,
-        "power": 65,
+        "power": 80,
         "accuracy": 100,
         "cooldown": 2,
         "targetType": targetTypes.ENEMY,
@@ -2661,11 +2688,11 @@ const moveConfig = {
     "m71": {
         "name": "Absorb",
         "type": types.GRASS,
-        "power": 20,
+        "power": 40,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.ANY,
+        "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.SPECIAL,
@@ -2682,7 +2709,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.SPECIAL,
-        "description": "A seed is planted on the target for 5 turns. It steals 1/8 of the target's max HP every turn.",
+        "description": "A seed is planted on the target for 5 turns. It steals 1/4 of the target's max HP every turn.",
     },
     "m76": {
         "name": "Solar Beam",
@@ -2744,7 +2771,7 @@ const moveConfig = {
     "m84": {
         "name": "Thunder Shock",
         "type": types.ELECTRIC,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2757,7 +2784,7 @@ const moveConfig = {
     "m85": {
         "name": "Thunderbolt",
         "type": types.ELECTRIC,
-        "power": 75,
+        "power": 95,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -2778,7 +2805,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "A weak electric charge is launched at the target. This has a 100% chance to paralyze the target on hit.",
+        "description": "A weak electric charge is launched at the target. This has a 100% chance to paralyze the target on hit, and grants the user 50% combat readiness.",
     },
     "m87": {
         "name": "Thunder",
@@ -2809,7 +2836,7 @@ const moveConfig = {
     "m88": {
         "name": "Rock Throw",
         "type": types.ROCK,
-        "power": 50,
+        "power": 60,
         "accuracy": 70,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2822,7 +2849,7 @@ const moveConfig = {
     "m89": {
         "name": "Earthquake",
         "type": types.GROUND,
-        "power": 95,
+        "power": 100,
         "accuracy": 100,
         "cooldown": 6,
         "targetType": targetTypes.ENEMY,
@@ -2830,12 +2857,12 @@ const moveConfig = {
         "targetPattern": targetPatterns.ALL,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
-        "description": "The user sets off an earthquake that hits all enemy Pokemon. Has 5 less base power for each additional enemy targetted (not including the first).",
+        "description": "The user sets off an earthquake that hits all enemy Pokemon. Has 7 less base power for each additional enemy targetted (not including the first).",
     },
     "m91": {
         "name": "Dig",
         "type": types.GROUND,
-        "power": 80,
+        "power": 100,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -2853,7 +2880,7 @@ const moveConfig = {
         "type": types.POISON,
         "power": null,
         "accuracy": 90,
-        "cooldown": 3,
+        "cooldown": 2,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
@@ -2864,7 +2891,7 @@ const moveConfig = {
     "m93": {
         "name": "Confusion",
         "type": types.PSYCHIC,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2898,7 +2925,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user relaxes and lightens its body to move faster. This sharply raises the user's Speed for 3 turns and boosts combat readiness by 60%.",
+        "description": "The user relaxes and lightens its body to move faster. This sharply raises the user's Speed for 4 turns and boosts combat readiness by 80%.",
     },
     "m97-1": {
         "name": "Ifrit Jambe",
@@ -2911,12 +2938,12 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user rapidly spins its body to move blazingly fast. This raises the user's Attack and Speed for 3 turns and boosts combat readiness by 60%. If the user isn't Fire type, permanently change its secondary type to Fire.",
+        "description": "The user rapidly spins its body to move blazingly fast. This raises the user's Attack and Speed for 4 turns and boosts combat readiness by 80%. If the user isn't Fire type, permanently change its secondary type to Fire.",
     },
     "m98": {
         "name": "Quick Attack",
         "type": types.NORMAL,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -2983,7 +3010,7 @@ const moveConfig = {
         "type": types.NORMAL,
         "power": null,
         "accuracy": null,
-        "cooldown": 3,
+        "cooldown": 2,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
@@ -3002,7 +3029,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.OTHER,
-        "description": "The user stiffens all the muscles in its body to raise its Defense for 2 turns.",
+        "description": "The user stiffens all the muscles in its body to raise its Defense for 2 turns. Also gains 15% def as shield.",
     },
     "m108": {
         "name": "Smokescreen",
@@ -3041,7 +3068,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.OTHER,
-        "description": "The user withdraws its body into its hard shell, raising its Defense for 2 turns.",
+        "description": "The user withdraws its body into its hard shell, raising its Defense for 2 turns and gaining 15% defense as shield.",
     },
     "m111": {
         "name": "Defense Curl",
@@ -3061,26 +3088,26 @@ const moveConfig = {
         "type": types.PSYCHIC,
         "power": null,
         "accuracy": null,
-        "cooldown": 6,
+        "cooldown": 5,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.ANY,
-        "targetPattern": targetPatterns.ROW,
+        "targetPattern": targetPatterns.ALL,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user creates a wall of light, sharply raising the Special Defense of targeted allies for 3 turns.",
+        "description": "The user creates a wall of light, sharply raising the Special Defense of targeted allies for 3 turns, and raising the Special Defense of other allies.",
     },
     "m115": {
         "name": "Reflect",
         "type": types.PSYCHIC,
         "power": null,
         "accuracy": null,
-        "cooldown": 6,
+        "cooldown": 5,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.ANY,
-        "targetPattern": targetPatterns.ROW,
+        "targetPattern": targetPatterns.ALL,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user creates a wall of light, sharply raising the Defense of targeted allies for 3 turns.",
+        "description": "The user creates a wall of light, sharply raising the Defense of targeted allies for 3 turns, and raising the Defense of other allies.",
     },
     "m116": {
         "name": "Focus Energy",
@@ -3093,7 +3120,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.OTHER,
-        "description": "The user takes a deep breath and focuses, sharply raising the user's attack for 1 turn.",
+        "description": "The user takes a deep breath and focuses, sharply raising the user's attack for 1 turn and gaining 50% combat readiness.",
     },
     "m118": {
         "name": "Metronome",
@@ -3124,7 +3151,7 @@ const moveConfig = {
     "m123": {
         "name": "Smog",
         "type": types.POISON,
-        "power": 30,
+        "power": 35,
         "accuracy": 70,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -3150,7 +3177,7 @@ const moveConfig = {
     "m127": {
         "name": "Waterfall",
         "type": types.WATER,
-        "power": 80,
+        "power": 100,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -3163,7 +3190,7 @@ const moveConfig = {
     "m134": {
         "name": "Kinesis",
         "type": types.PSYCHIC,
-        "power": 40,
+        "power": 45,
         "accuracy": 80,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -3189,8 +3216,8 @@ const moveConfig = {
     "m136": {
         "name": "High Jump Kick",
         "type": types.FIGHTING,
-        "power": 140,
-        "accuracy": 80,
+        "power": 150,
+        "accuracy": 70,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
@@ -3204,20 +3231,20 @@ const moveConfig = {
         "type": types.NORMAL,
         "power": null,
         "accuracy": null,
-        "cooldown": 3,
+        "cooldown": 2,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user glares at the target, paralyzing it.",
+        "description": "The user glares at the target, paralyzing it. Grants the user 60% combat readiness.",
     },
     "m137-1": {
         "name": "Rocket Glare",
         "type": types.DARK,
         "power": null,
         "accuracy": 80,
-        "cooldown": 4,
+        "cooldown": 3,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.ROW,
@@ -3228,7 +3255,7 @@ const moveConfig = {
     "m143": {
         "name": "Sky Attack",
         "type": types.FLYING,
-        "power": 160,
+        "power": 200,
         "accuracy": 90,
         "cooldown": 6,
         "targetType": targetTypes.ENEMY,
@@ -3246,7 +3273,7 @@ const moveConfig = {
         "type": types.GRASS,
         "power": null,
         "accuracy": null,
-        "cooldown": 4,
+        "cooldown": 3,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
@@ -3293,12 +3320,25 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user explodes, dealing damage to enemies. This also deals 1/3rd damage to surrounding allies, and causes the user to faint. Power increases proportional to percent remaining HP.",
     },
+    "m154-1": {
+        "name": "Paws of Fury",
+        "type": types.FIRE,
+        "power": 20,
+        "accuracy": 100,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SQUARE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user attacks the target square with its paws like it attacks trucks. This attack hits twice; the first lowering defense for 1 turn and the second dealing double damage.",
+    },
     "m156": {
         "name": "Rest",
         "type": types.PSYCHIC,
         "power": null,
         "accuracy": null,
-        "cooldown": 5,
+        "cooldown": 4,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
@@ -3313,7 +3353,7 @@ const moveConfig = {
         "accuracy": 90,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.ANY,
+        "targetPosition": targetPositions.BACK,
         "targetPattern": targetPatterns.ROW,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
@@ -3348,7 +3388,7 @@ const moveConfig = {
     "m168": {
         "name": "Thief",
         "type": types.DARK,
-        "power": 60,
+        "power": 70,
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -3387,11 +3427,11 @@ const moveConfig = {
     "m177-1": {
         "name": "Shadowblast",
         "type": types.FLYING,
-        "power": 90,
-        "accuracy": 90,
+        "power": 80,
+        "accuracy": 80,
         "cooldown": 6,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.ANY,
+        "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SQUARE,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.SPECIAL,
@@ -3426,7 +3466,7 @@ const moveConfig = {
     "m183": {
         "name": "Mach Punch",
         "type": types.FIGHTING,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -3439,7 +3479,7 @@ const moveConfig = {
     "m183-1": {
         "name": "Mach Pistol",
         "type": types.FIGHTING,
-        "power": 35,
+        "power": 45,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -3453,8 +3493,8 @@ const moveConfig = {
         "name": "Sweet Kiss",
         "type": types.FAIRY,
         "power": null,
-        "accuracy": 75,
-        "cooldown": 4,
+        "accuracy": 85,
+        "cooldown": 3,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
@@ -3473,7 +3513,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user permanently doubles its Attack stat in exchange for HP equal to half its max HP.",
+        "description": "The user permanently doubles its Attack stat in exchange for HP equal to half its max HP. Then, gain another turn.",
     },
     "m188": {
         "name": "Sludge Bomb",
@@ -3491,7 +3531,7 @@ const moveConfig = {
     "m189": {
         "name": "Mud Slap",
         "type": types.GROUND,
-        "power": 20,
+        "power": 35,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -3517,11 +3557,11 @@ const moveConfig = {
     "m192": {
         "name": "Zap Cannon",
         "type": types.ELECTRIC,
-        "power": 120,
+        "power": 140,
         "accuracy": 50,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.ANY,
+        "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.SPECIAL,
@@ -3569,7 +3609,7 @@ const moveConfig = {
     "m200": {
         "name": "Outrage",
         "type": types.DRAGON,
-        "power": 110,
+        "power": 130,
         "accuracy": 100,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -3582,11 +3622,11 @@ const moveConfig = {
     "m202": {
         "name": "Giga Drain",
         "type": types.GRASS,
-        "power": 75,
+        "power": 90,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.ANY,
+        "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.SPECIAL,
@@ -3610,7 +3650,7 @@ const moveConfig = {
         "type": types.FAIRY,
         "power": null,
         "accuracy": 100,
-        "cooldown": 3,
+        "cooldown": 2,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
@@ -3621,7 +3661,7 @@ const moveConfig = {
     "m205": {
         "name": "Rollout",
         "type": types.ROCK,
-        "power": 30,
+        "power": 40,
         "accuracy": 90,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -3660,7 +3700,7 @@ const moveConfig = {
     "m210": {
         "name": "Fury Cutter",
         "type": types.BUG,
-        "power": 30,
+        "power": 40,
         "accuracy": 90,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -3682,6 +3722,19 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.OTHER,
         "description": "The user pins targets with a dark, arresting look. Enemies lose 50% combat readiness and can't gain combat readiness for 2 turns.",
+    },
+    "m212-1": {
+        "name": "Slow Down!",
+        "type": types.FAIRY,
+        "power": null,
+        "accuracy": 75,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The causes enemies to slow to a crawl, sharply reducing their speed for 2 turns.",
     },
     "m214": {
         "name": "Sleep Talk",
@@ -3714,7 +3767,7 @@ const moveConfig = {
         "type": types.NORMAL,
         "power": 102,
         "accuracy": 100,
-        "cooldown": 4,
+        "cooldown": 3,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SINGLE,
@@ -3751,7 +3804,7 @@ const moveConfig = {
     "m223": {
         "name": "Dynamic Punch",
         "type": types.FIGHTING,
-        "power": 125,
+        "power": 140,
         "accuracy": 50,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -3759,12 +3812,12 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
-        "description": "The user punches the target with full, concentrated power. If hit, this also confuses the target for 3 turns.",
+        "description": "The user punches the target with full, concentrated power. If hit, this also confuses surrounding targets for 2 turns.",
     },
     "m224": {
         "name": "Megahorn",
         "type": types.BUG,
-        "power": 110,
+        "power": 120,
         "accuracy": 85,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -3826,12 +3879,25 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user slams the target with its steel-hard tail lowering the target's Defense stat for 2 turns. If the user has higher defense than the target, the effect occurs before damage is dealt.",
     },
+    "m235": {
+        "name": "Synthesis",
+        "type": types.GRASS,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 2,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user restores its own HP by 33% and gain 50% combat readiness. In sun, boost the users Special Attack and Special Defense for 2 turns. In other weather, this restores 25% HP.",
+    },
     "m236": {
         "name": "Moonlight",
         "type": types.FAIRY,
         "power": null,
         "accuracy": null,
-        "cooldown": 3,
+        "cooldown": 2,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
@@ -3855,7 +3921,7 @@ const moveConfig = {
     "m239": {
         "name": "Twister",
         "type": types.DRAGON,
-        "power": 30,
+        "power": 40,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -3894,7 +3960,7 @@ const moveConfig = {
     "m242": {
         "name": "Crunch",
         "type": types.DARK,
-        "power": 80,
+        "power": 100,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -3909,18 +3975,18 @@ const moveConfig = {
         "type": types.PSYCHIC,
         "power": null,
         "accuracy": null,
-        "cooldown": 3,
+        "cooldown": 4,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user creates a reflective field for 1 turn. When damaged by a Special move, deals damage back to the target with 1.5x base power.",
+        "description": "The user creates a reflective field for 2 turns. When damaged by a Special move, deals damage back to the target with 1.5x base power.",
     },
     "m245": {
         "name": "Extreme Speed",
         "type": types.NORMAL,
-        "power": 80,
+        "power": 95,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -3933,7 +3999,7 @@ const moveConfig = {
     "m246": {
         "name": "Ancient Power",
         "type": types.ROCK,
-        "power": 30,
+        "power": 40,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -3946,7 +4012,7 @@ const moveConfig = {
     "m247": {
         "name": "Shadow Ball",
         "type": types.GHOST,
-        "power": 80,
+        "power": 100,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -3972,7 +4038,7 @@ const moveConfig = {
     "m249": {
         "name": "Rock Smash",
         "type": types.FIGHTING,
-        "power": 35,
+        "power": 45,
         "accuracy": 80,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -3985,7 +4051,7 @@ const moveConfig = {
     "m252": {
         "name": "Fake Out",
         "type": types.NORMAL,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -4039,7 +4105,7 @@ const moveConfig = {
         "type": types.NORMAL,
         "power": null,
         "accuracy": null,
-        "cooldown": 4,
+        "cooldown": 3,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
@@ -4115,7 +4181,7 @@ const moveConfig = {
     "m276": {
         "name": "Superpower",
         "type": types.FIGHTING,
-        "power": 110,
+        "power": 130,
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -4141,7 +4207,7 @@ const moveConfig = {
     "m282": {
         "name": "Knock Off",
         "type": types.DARK,
-        "power": 65,
+        "power": 75,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -4182,13 +4248,13 @@ const moveConfig = {
         "type": types.GHOST,
         "power": null,
         "accuracy": null,
-        "cooldown": 3,
+        "cooldown": 4,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "If the user faints in the next turn, silence all enemies for 1 turn.",
+        "description": "If the user faints in the next turn, silence all enemies for 2 turns.",
     },
     "m295": {
         "name": "Luster Purge",
@@ -4197,7 +4263,7 @@ const moveConfig = {
         "accuracy": 80,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.ANY,
+        "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.COLUMN,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.SPECIAL,
@@ -4206,7 +4272,7 @@ const moveConfig = {
     "m296": {
         "name": "Mist Ball",
         "type": types.PSYCHIC,
-        "power": 60,
+        "power": 55,
         "accuracy": 80,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -4260,7 +4326,7 @@ const moveConfig = {
         "type": types.POISON,
         "power": 50,
         "accuracy": 100,
-        "cooldown": 3,
+        "cooldown": 2,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SINGLE,
@@ -4271,7 +4337,7 @@ const moveConfig = {
     "m309": {
         "name": "Meteor Mash",
         "type": types.STEEL,
-        "power": 80,
+        "power": 90,
         "accuracy": 90,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -4284,7 +4350,7 @@ const moveConfig = {
     "m311": {
         "name": "Weather Ball",
         "type": types.NORMAL,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -4310,7 +4376,7 @@ const moveConfig = {
     "m317": {
         "name": "Rock Tomb",
         "type": types.ROCK,
-        "power": 60,
+        "power": 80,
         "accuracy": 95,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -4323,7 +4389,7 @@ const moveConfig = {
     "m317-1": {
         "name": "Holy Tomb",
         "type": types.ROCK,
-        "power": 70,
+        "power": 90,
         "accuracy": 70,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -4336,7 +4402,7 @@ const moveConfig = {
     "m325": {
         "name": "Shadow Punch",
         "type": types.GHOST,
-        "power": 60,
+        "power": 75,
         "accuracy": null,
         "cooldown": 2,
         "targetType": targetTypes.ENEMY,
@@ -4349,7 +4415,7 @@ const moveConfig = {
     "m330": {
         "name": "Muddy Water",
         "type": types.WATER,
-        "power": 55,
+        "power": 50,
         "accuracy": 70,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -4362,7 +4428,7 @@ const moveConfig = {
     "m331": {
         "name": "Bullet Seed",
         "type": types.GRASS,
-        "power": 25,
+        "power": 30,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -4391,7 +4457,7 @@ const moveConfig = {
     "m332": {
         "name": "Aerial Ace",
         "type": types.FLYING,
-        "power": 65,
+        "power": 80,
         "accuracy": null,
         "cooldown": 2,
         "targetType": targetTypes.ENEMY,
@@ -4406,13 +4472,13 @@ const moveConfig = {
         "type": types.STEEL,
         "power": null,
         "accuracy": null,
-        "cooldown": 3,
+        "cooldown": 4,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user hardens its body's surface like iron, sharply raising its Defense stat for 2 turns.",
+        "description": "The user hardens its body's surface like iron, sharply raising its Defense stat for 3 turns and gaining 25% defense as shield.",
     },
     "m334-1": {
         "name": "Titanium Defense",
@@ -4425,7 +4491,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SQUARE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user hardens its body's surface like titanium to protect its teammates, sharply raising its Defense stat for 2 turns and raising surrounding allies Defense stat for 2 turns.",
+        "description": "The user hardens its teammates' bodies like titanium, sharply raising its Defense stat for 2 turns and raising surrounding allies Defense stat for 2 turns. Gives itself 25% defense as shield and allies 10% user def as shield.",
     },
     "m334-2": {
         "name": "Genetic Defense",
@@ -4456,7 +4522,7 @@ const moveConfig = {
     "m340": {
         "name": "Bounce",
         "type": types.FLYING,
-        "power": 85,
+        "power": 105,
         "accuracy": 85,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -4472,15 +4538,15 @@ const moveConfig = {
     "m344": {
         "name": "Volt Tackle",
         "type": types.ELECTRIC,
-        "power": 90,
+        "power": 80,
         "accuracy": 80,
-        "cooldown": 5,
+        "cooldown": 4,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.COLUMN,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
-        "description": "The user electrifies itself, then charges. This also damages the user by a third of the damage dealt. This may leave the target with paralysis with a 20% chance.",
+        "description": "The user electrifies itself, then charges. This also damages the user by 25% of the damage dealt. This may leave the target with paralysis with a 20% chance.",
     },
     "m347": {
         "name": "Calm Mind",
@@ -4493,7 +4559,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user quietly focuses its mind and calms its spirit to raise its Special Attack and Special Defense for 2 turns.",
+        "description": "The user quietly focuses its mind and calms its spirit to raise its Special Attack and Special Defense for 3 turns and gaining 50% combat readiness.",
     },
     "m348": {
         "name": "Leaf Blade",
@@ -4519,7 +4585,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user vigorously performs a mystic, powerful dance that raises its Attack and Speed stats for 3 turns.",
+        "description": "The user vigorously performs a mystic, powerful dance that raises its Attack and Speed stats for 3 turns and gaining 50% combat readiness.",
     },
     "m352": {
         "name": "Water Pulse",
@@ -4539,7 +4605,7 @@ const moveConfig = {
         "type": types.FLYING,
         "power": null,
         "accuracy": null,
-        "cooldown": 3,
+        "cooldown": 2,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
@@ -4591,7 +4657,7 @@ const moveConfig = {
         "type": types.BUG,
         "power": 70,
         "accuracy": 100,
-        "cooldown": 3,
+        "cooldown": 2,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SINGLE,
@@ -4602,7 +4668,7 @@ const moveConfig = {
     "m370": {
         "name": "Close Combat",
         "type": types.FIGHTING,
-        "power": 120,
+        "power": 150,
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -4628,7 +4694,7 @@ const moveConfig = {
     "m387": {
         "name": "Last Resort",
         "type": types.NORMAL,
-        "power": 40,
+        "power": 80,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -4643,7 +4709,7 @@ const moveConfig = {
         "type": types.WATER,
         "power": null,
         "accuracy": null,
-        "cooldown": 6,
+        "cooldown": 5,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SQUARE,
@@ -4667,7 +4733,7 @@ const moveConfig = {
     "m394-1": {
         "name": "Dark Blitz",
         "type": types.FIRE,
-        "power": 95,
+        "power": 90,
         "accuracy": 100,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -4680,7 +4746,7 @@ const moveConfig = {
     "m396": {
         "name": "Aura Sphere",
         "type": types.FIGHTING,
-        "power": 80,
+        "power": 100,
         "accuracy": null,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -4693,9 +4759,9 @@ const moveConfig = {
     "m398": {
         "name": "Poison Jab",
         "type": types.POISON,
-        "power": 80,
+        "power": 100,
         "accuracy": 100,
-        "cooldown": 4,
+        "cooldown": 3,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
@@ -4784,7 +4850,7 @@ const moveConfig = {
     "m407": {
         "name": "Dragon Rush",
         "type": types.DRAGON,
-        "power": 100,
+        "power": 120,
         "accuracy": 75,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -4797,7 +4863,7 @@ const moveConfig = {
     "m409": {
         "name": "Drain Punch",
         "type": types.FIGHTING,
-        "power": 75,
+        "power": 90,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -4810,7 +4876,7 @@ const moveConfig = {
     "m412": {
         "name": "Energy Ball",
         "type": types.GRASS,
-        "power": 80,
+        "power": 100,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -4862,11 +4928,11 @@ const moveConfig = {
     "m416-1": {
         "name": "Galaxy Impact",
         "type": types.NORMAL,
-        "power": 135,
+        "power": 150,
         "accuracy": 90,
         "cooldown": 6,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.ANY,
+        "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SQUARE,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
@@ -4877,31 +4943,31 @@ const moveConfig = {
         "type": types.DARK,
         "power": null,
         "accuracy": null,
-        "cooldown": 5,
+        "cooldown": 4,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user stimulates its brain by thinking bad thoughts. This sharply raises the user's Sp. Attack stat for 3 turns.",
+        "description": "The user stimulates its brain by thinking bad thoughts. This sharply raises the user's Sp. Attack stat for 3 turns, and gives it 60% combat readiness.",
     },
     "m417-1": {
         "name": "Uncontrollable Joy",
         "type": types.FAIRY,
         "power": null,
         "accuracy": null,
-        "cooldown": 2,
+        "cooldown": 4,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.OTHER,
-        "description": "The user stimulates the target's brain by thinking happy thoughts. This sharply raises the target's Sp. Attack and Evasion for 2 turns, and gives it 30% combat readiness.",
+        "description": "The user stimulates the target's brain by thinking happy thoughts. This sharply raises the target's Sp. Attack and Evasion for 2 turns, and gives it 60% combat readiness.",
     },
     "m418": {
         "name": "Bullet Punch",
         "type": types.STEEL,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -4914,7 +4980,7 @@ const moveConfig = {
     "m420": {
         "name": "Ice Shard",
         "type": types.ICE,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -4927,7 +4993,7 @@ const moveConfig = {
     "m424": {
         "name": "Fire Fang",
         "type": types.FIRE,
-        "power": 65,
+        "power": 80,
         "accuracy": 95,
         "cooldown": 2,
         "targetType": targetTypes.ENEMY,
@@ -4953,7 +5019,7 @@ const moveConfig = {
     "m428": {
         "name": "Zen Headbutt",
         "type": types.PSYCHIC,
-        "power": 90,
+        "power": 120,
         "accuracy": 90,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -4989,6 +5055,7 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user blows a powerful gust that dispells buffs from enemies and debuffs from allies.",
     },
+    // TODO: possibly rework this move
     "m433": {
         "name": "Trick Room",
         "type": types.PSYCHIC,
@@ -5044,7 +5111,7 @@ const moveConfig = {
     "m441": {
         "name": "Gunk Shot",
         "type": types.POISON,
-        "power": 80,
+        "power": 100,
         "accuracy": 80,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -5083,7 +5150,7 @@ const moveConfig = {
     "m450": {
         "name": "Bug Bite",
         "type": types.BUG,
-        "power": 60,
+        "power": 80,
         "accuracy": 100,
         "cooldown": 2,
         "targetType": targetTypes.ENEMY,
@@ -5111,20 +5178,20 @@ const moveConfig = {
         "type": types.ROCK,
         "power": null,
         "accuracy": null,
-        "cooldown": 3,
+        "cooldown": 5,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user and its allies take 50% damage from non-single-target attacks until the user's next turn.",
+        "description": "The user and its allies take 30% less damage, increased to 60% damage from non-single-target attacks for 3 turns.",
     },
     "m476": {
         "name": "Rage Powder",
         "type": types.BUG,
         "power": null,
         "accuracy": null,
-        "cooldown": 4,
+        "cooldown": 3,
         "targetType": targetTypes.ALLY,
         "targetPosition": targetPositions.SELF,
         "targetPattern": targetPatterns.SINGLE,
@@ -5135,7 +5202,7 @@ const moveConfig = {
     "m479": {
         "name": "Smack Down",
         "type": types.ROCK,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -5169,7 +5236,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
-        "description": "The user lightly performs a beautiful, mystic dance. This boosts the user's Special Attack, Special Defense, and Speed stats for 2 turns.",
+        "description": "The user lightly performs a beautiful, mystic dance. This boosts the user's Special Attack, Special Defense, and Speed stats for 3 turns. Boost the user's combat readiness by 50%.",
     },
     "m484": {
         "name": "Heavy Slam",
@@ -5187,7 +5254,7 @@ const moveConfig = {
     "m492": {
         "name": "Foul Play",
         "type": types.DARK,
-        "power": 85,
+        "power": 105,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -5200,11 +5267,11 @@ const moveConfig = {
     "m503": {
         "name": "Scald",
         "type": types.WATER,
-        "power": 80,
+        "power": 100,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.ANY,
+        "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.SPECIAL,
@@ -5226,7 +5293,7 @@ const moveConfig = {
     "m506": {
         "name": "Hex",
         "type": types.GHOST,
-        "power": 30,
+        "power": 45,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -5241,7 +5308,7 @@ const moveConfig = {
         "type": types.ELECTRIC,
         "power": 70,
         "accuracy": 100,
-        "cooldown": 3,
+        "cooldown": 2,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SINGLE,
@@ -5252,7 +5319,7 @@ const moveConfig = {
     "m523": {
         "name": "Bulldoze",
         "type": types.GROUND,
-        "power": 35,
+        "power": 30,
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -5265,9 +5332,9 @@ const moveConfig = {
     "m525": {
         "name": "Dragon Tail",
         "type": types.DRAGON,
-        "power": 60,
+        "power": 75,
         "accuracy": 90,
-        "cooldown": 3,
+        "cooldown": 2,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.BACK,
         "targetPattern": targetPatterns.SINGLE,
@@ -5304,7 +5371,7 @@ const moveConfig = {
     "m528": {
         "name": "Wild Charge",
         "type": types.ELECTRIC,
-        "power": 90,
+        "power": 100,
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -5312,12 +5379,12 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
-        "description": "The user shrouds itself in electricity and smashes into the target, increasing base power by 10% of user's speed. This also damages the user by 25% of damage dealt.",
+        "description": "The user shrouds itself in electricity and smashes into the target, increasing base power by 20% of user's speed. This also damages the user by 25% of damage dealt.",
     },
     "m529": {
         "name": "Drill Run",
         "type": types.GROUND,
-        "power": 80,
+        "power": 85,
         "accuracy": 95,
         "cooldown": 2,
         "targetType": targetTypes.ENEMY,
@@ -5330,7 +5397,7 @@ const moveConfig = {
     "m534": {
         "name": "Razor Shell",
         "type": types.WATER,
-        "power": 75,
+        "power": 90,
         "accuracy": 95,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -5382,8 +5449,8 @@ const moveConfig = {
     "m542-1": {
         "name": "Shadow Storm",
         "type": types.GHOST,
-        "power": 50,
-        "accuracy": 70,
+        "power": 40,
+        "accuracy": 80,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.ANY,
@@ -5408,7 +5475,7 @@ const moveConfig = {
     "m565": {
         "name": "Fell Stinger",
         "type": types.BUG,
-        "power": 90,
+        "power": 100,
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
@@ -5416,7 +5483,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
-        "description": "The user attacks the target with full force, dealing 50% more damage if the target is poisoned. If the target is knocked out, sharply raise the user's attack for 3 turns.",
+        "description": "The user attacks the target with full force, sharply raising attack for 3 turns. If the target is knocked out, gain another turn.",
     }, 
     "m568": {
         "name": "Noble Roar",
@@ -5436,7 +5503,7 @@ const moveConfig = {
         "type": types.ICE,
         "power": 70,
         "accuracy": 100,
-        "cooldown": 3,
+        "cooldown": 2,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SINGLE,
@@ -5460,7 +5527,7 @@ const moveConfig = {
     "m574": {
         "name": "Disarming Voice",
         "type": types.FAIRY,
-        "power": 40,
+        "power": 50,
         "accuracy": null,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -5473,7 +5540,7 @@ const moveConfig = {
     "m583": {
         "name": "Play Rough",
         "type": types.FAIRY,
-        "power": 90,
+        "power": 95,
         "accuracy": 90,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -5486,7 +5553,7 @@ const moveConfig = {
     "m585": {
         "name": "Moonblast",
         "type": types.FAIRY,
-        "power": 95,
+        "power": 80,
         "accuracy": 70,
         "cooldown": 5,
         "targetType": targetTypes.ENEMY,
@@ -5494,12 +5561,12 @@ const moveConfig = {
         "targetPattern": targetPatterns.ROW,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.SPECIAL,
-        "description": "The user attacks the target with a moonblast. This also lowers the target's special attack for 2 turns with a 70% chance.",
+        "description": "The user attacks the target with a moonblast. This also sharply lowers targets' special attack for 2 turns.",
     },
     "m586": {
         "name": "Boomburst",
         "type": types.NORMAL,
-        "power": 140,
+        "power": 130,
         "accuracy": 100,
         "cooldown": 7,
         "targetType": targetTypes.ENEMY,
@@ -5525,7 +5592,7 @@ const moveConfig = {
     "m618": {
         "name": "Origin Pulse",
         "type": types.WATER,
-        "power": 50,
+        "power": 45,
         "accuracy": 85,
         "cooldown": 6,
         "targetType": targetTypes.ENEMY,
@@ -5538,7 +5605,7 @@ const moveConfig = {
     "m619": {
         "name": "Precipice Blades",
         "type": types.GROUND,
-        "power": 55,
+        "power": 50,
         "accuracy": 85,
         "cooldown": 6,
         "targetType": targetTypes.ENEMY,
@@ -5568,7 +5635,7 @@ const moveConfig = {
         "accuracy": 100,
         "cooldown": 6,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.ANY,
+        "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.COLUMN,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.SPECIAL,
@@ -5579,9 +5646,9 @@ const moveConfig = {
         "type": types.GRASS,
         "power": null,
         "accuracy": 100,
-        "cooldown": 4,
+        "cooldown": 3,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.FRONT,
+        "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.OTHER,
@@ -5603,7 +5670,7 @@ const moveConfig = {
     "m710": {
         "name": "Liquidation",
         "type": types.WATER,
-        "power": 80,
+        "power": 100,
         "accuracy": 100,
         "cooldown": 3,
         "targetType": targetTypes.ENEMY,
@@ -5618,13 +5685,13 @@ const moveConfig = {
         "type": types.ELECTRIC,
         "power": 100,
         "accuracy": 100,
-        "cooldown": 7,
+        "cooldown": 6,
         "targetType": targetTypes.ENEMY,
         "targetPosition": targetPositions.ANY,
         "targetPattern": targetPatterns.ALL,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.SPECIAL,
-        "description": "The user unleashes a powerful beam of electricity. This ONLY deals damage to the primary target and 2 additional random enemies, but has a 10% chance to paralyze all targets.",
+        "description": "The user unleashes a powerful beam of electricity. This ONLY deals damage to the primary target and 2 additional random enemies, but has a 20% chance to paralyze all targets.",
     },
     "m814": {
         "name": "Dual Wingbeat",
@@ -5642,7 +5709,7 @@ const moveConfig = {
     "m876": {
         "name": "Pound",
         "type": types.NORMAL,
-        "power": 40,
+        "power": 50,
         "accuracy": 100,
         "cooldown": 0,
         "targetType": targetTypes.ENEMY,
@@ -5724,7 +5791,7 @@ const moveConfig = {
         "accuracy": 100,
         "cooldown": 4,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.ANY,
+        "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.COLUMN,
         "tier": moveTiers.POWER,
         "damageType": damageTypes.SPECIAL,
@@ -5785,7 +5852,7 @@ const moveConfig = {
     "m20011": {
         "name": "Dawn Rocket",
         "type": types.FAIRY,
-        "power": 65,
+        "power": 85,
         "accuracy": null,
         "cooldown": 2,
         "targetType": targetTypes.ENEMY,
@@ -5798,7 +5865,7 @@ const moveConfig = {
     "m20012": {
         "name": "Monkey God Gun",
         "type": types.FIGHTING,
-        "power": 85,
+        "power": 80,
         "accuracy": 100,
         "cooldown": 6,
         "targetType": targetTypes.ENEMY,
@@ -5928,6 +5995,8 @@ const moveExecutes = {
         for (const target of allTargets) {
             // apply greater atk up for 3 turns
             target.addEffect("greaterAtkUp", 3, source);
+            // gain 60% cr
+            source.boostCombatReadiness(source, 60);
         }
     },
     "m16": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -6400,8 +6469,8 @@ const moveExecutes = {
         const moveId = "m68";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
-            // apply counter 1 turn
-            target.addEffect("counter", 1, source);
+            // apply counter 2 turn
+            target.addEffect("counter", 2, source);
         }
     },
     "m70": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -6575,6 +6644,9 @@ const moveExecutes = {
 
             target.applyStatus(statusConditions.PARALYSIS, source);
         }
+
+        // give user 50 cr
+        source.boostCombatReadiness(source, 50);
     },
     "m87": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m87";
@@ -6633,7 +6705,7 @@ const moveExecutes = {
         const moveData = moveConfig[moveId];
         // deal less damage if more targets
         const numTargets = allTargets.length;
-        const power = moveData.power - (numTargets - 1) * 5;
+        const power = moveData.power - (numTargets - 1) * 7;
         for (const target of allTargets) {
             const dig = target.effectIds.burrowed !== undefined;
             const miss = missedTargets.includes(target);
@@ -6718,20 +6790,20 @@ const moveExecutes = {
         const moveData = moveConfig["m97"];
         for (const target of allTargets) {
             // apply greaterSpeUp buff
-            target.addEffect("greaterSpeUp", 3, source);
-            // boost combat readiness by 60
-            target.boostCombatReadiness(source, 60);
+            target.addEffect("greaterSpeUp", 4, source);
+            // boost combat readiness by 80
+            target.boostCombatReadiness(source, 80);
         }
     },
     "m97-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveData = moveConfig["m97-1"];
         for (const target of allTargets) {
             // apply atkUp, speUp buff
-            target.addEffect("atkUp", 3, source);
-            target.addEffect("speUp", 3, source);
+            target.addEffect("atkUp", 4, source);
+            target.addEffect("speUp", 4, source);
 
             // boost combat readiness by 60
-            target.boostCombatReadiness(source, 60);
+            target.boostCombatReadiness(source, 80);
         }
         // if user not fire, change second type to fire
         if (source.type1 !== types.FIRE && source.type2 !== types.FIRE) {
@@ -6823,6 +6895,10 @@ const moveExecutes = {
         for (const target of allTargets) {
             // def up for 2 turns
             target.addEffect("defUp", 2, source);
+            // gain 15% def as shield
+            target.addEffect("shield", 2, source, {
+                shield: Math.floor(target.getDef() * 0.15)
+            });
         }
     },
     "m108": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -6850,6 +6926,10 @@ const moveExecutes = {
         for (const target of allTargets) {
             // def up for 2 turns
             target.addEffect("defUp", 2, source);
+            // gain 15% def as shield
+            target.addEffect("shield", 2, source, {
+                shield: Math.floor(target.getDef() * 0.15)
+            });
         }
     },
     "m111": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -6865,17 +6945,33 @@ const moveExecutes = {
     "m113": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m113";
         const moveData = moveConfig[moveId];
+        // get target row
+        const allyParty = battle.parties[source.teamName];
+        const targetRow = source.getPatternTargets(allyParty, targetPatterns.ROW, primaryTarget.position);
         for (const target of allTargets) {
-            // greater spd up for 3 turns
-            target.addEffect("greaterSpdUp", 3, source);
+            if (targetRow.includes(target)) {
+                // greater spd up for 3 turns
+                target.addEffect("greaterSpdUp", 3, source);
+            } else {  
+                // spd up for 3 turns
+                target.addEffect("spdUp", 3, source);
+            }
         }
     },
     "m115": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m115";
         const moveData = moveConfig[moveId];
+        // get target row
+        const allyParty = battle.parties[source.teamName];
+        const targetRow = source.getPatternTargets(allyParty, targetPatterns.ROW, primaryTarget.position);
         for (const target of allTargets) {
-            // greater def up for 3 turns
-            target.addEffect("greaterDefUp", 3, source);
+            if (targetRow.includes(target)) {
+                // greater def up for 3 turns
+                target.addEffect("greaterDefUp", 3, source);
+            } else {  
+                // def up for 3 turns
+                target.addEffect("defUp", 3, source);
+            }
         }
     },
     "m116": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -6884,6 +6980,9 @@ const moveExecutes = {
         for (const target of allTargets) {
             // greater atk up for 1 turn
             target.addEffect("greaterAtkUp", 1, source);
+
+            // boost 50% cr
+            target.boostCombatReadiness(source, 50);
         }
     },
     "m118": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -7046,6 +7145,9 @@ const moveExecutes = {
 
             target.applyStatus(statusConditions.PARALYSIS, source);
         }
+
+        // give user 60% cr
+        source.boostCombatReadiness(source, 60);
     },
     "m137-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m137-1";
@@ -7180,6 +7282,35 @@ const moveExecutes = {
 
         // cause self to faint
         source.takeFaint(source);
+    },
+    "m154-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m154-1";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, lower def 1 turn
+            if (!miss) {
+                target.addEffect("defDown", 1, source);
+            }
+        }
+
+        for (const target of allTargets) {
+            if (target.isFainted) {
+                continue;
+            }
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal * 2, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
     },          
     "m156": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m156";
@@ -7304,15 +7435,15 @@ const moveExecutes = {
             n = Math.floor(source.hp / source.maxHp * 100);
             let power = 0;
             if (n >= 67) {
-                power = 30;
-            } else if (n >= 50) {
                 power = 40;
-            } else if (n >= 33) {
+            } else if (n >= 50) {
                 power = 50;
+            } else if (n >= 33) {
+                power = 60;
             } else if (n >= 10) {
-                power = 70;
+                power = 80;
             } else {
-                power = 100;
+                power = 120;
             }
             const miss = missedTargets.includes(target);
             const damageToDeal = calculateDamage(moveData, source, target, miss, {
@@ -7451,6 +7582,9 @@ const moveExecutes = {
             });
             target.atk += target.batk;
             battle.addToLog(`${target.name} doubled its attack!`);
+
+            // give 100 cr
+            target.boostCombatReadiness(source, 100);
         }
     },
     "m188": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -7725,6 +7859,18 @@ const moveExecutes = {
                 target.addEffect("restricted", 2, source);
             }
         }
+    },   
+    "m212-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m212-1";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+
+            // if not miss, greater spe down 2 turns
+            if (!miss) {
+                target.addEffect("greaterSpeDown", 2, source);
+            }
+        }
     },          
     "m214": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m214";
@@ -7855,9 +8001,13 @@ const moveExecutes = {
                 moveId: moveId
             });
 
-            // if hit, confuse for 3 turns
+            // if hit, confuse for 2 turns
             if (!miss) {
-                target.addEffect("confused", 3, source);
+                const enemyParty = source.getEnemyParty();
+                enemyTargets = source.getPatternTargets(enemyParty, targetPatterns.SQUARE, target.position, moveId);
+                for (const enemyTarget of enemyTargets) {
+                    enemyTarget.addEffect("confused", 2, source);
+                }
             }
         }
     },
@@ -7956,6 +8106,34 @@ const moveExecutes = {
             }
         }
     },
+    "m235": function (battle, source, primaryTarget, allTargets) {
+        const moveId = "m235";
+        for (const target of allTargets) {
+            let fraction = 0.33;
+            if (!battle.isWeatherNegated()) {
+                // fraction based on weather
+                if (battle.weather.weatherId === null) {
+                    fraction = 0.33;
+                } else if (battle.weather.weatherId === weatherConditions.SUN) {
+                    fraction = 0.33;
+
+                    // gain 2 turns spa, spd up
+                    target.addEffect("spaUp", 2, source);
+                    target.addEffect("spdUp", 2, source);
+                } else {
+                    fraction = 0.25;
+                }
+
+            }
+            source.giveHeal(Math.floor(target.maxHp * fraction), target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // gain 50% cr
+            target.boostCombatReadiness(source, 50);
+        }
+    },
     "m236": function (battle, source, primaryTarget, allTargets) {
         const moveId = "m236";
         for (const target of allTargets) {
@@ -8041,8 +8219,8 @@ const moveExecutes = {
         const moveId = "m243";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
-            // apply mirror coat 1 turn
-            target.addEffect("mirrorCoat", 1, source);
+            // apply mirror coat 2 turn
+            target.addEffect("mirrorCoat", 2, source);
         }
     },
     "m245": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -8710,17 +8888,34 @@ const moveExecutes = {
         const moveData = moveConfig["m334"];
         for (const target of allTargets) {
             // sharply raise def
-            target.addEffect("greaterDefUp", 2, source);
+            target.addEffect("greaterDefUp", 3, source);
+            // get 25% def as shield
+            target.addEffect("shield", 3, source, {
+                shield: Math.floor(target.getDef() * 0.25)
+            });
         }
     },
     "m334-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveData = moveConfig["m334-1"];
+        // put primary target at front of allTargets
+        if (allTargets.includes(primaryTarget)) {
+            allTargets = allTargets.filter(target => target !== primaryTarget);
+            allTargets.unshift(primaryTarget);
+        }
         for (const target of allTargets) {
             // if primary target, greater def up, else def up
             if (target === primaryTarget) {
                 target.addEffect("greaterDefUp", 2, source);
+                // get 25% def as shield
+                target.addEffect("shield", 2, source, {
+                    shield: Math.floor(source.getDef() * 0.25)
+                });
             } else {
                 target.addEffect("defUp", 2, source);
+                // get 10% def as shield
+                target.addEffect("shield", 2, source, {
+                    shield: Math.floor(source.getDef() * 0.1)
+                });
             }
         }
     },
@@ -8790,7 +8985,7 @@ const moveExecutes = {
         }
 
         battle.addToLog(`${source.name} is affected by recoil!`);
-        const damageToDeal = Math.max(Math.floor(damageDealt / 3), 1);
+        const damageToDeal = Math.max(Math.floor(damageDealt / 4), 1);
         source.dealDamage(damageToDeal, source, {
             type: "recoil"
         });
@@ -8799,9 +8994,12 @@ const moveExecutes = {
         const moveId = "m347";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
-            // spa, spd up 2 turns
-            target.addEffect("spaUp", 2, source);
-            target.addEffect("spdUp", 2, source);
+            // spa, spd up 3 turns
+            target.addEffect("spaUp", 3, source);
+            target.addEffect("spdUp", 3, source);
+
+            // gain 50% cr
+            target.boostCombatReadiness(source, 50);
         }
     },
     "m348": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -8824,6 +9022,9 @@ const moveExecutes = {
             // raise attack and speed
             target.addEffect("atkUp", 3, source);
             target.addEffect("speUp", 3, source);
+
+            // gain 50% cr
+            target.boostCombatReadiness(source, 50);
         }
     },
     "m352": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -9284,6 +9485,9 @@ const moveExecutes = {
         for (const target of allTargets) {
             // sharply raise spatk
             target.addEffect("greaterSpaUp", 3, source);
+
+            // boost cr 60%
+            source.boostCombatReadiness(source, 60);
         }
     },
     "m417-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -9294,8 +9498,8 @@ const moveExecutes = {
             target.addEffect("greaterSpaUp", 2, source);
             target.addEffect("greaterEvaUp", 2, source);
 
-            // boost cr 30%
-            source.boostCombatReadiness(source, 30);
+            // boost cr 60%
+            source.boostCombatReadiness(source, 60);
         }
     },
     "m418": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -9630,8 +9834,8 @@ const moveExecutes = {
         const moveId = "m469";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
-            // apply wide guard 1 turn
-            target.addEffect("wideGuard", 1, source);
+            // apply wide guard 3 turn
+            target.addEffect("wideGuard", 3, source);
         }
     },
     "m476": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -9689,9 +9893,12 @@ const moveExecutes = {
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             // boost spa, spd, spe
-            target.addEffect("spaUp", 2, source);
-            target.addEffect("spdUp", 2, source);
-            target.addEffect("speUp", 2, source);
+            target.addEffect("spaUp", 3, source);
+            target.addEffect("spdUp", 3, source);
+            target.addEffect("speUp", 3, source);
+
+            // boost cr 50%
+            target.boostCombatReadiness(source, 50);
         }
     },
     "m484": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -9874,7 +10081,7 @@ const moveExecutes = {
         let damageDealt = 0;
         for (const target of allTargets) {
             const damageToDeal = calculateDamage(moveData, source, target, missedTargets.includes(target), {
-                power: Math.floor(moveData.power + (source.getSpe() * 0.1))
+                power: Math.floor(moveData.power + (source.getSpe() * 0.2))
             });
             damageDealt += source.dealDamage(damageToDeal, target, {
                 type: "move",
@@ -9906,7 +10113,7 @@ const moveExecutes = {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             const damageToDeal = calculateDamage(moveData, source, target, miss, { 
-                power: Math.floor(moveData.power + (source.getDef() * 0.05))
+                power: Math.floor(moveData.power + (source.getDef() * 0.1))
             });
             source.dealDamage(damageToDeal, target, {
                 type: "move",
@@ -10013,16 +10220,13 @@ const moveExecutes = {
     "m565": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m565";
         const moveData = moveConfig[moveId];
+
+        // raise atk
+        source.addEffect("greaterAtkUp", 3, source);
         let defeatedEnemy = false;
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
-            let damageToDeal = calculateDamage(moveData, source, primaryTarget, false);
-
-            // if target poisoned, 1.5x damage
-            if (primaryTarget.statusCondition === statusConditions.POISON || primaryTarget.statusCondition === statusConditions.BADLY_POISON) {
-                damageToDeal = Math.round(damageToDeal * 1.5);
-            }
-
+            const damageToDeal = calculateDamage(moveData, source, primaryTarget, false);
             source.dealDamage(damageToDeal, primaryTarget, {
                 type: "move",
                 moveId: moveId
@@ -10033,9 +10237,9 @@ const moveExecutes = {
             }
         }
 
-        // if enemy was defeated, greatly raise atk for 3 turns
+        // if enemy was defeated, gain another turn
         if (defeatedEnemy) {
-            source.addEffect("greaterAtkUp", 3, source);
+            source.boostCombatReadiness(source, 100);
         }
     },
     "m568": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -10130,9 +10334,9 @@ const moveExecutes = {
                 moveId: moveId
             });
 
-            // if not miss, 70% chance to lower spatk
-            if (!miss && Math.random() < 0.7) {
-                target.addEffect("spaDown", 2, source);
+            // if not miss, sharply lower spatk
+            if (!miss) {
+                target.addEffect("greaterSpaDown", 2, source);
             }
         }
     },
@@ -10319,8 +10523,8 @@ const moveExecutes = {
                 });
             }
 
-            // if not miss, 10% chance to paralysis
-            if (!miss && Math.random() < 0.1) {
+            // if not miss, 20% chance to paralysis
+            if (!miss && Math.random() < 0.2) {
                 target.applyStatus(statusConditions.PARALYSIS, source);
             }
         }

@@ -174,6 +174,16 @@ const getPokemonIdToIndex = (pokemons=pokemonConfig) => {
     return pokemonIdToIndex;
 }
 
+const getEquipmentSlotValue = (slotId, slot, level) => {
+    const slotData = modifierSlotConfig[slotId];
+    const modifierData = modifierConfig[slot.modifier];
+    const { min, max } = modifierData;
+
+    const baseValue = slot.quality / 100 * (max - min) + min;
+    const value = Math.round(baseValue * (slotData.level ? level : 1));
+    return value;
+}
+
 const buildEquipmentString = (equipmentType, equipment) => {
     const { level=1, slots={} } = equipment;
     const equipmentData = equipmentConfig[equipmentType];
@@ -184,13 +194,10 @@ const buildEquipmentString = (equipmentType, equipment) => {
     for (const [slotId, slot] of Object.entries(slots)) {
         const slotData = modifierSlotConfig[slotId];
         const modifierData = modifierConfig[slot.modifier];
-        const { type, min, max } = modifierData;
-
-        const baseValue = slot.quality / 100 * (max - min) + min;
-        const value = Math.round(baseValue * (slotData.level ? level : 1));
+        const value = getEquipmentSlotValue(slotId, slot, level);
 
         modifierNames.push(`[${slotData.abbreviation}] ${modifierData.name}`);
-        modifierValues.push(`${value}${type === modifierTypes.PERCENT ? "%" : ""}`);
+        modifierValues.push(`${value}${modifierData.type === modifierTypes.PERCENT ? "%" : ""}`);
     }
     const whitespace = getWhitespace(modifierNames, 20);
     const equipmentString = modifierNames.map((name, i) => {
@@ -206,6 +213,26 @@ const buildEquipmentString = (equipmentType, equipment) => {
         equipmentHeader,
         equipmentString
     }
+}
+
+const buildCompactEquipmentString = (equipmentType, equipment, pokemon) => {
+    const { level=1, slots={} } = equipment;
+    const equipmentData = equipmentConfig[equipmentType];
+    let equipmentString = `${equipmentData.emoji} **[Lv. ${level}]** `;
+    for (const [slotId, slot] of Object.entries(slots)) {
+        const modifierData = modifierConfig[slot.modifier];
+        const value = getEquipmentSlotValue(slotId, slot, level);
+
+        equipmentString += `${modifierData.name} `;
+        equipmentString += `${value}${modifierData.type === modifierTypes.PERCENT ? "%" : ""} • `;
+    }
+    equipmentString = equipmentString.slice(0, -3);
+    if (pokemon) {
+        const { speciesId, level: pokemonLevel, _id } = pokemon;
+        equipmentString += `\n * Equipped by: ${pokemonConfig[speciesId].emoji} Lv. ${pokemonLevel} (${_id})`;
+    }
+
+    return equipmentString;
 }
 
 const buildBoostString = (oldPokemon, newPokemon) => {
@@ -254,7 +281,9 @@ module.exports = {
     getAbilityOrder,
     getPokemonOrder,
     getPokemonIdToIndex,
+    getEquipmentSlotValue,
     buildEquipmentString,
+    buildCompactEquipmentString,
     buildBoostString,
     getPartyPokemonIds,
     getMoveIds

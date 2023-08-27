@@ -1368,7 +1368,7 @@ const expMultiplier = (level) => {
     return 3 * (Math.pow(level, 1/2));
 }
 
-const NUM_DAILY_REWARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 3;
+const NUM_DAILY_REWARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 5;
 const NUM_DAILY_SHARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 5;
 
 module.exports = { 

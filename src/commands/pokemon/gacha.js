@@ -15,7 +15,7 @@ const { setState, deleteState } = require('../../services/state');
  * @param {String} pokeball Pokeball to use.
  * @returns An embed with the new pokemon, or an error message.
  */
-const gacha = async (user) => {
+const gacha = async (user, page) => {
     // build banner embed
     const stateId = setState({
         userId: user.id
@@ -24,7 +24,7 @@ const gacha = async (user) => {
     const { send, err } = await buildBannerSend({
         stateId: stateId,
         user: user,
-        page: 1,
+        page: page,
     });
     if (err) {
         deleteState(stateId);
@@ -34,7 +34,9 @@ const gacha = async (user) => {
 }
 
 const gachaMessageCommand = async (message) => {
-    const { send, err } = await gacha(message.author);
+    const args = message.content.split(" ");
+    const page = args[1] ? parseInt(args[1]) : 1;
+    const { send, err } = await gacha(message.author, page);
     if (err) {
         await message.channel.send(`${err}`);
         return { err: err };
@@ -45,7 +47,8 @@ const gachaMessageCommand = async (message) => {
 }
 
 const gachaSlashCommand = async (interaction) => {
-    const { send, err } = await gacha(interaction.user);
+    const page = interaction.options.getInteger('page') || 1;
+    const { send, err } = await gacha(interaction.user, page);
     if (err) {
         await interaction.reply(`${err}`);
         return { err: err };

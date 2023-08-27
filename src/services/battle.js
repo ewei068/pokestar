@@ -328,6 +328,7 @@ class Battle {
     dailyRewards;
     npcId;
     difficulty;
+    isPvp;
 
     constructor({ 
         moneyMultiplier=1, 
@@ -341,6 +342,7 @@ class Battle {
         winCallback=null,
         npcId=null,
         difficulty=null,
+        isPvp=false
     } = {}) {
         this.moneyMultiplier = moneyMultiplier;
         this.expMultiplier = expMultiplier;
@@ -388,6 +390,7 @@ class Battle {
         this.npcId = npcId;
         this.difficulty = difficulty;
         this.winCallback = winCallback;
+        this.isPvp = isPvp;
     }
     
     addTeam(teamName, isNpc) {
@@ -1588,7 +1591,14 @@ class Pokemon {
     }
 
     dealDamage(damage, target, damageInfo) {
-        // console.log(damage)
+        if (damage <= 0) {
+            return 0;
+        }
+
+        // if pvp, deal 15% less damage
+        if (this.battle.isPvp) {
+            damage = Math.max(1, Math.floor(damage * 0.85));
+        }
 
         const eventArgs = {
             target: target,
@@ -1599,7 +1609,6 @@ class Pokemon {
 
         this.battle.eventHandler.emit(battleEventNames.BEFORE_DAMAGE_DEALT, eventArgs);
         damage = eventArgs.damage;
-        // console.log(damage)
 
         const damageDealt = target.takeDamage(damage, this, damageInfo);
 
@@ -1631,8 +1640,20 @@ class Pokemon {
                 damage = Math.floor(damage * 1.5);
             }
         }
-        // console.log(damage)
 
+        // if shield, take shield damage and return 0
+        const shieldData = this.effectIds["shield"];
+        if (shieldData && shieldData.args && shieldData.args["shield"]) {
+            const shieldDamage = Math.min(damage, shieldData.args["shield"]);
+            shieldData.args["shield"] -= shieldDamage;
+
+            this.battle.addToLog(`${this.name} took ${shieldDamage} shield damage! (${shieldData.args["shield"]} left)`);
+            if (shieldData.args["shield"] <= 0) {
+                this.removeEffect("shield");
+            }
+            return 0;
+        }
+        
         const eventArgs = {
             target: this,
             damage: damage,
@@ -1643,7 +1664,6 @@ class Pokemon {
 
         this.battle.eventHandler.emit(battleEventNames.BEFORE_DAMAGE_TAKEN, eventArgs);
         damage = Math.min(eventArgs.damage, eventArgs.maxDamage);
-        // console.log(damage)
 
         const oldHp = this.hp;
         if (oldHp <= 0 || this.isFainted) {
@@ -1817,16 +1837,20 @@ class Pokemon {
         duration = this.battle.activePokemon === this ? duration + 1 : duration;
         const effectData = effectConfig[effectId];
 
-        // if effect already exists for longer or equal duration, do nothing
-        if (this.effectIds[effectId] && this.effectIds[effectId].duration >= duration) {
+        // if effect already exists for longer or equal duration, do nothing (special case for shield)
+        if (this.effectIds[effectId] && this.effectIds[effectId].duration >= duration && effectId !== "shield") {
             return;
         }
 
         // if effect exists, refresh duration
         // TODO: should this be modified?
         if (this.effectIds[effectId]) {
+            duration = Math.max(this.effectIds[effectId].duration, duration)
             this.effectIds[effectId].duration = duration;
-            return;
+            // shield special case
+            if (effectId !== "shield") {
+                return;
+            }
         }
 
         // trigger before effect add events
@@ -1844,11 +1868,22 @@ class Pokemon {
         }
         duration = beforeAddArgs.duration;
 
+        // special case for shield
+        let oldShield = {};
+        if (effectId === "shield") {
+            // if shield already exists, keep note of it
+            if (this.effectIds[effectId]) {
+                oldShield = this.effectIds[effectId].args;
+            }
+        }
         this.effectIds[effectId] = {
             duration: duration,
             source: source,
             initialArgs: args,
         };
+        if (oldShield) {
+            this.effectIds[effectId].args = oldShield;
+        }
         this.effectIds[effectId].args = effectData.effectAdd(this.battle, source, this, args) || {};
 
         if (this.effectIds[effectId] !== undefined) {
@@ -1909,7 +1944,7 @@ class Pokemon {
 
     applyStatus(statusId, source, {
         startingTurns=0
-    }=0) {
+    }={}) {
         // if faint, do nothing
         if (this.isFainted) {
             return;
@@ -1941,6 +1976,10 @@ class Pokemon {
                     this.battle.addToLog(`${this.name}'s Fire type renders it immune to burns!`);
                     break;
                 }
+
+                // reduce atk, spa by 25%
+                this.atk -= Math.floor(this.batk * 0.25);
+                this.spa -= Math.floor(this.bspa * 0.25);
 
                 this.status = {
                     statusId: statusId,
@@ -1975,8 +2014,8 @@ class Pokemon {
                     break;
                 }
 
-                // reduce speed by 30%
-                this.spe -= Math.floor(this.bspd * 0.3);
+                // reduce speed by 45%
+                this.spe -= Math.floor(this.bspd * 0.45);
 
                 this.status = {
                     statusId: statusId,
@@ -2045,7 +2084,7 @@ class Pokemon {
 
         switch (this.status.statusId) {
             case statusConditions.POISON:
-                const damage = Math.round(this.maxHp / 10);
+                const damage = Math.round(this.maxHp / 6);
                 this.battle.addToLog(`${this.name} is hurt by poison!`);
                 this.takeDamage(damage, this.status.source, {
                     type: "statusCondition",
@@ -2053,7 +2092,7 @@ class Pokemon {
                 });
                 break;
             case statusConditions.BURN:
-                const burnDamage = Math.round(this.maxHp / 16);
+                const burnDamage = Math.round(this.maxHp / 8);
                 this.battle.addToLog(`${this.name} is hurt by its burn!`);
                 this.takeDamage(burnDamage, this.status.source, {
                     type: "statusCondition",
@@ -2061,7 +2100,7 @@ class Pokemon {
                 });
                 break;
             case statusConditions.BADLY_POISON:
-                const badlyPoisonDamage = Math.round(this.maxHp / 10) * Math.pow(2, this.status.turns);
+                const badlyPoisonDamage = Math.round(this.maxHp / 6) * Math.pow(2, this.status.turns);
                 this.battle.addToLog(`${this.name} is hurt by poison!`);
                 this.takeDamage(badlyPoisonDamage, this.status.source, {
                     type: "statusCondition",
@@ -2085,13 +2124,16 @@ class Pokemon {
         switch (this.status.statusId) {
             case statusConditions.BURN:
                 this.battle.addToLog(`${this.name} was cured of its burn!`);
+                // restore atk, spa
+                this.atk += Math.floor(this.batk * 0.25);
+                this.spa += Math.floor(this.bspa * 0.25);
                 break;
             case statusConditions.FREEZE:
                 this.battle.addToLog(`${this.name} was thawed out!`);
                 break;
             case statusConditions.PARALYSIS:
                 // restore speed
-                this.spe += Math.floor(this.bspd * 0.25);
+                this.spe += Math.floor(this.bspd * 0.45);
 
                 this.battle.addToLog(`${this.name} was cured of its paralysis!`);
                 break;
@@ -2572,6 +2614,7 @@ const buildPveSend = async ({ stateId=null, user=null, view="list", option=null,
 
         state.npcId = option;
         send.components.push(returnRow);
+        send.content = "";
     } else if (view === "battle") {
         // validate npc id
         const npcData = npcConfig[state.npcId];

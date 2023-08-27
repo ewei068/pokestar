@@ -15,7 +15,7 @@ const commandCategoryConfig = {
         "name": "Pokemon",
         "description": "Commands to catch, train, and inspect Pokemon",
         "folder": "pokemon",
-        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "equipmentswap", "nature", "release", "mew", "celebi", "togglespawn"]
+        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "equipmentlist", "equipmentswap", "nature", "release", "mew", "celebi", "togglespawn"]
     },
     "shop": {
         "name": "Shop",
@@ -155,7 +155,14 @@ const commandConfig = {
         "description": "Roll the gacha",
         "longDescription": "Roll the gacha to get a random Pokemon. You can use different Pokeballs to increase your chances of getting a rare Pokemon. For more information, use this command and press the \"Info\" button. Get Pokeballs at the `/pokemart`, daily rewards, or level rewards.",
         "execute": "gacha.js",
-        "args": {},
+        "args": {
+            "page": {
+                "type": "int",
+                "description": "page number",
+                "optional": true,
+                "variable": false
+            },
+        },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },
     "list": {
@@ -320,6 +327,48 @@ const commandConfig = {
         },
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
+    },
+    "equipmentlist": {
+        "name": "Equipment List",
+        "aliases": ["equipmentlist", "eql"],
+        "description": "List and sort your equipment",
+        "longDescription": "List and sort your equipment. Specifiy an equipment type to filter and a stat to sort by",
+        "execute": "equipmentList.js",
+        "args": {
+            "equipment_type": {
+                "type": "string",
+                "description": "equipment type to filter by",
+                "optional": true,
+                "variable": false,
+                "enum": [
+                    "powerWeight", "powerBracer", "powerBelt", "powerLens", "powerBand", "powerAnklet"
+                ]
+            },
+            "sort_stat": {
+                "type": "string",
+                "description": "stat to sort by",
+                "optional": true,
+                "variable": false,
+                "enum": [
+                    "baseHp", "baseAtk", "baseDef", "baseSpA", "baseSpD", "baseSpe",
+                    "percentHp", "percentAtk", "percentDef", "percentSpA", "percentSpD", "percentSpe",
+                    "flatHp", "flatAtk", "flatDef", "flatSpA", "flatSpD", "flatSpe",
+                ]
+            },
+            "include_level": {
+                "type": "bool",
+                "description": "include equipment level in sort",
+                "optional": true,
+                "variable": false
+            },
+            "page": {
+                "type": "int",
+                "description": "page number to display",
+                "optional": true,
+                "variable": false
+            }
+        },
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },
     "equipmentswap": {
         "name": "Equipment Swap",
