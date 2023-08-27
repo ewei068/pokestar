@@ -31,6 +31,11 @@ const buildEquipmentSelectRow = (equipments, data, eventName, pokemonIds=[]) => 
                 pokemonId = pokemonIds[index];
             }
 
+            console.log(JSON.stringify({
+                pokemonId: pokemonId,
+                equipmentType: equipment.equipmentType,
+            }))
+
             const equipmentData = equipmentConfig[equipment.equipmentType]
             return {
                 label: `${equipmentData.name} (${pokemonId})`,
