@@ -13,6 +13,7 @@
     * Durability buff
     * Dupe pentalty?
   * Low rarity buff
+  * Reduce any targets
 * Subcommands
 * Equipment search
 * Fix return not clearing text in `/pve`

@@ -5790,6 +5790,22 @@ const pokemonConfig = {
         "growthRate": growthRates.SLOW,
         "unobtainable": true,
     },
+    "725-1": {
+        "name": "Littenyan",
+        "emoji": "<:littenyan:1145193884817834005>",
+        "description": "A special Litten with two tails. It is said to be the mascot of another world.",
+        "type": [types.FIRE, types.FAIRY],
+        "baseStats": [65, 119, 70, 80, 65, 131],
+        "sprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/littenyan-resized.png",
+        "shinySprite": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/littenyan-shiny-resized.png",
+        "abilities": {
+            "153": 1,
+        },
+        "moveIds": ["m10", "m212-1", "m583", "m154-1"],
+        "battleEligible": true,
+        "rarity": rarities.EPIC,
+        "growthRate": growthRates.SLOW,
+    },
     "828-1": {
         "name": "Scammer Thievul",
         "emoji": "<:scammerthievul:1130698673794338968>",

@@ -3320,6 +3320,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "The user explodes, dealing damage to enemies. This also deals 1/3rd damage to surrounding allies, and causes the user to faint. Power increases proportional to percent remaining HP.",
     },
+    "m154-1": {
+        "name": "Paws of Fury",
+        "type": types.FIRE,
+        "power": 20,
+        "accuracy": 100,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.SQUARE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user attacks the target square with its paws like it attacks trucks. This attack hits twice; the first lowering defense for 1 turn and the second dealing double damage.",
+    },
     "m156": {
         "name": "Rest",
         "type": types.PSYCHIC,
@@ -3709,6 +3722,19 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.OTHER,
         "description": "The user pins targets with a dark, arresting look. Enemies lose 50% combat readiness and can't gain combat readiness for 2 turns.",
+    },
+    "m212-1": {
+        "name": "Slow Down!",
+        "type": types.FAIRY,
+        "power": null,
+        "accuracy": 75,
+        "cooldown": 5,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The causes enemies to slow to a crawl, sharply reducing their speed for 2 turns.",
     },
     "m214": {
         "name": "Sleep Talk",
@@ -7256,6 +7282,35 @@ const moveExecutes = {
 
         // cause self to faint
         source.takeFaint(source);
+    },
+    "m154-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m154-1";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, lower def 1 turn
+            if (!miss) {
+                target.addEffect("defDown", 1, source);
+            }
+        }
+
+        for (const target of allTargets) {
+            if (target.isFainted) {
+                continue;
+            }
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal * 2, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
     },          
     "m156": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m156";
@@ -7802,6 +7857,18 @@ const moveExecutes = {
             if (!miss) {
                 target.reduceCombatReadiness(source, 50);
                 target.addEffect("restricted", 2, source);
+            }
+        }
+    },   
+    "m212-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m212-1";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+
+            // if not miss, greater spe down 2 turns
+            if (!miss) {
+                target.addEffect("greaterSpeDown", 2, source);
             }
         }
     },          
