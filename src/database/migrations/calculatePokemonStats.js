@@ -29,10 +29,10 @@ const PAGE_SIZE = 1000;
 const calculateAllStats = async () => {
     let pages = 0;
     while (true) {
-        // get page size + 1 pokemons
+        // get page pokemons
         const getQuery = new QueryBuilder(collectionNames.USER_POKEMON)
             .setFilter({})
-            .setLimit(PAGE_SIZE + 1)
+            .setLimit(PAGE_SIZE)
             .setPage(pages);
         const pokemons = await getQuery.find();
 
