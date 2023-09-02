@@ -1,5 +1,12 @@
 # Pokéstar Changelog
 
+### 1.0.1
+
+* Fix equipment sorting
+* Filter by non-locked
+* Fix list selection menu
+* dex alias
+
 ## 1.0.0 (8/27) - Official Release
 
 Pokestar is officially released out of Beta! Thanks everyone for helping me test the bot!

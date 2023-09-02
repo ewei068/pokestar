@@ -1391,7 +1391,7 @@ const buildEquipmentListSend = async ({ stateId=null, user=null } = {}) => {
         }
     });
     const uniquePokemons = pokemons.filter((p, i) => {
-        return pokemons.findIndex(p2 => p2.speciesId === p.speciesId) === i;
+        return pokemons.findIndex(p2 => p2._id === p._id) === i;
     });
     const pokemonSelectActionRow = buildPokemonSelectRow(uniquePokemons, selectRowData, eventNames.POKEMON_LIST_SELECT);
     send.components.push(pokemonSelectActionRow);

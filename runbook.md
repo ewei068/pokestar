@@ -49,6 +49,7 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 **Debian**
 
 * Follow instructions: https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-debian/
+    * `sudo systemctl start mongod`
 * If pubkey error: https://chrisjean.com/fix-apt-get-update-the-following-signatures-couldnt-be-verified-because-the-public-key-is-not-available/
 
 **Run Migration**
