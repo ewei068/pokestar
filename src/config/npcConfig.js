@@ -3,6 +3,7 @@ const { getFullUTCDate } = require("../utils/utils");
 const { rarities, rarityBins } = require("./pokemonConfig");
 const { drawIterable } = require("../utils/gachaUtils");
 const seedrandom = require("seedrandom");
+const { stageNames } = require("./stageConfig");
 
 const npcs = {
     BUG_CATCHER: "bugCatcher",
@@ -2247,6 +2248,41 @@ const dungeonConfig = {
     },*/
 }
 
+const raids = {
+    ARMORED_MEWTWO: "armoredMewtwoRaid",
+    // SHADOW_LUGIA: "shadowLugiaRaid",
+}
+
+const SHINY_CHANCE = process.env.STAGE === stageNames.ALPHA ? 0.8 : 0.01;
+
+const raidConfig = {
+    [raids.ARMORED_MEWTWO]: {
+        name: "Armored Mewtwo",
+        sprite: "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/armored-mewtwo-shiny.png",
+        emoji: "<:armoredmewtwo:1117130461282578535>",
+        description: "Nobody reads these right?",
+        boss: "150-1",
+        shinyRewards: [
+            "144", "145", "146", "150"
+        ],
+        difficulties: {
+            [difficulties.VERY_HARD]: {
+                rows: 3,
+                cols: 5,
+                pokemons: [
+                    {
+                        speciesId: "150-1",
+                        level: 250,
+                        position: 8,
+                    },
+                ],
+                shinyChance: SHINY_CHANCE,
+                moneyPerPercent: 1000,
+                ttl: 1000 * 60 * 60 * 2
+            },
+        },
+    },
+}
 
 const difficultyConfig = {
     [difficulties.VERY_EASY]: {
@@ -2299,4 +2335,6 @@ module.exports = {
     dungeonConfig,
     difficultyConfig,
     battleTowerConfig,
+    raids,
+    raidConfig,
 }

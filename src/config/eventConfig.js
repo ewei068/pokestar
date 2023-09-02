@@ -30,6 +30,8 @@ const eventNames = {
     DUNGEON_ACCEPT: "dungeonAccept",
     TOWER_SCROLL: "towerScroll",
     TOWER_ACCEPT: "towerAccept",
+    RAID_SELECT: "raidSelect",
+    RAID_RETURN: "raidReturn",
     BATTLE_INFO: "battleInfo",
     BATTLE_MOVE_SELECT: "battleMoveSelect",
     BATTLE_TARGET_SELECT: "battleTargetSelect",
@@ -225,6 +227,16 @@ const eventConfig = {
         "directory": "battle",
         "exp": 10,
         "money": 25,
+    },
+    [eventNames.RAID_SELECT]: {
+        "name": "Raid Select",
+        "execute": "raidSelect.js",
+        "directory": "battle",
+    },
+    [eventNames.RAID_RETURN]: {
+        "name": "Raid Return",
+        "execute": "raidReturn.js",
+        "directory": "battle",
     },
     [eventNames.BATTLE_INFO]: {
         "name": "Battle Info",

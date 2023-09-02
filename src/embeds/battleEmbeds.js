@@ -8,10 +8,10 @@
 */
 const { EmbedBuilder } = require("discord.js");
 const { moveConfig, weatherConditions } = require("../config/battleConfig");
-const { buildPartyString, buildMoveString, buildBattlePokemonString, buildNpcDifficultyString, buildDungeonDifficultyString, buildCompactPartyString } = require("../utils/battleUtils");
+const { buildPartyString, buildMoveString, buildBattlePokemonString, buildNpcDifficultyString, buildDungeonDifficultyString, buildCompactPartyString, buildRaidDifficultyString } = require("../utils/battleUtils");
 const { buildPokemonStatString, getAbilityName } = require("../utils/pokemonUtils");
 const { setTwoInline, linebreakString, fortnightToUTCTime, getFullUTCFortnight } = require("../utils/utils");
-const { npcConfig, dungeonConfig, battleTowerConfig  } = require("../config/npcConfig");
+const { npcConfig, dungeonConfig, battleTowerConfig, raidConfig  } = require("../config/npcConfig");
 const { pokemonConfig } = require("../config/pokemonConfig");
 const { getFullUsername, getRewardsString, flattenRewards } = require("../utils/trainerUtils");
 
@@ -358,6 +358,57 @@ const buildBattleTowerEmbed = (towerStage) => {
     return embed;
 }
 
+const buildRaidListEmbed = () => {
+    let raidString = "";
+    Object.entries(raidConfig).forEach(([raidId, raidData]) => {
+        raidString += `**${raidData.emoji} ${raidData.name}** • ${raidData.description}\n\n`;
+    });
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`Raids`);
+    embed.setColor(0xffffff);
+    embed.setDescription(raidString);
+    embed.setFooter({ text: `Defeat raids with your server!` });
+
+    return embed;
+}
+
+const buildRaidEmbed = (raidId) => {
+    const raidData = raidConfig[raidId];
+
+    const bossId = raidData.boss;
+    const bossData = pokemonConfig[bossId];
+    const bossString = `${bossData.emoji} #${bossId} **${bossData.name}** \`/pokedex ${bossId}\`\n`;
+    
+    const shinyIds = raidData.shinyRewards;
+    let shinyString = '';
+    for (const shinyId of shinyIds) {
+        const shinyData = pokemonConfig[shinyId];
+        shinyString += `${shinyData.emoji}`;
+    }
+
+    const fields = Object.entries(raidData.difficulties).map(([difficulty, difficultyData]) => {
+        const { difficultyHeader, difficultyString } = buildRaidDifficultyString(difficulty, difficultyData);
+        return {
+            name: difficultyHeader,
+            value: difficultyString,
+            inline: false,
+        };
+    });
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${raidData.emoji} ${raidData.name}`);
+    embed.setColor(0xffffff);
+    embed.setDescription(raidData.description);
+    embed.addFields({ name: "Boss", value: bossString, inline: true });
+    embed.addFields({ name: "Possible Shinies", value: shinyString, inline: true });
+    embed.addFields(fields);
+    embed.setImage(raidData.sprite);
+    embed.setFooter({ text: "Use the buttons to select a difficulty" });
+
+    return embed;
+}
+
 module.exports = {
     buildPartyEmbed,
     buildPartiesEmbed,
@@ -369,4 +420,6 @@ module.exports = {
     buildDungeonListEmbed,
     buildDungeonEmbed,
     buildBattleTowerEmbed,
+    buildRaidListEmbed,
+    buildRaidEmbed,
 };

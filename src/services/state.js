@@ -9,7 +9,6 @@
 const shortid = require('shortid');
 const { logger } = require('../log');
 
-
 const states = {};
 const ttls = {};
 
@@ -86,10 +85,19 @@ const getStateCount = () => {
     return Object.keys(states).length;
 }
 
+const setTtl = (stateId, ttl) => {
+    // check if state exists
+    if (stateId in states && stateId in ttls) {
+        // update ttl
+        ttls[stateId].ttl = ttl;
+    }
+}
+
 module.exports = {
     setState: setState,
     getState: getState,
     updateState: updateState,
     deleteState: deleteState,
-    getStateCount: getStateCount
+    getStateCount: getStateCount,
+    setTtl: setTtl
 }

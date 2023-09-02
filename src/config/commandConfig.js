@@ -27,7 +27,7 @@ const commandCategoryConfig = {
         "name": "Battle",
         "description": "Battle commands",
         "folder": "battle",
-        "commands": ["pvp", "pve", "dungeons",  "battletower", "party", "partyinfo", "partyadd", "partyremove", "partyauto", "partylist", "partyload"]
+        "commands": ["pvp", "pve", "dungeons",  "battletower", "raid", "party", "partyinfo", "partyadd", "partyremove", "partyauto", "partylist", "partyload"]
     },
     "social": {
         "name": "Social",
@@ -621,6 +621,15 @@ const commandConfig = {
         "description": "Battle the Battle Tower",
         "longDescription": "Climb the Battle Tower every other week for rewards!",
         "execute": "battleTower.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    },
+    "raid": {
+        "name": "Raid",
+        "aliases": ["raid"],
+        "description": "Battle a raid boss",
+        "longDescription": "Battle a raid boss with other players to get rewards!",
+        "execute": "raid.js",
         "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     },

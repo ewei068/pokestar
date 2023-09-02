@@ -2721,7 +2721,6 @@ const buildDungeonSend = async ({ stateId=null, user=null, view="list", option=n
         const embed = buildDungeonListEmbed();
         send.embeds.push(embed);
         
-        
         // build dungeon select menu
         const dungeonSelectRowData = {
             stateId: stateId,

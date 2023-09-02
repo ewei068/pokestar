@@ -10,7 +10,7 @@ const { effectConfig, statusConditions } = require('../config/battleConfig');
 const { difficultyConfig } = require('../config/npcConfig');
 const { pokemonConfig, typeConfig } = require('../config/pokemonConfig');
 const { getRewardsString, flattenRewards } = require('./trainerUtils');
-const { getPBar } = require('./utils');
+const { getPBar, formatMoney } = require('./utils');
 
 const buildPartyString = (pokemons, rows, cols, reverse=false, hp=false, emphPosition=null) => {
     let globalIndex = 0;
@@ -258,6 +258,26 @@ const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
     }
 }
 
+const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
+    const difficultyData = difficultyConfig[difficulty];
+    const allRaidPokemons = raidDifficultyData.pokemons;
+
+    const maxLevel = Math.max(...allRaidPokemons.map((pokemon) => pokemon.level));
+    const difficultyHeader = `[Lv. ${maxLevel}] ${difficultyData.name}`;
+
+    let difficultyString = '';
+    const uniqueSpeciesIds = [...new Set(allRaidPokemons.map((pokemon) => pokemon.speciesId))];
+    const pokemonEmojis = uniqueSpeciesIds.map((speciesId) => pokemonConfig[speciesId].emoji);
+    difficultyString += `**Pokemon:** ${pokemonEmojis.join(' ')}\n`;
+    // TODO: make time better
+    difficultyString += `**Shiny Chance:** ${Math.round(raidDifficultyData.shinyChance * 100, 2)}% • **Money/%:** ${formatMoney(raidDifficultyData.moneyPerPercent)} • **Time:** ${raidDifficultyData.ttl / (1000 * 60 * 60)} hours`;
+
+    return {
+        difficultyHeader,
+        difficultyString,
+    }
+}
+
 const getIdFromTowerStage = (towerStage) => {
     return `battleTowerStage${towerStage}`;
 }
@@ -270,4 +290,5 @@ module.exports = {
     buildNpcDifficultyString,
     buildDungeonDifficultyString,
     getIdFromTowerStage,
+    buildRaidDifficultyString,
 };
