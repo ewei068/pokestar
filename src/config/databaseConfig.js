@@ -36,6 +36,7 @@ const collectionNames = {
     USERS: 'users',
     USER_POKEMON: 'userPokemon',
     GUILDS: 'guilds',
+    RAIDS: 'raids',
     LIST_POKEMON: 'listPokemon',
     POKEMON_GROUPED: 'pokemonGrouped',
     POKEMON_AND_USERS: 'pokemonAndUsers',
@@ -64,6 +65,14 @@ const collectionConfig = {
             {
                 key: { guildId: 1 },
                 unique: true
+            }
+        ]
+    },
+    [collectionNames.RAIDS]: {
+        indexes: [
+            {
+                key: { userId: 1 },
+                unique: false
             }
         ]
     },

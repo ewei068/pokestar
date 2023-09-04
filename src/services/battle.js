@@ -36,9 +36,9 @@ class NPC {
     user;
     party;
 
-    constructor(npcData, difficulty) {
+    constructor(npcData, difficulty, { userId=null, user=null, party=null } = {}) {
         const difficultyData = difficultyConfig[difficulty];
-        this.userId = uuidv4();
+        this.userId = userId || uuidv4();
         this.user = {
             username: npcData.name,
             discriminator: '0',
@@ -294,6 +294,34 @@ class TowerNPC extends NPC {
                 this.party.pokemons[index] = pokemons[i];
                 i++;
             }
+        }
+    }
+}
+
+class RaidNPC extends NPC {
+    constructor(raidData, difficulty, raidUserId, boss) {
+        super(raidData, difficulty, {
+            userId: raidUserId
+        });
+        this.raidData = raidData;
+        this.difficulty = difficulty;
+        this.boss = boss;
+    }
+
+    setPokemon(raidData, difficulty) {
+        const raidDifficultyData = raidData.difficulties[difficulty];
+        this.party = {
+            rows: raidDifficultyData.rows,
+            cols: raidDifficultyData.cols,
+            pokemons: Array(raidDifficultyData.rows * raidDifficultyData.cols).fill(null)
+        };
+        
+        // generate party
+        for (const pokemonData of raidDifficultyData.pokemons) {
+            const pokemon = pokemonData.speciesId === boss.speciesId ? { ...boss } : generateRandomPokemon(this.userId, pokemonData.speciesId, pokemonData.level);
+            // give random id
+            pokemon._id = uuidv4();
+            this.party.pokemons[pokemonData.position - 1] = pokemon;
         }
     }
 }
@@ -1016,8 +1044,8 @@ class Pokemon {
         this.originalUserId = trainer.userId;
         this.teamName = teamName;
         this.name = pokemonData.name;
-        this.hp = pokemonData.stats[0];
-        this.maxHp = this.hp;
+        this.hp = pokemonData.remainingHp || pokemonData.stats[0];
+        this.maxHp = this.pokemonData.stats[0];
         this.level = pokemonData.level;
         this.atk = pokemonData.stats[1];
         this.batk = pokemonData.stats[1];

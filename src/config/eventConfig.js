@@ -32,6 +32,7 @@ const eventNames = {
     TOWER_ACCEPT: "towerAccept",
     RAID_SELECT: "raidSelect",
     RAID_RETURN: "raidReturn",
+    RAID_START: "raidStart",
     BATTLE_INFO: "battleInfo",
     BATTLE_MOVE_SELECT: "battleMoveSelect",
     BATTLE_TARGET_SELECT: "battleTargetSelect",
@@ -237,6 +238,13 @@ const eventConfig = {
         "name": "Raid Return",
         "execute": "raidReturn.js",
         "directory": "battle",
+    },
+    [eventNames.RAID_START]: {
+        "name": "Raid Start",
+        "execute": "raidStart.js",
+        "directory": "battle",
+        "exp": 10,
+        "money": 25,
     },
     [eventNames.BATTLE_INFO]: {
         "name": "Battle Info",

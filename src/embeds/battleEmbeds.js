@@ -10,7 +10,7 @@ const { EmbedBuilder } = require("discord.js");
 const { moveConfig, weatherConditions } = require("../config/battleConfig");
 const { buildPartyString, buildMoveString, buildBattlePokemonString, buildNpcDifficultyString, buildDungeonDifficultyString, buildCompactPartyString, buildRaidDifficultyString } = require("../utils/battleUtils");
 const { buildPokemonStatString, getAbilityName } = require("../utils/pokemonUtils");
-const { setTwoInline, linebreakString, fortnightToUTCTime, getFullUTCFortnight } = require("../utils/utils");
+const { setTwoInline, linebreakString, fortnightToUTCTime, getFullUTCFortnight, getPBar } = require("../utils/utils");
 const { npcConfig, dungeonConfig, battleTowerConfig, raidConfig  } = require("../config/npcConfig");
 const { pokemonConfig } = require("../config/pokemonConfig");
 const { getFullUsername, getRewardsString, flattenRewards } = require("../utils/trainerUtils");
@@ -409,6 +409,30 @@ const buildRaidEmbed = (raidId) => {
     return embed;
 }
 
+const buildRaidInstanceEmbed = (raid) => {
+    const { userId, raidId, difficulty, boss, ttl, participants } = raid;
+    const raidData = raidConfig[raidId];
+    const bossData = pokemonConfig[boss.speciesId];
+    const bossTotalHp = boss.stats[0];
+
+    const percentHp = Math.floor(boss.remainingHp / bossTotalHp * 100);
+    let descriptionString = `HP: ${getPBar(percentHp, 20)} ${percentHp}%\n`;
+    descriptionString += `**Raid Despawns <t:${Math.floor(ttl / 1000)}:R>**`;
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${raidData.emoji} ${raidData.name} Raid`);
+    embed.setColor(0xffffff);
+    embed.setDescription(descriptionString);
+    embed.addFields(
+        { name: "Owner", value: `<@${userId}>`, inline: false },
+        { name: "Boss", value: `${bossData.emoji} #${boss.speciesId} **${bossData.name}** \`/pokedex ${boss.speciesId}\``, inline: true }
+    );
+    // TODO: add participants
+    embed.setImage(raidData.sprite);
+
+    return embed;
+}
+
 module.exports = {
     buildPartyEmbed,
     buildPartiesEmbed,
@@ -422,4 +446,5 @@ module.exports = {
     buildBattleTowerEmbed,
     buildRaidListEmbed,
     buildRaidEmbed,
+    buildRaidInstanceEmbed,
 };
