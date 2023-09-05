@@ -26,8 +26,8 @@ const raidStart = async (interaction, data) => {
         return { err: actionRes.err };
     }
 
-    // set state's interaction
-    state.interaction = interaction;
+    // set state's interaction message
+    state.messageRef = interaction.message;
 
     const { send, err } = await buildRaidSend({
         stateId: data.stateId,

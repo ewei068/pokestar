@@ -2253,7 +2253,7 @@ const raids = {
     // SHADOW_LUGIA: "shadowLugiaRaid",
 }
 
-const SHINY_CHANCE = process.env.STAGE === stageNames.ALPHA ? 0.8 : 0.01;
+const SHINY_CHANCE = process.env.STAGE === stageNames.ALPHA ? 0.8 : 0.033;
 
 const raidConfig = {
     [raids.ARMORED_MEWTWO]: {
@@ -2271,13 +2271,38 @@ const raidConfig = {
                 cols: 5,
                 pokemons: [
                     {
+                        speciesId: "3",
+                        level: 100,
+                        position: 1,
+                    },
+                    {
+                        speciesId: "6",
+                        level: 100,
+                        position: 3,
+                    },
+                    {
+                        speciesId: "9",
+                        level: 100,
+                        position: 5,
+                    },
+                    {
+                        speciesId: "25-1",
+                        level: 120,
+                        position: 7,
+                    },
+                    {
+                        speciesId: "52-1",
+                        level: 120,
+                        position: 9,
+                    },
+                    {
                         speciesId: "150-1",
                         level: 250,
-                        position: 8,
+                        position: 13,
                     },
                 ],
                 shinyChance: SHINY_CHANCE,
-                moneyPerPercent: 1000,
+                moneyPerPercent: 500,
                 ttl: 1000 * 60 * 60 * 2
             },
         },

@@ -10,7 +10,7 @@ const { EmbedBuilder } = require("discord.js");
 const { moveConfig, weatherConditions } = require("../config/battleConfig");
 const { buildPartyString, buildMoveString, buildBattlePokemonString, buildNpcDifficultyString, buildDungeonDifficultyString, buildCompactPartyString, buildRaidDifficultyString } = require("../utils/battleUtils");
 const { buildPokemonStatString, getAbilityName } = require("../utils/pokemonUtils");
-const { setTwoInline, linebreakString, fortnightToUTCTime, getFullUTCFortnight, getPBar } = require("../utils/utils");
+const { setTwoInline, linebreakString, fortnightToUTCTime, getFullUTCFortnight, getPBar, formatMoney } = require("../utils/utils");
 const { npcConfig, dungeonConfig, battleTowerConfig, raidConfig  } = require("../config/npcConfig");
 const { pokemonConfig } = require("../config/pokemonConfig");
 const { getFullUsername, getRewardsString, flattenRewards } = require("../utils/trainerUtils");
@@ -419,6 +419,14 @@ const buildRaidInstanceEmbed = (raid) => {
     let descriptionString = `HP: ${getPBar(percentHp, 20)} ${percentHp}%\n`;
     descriptionString += `**Raid Despawns <t:${Math.floor(ttl / 1000)}:R>**`;
 
+    // build top 10 participant string sorted by damage dealt
+    const topParticipants = Object.keys(participants).sort((a, b) => participants[b] - participants[a]).slice(0, 10);
+    let participantString = '';
+    for (const participantId of topParticipants) {
+        const participantDamage = participants[participantId];
+        participantString += `**<@${participantId}>** • ${participantDamage} (${Math.floor(participantDamage / bossTotalHp * 100)}%)\n`;
+    }
+
     const embed = new EmbedBuilder();
     embed.setTitle(`${raidData.emoji} ${raidData.name} Raid`);
     embed.setColor(0xffffff);
@@ -427,7 +435,49 @@ const buildRaidInstanceEmbed = (raid) => {
         { name: "Owner", value: `<@${userId}>`, inline: false },
         { name: "Boss", value: `${bossData.emoji} #${boss.speciesId} **${bossData.name}** \`/pokedex ${boss.speciesId}\``, inline: true }
     );
-    // TODO: add participants
+    if (participantString) {
+        embed.addFields({ name: "Top Participants", value: participantString, inline: false });
+    }
+    embed.setImage(raidData.sprite);
+
+    return embed;
+}
+
+const buildRaidWinEmbed = (raid, rewards) => {
+    const { userId, raidId, difficulty, boss, ttl, participants } = raid;
+    const raidData = raidConfig[raidId];
+    const bossTotalHp = boss.stats[0];
+
+    // build participant rewards
+    const topParticipants = Object.keys(participants).sort((a, b) => participants[b] - participants[a])
+    let participantString = '**Rewards Recevied **\n';
+    for (const participantId of topParticipants) {
+        const participantDamage = participants[participantId];
+        const participantRewards = rewards[participantId];
+        if (!participantRewards) continue;
+        const { money, backpack, shiny } = participantRewards;
+
+        const rewardsForTrainer = [];
+        if (money) {
+            rewardsForTrainer.push(formatMoney(money));
+        }
+        if (backpack) {
+            // TODO
+        }
+        if (shiny) {
+            const shinyData = pokemonConfig[shiny];
+            if (shinyData) {
+                rewardsForTrainer.push(`✨ ${shinyData.emoji}`);
+            }
+        }
+
+        participantString += `**<@${participantId}>** • ${rewardsForTrainer.join(" • ")} • ${participantDamage} damage (${Math.floor(participantDamage / bossTotalHp * 100)}%)\n`;
+    }
+
+    const embed = new EmbedBuilder();
+    embed.setTitle(`${raidData.emoji} ${raidData.name} Raid Defeated!`);
+    embed.setColor(0xffffff);
+    embed.setDescription(participantString);
     embed.setImage(raidData.sprite);
 
     return embed;
@@ -447,4 +497,5 @@ module.exports = {
     buildRaidListEmbed,
     buildRaidEmbed,
     buildRaidInstanceEmbed,
+    buildRaidWinEmbed,
 };

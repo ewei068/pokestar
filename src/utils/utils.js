@@ -200,6 +200,14 @@ const formatMoney = (amount) => {
     return "₽" + formatted;
 }
 
+const errorlessAsync = async (fn) => {
+    try {
+        return await fn();
+    } catch (err) {
+        // do nothing
+    }
+}
+
 module.exports = {
     getOrSetDefault,
     getPBar,
@@ -219,5 +227,6 @@ module.exports = {
     fortnightToUTCTime,
     getTimeToNextDay,
     poll,
-    formatMoney
+    formatMoney,
+    errorlessAsync
 }

@@ -318,9 +318,9 @@ class RaidNPC extends NPC {
         
         // generate party
         for (const pokemonData of raidDifficultyData.pokemons) {
-            const pokemon = pokemonData.speciesId === boss.speciesId ? { ...boss } : generateRandomPokemon(this.userId, pokemonData.speciesId, pokemonData.level);
+            const pokemon = pokemonData.speciesId === this.boss.speciesId ? { ...this.boss } : generateRandomPokemon(this.userId, pokemonData.speciesId, pokemonData.level);
             // give random id
-            pokemon._id = uuidv4();
+            pokemon._id = pokemon._id || uuidv4();
             this.party.pokemons[pokemonData.position - 1] = pokemon;
         }
     }
@@ -368,6 +368,7 @@ class Battle {
         rewardString=null,
         dailyRewards=null,
         winCallback=null,
+        loseCallback=null,
         npcId=null,
         difficulty=null,
         isPvp=false
@@ -418,6 +419,7 @@ class Battle {
         this.npcId = npcId;
         this.difficulty = difficulty;
         this.winCallback = winCallback;
+        this.loseCallback = loseCallback;
         this.isPvp = isPvp;
     }
     
@@ -2388,6 +2390,7 @@ class BattleEventHandler {
 
 const getStartTurnSend = async (battle, stateId) => {
     let content = battle.log.join('\n');
+    battle.clearLog();
 
     const stateEmbed = buildBattleEmbed(battle);
     
@@ -2515,10 +2518,17 @@ const getStartTurnSend = async (battle, stateId) => {
                     }
 
                 }
+            } else {
+                if (battle.loseCallback) {
+                    await battle.loseCallback(battle);
+                }
             }
         } catch (err) {
             logger.error(`Failed to add battle rewards: ${err}`);
         }
+
+        // re-add log to content
+        content += `\n${battle.log.join('\n')}`;
 
         // if state has an NPC id, add a replay button
         const state = getState(stateId);
@@ -3056,4 +3066,5 @@ module.exports = {
     buildDungeonSend,
     onBattleTowerAccept,
     buildBattleTowerSend,
+    RaidNPC
 }

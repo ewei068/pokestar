@@ -60,11 +60,13 @@ const updateState = (stateId, state) => {
     }
 }
 
-const getState = (stateId) => {
+const getState = (stateId, refresh=true) => {
     // check if state exists
     if (stateId in states) {
-        // update lastCalled time
-        ttls[stateId].lastCalled = Date.now();
+        if (refresh) {
+            // update lastCalled time
+            ttls[stateId].lastCalled = Date.now();
+        }
         // return state
         return states[stateId];
     } else {
