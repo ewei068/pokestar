@@ -14212,6 +14212,249 @@ const abilityConfig = {
             battle.eventHandler.unregisterListener(abilityData.listenerId2);
         }
     },
+    "20013": {
+        "name": "Armored Behemoth's Pressure",
+        "description": "The user is immune to instant-faint effects and takes reduced damage. When taking damage, increase the user's defensive stats by 5% and has a 30% chance to counter with a random move.",
+        "abilityAdd": function (battle, source, target) {
+            const afterDamageListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    const sourcePokemon = args.source;
+                    if (targetPokemon.isFainted || targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    // attempt to get ability data and log damage taken
+                    const ability = initialArgs.pokemon.ability;
+                    if (!ability || ability.abilityId !== "20013" || !ability.data) {
+                        return;
+                    }
+                    const abilityData = ability.data;
+                    const turn = abilityData.turn || targetPokemon.battle.turn;
+                    abilityData.damageTakenTurn += args.damage;
+
+                    // increase defenses by 5%
+                    targetPokemon.battle.addToLog(`${targetPokemon.name}'s Armored Behemoth's Pressence increases its defenses!`);
+                    targetPokemon.def += Math.floor(targetPokemon.bdef * 0.05);
+                    targetPokemon.spd += Math.floor(targetPokemon.bspd * 0.05);
+
+                    // 30% chance to counter with a random move
+                    if (Math.random() > 0.3 || !sourcePokemon) {
+                        return;
+                    }
+                    const validMoves = Object.keys(targetPokemon.moveIds);
+                    // if no moves, return
+                    if (validMoves.length === 0) {
+                        battle.addToLog(`${targetPokemon.name} has no moves to use!`);
+                        return;
+                    }
+                    const randomMoveId = validMoves[Math.floor(Math.random() * validMoves.length)];
+                    const randomMoveData = moveConfig[randomMoveId];
+                    battle.addToLog(`${targetPokemon.name} countered with ${randomMoveData.name}!`);
+                    // get valid targets
+                    const validTargets = battle.getEligibleTargets(targetPokemon, randomMoveId);
+                    // if no valid targets, return
+                    if (validTargets.length === 0) {
+                        battle.addToLog(`${randomMoveData.name} has no valid targets!`);
+                        return;
+                    }
+                    // choose target or random valid target
+                    const target = validTargets.includes(sourcePokemon) ? sourcePokemon : validTargets[Math.floor(Math.random() * validTargets.length)];
+                    const targetParty = battle.parties[target.teamName];
+                    const targets = targetPokemon.getPatternTargets(targetParty, randomMoveData.targetPattern, target.position, randomMoveId);
+                    // use move against target
+                    battle.addToLog(`${randomMoveData.name} hit ${target.name}!`);
+                    // yes I know the targets are confusing
+                    moveExecutes[randomMoveId](targetPokemon.battle, targetPokemon, target, targets, []);
+                }
+            }
+            const damageListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    const sourcePokemon = args.source;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    // attempt to get ability data
+                    const ability = initialArgs.pokemon.ability;
+                    if (!ability || ability.abilityId !== "20013" || !ability.data) {
+                        return;
+                    }
+                    const abilityData = ability.data;
+                    const turn = abilityData.turn;
+                    abilityData.turn = targetPokemon.battle.turn;
+                    if (turn !== targetPokemon.battle.turn) {
+                        abilityData.damageTakenTurn = 0;
+                    }
+                    const damageTakenTurn = abilityData.damageTakenTurn || 0;
+
+                    const damage = args.damage;
+                    const maxHp = targetPokemon.maxHp;
+                    if (damage > maxHp * 0.03) {
+                        args.damage = Math.floor(maxHp * 0.03);
+                        args.maxDamage = Math.min(args.maxDamage, args.damage);
+                    }
+
+                    // if took more than 5% of max hp this turn, reduce damage down to 0.5% of max hp
+                    if (damageTakenTurn > 0.05 * maxHp && damage > maxHp * 0.005) {
+                        args.damage = Math.floor(maxHp * 0.005);
+                        args.maxDamage = Math.min(args.maxDamage, args.damage);
+                    }
+                }
+            }
+            const faintListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    args.canFaint = false;
+                    targetPokemon.battle.addToLog(`${targetPokemon.name}'s Armored Behemoth's Pressence prevents it from fainting!`);
+                }
+            }
+
+            const afterDamageListenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_DAMAGE_TAKEN, afterDamageListener);
+            const damageListenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, damageListener);
+            const faintListenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_CAUSE_FAINT, faintListener);
+            return {
+                "afterDamageListenerId": afterDamageListenerId,
+                "damageListenerId": damageListenerId,
+                "faintListenerId": faintListenerId,
+                "turn": 0,
+                "damageTakenTurn": 0,
+            };
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "20013" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.afterDamageListenerId);
+            battle.eventHandler.unregisterListener(abilityData.damageListenerId);
+            battle.eventHandler.unregisterListener(abilityData.faintListenerId);
+        }
+    },
+    "20014": {
+        "name": "Shadow Berserker's Rage",
+        "description": "The user is immune to instant-faint effects and takes reduced damage. When taking damage, increase the user's offensive stats by 5% and gains 30% combat readiness.",
+        "abilityAdd": function (battle, source, target) {
+            const afterDamageListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    const sourcePokemon = args.source;
+                    if (targetPokemon.isFainted || targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    // attempt to get ability data and log damage taken
+                    const ability = initialArgs.pokemon.ability;
+                    if (!ability || ability.abilityId !== "20014" || !ability.data) {
+                        return;
+                    }
+                    const abilityData = ability.data;
+                    const turn = abilityData.turn || targetPokemon.battle.turn;
+                    abilityData.damageTakenTurn += args.damage;
+
+                    // increase offenses by 5%
+                    targetPokemon.battle.addToLog(`${targetPokemon.name}'s Shadow Berserker's Rage increases its offenses!`);
+                    targetPokemon.atk += Math.floor(targetPokemon.batk * 0.05);
+                    targetPokemon.spa += Math.floor(targetPokemon.bspa * 0.05);
+
+                    // gain 30%
+                    targetPokemon.battle.addToLog(`${targetPokemon.name}'s Shadow Berserker's Rage increases its combat readiness!`);
+                    targetPokemon.boostCombatReadiness(targetPokemon, 30);
+                }
+            }
+            const damageListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    const sourcePokemon = args.source;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    // attempt to get ability data
+                    const ability = initialArgs.pokemon.ability;
+                    if (!ability || ability.abilityId !== "20014" || !ability.data) {
+                        return;
+                    }
+                    const abilityData = ability.data;
+                    const turn = abilityData.turn;
+                    abilityData.turn = targetPokemon.battle.turn;
+                    if (turn !== targetPokemon.battle.turn) {
+                        abilityData.damageTakenTurn = 0;
+                    }
+                    const damageTakenTurn = abilityData.damageTakenTurn || 0;
+
+                    const damage = args.damage;
+                    const maxHp = targetPokemon.maxHp;
+                    if (damage > maxHp * 0.055) {
+                        args.damage = Math.floor(maxHp * 0.055);
+                        args.maxDamage = Math.min(args.maxDamage, args.damage);
+                    }
+
+                    // if took more than 5% of max hp this turn, reduce damage down to 1% of max hp
+                    if (damageTakenTurn > 0.05 * maxHp && damage > maxHp * 0.01) {
+                        args.damage = Math.floor(maxHp * 0.01);
+                        args.maxDamage = Math.min(args.maxDamage, args.damage);
+                    }
+                }
+            }
+            const faintListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    if (targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
+
+                    args.canFaint = false;
+                    targetPokemon.battle.addToLog(`${targetPokemon.name}'s Shadow Berserker's Rage prevents it from fainting!`);
+                }
+            }
+
+            const afterDamageListenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_DAMAGE_TAKEN, afterDamageListener);
+            const damageListenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, damageListener);
+            const faintListenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_CAUSE_FAINT, faintListener);
+            return {
+                "afterDamageListenerId": afterDamageListenerId,
+                "damageListenerId": damageListenerId,
+                "faintListenerId": faintListenerId,
+                "turn": 0,
+                "damageTakenTurn": 0,
+            };
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "20014" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.afterDamageListenerId);
+            battle.eventHandler.unregisterListener(abilityData.damageListenerId);
+            battle.eventHandler.unregisterListener(abilityData.faintListenerId);
+        }
+    },
 
 };
 

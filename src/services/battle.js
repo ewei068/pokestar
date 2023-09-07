@@ -2389,6 +2389,10 @@ class BattleEventHandler {
 }
 
 const getStartTurnSend = async (battle, stateId) => {
+    // clip log to last 20 lines
+    if (battle.log.length > 20) {
+        battle.log = battle.log.slice(battle.log.length - 20);
+    }
     let content = battle.log.join('\n');
     battle.clearLog();
 

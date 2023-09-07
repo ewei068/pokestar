@@ -2250,7 +2250,7 @@ const dungeonConfig = {
 
 const raids = {
     ARMORED_MEWTWO: "armoredMewtwoRaid",
-    // SHADOW_LUGIA: "shadowLugiaRaid",
+    SHADOW_LUGIA: "shadowLugiaRaid",
 }
 
 const SHINY_CHANCE = process.env.STAGE === stageNames.ALPHA ? 0.8 : 0.033;
@@ -2258,10 +2258,10 @@ const SHINY_CHANCE = process.env.STAGE === stageNames.ALPHA ? 0.8 : 0.033;
 const raidConfig = {
     [raids.ARMORED_MEWTWO]: {
         name: "Armored Mewtwo",
-        sprite: "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/armored-mewtwo-shiny.png",
+        sprite: "https://s.aficionados.com.br/imagens/pokemon-go-niantic-anuncia-mewtwo-com-armadura-para-o-jogo_f.jpg",
         emoji: "<:armoredmewtwo:1117130461282578535>",
-        description: "Nobody reads these right?",
-        boss: "150-1",
+        description: "Team Rocket GO has captured Mewtwo and armored it. Team up with other trainers to defeat it and save Mewtwo!",
+        boss: "20150-1",
         shinyRewards: [
             "144", "145", "146", "150"
         ],
@@ -2296,8 +2296,59 @@ const raidConfig = {
                         position: 9,
                     },
                     {
-                        speciesId: "150-1",
-                        level: 250,
+                        speciesId: "20150-1",
+                        level: 150,
+                        position: 13,
+                    },
+                ],
+                shinyChance: SHINY_CHANCE,
+                moneyPerPercent: 500,
+                ttl: 1000 * 60 * 60 * 2
+            },
+        },
+    },
+    [raids.SHADOW_LUGIA]: {
+        name: "Shadow Lugia",
+        sprite: "https://64.media.tumblr.com/2a40c996ae00cefd2be5b5de74da8fef/236f6aa7b1a334ea-15/s1280x1920/f11d75a0e478800f90a9db168ff540d5c4f4eea4.png",
+        emoji: "<:shadowlugia:1127311851278061608>",
+        description: "Team Rocket GO has captured Lugia and corrupted it. Team up with other trainers to stop its rampage!",
+        boss: "20249-1",
+        shinyRewards: [
+            "243","244", "245", "249"
+        ],
+        difficulties: {
+            [difficulties.VERY_HARD]: {
+                rows: 3,
+                cols: 5,
+                pokemons: [
+                    {
+                        speciesId: "144",
+                        level: 95,
+                        position: 1,
+                    },
+                    {
+                        speciesId: "145",
+                        level: 95,
+                        position: 3,
+                    },
+                    {
+                        speciesId: "146",
+                        level: 95,
+                        position: 5,
+                    },
+                    {
+                        speciesId: "248-1",
+                        level: 120,
+                        position: 7,
+                    },
+                    {
+                        speciesId: "157-1",
+                        level: 120,
+                        position: 9,
+                    },
+                    {
+                        speciesId: "20249-1",
+                        level: 150,
                         position: 13,
                     },
                 ],

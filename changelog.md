@@ -2,9 +2,13 @@
 
 ### 1.0.1
 
+* Raid
 * Fix equipment sorting
 * Filter by non-locked
 * Fix list selection menu
+* Fix spawn exploit
+* Expire One Piece event
+* Nerf perish song
 * dex alias
 
 ## 1.0.0 (8/27) - Official Release
