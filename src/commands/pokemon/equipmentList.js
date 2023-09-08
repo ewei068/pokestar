@@ -14,13 +14,14 @@ const { setState, deleteState } = require("../../services/state");
  * Used to list the equipment 
  * @returns 
  */
-const equipmentList = async (user, equipmentType, sortStat, includeLevel, page) => {
+const equipmentList = async (user, equipmentType, sortStat, includeLevel, locked, page) => {
     // build selection list of equipment
     const stateId = setState({
         userId: user.id,
         equipmentType: equipmentType,
         stat: sortStat,
         includeLevel: includeLevel,
+        locked: locked,
         page: page,
     }, ttl=150);
 
@@ -40,8 +41,9 @@ const equipmentListMessageCommand = async (message) => {
     const equipmentType = args[1];
     const sortStat = args[2];
     const includeLevel = args[3] ? args[3].toLowerCase() === 'true' : true;
-    const page = args[4] ? parseInt(args[4]) : 1;
-    const { send, err } = await equipmentList(message.author, equipmentType, sortStat, includeLevel, page);
+    const locked = args[4] !== undefined ? (args[4].toLowerCase() === 'true') : undefined;
+    const page = args[5] ? parseInt(args[5]) : 1;
+    const { send, err } = await equipmentList(message.author, equipmentType, sortStat, includeLevel, locked, page);
     if (err) {
         await message.channel.send(`${err}`);
         return { err: err };
@@ -56,8 +58,9 @@ const equipmentListSlashCommand = async (interaction) => {
     const equipmentType = interaction.options.getString('equipment_type');
     const sortStat = interaction.options.getString('sort_stat');
     const includeLevel = interaction.options.getBoolean('include_level') === false ? false : true;
+    const locked = interaction.options.getBoolean('locked') === undefined ? undefined : interaction.options.getBoolean('locked');
     const page = interaction.options.getInteger('page');
-    const { send, err } = await equipmentList(interaction.user, equipmentType, sortStat, includeLevel, page);
+    const { send, err } = await equipmentList(interaction.user, equipmentType, sortStat, includeLevel, locked, page);
     if (err) {
         await interaction.editReply(`${err}`);
         return { err: err };

@@ -155,7 +155,8 @@ const collectionConfig = {
                     pokemonLevel: "$level",
                     equipments: { 
                         $objectToArray: "$equipments" 
-                    }
+                    },
+                    locked: 1,
                 }
             },
             {
@@ -172,7 +173,8 @@ const collectionConfig = {
                     pokemonLevel: 1,
                     equipmentType: "$equipments.k",
                     level: "$equipments.v.level",
-                    slots: "$equipments.v.slots"
+                    slots: "$equipments.v.slots",
+                    locked: 1,
                 }
             },
             // add field

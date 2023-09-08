@@ -361,6 +361,12 @@ const commandConfig = {
                 "optional": true,
                 "variable": false
             },
+            "locked": {
+                "type": "bool",
+                "description": "include/exclude locked Pokemon in sort",
+                "optional": true,
+                "variable": false
+            },
             "page": {
                 "type": "int",
                 "description": "page number to display",

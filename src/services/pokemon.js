@@ -1326,12 +1326,16 @@ const buildEquipmentListSend = async ({ stateId=null, user=null } = {}) => {
         { $match: { 
             userId: user.id,
             equipmentType: state.equipmentType || { $exists: true },
+            locked: (state.locked === true || state.locked === false) ? state.locked : { $exists: true },
         } },
     ]
     // if state.stat, add stat to agg pipeline sort
     if (state.stat) {
         const includeLevel = state.includeLevel ? "equipmentStats" : "equipmentStatsWithoutLevel";
-        aggPipeline.push({ $sort: { [`${includeLevel}.${state.stat}`]: -1 } });
+        aggPipeline.push({ $sort: {
+            [`${includeLevel}.${state.stat}`]: -1 },
+            "_id": 1,
+        });
     }
     // paginate
     aggPipeline.push({ $skip: (page - 1) * EQUIPMENT_LIST_PAGE_SIZE });
@@ -1373,7 +1377,6 @@ const buildEquipmentListSend = async ({ stateId=null, user=null } = {}) => {
     const scrollActionRow = buildScrollActionRow(page, lastPage, scrollRowData, eventNames.EQUIPMENT_SCROLL);
     send.components.push(scrollActionRow);
 
-    
     // eq select row
     const selectRowData = {
         stateId: stateId,
@@ -1391,7 +1394,7 @@ const buildEquipmentListSend = async ({ stateId=null, user=null } = {}) => {
         }
     });
     const uniquePokemons = pokemons.filter((p, i) => {
-        return pokemons.findIndex(p2 => p2._id === p._id) === i;
+        return pokemons.findIndex(p2 => p2._id.toString() === p._id.toString()) === i;
     });
     const pokemonSelectActionRow = buildPokemonSelectRow(uniquePokemons, selectRowData, eventNames.POKEMON_LIST_SELECT);
     send.components.push(pokemonSelectActionRow);
