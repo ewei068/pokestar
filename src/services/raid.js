@@ -492,8 +492,26 @@ const buildRaidSend = async ({ stateId=null, user=null } = {}) => {
     return { send: send, err: null };
 }
 
+const cleanupRaids = async () => {
+    const query = new QueryBuilder(collectionNames.RAIDS)
+        .setFilter({ ttl: { $lt: Date.now() } });
+    
+    let numRaidsCleaned = 0;
+    const raids = await query.find();
+    for (const raid of raids) {
+        try {
+            await checkTtl(raid);
+            numRaidsCleaned++;
+        } catch (err) {
+            // pass
+        }
+    }
+    logger.info(`Cleaned ${numRaidsCleaned} raids`);
+}
+
 module.exports = {
     onRaidStart,
     onRaidAccept,
-    buildRaidSend
+    buildRaidSend,
+    cleanupRaids,
 };

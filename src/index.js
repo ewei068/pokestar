@@ -14,6 +14,7 @@ const { poll, formatMoney } = require('./utils/utils.js');
 const axios = require('axios');
 const { startSpawning, addGuild } = require('./services/spawn.js');
 const { getStateCount } = require('./services/state.js');
+const { cleanupRaids } = require('./services/raid.js');
 
 const FFLAG_ENABLE_SPAWN = process.env.FFLAG_ENABLE_SPAWN === "1";
 console.log(`FFLAG_ENABLE_SPAWN: ${FFLAG_ENABLE_SPAWN}`);
@@ -131,6 +132,15 @@ client.once(Events.ClientReady, c => {
             logger.warn("Error polling state size");
         }
     }, 1000 * 60 * 60);
+
+    // poll raid cleanup
+    poll(async () => {
+        try {
+            await cleanupRaids();
+        } catch (error) {
+            logger.error("Error cleaning up raids", error);
+        }
+    }, 1000 * 60 * 10);
 
     // connect to discordbotlist.com
     if (process.env.STAGE === stageNames.BETA || process.env.STAGE === stageNames.PROD) {
