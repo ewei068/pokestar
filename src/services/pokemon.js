@@ -1332,9 +1332,11 @@ const buildEquipmentListSend = async ({ stateId=null, user=null } = {}) => {
     // if state.stat, add stat to agg pipeline sort
     if (state.stat) {
         const includeLevel = state.includeLevel ? "equipmentStats" : "equipmentStatsWithoutLevel";
-        aggPipeline.push({ $sort: {
-            [`${includeLevel}.${state.stat}`]: -1 },
-            "_id": 1,
+        aggPipeline.push({ 
+            $sort: {
+                [`${includeLevel}.${state.stat}`]: -1 ,
+                "_id": 1,
+            }
         });
     }
     // paginate
@@ -1342,7 +1344,6 @@ const buildEquipmentListSend = async ({ stateId=null, user=null } = {}) => {
     // + 1 to see if there is a next page
     aggPipeline.push({ $limit: EQUIPMENT_LIST_PAGE_SIZE + 1 });
 
-    console.log(JSON.stringify(aggPipeline, null, 2));
     // get equipment
     let equipments;
     try {
