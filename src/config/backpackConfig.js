@@ -1,6 +1,7 @@
 const backpackCategories = {
     POKEBALLS: '0',
     MATERIALS: '1',
+    CONSUMABLES: '2',
 }
 
 const backpackItems = {
@@ -12,6 +13,7 @@ const backpackItems = {
     EMOTION_SHARD: '5',
     WILLPOWER_SHARD: '6',
     MINT: '7',
+    RAID_PASS: '8',
 }
 
 const backpackCategoryConfig = {
@@ -34,9 +36,17 @@ const backpackCategoryConfig = {
             backpackItems.KNOWLEDGE_SHARD,
             backpackItems.EMOTION_SHARD,
             backpackItems.WILLPOWER_SHARD,
-            backpackItems.MINT,
+            backpackItems.MINT
         ]
     },
+    [backpackCategories.CONSUMABLES]: {
+        "name": "Consumables",
+        "emoji": "<:raidpass:1150161526297206824>",
+        "description": "One-time use items for various purposes!",
+        "items": [
+            backpackItems.RAID_PASS
+        ]
+    }
 }
 
 const backpackItemConfig = {
@@ -87,6 +97,12 @@ const backpackItemConfig = {
         "emoji": "<:mint:1119381176398913576>",
         "description": "Used to change a Pokemon's nature!",
         "category": backpackCategories.MATERIALS,
+    },
+    [backpackItems.RAID_PASS]: {
+        "name": "Raid Pass",
+        "emoji": "<:raidpass:1150161526297206824>",
+        "description": "Used to start a raid!",
+        "category": backpackCategories.CONSUMABLES,
     },
 }
 

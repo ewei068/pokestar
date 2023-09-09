@@ -112,7 +112,7 @@ const calculateDamage = (move, source, target, miss=false, { atkStat=null, attac
         type = 0.35;
     }
     const random = Math.random() * (1 - 0.85) + 0.85;
-    const burn = source.status.statusId === statusConditions.BURN && move.damageType === damageTypes.PHYSICAL ? 0.5 : 1;
+    const burn = source.status.statusId === statusConditions.BURN ? 0.65 : 1;
 
     let weatherMult = 1;
     if (!source.battle.isWeatherNegated()) {
@@ -5693,6 +5693,19 @@ const moveConfig = {
         "damageType": damageTypes.SPECIAL,
         "description": "The user unleashes a powerful beam of electricity. This ONLY deals damage to the primary target and 2 additional random enemies, but has a 20% chance to paralyze all targets.",
     },
+    "m742": {
+        "name": "Double Iron Bash",
+        "type": types.STEEL,
+        "power": 60,
+        "accuracy": 100,
+        "cooldown": 6,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.PHYSICAL,
+        "description": "The user rotates, centering the hex nut in its chest, and then strikes with its arms twice in a row. This move hits twice; once in a row and once in a column, each with a 30% chance to flinch.",
+    },
     "m814": {
         "name": "Dual Wingbeat",
         "type": types.FLYING,
@@ -10526,6 +10539,42 @@ const moveExecutes = {
             // if not miss, 20% chance to paralysis
             if (!miss && Math.random() < 0.2) {
                 target.applyStatus(statusConditions.PARALYSIS, source);
+            }
+        }
+    },
+    "m742": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m742";
+        const moveData = moveConfig[moveId];
+
+        // get row targets
+        const enemyParty = battle.parties[primaryTarget.teamName]
+        const rowTargets = source.getPatternTargets(enemyParty, targetPatterns.ROW, primaryTarget.position, moveId);
+        for (const target of rowTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 30% chance to flinch
+            if (!miss && Math.random() < 0.3) {
+                target.addEffect("flinched", 1, source);
+            }
+        }
+
+        const columnTargets = source.getPatternTargets(enemyParty, targetPatterns.COLUMN, primaryTarget.position, moveId);
+        for (const target of columnTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+
+            // if not miss, 30% chance to flinch
+            if (!miss && Math.random() < 0.3) {
+                target.addEffect("flinched", 1, source);
             }
         }
     },

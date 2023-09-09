@@ -2007,10 +2007,6 @@ class Pokemon {
                     break;
                 }
 
-                // reduce atk, spa by 25%
-                this.atk -= Math.floor(this.batk * 0.25);
-                this.spa -= Math.floor(this.bspa * 0.25);
-
                 this.status = {
                     statusId: statusId,
                     source: source,
@@ -2154,9 +2150,6 @@ class Pokemon {
         switch (this.status.statusId) {
             case statusConditions.BURN:
                 this.battle.addToLog(`${this.name} was cured of its burn!`);
-                // restore atk, spa
-                this.atk += Math.floor(this.batk * 0.25);
-                this.spa += Math.floor(this.bspa * 0.25);
                 break;
             case statusConditions.FREEZE:
                 this.battle.addToLog(`${this.name} was thawed out!`);

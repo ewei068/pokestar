@@ -21,6 +21,7 @@ const npcs = {
     DRAGON_TAMER: "dragonTamer",
     ACE_TRAINER: "aceTrainer",
     PALMER: "palmer",
+    PROFESSOR_WILLOW: "professorWillow",
     STRAW_HATS: "strawHats",
     //TEAM_ROCKET: "teamRocket",
     //GOLD_RUSH: "goldRush",
@@ -524,6 +525,28 @@ const npcConfig = {
                     backpack: {
                         [backpackCategories.MATERIALS]: {
                             [backpackItems.MINT]: 1,
+                        },
+                    }
+                }
+            },
+        }
+    },
+    [npcs.PROFESSOR_WILLOW]: {
+        name: "Professor Willow",
+        sprite: "https://archives.bulbagarden.net/media/upload/thumb/5/53/GO_Professor_Willow_2022.png/52px-GO_Professor_Willow_2022.png",
+        emoji: "🤓",
+        catchphrase: "I'm Willow, the Pokémon Professor. If you're strong enough to defeat me, I'll allow you to participate in a Raid.",
+        difficulties: {
+            [difficulties.VERY_HARD]: {
+                minLevel: 130,
+                maxLevel: 149,
+                numPokemon: 6,
+                pokemonIds: ["144", "145", "146", "150-1", "249-1"],
+                aceId: "20809",
+                dailyRewards: {
+                    backpack: {
+                        [backpackCategories.CONSUMABLES]: {
+                            [backpackItems.RAID_PASS]: process.env.STAGE == stageNames.ALPHA ? 25 : 1,
                         },
                     }
                 }

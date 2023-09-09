@@ -1,5 +1,6 @@
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
+const { backpackItems, backpackItemConfig } = require("../config/backpackConfig");
 const { collectionNames } = require("../config/databaseConfig");
 const { eventNames } = require("../config/eventConfig");
 const { raids, raidConfig, difficultyConfig } = require("../config/npcConfig");
@@ -7,7 +8,7 @@ const { QueryBuilder, deleteDocuments, updateDocument } = require("../database/m
 const { buildRaidListEmbed, buildRaidEmbed, buildRaidInstanceEmbed, buildRaidWinEmbed } = require("../embeds/battleEmbeds");
 const { logger } = require("../log");
 const { drawIterable } = require("../utils/gachaUtils");
-const { addRewards } = require("../utils/trainerUtils");
+const { addRewards, getItems, removeItems } = require("../utils/trainerUtils");
 const { idFrom, errorlessAsync } = require("../utils/utils");
 const { RaidNPC, Battle, getStartTurnSend } = require("./battle");
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
@@ -77,6 +78,11 @@ const getRaidByInstanceId = async ({ raidInstanceId=null } = {}) => {
     return raid;
 }
 
+const canStartRaid = (trainer) => {
+    const numRaidPasses = getItems(trainer, backpackItems.RAID_PASS);
+    return numRaidPasses > 0;
+}
+
 const onRaidStart = async ({ stateId=null, user=null } = {}) => {
     // get state
     const state = getState(stateId);
@@ -106,6 +112,10 @@ const onRaidStart = async ({ stateId=null, user=null } = {}) => {
         return { send: null, err: "You already have an active raid. Use `/raid` again to view it." };
     }
 
+    if (!canStartRaid(trainer.data)) {
+        return { send: null, err: "You don't have any raid passes. You can get them by beating Professor Willow in `/pve`." };
+    }
+
     // create boss pokemon
     const bossId = raidData.boss;
     const bossData = difficultyData.pokemons.filter(p => p.speciesId === bossId)[0];
@@ -115,6 +125,13 @@ const onRaidStart = async ({ stateId=null, user=null } = {}) => {
     });
     boss.remainingHp = boss.stats[0];
     boss._id = uuidv4();
+
+    // remove a raid pass
+    removeItems(trainer.data, backpackItems.RAID_PASS, 1);
+    const updateRes = await updateTrainer(trainer.data);
+    if (updateRes.err) {
+        return { send: null, err: "Error updating trainer." };
+    }
 
     // create raid
     const raid = {
@@ -450,6 +467,9 @@ const buildRaidSend = async ({ stateId=null, user=null } = {}) => {
         const embed = buildRaidEmbed(raidId);
         send.embeds.push(embed);
 
+        const raidPassData = backpackItemConfig[backpackItems.RAID_PASS];
+        send.content = `You have ${getItems(trainer, backpackItems.RAID_PASS)} ${raidPassData.emoji}.`
+
         // build difficulty select
         const difficultySelectData = {
             stateId: stateId,
@@ -457,11 +477,12 @@ const buildRaidSend = async ({ stateId=null, user=null } = {}) => {
         const difficultyButtonConfigs = Object.keys(raidData.difficulties).map(difficulty => {
             return {
                 label: difficultyConfig[difficulty].name,
-                disabled: false,
+                disabled: !canStartRaid(trainer),
                 data: {
                     ...difficultySelectData,
                     difficulty: difficulty,
-                }
+                },
+                emoji: raidPassData.emoji,
             }
         });
         const difficultyRow = buildButtonActionRow(

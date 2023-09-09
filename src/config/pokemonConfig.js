@@ -5976,6 +5976,23 @@ const pokemonConfig = {
         "growthRate": growthRates.SLOW,
         "unobtainable": true,
     },
+    "20809": {
+        "name": "Willow's Melmetal",
+        "emoji": "<:809:1149545704008716391>",
+        "description": "After studying this Pokemon for decades, Professor Willow has brought the full potential out of Melmetal.",
+        "type": [types.STEEL],
+        "baseStats": [135, 153, 153, 100, 125, 34],
+        "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/809.png",
+        "shinySprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/809.png",
+        "abilities": {
+            "20002": 1,
+        },
+        "moveIds": ["m334", "m153", "m223", "m719", "m742"],
+        "battleEligible": true,
+        "rarity": rarities.MYTHICAL,
+        "growthRate": growthRates.SLOW,
+        "unobtainable": true,
+    }
 }
 
 const rarityBins = {
