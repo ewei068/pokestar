@@ -2276,7 +2276,7 @@ const raids = {
     SHADOW_LUGIA: "shadowLugiaRaid",
 }
 
-const SHINY_CHANCE = process.env.STAGE === stageNames.ALPHA ? 0.8 : 0.0033;
+const SHINY_CHANCE = 0.0033 //process.env.STAGE === stageNames.ALPHA ? 0.8 : 0.0033;
 
 const raidConfig = {
     [raids.ARMORED_MEWTWO]: {

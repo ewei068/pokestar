@@ -270,7 +270,10 @@ const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
     const pokemonEmojis = uniqueSpeciesIds.map((speciesId) => pokemonConfig[speciesId].emoji);
     difficultyString += `**Pokemon:** ${pokemonEmojis.join(' ')}\n`;
     // TODO: make time better
-    difficultyString += `**Shiny Chance:** ${Math.round(raidDifficultyData.shinyChance * 100, 2)}% • **Money/%:** ${formatMoney(raidDifficultyData.moneyPerPercent)} • **Time:** ${raidDifficultyData.ttl / (1000 * 60 * 60)} hours`;
+    // display shiny chance as percentage rounded to 2 decimal places
+    const shinyChance = Math.round(raidDifficultyData.shinyChance * 10000) / 100;
+
+    difficultyString += `**Shiny Chance:** ${shinyChance}% • **Money/%:** ${formatMoney(raidDifficultyData.moneyPerPercent)} • **Time:** ${raidDifficultyData.ttl / (1000 * 60 * 60)} hours`;
 
     return {
         difficultyHeader,
