@@ -122,7 +122,7 @@ const commandConfig = {
     },
     "daily": {
         "name": "Daily",
-        "aliases": ["daily", "d"],
+        "aliases": ["daily", "dl"],
         "description": "Get your daily rewards",
         "longDescription": "Get your daily rewards, including Pokedollars and Pokeballs. You can get your daily rewards once every 24 hours, resetting at 00:00 UTC.",
         "execute": "daily.js",
@@ -236,7 +236,7 @@ const commandConfig = {
     },
     "pokedex": {
         "name": "Pokedex",
-        "aliases": ["pokedex", "dex"],
+        "aliases": ["pokedex", "dex", "d"],
         "description": "Get info about a Pokemon species",
         "longDescription": "Browse all information about a Pokedex species, including its general information, base stats, and moves. Specify a species to skip to that species.",
         "execute": "pokedex.js",
@@ -597,7 +597,7 @@ const commandConfig = {
                 "variable": false,
                 "enum": [
                     "bugCatcher", "youngster", "lass", "fisherman", "hiker", "aromaLady", "blackBelt", "dragonTamer", "aceTrainer", 
-                    "blue", "red", "gold", "steven", "palmer", "strawHats"
+                    "blue", "red", "gold", "steven", "palmer", "professorWillow"
                 ]
             },
             "difficulty": {

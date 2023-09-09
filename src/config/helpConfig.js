@@ -133,7 +133,7 @@ const gameEventConfig = [
         "description": HUNDRED_MEMBERS_DESCRIPTION,
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-launch-banner.png",
     },
-    {
+    /*{
         "name": "One Piece",
         "description": ONE_PIECE_DESCRIPTION,
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-op-banner.png"

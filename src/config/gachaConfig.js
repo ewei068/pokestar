@@ -83,7 +83,7 @@ const bannerConfig = [
         },
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-launch-banner.png"
     },
-    {
+    /*{
         "bannerType": bannerTypes.SPECIAL,
         "name": "[EVENT] Rubber Infernape",
         "description": "The One Piece Gear 5 event is here! Pull for the limited-time Rubber Infernape, a powerful attacker who can awaken, as well as other event Epics!",

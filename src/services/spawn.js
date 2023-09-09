@@ -73,7 +73,7 @@ const buildPokemonSpawnSend = () => {
     const speciesId = drawIterable(rarityBins[rarity], 1)[0];
     const pokemonData = pokemonConfig[speciesId];
 
-    const shinyChance = process.env.STAGE == stageNames.ALPHA ? 1 : 1024 / 8;
+    const shinyChance = process.env.STAGE == stageNames.ALPHA ? 1 : 1024 / 4;
     const isShiny = drawUniform(0, shinyChance, 1)[0] == 0;
     const level = drawUniform(1, 100, 1)[0];
 
@@ -307,23 +307,6 @@ class GuildSpawner {
     }
 
     async spawn(guild) {
-        // spawn probability based on number of members (not implemented for now)
-        /* let spawnProbability = 0;
-        const memberCount = guild.members.cache.size;
-        console.log(memberCount);
-        if (memberCount < 5) {
-            spawnProbability = 0.25;
-        } else if (memberCount < 100) {
-            spawnProbability = 1;
-        } else if (memberCount < 500) {
-            spawnProbability = 0.7;
-        } else {
-            spawnProbability = 0.5;
-        }
-        if (Math.random() > spawnProbability && !WHITELISTED_SERVERS.includes(guild.id)) {
-            return {};
-        } */
-
         // check if spawn was disabled for guild
         // get guild
         this.guildData = await getGuildData(guild.id);
@@ -338,6 +321,23 @@ class GuildSpawner {
             if (res.err) {
                 return res;
             }
+        }
+        guild = this.guild;
+
+        // spawn probability based on number of members
+        let spawnProbability = 0;
+        const memberCount = guild.members.cache.size;
+        if (memberCount < 5) {
+            spawnProbability = 0.25;
+        } else if (memberCount < 20) {
+            spawnProbability = 0.5;
+        } else if (memberCount < 200) {
+            spawnProbability = 1;
+        } else {
+            spawnProbability = 0.7;
+        }
+        if (Math.random() > spawnProbability && !WHITELISTED_SERVERS.includes(guild.id)) {
+            return {};
         }
 
         // get random cached channel

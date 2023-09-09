@@ -22,7 +22,7 @@ const npcs = {
     ACE_TRAINER: "aceTrainer",
     PALMER: "palmer",
     PROFESSOR_WILLOW: "professorWillow",
-    STRAW_HATS: "strawHats",
+    //STRAW_HATS: "strawHats",
     //TEAM_ROCKET: "teamRocket",
     //GOLD_RUSH: "goldRush",
 }
@@ -553,7 +553,7 @@ const npcConfig = {
             },
         }
     },
-    [npcs.STRAW_HATS]: {
+    /*[npcs.STRAW_HATS]: {
         name: "Straw Hats",
         sprite: "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/luffy-resized.png",
         emoji: "<:luffy:1136890668342595654>",
@@ -973,7 +973,7 @@ const dungeons = {
     SOUL_CAVE: "soulCave",
     SPIRIT_ALTAR: "spiritAltar",
     NEW_ISLAND: "newIsland",
-    ONIGASHIMA: "onigashima",
+    //ONIGASHIMA: "onigashima",
     //BLOODY_SUNDAY: "bloodySunday",
 }
 
@@ -1986,7 +1986,7 @@ const dungeonConfig = {
             },
         }
     },
-    [dungeons.ONIGASHIMA]: {
+    /*[dungeons.ONIGASHIMA]: {
         name: "Onigashima",
         sprite: "https://i.pinimg.com/736x/61/75/09/61750983442c10bc384f5909f1c7558a.jpg",
         emoji: "💀",

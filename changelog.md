@@ -1,15 +1,20 @@
 # Pokéstar Changelog
 
-### 1.0.1
+### 1.0.1 - Raid Update
 
-* Raid
-* Fix equipment sorting
-* Filter by non-locked
-* Fix list selection menu
-* Fix spawn exploit
-* Expire One Piece event
-* Nerf perish song
-* dex alias
+* **Raids:** Raids have arrived in Pokestar! Team up with your server to defeat powerful raid bosses for a chance at shiny Legendaries!
+  * Get a raid pass every day from defeating Professor Willow in `/pve`.
+  * Use `/raid` to browse a raid or view an ongoing raid.
+  * Challenge a raid with your friends!
+  * After the raid is defeated, rewards are given based on damage dealt.
+* `/pokedex` now has the `d` alias.
+* Adjustments:
+  * Fix `/equipmentlist` sorting bugs.
+  * Added a locked Pokemon filter to `/equipmentlist`
+  * Fix `/equipmentlist` Pokemon selection menu bugs.
+  * Wild Pokemon spawn less in low-member and high-member servers.
+  * Nerf Perish Song.
+* Expire One Piece event.
 
 ## 1.0.0 (8/27) - Official Release
 

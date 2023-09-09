@@ -3587,7 +3587,7 @@ const moveConfig = {
         "accuracy": null,
         "cooldown": 7,
         "targetType": targetTypes.ENEMY,
-        "targetPosition": targetPositions.ANY,
+        "targetPosition": targetPositions.FRONT,
         "targetPattern": targetPatterns.SQUARE,
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.OTHER,
