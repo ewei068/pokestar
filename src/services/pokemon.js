@@ -1342,6 +1342,7 @@ const buildEquipmentListSend = async ({ stateId=null, user=null } = {}) => {
     // + 1 to see if there is a next page
     aggPipeline.push({ $limit: EQUIPMENT_LIST_PAGE_SIZE + 1 });
 
+    console.log(JSON.stringify(aggPipeline, null, 2));
     // get equipment
     let equipments;
     try {
