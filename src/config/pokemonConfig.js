@@ -5953,7 +5953,7 @@ const pokemonConfig = {
         "abilities": {
             "20014": 1,
         },
-        "moveIds": ["m94", "m245", "m542-1", "m814", "m177", "m177-1"],
+        "moveIds": ["m94", "m245", "m542-1", "m814", "m177-1", "m248"],
         "battleEligible": true,
         "rarity": rarities.MYTHICAL,
         "growthRate": growthRates.SLOW,

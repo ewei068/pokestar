@@ -66,14 +66,17 @@ const calculateSpawnCooldown = (multiplier = 1) => {
     return Math.round(timeout * multiplier);
 }
 
-const buildPokemonSpawnSend = () => {
+const buildPokemonSpawnSend = (goodSpawn) => {
     // get random rarity
     const rarity = drawDiscrete(pokeballConfig[backpackItems.GREATBALL].chances, 1)[0];
     // get random pokemon
     const speciesId = drawIterable(rarityBins[rarity], 1)[0];
     const pokemonData = pokemonConfig[speciesId];
 
-    const shinyChance = process.env.STAGE == stageNames.ALPHA ? 1 : 1024 / 4;
+    let shinyChance = process.env.STAGE == stageNames.ALPHA ? 1 : 1024 / 4;
+    if (!goodSpawn) {
+        shinyChance = 1024;
+    }
     const isShiny = drawUniform(0, shinyChance, 1)[0] == 0;
     const level = drawUniform(1, 100, 1)[0];
 
@@ -81,6 +84,7 @@ const buildPokemonSpawnSend = () => {
         speciesId: speciesId,
         isShiny: isShiny,
         level: level,
+        goodSpawn: goodSpawn,
     }, 30 * 60);
     const buttonConfigs = [{
         label: "Catch!",
@@ -206,7 +210,7 @@ const onButtonPress = async (interaction, data, state) => {
         // generate pokemon
         const give = await giveNewPokemons(trainer.data, [state.speciesId], state.level, {
             isShiny: state.isShiny,
-            betterIvs: true,
+            betterIvs: state.goodSpawn,
         });
         if (give.err) {
             return { send: null, err: give.err };
@@ -328,16 +332,17 @@ class GuildSpawner {
         let spawnProbability = 0;
         const memberCount = guild.members.cache.size;
         if (memberCount < 5) {
-            spawnProbability = 0.25;
+            spawnProbability = 0.33;
         } else if (memberCount < 20) {
-            spawnProbability = 0.5;
+            spawnProbability = 0.7;
         } else if (memberCount < 200) {
             spawnProbability = 1;
         } else {
-            spawnProbability = 0.7;
+            spawnProbability = 0.8;
         }
+        let goodSpawn = true;
         if (Math.random() > spawnProbability && !WHITELISTED_SERVERS.includes(guild.id)) {
-            return {};
+            goodSpawn = false;
         }
 
         // get random cached channel
@@ -354,7 +359,7 @@ class GuildSpawner {
         // get random cached channel
         channel = this.chachedChannels[Math.floor(Math.random() * this.chachedChannels.length)];
         // send in channel
-        const { send, err } = buildPokemonSpawnSend();
+        const { send, err } = buildPokemonSpawnSend(goodSpawn);
         if (err) {
             return { err: err };
         }

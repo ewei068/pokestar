@@ -1,6 +1,6 @@
 # Pokéstar Changelog
 
-### 1.0.1 - Raid Update
+### 1.0.1 (9/9) - Raid Update
 
 * **Raids:** Raids have arrived in Pokestar! Team up with your server to defeat powerful raid bosses for a chance at shiny Legendaries!
   * Get a raid pass every day from defeating Professor Willow in `/pve`.
