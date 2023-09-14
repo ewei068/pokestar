@@ -20,6 +20,7 @@ const { stageNames } = require("../config/stageConfig");
 const { QueryBuilder } = require("../database/mongoHandler");
 const { buildPokemonEmbed, buildCelebiAbilityEmbed, buildNewPokemonEmbed } = require("../embeds/pokemonEmbeds");
 const { logger } = require("../log");
+const { getIdFromTowerStage } = require("../utils/battleUtils");
 const { drawDiscrete, drawIterable } = require("../utils/gachaUtils");
 const { getItems, removeItems } = require("../utils/trainerUtils");
 const { generateRandomPokemon, checkNumPokemon, giveNewPokemons } = require("./gacha");
@@ -530,6 +531,153 @@ const buildTimeTravelSend = async (user) => {
     return { send: send, err: null };
 }
 
+const DEOXYS_SPECIES_IDS = pokemonConfig["386"].mythicConfig.speciesIds;
+
+const getDeoxys = async (trainer) => {
+    const deoxysRes = await Promise.all(DEOXYS_SPECIES_IDS.map(async (speciesId) => {
+        return await getMythic(trainer, speciesId);
+    }));
+
+    let deoxys = null;
+    for (const possibleDeoxys of deoxysRes) {
+        if (possibleDeoxys.data) {
+            deoxys = possibleDeoxys.data;
+            break;
+        }
+    }
+
+    let modified = false;
+    let speciesId = deoxys && deoxys.speciesId || DEOXYS_SPECIES_IDS[0];
+    const deoxysData = pokemonConfig[speciesId];
+    if (!deoxys) {
+        // check if trainer has beat battle tower 20
+        if (!trainer.defeatedNPCs[getIdFromTowerStage(20)]) {
+            return { err: "You must defeat Battle Tower floor 20 to get Deoxys! Use `/battletower` to challenge it!" };
+        }
+
+        deoxys = generateRandomPokemon(trainer.userId, speciesId, level=1);
+        // set ivs to 31
+        deoxys.ivs = [31, 31, 31, 31, 31, 31];
+        // set shiny to false
+        deoxys.shiny = false;
+        // set locked to true
+        deoxys.locked = true;
+        // set nature to 0
+        deoxys.natureId = "0";
+        // recalculate stats
+        calculatePokemonStats(deoxys, deoxysData);
+        modified = true;
+    }
+
+    // update deoxys if modified
+    if (modified) {
+        try {
+            const query = new QueryBuilder(collectionNames.USER_POKEMON)
+                .setFilter({ userId: deoxys.userId, speciesId: speciesId })
+                .setUpsert({ $set: deoxys });
+            const res = await query.upsertOne();
+
+            if (res.upsertedCount !== 1) {
+                logger.warn(`Error updating Deoxys for ${trainer.user.username}`);
+            }
+            if (res.upsertedId) {
+                deoxys._id = res.upsertedId;
+            }
+            logger.info(`Updated Deoxys for ${trainer.user.username}`);
+        } catch (err) {
+            logger.error(err);
+            return { err: "Error updating Deoxys" };
+        }
+    }
+
+    return { data: deoxys };
+}
+
+const buildDeoxysSend = async (user) => {
+    let trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { err: trainer.err };
+    }
+    trainer = trainer.data;
+
+    const deoxysRes = await getDeoxys(trainer);
+    if (deoxysRes.err) {
+        return { err: deoxysRes.err };
+    }
+    const deoxys = deoxysRes.data;
+    const deoxysId = deoxys.speciesId;
+    const deoxysData = pokemonConfig[deoxysId];
+
+    const send = {
+        content: deoxys._id.toString(),
+        embeds: [],
+        components: [],
+    }
+
+    // build pokemon embed
+    const embed = buildPokemonEmbed(trainer, deoxys, "all");
+    send.embeds.push(embed);
+
+    // build tab buttons
+    const tabButtonConfigs = DEOXYS_SPECIES_IDS.map((speciesId) => {
+        const speciesData = pokemonConfig[speciesId];
+        const splitName = speciesData.name.split("-");
+        const formName = splitName[1] || "Normal";
+        return {
+            label: formName,
+            disabled: deoxysId === speciesId,
+            data: {
+                speciesId: speciesId,
+            },
+            emoji: speciesData.emoji,
+        }
+    });
+    const tabButtons = buildButtonActionRow(tabButtonConfigs, eventNames.DEOXYS_FORM_SELECT);
+    send.components.push(tabButtons);
+
+    return { send: send, err: null };
+}
+
+const onFormSelect = async (user, speciesId) => {
+    if (!DEOXYS_SPECIES_IDS.includes(speciesId)) {
+        return { err: "Invalid Deoxys Form" };
+    }
+
+    let trainer = await getTrainer(user);
+    if (trainer.err) {
+        return { err: trainer.err };
+    }
+    trainer = trainer.data;
+
+    const deoxysRes = await getDeoxys(trainer);
+    if (deoxysRes.err) {
+        return { err: deoxysRes.err };
+    }
+    const deoxys = deoxysRes.data;
+
+    const newDeoxysData = pokemonConfig[speciesId];
+    if (!newDeoxysData) {
+        return { err: "Invalid Deoxys Form" };
+    } else if (deoxys.speciesId === speciesId) {
+        return { err: "You already have this Deoxys Form" };
+    }
+
+    // update deoxys
+    deoxys.speciesId = speciesId;
+    deoxys.name = newDeoxysData.name;
+    deoxys.abilityId = Object.keys(newDeoxysData.abilities)[0];
+
+    // recalculate stats
+    const updateRes = await calculateAndUpdatePokemonStats(deoxys, newDeoxysData);
+    if (updateRes.err) {
+        return { err: updateRes.err };
+    }
+
+    return { err: null };
+}
+
+
+
 module.exports = {
     getMew,
     updateMew,
@@ -537,4 +685,7 @@ module.exports = {
     getCelebi,
     buildCelebiSend,
     buildTimeTravelSend,
+    getDeoxys,
+    buildDeoxysSend,
+    onFormSelect,
 }

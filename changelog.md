@@ -1,5 +1,16 @@
 # Pokéstar Changelog
 
+### 1.0.2
+
+* Gen 3 wrapup event
+* New raid
+* Deoxys + Jirachi
+* Role mentions
+* Nerf withdraw/harden
+* Rebalance raids
+* Change shiftry ability?
+* Fix Help
+
 ### 1.0.1 (9/9) - Raid Update
 
 * **Raids:** Raids have arrived in Pokestar! Team up with your server to defeat powerful raid bosses for a chance at shiny Legendaries!

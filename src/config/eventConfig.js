@@ -43,6 +43,7 @@ const eventNames = {
     MEW_BUTTON: "mewButton",
     MEW_SELECT: "mewSelect",
     CELEBI_TIME_TRAVEL: "celebiTimeTravel",
+    DEOXYS_FORM_SELECT: "deoxysFormSelect",
     TRADE_HELP: "tradeHelp",
     TRADE_REQUEST_ACCEPT: "tradeRequestAccept",
     TRADE_REQUEST_BUTTON: "tradeRequestButton",
@@ -303,6 +304,13 @@ const eventConfig = {
         "directory": "mythic",
         "exp": 25,
         "money": 50,
+    },
+    [eventNames.DEOXYS_FORM_SELECT]: {
+        "name": "Deoxys Form Select",
+        "execute": "deoxysFormSelect.js",
+        "directory": "mythic",
+        "exp": 5,
+        "money": 10,
     },
     [eventNames.TRADE_HELP]: {
         "name": "Trade Help",

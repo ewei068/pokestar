@@ -15,7 +15,7 @@ const commandCategoryConfig = {
         "name": "Pokemon",
         "description": "Commands to catch, train, and inspect Pokemon",
         "folder": "pokemon",
-        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "equipmentlist", "equipmentswap", "nature", "release", "mew", "celebi", "togglespawn"]
+        "commands": ["gacha", "info", "list", "pokedex", "train", "evolve", "equipment", "equipmentlist", "equipmentswap", "nature", "release", "mythic", "mew", "celebi", "deoxys", "togglespawn"]
     },
     "shop": {
         "name": "Shop",
@@ -760,6 +760,14 @@ const commandConfig = {
         "money": 10,
         "parent": "party"
     },
+    "mythic": {
+        "name": "Mythic",
+        "aliases": ["mythic"],
+        "description": "Entry point for Mythical Pokemon",
+        "subcommands": ["mew", "celebi", "deoxys"],
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    },
     "mew": {
         "name": "Mew",
         "aliases": ["mew"],
@@ -769,7 +777,8 @@ const commandConfig = {
         "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
-        "money": 10
+        "money": 10,
+        "parent": "mythic"
     },
     "celebi": {
         "name": "Celebi",
@@ -780,7 +789,20 @@ const commandConfig = {
         "args": {},
         "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
         "exp": 5,
-        "money": 10
+        "money": 10,
+        "parent": "mythic"
+    },
+    "deoxys": {
+        "name": "Deoxys",
+        "aliases": ["deoxys"],
+        "description": "View your Deoxys and change its form!",
+        "longDescription": "View your Deoxys and change its form! Deoxys is a special Pokemon that can change form!",
+        "execute": "deoxys.js",
+        "args": {},
+        "stages": [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+        "exp": 5,
+        "money": 10,
+        "parent": "mythic"
     },
     "tutorial": {
         "name": "Tutorial",

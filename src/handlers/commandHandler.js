@@ -266,6 +266,9 @@ const runSlashCommand = async (interaction, client) => {
         if (subcommand) {
             command = `${command}${subcommand}`;
         }
+        if (!(command in slashCommands)) {
+            command = subcommand;
+        }
     } catch (err) {
         // pass
     }
