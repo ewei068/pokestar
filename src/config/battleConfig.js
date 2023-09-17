@@ -2990,7 +2990,7 @@ const moveConfig = {
         "targetPattern": targetPatterns.SINGLE,
         "tier": moveTiers.BASIC,
         "damageType": damageTypes.OTHER,
-        "description": "The user copies the target's ultimate move for 3 turns. Fails if the target has no ultimate move. If the user doesn't know mimic, replaces the move in the first slot.",
+        "description": "The user copies the target's ultimate move for 3 turns, then gain 50% combat readiness. Fails if the target has no ultimate move. If the user doesn't know mimic, replaces the move in the first slot.",
     },
     "m103": {
         "name": "Screech",
@@ -4399,6 +4399,19 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "Boulders of biblical proportion are hurled at the target. This also lowers the target's Speed stat for 2 turns, even when the attack misses.",
     },
+    "m322":{
+        "name": "Cosmic Power",
+        "type": types.PSYCHIC,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 4,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.POWER,
+        "damageType": damageTypes.OTHER,
+        "description": "The user absorbs a mystical power from space to raise its defense and special defense for 3 turns. Gives itself 10% of its defenses as a shield.",
+    },
     "m325": {
         "name": "Shadow Punch",
         "type": types.GHOST,
@@ -4599,6 +4612,58 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.SPECIAL,
         "description": "The user attacks the target with a pulsing blast of water. This has a 25% chance to confuse targets for 2 turns.",
+    },
+    "m354": {
+        "name": "Psycho Boost",
+        "type": types.PSYCHIC,
+        "power": 20,
+        "accuracy": 90,
+        "cooldown": 6,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.ANY,
+        "targetPattern": targetPatterns.ALL,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user enhances its allies with alien power, sharply raising their highest stat for 2 turns. Then, attacks all enemies.",
+    },
+    "m354-1": {
+        "name": "Psycho Boost - Attack",
+        "type": types.PSYCHIC,
+        "power": 100,
+        "accuracy": 90,
+        "cooldown": 6,
+        "targetType": targetTypes.ENEMY,
+        "targetPosition": targetPositions.FRONT,
+        "targetPattern": targetPatterns.COLUMN,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.SPECIAL,
+        "description": "The user performs an all-out attack, dealing damage based on the higher of its attacking stats, then sharply lowers that stat for 2 turns.",
+    },
+    "m354-2": {
+        "name": "Psycho Boost - Defense",
+        "type": types.PSYCHIC,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 5,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.NON_SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "The user protects an ally, granting them a shield equal to to 25% of the user's defenses for 2 turns.",
+    },
+    "m354-3": {
+        "name": "Psycho Boost - Speed",
+        "type": types.PSYCHIC,
+        "power": null,
+        "accuracy": null,
+        "cooldown": 7,
+        "targetType": targetTypes.ALLY,
+        "targetPosition": targetPositions.SELF,
+        "targetPattern": targetPatterns.SINGLE,
+        "tier": moveTiers.ULTIMATE,
+        "damageType": damageTypes.OTHER,
+        "description": "The user warps time and space at light speed, giving itself 2 additional turns.",
     },
     "m355": {
         "name": "Roost",
@@ -6877,6 +6942,9 @@ const moveExecutes = {
                 moveId: ultimateMoveId,
                 oldMoveId: oldMoveId
             });
+
+            // boost cr 50%
+            source.boostCombatReadiness(source, 50);
         }
     },
     "m103": function (battle, source, primaryTarget, allTargets, missedTargets) {
@@ -8809,6 +8877,18 @@ const moveExecutes = {
             target.addEffect("speDown", 2, source);
         }
     },
+    "m322": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveData = moveConfig["m322"];
+        for (const target of allTargets) {
+            // raise def, spd
+            target.addEffect("defUp", 3, source);
+            target.addEffect("spdUp", 3, source);
+            // get 10% defenses as shield
+            target.addEffect("shield", 3, source, {
+                shield: Math.floor(target.getDef() * 0.1 + target.getSpd() * 0.1)
+            });
+        }
+    },
     "m325": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m325";
         const moveData = moveConfig[moveId];
@@ -9055,6 +9135,83 @@ const moveExecutes = {
             if (!miss && Math.random() < 0.25) {
                 target.addEffect("confused", 2, source);
             }
+        }
+    },
+    "m354": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m354";
+        const moveData = moveConfig[moveId];
+
+        const allAllies = battle.parties[source.teamName].pokemons.filter(p => p && !p.isFainted);
+        for (const ally of allAllies) {
+            // get highest non-hp base stat
+            const statValues = [ally.batk, ally.bdef, ally.bspa, ally.bspd, ally.bspe];
+            // argmax 
+            const highestStatIndex = statValues.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
+            switch (highestStatIndex + 1) {
+                case 1:
+                    ally.addEffect("greaterAtkUp", 2, source);
+                    break;
+                case 2:
+                    ally.addEffect("greaterDefUp", 2, source);
+                    break;
+                case 3:
+                    ally.addEffect("greaterSpaUp", 2, source);
+                    break;
+                case 4:
+                    ally.addEffect("greaterSpdUp", 2, source);
+                    break;
+                case 5:
+                    ally.addEffect("greaterSpeUp", 2, source);
+                    break;
+            }
+        }
+
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss);
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+    },
+    "m354-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m354-1";
+        const moveData = moveConfig[moveId];
+        const useAtk = source.atk > source.spa;
+        for (const target of allTargets) {
+            const miss = missedTargets.includes(target);
+            const damageToDeal = calculateDamage(moveData, source, target, miss, {
+                atkStat: useAtk ? damageTypes.PHYSICAL : damageTypes.SPECIAL,
+            });
+            source.dealDamage(damageToDeal, target, {
+                type: "move",
+                moveId: moveId
+            });
+        }
+
+        // lower attack or special attack
+        if (useAtk) {
+            source.addEffect("greaterAtkDown", 2, source);
+        } else {
+            source.addEffect("greaterSpaDown", 2, source);
+        }
+    },
+    "m354-2": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveData = moveConfig["m354-2"];
+        for (const target of allTargets) {
+            // get 25% def, spd as shield
+            target.addEffect("shield", 3, source, {
+                shield: Math.floor(source.getDef() * 0.25 + source.getSpd() * 0.25)
+            });
+        }
+    },
+    "m354-3": function (battle, source, primaryTarget, allTargets, missedTargets) {
+        const moveId = "m354-3";
+        const moveData = moveConfig[moveId];
+        for (const target of allTargets) {
+            // apply extra turn buff for 1 (2) turn
+            target.addEffect("extraTurn", 1, source);
         }
     },
     "m355": function (battle, source, primaryTarget, allTargets) {
@@ -14504,7 +14661,136 @@ const abilityConfig = {
             battle.eventHandler.unregisterListener(abilityData.faintListenerId);
         }
     },
+    "20015": {
+        "name": "Cosmic Strength",
+        "description": "When the user receives an attack debuff, sharply raise the other attacking stat for 1 turn.",
+        "abilityAdd": function (battle, source, target) {
+            const debuffListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    // make sure target is user
+                    const targetPokemon = args.target;
+                    if (targetPokemon.isFainted || targetPokemon !== initialArgs.pokemon) {
+                        return;
+                    }
 
+                    const effectId = args.effectId;
+                    if (effectId === "atkDown" || effectId === "greaterAtkDown") {
+                        // increase special attack
+                        targetPokemon.battle.addToLog(`${targetPokemon.name}'s Cosmic Strength increases its special attack!`);
+                        targetPokemon.addEffect("greaterSpaUp", 1, targetPokemon);
+                    } else if (effectId === "spaDown" || effectId === "greaterSpaDown") {
+                        // increase attack
+                        targetPokemon.battle.addToLog(`${targetPokemon.name}'s Cosmic Strength increases its attack!`);
+                        targetPokemon.addEffect("greaterAtkUp", 1, targetPokemon);
+                    }
+                }
+            }
+
+            const debuffListenerId = battle.eventHandler.registerListener(battleEventNames.AFTER_EFFECT_ADD, debuffListener);
+            return {
+                "debuffListenerId": debuffListenerId,
+            };
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "20015" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.debuffListenerId);
+        }
+    },
+    "20016": {
+        "name": "Cosmic Protection",
+        "description": "Reduce the damage taken by all allies by 12.5%.",
+        "abilityAdd": function (battle, source, target) {
+            const damageListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const targetPokemon = args.target;
+                    if (targetPokemon.teamName !== initialArgs.pokemon.teamName) {
+                        return;
+                    }
+
+                    const damage = args.damage;
+                    args.damage = Math.floor(damage * 0.875);
+                    args.maxDamage = Math.min(args.maxDamage, args.damage);
+                }
+            }
+
+            const damageListenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_DAMAGE_TAKEN, damageListener);
+            battle.addToLog(`${target.name}'s Cosmic Protection is reducing the damage taken by all allies!`);
+            return {
+                "damageListenerId": damageListenerId,
+            };
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "20016" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.damageListenerId);
+        }
+    },
+    "20017": {
+        "name": "Cosmic Agility",
+        "description": "When the user starts its turn, boost the stats of all allies permanently by 2%. Can occur up to 10 times.",
+        "abilityAdd": function (battle, source, target) {
+            const turnListener = {
+                initialArgs: {
+                    pokemon: target,
+                },
+                execute: function(initialArgs, args) {
+                    const pokemon = initialArgs.pokemon;
+                    if (pokemon.battle.activePokemon !== pokemon) {
+                        return;
+                    }
+
+                    // attempt to get ability data
+                    const ability = initialArgs.pokemon.ability;
+                    if (!ability || ability.abilityId !== "20017" || !ability.data) {
+                        return;
+                    }
+                    const abilityData = ability.data;
+                    const turns = abilityData.turns || 0;
+                    if (turns >= 10) {
+                        return;
+                    }
+                    abilityData.turns = turns + 1;
+
+                    pokemon.battle.addToLog(`${pokemon.name}'s Cosmic Agility increases the stats of all allies!`);
+                    const allies = pokemon.battle.parties[pokemon.teamName].pokemons.filter(p => p && !p.isFainted);
+                    for (const ally of allies) {
+                        ally.atk += Math.max(Math.floor(ally.batk * 0.02), 1);
+                        ally.def += Math.max(Math.floor(ally.bdef * 0.02), 1);
+                        ally.spa += Math.max(Math.floor(ally.bspa * 0.02), 1);
+                        ally.spd += Math.max(Math.floor(ally.bspd * 0.02), 1);
+                        ally.spe += Math.max(Math.floor(ally.bspe * 0.02), 1);
+                    }
+                }
+            }
+
+            const turnListenerId = battle.eventHandler.registerListener(battleEventNames.TURN_BEGIN, turnListener);
+            return {
+                "turnListenerId": turnListenerId,
+                turns: 0,
+            }
+        },
+        "abilityRemove": function (battle, source, target) {
+            const ability = target.ability;
+            if (!ability || ability.abilityId !== "20017" || !ability.data) {
+                return;
+            }
+            const abilityData = ability.data;
+            battle.eventHandler.unregisterListener(abilityData.turnListenerId);
+        }
+    },
 };
 
 module.exports = {
