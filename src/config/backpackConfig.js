@@ -27,7 +27,7 @@ const backpackCategoryConfig = {
             backpackItems.ULTRABALL,
             backpackItems.MASTERBALL
         ]
-    }, 
+    },
     [backpackCategories.MATERIALS]: {
         "name": "Materials",
         "emoji": "<:materials:1112557472759160852>",

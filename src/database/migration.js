@@ -6,13 +6,14 @@
  * 
  * migration.js Only run once. Migrates all of the necessary components for new use.
 */
+require('dotenv').config();
 const { DB_NAME, collectionConfig } = require("../config/databaseConfig");
 const { MongoClient } = require("mongodb");
 const { logger } = require("../log");
 
 const baseURL = process.env.MONGODB_URL;
 
-const client = new MongoClient(`${baseURL}/${DB_NAME}`, { useUnifiedTopology: true, connectTimeoutMS: 5000});
+const client = new MongoClient(`${baseURL}/${DB_NAME}`, { useUnifiedTopology: true, connectTimeoutMS: 5000 });
 
 const createIndices = async (dbo, collectionName, collection) => {
     if (!collection.indexes) {
@@ -45,9 +46,9 @@ const createCollection = async (dbo, name, collectionData) => {
 
     // create collection
     if (collectionData.viewOn) {
-        await dbo.createCollection(name, { 
-            viewOn: collectionData.viewOn, 
-            pipeline: collectionData.pipeline 
+        await dbo.createCollection(name, {
+            viewOn: collectionData.viewOn,
+            pipeline: collectionData.pipeline
         });
         logger.info(`View ${name} created!`);
     } else {
@@ -73,7 +74,7 @@ client.connect().then(async () => {
         // const collection = await dbo.collection(collectionName);
         await createIndices(dbo, collectionName, collectionData);
     }
-    
+
 }).catch(err => {
     logger.info(err)
 })

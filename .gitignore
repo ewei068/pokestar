@@ -108,3 +108,4 @@ extra_data
 src/test.js
 src/backups
 ssh.txt
+.DS_Store

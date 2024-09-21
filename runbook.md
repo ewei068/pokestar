@@ -42,8 +42,8 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 * `brew tap mongodb/brew`
 * `brew install mongodb-community@6.0`
 * `brew install mongosh`
-* `brew services start mongodb-community`
-    * To stop, `brew services stop mongodb-community`
+* `brew services start mongodb-community@6.0`
+    * To stop, `brew services stop mongodb-community@6.0`
     * Don't run in `tmux`
 
 **Debian**
