@@ -23,7 +23,7 @@ const buildSingleButton = (label, emoji, data, style, disabled, eventName) => {
         eventName: eventName,
         ...data,
     }
-    
+
     const button = new ButtonBuilder()
         .setCustomId(`${JSON.stringify(buttonId)}`)
         .setStyle(style)

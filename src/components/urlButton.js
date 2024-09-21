@@ -22,7 +22,7 @@ const buildUrlButton = (buttonConfigs) => {
             .setURL(buttonConfig.url);
         buttons.push(button);
     }
-    
+
     const actionRow = new ActionRowBuilder()
         .addComponents(buttons);
 

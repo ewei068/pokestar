@@ -15,7 +15,7 @@ const { eventNames } = require("../config/eventConfig");
  * @param {*} size the number of possible positions to add to.
  * @returns ActionRowBuilder
  */
-const partyAddRow = (pokemonId, size=12) => {
+const partyAddRow = (pokemonId, size = 12) => {
     const menuId = {
         eventName: eventNames.PARTY_ADD,
         id: pokemonId
@@ -26,8 +26,8 @@ const partyAddRow = (pokemonId, size=12) => {
         .setPlaceholder("Select a position")
         .addOptions(Array.from(Array(size).keys()).map(i => {
             return {
-                label: `Position ${i+1}`,
-                value: `${i+1}`,
+                label: `Position ${i + 1}`,
+                value: `${i + 1}`,
             }
         }));
 

@@ -20,7 +20,7 @@ const { StringSelectMenuBuilder, ActionRowBuilder } = require("discord.js");
  * @param {*} defaultId 
  * @returns 
  */
-const buildIdConfigSelectRow = (ids, config, placeholder, data, eventName, showId=true, extraFields=[], defaultId=null) => {
+const buildIdConfigSelectRow = (ids, config, placeholder, data, eventName, showId = true, extraFields = [], defaultId = null) => {
     const menuId = {
         eventName: eventName,
         ...data,

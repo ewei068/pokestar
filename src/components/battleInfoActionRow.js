@@ -7,7 +7,6 @@
  * battleInfoActionRow.js creates the battle info action row for the players in the battle.
 */
 const { eventNames } = require('../config/eventConfig');
-const { stageNames } = require('../config/stageConfig');
 const { buildButtonActionRow } = require('./buttonActionRow');
 
 /**
@@ -17,7 +16,7 @@ const { buildButtonActionRow } = require('./buttonActionRow');
  * @param {*} selectionIndex always 0.
  * @returns ActionRowBuilder
  */
-const buildBattleInfoActionRow = (battle, stateId, selectionIndex=0) => {
+const buildBattleInfoActionRow = (battle, stateId, selectionIndex = 0) => {
     const infoRowData = {
         stateId: stateId
     }
@@ -51,7 +50,7 @@ const buildBattleInfoActionRow = (battle, stateId, selectionIndex=0) => {
             selectionIndex: i + 1
         }
     });
-    
+
     buttonConfigs.push({
         label: 'Refresh',
         disabled: false,
@@ -60,7 +59,7 @@ const buildBattleInfoActionRow = (battle, stateId, selectionIndex=0) => {
             selectionIndex: i + 2
         }
     });
-    
+
     // disable selection index
     buttonConfigs[selectionIndex].disabled = true;
 

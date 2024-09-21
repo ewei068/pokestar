@@ -16,7 +16,7 @@ const { buildYesNoButton } = require('./yesNoButton');
  * @param {*} danger danger Will Robinson. set to false.
  * @returns ActionRowBuilder
  */
-const buildYesNoActionRow = (data, eventName, danger=false) => {
+const buildYesNoActionRow = (data, eventName, danger = false) => {
     const actionRow = new ActionRowBuilder();
     const yesButton = buildYesNoButton(true, data, eventName, danger);
     const noButton = buildYesNoButton(false, data, eventName, danger);

@@ -16,7 +16,7 @@ const { equipmentConfig } = require("../config/equipmentConfig");
  * @param {*} eventName the name of the event for the menuId to reference.
  * @returns ActionRowBuilder
  */
-const buildEquipmentSelectRow = (equipments, data, eventName, pokemonIds=[]) => {
+const buildEquipmentSelectRow = (equipments, data, eventName, pokemonIds = []) => {
     const menuId = {
         eventName: eventName,
         ...data,

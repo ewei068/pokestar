@@ -16,7 +16,7 @@ const { ButtonBuilder, ButtonStyle } = require('discord.js');
  * @param {*} danger danger Will Robinson. Set to false, but changes button style if true.
  * @returns ButtonBuilder
  */
-const buildYesNoButton = (yes, data, eventName, danger=false) => {
+const buildYesNoButton = (yes, data, eventName, danger = false) => {
     const buttonId = JSON.stringify({
         yes: yes,
         eventName: eventName,
