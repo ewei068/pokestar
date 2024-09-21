@@ -7,7 +7,7 @@
  * Dungeons.js is used to run the game's dungeon's system, specifically the commands within.
 */
 const { setState, deleteState } = require("../../services/state");
-const { buildPveSend, buildDungeonSend } = require("../../services/battle");
+const { buildDungeonSend } = require("../../services/battle");
 
 /**
  * Creates the dungeon via encapsulating buildDungeonSend and giving it the required user data 
@@ -17,7 +17,7 @@ const { buildPveSend, buildDungeonSend } = require("../../services/battle");
 const dungeons = async (user) => {
     const stateId = setState({
         userId: user.id,
-    }, ttl=300);
+    }, 300);
     const { send, err } = await buildDungeonSend({
         stateId: stateId,
         user: user,

@@ -38,7 +38,7 @@ const partyInfo = async (user) => {
     }
 
     // build embed
-    const partyEmbed = buildPartyEmbed(trainer.data, partyPokemons.data, detailed=true);
+    const partyEmbed = buildPartyEmbed(trainer.data, partyPokemons.data, true);
 
     // build selection row for pokemon Ids
     const selectRowData = {}

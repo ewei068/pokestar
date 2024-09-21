@@ -25,7 +25,7 @@ const battleTower = async (user) => {
     const stateId = setState({
         userId: user.id,
         towerStage: trainer.data.lastTowerStage + (trainer.data.lastTowerStage === Object.keys(battleTowerConfig).length ? 0 : 1),
-    }, ttl=300);
+    }, 300);
     const { send, err } = await buildBattleTowerSend({
         stateId: stateId,
         user: user,

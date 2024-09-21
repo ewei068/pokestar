@@ -7,10 +7,8 @@
  * partyLoad.js loads a saved party into the active party for the user.
 */
 const { getTrainer, updateTrainer } = require('../../services/trainer');
-const { updateParty, getPartyPokemons } = require('../../services/party');
-const { getPokemon } = require('../../services/pokemon');
+const { getPartyPokemons } = require('../../services/party');
 const { buildPartyEmbed } = require('../../embeds/battleEmbeds');
-const { pokemonConfig } = require('../../config/pokemonConfig');
 
 /**
  * loads a saved party into the active party for the user.

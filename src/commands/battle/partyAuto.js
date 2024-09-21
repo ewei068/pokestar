@@ -8,9 +8,8 @@
 */
 const { getTrainer } = require('../../services/trainer');
 const { updateParty, getPartyPokemons } = require('../../services/party');
-const { getPokemon, listPokemons } = require('../../services/pokemon');
+const { listPokemons } = require('../../services/pokemon');
 const { buildPartyEmbed } = require('../../embeds/battleEmbeds');
-const { pokemonConfig } = require('../../config/pokemonConfig');
 
 /**
  * creates an automatic party for the given user, uses dependencies to get other relevant data.

@@ -21,7 +21,7 @@ const pve = async (user, npcId, difficulty) => {
     if (!npcId) {
         const stateId = setState({
             userId: user.id,
-        }, ttl=300);
+        }, 300);
         const { send, err } = await buildPveSend({
             stateId: stateId,
             user: user,
@@ -37,7 +37,7 @@ const pve = async (user, npcId, difficulty) => {
         // if no difficulty, build npc data
         const stateId = setState({
             userId: user.id,
-        }, ttl=300);
+        }, 300);
         const { send, err } = await buildPveSend({
             stateId: stateId,
             user: user,
@@ -55,7 +55,7 @@ const pve = async (user, npcId, difficulty) => {
             userId: user.id,
             npcId: npcId,
             difficulty: difficulty,
-        }, ttl=300);
+        }, 300);
         const { send, err } = await buildPveSend({
             stateId: stateId,
             user: user,

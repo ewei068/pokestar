@@ -23,18 +23,17 @@ const parties = async (user) => {
     if (trainer.err) {
         return { send: null, err: trainer.err };
     }
-    const party = trainer.data.party;
 
     // get unique pokemon ids in all parties
     const uniqueIds = getPartyPokemonIds(trainer.data);
 
     // get pokemon from ids
     const pokemons = await listPokemons(
-        trainer.data, 
-        { 
-            page: 1, 
+        trainer.data,
+        {
+            page: 1,
             pageSize: uniqueIds.length + 1, // for safety idk
-            filter: { _id: { $in: uniqueIds.map(idFrom)} } 
+            filter: { _id: { $in: uniqueIds.map(idFrom) } }
         }
     );
     if (pokemons.err) {

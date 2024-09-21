@@ -18,7 +18,7 @@ const raid = async (user) => {
     const stateId = setState({
         userId: user.id,
         view: "list"
-    }, ttl=300);
+    }, 300);
     const { send, err } = await buildRaidSend({
         stateId: stateId,
         user: user,

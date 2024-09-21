@@ -26,9 +26,9 @@ const partyRemove = async (user, option) => {
 
     // if option is a number convert to number and use as position
     if (!isNaN(option)) {
-        position = parseInt(option);
+        const position = parseInt(option);
         const index = position - 1;
-        
+
         // check if position is valid
         if (index < 0 || index >= trainer.data.party.pokemonIds.length) {
             return { send: null, err: `Invalid position! Must be between 1 and ${trainer.data.party.pokemonIds.length}.` };
