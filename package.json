@@ -28,5 +28,10 @@
     "seedrandom": "^3.0.5",
     "shortid": "^2.2.16",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.11.0",
+    "eslint": "^9.11.0",
+    "globals": "^15.9.0"
   }
 }
