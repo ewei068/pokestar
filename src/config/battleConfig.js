@@ -83,7 +83,7 @@ const typeAdvantages = {
     [types.FAIRY]: { [types.FIRE]: 0.5, [types.FIGHTING]: 2, [types.POISON]: 0.5, [types.DRAGON]: 2, [types.DARK]: 2, [types.STEEL]: 0.5 }
 };
 
-const calculateDamage = (move, source, target, miss=false, { atkStat=null, attack=null, defStat=null, defense=null, power=null, type=null, moveType=null } = {}) => {
+const calculateDamage = (move, source, target, miss = false, { atkStat = null, attack = null, defStat = null, defense = null, power = null, type = null, moveType = null } = {}) => {
     power = power || move.power;
     const level = source.level;
     atkStat = atkStat || move.damageType;
@@ -181,7 +181,7 @@ const effectConfig = {
         "description": "The target's takes shielded damage.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target, initialArgs) {
+        "effectAdd": function (battle, source, target, initialArgs) {
             const shield = initialArgs && initialArgs.shield;
             if (!shield) {
                 return {};
@@ -195,7 +195,7 @@ const effectConfig = {
             initialArgs.shield = newShield;
             return initialArgs;
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s shield was removed!`);
         },
     },
@@ -204,7 +204,7 @@ const effectConfig = {
         "description": "The target's Attack increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if greaterAtkUp exists on target, remove atkUp and refresh greaterAtkUp
             if (target.effectIds.greaterAtkUp) {
                 const currentDuration = target.effectIds.atkUp.duration;
@@ -217,7 +217,7 @@ const effectConfig = {
                 target.atk += Math.floor(target.batk * 0.5);
             }
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Attack boost wore off!`);
             target.atk -= Math.floor(target.batk * 0.5);
         },
@@ -227,7 +227,7 @@ const effectConfig = {
         "description": "The target's Attack greatly increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if atkUp exists on target, remove atkUp and refresh greaterAtkUp
             if (target.effectIds.atkUp) {
                 const currentDuration = target.effectIds.atkUp.duration;
@@ -240,7 +240,7 @@ const effectConfig = {
                 target.atk += Math.floor(target.batk * 0.75);
             }
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Attack boost wore off!`);
             target.atk -= Math.floor(target.batk * 0.75);
         },
@@ -250,7 +250,7 @@ const effectConfig = {
         "description": "The target's Attack decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if greaterAtkDown exists on target, remove atkDown and refresh greaterAtkDown
             if (target.effectIds.greaterAtkDown) {
                 const currentDuration = target.effectIds.atkDown.duration;
@@ -263,7 +263,7 @@ const effectConfig = {
                 target.atk -= Math.floor(target.batk * 0.33);
             }
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Attack drop faded!`);
             target.atk += Math.floor(target.batk * 0.33);
         },
@@ -273,7 +273,7 @@ const effectConfig = {
         "description": "The target's Attack greatly decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if atkDown exists on target, remove atkDown and refresh atkDown
             if (target.effectIds.atkDown) {
                 const currentDuration = target.effectIds.atkDown.duration;
@@ -286,7 +286,7 @@ const effectConfig = {
                 target.atk -= Math.floor(target.batk * 0.5);
             }
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Attack drop faded!`);
             target.atk += Math.floor(target.batk * 0.5);
         },
@@ -296,7 +296,7 @@ const effectConfig = {
         "description": "The target's Defense increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if greaterDefUp exists on target, remove defUp and refresh greaterDefUp
             if (target.effectIds.greaterDefUp) {
                 const currentDuration = target.effectIds.defUp.duration;
@@ -309,7 +309,7 @@ const effectConfig = {
                 target.def += Math.floor(target.bdef * 0.5);
             }
         },
-        "effectRemove": function(battle, target) {  
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Defense boost faded!`);
             target.def -= Math.floor(target.bdef * 0.5);
         },
@@ -319,7 +319,7 @@ const effectConfig = {
         "description": "The target's Defense sharply increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Defense sharply rose!`);
             // if defUp exists on target, remove defUp and refresh greaterDefUp
             if (target.effectIds.defUp) {
@@ -332,7 +332,7 @@ const effectConfig = {
             }
             target.def += Math.floor(target.bdef * 0.75);
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Defense boost faded!`);
             target.def -= Math.floor(target.bdef * 0.75);
         },
@@ -342,7 +342,7 @@ const effectConfig = {
         "description": "The target's Defense decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if greaterDefDown exists on target, remove defDown and refresh greaterDefDown
             if (target.effectIds.greaterDefDown) {
                 const currentDuration = target.effectIds.defDown.duration;
@@ -355,7 +355,7 @@ const effectConfig = {
                 target.def -= Math.floor(target.bdef * 0.33);
             }
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Defense drop faded!`);
             target.def += Math.floor(target.bdef * 0.33);
         },
@@ -365,7 +365,7 @@ const effectConfig = {
         "description": "The target's Defense sharply decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Defense sharply fell!`);
             // if defDown exists on target, remove defDown and refresh greaterDefDown
             if (target.effectIds.defDown) {
@@ -378,7 +378,7 @@ const effectConfig = {
             }
             target.def -= Math.floor(target.bdef * 0.5);
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Defense drop faded!`);
             target.def += Math.floor(target.bdef * 0.5);
         },
@@ -388,7 +388,7 @@ const effectConfig = {
         "description": "The target's Special Attack increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if greaterSpaUp exists on target, remove spaUp and refresh greaterSpaUp
             if (target.effectIds.greaterSpaUp) {
                 const currentDuration = target.effectIds.spaUp.duration;
@@ -401,7 +401,7 @@ const effectConfig = {
                 target.spa += Math.floor(target.bspa * 0.5);
             }
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Special Attack boost faded!`);
             target.spa -= Math.floor(target.bspa * 0.5);
         },
@@ -411,7 +411,7 @@ const effectConfig = {
         "description": "The target's Special Attack sharply increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Special Attack sharply rose!`);
             // if spaUp exists on target, remove spaUp and refresh greaterSpaUp
             if (target.effectIds.spaUp) {
@@ -424,7 +424,7 @@ const effectConfig = {
             }
             target.spa += Math.floor(target.bspa * 0.75);
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Special Attack boost faded!`);
             target.spa -= Math.floor(target.bspa * 0.75);
         },
@@ -434,7 +434,7 @@ const effectConfig = {
         "description": "The target's Special Attack decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if greaterSpaDown exists on target, remove spaDown and refresh greaterSpaDown
             if (target.effectIds.greaterSpaDown) {
                 const currentDuration = target.effectIds.spaDown.duration;
@@ -447,7 +447,7 @@ const effectConfig = {
                 target.spa -= Math.floor(target.bspa * 0.33);
             }
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Special Attack drop faded!`);
             target.spa += Math.floor(target.bspa * 0.33);
         },
@@ -457,7 +457,7 @@ const effectConfig = {
         "description": "The target's Special Attack sharply decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Special Attack sharply fell!`);
             // if spaDown exists on target, remove spaDown and refresh greaterSpaDown
             if (target.effectIds.spaDown) {
@@ -470,7 +470,7 @@ const effectConfig = {
             }
             target.spa -= Math.floor(target.bspa * 0.5);
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Special Attack drop faded!`);
             target.spa += Math.floor(target.bspa * 0.5);
         },
@@ -480,7 +480,7 @@ const effectConfig = {
         "description": "The target's Special Defense increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if greaterSpdUp exists on target, remove spdUp and refresh greaterSpdUp
             if (target.effectIds.greaterSpdUp) {
                 const currentDuration = target.effectIds.spdUp.duration;
@@ -493,7 +493,7 @@ const effectConfig = {
                 target.spd += Math.floor(target.bspd * 0.5);
             }
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Special Defense boost faded!`);
             target.spd -= Math.floor(target.bspd * 0.5);
         },
@@ -503,7 +503,7 @@ const effectConfig = {
         "description": "The target's Special Defense sharply increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Special Defense sharply rose!`);
             // if spdUp exists on target, remove spdUp and refresh greaterSpdUp
             if (target.effectIds.spdUp) {
@@ -516,7 +516,7 @@ const effectConfig = {
             }
             target.spd += Math.floor(target.bspd * 0.75);
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Special Defense boost faded!`);
             target.spd -= Math.floor(target.bspd * 0.75);
         },
@@ -526,7 +526,7 @@ const effectConfig = {
         "description": "The target's Special Defense decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if greaterSpdDown exists on target, remove spdDown and refresh greaterSpdDown
             if (target.effectIds.greaterSpdDown) {
                 const currentDuration = target.effectIds.spdDown.duration;
@@ -539,7 +539,7 @@ const effectConfig = {
                 target.spd -= Math.floor(target.bspd * 0.33);
             }
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Special Defense drop faded!`);
             target.spd += Math.floor(target.bspd * 0.33);
         },
@@ -549,7 +549,7 @@ const effectConfig = {
         "description": "The target's Special Defense sharply decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Special Defense sharply fell!`);
             // if spdDown exists on target, remove spdDown and refresh greaterSpdDown
             if (target.effectIds.spdDown) {
@@ -562,7 +562,7 @@ const effectConfig = {
             }
             target.spd -= Math.floor(target.bspd * 0.5);
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Special Defense drop faded!`);
             target.spd += Math.floor(target.bspd * 0.5);
         },
@@ -572,7 +572,7 @@ const effectConfig = {
         "description": "The target's Speed increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if greaterSpeUp exists on target, remove speUp and refresh greaterSpeUp
             if (target.effectIds.greaterSpeUp) {
                 const currentDuration = target.effectIds.speUp.duration;
@@ -585,7 +585,7 @@ const effectConfig = {
                 target.spe += Math.floor(target.bspe * 0.4);
             }
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Speed boost faded!`);
             target.spe -= Math.floor(target.bspe * 0.4);
         },
@@ -595,7 +595,7 @@ const effectConfig = {
         "description": "The target's Speed sharply increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Speed sharply rose!`);
             // if speUp exists on target, remove speUp and refresh greaterSpeUp
             if (target.effectIds.speUp) {
@@ -608,7 +608,7 @@ const effectConfig = {
             }
             target.spe += Math.floor(target.bspe * 0.6);
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Speed boost faded!`);
             target.spe -= Math.floor(target.bspe * 0.6);
         },
@@ -618,7 +618,7 @@ const effectConfig = {
         "description": "The target's Speed decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if greaterSpeDown exists on target, remove speDown and refresh greaterSpeDown
             if (target.effectIds.greaterSpeDown) {
                 const currentDuration = target.effectIds.speDown.duration;
@@ -631,7 +631,7 @@ const effectConfig = {
                 target.spe -= Math.floor(target.bspe * 0.33);
             }
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Speed drop faded!`);
             target.spe += Math.floor(target.bspe * 0.33);
         },
@@ -641,7 +641,7 @@ const effectConfig = {
         "description": "The target's Speed sharply decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Speed sharply fell!`);
             // if speDown exists on target, remove speDown and refresh greaterSpeDown
             if (target.effectIds.speDown) {
@@ -654,7 +654,7 @@ const effectConfig = {
             }
             target.spe -= Math.floor(target.bspe * 0.5);
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Speed drop faded!`);
             target.spe += Math.floor(target.bspe * 0.5);
         },
@@ -664,7 +664,7 @@ const effectConfig = {
         "description": "The target's Accuracy decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if greaterAccDown exists on target, remove accDown and refresh greaterAccDown
             if (target.effectIds.greaterAccDown) {
                 const currentDuration = target.effectIds.accDown.duration;
@@ -677,7 +677,7 @@ const effectConfig = {
                 target.acc -= 30;
             }
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Accuracy drop faded!`);
             target.acc += 30;
         },
@@ -687,7 +687,7 @@ const effectConfig = {
         "description": "The target's Accuracy sharply decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Accuracy sharply fell!`);
             // if accDown exists on target, remove accDown and refresh greaterAccDown
             if (target.effectIds.accDown) {
@@ -700,7 +700,7 @@ const effectConfig = {
             }
             target.acc -= 50;
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Accuracy drop faded!`);
             target.acc += 50;
         },
@@ -710,7 +710,7 @@ const effectConfig = {
         "description": "The target's Evasion increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if greaterEvaUp exists on target, remove evaUp and refresh greaterEvaUp
             if (target.effectIds.greaterEvaUp) {
                 const currentDuration = target.effectIds.evaUp.duration;
@@ -723,7 +723,7 @@ const effectConfig = {
                 target.eva += 50;
             }
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Evasion boost faded!`);
             target.eva -= 50;
         },
@@ -733,7 +733,7 @@ const effectConfig = {
         "description": "The target's Evasion sharply increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Evasion sharply rose!`);
             // if evaUp exists on target, remove evaUp and refresh greaterEvaUp
             if (target.effectIds.evaUp) {
@@ -746,7 +746,7 @@ const effectConfig = {
             }
             target.eva += 75;
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Evasion boost faded!`);
             target.eva -= 75;
         },
@@ -756,7 +756,7 @@ const effectConfig = {
         "description": "The target's Evasion decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             // if greaterEvaDown exists on target, remove evaDown and refresh greaterEvaDown
             if (target.effectIds.greaterEvaDown) {
                 const currentDuration = target.effectIds.evaDown.duration;
@@ -769,7 +769,7 @@ const effectConfig = {
                 target.eva -= 25;
             }
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Evasion drop faded!`);
             target.eva += 25;
         },
@@ -779,7 +779,7 @@ const effectConfig = {
         "description": "The target's Evasion sharply decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name}'s Evasion sharply fell!`);
             // if evaDown exists on target, remove evaDown and refresh greaterEvaDown
             if (target.effectIds.evaDown) {
@@ -792,7 +792,7 @@ const effectConfig = {
             }
             target.eva -= 40;
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name}'s Evasion drop faded!`);
             target.eva += 40;
         },
@@ -802,12 +802,12 @@ const effectConfig = {
         "description": "The target is confused.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const inflictedPokemon = initialArgs.pokemon;
                     const sourcePokemon = args.source;
                     if (inflictedPokemon !== sourcePokemon) {
@@ -824,7 +824,7 @@ const effectConfig = {
                         inflictedPokemon.dealDamage(damage, inflictedPokemon, {
                             "type": "confusion",
                         });
-                        
+
                         // disable ability to use move
                         args.canUseMove = false;
                     }
@@ -836,7 +836,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} snapped out of its confusion!`);
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
@@ -847,12 +847,12 @@ const effectConfig = {
         "description": "The target will counter physical moves used against it.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     // filter for physical moves
                     if (args.damageInfo.type !== "move") {
                         return;
@@ -885,7 +885,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} lowers its counter stance!`);
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
@@ -896,12 +896,12 @@ const effectConfig = {
         "description": "The target will reflect special moves used against it.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     // filter for special moves
                     if (args.damageInfo.type !== "move") {
                         return;
@@ -934,7 +934,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name}'s reflective field fades!`);
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
@@ -945,11 +945,11 @@ const effectConfig = {
         "description": "The target flinched.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} flinched!`);
             target.incapacitated = true;
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             target.incapacitated = false;
         },
     },
@@ -958,11 +958,11 @@ const effectConfig = {
         "description": "The target must recharge.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} must recharge!`);
             target.incapacitated = true;
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             target.incapacitated = false;
         }
     },
@@ -971,11 +971,11 @@ const effectConfig = {
         "description": "The target cannot gain combat readiness.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} is restricted and cannot gain combat readiness!`);
             target.restricted = true;
         },
-        "effectRemove": function(battle, target) {
+        "effectRemove": function (battle, target) {
             target.restricted = false;
         }
     },
@@ -984,19 +984,19 @@ const effectConfig = {
         "description": "The target's HP cannot be reduced below 1.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} is immortal!`);
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const immortalPokemon = initialArgs.pokemon;
                     const damagedPokemon = args.target;
                     if (immortalPokemon !== damagedPokemon) {
                         return;
                     }
-                    
+
                     // if damage would reduce HP below 1, set damage to HP - 1
                     if (args.damage >= damagedPokemon.hp) {
                         immortalPokemon.battle.addToLog(`${immortalPokemon.name} cannot be reduced below 1 HP!`);
@@ -1010,7 +1010,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1020,13 +1020,13 @@ const effectConfig = {
         "description": "The target can't take damage from moves.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} protected itself!`);
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -1036,7 +1036,7 @@ const effectConfig = {
                     if (invulnPokemon !== damagedPokemon) {
                         return;
                     }
-                    
+
                     // set damage to 0
                     args.damage = 0;
                     args.maxDamage = Math.min(args.maxDamage, args.damage);
@@ -1048,7 +1048,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1058,13 +1058,13 @@ const effectConfig = {
         "description": "The target stretches to its attacks.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} stretches to its attacks!`);
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -1075,7 +1075,7 @@ const effectConfig = {
                     if (invulnPokemon !== damagedPokemon) {
                         return;
                     }
-                    
+
                     // set damage to 0
                     const oldDamage = args.damage;
                     args.damage = 0;
@@ -1107,7 +1107,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1117,13 +1117,13 @@ const effectConfig = {
         "description": "The user is protecting its allies from AoE moves.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${source.name} is protecting its allies!`);
             const listener = {
                 initialArgs: {
                     pokemon: source,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -1152,7 +1152,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1162,14 +1162,14 @@ const effectConfig = {
         "description": "When the user takes damage, heal other allies by half the damage taken.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${source.name} is sharing the wealth!`);
             const listener = {
 
                 initialArgs: {
                     pokemon: source,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const moneyBagsPokemon = initialArgs.pokemon;
                     if (moneyBagsPokemon.isFainted) {
                         return;
@@ -1201,7 +1201,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1211,13 +1211,13 @@ const effectConfig = {
         "description": "The target is immune to status conditions.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} is immune to status conditions!`);
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (initialArgs.pokemon !== targetPokemon) {
                         return;
@@ -1232,7 +1232,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} is no longer immune to status conditions!`);
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
@@ -1243,9 +1243,9 @@ const effectConfig = {
         "description": "The target will be healed at the end of the duration.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target, initialArgs) {
+        "effectAdd": function (battle, source, target, initialArgs) {
         },
-        "effectRemove": function(battle, target, args, initialArgs) {
+        "effectRemove": function (battle, target, args, initialArgs) {
             const effect = target.effectIds.delayedHeal;
             if (effect && effect.duration > 0) {
                 return;
@@ -1263,18 +1263,18 @@ const effectConfig = {
         "description": "The target will be healed at the end of each turn.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target, initialArgs) {
+        "effectAdd": function (battle, source, target, initialArgs) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                     healAmount: initialArgs.healAmount,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const regenPokemon = initialArgs.pokemon;
                     if (regenPokemon !== regenPokemon.battle.activePokemon) {
                         return;
                     }
-                    
+
                     regenPokemon.battle.addToLog(`${regenPokemon.name} regenerated some health!`);
                     const healAmount = initialArgs.healAmount;
                     regenPokemon.takeHeal(healAmount, regenPokemon, {
@@ -1288,7 +1288,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1298,19 +1298,19 @@ const effectConfig = {
         "description": "The target will take damage at the end of each turn.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target, args) {
+        "effectAdd": function (battle, source, target, args) {
             const listener = {
                 initialArgs: {
                     source: source,
                     pokemon: target,
                     damage: args.damage,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const dotPokemon = initialArgs.pokemon;
                     if (dotPokemon !== dotPokemon.battle.activePokemon) {
                         return;
                     }
-                    
+
                     dotPokemon.battle.addToLog(`${dotPokemon.name} took damage from the DoT!`);
                     const damage = initialArgs.damage;
                     dotPokemon.takeDamage(damage, initialArgs.source, {
@@ -1324,7 +1324,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1334,18 +1334,18 @@ const effectConfig = {
         "description": "The target will take damage at the end of each turn and the source will be healed by the damage dealt.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target, args) {
+        "effectAdd": function (battle, source, target, args) {
             const listener = {
                 initialArgs: {
                     source: source,
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const dotPokemon = initialArgs.pokemon;
                     if (dotPokemon !== dotPokemon.battle.activePokemon) {
                         return;
                     }
-                    
+
                     dotPokemon.battle.addToLog(`${dotPokemon.name} took damage from the Leech Seed!`);
                     const damage = Math.floor(dotPokemon.maxHp / 4);
                     const damageTaken = dotPokemon.takeDamage(damage, initialArgs.source, {
@@ -1362,7 +1362,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} is no longer affected by Leech Seed!`);
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
@@ -1373,17 +1373,17 @@ const effectConfig = {
         "description": "At the end of each turn, give the target an extra turn.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target, args) {
+        "effectAdd": function (battle, source, target, args) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = initialArgs.pokemon;
                     if (targetPokemon !== targetPokemon.battle.activePokemon) {
                         return;
                     }
-                    
+
                     targetPokemon.battle.addToLog(`${targetPokemon.name} takes an additional turn!`);
                     targetPokemon.boostCombatReadiness(targetPokemon, 100);
                 }
@@ -1394,7 +1394,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1404,13 +1404,13 @@ const effectConfig = {
         "description": "The target is affected by Stealth Rock.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             const listener = {
                 initialArgs: {
                     source: source,
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const affectedPokemon = initialArgs.pokemon;
                     const targetPokemon = args.target;
                     if (affectedPokemon !== targetPokemon) {
@@ -1451,7 +1451,7 @@ const effectConfig = {
                 "buffListenerId": buffListenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             const crListenerId = args.crListenerId;
             battle.eventHandler.unregisterListener(crListenerId);
             const buffListenerId = args.buffListenerId;
@@ -1463,13 +1463,13 @@ const effectConfig = {
         "description": "The target is affected by Spikes.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             const crListener = {
                 initialArgs: {
                     source: source,
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const affectedPokemon = initialArgs.pokemon;
                     const targetPokemon = args.target;
                     if (affectedPokemon !== targetPokemon) {
@@ -1489,7 +1489,7 @@ const effectConfig = {
                     source: source,
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const affectedPokemon = initialArgs.pokemon;
                     const sourcePokemon = args.source;
                     if (affectedPokemon !== sourcePokemon) {
@@ -1512,7 +1512,7 @@ const effectConfig = {
                 "beforeMoveListenerId": beforeMoveListenerId,
             };
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             const crListenerId = args.crListenerId;
             battle.eventHandler.unregisterListener(crListenerId);
             const beforeMoveListenerId = args.beforeMoveListenerId;
@@ -1524,7 +1524,7 @@ const effectConfig = {
         "description": "The target's ultimate move(s) are disabled.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             const disabledMoves = [];
             // disable ultimate moves
             for (const moveId of Object.keys(target.moveIds)) {
@@ -1543,7 +1543,7 @@ const effectConfig = {
                 "source": source,
             }
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name}'s ultimate moves are now available!`);
             // enable ultimate moves
             for (const moveId of Object.keys(target.moveIds)) {
@@ -1559,7 +1559,7 @@ const effectConfig = {
         "description": "The target can only use basic moves.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} is silenced and can only use basic moves!`);
             for (const moveId in target.moveIds) {
                 const move = target.moveIds[moveId];
@@ -1572,7 +1572,7 @@ const effectConfig = {
                 "source": source,
             }
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} is no longer silenced!`);
             for (const moveId in target.moveIds) {
                 const move = target.moveIds[moveId];
@@ -1588,7 +1588,7 @@ const effectConfig = {
         "description": "The target is taunted.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} was taunted!`);
             // disable moves with no power
             for (const moveId of Object.keys(target.moveIds)) {
@@ -1601,7 +1601,7 @@ const effectConfig = {
                 "source": source,
             }
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} is no longer taunted!`);
             // enable moves with no power
             for (const moveId of Object.keys(target.moveIds)) {
@@ -1617,7 +1617,7 @@ const effectConfig = {
         "description": "The target is reverse-taunted.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} was reverse-taunted!`);
             // disable moves with power
             for (const moveId of Object.keys(target.moveIds)) {
@@ -1630,7 +1630,7 @@ const effectConfig = {
                 "source": source,
             }
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} is no longer reverse-taunted!`);
             // enable moves with no power
             for (const moveId of Object.keys(target.moveIds)) {
@@ -1646,13 +1646,13 @@ const effectConfig = {
         "description": "Moves are redirected to this target.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} is redirecting moves!`);
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     // if redirect user isnt targetable, ignore
                     if (!args.user.battle.isPokemonTargetable(initialArgs.pokemon)) {
                         return;
@@ -1679,7 +1679,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             }
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} is no longer redirecting moves!`);
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
@@ -1690,13 +1690,13 @@ const effectConfig = {
         "description": "The target is charging its Electric moves.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} is charging its Electric moves!`);
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const type = args.damageInfo.type;
                     if (type !== "move") {
                         return;
@@ -1722,7 +1722,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             }
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} is no longer charging!`);
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
@@ -1733,7 +1733,7 @@ const effectConfig = {
         "description": "The target loses its Flying type.",
         "type": effectTypes.NEUTRAL,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} lost its Flying type!`);
             // if pure flying, change to pure normal
             if (target.type1 === types.FLYING && target.type2 === null) {
@@ -1741,7 +1741,7 @@ const effectConfig = {
                 return {
                     "typeSlot": "type1",
                 }
-            // else
+                // else
             } else if (target.type1 === types.FLYING) {
                 target.type1 = null;
                 return {
@@ -1761,7 +1761,7 @@ const effectConfig = {
                 return {};
             }
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} regained its Flying type!`);
             if (args.typeSlot)
                 target[args.typeSlot] = types.FLYING;
@@ -1772,7 +1772,7 @@ const effectConfig = {
         "description": "The target absorbs light, preparing a powerful Solar Beam.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} is absorbing light!`);
             // disable non-solar beam moves
             for (const moveId in target.moveIds) {
@@ -1781,7 +1781,7 @@ const effectConfig = {
                 }
             }
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             // enable non-solar beam moves
             for (const moveId in target.moveIds) {
                 if (moveId !== "m76") {
@@ -1795,7 +1795,7 @@ const effectConfig = {
         "description": "The target is projecting its spirit in preparation for a powerful Ashura Bakkei.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} is projecting its spirit!`);
             // disable non-ashura bakkei moves
             for (const moveId in target.moveIds) {
@@ -1804,7 +1804,7 @@ const effectConfig = {
                 }
             }
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             // enable non-ashura bakkei moves
             for (const moveId in target.moveIds) {
                 if (moveId !== "m331-1") {
@@ -1818,7 +1818,7 @@ const effectConfig = {
         "description": "The target is charging a powerful Sky Attack.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} becomes cloaked in a harsh light!`);
             // disable non-sky attack moves
             for (const moveId in target.moveIds) {
@@ -1827,7 +1827,7 @@ const effectConfig = {
                 }
             }
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             // enable non-sky attack moves
             for (const moveId in target.moveIds) {
                 if (moveId !== "m143") {
@@ -1841,7 +1841,7 @@ const effectConfig = {
         "description": "The target has burrowed underground.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} burrows underground!`);
             // disable non-dig  moves
             for (const moveId in target.moveIds) {
@@ -1853,7 +1853,7 @@ const effectConfig = {
             target.targetable = false;
             target.hittable = false;
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             // enable non-dig moves
             for (const moveId in target.moveIds) {
                 if (moveId !== "m91") {
@@ -1870,7 +1870,7 @@ const effectConfig = {
         "description": "The target has sprung up into the sky.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} springs up into the sky!`);
             // disable non-bounce moves
             for (const moveId in target.moveIds) {
@@ -1882,7 +1882,7 @@ const effectConfig = {
             target.targetable = false;
             target.hittable = false;
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             // enable non-bounce moves
             for (const moveId in target.moveIds) {
                 if (moveId !== "m340") {
@@ -1899,7 +1899,7 @@ const effectConfig = {
         "description": "The target is enraged, attacking wildly.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} is enraged!`);
             // disable non-outrage moves
             for (const moveId in target.moveIds) {
@@ -1908,7 +1908,7 @@ const effectConfig = {
                 }
             }
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} calmed down!`);
             // enable non-outrage moves
             for (const moveId in target.moveIds) {
@@ -1923,10 +1923,10 @@ const effectConfig = {
         "description": "The target is foreseeing an attack.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${source.name} is foreseeing an attack against ${target.name}!`);
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             const effect = target.effectIds["futureSight"];
             if (!effect) return;
             const source = effect.source;
@@ -1956,10 +1956,10 @@ const effectConfig = {
         "description": "The target is falling asleep.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${source.name} is making ${target.name} drowsy!`);
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             const effect = target.effectIds["yawn"];
             if (!effect) return;
             const source = effect.source;
@@ -1972,7 +1972,7 @@ const effectConfig = {
                 target.applyStatus(statusConditions.SLEEP, source);
             } else {
                 battle.addToLog(`${target.name} is no longer drowsy!`);
-            }   
+            }
         }
     },
     "perishSong": {
@@ -1980,10 +1980,10 @@ const effectConfig = {
         "description": "The target is doomed to faint in 3 turns.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} is doomed to faint!`);
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             const effect = target.effectIds["perishSong"];
             if (!effect) return;
             const remainingDuration = effect.duration;
@@ -2000,10 +2000,10 @@ const effectConfig = {
         "description": "The target is rolling out of control.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} is rolling out of control!`);
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
         }
     },
     "furyCutter": {
@@ -2011,10 +2011,10 @@ const effectConfig = {
         "description": "The target is being honing its claws.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} is honing its claws!`);
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
         }
     },
     "grudge": {
@@ -2022,13 +2022,13 @@ const effectConfig = {
         "description": "If the target faints, silence all enemies for 1 turn.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} is filled with a vengeful spirit!`);
             const listener = {
                 initialArgs: {
                     "pokemon": target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     // if not grudge user, ignore
                     const targetPokemon = args.target;
                     if (targetPokemon !== initialArgs.pokemon) {
@@ -2040,7 +2040,7 @@ const effectConfig = {
                     const enemyPokemons = targetPokemon.getPatternTargets(
                         targetPokemon.battle.parties[enemyTeamName],
                         targetPatterns.ALL,
-                        1 
+                        1
                     );
                     targetPokemon.battle.addToLog(`${targetPokemon.name}'s holds a grudge!`);
                     for (const enemyPokemon of enemyPokemons) {
@@ -2053,7 +2053,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             }
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} is no longer holding a grudge!`);
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
@@ -2064,14 +2064,14 @@ const effectConfig = {
         "description": "If the target faints, the chosen Pokemon faints as well.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function(battle, source, target, initialArgs) {
+        "effectAdd": function (battle, source, target, initialArgs) {
             battle.addToLog(`${target.name} binds ${initialArgs.boundPokemon.name} by a vow!`);
             const listener = {
                 initialArgs: {
                     "pokemon": target,
                     "boundPokemon": initialArgs.boundPokemon,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     // if not destiny bond user, ignore
                     const targetPokemon = args.target;
                     if (targetPokemon !== initialArgs.pokemon) {
@@ -2088,7 +2088,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             }
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} is no longer bound by a vow!`);
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
@@ -2099,7 +2099,7 @@ const effectConfig = {
         "description": "The target is mimicking a move.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function(battle, source, target, initialArgs) {
+        "effectAdd": function (battle, source, target, initialArgs) {
             const mimicMoveId = initialArgs.moveId;
             const moveData = moveConfig[mimicMoveId];
             if (!mimicMoveId) return;
@@ -2122,7 +2122,7 @@ const effectConfig = {
             }
             battle.addToLog(`${target.name} is mimicking ${moveData.name}!`);
         },
-        "effectRemove": function(battle, target, args, initialArgs) {
+        "effectRemove": function (battle, target, args, initialArgs) {
             if (initialArgs.noRemove) return;
             const mimicMoveId = initialArgs.moveId;
             const oldMoveId = initialArgs.oldMoveId;
@@ -2139,7 +2139,7 @@ const effectConfig = {
         "description": "The target has awakened Gear 5.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function(battle, source, target) {
+        "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} has awakened Gear 5!`);
 
             // remember old: species ID, move IDs, ability ID
@@ -2154,7 +2154,7 @@ const effectConfig = {
 
             return rv;
         },
-        "effectRemove": function(battle, target, args) {
+        "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} has lost Gear 5!`);
 
             target.transformInto(args.oldSpeciesId, {
@@ -2723,10 +2723,10 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.SPECIAL,
         "description": "A two-turn attack. The user gathers light, then blasts a bundled beam on the next turn.",
-        "silenceIf": function(battle, pokemon) {
-            return pokemon.effectIds.absorbLight === undefined 
-            && !battle.isWeatherNegated()
-            && battle.weather.weatherId !== weatherConditions.SUN;
+        "silenceIf": function (battle, pokemon) {
+            return pokemon.effectIds.absorbLight === undefined
+                && !battle.isWeatherNegated()
+                && battle.weather.weatherId !== weatherConditions.SUN;
         }
     },
     "m77": {
@@ -2871,7 +2871,7 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user burrows into the ground, becoming untargetable and unhittable 1 turn. The user then attacks on the next turn.",
-        "silenceIf": function(battle, pokemon) {
+        "silenceIf": function (battle, pokemon) {
             return pokemon.effectIds.burrowed === undefined;
         }
     },
@@ -3264,7 +3264,7 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
         "description": "A second-turn attack move. If this defeats the target, all enemies have a 30% chance to flinch, boosted by 10% of the user's speed, up to a max of 75%.",
-        "silenceIf": function(battle, pokemon) {
+        "silenceIf": function (battle, pokemon) {
             return pokemon.effectIds.skyCharge === undefined;
         }
     },
@@ -4152,7 +4152,7 @@ const moveConfig = {
         "damageType": damageTypes.OTHER,
         "description": "The user taunts the target into only using moves WITHOUT base power for 2 turns.",
     },
-    "m270":{
+    "m270": {
         "name": "Helping Hand",
         "type": types.NORMAL,
         "power": null,
@@ -4399,7 +4399,7 @@ const moveConfig = {
         "damageType": damageTypes.PHYSICAL,
         "description": "Boulders of biblical proportion are hurled at the target. This also lowers the target's Speed stat for 2 turns, even when the attack misses.",
     },
-    "m322":{
+    "m322": {
         "name": "Cosmic Power",
         "type": types.PSYCHIC,
         "power": null,
@@ -4463,7 +4463,7 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user takes a turn to charge up, then forcefully slashes at random targets, hitting 9 times. Targets who are successfully hit take an additional 5% max HP true damage.",
-        "silenceIf": function(battle, pokemon) {
+        "silenceIf": function (battle, pokemon) {
             return pokemon.effectIds.projectingSpirit === undefined;
         }
     },
@@ -4544,7 +4544,7 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user bounces up high, then drops on the target on the second turn. This has a 30% chance to leave the target with paralysis.",
-        "silenceIf": function(battle, pokemon) {
+        "silenceIf": function (battle, pokemon) {
             return pokemon.effectIds.sprungUp === undefined;
         }
     },
@@ -5549,7 +5549,7 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user attacks the target with full force, sharply raising attack for 3 turns. If the target is knocked out, gain another turn.",
-    }, 
+    },
     "m568": {
         "name": "Noble Roar",
         "type": types.NORMAL,
@@ -6796,7 +6796,7 @@ const moveExecutes = {
             });
         }
     },
-    
+
     "m91": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m91";
         const moveData = moveConfig[moveId];
@@ -6909,7 +6909,7 @@ const moveExecutes = {
         if (pokemons.length > 0) {
             const pokemon = pokemons.reduce((a, b) => a.combatReadiness > b.combatReadiness ? a : b);
             pokemon.boostCombatReadiness(source, 100);
-        } 
+        }
     },
     "m101": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m101";
@@ -7033,7 +7033,7 @@ const moveExecutes = {
             if (targetRow.includes(target)) {
                 // greater spd up for 3 turns
                 target.addEffect("greaterSpdUp", 3, source);
-            } else {  
+            } else {
                 // spd up for 3 turns
                 target.addEffect("spdUp", 3, source);
             }
@@ -7049,7 +7049,7 @@ const moveExecutes = {
             if (targetRow.includes(target)) {
                 // greater def up for 3 turns
                 target.addEffect("greaterDefUp", 3, source);
-            } else {  
+            } else {
                 // def up for 3 turns
                 target.addEffect("defUp", 3, source);
             }
@@ -7069,7 +7069,7 @@ const moveExecutes = {
     "m118": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m118";
         const moveData = moveConfig[moveId];
-        
+
         // get random basic moves
         const basicMoves = Object.keys(moveConfig).filter(moveId => moveConfig[moveId].tier == moveTiers.BASIC);
         const randomMoveId = basicMoves[Math.floor(Math.random() * basicMoves.length)];
@@ -7150,7 +7150,7 @@ const moveExecutes = {
             });
 
             // if not miss, 20% + sourceatk/enemyatk chance to flinch
-            const flinchChance = source.atk > target.atk ? 0.2 + (source.atk/target.atk - 1) : 0.2;
+            const flinchChance = source.atk > target.atk ? 0.2 + (source.atk / target.atk - 1) : 0.2;
             if (!miss && Math.random() < flinchChance) {
                 target.addEffect("flinched", 1, source);
             }
@@ -7214,7 +7214,7 @@ const moveExecutes = {
                 });
             }
         }
-    },  
+    },
     "m137": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m137";
         const moveData = moveConfig[moveId];
@@ -7276,7 +7276,7 @@ const moveExecutes = {
         const surroundingTargets = source.getPatternTargets(targetParty, targetPatterns.ALL, primaryTarget.position);
         for (const target of surroundingTargets) {
             // flinch chance = (30 + source speed/10)
-            const flinchChance = Math.min(0.3 + (source.getSpe() / 10)/100, .75);
+            const flinchChance = Math.min(0.3 + (source.getSpe() / 10) / 100, .75);
             if (Math.random() < flinchChance) {
                 target.addEffect("flinched", 1, source);
             }
@@ -7342,7 +7342,7 @@ const moveExecutes = {
                 moveId: moveId
             });
         }
-        
+
         // also deal 1/3rd damage to surrounding allies
         const allyParty = battle.parties[source.teamName];
         const allyTargets = source.getPatternTargets(allyParty, targetPatterns.SQUARE, source.position);
@@ -7392,7 +7392,7 @@ const moveExecutes = {
                 moveId: moveId
             });
         }
-    },          
+    },
     "m156": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m156";
         const moveData = moveConfig[moveId];
@@ -7895,7 +7895,7 @@ const moveExecutes = {
             target.addEffect("spaUp", 1, source);
             target.addEffect("spdUp", 1, source);
             target.addEffect("speUp", 1, source);
-            
+
             // heal
             source.giveHeal(Math.floor(source.maxHp * (0.25)), source, {
                 type: "move",
@@ -7940,7 +7940,7 @@ const moveExecutes = {
                 target.addEffect("restricted", 2, source);
             }
         }
-    },   
+    },
     "m212-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m212-1";
         const moveData = moveConfig[moveId];
@@ -7952,7 +7952,7 @@ const moveExecutes = {
                 target.addEffect("greaterSpeDown", 2, source);
             }
         }
-    },          
+    },
     "m214": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m214";
         const moveData = moveConfig[moveId];
@@ -8129,7 +8129,7 @@ const moveExecutes = {
         for (const target of allTargets) {
             // boost cr to 100
             target.boostCombatReadiness(source, 100);
-            
+
             // give greater atkup, defup 2 turns
             target.addEffect("greaterAtkUp", 2, source);
             target.addEffect("greaterDefUp", 2, source);
@@ -8421,7 +8421,7 @@ const moveExecutes = {
                 target.addEffect("flinched", 1, source);
             }
         }
-        
+
         // boost source cr by 60
         source.boostCombatReadiness(source, 60);
     },
@@ -8595,7 +8595,7 @@ const moveExecutes = {
                 moveId: moveId
             });
         }
-    },       
+    },
     "m283": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m283";
         const moveData = moveConfig[moveId];
@@ -8953,7 +8953,7 @@ const moveExecutes = {
                 if (allTargets.length === 0) {
                     break;
                 }
-    
+
                 const target = allTargets[Math.floor(Math.random() * allTargets.length)];
                 const miss = missedTargets.includes(target);
                 // if not miss, deal 5% target max hp
@@ -9291,7 +9291,7 @@ const moveExecutes = {
         if (pokemons.length > 0) {
             const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
             pokemon.boostCombatReadiness(source, 100);
-        } 
+        }
     },
     "m370": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m370";
@@ -9473,7 +9473,7 @@ const moveExecutes = {
                 type: "move",
                 moveId: moveId
             });
-            
+
             // if not miss, 25% to flinch 1 turn
             if (!miss && Math.random() < 0.25) {
                 target.addEffect("flinched", 1, source);
@@ -9813,7 +9813,7 @@ const moveExecutes = {
         if (targets.length === 0) {
             return;
         }
-        
+
         // get mean spe of all targets
         const meanSpe = targets.reduce((acc, p) => acc + p.getSpe(), 0) / targets.length;
         // for all targets apply effect: 
@@ -9993,7 +9993,7 @@ const moveExecutes = {
             const damageToDeal = calculateDamage(moveData, source, target, miss);
             source.dealDamage(damageToDeal, target, {
                 type: "move",
-                moveId: moveId 
+                moveId: moveId
             });
         }
 
@@ -10087,7 +10087,7 @@ const moveExecutes = {
             }
             const hpPower = Math.floor(source.maxHp / 15);
             const power = speedPower + hpPower;
-            
+
             const miss = missedTargets.includes(target);
             const damageToDeal = calculateDamage(moveData, source, target, miss, {
                 power: power
@@ -10183,7 +10183,7 @@ const moveExecutes = {
         if (pokemons.length > 0) {
             const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
             pokemon.boostCombatReadiness(source, 100);
-        } 
+        }
     },
     "m523": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m523";
@@ -10282,7 +10282,7 @@ const moveExecutes = {
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
-            const damageToDeal = calculateDamage(moveData, source, target, miss, { 
+            const damageToDeal = calculateDamage(moveData, source, target, miss, {
                 power: Math.floor(moveData.power + (source.getDef() * 0.1))
             });
             source.dealDamage(damageToDeal, target, {
@@ -10386,7 +10386,7 @@ const moveExecutes = {
                 target.addEffect("restricted", 2, source);
             }
         }
-    },  
+    },
     "m565": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m565";
         const moveData = moveConfig[moveId];
@@ -10819,7 +10819,7 @@ const moveExecutes = {
     "m20003": function (battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m20003";
         const moveData = moveConfig[moveId];
-        
+
         // get random fainted enemy of primary target
         const enemyParty = primaryTarget.getEnemyParty();
         const enemyPokemons = enemyParty.pokemons;
@@ -10967,7 +10967,7 @@ const moveExecutes = {
             battle.addToLog(`But it failed! ${source.name} is not under 25% HP!`);
             return;
         }
-        
+
         for (const target of allTargets) {
             // heal 50%
             const healAmount = Math.floor(target.maxHp * 0.5);
@@ -11028,7 +11028,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (initialArgs.pokemon.isFainted) {
                         return;
                     }
@@ -11059,9 +11059,9 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const activePokemon = initialArgs.pokemon.battle.activePokemon;
-                    if (initialArgs.pokemon.isFainted ||  activePokemon !== initialArgs.pokemon) {
+                    if (initialArgs.pokemon.isFainted || activePokemon !== initialArgs.pokemon) {
                         return;
                     }
 
@@ -11103,7 +11103,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (initialArgs.pokemon !== targetPokemon) {
                         return;
@@ -11119,7 +11119,7 @@ const abilityConfig = {
                     // if fatal damage, set hp to 1
                     if (args.damage > targetPokemon.hp) {
                         args.damage = targetPokemon.hp - 1;
-                        args.maxDamage= Math.min(args.maxDamage, args.damage);
+                        args.maxDamage = Math.min(args.maxDamage, args.damage);
                         targetPokemon.battle.addToLog(`${targetPokemon.name} hung on with Sturdy!`);
                         // remove event listener
                         targetPokemon.battle.eventHandler.unregisterListener(abilityData.listenerId);
@@ -11149,7 +11149,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.statusId !== statusConditions.PARALYSIS) {
                         return;
                     }
@@ -11185,7 +11185,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -11226,7 +11226,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -11270,7 +11270,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -11334,7 +11334,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.statusId !== statusConditions.SLEEP) {
                         return;
                     }
@@ -11370,7 +11370,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -11413,7 +11413,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const effectId = args.effectId;
                     const effectData = effectConfig[effectId];
                     if (!effectData) {
@@ -11427,14 +11427,14 @@ const abilityConfig = {
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     targetPokemon.battle.addToLog(`${targetPokemon.name}'s Shield Dust blocks the debuff!`);
                     args.canAdd = false;
                 }
             }
 
             const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_EFFECT_ADD, listener);
-            
+
             return {
                 listenerId: listenerId,
             }
@@ -11456,7 +11456,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.effectId !== "confused") {
                         return;
                     }
@@ -11465,7 +11465,7 @@ const abilityConfig = {
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     targetPokemon.battle.addToLog(`${targetPokemon.name}'s Own Tempo prevents confusion!`);
                     args.canAdd = false;
                 }
@@ -11492,7 +11492,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const sourcePokemon = initialArgs.pokemon;
                     const battle = args.battle;
                     const enemyParty = sourcePokemon.getEnemyParty();
@@ -11551,7 +11551,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const sourcePokemon = initialArgs.pokemon;
                     const battle = args.battle;
                     const enemyParty = sourcePokemon.getEnemyParty();
@@ -11590,7 +11590,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     const sourcePokemon = args.source;
                     if (targetPokemon !== initialArgs.pokemon) {
@@ -11633,7 +11633,7 @@ const abilityConfig = {
             const abilityData = ability.data;
             battle.eventHandler.unregisterListener(abilityData.listenerId);
             source.maxHp = source.maxHp * 4;
-        }   
+        }
     },
     "26": {
         "name": "Levitate",
@@ -11643,7 +11643,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
@@ -11678,7 +11678,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -11713,7 +11713,7 @@ const abilityConfig = {
             const abilityData = ability.data;
             battle.eventHandler.unregisterListener(abilityData.listenerId);
         }
-    },      
+    },
     "28": {
         "name": "Synchronize",
         // TODO: this functionality is different from the game, may need to nerf
@@ -11723,7 +11723,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     const sourcePokemon = args.source;
                     if (targetPokemon.isFainted || initialArgs.pokemon !== targetPokemon) {
@@ -11760,7 +11760,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon.isFainted || initialArgs.pokemon !== targetPokemon) {
                         return;
@@ -11798,7 +11798,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const sourcePokemon = args.source;
                     const targetPokemons = args.targets;
                     if (initialArgs.pokemon !== sourcePokemon) {
@@ -11849,7 +11849,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     // if redirect user isnt targetable, ignore
                     if (!args.user.battle.isPokemonTargetable(initialArgs.pokemon)) {
                         return;
@@ -11878,7 +11878,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -11944,7 +11944,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const sourcePokemon = initialArgs.pokemon;
                     const battle = args.battle;
                     const teamNames = Object.keys(battle.teams);
@@ -11996,7 +11996,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -12037,7 +12037,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.effectId !== "flinched") {
                         return;
                     }
@@ -12046,7 +12046,7 @@ const abilityConfig = {
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     targetPokemon.battle.addToLog(`${targetPokemon.name}'s Inner Focus prevents flinching!`);
                     args.canAdd = false;
                 }
@@ -12073,7 +12073,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (initialArgs.pokemon.isFainted) {
                         return;
                     }
@@ -12104,7 +12104,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     // check who should be affected
                     let targetPokemon = null;
                     if (initialArgs.pokemon === args.source) {
@@ -12172,7 +12172,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     // check move
                     if (args.damageInfo.type !== "move") {
                         return;
@@ -12249,7 +12249,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -12258,7 +12258,7 @@ const abilityConfig = {
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     // if move type === fire or ice, reduce damage by 50%
                     const moveData = moveConfig[args.damageInfo.moveId];
                     if (moveData.type === types.FIRE || moveData.type === types.ICE) {
@@ -12291,7 +12291,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon.isFainted || targetPokemon !== initialArgs.pokemon) {
                         return;
@@ -12337,7 +12337,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.effectId !== "atkDown" && args.effectId !== "greaterAtkDown") {
                         return;
                     }
@@ -12346,14 +12346,14 @@ const abilityConfig = {
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     targetPokemon.battle.addToLog(`${targetPokemon.name}'s Hyper Cutter prevents its attack from being lowered!`);
                     args.canAdd = false;
                 }
             }
 
             const listenerId = battle.eventHandler.registerListener(battleEventNames.BEFORE_EFFECT_ADD, listener);
-            
+
             return {
                 listenerId: listenerId,
             }
@@ -12375,7 +12375,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon === initialArgs.pokemon || targetPokemon.teamName !== initialArgs.pokemon.teamName) {
                         return;
@@ -12418,7 +12418,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const pokemon = initialArgs.pokemon;
                     const activePokemon = pokemon.battle.activePokemon;
                     if (pokemon !== activePokemon) {
@@ -12462,7 +12462,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const pokemon = initialArgs.pokemon;
                     const activePokemon = pokemon.battle.activePokemon;
                     if (pokemon !== activePokemon) {
@@ -12506,7 +12506,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -12516,7 +12516,7 @@ const abilityConfig = {
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     // if move is physical, 30% chance to lower attacker's attack for 1 turn
                     const moveData = moveConfig[args.damageInfo.moveId];
                     if (moveData.damageType === damageTypes.PHYSICAL && Math.random() < 0.3) {
@@ -12549,7 +12549,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
@@ -12582,7 +12582,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -12591,7 +12591,7 @@ const abilityConfig = {
                     if (userPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     // if move type === grass and hp < 1/3, increase damage by 50%
                     const moveData = moveConfig[args.damageInfo.moveId];
                     if (moveData.type === types.GRASS && userPokemon.hp < userPokemon.maxHp / 3) {
@@ -12622,7 +12622,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -12631,7 +12631,7 @@ const abilityConfig = {
                     if (userPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     // if move type === fire and hp < 1/3, increase damage by 50%
                     const moveData = moveConfig[args.damageInfo.moveId];
                     if (moveData.type === types.FIRE && userPokemon.hp < userPokemon.maxHp / 3) {
@@ -12662,7 +12662,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -12671,7 +12671,7 @@ const abilityConfig = {
                     if (userPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     // if move type === water and hp < 1/3, increase damage by 50%
                     const moveData = moveConfig[args.damageInfo.moveId];
                     if (moveData.type === types.WATER && userPokemon.hp < userPokemon.maxHp / 3) {
@@ -12702,7 +12702,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -12711,7 +12711,7 @@ const abilityConfig = {
                     if (userPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     // if move type === bug and hp < 1/3, increase damage by 50%
                     const moveData = moveConfig[args.damageInfo.moveId];
                     if (moveData.type === types.BUG && userPokemon.hp < userPokemon.maxHp / 3) {
@@ -12742,7 +12742,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (initialArgs.pokemon.isFainted) {
                         return;
                     }
@@ -12773,13 +12773,13 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const sourcePokemon = args.source;
                     const targetPokemon = args.target;
                     if (sourcePokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     // if target is not flying, restrict combat readiness boosts for 2 turns
                     if (sourcePokemon.getTypeDamageMultiplier(types.GROUND, targetPokemon) !== 0) {
                         targetPokemon.addEffect("restricted", 2, sourcePokemon);
@@ -12809,7 +12809,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -12818,7 +12818,7 @@ const abilityConfig = {
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     // reduce damage taken by 12.5%
                     args.damage = Math.round(args.damage * 0.875);
                 }
@@ -12854,7 +12854,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -12863,7 +12863,7 @@ const abilityConfig = {
                     if (userPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     // if move type === punch, increase damage by 20%
                     const moveData = moveConfig[args.damageInfo.moveId];
                     if (moveData.name.toLowerCase().includes("punch")) {
@@ -12894,7 +12894,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -12933,7 +12933,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -12943,7 +12943,7 @@ const abilityConfig = {
                     if (userPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     // if target is backmost row, increase damage by 50%
                     const { party, row, col } = targetPokemon.getPartyRowColumn();
                     if (row === party.rows - 1) {
@@ -12973,13 +12973,13 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const sourcePokemon = args.source;
                     const targetPokemon = args.target;
                     if (sourcePokemon !== initialArgs.pokemon && targetPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     args.hitChance = 100;
                 }
             }
@@ -13005,7 +13005,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -13015,7 +13015,7 @@ const abilityConfig = {
                     if (sourcePokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     // if move has 60 base power or less, increase damage by 50%
                     const moveData = moveConfig[args.damageInfo.moveId];
                     if (moveData.power <= 70) {
@@ -13046,7 +13046,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -13056,7 +13056,7 @@ const abilityConfig = {
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     const moveData = moveConfig[args.damageInfo.moveId];
                     if (!moveData) {
                         return;
@@ -13091,7 +13091,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -13101,7 +13101,7 @@ const abilityConfig = {
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     const moveData = moveConfig[args.damageInfo.moveId];
                     if (!moveData) {
                         return;
@@ -13137,7 +13137,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     // if redirect user isnt targetable, ignore
                     if (!args.user.battle.isPokemonTargetable(initialArgs.pokemon)) {
                         return;
@@ -13166,7 +13166,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -13212,7 +13212,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const battle = initialArgs.pokemon.battle;
                     const activePokemon = battle.activePokemon;
                     if (activePokemon !== initialArgs.pokemon) {
@@ -13254,7 +13254,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -13274,7 +13274,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const sourcePokemon = args.source;
                     const targetPokemon = args.target;
                     if (sourcePokemon !== initialArgs.pokemon) {
@@ -13317,7 +13317,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -13331,7 +13331,7 @@ const abilityConfig = {
                     if (!sourcePokemon.moveIds[args.damageInfo.moveId]) {
                         return;
                     }
-                    
+
                     // 30% chance to increase cooldown by 2
                     if (Math.random() < 0.3) {
                         targetPokemon.battle.addToLog(`${sourcePokemon.name} was cursed by ${targetPokemon.name}'s Cursed Body!`);
@@ -13361,7 +13361,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const sourcePokemon = args.source;
                     const targetPokemon = args.target;
                     if (sourcePokemon !== initialArgs.pokemon) {
@@ -13405,7 +13405,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -13414,7 +13414,7 @@ const abilityConfig = {
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     // if hp is full, reduce damage by 50%
                     if (targetPokemon.hp === targetPokemon.maxHp) {
                         targetPokemon.battle.addToLog(`${targetPokemon.name}'s Multiscale reduces damage taken!`);
@@ -13444,7 +13444,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.damageInfo.type !== "move") {
                         return;
                     }
@@ -13485,7 +13485,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const battle = initialArgs.pokemon.battle;
                     const activePokemon = battle.activePokemon;
                     if (activePokemon !== initialArgs.pokemon) {
@@ -13522,7 +13522,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     if (args.effectId !== "defDown" && args.effectId !== "greaterDefDown") {
                         return;
                     }
@@ -13531,7 +13531,7 @@ const abilityConfig = {
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
                     }
-                    
+
                     targetPokemon.battle.addToLog(`${targetPokemon.name}'s Big Pecks prevents the defense drop!`);
                     args.canAdd = false;
                 }
@@ -13558,7 +13558,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: source,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const sourcePokemon = args.source;
                     if (sourcePokemon.isFainted || sourcePokemon !== initialArgs.pokemon) {
                         return;
@@ -13599,7 +13599,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     // make sure target of enemy move
                     const sourcePokemon = args.source;
                     const targetPokemons = args.targets;
@@ -13648,7 +13648,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     // make sure source is user
                     const sourcePokemon = args.source;
                     if (sourcePokemon.isFainted || sourcePokemon !== initialArgs.pokemon) {
@@ -13689,7 +13689,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     // make sure target is user
                     const targetPokemon = args.target;
                     if (targetPokemon.isFainted || targetPokemon !== initialArgs.pokemon) {
@@ -13729,7 +13729,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const sourcePokemon = args.source;
                     const targetPokemon = args.target;
                     if (initialArgs.pokemon.teamName === targetPokemon.teamName) {
@@ -13766,7 +13766,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const pokemon = initialArgs.pokemon;
                     const activePokemon = pokemon.battle.activePokemon;
                     if (activePokemon.teamName === pokemon.teamName) {
@@ -13783,7 +13783,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
@@ -13802,7 +13802,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
@@ -13841,7 +13841,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon.isFainted || targetPokemon !== initialArgs.pokemon) {
                         return;
@@ -13862,7 +13862,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
@@ -13881,7 +13881,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
@@ -13920,7 +13920,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const pokemon = initialArgs.pokemon;
                     const activePokemon = pokemon.battle.activePokemon;
                     if (activePokemon !== pokemon) {
@@ -13939,7 +13939,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
@@ -13958,7 +13958,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
@@ -13997,7 +13997,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const pokemon = initialArgs.pokemon;
                     const targetPokemon = args.target;
                     if (targetPokemon === pokemon) {
@@ -14014,7 +14014,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
@@ -14033,7 +14033,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
@@ -14072,7 +14072,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon.teamName === initialArgs.pokemon.teamName) {
                         return;
@@ -14122,7 +14122,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const battle = initialArgs.pokemon.battle;
                     const activePokemon = battle.activePokemon;
                     if (activePokemon !== initialArgs.pokemon) {
@@ -14189,7 +14189,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const battle = initialArgs.pokemon.battle;
                     const targetPokemon = args.target;
                     if (targetPokemon.teamName !== initialArgs.pokemon.teamName) {
@@ -14228,7 +14228,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (initialArgs.pokemon !== targetPokemon) {
                         return;
@@ -14244,7 +14244,7 @@ const abilityConfig = {
                     // if fatal damage, prevent it and set cr to 100
                     if (args.damage > targetPokemon.hp) {
                         args.damage = 0;
-                        args.maxDamage= Math.min(args.maxDamage, args.damage);
+                        args.maxDamage = Math.min(args.maxDamage, args.damage);
                         targetPokemon.battle.addToLog(`${targetPokemon.name} resurrects!`);
                         targetPokemon.boostCombatReadiness(targetPokemon, 100);
                         // remove event listener
@@ -14288,7 +14288,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const pokemon = initialArgs.pokemon;
                     // add moneybags buff
                     pokemon.addEffect("moneyBags", 2, pokemon);
@@ -14317,7 +14317,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const pokemon = initialArgs.pokemon;
                     // add immortality buff
                     pokemon.addEffect("immortal", 2, pokemon);
@@ -14347,7 +14347,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const pokemon = initialArgs.pokemon;
                     if (pokemon !== args.target) {
                         return;
@@ -14372,7 +14372,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const pokemon = initialArgs.pokemon;
                     if (pokemon !== args.source) {
                         return;
@@ -14426,7 +14426,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     const sourcePokemon = args.source;
                     if (targetPokemon.isFainted || targetPokemon !== initialArgs.pokemon) {
@@ -14481,7 +14481,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     const sourcePokemon = args.source;
                     if (targetPokemon !== initialArgs.pokemon) {
@@ -14519,7 +14519,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
@@ -14560,7 +14560,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     const sourcePokemon = args.source;
                     if (targetPokemon.isFainted || targetPokemon !== initialArgs.pokemon) {
@@ -14590,7 +14590,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     const sourcePokemon = args.source;
                     if (targetPokemon !== initialArgs.pokemon) {
@@ -14628,7 +14628,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon !== initialArgs.pokemon) {
                         return;
@@ -14669,7 +14669,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     // make sure target is user
                     const targetPokemon = args.target;
                     if (targetPokemon.isFainted || targetPokemon !== initialArgs.pokemon) {
@@ -14711,7 +14711,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const targetPokemon = args.target;
                     if (targetPokemon.teamName !== initialArgs.pokemon.teamName) {
                         return;
@@ -14746,7 +14746,7 @@ const abilityConfig = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function(initialArgs, args) {
+                execute: function (initialArgs, args) {
                     const pokemon = initialArgs.pokemon;
                     if (pokemon.battle.activePokemon !== pokemon) {
                         return;
