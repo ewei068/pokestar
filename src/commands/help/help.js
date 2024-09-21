@@ -13,8 +13,8 @@ const help = async (command) => {
         // build state & select row UI
         const stateId = setState({
             messageStack: []
-        }, ttl=150);
-        
+        }, 150);
+
         const { send, err } = await buildHelpSend({
             stateId: stateId,
             view: "help",

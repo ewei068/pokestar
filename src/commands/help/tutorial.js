@@ -1,8 +1,8 @@
-const { buildUrlButton } = require("../../components/urlButton");
 const { quickstartString } = require("../../config/helpConfig");
 const { buildTutorialSend } = require("../../embeds/helpEmbeds");
 
 // depreciated for now
+// eslint-disable-next-line no-unused-vars
 const TUTORIAL_URL = "https://github.com/ewei068/pokestar/blob/main/README.md#tutorial";
 
 const tutorial = async (page) => {
