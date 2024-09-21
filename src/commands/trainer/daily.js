@@ -8,8 +8,7 @@
 */
 const { drawDaily } = require('../../services/gacha');
 const { getTrainer } = require('../../services/trainer');
-const { backpackCategories, backpackItemConfig } = require('../../config/backpackConfig');
-const { getPokeballsString, getRewardsString, getBackpackItemsString } = require('../../utils/trainerUtils');
+const { getRewardsString, getBackpackItemsString } = require('../../utils/trainerUtils');
 const { formatMoney } = require('../../utils/utils');
 
 /**
@@ -30,7 +29,7 @@ const daily = async (user) => {
     if (rewards.err) {
         return { data: null, err: rewards.err };
     }
-    const { money, backpack } = rewards.data;
+    const { money } = rewards.data;
 
     // build itemized rewards string
     let rewardsString = getRewardsString(rewards.data);
@@ -39,7 +38,7 @@ const daily = async (user) => {
         rewardsString += `\n${formatMoney(trainer.data.money)}`;
     }
     rewardsString += getBackpackItemsString(trainer.data);
-    rewardsString += "\nSpend your Pokedollars at the \`/pokemart\` | Use \`/gacha\` to use your Pokeballs";
+    rewardsString += "\nSpend your Pokedollars at the `/pokemart` | Use `/gacha` to use your Pokeballs";
 
     return { data: rewardsString, err: null };
 }

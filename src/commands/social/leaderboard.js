@@ -32,7 +32,7 @@ const leaderboard = async (category, scope, guild) => {
     if (leaderboard.err) {
         return { embed: null, err: leaderboard.err };
     }
-    
+
     // build leaderboard embed
     const embed = buildLeaderboardEmbed(leaderboard.data, categoryData, scope);
 

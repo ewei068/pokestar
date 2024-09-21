@@ -20,7 +20,7 @@ const pokemart = async (user) => {
     const stateId = setState({
         userId: user.id,
         messageStack: []
-    }, ttl=150);
+    }, 150);
 
     const { send, err } = await buildShopSend({
         stateId: stateId,

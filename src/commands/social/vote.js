@@ -33,7 +33,7 @@ const vote = async (user) => {
         disabled: false,
         data: {},
         // celebration
-        emoji: "🎉" 
+        emoji: "🎉"
     }], eventNames.VOTE_REWARDS);
 
     const send = {

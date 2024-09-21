@@ -20,7 +20,7 @@ const locations = async (user) => {
     if (trainer.err) {
         return { embed: null, err: trainer.err };
     }
-    
+
     // get embed
     const embed = buildLocationsEmbed(trainer.data);
 

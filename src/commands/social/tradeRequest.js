@@ -27,7 +27,7 @@ const tradeRequest = async (user, secondUserId) => {
         user1: user,
         userId1: user.id,
         userId2: secondUserId,
-    }, ttl=300);
+    }, 300);
     const { send, err } = await buildTradeRequestSend({
         stateId: stateId,
         user1: user,

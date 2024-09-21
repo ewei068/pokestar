@@ -24,7 +24,7 @@ const buy = async (user, itemId, quantity) => {
     if (quantity < 1) {
         return { embed: null, err: 'You must buy at least 1 item.' };
     }
-    
+
     // get trainer
     const trainer = await getTrainer(user);
     if (trainer.err) {
@@ -36,7 +36,7 @@ const buy = async (user, itemId, quantity) => {
     if (itemBuyResult.err) {
         return { embed: null, err: itemBuyResult.err };
     }
-    
+
     const send = {
         content: `${itemBuyResult.data}`,
     }

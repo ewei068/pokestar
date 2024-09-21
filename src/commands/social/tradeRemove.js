@@ -30,7 +30,7 @@ const tradeRemoveMessageCommand = async (message) => {
     const option = args[1];
     let money = 0;
     let pokemonId = null;
-    
+
     if (option === "ALL") {
         // pass
     } else if (!isNaN(option)) {

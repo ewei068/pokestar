@@ -16,18 +16,18 @@ const commands = [];
 
 // iterate over command config categories and commands
 for (const commandCategory in commandCategoryConfig) {
-    const commandCategoryData = commandCategoryConfig[commandCategory];
-    for (const commandName of commandCategoryData.commands) {
-        const commandData = commandConfig[commandName];
-        if (commandData.stages.includes(process.env.STAGE)) {
+	const commandCategoryData = commandCategoryConfig[commandCategory];
+	for (const commandName of commandCategoryData.commands) {
+		const commandData = commandConfig[commandName];
+		if (commandData.stages.includes(process.env.STAGE)) {
 			console.log(commandName, commandData)
-            const slashCommand = buildSlashCommand(commandData);
+			const slashCommand = buildSlashCommand(commandData);
 			if (!slashCommand) {
 				continue;
 			}
-            commands.push(slashCommand.toJSON());
-        }
-    }
+			commands.push(slashCommand.toJSON());
+		}
+	}
 }
 
 // Construct and prepare an instance of the REST module

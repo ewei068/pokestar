@@ -7,8 +7,6 @@
  * levelRewards.js Creates a system to dispaly and grant unclaimed level rewards to the user.
 */
 const { getLevelRewards } = require("../../services/trainer");
-const { backpackItemConfig } = require("../../config/backpackConfig");
-const { getRewardsString } = require("../../utils/trainerUtils");
 
 /**
  * Grants any unclaimed level rewards to the user.
