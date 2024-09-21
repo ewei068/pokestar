@@ -181,7 +181,7 @@ const effectConfig = {
         "description": "The target's takes shielded damage.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target, initialArgs) {
+        "effectAdd": function (battle, _source, target, initialArgs) {
             const shield = initialArgs && initialArgs.shield;
             if (!shield) {
                 return {};
@@ -204,7 +204,7 @@ const effectConfig = {
         "description": "The target's Attack increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if greaterAtkUp exists on target, remove atkUp and refresh greaterAtkUp
             if (target.effectIds.greaterAtkUp) {
                 const currentDuration = target.effectIds.atkUp.duration;
@@ -227,7 +227,7 @@ const effectConfig = {
         "description": "The target's Attack greatly increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if atkUp exists on target, remove atkUp and refresh greaterAtkUp
             if (target.effectIds.atkUp) {
                 const currentDuration = target.effectIds.atkUp.duration;
@@ -250,7 +250,7 @@ const effectConfig = {
         "description": "The target's Attack decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if greaterAtkDown exists on target, remove atkDown and refresh greaterAtkDown
             if (target.effectIds.greaterAtkDown) {
                 const currentDuration = target.effectIds.atkDown.duration;
@@ -273,7 +273,7 @@ const effectConfig = {
         "description": "The target's Attack greatly decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if atkDown exists on target, remove atkDown and refresh atkDown
             if (target.effectIds.atkDown) {
                 const currentDuration = target.effectIds.atkDown.duration;
@@ -296,7 +296,7 @@ const effectConfig = {
         "description": "The target's Defense increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if greaterDefUp exists on target, remove defUp and refresh greaterDefUp
             if (target.effectIds.greaterDefUp) {
                 const currentDuration = target.effectIds.defUp.duration;
@@ -319,7 +319,7 @@ const effectConfig = {
         "description": "The target's Defense sharply increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Defense sharply rose!`);
             // if defUp exists on target, remove defUp and refresh greaterDefUp
             if (target.effectIds.defUp) {
@@ -342,7 +342,7 @@ const effectConfig = {
         "description": "The target's Defense decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if greaterDefDown exists on target, remove defDown and refresh greaterDefDown
             if (target.effectIds.greaterDefDown) {
                 const currentDuration = target.effectIds.defDown.duration;
@@ -365,7 +365,7 @@ const effectConfig = {
         "description": "The target's Defense sharply decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Defense sharply fell!`);
             // if defDown exists on target, remove defDown and refresh greaterDefDown
             if (target.effectIds.defDown) {
@@ -388,7 +388,7 @@ const effectConfig = {
         "description": "The target's Special Attack increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if greaterSpaUp exists on target, remove spaUp and refresh greaterSpaUp
             if (target.effectIds.greaterSpaUp) {
                 const currentDuration = target.effectIds.spaUp.duration;
@@ -411,7 +411,7 @@ const effectConfig = {
         "description": "The target's Special Attack sharply increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Special Attack sharply rose!`);
             // if spaUp exists on target, remove spaUp and refresh greaterSpaUp
             if (target.effectIds.spaUp) {
@@ -434,7 +434,7 @@ const effectConfig = {
         "description": "The target's Special Attack decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if greaterSpaDown exists on target, remove spaDown and refresh greaterSpaDown
             if (target.effectIds.greaterSpaDown) {
                 const currentDuration = target.effectIds.spaDown.duration;
@@ -457,7 +457,7 @@ const effectConfig = {
         "description": "The target's Special Attack sharply decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Special Attack sharply fell!`);
             // if spaDown exists on target, remove spaDown and refresh greaterSpaDown
             if (target.effectIds.spaDown) {
@@ -480,7 +480,7 @@ const effectConfig = {
         "description": "The target's Special Defense increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if greaterSpdUp exists on target, remove spdUp and refresh greaterSpdUp
             if (target.effectIds.greaterSpdUp) {
                 const currentDuration = target.effectIds.spdUp.duration;
@@ -503,7 +503,7 @@ const effectConfig = {
         "description": "The target's Special Defense sharply increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Special Defense sharply rose!`);
             // if spdUp exists on target, remove spdUp and refresh greaterSpdUp
             if (target.effectIds.spdUp) {
@@ -526,7 +526,7 @@ const effectConfig = {
         "description": "The target's Special Defense decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if greaterSpdDown exists on target, remove spdDown and refresh greaterSpdDown
             if (target.effectIds.greaterSpdDown) {
                 const currentDuration = target.effectIds.spdDown.duration;
@@ -549,7 +549,7 @@ const effectConfig = {
         "description": "The target's Special Defense sharply decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Special Defense sharply fell!`);
             // if spdDown exists on target, remove spdDown and refresh greaterSpdDown
             if (target.effectIds.spdDown) {
@@ -572,7 +572,7 @@ const effectConfig = {
         "description": "The target's Speed increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if greaterSpeUp exists on target, remove speUp and refresh greaterSpeUp
             if (target.effectIds.greaterSpeUp) {
                 const currentDuration = target.effectIds.speUp.duration;
@@ -595,7 +595,7 @@ const effectConfig = {
         "description": "The target's Speed sharply increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Speed sharply rose!`);
             // if speUp exists on target, remove speUp and refresh greaterSpeUp
             if (target.effectIds.speUp) {
@@ -618,7 +618,7 @@ const effectConfig = {
         "description": "The target's Speed decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if greaterSpeDown exists on target, remove speDown and refresh greaterSpeDown
             if (target.effectIds.greaterSpeDown) {
                 const currentDuration = target.effectIds.speDown.duration;
@@ -641,7 +641,7 @@ const effectConfig = {
         "description": "The target's Speed sharply decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Speed sharply fell!`);
             // if speDown exists on target, remove speDown and refresh greaterSpeDown
             if (target.effectIds.speDown) {
@@ -664,7 +664,7 @@ const effectConfig = {
         "description": "The target's Accuracy decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if greaterAccDown exists on target, remove accDown and refresh greaterAccDown
             if (target.effectIds.greaterAccDown) {
                 const currentDuration = target.effectIds.accDown.duration;
@@ -687,7 +687,7 @@ const effectConfig = {
         "description": "The target's Accuracy sharply decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Accuracy sharply fell!`);
             // if accDown exists on target, remove accDown and refresh greaterAccDown
             if (target.effectIds.accDown) {
@@ -710,7 +710,7 @@ const effectConfig = {
         "description": "The target's Evasion increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if greaterEvaUp exists on target, remove evaUp and refresh greaterEvaUp
             if (target.effectIds.greaterEvaUp) {
                 const currentDuration = target.effectIds.evaUp.duration;
@@ -733,7 +733,7 @@ const effectConfig = {
         "description": "The target's Evasion sharply increased.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Evasion sharply rose!`);
             // if evaUp exists on target, remove evaUp and refresh greaterEvaUp
             if (target.effectIds.evaUp) {
@@ -756,7 +756,7 @@ const effectConfig = {
         "description": "The target's Evasion decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             // if greaterEvaDown exists on target, remove evaDown and refresh greaterEvaDown
             if (target.effectIds.greaterEvaDown) {
                 const currentDuration = target.effectIds.evaDown.duration;
@@ -779,7 +779,7 @@ const effectConfig = {
         "description": "The target's Evasion sharply decreased.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Evasion sharply fell!`);
             // if evaDown exists on target, remove evaDown and refresh greaterEvaDown
             if (target.effectIds.evaDown) {
@@ -802,7 +802,7 @@ const effectConfig = {
         "description": "The target is confused.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -847,7 +847,7 @@ const effectConfig = {
         "description": "The target will counter physical moves used against it.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -896,7 +896,7 @@ const effectConfig = {
         "description": "The target will reflect special moves used against it.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -945,11 +945,11 @@ const effectConfig = {
         "description": "The target flinched.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} flinched!`);
             target.incapacitated = true;
         },
-        "effectRemove": function (battle, target) {
+        "effectRemove": function (_battle, target) {
             target.incapacitated = false;
         },
     },
@@ -958,11 +958,11 @@ const effectConfig = {
         "description": "The target must recharge.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} must recharge!`);
             target.incapacitated = true;
         },
-        "effectRemove": function (battle, target) {
+        "effectRemove": function (_battle, target) {
             target.incapacitated = false;
         }
     },
@@ -971,11 +971,11 @@ const effectConfig = {
         "description": "The target cannot gain combat readiness.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} is restricted and cannot gain combat readiness!`);
             target.restricted = true;
         },
-        "effectRemove": function (battle, target) {
+        "effectRemove": function (_battle, target) {
             target.restricted = false;
         }
     },
@@ -984,7 +984,7 @@ const effectConfig = {
         "description": "The target's HP cannot be reduced below 1.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} is immortal!`);
             const listener = {
                 initialArgs: {
@@ -1010,7 +1010,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (battle, _target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1020,7 +1020,7 @@ const effectConfig = {
         "description": "The target can't take damage from moves.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} protected itself!`);
             const listener = {
                 initialArgs: {
@@ -1048,7 +1048,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (battle, _target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1058,7 +1058,7 @@ const effectConfig = {
         "description": "The target stretches to its attacks.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} stretches to its attacks!`);
             const listener = {
                 initialArgs: {
@@ -1107,7 +1107,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (battle, _target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1117,7 +1117,7 @@ const effectConfig = {
         "description": "The user is protecting its allies from AoE moves.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, source) {
             battle.addToLog(`${source.name} is protecting its allies!`);
             const listener = {
                 initialArgs: {
@@ -1152,7 +1152,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (battle, _target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1162,7 +1162,7 @@ const effectConfig = {
         "description": "When the user takes damage, heal other allies by half the damage taken.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, source) {
             battle.addToLog(`${source.name} is sharing the wealth!`);
             const listener = {
 
@@ -1201,7 +1201,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (battle, _target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1211,7 +1211,7 @@ const effectConfig = {
         "description": "The target is immune to status conditions.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} is immune to status conditions!`);
             const listener = {
                 initialArgs: {
@@ -1243,9 +1243,9 @@ const effectConfig = {
         "description": "The target will be healed at the end of the duration.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target, initialArgs) {
+        "effectAdd": function () {
         },
-        "effectRemove": function (battle, target, args, initialArgs) {
+        "effectRemove": function (battle, target, _args, initialArgs) {
             const effect = target.effectIds.delayedHeal;
             if (effect && effect.duration > 0) {
                 return;
@@ -1263,13 +1263,13 @@ const effectConfig = {
         "description": "The target will be healed at the end of each turn.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target, initialArgs) {
+        "effectAdd": function (battle, _source, target, initialArgs) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                     healAmount: initialArgs.healAmount,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs) {
                     const regenPokemon = initialArgs.pokemon;
                     if (regenPokemon !== regenPokemon.battle.activePokemon) {
                         return;
@@ -1288,7 +1288,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (battle, _target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1305,7 +1305,7 @@ const effectConfig = {
                     pokemon: target,
                     damage: args.damage,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs) {
                     const dotPokemon = initialArgs.pokemon;
                     if (dotPokemon !== dotPokemon.battle.activePokemon) {
                         return;
@@ -1324,7 +1324,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (battle, _target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1334,13 +1334,13 @@ const effectConfig = {
         "description": "The target will take damage at the end of each turn and the source will be healed by the damage dealt.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target, args) {
+        "effectAdd": function (battle, source, target) {
             const listener = {
                 initialArgs: {
                     source: source,
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs) {
                     const dotPokemon = initialArgs.pokemon;
                     if (dotPokemon !== dotPokemon.battle.activePokemon) {
                         return;
@@ -1373,12 +1373,12 @@ const effectConfig = {
         "description": "At the end of each turn, give the target an extra turn.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target, args) {
+        "effectAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs) {
                     const targetPokemon = initialArgs.pokemon;
                     if (targetPokemon !== targetPokemon.battle.activePokemon) {
                         return;
@@ -1394,7 +1394,7 @@ const effectConfig = {
                 "listenerId": listenerId,
             };
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (battle, _target, args) {
             const listenerId = args.listenerId;
             battle.eventHandler.unregisterListener(listenerId);
         }
@@ -1451,7 +1451,7 @@ const effectConfig = {
                 "buffListenerId": buffListenerId,
             };
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (battle, _target, args) {
             const crListenerId = args.crListenerId;
             battle.eventHandler.unregisterListener(crListenerId);
             const buffListenerId = args.buffListenerId;
@@ -1512,7 +1512,7 @@ const effectConfig = {
                 "beforeMoveListenerId": beforeMoveListenerId,
             };
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (battle, _target, args) {
             const crListenerId = args.crListenerId;
             battle.eventHandler.unregisterListener(crListenerId);
             const beforeMoveListenerId = args.beforeMoveListenerId;
@@ -1562,7 +1562,6 @@ const effectConfig = {
         "effectAdd": function (battle, source, target) {
             battle.addToLog(`${target.name} is silenced and can only use basic moves!`);
             for (const moveId in target.moveIds) {
-                const move = target.moveIds[moveId];
                 const moveData = moveConfig[moveId];
                 if (moveData.tier !== moveTiers.BASIC) {
                     target.disableMove(moveId, source);
@@ -1575,7 +1574,6 @@ const effectConfig = {
         "effectRemove": function (battle, target, args) {
             battle.addToLog(`${target.name} is no longer silenced!`);
             for (const moveId in target.moveIds) {
-                const move = target.moveIds[moveId];
                 const moveData = moveConfig[moveId];
                 if (moveData.tier !== moveTiers.BASIC) {
                     target.enableMove(moveId, args.source);
@@ -1646,7 +1644,7 @@ const effectConfig = {
         "description": "Moves are redirected to this target.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} is redirecting moves!`);
             const listener = {
                 initialArgs: {
@@ -1690,7 +1688,7 @@ const effectConfig = {
         "description": "The target is charging its Electric moves.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} is charging its Electric moves!`);
             const listener = {
                 initialArgs: {
@@ -1733,7 +1731,7 @@ const effectConfig = {
         "description": "The target loses its Flying type.",
         "type": effectTypes.NEUTRAL,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} lost its Flying type!`);
             // if pure flying, change to pure normal
             if (target.type1 === types.FLYING && target.type2 === null) {
@@ -1772,7 +1770,7 @@ const effectConfig = {
         "description": "The target absorbs light, preparing a powerful Solar Beam.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} is absorbing light!`);
             // disable non-solar beam moves
             for (const moveId in target.moveIds) {
@@ -1781,7 +1779,7 @@ const effectConfig = {
                 }
             }
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (_battle, target) {
             // enable non-solar beam moves
             for (const moveId in target.moveIds) {
                 if (moveId !== "m76") {
@@ -1795,7 +1793,7 @@ const effectConfig = {
         "description": "The target is projecting its spirit in preparation for a powerful Ashura Bakkei.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} is projecting its spirit!`);
             // disable non-ashura bakkei moves
             for (const moveId in target.moveIds) {
@@ -1804,7 +1802,7 @@ const effectConfig = {
                 }
             }
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (_battle, target) {
             // enable non-ashura bakkei moves
             for (const moveId in target.moveIds) {
                 if (moveId !== "m331-1") {
@@ -1818,7 +1816,7 @@ const effectConfig = {
         "description": "The target is charging a powerful Sky Attack.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} becomes cloaked in a harsh light!`);
             // disable non-sky attack moves
             for (const moveId in target.moveIds) {
@@ -1827,7 +1825,7 @@ const effectConfig = {
                 }
             }
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (_battle, target) {
             // enable non-sky attack moves
             for (const moveId in target.moveIds) {
                 if (moveId !== "m143") {
@@ -1841,7 +1839,7 @@ const effectConfig = {
         "description": "The target has burrowed underground.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} burrows underground!`);
             // disable non-dig  moves
             for (const moveId in target.moveIds) {
@@ -1853,7 +1851,7 @@ const effectConfig = {
             target.targetable = false;
             target.hittable = false;
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (_battle, target) {
             // enable non-dig moves
             for (const moveId in target.moveIds) {
                 if (moveId !== "m91") {
@@ -1870,7 +1868,7 @@ const effectConfig = {
         "description": "The target has sprung up into the sky.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} springs up into the sky!`);
             // disable non-bounce moves
             for (const moveId in target.moveIds) {
@@ -1882,7 +1880,7 @@ const effectConfig = {
             target.targetable = false;
             target.hittable = false;
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (_battle, target) {
             // enable non-bounce moves
             for (const moveId in target.moveIds) {
                 if (moveId !== "m340") {
@@ -1899,7 +1897,7 @@ const effectConfig = {
         "description": "The target is enraged, attacking wildly.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} is enraged!`);
             // disable non-outrage moves
             for (const moveId in target.moveIds) {
@@ -1908,7 +1906,7 @@ const effectConfig = {
                 }
             }
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (battle, target) {
             battle.addToLog(`${target.name} calmed down!`);
             // enable non-outrage moves
             for (const moveId in target.moveIds) {
@@ -1926,7 +1924,7 @@ const effectConfig = {
         "effectAdd": function (battle, source, target) {
             battle.addToLog(`${source.name} is foreseeing an attack against ${target.name}!`);
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (battle, target) {
             const effect = target.effectIds["futureSight"];
             if (!effect) return;
             const source = effect.source;
@@ -1959,7 +1957,7 @@ const effectConfig = {
         "effectAdd": function (battle, source, target) {
             battle.addToLog(`${source.name} is making ${target.name} drowsy!`);
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (battle, target) {
             const effect = target.effectIds["yawn"];
             if (!effect) return;
             const source = effect.source;
@@ -1980,10 +1978,10 @@ const effectConfig = {
         "description": "The target is doomed to faint in 3 turns.",
         "type": effectTypes.DEBUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} is doomed to faint!`);
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function (battle, target) {
             const effect = target.effectIds["perishSong"];
             if (!effect) return;
             const remainingDuration = effect.duration;
@@ -2000,10 +1998,10 @@ const effectConfig = {
         "description": "The target is rolling out of control.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} is rolling out of control!`);
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function () {
         }
     },
     "furyCutter": {
@@ -2011,10 +2009,10 @@ const effectConfig = {
         "description": "The target is being honing its claws.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} is honing its claws!`);
         },
-        "effectRemove": function (battle, target, args) {
+        "effectRemove": function () {
         }
     },
     "grudge": {
@@ -2022,7 +2020,7 @@ const effectConfig = {
         "description": "If the target faints, silence all enemies for 1 turn.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} is filled with a vengeful spirit!`);
             const listener = {
                 initialArgs: {
@@ -2064,7 +2062,7 @@ const effectConfig = {
         "description": "If the target faints, the chosen Pokemon faints as well.",
         "type": effectTypes.BUFF,
         "dispellable": true,
-        "effectAdd": function (battle, source, target, initialArgs) {
+        "effectAdd": function (battle, _source, target, initialArgs) {
             battle.addToLog(`${target.name} binds ${initialArgs.boundPokemon.name} by a vow!`);
             const listener = {
                 initialArgs: {
@@ -2099,7 +2097,7 @@ const effectConfig = {
         "description": "The target is mimicking a move.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function (battle, source, target, initialArgs) {
+        "effectAdd": function (battle, _source, target, initialArgs) {
             const mimicMoveId = initialArgs.moveId;
             const moveData = moveConfig[mimicMoveId];
             if (!mimicMoveId) return;
@@ -2122,7 +2120,7 @@ const effectConfig = {
             }
             battle.addToLog(`${target.name} is mimicking ${moveData.name}!`);
         },
-        "effectRemove": function (battle, target, args, initialArgs) {
+        "effectRemove": function (_battle, target, _args, initialArgs) {
             if (initialArgs.noRemove) return;
             const mimicMoveId = initialArgs.moveId;
             const oldMoveId = initialArgs.oldMoveId;
@@ -2139,7 +2137,7 @@ const effectConfig = {
         "description": "The target has awakened Gear 5.",
         "type": effectTypes.BUFF,
         "dispellable": false,
-        "effectAdd": function (battle, source, target) {
+        "effectAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name} has awakened Gear 5!`);
 
             // remember old: species ID, move IDs, ability ID
@@ -2871,7 +2869,7 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user burrows into the ground, becoming untargetable and unhittable 1 turn. The user then attacks on the next turn.",
-        "silenceIf": function (battle, pokemon) {
+        "silenceIf": function (_battle, pokemon) {
             return pokemon.effectIds.burrowed === undefined;
         }
     },
@@ -3264,7 +3262,7 @@ const moveConfig = {
         "tier": moveTiers.ULTIMATE,
         "damageType": damageTypes.PHYSICAL,
         "description": "A second-turn attack move. If this defeats the target, all enemies have a 30% chance to flinch, boosted by 10% of the user's speed, up to a max of 75%.",
-        "silenceIf": function (battle, pokemon) {
+        "silenceIf": function (_battle, pokemon) {
             return pokemon.effectIds.skyCharge === undefined;
         }
     },
@@ -4463,7 +4461,7 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user takes a turn to charge up, then forcefully slashes at random targets, hitting 9 times. Targets who are successfully hit take an additional 5% max HP true damage.",
-        "silenceIf": function (battle, pokemon) {
+        "silenceIf": function (_battle, pokemon) {
             return pokemon.effectIds.projectingSpirit === undefined;
         }
     },
@@ -4544,7 +4542,7 @@ const moveConfig = {
         "tier": moveTiers.POWER,
         "damageType": damageTypes.PHYSICAL,
         "description": "The user bounces up high, then drops on the target on the second turn. This has a 30% chance to leave the target with paralysis.",
-        "silenceIf": function (battle, pokemon) {
+        "silenceIf": function (_battle, pokemon) {
             return pokemon.effectIds.sprungUp === undefined;
         }
     },
@@ -5969,7 +5967,7 @@ const moveConfig = {
 };
 
 const moveExecutes = {
-    "m6": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m6": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m6";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -5994,7 +5992,7 @@ const moveExecutes = {
             source.battle.moneyMultiplier += 0.1;
         }
     },
-    "m6-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m6-1": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m6-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6027,7 +6025,7 @@ const moveExecutes = {
             }
         }
     },
-    "m7-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m7-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m7-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6056,7 +6054,7 @@ const moveExecutes = {
             }
         }
     },
-    "m10": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m10": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m10";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6067,9 +6065,7 @@ const moveExecutes = {
             });
         }
     },
-    "m14": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m14";
-        const moveData = moveConfig[moveId];
+    "m14": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // apply greater atk up for 3 turns
             target.addEffect("greaterAtkUp", 3, source);
@@ -6077,7 +6073,7 @@ const moveExecutes = {
             source.boostCombatReadiness(source, 60);
         }
     },
-    "m16": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m16": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m16";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6093,7 +6089,7 @@ const moveExecutes = {
             });
         }
     },
-    "m17": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m17": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m17";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6104,7 +6100,7 @@ const moveExecutes = {
             });
         }
     },
-    "m21": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m21": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m21";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6116,7 +6112,7 @@ const moveExecutes = {
             });
         }
     },
-    "m22": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m22": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m22";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6128,7 +6124,7 @@ const moveExecutes = {
             });
         }
     },
-    "m23": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m23": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m23";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6145,7 +6141,7 @@ const moveExecutes = {
             }
         }
     },
-    "m30": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m30": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m30";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6157,7 +6153,7 @@ const moveExecutes = {
             });
         }
     },
-    "m33": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m33": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m33";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6169,7 +6165,7 @@ const moveExecutes = {
             });
         }
     },
-    "m34": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m34": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m34";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6186,7 +6182,7 @@ const moveExecutes = {
             }
         }
     },
-    "m34-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m34-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m34-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6203,7 +6199,7 @@ const moveExecutes = {
             }
         }
     },
-    "m35": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m35": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m35";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6222,7 +6218,7 @@ const moveExecutes = {
             }
         }
     },
-    "m36": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m36": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m36";
         const moveData = moveConfig[moveId];
         let damageDealt = 0;
@@ -6241,7 +6237,7 @@ const moveExecutes = {
             type: "recoil"
         });
     },
-    "m38": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m38": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m38";
         const moveData = moveConfig[moveId];
         let damageDealt = 0;
@@ -6259,7 +6255,7 @@ const moveExecutes = {
             type: "recoil"
         });
     },
-    "m40": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m40": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m40";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6276,9 +6272,7 @@ const moveExecutes = {
             }
         }
     },
-    "m43": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m43";
-        const moveData = moveConfig[moveId];
+    "m43": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             if (!miss) {
@@ -6287,9 +6281,7 @@ const moveExecutes = {
             }
         }
     },
-    "m46": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m46";
-        const moveData = moveConfig[moveId];
+    "m46": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // remove all buffs
             for (const effectId of Object.keys(target.effectIds)) {
@@ -6302,9 +6294,7 @@ const moveExecutes = {
             target.reduceCombatReadiness(source, 100);
         }
     },
-    "m47": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m47";
-        const moveData = moveConfig[moveId];
+    "m47": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             if (!miss) {
@@ -6312,9 +6302,7 @@ const moveExecutes = {
             }
         }
     },
-    "m50": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m50";
-        const moveData = moveConfig[moveId];
+    "m50": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             if (!miss) {
@@ -6322,7 +6310,7 @@ const moveExecutes = {
             }
         }
     },
-    "m51": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m51": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m51";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6339,7 +6327,7 @@ const moveExecutes = {
             }
         }
     },
-    "m52": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m52": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m52";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6356,7 +6344,7 @@ const moveExecutes = {
             }
         }
     },
-    "m53": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m53": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m53";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6373,7 +6361,7 @@ const moveExecutes = {
             }
         }
     },
-    "m55": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m55": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m55";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6385,7 +6373,7 @@ const moveExecutes = {
             });
         }
     },
-    "m56": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m56": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m56";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6402,7 +6390,7 @@ const moveExecutes = {
             }
         }
     },
-    "m56-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m56-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m56-1";
         const moveData = moveConfig[moveId];
         const multiplier = allTargets.length === 1 ? 1.5 : 1;
@@ -6420,7 +6408,7 @@ const moveExecutes = {
             }
         }
     },
-    "m56-2": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m56-2": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m56-2";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6436,7 +6424,7 @@ const moveExecutes = {
             target.addEffect("spaDown", 1, source);
         }
     },
-    "m57": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m57": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m57";
         const moveData = moveConfig[moveId];
         // deal less damage if more targets
@@ -6453,7 +6441,7 @@ const moveExecutes = {
             });
         }
     },
-    "m58": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m58": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m58";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6470,7 +6458,7 @@ const moveExecutes = {
             }
         }
     },
-    "m59": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m59": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m59";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6487,7 +6475,7 @@ const moveExecutes = {
             }
         }
     },
-    "m60": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m60": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m60";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6504,7 +6492,7 @@ const moveExecutes = {
             }
         }
     },
-    "m63": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m63": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m63";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6519,7 +6507,7 @@ const moveExecutes = {
         // apply recharge to self
         source.addEffect("recharge", 1, source);
     },
-    "m64": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m64": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m64";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6531,7 +6519,7 @@ const moveExecutes = {
             });
         }
     },
-    "m65": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m65": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m65";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6543,15 +6531,13 @@ const moveExecutes = {
             });
         }
     },
-    "m68": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m68";
-        const moveData = moveConfig[moveId];
+    "m68": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // apply counter 2 turn
             target.addEffect("counter", 2, source);
         }
     },
-    "m70": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m70": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m70";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6564,7 +6550,7 @@ const moveExecutes = {
             });
         }
     },
-    "m71": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m71": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m71";
         const moveData = moveConfig[moveId];
         let damageDealt = 0;
@@ -6583,9 +6569,7 @@ const moveExecutes = {
             moveId: moveId
         });
     },
-    "m73": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m73";
-        const moveData = moveConfig[moveId];
+    "m73": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             // check if target is grass type
             if (target.type1 === types.GRASS || target.type2 === types.GRASS) {
@@ -6602,7 +6586,7 @@ const moveExecutes = {
             target.addEffect("leechSeed", 5, source);
         }
     },
-    "m76": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m76": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m76";
         const moveData = moveConfig[moveId];
         // if pokemon doesnt have "abosrb light" buff, apply it
@@ -6626,9 +6610,7 @@ const moveExecutes = {
             }
         }
     },
-    "m77": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m77";
-        const moveData = moveConfig[moveId];
+    "m77": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             // check if target is grass type
             if (target.type1 === types.GRASS || target.type2 === types.GRASS) {
@@ -6644,9 +6626,7 @@ const moveExecutes = {
             target.applyStatus(statusConditions.POISON, source);
         }
     },
-    "m79": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m79";
-        const moveData = moveConfig[moveId];
+    "m79": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             // check if target is grass type
             if (target.type1 === types.GRASS || target.type2 === types.GRASS) {
@@ -6662,9 +6642,7 @@ const moveExecutes = {
             target.applyStatus(statusConditions.SLEEP, source);
         }
     },
-    "m81": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m81";
-        const moveData = moveConfig[moveId];
+    "m81": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             if (miss) {
@@ -6677,7 +6655,7 @@ const moveExecutes = {
             target.reduceCombatReadiness(source, 15);
         }
     },
-    "m84": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m84": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m84";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6694,7 +6672,7 @@ const moveExecutes = {
             }
         }
     },
-    "m85": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m85": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m85";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6711,9 +6689,7 @@ const moveExecutes = {
             }
         }
     },
-    "m86": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m86";
-        const moveData = moveConfig[moveId];
+    "m86": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             if (miss) {
@@ -6726,7 +6702,7 @@ const moveExecutes = {
         // give user 50 cr
         source.boostCombatReadiness(source, 50);
     },
-    "m87": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m87": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m87";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6747,7 +6723,7 @@ const moveExecutes = {
             }
         }
     },
-    "m87-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m87-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m87-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6766,7 +6742,7 @@ const moveExecutes = {
         // add spe down to user 1 turn
         source.addEffect("speDown", 1, source);
     },
-    "m88": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m88": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m88";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6778,7 +6754,7 @@ const moveExecutes = {
             });
         }
     },
-    "m89": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m89": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m89";
         const moveData = moveConfig[moveId];
         // deal less damage if more targets
@@ -6797,7 +6773,7 @@ const moveExecutes = {
         }
     },
 
-    "m91": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m91": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m91";
         const moveData = moveConfig[moveId];
         // if pokemon doesnt have "burrowed" buff, apply it
@@ -6818,9 +6794,7 @@ const moveExecutes = {
             }
         }
     },
-    "m92": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m92";
-        const moveData = moveConfig[moveId];
+    "m92": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             // if not miss or user poison, apply badly poisoned
             const miss = missedTargets.includes(target);
@@ -6830,7 +6804,7 @@ const moveExecutes = {
             }
         }
     },
-    "m93": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m93": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m93";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6847,7 +6821,7 @@ const moveExecutes = {
             }
         }
     },
-    "m94": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m94": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m94";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -6864,8 +6838,7 @@ const moveExecutes = {
             }
         }
     },
-    "m97": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveData = moveConfig["m97"];
+    "m97": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // apply greaterSpeUp buff
             target.addEffect("greaterSpeUp", 4, source);
@@ -6873,8 +6846,7 @@ const moveExecutes = {
             target.boostCombatReadiness(source, 80);
         }
     },
-    "m97-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveData = moveConfig["m97-1"];
+    "m97-1": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // apply atkUp, speUp buff
             target.addEffect("atkUp", 4, source);
@@ -6888,7 +6860,7 @@ const moveExecutes = {
             source.type2 = types.FIRE;
         }
     },
-    "m98": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m98": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveData = moveConfig["m98"];
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
@@ -6902,7 +6874,7 @@ const moveExecutes = {
         // boost cr by 30
         source.boostCombatReadiness(source, 30);
     },
-    "m100": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m100": function (battle, source) {
         // boost highest cr non-self party pokemon cr to 100
         const party = battle.parties[source.teamName];
         const pokemons = source.getPatternTargets(party, targetPatterns.ALL_EXCEPT_SELF, 1);
@@ -6911,9 +6883,8 @@ const moveExecutes = {
             pokemon.boostCombatReadiness(source, 100);
         }
     },
-    "m101": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m101": function (_battle, source, _primaryTarget, allTargets) {
         const moveId = "m101";
-        const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             const damageToDeal = source.level;
             source.dealDamage(damageToDeal, target, {
@@ -6922,9 +6893,8 @@ const moveExecutes = {
             });
         }
     },
-    "m102": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m102": function (battle, source, _primaryTarget, allTargets) {
         const moveId = "m102";
-        const moveData = moveConfig[moveId];
         // get mimic index
         const mimicIndex = Math.max(Object.keys(source.moveIds).indexOf(moveId), 0);
         const oldMoveId = Object.keys(source.moveIds)[mimicIndex];
@@ -6947,9 +6917,7 @@ const moveExecutes = {
             source.boostCombatReadiness(source, 50);
         }
     },
-    "m103": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m103";
-        const moveData = moveConfig[moveId];
+    "m103": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             if (!miss) {
@@ -6958,9 +6926,8 @@ const moveExecutes = {
             }
         }
     },
-    "m105": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m105": function (_battle, source, _primaryTarget, allTargets) {
         const moveId = "m105";
-        const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             // heal 50%
             const healAmount = Math.floor(target.maxHp * 0.5);
@@ -6970,9 +6937,7 @@ const moveExecutes = {
             });
         }
     },
-    "m106": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m106";
-        const moveData = moveConfig[moveId];
+    "m106": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // def up for 2 turns
             target.addEffect("defUp", 2, source);
@@ -6982,9 +6947,7 @@ const moveExecutes = {
             });
         }
     },
-    "m108": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m108";
-        const moveData = moveConfig[moveId];
+    "m108": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             // if not miss, greater acc down 2 turns
@@ -6993,17 +6956,13 @@ const moveExecutes = {
             }
         }
     },
-    "m108-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m108-1";
-        const moveData = moveConfig[moveId];
+    "m108-1": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // greater eva up 2 turns
             target.addEffect("greaterEvaUp", 2, source);
         }
     },
-    "m110": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m110";
-        const moveData = moveConfig[moveId];
+    "m110": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // def up for 2 turns
             target.addEffect("defUp", 2, source);
@@ -7013,9 +6972,7 @@ const moveExecutes = {
             });
         }
     },
-    "m111": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m111";
-        const moveData = moveConfig[moveId];
+    "m111": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // def up for 4 turns
             target.addEffect("defUp", 4, source);
@@ -7023,9 +6980,7 @@ const moveExecutes = {
             target.addEffect("rollout", 4, source);
         }
     },
-    "m113": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m113";
-        const moveData = moveConfig[moveId];
+    "m113": function (battle, source, primaryTarget, allTargets) {
         // get target row
         const allyParty = battle.parties[source.teamName];
         const targetRow = source.getPatternTargets(allyParty, targetPatterns.ROW, primaryTarget.position);
@@ -7039,9 +6994,7 @@ const moveExecutes = {
             }
         }
     },
-    "m115": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m115";
-        const moveData = moveConfig[moveId];
+    "m115": function (battle, source, primaryTarget, allTargets) {
         // get target row
         const allyParty = battle.parties[source.teamName];
         const targetRow = source.getPatternTargets(allyParty, targetPatterns.ROW, primaryTarget.position);
@@ -7055,9 +7008,7 @@ const moveExecutes = {
             }
         }
     },
-    "m116": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m116";
-        const moveData = moveConfig[moveId];
+    "m116": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // greater atk up for 1 turn
             target.addEffect("greaterAtkUp", 1, source);
@@ -7066,10 +7017,7 @@ const moveExecutes = {
             target.boostCombatReadiness(source, 50);
         }
     },
-    "m118": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m118";
-        const moveData = moveConfig[moveId];
-
+    "m118": function (battle, source) {
         // get random basic moves
         const basicMoves = Object.keys(moveConfig).filter(moveId => moveConfig[moveId].tier == moveTiers.BASIC);
         const randomMoveId = basicMoves[Math.floor(Math.random() * basicMoves.length)];
@@ -7087,7 +7035,7 @@ const moveExecutes = {
         const randomTarget = eligibleTargets[Math.floor(Math.random() * eligibleTargets.length)];
         moveExecutes[randomMoveId](battle, source, randomTarget, [randomTarget], []);
     },
-    "m122": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m122": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m122";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7104,7 +7052,7 @@ const moveExecutes = {
             }
         }
     },
-    "m123": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m123": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m123";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7121,7 +7069,7 @@ const moveExecutes = {
             }
         }
     },
-    "m126": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m126": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m126";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7138,7 +7086,7 @@ const moveExecutes = {
             }
         }
     },
-    "m127": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m127": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m127";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7156,7 +7104,7 @@ const moveExecutes = {
             }
         }
     },
-    "m134": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m134": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m134";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7173,9 +7121,8 @@ const moveExecutes = {
             }
         }
     },
-    "m135": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m135": function (_battle, source, _primaryTarget, allTargets) {
         const moveId = "m135";
-        const moveData = moveConfig[moveId];
         // sac 20% hp
         const damageToDeal = Math.floor(source.hp * 0.2);
         source.dealDamage(damageToDeal, source, {
@@ -7195,7 +7142,7 @@ const moveExecutes = {
             }
         }
     },
-    "m136": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m136": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m136";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7215,9 +7162,7 @@ const moveExecutes = {
             }
         }
     },
-    "m137": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m137";
-        const moveData = moveConfig[moveId];
+    "m137": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             if (miss) {
@@ -7230,9 +7175,7 @@ const moveExecutes = {
         // give user 60% cr
         source.boostCombatReadiness(source, 60);
     },
-    "m137-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m137-1";
-        const moveData = moveConfig[moveId];
+    "m137-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             if (miss) {
@@ -7282,9 +7225,7 @@ const moveExecutes = {
             }
         }
     },
-    "m147": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m147";
-        const moveData = moveConfig[moveId];
+    "m147": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             // check if target is grass type
             if (target.type1 === types.GRASS || target.type2 === types.GRASS) {
@@ -7300,9 +7241,7 @@ const moveExecutes = {
             target.applyStatus(statusConditions.SLEEP, source);
         }
     },
-    "m150": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m150";
-        const moveData = moveConfig[moveId];
+    "m150": function (battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // SECRET: has 1/1000 chance to instakill
             if (Math.random() < 0.001) {
@@ -7314,7 +7253,7 @@ const moveExecutes = {
             }
         }
     },
-    "m152": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m152": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m152";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7327,7 +7266,7 @@ const moveExecutes = {
             });
         }
     },
-    "m153": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m153": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m153";
         const moveData = moveConfig[moveId];
         // power = base power + percent hp * 100
@@ -7364,7 +7303,7 @@ const moveExecutes = {
         // cause self to faint
         source.takeFaint(source);
     },
-    "m154-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m154-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m154-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7393,7 +7332,7 @@ const moveExecutes = {
             });
         }
     },
-    "m156": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m156": function (battle, source, _primaryTarget, allTargets) {
         const moveId = "m156";
         const moveData = moveConfig[moveId];
 
@@ -7423,7 +7362,7 @@ const moveExecutes = {
             target.applyStatus(statusConditions.SLEEP, source, { startingTurns: -1 });
         }
     },
-    "m157": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m157": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m157";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7440,9 +7379,8 @@ const moveExecutes = {
             }
         }
     },
-    "m162": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m162": function (_battle, source, _primaryTarget, allTargets) {
         const moveId = "m162";
-        const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             // deal half targets health as damage
             const damageToDeal = Math.floor(target.hp * 0.5);
@@ -7452,7 +7390,7 @@ const moveExecutes = {
             });
         }
     },
-    "m167": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m167": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m167";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7474,7 +7412,7 @@ const moveExecutes = {
             });
         }
     },
-    "m168": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m168": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m168";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7508,12 +7446,12 @@ const moveExecutes = {
             }
         }
     },
-    "m175": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m175": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m175";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             // calculate power (lower hp = higher power)
-            n = Math.floor(source.hp / source.maxHp * 100);
+            const n = Math.floor(source.hp / source.maxHp * 100);
             let power = 0;
             if (n >= 67) {
                 power = 40;
@@ -7536,7 +7474,7 @@ const moveExecutes = {
             });
         }
     },
-    "m177": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m177": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m177";
         const moveData = moveConfig[moveId];
         // filter out allTargets => just the primary target and up to 2 random other targets
@@ -7572,7 +7510,7 @@ const moveExecutes = {
             }
         }
     },
-    "m177-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m177-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m177-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7591,23 +7529,19 @@ const moveExecutes = {
             });
         }
     },
-    "m182": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m182";
-        const moveData = moveConfig[moveId];
+    "m182": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // apply move invulnerable
             target.addEffect("moveInvulnerable", 1, source);
         }
     },
-    "m182-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m182-1";
-        const moveData = moveConfig[moveId];
+    "m182-1": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // apply super stretchy
             target.addEffect("superStretchy", 1, source);
         }
     },
-    "m183": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m183": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m183";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7622,7 +7556,7 @@ const moveExecutes = {
         // boost self cr by 30
         source.boostCombatReadiness(source, 30);
     },
-    "m183-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m183-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m183-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7637,9 +7571,7 @@ const moveExecutes = {
         // boost self cr by 40
         source.boostCombatReadiness(source, 40);
     },
-    "m186": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m186";
-        const moveData = moveConfig[moveId];
+    "m186": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             if (!miss) {
@@ -7648,9 +7580,7 @@ const moveExecutes = {
             }
         }
     },
-    "m187": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m187";
-        const moveData = moveConfig[moveId];
+    "m187": function (battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             const halfHp = Math.floor(target.maxHp * 0.5);
             if (target.hp <= halfHp) {
@@ -7668,7 +7598,7 @@ const moveExecutes = {
             target.boostCombatReadiness(source, 100);
         }
     },
-    "m188": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m188": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m188";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7685,7 +7615,7 @@ const moveExecutes = {
             }
         }
     },
-    "m189": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m189": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m189";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7703,8 +7633,6 @@ const moveExecutes = {
         }
     },
     "m191": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m191";
-        const moveData = moveConfig[moveId];
         // spikes log
         battle.addToLog(`Spikes were scattered around ${primaryTarget.name}'s surroundings!`);
         for (const target of allTargets) {
@@ -7714,7 +7642,7 @@ const moveExecutes = {
             }
         }
     },
-    "m192": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m192": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m192";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -7731,9 +7659,7 @@ const moveExecutes = {
             }
         }
     },
-    "m194": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m194";
-        const moveData = moveConfig[moveId];
+    "m194": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // apply destiny bond 1 turn to user
             source.addEffect("destinyBond", 1, source, {
@@ -7741,9 +7667,7 @@ const moveExecutes = {
             });
         }
     },
-    "m195": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m195";
-        const moveData = moveConfig[moveId];
+    "m195": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             // if not miss, apply perish song 3 turns
             if (!missedTargets.includes(target)) {
@@ -7761,16 +7685,14 @@ const moveExecutes = {
         // append ally targets to all targets
         allTargets.push(...allyTargets);
     },
-    "m199": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m199";
-        const moveData = moveConfig[moveId];
+    "m199": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // apply redirect and greaterEvaDown 1 turn
             target.addEffect("redirect", 1, source);
             target.addEffect("greaterEvaDown", 1, source);
         }
     },
-    "m200": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m200": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m200";
         const moveData = moveConfig[moveId];
         // if source doesn't have outrage, apply it
@@ -7797,7 +7719,7 @@ const moveExecutes = {
             source.addEffect("confused", 2, source);
         }
     },
-    "m202": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m202": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m202";
         const moveData = moveConfig[moveId];
         let damageDealt = 0;
@@ -7816,17 +7738,13 @@ const moveExecutes = {
             moveId: moveId
         });
     },
-    "m203": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m203";
-        const moveData = moveConfig[moveId];
+    "m203": function (_battle, source, _primaryTarget, allTargets) {
         for (const target of allTargets) {
             // apply 1 turn immortality
             target.addEffect("immortal", 1, source);
         }
     },
-    "m204": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m204";
-        const moveData = moveConfig[moveId];
+    "m204": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
             if (!miss) {
@@ -7835,7 +7753,7 @@ const moveExecutes = {
             }
         }
     },
-    "m205": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m205": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m205";
         const moveData = moveConfig[moveId];
         let targetHit = false;
@@ -7860,9 +7778,8 @@ const moveExecutes = {
             source.addEffect("rollout", 1, source);
         }
     },
-    "m208": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m208": function (_battle, source, _primaryTarget, allTargets) {
         const moveId = "m208";
-        const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             let effects = 0;
             // remove all debuffs
@@ -7885,9 +7802,8 @@ const moveExecutes = {
             });
         }
     },
-    "m208-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m208-1": function (_battle, source, _primaryTarget, allTargets) {
         const moveId = "m208-1";
-        const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             // give all stats up 1 turn
             target.addEffect("atkUp", 1, source);
@@ -7903,7 +7819,7 @@ const moveExecutes = {
             });
         }
     },
-    "m210": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m210": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m210";
         const moveData = moveConfig[moveId];
         let targetHit = false;
@@ -7928,9 +7844,7 @@ const moveExecutes = {
             source.addEffect("furyCutter", 1, source);
         }
     },
-    "m212": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m212";
-        const moveData = moveConfig[moveId];
+    "m212": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
 
@@ -7941,9 +7855,7 @@ const moveExecutes = {
             }
         }
     },
-    "m212-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
-        const moveId = "m212-1";
-        const moveData = moveConfig[moveId];
+    "m212-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         for (const target of allTargets) {
             const miss = missedTargets.includes(target);
 
@@ -7953,9 +7865,8 @@ const moveExecutes = {
             }
         }
     },
-    "m214": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m214": function (battle, source) {
         const moveId = "m214";
-        const moveData = moveConfig[moveId];
         // if not asleep, fail
         if (source.status.statusId !== statusConditions.SLEEP) {
             battle.addToLog(`${source.name} is not asleep!`);
@@ -8000,12 +7911,12 @@ const moveExecutes = {
             source.removeStatus();
         }
     },
-    "m215": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m215": function (_battle, source, _primaryTarget, allTargets) {
         const moveId = "m215";
-        const moveData = moveConfig[moveId];
         for (const target of allTargets) {
             // remove status conditions
             const statusRemoved = target.removeStatus();
+            const test = [1, 1, 1,1,1 ,1, 1,1,1,1,1,1, 1, 1,1,1 ,1, 1,1,1,1,1,1, 1, 1,1,1 ,1, 1,1,1,1,1,1, 1, 1,1,1 ,1, 1,1,1,1,1]
 
             // heal 10% max HP, boosted to 20% if condition removed
             const healAmount = Math.floor(target.maxHp * (statusRemoved ? 0.2 : 0.1));
@@ -8015,7 +7926,7 @@ const moveExecutes = {
             });
         }
     },
-    "m216": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m216": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m216";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8030,7 +7941,7 @@ const moveExecutes = {
             });
         }
     },
-    "m219": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m219": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m219";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8038,7 +7949,7 @@ const moveExecutes = {
             target.addEffect("statusImmunity", 3, source);
         }
     },
-    "m221": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m221": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m221";
         const moveData = moveConfig[moveId];
         // filter out allTargets => just the primary target and up to 2 random other targets
@@ -8071,7 +7982,7 @@ const moveExecutes = {
             }
         }
     },
-    "m223": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m223": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m223";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8092,7 +8003,7 @@ const moveExecutes = {
             }
         }
     },
-    "m224": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m224": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m224";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8104,7 +8015,7 @@ const moveExecutes = {
             });
         }
     },
-    "m226": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m226": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m226";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8123,7 +8034,7 @@ const moveExecutes = {
             }
         }
     },
-    "m226-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m226-1": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m226-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8135,7 +8046,7 @@ const moveExecutes = {
             target.addEffect("greaterDefUp", 2, source);
         }
     },
-    "m229": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m229": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m229";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8164,7 +8075,7 @@ const moveExecutes = {
         // append ally targets to all targets
         allTargets.push(...allyTargets);
     },
-    "m231": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m231": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m231";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8187,7 +8098,7 @@ const moveExecutes = {
             }
         }
     },
-    "m235": function (battle, source, primaryTarget, allTargets) {
+    "m235": function (battle, source, _primaryTarget, allTargets) {
         const moveId = "m235";
         for (const target of allTargets) {
             let fraction = 0.33;
@@ -8215,7 +8126,7 @@ const moveExecutes = {
             target.boostCombatReadiness(source, 50);
         }
     },
-    "m236": function (battle, source, primaryTarget, allTargets) {
+    "m236": function (battle, source, _primaryTarget, allTargets) {
         const moveId = "m236";
         for (const target of allTargets) {
             let fraction = 0.5;
@@ -8235,7 +8146,7 @@ const moveExecutes = {
             });
         }
     },
-    "m238": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m238": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m238";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8248,7 +8159,7 @@ const moveExecutes = {
             });
         }
     },
-    "m239": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m239": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m239";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8265,21 +8176,21 @@ const moveExecutes = {
             }
         }
     },
-    "m240": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m240": function (battle, source, _primaryTarget, _allTargets, _missedTargets) {
         const moveId = "m240";
         const moveData = moveConfig[moveId];
 
         // rain weather
         battle.createWeather(weatherConditions.RAIN, source);
     },
-    "m241": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m241": function (battle, source, _primaryTarget, _allTargets, _missedTargets) {
         const moveId = "m241";
         const moveData = moveConfig[moveId];
 
         // sun weather
         battle.createWeather(weatherConditions.SUN, source);
     },
-    "m242": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m242": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m242";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8296,7 +8207,7 @@ const moveExecutes = {
             }
         }
     },
-    "m243": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m243": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m243";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8304,7 +8215,7 @@ const moveExecutes = {
             target.addEffect("mirrorCoat", 2, source);
         }
     },
-    "m245": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m245": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m245";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8319,7 +8230,7 @@ const moveExecutes = {
         // raise own cr by 60%
         source.boostCombatReadiness(source, 60);
     },
-    "m246": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m246": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m246";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8358,7 +8269,7 @@ const moveExecutes = {
                 break;
         }
     },
-    "m247": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m247": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m247";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8375,7 +8286,7 @@ const moveExecutes = {
             }
         }
     },
-    "m248": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m248": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m248";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8388,7 +8299,7 @@ const moveExecutes = {
             target.addEffect("futureSight", 2, source);
         }
     },
-    "m249": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m249": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m249";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8405,7 +8316,7 @@ const moveExecutes = {
             }
         }
     },
-    "m252": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m252": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m252";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8450,14 +8361,14 @@ const moveExecutes = {
             }
         }
     },
-    "m258": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m258": function (battle, source, _primaryTarget, _allTargets, _missedTargets) {
         const moveId = "m258";
         const moveData = moveConfig[moveId];
 
         // hail weather
         battle.createWeather(weatherConditions.HAIL, source);
     },
-    "m266": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m266": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m266";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8465,7 +8376,7 @@ const moveExecutes = {
             target.addEffect("redirect", 1, source);
         }
     },
-    "m262": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m262": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m262";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8479,7 +8390,7 @@ const moveExecutes = {
         // cause self to faint
         source.takeFaint(source);
     },
-    "m268": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m268": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m266";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8489,7 +8400,7 @@ const moveExecutes = {
             target.addEffect("spdUp", 1, source);
         }
     },
-    "m269": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m269": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m269";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8502,7 +8413,7 @@ const moveExecutes = {
             target.addEffect("taunt", 2, source);
         }
     },
-    "m269-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m269-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m269-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8515,7 +8426,7 @@ const moveExecutes = {
             target.addEffect("reverseTaunt", 2, source);
         }
     },
-    "m270": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m270": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m270";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8524,7 +8435,7 @@ const moveExecutes = {
             target.addEffect("spaUp", 1, source);
         }
     },
-    "m273": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m273": function (battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m273";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8535,7 +8446,7 @@ const moveExecutes = {
             });
         }
     },
-    "m276": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m276": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m276";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8550,7 +8461,7 @@ const moveExecutes = {
         source.addEffect("atkDown", 1, source);
         source.addEffect("defDown", 1, source);
     },
-    "m281": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m281": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m281";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8566,7 +8477,7 @@ const moveExecutes = {
             }
         }
     },
-    "m282": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m282": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m282";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8596,7 +8507,7 @@ const moveExecutes = {
             });
         }
     },
-    "m283": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m283": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m283";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8618,7 +8529,7 @@ const moveExecutes = {
             });
         }
     },
-    "m284": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m284": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m284";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8634,7 +8545,7 @@ const moveExecutes = {
             });
         }
     },
-    "m288": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m288": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m288";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8677,7 +8588,7 @@ const moveExecutes = {
             }
         }
     },
-    "m296": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m296": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m296";
         const moveData = moveConfig[moveId];
 
@@ -8708,7 +8619,7 @@ const moveExecutes = {
             }
         }
     },
-    "m299": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m299": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m299";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8725,10 +8636,10 @@ const moveExecutes = {
             }
         }
     },
-    "m303": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m303": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m303";
         const moveData = moveConfig[moveId];
-        for (const target of allTargets) {
+        for (const _target of allTargets) {
             // heal 50%
             const healAmount = Math.floor(source.maxHp * 0.5);
             source.giveHeal(healAmount, source, {
@@ -8740,7 +8651,7 @@ const moveExecutes = {
             source.addEffect("defUp", 2, source);
         }
     },
-    "m304": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m304": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m304";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8752,7 +8663,7 @@ const moveExecutes = {
             });
         }
     },
-    "m305": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m305": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m305";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8769,7 +8680,7 @@ const moveExecutes = {
             }
         }
     },
-    "m309": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m309": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m309";
         const moveData = moveConfig[moveId];
 
@@ -8794,7 +8705,7 @@ const moveExecutes = {
             source.dispellEffect("atkUp");
         }
     },
-    "m311": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m311": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m311";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8821,7 +8732,7 @@ const moveExecutes = {
             });
         }
     },
-    "m316": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m316": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m316";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8845,7 +8756,7 @@ const moveExecutes = {
             });
         }
     },
-    "m317": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m317": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m317";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8862,7 +8773,7 @@ const moveExecutes = {
             }
         }
     },
-    "m317-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m317-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m317-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8877,7 +8788,7 @@ const moveExecutes = {
             target.addEffect("speDown", 2, source);
         }
     },
-    "m322": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m322": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveData = moveConfig["m322"];
         for (const target of allTargets) {
             // raise def, spd
@@ -8889,7 +8800,7 @@ const moveExecutes = {
             });
         }
     },
-    "m325": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m325": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m325";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8901,7 +8812,7 @@ const moveExecutes = {
             });
         }
     },
-    "m330": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m330": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m330";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8918,7 +8829,7 @@ const moveExecutes = {
             }
         }
     },
-    "m331": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m331": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m331";
         const moveData = moveConfig[moveId];
         // loop 5 times, hitting random non-fainted target
@@ -8937,7 +8848,7 @@ const moveExecutes = {
             });
         }
     },
-    "m331-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m331-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m331-1";
         const moveData = moveConfig[moveId];
         // if pokemon doesnt have "projectingSpirit" buff, apply it
@@ -8965,7 +8876,7 @@ const moveExecutes = {
             }
         }
     },
-    "m332": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m332": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m332";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -8977,7 +8888,7 @@ const moveExecutes = {
             });
         }
     },
-    "m334": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m334": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveData = moveConfig["m334"];
         for (const target of allTargets) {
             // sharply raise def
@@ -8988,7 +8899,7 @@ const moveExecutes = {
             });
         }
     },
-    "m334-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m334-1": function (_battle, source, primaryTarget, allTargets, _missedTargets) {
         const moveData = moveConfig["m334-1"];
         // put primary target at front of allTargets
         if (allTargets.includes(primaryTarget)) {
@@ -9012,7 +8923,7 @@ const moveExecutes = {
             }
         }
     },
-    "m334-2": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m334-2": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveData = moveConfig["m334-2"];
         for (const target of allTargets) {
             // sharply raise def & special def
@@ -9022,7 +8933,7 @@ const moveExecutes = {
             target.addEffect("speDown", 2, source);
         }
     },
-    "m336": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m336": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m336";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9033,7 +8944,7 @@ const moveExecutes = {
             target.boostCombatReadiness(source, 15);
         }
     },
-    "m340": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m340": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m340";
         const moveData = moveConfig[moveId];
         // if pokemon doesnt have "sprungUp" buff, apply it
@@ -9059,7 +8970,7 @@ const moveExecutes = {
             }
         }
     },
-    "m344": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m344": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m344";
         const moveData = moveConfig[moveId];
         let damageDealt = 0;
@@ -9083,7 +8994,7 @@ const moveExecutes = {
             type: "recoil"
         });
     },
-    "m347": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m347": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m347";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9095,7 +9006,7 @@ const moveExecutes = {
             target.boostCombatReadiness(source, 50);
         }
     },
-    "m348": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m348": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m348";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9109,7 +9020,7 @@ const moveExecutes = {
             });
         }
     },
-    "m349": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m349": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveData = moveConfig["m349"];
         for (const target of allTargets) {
             // raise attack and speed
@@ -9120,7 +9031,7 @@ const moveExecutes = {
             target.boostCombatReadiness(source, 50);
         }
     },
-    "m352": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m352": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m352";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9137,7 +9048,7 @@ const moveExecutes = {
             }
         }
     },
-    "m354": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m354": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m354";
         const moveData = moveConfig[moveId];
 
@@ -9175,7 +9086,7 @@ const moveExecutes = {
             });
         }
     },
-    "m354-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m354-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m354-1";
         const moveData = moveConfig[moveId];
         const useAtk = source.atk > source.spa;
@@ -9197,7 +9108,7 @@ const moveExecutes = {
             source.addEffect("greaterSpaDown", 2, source);
         }
     },
-    "m354-2": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m354-2": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveData = moveConfig["m354-2"];
         for (const target of allTargets) {
             // get 25% def, spd as shield
@@ -9206,7 +9117,7 @@ const moveExecutes = {
             });
         }
     },
-    "m354-3": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m354-3": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m354-3";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9214,7 +9125,7 @@ const moveExecutes = {
             target.addEffect("extraTurn", 1, source);
         }
     },
-    "m355": function (battle, source, primaryTarget, allTargets) {
+    "m355": function (_battle, source, _primaryTarget, allTargets) {
         const moveId = "m355";
         for (const target of allTargets) {
             source.giveHeal(Math.min(Math.floor(target.maxHp / 2), target.maxHp - target.hp), target, {
@@ -9226,7 +9137,7 @@ const moveExecutes = {
             target.addEffect("loseFlying", 1, source);
         }
     },
-    "m359": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m359": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m359";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9241,7 +9152,7 @@ const moveExecutes = {
         // source spe down 1 turns
         source.addEffect("speDown", 1, source);
     },
-    "m361": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m361": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m361";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9256,7 +9167,7 @@ const moveExecutes = {
         // cause self to faint
         source.takeFaint(source);
     },
-    "m366": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m366": function (battle, source, primaryTarget, allTargets, _missedTargets) {
         const moveId = "m366";
         const moveData = moveConfig[moveId];
 
@@ -9274,7 +9185,7 @@ const moveExecutes = {
             }
         }
     },
-    "m369": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m369": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m369";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9293,7 +9204,7 @@ const moveExecutes = {
             pokemon.boostCombatReadiness(source, 100);
         }
     },
-    "m370": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m370": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m370";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9309,7 +9220,7 @@ const moveExecutes = {
         source.addEffect("defDown", 1, source);
         source.addEffect("spdDown", 1, source);
     },
-    "m370-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m370-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m370-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9325,7 +9236,7 @@ const moveExecutes = {
         source.addEffect("greaterDefDown", 1, source);
         source.addEffect("greaterSpdDown", 1, source);
     },
-    "m387": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m387": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m387";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9342,7 +9253,7 @@ const moveExecutes = {
             });
         }
     },
-    "m392": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m392": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m392";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9379,7 +9290,7 @@ const moveExecutes = {
             type: "recoil"
         });
     },
-    "m394-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m394-1": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m394-1";
         const moveData = moveConfig[moveId];
         let damageDealt = 0;
@@ -9404,7 +9315,7 @@ const moveExecutes = {
             type: "recoil"
         });
     },
-    "m396": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m396": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m398";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9416,7 +9327,7 @@ const moveExecutes = {
             });
         }
     },
-    "m398": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m398": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m398";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9433,7 +9344,7 @@ const moveExecutes = {
             }
         }
     },
-    "m399": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m399": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m399";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9450,7 +9361,7 @@ const moveExecutes = {
             }
         }
     },
-    "m402": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m402": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m402";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9463,7 +9374,7 @@ const moveExecutes = {
             });
         }
     },
-    "m403": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m403": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m403";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9480,7 +9391,7 @@ const moveExecutes = {
             }
         }
     },
-    "m404": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m404": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m404";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9500,7 +9411,7 @@ const moveExecutes = {
             }
         }
     },
-    "m405": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m405": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m405";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9517,7 +9428,7 @@ const moveExecutes = {
             });
         }
     },
-    "m406": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m406": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m406";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9529,7 +9440,7 @@ const moveExecutes = {
             });
         }
     },
-    "m407": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m407": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m407";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9546,7 +9457,7 @@ const moveExecutes = {
             }
         }
     },
-    "m409": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m409": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m409";
         const moveData = moveConfig[moveId];
         let damageDealt = 0;
@@ -9565,7 +9476,7 @@ const moveExecutes = {
             moveId: moveId
         });
     },
-    "m412": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m412": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m412";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9582,7 +9493,7 @@ const moveExecutes = {
             }
         }
     },
-    "m413": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m413": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m413";
         const moveData = moveConfig[moveId];
         let damageDealt = 0;
@@ -9602,7 +9513,7 @@ const moveExecutes = {
             type: "recoil"
         });
     },
-    "m414": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m414": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m414";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9619,7 +9530,7 @@ const moveExecutes = {
             }
         }
     },
-    "m416": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m416": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m416";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9634,7 +9545,7 @@ const moveExecutes = {
         // apply recharge to self
         source.addEffect("recharge", 1, source);
     },
-    "m416-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m416-1": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m416-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9649,7 +9560,7 @@ const moveExecutes = {
         // apply greater spe down to self
         source.addEffect("greaterSpeDown", 1, source);
     },
-    "m417": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m417": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m417";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9660,7 +9571,7 @@ const moveExecutes = {
             source.boostCombatReadiness(source, 60);
         }
     },
-    "m417-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m417-1": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m417-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9672,7 +9583,7 @@ const moveExecutes = {
             source.boostCombatReadiness(source, 60);
         }
     },
-    "m418": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m418": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m418";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9687,7 +9598,7 @@ const moveExecutes = {
         // boost self cr by 30
         source.boostCombatReadiness(source, 30);
     },
-    "m420": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m420": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m420";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9702,7 +9613,7 @@ const moveExecutes = {
         // boost self cr by 30
         source.boostCombatReadiness(source, 30);
     },
-    "m424": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m424": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m424";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9723,7 +9634,7 @@ const moveExecutes = {
             }
         }
     },
-    "m425": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m425": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m425";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9738,7 +9649,7 @@ const moveExecutes = {
         // boost self cr by 30
         source.boostCombatReadiness(source, 30);
     },
-    "m428": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m428": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m428";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9755,7 +9666,7 @@ const moveExecutes = {
             }
         }
     },
-    "m430": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m430": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m430";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9772,7 +9683,7 @@ const moveExecutes = {
             }
         }
     },
-    "m432": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m432": function (battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m432";
         const moveData = moveConfig[moveId];
         const targets = Object.values(battle.allPokemon).filter(p => battle.isPokemonHittable(p, moveId));
@@ -9805,7 +9716,7 @@ const moveExecutes = {
             }
         }
     },
-    "m433": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m433": function (battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m433";
         // get all non-fainted, hitable pokemon
         const targets = Object.values(battle.allPokemon).filter(p => battle.isPokemonHittable(p, moveId));
@@ -9839,7 +9750,7 @@ const moveExecutes = {
             }
         }
     },
-    "m435": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m435": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m435";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9856,7 +9767,7 @@ const moveExecutes = {
             }
         }
     },
-    "m435-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m435-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m435-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9891,7 +9802,7 @@ const moveExecutes = {
             }
         }
     },
-    "m437": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m437": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m437";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9906,7 +9817,7 @@ const moveExecutes = {
         // apply greater spa down to user 2 turns
         source.addEffect("greaterSpaDown", 2, source);
     },
-    "m441": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m441": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m441";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9929,7 +9840,7 @@ const moveExecutes = {
             }
         }
     },
-    "m444": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m444": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m444";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9941,7 +9852,7 @@ const moveExecutes = {
             });
         }
     },
-    "m446": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m446": function (battle, source, primaryTarget, allTargets, _missedTargets) {
         const moveId = "m446";
         const moveData = moveConfig[moveId];
         // stealth rock log
@@ -9951,7 +9862,7 @@ const moveExecutes = {
             target.addEffect("stealthRock", 3, source);
         }
     },
-    "m450": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m450": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m450";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -9985,7 +9896,7 @@ const moveExecutes = {
             }
         }
     },
-    "m453": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m453": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m453";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10000,7 +9911,7 @@ const moveExecutes = {
         // boost cr by 30
         source.boostCombatReadiness(source, 30);
     },
-    "m469": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m469": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m469";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10008,7 +9919,7 @@ const moveExecutes = {
             target.addEffect("wideGuard", 3, source);
         }
     },
-    "m476": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m476": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m476";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10016,7 +9927,7 @@ const moveExecutes = {
             target.addEffect("redirect", 1, source);
         }
     },
-    "m479": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m479": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m479";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10058,7 +9969,7 @@ const moveExecutes = {
             }
         }
     },
-    "m483": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m483": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m483";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10071,7 +9982,7 @@ const moveExecutes = {
             target.boostCombatReadiness(source, 50);
         }
     },
-    "m484": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m484": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m484";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10098,7 +10009,7 @@ const moveExecutes = {
             });
         }
     },
-    "m492": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m492": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m492";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10113,7 +10024,7 @@ const moveExecutes = {
             });
         }
     },
-    "m503": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m503": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m503";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10130,7 +10041,7 @@ const moveExecutes = {
             }
         }
     },
-    "m505": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m505": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m505";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10142,7 +10053,7 @@ const moveExecutes = {
             });
         }
     },
-    "m506": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m506": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m506";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10166,7 +10077,7 @@ const moveExecutes = {
             });
         }
     },
-    "m521": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m521": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m521";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10185,7 +10096,7 @@ const moveExecutes = {
             pokemon.boostCombatReadiness(source, 100);
         }
     },
-    "m523": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m523": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m523";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10202,7 +10113,7 @@ const moveExecutes = {
             }
         }
     },
-    "m525": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m525": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m525";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10219,7 +10130,7 @@ const moveExecutes = {
             }
         }
     },
-    "m526": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m526": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m526";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10228,7 +10139,7 @@ const moveExecutes = {
             target.addEffect("spaUp", 2, source);
         }
     },
-    "m527": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m527": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m527";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10245,7 +10156,7 @@ const moveExecutes = {
             }
         }
     },
-    "m528": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m528": function (battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m528";
         const moveData = moveConfig[moveId];
         let damageDealt = 0;
@@ -10265,7 +10176,7 @@ const moveExecutes = {
             type: "recoil"
         });
     },
-    "m529": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m529": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m529";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10277,7 +10188,7 @@ const moveExecutes = {
             });
         }
     },
-    "m534": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m534": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m534";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10296,7 +10207,7 @@ const moveExecutes = {
             }
         }
     },
-    "m540": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m540": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m540";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10309,7 +10220,7 @@ const moveExecutes = {
             });
         }
     },
-    "m540-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m540-1": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m540-1";
         const moveData = moveConfig[moveId];
         let targetsFainted = 0;
@@ -10333,7 +10244,7 @@ const moveExecutes = {
             source.boostCombatReadiness(source, targetsFainted * 30);
         }
     },
-    "m542": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m542": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m542";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10350,7 +10261,7 @@ const moveExecutes = {
             }
         }
     },
-    "m542-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m542-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m542-1";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10374,7 +10285,7 @@ const moveExecutes = {
             }
         }
     },
-    "m564": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m564": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m564";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10387,7 +10298,7 @@ const moveExecutes = {
             }
         }
     },
-    "m565": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m565": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m565";
         const moveData = moveConfig[moveId];
 
@@ -10412,7 +10323,7 @@ const moveExecutes = {
             source.boostCombatReadiness(source, 100);
         }
     },
-    "m568": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m568": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m568";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10424,7 +10335,7 @@ const moveExecutes = {
             }
         }
     },
-    "m573": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m573": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m573";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10443,7 +10354,7 @@ const moveExecutes = {
             }
         }
     },
-    "m572": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m572": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m572";
         const moveData = moveConfig[moveId];
         // deal less damage if more targets
@@ -10460,7 +10371,7 @@ const moveExecutes = {
             });
         }
     },
-    "m574": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m574": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m574";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10472,7 +10383,7 @@ const moveExecutes = {
             });
         }
     },
-    "m583": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m583": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m583";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10493,7 +10404,7 @@ const moveExecutes = {
             }
         }
     },
-    "m585": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m585": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m585";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10510,7 +10421,7 @@ const moveExecutes = {
             }
         }
     },
-    "m586": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m586": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m586";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10528,7 +10439,7 @@ const moveExecutes = {
             type: "recoil",
         });
     },
-    "m605": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m605": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m605";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10540,7 +10451,7 @@ const moveExecutes = {
             });
         }
     },
-    "m618": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m618": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m618";
         const moveData = moveConfig[moveId];
 
@@ -10557,7 +10468,7 @@ const moveExecutes = {
             });
         }
     },
-    "m619": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m619": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m619";
         const moveData = moveConfig[moveId];
 
@@ -10574,7 +10485,7 @@ const moveExecutes = {
             });
         }
     },
-    "m620": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m620": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m620";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10593,7 +10504,7 @@ const moveExecutes = {
         source.addEffect("defDown", 2, source);
         source.addEffect("spdDown", 2, source);
     },
-    "m620-1": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m620-1": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m620-1";
         const moveData = moveConfig[moveId];
         let hits = 0;
@@ -10619,7 +10530,7 @@ const moveExecutes = {
             });
         }
     },
-    "m668": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m668": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m668";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10637,7 +10548,7 @@ const moveExecutes = {
             }
         }
     },
-    "m672": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m672": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m672";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10649,7 +10560,7 @@ const moveExecutes = {
             }
         }
     },
-    "m710": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m710": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m710";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10666,7 +10577,7 @@ const moveExecutes = {
             }
         }
     },
-    "m719": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m719": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m719";
         const moveData = moveConfig[moveId];
         // filter out allTargets => just the primary target and up to 2 random other targets
@@ -10699,7 +10610,7 @@ const moveExecutes = {
             }
         }
     },
-    "m742": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m742": function (battle, source, primaryTarget, _allTargets, missedTargets) {
         const moveId = "m742";
         const moveData = moveConfig[moveId];
 
@@ -10735,7 +10646,7 @@ const moveExecutes = {
             }
         }
     },
-    "m814": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m814": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m814";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10755,7 +10666,7 @@ const moveExecutes = {
             }
         }
     },
-    "m876": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m876": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m876";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10767,7 +10678,7 @@ const moveExecutes = {
             });
         }
     },
-    "m20001": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m20001": function (_battle, source, primaryTarget, allTargets, missedTargets) {
         const moveId = "m20001";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10787,7 +10698,7 @@ const moveExecutes = {
             }
         }
     },
-    "m20002": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m20002": function (battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m20002";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10816,7 +10727,7 @@ const moveExecutes = {
             }
         }
     },
-    "m20003": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m20003": function (battle, source, primaryTarget, _allTargets, _missedTargets) {
         const moveId = "m20003";
         const moveData = moveConfig[moveId];
 
@@ -10849,7 +10760,7 @@ const moveExecutes = {
         // revive fainted pokemon with 50% hp
         randomFaintedPokemon.beRevived(Math.floor(randomFaintedPokemon.maxHp / 2), source);
     },
-    "m20004": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m20004": function (battle, source, _primaryTarget, _allTargets, _missedTargets) {
         const moveId = "m20004";
         const moveData = moveConfig[moveId];
         // get all non-fainted, hitable pokemon
@@ -10862,7 +10773,7 @@ const moveExecutes = {
         // source cr 100%
         source.boostCombatReadiness(source, 100);
     },
-    "m20005": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m20005": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m20005";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10877,7 +10788,7 @@ const moveExecutes = {
             target.boostCombatReadiness(source, 100);
         }
     },
-    "m20006": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m20006": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m20006";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10899,7 +10810,7 @@ const moveExecutes = {
             }
         }
     },
-    "m20007": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m20007": function (battle, source, _primaryTarget, _allTargets, _missedTargets) {
         const moveId = "m20007";
         const moveData = moveConfig[moveId];
         // get all non-fainted, hitable pokemon
@@ -10909,7 +10820,7 @@ const moveExecutes = {
             target.boostCombatReadiness(source, crBoost);
         }
     },
-    "m20008": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m20008": function (battle, source, primaryTarget, allTargets, _missedTargets) {
         const moveId = "m20008";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10934,7 +10845,7 @@ const moveExecutes = {
             }
         }
     },
-    "m20009": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m20009": function (battle, source, primaryTarget, _allTargets, missedTargets) {
         const moveId = "m20009";
         const moveData = moveConfig[moveId];
         for (let i = 0; i < 3; i++) {
@@ -10958,7 +10869,7 @@ const moveExecutes = {
             });
         }
     },
-    "m20010": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m20010": function (battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m20010";
         const moveData = moveConfig[moveId];
 
@@ -10981,7 +10892,7 @@ const moveExecutes = {
             target.boostCombatReadiness(source, 100);
         }
     },
-    "m20011": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m20011": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m20011";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -10997,7 +10908,7 @@ const moveExecutes = {
             });
         }
     },
-    "m20012": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m20012": function (_battle, source, _primaryTarget, allTargets, missedTargets) {
         const moveId = "m20012";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -11009,7 +10920,7 @@ const moveExecutes = {
             });
         }
     },
-    "m20013": function (battle, source, primaryTarget, allTargets, missedTargets) {
+    "m20013": function (_battle, source, _primaryTarget, allTargets, _missedTargets) {
         const moveId = "m20013";
         const moveData = moveConfig[moveId];
         for (const target of allTargets) {
@@ -11023,12 +10934,12 @@ const abilityConfig = {
     "2": {
         "name": "Drizzle",
         "description": "At the start of battle, stir up a rainy storm.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs, _args) {
                     if (initialArgs.pokemon.isFainted) {
                         return;
                     }
@@ -11042,7 +10953,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "2" || !ability.data) {
                 return;
@@ -11054,12 +10965,12 @@ const abilityConfig = {
     "3": {
         "name": "Speed Boost",
         "description": "At the end of each turn, increase the user's Combat Readiness by 20%, increasing by 20% each turn, up to a maximum of 60%.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs, _args) {
                     const activePokemon = initialArgs.pokemon.battle.activePokemon;
                     if (initialArgs.pokemon.isFainted || activePokemon !== initialArgs.pokemon) {
                         return;
@@ -11086,7 +10997,7 @@ const abilityConfig = {
                 "turns": 0,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "3" || !ability.data) {
                 return;
@@ -11098,7 +11009,7 @@ const abilityConfig = {
     "5": {
         "name": "Sturdy",
         "description": "The first time the user takes fatal damage, the user instead survives with 1 HP.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11132,7 +11043,7 @@ const abilityConfig = {
                 listenerId: listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "5" || !ability.data) {
                 return;
@@ -11144,7 +11055,7 @@ const abilityConfig = {
     "7": {
         "name": "Limber",
         "description": "Prevents the user from paralysis.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11168,7 +11079,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "7" || !ability.data) {
                 return;
@@ -11180,7 +11091,7 @@ const abilityConfig = {
     "9": {
         "name": "Static",
         "description": "When the user takes damage and survives from a physical move, 30% chance to paralyze the attacker.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11209,7 +11120,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "9" || !ability.data) {
                 return;
@@ -11221,7 +11132,7 @@ const abilityConfig = {
     "10": {
         "name": "Volt Absorb",
         "description": "When the user takes damage from an electric move, negate the damage and heal 25% of max HP.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11253,7 +11164,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "10" || !ability.data) {
                 return;
@@ -11265,7 +11176,7 @@ const abilityConfig = {
     "11": {
         "name": "Water Absorb",
         "description": "When the user takes damage from a water move, negate the damage and heal 25% of max HP.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11297,7 +11208,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "11" || !ability.data) {
                 return;
@@ -11309,27 +11220,27 @@ const abilityConfig = {
     "13": {
         "name": "Cloud Nine",
         "description": "Negates all weather effects.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Cloud Nine ability negates all weather effects!`)
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (_battle, _source, _target) {
         }
     },
     "14": {
         "name": "Compound Eyes",
         "description": "Increases accuracy of moves by 30%.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Compound Eyes ability increases its accuracy!`)
             target.acc += 30;
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (_battle, _source, target) {
             target.acc -= 30;
         }
     },
     "15": {
         "name": "Insomnia",
         "description": "Prevents the user from sleep.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11353,7 +11264,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "15" || !ability.data) {
                 return;
@@ -11365,7 +11276,7 @@ const abilityConfig = {
     "18": {
         "name": "Flash Fire",
         "description": "When the user takes damage from a fire move, negate the damage grant Atk. Up and Spa. Up. for 1 turn.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11396,7 +11307,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "18" || !ability.data) {
                 return;
@@ -11408,7 +11319,7 @@ const abilityConfig = {
     "19": {
         "name": "Shield Dust",
         "description": "Prevents the user from being debuffed by dispellable debuffs.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11439,7 +11350,7 @@ const abilityConfig = {
                 listenerId: listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "19" || !ability.data) {
                 return;
@@ -11451,7 +11362,7 @@ const abilityConfig = {
     "20": {
         "name": "Own Tempo",
         "description": "Prevents the user from being confused.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11475,7 +11386,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "20" || !ability.data) {
                 return;
@@ -11487,7 +11398,7 @@ const abilityConfig = {
     "22": {
         "name": "Intimidate",
         "description": "At the start of battle, lowers the attack of the enemy Pokemon with the highest attack and the enemy Pokemon with the highest speed for 1 turn.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11534,7 +11445,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "22" || !ability.data) {
                 return;
@@ -11546,7 +11457,7 @@ const abilityConfig = {
     "23": {
         "name": "Shadow Tag",
         "description": "At the start of battle, restrict all enemies for 1 turn.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11573,7 +11484,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "23" || !ability.data) {
                 return;
@@ -11638,7 +11549,7 @@ const abilityConfig = {
     "26": {
         "name": "Levitate",
         "description": "The user evades Ground-type moves and effects.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11661,7 +11572,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "26" || !ability.data) {
                 return;
@@ -11673,7 +11584,7 @@ const abilityConfig = {
     "27": {
         "name": "Effect Spore",
         "description": "When the user is damaged by a physical move, the Pokemon that hit the user has a 30% chance of being inflicted with Poison, Paralysis, or Sleep.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11705,7 +11616,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "27" || !ability.data) {
                 return;
@@ -11718,7 +11629,7 @@ const abilityConfig = {
         "name": "Synchronize",
         // TODO: this functionality is different from the game, may need to nerf
         "description": "When the user is inflicted with a status condition, the Pokemon that inflicted the status condition is also inflicted with the same status condition.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11743,7 +11654,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "28" || !ability.data) {
                 return;
@@ -11755,7 +11666,7 @@ const abilityConfig = {
     "29": {
         "name": "Clear Body",
         "description": "The user cannot receive debuffs.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11781,7 +11692,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "29" || !ability.data) {
                 return;
@@ -11793,7 +11704,7 @@ const abilityConfig = {
     "30": {
         "name": "Natural Cure",
         "description": "After the user targets an ally with a move, heal their status conditions. If the move is ULTIMATE, also dispell their debuffs.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11831,7 +11742,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "30" || !ability.data) {
                 return;
@@ -11843,7 +11754,7 @@ const abilityConfig = {
     "31": {
         "name": "Lightning Rod",
         "description": "When the user is targeted by an Electric-type move, the move is redirected to the user. This also boosts user's special attack for 1 turn if dealt damage.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             // redirect listener
             const listener1 = {
                 initialArgs: {
@@ -11904,7 +11815,7 @@ const abilityConfig = {
                 "listenerId2": listenerId2,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "31" || !ability.data) {
                 return;
@@ -11917,29 +11828,29 @@ const abilityConfig = {
     "33": {
         "name": "Swift Swim",
         "description": "Increases user's speed by 1/3 of its level. Increases speed by 50% (multiplicative with initial buff) in rain.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Swift Swim increases its speed!`);
             target.spe += Math.floor(target.level * 0.333);
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (_battle, _source, target) {
             target.spe -= Math.floor(target.level * 0.333);
         }
     },
     "34": {
         "name": "Chlorophyll",
         "description": "Increases user's speed by 1/3 of its level. Increases speed by 50% (multiplicative with initial buff) in harsh sunlight.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Chlorophyll increases its speed!`);
             target.spe += Math.floor(target.level * 0.333);
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (_battle, _source, target) {
             target.spe -= Math.floor(target.level * 0.333);
         }
     },
     "35": {
         "name": "Illuminate",
         "description": "At the start of battle, reduce the evasion of the enemy front row for 2 turns.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -11966,7 +11877,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "35" || !ability.data) {
                 return;
@@ -11978,12 +11889,12 @@ const abilityConfig = {
     "37": {
         "name": "Huge Power",
         "description": "Doubles user's attack.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Huge Power increases its attack!`);
             target.atk += target.batk;
             target.batk += target.batk;
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (_battle, _source, target) {
             target.batk = Math.floor(target.batk / 2);
             target.atk -= target.batk;
         }
@@ -11991,7 +11902,7 @@ const abilityConfig = {
     "38": {
         "name": "Poison Point",
         "description": "When the user is damaged by a physical move, the move user has a 30% chance to be poisoned.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12020,7 +11931,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "38" || !ability.data) {
                 return;
@@ -12032,7 +11943,7 @@ const abilityConfig = {
     "39": {
         "name": "Inner Focus",
         "description": "Prevents the user from flinching.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12056,7 +11967,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "39" || !ability.data) {
                 return;
@@ -12068,12 +11979,12 @@ const abilityConfig = {
     "45": {
         "name": "Sand Stream",
         "description": "At the start of battle, kick up a Sandstorm.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs, _args) {
                     if (initialArgs.pokemon.isFainted) {
                         return;
                     }
@@ -12087,7 +11998,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "45" || !ability.data) {
                 return;
@@ -12099,7 +12010,7 @@ const abilityConfig = {
     "46": {
         "name": "Pressure",
         "description": "When the user takes or deals damage, put a random available move for the target on cooldown for 2 turns, if it can have a cooldown. Can only be triggered once per-target.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12154,7 +12065,7 @@ const abilityConfig = {
                 affectedPokemons: [target],
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "46" || !ability.data) {
                 return;
@@ -12167,7 +12078,7 @@ const abilityConfig = {
     "46-1": {
         "name": "Conqueror's Pressure",
         "description": "When the user takes or deals damage from a move, attack the target with a physical attack with 30% the move's power, but use the targets Special Defense stat. Can only be triggered once per-target.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12231,7 +12142,7 @@ const abilityConfig = {
                 affectedPokemons: [target],
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "46-1" || !ability.data) {
                 return;
@@ -12244,7 +12155,7 @@ const abilityConfig = {
     "47": {
         "name": "Thick Fat",
         "description": "Reduces damage taken from fire and ice moves by 50%.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12274,7 +12185,7 @@ const abilityConfig = {
                 listenerId: listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "47" || !ability.data) {
                 return;
@@ -12286,7 +12197,7 @@ const abilityConfig = {
     "50": {
         "name": "Run Away",
         "description": "The first time this Pokemon's HP is reduced below 25%, increase its combat readiness to 100%.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12320,7 +12231,7 @@ const abilityConfig = {
                 listenerId: listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "50" || !ability.data) {
                 return;
@@ -12332,7 +12243,7 @@ const abilityConfig = {
     "52": {
         "name": "Hyper Cutter",
         "description": "Prevents the user's attack from being lowered by Atk. Down and Greater Atk. Down.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12358,7 +12269,7 @@ const abilityConfig = {
                 listenerId: listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "52" || !ability.data) {
                 return;
@@ -12401,7 +12312,7 @@ const abilityConfig = {
                 listenerId: listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "53" || !ability.data) {
                 return;
@@ -12413,12 +12324,12 @@ const abilityConfig = {
     "54": {
         "name": "Truant",
         "description": "Skips every second turn.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs, _args) {
                     const pokemon = initialArgs.pokemon;
                     const activePokemon = pokemon.battle.activePokemon;
                     if (pokemon !== activePokemon) {
@@ -12445,7 +12356,7 @@ const abilityConfig = {
                 turn: 0,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "54" || !ability.data) {
                 return;
@@ -12457,12 +12368,12 @@ const abilityConfig = {
     "54-1": {
         "name": "Old Age",
         "description": "Every second turn, sharply lower the user's speed for 1 turn.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs, _args) {
                     const pokemon = initialArgs.pokemon;
                     const activePokemon = pokemon.battle.activePokemon;
                     if (pokemon !== activePokemon) {
@@ -12489,7 +12400,7 @@ const abilityConfig = {
                 turn: 0,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "54-1" || !ability.data) {
                 return;
@@ -12501,7 +12412,7 @@ const abilityConfig = {
     "56": {
         "name": "Cute Charm",
         "description": "Before the user is hit by a physical move, there is a 30% chance to lower the attacker's attack for 1 turn.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12532,7 +12443,7 @@ const abilityConfig = {
                 listenerId: listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "56" || !ability.data) {
                 return;
@@ -12544,7 +12455,7 @@ const abilityConfig = {
     "62": {
         "name": "Guts",
         "description": "After being afflicted with a status condition, permanently boost the user's attack by 50%.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12565,7 +12476,7 @@ const abilityConfig = {
                 listenerId: listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "62" || !ability.data) {
                 return;
@@ -12577,7 +12488,7 @@ const abilityConfig = {
     "65": {
         "name": "Overgrow",
         "description": "Increases damage of grass moves by 50% when HP is below 1/3.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12605,7 +12516,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "65" || !ability.data) {
                 return;
@@ -12617,7 +12528,7 @@ const abilityConfig = {
     "66": {
         "name": "Blaze",
         "description": "Increases damage of fire moves by 50% when HP is below 1/3.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12645,7 +12556,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "66" || !ability.data) {
                 return;
@@ -12657,7 +12568,7 @@ const abilityConfig = {
     "67": {
         "name": "Torrent",
         "description": "Increases damage of water moves by 50% when HP is below 1/3.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12685,7 +12596,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "67" || !ability.data) {
                 return;
@@ -12697,7 +12608,7 @@ const abilityConfig = {
     "68": {
         "name": "Swarm",
         "description": "Increases damage of bug moves by 50% when HP is below 1/3.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12725,7 +12636,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "68" || !ability.data) {
                 return;
@@ -12737,12 +12648,12 @@ const abilityConfig = {
     "70": {
         "name": "Drought",
         "description": "At the start of battle, the weather becomes sunny.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs, _args) {
                     if (initialArgs.pokemon.isFainted) {
                         return;
                     }
@@ -12756,7 +12667,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "70" || !ability.data) {
                 return;
@@ -12768,7 +12679,7 @@ const abilityConfig = {
     "71": {
         "name": "Arena Trap",
         "description": "Whenever the user damages a target, restrict their combat readiness boosts for 2 turns. Doesn't affect Pokemon in the air.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12791,7 +12702,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "71" || !ability.data) {
                 return;
@@ -12803,7 +12714,7 @@ const abilityConfig = {
     "75": {
         "name": "Shell Armor",
         "description": "Reduces damage taken from moves by 12.5%.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Shell Armor is reducing its damage taken!`);
             const listener = {
                 initialArgs: {
@@ -12828,7 +12739,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "75" || !ability.data) {
                 return;
@@ -12840,16 +12751,16 @@ const abilityConfig = {
     "76": {
         "name": "Air Lock",
         "description": "Negates all weather effects.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             battle.addToLog(`${target.name}'s Air Lock ability negates all weather effects!`)
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (_battle, _source, _target) {
         }
     },
     "89": {
         "name": "Iron Fist",
         "description": "Increases damage of punching moves by 20%.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12877,7 +12788,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "89" || !ability.data) {
                 return;
@@ -12889,7 +12800,7 @@ const abilityConfig = {
     "94": {
         "name": "Solar Power",
         "description": "Increases damage dealt by user by 35% when sunny.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12916,7 +12827,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "94" || !ability.data) {
                 return;
@@ -12928,7 +12839,7 @@ const abilityConfig = {
     "97": {
         "name": "Sniper",
         "description": "Increases damage dealt by user to the BACKMOST row by 50%.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12956,7 +12867,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "97" || !ability.data) {
                 return;
@@ -12968,7 +12879,7 @@ const abilityConfig = {
     "99": {
         "name": "No Guard",
         "description": "Moves used by and against the user never miss.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -12988,7 +12899,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "99" || !ability.data) {
                 return;
@@ -13000,7 +12911,7 @@ const abilityConfig = {
     "101": {
         "name": "Technician",
         "description": "Increases damage dealt by moves with 70 base power or less by 50%.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -13029,7 +12940,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "101" || !ability.data) {
                 return;
@@ -13041,7 +12952,7 @@ const abilityConfig = {
     "108": {
         "name": "Forewarn",
         "description": "The user takes 15% less damage from super effective and ultimate moves.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -13074,7 +12985,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "108" || !ability.data) {
                 return;
@@ -13086,7 +12997,7 @@ const abilityConfig = {
     "111": {
         "name": "Filter",
         "description": "The user takes 20% less damage from super effective moves.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -13119,7 +13030,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "111" || !ability.data) {
                 return;
@@ -13131,7 +13042,7 @@ const abilityConfig = {
     "114": {
         "name": "Storm Drain",
         "description": "When the user is targeted by a Water-type move, the move is redirected to the user. This also boosts user's special attack for 1 turn and ignores damage.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             // redirect listener
             const listener1 = {
                 initialArgs: {
@@ -13194,7 +13105,7 @@ const abilityConfig = {
                 "listenerId2": listenerId2,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "114" || !ability.data) {
                 return;
@@ -13207,12 +13118,12 @@ const abilityConfig = {
     "115": {
         "name": "Ice Body",
         "description": "After the user's turn, if it's hailing, heal 25% of its max HP.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs, _args) {
                     const battle = initialArgs.pokemon.battle;
                     const activePokemon = battle.activePokemon;
                     if (activePokemon !== initialArgs.pokemon) {
@@ -13237,7 +13148,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "115" || !ability.data) {
                 return;
@@ -13249,7 +13160,7 @@ const abilityConfig = {
     "125": {
         "name": "Sheer Force",
         "description": "Increases damage dealt by moves by 20%, but prevents the user from applying effects or status conditions.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const damageListener = {
                 initialArgs: {
                     pokemon: target,
@@ -13298,7 +13209,7 @@ const abilityConfig = {
                 "statusListenerId": statusListenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "125" || !ability.data) {
                 return;
@@ -13312,7 +13223,7 @@ const abilityConfig = {
     "130": {
         "name": "Cursed Body",
         "description": "When the user is damaged by a move, the move has a 30% chance to increase its cooldown by 2.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -13344,7 +13255,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "130" || !ability.data) {
                 return;
@@ -13356,7 +13267,7 @@ const abilityConfig = {
     "134": {
         "name": "Heavy Metal",
         "description": "Increases damage of Steel moves by 8% of the user's defense.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -13388,7 +13299,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "134" || !ability.data) {
                 return;
@@ -13400,7 +13311,7 @@ const abilityConfig = {
     "136": {
         "name": "Multiscale",
         "description": "Reduces damage taken by 50% when HP is full.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -13427,7 +13338,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "138" || !ability.data) {
                 return;
@@ -13439,7 +13350,7 @@ const abilityConfig = {
     "143": {
         "name": "Poison Touch",
         "description": "When the user is damaged by a physical move, the move user has a 30% chance to be poisoned.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -13468,7 +13379,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "143" || !ability.data) {
                 return;
@@ -13480,12 +13391,12 @@ const abilityConfig = {
     "144": {
         "name": "Regenerator",
         "description": "After the user's turn, heal 15% of its max HP.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs, _args) {
                     const battle = initialArgs.pokemon.battle;
                     const activePokemon = battle.activePokemon;
                     if (activePokemon !== initialArgs.pokemon) {
@@ -13505,7 +13416,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "144" || !ability.data) {
                 return;
@@ -13517,7 +13428,7 @@ const abilityConfig = {
     "145": {
         "name": "Big Pecks",
         "description": "Immune to Def. Down and Greater Def. Down.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -13541,7 +13452,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "145" || !ability.data) {
                 return;
@@ -13553,7 +13464,7 @@ const abilityConfig = {
     "153": {
         "name": "Moxie",
         "description": "When the user defeats a Pokemon, gain increased attack for 2 turns and 10% combat readiness. If already has increased attack, greatly increase attack instead.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, source, _target) {
             const listener = {
                 initialArgs: {
                     pokemon: source,
@@ -13582,7 +13493,7 @@ const abilityConfig = {
                 "listenerId": listenerId
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, source, _target) {
             const ability = source.ability;
             if (!ability || ability.abilityId !== "153" || !ability.data) {
                 return;
@@ -13594,7 +13505,7 @@ const abilityConfig = {
     "156": {
         "name": "Magic Bounce",
         "description": "Reflects non-damaging moves back to the user.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -13631,7 +13542,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "156" || !ability.data) {
                 return;
@@ -13643,7 +13554,7 @@ const abilityConfig = {
     "158": {
         "name": "Prankster",
         "description": "After using a non-damaging move, gain 30% combat readiness.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -13672,7 +13583,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "158" || !ability.data) {
                 return;
@@ -13684,7 +13595,7 @@ const abilityConfig = {
     "172": {
         "name": "Competitive",
         "description": "After receiving a debuff, sharply increase special attack for 2 turns.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -13712,7 +13623,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "172" || !ability.data) {
                 return;
@@ -13724,7 +13635,7 @@ const abilityConfig = {
     "198": {
         "name": "Stakeout",
         "description": "Allies deal 30% more damage to enemies with greater than 70% combat readiness.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -13749,7 +13660,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "198" || !ability.data) {
                 return;
@@ -13761,12 +13672,12 @@ const abilityConfig = {
     "20001": {
         "name": "Mind Presence",
         "description": "Whenever an enemy ends a turn, increase the user's combat readiness by 10% attacking stats by 2% without triggering effects. The user cannot be damaged by more than 35% of its max HP at a time. The user is immune to instant-faint effects.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const turnListener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs, _args) {
                     const pokemon = initialArgs.pokemon;
                     const activePokemon = pokemon.battle.activePokemon;
                     if (activePokemon.teamName === pokemon.teamName) {
@@ -13822,7 +13733,7 @@ const abilityConfig = {
                 "faintListenerId": faintListenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "20001" || !ability.data) {
                 return;
@@ -13836,7 +13747,7 @@ const abilityConfig = {
     "20002": {
         "name": "Soul Body",
         "description": "Whenever the user survives damage, increase its combat readiness by 15% without triggering effects, and heal all allies by 5% of its max HP. The user cannot be damaged by more than 35% of its max HP at a time. The user is immune to instant-faint effects.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const afterDamageListener = {
                 initialArgs: {
                     pokemon: target,
@@ -13901,7 +13812,7 @@ const abilityConfig = {
                 "faintListenerId": faintListenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "20002" || !ability.data) {
                 return;
@@ -13915,12 +13826,12 @@ const abilityConfig = {
     "20003": {
         "name": "Soul Energy",
         "description": "Whenever the user's turn ends, increase the combat readiness of all allies by 15% without triggering effects. The user cannot be damaged by more than 55% of its max HP at a time. The user is immune to instant-faint effects.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const turnListener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs, _args) {
                     const pokemon = initialArgs.pokemon;
                     const activePokemon = pokemon.battle.activePokemon;
                     if (activePokemon !== pokemon) {
@@ -13978,7 +13889,7 @@ const abilityConfig = {
                 "faintListenerId": faintListenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "20003" || !ability.data) {
                 return;
@@ -13992,7 +13903,7 @@ const abilityConfig = {
     "20004": {
         "name": "Spirit Power",
         "description": "Whenever a Pokemon faints, permanently incease the user's attacking stats and speed by 20% without triggering effects. The user cannot be damaged by more than 55% of its max HP at a time. The user is immune to instant-faint effects.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const afterFaintListener = {
                 initialArgs: {
                     pokemon: target,
@@ -14053,7 +13964,7 @@ const abilityConfig = {
                 "faintListenerId": faintListenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "20004" || !ability.data) {
                 return;
@@ -14067,7 +13978,7 @@ const abilityConfig = {
     "20005": {
         "name": "False Democracy",
         "description": "Whenever an enemy gains combat readiness, disable its ultimate move for 1 turn. This can only happen once per-enemy.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -14105,7 +14016,7 @@ const abilityConfig = {
                 affectedPokemons: [target],
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "20005" || !ability.data) {
                 return;
@@ -14117,12 +14028,12 @@ const abilityConfig = {
     "20006": {
         "name": "Anarchy",
         "description": "Every other turn, the user enters Anarchy mode. This increases the user's speed by 100%, but decreases accuracy by 50%. Starts the battle in Anarchy mode.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs, _args) {
                     const battle = initialArgs.pokemon.battle;
                     const activePokemon = battle.activePokemon;
                     if (activePokemon !== initialArgs.pokemon) {
@@ -14165,7 +14076,7 @@ const abilityConfig = {
                 inAnarchyMode: true,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "20006" || !ability.data) {
                 return;
@@ -14184,7 +14095,7 @@ const abilityConfig = {
     "20007": {
         "name": "Bloody Sunday",
         "description": "Whenever an ally Pokemon faints, increase the user's combat readiness to 100%.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -14211,7 +14122,7 @@ const abilityConfig = {
                 "listenerId": listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "20007" || !ability.data) {
                 return;
@@ -14223,7 +14134,7 @@ const abilityConfig = {
     "20008": {
         "name": "Resurrection",
         "description": "The first time the user would take lethal damage, prevent it and set its combat readiness to 100%.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
@@ -14258,7 +14169,7 @@ const abilityConfig = {
                 listenerId: listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "20008" || !ability.data) {
                 return;
@@ -14270,25 +14181,25 @@ const abilityConfig = {
     "20009": {
         "name": "Royalty",
         "description": "Boosts the user's Special Attack by 30% of its Attack.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const batk = target.batk;
             target.spa += Math.floor(batk * 0.30);
             battle.addToLog(`${target.name}'s Royalty boosts its Special Attack!`);
             return {};
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (_battle, _source, target) {
             target.spa -= Math.floor(target.batk * 0.30);
         }
     },
     "20010": {
         "name": "Money Bags",
         "description": "At the start of the battle, the user gains the Money Bags buff, which heals allies when taking damage.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs, _args) {
                     const pokemon = initialArgs.pokemon;
                     // add moneybags buff
                     pokemon.addEffect("moneyBags", 2, pokemon);
@@ -14300,7 +14211,7 @@ const abilityConfig = {
                 listenerId: listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "m20010" || !ability.data) {
                 return;
@@ -14312,12 +14223,12 @@ const abilityConfig = {
     "20011": {
         "name": "Ever-beating Heart",
         "description": "At the start of battle, the user gets Immortality for 2 turns.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const listener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs, _args) {
                     const pokemon = initialArgs.pokemon;
                     // add immortality buff
                     pokemon.addEffect("immortal", 2, pokemon);
@@ -14329,7 +14240,7 @@ const abilityConfig = {
                 listenerId: listenerId,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "m20011" || !ability.data) {
                 return;
@@ -14341,7 +14252,7 @@ const abilityConfig = {
     "20012": {
         "name": "Blue Haki",
         "description": "The user's buffs last 1 additional turn. When buffed, the user deals 25% more damage.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             // buff listener
             const listener = {
                 initialArgs: {
@@ -14408,7 +14319,7 @@ const abilityConfig = {
                 listenerId2: listenerId2,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "m20012" || !ability.data) {
                 return;
@@ -14421,7 +14332,7 @@ const abilityConfig = {
     "20013": {
         "name": "Armored Behemoth's Pressure",
         "description": "The user is immune to instant-faint effects and takes reduced damage. When taking damage, increase the user's defensive stats by 5% and has a 30% chance to counter with a random move.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const afterDamageListener = {
                 initialArgs: {
                     pokemon: target,
@@ -14541,7 +14452,7 @@ const abilityConfig = {
                 "damageTakenTurn": 0,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "20013" || !ability.data) {
                 return;
@@ -14555,7 +14466,7 @@ const abilityConfig = {
     "20014": {
         "name": "Shadow Berserker's Rage",
         "description": "The user is immune to instant-faint effects and takes reduced damage. When taking damage, increase the user's offensive stats by 5% and gains 30% combat readiness.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const afterDamageListener = {
                 initialArgs: {
                     pokemon: target,
@@ -14650,7 +14561,7 @@ const abilityConfig = {
                 "damageTakenTurn": 0,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "20014" || !ability.data) {
                 return;
@@ -14664,7 +14575,7 @@ const abilityConfig = {
     "20015": {
         "name": "Cosmic Strength",
         "description": "When the user receives an attack debuff, sharply raise the other attacking stat for 1 turn.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const debuffListener = {
                 initialArgs: {
                     pokemon: target,
@@ -14694,7 +14605,7 @@ const abilityConfig = {
                 "debuffListenerId": debuffListenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "20015" || !ability.data) {
                 return;
@@ -14706,7 +14617,7 @@ const abilityConfig = {
     "20016": {
         "name": "Cosmic Protection",
         "description": "Reduce the damage taken by all allies by 12.5%.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const damageListener = {
                 initialArgs: {
                     pokemon: target,
@@ -14729,7 +14640,7 @@ const abilityConfig = {
                 "damageListenerId": damageListenerId,
             };
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "20016" || !ability.data) {
                 return;
@@ -14741,12 +14652,12 @@ const abilityConfig = {
     "20017": {
         "name": "Cosmic Agility",
         "description": "When the user starts its turn, boost the stats of all allies permanently by 2%. Can occur up to 10 times.",
-        "abilityAdd": function (battle, source, target) {
+        "abilityAdd": function (battle, _source, target) {
             const turnListener = {
                 initialArgs: {
                     pokemon: target,
                 },
-                execute: function (initialArgs, args) {
+                execute: function (initialArgs, _args) {
                     const pokemon = initialArgs.pokemon;
                     if (pokemon.battle.activePokemon !== pokemon) {
                         return;
@@ -14782,7 +14693,7 @@ const abilityConfig = {
                 turns: 0,
             }
         },
-        "abilityRemove": function (battle, source, target) {
+        "abilityRemove": function (battle, _source, target) {
             const ability = target.ability;
             if (!ability || ability.abilityId !== "20017" || !ability.data) {
                 return;

@@ -15,8 +15,24 @@ import pluginJs from "@eslint/js";
 export default [
   // mimic ESLintRC-style extends
   ...compat.extends("airbnb", "prettier"),
-  { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
+  {
+    files: ["**/*.js"],
+    languageOptions: {
+      sourceType: "commonjs",
+      parserOptions: {
+        ecmaVersion: 2020,
+      },
+    },
+  },
   { languageOptions: { globals: globals.node } },
-  { rules: { "consistent-return": "off", "no-return-await": "off" } },
+  {
+    rules: {
+      "consistent-return": "off",
+      "no-return-await": "off", // deprecated
+      "no-restricted-syntax": "off", // TODO: enable but make better lol
+      "no-underscore-dangle": "off", // Needed for mongo _id
+      "guard-for-in": "off", // TODO: enable but make better lol
+    },
+  },
   pluginJs.configs.recommended,
 ];
