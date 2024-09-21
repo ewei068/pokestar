@@ -64,15 +64,15 @@ const evolve = async (user, pokemonId) => {
         userId: user.id,
         pokemonId: pokemon.data._id,
         speciesId: null
-    }, ttl=150);
+    }, 150);
     const selectionRowData = {
         stateId: stateId,
     }
     const selectionRow = buildSpeciesSelectRow(
-        evolutionSpeciesIds, 
+        evolutionSpeciesIds,
         pokemonConfig,
         "Select a pokemon to evolve to:",
-        selectionRowData, 
+        selectionRowData,
         eventNames.POKEMON_EVOLVE_SELECT
     );
 

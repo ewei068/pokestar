@@ -6,8 +6,7 @@
  * 
  * equipmentList.js list and sort the equipment
 */
-const { modifierSlots } = require("../../config/equipmentConfig");
-const { buildEquipmentListSend, getIdFromNameOrId } = require("../../services/pokemon");
+const { buildEquipmentListSend } = require("../../services/pokemon");
 const { setState, deleteState } = require("../../services/state");
 
 /**
@@ -23,7 +22,7 @@ const equipmentList = async (user, equipmentType, sortStat, includeLevel, locked
         includeLevel: includeLevel,
         locked: locked,
         page: page,
-    }, ttl=150);
+    }, 150);
 
     const { send, err } = await buildEquipmentListSend({
         stateId: stateId,

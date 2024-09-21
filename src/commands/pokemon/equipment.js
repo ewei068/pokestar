@@ -23,7 +23,7 @@ const equipment = async (user, pokemonId) => {
         pokemonId: pokemonId,
         slotId: modifierSlots.PRIMARY,
         messageStack: []
-    }, ttl=150);
+    }, 150);
 
     const { send, err } = await buildEquipmentSend({
         stateId: stateId,

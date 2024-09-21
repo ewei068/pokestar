@@ -6,7 +6,6 @@
  * 
  * equipmentSwap.js is used to swap the equipment on a given pokemon
 */
-const { modifierSlots } = require("../../config/equipmentConfig");
 const { buildEquipmentSwapSend, getIdFromNameOrId } = require("../../services/pokemon");
 const { setState, deleteState } = require("../../services/state");
 
@@ -22,7 +21,7 @@ const equipmentSwap = async (user, pokemonId, pokemonId2, equipmentType) => {
         pokemonId: pokemonId,
         pokemonId2: pokemonId2,
         equipmentType: equipmentType,
-    }, ttl=150);
+    }, 150);
 
     const { send, err } = await buildEquipmentSwapSend({
         stateId: stateId,

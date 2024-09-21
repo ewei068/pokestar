@@ -6,7 +6,7 @@
  * 
  * list.js fetches a list of a trainer's pokemon, returning an embed with the list.
 */
-const { listPokemons: listPokemons, setBattleEligible } = require('../../services/pokemon');
+const { listPokemons: listPokemons } = require('../../services/pokemon');
 const { getTrainer } = require('../../services/trainer');
 const { buildPokemonListEmbed } = require('../../embeds/pokemonEmbeds');
 const { buildScrollActionRow } = require('../../components/scrollActionRow');
@@ -97,17 +97,17 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
     const embed = buildPokemonListEmbed(trainer.data, pokemons.data, page);
 
     // build pagination row
-    const stateId = setState({ 
-        userId: user.id, 
+    const stateId = setState({
+        userId: user.id,
         listOptions: listOptions,
         lastPage: pokemons.lastPage,
         pokemonIds: pokemons.data.map(pokemon => pokemon._id.toString())
-    }, ttl=300);
+    }, 300);
     const scrollRowData = {
         stateId: stateId,
     }
     const scrollActionRow = buildScrollActionRow(page, pokemons.lastPage, scrollRowData, eventNames.POKEMON_SCROLL);
-    
+
     // build select row
     const selectRowData = {
         stateId: stateId,
@@ -122,7 +122,7 @@ const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
         label: "Release Page",
         disabled: false,
         data: releasePageData,
-    }], eventNames.POKEMON_RELEASE_PAGE, danger=true);
+    }], eventNames.POKEMON_RELEASE_PAGE, true);
 
     const send = {
         content: "**[MOBILE USERS]** Select a pokemon to copy its ID (Hold message -> Copy Text).",

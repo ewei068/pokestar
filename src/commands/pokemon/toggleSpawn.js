@@ -1,6 +1,7 @@
 const { collectionNames } = require("../../config/databaseConfig");
 const { QueryBuilder } = require("../../database/mongoHandler");
 const { getChannelId } = require("../../utils/utils");
+const { logger } = require("../../log");
 
 const toggleSpawn = async (user, guildId, channelId, member) => {
     // check if user can manage roles
@@ -39,7 +40,7 @@ const toggleSpawn = async (user, guildId, channelId, member) => {
         try {
             const query = new QueryBuilder(collectionNames.GUILDS)
                 .setFilter({ guildId: guildId })
-                .setUpsert({ $set: { guildId: guildId, spawnDisabledChannels: guildData.spawnDisabledChannels }});
+                .setUpsert({ $set: { guildId: guildId, spawnDisabledChannels: guildData.spawnDisabledChannels } });
 
             await query.upsertOne();
         } catch (err) {
@@ -59,7 +60,7 @@ const toggleSpawn = async (user, guildId, channelId, member) => {
         try {
             const query = new QueryBuilder(collectionNames.GUILDS)
                 .setFilter({ guildId: guildId })
-                .setUpsert({ $set: { guildId: guildId, spawnDisabled: guildData.spawnDisabled }});
+                .setUpsert({ $set: { guildId: guildId, spawnDisabled: guildData.spawnDisabled } });
 
             await query.upsertOne();
         } catch (err) {

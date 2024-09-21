@@ -20,7 +20,7 @@ const nature = async (user, pokemonId) => {
     const stateId = setState({
         userId: user.id,
         pokemonId: pokemonId
-    }, ttl=150);
+    }, 150);
 
     const { send, err } = await buildNatureSend({
         stateId: stateId,

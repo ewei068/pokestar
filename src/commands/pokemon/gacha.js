@@ -6,7 +6,7 @@
  * 
  * gacha.js is the backbone of the game concept. Using a modified standard gacha system it uses pokeballs to spin the gacha for a/many random pokemon.
 */
-const { buildBannerSend } = require ('../../services/gacha') ;
+const { buildBannerSend } = require('../../services/gacha');
 const { setState, deleteState } = require('../../services/state');
 
 /**
@@ -19,7 +19,7 @@ const gacha = async (user, page) => {
     // build banner embed
     const stateId = setState({
         userId: user.id
-    }, ttl=150);
+    }, 150);
 
     const { send, err } = await buildBannerSend({
         stateId: stateId,
