@@ -1,5 +1,7 @@
 # Pokéstar Changelog
 
+### 1.0.3 - Big Refactor
+
 ### 1.0.2
 
 * Gen 3 wrapup event
