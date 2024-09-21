@@ -18,21 +18,21 @@ for (const [id, pokemon] of Object.entries(pokemonConfig)) {
         url: imageUrl,
         responseType: 'stream'
     })
-    .then(response => {
-        // Create a writable stream and pipe the image data to it
-        const imagePath = path.join(saveDirectory, filename);
-        const writer = fs.createWriteStream(imagePath);
-        response.data.pipe(writer);
+        .then(response => {
+            // Create a writable stream and pipe the image data to it
+            const imagePath = path.join(saveDirectory, filename);
+            const writer = fs.createWriteStream(imagePath);
+            response.data.pipe(writer);
 
-        writer.on('finish', () => {
-        console.log(`Image downloaded and saved as: ${imagePath}`);
-        });
+            writer.on('finish', () => {
+                console.log(`Image downloaded and saved as: ${imagePath}`);
+            });
 
-        writer.on('error', err => {
-        console.error('Error while saving the image:', err);
+            writer.on('error', err => {
+                console.error('Error while saving the image:', err);
+            });
+        })
+        .catch(error => {
+            console.error('Error while downloading the image:', error);
         });
-    })
-    .catch(error => {
-        console.error('Error while downloading the image:', error);
-    });
 }

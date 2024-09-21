@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const { Client, Events, GatewayIntentBits } = require('discord.js');
-const { runMessageCommand, runSlashCommand, prefix } = require('./handlers/commandHandler.js');
+const { runMessageCommand, runSlashCommand } = require('./handlers/commandHandler.js');
 const { handleEvent } = require('./handlers/eventHandler.js');
 const { logger } = require('./log');
 const { checkRateLimit } = require('./services/rateLimit.js');
@@ -10,7 +10,7 @@ const express = require('express');
 const cors = require('cors');
 const { addVote } = require('./services/trainer.js');
 const { stageNames } = require('./config/stageConfig.js');
-const { poll, formatMoney } = require('./utils/utils.js');
+const { poll } = require('./utils/utils.js');
 const axios = require('axios');
 const { startSpawning, addGuild } = require('./services/spawn.js');
 const { getStateCount } = require('./services/state.js');
@@ -25,18 +25,19 @@ const corsOptions = {
 }
 
 // Create a new client instance
-const client = new Client({ intents: 
-    [
-        GatewayIntentBits.Guilds, 
-        GatewayIntentBits.GuildMessages, 
-        // GatewayIntentBits.MessageContent
-    ] 
+const client = new Client({
+    intents:
+        [
+            GatewayIntentBits.Guilds,
+            GatewayIntentBits.GuildMessages,
+            // GatewayIntentBits.MessageContent
+        ]
 });
 
 client.on(Events.MessageCreate, async (message) => {
     try {
         if (!checkRateLimit(message.author.id)) return;
-    } catch (error) {
+    } catch {
         return;
     }
 
@@ -59,7 +60,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     try {
         if (!checkRateLimit(interaction.user.id)) return;
-    } catch (error) {
+    } catch {
         return;
     }
 
@@ -70,7 +71,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         logger.error(error);
         try {
             await interaction.reply("There was an error trying to execute that command!");
-        } catch (error) {
+        } catch {
             try {
                 await interaction.followUp("There was an error trying to execute that command!");
             } catch (error) {
@@ -86,7 +87,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     try {
         if (!checkRateLimit(interaction.user.id)) return;
-    } catch (error) {
+    } catch {
         return;
     }
 
@@ -109,7 +110,7 @@ client.on(Events.GuildCreate, (guild) => {
 // When the client is ready, run this code (only once)
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, c => {
-	logger.info(`Ready! Logged in as ${c.user.tag}`);
+    logger.info(`Ready! Logged in as ${c.user.tag}`);
     client.user.setActivity(`/tutorial /help`);
     // log connected guilds
     let guildString = "";
@@ -128,7 +129,7 @@ client.once(Events.ClientReady, c => {
         try {
             const stateSize = getStateCount();
             logger.info(`STATE SIZE: ${stateSize}`);
-        } catch (error) {
+        } catch {
             logger.warn("Error polling state size");
         }
     }, 1000 * 60 * 60);
@@ -164,7 +165,7 @@ client.once(Events.ClientReady, c => {
                     "Content-Type": "application/json"
                 }
                 await axios.post(botlistUrl, botlistData, { headers: botlistHeaders });
-            } catch (error) {
+            } catch {
                 logger.warn("Error posting botlist.me stats");
             }
         }, 1000 * 60 * 60);
@@ -182,7 +183,7 @@ client.once(Events.ClientReady, c => {
                     "Content-Type": "application/json"
                 }
                 await axios.post(topggUrl, topggData, { headers: topggHeaders });
-            } catch (error) {
+            } catch {
                 logger.warn("Error posting top.gg stats");
             }
         }, 1000 * 60 * 60);
@@ -200,7 +201,7 @@ client.once(Events.ClientReady, c => {
                     "Content-Type": "application/json"
                 }
                 await axios.post(discordlistUrl, discordlistData, { headers: discordlistHeaders });
-            } catch (error) {
+            } catch {
                 logger.warn("Error posting discordlist.gg stats");
             }
         }, 1000 * 60 * 60);
@@ -224,25 +225,25 @@ app.post("/vote", async (req, res) => {
         if (req.header("Authorization") === process.env.DBL_SECRET) {
             const user = req.body;
             logger.info(`Received DBL vote from ${user.id}`);
-            const { data, err } = await addVote(user);
+            const { err } = await addVote(user);
             if (!err) {
                 success = true;
             }
-        /* } else if (req.header("Authorization") === process.env.BOTLIST_SECRET) {
-            const user = {
-                id: req.body.user,
-            }
-            logger.info(`Received BOTLIST vote from ${user.id}`);
-            const { data, err } = await addVote(user);
-            if (!err) {
-                success = true;
-            } */
+            /* } else if (req.header("Authorization") === process.env.BOTLIST_SECRET) {
+                const user = {
+                    id: req.body.user,
+                }
+                logger.info(`Received BOTLIST vote from ${user.id}`);
+                const { data, err } = await addVote(user);
+                if (!err) {
+                    success = true;
+                } */
         } else if (req.header("Authorization") === process.env.TOPGG_SECRET) {
             const user = {
                 id: req.body.user,
             }
             logger.info(`Received TOP.GG vote from ${user.id}`);
-            const { data, err } = await addVote(user, 2);
+            const { err } = await addVote(user, 2);
             if (!err) {
                 success = true;
             }
