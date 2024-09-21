@@ -3,12 +3,12 @@ const seedrandom = require("seedrandom");
 const { buildYesNoActionRow } = require("../../components/yesNoActionRow");
 const { setState } = require("../../services/state");
 
-const test2 = ({arg1 = null, arg2 = null} = {}) => {
+const test2 = ({ arg1 = null, arg2 = null } = {}) => {
     console.log(arg1);
     console.log(arg2);
 }
 
-const test = async (channel, interaction=false) => {
+const test = async (channel, interaction = false) => {
     /* const sendResult = await channel.send("test1");
     console.log(sendResult);
     const state = {

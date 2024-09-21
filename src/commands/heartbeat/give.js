@@ -6,7 +6,7 @@ const { buildNewPokemonEmbed } = require('../../embeds/pokemonEmbeds');
 
 const give = async (user, pokemonId, level, equipmentLevel) => {
     // TODO: restrict users who can use?
-    
+
     //restrict level
     if (level < 1 || level > 100) {
         return { send: null, err: "Invalid level" };
