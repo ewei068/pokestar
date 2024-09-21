@@ -3,11 +3,11 @@
  * @author Elvis Wei
  * @date 2023
  * @section Description
- * 
+ *
  * battleInfoActionRow.js creates the battle info action row for the players in the battle.
-*/
-const { eventNames } = require('../config/eventConfig');
-const { buildButtonActionRow } = require('./buttonActionRow');
+ */
+const { eventNames } = require("../config/eventConfig");
+const { buildButtonActionRow } = require("./buttonActionRow");
 
 /**
  * build a row showing the battle action info
@@ -17,56 +17,56 @@ const { buildButtonActionRow } = require('./buttonActionRow');
  * @returns ActionRowBuilder
  */
 const buildBattleInfoActionRow = (battle, stateId, selectionIndex = 0) => {
-    const infoRowData = {
-        stateId: stateId
-    }
+  const infoRowData = {
+    stateId,
+  };
 
-    // TODO: this is probably confusing so refactor at some point
-    let i = 0;
-    const buttonConfigs = Object.keys(battle.teams).map(teamName => {
-        i += 1;
-        return {
-            label: teamName,
-            disabled: false,
-            data: {
-                ...infoRowData,
-                selectionIndex: i - 1
-            }
-        }
-    });
-    buttonConfigs.push({
-        label: 'Moves',
-        disabled: false,
-        data: {
-            ...infoRowData,
-            selectionIndex: i
-        }
-    });
-    buttonConfigs.push({
-        label: 'Hide',
-        disabled: false,
-        data: {
-            ...infoRowData,
-            selectionIndex: i + 1
-        }
-    });
+  // TODO: this is probably confusing so refactor at some point
+  let i = 0;
+  const buttonConfigs = Object.keys(battle.teams).map((teamName) => {
+    i += 1;
+    return {
+      label: teamName,
+      disabled: false,
+      data: {
+        ...infoRowData,
+        selectionIndex: i - 1,
+      },
+    };
+  });
+  buttonConfigs.push({
+    label: "Moves",
+    disabled: false,
+    data: {
+      ...infoRowData,
+      selectionIndex: i,
+    },
+  });
+  buttonConfigs.push({
+    label: "Hide",
+    disabled: false,
+    data: {
+      ...infoRowData,
+      selectionIndex: i + 1,
+    },
+  });
 
-    buttonConfigs.push({
-        label: 'Refresh',
-        disabled: false,
-        data: {
-            ...infoRowData,
-            selectionIndex: i + 2
-        }
-    });
+  buttonConfigs.push({
+    label: "Refresh",
+    disabled: false,
+    data: {
+      ...infoRowData,
+      selectionIndex: i + 2,
+    },
+  });
 
-    // disable selection index
-    buttonConfigs[selectionIndex].disabled = true;
+  // disable selection index
+  buttonConfigs[selectionIndex].disabled = true;
 
-    const infoRow = buildButtonActionRow(buttonConfigs, eventNames.BATTLE_INFO);
-    return infoRow;
-}
+  const infoRow = buildButtonActionRow(buttonConfigs, eventNames.BATTLE_INFO);
+  return infoRow;
+};
 
 module.exports = {
-    buildBattleInfoActionRow
+  buildBattleInfoActionRow,
 };

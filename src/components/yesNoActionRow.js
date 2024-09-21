@@ -3,11 +3,11 @@
  * @author Elvis Wei
  * @date 2023
  * @section Description
- * 
+ *
  * yesNoActionRow.js Creates an action row using discordjs's ActionRowBuilder for Yes/No options.
-*/
-const { ActionRowBuilder } = require('discord.js');
-const { buildYesNoButton } = require('./yesNoButton');
+ */
+const { ActionRowBuilder } = require("discord.js");
+const { buildYesNoButton } = require("./yesNoButton");
 
 /**
  * Creates an action row using discordjs's ActionRowBuilder for Yes/No options.
@@ -17,13 +17,13 @@ const { buildYesNoButton } = require('./yesNoButton');
  * @returns ActionRowBuilder
  */
 const buildYesNoActionRow = (data, eventName, danger = false) => {
-    const actionRow = new ActionRowBuilder();
-    const yesButton = buildYesNoButton(true, data, eventName, danger);
-    const noButton = buildYesNoButton(false, data, eventName, danger);
-    actionRow.addComponents(yesButton, noButton);
-    return actionRow;
-}
+  const actionRow = new ActionRowBuilder();
+  const yesButton = buildYesNoButton(true, data, eventName, danger);
+  const noButton = buildYesNoButton(false, data, eventName, danger);
+  actionRow.addComponents(yesButton, noButton);
+  return actionRow;
+};
 
 module.exports = {
-    buildYesNoActionRow
+  buildYesNoActionRow,
 };
