@@ -24,7 +24,6 @@ const createIndices = async (dbo, collectionName, collection) => {
   }
   for (const index of collection.indexes) {
     try {
-      // eslint-disable-next-line no-await-in-loop
       await dbo
         .collection(collectionName)
         .createIndex(index.key, { unique: index.unique });
@@ -72,7 +71,6 @@ client
     for (const collectionName in collectionConfig) {
       const collectionData = collectionConfig[collectionName];
       try {
-        // eslint-disable-next-line no-await-in-loop
         await createCollection(dbo, collectionName, collectionData);
       } catch (error) {
         logger.error(`Error creating collection ${collectionName}`);
@@ -80,7 +78,6 @@ client
         continue;
       }
       // const collection = await dbo.collection(collectionName);
-      // eslint-disable-next-line no-await-in-loop
       await createIndices(dbo, collectionName, collectionData);
     }
   })

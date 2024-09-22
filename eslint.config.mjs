@@ -33,6 +33,7 @@ export default [
       "no-underscore-dangle": "off", // Needed for mongo _id
       "guard-for-in": "off", // TODO: enable but make better lol
       "no-continue": "off", // doesn't seem to work properly
+      "no-await-in-loop": "off", // TODO: use promise.all
     },
   },
   pluginJs.configs.recommended,

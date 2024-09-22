@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 /* eslint-disable no-case-declarations */
 // TODO: probably fix both
 /* eslint-disable no-param-reassign */
