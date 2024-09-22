@@ -5,6 +5,7 @@
     }
   ],
   "settings": {
+    "editor.tabSize": 4,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "always"

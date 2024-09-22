@@ -1,3 +1,6 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-use-before-define */
+/* eslint-disable no-param-reassign */
 const { types } = require("./pokemonConfig");
 
 const battleEventNames = {
@@ -213,6 +216,24 @@ const typeAdvantages = {
   },
 };
 
+// unqiue status conditions
+const statusConditions = {
+  BURN: "Burn",
+  FREEZE: "Freeze",
+  PARALYSIS: "Paralysis",
+  POISON: "Poison",
+  SLEEP: "Sleep",
+  BADLY_POISON: "Badly Poison",
+};
+
+// unique weather conditions
+const weatherConditions = {
+  RAIN: "Rain",
+  SUN: "Sun",
+  SANDSTORM: "Sandstorm",
+  HAIL: "Hail",
+};
+
 const calculateDamage = (
   move,
   source,
@@ -228,6 +249,7 @@ const calculateDamage = (
     moveType = null,
   } = {}
 ) => {
+  /* eslint-disable-code-block no-param-reassign */
   power = power || move.power;
   const { level } = source;
   atkStat = atkStat || move.damageType;
@@ -1294,6 +1316,7 @@ const effectConfig = {
 
           // get move data
           const { moveId } = args.damageInfo;
+          // eslint-disable-next-line no-use-before-define
           const moveData = moveConfig[moveId];
           if (!moveData) {
             return;
@@ -2476,24 +2499,6 @@ const effectConfig = {
       }
     },
   },
-};
-
-// unqiue status conditions
-const statusConditions = {
-  BURN: "Burn",
-  FREEZE: "Freeze",
-  PARALYSIS: "Paralysis",
-  POISON: "Poison",
-  SLEEP: "Sleep",
-  BADLY_POISON: "Badly Poison",
-};
-
-// unique weather conditions
-const weatherConditions = {
-  RAIN: "Rain",
-  SUN: "Sun",
-  SANDSTORM: "Sandstorm",
-  HAIL: "Hail",
 };
 
 const moveConfig = {
@@ -7703,7 +7708,7 @@ const moveExecutes = {
   m118(battle, source) {
     // get random basic moves
     const basicMoves = Object.keys(moveConfig).filter(
-      (moveId) => moveConfig[moveId].tier == moveTiers.BASIC
+      (moveId) => moveConfig[moveId].tier === moveTiers.BASIC
     );
     const randomMoveId =
       basicMoves[Math.floor(Math.random() * basicMoves.length)];
@@ -8158,7 +8163,7 @@ const moveExecutes = {
             );
           }
         );
-        if (possibleBuffs.length == 0) {
+        if (possibleBuffs.length === 0) {
           return;
         }
 
@@ -8216,7 +8221,7 @@ const moveExecutes = {
     if (allTargets.length > 3) {
       const newTargets = [primaryTarget];
       const otherTargets = allTargets.filter((t) => t !== primaryTarget);
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < 2; i += 1) {
         const randomIndex = Math.floor(Math.random() * otherTargets.length);
         newTargets.push(otherTargets[randomIndex]);
         otherTargets.splice(randomIndex, 1);
@@ -8539,13 +8544,13 @@ const moveExecutes = {
         const effectData = effectConfig[effectId];
         if (effectData.type === effectTypes.DEBUFF) {
           if (target.dispellEffect(effectId)) {
-            effects++;
+            effects += 1;
           }
         }
       }
       // remove status
       if (target.removeStatus()) {
-        effects++;
+        effects += 1;
       }
       // heal
       source.giveHeal(
@@ -8689,10 +8694,6 @@ const moveExecutes = {
     for (const target of allTargets) {
       // remove status conditions
       const statusRemoved = target.removeStatus();
-      const test = [
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-      ];
 
       // heal 10% max HP, boosted to 20% if condition removed
       const healAmount = Math.floor(target.maxHp * (statusRemoved ? 0.2 : 0.1));
@@ -8717,9 +8718,7 @@ const moveExecutes = {
       });
     }
   },
-  m219(_battle, source, _primaryTarget, allTargets, _missedTargets) {
-    const moveId = "m219";
-    const moveData = moveConfig[moveId];
+  m219(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply status immunity for 3 turns
       target.addEffect("statusImmunity", 3, source);
@@ -8733,7 +8732,7 @@ const moveExecutes = {
     if (allTargets.length > 3) {
       const newTargets = [primaryTarget];
       const otherTargets = allTargets.filter((t) => t !== primaryTarget);
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < 2; i += 1) {
         const randomIndex = Math.floor(Math.random() * otherTargets.length);
         newTargets.push(otherTargets[randomIndex]);
         otherTargets.splice(randomIndex, 1);
@@ -9287,7 +9286,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       if (!miss) {
         // if source is sleep, apply sleep
-        if (source.status.statusId == statusConditions.SLEEP) {
+        if (source.status.statusId === statusConditions.SLEEP) {
           target.applyStatus(statusConditions.SLEEP, source);
         } else {
           target.addEffect("yawn", 1, source);
@@ -9682,7 +9681,7 @@ const moveExecutes = {
     const moveId = "m331";
     const moveData = moveConfig[moveId];
     // loop 5 times, hitting random non-fainted target
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i += 1) {
       allTargets = allTargets.filter((target) => !target.isFainted);
       if (allTargets.length === 0) {
         break;
@@ -9714,7 +9713,7 @@ const moveExecutes = {
     } else {
       // if pokemon has "projectingSpirit" buff, remove it and deal damage
       source.removeEffect("projectingSpirit");
-      for (let i = 0; i < 9; i++) {
+      for (let i = 0; i < 9; i += 1) {
         allTargets = allTargets.filter((target) => !target.isFainted);
         if (allTargets.length === 0) {
           break;
@@ -10768,7 +10767,7 @@ const moveExecutes = {
             );
           }
         );
-        if (possibleDebuffs.length == 0) {
+        if (possibleDebuffs.length === 0) {
           continue;
         }
 
@@ -10878,7 +10877,7 @@ const moveExecutes = {
             );
           }
         );
-        if (possibleBuffs.length == 0) {
+        if (possibleBuffs.length === 0) {
           return;
         }
 
@@ -11656,7 +11655,7 @@ const moveExecutes = {
     if (allTargets.length > 3) {
       const newTargets = [primaryTarget];
       const otherTargets = allTargets.filter((t) => t !== primaryTarget);
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < 2; i += 1) {
         const randomIndex = Math.floor(Math.random() * otherTargets.length);
         newTargets.push(otherTargets[randomIndex]);
         otherTargets.splice(randomIndex, 1);
@@ -11956,7 +11955,7 @@ const moveExecutes = {
   m20009(battle, source, primaryTarget, _allTargets, missedTargets) {
     const moveId = "m20009";
     const moveData = moveConfig[moveId];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 3; i += 1) {
       let target = primaryTarget;
       if (primaryTarget.isFainted) {
         // get random target from enemy party
@@ -13016,7 +13015,7 @@ const abilityConfig = {
             );
             target.removeStatus();
             const moveData = moveConfig[args.moveId];
-            if (moveData && moveData.tier == moveTiers.ULTIMATE) {
+            if (moveData && moveData.tier === moveTiers.ULTIMATE) {
               for (const effectId in target.effectIds) {
                 const effectData = effectConfig[effectId];
                 if (effectData.type === effectTypes.DEBUFF) {
