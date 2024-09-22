@@ -288,38 +288,38 @@ const growthRates = {
 const growthRateConfig = {
   [growthRates.ERRATIC]: {
     name: "Erratic",
-    growthFn: function (level) {
+    growthFn(level) {
       // TODO: change?
       return Math.floor(0.5 * level ** 2.5);
     },
   },
   [growthRates.FAST]: {
     name: "Fast",
-    growthFn: function (level) {
+    growthFn(level) {
       return Math.floor(0.5 * level ** 2.5);
     },
   },
   [growthRates.MEDIUMFAST]: {
     name: "Medium Fast",
-    growthFn: function (level) {
+    growthFn(level) {
       return Math.floor(0.8 * level ** 2.5);
     },
   },
   [growthRates.MEDIUMSLOW]: {
     name: "Medium Slow",
-    growthFn: function (level) {
+    growthFn(level) {
       return Math.floor(level ** 2.5);
     },
   },
   [growthRates.SLOW]: {
     name: "Slow",
-    growthFn: function (level) {
+    growthFn(level) {
       return Math.floor(1.5 * level ** 2.5);
     },
   },
   [growthRates.FLUCTUATING]: {
     name: "Fluctuating",
-    growthFn: function (level) {
+    growthFn(level) {
       // TODO: change?
       return Math.floor(1.5 * level ** 2.5);
     },
@@ -7597,8 +7597,8 @@ const rarityConfig = {
 const generations = [152, 252];
 
 const getGeneration = (id) => {
-  const baseNumber = parseInt(id.split("-")[0]);
-  for (let i = 0; i < generations.length; i++) {
+  const baseNumber = parseInt(id.split("-")[0], 10);
+  for (let i = 0; i < generations.length; i += 1) {
     if (baseNumber < generations[i]) {
       return i + 1;
     }
