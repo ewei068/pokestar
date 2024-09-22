@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable func-names */
 /* eslint-disable no-shadow */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-param-reassign */
@@ -8771,7 +8773,7 @@ const moveExecutes = {
       // if hit, confuse for 2 turns
       if (!miss) {
         const enemyParty = source.getEnemyParty();
-        enemyTargets = source.getPatternTargets(
+        const enemyTargets = source.getPatternTargets(
           enemyParty,
           targetPatterns.SQUARE,
           target.position,
@@ -8795,9 +8797,7 @@ const moveExecutes = {
       });
     }
   },
-  m226(_battle, source, _primaryTarget, allTargets, _missedTargets) {
-    const moveId = "m226";
-    const moveData = moveConfig[moveId];
+  m226(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // boost cr to 100
       target.boostCombatReadiness(source, 100);
@@ -8819,15 +8819,7 @@ const moveExecutes = {
       }
     }
   },
-  "m226-1": function (
-    _battle,
-    source,
-    _primaryTarget,
-    allTargets,
-    _missedTargets
-  ) {
-    const moveId = "m226-1";
-    const moveData = moveConfig[moveId];
+  "m226-1": function (_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // boost cr to 100
       target.boostCombatReadiness(source, 100);
@@ -8859,7 +8851,7 @@ const moveExecutes = {
     for (const ally of allyTargets) {
       for (const effectId of Object.keys(ally.effectIds)) {
         const effectData = effectConfig[effectId];
-        if (effectData.type != effectTypes.DEBUFF) {
+        if (effectData.type !== effectTypes.DEBUFF) {
           continue;
         }
 
@@ -8974,17 +8966,11 @@ const moveExecutes = {
       }
     }
   },
-  m240(battle, source, _primaryTarget, _allTargets, _missedTargets) {
-    const moveId = "m240";
-    const moveData = moveConfig[moveId];
-
+  m240(battle, source) {
     // rain weather
     battle.createWeather(weatherConditions.RAIN, source);
   },
-  m241(battle, source, _primaryTarget, _allTargets, _missedTargets) {
-    const moveId = "m241";
-    const moveData = moveConfig[moveId];
-
+  m241(battle, source) {
     // sun weather
     battle.createWeather(weatherConditions.SUN, source);
   },
@@ -9073,6 +9059,8 @@ const moveExecutes = {
         break;
       case 5:
         source.addEffect("speUp", 1, source);
+        break;
+      default:
         break;
     }
   },
@@ -9305,12 +9293,12 @@ const moveExecutes = {
       if (!miss) {
         for (const effectId of Object.keys(target.effectIds)) {
           const effectData = effectConfig[effectId];
-          if (effectData.type != effectTypes.BUFF) {
+          if (effectData.type !== effectTypes.BUFF) {
             continue;
           }
 
           if (target.dispellEffect(effectId)) {
-            buffsRemoved++;
+            buffsRemoved += 1;
           }
         }
       }
@@ -9583,7 +9571,7 @@ const moveExecutes = {
       // remove debuffs
       for (const effectId of Object.keys(target.effectIds)) {
         const effectData = effectConfig[effectId];
-        if (effectData.type != effectTypes.DEBUFF) {
+        if (effectData.type !== effectTypes.DEBUFF) {
           continue;
         }
 
@@ -9959,6 +9947,8 @@ const moveExecutes = {
           break;
         case 5:
           ally.addEffect("greaterSpeUp", 2, source);
+          break;
+        default:
           break;
       }
     }
@@ -11279,7 +11269,7 @@ const moveExecutes = {
 
       // if target fainted, increase targets fainted
       if (target.isFainted) {
-        targetsFainted++;
+        targetsFainted += 1;
       }
     }
 
@@ -13755,7 +13745,7 @@ const abilityConfig = {
             pokemon.battle.addToLog(`${pokemon.name} is becoming lazy!`);
             activePokemon.addEffect("recharge", 1, activePokemon);
           }
-          ability.data.turn++;
+          ability.data.turn += 1;
         },
       };
 
@@ -13805,7 +13795,7 @@ const abilityConfig = {
             );
             activePokemon.addEffect("greaterSpeDown", 1, activePokemon);
           }
-          ability.data.turn++;
+          ability.data.turn += 1;
         },
       };
 
