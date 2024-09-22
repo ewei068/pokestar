@@ -5,7 +5,8 @@
     }
   ],
   "settings": {
-    "editor.tabSize": 4,
+    "editor.tabSize": 2,
+    "editor.detectIndentation": false,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "always"
