@@ -17,4 +17,5 @@ jobs:
     steps:
       - name: Discord notification
         uses: Ilshidur/action-discord@master
-      - run: echo "Test secret ${{ secrets.TEST_SECRET }}"
+        with:
+          args: "Testing! lol"
