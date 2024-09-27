@@ -1,0 +1,14 @@
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - ".github/workflows/discord-webhook.yml"
+jobs:
+  - name: Discord notification
+  env:
+    DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  uses: Ilshidur/action-discord@master
