@@ -79,6 +79,7 @@ const { generateRandomPokemon } = require("./gacha");
 const { validateParty } = require("./party");
 const { addRewards, getRewardsString } = require("../utils/trainerUtils");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
+const { User } = require("discord.js");
 
 class NPC {
   constructor(
@@ -3420,6 +3421,13 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
   return { err: null };
 };
 
+/**
+ *
+ * @param {Object} param0
+ * @param {string?=} param0.stateId
+ * @param {User?=} param0.user
+ * @returns
+ */
 const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
   // get state
   const state = getState(stateId);

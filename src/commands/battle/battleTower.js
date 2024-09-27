@@ -10,15 +10,16 @@ const { setState, deleteState } = require("../../services/state");
 const { buildBattleTowerSend } = require("../../services/battle");
 const { getTrainer } = require("../../services/trainer");
 const { battleTowerConfig } = require("../../config/npcConfig");
+const { ChatInputCommandInteraction, User } = require("discord.js");
 
 /**
  * Creates the tower via encapsulating buildBattleTowerSend and giving it the required user data
- * @param user user required for creating user specific tower.
+ * @param {User} user user required for creating user specific tower.
  * @returns Error or message to send.
  */
 const battleTower = async (user) => {
   const trainer = await getTrainer(user);
-  if (trainer.err) {
+  if (trainer.err || !trainer.data) {
     return { err: trainer.err };
   }
 
@@ -53,7 +54,11 @@ const battleTowerMessageCommand = async (message) => {
   await message.channel.send(send);
 };
 
-// reads in slash-commands for the user-created tower and outputs results.
+/**
+ *
+ * @param {ChatInputCommandInteraction} interaction
+ * @returns {Promise<any>}
+ */
 const battleTowerSlashCommand = async (interaction) => {
   const { send, err } = await battleTower(interaction.user);
   if (err) {
