@@ -11,9 +11,10 @@ jobs:
   Discord-Notification:
     name: Discord notification
     runs-on: ubuntu-latest
+    env:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
     steps:
       - name: Discord notification
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
         uses: Ilshidur/action-discord@master
+      - run: echo "Test secret ${{ secrets.TEST_SECRET }}"
