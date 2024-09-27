@@ -34,6 +34,7 @@ export default [
       "guard-for-in": "off", // TODO: enable but make better lol
       "no-continue": "off", // doesn't seem to work properly
       "no-await-in-loop": "off", // TODO: use promise.all
+      "jsdoc/no-undefined-types": 1,
     },
   },
   pluginJs.configs.recommended,
