@@ -3,11 +3,11 @@
  * @author Elvis Wei
  * @date 2023
  * @section Description
- * 
+ *
  * scrollActionRow.js Creates the scroll action row for the action row builder.
-*/
-const { ActionRowBuilder } = require('discord.js');
-const { buildScrollButton } = require('./scrollButton');
+ */
+const { ActionRowBuilder } = require("discord.js");
+const { buildScrollButton } = require("./scrollButton");
 
 /**
  * Creates the scroll action row for the action row builder.
@@ -18,13 +18,26 @@ const { buildScrollButton } = require('./scrollButton');
  * @returns ActionRowBuilder
  */
 const buildScrollActionRow = (page, lastPage, data, eventName) => {
-    const actionRow = new ActionRowBuilder();
-    const leftButton = buildScrollButton(true, data, page-1, page <= 1, eventName);
-    const rightButton = buildScrollButton(false, data, page+1, lastPage, eventName);
-    actionRow.addComponents(leftButton, rightButton);
-    return actionRow;
-}
+  const actionRow = new ActionRowBuilder();
+  const leftButton = buildScrollButton(
+    true,
+    data,
+    page - 1,
+    page <= 1,
+    eventName
+  );
+  const rightButton = buildScrollButton(
+    false,
+    data,
+    page + 1,
+    lastPage,
+    eventName
+  );
+  actionRow.addComponents(leftButton, rightButton);
+
+  return actionRow;
+};
 
 module.exports = {
-    buildScrollActionRow
+  buildScrollActionRow,
 };

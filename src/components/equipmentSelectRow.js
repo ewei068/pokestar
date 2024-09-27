@@ -3,9 +3,9 @@
  * @author Elvis Wei
  * @date 2023
  * @section Description
- * 
+ *
  * equipmentSelectRow.js creates the equipment select row within the ActionRowBuilder. Yea that's about it.
-*/
+ */
 const { StringSelectMenuBuilder, ActionRowBuilder } = require("discord.js");
 const { equipmentConfig } = require("../config/equipmentConfig");
 
@@ -16,38 +16,44 @@ const { equipmentConfig } = require("../config/equipmentConfig");
  * @param {*} eventName the name of the event for the menuId to reference.
  * @returns ActionRowBuilder
  */
-const buildEquipmentSelectRow = (equipments, data, eventName, pokemonIds=[]) => {
-    const menuId = {
-        eventName: eventName,
-        ...data,
-    }
+const buildEquipmentSelectRow = (
+  equipments,
+  data,
+  eventName,
+  pokemonIds = []
+) => {
+  const menuId = {
+    eventName,
+    ...data,
+  };
 
-    const selectMenu = new StringSelectMenuBuilder()
-        .setCustomId(`${JSON.stringify(menuId)}`)
-        .setPlaceholder('Select an equipment')
-        .addOptions(equipments.map((equipment, index) => {
-            let pokemonId = equipment.pokemonId;
-            if (pokemonIds.length > 0) {
-                pokemonId = pokemonIds[index];
-            }
+  const selectMenu = new StringSelectMenuBuilder()
+    .setCustomId(`${JSON.stringify(menuId)}`)
+    .setPlaceholder("Select an equipment")
+    .addOptions(
+      equipments.map((equipment, index) => {
+        let { pokemonId } = equipment;
+        if (pokemonIds.length > 0) {
+          pokemonId = pokemonIds[index];
+        }
 
-            const equipmentData = equipmentConfig[equipment.equipmentType]
-            return {
-                label: `${equipmentData.name} (${pokemonId})`,
-                value: JSON.stringify({
-                    pokemonId: pokemonId,
-                    equipmentType: equipment.equipmentType,
-                }),
-                emoji: equipmentData.emoji,
-            }
-        }));
+        const equipmentData = equipmentConfig[equipment.equipmentType];
+        return {
+          label: `${equipmentData.name} (${pokemonId})`,
+          value: JSON.stringify({
+            pokemonId,
+            equipmentType: equipment.equipmentType,
+          }),
+          emoji: equipmentData.emoji,
+        };
+      })
+    );
 
-    const actionRow = new ActionRowBuilder()
-        .addComponents(selectMenu);
+  const actionRow = new ActionRowBuilder().addComponents(selectMenu);
 
-    return actionRow;
-}
+  return actionRow;
+};
 
 module.exports = {
-    buildEquipmentSelectRow: buildEquipmentSelectRow
+  buildEquipmentSelectRow,
 };

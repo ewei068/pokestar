@@ -3,12 +3,11 @@
  * @author Elvis Wei
  * @date 2023
  * @section Description
- * 
+ *
  * selectBattleTargetRow.js Creates the option to select the target for an attack in battle.
-*/
+ */
 const { ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const { eventNames } = require("../config/eventConfig");
-const { moveConfig } = require("../config/battleConfig");
 const { getFullUsername } = require("../utils/trainerUtils");
 const { pokemonConfig } = require("../config/pokemonConfig");
 
@@ -20,31 +19,41 @@ const { pokemonConfig } = require("../config/pokemonConfig");
  * @param {*} stateId the Id of the current state.
  * @returns ActionRowBuilder
  */
-const buildSelectBattleTargetRow = (battle, eligibleTargets, moveId, stateId) => {
-    const selectMenu = new StringSelectMenuBuilder()
-        .setCustomId(JSON.stringify({
-            eventName: eventNames.BATTLE_TARGET_SELECT,
-            stateId: stateId,
-            moveId: moveId,
-        }))
-        .setPlaceholder("Select a target")
-        .addOptions(eligibleTargets.map(target => {
-            const user = battle.users[target.userId];
-            const speciesData = pokemonConfig[target.speciesId];
+const buildSelectBattleTargetRow = (
+  battle,
+  eligibleTargets,
+  moveId,
+  stateId
+) => {
+  const selectMenu = new StringSelectMenuBuilder()
+    .setCustomId(
+      JSON.stringify({
+        eventName: eventNames.BATTLE_TARGET_SELECT,
+        stateId,
+        moveId,
+      })
+    )
+    .setPlaceholder("Select a target")
+    .addOptions(
+      eligibleTargets.map((target) => {
+        const user = battle.users[target.userId];
+        const speciesData = pokemonConfig[target.speciesId];
 
-            return {
-                label: `[${getFullUsername(user)}] [${target.position}] ${target.name}`,
-                value: `${target.id}`,
-                emoji: speciesData.emoji,
-            }
-        }));
+        return {
+          label: `[${getFullUsername(user)}] [${target.position}] ${
+            target.name
+          }`,
+          value: `${target.id}`,
+          emoji: speciesData.emoji,
+        };
+      })
+    );
 
-    const actionRow = new ActionRowBuilder()
-        .addComponents(selectMenu);
+  const actionRow = new ActionRowBuilder().addComponents(selectMenu);
 
-    return actionRow;
-}
+  return actionRow;
+};
 
 module.exports = {
-    buildSelectBattleTargetRow
+  buildSelectBattleTargetRow,
 };

@@ -3,10 +3,10 @@
  * @author Elvis Wei
  * @date 2023
  * @section Description
- * 
+ *
  * scrollButton.js The builder for the scroll button itself for the scrollActionRow to use.
-*/
-const { ButtonBuilder, ButtonStyle } = require('discord.js');
+ */
+const { ButtonBuilder, ButtonStyle } = require("discord.js");
 
 /**
  * The builder for the scroll button itself for the scrollActionRow to use.
@@ -18,20 +18,20 @@ const { ButtonBuilder, ButtonStyle } = require('discord.js');
  * @returns ButtonBuilder
  */
 const buildScrollButton = (isLeft, data, page, disabled, eventName) => {
-    const buttonId = {
-        page: page,
-        eventName: eventName,
-        ...data,
-    }
+  const buttonId = {
+    page,
+    eventName,
+    ...data,
+  };
 
-    const button = new ButtonBuilder()
-        .setCustomId(`${JSON.stringify(buttonId)}`)
-        .setLabel(isLeft ? '◄' : '►')
-        .setStyle(ButtonStyle.Secondary)
-        .setDisabled(disabled);
-    return button;
-}
+  const button = new ButtonBuilder()
+    .setCustomId(`${JSON.stringify(buttonId)}`)
+    .setLabel(isLeft ? "◄" : "►")
+    .setStyle(ButtonStyle.Secondary)
+    .setDisabled(disabled);
+  return button;
+};
 
 module.exports = {
-    buildScrollButton
+  buildScrollButton,
 };

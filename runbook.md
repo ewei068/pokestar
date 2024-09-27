@@ -24,8 +24,9 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 
 ### Node & npm
 
-* `brew install node@16`
-* Add path to `~/.profile`
+* Install nvm `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash`
+* `nvm install 18`
+* Add path to profile if not there -- `~/.profile` for Debian
 * `git clone https://github.com/ewei068/pokestar.git`
 * `cd pokestar/src && npm install`
 
@@ -42,8 +43,8 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 * `brew tap mongodb/brew`
 * `brew install mongodb-community@6.0`
 * `brew install mongosh`
-* `brew services start mongodb-community`
-    * To stop, `brew services stop mongodb-community`
+* `brew services start mongodb-community@6.0`
+    * To stop, `brew services stop mongodb-community@6.0`
     * Don't run in `tmux`
 
 **Debian**

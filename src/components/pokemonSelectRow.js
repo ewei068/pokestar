@@ -3,9 +3,9 @@
  * @author Elvis Wei
  * @date 2023
  * @section Description
- * 
+ *
  * pokemonSelectRow.js creates the pokemon select row within the ActionRowBuilder. Yea that's about it.
-*/
+ */
 const { StringSelectMenuBuilder, ActionRowBuilder } = require("discord.js");
 const { pokemonConfig } = require("../config/pokemonConfig");
 
@@ -17,29 +17,30 @@ const { pokemonConfig } = require("../config/pokemonConfig");
  * @returns ActionRowBuilder
  */
 const buildPokemonSelectRow = (pokemons, data, eventName) => {
-    const menuId = {
-        eventName: eventName,
-        ...data,
-    }
+  const menuId = {
+    eventName,
+    ...data,
+  };
 
-    const selectMenu = new StringSelectMenuBuilder()
-        .setCustomId(`${JSON.stringify(menuId)}`)
-        .setPlaceholder('Select a pokemon')
-        .addOptions(pokemons.map(pokemon => {
-            const speciesData = pokemonConfig[pokemon.speciesId];
-            return {
-                label: `${pokemon.name} (${pokemon._id})`,
-                value: `${pokemon._id}`,
-                emoji: speciesData.emoji,
-            }
-        }));
+  const selectMenu = new StringSelectMenuBuilder()
+    .setCustomId(`${JSON.stringify(menuId)}`)
+    .setPlaceholder("Select a pokemon")
+    .addOptions(
+      pokemons.map((pokemon) => {
+        const speciesData = pokemonConfig[pokemon.speciesId];
+        return {
+          label: `${pokemon.name} (${pokemon._id})`,
+          value: `${pokemon._id}`,
+          emoji: speciesData.emoji,
+        };
+      })
+    );
 
-    const actionRow = new ActionRowBuilder()
-        .addComponents(selectMenu);
+  const actionRow = new ActionRowBuilder().addComponents(selectMenu);
 
-    return actionRow;
-}
+  return actionRow;
+};
 
 module.exports = {
-    buildPokemonSelectRow
+  buildPokemonSelectRow,
 };

@@ -1,89 +1,94 @@
 const seedrandom = require("seedrandom");
-const { backpackItems } = require('./backpackConfig');
-const { rarities, rarityBins, pokemonConfig, getGeneration } = require('./pokemonConfig');
+const { backpackItems } = require("./backpackConfig");
+const {
+  rarities,
+  rarityBins,
+  pokemonConfig,
+  getGeneration,
+} = require("./pokemonConfig");
 const { drawIterable } = require("../utils/gachaUtils");
-const { stageNames } = require("./stageConfig");
 const { getFullUTCDate } = require("../utils/utils");
 
 const dailyRewardChances = {
-    [backpackItems.POKEBALL]: 0.7,
-    [backpackItems.GREATBALL]: 0.25,
-    [backpackItems.ULTRABALL]: 0.04,
-    [backpackItems.MASTERBALL]: 0.01,
-}
+  [backpackItems.POKEBALL]: 0.7,
+  [backpackItems.GREATBALL]: 0.25,
+  [backpackItems.ULTRABALL]: 0.04,
+  [backpackItems.MASTERBALL]: 0.01,
+};
 
 const pokeballConfig = {
-    [backpackItems.POKEBALL]: {
-        chances: {
-            [rarities.COMMON]: 0.7,
-            [rarities.RARE]: 0.25,
-            [rarities.EPIC]: 0.04,
-            [rarities.LEGENDARY]: 0.01,
-        },
-        pity: 1
+  [backpackItems.POKEBALL]: {
+    chances: {
+      [rarities.COMMON]: 0.7,
+      [rarities.RARE]: 0.25,
+      [rarities.EPIC]: 0.04,
+      [rarities.LEGENDARY]: 0.01,
     },
-    [backpackItems.GREATBALL]: {
-        chances: {
-            [rarities.COMMON]: 0.3,
-            [rarities.RARE]: 0.55,
-            [rarities.EPIC]: 0.12,
-            [rarities.LEGENDARY]: 0.03,
-        },
-        pity: 3
+    pity: 1,
+  },
+  [backpackItems.GREATBALL]: {
+    chances: {
+      [rarities.COMMON]: 0.3,
+      [rarities.RARE]: 0.55,
+      [rarities.EPIC]: 0.12,
+      [rarities.LEGENDARY]: 0.03,
     },
-    [backpackItems.ULTRABALL]: {
-        chances: {
-            [rarities.RARE]: 0.45,
-            [rarities.EPIC]: 0.5,
-            [rarities.LEGENDARY]: 0.05,
-        },
-        pity: 5
+    pity: 3,
+  },
+  [backpackItems.ULTRABALL]: {
+    chances: {
+      [rarities.RARE]: 0.45,
+      [rarities.EPIC]: 0.5,
+      [rarities.LEGENDARY]: 0.05,
     },
-    [backpackItems.MASTERBALL]: {
-        chances: {
-            [rarities.EPIC]: 0.9,
-            [rarities.LEGENDARY]: 0.1,
-        },
-        pity: 10
-    }
-}
+    pity: 5,
+  },
+  [backpackItems.MASTERBALL]: {
+    chances: {
+      [rarities.EPIC]: 0.9,
+      [rarities.LEGENDARY]: 0.1,
+    },
+    pity: 10,
+  },
+};
 
 const bannerTypes = {
-    STANDARD: "standard",
-    ROTATING: "rotating",
-    SPECIAL: "special",
-}
+  STANDARD: "standard",
+  ROTATING: "rotating",
+  SPECIAL: "special",
+};
 
 const bannerTypeConfig = {
-    [bannerTypes.STANDARD]: {
-        "name": "Standard",
-        "description": "Standard banner with all currently available gacha Pokemon.",
-    },
-    [bannerTypes.ROTATING]: {
-        "name": "Rotating",
-        "description": "Banner which rotates rate-up Pokemon randomly every day.",
-    },
-    [bannerTypes.SPECIAL]: {
-        "name": "Special",
-        "description": "Special banner with a limited-time or hand-chosen rate-up Pokemon.",
-    },
-}
+  [bannerTypes.STANDARD]: {
+    name: "Standard",
+    description: "Standard banner with all currently available gacha Pokemon.",
+  },
+  [bannerTypes.ROTATING]: {
+    name: "Rotating",
+    description: "Banner which rotates rate-up Pokemon randomly every day.",
+  },
+  [bannerTypes.SPECIAL]: {
+    name: "Special",
+    description:
+      "Special banner with a limited-time or hand-chosen rate-up Pokemon.",
+  },
+};
 
 const bannerConfig = [
-    {
-        "bannerType": bannerTypes.SPECIAL,
-        "name": "[EVENT] Launch Celebration Re-Run",
-        "description": "The launch celebration is being re-run! Pull for the limited Gary's Blastoise and Ash's Pikachu, who have also received buffs! For more information, use `/events`.",
-        "rateUp": () => {
-            return {
-                [rarities.LEGENDARY]: ["9-1", "25-1"],
-                [rarities.EPIC]: ["3", "6", "9", "131", "143"],
-                [rarities.RARE]: ["1", "4", "7", "133"]
-            }
-        },
-        "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-launch-banner.png"
-    },
-    /*{
+  {
+    bannerType: bannerTypes.SPECIAL,
+    name: "[EVENT] Launch Celebration Re-Run",
+    description:
+      "The launch celebration is being re-run! Pull for the limited Gary's Blastoise and Ash's Pikachu, who have also received buffs! For more information, use `/events`.",
+    rateUp: () => ({
+      [rarities.LEGENDARY]: ["9-1", "25-1"],
+      [rarities.EPIC]: ["3", "6", "9", "131", "143"],
+      [rarities.RARE]: ["1", "4", "7", "133"],
+    }),
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-launch-banner.png",
+  },
+  /* {
         "bannerType": bannerTypes.SPECIAL,
         "name": "[EVENT] Rubber Infernape",
         "description": "The One Piece Gear 5 event is here! Pull for the limited-time Rubber Infernape, a powerful attacker who can awaken, as well as other event Epics!",
@@ -300,106 +305,125 @@ const bannerConfig = [
         },
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-launch-banner.png"
     }, */
-    {
-        "bannerType": bannerTypes.ROTATING,
-        "name": "[GEN 1] Rotating",
-        "description": "Banner which rotates rate-up Generation I Pokemon randomly every day.",
-        "rateUp": () => {
-            // seedrandom using date 
-            const date = getFullUTCDate();
-            const rng = seedrandom(date);
-            const gen1Legendaries = rarityBins[rarities.LEGENDARY].filter(p => getGeneration(p) === 1);
-            const gen1Epics = rarityBins[rarities.EPIC].filter(p => getGeneration(p) === 1);
-            return {
-                [rarities.LEGENDARY]: drawIterable(gen1Legendaries, 1, {
-                    replacement: false,
-                    rng: rng,
-                }),
-                [rarities.EPIC]: drawIterable(gen1Epics, 3, {
-                    replacement: false,
-                    rng: rng,
-                }),
-            }
-        }
+  {
+    bannerType: bannerTypes.ROTATING,
+    name: "[GEN 1] Rotating",
+    description:
+      "Banner which rotates rate-up Generation I Pokemon randomly every day.",
+    rateUp: () => {
+      // seedrandom using date
+      const date = getFullUTCDate();
+      const rng = seedrandom(date);
+      const gen1Legendaries = rarityBins[rarities.LEGENDARY].filter(
+        (p) => getGeneration(p) === 1
+      );
+      const gen1Epics = rarityBins[rarities.EPIC].filter(
+        (p) => getGeneration(p) === 1
+      );
+      return {
+        [rarities.LEGENDARY]: drawIterable(gen1Legendaries, 1, {
+          replacement: false,
+          rng,
+        }),
+        [rarities.EPIC]: drawIterable(gen1Epics, 3, {
+          replacement: false,
+          rng,
+        }),
+      };
     },
-    {
-        "bannerType": bannerTypes.ROTATING,
-        "name": "[GEN 2] Rotating",
-        "description": "Banner which rotates rate-up Generation II Pokemon randomly every day.",
-        "rateUp": () => {
-            // seedrandom using date
-            const date = getFullUTCDate();
-            const rng = seedrandom(date);
-            const gen2Legendaries = rarityBins[rarities.LEGENDARY].filter(p => getGeneration(p) === 2);
-            const gen2Epics = rarityBins[rarities.EPIC].filter(p => getGeneration(p) === 2);
-            return {
-                [rarities.LEGENDARY]: drawIterable(gen2Legendaries, 1, {
-                    replacement: false,
-                    rng: rng,
-                }),
-                [rarities.EPIC]: drawIterable(gen2Epics, 3, {
-                    replacement: false,
-                    rng: rng,
-                }),
-            }
-        }
+  },
+  {
+    bannerType: bannerTypes.ROTATING,
+    name: "[GEN 2] Rotating",
+    description:
+      "Banner which rotates rate-up Generation II Pokemon randomly every day.",
+    rateUp: () => {
+      // seedrandom using date
+      const date = getFullUTCDate();
+      const rng = seedrandom(date);
+      const gen2Legendaries = rarityBins[rarities.LEGENDARY].filter(
+        (p) => getGeneration(p) === 2
+      );
+      const gen2Epics = rarityBins[rarities.EPIC].filter(
+        (p) => getGeneration(p) === 2
+      );
+      return {
+        [rarities.LEGENDARY]: drawIterable(gen2Legendaries, 1, {
+          replacement: false,
+          rng,
+        }),
+        [rarities.EPIC]: drawIterable(gen2Epics, 3, {
+          replacement: false,
+          rng,
+        }),
+      };
     },
-    {
-        "bannerType": bannerTypes.ROTATING,
-        "name": "[GEN 3] Rotating",
-        "description": "Banner which rotates rate-up Generation III Pokemon randomly every day.",
-        "rateUp": () => {
-            // seedrandom using date
-            const date = getFullUTCDate();
-            const rng = seedrandom(date);
-            const gen3Legendaries = rarityBins[rarities.LEGENDARY].filter(p => getGeneration(p) === 3);
-            const gen3Epics = rarityBins[rarities.EPIC].filter(p => getGeneration(p) === 3);
-            return {
-                [rarities.LEGENDARY]: drawIterable(gen3Legendaries, 1, {
-                    replacement: false,
-                    rng: rng,
-                }),
-                [rarities.EPIC]: drawIterable(gen3Epics, 3, {
-                    replacement: false,
-                    rng: rng,
-                }),
-            }
-        }
+  },
+  {
+    bannerType: bannerTypes.ROTATING,
+    name: "[GEN 3] Rotating",
+    description:
+      "Banner which rotates rate-up Generation III Pokemon randomly every day.",
+    rateUp: () => {
+      // seedrandom using date
+      const date = getFullUTCDate();
+      const rng = seedrandom(date);
+      const gen3Legendaries = rarityBins[rarities.LEGENDARY].filter(
+        (p) => getGeneration(p) === 3
+      );
+      const gen3Epics = rarityBins[rarities.EPIC].filter(
+        (p) => getGeneration(p) === 3
+      );
+      return {
+        [rarities.LEGENDARY]: drawIterable(gen3Legendaries, 1, {
+          replacement: false,
+          rng,
+        }),
+        [rarities.EPIC]: drawIterable(gen3Epics, 3, {
+          replacement: false,
+          rng,
+        }),
+      };
     },
-    {
-        "bannerType": bannerTypes.STANDARD,
-        "name": "Standard",
-        "description": "Standard banner with all currently available gacha Pokemon.",
-        "rateUp": () => {},
-    },
-]
+  },
+  {
+    bannerType: bannerTypes.STANDARD,
+    name: "Standard",
+    description: "Standard banner with all currently available gacha Pokemon.",
+    rateUp: () => {},
+  },
+];
 
 const getCelebiPool = () => {
-    const celebiId = "251";
-    const celebiConfig = pokemonConfig[celebiId];
-    // seedrandom using date 
-    const date = getFullUTCDate();
-    const rng = seedrandom(date);
-    return {
-        [rarities.LEGENDARY]: drawIterable(celebiConfig.mythicConfig[rarities.LEGENDARY], 3, {
-            replacement: false,
-            rng: rng,
-        }),
-        [rarities.EPIC]: drawIterable(celebiConfig.mythicConfig[rarities.EPIC], 3, {
-            replacement: false,
-            rng: rng,
-        }),
-    }
-}
+  const celebiId = "251";
+  const celebiConfig = pokemonConfig[celebiId];
+  // seedrandom using date
+  const date = getFullUTCDate();
+  const rng = seedrandom(date);
+  return {
+    [rarities.LEGENDARY]: drawIterable(
+      celebiConfig.mythicConfig[rarities.LEGENDARY],
+      3,
+      {
+        replacement: false,
+        rng,
+      }
+    ),
+    [rarities.EPIC]: drawIterable(celebiConfig.mythicConfig[rarities.EPIC], 3, {
+      replacement: false,
+      rng,
+    }),
+  };
+};
 
 const MAX_PITY = 100;
 
 module.exports = {
-    dailyRewardChances,
-    pokeballConfig,
-    bannerTypes,
-    bannerTypeConfig,
-    bannerConfig,
-    MAX_PITY,
-    getCelebiPool,
+  dailyRewardChances,
+  pokeballConfig,
+  bannerTypes,
+  bannerTypeConfig,
+  bannerConfig,
+  MAX_PITY,
+  getCelebiPool,
 };
