@@ -10,6 +10,10 @@ on:
 jobs:
   Discord-Notification:
     name: Discord notification
-    env:
-      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-    uses: Ilshidur/action-discord@master
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        uses: Ilshidur/action-discord@master
