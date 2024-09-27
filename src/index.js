@@ -20,6 +20,7 @@ const { startSpawning, addGuild } = require("./services/spawn");
 const { getStateCount } = require("./services/state");
 const { cleanupRaids } = require("./services/raid");
 
+console.log(`STAGE: ${process.env.STAGE}`);
 const FFLAG_ENABLE_SPAWN = process.env.FFLAG_ENABLE_SPAWN === "1";
 console.log(`FFLAG_ENABLE_SPAWN: ${FFLAG_ENABLE_SPAWN}`);
 

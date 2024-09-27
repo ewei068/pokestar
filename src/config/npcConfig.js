@@ -597,9 +597,8 @@ const npcConfig = {
         dailyRewards: {
           backpack: {
             [backpackCategories.CONSUMABLES]: {
-              [backpackItems.RAID_PASS]: (process.env.STAGE = stageNames.ALPHA
-                ? 25
-                : 1),
+              [backpackItems.RAID_PASS]:
+                process.env.STAGE === stageNames.ALPHA ? 25 : 1,
             },
           },
         },
