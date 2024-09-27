@@ -18,4 +18,3 @@ jobs:
       - name: Discord notification
         uses: Ilshidur/action-discord@master
         with:
-          args: "Testing! lol"
