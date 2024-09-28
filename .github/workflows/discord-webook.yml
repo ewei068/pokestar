@@ -1,0 +1,56 @@
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - main
+jobs:
+  Discord-Notification:
+    name: Discord notification
+    runs-on: ubuntu-latest
+    env:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Fetch all history for all branches
+
+      - name: Get embed details
+        id: embed_details
+        run: |
+          COMMIT_MESSAGE="$(git log --no-merges -1 --pretty="commit %h: %s")"
+          SAFE_COMMIT_MESSAGE=$(echo "$COMMIT_MESSAGE" | tr -d '\r\n' | sed 's/[*//]/_/g')
+          echo "COMMIT_MESSAGE=$SAFE_COMMIT_MESSAGE" >> $GITHUB_ENV
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            if [ "${{ github.event.action }}" == "opened" ] || [ "${{ github.event.action }}" == "reopened" ]; then
+              echo "EMBED_TITLE=Pull Request: ${{ github.event.pull_request.title }} (#${{ github.event.pull_request.number }}) Opened" >> $GITHUB_ENV
+            else
+              echo "EMBED_TITLE=Pull Request: ${{ github.event.pull_request.title }} (#${{ github.event.pull_request.number }}) Updated" >> $GITHUB_ENV
+            fi
+            echo "EMBED_COLOR=2067276" >> $GITHUB_ENV
+            echo "THUMBNAIL_URL=https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/misc/pikachu-pull.jpg" >> $GITHUB_ENV
+          else
+            echo "EMBED_TITLE=Push made to branch: ${{ github.head_ref || github.ref_name }} " >> $GITHUB_ENV
+            echo "EMBED_COLOR=7419530" >> $GITHUB_ENV
+            echo "THUMBNAIL_URL=https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/misc/pikachu-push.jpg" >> $GITHUB_ENV
+          fi
+
+      - name: Debug Log
+        env: 
+          DISCORD_EMBEDS: '[{ 
+            "title": "${{ env.EMBED_TITLE }}", 
+            "description": "${{ env.COMMIT_MESSAGE }}",
+            "color": ${{ env.EMBED_COLOR }},
+            "timestamp": "${{ github.event.pull_request.updated_at }}", 
+            "author": { "name": "${{ github.event.sender.login }}", "icon_url": "${{ github.event.sender.avatar_url }}", "url": "https://github.com/${{ github.event.sender.login }}" },
+            "url": "${{ github.event.pull_request.html_url }}",
+            "thumbnail": { "url": "${{ env.THUMBNAIL_URL }}"}
+          }]'
+        
+        run: |
+          echo '${{ env.DISCORD_EMBEDS }}'
+          echo 'DISCORD_EMBEDS=${{ env.DISCORD_EMBEDS }}' >> $GITHUB_ENV
+      - name: Discord notification
+        uses: Ilshidur/action-discord@master
