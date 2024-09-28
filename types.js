@@ -25,7 +25,7 @@ module.exports._typesOnly = true;
 
 /**
  * @typedef {Object} PartyInfo
- * @property {Array<string>} pokemonIds
+ * @property {Array<string?>} pokemonIds
  * @property {number} rows
  * @property {number} cols
  */

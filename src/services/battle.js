@@ -2044,6 +2044,22 @@ class Battle {
   difficulty;
   isPvp; */
 
+  /**
+   * @param {Object} param0
+   * @param {number?=} param0.moneyMultiplier
+   * @param {number?=} param0.expMultiplier
+   * @param {number?=} param0.pokemonExpMultiplier
+   * @param {number?=} param0.level
+   * @param {number?=} param0.equipmentLevel
+   * @param {Object?=} param0.rewards
+   * @param {string?=} param0.rewardString
+   * @param {Object?=} param0.dailyRewards
+   * @param {Function?=} param0.winCallback
+   * @param {Function?=} param0.loseCallback
+   * @param {string?=} param0.npcId
+   * @param {string?=} param0.difficulty
+   * @param {boolean?=} param0.isPvp
+   */
   constructor({
     moneyMultiplier = 1,
     expMultiplier = 1,
