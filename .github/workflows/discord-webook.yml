@@ -26,11 +26,11 @@ jobs:
               echo "EMBED_TITLE=PR ${{ github.event.pull_request.title }} #${{ github.event.pull_request.number }} Updated" >> $GITHUB_ENV
             fi
             echo "EMBED_COLOR=2067276" >> $GITHUB_ENV
-            echo "THUMBNAIL_URL=https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/1d6e9d53-85f8-4a21-bab2-ea9070a61ea4/dfvluwo-df173c03-abbd-481f-baa5-3002a7727b68.jpg/v1/fill/w_1048,h_763,q_70,strp/pikachu_and_meowth_pulling_rope_by_eortiz96_dfvluwo-pre.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9OTMyIiwicGF0aCI6IlwvZlwvMWQ2ZTlkNTMtODVmOC00YTIxLWJhYjItZWE5MDcwYTYxZWE0XC9kZnZsdXdvLWRmMTczYzAzLWFiYmQtNDgxZi1iYWE1LTMwMDJhNzcyN2I2OC5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.IY9U02KIt5Km_3puLxxzR62kc0UUWAlWqyIAZiJEa6Y" >> $GITHUB_ENV
+            echo "THUMBNAIL_URL=https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/misc/pikachu-pull.jpg" >> $GITHUB_ENV
           else
             echo "EMBED_TITLE=Triggered by Push to branch: ${{ github.ref }}" >> $GITHUB_ENV
             echo "EMBED_COLOR=7419530" >> $GITHUB_ENV
-            echo "THUMBNAIL_URL=https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5e738264-b25c-401f-ac12-2d60ec54eae2/df4fv5s-9ccb7c4a-920b-4c72-96bc-7a497e839c07.jpg/v1/fill/w_936,h_686,q_75,strp/pokemon_galatic_battles___pikachu_pushing_by_axlfan28_df4fv5s-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9Njg2IiwicGF0aCI6IlwvZlwvNWU3MzgyNjQtYjI1Yy00MDFmLWFjMTItMmQ2MGVjNTRlYWUyXC9kZjRmdjVzLTljY2I3YzRhLTkyMGItNGM3Mi05NmJjLTdhNDk3ZTgzOWMwNy5qcGciLCJ3aWR0aCI6Ijw9OTM2In1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.JxB3RJXeRjlDoFC1yv9yGrOGQO8Radk6IJ3_Z2Im_rg" >> $GITHUB_ENV
+            echo "THUMBNAIL_URL=https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/misc/pikachu-push.jpg" >> $GITHUB_ENV
           fi
       - name: Debug Log
         env: 
