@@ -52,6 +52,6 @@ jobs:
         
         run: |
           echo '${{ env.DISCORD_EMBEDS }}'
-          echo '${{ env.DISCORD_EMBEDS }}' >> $GITHUB_ENV
+          echo 'DISCORD_EMBEDS=${{ env.DISCORD_EMBEDS }}' >> $GITHUB_ENV
       - name: Discord notification
         uses: Ilshidur/action-discord@master
