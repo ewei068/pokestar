@@ -37,7 +37,7 @@ jobs:
             echo "EMBED_COLOR=7419530" >> $GITHUB_ENV
             echo "THUMBNAIL_URL=https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/misc/pikachu-push.jpg" >> $GITHUB_ENV
           fi
-          
+
       - name: Debug Log
         env: 
           DISCORD_EMBEDS: '[{ 
@@ -50,17 +50,8 @@ jobs:
             "thumbnail": { "url": "${{ env.THUMBNAIL_URL }}"}
           }]'
         
-        run: echo "${{ env.DISCORD_EMBEDS }}"
+        run: |
+          echo '${{ env.DISCORD_EMBEDS }}'
+          ehco '${{ env.DISCORD_EMBEDS }}' >> $GITHUB_ENV
       - name: Discord notification
-        env: 
-            DISCORD_EMBEDS: '[{ 
-              "title": "${{ env.EMBED_TITLE }}", 
-              "description": "Test",
-              "color": ${{ env.EMBED_COLOR }},
-              "timestamp": "${{ github.event.pull_request.updated_at }}", 
-              "author": { "name": "${{ github.event.sender.login }}", "icon_url": "${{ github.event.sender.avatar_url }}", "url": "https://github.com/${{ github.event.sender.login }}" },
-              "url": "${{ github.event.pull_request.html_url }}",
-              "thumbnail": { "url": "${{ env.THUMBNAIL_URL }}"}
-            }]'
-
         uses: Ilshidur/action-discord@master
