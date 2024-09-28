@@ -61,7 +61,7 @@ const battleTowerMessageCommand = async (message) => {
  */
 const battleTowerSlashCommand = async (interaction) => {
   const { send, err } = await battleTower(interaction.user);
-  if (err) {
+  if (err || !send) {
     await interaction.reply(`${err}`);
     return { err };
   }
