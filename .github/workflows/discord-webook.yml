@@ -23,7 +23,7 @@ jobs:
       - name: Get embed details
         id: embed_details
         run: |
-          echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+          echo "COMMIT_MESSAGE=$(git log --no-merges -1 --pretty=%B)" >> $GITHUB_ENV
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             if [ "${{ github.event.action }}" == "opened" ] || [ "${{ github.event.action }}" == "reopened" ]; then
               echo "EMBED_TITLE=Pull Request: ${{ github.event.pull_request.title }} (#${{ github.event.pull_request.number }}) Opened" >> $GITHUB_ENV
