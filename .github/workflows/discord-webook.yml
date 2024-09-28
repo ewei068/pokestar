@@ -21,9 +21,9 @@ jobs:
           echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             if [ "${{ github.event.action }}" == "opened" ] || [ "${{ github.event.action }}" == "reopened" ]; then
-              echo "EMBED_TITLE=PR ${{ github.event.pull_request.title }} ${{ github.event.pull_request.number }} Opened" >> $GITHUB_ENV
+              echo "EMBED_TITLE=PR ${{ github.event.pull_request.title }} #${{ github.event.pull_request.number }} Opened" >> $GITHUB_ENV
             else
-              echo "EMBED_TITLE=PR ${{ github.event.pull_request.title }} ${{ github.event.pull_request.number }} Updated" >> $GITHUB_ENV
+              echo "EMBED_TITLE=PR ${{ github.event.pull_request.title }} #${{ github.event.pull_request.number }} Updated" >> $GITHUB_ENV
             fi
             echo "EMBED_COLOR=2067276" >> $GITHUB_ENV
             echo "THUMBNAIL_URL=https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/1d6e9d53-85f8-4a21-bab2-ea9070a61ea4/dfvluwo-df173c03-abbd-481f-baa5-3002a7727b68.jpg/v1/fill/w_1048,h_763,q_70,strp/pikachu_and_meowth_pulling_rope_by_eortiz96_dfvluwo-pre.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9OTMyIiwicGF0aCI6IlwvZlwvMWQ2ZTlkNTMtODVmOC00YTIxLWJhYjItZWE5MDcwYTYxZWE0XC9kZnZsdXdvLWRmMTczYzAzLWFiYmQtNDgxZi1iYWE1LTMwMDJhNzcyN2I2OC5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.IY9U02KIt5Km_3puLxxzR62kc0UUWAlWqyIAZiJEa6Y" >> $GITHUB_ENV
@@ -44,6 +44,6 @@ jobs:
             "thumbnail": { "url": "${{ env.THUMBNAIL_URL }}"}
           }]'
         
-        run: echo "${{ env.DISCORD_EMBEDS }}" >> $GITHUB_ENV
+        run: echo "DISCORD_EMBEDS=${{ env.DISCORD_EMBEDS }}" >> $GITHUB_ENV
       - name: Discord notification
         uses: Ilshidur/action-discord@master
