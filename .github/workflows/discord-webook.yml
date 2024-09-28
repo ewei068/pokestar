@@ -45,7 +45,7 @@ jobs:
           }]'
         
         run: echo "DISCORD_EMBEDS=${{ env.DISCORD_EMBEDS }}" >> $GITHUB_ENV
+      - name: Debug Log 2
+        run: echo {{ env.DISCORD_EMBEDS }}
       - name: Discord notification
         uses: Ilshidur/action-discord@master
-        with:
-          args: "New GitHub Activity"
