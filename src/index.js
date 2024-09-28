@@ -74,7 +74,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   runSlashCommand(interaction, client)
     .then(() => {
-      // do nothing
+      // do nothin
     })
     .catch(async (error) => {
       logger.error(`Error in slash command: ${interaction.commandName}`);
