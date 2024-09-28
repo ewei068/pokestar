@@ -20,7 +20,7 @@ jobs:
       - name: Get embed details
         id: embed_details
         run: |
-          COMMIT_MESSAGE=$(git log --no-merges -1 --pretty="commit %h: %B")"
+          COMMIT_MESSAGE="$(git log --no-merges -1 --pretty="commit %h: %B")"
           SAFE_COMMIT_MESSAGE=$(echo "$COMMIT_MESSAGE" | tr -d '\r\n' | sed 's/[*://]/_/g')
           echo "COMMIT_MESSAGE=$SAFE_COMMIT_MESSAGE" >> $GITHUB_ENV
           if [ "${{ github.event_name }}" == "pull_request" ]; then
