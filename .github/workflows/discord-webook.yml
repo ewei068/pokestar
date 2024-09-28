@@ -44,6 +44,6 @@ jobs:
             "thumbnail": { "url": "${{ env.THUMBNAIL_URL }}"}
           }]'
         
-        echo "${{ env.DISCORD_EMBEDS }}" >> $GITHUB_ENV
+        run: echo "${{ env.DISCORD_EMBEDS }}" >> $GITHUB_ENV
       - name: Discord notification
         uses: Ilshidur/action-discord@master
