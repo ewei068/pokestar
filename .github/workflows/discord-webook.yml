@@ -14,12 +14,12 @@ jobs:
     env:
       DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-    - name: Checkout repository
+    steps:
+      - name: Checkout repository
         uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Fetch all history for all branches
 
-    steps:
       - name: Get embed details
         id: embed_details
         run: |
@@ -37,6 +37,7 @@ jobs:
             echo "EMBED_COLOR=7419530" >> $GITHUB_ENV
             echo "THUMBNAIL_URL=https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/misc/pikachu-push.jpg" >> $GITHUB_ENV
           fi
+          
       - name: Debug Log
         env: 
           DISCORD_EMBEDS: '[{ 
