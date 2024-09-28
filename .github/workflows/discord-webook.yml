@@ -36,7 +36,7 @@ jobs:
         env: 
           DISCORD_EMBEDS: '[{ 
             "title": "${{ env.EMBED_TITLE }}", 
-            "description": "${{ env.COMMIT_MESSAGE }}",
+            "description": "Test",
             "color": ${{ env.EMBED_COLOR }},
             "timestamp": "${{ github.event.pull_request.updated_at }}", 
             "author": { "name": "${{ github.event.sender.login }}", "icon_url": "${{ github.event.sender.avatar_url }}", "url": "https://github.com/${{ github.event.sender.login }}" },
@@ -47,3 +47,5 @@ jobs:
         run: echo "DISCORD_EMBEDS=${{ env.DISCORD_EMBEDS }}" >> $GITHUB_ENV
       - name: Discord notification
         uses: Ilshidur/action-discord@master
+        with:
+          args: "New GitHub Activity"
