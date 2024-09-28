@@ -14,6 +14,11 @@ jobs:
     env:
       DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
+    - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Fetch all history for all branches
+
     steps:
       - name: Get embed details
         id: embed_details
@@ -21,9 +26,9 @@ jobs:
           echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             if [ "${{ github.event.action }}" == "opened" ] || [ "${{ github.event.action }}" == "reopened" ]; then
-              echo "EMBED_TITLE=PR ${{ github.event.pull_request.title }} #${{ github.event.pull_request.number }} Opened" >> $GITHUB_ENV
+              echo "EMBED_TITLE=Pull Request: ${{ github.event.pull_request.title }} (#${{ github.event.pull_request.number }}) Opened" >> $GITHUB_ENV
             else
-              echo "EMBED_TITLE=PR ${{ github.event.pull_request.title }} #${{ github.event.pull_request.number }} Updated" >> $GITHUB_ENV
+              echo "EMBED_TITLE=Pull Request: ${{ github.event.pull_request.title }} (#${{ github.event.pull_request.number }}) Updated" >> $GITHUB_ENV
             fi
             echo "EMBED_COLOR=2067276" >> $GITHUB_ENV
             echo "THUMBNAIL_URL=https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/misc/pikachu-pull.jpg" >> $GITHUB_ENV
@@ -36,7 +41,7 @@ jobs:
         env: 
           DISCORD_EMBEDS: '[{ 
             "title": "${{ env.EMBED_TITLE }}", 
-            "description": "Test",
+            "description": "{{ env.COMMIT_MESSAGE }}",
             "color": ${{ env.EMBED_COLOR }},
             "timestamp": "${{ github.event.pull_request.updated_at }}", 
             "author": { "name": "${{ github.event.sender.login }}", "icon_url": "${{ github.event.sender.avatar_url }}", "url": "https://github.com/${{ github.event.sender.login }}" },
