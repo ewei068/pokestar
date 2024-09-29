@@ -8,11 +8,12 @@
  */
 const { setState, deleteState } = require("../../services/state");
 const { buildShopSend } = require("../../services/shop");
+const { User } = require("discord.js");
 
 /**
  * Parses the shop config, returning an interactive embed for the user to
  * browse the shop.
- * @param {String} user User who initiated the command.
+ * @param {User} user User who initiated the command.
  * @returns Embed with shop options.
  */
 const pokemart = async (user) => {

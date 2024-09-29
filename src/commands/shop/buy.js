@@ -6,12 +6,13 @@
  *
  * buy.js created for users to buy items.
  */
+const { User } = require("discord.js");
 const { buyItem } = require("../../services/shop");
 const { getTrainer } = require("../../services/trainer");
 
 /**
  * Attempts to execute user's request to buy an item at a given quantity.
- * @param {Object} user User who initiated the command.
+ * @param {User} user User who initiated the command.
  * @param {String} itemId ID of the item to buy.
  * @param {Number} quantity Quantity of the item to buy.
  * @returns Message confirming the purchase, or an error message.

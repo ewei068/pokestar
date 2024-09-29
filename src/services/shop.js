@@ -38,6 +38,7 @@ const {
   addItems,
   getItems,
 } = require("../utils/trainerUtils");
+const { User } = require("discord.js");
 
 const canBuyItem = (trainer, itemId, quantity) => {
   getOrSetDefault(trainer.purchasedShopItemsToday, itemId, 0);
@@ -305,6 +306,16 @@ const buyItem = async (trainer, itemId, quantity) => {
   return { data: returnString, err: null };
 };
 
+/**
+ *
+ * @param {Object} param0
+ * @param {string?=} param0.stateId
+ * @param {User?=} param0.user
+ * @param {string?=} param0.view
+ * @param {string?=} param0.option
+ * @param {boolean?=} param0.back
+ * @returns
+ */
 const buildShopSend = async ({
   stateId = null,
   user = null,
