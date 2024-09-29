@@ -67,3 +67,16 @@ module.exports._typesOnly = true;
  * @property {boolean} hasCelebi
  * @property {boolean} usedTimeTravel
  */
+
+/**
+ * @typedef {Object} Guild
+ * @property {string} guildId
+ * @property {number} lastCommand
+ * @property {boolean} spawnDisabled
+ * @property {Array<string>} spawnDisabledChannels
+ */
+
+/**
+ * @template T
+ * @typedef {import('mongodb').Collection & T} MongoCollection
+ */

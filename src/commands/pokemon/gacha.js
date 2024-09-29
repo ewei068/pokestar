@@ -12,7 +12,7 @@ const { setState, deleteState } = require("../../services/state");
 /**
  * Attempts to use a pokeball to spin the gacha for a random pokemon.
  * @param {Object} user User who initiated the command.
- * @param {String} pokeball Pokeball to use.
+ * @param {number} page Pokeball to use.
  * @returns An embed with the new pokemon, or an error message.
  */
 const gacha = async (user, page) => {

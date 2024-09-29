@@ -465,6 +465,13 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity = 1) => {
   return await giveNewPokemons(trainer, pokemonIds);
 };
 
+/**
+ * @param {Object} param0
+ * @param {number?=} param0.stateId
+ * @param {Object?=} param0.user
+ * @param {number?=} param0.page
+ * @returns
+ */
 const buildBannerSend = async ({
   stateId = null,
   user = null,
@@ -487,11 +494,11 @@ const buildBannerSend = async ({
   }
 
   // get trainer
-  let trainer = await getTrainer(user);
-  if (trainer.err) {
-    return { send: null, err: trainer.err };
+  const trainerResult = await getTrainer(user);
+  if (trainerResult.err || !trainerResult.data) {
+    return { send: null, err: trainerResult.err };
   }
-  trainer = trainer.data;
+  const trainer = trainerResult.data;
 
   const send = {
     embeds: [],
