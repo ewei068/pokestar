@@ -15,36 +15,22 @@ const backpackItems = {
   MINT: "7",
   RAID_PASS: "8",
 };
-
 const backpackCategoryConfig = {
   [backpackCategories.POKEBALLS]: {
     name: "Pokeballs",
     emoji: "<:pokeball:1100296136931156008>",
     description:
       "Used to catch Pokemon! Use `/help gacha` command to learn more!",
-    items: [
-      backpackItems.POKEBALL,
-      backpackItems.GREATBALL,
-      backpackItems.ULTRABALL,
-      backpackItems.MASTERBALL,
-    ],
   },
   [backpackCategories.MATERIALS]: {
     name: "Materials",
     emoji: "<:materials:1112557472759160852>",
     description: "Used to upgrade Pokemon and equipment!",
-    items: [
-      backpackItems.KNOWLEDGE_SHARD,
-      backpackItems.EMOTION_SHARD,
-      backpackItems.WILLPOWER_SHARD,
-      backpackItems.MINT,
-    ],
   },
   [backpackCategories.CONSUMABLES]: {
     name: "Consumables",
     emoji: "<:raidpass:1150161526297206824>",
     description: "One-time use items for various purposes!",
-    items: [backpackItems.RAID_PASS],
   },
 };
 
