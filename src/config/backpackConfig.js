@@ -1,10 +1,14 @@
-const backpackCategories = {
+const types = require("../../types");
+
+/** @typedef{types.Enum<backpackCategories>} BackpackCategoryEnum */
+const backpackCategories = Object.freeze({
   POKEBALLS: "0",
   MATERIALS: "1",
   CONSUMABLES: "2",
-};
+});
 
-const backpackItems = {
+/** @typedef{types.Enum<backpackItems>} BackpackItemEnum */
+const backpackItems = Object.freeze({
   POKEBALL: "0",
   GREATBALL: "1",
   ULTRABALL: "2",
@@ -14,8 +18,9 @@ const backpackItems = {
   WILLPOWER_SHARD: "6",
   MINT: "7",
   RAID_PASS: "8",
-};
-const backpackCategoryConfig = {
+});
+
+const backpackCategoryConfig = Object.freeze({
   [backpackCategories.POKEBALLS]: {
     name: "Pokeballs",
     emoji: "<:pokeball:1100296136931156008>",
@@ -32,9 +37,9 @@ const backpackCategoryConfig = {
     emoji: "<:raidpass:1150161526297206824>",
     description: "One-time use items for various purposes!",
   },
-};
+});
 
-const backpackItemConfig = {
+const backpackItemConfig = Object.freeze({
   [backpackItems.POKEBALL]: {
     name: "Pokeball",
     emoji: "<:pokeball:1100296136931156008>",
@@ -93,7 +98,7 @@ const backpackItemConfig = {
     description: "Used to start a raid!",
     category: backpackCategories.CONSUMABLES,
   },
-};
+});
 
 module.exports = {
   backpackCategories,

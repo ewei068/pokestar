@@ -1,5 +1,12 @@
 module.exports._typesOnly = true;
 
+// TODO: organize this lol
+
+/**
+ * @template T
+ * @typedef {T[keyof T]} Enum<T>
+ */
+
 /**
  * @typedef {Object} CompactUser
  * @property {string} id

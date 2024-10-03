@@ -350,7 +350,6 @@ const targetPatterns = {
 };
 
 // TODO: is it worth having classes for these?
-
 const effectTypes = {
   BUFF: "Buff",
   DEBUFF: "Debuff",
