@@ -8,6 +8,11 @@ module.exports._typesOnly = true;
  */
 
 /**
+ * @template T
+ * @typedef {keyof T} Keys<T>
+ */
+
+/**
  * @typedef {Object} CompactUser
  * @property {string} id
  * @property {string} username

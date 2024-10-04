@@ -41,11 +41,12 @@ const damageTypes = Object.freeze({
   OTHER: "Other",
 });
 
-const moveTiers = {
+/** @typedef {types.Enum<moveTiers>} MoveTierEnum */
+const moveTiers = Object.freeze({
   BASIC: "Basic",
   POWER: "Power",
   ULTIMATE: "Ultimate",
-};
+});
 // create pokemon type advantage matrix
 /*
 
@@ -230,6 +231,7 @@ const typeAdvantages = {
 };
 
 // unqiue status conditions
+/** @typedef {types.Enum<statusConditions>} StatusConditionEnum */
 const statusConditions = {
   BURN: "Burn",
   FREEZE: "Freeze",
@@ -248,15 +250,10 @@ const weatherConditions = {
 };
 
 /**
- * @typedef {import("../services/battle").Battle} Battle
- * @typedef {import("../services/battle").Pokemon} Pokemon
- */
-
-/**
  *
  * @param {*} move
- * @param {Pokemon} source
- * @param {Pokemon} target
+ * @param {BattlePokemon} source
+ * @param {BattlePokemon} target
  * @param {boolean} miss
  * @param {*} param4
  * @returns
@@ -351,19 +348,22 @@ const calculateDamage = (
   return Math.max(damage, 1);
 };
 
-const targetTypes = {
+/** @typedef {types.Enum<targetTypes>} TargetTypeEnum */
+const targetTypes = Object.freeze({
   ALLY: "Ally",
   ENEMY: "Enemy",
   ANY: "Any",
-};
-const targetPositions = {
+});
+/** @typedef {types.Enum<targetPositions>} TargetPositionEnum */
+const targetPositions = Object.freeze({
   SELF: "Self",
   NON_SELF: "Non-self",
   ANY: "Any",
   FRONT: "Front",
   BACK: "Back",
-};
-const targetPatterns = {
+});
+/** @typedef {types.Enum<targetPatterns>} TargetPatternEnum */
+const targetPatterns = Object.freeze({
   SINGLE: "Single",
   ALL: "All",
   ALL_EXCEPT_SELF: "All-except-self",
@@ -372,9 +372,8 @@ const targetPatterns = {
   RANDOM: "Random",
   SQUARE: "Square",
   CROSS: "Cross",
-};
+});
 
-// TODO: is it worth having classes for these?
 const effectTypes = {
   BUFF: "Buff",
   DEBUFF: "Debuff",
@@ -2527,7 +2526,8 @@ const effectConfig = {
   },
 };
 
-const moveConfig = {
+/** @typedef{types.Keys<moveConfig>} LegacyMoveIdEnum */
+const moveConfig = Object.freeze({
   m6: {
     name: "Pay Day",
     type: pokemonTypes.NORMAL,
@@ -6580,7 +6580,7 @@ const moveConfig = {
     description:
       "The user activates its Stand, ZA WATER!!!, forcing time to stop for all other Pokemon. This provides the user a buff granting it 2 extra turns.",
   },
-};
+});
 
 const moveExecutes = {
   m6(battle, source, _primaryTarget, allTargets, missedTargets) {

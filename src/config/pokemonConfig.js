@@ -1,4 +1,7 @@
-const types = {
+const jsTypes = require("../../types");
+
+/** @typedef {jsTypes.Enum<types>} PokemonTypeEnum */
+const types = Object.freeze({
   NORMAL: 0,
   FIGHTING: 1,
   FLYING: 2,
@@ -19,7 +22,7 @@ const types = {
   FAIRY: 17,
   UNKNOWN: 18,
   SHADOW: 19,
-};
+});
 
 const typeConfig = {
   0: {
