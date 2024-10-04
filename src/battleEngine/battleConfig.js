@@ -272,6 +272,7 @@ const calculateDamage = (
     power = null,
     type = null,
     moveType = null,
+    finalDamageMultipler = 1,
   } = {}
 ) => {
   /* eslint-disable-code-block no-param-reassign */
@@ -343,7 +344,8 @@ const calculateDamage = (
       random *
       burn *
       weatherMult *
-      missMult
+      missMult *
+      finalDamageMultipler
   );
 
   return Math.max(damage, 1);
@@ -2641,20 +2643,6 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The target is slammed with a long tail, vines, etc., to inflict damage.",
-  },
-  m22: {
-    name: "Vine Whip",
-    type: pokemonTypes.GRASS,
-    power: 55,
-    accuracy: 100,
-    cooldown: 0,
-    targetType: targetTypes.ENEMY,
-    targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.SINGLE,
-    tier: moveTiers.BASIC,
-    damageType: damageTypes.PHYSICAL,
-    description:
-      "The target is struck with slender, whiplike vines to inflict damage.",
   },
   m23: {
     name: "Stomp",
@@ -6745,18 +6733,6 @@ const moveExecutes = {
   },
   m21(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m21";
-    const moveData = getMove(moveId);
-    for (const target of allTargets) {
-      const miss = missedTargets.includes(target);
-      const damageToDeal = calculateDamage(moveData, source, target, miss);
-      source.dealDamage(damageToDeal, target, {
-        type: "move",
-        moveId,
-      });
-    }
-  },
-  m22(_battle, source, _primaryTarget, allTargets, missedTargets) {
-    const moveId = "m22";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -16634,4 +16610,6 @@ module.exports = {
   weatherConditions,
   calculateDamage,
   abilityConfig,
+  damageTypes,
+  calculateDamage,
 };

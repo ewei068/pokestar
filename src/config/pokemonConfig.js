@@ -1,4 +1,5 @@
 const jsTypes = require("../../types");
+const { moveIdEnum } = require("../enums/battleEnums");
 
 /** @typedef {jsTypes.Enum<types>} PokemonTypeEnum */
 const types = Object.freeze({
@@ -358,7 +359,7 @@ const pokemonConfig = {
       65: 0.8,
       34: 0.2,
     },
-    moveIds: ["m22", "m33", "m79", "m202"],
+    moveIds: [moveIdEnum.VINE_WHIP, "m33", "m79", "m202"],
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMSLOW,
@@ -384,7 +385,7 @@ const pokemonConfig = {
       65: 0.8,
       34: 0.2,
     },
-    moveIds: ["m22", "m79", "m188", "m202"],
+    moveIds: [moveIdEnum.VINE_WHIP, "m79", "m188", "m202"],
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
@@ -404,7 +405,7 @@ const pokemonConfig = {
       65: 0.8,
       34: 0.2,
     },
-    moveIds: ["m22", "m79", "m188", "m76"],
+    moveIds: [moveIdEnum.VINE_WHIP, "m79", "m188", "m76"],
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
@@ -1956,7 +1957,7 @@ const pokemonConfig = {
       34: 0.8,
       82: 0.2,
     },
-    moveIds: ["m22", "m51", "m202", "m398"],
+    moveIds: [moveIdEnum.VINE_WHIP, "m51", "m202", "m398"],
     battleEligible: true,
     rarity: rarities.COMMON,
     growthRate: growthRates.MEDIUMSLOW,
@@ -3471,7 +3472,7 @@ const pokemonConfig = {
       basicMoveIds: [
         "m16",
         "m17",
-        "m22",
+        moveIdEnum.VINE_WHIP,
         "m35",
         "m40",
         "m43",
@@ -3634,7 +3635,7 @@ const pokemonConfig = {
       65: 0.8,
       102: 0.2,
     },
-    moveIds: ["m22", "m77", "m73", "m202"],
+    moveIds: [moveIdEnum.VINE_WHIP, "m77", "m73", "m202"],
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMSLOW,

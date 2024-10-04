@@ -1,5 +1,5 @@
 /**
- * @typedef {import("./moveService").MoveIdEnum} MoveIdEnum
+ * @typedef {import("../enums/battleEnums").MoveIdEnum} MoveIdEnum
  *
  * @typedef {import("../services/battle").Battle} Battle
  * @typedef {import("../services/battle").Pokemon} BattlePokemon
@@ -17,10 +17,11 @@
 
 /**
  * @callback MoveExecute
+ * @this {Move}
  * @param {Object} param0
  * @param {Battle} param0.battle
  * @param {BattlePokemon} param0.source
  * @param {BattlePokemon} param0.primaryTarget
  * @param {Array<BattlePokemon>} param0.allTargets
- * @param {Array<BattlePokemon>?=} param0.missedTargets
+ * @param {Array<BattlePokemon>} param0.missedTargets
  */

@@ -1,17 +1,6 @@
 const { logger } = require("../log");
 const types = require("../../types");
 
-/**
- * @typedef{import("./battleConfig").LegacyMoveIdEnum} LegacyMoveIdEnum
- * @typedef{types.Enum<moveIds>} NewMoveIdEnum
- * @typedef{LegacyMoveIdEnum | NewMoveIdEnum} MoveIdEnum
- */
-
-const moveIds = Object.freeze({
-  TEST_MOVE: "999",
-  TEST_MOVE2: "998",
-});
-
 const allMoves = {};
 
 /**
@@ -59,7 +48,7 @@ const getMove = (moveId) => {
  * @param {Object} param0.source
  * @param {Object} param0.primaryTarget
  * @param {Array<Object>} param0.allTargets
- * @param {Array<Object>?=} param0.missedTargets
+ * @param {Array<Object>=} param0.missedTargets
  * @returns
  */
 const executeMove = ({

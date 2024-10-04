@@ -1,3 +1,15 @@
+const { types: pokemonTypes } = require("../config/pokemonConfig");
+const {
+  targetTypes,
+  targetPositions,
+  targetPatterns,
+  damageTypes,
+  moveTiers,
+  calculateDamage,
+} = require("./battleConfig");
+const { getMove } = require("./moveService");
+const { moveIdEnum } = require("../enums/battleEnums");
+
 /**
  * @typedef {import("../config/pokemonConfig").PokemonTypeEnum} PokemonTypeEnum
  */
@@ -49,9 +61,62 @@ class Move {
     this.execute = execute;
     this.isLegacyMove = false;
   }
+
+  /**
+   * @param {Object} param0
+   * @param {BattlePokemon} param0.source
+   * @param {BattlePokemon} param0.primaryTarget
+   * @param {Array<BattlePokemon>} param0.allTargets
+   * @param {Array<BattlePokemon>=} param0.missedTargets
+   * @param {number=} param0.offTargetDamageMultiplier
+   */
+  genericDealDamage = ({
+    source,
+    primaryTarget,
+    allTargets,
+    missedTargets = [],
+    offTargetDamageMultiplier = 0.8,
+  }) => {
+    const moveData = getMove(this.id);
+    for (const target of allTargets) {
+      const miss = missedTargets.includes(target);
+      const damageToDeal = calculateDamage(moveData, source, target, miss, {
+        finalDamageMultiplier:
+          target === primaryTarget ? 1 : offTargetDamageMultiplier,
+      });
+      source.dealDamage(damageToDeal, target, {
+        type: "move",
+        moveId: this.id,
+      });
+    }
+  };
 }
 
-const movesToRegister = [];
+const movesToRegister = [
+  new Move({
+    id: moveIdEnum.VINE_WHIP,
+    name: "Vine Whip",
+    type: pokemonTypes.GRASS,
+    power: 55,
+    accuracy: 100,
+    cooldown: 0,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The target is struck with slender, whiplike vines to inflict damage.",
+    execute: function ({ source, primaryTarget, allTargets, missedTargets }) {
+      this.genericDealDamage({
+        source,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+      });
+    },
+  }),
+];
 
 module.exports = {
   Move,
