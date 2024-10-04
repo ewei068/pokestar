@@ -1,20 +1,19 @@
 const { logger } = require("../log");
-const types = require("../../types");
 
 const allMoves = {};
 
 /**
- * @param {Array<Move>} moves
+ * @param {{[K in MoveIdEnum]: Move}} moves
  */
 const registerMoves = (moves) => {
-  moves.forEach((move) => {
-    allMoves[move.id] = move;
+  Object.entries(moves).forEach(([moveId, move]) => {
+    allMoves[moveId] = move;
   });
 };
 
 /**
- * @param {Object<MoveIdEnum, Object>} moveConfig
- * @param {Object<MoveIdEnum, Function>} moveExecutes
+ * @param {{[K in MoveIdEnum]: Object}} moveConfig
+ * @param {{[K in MoveIdEnum]: Function}} moveExecutes
  */
 const registerLegacyMoves = (moveConfig, moveExecutes) => {
   Object.entries(moveConfig).forEach(([moveId, move]) => {

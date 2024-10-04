@@ -577,7 +577,7 @@ class Pokemon {
     [this.maxHp = 0] = this.pokemonData.stats;
     this.level = pokemonData.level;
     [
-      this.atk,
+      this.atk = 0,
       this.batk = 0,
       this.def,
       this.bdef = 0,

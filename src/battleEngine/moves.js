@@ -92,8 +92,8 @@ class Move {
   };
 }
 
-const movesToRegister = [
-  new Move({
+const movesToRegister = Object.freeze({
+  [moveIdEnum.VINE_WHIP]: new Move({
     id: moveIdEnum.VINE_WHIP,
     name: "Vine Whip",
     type: pokemonTypes.GRASS,
@@ -116,7 +116,7 @@ const movesToRegister = [
       });
     },
   }),
-];
+});
 
 module.exports = {
   Move,

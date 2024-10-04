@@ -377,12 +377,15 @@ const targetPatterns = Object.freeze({
   CROSS: "Cross",
 });
 
-const effectTypes = {
+/** @typedef {types.Enum<effectTypes>} EffectTypeEnum */
+const effectTypes = Object.freeze({
   BUFF: "Buff",
   DEBUFF: "Debuff",
   NEUTRAL: "Neutral",
-};
-const effectConfig = {
+});
+
+/** @typedef {types.Keys<effectConfig>} LegacyEffectIdEnum */
+const effectConfig = Object.freeze({
   shield: {
     name: "Shield",
     description: "The target's takes shielded damage.",
@@ -2528,7 +2531,7 @@ const effectConfig = {
       }
     },
   },
-};
+});
 
 /** @typedef{types.Keys<moveConfig>} LegacyMoveIdEnum */
 const moveConfig = Object.freeze({
