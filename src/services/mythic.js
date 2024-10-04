@@ -13,7 +13,7 @@ const {
   backpackItemConfig,
   backpackItems,
 } = require("../config/backpackConfig");
-const { moveConfig } = require("../config/battleConfig");
+const { moveConfig } = require("../battleEngine/battleConfig");
 const { collectionNames } = require("../config/databaseConfig");
 const { eventNames } = require("../config/eventConfig");
 const { getCelebiPool } = require("../config/gachaConfig");

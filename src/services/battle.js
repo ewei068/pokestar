@@ -28,7 +28,7 @@ const {
   abilityConfig,
   typeAdvantages,
   weatherConditions,
-} = require("../config/battleConfig");
+} = require("../battleEngine/battleConfig");
 const {
   buildBattleEmbed,
   buildPveListEmbed,
@@ -3507,7 +3507,7 @@ const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
 module.exports = {
   Battle,
   // BattleEventHandler,
-  // Pokemon,
+  Pokemon,
   getStartTurnSend,
   buildPveSend,
   buildDungeonSend,

@@ -3,7 +3,7 @@
 const { ButtonStyle } = require("discord.js");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { backpackItems } = require("../config/backpackConfig");
-const { typeAdvantages } = require("../config/battleConfig");
+const { typeAdvantages } = require("../battleEngine/battleConfig");
 const { eventNames } = require("../config/eventConfig");
 const { pokeballConfig } = require("../config/gachaConfig");
 const {

@@ -3,9 +3,11 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-param-reassign */
-const { types: pokemonTypes } = require("./pokemonConfig");
+const { types: pokemonTypes } = require("../config/pokemonConfig");
+const types = require("../../types");
 
-const battleEventNames = {
+/** @typedef {types.Enum<battleEventNames>} BattleEventEnum */
+const battleEventNames = Object.freeze({
   BATTLE_BEGIN: "battleStart",
   TURN_END: "turnEnd",
   TURN_BEGIN: "turnBegin",
@@ -30,13 +32,14 @@ const battleEventNames = {
   CALCULATE_TYPE_MULTIPLIER: "calculateTypeMultiplier",
   CALCULATE_MISS: "calculateMiss",
   GET_ELIGIBLE_TARGETS: "getEligibleTargets",
-};
+});
 
-const damageTypes = {
+/** @typedef {types.Enum<damageTypes>} DamageTypeEnum */
+const damageTypes = Object.freeze({
   PHYSICAL: "Physical",
   SPECIAL: "Special",
   OTHER: "Other",
-};
+});
 
 const moveTiers = {
   BASIC: "Basic",
@@ -244,6 +247,20 @@ const weatherConditions = {
   HAIL: "Hail",
 };
 
+/**
+ * @typedef {import("../services/battle").Battle} Battle
+ * @typedef {import("../services/battle").Pokemon} Pokemon
+ */
+
+/**
+ *
+ * @param {*} move
+ * @param {Pokemon} source
+ * @param {Pokemon} target
+ * @param {boolean} miss
+ * @param {*} param4
+ * @returns
+ */
 const calculateDamage = (
   move,
   source,
