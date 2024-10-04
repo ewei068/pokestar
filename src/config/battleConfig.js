@@ -3,7 +3,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-param-reassign */
-const { types } = require("./pokemonConfig");
+const { types: pokemonTypes } = require("./pokemonConfig");
 
 const battleEventNames = {
   BATTLE_BEGIN: "battleStart",
@@ -68,153 +68,161 @@ steel = {'fire': .5, 'water': .5, 'electric': .5, 'ice': 2, 'rock': 2, 'steel': 
 fairy = {'fire': .5, 'fighting': 2, 'poison': .5, 'dragon': 2, 'dark': 2, 'steel': .5}
 */
 const typeAdvantages = {
-  [types.NORMAL]: { [types.ROCK]: 0.5, [types.GHOST]: 0, [types.STEEL]: 0.5 },
-  [types.FIRE]: {
-    [types.FIRE]: 0.5,
-    [types.WATER]: 0.5,
-    [types.GRASS]: 2,
-    [types.ICE]: 2,
-    [types.BUG]: 2,
-    [types.ROCK]: 0.5,
-    [types.DRAGON]: 0.5,
-    [types.STEEL]: 2,
+  [pokemonTypes.NORMAL]: {
+    [pokemonTypes.ROCK]: 0.5,
+    [pokemonTypes.GHOST]: 0,
+    [pokemonTypes.STEEL]: 0.5,
   },
-  [types.WATER]: {
-    [types.FIRE]: 2,
-    [types.WATER]: 0.5,
-    [types.GRASS]: 0.5,
-    [types.GROUND]: 2,
-    [types.ROCK]: 2,
-    [types.DRAGON]: 0.5,
+  [pokemonTypes.FIRE]: {
+    [pokemonTypes.FIRE]: 0.5,
+    [pokemonTypes.WATER]: 0.5,
+    [pokemonTypes.GRASS]: 2,
+    [pokemonTypes.ICE]: 2,
+    [pokemonTypes.BUG]: 2,
+    [pokemonTypes.ROCK]: 0.5,
+    [pokemonTypes.DRAGON]: 0.5,
+    [pokemonTypes.STEEL]: 2,
   },
-  [types.ELECTRIC]: {
-    [types.WATER]: 2,
-    [types.ELECTRIC]: 0.5,
-    [types.GRASS]: 0.5,
-    [types.GROUND]: 0,
-    [types.FLYING]: 2,
-    [types.DRAGON]: 0.5,
+  [pokemonTypes.WATER]: {
+    [pokemonTypes.FIRE]: 2,
+    [pokemonTypes.WATER]: 0.5,
+    [pokemonTypes.GRASS]: 0.5,
+    [pokemonTypes.GROUND]: 2,
+    [pokemonTypes.ROCK]: 2,
+    [pokemonTypes.DRAGON]: 0.5,
   },
-  [types.GRASS]: {
-    [types.FIRE]: 0.5,
-    [types.WATER]: 2,
-    [types.GRASS]: 0.5,
-    [types.POISON]: 0.5,
-    [types.GROUND]: 2,
-    [types.FLYING]: 0.5,
-    [types.BUG]: 0.5,
-    [types.ROCK]: 2,
-    [types.DRAGON]: 0.5,
-    [types.STEEL]: 0.5,
+  [pokemonTypes.ELECTRIC]: {
+    [pokemonTypes.WATER]: 2,
+    [pokemonTypes.ELECTRIC]: 0.5,
+    [pokemonTypes.GRASS]: 0.5,
+    [pokemonTypes.GROUND]: 0,
+    [pokemonTypes.FLYING]: 2,
+    [pokemonTypes.DRAGON]: 0.5,
   },
-  [types.ICE]: {
-    [types.FIRE]: 0.5,
-    [types.WATER]: 0.5,
-    [types.GRASS]: 2,
-    [types.ICE]: 0.5,
-    [types.GROUND]: 2,
-    [types.FLYING]: 2,
-    [types.DRAGON]: 2,
-    [types.STEEL]: 0.5,
+  [pokemonTypes.GRASS]: {
+    [pokemonTypes.FIRE]: 0.5,
+    [pokemonTypes.WATER]: 2,
+    [pokemonTypes.GRASS]: 0.5,
+    [pokemonTypes.POISON]: 0.5,
+    [pokemonTypes.GROUND]: 2,
+    [pokemonTypes.FLYING]: 0.5,
+    [pokemonTypes.BUG]: 0.5,
+    [pokemonTypes.ROCK]: 2,
+    [pokemonTypes.DRAGON]: 0.5,
+    [pokemonTypes.STEEL]: 0.5,
   },
-  [types.FIGHTING]: {
-    [types.NORMAL]: 2,
-    [types.ICE]: 2,
-    [types.POISON]: 0.5,
-    [types.FLYING]: 0.5,
-    [types.PSYCHIC]: 0.5,
-    [types.BUG]: 0.5,
-    [types.ROCK]: 2,
-    [types.GHOST]: 0,
-    [types.DARK]: 2,
-    [types.STEEL]: 2,
-    [types.FAIRY]: 0.5,
+  [pokemonTypes.ICE]: {
+    [pokemonTypes.FIRE]: 0.5,
+    [pokemonTypes.WATER]: 0.5,
+    [pokemonTypes.GRASS]: 2,
+    [pokemonTypes.ICE]: 0.5,
+    [pokemonTypes.GROUND]: 2,
+    [pokemonTypes.FLYING]: 2,
+    [pokemonTypes.DRAGON]: 2,
+    [pokemonTypes.STEEL]: 0.5,
   },
-  [types.POISON]: {
-    [types.GRASS]: 2,
-    [types.POISON]: 0.5,
-    [types.GROUND]: 0.5,
-    [types.ROCK]: 0.5,
-    [types.GHOST]: 0.5,
-    [types.STEEL]: 0,
-    [types.FAIRY]: 2,
+  [pokemonTypes.FIGHTING]: {
+    [pokemonTypes.NORMAL]: 2,
+    [pokemonTypes.ICE]: 2,
+    [pokemonTypes.POISON]: 0.5,
+    [pokemonTypes.FLYING]: 0.5,
+    [pokemonTypes.PSYCHIC]: 0.5,
+    [pokemonTypes.BUG]: 0.5,
+    [pokemonTypes.ROCK]: 2,
+    [pokemonTypes.GHOST]: 0,
+    [pokemonTypes.DARK]: 2,
+    [pokemonTypes.STEEL]: 2,
+    [pokemonTypes.FAIRY]: 0.5,
   },
-  [types.GROUND]: {
-    [types.FIRE]: 2,
-    [types.ELECTRIC]: 2,
-    [types.GRASS]: 0.5,
-    [types.POISON]: 2,
-    [types.FLYING]: 0,
-    [types.BUG]: 0.5,
-    [types.ROCK]: 2,
-    [types.STEEL]: 2,
+  [pokemonTypes.POISON]: {
+    [pokemonTypes.GRASS]: 2,
+    [pokemonTypes.POISON]: 0.5,
+    [pokemonTypes.GROUND]: 0.5,
+    [pokemonTypes.ROCK]: 0.5,
+    [pokemonTypes.GHOST]: 0.5,
+    [pokemonTypes.STEEL]: 0,
+    [pokemonTypes.FAIRY]: 2,
   },
-  [types.FLYING]: {
-    [types.ELECTRIC]: 0.5,
-    [types.GRASS]: 2,
-    [types.FIGHTING]: 2,
-    [types.BUG]: 2,
-    [types.ROCK]: 0.5,
-    [types.STEEL]: 0.5,
+  [pokemonTypes.GROUND]: {
+    [pokemonTypes.FIRE]: 2,
+    [pokemonTypes.ELECTRIC]: 2,
+    [pokemonTypes.GRASS]: 0.5,
+    [pokemonTypes.POISON]: 2,
+    [pokemonTypes.FLYING]: 0,
+    [pokemonTypes.BUG]: 0.5,
+    [pokemonTypes.ROCK]: 2,
+    [pokemonTypes.STEEL]: 2,
   },
-  [types.PSYCHIC]: {
-    [types.FIGHTING]: 2,
-    [types.POISON]: 2,
-    [types.PSYCHIC]: 0.5,
-    [types.DARK]: 0,
-    [types.STEEL]: 0.5,
+  [pokemonTypes.FLYING]: {
+    [pokemonTypes.ELECTRIC]: 0.5,
+    [pokemonTypes.GRASS]: 2,
+    [pokemonTypes.FIGHTING]: 2,
+    [pokemonTypes.BUG]: 2,
+    [pokemonTypes.ROCK]: 0.5,
+    [pokemonTypes.STEEL]: 0.5,
   },
-  [types.BUG]: {
-    [types.FIRE]: 0.5,
-    [types.GRASS]: 2,
-    [types.FIGHTING]: 0.5,
-    [types.POISON]: 0.5,
-    [types.FLYING]: 0.5,
-    [types.PSYCHIC]: 2,
-    [types.GHOST]: 0.5,
-    [types.DARK]: 2,
-    [types.STEEL]: 0.5,
-    [types.FAIRY]: 0.5,
+  [pokemonTypes.PSYCHIC]: {
+    [pokemonTypes.FIGHTING]: 2,
+    [pokemonTypes.POISON]: 2,
+    [pokemonTypes.PSYCHIC]: 0.5,
+    [pokemonTypes.DARK]: 0,
+    [pokemonTypes.STEEL]: 0.5,
   },
-  [types.ROCK]: {
-    [types.FIRE]: 2,
-    [types.ICE]: 2,
-    [types.FIGHTING]: 0.5,
-    [types.GROUND]: 0.5,
-    [types.FLYING]: 2,
-    [types.BUG]: 2,
-    [types.STEEL]: 0.5,
+  [pokemonTypes.BUG]: {
+    [pokemonTypes.FIRE]: 0.5,
+    [pokemonTypes.GRASS]: 2,
+    [pokemonTypes.FIGHTING]: 0.5,
+    [pokemonTypes.POISON]: 0.5,
+    [pokemonTypes.FLYING]: 0.5,
+    [pokemonTypes.PSYCHIC]: 2,
+    [pokemonTypes.GHOST]: 0.5,
+    [pokemonTypes.DARK]: 2,
+    [pokemonTypes.STEEL]: 0.5,
+    [pokemonTypes.FAIRY]: 0.5,
   },
-  [types.GHOST]: {
-    [types.NORMAL]: 0,
-    [types.PSYCHIC]: 2,
-    [types.GHOST]: 2,
-    [types.DARK]: 0.5,
+  [pokemonTypes.ROCK]: {
+    [pokemonTypes.FIRE]: 2,
+    [pokemonTypes.ICE]: 2,
+    [pokemonTypes.FIGHTING]: 0.5,
+    [pokemonTypes.GROUND]: 0.5,
+    [pokemonTypes.FLYING]: 2,
+    [pokemonTypes.BUG]: 2,
+    [pokemonTypes.STEEL]: 0.5,
   },
-  [types.DRAGON]: { [types.DRAGON]: 2, [types.STEEL]: 0.5, [types.FAIRY]: 0 },
-  [types.DARK]: {
-    [types.FIGHTING]: 0.5,
-    [types.PSYCHIC]: 2,
-    [types.GHOST]: 2,
-    [types.DARK]: 0.5,
-    [types.FAIRY]: 0.5,
+  [pokemonTypes.GHOST]: {
+    [pokemonTypes.NORMAL]: 0,
+    [pokemonTypes.PSYCHIC]: 2,
+    [pokemonTypes.GHOST]: 2,
+    [pokemonTypes.DARK]: 0.5,
   },
-  [types.STEEL]: {
-    [types.FIRE]: 0.5,
-    [types.WATER]: 0.5,
-    [types.ELECTRIC]: 0.5,
-    [types.ICE]: 2,
-    [types.ROCK]: 2,
-    [types.STEEL]: 0.5,
-    [types.FAIRY]: 2,
+  [pokemonTypes.DRAGON]: {
+    [pokemonTypes.DRAGON]: 2,
+    [pokemonTypes.STEEL]: 0.5,
+    [pokemonTypes.FAIRY]: 0,
   },
-  [types.FAIRY]: {
-    [types.FIRE]: 0.5,
-    [types.FIGHTING]: 2,
-    [types.POISON]: 0.5,
-    [types.DRAGON]: 2,
-    [types.DARK]: 2,
-    [types.STEEL]: 0.5,
+  [pokemonTypes.DARK]: {
+    [pokemonTypes.FIGHTING]: 0.5,
+    [pokemonTypes.PSYCHIC]: 2,
+    [pokemonTypes.GHOST]: 2,
+    [pokemonTypes.DARK]: 0.5,
+    [pokemonTypes.FAIRY]: 0.5,
+  },
+  [pokemonTypes.STEEL]: {
+    [pokemonTypes.FIRE]: 0.5,
+    [pokemonTypes.WATER]: 0.5,
+    [pokemonTypes.ELECTRIC]: 0.5,
+    [pokemonTypes.ICE]: 2,
+    [pokemonTypes.ROCK]: 2,
+    [pokemonTypes.STEEL]: 0.5,
+    [pokemonTypes.FAIRY]: 2,
+  },
+  [pokemonTypes.FAIRY]: {
+    [pokemonTypes.FIRE]: 0.5,
+    [pokemonTypes.FIGHTING]: 2,
+    [pokemonTypes.POISON]: 0.5,
+    [pokemonTypes.DRAGON]: 2,
+    [pokemonTypes.DARK]: 2,
+    [pokemonTypes.STEEL]: 0.5,
   },
 };
 
@@ -291,15 +299,15 @@ const calculateDamage = (
   if (!source.battle.isWeatherNegated()) {
     const { weather } = source.battle;
     if (weather.weatherId === weatherConditions.SUN) {
-      if (move.type === types.FIRE) {
+      if (move.type === pokemonTypes.FIRE) {
         weatherMult = 1.5;
-      } else if (move.type === types.WATER) {
+      } else if (move.type === pokemonTypes.WATER) {
         weatherMult = 0.5;
       }
     } else if (weather.weatherId === weatherConditions.RAIN) {
-      if (move.type === types.FIRE) {
+      if (move.type === pokemonTypes.FIRE) {
         weatherMult = 0.5;
-      } else if (move.type === types.WATER) {
+      } else if (move.type === pokemonTypes.WATER) {
         weatherMult = 1.5;
       }
     }
@@ -1002,7 +1010,7 @@ const effectConfig = {
               {
                 power: 40,
                 damageType: damageTypes.PHYSICAL,
-                type: types.UNKNOWN,
+                type: pokemonTypes.UNKNOWN,
               },
               inflictedPokemon,
               inflictedPokemon,
@@ -1068,7 +1076,7 @@ const effectConfig = {
             {
               power: moveData.power ? moveData.power * 1.5 : 40,
               damageType: damageTypes.PHYSICAL,
-              type: types.FIGHTING,
+              type: pokemonTypes.FIGHTING,
             },
             targetPokemon,
             sourcePokemon,
@@ -1130,7 +1138,7 @@ const effectConfig = {
             {
               power: moveData.power ? moveData.power * 1.5 : 40,
               damageType: damageTypes.SPECIAL,
-              type: types.PSYCHIC,
+              type: pokemonTypes.PSYCHIC,
             },
             targetPokemon,
             sourcePokemon,
@@ -1713,7 +1721,7 @@ const effectConfig = {
 
           // get damage multiplier
           let mult = targetPokemon.getTypeDamageMultiplier(
-            types.ROCK,
+            pokemonTypes.ROCK,
             targetPokemon
           );
           if (mult >= 4) {
@@ -2012,7 +2020,7 @@ const effectConfig = {
           }
           const { moveId } = args.damageInfo;
           const moveData = moveConfig[moveId];
-          if (moveData.type !== types.ELECTRIC) {
+          if (moveData.type !== pokemonTypes.ELECTRIC) {
             return;
           }
 
@@ -2047,26 +2055,26 @@ const effectConfig = {
     effectAdd(battle, _source, target) {
       battle.addToLog(`${target.name} lost its Flying type!`);
       // if pure flying, change to pure normal
-      if (target.type1 === types.FLYING && target.type2 === null) {
-        target.type1 = types.NORMAL;
+      if (target.type1 === pokemonTypes.FLYING && target.type2 === null) {
+        target.type1 = pokemonTypes.NORMAL;
         return {
           typeSlot: "type1",
         };
         // else
       }
-      if (target.type1 === types.FLYING) {
+      if (target.type1 === pokemonTypes.FLYING) {
         target.type1 = null;
         return {
           typeSlot: "type1",
         };
       }
-      if (target.type2 === types.FLYING && target.type1 === null) {
-        target.type2 = types.NORMAL;
+      if (target.type2 === pokemonTypes.FLYING && target.type1 === null) {
+        target.type2 = pokemonTypes.NORMAL;
         return {
           typeSlot: "type2",
         };
       }
-      if (target.type2 === types.FLYING) {
+      if (target.type2 === pokemonTypes.FLYING) {
         target.type2 = null;
         return {
           typeSlot: "type2",
@@ -2076,7 +2084,7 @@ const effectConfig = {
     },
     effectRemove(battle, target, args) {
       battle.addToLog(`${target.name} regained its Flying type!`);
-      if (args.typeSlot) target[args.typeSlot] = types.FLYING;
+      if (args.typeSlot) target[args.typeSlot] = pokemonTypes.FLYING;
     },
   },
   absorbLight: {
@@ -2505,7 +2513,7 @@ const effectConfig = {
 const moveConfig = {
   m6: {
     name: "Pay Day",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 45,
     accuracy: 100,
     cooldown: 0,
@@ -2519,7 +2527,7 @@ const moveConfig = {
   },
   "m6-1": {
     name: "Gold Rush",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 35,
     accuracy: 80,
     cooldown: 6,
@@ -2533,7 +2541,7 @@ const moveConfig = {
   },
   "m7-1": {
     name: "Red Hawk",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 80,
     accuracy: 100,
     cooldown: 3,
@@ -2547,7 +2555,7 @@ const moveConfig = {
   },
   m10: {
     name: "Scratch",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -2561,7 +2569,7 @@ const moveConfig = {
   },
   m14: {
     name: "Swords Dance",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -2575,7 +2583,7 @@ const moveConfig = {
   },
   m16: {
     name: "Gust",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 45,
     accuracy: 100,
     cooldown: 0,
@@ -2589,7 +2597,7 @@ const moveConfig = {
   },
   m17: {
     name: "Wing Attack",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 55,
     accuracy: 100,
     cooldown: 0,
@@ -2603,7 +2611,7 @@ const moveConfig = {
   },
   m21: {
     name: "Slam",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 90,
     accuracy: 80,
     cooldown: 2,
@@ -2617,7 +2625,7 @@ const moveConfig = {
   },
   m22: {
     name: "Vine Whip",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 55,
     accuracy: 100,
     cooldown: 0,
@@ -2631,7 +2639,7 @@ const moveConfig = {
   },
   m23: {
     name: "Stomp",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 90,
     accuracy: 100,
     cooldown: 3,
@@ -2645,7 +2653,7 @@ const moveConfig = {
   },
   m30: {
     name: "Horn Attack",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 75,
     accuracy: 100,
     cooldown: 2,
@@ -2659,7 +2667,7 @@ const moveConfig = {
   },
   m33: {
     name: "Tackle",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -2673,7 +2681,7 @@ const moveConfig = {
   },
   m34: {
     name: "Body Slam",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 95,
     accuracy: 85,
     cooldown: 3,
@@ -2687,7 +2695,7 @@ const moveConfig = {
   },
   "m34-1": {
     name: "Groggy Slam",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 75,
     accuracy: 75,
     cooldown: 4,
@@ -2701,7 +2709,7 @@ const moveConfig = {
   },
   m35: {
     name: "Wrap",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 20,
     accuracy: 90,
     cooldown: 0,
@@ -2715,7 +2723,7 @@ const moveConfig = {
   },
   m36: {
     name: "Take Down",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 120,
     accuracy: 85,
     cooldown: 3,
@@ -2729,7 +2737,7 @@ const moveConfig = {
   },
   m38: {
     name: "Double-Edge",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 160,
     accuracy: 100,
     cooldown: 4,
@@ -2743,7 +2751,7 @@ const moveConfig = {
   },
   m40: {
     name: "Poison Sting",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 20,
     accuracy: 100,
     cooldown: 0,
@@ -2757,7 +2765,7 @@ const moveConfig = {
   },
   m43: {
     name: "Leer",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
     cooldown: 0,
@@ -2771,7 +2779,7 @@ const moveConfig = {
   },
   m46: {
     name: "Roar",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -2785,7 +2793,7 @@ const moveConfig = {
   },
   m47: {
     name: "Sing",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 55,
     cooldown: 4,
@@ -2799,7 +2807,7 @@ const moveConfig = {
   },
   m50: {
     name: "Disable",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
     cooldown: 2,
@@ -2812,7 +2820,7 @@ const moveConfig = {
   },
   m51: {
     name: "Acid",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -2826,7 +2834,7 @@ const moveConfig = {
   },
   m52: {
     name: "Ember",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -2840,7 +2848,7 @@ const moveConfig = {
   },
   m53: {
     name: "Flamethrower",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 70,
     accuracy: 100,
     cooldown: 4,
@@ -2854,7 +2862,7 @@ const moveConfig = {
   },
   m55: {
     name: "Water Gun",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -2867,7 +2875,7 @@ const moveConfig = {
   },
   m56: {
     name: "Hydro Pump",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 100,
     accuracy: 80,
     cooldown: 5,
@@ -2881,7 +2889,7 @@ const moveConfig = {
   },
   "m56-1": {
     name: "Hydro Artilery Pump",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 90,
     accuracy: 80,
     cooldown: 6,
@@ -2895,7 +2903,7 @@ const moveConfig = {
   },
   "m56-2": {
     name: "Holy Pump",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 110,
     accuracy: 60,
     cooldown: 5,
@@ -2909,7 +2917,7 @@ const moveConfig = {
   },
   m57: {
     name: "Surf",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 65,
     accuracy: 90,
     cooldown: 5,
@@ -2923,7 +2931,7 @@ const moveConfig = {
   },
   m58: {
     name: "Ice Beam",
-    type: types.ICE,
+    type: pokemonTypes.ICE,
     power: 70,
     accuracy: 90,
     cooldown: 4,
@@ -2937,7 +2945,7 @@ const moveConfig = {
   },
   m59: {
     name: "Blizzard",
-    type: types.ICE,
+    type: pokemonTypes.ICE,
     power: 70,
     accuracy: 70,
     cooldown: 6,
@@ -2951,7 +2959,7 @@ const moveConfig = {
   },
   m60: {
     name: "Psybeam",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 80,
     accuracy: 100,
     cooldown: 2,
@@ -2965,7 +2973,7 @@ const moveConfig = {
   },
   m63: {
     name: "Hyper Beam",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 160,
     accuracy: 90,
     cooldown: 6,
@@ -2979,7 +2987,7 @@ const moveConfig = {
   },
   m64: {
     name: "Peck",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 45,
     accuracy: 100,
     cooldown: 0,
@@ -2992,7 +3000,7 @@ const moveConfig = {
   },
   m65: {
     name: "Drill Peck",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 85,
     accuracy: 100,
     cooldown: 2,
@@ -3006,7 +3014,7 @@ const moveConfig = {
   },
   m68: {
     name: "Counter",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -3020,7 +3028,7 @@ const moveConfig = {
   },
   m70: {
     name: "Strength",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 80,
     accuracy: 100,
     cooldown: 2,
@@ -3034,7 +3042,7 @@ const moveConfig = {
   },
   m71: {
     name: "Absorb",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 40,
     accuracy: 100,
     cooldown: 0,
@@ -3048,7 +3056,7 @@ const moveConfig = {
   },
   m73: {
     name: "Leech Seed",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: null,
     accuracy: 90,
     cooldown: 3,
@@ -3062,7 +3070,7 @@ const moveConfig = {
   },
   m76: {
     name: "Solar Beam",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 120,
     accuracy: 100,
     cooldown: 5,
@@ -3083,7 +3091,7 @@ const moveConfig = {
   },
   m77: {
     name: "Poison Powder",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: null,
     accuracy: 70,
     cooldown: 0,
@@ -3097,7 +3105,7 @@ const moveConfig = {
   },
   m79: {
     name: "Sleep Powder",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: null,
     accuracy: 85,
     cooldown: 4,
@@ -3111,7 +3119,7 @@ const moveConfig = {
   },
   m81: {
     name: "String Shot",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: null,
     accuracy: 95,
     cooldown: 0,
@@ -3125,7 +3133,7 @@ const moveConfig = {
   },
   m84: {
     name: "Thunder Shock",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -3139,7 +3147,7 @@ const moveConfig = {
   },
   m85: {
     name: "Thunderbolt",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 95,
     accuracy: 100,
     cooldown: 3,
@@ -3153,7 +3161,7 @@ const moveConfig = {
   },
   m86: {
     name: "Thunder Wave",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: null,
     accuracy: 90,
     cooldown: 3,
@@ -3167,7 +3175,7 @@ const moveConfig = {
   },
   m87: {
     name: "Thunder",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 95,
     accuracy: 70,
     cooldown: 5,
@@ -3181,7 +3189,7 @@ const moveConfig = {
   },
   "m87-1": {
     name: "Thunder Charge",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 110,
     accuracy: 80,
     cooldown: 5,
@@ -3195,7 +3203,7 @@ const moveConfig = {
   },
   m88: {
     name: "Rock Throw",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 60,
     accuracy: 70,
     cooldown: 0,
@@ -3209,7 +3217,7 @@ const moveConfig = {
   },
   m89: {
     name: "Earthquake",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: 100,
     accuracy: 100,
     cooldown: 6,
@@ -3223,7 +3231,7 @@ const moveConfig = {
   },
   m91: {
     name: "Dig",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -3240,7 +3248,7 @@ const moveConfig = {
   },
   m92: {
     name: "Toxic",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: null,
     accuracy: 90,
     cooldown: 2,
@@ -3254,7 +3262,7 @@ const moveConfig = {
   },
   m93: {
     name: "Confusion",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -3268,7 +3276,7 @@ const moveConfig = {
   },
   m94: {
     name: "Psychic",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 65,
     accuracy: 90,
     cooldown: 4,
@@ -3282,7 +3290,7 @@ const moveConfig = {
   },
   m97: {
     name: "Agility",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3296,7 +3304,7 @@ const moveConfig = {
   },
   "m97-1": {
     name: "Ifrit Jambe",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3310,7 +3318,7 @@ const moveConfig = {
   },
   m98: {
     name: "Quick Attack",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -3324,7 +3332,7 @@ const moveConfig = {
   },
   m100: {
     name: "Teleport",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -3338,7 +3346,7 @@ const moveConfig = {
   },
   m101: {
     name: "Night Shade",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -3352,7 +3360,7 @@ const moveConfig = {
   },
   m102: {
     name: "Mimic",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -3366,7 +3374,7 @@ const moveConfig = {
   },
   m103: {
     name: "Screech",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 85,
     cooldown: 4,
@@ -3380,7 +3388,7 @@ const moveConfig = {
   },
   m105: {
     name: "Recover",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -3393,7 +3401,7 @@ const moveConfig = {
   },
   m106: {
     name: "Harden",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -3407,7 +3415,7 @@ const moveConfig = {
   },
   m108: {
     name: "Smokescreen",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
     cooldown: 4,
@@ -3421,7 +3429,7 @@ const moveConfig = {
   },
   "m108-1": {
     name: "Rocket Smokescreen",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: 100,
     cooldown: 5,
@@ -3435,7 +3443,7 @@ const moveConfig = {
   },
   m110: {
     name: "Withdraw",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -3449,7 +3457,7 @@ const moveConfig = {
   },
   m111: {
     name: "Defense Curl",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -3463,7 +3471,7 @@ const moveConfig = {
   },
   m113: {
     name: "Light Screen",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3477,7 +3485,7 @@ const moveConfig = {
   },
   m115: {
     name: "Reflect",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3491,7 +3499,7 @@ const moveConfig = {
   },
   m116: {
     name: "Focus Energy",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -3505,7 +3513,7 @@ const moveConfig = {
   },
   m118: {
     name: "Metronome",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -3519,7 +3527,7 @@ const moveConfig = {
   },
   m122: {
     name: "Lick",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: 20,
     accuracy: 100,
     cooldown: 0,
@@ -3533,7 +3541,7 @@ const moveConfig = {
   },
   m123: {
     name: "Smog",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 35,
     accuracy: 70,
     cooldown: 0,
@@ -3547,7 +3555,7 @@ const moveConfig = {
   },
   m126: {
     name: "Fire Blast",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 90,
     accuracy: 85,
     cooldown: 5,
@@ -3561,7 +3569,7 @@ const moveConfig = {
   },
   m127: {
     name: "Waterfall",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -3575,7 +3583,7 @@ const moveConfig = {
   },
   m134: {
     name: "Kinesis",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 45,
     accuracy: 80,
     cooldown: 0,
@@ -3589,7 +3597,7 @@ const moveConfig = {
   },
   m135: {
     name: "Soft-Boiled",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -3603,7 +3611,7 @@ const moveConfig = {
   },
   m136: {
     name: "High Jump Kick",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 150,
     accuracy: 70,
     cooldown: 4,
@@ -3617,7 +3625,7 @@ const moveConfig = {
   },
   m137: {
     name: "Glare",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -3631,7 +3639,7 @@ const moveConfig = {
   },
   "m137-1": {
     name: "Rocket Glare",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: 80,
     cooldown: 3,
@@ -3644,7 +3652,7 @@ const moveConfig = {
   },
   m143: {
     name: "Sky Attack",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 200,
     accuracy: 90,
     cooldown: 6,
@@ -3661,7 +3669,7 @@ const moveConfig = {
   },
   m147: {
     name: "Spore",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -3675,7 +3683,7 @@ const moveConfig = {
   },
   m150: {
     name: "Splash",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -3688,7 +3696,7 @@ const moveConfig = {
   },
   m152: {
     name: "Crabhammer",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 100,
     accuracy: 90,
     cooldown: 5,
@@ -3702,7 +3710,7 @@ const moveConfig = {
   },
   m153: {
     name: "Explosion",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 150,
     accuracy: 100,
     cooldown: 7,
@@ -3716,7 +3724,7 @@ const moveConfig = {
   },
   "m154-1": {
     name: "Paws of Fury",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 20,
     accuracy: 100,
     cooldown: 5,
@@ -3730,7 +3738,7 @@ const moveConfig = {
   },
   m156: {
     name: "Rest",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -3744,7 +3752,7 @@ const moveConfig = {
   },
   m157: {
     name: "Rock Slide",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 75,
     accuracy: 90,
     cooldown: 5,
@@ -3758,7 +3766,7 @@ const moveConfig = {
   },
   m162: {
     name: "Super Fang",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -3772,7 +3780,7 @@ const moveConfig = {
   },
   m167: {
     name: "Triple Kick",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 33,
     accuracy: 90,
     cooldown: 5,
@@ -3786,7 +3794,7 @@ const moveConfig = {
   },
   m168: {
     name: "Thief",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 70,
     accuracy: 100,
     cooldown: 4,
@@ -3800,7 +3808,7 @@ const moveConfig = {
   },
   m175: {
     name: "Flail",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
     cooldown: 0,
@@ -3814,7 +3822,7 @@ const moveConfig = {
   },
   m177: {
     name: "Aeroblast",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 100,
     accuracy: 90,
     cooldown: 6,
@@ -3828,7 +3836,7 @@ const moveConfig = {
   },
   "m177-1": {
     name: "Shadowblast",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 80,
     accuracy: 80,
     cooldown: 6,
@@ -3842,7 +3850,7 @@ const moveConfig = {
   },
   m182: {
     name: "Protect",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3855,7 +3863,7 @@ const moveConfig = {
   },
   "m182-1": {
     name: "Stretchy Defense",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3869,7 +3877,7 @@ const moveConfig = {
   },
   m183: {
     name: "Mach Punch",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -3883,7 +3891,7 @@ const moveConfig = {
   },
   "m183-1": {
     name: "Mach Pistol",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 45,
     accuracy: 100,
     cooldown: 0,
@@ -3897,7 +3905,7 @@ const moveConfig = {
   },
   m186: {
     name: "Sweet Kiss",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: null,
     accuracy: 85,
     cooldown: 3,
@@ -3911,7 +3919,7 @@ const moveConfig = {
   },
   m187: {
     name: "Belly Drum",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3925,7 +3933,7 @@ const moveConfig = {
   },
   m188: {
     name: "Sludge Bomb",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 65,
     accuracy: 100,
     cooldown: 4,
@@ -3939,7 +3947,7 @@ const moveConfig = {
   },
   m189: {
     name: "Mud Slap",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: 35,
     accuracy: 100,
     cooldown: 0,
@@ -3953,7 +3961,7 @@ const moveConfig = {
   },
   m191: {
     name: "Spikes",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: null,
     accuracy: 100,
     cooldown: 5,
@@ -3967,7 +3975,7 @@ const moveConfig = {
   },
   m192: {
     name: "Zap Cannon",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 140,
     accuracy: 50,
     cooldown: 4,
@@ -3981,7 +3989,7 @@ const moveConfig = {
   },
   m194: {
     name: "Destiny Bond",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3995,7 +4003,7 @@ const moveConfig = {
   },
   m195: {
     name: "Perish Song",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 7,
@@ -4009,7 +4017,7 @@ const moveConfig = {
   },
   m199: {
     name: "Lock-On",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -4023,7 +4031,7 @@ const moveConfig = {
   },
   m200: {
     name: "Outrage",
-    type: types.DRAGON,
+    type: pokemonTypes.DRAGON,
     power: 130,
     accuracy: 100,
     cooldown: 5,
@@ -4037,7 +4045,7 @@ const moveConfig = {
   },
   m202: {
     name: "Giga Drain",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 90,
     accuracy: 100,
     cooldown: 3,
@@ -4051,7 +4059,7 @@ const moveConfig = {
   },
   m203: {
     name: "Endure",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4064,7 +4072,7 @@ const moveConfig = {
   },
   m204: {
     name: "Charm",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: null,
     accuracy: 100,
     cooldown: 2,
@@ -4078,7 +4086,7 @@ const moveConfig = {
   },
   m205: {
     name: "Rollout",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 40,
     accuracy: 90,
     cooldown: 0,
@@ -4092,7 +4100,7 @@ const moveConfig = {
   },
   m208: {
     name: "Milk Drink",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -4106,7 +4114,7 @@ const moveConfig = {
   },
   "m208-1": {
     name: "Shuron Hakke",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4120,7 +4128,7 @@ const moveConfig = {
   },
   m210: {
     name: "Fury Cutter",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: 40,
     accuracy: 90,
     cooldown: 0,
@@ -4134,7 +4142,7 @@ const moveConfig = {
   },
   m212: {
     name: "Mean Look",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
     cooldown: 5,
@@ -4148,7 +4156,7 @@ const moveConfig = {
   },
   "m212-1": {
     name: "Slow Down!",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: null,
     accuracy: 75,
     cooldown: 5,
@@ -4162,7 +4170,7 @@ const moveConfig = {
   },
   m214: {
     name: "Sleep Talk",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -4176,7 +4184,7 @@ const moveConfig = {
   },
   m215: {
     name: "Heal Bell",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4190,7 +4198,7 @@ const moveConfig = {
   },
   m216: {
     name: "Return",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 102,
     accuracy: 100,
     cooldown: 3,
@@ -4204,7 +4212,7 @@ const moveConfig = {
   },
   m219: {
     name: "Safeguard",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -4218,7 +4226,7 @@ const moveConfig = {
   },
   m221: {
     name: "Sacred Fire",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 100,
     accuracy: 90,
     cooldown: 6,
@@ -4232,7 +4240,7 @@ const moveConfig = {
   },
   m223: {
     name: "Dynamic Punch",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 140,
     accuracy: 50,
     cooldown: 4,
@@ -4246,7 +4254,7 @@ const moveConfig = {
   },
   m224: {
     name: "Megahorn",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: 120,
     accuracy: 85,
     cooldown: 4,
@@ -4260,7 +4268,7 @@ const moveConfig = {
   },
   m226: {
     name: "Baton Pass",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -4274,7 +4282,7 @@ const moveConfig = {
   },
   "m226-1": {
     name: "Attack Cuisine",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4288,7 +4296,7 @@ const moveConfig = {
   },
   m229: {
     name: "Rapid Spin",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 50,
     accuracy: 100,
     cooldown: 4,
@@ -4302,7 +4310,7 @@ const moveConfig = {
   },
   m231: {
     name: "Iron Tail",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: 100,
     accuracy: 75,
     cooldown: 6,
@@ -4316,7 +4324,7 @@ const moveConfig = {
   },
   m235: {
     name: "Synthesis",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -4330,7 +4338,7 @@ const moveConfig = {
   },
   m236: {
     name: "Moonlight",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -4344,7 +4352,7 @@ const moveConfig = {
   },
   m238: {
     name: "Cross Chop",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 80,
     accuracy: 80,
     cooldown: 4,
@@ -4358,7 +4366,7 @@ const moveConfig = {
   },
   m239: {
     name: "Twister",
-    type: types.DRAGON,
+    type: pokemonTypes.DRAGON,
     power: 40,
     accuracy: 100,
     cooldown: 0,
@@ -4372,7 +4380,7 @@ const moveConfig = {
   },
   m240: {
     name: "Rain Dance",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -4385,7 +4393,7 @@ const moveConfig = {
   },
   m241: {
     name: "Sunny Day",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -4398,7 +4406,7 @@ const moveConfig = {
   },
   m242: {
     name: "Crunch",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -4412,7 +4420,7 @@ const moveConfig = {
   },
   m243: {
     name: "Mirror Coat",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4426,7 +4434,7 @@ const moveConfig = {
   },
   m245: {
     name: "Extreme Speed",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 95,
     accuracy: 100,
     cooldown: 3,
@@ -4440,7 +4448,7 @@ const moveConfig = {
   },
   m246: {
     name: "Ancient Power",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 40,
     accuracy: 100,
     cooldown: 0,
@@ -4454,7 +4462,7 @@ const moveConfig = {
   },
   m247: {
     name: "Shadow Ball",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -4468,7 +4476,7 @@ const moveConfig = {
   },
   m248: {
     name: "Future Sight",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 100,
     accuracy: 100,
     cooldown: 5,
@@ -4482,7 +4490,7 @@ const moveConfig = {
   },
   m249: {
     name: "Rock Smash",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 45,
     accuracy: 80,
     cooldown: 0,
@@ -4496,7 +4504,7 @@ const moveConfig = {
   },
   m252: {
     name: "Fake Out",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 50,
     accuracy: 100,
     cooldown: 4,
@@ -4510,7 +4518,7 @@ const moveConfig = {
   },
   m257: {
     name: "Heat Wave",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 80,
     accuracy: 100,
     cooldown: 5,
@@ -4524,7 +4532,7 @@ const moveConfig = {
   },
   m258: {
     name: "Hail",
-    type: types.ICE,
+    type: pokemonTypes.ICE,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -4537,7 +4545,7 @@ const moveConfig = {
   },
   m262: {
     name: "Memento",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: 100,
     cooldown: 5,
@@ -4551,7 +4559,7 @@ const moveConfig = {
   },
   m266: {
     name: "Follow Me",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -4564,7 +4572,7 @@ const moveConfig = {
   },
   m268: {
     name: "Charge",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -4578,7 +4586,7 @@ const moveConfig = {
   },
   m269: {
     name: "Taunt",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: 100,
     cooldown: 4,
@@ -4592,7 +4600,7 @@ const moveConfig = {
   },
   "m269-1": {
     name: "Reverse Taunt",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: 100,
     cooldown: 4,
@@ -4606,7 +4614,7 @@ const moveConfig = {
   },
   m270: {
     name: "Helping Hand",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -4620,7 +4628,7 @@ const moveConfig = {
   },
   m273: {
     name: "Wish",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -4634,7 +4642,7 @@ const moveConfig = {
   },
   m276: {
     name: "Superpower",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 130,
     accuracy: 100,
     cooldown: 4,
@@ -4648,7 +4656,7 @@ const moveConfig = {
   },
   m281: {
     name: "Yawn",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
     cooldown: 4,
@@ -4662,7 +4670,7 @@ const moveConfig = {
   },
   m282: {
     name: "Knock Off",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 75,
     accuracy: 100,
     cooldown: 3,
@@ -4676,7 +4684,7 @@ const moveConfig = {
   },
   m283: {
     name: "Endeavor",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
     cooldown: 5,
@@ -4690,7 +4698,7 @@ const moveConfig = {
   },
   m284: {
     name: "Eruption",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 130,
     accuracy: 100,
     cooldown: 5,
@@ -4704,7 +4712,7 @@ const moveConfig = {
   },
   m288: {
     name: "Grudge",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4718,7 +4726,7 @@ const moveConfig = {
   },
   m295: {
     name: "Luster Purge",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 80,
     accuracy: 80,
     cooldown: 5,
@@ -4732,7 +4740,7 @@ const moveConfig = {
   },
   m296: {
     name: "Mist Ball",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 55,
     accuracy: 80,
     cooldown: 5,
@@ -4746,7 +4754,7 @@ const moveConfig = {
   },
   m299: {
     name: "Blaze Kick",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 85,
     accuracy: 90,
     cooldown: 3,
@@ -4760,7 +4768,7 @@ const moveConfig = {
   },
   m303: {
     name: "Slack Off",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -4774,7 +4782,7 @@ const moveConfig = {
   },
   m304: {
     name: "Hyper Voice",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 85,
     accuracy: 100,
     cooldown: 5,
@@ -4788,7 +4796,7 @@ const moveConfig = {
   },
   m305: {
     name: "Poison Fang",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 50,
     accuracy: 100,
     cooldown: 2,
@@ -4802,7 +4810,7 @@ const moveConfig = {
   },
   m309: {
     name: "Meteor Mash",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: 90,
     accuracy: 90,
     cooldown: 4,
@@ -4816,7 +4824,7 @@ const moveConfig = {
   },
   m311: {
     name: "Weather Ball",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -4830,7 +4838,7 @@ const moveConfig = {
   },
   m316: {
     name: "Aromatherapy",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -4844,7 +4852,7 @@ const moveConfig = {
   },
   m317: {
     name: "Rock Tomb",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 80,
     accuracy: 95,
     cooldown: 3,
@@ -4858,7 +4866,7 @@ const moveConfig = {
   },
   "m317-1": {
     name: "Holy Tomb",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 90,
     accuracy: 70,
     cooldown: 3,
@@ -4872,7 +4880,7 @@ const moveConfig = {
   },
   m322: {
     name: "Cosmic Power",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4886,7 +4894,7 @@ const moveConfig = {
   },
   m325: {
     name: "Shadow Punch",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: 75,
     accuracy: null,
     cooldown: 2,
@@ -4900,7 +4908,7 @@ const moveConfig = {
   },
   m330: {
     name: "Muddy Water",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 50,
     accuracy: 70,
     cooldown: 5,
@@ -4914,7 +4922,7 @@ const moveConfig = {
   },
   m331: {
     name: "Bullet Seed",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 30,
     accuracy: 100,
     cooldown: 3,
@@ -4928,7 +4936,7 @@ const moveConfig = {
   },
   "m331-1": {
     name: "Ashura Bakkei",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 15,
     accuracy: 80,
     cooldown: 5,
@@ -4945,7 +4953,7 @@ const moveConfig = {
   },
   m332: {
     name: "Aerial Ace",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 80,
     accuracy: null,
     cooldown: 2,
@@ -4959,7 +4967,7 @@ const moveConfig = {
   },
   m334: {
     name: "Iron Defense",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4973,7 +4981,7 @@ const moveConfig = {
   },
   "m334-1": {
     name: "Titanium Defense",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -4987,7 +4995,7 @@ const moveConfig = {
   },
   "m334-2": {
     name: "Genetic Defense",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5001,7 +5009,7 @@ const moveConfig = {
   },
   m336: {
     name: "Howl",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -5015,7 +5023,7 @@ const moveConfig = {
   },
   m340: {
     name: "Bounce",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 105,
     accuracy: 85,
     cooldown: 3,
@@ -5032,7 +5040,7 @@ const moveConfig = {
   },
   m344: {
     name: "Volt Tackle",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 80,
     accuracy: 80,
     cooldown: 4,
@@ -5046,7 +5054,7 @@ const moveConfig = {
   },
   m347: {
     name: "Calm Mind",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -5060,7 +5068,7 @@ const moveConfig = {
   },
   m348: {
     name: "Leaf Blade",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 80,
     accuracy: 100,
     cooldown: 4,
@@ -5074,7 +5082,7 @@ const moveConfig = {
   },
   m349: {
     name: "Dragon Dance",
-    type: types.DRAGON,
+    type: pokemonTypes.DRAGON,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5088,7 +5096,7 @@ const moveConfig = {
   },
   m352: {
     name: "Water Pulse",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 60,
     accuracy: 100,
     cooldown: 4,
@@ -5102,7 +5110,7 @@ const moveConfig = {
   },
   m354: {
     name: "Psycho Boost",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 20,
     accuracy: 90,
     cooldown: 6,
@@ -5116,7 +5124,7 @@ const moveConfig = {
   },
   "m354-1": {
     name: "Psycho Boost - Attack",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 100,
     accuracy: 90,
     cooldown: 6,
@@ -5130,7 +5138,7 @@ const moveConfig = {
   },
   "m354-2": {
     name: "Psycho Boost - Defense",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5144,7 +5152,7 @@ const moveConfig = {
   },
   "m354-3": {
     name: "Psycho Boost - Speed",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 7,
@@ -5158,7 +5166,7 @@ const moveConfig = {
   },
   m355: {
     name: "Roost",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -5172,7 +5180,7 @@ const moveConfig = {
   },
   m359: {
     name: "Hammer Arm",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 80,
     accuracy: 90,
     cooldown: 4,
@@ -5186,7 +5194,7 @@ const moveConfig = {
   },
   m361: {
     name: "Healing Wish",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5200,7 +5208,7 @@ const moveConfig = {
   },
   m366: {
     name: "Tailwind",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: null,
     accuracy: null,
     cooldown: 6,
@@ -5214,7 +5222,7 @@ const moveConfig = {
   },
   m369: {
     name: "U-Turn",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: 70,
     accuracy: 100,
     cooldown: 2,
@@ -5228,7 +5236,7 @@ const moveConfig = {
   },
   m370: {
     name: "Close Combat",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 150,
     accuracy: 100,
     cooldown: 4,
@@ -5242,7 +5250,7 @@ const moveConfig = {
   },
   "m370-1": {
     name: "Gattling Combat",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 90,
     accuracy: 80,
     cooldown: 5,
@@ -5256,7 +5264,7 @@ const moveConfig = {
   },
   m387: {
     name: "Last Resort",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 80,
     accuracy: 100,
     cooldown: 3,
@@ -5270,7 +5278,7 @@ const moveConfig = {
   },
   m392: {
     name: "Aqua Ring",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5284,7 +5292,7 @@ const moveConfig = {
   },
   m394: {
     name: "Flare Blitz",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 110,
     accuracy: 100,
     cooldown: 5,
@@ -5298,7 +5306,7 @@ const moveConfig = {
   },
   "m394-1": {
     name: "Dark Blitz",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 90,
     accuracy: 100,
     cooldown: 5,
@@ -5312,7 +5320,7 @@ const moveConfig = {
   },
   m396: {
     name: "Aura Sphere",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 100,
     accuracy: null,
     cooldown: 3,
@@ -5326,7 +5334,7 @@ const moveConfig = {
   },
   m398: {
     name: "Poison Jab",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -5340,7 +5348,7 @@ const moveConfig = {
   },
   m399: {
     name: "Dark Pulse",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 65,
     accuracy: 100,
     cooldown: 4,
@@ -5354,7 +5362,7 @@ const moveConfig = {
   },
   m402: {
     name: "Seed Bomb",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 80,
     accuracy: 80,
     cooldown: 3,
@@ -5368,7 +5376,7 @@ const moveConfig = {
   },
   m403: {
     name: "Air Slash",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 65,
     accuracy: 90,
     cooldown: 4,
@@ -5382,7 +5390,7 @@ const moveConfig = {
   },
   m404: {
     name: "X-Scissor",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: 45,
     accuracy: 100,
     cooldown: 4,
@@ -5396,7 +5404,7 @@ const moveConfig = {
   },
   m405: {
     name: "Bug Buzz",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: 70,
     accuracy: 100,
     cooldown: 5,
@@ -5410,7 +5418,7 @@ const moveConfig = {
   },
   m406: {
     name: "Dragon Pulse",
-    type: types.DRAGON,
+    type: pokemonTypes.DRAGON,
     power: 70,
     accuracy: 100,
     cooldown: 4,
@@ -5424,7 +5432,7 @@ const moveConfig = {
   },
   m407: {
     name: "Dragon Rush",
-    type: types.DRAGON,
+    type: pokemonTypes.DRAGON,
     power: 120,
     accuracy: 75,
     cooldown: 3,
@@ -5438,7 +5446,7 @@ const moveConfig = {
   },
   m409: {
     name: "Drain Punch",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 90,
     accuracy: 100,
     cooldown: 3,
@@ -5452,7 +5460,7 @@ const moveConfig = {
   },
   m412: {
     name: "Energy Ball",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -5466,7 +5474,7 @@ const moveConfig = {
   },
   m413: {
     name: "Brave Bird",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 110,
     accuracy: 80,
     cooldown: 5,
@@ -5480,7 +5488,7 @@ const moveConfig = {
   },
   m414: {
     name: "Earth Power",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: 70,
     accuracy: 100,
     cooldown: 4,
@@ -5494,7 +5502,7 @@ const moveConfig = {
   },
   m416: {
     name: "Giga Impact",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 160,
     accuracy: 90,
     cooldown: 6,
@@ -5508,7 +5516,7 @@ const moveConfig = {
   },
   "m416-1": {
     name: "Galaxy Impact",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 150,
     accuracy: 90,
     cooldown: 6,
@@ -5522,7 +5530,7 @@ const moveConfig = {
   },
   m417: {
     name: "Nasty Plot",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -5536,7 +5544,7 @@ const moveConfig = {
   },
   "m417-1": {
     name: "Uncontrollable Joy",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -5550,7 +5558,7 @@ const moveConfig = {
   },
   m418: {
     name: "Bullet Punch",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -5564,7 +5572,7 @@ const moveConfig = {
   },
   m420: {
     name: "Ice Shard",
-    type: types.ICE,
+    type: pokemonTypes.ICE,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -5578,7 +5586,7 @@ const moveConfig = {
   },
   m424: {
     name: "Fire Fang",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 80,
     accuracy: 95,
     cooldown: 2,
@@ -5592,7 +5600,7 @@ const moveConfig = {
   },
   m425: {
     name: "Shadow Sneak",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: 40,
     accuracy: 100,
     cooldown: 0,
@@ -5606,7 +5614,7 @@ const moveConfig = {
   },
   m428: {
     name: "Zen Headbutt",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 120,
     accuracy: 90,
     cooldown: 4,
@@ -5620,7 +5628,7 @@ const moveConfig = {
   },
   m430: {
     name: "Flash Cannon",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: 65,
     accuracy: 100,
     cooldown: 4,
@@ -5634,7 +5642,7 @@ const moveConfig = {
   },
   m432: {
     name: "Defog",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -5649,7 +5657,7 @@ const moveConfig = {
   // TODO: possibly rework this move
   m433: {
     name: "Trick Room",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5663,7 +5671,7 @@ const moveConfig = {
   },
   m435: {
     name: "Discharge",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 65,
     accuracy: 100,
     cooldown: 4,
@@ -5677,7 +5685,7 @@ const moveConfig = {
   },
   "m435-1": {
     name: "Volt Discharge",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 70,
     accuracy: 100,
     cooldown: 5,
@@ -5691,7 +5699,7 @@ const moveConfig = {
   },
   m437: {
     name: "Leaf Storm",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 100,
     accuracy: 90,
     cooldown: 5,
@@ -5705,7 +5713,7 @@ const moveConfig = {
   },
   m441: {
     name: "Gunk Shot",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 100,
     accuracy: 80,
     cooldown: 3,
@@ -5719,7 +5727,7 @@ const moveConfig = {
   },
   m444: {
     name: "Stone Edge",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 80,
     accuracy: 80,
     cooldown: 4,
@@ -5733,7 +5741,7 @@ const moveConfig = {
   },
   m446: {
     name: "Stealth Rock",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5747,7 +5755,7 @@ const moveConfig = {
   },
   m450: {
     name: "Bug Bite",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: 80,
     accuracy: 100,
     cooldown: 2,
@@ -5761,7 +5769,7 @@ const moveConfig = {
   },
   m453: {
     name: "Aqua Jet",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 40,
     accuracy: 100,
     cooldown: 0,
@@ -5775,7 +5783,7 @@ const moveConfig = {
   },
   m469: {
     name: "Wide Guard",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5789,7 +5797,7 @@ const moveConfig = {
   },
   m476: {
     name: "Rage Powder",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -5803,7 +5811,7 @@ const moveConfig = {
   },
   m479: {
     name: "Smack Down",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -5817,7 +5825,7 @@ const moveConfig = {
   },
   m482: {
     name: "Sludge Wave",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 85,
     accuracy: 100,
     cooldown: 5,
@@ -5831,7 +5839,7 @@ const moveConfig = {
   },
   m483: {
     name: "Quiver Dance",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -5845,7 +5853,7 @@ const moveConfig = {
   },
   m484: {
     name: "Heavy Slam",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: null,
     accuracy: 100,
     cooldown: 3,
@@ -5859,7 +5867,7 @@ const moveConfig = {
   },
   m492: {
     name: "Foul Play",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 105,
     accuracy: 100,
     cooldown: 3,
@@ -5873,7 +5881,7 @@ const moveConfig = {
   },
   m503: {
     name: "Scald",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -5887,7 +5895,7 @@ const moveConfig = {
   },
   m505: {
     name: "Heal Pulse",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -5901,7 +5909,7 @@ const moveConfig = {
   },
   m506: {
     name: "Hex",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: 45,
     accuracy: 100,
     cooldown: 0,
@@ -5915,7 +5923,7 @@ const moveConfig = {
   },
   m521: {
     name: "Volt Switch",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 70,
     accuracy: 100,
     cooldown: 2,
@@ -5929,7 +5937,7 @@ const moveConfig = {
   },
   m523: {
     name: "Bulldoze",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: 30,
     accuracy: 100,
     cooldown: 4,
@@ -5943,7 +5951,7 @@ const moveConfig = {
   },
   m525: {
     name: "Dragon Tail",
-    type: types.DRAGON,
+    type: pokemonTypes.DRAGON,
     power: 75,
     accuracy: 90,
     cooldown: 2,
@@ -5957,7 +5965,7 @@ const moveConfig = {
   },
   m526: {
     name: "Work Up",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -5971,7 +5979,7 @@ const moveConfig = {
   },
   m527: {
     name: "Electroweb",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 50,
     accuracy: 90,
     cooldown: 5,
@@ -5985,7 +5993,7 @@ const moveConfig = {
   },
   m528: {
     name: "Wild Charge",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 100,
     accuracy: 100,
     cooldown: 4,
@@ -5999,7 +6007,7 @@ const moveConfig = {
   },
   m529: {
     name: "Drill Run",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: 85,
     accuracy: 95,
     cooldown: 2,
@@ -6013,7 +6021,7 @@ const moveConfig = {
   },
   m534: {
     name: "Razor Shell",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 90,
     accuracy: 95,
     cooldown: 4,
@@ -6027,7 +6035,7 @@ const moveConfig = {
   },
   m540: {
     name: "Psystrike",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 95,
     accuracy: 100,
     cooldown: 5,
@@ -6041,7 +6049,7 @@ const moveConfig = {
   },
   "m540-1": {
     name: "Divine Departure",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 85,
     accuracy: 100,
     cooldown: 5,
@@ -6055,7 +6063,7 @@ const moveConfig = {
   },
   m542: {
     name: "Hurricane",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 70,
     accuracy: 70,
     cooldown: 5,
@@ -6069,7 +6077,7 @@ const moveConfig = {
   },
   "m542-1": {
     name: "Shadow Storm",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: 40,
     accuracy: 80,
     cooldown: 5,
@@ -6083,7 +6091,7 @@ const moveConfig = {
   },
   m564: {
     name: "Sticky Web",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -6097,7 +6105,7 @@ const moveConfig = {
   },
   m565: {
     name: "Fell Stinger",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: 100,
     accuracy: 100,
     cooldown: 4,
@@ -6111,7 +6119,7 @@ const moveConfig = {
   },
   m568: {
     name: "Noble Roar",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 70,
     cooldown: 4,
@@ -6125,7 +6133,7 @@ const moveConfig = {
   },
   m573: {
     name: "Freeze-Dry",
-    type: types.ICE,
+    type: pokemonTypes.ICE,
     power: 90,
     accuracy: 90,
     cooldown: 3,
@@ -6139,7 +6147,7 @@ const moveConfig = {
   },
   m572: {
     name: "Petal Blizzard",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 90,
     accuracy: 100,
     cooldown: 5,
@@ -6153,7 +6161,7 @@ const moveConfig = {
   },
   m574: {
     name: "Disarming Voice",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: 50,
     accuracy: null,
     cooldown: 0,
@@ -6167,7 +6175,7 @@ const moveConfig = {
   },
   m583: {
     name: "Play Rough",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: 95,
     accuracy: 90,
     cooldown: 3,
@@ -6181,7 +6189,7 @@ const moveConfig = {
   },
   m585: {
     name: "Moonblast",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: 80,
     accuracy: 70,
     cooldown: 5,
@@ -6195,7 +6203,7 @@ const moveConfig = {
   },
   m586: {
     name: "Boomburst",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 130,
     accuracy: 100,
     cooldown: 7,
@@ -6209,7 +6217,7 @@ const moveConfig = {
   },
   m605: {
     name: "Dazzling Gleam",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: 75,
     accuracy: 100,
     cooldown: 4,
@@ -6222,7 +6230,7 @@ const moveConfig = {
   },
   m618: {
     name: "Origin Pulse",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 45,
     accuracy: 85,
     cooldown: 6,
@@ -6236,7 +6244,7 @@ const moveConfig = {
   },
   m619: {
     name: "Precipice Blades",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: 50,
     accuracy: 85,
     cooldown: 6,
@@ -6250,7 +6258,7 @@ const moveConfig = {
   },
   m620: {
     name: "Dragon Ascent",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 85,
     accuracy: 100,
     cooldown: 7,
@@ -6264,7 +6272,7 @@ const moveConfig = {
   },
   "m620-1": {
     name: "Bolo Breath",
-    type: types.DRAGON,
+    type: pokemonTypes.DRAGON,
     power: 95,
     accuracy: 100,
     cooldown: 6,
@@ -6278,7 +6286,7 @@ const moveConfig = {
   },
   m668: {
     name: "Strength Sap",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: null,
     accuracy: 100,
     cooldown: 3,
@@ -6292,7 +6300,7 @@ const moveConfig = {
   },
   m672: {
     name: "Toxic Thread",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: null,
     accuracy: 100,
     cooldown: 5,
@@ -6306,7 +6314,7 @@ const moveConfig = {
   },
   m710: {
     name: "Liquidation",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -6320,7 +6328,7 @@ const moveConfig = {
   },
   m719: {
     name: "10,000,000 Volt Thunderbolt",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 100,
     accuracy: 100,
     cooldown: 6,
@@ -6334,7 +6342,7 @@ const moveConfig = {
   },
   m742: {
     name: "Double Iron Bash",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: 60,
     accuracy: 100,
     cooldown: 6,
@@ -6348,7 +6356,7 @@ const moveConfig = {
   },
   m814: {
     name: "Dual Wingbeat",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 45,
     accuracy: 90,
     cooldown: 4,
@@ -6362,7 +6370,7 @@ const moveConfig = {
   },
   m876: {
     name: "Pound",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -6375,7 +6383,7 @@ const moveConfig = {
   },
   m20001: {
     name: "Democracy",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: 100,
     cooldown: 4,
@@ -6389,7 +6397,7 @@ const moveConfig = {
   },
   m20002: {
     name: "HM Master",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -6403,7 +6411,7 @@ const moveConfig = {
   },
   m20003: {
     name: "Rocket Thievery",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: null,
     cooldown: 7,
@@ -6417,7 +6425,7 @@ const moveConfig = {
   },
   m20004: {
     name: "Time Dilation",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -6431,7 +6439,7 @@ const moveConfig = {
   },
   m20005: {
     name: "Stoke the Fire!",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -6445,7 +6453,7 @@ const moveConfig = {
   },
   m20006: {
     name: "Destructor Beam",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 50,
     accuracy: 100,
     cooldown: 4,
@@ -6459,7 +6467,7 @@ const moveConfig = {
   },
   m20007: {
     name: "Scammed!",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: null,
     cooldown: 6,
@@ -6473,7 +6481,7 @@ const moveConfig = {
   },
   m20008: {
     name: "All-In",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -6487,7 +6495,7 @@ const moveConfig = {
   },
   m20009: {
     name: "King of Hell",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 50,
     accuracy: 90,
     cooldown: 6,
@@ -6501,7 +6509,7 @@ const moveConfig = {
   },
   m20010: {
     name: "Gear Fifth",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: null,
     accuracy: null,
     cooldown: 7,
@@ -6515,7 +6523,7 @@ const moveConfig = {
   },
   m20011: {
     name: "Dawn Rocket",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: 85,
     accuracy: null,
     cooldown: 2,
@@ -6529,7 +6537,7 @@ const moveConfig = {
   },
   m20012: {
     name: "Monkey God Gun",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 80,
     accuracy: 100,
     cooldown: 6,
@@ -6543,7 +6551,7 @@ const moveConfig = {
   },
   m20013: {
     name: "ZA WATER!!!",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: null,
     accuracy: null,
     cooldown: 6,
@@ -7217,7 +7225,10 @@ const moveExecutes = {
   m73(battle, source, _primaryTarget, allTargets, missedTargets) {
     for (const target of allTargets) {
       // check if target is grass type
-      if (target.type1 === types.GRASS || target.type2 === types.GRASS) {
+      if (
+        target.type1 === pokemonTypes.GRASS ||
+        target.type2 === pokemonTypes.GRASS
+      ) {
         battle.addToLog(
           `${target.name}'s Grass type renders it immune to Leech Seed!`
         );
@@ -7269,7 +7280,10 @@ const moveExecutes = {
   m77(battle, source, _primaryTarget, allTargets, missedTargets) {
     for (const target of allTargets) {
       // check if target is grass type
-      if (target.type1 === types.GRASS || target.type2 === types.GRASS) {
+      if (
+        target.type1 === pokemonTypes.GRASS ||
+        target.type2 === pokemonTypes.GRASS
+      ) {
         battle.addToLog(
           `${target.name}'s Grass type renders it immune to spore moves!`
         );
@@ -7287,7 +7301,10 @@ const moveExecutes = {
   m79(battle, source, _primaryTarget, allTargets, missedTargets) {
     for (const target of allTargets) {
       // check if target is grass type
-      if (target.type1 === types.GRASS || target.type2 === types.GRASS) {
+      if (
+        target.type1 === pokemonTypes.GRASS ||
+        target.type2 === pokemonTypes.GRASS
+      ) {
         battle.addToLog(
           `${target.name}'s Grass type renders it immune to spore moves!`
         );
@@ -7471,7 +7488,8 @@ const moveExecutes = {
       // if not miss or user poison, apply badly poisoned
       const miss = missedTargets.includes(target);
       const poisonType =
-        source.type1 === types.POISON || source.type2 === types.POISON;
+        source.type1 === pokemonTypes.POISON ||
+        source.type2 === pokemonTypes.POISON;
       if (!miss || poisonType) {
         target.applyStatus(statusConditions.BADLY_POISON, source);
       }
@@ -7529,8 +7547,11 @@ const moveExecutes = {
       target.boostCombatReadiness(source, 80);
     }
     // if user not fire, change second type to fire
-    if (source.type1 !== types.FIRE && source.type2 !== types.FIRE) {
-      source.type2 = types.FIRE;
+    if (
+      source.type1 !== pokemonTypes.FIRE &&
+      source.type2 !== pokemonTypes.FIRE
+    ) {
+      source.type2 = pokemonTypes.FIRE;
     }
   },
   m98(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -7938,7 +7959,10 @@ const moveExecutes = {
   m147(battle, source, _primaryTarget, allTargets, missedTargets) {
     for (const target of allTargets) {
       // check if target is grass type
-      if (target.type1 === types.GRASS || target.type2 === types.GRASS) {
+      if (
+        target.type1 === pokemonTypes.GRASS ||
+        target.type2 === pokemonTypes.GRASS
+      ) {
         battle.addToLog(
           `${target.name}'s Grass type renders it immune to spore moves!`
         );
@@ -9537,13 +9561,13 @@ const moveExecutes = {
       let { type } = moveData;
       if (!battle.isWeatherNegated()) {
         if (battle.weather.weatherId === weatherConditions.SUN) {
-          type = types.FIRE;
+          type = pokemonTypes.FIRE;
         } else if (battle.weather.weatherId === weatherConditions.RAIN) {
-          type = types.WATER;
+          type = pokemonTypes.WATER;
         } else if (battle.weather.weatherId === weatherConditions.SANDSTORM) {
-          type = types.ROCK;
+          type = pokemonTypes.ROCK;
         } else if (battle.weather.weatherId === weatherConditions.HAIL) {
-          type = types.ICE;
+          type = pokemonTypes.ICE;
         }
       }
       const miss = missedTargets.includes(target);
@@ -10225,8 +10249,14 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // get max of fire, dark multiplier
-      const fireMultiplier = source.getTypeDamageMultiplier(types.FIRE, target);
-      const darkMultiplier = source.getTypeDamageMultiplier(types.DARK, target);
+      const fireMultiplier = source.getTypeDamageMultiplier(
+        pokemonTypes.FIRE,
+        target
+      );
+      const darkMultiplier = source.getTypeDamageMultiplier(
+        pokemonTypes.DARK,
+        target
+      );
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
         type: Math.max(fireMultiplier, darkMultiplier),
       });
@@ -10934,7 +10964,8 @@ const moveExecutes = {
       // if not miss and target has flying type, apply loseFlying to target
       if (
         !miss &&
-        (target.type1 === types.FLYING || target.type2 === types.FLYING)
+        (target.type1 === pokemonTypes.FLYING ||
+          target.type2 === pokemonTypes.FLYING)
       ) {
         target.addEffect("loseFlying", 1, source);
       }
@@ -11385,7 +11416,8 @@ const moveExecutes = {
     for (const target of allTargets) {
       // see if target is water type
       const waterType =
-        target.type1 === types.WATER || target.type2 === types.WATER;
+        target.type1 === pokemonTypes.WATER ||
+        target.type2 === pokemonTypes.WATER;
       const miss = !waterType && missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
         type: waterType ? 2 : null,
@@ -12303,7 +12335,7 @@ const abilityConfig = {
 
           // if electric, negate damage and heal 25% of max hp
           const moveData = moveConfig[args.damageInfo.moveId];
-          if (moveData.type === types.ELECTRIC) {
+          if (moveData.type === pokemonTypes.ELECTRIC) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name} is healed by Volt Absorb!`
             );
@@ -12360,7 +12392,7 @@ const abilityConfig = {
 
           // if water, negate damage and heal 25% of max hp
           const moveData = moveConfig[args.damageInfo.moveId];
-          if (moveData.type === types.WATER) {
+          if (moveData.type === pokemonTypes.WATER) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name} is healed by Water Absorb!`
             );
@@ -12484,7 +12516,7 @@ const abilityConfig = {
 
           // if fire, negate damage and grant atk up, spa up
           const moveData = moveConfig[args.damageInfo.moveId];
-          if (moveData.type === types.FIRE) {
+          if (moveData.type === pokemonTypes.FIRE) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Flash Fire was activated by the Fire attack!`
             );
@@ -12797,7 +12829,7 @@ const abilityConfig = {
           }
 
           const { moveType } = args;
-          if (moveType !== types.GROUND) {
+          if (moveType !== pokemonTypes.GROUND) {
             return;
           }
           args.multiplier = 0;
@@ -13051,7 +13083,7 @@ const abilityConfig = {
           // check that enemy used non-ally move, and that move is electric
           const moveUser = args.user;
           const moveData = moveConfig[args.moveId];
-          if (moveData.type !== types.ELECTRIC) {
+          if (moveData.type !== pokemonTypes.ELECTRIC) {
             return;
           }
           if (moveUser.teamName === initialArgs.pokemon.teamName) {
@@ -13076,7 +13108,7 @@ const abilityConfig = {
           }
 
           const moveData = moveConfig[args.damageInfo.moveId];
-          if (moveData.type !== types.ELECTRIC) {
+          if (moveData.type !== pokemonTypes.ELECTRIC) {
             return;
           }
 
@@ -13472,7 +13504,7 @@ const abilityConfig = {
             {
               power,
               damageType: damageTypes.PHYSICAL,
-              type: types.PSYCHIC,
+              type: pokemonTypes.PSYCHIC,
             },
             initialArgs.pokemon,
             targetPokemon,
@@ -13533,7 +13565,10 @@ const abilityConfig = {
 
           // if move type === fire or ice, reduce damage by 50%
           const moveData = moveConfig[args.damageInfo.moveId];
-          if (moveData.type === types.FIRE || moveData.type === types.ICE) {
+          if (
+            moveData.type === pokemonTypes.FIRE ||
+            moveData.type === pokemonTypes.ICE
+          ) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Thick Fat reduces damage taken!`
             );
@@ -13929,7 +13964,7 @@ const abilityConfig = {
           // if move type === grass and hp < 1/3, increase damage by 50%
           const moveData = moveConfig[args.damageInfo.moveId];
           if (
-            moveData.type === types.GRASS &&
+            moveData.type === pokemonTypes.GRASS &&
             userPokemon.hp < userPokemon.maxHp / 3
           ) {
             userPokemon.battle.addToLog(
@@ -13977,7 +14012,7 @@ const abilityConfig = {
           // if move type === fire and hp < 1/3, increase damage by 50%
           const moveData = moveConfig[args.damageInfo.moveId];
           if (
-            moveData.type === types.FIRE &&
+            moveData.type === pokemonTypes.FIRE &&
             userPokemon.hp < userPokemon.maxHp / 3
           ) {
             userPokemon.battle.addToLog(
@@ -14025,7 +14060,7 @@ const abilityConfig = {
           // if move type === water and hp < 1/3, increase damage by 50%
           const moveData = moveConfig[args.damageInfo.moveId];
           if (
-            moveData.type === types.WATER &&
+            moveData.type === pokemonTypes.WATER &&
             userPokemon.hp < userPokemon.maxHp / 3
           ) {
             userPokemon.battle.addToLog(
@@ -14073,7 +14108,7 @@ const abilityConfig = {
           // if move type === bug and hp < 1/3, increase damage by 50%
           const moveData = moveConfig[args.damageInfo.moveId];
           if (
-            moveData.type === types.BUG &&
+            moveData.type === pokemonTypes.BUG &&
             userPokemon.hp < userPokemon.maxHp / 3
           ) {
             userPokemon.battle.addToLog(
@@ -14156,7 +14191,7 @@ const abilityConfig = {
           // if target is not flying, restrict combat readiness boosts for 2 turns
           if (
             sourcePokemon.getTypeDamageMultiplier(
-              types.GROUND,
+              pokemonTypes.GROUND,
               targetPokemon
             ) !== 0
           ) {
@@ -14581,7 +14616,7 @@ const abilityConfig = {
           // check that enemy used non-ally move, and that move is water
           const moveUser = args.user;
           const moveData = moveConfig[args.moveId];
-          if (moveData.type !== types.WATER) {
+          if (moveData.type !== pokemonTypes.WATER) {
             return;
           }
           if (moveUser.teamName === initialArgs.pokemon.teamName) {
@@ -14606,7 +14641,7 @@ const abilityConfig = {
           }
 
           const moveData = moveConfig[args.damageInfo.moveId];
-          if (moveData.type !== types.WATER) {
+          if (moveData.type !== pokemonTypes.WATER) {
             return;
           }
 
@@ -14845,7 +14880,7 @@ const abilityConfig = {
           }
           const { moveId } = args.damageInfo;
           const moveData = moveConfig[moveId];
-          if (!moveData || moveData.type !== types.STEEL) {
+          if (!moveData || moveData.type !== pokemonTypes.STEEL) {
             return;
           }
 
