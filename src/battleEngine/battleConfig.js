@@ -5,6 +5,7 @@
 /* eslint-disable no-param-reassign */
 const { types: pokemonTypes } = require("../config/pokemonConfig");
 const types = require("../../types");
+const { getMove, executeMove } = require("./moveService");
 
 /** @typedef {types.Enum<battleEventNames>} BattleEventEnum */
 const battleEventNames = Object.freeze({
@@ -1074,7 +1075,7 @@ const effectConfig = {
           if (args.damageInfo.type !== "move") {
             return;
           }
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (!moveData || moveData.damageType !== damageTypes.PHYSICAL) {
             return;
           }
@@ -1136,7 +1137,7 @@ const effectConfig = {
           if (args.damageInfo.type !== "move") {
             return;
           }
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (!moveData || moveData.damageType !== damageTypes.SPECIAL) {
             return;
           }
@@ -1342,7 +1343,7 @@ const effectConfig = {
           // get move data
           const { moveId } = args.damageInfo;
           // eslint-disable-next-line no-use-before-define
-          const moveData = moveConfig[moveId];
+          const moveData = getMove(moveId);
           if (!moveData) {
             return;
           }
@@ -1358,13 +1359,14 @@ const effectConfig = {
             invulnPokemon.battle.addToLog(
               `${invulnPokemon.name} reflected the move back at ${sourcePokemon.name}!`
             );
-            moveExecutes[moveId](
-              invulnPokemon.battle,
-              invulnPokemon,
-              sourcePokemon,
-              [sourcePokemon],
-              []
-            );
+            executeMove({
+              moveId: moveId,
+              battle: invulnPokemon.battle,
+              source: invulnPokemon,
+              primaryTarget: sourcePokemon,
+              allTargets: [sourcePokemon],
+              missedTargets: [],
+            });
           }
         },
       };
@@ -1396,7 +1398,7 @@ const effectConfig = {
           if (args.damageInfo.type !== "move") {
             return;
           }
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           let multiplier = 0.7;
           if (moveData.targetPattern === targetPatterns.SINGLE) {
             multiplier = 0.4;
@@ -1857,7 +1859,7 @@ const effectConfig = {
       const disabledMoves = [];
       // disable ultimate moves
       for (const moveId of Object.keys(target.moveIds)) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (moveData.tier === moveTiers.ULTIMATE) {
           target.disableMove(moveId, source);
           disabledMoves.push(moveData.name);
@@ -1878,7 +1880,7 @@ const effectConfig = {
       battle.addToLog(`${target.name}'s ultimate moves are now available!`);
       // enable ultimate moves
       for (const moveId of Object.keys(target.moveIds)) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (moveData.tier === moveTiers.ULTIMATE) {
           target.enableMove(moveId, args.source);
         }
@@ -1895,7 +1897,7 @@ const effectConfig = {
         `${target.name} is silenced and can only use basic moves!`
       );
       for (const moveId in target.moveIds) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (moveData.tier !== moveTiers.BASIC) {
           target.disableMove(moveId, source);
         }
@@ -1907,7 +1909,7 @@ const effectConfig = {
     effectRemove(battle, target, args) {
       battle.addToLog(`${target.name} is no longer silenced!`);
       for (const moveId in target.moveIds) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (moveData.tier !== moveTiers.BASIC) {
           target.enableMove(moveId, args.source);
         }
@@ -1923,7 +1925,7 @@ const effectConfig = {
       battle.addToLog(`${target.name} was taunted!`);
       // disable moves with no power
       for (const moveId of Object.keys(target.moveIds)) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (!moveData.power) {
           target.disableMove(moveId, source);
         }
@@ -1936,7 +1938,7 @@ const effectConfig = {
       battle.addToLog(`${target.name} is no longer taunted!`);
       // enable moves with no power
       for (const moveId of Object.keys(target.moveIds)) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (!moveData.power) {
           target.enableMove(moveId, args.source);
         }
@@ -1952,7 +1954,7 @@ const effectConfig = {
       battle.addToLog(`${target.name} was reverse-taunted!`);
       // disable moves with power
       for (const moveId of Object.keys(target.moveIds)) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (moveData.power) {
           target.disableMove(moveId, source);
         }
@@ -1965,7 +1967,7 @@ const effectConfig = {
       battle.addToLog(`${target.name} is no longer reverse-taunted!`);
       // enable moves with no power
       for (const moveId of Object.keys(target.moveIds)) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (moveData.power) {
           target.enableMove(moveId, args.source);
         }
@@ -1991,7 +1993,7 @@ const effectConfig = {
 
           // check that enemy used non-ally move
           const moveUser = args.user;
-          const moveData = moveConfig[args.moveId];
+          const moveData = getMove(args.moveId);
           if (moveUser.teamName === initialArgs.pokemon.teamName) {
             return;
           }
@@ -2035,7 +2037,7 @@ const effectConfig = {
             return;
           }
           const { moveId } = args.damageInfo;
-          const moveData = moveConfig[moveId];
+          const moveData = getMove(moveId);
           if (moveData.type !== pokemonTypes.ELECTRIC) {
             return;
           }
@@ -2455,7 +2457,7 @@ const effectConfig = {
     dispellable: false,
     effectAdd(battle, _source, target, initialArgs) {
       const mimicMoveId = initialArgs.moveId;
-      const moveData = moveConfig[mimicMoveId];
+      const moveData = getMove(mimicMoveId);
       if (!mimicMoveId) return;
       if (!moveData) return;
       // if target already knows move, ignore
@@ -2518,7 +2520,7 @@ const effectConfig = {
 
       // if knows Gear Fifth, set cooldown to max
       const gearFifthMoveId = "m20010";
-      const moveData = moveConfig[gearFifthMoveId];
+      const moveData = getMove(gearFifthMoveId);
       if (target.moveIds[gearFifthMoveId]) {
         target.moveIds[gearFifthMoveId].cooldown = moveData.cooldown;
       }
@@ -6585,7 +6587,7 @@ const moveConfig = Object.freeze({
 const moveExecutes = {
   m6(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m6";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const damageToDeal = calculateDamage(
         moveData,
@@ -6619,7 +6621,7 @@ const moveExecutes = {
   },
   "m6-1": function (battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m6-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6658,7 +6660,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m7-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // if not miss, attempt to remove defUp, greaterDefUp, spdUp, greaterSpdUp
@@ -6687,7 +6689,7 @@ const moveExecutes = {
   },
   m10(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m10";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const damageToDeal = calculateDamage(
         moveData,
@@ -6711,7 +6713,7 @@ const moveExecutes = {
   },
   m16(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m16";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // if sprungUp, have 2x power
       const sprungUp = target.effectIds.sprungUp !== undefined;
@@ -6727,7 +6729,7 @@ const moveExecutes = {
   },
   m17(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m17";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const damageToDeal = calculateDamage(
         moveData,
@@ -6743,7 +6745,7 @@ const moveExecutes = {
   },
   m21(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m21";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6755,7 +6757,7 @@ const moveExecutes = {
   },
   m22(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m22";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6767,7 +6769,7 @@ const moveExecutes = {
   },
   m23(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m23";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6784,7 +6786,7 @@ const moveExecutes = {
   },
   m30(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m30";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6796,7 +6798,7 @@ const moveExecutes = {
   },
   m33(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m33";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6808,7 +6810,7 @@ const moveExecutes = {
   },
   m34(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m34";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6831,7 +6833,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m34-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6848,7 +6850,7 @@ const moveExecutes = {
   },
   m35(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m35";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6867,7 +6869,7 @@ const moveExecutes = {
   },
   m36(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m36";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -6886,7 +6888,7 @@ const moveExecutes = {
   },
   m38(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m38";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const damageToDeal = calculateDamage(
@@ -6909,7 +6911,7 @@ const moveExecutes = {
   },
   m40(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m40";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6964,7 +6966,7 @@ const moveExecutes = {
   },
   m51(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m51";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6981,7 +6983,7 @@ const moveExecutes = {
   },
   m52(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m52";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6998,7 +7000,7 @@ const moveExecutes = {
   },
   m53(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m53";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7015,7 +7017,7 @@ const moveExecutes = {
   },
   m55(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m55";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7027,7 +7029,7 @@ const moveExecutes = {
   },
   m56(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m56";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7050,7 +7052,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m56-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     const multiplier = allTargets.length === 1 ? 1.5 : 1;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -7074,7 +7076,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m56-2";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7090,7 +7092,7 @@ const moveExecutes = {
   },
   m57(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m57";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // deal less damage if more targets
     const numTargets = allTargets.length;
     const power = moveData.power - (numTargets - 1) * 5;
@@ -7107,7 +7109,7 @@ const moveExecutes = {
   },
   m58(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m58";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7124,7 +7126,7 @@ const moveExecutes = {
   },
   m59(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m59";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7141,7 +7143,7 @@ const moveExecutes = {
   },
   m60(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m60";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7158,7 +7160,7 @@ const moveExecutes = {
   },
   m63(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m63";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7177,7 +7179,7 @@ const moveExecutes = {
   },
   m64(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m64";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7189,7 +7191,7 @@ const moveExecutes = {
   },
   m65(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m65";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7207,7 +7209,7 @@ const moveExecutes = {
   },
   m70(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m70";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // 5% of atk true damage
@@ -7222,7 +7224,7 @@ const moveExecutes = {
   },
   m71(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m71";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -7263,7 +7265,7 @@ const moveExecutes = {
   },
   m76(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m76";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // if pokemon doesnt have "abosrb light" buff, apply it
     if (
       source.effectIds.absorbLight === undefined &&
@@ -7351,7 +7353,7 @@ const moveExecutes = {
   },
   m84(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m84";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7368,7 +7370,7 @@ const moveExecutes = {
   },
   m85(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m85";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7398,7 +7400,7 @@ const moveExecutes = {
   },
   m87(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m87";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // if sprungUp, have 2x power
       const sprungUp = target.effectIds.sprungUp !== undefined;
@@ -7425,7 +7427,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m87-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // if sprungUp, have 2x power
       const sprungUp = target.effectIds.sprungUp !== undefined;
@@ -7444,7 +7446,7 @@ const moveExecutes = {
   },
   m88(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m88";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7456,7 +7458,7 @@ const moveExecutes = {
   },
   m89(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m89";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // deal less damage if more targets
     const numTargets = allTargets.length;
     const power = moveData.power - (numTargets - 1) * 7;
@@ -7481,7 +7483,7 @@ const moveExecutes = {
 
   m91(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m91";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // if pokemon doesnt have "burrowed" buff, apply it
     if (source.effectIds.burrowed === undefined) {
       source.addEffect("burrowed", 1, source);
@@ -7514,7 +7516,7 @@ const moveExecutes = {
   },
   m93(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m93";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7531,7 +7533,7 @@ const moveExecutes = {
   },
   m94(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m94";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7618,7 +7620,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // attempt to get targets ultimate move
       const ultimateMoveIds = Object.keys(target.moveIds).filter(
-        (moveId) => moveConfig[moveId].tier === moveTiers.ULTIMATE
+        (moveId) => getMove(moveId).tier === moveTiers.ULTIMATE
       );
       if (ultimateMoveIds.length === 0) {
         battle.addToLog(`But if failed!`);
@@ -7747,11 +7749,11 @@ const moveExecutes = {
   m118(battle, source) {
     // get random basic moves
     const basicMoves = Object.keys(moveConfig).filter(
-      (moveId) => moveConfig[moveId].tier === moveTiers.BASIC
+      (moveId) => getMove(moveId).tier === moveTiers.BASIC
     );
     const randomMoveId =
       basicMoves[Math.floor(Math.random() * basicMoves.length)];
-    const randomMoveData = moveConfig[randomMoveId];
+    const randomMoveData = getMove(randomMoveId);
     battle.addToLog(`${source.name} used ${randomMoveData.name}!`);
 
     // get eligible targets
@@ -7764,17 +7766,18 @@ const moveExecutes = {
     // get random target & use move
     const randomTarget =
       eligibleTargets[Math.floor(Math.random() * eligibleTargets.length)];
-    moveExecutes[randomMoveId](
+    executeMove({
+      moveId: randomMoveId,
       battle,
       source,
-      randomTarget,
-      [randomTarget],
-      []
-    );
+      primaryTarget: randomTarget,
+      allTargets: [randomTarget],
+      missedTargets: [],
+    });
   },
   m122(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m122";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7791,7 +7794,7 @@ const moveExecutes = {
   },
   m123(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m123";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7808,7 +7811,7 @@ const moveExecutes = {
   },
   m126(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m126";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7825,7 +7828,7 @@ const moveExecutes = {
   },
   m127(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m127";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7844,7 +7847,7 @@ const moveExecutes = {
   },
   m134(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m134";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7882,7 +7885,7 @@ const moveExecutes = {
   },
   m136(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m136";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7931,7 +7934,7 @@ const moveExecutes = {
   },
   m143(battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m143";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let defeatedEnemy = false;
     // two turn move logic
     if (source.effectIds.skyCharge === undefined) {
@@ -8008,7 +8011,7 @@ const moveExecutes = {
   },
   m152(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m152";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // 5% of atk true damage
@@ -8023,7 +8026,7 @@ const moveExecutes = {
   },
   m153(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m153";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // power = base power + percent hp * 100
     const power = moveData.power + (source.hp / source.maxHp) * 100;
     for (const target of allTargets) {
@@ -8072,7 +8075,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m154-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8101,7 +8104,7 @@ const moveExecutes = {
   },
   m156(battle, source, _primaryTarget, allTargets) {
     const moveId = "m156";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // if source asleep or max HP, fail
     if (
@@ -8136,7 +8139,7 @@ const moveExecutes = {
   },
   m157(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m157";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8164,7 +8167,7 @@ const moveExecutes = {
   },
   m167(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m167";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       let damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8186,7 +8189,7 @@ const moveExecutes = {
   },
   m168(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m168";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8229,7 +8232,7 @@ const moveExecutes = {
   },
   m175(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m175";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // calculate power (lower hp = higher power)
       const n = Math.floor((source.hp / source.maxHp) * 100);
@@ -8257,7 +8260,7 @@ const moveExecutes = {
   },
   m177(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m177";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // filter out allTargets => just the primary target and up to 2 random other targets
     let damagedTargets = [];
     if (allTargets.length > 3) {
@@ -8299,7 +8302,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m177-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       let type = source.getTypeDamageMultiplier(moveData.type, target);
@@ -8330,7 +8333,7 @@ const moveExecutes = {
   },
   m183(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m183";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8351,7 +8354,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m183-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8393,7 +8396,7 @@ const moveExecutes = {
   },
   m188(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m188";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8410,7 +8413,7 @@ const moveExecutes = {
   },
   m189(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m189";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8439,7 +8442,7 @@ const moveExecutes = {
   },
   m192(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m192";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8493,7 +8496,7 @@ const moveExecutes = {
   },
   m200(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m200";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // if source doesn't have outrage, apply it
     if (source.effectIds.outrage === undefined) {
       source.addEffect("outrage", 2, source);
@@ -8520,7 +8523,7 @@ const moveExecutes = {
   },
   m202(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m202";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -8554,7 +8557,7 @@ const moveExecutes = {
   },
   m205(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m205";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let targetHit = false;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -8624,7 +8627,7 @@ const moveExecutes = {
   },
   m210(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m210";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let targetHit = false;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -8693,7 +8696,7 @@ const moveExecutes = {
     }
     const randomMoveId =
       sleepTalkMoves[Math.floor(Math.random() * sleepTalkMoves.length)];
-    const randomMoveData = moveConfig[randomMoveId];
+    const randomMoveData = getMove(randomMoveId);
     battle.addToLog(`${source.name} used ${randomMoveData.name}!`);
 
     // get valid targets
@@ -8718,7 +8721,14 @@ const moveExecutes = {
     );
     // use move against target
     battle.addToLog(`${randomMoveData.name} hit ${randomTarget.name}!`);
-    moveExecutes[randomMoveId](battle, source, randomTarget, targets, []);
+    executeMove({
+      moveId: randomMoveId,
+      battle,
+      source,
+      primaryTarget: randomTarget,
+      allTargets: targets,
+      missedTargets: [],
+    });
 
     // roll wakeup
     // sleep wakeup chance: 0 turns: 0%, 1 turn: 66%, 2 turns: 100%
@@ -8747,7 +8757,7 @@ const moveExecutes = {
   },
   m216(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m216";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // 20 less bp if source is damaged
@@ -8768,7 +8778,7 @@ const moveExecutes = {
   },
   m221(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m221";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // filter out allTargets => just the primary target and up to 2 random other targets
     let damagedTargets = [];
     if (allTargets.length > 3) {
@@ -8801,7 +8811,7 @@ const moveExecutes = {
   },
   m223(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m223";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8827,7 +8837,7 @@ const moveExecutes = {
   },
   m224(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m224";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8871,7 +8881,7 @@ const moveExecutes = {
   },
   m229(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m229";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8904,7 +8914,7 @@ const moveExecutes = {
   },
   m231(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m231";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // check if user def is higher, if so apply effects before damage
@@ -8974,7 +8984,7 @@ const moveExecutes = {
   },
   m238(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m238";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8991,7 +9001,7 @@ const moveExecutes = {
   },
   m239(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m239";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9016,7 +9026,7 @@ const moveExecutes = {
   },
   m242(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m242";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9033,7 +9043,7 @@ const moveExecutes = {
   },
   m243(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m243";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply mirror coat 2 turn
       target.addEffect("mirrorCoat", 2, source);
@@ -9041,7 +9051,7 @@ const moveExecutes = {
   },
   m245(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m245";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9056,7 +9066,7 @@ const moveExecutes = {
   },
   m246(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m246";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9106,7 +9116,7 @@ const moveExecutes = {
   },
   m247(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m247";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9123,7 +9133,7 @@ const moveExecutes = {
   },
   m248(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m248";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (miss) {
@@ -9136,7 +9146,7 @@ const moveExecutes = {
   },
   m249(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m249";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9153,7 +9163,7 @@ const moveExecutes = {
   },
   m252(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m252";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9173,7 +9183,7 @@ const moveExecutes = {
   },
   m257(battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m257";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // get only target row
     const targetParty = battle.parties[primaryTarget.teamName];
@@ -9202,14 +9212,14 @@ const moveExecutes = {
   },
   m258(battle, source, _primaryTarget, _allTargets, _missedTargets) {
     const moveId = "m258";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // hail weather
     battle.createWeather(weatherConditions.HAIL, source);
   },
   m266(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m266";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply redirect for 1 turn
       target.addEffect("redirect", 1, source);
@@ -9217,7 +9227,7 @@ const moveExecutes = {
   },
   m262(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m262";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (!miss) {
@@ -9231,7 +9241,7 @@ const moveExecutes = {
   },
   m268(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m266";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply charge for 1 turn
       target.addEffect("charge", 1, source);
@@ -9241,7 +9251,7 @@ const moveExecutes = {
   },
   m269(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m269";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (miss) {
@@ -9260,7 +9270,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m269-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (miss) {
@@ -9273,7 +9283,7 @@ const moveExecutes = {
   },
   m270(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m270";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply atk up and spa up 1 turn
       target.addEffect("atkUp", 1, source);
@@ -9282,7 +9292,7 @@ const moveExecutes = {
   },
   m273(battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m273";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // give delayed heal
       battle.addToLog(`${target.name} recieved ${source.name}'s wish!`);
@@ -9293,7 +9303,7 @@ const moveExecutes = {
   },
   m276(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m276";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9308,7 +9318,7 @@ const moveExecutes = {
   },
   m281(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m281";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // if not miss  apply yawn debuff
       const miss = missedTargets.includes(target);
@@ -9324,7 +9334,7 @@ const moveExecutes = {
   },
   m282(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m282";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
 
@@ -9356,7 +9366,7 @@ const moveExecutes = {
   },
   m283(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m283";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (miss) {
@@ -9378,7 +9388,7 @@ const moveExecutes = {
   },
   m284(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m284";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // power = power * proportion source HP
@@ -9394,7 +9404,7 @@ const moveExecutes = {
   },
   m288(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m288";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply grudge for 1 turn
       target.addEffect("grudge", 1, source);
@@ -9402,7 +9412,7 @@ const moveExecutes = {
   },
   m295(battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m295";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // check if ally has mist ball on cooldown
     const allyPokemons = Object.values(battle.allPokemon).filter(
@@ -9449,7 +9459,7 @@ const moveExecutes = {
   },
   m296(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m296";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // check if ally has luster purge on cooldown
     const allyPokemons = Object.values(battle.allPokemon).filter(
@@ -9487,7 +9497,7 @@ const moveExecutes = {
   },
   m299(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m299";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9504,7 +9514,7 @@ const moveExecutes = {
   },
   m303(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m303";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const _target of allTargets) {
       // heal 50%
       const healAmount = Math.floor(source.maxHp * 0.5);
@@ -9519,7 +9529,7 @@ const moveExecutes = {
   },
   m304(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m304";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9531,7 +9541,7 @@ const moveExecutes = {
   },
   m305(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m305";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9548,7 +9558,7 @@ const moveExecutes = {
   },
   m309(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m309";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // raise user atk for 2 turn
     source.addEffect("atkUp", 2, source);
@@ -9573,7 +9583,7 @@ const moveExecutes = {
   },
   m311(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m311";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       let { type } = moveData;
       if (!battle.isWeatherNegated()) {
@@ -9604,7 +9614,7 @@ const moveExecutes = {
   },
   m316(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m316";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // remove status conditions
       target.removeStatus();
@@ -9628,7 +9638,7 @@ const moveExecutes = {
   },
   m317(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m317";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9651,7 +9661,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m317-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9678,7 +9688,7 @@ const moveExecutes = {
   },
   m325(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m325";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // ignore miss
       const damageToDeal = calculateDamage(moveData, source, target, false);
@@ -9690,7 +9700,7 @@ const moveExecutes = {
   },
   m330(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m330";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9707,7 +9717,7 @@ const moveExecutes = {
   },
   m331(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m331";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // loop 5 times, hitting random non-fainted target
     for (let i = 0; i < 5; i += 1) {
       allTargets = allTargets.filter((target) => !target.isFainted);
@@ -9732,7 +9742,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m331-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // if pokemon doesnt have "projectingSpirit" buff, apply it
     if (source.effectIds.projectingSpirit === undefined) {
       source.addEffect("projectingSpirit", 1, source);
@@ -9763,7 +9773,7 @@ const moveExecutes = {
   },
   m332(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m332";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // ignore miss
       const damageToDeal = calculateDamage(moveData, source, target, false);
@@ -9791,7 +9801,7 @@ const moveExecutes = {
     allTargets,
     _missedTargets
   ) {
-    const moveData = moveConfig["m334-1"];
+    const moveData = getMove("m334-1");
     // put primary target at front of allTargets
     if (allTargets.includes(primaryTarget)) {
       allTargets = allTargets.filter((target) => target !== primaryTarget);
@@ -9821,7 +9831,7 @@ const moveExecutes = {
     allTargets,
     _missedTargets
   ) {
-    const moveData = moveConfig["m334-2"];
+    const moveData = getMove("m334-2");
     for (const target of allTargets) {
       // sharply raise def & special def
       target.addEffect("greaterDefUp", 2, source);
@@ -9832,7 +9842,7 @@ const moveExecutes = {
   },
   m336(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m336";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // grant atk up 1 turn
       target.addEffect("atkUp", 1, source);
@@ -9843,7 +9853,7 @@ const moveExecutes = {
   },
   m340(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m340";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // if pokemon doesnt have "sprungUp" buff, apply it
     if (source.effectIds.sprungUp === undefined) {
       source.addEffect("sprungUp", 1, source);
@@ -9869,7 +9879,7 @@ const moveExecutes = {
   },
   m344(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m344";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -9893,7 +9903,7 @@ const moveExecutes = {
   },
   m347(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m347";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // spa, spd up 3 turns
       target.addEffect("spaUp", 3, source);
@@ -9905,7 +9915,7 @@ const moveExecutes = {
   },
   m348(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m348";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // 5% atk true damage
@@ -9936,7 +9946,7 @@ const moveExecutes = {
   },
   m352(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m352";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9953,7 +9963,7 @@ const moveExecutes = {
   },
   m354(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m354";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     const allAllies = battle.parties[source.teamName].pokemons.filter(
       (p) => p && !p.isFainted
@@ -10010,7 +10020,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m354-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     const useAtk = source.atk > source.spa;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -10037,7 +10047,7 @@ const moveExecutes = {
     allTargets,
     _missedTargets
   ) {
-    const moveData = moveConfig["m354-2"];
+    const moveData = getMove("m354-2");
     for (const target of allTargets) {
       // get 25% def, spd as shield
       target.addEffect("shield", 3, source, {
@@ -10053,7 +10063,7 @@ const moveExecutes = {
     _missedTargets
   ) {
     const moveId = "m354-3";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply extra turn buff for 1 (2) turn
       target.addEffect("extraTurn", 1, source);
@@ -10077,7 +10087,7 @@ const moveExecutes = {
   },
   m359(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m359";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10092,7 +10102,7 @@ const moveExecutes = {
   },
   m361(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m361";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // fully heal
       source.giveHeal(target.maxHp, target, {
@@ -10107,7 +10117,7 @@ const moveExecutes = {
   },
   m366(battle, source, primaryTarget, allTargets, _missedTargets) {
     const moveId = "m366";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // get only target row
     const targetParty = battle.parties[primaryTarget.teamName];
@@ -10129,7 +10139,7 @@ const moveExecutes = {
   },
   m369(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m369";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const damageToDeal = calculateDamage(
         moveData,
@@ -10157,7 +10167,7 @@ const moveExecutes = {
   },
   m370(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m370";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10179,7 +10189,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m370-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10195,7 +10205,7 @@ const moveExecutes = {
   },
   m387(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m387";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // calculate power = base power * moves on cooldown
       const numCooldownMoves = Object.values(source.moveIds).filter(
@@ -10214,7 +10224,7 @@ const moveExecutes = {
   },
   m392(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m392";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // add regeneration and def up
       target.addEffect("regeneration", 3, source, {
@@ -10225,7 +10235,7 @@ const moveExecutes = {
   },
   m394(battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m394";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -10261,7 +10271,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m394-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -10292,7 +10302,7 @@ const moveExecutes = {
   },
   m396(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m398";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // ignore miss
       const damageToDeal = calculateDamage(moveData, source, target, false);
@@ -10304,7 +10314,7 @@ const moveExecutes = {
   },
   m398(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m398";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10321,7 +10331,7 @@ const moveExecutes = {
   },
   m399(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m399";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10338,7 +10348,7 @@ const moveExecutes = {
   },
   m402(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m402";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10355,7 +10365,7 @@ const moveExecutes = {
   },
   m403(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m403";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10372,7 +10382,7 @@ const moveExecutes = {
   },
   m404(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m404";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10397,7 +10407,7 @@ const moveExecutes = {
   },
   m405(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m405";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // if not miss, 80% to spd down
@@ -10414,7 +10424,7 @@ const moveExecutes = {
   },
   m406(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m406";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10426,7 +10436,7 @@ const moveExecutes = {
   },
   m407(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m407";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10443,7 +10453,7 @@ const moveExecutes = {
   },
   m409(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m409";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -10462,7 +10472,7 @@ const moveExecutes = {
   },
   m412(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m412";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10479,7 +10489,7 @@ const moveExecutes = {
   },
   m413(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m413";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -10499,7 +10509,7 @@ const moveExecutes = {
   },
   m414(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m414";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10516,7 +10526,7 @@ const moveExecutes = {
   },
   m416(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m416";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10541,7 +10551,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m416-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10560,7 +10570,7 @@ const moveExecutes = {
   },
   m417(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m417";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // sharply raise spatk
       target.addEffect("greaterSpaUp", 3, source);
@@ -10577,7 +10587,7 @@ const moveExecutes = {
     _missedTargets
   ) {
     const moveId = "m417-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // sharply raise spatk, eva
       target.addEffect("greaterSpaUp", 2, source);
@@ -10589,7 +10599,7 @@ const moveExecutes = {
   },
   m418(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m418";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10604,7 +10614,7 @@ const moveExecutes = {
   },
   m420(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m420";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10619,7 +10629,7 @@ const moveExecutes = {
   },
   m424(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m424";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10640,7 +10650,7 @@ const moveExecutes = {
   },
   m425(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m425";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10655,7 +10665,7 @@ const moveExecutes = {
   },
   m428(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m428";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10672,7 +10682,7 @@ const moveExecutes = {
   },
   m430(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m430";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10689,7 +10699,7 @@ const moveExecutes = {
   },
   m432(battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m432";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     const targets = Object.values(battle.allPokemon).filter((p) =>
       battle.isPokemonHittable(p, moveId)
     );
@@ -10761,7 +10771,7 @@ const moveExecutes = {
   },
   m435(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m435";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10784,7 +10794,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m435-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10824,7 +10834,7 @@ const moveExecutes = {
   },
   m437(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m437";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10839,7 +10849,7 @@ const moveExecutes = {
   },
   m441(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m441";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       let damageToDeal = calculateDamage(
@@ -10870,7 +10880,7 @@ const moveExecutes = {
   },
   m444(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m444";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10882,7 +10892,7 @@ const moveExecutes = {
   },
   m446(battle, source, primaryTarget, allTargets, _missedTargets) {
     const moveId = "m446";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // stealth rock log
     battle.addToLog(
       `Sharp rocks were scattered on the ground near ${primaryTarget.teamName}'s side!`
@@ -10894,7 +10904,7 @@ const moveExecutes = {
   },
   m450(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m450";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10938,7 +10948,7 @@ const moveExecutes = {
   },
   m453(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m453";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10953,7 +10963,7 @@ const moveExecutes = {
   },
   m469(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m469";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply wide guard 3 turn
       target.addEffect("wideGuard", 3, source);
@@ -10961,7 +10971,7 @@ const moveExecutes = {
   },
   m476(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m476";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply redirect for 1 turn
       target.addEffect("redirect", 1, source);
@@ -10969,7 +10979,7 @@ const moveExecutes = {
   },
   m479(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m479";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10990,7 +11000,7 @@ const moveExecutes = {
   },
   m482(battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m482";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // get only target row
     const targetParty = battle.parties[primaryTarget.teamName];
@@ -11019,7 +11029,7 @@ const moveExecutes = {
   },
   m483(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m483";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // boost spa, spd, spe
       target.addEffect("spaUp", 3, source);
@@ -11032,7 +11042,7 @@ const moveExecutes = {
   },
   m484(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m484";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       let speedPower = 0;
       if (source.getSpe() < 150) {
@@ -11059,7 +11069,7 @@ const moveExecutes = {
   },
   m492(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m492";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // use target's attack
@@ -11074,7 +11084,7 @@ const moveExecutes = {
   },
   m503(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m503";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11091,7 +11101,7 @@ const moveExecutes = {
   },
   m505(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m505";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // heal 50%
       const healAmount = Math.floor(target.maxHp / 2);
@@ -11103,7 +11113,7 @@ const moveExecutes = {
   },
   m506(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m506";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
 
@@ -11127,7 +11137,7 @@ const moveExecutes = {
   },
   m521(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m521";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const damageToDeal = calculateDamage(
         moveData,
@@ -11155,7 +11165,7 @@ const moveExecutes = {
   },
   m523(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m523";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11172,7 +11182,7 @@ const moveExecutes = {
   },
   m525(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m525";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11189,7 +11199,7 @@ const moveExecutes = {
   },
   m526(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m526";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // give atk up and spa up 2 turns
       target.addEffect("atkUp", 2, source);
@@ -11198,7 +11208,7 @@ const moveExecutes = {
   },
   m527(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m527";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11215,7 +11225,7 @@ const moveExecutes = {
   },
   m528(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m528";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const damageToDeal = calculateDamage(
@@ -11241,7 +11251,7 @@ const moveExecutes = {
   },
   m529(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m529";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11253,7 +11263,7 @@ const moveExecutes = {
   },
   m534(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m534";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
@@ -11272,7 +11282,7 @@ const moveExecutes = {
   },
   m540(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m540";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
@@ -11297,7 +11307,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m540-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let targetsFainted = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -11327,7 +11337,7 @@ const moveExecutes = {
   },
   m542(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m542";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11350,7 +11360,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m542-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       let type = source.getTypeDamageMultiplier(moveData.type, target);
@@ -11374,7 +11384,7 @@ const moveExecutes = {
   },
   m564(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m564";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
 
@@ -11387,7 +11397,7 @@ const moveExecutes = {
   },
   m565(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m565";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // raise atk
     source.addEffect("greaterAtkUp", 3, source);
@@ -11417,7 +11427,7 @@ const moveExecutes = {
   },
   m568(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m568";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // if not miss or primary target, atk and spa down 1 turn
@@ -11429,7 +11439,7 @@ const moveExecutes = {
   },
   m573(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m573";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // see if target is water type
       const waterType =
@@ -11452,7 +11462,7 @@ const moveExecutes = {
   },
   m572(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m572";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // deal less damage if more targets
     const numTargets = allTargets.length;
     const power = moveData.power - (numTargets - 1) * 5;
@@ -11469,7 +11479,7 @@ const moveExecutes = {
   },
   m574(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m574";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // ignore miss
       const damageToDeal = calculateDamage(moveData, source, target, false);
@@ -11481,7 +11491,7 @@ const moveExecutes = {
   },
   m583(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m583";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11502,7 +11512,7 @@ const moveExecutes = {
   },
   m585(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m585";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11519,7 +11529,7 @@ const moveExecutes = {
   },
   m586(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m586";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11537,7 +11547,7 @@ const moveExecutes = {
   },
   m605(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m605";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11549,7 +11559,7 @@ const moveExecutes = {
   },
   m618(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m618";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // give user spa, spd up
     source.addEffect("spaUp", 1, source);
@@ -11566,7 +11576,7 @@ const moveExecutes = {
   },
   m619(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m619";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // give user atk, def up
     source.addEffect("atkUp", 1, source);
@@ -11583,7 +11593,7 @@ const moveExecutes = {
   },
   m620(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m620";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
@@ -11611,7 +11621,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m620-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let hits = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -11640,7 +11650,7 @@ const moveExecutes = {
   },
   m668(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m668";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // heal hp equal to targets atk
@@ -11658,7 +11668,7 @@ const moveExecutes = {
   },
   m672(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m672";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // if not miss, badly poison and fully reduce cr
@@ -11670,7 +11680,7 @@ const moveExecutes = {
   },
   m710(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m710";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11687,7 +11697,7 @@ const moveExecutes = {
   },
   m719(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m719";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // filter out allTargets => just the primary target and up to 2 random other targets
     let damagedTargets = [];
     if (allTargets.length > 3) {
@@ -11720,7 +11730,7 @@ const moveExecutes = {
   },
   m742(battle, source, primaryTarget, _allTargets, missedTargets) {
     const moveId = "m742";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // get row targets
     const enemyParty = battle.parties[primaryTarget.teamName];
@@ -11766,7 +11776,7 @@ const moveExecutes = {
   },
   m814(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m814";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11791,7 +11801,7 @@ const moveExecutes = {
   },
   m876(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m876";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11803,7 +11813,7 @@ const moveExecutes = {
   },
   m20001(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m20001";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // if primary target, increase cr to 100% and give spe up 2 turns
       if (target === primaryTarget) {
@@ -11823,7 +11833,7 @@ const moveExecutes = {
   },
   m20002(battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m20002";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // use all HM moves
       const hmMoveIds = ["m57", "m70", "m127", "m249"];
@@ -11836,7 +11846,7 @@ const moveExecutes = {
         if (move.cooldown > 0) {
           source.reduceMoveCooldown(moveId, move.cooldown, source);
         } else {
-          const moveData = moveConfig[moveId];
+          const moveData = getMove(moveId);
           // else, use move and set cooldown
           battle.addToLog(`${source.name} used ${moveData.name}!`);
           // get target
@@ -11847,7 +11857,14 @@ const moveExecutes = {
             target.position,
             moveId
           );
-          moveExecutes[moveId](battle, source, target, targets, []);
+          executeMove({
+            moveId,
+            battle,
+            source,
+            primaryTarget: target,
+            allTargets: targets,
+            missedTargets: [],
+          });
 
           // set cd
           move.cooldown = moveData.cooldown;
@@ -11857,7 +11874,7 @@ const moveExecutes = {
   },
   m20003(battle, source, primaryTarget, _allTargets, _missedTargets) {
     const moveId = "m20003";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // get random fainted enemy of primary target
     const enemyParty = primaryTarget.getEnemyParty();
@@ -11902,7 +11919,7 @@ const moveExecutes = {
   },
   m20004(battle, source, _primaryTarget, _allTargets, _missedTargets) {
     const moveId = "m20004";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // get all non-fainted, hitable pokemon
     const targets = Object.values(battle.allPokemon).filter((p) =>
       battle.isPokemonHittable(p, moveId)
@@ -11918,7 +11935,7 @@ const moveExecutes = {
   },
   m20005(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m20005";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // heal 40%
       const healAmount = Math.floor(target.maxHp * 0.4);
@@ -11933,7 +11950,7 @@ const moveExecutes = {
   },
   m20006(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m20006";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11955,7 +11972,7 @@ const moveExecutes = {
   },
   m20007(battle, source, _primaryTarget, _allTargets, _missedTargets) {
     const moveId = "m20007";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // get all non-fainted, hitable pokemon
     const targets = Object.values(battle.allPokemon).filter((p) =>
       battle.isPokemonHittable(p, moveId)
@@ -11967,7 +11984,7 @@ const moveExecutes = {
   },
   m20008(battle, source, primaryTarget, allTargets, _missedTargets) {
     const moveId = "m20008";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // if primary, reduce hp by 50% and apply greater def down, spd down 1 turns
       if (target === primaryTarget) {
@@ -11992,7 +12009,7 @@ const moveExecutes = {
   },
   m20009(battle, source, primaryTarget, _allTargets, missedTargets) {
     const moveId = "m20009";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (let i = 0; i < 3; i += 1) {
       let target = primaryTarget;
       if (primaryTarget.isFainted) {
@@ -12021,7 +12038,7 @@ const moveExecutes = {
   },
   m20010(battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m20010";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // if source not under 25% hp, do nothing
     if (source.hp > source.maxHp * 0.25) {
@@ -12044,7 +12061,7 @@ const moveExecutes = {
   },
   m20011(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m20011";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // ignore miss
       // def is min user, target spd
@@ -12060,7 +12077,7 @@ const moveExecutes = {
   },
   m20012(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m20012";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -12072,7 +12089,7 @@ const moveExecutes = {
   },
   m20013(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m20013";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply extra turn buff for 1 (2) turn
       target.addEffect("extraTurn", 1, source);
@@ -12296,7 +12313,7 @@ const abilityConfig = {
           }
 
           // if physical, 30% chance to paralyze
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
             Math.random() < 0.3
@@ -12351,7 +12368,7 @@ const abilityConfig = {
           }
 
           // if electric, negate damage and heal 25% of max hp
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (moveData.type === pokemonTypes.ELECTRIC) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name} is healed by Volt Absorb!`
@@ -12408,7 +12425,7 @@ const abilityConfig = {
           }
 
           // if water, negate damage and heal 25% of max hp
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (moveData.type === pokemonTypes.WATER) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name} is healed by Water Absorb!`
@@ -12532,7 +12549,7 @@ const abilityConfig = {
           }
 
           // if fire, negate damage and grant atk up, spa up
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (moveData.type === pokemonTypes.FIRE) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Flash Fire was activated by the Fire attack!`
@@ -12789,7 +12806,7 @@ const abilityConfig = {
             return;
           }
           const { moveId } = args.damageInfo;
-          const moveData = moveConfig[moveId];
+          const moveData = getMove(moveId);
           if (!moveData) {
             return;
           }
@@ -12893,7 +12910,7 @@ const abilityConfig = {
           }
 
           // if physical, 30% chance to status
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
             Math.random() < 0.3
@@ -13052,7 +13069,7 @@ const abilityConfig = {
               `${sourcePokemon.name}'s Natural Cure remedies ${target.name}!`
             );
             target.removeStatus();
-            const moveData = moveConfig[args.moveId];
+            const moveData = getMove(args.moveId);
             if (moveData && moveData.tier === moveTiers.ULTIMATE) {
               for (const effectId in target.effectIds) {
                 const effectData = effectConfig[effectId];
@@ -13099,7 +13116,7 @@ const abilityConfig = {
 
           // check that enemy used non-ally move, and that move is electric
           const moveUser = args.user;
-          const moveData = moveConfig[args.moveId];
+          const moveData = getMove(args.moveId);
           if (moveData.type !== pokemonTypes.ELECTRIC) {
             return;
           }
@@ -13124,7 +13141,7 @@ const abilityConfig = {
             return;
           }
 
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (moveData.type !== pokemonTypes.ELECTRIC) {
             return;
           }
@@ -13275,7 +13292,7 @@ const abilityConfig = {
           }
 
           // if physical, 30% chance to poison
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
             Math.random() < 0.3
@@ -13421,7 +13438,7 @@ const abilityConfig = {
           const targetMoveIds = targetPokemon.moveIds;
           const possibleMoves = Object.entries(targetMoveIds).filter(
             ([moveId, move]) => {
-              const moveData = moveConfig[moveId];
+              const moveData = getMove(moveId);
               const currentCooldown = move.cooldown;
               return moveData.cooldown && currentCooldown === 0;
             }
@@ -13435,7 +13452,7 @@ const abilityConfig = {
           targetPokemon.battle.addToLog(
             `${initialArgs.pokemon.name} is exerting Pressure against ${
               targetPokemon.name
-            }'s ${moveConfig[randomMove[0]].name}!`
+            }'s ${getMove(randomMove[0]).name}!`
           );
           abilityData.affectedPokemons.push(targetPokemon);
         },
@@ -13482,7 +13499,7 @@ const abilityConfig = {
             return;
           }
           const { moveId } = args.damageInfo;
-          const moveData = moveConfig[moveId];
+          const moveData = getMove(moveId);
           if (!moveData) {
             return;
           }
@@ -13581,7 +13598,7 @@ const abilityConfig = {
           }
 
           // if move type === fire or ice, reduce damage by 50%
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.type === pokemonTypes.FIRE ||
             moveData.type === pokemonTypes.ICE
@@ -13890,7 +13907,7 @@ const abilityConfig = {
           }
 
           // if move is physical, 30% chance to lower attacker's attack for 1 turn
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
             Math.random() < 0.3
@@ -13979,7 +13996,7 @@ const abilityConfig = {
           }
 
           // if move type === grass and hp < 1/3, increase damage by 50%
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.type === pokemonTypes.GRASS &&
             userPokemon.hp < userPokemon.maxHp / 3
@@ -14027,7 +14044,7 @@ const abilityConfig = {
           }
 
           // if move type === fire and hp < 1/3, increase damage by 50%
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.type === pokemonTypes.FIRE &&
             userPokemon.hp < userPokemon.maxHp / 3
@@ -14075,7 +14092,7 @@ const abilityConfig = {
           }
 
           // if move type === water and hp < 1/3, increase damage by 50%
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.type === pokemonTypes.WATER &&
             userPokemon.hp < userPokemon.maxHp / 3
@@ -14123,7 +14140,7 @@ const abilityConfig = {
           }
 
           // if move type === bug and hp < 1/3, increase damage by 50%
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.type === pokemonTypes.BUG &&
             userPokemon.hp < userPokemon.maxHp / 3
@@ -14304,7 +14321,7 @@ const abilityConfig = {
           }
 
           // if move type === punch, increase damage by 20%
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (moveData.name.toLowerCase().includes("punch")) {
             userPokemon.battle.addToLog(
               `${userPokemon.name}'s Iron Fist increases the damage!`
@@ -14476,7 +14493,7 @@ const abilityConfig = {
           }
 
           // if move has 60 base power or less, increase damage by 50%
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (moveData.power <= 70) {
             sourcePokemon.battle.addToLog(
               `${sourcePokemon.name}'s Technician is increasing its damage!`
@@ -14522,7 +14539,7 @@ const abilityConfig = {
             return;
           }
 
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (!moveData) {
             return;
           }
@@ -14578,7 +14595,7 @@ const abilityConfig = {
             return;
           }
 
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (!moveData) {
             return;
           }
@@ -14632,7 +14649,7 @@ const abilityConfig = {
 
           // check that enemy used non-ally move, and that move is water
           const moveUser = args.user;
-          const moveData = moveConfig[args.moveId];
+          const moveData = getMove(args.moveId);
           if (moveData.type !== pokemonTypes.WATER) {
             return;
           }
@@ -14657,7 +14674,7 @@ const abilityConfig = {
             return;
           }
 
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (moveData.type !== pokemonTypes.WATER) {
             return;
           }
@@ -14896,7 +14913,7 @@ const abilityConfig = {
             return;
           }
           const { moveId } = args.damageInfo;
-          const moveData = moveConfig[moveId];
+          const moveData = getMove(moveId);
           if (!moveData || moveData.type !== pokemonTypes.STEEL) {
             return;
           }
@@ -14994,7 +15011,7 @@ const abilityConfig = {
           }
 
           // if physical, 30% chance to poison
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
             Math.random() < 0.3
@@ -15182,7 +15199,7 @@ const abilityConfig = {
           }
 
           // make sure move is non-damaging
-          const moveData = moveConfig[args.moveId];
+          const moveData = getMove(args.moveId);
           if (!moveData || moveData.damageType !== damageTypes.OTHER) {
             return;
           }
@@ -15195,13 +15212,14 @@ const abilityConfig = {
           initialPokemon.battle.addToLog(
             `${initialPokemon.name}'s Magic Bounce reflects the move!`
           );
-          moveExecutes[args.moveId](
+          executeMove({
+            moveId: args.moveId,
             battle,
-            initialPokemon,
-            sourcePokemon,
-            [sourcePokemon],
-            []
-          );
+            source: initialPokemon,
+            primaryTarget: sourcePokemon,
+            allTargets: [sourcePokemon],
+            missedTargets: [],
+          });
         },
       };
       const listenerId = battle.eventHandler.registerListener(
@@ -15241,7 +15259,7 @@ const abilityConfig = {
 
           // make sure move is non-damaging
           const { moveId } = args;
-          const moveData = moveConfig[moveId];
+          const moveData = getMove(moveId);
           if (!moveData || moveData.damageType !== damageTypes.OTHER) {
             return;
           }
@@ -16193,7 +16211,7 @@ const abilityConfig = {
           }
           const randomMoveId =
             validMoves[Math.floor(Math.random() * validMoves.length)];
-          const randomMoveData = moveConfig[randomMoveId];
+          const randomMoveData = getMove(randomMoveId);
           battle.addToLog(
             `${targetPokemon.name} countered with ${randomMoveData.name}!`
           );
@@ -16221,13 +16239,14 @@ const abilityConfig = {
           // use move against target
           battle.addToLog(`${randomMoveData.name} hit ${target.name}!`);
           // yes I know the targets are confusing
-          moveExecutes[randomMoveId](
-            targetPokemon.battle,
-            targetPokemon,
-            target,
-            targets,
-            []
-          );
+          executeMove({
+            moveId: randomMoveId,
+            battle: targetPokemon.battle,
+            source: targetPokemon,
+            primaryTarget: target,
+            allTargets: targets,
+            missedTargets: [],
+          });
         },
       };
       const damageListener = {

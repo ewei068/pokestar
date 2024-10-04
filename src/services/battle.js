@@ -80,6 +80,7 @@ const { validateParty } = require("./party");
 const { addRewards, getRewardsString } = require("../utils/trainerUtils");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
 const { User } = require("discord.js");
+const { getMove, executeMove } = require("../battleEngine/moveService");
 
 class NPC {
   constructor(
@@ -233,7 +234,7 @@ class NPC {
 
   // eslint-disable-next-line class-methods-use-this
   calculateHeuristic(moveId, source, targetsHit) {
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     let heuristic = 0;
     // special case: if asleep and sleep talk, use sleep talk
@@ -573,19 +574,19 @@ class Pokemon {
     this.teamName = teamName;
     this.name = pokemonData.name;
     this.hp = pokemonData.remainingHp || pokemonData.stats[0];
-    [this.maxHp] = this.pokemonData.stats;
+    [this.maxHp = 0] = this.pokemonData.stats;
     this.level = pokemonData.level;
     [
       this.atk,
-      this.batk,
+      this.batk = 0,
       this.def,
-      this.bdef,
+      this.bdef = 0,
       this.spa,
-      this.bspa,
+      this.bspa = 0,
       this.spd,
-      this.bspd,
+      this.bspd = 0,
       this.spe,
-      this.bspe,
+      this.bspe = 0,
     ] = [
       pokemonData.stats[1],
       pokemonData.stats[1],
@@ -600,7 +601,7 @@ class Pokemon {
     ];
     this.acc = 100;
     this.eva = 100;
-    [this.type1, this.type2 = null] = this.speciesData.type;
+    [this.type1 = null, this.type2 = null] = this.speciesData.type;
     // map effectId => effect data (duration, args)
     this.effectIds = {};
     // map moveId => move data (cooldown, disabled)
@@ -685,7 +686,7 @@ class Pokemon {
       return;
     }
     // make sure move exists and is not on cooldown & disabled
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     if (
       !moveData ||
       this.moveIds[moveId].cooldown > 0 ||
@@ -820,13 +821,14 @@ class Pokemon {
       );
 
       // execute move
-      moveExecutes[moveId](
-        this.battle,
-        this,
+      executeMove({
+        moveId,
+        battle: this.battle,
+        source: this,
         primaryTarget,
         allTargets,
-        missedTargets
-      );
+        missedTargets,
+      });
 
       // after move event
       const eventArgs = {
@@ -1065,7 +1067,7 @@ class Pokemon {
   }
 
   getTargets(moveId, targetPokemonId) {
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // make sure target exists and is alive
     const target = this.battle.allPokemon[targetPokemonId];
     if (!target) {
@@ -1088,7 +1090,7 @@ class Pokemon {
   }
 
   getMisses(moveId, targetPokemons) {
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     const misses = [];
     if (!moveData.accuracy) {
       return misses;
@@ -1278,8 +1280,8 @@ class Pokemon {
     const freezeCheck =
       this.status.statusId === statusConditions.FREEZE &&
       damageInfo.type === "move" &&
-      moveConfig[damageInfo.moveId] !== undefined &&
-      (moveConfig[damageInfo.moveId].type === types.FIRE ||
+      getMove(damageInfo.moveId) !== undefined &&
+      (getMove(damageInfo.moveId).type === types.FIRE ||
         damageInfo.moveId === "m503");
     if (freezeCheck) {
       if (this.removeStatus()) {
@@ -1875,7 +1877,7 @@ class Pokemon {
 
     // disable move
     this.moveIds[moveId].disabled = true;
-    // this.battle.addToLog(`${this.name}'s ${moveConfig[moveId].name} was disabled!`);
+    // this.battle.addToLog(`${this.name}'s ${getMove(moveId).name} was disabled!`);
   }
 
   // eslint-disable-next-line no-unused-vars
@@ -1892,7 +1894,7 @@ class Pokemon {
 
     // enable move
     this.moveIds[moveId].disabled = false;
-    // this.battle.addToLog(`${this.name}'s ${moveConfig[moveId].name} is no longer disabled!`);
+    // this.battle.addToLog(`${this.name}'s ${getMove(moveId).name} is no longer disabled!`);
   }
 
   tickEffectDurations() {
@@ -1933,7 +1935,7 @@ class Pokemon {
 
     if (!silenced) {
       this.battle.addToLog(
-        `${this.name}'s ${moveConfig[moveId].name}'s cooldown was reduced by ${
+        `${this.name}'s ${getMove(moveId).name}'s cooldown was reduced by ${
           oldCooldown - newCooldown
         } turns!`
       );
@@ -2552,7 +2554,7 @@ class Battle {
   }
 
   getEligibleTargets(source, moveId) {
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     const eligibleTargets = [];
     const eventArgs = {
       user: source,
