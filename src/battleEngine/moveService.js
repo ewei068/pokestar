@@ -12,7 +12,7 @@ const registerMoves = (moves) => {
 };
 
 /**
- * @param {{[K in MoveIdEnum]: Object}} moveConfig
+ * @param {{[K in MoveIdEnum]: object}} moveConfig
  * @param {{[K in MoveIdEnum]: Function}} moveExecutes
  */
 const registerLegacyMoves = (moveConfig, moveExecutes) => {
@@ -36,19 +36,16 @@ const registerLegacyMoves = (moveConfig, moveExecutes) => {
  * @param {MoveIdEnum} moveId
  * @returns {Move}
  */
-const getMove = (moveId) => {
-  return allMoves[moveId];
-};
+const getMove = (moveId) => allMoves[moveId];
 
 /**
- * @param {Object} param0
+ * @param {object} param0
  * @param {MoveIdEnum} param0.moveId
- * @param {Object} param0.battle
- * @param {Object} param0.source
- * @param {Object} param0.primaryTarget
- * @param {Array<Object>} param0.allTargets
- * @param {Array<Object>=} param0.missedTargets
- * @returns
+ * @param {object} param0.battle
+ * @param {object} param0.source
+ * @param {object} param0.primaryTarget
+ * @param {Array<object>} param0.allTargets
+ * @param {Array<object>=} param0.missedTargets
  */
 const executeMove = ({
   moveId,
@@ -73,7 +70,7 @@ const executeMove = ({
       missedTargets,
     });
   } else {
-    const legacyMove = /** @type{any} */ (move);
+    const legacyMove = /** @type {any} */ (move);
     legacyMove.execute(
       battle,
       source,

@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const { effectTypes } = require("./battleConfig");
 const { effectIdEnum } = require("../enums/battleEnums");
 
@@ -7,7 +8,7 @@ const { effectIdEnum } = require("../enums/battleEnums");
  */
 class Effect {
   /**
-   * @param {Object} param0
+   * @param {object} param0
    * @param {EffectIdEnum} param0.id
    * @param {string} param0.name
    * @param {string} param0.description
@@ -46,7 +47,7 @@ const effectsToRegister = Object.freeze({
     /**
      * @param {EffectAddBasicArgs & {initialArgs: null}} args
      */
-    effectAdd: function ({ battle, target }) {
+    effectAdd({ battle, target }) {
       // if greaterAtkUp exists on target, remove atkUp and refresh greaterAtkUp
       if (target.effectIds.greaterAtkUp) {
         const currentDuration = target.effectIds.atkUp.duration;
@@ -60,7 +61,7 @@ const effectsToRegister = Object.freeze({
       }
       return {};
     },
-    effectRemove: function ({ battle, target, initialArgs, properties }) {
+    effectRemove({ battle, target }) {
       battle.addToLog(`${target.name}'s Attack boost wore off!`);
       target.atk -= Math.floor(target.batk * 0.5);
     },

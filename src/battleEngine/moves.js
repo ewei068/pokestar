@@ -16,7 +16,7 @@ const { moveIdEnum } = require("../enums/battleEnums");
 
 class Move {
   /**
-   * @param {Object} param0
+   * @param {object} param0
    * @param {MoveIdEnum} param0.id
    * @param {string} param0.name
    * @param {PokemonTypeEnum} param0.type
@@ -63,20 +63,20 @@ class Move {
   }
 
   /**
-   * @param {Object} param0
+   * @param {object} param0
    * @param {BattlePokemon} param0.source
    * @param {BattlePokemon} param0.primaryTarget
    * @param {Array<BattlePokemon>} param0.allTargets
    * @param {Array<BattlePokemon>=} param0.missedTargets
    * @param {number=} param0.offTargetDamageMultiplier
    */
-  genericDealDamage = ({
+  genericDealDamage({
     source,
     primaryTarget,
     allTargets,
     missedTargets = [],
     offTargetDamageMultiplier = 0.8,
-  }) => {
+  }) {
     const moveData = getMove(this.id);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -89,7 +89,7 @@ class Move {
         moveId: this.id,
       });
     }
-  };
+  }
 }
 
 const movesToRegister = Object.freeze({
@@ -107,7 +107,7 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The target is struck with slender, whiplike vines to inflict damage.",
-    execute: function ({ source, primaryTarget, allTargets, missedTargets }) {
+    execute({ source, primaryTarget, allTargets, missedTargets }) {
       this.genericDealDamage({
         source,
         primaryTarget,

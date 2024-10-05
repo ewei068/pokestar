@@ -1,6 +1,4 @@
 const { logger } = require("../log");
-const types = require("../../types");
-const { effectIdEnum } = require("../enums/battleEnums");
 
 const allEffects = {};
 
@@ -14,7 +12,7 @@ const registerEffects = (effects) => {
 };
 
 /**
- * @param {Record<EffectIdEnum, Object>} effectConfig
+ * @param {Record<EffectIdEnum, object>} effectConfig
  */
 const registerLegacyEffects = (effectConfig) => {
   Object.entries(effectConfig).forEach(([effectId, effect]) => {
@@ -30,21 +28,17 @@ const registerLegacyEffects = (effectConfig) => {
  * @param {K} effectId
  * @returns {K extends keyof RegisteredEffects ? RegisteredEffects[K] : Effect<any, any>}
  */
-const getEffect = (effectId) => {
+const getEffect = (effectId) =>
   // @ts-ignore
-  return allEffects[effectId];
-};
-
-const test = getEffect(effectIdEnum.TEST_EFFECT);
-
+  allEffects[effectId];
 /**
  * @template {EffectIdEnum} K
- * @param {Object} param0
+ * @param {object} param0
  * @param {K} param0.effectId
  * @param {Battle} param0.battle
  * @param {BattlePokemon} param0.source
  * @param {BattlePokemon} param0.target
- * @param {K extends keyof RegisteredEffects ? EffectInitialArgsType<RegisteredEffects[K]> : any} param0.initialArgs
+ * @param {EffectInitialArgsTypeFromId<K>} param0.initialArgs
  */
 const applyEffect = ({ effectId, battle, source, target, initialArgs }) => {
   const effect = getEffect(effectId);
@@ -67,12 +61,12 @@ const applyEffect = ({ effectId, battle, source, target, initialArgs }) => {
 
 /**
  * @template {EffectIdEnum} K
- * @param {Object} param0
+ * @param {object} param0
  * @param {K} param0.effectId
  * @param {Battle} param0.battle
  * @param {BattlePokemon} param0.target
- * @param {K extends keyof RegisteredEffects ? EffectInitialArgsType<RegisteredEffects[K]> : any} param0.initialArgs
- * @param {K extends keyof RegisteredEffects ? EffectPropertiesType<RegisteredEffects[K]> : any} param0.properties
+ * @param {EffectInitialArgsTypeFromId<K>} param0.initialArgs
+ * @param {EffectPropertiesTypeFromId<K>} param0.properties
  */
 const removeEffect = ({
   effectId,
@@ -103,4 +97,6 @@ module.exports = {
   registerEffects,
   registerLegacyEffects,
   getEffect,
+  applyEffect,
+  removeEffect,
 };

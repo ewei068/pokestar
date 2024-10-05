@@ -1365,7 +1365,7 @@ const effectConfig = Object.freeze({
               `${invulnPokemon.name} reflected the move back at ${sourcePokemon.name}!`
             );
             executeMove({
-              moveId: moveId,
+              moveId,
               battle: invulnPokemon.battle,
               source: invulnPokemon,
               primaryTarget: sourcePokemon,
