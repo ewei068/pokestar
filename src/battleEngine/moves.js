@@ -77,10 +77,9 @@ class Move {
     missedTargets = [],
     offTargetDamageMultiplier = 0.8,
   }) {
-    const moveData = getMove(this.id);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
-      const damageToDeal = calculateDamage(moveData, source, target, miss, {
+      const damageToDeal = calculateDamage(this, source, target, miss, {
         finalDamageMultiplier:
           target === primaryTarget ? 1 : offTargetDamageMultiplier,
       });

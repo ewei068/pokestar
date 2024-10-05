@@ -413,29 +413,6 @@ const effectConfig = Object.freeze({
       battle.addToLog(`${target.name}'s shield was removed!`);
     },
   },
-  atkUp: {
-    name: "Atk. Up",
-    description: "The target's Attack increased.",
-    type: effectTypes.BUFF,
-    dispellable: true,
-    effectAdd(battle, _source, target) {
-      // if greaterAtkUp exists on target, remove atkUp and refresh greaterAtkUp
-      if (target.effectIds.greaterAtkUp) {
-        const currentDuration = target.effectIds.atkUp.duration;
-        delete target.effectIds.atkUp;
-        if (target.effectIds.greaterAtkUp.duration < currentDuration) {
-          target.effectIds.greaterAtkUp.duration = currentDuration;
-        }
-      } else {
-        battle.addToLog(`${target.name}'s Attack rose!`);
-        target.atk += Math.floor(target.batk * 0.5);
-      }
-    },
-    effectRemove(battle, target) {
-      battle.addToLog(`${target.name}'s Attack boost wore off!`);
-      target.atk -= Math.floor(target.batk * 0.5);
-    },
-  },
   greaterAtkUp: {
     name: "Greater Atk. Up",
     description: "The target's Attack greatly increased.",
