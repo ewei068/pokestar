@@ -42,6 +42,7 @@ const getEffect = (effectId) =>
  * @param {BattlePokemon} param0.source
  * @param {BattlePokemon} param0.target
  * @param {EffectInitialArgsTypeFromId<K>} param0.initialArgs
+ * @returns {EffectPropertiesTypeFromId<K> | undefined}
  */
 const applyEffect = ({ effectId, battle, source, target, initialArgs }) => {
   const effect = getEffect(effectId);
@@ -50,16 +51,15 @@ const applyEffect = ({ effectId, battle, source, target, initialArgs }) => {
     return;
   }
   if (!effect.isLegacyEffect) {
-    effect.effectAdd({
+    return effect.effectAdd({
       battle,
       source,
       target,
       initialArgs,
     });
-  } else {
-    const legacyEffect = /** @type {any} */ (effect);
-    legacyEffect.effectAdd(battle, source, target, initialArgs);
   }
+  const legacyEffect = /** @type {any} */ (effect);
+  return legacyEffect.effectAdd(battle, source, target, initialArgs);
 };
 
 /**

@@ -6576,6 +6576,18 @@ const moveConfig = Object.freeze({
   },
 });
 
+/**
+ * @callback LegacyMoveExecute
+ * @param {Battle} battle
+ * @param {BattlePokemon} source
+ * @param {BattlePokemon} primaryTarget
+ * @param {BattlePokemon[]} allTargets
+ * @param {BattlePokemon[]} missedTargets
+ * @returns {void}
+ */
+/**
+ * @type {Record<LegacyMoveIdEnum, LegacyMoveExecute>}
+ */
 const moveExecutes = {
   m6(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m6";
@@ -7539,8 +7551,8 @@ const moveExecutes = {
   "m97-1": function (_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply atkUp, speUp buff
-      target.addEffect("atkUp", 4, source);
-      target.addEffect("speUp", 4, source);
+      target.addEffect("atkUp", 4, source, undefined);
+      target.addEffect("speUp", 4, source, undefined);
 
       // boost combat readiness by 60
       target.boostCombatReadiness(source, 80);

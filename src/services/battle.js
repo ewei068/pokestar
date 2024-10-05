@@ -77,7 +77,11 @@ const { validateParty } = require("./party");
 const { addRewards, getRewardsString } = require("../utils/trainerUtils");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
 const { getMove, executeMove } = require("../battleEngine/moveService");
-const { getEffect } = require("../battleEngine/effectService");
+const {
+  getEffect,
+  applyEffect,
+  removeEffect,
+} = require("../battleEngine/effectService");
 
 class NPC {
   constructor(
@@ -1503,6 +1507,13 @@ class Pokemon {
     return combatReadinessLost;
   }
 
+  /**
+   * @template {EffectIdEnum} K
+   * @param {K} effectId
+   * @param {number} duration
+   * @param {BattlePokemon} source
+   * @param {EffectInitialArgsTypeFromId<K>} args
+   */
   addEffect(effectId, duration, source, args) {
     // if faint, do nothing
     if (this.isFainted) {
@@ -1510,7 +1521,6 @@ class Pokemon {
     }
 
     duration = this.battle.activePokemon === this ? duration + 1 : duration;
-    const effectData = getEffect(effectId);
 
     // if effect already exists for longer or equal duration, do nothing (special case for shield)
     if (
@@ -1567,7 +1577,13 @@ class Pokemon {
       this.effectIds[effectId].args = oldShield;
     }
     this.effectIds[effectId].args =
-      effectData.effectAdd(this.battle, source, this, args) || {};
+      applyEffect({
+        effectId,
+        battle: this.battle,
+        source,
+        target: this,
+        initialArgs: args,
+      }) || {};
 
     if (this.effectIds[effectId] !== undefined) {
       // trigger after add effect events
@@ -1617,20 +1633,27 @@ class Pokemon {
     return this.effectIds[effectId];
   }
 
-  removeEffect(effectId) {
-    const effectData = getEffect(effectId);
+  /**
+   * Forcefully deletes the effect instance from this Pokemon. ONLY USE to bypass effect removal logic.
+   * @param {EffectIdEnum} effectId
+   */
+  deleteEffectInstance(effectId) {
+    delete this.effectIds[effectId];
+  }
 
+  removeEffect(effectId) {
     // if effect doesn't exist, do nothing
     if (!this.effectIds[effectId]) {
       return false;
     }
 
-    effectData.effectRemove(
-      this.battle,
-      this,
-      this.effectIds[effectId].args,
-      this.effectIds[effectId].initialArgs
-    );
+    removeEffect({
+      effectId,
+      battle: this.battle,
+      target: this,
+      properties: this.effectIds[effectId].args,
+      initialArgs: this.effectIds[effectId].initialArgs,
+    });
 
     if (this.effectIds[effectId] !== undefined) {
       const afterRemoveArgs = {

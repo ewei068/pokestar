@@ -48,25 +48,25 @@
  * @template T
  * @template U
  * @callback EffectAddCallback
+ * @this {Effect<T, any>} // not having any bugs out the template
  * @param {object} param0
  * @param {Battle} param0.battle
  * @param {BattlePokemon} param0.source
  * @param {BattlePokemon} param0.target
  * @param {T} param0.initialArgs
  * @returns {U}
- * @this {Effect<T, U>}
  */
 
 /**
  * @template T
  * @template U
  * @callback EffectRemoveCallback
+ * @this {Effect<T, U>}
  * @param {object} param0
  * @param {Battle} param0.battle
  * @param {BattlePokemon} param0.target
  * @param {T} param0.initialArgs
  * @param {U} param0.properties
- * @this {Effect<T, U>}
  */
 
 /**

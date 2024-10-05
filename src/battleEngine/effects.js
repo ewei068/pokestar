@@ -45,21 +45,22 @@ const effectsToRegister = Object.freeze({
     type: effectTypes.BUFF,
     dispellable: true,
     /**
-     * @param {EffectAddBasicArgs & {initialArgs: null}} args
+     * @param {EffectAddBasicArgs & {initialArgs: any}} args
      */
     effectAdd({ battle, target }) {
       // if greaterAtkUp exists on target, remove atkUp and refresh greaterAtkUp
-      if (target.effectIds.greaterAtkUp) {
-        const currentDuration = target.effectIds.atkUp.duration;
-        delete target.effectIds.atkUp;
-        if (target.effectIds.greaterAtkUp.duration < currentDuration) {
-          target.effectIds.greaterAtkUp.duration = currentDuration;
+      const greaterAtkUpInstance = target.getEffectInstance("greaterAtkUp");
+      const thisInstance = target.getEffectInstance(effectIdEnum.ATK_UP);
+      if (greaterAtkUpInstance) {
+        const currentDuration = thisInstance?.duration ?? 0;
+        if (greaterAtkUpInstance.duration < currentDuration) {
+          greaterAtkUpInstance.duration = currentDuration;
         }
+        target.deleteEffectInstance(effectIdEnum.ATK_UP);
       } else {
         battle.addToLog(`${target.name}'s Attack rose!`);
         target.atk += Math.floor(target.batk * 0.5);
       }
-      return {};
     },
     effectRemove({ battle, target }) {
       battle.addToLog(`${target.name}'s Attack boost wore off!`);
