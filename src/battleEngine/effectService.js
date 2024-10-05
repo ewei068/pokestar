@@ -1,3 +1,5 @@
+// eslint-disable-next-line no-unused-vars
+const { effectIdEnum } = require("../enums/battleEnums"); // TODO: remove after testing
 const { logger } = require("../log");
 
 const allEffects = {};
@@ -31,6 +33,7 @@ const registerLegacyEffects = (effectConfig) => {
 const getEffect = (effectId) =>
   // @ts-ignore
   allEffects[effectId];
+
 /**
  * @template {EffectIdEnum} K
  * @param {object} param0

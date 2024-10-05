@@ -6,6 +6,7 @@
 const { types: pokemonTypes } = require("../config/pokemonConfig");
 const types = require("../../types");
 const { getMove, executeMove } = require("./moveService");
+const { getEffect } = require("./effectService");
 
 /** @typedef {types.Enum<battleEventNames>} BattleEventEnum */
 const battleEventNames = Object.freeze({
@@ -1737,7 +1738,7 @@ const effectConfig = Object.freeze({
           // only allow buffs to trigger
           if (
             args.effectId &&
-            effectConfig[args.effectId].type !== effectTypes.BUFF
+            getEffect(args.effectId).type !== effectTypes.BUFF
           ) {
             return;
           }
@@ -6918,7 +6919,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // remove all buffs
       for (const effectId of Object.keys(target.effectIds)) {
-        const effectData = effectConfig[effectId];
+        const effectData = getEffect(effectId);
         if (effectData.type === effectTypes.BUFF) {
           target.dispellEffect(effectId);
         }
@@ -8099,7 +8100,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // remove all debuffs
       for (const effectId of Object.keys(target.effectIds)) {
-        const effectData = effectConfig[effectId];
+        const effectData = getEffect(effectId);
         if (effectData.type === effectTypes.DEBUFF) {
           target.removeEffect(effectId);
         }
@@ -8181,7 +8182,7 @@ const moveExecutes = {
       if (!miss) {
         const possibleBuffs = Object.keys(target.effectIds).filter(
           (effectId) => {
-            const effectData = effectConfig[effectId];
+            const effectData = getEffect(effectId);
             return (
               effectData.type === effectTypes.BUFF && effectData.dispellable
             );
@@ -8565,7 +8566,7 @@ const moveExecutes = {
       let effects = 0;
       // remove all debuffs
       for (const effectId of Object.keys(target.effectIds)) {
-        const effectData = effectConfig[effectId];
+        const effectData = getEffect(effectId);
         if (effectData.type === effectTypes.DEBUFF) {
           if (target.dispellEffect(effectId)) {
             effects += 1;
@@ -8879,7 +8880,7 @@ const moveExecutes = {
     );
     for (const ally of allyTargets) {
       for (const effectId of Object.keys(ally.effectIds)) {
-        const effectData = effectConfig[effectId];
+        const effectData = getEffect(effectId);
         if (effectData.type !== effectTypes.DEBUFF) {
           continue;
         }
@@ -9321,7 +9322,7 @@ const moveExecutes = {
       // if not miss, remove all buffs
       if (!miss) {
         for (const effectId of Object.keys(target.effectIds)) {
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (effectData.type !== effectTypes.BUFF) {
             continue;
           }
@@ -9599,7 +9600,7 @@ const moveExecutes = {
       target.removeStatus();
       // remove debuffs
       for (const effectId of Object.keys(target.effectIds)) {
-        const effectData = effectConfig[effectId];
+        const effectData = getEffect(effectId);
         if (effectData.type !== effectTypes.DEBUFF) {
           continue;
         }
@@ -10691,14 +10692,14 @@ const moveExecutes = {
       // if ally, dispell debuffs. if enemy, dispell buffs
       if (target.teamName === source.teamName) {
         for (const effectId of Object.keys(target.effectIds)) {
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (effectData.type === effectTypes.DEBUFF) {
             target.dispellEffect(effectId);
           }
         }
       } else {
         for (const effectId of Object.keys(target.effectIds)) {
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (effectData.type === effectTypes.BUFF) {
             target.dispellEffect(effectId);
           }
@@ -10786,7 +10787,7 @@ const moveExecutes = {
       if (!miss) {
         const possibleDebuffs = Object.keys(source.effectIds).filter(
           (effectId) => {
-            const effectData = effectConfig[effectId];
+            const effectData = getEffect(effectId);
             return (
               effectData.type === effectTypes.DEBUFF && effectData.dispellable
             );
@@ -10896,7 +10897,7 @@ const moveExecutes = {
       if (!miss) {
         const possibleBuffs = Object.keys(target.effectIds).filter(
           (effectId) => {
-            const effectData = effectConfig[effectId];
+            const effectData = getEffect(effectId);
             return (
               effectData.type === effectTypes.BUFF && effectData.dispellable
             );
@@ -11098,7 +11099,7 @@ const moveExecutes = {
 
       let hasDebuff = false;
       for (const effect of Object.keys(target.effectIds)) {
-        const effectData = effectConfig[effect];
+        const effectData = getEffect(effect);
         if (effectData.type === effectTypes.DEBUFF) {
           hasDebuff = true;
           break;
@@ -11941,7 +11942,7 @@ const moveExecutes = {
       if (!miss) {
         // remove all buffs
         for (const effectId of Object.keys(target.effectIds)) {
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (effectData.type === effectTypes.BUFF) {
             target.dispellEffect(effectId);
           }
@@ -11979,7 +11980,7 @@ const moveExecutes = {
       // increase all buff durations by 1 if dispellable
       battle.addToLog(`${target.name} is invigorated!`);
       for (const effectId of Object.keys(target.effectIds)) {
-        const effectData = effectConfig[effectId];
+        const effectData = getEffect(effectId);
         if (effectData.type === effectTypes.BUFF && effectData.dispellable) {
           target.effectIds[effectId].duration += 1;
         }
@@ -12568,7 +12569,7 @@ const abilityConfig = {
         },
         execute(initialArgs, args) {
           const { effectId } = args;
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (!effectData) {
             return;
           }
@@ -12993,7 +12994,7 @@ const abilityConfig = {
           }
 
           const { effectId } = args;
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (!effectData || effectData.type !== effectTypes.DEBUFF) {
             return;
           }
@@ -13051,7 +13052,7 @@ const abilityConfig = {
             const moveData = getMove(args.moveId);
             if (moveData && moveData.tier === moveTiers.ULTIMATE) {
               for (const effectId in target.effectIds) {
-                const effectData = effectConfig[effectId];
+                const effectData = getEffect(effectId);
                 if (effectData.type === effectTypes.DEBUFF) {
                   target.dispellEffect(effectId);
                 }
@@ -13730,7 +13731,7 @@ const abilityConfig = {
             return;
           }
 
-          const effectData = effectConfig[args.effectId];
+          const effectData = getEffect(args.effectId);
           if (
             !effectData ||
             !effectData.dispellable ||
@@ -15287,7 +15288,7 @@ const abilityConfig = {
           }
 
           const { effectId } = args;
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (!effectData || effectData.type !== effectTypes.DEBUFF) {
             return;
           }
@@ -16069,7 +16070,7 @@ const abilityConfig = {
           }
 
           const { effectId } = args;
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (!effectData) {
             return;
           }
@@ -16098,7 +16099,7 @@ const abilityConfig = {
           // see if buff
           let isBuffed = false;
           for (const effectId of Object.keys(pokemon.effectIds)) {
-            const effectData = effectConfig[effectId];
+            const effectData = getEffect(effectId);
             if (!effectData) {
               continue;
             }

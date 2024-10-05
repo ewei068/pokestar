@@ -16,12 +16,9 @@ const { getOrSetDefault, formatMoney } = require("../utils/utils");
 const { pokemonConfig, types } = require("../config/pokemonConfig");
 const {
   battleEventNames,
-  moveExecutes,
-  moveConfig,
   targetTypes,
   targetPatterns,
   targetPositions,
-  effectConfig,
   statusConditions,
   moveTiers,
   calculateDamage,
@@ -79,8 +76,8 @@ const { generateRandomPokemon } = require("./gacha");
 const { validateParty } = require("./party");
 const { addRewards, getRewardsString } = require("../utils/trainerUtils");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
-const { User } = require("discord.js");
 const { getMove, executeMove } = require("../battleEngine/moveService");
+const { getEffect } = require("../battleEngine/effectService");
 
 class NPC {
   constructor(
@@ -1513,7 +1510,7 @@ class Pokemon {
     }
 
     duration = this.battle.activePokemon === this ? duration + 1 : duration;
-    const effectData = effectConfig[effectId];
+    const effectData = getEffect(effectId);
 
     // if effect already exists for longer or equal duration, do nothing (special case for shield)
     if (
@@ -1590,7 +1587,7 @@ class Pokemon {
   }
 
   dispellEffect(effectId) {
-    const effectData = effectConfig[effectId];
+    const effectData = getEffect(effectId);
 
     // if effect doesn't exist, do nothing
     if (!this.effectIds[effectId]) {
@@ -1605,8 +1602,23 @@ class Pokemon {
     return this.removeEffect(effectId);
   }
 
+  /**
+   * @template {EffectIdEnum} K
+   * @param {K} effectId
+   * @returns {{
+   *  duration: number,
+   *  source: Pokemon,
+   *  initialArgs: K extends keyof RegisteredEffects ? EffectInitialArgsType<RegisteredEffects[K]> : any,
+   *  args: K extends keyof RegisteredEffects ? EffectPropertiesType<RegisteredEffects[K]> : any
+   * } | undefined}
+   */
+  getEffectInstance(effectId) {
+    // @ts-ignore
+    return this.effectIds[effectId];
+  }
+
   removeEffect(effectId) {
-    const effectData = effectConfig[effectId];
+    const effectData = getEffect(effectId);
 
     // if effect doesn't exist, do nothing
     if (!this.effectIds[effectId]) {
@@ -2047,15 +2059,15 @@ class Battle {
   isPvp; */
 
   /**
-   * @param {Object} param0
+   * @param {object} param0
    * @param {number?=} param0.moneyMultiplier
    * @param {number?=} param0.expMultiplier
    * @param {number?=} param0.pokemonExpMultiplier
    * @param {number?=} param0.level
    * @param {number?=} param0.equipmentLevel
-   * @param {Object?=} param0.rewards
+   * @param {object?=} param0.rewards
    * @param {string?=} param0.rewardString
-   * @param {Object?=} param0.dailyRewards
+   * @param {object?=} param0.dailyRewards
    * @param {Function?=} param0.winCallback
    * @param {Function?=} param0.loseCallback
    * @param {string?=} param0.npcId
@@ -3441,7 +3453,7 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
 
 /**
  *
- * @param {Object} param0
+ * @param {object} param0
  * @param {string?=} param0.stateId
  * @param {User?=} param0.user
  * @returns
