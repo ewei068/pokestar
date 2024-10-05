@@ -387,32 +387,6 @@ const effectTypes = Object.freeze({
 
 /** @typedef {types.Keys<effectConfig>} LegacyEffectIdEnum */
 const effectConfig = Object.freeze({
-  shield: {
-    name: "Shield",
-    description: "The target's takes shielded damage.",
-    type: effectTypes.BUFF,
-    dispellable: true,
-    effectAdd(battle, _source, target, initialArgs) {
-      const shield = initialArgs && initialArgs.shield;
-      if (!shield) {
-        return {};
-      }
-
-      let oldShield =
-        target.effectIds.shield &&
-        target.effectIds.shield.args &&
-        target.effectIds.shield.args.shield;
-      oldShield = oldShield || 0;
-
-      const newShield = Math.max(oldShield, shield);
-      battle.addToLog(`${target.name} is shielded for ${newShield} damage!`);
-      initialArgs.shield = newShield;
-      return initialArgs;
-    },
-    effectRemove(battle, target) {
-      battle.addToLog(`${target.name}'s shield was removed!`);
-    },
-  },
   greaterAtkUp: {
     name: "Greater Atk. Up",
     description: "The target's Attack greatly increased.",

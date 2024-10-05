@@ -6,9 +6,12 @@ const allMoves = {};
  * @param {{[K in MoveIdEnum]: Move}} moves
  */
 const registerMoves = (moves) => {
+  let movesRegistered = 0;
   Object.entries(moves).forEach(([moveId, move]) => {
     allMoves[moveId] = move;
+    movesRegistered += 1;
   });
+  logger.info(`Registered ${movesRegistered} moves.`);
 };
 
 /**
@@ -16,7 +19,14 @@ const registerMoves = (moves) => {
  * @param {{[K in MoveIdEnum]: Function}} moveExecutes
  */
 const registerLegacyMoves = (moveConfig, moveExecutes) => {
+  let movesRegistered = 0;
   Object.entries(moveConfig).forEach(([moveId, move]) => {
+    if (allMoves[moveId]) {
+      logger.warn(
+        `Move ${moveId} ${allMoves[moveId].name} already exists. Continuing...`
+      );
+      return;
+    }
     const moveExecute = moveExecutes[moveId];
     if (!moveExecute) {
       logger.warn(
@@ -29,7 +39,9 @@ const registerLegacyMoves = (moveConfig, moveExecutes) => {
       execute: moveExecutes[moveId],
       isLegacyMove: true,
     };
+    movesRegistered += 1;
   });
+  logger.info(`Registered ${movesRegistered} legacy moves.`);
 };
 
 /**

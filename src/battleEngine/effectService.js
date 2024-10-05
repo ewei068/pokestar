@@ -8,21 +8,33 @@ const allEffects = {};
  * @param {Record<EffectIdEnum, Effect<any, any>>} effects
  */
 const registerEffects = (effects) => {
+  let effectsRegistered = 0;
   Object.entries(effects).forEach(([effectId, effect]) => {
     allEffects[effectId] = effect;
+    effectsRegistered += 1;
   });
+  logger.info(`Registered ${effectsRegistered} effects.`);
 };
 
 /**
  * @param {Record<EffectIdEnum, object>} effectConfig
  */
 const registerLegacyEffects = (effectConfig) => {
+  let effectsRegistered = 0;
   Object.entries(effectConfig).forEach(([effectId, effect]) => {
+    if (allEffects[effectId]) {
+      logger.warn(
+        `Effect ${effectId} ${allEffects[effectId].name} already exists. Continuing...`
+      );
+      return;
+    }
     allEffects[effectId] = {
       ...effect,
       isLegacyEffect: true,
     };
+    effectsRegistered += 1;
   });
+  logger.info(`Registered ${effectsRegistered} legacy effects.`);
 };
 
 /**
@@ -84,6 +96,7 @@ const removeEffect = ({
     return;
   }
   if (!effect.isLegacyEffect) {
+    // @ts-ignore
     effect.effectRemove({
       battle,
       target,

@@ -79,10 +79,16 @@ class Move {
   }) {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
-      const damageToDeal = calculateDamage(this, source, target, miss, {
-        finalDamageMultiplier:
-          target === primaryTarget ? 1 : offTargetDamageMultiplier,
-      });
+      const damageToDeal = calculateDamage(
+        getMove(this.id),
+        source,
+        target,
+        miss,
+        {
+          finalDamageMultiplier:
+            target === primaryTarget ? 1 : offTargetDamageMultiplier,
+        }
+      );
       source.dealDamage(damageToDeal, target, {
         type: "move",
         moveId: this.id,

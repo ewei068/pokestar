@@ -30,7 +30,7 @@
 
 /**
  * @template T
- * @typedef {T extends Effect<infer U, infer V> ? V | {} : never} EffectPropertiesType
+ * @typedef {T extends Effect<infer U, infer V> ? V & {} : never} EffectPropertiesType
  */
 
 /**

@@ -67,6 +67,33 @@ const effectsToRegister = Object.freeze({
       target.atk -= Math.floor(target.batk * 0.5);
     },
   }),
+  [effectIdEnum.SHIELD]: new Effect({
+    id: effectIdEnum.SHIELD,
+    name: "Shield",
+    description: "The target's takes shielded damage.",
+    type: effectTypes.BUFF,
+    dispellable: true,
+    /**
+     * @param {EffectAddBasicArgs & {initialArgs: {shield: number}}} args
+     * @returns {{shield?: number}}
+     */
+    effectAdd({ battle, target, initialArgs }) {
+      const shield = initialArgs && initialArgs.shield;
+      if (!shield) {
+        return {};
+      }
+
+      const oldShield =
+        target.getEffectInstance(effectIdEnum.SHIELD)?.args?.shield ?? 0;
+      const newShield = Math.max(oldShield, shield);
+      battle.addToLog(`${target.name} is shielded for ${newShield} damage!`);
+      initialArgs.shield = newShield;
+      return initialArgs;
+    },
+    effectRemove({ battle, target }) {
+      battle.addToLog(`${target.name}'s shield was removed!`);
+    },
+  }),
 });
 
 module.exports = {

@@ -9,6 +9,7 @@ const types = require("../../types");
 const effectIdEnum = Object.freeze({
   TEST_EFFECT: "testEffect",
   ATK_UP: "atkUp",
+  SHIELD: "shield",
 });
 
 /**
