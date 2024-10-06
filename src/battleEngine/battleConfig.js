@@ -5,7 +5,7 @@
 /* eslint-disable no-param-reassign */
 const { types: pokemonTypes } = require("../config/pokemonConfig");
 const types = require("../../types");
-const { getMove, executeMove } = require("./moveService");
+const { getMove, getMoveIds, executeMove } = require("./moveService");
 const { getEffect } = require("./effectService");
 
 /** @typedef {types.Enum<battleEventNames>} BattleEventEnum */
@@ -2235,7 +2235,7 @@ const effectConfig = Object.freeze({
       battle.addToLog(
         `${target.name} was hit by ${source.name}'s Future Sight!`
       );
-      const damageCalc = calculateDamage(moveConfig.m248, source, target);
+      const damageCalc = calculateDamage(getMove("m248"), source, target);
       // calculate damage based on remaining duration. 0 => 100%, 1 => 50%, >= 2 => 25%
       let damageToDeal = damageCalc;
       if (remainingDuration === 0) {
@@ -7517,7 +7517,7 @@ const moveExecutes = {
     }
   },
   m98(_battle, source, _primaryTarget, allTargets, missedTargets) {
-    const moveData = moveConfig.m98;
+    const moveData = getMove("m98");
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7691,9 +7691,9 @@ const moveExecutes = {
   },
   m118(battle, source) {
     // get random basic moves
-    const basicMoves = Object.keys(moveConfig).filter(
-      (moveId) => getMove(moveId).tier === moveTiers.BASIC
-    );
+    const basicMoves = getMoveIds({
+      fieldFilter: { tier: moveTiers.BASIC },
+    });
     const randomMoveId =
       basicMoves[Math.floor(Math.random() * basicMoves.length)];
     const randomMoveData = getMove(randomMoveId);
@@ -9618,7 +9618,7 @@ const moveExecutes = {
     }
   },
   m322(_battle, source, _primaryTarget, allTargets, _missedTargets) {
-    const moveData = moveConfig.m322;
+    const moveData = getMove("m322");
     for (const target of allTargets) {
       // raise def, spd
       target.addEffect("defUp", 3, source);
@@ -9727,7 +9727,7 @@ const moveExecutes = {
     }
   },
   m334(_battle, source, _primaryTarget, allTargets, _missedTargets) {
-    const moveData = moveConfig.m334;
+    const moveData = getMove("m334");
     for (const target of allTargets) {
       // sharply raise def
       target.addEffect("greaterDefUp", 3, source);
@@ -9877,7 +9877,7 @@ const moveExecutes = {
     }
   },
   m349(_battle, source, _primaryTarget, allTargets, _missedTargets) {
-    const moveData = moveConfig.m349;
+    const moveData = getMove("m349");
     for (const target of allTargets) {
       // raise attack and speed
       target.addEffect("atkUp", 3, source);

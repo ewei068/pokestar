@@ -53,8 +53,8 @@ const getMove = (moveId) => allMoves[moveId];
 
 /**
  * @param {object} param0
- * @param {Record<string, any>} param0.fieldFilter
- * @param {Function} param0.customFilter
+ * @param {Record<string, any>=} param0.fieldFilter
+ * @param {Function=} param0.customFilter
  * @returns {types.PartialRecord<MoveIdEnum, Move>}
  */
 const getMoves = ({ fieldFilter, customFilter }) => {
@@ -87,8 +87,8 @@ const getMoves = ({ fieldFilter, customFilter }) => {
 
 /**
  * @param {object} param0
- * @param {Record<string, any>} param0.fieldFilter
- * @param {Function} param0.customFilter
+ * @param {Record<string, any>=} param0.fieldFilter
+ * @param {Function=} param0.customFilter
  * @returns {Array<MoveIdEnum>}
  */
 const getMoveIds = ({ fieldFilter, customFilter }) => {
