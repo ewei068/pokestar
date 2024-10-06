@@ -607,7 +607,7 @@ class Pokemon {
     this.effectIds = {};
     // map moveId => move data (cooldown, disabled)
     this.addMoves(pokemonData);
-    this.addAbility(pokemonData);
+    this.setAbility(pokemonData);
     this.status = {
       statusId: null,
       turns: 0,
@@ -631,7 +631,7 @@ class Pokemon {
     }, {});
   }
 
-  addAbility(pokemonData) {
+  setAbility(pokemonData) {
     this.ability = {
       abilityId: pokemonData.abilityId,
     };
@@ -675,7 +675,7 @@ class Pokemon {
 
     // set moves and ability
     this.addMoves(this.pokemonData);
-    this.addAbility(this.pokemonData);
+    this.setAbility(this.pokemonData);
     this.applyAbility();
 
     this.battle.addToLog(`${oldName} transformed into ${this.name}!`);
