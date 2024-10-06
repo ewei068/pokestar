@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 const { effectIdEnum } = require("../enums/battleEnums"); // TODO: remove after testing
 const { logger } = require("../log");
+const types = require("../../types");
 
 const allEffects = {};
 
@@ -46,6 +47,49 @@ const getEffect = (effectId) =>
   // @ts-ignore
   allEffects[effectId];
 
+/**
+ * @param {Object} param0
+ * @param {Record<string, any>=} param0.fieldFilter
+ * @param {Function=} param0.customFilter
+ * @returns {types.PartialRecord<EffectIdEnum, Effect<any, any>>}
+ */
+const getEffects = ({ fieldFilter, customFilter }) => {
+  if (customFilter) {
+    return Object.entries(allEffects).reduce((acc, [effectId, effect]) => {
+      if (customFilter(effect)) {
+        acc[effectId] = effect;
+      }
+      return acc;
+    }, {});
+  }
+
+  if (fieldFilter) {
+    return Object.entries(allEffects).reduce((acc, [effectId, effect]) => {
+      Object.entries(fieldFilter).forEach(([field, value]) => {
+        if (effect[field] !== value) {
+          return acc;
+        }
+      });
+      acc[effectId] = effect;
+      return acc;
+    }, {});
+  }
+
+  return {
+    ...allEffects,
+  };
+};
+/**
+ * @param {Object} param0
+ * @param {Record<string, any>=} param0.fieldFilter
+ * @param {Function=} param0.customFilter
+ * @returns {EffectIdEnum[]}
+ */
+const getEffectIds = ({ fieldFilter, customFilter }) => {
+  const effects = getEffects({ fieldFilter, customFilter });
+  // @ts-ignore
+  return Object.keys(effects);
+};
 /**
  * @template {EffectIdEnum} K
  * @param {object} param0
@@ -113,6 +157,8 @@ module.exports = {
   registerEffects,
   registerLegacyEffects,
   getEffect,
+  getEffects,
+  getEffectIds,
   applyEffect,
   removeEffect,
 };

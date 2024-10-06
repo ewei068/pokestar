@@ -69,20 +69,19 @@ const getMoves = ({ fieldFilter, customFilter }) => {
 
   if (fieldFilter) {
     return Object.entries(allMoves).reduce((acc, [moveId, move]) => {
-      let isValid = true;
       Object.entries(fieldFilter).forEach(([field, value]) => {
         if (move[field] !== value) {
-          isValid = false;
+          return acc;
         }
       });
-      if (isValid) {
-        acc[moveId] = move;
-      }
+      acc[moveId] = move;
       return acc;
     }, {});
   }
 
-  return allMoves;
+  return {
+    ...allMoves,
+  };
 };
 
 /**
