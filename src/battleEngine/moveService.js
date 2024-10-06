@@ -1,4 +1,5 @@
 const { logger } = require("../log");
+const types = require("../../types");
 
 const allMoves = {};
 
@@ -52,6 +53,52 @@ const getMove = (moveId) => allMoves[moveId];
 
 /**
  * @param {object} param0
+ * @param {Record<string, any>} param0.fieldFilter
+ * @param {Function} param0.customFilter
+ * @returns {types.PartialRecord<MoveIdEnum, Move>}
+ */
+const getMoves = ({ fieldFilter, customFilter }) => {
+  if (customFilter) {
+    return Object.entries(allMoves).reduce((acc, [moveId, move]) => {
+      if (customFilter(move)) {
+        acc[moveId] = move;
+      }
+      return acc;
+    }, {});
+  }
+
+  if (fieldFilter) {
+    return Object.entries(allMoves).reduce((acc, [moveId, move]) => {
+      let isValid = true;
+      Object.entries(fieldFilter).forEach(([field, value]) => {
+        if (move[field] !== value) {
+          isValid = false;
+        }
+      });
+      if (isValid) {
+        acc[moveId] = move;
+      }
+      return acc;
+    }, {});
+  }
+
+  return allMoves;
+};
+
+/**
+ * @param {object} param0
+ * @param {Record<string, any>} param0.fieldFilter
+ * @param {Function} param0.customFilter
+ * @returns {Array<MoveIdEnum>}
+ */
+const getMoveIds = ({ fieldFilter, customFilter }) => {
+  const moves = getMoves({ fieldFilter, customFilter });
+  // @ts-ignore
+  return Object.keys(moves);
+};
+
+/**
+ * @param {object} param0
  * @param {MoveIdEnum} param0.moveId
  * @param {object} param0.battle
  * @param {object} param0.source
@@ -97,5 +144,7 @@ module.exports = {
   registerMoves,
   registerLegacyMoves,
   getMove,
+  getMoves,
+  getMoveIds,
   executeMove,
 };

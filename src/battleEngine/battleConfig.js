@@ -16578,5 +16578,4 @@ module.exports = {
   calculateDamage,
   abilityConfig,
   damageTypes,
-  calculateDamage,
 };

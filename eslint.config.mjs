@@ -34,7 +34,7 @@ export default [
       "guard-for-in": "off", // TODO: enable but make better lol
       "no-continue": "off", // doesn't seem to work properly
       "no-await-in-loop": "off", // TODO: use promise.all
-      "jsdoc/no-undefined-types": "off",
+      "jsdoc/no-undefined-types": "silent", // doesn't seem to work with TS types
       "jsdoc/require-param-description": "off", // TODO: maybe add descriptions
       "jsdoc/require-returns-description": "off", // TODO: maybe add descriptions
       "jsdoc/valid-types": "off", // doesn't seem to work with TS types
