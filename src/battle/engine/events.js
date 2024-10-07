@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const { v4: uuidv4 } = require("uuid");
 const { getOrSetDefault } = require("../../utils/utils");
 
@@ -19,12 +20,12 @@ class BattleEventHandler {
     getOrSetDefault(this.eventNames, eventName, new Set()).add(listenerId);
     this.eventListeners[listenerId] = listener;
     // add listenerId and eventName to listener.initialargs
-    // eslint-disable-next-line no-param-reassign
     listener.initialArgs = {
       listenerId,
       eventName,
       ...listener.initialArgs,
     };
+    listener.eventName = eventName;
 
     return listenerId;
   }
@@ -32,7 +33,7 @@ class BattleEventHandler {
   unregisterListener(listenerId) {
     const listener = this.eventListeners[listenerId];
     if (listener) {
-      const { eventName } = listener.initialArgs;
+      const { eventName } = listener.eventName;
       const listenerIds = this.eventNames[eventName];
       if (listenerIds) {
         listenerIds.delete(listenerId);
@@ -47,20 +48,20 @@ class BattleEventHandler {
       for (const listenerId of listenerIds) {
         const listener = this.eventListeners[listenerId];
         if (listener) {
-          listener.execute(listener.initialArgs, args);
+          // migration harness
+          if (listener.isNewListener) {
+            listener.execute({
+              ...(args || {}),
+              eventName,
+            });
+          } else {
+            listener.execute(listener.initialArgs, args);
+          }
         }
       }
     }
   }
 }
-
-/**
- * @param {object} param0
- * @param {string} param0.eventName
- * @param {Battle} param0.battle
- * @param param0.callback
- */
-const registerListenerFunction = ({ eventName, battle, callback }) => {};
 
 module.exports = {
   BattleEventHandler,

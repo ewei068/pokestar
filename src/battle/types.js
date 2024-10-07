@@ -4,7 +4,6 @@
  */
 
 /**
- * @typedef {import("../config/battleConfig").BattleEventEnum} BattleEventEnum
  * @typedef {import("../config/battleConfig").DamageTypeEnum} DamageTypeEnum
  * @typedef {import("../config/battleConfig").MoveTierEnum} MoveTierEnum
  * @typedef {import("../config/battleConfig").StatusConditionEnum} StatusConditionEnum
@@ -82,4 +81,10 @@
  * @param {BattlePokemon} param0.primaryTarget
  * @param {Array<BattlePokemon>} param0.allTargets
  * @param {Array<BattlePokemon>} param0.missedTargets
+ */
+
+/**
+ * @template {BattleEventEnum} K
+ * @callback BattleEventListenerCallback
+ * @param {BattleEventArgs<K>} args
  */

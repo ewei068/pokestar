@@ -2722,6 +2722,19 @@ class Battle {
     return true;
   }
 
+  /**
+   * @template {BattleEventEnum} K
+   * @param {object} param0
+   * @param {K} param0.eventName
+   * @param { BattleEventListenerCallback<K> } param0.callback
+   */
+  registerListenerFunction({ eventName, callback }) {
+    return this.eventHandler.registerListener(eventName, {
+      isNewListener: true,
+      execute: callback,
+    });
+  }
+
   clearLog() {
     this.log = [];
   }
