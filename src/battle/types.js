@@ -88,3 +88,10 @@
  * @callback BattleEventListenerCallback
  * @param {BattleEventArgs<K>} args
  */
+
+/**
+ * @template {BattleEventEnum} K
+ * @callback BattleEventListenerConditionCallback
+ * @param {BattleEventArgs<K>} args
+ * @returns {boolean}
+ */

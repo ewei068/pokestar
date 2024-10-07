@@ -2282,7 +2282,9 @@ class Battle {
 
   nextTurn() {
     // end turn logic
-    this.eventHandler.emit(battleEventEnum.TURN_END);
+    this.eventHandler.emit(battleEventEnum.TURN_END, {
+      activePokemon: this.activePokemon,
+    });
 
     // tick status effects
     if (!this.activePokemon.isFainted) {
@@ -2727,12 +2729,25 @@ class Battle {
    * @param {object} param0
    * @param {K} param0.eventName
    * @param { BattleEventListenerCallback<K> } param0.callback
+   * @param { BattleEventListenerConditionCallback<K>= } param0.conditionCallback function that returns true if the event should be executed. If undefined, always execute for event.
+   * @returns {string} listenerId
    */
-  registerListenerFunction({ eventName, callback }) {
+  registerListenerFunction({ eventName, callback, conditionCallback }) {
     return this.eventHandler.registerListener(eventName, {
       isNewListener: true,
       execute: callback,
+      conditionCallback,
     });
+  }
+
+  /**
+   * @param {string} listenerId
+   */
+  unregisterListener(listenerId) {
+    if (!listenerId) {
+      return;
+    }
+    this.eventHandler.unregisterListener(listenerId);
   }
 
   clearLog() {

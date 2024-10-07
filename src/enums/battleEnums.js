@@ -57,7 +57,7 @@ const battleEventEnum = Object.freeze({
  * @template {BattleEventEnum} K
  * @typedef {{
  *  [battleEventEnum.BATTLE_BEGIN]: {},
- *  [battleEventEnum.TURN_END]: {},
+ *  [battleEventEnum.TURN_END]: {activePokemon: BattlePokemon},
  *  [battleEventEnum.TURN_BEGIN]: {},
  *  [battleEventEnum.BEFORE_MOVE]: {canUseMove: boolean, source: BattlePokemon, primaryTarget: BattlePokemon, moveId: MoveIdEnum},
  *  [battleEventEnum.BEFORE_MOVE_EXECUTE]: any,

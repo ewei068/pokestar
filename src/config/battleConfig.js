@@ -12,6 +12,9 @@ const {
 } = require("../battle/data/moveService");
 const { getEffect } = require("../battle/data/effectRegistry");
 const { battleEventEnum } = require("../enums/battleEnums");
+const {
+  getIsActivePokemonCallback,
+} = require("../battle/engine/eventConditions");
 
 /** @typedef {types.Enum<damageTypes>} DamageTypeEnum */
 const damageTypes = Object.freeze({
@@ -12022,7 +12025,31 @@ const moveExecutes = {
   },
 };
 
-const abilityConfig = {
+/**
+ * @callback LegacyAbilityAdd
+ * @param {Battle} battle
+ * @param {BattlePokemon} source
+ * @param {BattlePokemon} target
+ */
+
+/**
+ * @callback LegacyAbilityRemove
+ * @param {Battle} battle
+ * @param {BattlePokemon} source
+ * @param {BattlePokemon} target
+ */
+
+/** @typedef {types.Keys<abilityConfig>} LegacyAbilityIdEnum */
+
+/**
+ * @type {Record<string, {
+ *  name: string,
+ *  description: string,
+ *  abilityAdd: LegacyAbilityAdd,
+ *  abilityRemove: LegacyAbilityRemove
+ * }>}
+ */
+const abilityConfig = Object.freeze({
   2: {
     name: "Drizzle",
     description: "At the start of battle, stir up a rainy storm.",
@@ -14969,33 +14996,21 @@ const abilityConfig = {
     name: "Regenerator",
     description: "After the user's turn, heal 15% of its max HP.",
     abilityAdd(battle, _source, target) {
-      const listener = {
-        initialArgs: {
-          pokemon: target,
-        },
-        execute(initialArgs, _args) {
-          const { battle } = initialArgs.pokemon;
-          const { activePokemon } = battle;
-          if (activePokemon !== initialArgs.pokemon) {
-            return;
-          }
-
-          // heal 15% of max hp
-          battle.addToLog(
-            `${activePokemon.name}'s Regenerator restores its health!`
-          );
-          const healAmount = Math.floor(activePokemon.maxHp * 0.15);
-          activePokemon.giveHeal(healAmount, activePokemon, {
-            type: "regenerator",
-          });
-        },
-      };
-      const listenerId = battle.eventHandler.registerListener(
-        battleEventEnum.TURN_END,
-        listener
-      );
       return {
-        listenerId,
+        listenerId: battle.registerListenerFunction({
+          eventName: battleEventEnum.TURN_END,
+          callback: ({ activePokemon }) => {
+            // heal 15% of max hp
+            battle.addToLog(
+              `${activePokemon.name}'s Regenerator restores its health!`
+            );
+            const healAmount = Math.floor(activePokemon.maxHp * 0.15);
+            activePokemon.giveHeal(healAmount, activePokemon, {
+              type: "regenerator",
+            });
+          },
+          conditionCallback: getIsActivePokemonCallback(battle, target),
+        }),
       };
     },
     abilityRemove(battle, _source, target) {
@@ -15004,7 +15019,7 @@ const abilityConfig = {
         return;
       }
       const abilityData = ability.data;
-      battle.eventHandler.unregisterListener(abilityData.listenerId);
+      battle.unregisterListener(abilityData.listenerId);
     },
   },
   145: {
@@ -16542,7 +16557,7 @@ const abilityConfig = {
       battle.eventHandler.unregisterListener(abilityData.turnListenerId);
     },
   },
-};
+});
 
 module.exports = {
   typeAdvantages,

@@ -44,20 +44,28 @@ class BattleEventHandler {
 
   emit(eventName, args) {
     const listenerIds = this.eventNames[eventName];
-    if (listenerIds) {
-      for (const listenerId of listenerIds) {
-        const listener = this.eventListeners[listenerId];
-        if (listener) {
-          // migration harness
-          if (listener.isNewListener) {
-            listener.execute({
-              ...(args || {}),
-              eventName,
-            });
-          } else {
-            listener.execute(listener.initialArgs, args);
-          }
+    if (!listenerIds) {
+      return;
+    }
+    for (const listenerId of listenerIds) {
+      const listener = this.eventListeners[listenerId];
+      if (!listener) {
+        continue;
+      }
+      const fullArgs = {
+        ...(args || {}),
+        eventName,
+      };
+      // migration harness
+      if (listener.isNewListener) {
+        if (
+          !listener.conditionCallback ||
+          listener.conditionCallback(fullArgs)
+        ) {
+          listener.execute(fullArgs);
         }
+      } else {
+        listener.execute(listener.initialArgs, args);
       }
     }
   }
