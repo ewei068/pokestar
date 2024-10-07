@@ -11,34 +11,7 @@ const {
   executeMove,
 } = require("../battle/data/moveService");
 const { getEffect } = require("../battle/data/effectRegistry");
-
-/** @typedef {types.Enum<battleEventNames>} BattleEventEnum */
-const battleEventNames = Object.freeze({
-  BATTLE_BEGIN: "battleStart",
-  TURN_END: "turnEnd",
-  TURN_BEGIN: "turnBegin",
-  BEFORE_MOVE: "beforeMove",
-  BEFORE_MOVE_EXECUTE: "beforeMoveExecute",
-  AFTER_MOVE: "afterMove",
-  BEFORE_DAMAGE_DEALT: "beforeDamageDealt",
-  AFTER_DAMAGE_DEALT: "afterDamageDealt",
-  BEFORE_DAMAGE_TAKEN: "beforeDamageTaken",
-  AFTER_DAMAGE_TAKEN: "afterDamageTaken",
-  BEFORE_CR_GAINED: "beforeCRGained",
-  AFTER_CR_GAINED: "afterCRGained",
-  BEFORE_EFFECT_ADD: "beforeEffectAdd",
-  AFTER_EFFECT_ADD: "afterEffectAdd",
-  BEFORE_EFFECT_REMOVE: "beforeEffectRemove",
-  AFTER_EFFECT_REMOVE: "afterEffectRemove",
-  BEFORE_STATUS_APPLY: "beforeStatusApply",
-  AFTER_STATUS_APPLY: "afterStatusApply",
-  BEFORE_CAUSE_FAINT: "beforeCauseFaint",
-  BEFORE_FAINT: "beforeFaint",
-  AFTER_FAINT: "afterFaint",
-  CALCULATE_TYPE_MULTIPLIER: "calculateTypeMultiplier",
-  CALCULATE_MISS: "calculateMiss",
-  GET_ELIGIBLE_TARGETS: "getEligibleTargets",
-});
+const { battleEventEnum } = require("../enums/battleEnums");
 
 /** @typedef {types.Enum<damageTypes>} DamageTypeEnum */
 const damageTypes = Object.freeze({
@@ -1008,7 +981,7 @@ const effectConfig = Object.freeze({
       };
       battle.addToLog(`${target.name} became confused!`);
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_MOVE,
+        battleEventEnum.BEFORE_MOVE,
         listener
       );
       return {
@@ -1070,7 +1043,7 @@ const effectConfig = Object.freeze({
       };
       battle.addToLog(`${target.name} assumes a counter stance!`);
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -1132,7 +1105,7 @@ const effectConfig = Object.freeze({
       };
       battle.addToLog(`${target.name} puts up a reflective field!`);
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -1215,7 +1188,7 @@ const effectConfig = Object.freeze({
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -1258,7 +1231,7 @@ const effectConfig = Object.freeze({
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -1332,7 +1305,7 @@ const effectConfig = Object.freeze({
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -1382,7 +1355,7 @@ const effectConfig = Object.freeze({
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -1437,7 +1410,7 @@ const effectConfig = Object.freeze({
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -1473,7 +1446,7 @@ const effectConfig = Object.freeze({
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_STATUS_APPLY,
+        battleEventEnum.BEFORE_STATUS_APPLY,
         listener
       );
       return {
@@ -1534,7 +1507,7 @@ const effectConfig = Object.freeze({
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
       battle.addToLog(`${target.name} is regenerating health!`);
@@ -1575,7 +1548,7 @@ const effectConfig = Object.freeze({
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
       battle.addToLog(`${target.name} is taking damage from a DoT effect!`);
@@ -1623,7 +1596,7 @@ const effectConfig = Object.freeze({
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
       battle.addToLog(`${target.name} is affected by a Leech Seed!`);
@@ -1660,7 +1633,7 @@ const effectConfig = Object.freeze({
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
       battle.addToLog(`${target.name} is taking extra turns!!`);
@@ -1725,11 +1698,11 @@ const effectConfig = Object.freeze({
       };
 
       const crListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_CR_GAINED,
+        battleEventEnum.AFTER_CR_GAINED,
         listener
       );
       const buffListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_EFFECT_ADD,
+        battleEventEnum.AFTER_EFFECT_ADD,
         listener
       );
       return {
@@ -1792,11 +1765,11 @@ const effectConfig = Object.freeze({
       };
 
       const crListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_CR_GAINED,
+        battleEventEnum.AFTER_CR_GAINED,
         crListener
       );
       const beforeMoveListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_MOVE,
+        battleEventEnum.BEFORE_MOVE,
         beforeMoveListener
       );
       return {
@@ -1968,7 +1941,7 @@ const effectConfig = Object.freeze({
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.GET_ELIGIBLE_TARGETS,
+        battleEventEnum.GET_ELIGIBLE_TARGETS,
         listener
       );
       return {
@@ -2013,7 +1986,7 @@ const effectConfig = Object.freeze({
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -2356,7 +2329,7 @@ const effectConfig = Object.freeze({
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_FAINT,
+        battleEventEnum.AFTER_FAINT,
         listener
       );
       return {
@@ -2398,7 +2371,7 @@ const effectConfig = Object.freeze({
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_FAINT,
+        battleEventEnum.AFTER_FAINT,
         listener
       );
       return {
@@ -12071,7 +12044,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
       return {
@@ -12126,7 +12099,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
       return {
@@ -12181,7 +12154,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -12225,7 +12198,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_STATUS_APPLY,
+        battleEventEnum.BEFORE_STATUS_APPLY,
         listener
       );
       return {
@@ -12281,7 +12254,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -12338,7 +12311,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -12395,7 +12368,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -12462,7 +12435,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_STATUS_APPLY,
+        battleEventEnum.BEFORE_STATUS_APPLY,
         listener
       );
       return {
@@ -12514,7 +12487,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -12565,7 +12538,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         listener
       );
 
@@ -12607,7 +12580,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         listener
       );
       return {
@@ -12676,7 +12649,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
       return {
@@ -12721,7 +12694,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
 
@@ -12779,7 +12752,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
 
@@ -12822,7 +12795,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.CALCULATE_TYPE_MULTIPLIER,
+        battleEventEnum.CALCULATE_TYPE_MULTIPLIER,
         listener
       );
       return {
@@ -12885,7 +12858,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -12932,7 +12905,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_STATUS_APPLY,
+        battleEventEnum.AFTER_STATUS_APPLY,
         listener
       );
       return {
@@ -12978,7 +12951,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         listener
       );
       return {
@@ -13034,7 +13007,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_MOVE,
+        battleEventEnum.AFTER_MOVE,
         listener
       );
       return {
@@ -13113,11 +13086,11 @@ const abilityConfig = {
         },
       };
       const listenerId1 = battle.eventHandler.registerListener(
-        battleEventNames.GET_ELIGIBLE_TARGETS,
+        battleEventEnum.GET_ELIGIBLE_TARGETS,
         listener1
       );
       const listenerId2 = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener2
       );
       return {
@@ -13191,7 +13164,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
       return {
@@ -13257,7 +13230,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -13298,7 +13271,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         listener
       );
       return {
@@ -13335,7 +13308,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
       return {
@@ -13412,11 +13385,11 @@ const abilityConfig = {
 
       // add listener to after damage dealt and after damage taken
       const dealtListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_DEALT,
+        battleEventEnum.AFTER_DAMAGE_DEALT,
         listener
       );
       const takenListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
 
@@ -13507,11 +13480,11 @@ const abilityConfig = {
 
       // add listener to after damage dealt and after damage taken
       const dealtListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_DEALT,
+        battleEventEnum.AFTER_DAMAGE_DEALT,
         listener
       );
       const takenListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
 
@@ -13564,7 +13537,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
 
@@ -13621,7 +13594,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
 
@@ -13668,7 +13641,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         listener
       );
 
@@ -13724,7 +13697,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_EFFECT_REMOVE,
+        battleEventEnum.AFTER_EFFECT_REMOVE,
         listener
       );
 
@@ -13770,7 +13743,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
 
@@ -13820,7 +13793,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
 
@@ -13873,7 +13846,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
 
@@ -13912,7 +13885,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_STATUS_APPLY,
+        battleEventEnum.AFTER_STATUS_APPLY,
         listener
       );
 
@@ -13961,7 +13934,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14009,7 +13982,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14057,7 +14030,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14105,7 +14078,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14142,7 +14115,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
       return {
@@ -14186,7 +14159,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_DEALT,
+        battleEventEnum.AFTER_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14228,7 +14201,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -14283,7 +14256,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14327,7 +14300,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14370,7 +14343,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14408,7 +14381,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.CALCULATE_MISS,
+        battleEventEnum.CALCULATE_MISS,
         listener
       );
       return {
@@ -14455,7 +14428,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14512,7 +14485,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -14567,7 +14540,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -14648,11 +14621,11 @@ const abilityConfig = {
         },
       };
       const listenerId1 = battle.eventHandler.registerListener(
-        battleEventNames.GET_ELIGIBLE_TARGETS,
+        battleEventEnum.GET_ELIGIBLE_TARGETS,
         listener1
       );
       const listenerId2 = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener2
       );
       return {
@@ -14705,7 +14678,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
       return {
@@ -14768,15 +14741,15 @@ const abilityConfig = {
 
       battle.addToLog(`${target.name}'s Sheer Force is increasing its damage!`);
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         damageListener
       );
       const effectListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         effectAndStatusListener
       );
       const statusListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_STATUS_APPLY,
+        battleEventEnum.BEFORE_STATUS_APPLY,
         effectAndStatusListener
       );
       return {
@@ -14830,7 +14803,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -14879,7 +14852,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14923,7 +14896,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -14976,7 +14949,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -15018,7 +14991,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
       return {
@@ -15062,7 +15035,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         listener
       );
       return {
@@ -15114,7 +15087,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_FAINT,
+        battleEventEnum.AFTER_FAINT,
         listener
       );
       return {
@@ -15175,7 +15148,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_MOVE_EXECUTE,
+        battleEventEnum.BEFORE_MOVE_EXECUTE,
         listener
       );
       return {
@@ -15224,7 +15197,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_MOVE,
+        battleEventEnum.AFTER_MOVE,
         listener
       );
       return {
@@ -15273,7 +15246,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_EFFECT_ADD,
+        battleEventEnum.AFTER_EFFECT_ADD,
         listener
       );
       return {
@@ -15316,7 +15289,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -15395,15 +15368,15 @@ const abilityConfig = {
       };
 
       const turnListenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         turnListener
       );
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
       );
       const faintListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_CAUSE_FAINT,
+        battleEventEnum.BEFORE_CAUSE_FAINT,
         faintListener
       );
       return {
@@ -15502,15 +15475,15 @@ const abilityConfig = {
       };
 
       const afterDamageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         afterDamageListener
       );
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
       );
       const faintListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_CAUSE_FAINT,
+        battleEventEnum.BEFORE_CAUSE_FAINT,
         faintListener
       );
       return {
@@ -15599,15 +15572,15 @@ const abilityConfig = {
       };
 
       const turnListenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         turnListener
       );
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
       );
       const faintListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_CAUSE_FAINT,
+        battleEventEnum.BEFORE_CAUSE_FAINT,
         faintListener
       );
       return {
@@ -15690,15 +15663,15 @@ const abilityConfig = {
       };
 
       const afterFaintListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_FAINT,
+        battleEventEnum.AFTER_FAINT,
         afterFaintListener
       );
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
       );
       const faintListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_CAUSE_FAINT,
+        battleEventEnum.BEFORE_CAUSE_FAINT,
         faintListener
       );
       return {
@@ -15759,7 +15732,7 @@ const abilityConfig = {
 
       // add listener to after cr gain
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_CR_GAINED,
+        battleEventEnum.AFTER_CR_GAINED,
         listener
       );
 
@@ -15818,7 +15791,7 @@ const abilityConfig = {
 
       // add listener to after turn end
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
 
@@ -15876,7 +15849,7 @@ const abilityConfig = {
 
       // add listener to after faint
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_FAINT,
+        battleEventEnum.AFTER_FAINT,
         listener
       );
 
@@ -15930,7 +15903,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -15976,7 +15949,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
       return {
@@ -16009,7 +15982,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
       return {
@@ -16094,11 +16067,11 @@ const abilityConfig = {
       };
 
       const listenerId1 = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         listener
       );
       const listenerId2 = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener2
       );
       return {
@@ -16257,15 +16230,15 @@ const abilityConfig = {
       };
 
       const afterDamageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         afterDamageListener
       );
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
       );
       const faintListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_CAUSE_FAINT,
+        battleEventEnum.BEFORE_CAUSE_FAINT,
         faintListener
       );
       return {
@@ -16385,15 +16358,15 @@ const abilityConfig = {
       };
 
       const afterDamageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         afterDamageListener
       );
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
       );
       const faintListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_CAUSE_FAINT,
+        battleEventEnum.BEFORE_CAUSE_FAINT,
         faintListener
       );
       return {
@@ -16452,7 +16425,7 @@ const abilityConfig = {
       };
 
       const debuffListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_EFFECT_ADD,
+        battleEventEnum.AFTER_EFFECT_ADD,
         debuffListener
       );
       return {
@@ -16489,7 +16462,7 @@ const abilityConfig = {
       };
 
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
       );
       battle.addToLog(
@@ -16552,7 +16525,7 @@ const abilityConfig = {
       };
 
       const turnListenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_BEGIN,
+        battleEventEnum.TURN_BEGIN,
         turnListener
       );
       return {
@@ -16573,7 +16546,6 @@ const abilityConfig = {
 
 module.exports = {
   typeAdvantages,
-  battleEventNames,
   moveConfig,
   moveExecutes,
   moveTiers,

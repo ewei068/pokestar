@@ -15,7 +15,6 @@ const { v4: uuidv4 } = require("uuid");
 const { getOrSetDefault, formatMoney } = require("../utils/utils");
 const { pokemonConfig, types } = require("../config/pokemonConfig");
 const {
-  battleEventNames,
   targetTypes,
   targetPatterns,
   targetPositions,
@@ -26,6 +25,7 @@ const {
   typeAdvantages,
   weatherConditions,
 } = require("../config/battleConfig");
+const { battleEventEnum } = require("../enums/battleEnums");
 const {
   buildBattleEmbed,
   buildPveListEmbed,
@@ -708,7 +708,7 @@ class Pokemon {
       };
 
       // trigger before move events
-      this.battle.eventHandler.emit(battleEventNames.BEFORE_MOVE, eventArgs);
+      this.battle.eventHandler.emit(battleEventEnum.BEFORE_MOVE, eventArgs);
 
       canUseMove = eventArgs.canUseMove;
     }
@@ -756,7 +756,7 @@ class Pokemon {
         moveId,
       };
       this.battle.eventHandler.emit(
-        battleEventNames.BEFORE_MOVE_EXECUTE,
+        battleEventEnum.BEFORE_MOVE_EXECUTE,
         executeEventArgs
       );
 
@@ -778,7 +778,7 @@ class Pokemon {
         missedTargets,
         moveId,
       };
-      this.battle.eventHandler.emit(battleEventNames.AFTER_MOVE, eventArgs);
+      this.battle.eventHandler.emit(battleEventEnum.AFTER_MOVE, eventArgs);
     }
 
     // end turn
@@ -889,7 +889,7 @@ class Pokemon {
       multiplier: mult,
     };
     this.battle.eventHandler.emit(
-      battleEventNames.CALCULATE_TYPE_MULTIPLIER,
+      battleEventEnum.CALCULATE_TYPE_MULTIPLIER,
       eventArgs
     );
 
@@ -1085,7 +1085,7 @@ class Pokemon {
         source: this,
       };
       this.battle.eventHandler.emit(
-        battleEventNames.CALCULATE_MISS,
+        battleEventEnum.CALCULATE_MISS,
         calculateMissArgs
       );
 
@@ -1188,7 +1188,7 @@ class Pokemon {
     };
 
     this.battle.eventHandler.emit(
-      battleEventNames.BEFORE_DAMAGE_DEALT,
+      battleEventEnum.BEFORE_DAMAGE_DEALT,
       eventArgs
     );
     damage = eventArgs.damage;
@@ -1203,7 +1203,7 @@ class Pokemon {
         damageInfo,
       };
       this.battle.eventHandler.emit(
-        battleEventNames.AFTER_DAMAGE_DEALT,
+        battleEventEnum.AFTER_DAMAGE_DEALT,
         afterDamageArgs
       );
     }
@@ -1253,7 +1253,7 @@ class Pokemon {
     };
 
     this.battle.eventHandler.emit(
-      battleEventNames.BEFORE_DAMAGE_TAKEN,
+      battleEventEnum.BEFORE_DAMAGE_TAKEN,
       eventArgs
     );
     damage = Math.min(eventArgs.damage, eventArgs.maxDamage);
@@ -1278,7 +1278,7 @@ class Pokemon {
         damageInfo,
       };
       this.battle.eventHandler.emit(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         afterDamageArgs
       );
     }
@@ -1297,7 +1297,7 @@ class Pokemon {
       canFaint: true,
     };
     this.battle.eventHandler.emit(
-      battleEventNames.BEFORE_CAUSE_FAINT,
+      battleEventEnum.BEFORE_CAUSE_FAINT,
       beforeCauseFaintArgs
     );
     if (!beforeCauseFaintArgs.canFaint) {
@@ -1320,7 +1320,7 @@ class Pokemon {
       target: this,
       source,
     };
-    this.battle.eventHandler.emit(battleEventNames.AFTER_FAINT, afterFaintArgs);
+    this.battle.eventHandler.emit(battleEventEnum.AFTER_FAINT, afterFaintArgs);
   }
 
   // eslint-disable-next-line no-unused-vars
@@ -1399,7 +1399,7 @@ class Pokemon {
     };
     if (triggerEvents) {
       this.battle.eventHandler.emit(
-        battleEventNames.BEFORE_CR_GAINED,
+        battleEventEnum.BEFORE_CR_GAINED,
         beforeBoostArgs
       );
     }
@@ -1422,10 +1422,7 @@ class Pokemon {
         source,
         combatReadinessGained: amount,
       };
-      this.battle.eventHandler.emit(
-        battleEventNames.AFTER_CR_GAINED,
-        eventArgs
-      );
+      this.battle.eventHandler.emit(battleEventEnum.AFTER_CR_GAINED, eventArgs);
     }
 
     return combatReadinessGained;
@@ -1496,7 +1493,7 @@ class Pokemon {
       canAdd: true,
     };
     this.battle.eventHandler.emit(
-      battleEventNames.BEFORE_EFFECT_ADD,
+      battleEventEnum.BEFORE_EFFECT_ADD,
       beforeAddArgs
     );
     if (!beforeAddArgs.canAdd) {
@@ -1542,11 +1539,11 @@ class Pokemon {
         source,
         effectId,
         duration,
-        initialArgs: initialArgs,
+        initialArgs,
         args: this.effectIds[effectId].args,
       };
       this.battle.eventHandler.emit(
-        battleEventNames.AFTER_EFFECT_ADD,
+        battleEventEnum.AFTER_EFFECT_ADD,
         afterAddArgs
       );
     }
@@ -1630,7 +1627,7 @@ class Pokemon {
         args: this.effectIds[effectId].args,
       };
       this.battle.eventHandler.emit(
-        battleEventNames.AFTER_EFFECT_REMOVE,
+        battleEventEnum.AFTER_EFFECT_REMOVE,
         afterRemoveArgs
       );
     }
@@ -1659,7 +1656,7 @@ class Pokemon {
       canApply: true,
     };
     this.battle.eventHandler.emit(
-      battleEventNames.BEFORE_STATUS_APPLY,
+      battleEventEnum.BEFORE_STATUS_APPLY,
       beforeApplyArgs
     );
     if (!beforeApplyArgs.canApply) {
@@ -1779,7 +1776,7 @@ class Pokemon {
         statusId,
       };
       this.battle.eventHandler.emit(
-        battleEventNames.AFTER_STATUS_APPLY,
+        battleEventEnum.AFTER_STATUS_APPLY,
         afterStatusArgs
       );
     }
@@ -2247,7 +2244,7 @@ class Battle {
       pokemon.applyAbility();
     });
 
-    this.eventHandler.emit(battleEventNames.BATTLE_BEGIN, {
+    this.eventHandler.emit(battleEventEnum.BATTLE_BEGIN, {
       battle: this,
     });
 
@@ -2265,7 +2262,7 @@ class Battle {
     }
 
     // begin turn
-    this.eventHandler.emit(battleEventNames.TURN_BEGIN);
+    this.eventHandler.emit(battleEventEnum.TURN_BEGIN);
 
     // log
     const userIsNpc = this.isNpc(this.activePokemon.userId);
@@ -2285,7 +2282,7 @@ class Battle {
 
   nextTurn() {
     // end turn logic
-    this.eventHandler.emit(battleEventNames.TURN_END);
+    this.eventHandler.emit(battleEventEnum.TURN_END);
 
     // tick status effects
     if (!this.activePokemon.isFainted) {
@@ -2562,7 +2559,7 @@ class Battle {
       eligibleTargets,
       shouldReturn: false,
     };
-    this.eventHandler.emit(battleEventNames.GET_ELIGIBLE_TARGETS, eventArgs);
+    this.eventHandler.emit(battleEventEnum.GET_ELIGIBLE_TARGETS, eventArgs);
     if (eventArgs.shouldReturn) {
       return eligibleTargets;
     }

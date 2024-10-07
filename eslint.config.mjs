@@ -37,6 +37,7 @@ export default [
       "jsdoc/no-undefined-types": "off", // doesn't seem to work with TS types
       "jsdoc/require-param-description": "off", // TODO: maybe add descriptions
       "jsdoc/require-returns-description": "off", // TODO: maybe add descriptions
+      "jsdoc/require-property-description": "off", // TODO: maybe add descriptions
       "jsdoc/valid-types": "off", // doesn't seem to work with TS types
       "jsdoc/require-returns": "off",
     },

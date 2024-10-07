@@ -3,9 +3,9 @@ const { getOrSetDefault } = require("../../utils/utils");
 
 class BattleEventHandler {
   // event name => listenerIds
-  eventNames;
+  // eventNames;
   // listenerId => listener
-  eventListeners;
+  // eventListeners;
 
   constructor() {
     this.eventNames = {};
@@ -16,7 +16,7 @@ class BattleEventHandler {
     // generate listener UUID
     const listenerId = uuidv4();
 
-    getOrSetDefault(this.eventNames, eventName, {})[listenerId] = listener;
+    getOrSetDefault(this.eventNames, eventName, new Set()).add(listenerId);
     this.eventListeners[listenerId] = listener;
     // add listenerId and eventName to listener.initialargs
     // eslint-disable-next-line no-param-reassign
@@ -35,7 +35,7 @@ class BattleEventHandler {
       const { eventName } = listener.initialArgs;
       const listenerIds = this.eventNames[eventName];
       if (listenerIds) {
-        delete listenerIds[listenerId];
+        listenerIds.delete(listenerId);
       }
       delete this.eventListeners[listenerId];
     }
@@ -53,6 +53,14 @@ class BattleEventHandler {
     }
   }
 }
+
+/**
+ * @param {object} param0
+ * @param {string} param0.eventName
+ * @param {Battle} param0.battle
+ * @param param0.callback
+ */
+const registerListenerFunction = ({ eventName, battle, callback }) => {};
 
 module.exports = {
   BattleEventHandler,
