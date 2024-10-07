@@ -27,7 +27,7 @@ const partyInfo = async (user) => {
 
   // get party pokemons
   const partyPokemons = await getPartyPokemons(trainer.data);
-  if (partyPokemons.err) {
+  if (partyPokemons.err || !partyPokemons.data) {
     return { send: null, err: partyPokemons.err };
   }
   const partyPokemonsFiltered = partyPokemons.data.filter(

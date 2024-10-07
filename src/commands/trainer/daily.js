@@ -6,6 +6,7 @@
  *
  * daily.js creates a system to display and grant the user their daily rewards.
  */
+const { User } = require("discord.js");
 const { drawDaily } = require("../../services/gacha");
 const { getTrainer } = require("../../services/trainer");
 const {
@@ -17,19 +18,19 @@ const { formatMoney } = require("../../utils/utils");
 /**
  * Attempts to grant the user their daily rewards. If the user has
  * already claimed their daily rewards, returns an error message.
- * @param {Object} user User who initiated the command.
+ * @param {User} user User who initiated the command.
  * @returns Embed with the user's daily rewards, or an error message.
  */
 const daily = async (user) => {
   // get trainer
   const trainer = await getTrainer(user);
-  if (trainer.err) {
+  if (trainer.err || !trainer.data) {
     return { data: null, err: trainer.err };
   }
 
   // draw daily rewards
   const rewards = await drawDaily(trainer.data);
-  if (rewards.err) {
+  if (rewards.err || !rewards.data) {
     return { data: null, err: rewards.err };
   }
   const { money } = rewards.data;

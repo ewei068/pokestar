@@ -5,7 +5,7 @@ const { Client, Events, GatewayIntentBits } = require("discord.js");
 const { createDjsClient } = require("discordbotlist");
 const express = require("express");
 const cors = require("cors");
-const axios = require("axios");
+const { default: axios } = require("axios");
 const {
   runMessageCommand,
   runSlashCommand,
@@ -19,10 +19,15 @@ const { poll } = require("./utils/utils");
 const { startSpawning, addGuild } = require("./services/spawn");
 const { getStateCount } = require("./services/state");
 const { cleanupRaids } = require("./services/raid");
+const {
+  initialize: initializeBattleData,
+} = require("./battle/data/initialize");
 
 console.log(`STAGE: ${process.env.STAGE}`);
 const FFLAG_ENABLE_SPAWN = process.env.FFLAG_ENABLE_SPAWN === "1";
 console.log(`FFLAG_ENABLE_SPAWN: ${FFLAG_ENABLE_SPAWN}`);
+
+initializeBattleData();
 
 const corsOptions = {
   origin: true,
@@ -124,6 +129,12 @@ client.on(Events.GuildCreate, (guild) => {
 // When the client is ready, run this code (only once)
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, (c) => {
+  if (!client.user) {
+    logger.error(
+      "Client user not found. Something went terribly wrong I'm so sorry I can't continue xd"
+    );
+    return;
+  }
   logger.info(`Ready! Logged in as ${c.user.tag}`);
   client.user.setActivity(`/tutorial /help`);
   // log connected guilds
@@ -159,8 +170,9 @@ client.once(Events.ClientReady, (c) => {
 
   // connect to discordbotlist.com
   if (
-    process.env.STAGE === stageNames.BETA ||
-    process.env.STAGE === stageNames.PROD
+    (process.env.STAGE === stageNames.BETA ||
+      process.env.STAGE === stageNames.PROD) &&
+    process.env.DBL_TOKEN
   ) {
     const dbl = createDjsClient(process.env.DBL_TOKEN, client);
     dbl.on("posted", (stats) => {

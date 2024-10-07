@@ -15,7 +15,8 @@ const {
   typeConfig,
   growthRateConfig,
 } = require("../config/pokemonConfig");
-const { moveConfig, abilityConfig } = require("../config/battleConfig");
+const { abilityConfig } = require("../config/battleConfig");
+const { getMove } = require("../battle/data/moveService");
 const {
   getWhitespace,
   getPBar,
@@ -362,7 +363,7 @@ const buildPokemonEmbed = (
   // moves & abilities
   if (tab === "battle" || tab === "all") {
     const fields = getMoveIds(pokemon).map((moveId) => {
-      const moveData = moveConfig[moveId];
+      const moveData = getMove(moveId);
       const { moveHeader, moveString } = buildMoveString(moveData);
       return {
         name: moveHeader,
@@ -742,7 +743,7 @@ const buildSpeciesDexEmbed = (id, speciesData, tab, ownershipData) => {
       embed.setDescription(`No moves!`);
     } else {
       const fields = speciesData.moveIds.map((moveId) => {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         const { moveHeader, moveString } = buildMoveString(moveData);
         return {
           name: moveHeader,

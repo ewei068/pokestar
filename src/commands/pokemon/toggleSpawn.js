@@ -2,6 +2,8 @@ const { collectionNames } = require("../../config/databaseConfig");
 const { QueryBuilder } = require("../../database/mongoHandler");
 const { getChannelId } = require("../../utils/utils");
 const { logger } = require("../../log");
+const types = require("../../../types");
+const { Collection } = require("mongodb");
 
 const toggleSpawn = async (user, guildId, channelId, member) => {
   // check if user can manage roles
@@ -21,7 +23,9 @@ const toggleSpawn = async (user, guildId, channelId, member) => {
       guildId,
     });
 
-    const guildRes = await query.findOne();
+    const guildRes = /** @type{types.MongoCollection<types.Guild>} */ (
+      await query.findOne()
+    );
     if (guildRes) {
       guildData = guildRes;
     }

@@ -6,11 +6,12 @@
  *
  * battleUtils.js the lowest level of code for battles used by the battle.js
  */
-const { effectConfig, statusConditions } = require("../config/battleConfig");
+const { statusConditions } = require("../config/battleConfig");
 const { difficultyConfig } = require("../config/npcConfig");
 const { pokemonConfig, typeConfig } = require("../config/pokemonConfig");
 const { getRewardsString, flattenRewards } = require("./trainerUtils");
 const { getPBar, formatMoney } = require("./utils");
+const { getEffect } = require("../battle/data/effectRegistry");
 
 const buildPartyString = (
   pokemons,
@@ -249,7 +250,9 @@ const buildBattlePokemonString = (pokemon) => {
         ) {
           shieldString = `${pokemon.effectIds[effectId].args.shield} HP `;
         }
-        return `${shieldString}${effectConfig[effectId].name} (${pokemon.effectIds[effectId].duration})`;
+        return `${shieldString}${getEffect(effectId).name} (${
+          pokemon.effectIds[effectId].duration
+        })`;
       })
       .join(", ")}`;
   } else {

@@ -19,7 +19,7 @@ const { buildPartyEmbed } = require("../../embeds/battleEmbeds");
 const partyRemove = async (user, option) => {
   // get trainer
   const trainer = await getTrainer(user);
-  if (trainer.err) {
+  if (trainer.err || !trainer.data) {
     return { send: null, err: trainer.err };
   }
   const partyPokemon = trainer.data.party.pokemonIds;

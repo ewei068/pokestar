@@ -6,7 +6,11 @@
  *
  * commandHandler.js handles all commands and command types the user can use.
  */
-const { SlashCommandBuilder } = require("discord.js");
+const {
+  SlashCommandBuilder,
+  ChatInputCommandInteraction,
+  Client,
+} = require("discord.js");
 const path = require("node:path");
 const {
   commandCategoryConfig,
@@ -269,6 +273,12 @@ const runMessageCommand = async (message, client) => {
   }
 };
 
+/**
+ *
+ * @param {ChatInputCommandInteraction<import("discord.js").CacheType>} interaction
+ * @param {Client<boolean>} client
+ * @returns
+ */
 const runSlashCommand = async (interaction, client) => {
   try {
     const query = new QueryBuilder(collectionNames.GUILDS)

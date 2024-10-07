@@ -48,7 +48,7 @@ const train = async (user, pokemonId, location) => {
 
   // add exp & EVs
   const res = await trainPokemon(trainer.data, pokemon.data, locationId);
-  if (res.err) {
+  if (res.err || !res.data) {
     return { data: null, err: res.err };
   }
   const { exp, evs } = res.data;

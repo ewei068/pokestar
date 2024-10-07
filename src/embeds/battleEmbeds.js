@@ -7,7 +7,8 @@
  * battleEmbeds.js Handles all embedded instructions for battles.
  */
 const { EmbedBuilder } = require("discord.js");
-const { moveConfig, weatherConditions } = require("../config/battleConfig");
+const { weatherConditions } = require("../config/battleConfig");
+const { getMove } = require("../battle/data/moveService");
 const {
   buildPartyString,
   buildMoveString,
@@ -255,7 +256,7 @@ const buildBattleEmbed = (battle) => {
 const buildBattleMovesetEmbed = (pokemon) => {
   const fields = Object.keys(pokemon.moveIds).map((moveId) => {
     const { cooldown } = pokemon.moveIds[moveId];
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     const { moveHeader, moveString } = buildMoveString(moveData, cooldown);
     return {
       name: moveHeader,

@@ -37,7 +37,7 @@ const {
   getBackpackItemsString,
 } = require("../utils/trainerUtils");
 const { getVoteMultiplier } = require("../config/socialConfig");
-
+const types = require("../../types");
 /* 
 "user": {
     "username": "Mason",
@@ -77,7 +77,10 @@ const initTrainer = async (user) => {
 const getTrainerFromId = async (userId) => {
   try {
     // check if trainer exists
-    const trainers = await findDocuments(collectionNames.USERS, { userId });
+    const trainers =
+      /** @type{Array<import("mongodb").WithId<types.Trainer>>} */ (
+        await findDocuments(collectionNames.USERS, { userId })
+      );
     if (trainers.length === 0) {
       return { data: null, err: "Error finding trainer." };
     }
@@ -89,6 +92,12 @@ const getTrainerFromId = async (userId) => {
   }
 };
 
+/**
+ *
+ * @param {any} discordUser
+ * @param {boolean?} refresh
+ * @returns
+ */
 const getTrainer = async (discordUser, refresh = true) => {
   // only keep desired fields
   const tmpUser = {
@@ -102,7 +111,9 @@ const getTrainer = async (discordUser, refresh = true) => {
   let trainers;
   try {
     // check if trainer exists
-    trainers = await findDocuments(collectionNames.USERS, { userId: user.id });
+    trainers =
+      /** @type{Array<import("mongodb").WithId<types.Trainer>>} */
+      (await findDocuments(collectionNames.USERS, { userId: user.id }));
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error finding trainer." };
@@ -111,7 +122,7 @@ const getTrainer = async (discordUser, refresh = true) => {
   let trainer;
   if (trainers.length === 0) {
     try {
-      trainer = await initTrainer(user);
+      trainer = /** @type{types.Trainer} */ (await initTrainer(user));
       if (trainer === null) {
         return { data: null, err: "Error creating trainer." };
       }

@@ -24,7 +24,7 @@ const { getUserId } = require("../../utils/utils");
  * @param {Object} user User who initiated the command.
  * @param {Number} page Page of the list to display.
  * @param {String} filterBy Field to filter by.
- * @param {String} filterValue Value to filter for equality.
+ * @param {String | boolean} filterValue Value to filter for equality.
  * @param {String} sortBy Field to sort by.
  * @param {boolean} descending Sort in descending order.
  * @returns Embed with list of Pokemon, and components for pagination/selection.

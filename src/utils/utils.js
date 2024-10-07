@@ -129,6 +129,10 @@ const setTwoInline = (fields) => {
   return fields;
 };
 
+/**
+ * @param {Date?=} date
+ * @returns
+ */
 const getFullUTCDate = (date = null) => {
   if (!date) {
     date = new Date();
@@ -137,6 +141,10 @@ const getFullUTCDate = (date = null) => {
   return Math.floor(time / 86400000);
 };
 
+/**
+ * @param {Date?=} date
+ * @returns
+ */
 const getFullUTCWeek = (date = null) => {
   if (!date) {
     date = new Date();
@@ -145,7 +153,11 @@ const getFullUTCWeek = (date = null) => {
   return Math.floor(time / (86400000 * 7));
 };
 
-// nice fortnite
+/**
+ * nice fortnite
+ * @param {Date?=} date
+ * @returns
+ */
 const getFullUTCFortnight = (date = null) => {
   if (!date) {
     date = new Date();
