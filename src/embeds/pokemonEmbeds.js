@@ -15,7 +15,7 @@ const {
   typeConfig,
   growthRateConfig,
 } = require("../config/pokemonConfig");
-const { abilityConfig } = require("../battle/battleConfig");
+const { abilityConfig } = require("../config/battleConfig");
 const { getMove } = require("../battle/data/moveService");
 const {
   getWhitespace,

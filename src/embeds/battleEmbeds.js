@@ -7,7 +7,7 @@
  * battleEmbeds.js Handles all embedded instructions for battles.
  */
 const { EmbedBuilder } = require("discord.js");
-const { weatherConditions } = require("../battle/battleConfig");
+const { weatherConditions } = require("../config/battleConfig");
 const { getMove } = require("../battle/data/moveService");
 const {
   buildPartyString,

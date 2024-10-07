@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const { effectTypes } = require("../battleConfig");
+const { effectTypes } = require("../../config/battleConfig");
 const { effectIdEnum } = require("../../enums/battleEnums");
 
 /**

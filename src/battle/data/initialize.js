@@ -3,7 +3,11 @@
 const { registerMoves, registerLegacyMoves } = require("./moveService");
 const { registerEffects, registerLegacyEffects } = require("./effectRegistry");
 const { effectsToRegister } = require("./effects");
-const { moveConfig, moveExecutes, effectConfig } = require("../battleConfig");
+const {
+  moveConfig,
+  moveExecutes,
+  effectConfig,
+} = require("../../config/battleConfig");
 const { movesToRegister } = require("./moves");
 
 const initialize = () => {

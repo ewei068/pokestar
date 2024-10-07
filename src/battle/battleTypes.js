@@ -3,14 +3,14 @@
  * @typedef {import("../enums/battleEnums").EffectIdEnum} EffectIdEnum
  * @typedef {import("../services/battle").Battle} Battle
  * @typedef {import("../services/battle").Pokemon} BattlePokemon
- * @typedef {import("./battleConfig").BattleEventEnum} BattleEventEnum
- * @typedef {import("./battleConfig").DamageTypeEnum} DamageTypeEnum
- * @typedef {import("./battleConfig").MoveTierEnum} MoveTierEnum
- * @typedef {import("./battleConfig").StatusConditionEnum} StatusConditionEnum
- * @typedef {import("./battleConfig").TargetTypeEnum} TargetTypeEnum
- * @typedef {import("./battleConfig").TargetPositionEnum} TargetPositionEnum
- * @typedef {import("./battleConfig").TargetPatternEnum} TargetPatternEnum
- * @typedef {import("./battleConfig").EffectTypeEnum} EffectTypeEnum
+ * @typedef {import("../config/battleConfig").BattleEventEnum} BattleEventEnum
+ * @typedef {import("../config/battleConfig").DamageTypeEnum} DamageTypeEnum
+ * @typedef {import("../config/battleConfig").MoveTierEnum} MoveTierEnum
+ * @typedef {import("../config/battleConfig").StatusConditionEnum} StatusConditionEnum
+ * @typedef {import("../config/battleConfig").TargetTypeEnum} TargetTypeEnum
+ * @typedef {import("../config/battleConfig").TargetPositionEnum} TargetPositionEnum
+ * @typedef {import("../config/battleConfig").TargetPatternEnum} TargetPatternEnum
+ * @typedef {import("../config/battleConfig").EffectTypeEnum} EffectTypeEnum
  * @typedef {{battle: Battle, source: BattlePokemon, target: BattlePokemon}} EffectAddBasicArgs
  * @typedef {{battle: Battle, target: BattlePokemon}} EffectRemoveBasicArgs
  * @typedef {typeof import("./data/effects").effectsToRegister} RegisteredEffects

@@ -3,10 +3,14 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-param-reassign */
-const { types: pokemonTypes } = require("../config/pokemonConfig");
+const { types: pokemonTypes } = require("./pokemonConfig");
 const types = require("../../types");
-const { getMove, getMoveIds, executeMove } = require("./data/moveService");
-const { getEffect } = require("./data/effectRegistry");
+const {
+  getMove,
+  getMoveIds,
+  executeMove,
+} = require("../battle/data/moveService");
+const { getEffect } = require("../battle/data/effectRegistry");
 
 /** @typedef {types.Enum<battleEventNames>} BattleEventEnum */
 const battleEventNames = Object.freeze({

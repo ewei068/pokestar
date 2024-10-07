@@ -1,7 +1,7 @@
 const types = require("../../types");
 
 /**
- * @typedef {import("../battle/battleConfig").LegacyEffectIdEnum} LegacyEffectIdEnum
+ * @typedef {import("../config/battleConfig").LegacyEffectIdEnum} LegacyEffectIdEnum
  * @typedef {types.Enum<effectIdEnum>} NewEffectIdEnum
  * @typedef {LegacyEffectIdEnum | NewEffectIdEnum} EffectIdEnum
  */
@@ -13,7 +13,7 @@ const effectIdEnum = Object.freeze({
 });
 
 /**
- * @typedef {import("../battle/battleConfig").LegacyMoveIdEnum} LegacyMoveIdEnum
+ * @typedef {import("../config/battleConfig").LegacyMoveIdEnum} LegacyMoveIdEnum
  * @typedef {types.Enum<moveIdEnum>} NewMoveIdEnum
  * @typedef {LegacyMoveIdEnum | NewMoveIdEnum} MoveIdEnum
  */

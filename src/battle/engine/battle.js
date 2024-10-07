@@ -12,8 +12,8 @@
  * battle.js Handles all battle interactions from the user at a base level down to creating the teams.
  */
 const { v4: uuidv4 } = require("uuid");
-const { getOrSetDefault, formatMoney } = require("../utils/utils");
-const { pokemonConfig, types } = require("../config/pokemonConfig");
+const { getOrSetDefault, formatMoney } = require("../../utils/utils");
+const { pokemonConfig, types } = require("../../config/pokemonConfig");
 const {
   battleEventNames,
   targetTypes,
@@ -25,7 +25,7 @@ const {
   abilityConfig,
   typeAdvantages,
   weatherConditions,
-} = require("../config/battleConfig");
+} = require("../../config/battleConfig");
 const {
   buildBattleEmbed,
   buildPveListEmbed,
@@ -33,51 +33,59 @@ const {
   buildDungeonListEmbed,
   buildDungeonEmbed,
   buildBattleTowerEmbed,
-} = require("../embeds/battleEmbeds");
+} = require("../../embeds/battleEmbeds");
 const {
   buildSelectBattleMoveRow,
-} = require("../components/selectBattleMoveRow");
-const { buildButtonActionRow } = require("../components/buttonActionRow");
+} = require("../../components/selectBattleMoveRow");
+const { buildButtonActionRow } = require("../../components/buttonActionRow");
 const {
   buildBattleInfoActionRow,
-} = require("../components/battleInfoActionRow");
-const { getTrainer, addExpAndMoney, updateTrainer } = require("./trainer");
+} = require("../../components/battleInfoActionRow");
+const {
+  getTrainer,
+  addExpAndMoney,
+  updateTrainer,
+} = require("../../services/trainer");
 const {
   addPokemonExpAndEVs,
   getPokemon,
   calculatePokemonStats,
-} = require("./pokemon");
-const { logger } = require("../log");
-const { buildNextTurnActionRow } = require("../components/battleNextTurnRow");
-const { deleteState } = require("./state");
+} = require("../../services/pokemon");
+const { logger } = require("../../log");
+const {
+  buildNextTurnActionRow,
+} = require("../../components/battleNextTurnRow");
+const { deleteState } = require("../../services/state");
 const {
   calculateEffectiveSpeed,
   calculateEffectiveAccuracy,
   calculateEffectiveEvasion,
   getMoveIds,
-} = require("../utils/pokemonUtils");
+} = require("../../utils/pokemonUtils");
 const {
   npcConfig,
   difficultyConfig,
   dungeons,
   dungeonConfig,
   battleTowerConfig,
-} = require("../config/npcConfig");
-const { buildScrollActionRow } = require("../components/scrollActionRow");
-const { getState } = require("./state");
-const { eventNames } = require("../config/eventConfig");
-const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
+} = require("../../config/npcConfig");
+const { buildScrollActionRow } = require("../../components/scrollActionRow");
+const { getState } = require("../../services/state");
+const { eventNames } = require("../../config/eventConfig");
+const {
+  buildIdConfigSelectRow,
+} = require("../../components/idConfigSelectRow");
 const {
   drawIterable,
   drawUniform,
   drawDiscrete,
-} = require("../utils/gachaUtils");
-const { generateRandomPokemon } = require("./gacha");
-const { validateParty } = require("./party");
-const { addRewards, getRewardsString } = require("../utils/trainerUtils");
-const { getIdFromTowerStage } = require("../utils/battleUtils");
-const { getMove, executeMove } = require("../battle/data/moveService");
-const { getEffect } = require("../battle/data/effectRegistry");
+} = require("../../utils/gachaUtils");
+const { generateRandomPokemon } = require("../../services/gacha");
+const { validateParty } = require("../../services/party");
+const { addRewards, getRewardsString } = require("../../utils/trainerUtils");
+const { getIdFromTowerStage } = require("../../utils/battleUtils");
+const { getMove, executeMove } = require("../data/moveService");
+const { getEffect } = require("../data/effectRegistry");
 
 class NPC {
   constructor(
