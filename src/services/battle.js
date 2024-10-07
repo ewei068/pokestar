@@ -25,7 +25,7 @@ const {
   abilityConfig,
   typeAdvantages,
   weatherConditions,
-} = require("../battleEngine/battleConfig");
+} = require("../battle/battleConfig");
 const {
   buildBattleEmbed,
   buildPveListEmbed,
@@ -76,8 +76,8 @@ const { generateRandomPokemon } = require("./gacha");
 const { validateParty } = require("./party");
 const { addRewards, getRewardsString } = require("../utils/trainerUtils");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
-const { getMove, executeMove } = require("../battleEngine/data/moveService");
-const { getEffect } = require("../battleEngine/data/effectRegistry");
+const { getMove, executeMove } = require("../battle/data/moveService");
+const { getEffect } = require("../battle/data/effectRegistry");
 
 class NPC {
   constructor(

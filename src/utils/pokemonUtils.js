@@ -12,7 +12,7 @@ const {
   growthRateConfig,
 } = require("../config/pokemonConfig");
 const { getPBar, getWhitespace } = require("./utils");
-const { abilityConfig } = require("../battleEngine/battleConfig");
+const { abilityConfig } = require("../battle/battleConfig");
 const {
   equipmentConfig,
   modifierSlotConfig,

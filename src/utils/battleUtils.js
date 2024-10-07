@@ -6,12 +6,12 @@
  *
  * battleUtils.js the lowest level of code for battles used by the battle.js
  */
-const { statusConditions } = require("../battleEngine/battleConfig");
+const { statusConditions } = require("../battle/battleConfig");
 const { difficultyConfig } = require("../config/npcConfig");
 const { pokemonConfig, typeConfig } = require("../config/pokemonConfig");
 const { getRewardsString, flattenRewards } = require("./trainerUtils");
 const { getPBar, formatMoney } = require("./utils");
-const { getEffect } = require("../battleEngine/data/effectRegistry");
+const { getEffect } = require("../battle/data/effectRegistry");
 
 const buildPartyString = (
   pokemons,

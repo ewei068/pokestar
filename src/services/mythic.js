@@ -46,7 +46,7 @@ const {
   calculateAndUpdatePokemonStats,
 } = require("./pokemon");
 const { getTrainer, updateTrainer } = require("./trainer");
-const { getMoves } = require("../battleEngine/data/moveService");
+const { getMoves } = require("../battle/data/moveService");
 
 const getMythic = async (trainer, speciesId) => {
   const speciesData = pokemonConfig[speciesId];
