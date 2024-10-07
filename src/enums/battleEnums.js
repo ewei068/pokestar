@@ -80,7 +80,12 @@ const battleEventEnum = Object.freeze({
  *  [battleEventEnum.CALCULATE_TYPE_MULTIPLIER]: any,
  *  [battleEventEnum.CALCULATE_MISS]: any,
  *  [battleEventEnum.GET_ELIGIBLE_TARGETS]: any,
- * }[K] & { eventName: K }} BattleEventArgs
+ * }[K]} BattleEventArgsWithoutEventName
+ */
+
+/**
+ * @template {BattleEventEnum} K
+ * @typedef {BattleEventArgsWithoutEventName<K> & { eventName: K }} BattleEventArgs
  */
 
 module.exports = {

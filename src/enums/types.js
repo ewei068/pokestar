@@ -6,5 +6,10 @@
 
 /**
  * @template {BattleEventEnum} K
+ * @typedef {import("./battleEnums").BattleEventArgsWithoutEventName<K>} BattleEventArgsWithoutEventName
+ */
+
+/**
+ * @template {BattleEventEnum} K
  * @typedef {import("./battleEnums").BattleEventArgs<K>} BattleEventArgs
  */

@@ -2282,7 +2282,7 @@ class Battle {
 
   nextTurn() {
     // end turn logic
-    this.eventHandler.emit(battleEventEnum.TURN_END, {
+    this.emitEvent(battleEventEnum.TURN_END, {
       activePokemon: this.activePokemon,
     });
 
@@ -2748,6 +2748,15 @@ class Battle {
       return;
     }
     this.eventHandler.unregisterListener(listenerId);
+  }
+
+  /**
+   * @template {BattleEventEnum} K
+   * @param {K} eventName
+   * @param {BattleEventArgsWithoutEventName<K>} args
+   */
+  emitEvent(eventName, args) {
+    this.eventHandler.emit(eventName, args || {});
   }
 
   clearLog() {
