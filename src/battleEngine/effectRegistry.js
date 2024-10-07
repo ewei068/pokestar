@@ -65,11 +65,11 @@ const getEffects = ({ fieldFilter, customFilter }) => {
 
   if (fieldFilter) {
     return Object.entries(allEffects).reduce((acc, [effectId, effect]) => {
-      Object.entries(fieldFilter).forEach(([field, value]) => {
+      for (const [field, value] of Object.entries(fieldFilter)) {
         if (effect[field] !== value) {
           return acc;
         }
-      });
+      }
       acc[effectId] = effect;
       return acc;
     }, {});
@@ -90,68 +90,6 @@ const getEffectIds = ({ fieldFilter, customFilter }) => {
   // @ts-ignore
   return Object.keys(effects);
 };
-/**
- * @template {EffectIdEnum} K
- * @param {object} param0
- * @param {K} param0.effectId
- * @param {Battle} param0.battle
- * @param {BattlePokemon} param0.source
- * @param {BattlePokemon} param0.target
- * @param {EffectInitialArgsTypeFromId<K>} param0.initialArgs
- * @returns {EffectPropertiesTypeFromId<K> | undefined}
- */
-const applyEffect = ({ effectId, battle, source, target, initialArgs }) => {
-  const effect = getEffect(effectId);
-  if (!effect) {
-    logger.error(`Effect ${effectId} does not exist.`);
-    return;
-  }
-  if (!effect.isLegacyEffect) {
-    return effect.effectAdd({
-      battle,
-      source,
-      target,
-      initialArgs,
-    });
-  }
-  const legacyEffect = /** @type {any} */ (effect);
-  return legacyEffect.effectAdd(battle, source, target, initialArgs);
-};
-
-/**
- * @template {EffectIdEnum} K
- * @param {object} param0
- * @param {K} param0.effectId
- * @param {Battle} param0.battle
- * @param {BattlePokemon} param0.target
- * @param {EffectInitialArgsTypeFromId<K>} param0.initialArgs
- * @param {EffectPropertiesTypeFromId<K>} param0.properties
- */
-const removeEffect = ({
-  effectId,
-  battle,
-  target,
-  initialArgs,
-  properties,
-}) => {
-  const effect = getEffect(effectId);
-  if (!effect) {
-    logger.error(`Effect ${effectId} does not exist.`);
-    return;
-  }
-  if (!effect.isLegacyEffect) {
-    // @ts-ignore
-    effect.effectRemove({
-      battle,
-      target,
-      initialArgs,
-      properties,
-    });
-  } else {
-    const legacyEffect = /** @type {any} */ (effect);
-    legacyEffect.effectRemove(battle, target, properties, initialArgs);
-  }
-};
 
 module.exports = {
   registerEffects,
@@ -159,6 +97,4 @@ module.exports = {
   getEffect,
   getEffects,
   getEffectIds,
-  applyEffect,
-  removeEffect,
 };

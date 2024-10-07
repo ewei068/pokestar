@@ -6,7 +6,7 @@
 const { types: pokemonTypes } = require("../config/pokemonConfig");
 const types = require("../../types");
 const { getMove, getMoveIds, executeMove } = require("./moveService");
-const { getEffect } = require("./effectService");
+const { getEffect } = require("./effectRegistry");
 
 /** @typedef {types.Enum<battleEventNames>} BattleEventEnum */
 const battleEventNames = Object.freeze({
@@ -2347,7 +2347,7 @@ const effectConfig = Object.freeze({
             `${targetPokemon.name}'s holds a grudge!`
           );
           for (const enemyPokemon of enemyPokemons) {
-            enemyPokemon.addEffect("silenced", 2, targetPokemon);
+            enemyPokemon.applyEffect("silenced", 2, targetPokemon);
           }
         },
       };
@@ -6661,7 +6661,7 @@ const moveExecutes = {
   m14(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply greater atk up for 3 turns
-      target.addEffect("greaterAtkUp", 3, source);
+      target.applyEffect("greaterAtkUp", 3, source);
       // gain 60% cr
       source.boostCombatReadiness(source, 60);
     }
@@ -6723,7 +6723,7 @@ const moveExecutes = {
 
       // if not miss, flinch with 30% chance
       if (!miss && Math.random() < 0.3) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
@@ -6804,7 +6804,7 @@ const moveExecutes = {
 
       // if not miss, apply 1/8 hp DoT for 2 turns
       if (!miss) {
-        target.addEffect("dot", 2, source, {
+        target.applyEffect("dot", 2, source, {
           damage: Math.max(Math.floor(target.maxHp / 8), 1),
         });
       }
@@ -6874,7 +6874,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       if (!miss) {
         // def down 2 turns
-        target.addEffect("defDown", 2, source);
+        target.applyEffect("defDown", 2, source);
       }
     }
   },
@@ -6903,7 +6903,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (!miss) {
-        target.addEffect("disable", 1, source);
+        target.applyEffect("disable", 1, source);
       }
     }
   },
@@ -6920,7 +6920,7 @@ const moveExecutes = {
 
       // 20% chance spd down 1 turn
       if (!miss && Math.random() < 0.2) {
-        target.addEffect("spdDown", 1, source);
+        target.applyEffect("spdDown", 1, source);
       }
     }
   },
@@ -7029,8 +7029,8 @@ const moveExecutes = {
       });
 
       // reduce atk and spa for 1 turn
-      target.addEffect("atkDown", 1, source);
-      target.addEffect("spaDown", 1, source);
+      target.applyEffect("atkDown", 1, source);
+      target.applyEffect("spaDown", 1, source);
     }
   },
   m57(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -7097,7 +7097,7 @@ const moveExecutes = {
 
       // if not miss, 50% chance to confuse for 1 turn
       if (!miss && Math.random() < 0.5) {
-        target.addEffect("confused", 1, source);
+        target.applyEffect("confused", 1, source);
       }
     }
   },
@@ -7118,7 +7118,7 @@ const moveExecutes = {
       );
     }
     // apply recharge to self
-    source.addEffect("recharge", 1, source);
+    source.applyEffect("recharge", 1, source);
   },
   m64(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m64";
@@ -7147,7 +7147,7 @@ const moveExecutes = {
   m68(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply counter 2 turn
-      target.addEffect("counter", 2, source);
+      target.applyEffect("counter", 2, source);
     }
   },
   m70(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -7203,7 +7203,7 @@ const moveExecutes = {
       }
 
       // apply leech seed 5 turns
-      target.addEffect("leechSeed", 5, source);
+      target.applyEffect("leechSeed", 5, source);
     }
   },
   m76(battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -7215,7 +7215,7 @@ const moveExecutes = {
       !battle.isWeatherNegated() &&
       battle.weather.weatherId !== weatherConditions.SUN
     ) {
-      source.addEffect("absorbLight", 1, source);
+      source.applyEffect("absorbLight", 1, source);
       // remove solar beam cd
       source.moveIds[moveId].cooldown = 0;
     } else {
@@ -7289,7 +7289,7 @@ const moveExecutes = {
       }
 
       // sharply lower speed for 1 turn
-      target.addEffect("greaterSpeDown", 1, source);
+      target.applyEffect("greaterSpeDown", 1, source);
       // lower cr by 15%
       target.reduceCombatReadiness(source, 15);
     }
@@ -7385,7 +7385,7 @@ const moveExecutes = {
     }
 
     // add spe down to user 1 turn
-    source.addEffect("speDown", 1, source);
+    source.applyEffect("speDown", 1, source);
   },
   m88(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m88";
@@ -7429,7 +7429,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     // if pokemon doesnt have "burrowed" buff, apply it
     if (source.effectIds.burrowed === undefined) {
-      source.addEffect("burrowed", 1, source);
+      source.applyEffect("burrowed", 1, source);
       // remove dig cd
       source.moveIds[moveId].cooldown = 0;
     } else {
@@ -7470,7 +7470,7 @@ const moveExecutes = {
 
       // if not miss, 25% to confuse
       if (!miss && Math.random() < 0.25) {
-        target.addEffect("confused", 1, source);
+        target.applyEffect("confused", 1, source);
       }
     }
   },
@@ -7487,14 +7487,14 @@ const moveExecutes = {
 
       // if not miss, 60% chance to spd down 1 turn
       if (!miss && Math.random() < 0.6) {
-        target.addEffect("spdDown", 1, source);
+        target.applyEffect("spdDown", 1, source);
       }
     }
   },
   m97(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply greaterSpeUp buff
-      target.addEffect("greaterSpeUp", 4, source);
+      target.applyEffect("greaterSpeUp", 4, source);
       // boost combat readiness by 80
       target.boostCombatReadiness(source, 80);
     }
@@ -7502,8 +7502,8 @@ const moveExecutes = {
   "m97-1": function (_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply atkUp, speUp buff
-      target.addEffect("atkUp", 4, source, undefined);
-      target.addEffect("speUp", 4, source, undefined);
+      target.applyEffect("atkUp", 4, source, undefined);
+      target.applyEffect("speUp", 4, source, undefined);
 
       // boost combat readiness by 60
       target.boostCombatReadiness(source, 80);
@@ -7572,7 +7572,7 @@ const moveExecutes = {
       const ultimateMoveId = ultimateMoveIds[0];
 
       // replace move with ultimate move
-      source.addEffect("mimic", 3, source, {
+      source.applyEffect("mimic", 3, source, {
         moveId: ultimateMoveId,
         oldMoveId,
       });
@@ -7586,7 +7586,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       if (!miss) {
         // greater def down for 2 turns
-        target.addEffect("greaterDefDown", 2, source);
+        target.applyEffect("greaterDefDown", 2, source);
       }
     }
   },
@@ -7604,9 +7604,9 @@ const moveExecutes = {
   m106(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // def up for 2 turns
-      target.addEffect("defUp", 2, source);
+      target.applyEffect("defUp", 2, source);
       // gain 15% def as shield
-      target.addEffect("shield", 2, source, {
+      target.applyEffect("shield", 2, source, {
         shield: Math.floor(target.getDef() * 0.15),
       });
     }
@@ -7616,22 +7616,22 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       // if not miss, greater acc down 2 turns
       if (!miss) {
-        target.addEffect("greaterAccDown", 2, source);
+        target.applyEffect("greaterAccDown", 2, source);
       }
     }
   },
   "m108-1": function (_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // greater eva up 2 turns
-      target.addEffect("greaterEvaUp", 2, source);
+      target.applyEffect("greaterEvaUp", 2, source);
     }
   },
   m110(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // def up for 2 turns
-      target.addEffect("defUp", 2, source);
+      target.applyEffect("defUp", 2, source);
       // gain 15% def as shield
-      target.addEffect("shield", 2, source, {
+      target.applyEffect("shield", 2, source, {
         shield: Math.floor(target.getDef() * 0.15),
       });
     }
@@ -7639,9 +7639,9 @@ const moveExecutes = {
   m111(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // def up for 4 turns
-      target.addEffect("defUp", 4, source);
+      target.applyEffect("defUp", 4, source);
       // rollout 4 turns
-      target.addEffect("rollout", 4, source);
+      target.applyEffect("rollout", 4, source);
     }
   },
   m113(battle, source, primaryTarget, allTargets) {
@@ -7655,10 +7655,10 @@ const moveExecutes = {
     for (const target of allTargets) {
       if (targetRow.includes(target)) {
         // greater spd up for 3 turns
-        target.addEffect("greaterSpdUp", 3, source);
+        target.applyEffect("greaterSpdUp", 3, source);
       } else {
         // spd up for 3 turns
-        target.addEffect("spdUp", 3, source);
+        target.applyEffect("spdUp", 3, source);
       }
     }
   },
@@ -7673,17 +7673,17 @@ const moveExecutes = {
     for (const target of allTargets) {
       if (targetRow.includes(target)) {
         // greater def up for 3 turns
-        target.addEffect("greaterDefUp", 3, source);
+        target.applyEffect("greaterDefUp", 3, source);
       } else {
         // def up for 3 turns
-        target.addEffect("defUp", 3, source);
+        target.applyEffect("defUp", 3, source);
       }
     }
   },
   m116(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // greater atk up for 1 turn
-      target.addEffect("greaterAtkUp", 1, source);
+      target.applyEffect("greaterAtkUp", 1, source);
 
       // boost 50% cr
       target.boostCombatReadiness(source, 50);
@@ -7784,7 +7784,7 @@ const moveExecutes = {
       const flinchChance =
         source.atk > target.atk ? 0.2 + (source.atk / target.atk - 1) : 0.2;
       if (!miss && Math.random() < flinchChance) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
@@ -7801,7 +7801,7 @@ const moveExecutes = {
 
       // if not miss, apply accDown
       if (!miss) {
-        target.addEffect("accDown", 1, source);
+        target.applyEffect("accDown", 1, source);
       }
     }
   },
@@ -7881,7 +7881,7 @@ const moveExecutes = {
     let defeatedEnemy = false;
     // two turn move logic
     if (source.effectIds.skyCharge === undefined) {
-      source.addEffect("skyCharge", 1, source);
+      source.applyEffect("skyCharge", 1, source);
       // remove sky attack cd
       source.moveIds[moveId].cooldown = 0;
     } else {
@@ -7915,7 +7915,7 @@ const moveExecutes = {
       // flinch chance = (30 + source speed/10)
       const flinchChance = Math.min(0.3 + source.getSpe() / 10 / 100, 0.75);
       if (Math.random() < flinchChance) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
@@ -8029,7 +8029,7 @@ const moveExecutes = {
 
       // if not miss, lower def 1 turn
       if (!miss) {
-        target.addEffect("defDown", 1, source);
+        target.applyEffect("defDown", 1, source);
       }
     }
 
@@ -8093,7 +8093,7 @@ const moveExecutes = {
 
       // if not miss, 70% chance to flinch for 1 turn
       if (!miss && Math.random() < 0.7) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
@@ -8163,7 +8163,7 @@ const moveExecutes = {
             continue;
           }
           // apply buff to self
-          source.addEffect(
+          source.applyEffect(
             buffIdToSteal,
             buffToSteal.duration,
             buffToSteal.source,
@@ -8265,13 +8265,13 @@ const moveExecutes = {
   m182(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply move invulnerable
-      target.addEffect("moveInvulnerable", 1, source);
+      target.applyEffect("moveInvulnerable", 1, source);
     }
   },
   "m182-1": function (_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply super stretchy
-      target.addEffect("superStretchy", 1, source);
+      target.applyEffect("superStretchy", 1, source);
     }
   },
   m183(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -8315,7 +8315,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       if (!miss) {
         // apply confused for 3 turns
-        target.addEffect("confused", 3, source);
+        target.applyEffect("confused", 3, source);
       }
     }
   },
@@ -8367,7 +8367,7 @@ const moveExecutes = {
 
       // if not missed, acc down
       if (!miss) {
-        target.addEffect("accDown", 1, source);
+        target.applyEffect("accDown", 1, source);
       }
     }
   },
@@ -8379,7 +8379,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // if not miss, apply spikes 3 turns
       if (!missedTargets.includes(target)) {
-        target.addEffect("spikes", 3, source);
+        target.applyEffect("spikes", 3, source);
       }
     }
   },
@@ -8403,7 +8403,7 @@ const moveExecutes = {
   m194(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply destiny bond 1 turn to user
-      source.addEffect("destinyBond", 1, source, {
+      source.applyEffect("destinyBond", 1, source, {
         boundPokemon: target,
       });
     }
@@ -8412,7 +8412,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // if not miss, apply perish song 3 turns
       if (!missedTargets.includes(target)) {
-        target.addEffect("perishSong", 3, source);
+        target.applyEffect("perishSong", 3, source);
       }
     }
 
@@ -8424,7 +8424,7 @@ const moveExecutes = {
       source.position
     );
     for (const target of allyTargets) {
-      target.addEffect("perishSong", 3, source);
+      target.applyEffect("perishSong", 3, source);
     }
 
     // append ally targets to all targets
@@ -8433,8 +8433,8 @@ const moveExecutes = {
   m199(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply redirect and greaterEvaDown 1 turn
-      target.addEffect("redirect", 1, source);
-      target.addEffect("greaterEvaDown", 1, source);
+      target.applyEffect("redirect", 1, source);
+      target.applyEffect("greaterEvaDown", 1, source);
     }
   },
   m200(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -8442,7 +8442,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     // if source doesn't have outrage, apply it
     if (source.effectIds.outrage === undefined) {
-      source.addEffect("outrage", 2, source);
+      source.applyEffect("outrage", 2, source);
     }
 
     for (const target of allTargets) {
@@ -8461,7 +8461,7 @@ const moveExecutes = {
       // remove outrage
       source.removeEffect("outrage");
       // confuse self
-      source.addEffect("confused", 2, source);
+      source.applyEffect("confused", 2, source);
     }
   },
   m202(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -8486,7 +8486,7 @@ const moveExecutes = {
   m203(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply 1 turn immortality
-      target.addEffect("immortal", 1, source);
+      target.applyEffect("immortal", 1, source);
     }
   },
   m204(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -8494,7 +8494,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       if (!miss) {
         // greater atk down for 2 turns
-        target.addEffect("greaterAtkDown", 2, source);
+        target.applyEffect("greaterAtkDown", 2, source);
       }
     }
   },
@@ -8520,7 +8520,7 @@ const moveExecutes = {
 
     if (targetHit) {
       // add rollout for 1 turn
-      source.addEffect("rollout", 1, source);
+      source.applyEffect("rollout", 1, source);
     }
   },
   m208(_battle, source, _primaryTarget, allTargets) {
@@ -8555,11 +8555,11 @@ const moveExecutes = {
     const moveId = "m208-1";
     for (const target of allTargets) {
       // give all stats up 1 turn
-      target.addEffect("atkUp", 1, source);
-      target.addEffect("defUp", 1, source);
-      target.addEffect("spaUp", 1, source);
-      target.addEffect("spdUp", 1, source);
-      target.addEffect("speUp", 1, source);
+      target.applyEffect("atkUp", 1, source);
+      target.applyEffect("defUp", 1, source);
+      target.applyEffect("spaUp", 1, source);
+      target.applyEffect("spdUp", 1, source);
+      target.applyEffect("speUp", 1, source);
 
       // heal
       source.giveHeal(Math.floor(source.maxHp * 0.25), source, {
@@ -8590,7 +8590,7 @@ const moveExecutes = {
 
     if (targetHit) {
       // add fury cutter for 1 turn
-      source.addEffect("furyCutter", 1, source);
+      source.applyEffect("furyCutter", 1, source);
     }
   },
   m212(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -8600,7 +8600,7 @@ const moveExecutes = {
       // if not miss, cr down 50% and restrict 2 turns
       if (!miss) {
         target.reduceCombatReadiness(source, 50);
-        target.addEffect("restricted", 2, source);
+        target.applyEffect("restricted", 2, source);
       }
     }
   },
@@ -8616,7 +8616,7 @@ const moveExecutes = {
 
       // if not miss, greater spe down 2 turns
       if (!miss) {
-        target.addEffect("greaterSpeDown", 2, source);
+        target.applyEffect("greaterSpeDown", 2, source);
       }
     }
   },
@@ -8716,7 +8716,7 @@ const moveExecutes = {
   m219(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply status immunity for 3 turns
-      target.addEffect("statusImmunity", 3, source);
+      target.applyEffect("statusImmunity", 3, source);
     }
   },
   m221(_battle, source, primaryTarget, allTargets, missedTargets) {
@@ -8773,7 +8773,7 @@ const moveExecutes = {
           moveId
         );
         for (const enemyTarget of enemyTargets) {
-          enemyTarget.addEffect("confused", 2, source);
+          enemyTarget.applyEffect("confused", 2, source);
         }
       }
     }
@@ -8803,7 +8803,7 @@ const moveExecutes = {
           return;
         }
         // apply effect to target
-        target.addEffect(
+        target.applyEffect(
           effectId,
           effect.duration,
           effect.source,
@@ -8818,8 +8818,8 @@ const moveExecutes = {
       target.boostCombatReadiness(source, 100);
 
       // give greater atkup, defup 2 turns
-      target.addEffect("greaterAtkUp", 2, source);
-      target.addEffect("greaterDefUp", 2, source);
+      target.applyEffect("greaterAtkUp", 2, source);
+      target.applyEffect("greaterDefUp", 2, source);
     }
   },
   m229(battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -8864,7 +8864,7 @@ const moveExecutes = {
       const beforeDamage = source.getDef() > target.getDef();
       if (!miss && beforeDamage) {
         // apply def down 2 turns
-        target.addEffect("defDown", 2, source);
+        target.applyEffect("defDown", 2, source);
       }
       const damageToDeal = calculateDamage(moveData, source, target, miss);
       source.dealDamage(damageToDeal, target, {
@@ -8874,7 +8874,7 @@ const moveExecutes = {
 
       if (!miss && !beforeDamage) {
         // apply def down 2 turns
-        target.addEffect("defDown", 2, source);
+        target.applyEffect("defDown", 2, source);
       }
     }
   },
@@ -8890,8 +8890,8 @@ const moveExecutes = {
           fraction = 0.33;
 
           // gain 2 turns spa, spd up
-          target.addEffect("spaUp", 2, source);
-          target.addEffect("spdUp", 2, source);
+          target.applyEffect("spaUp", 2, source);
+          target.applyEffect("spdUp", 2, source);
         } else {
           fraction = 0.25;
         }
@@ -8955,7 +8955,7 @@ const moveExecutes = {
 
       // if not missed, 30% chance to flinch
       if (!miss && Math.random() < 0.3) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
@@ -8980,7 +8980,7 @@ const moveExecutes = {
 
       // if not miss, 85% chance to reduce def
       if (!miss && Math.random() < 0.85) {
-        target.addEffect("defDown", 2, source);
+        target.applyEffect("defDown", 2, source);
       }
     }
   },
@@ -8989,7 +8989,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply mirror coat 2 turn
-      target.addEffect("mirrorCoat", 2, source);
+      target.applyEffect("mirrorCoat", 2, source);
     }
   },
   m245(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -9039,19 +9039,19 @@ const moveExecutes = {
     );
     switch (highestStatIndex + 1) {
       case 1:
-        source.addEffect("atkUp", 1, source);
+        source.applyEffect("atkUp", 1, source);
         break;
       case 2:
-        source.addEffect("defUp", 1, source);
+        source.applyEffect("defUp", 1, source);
         break;
       case 3:
-        source.addEffect("spaUp", 1, source);
+        source.applyEffect("spaUp", 1, source);
         break;
       case 4:
-        source.addEffect("spdUp", 1, source);
+        source.applyEffect("spdUp", 1, source);
         break;
       case 5:
-        source.addEffect("speUp", 1, source);
+        source.applyEffect("speUp", 1, source);
         break;
       default:
         break;
@@ -9070,7 +9070,7 @@ const moveExecutes = {
 
       // if not miss, 85% chance to reduce sp def
       if (!miss && Math.random() < 0.85) {
-        target.addEffect("spdDown", 2, source);
+        target.applyEffect("spdDown", 2, source);
       }
     }
   },
@@ -9084,7 +9084,7 @@ const moveExecutes = {
       }
 
       // apply 2 turns future sight
-      target.addEffect("futureSight", 2, source);
+      target.applyEffect("futureSight", 2, source);
     }
   },
   m249(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -9100,7 +9100,7 @@ const moveExecutes = {
 
       // if not miss, def down 2 turns 70% chance
       if (!miss && Math.random() < 0.7) {
-        target.addEffect("defDown", 2, source);
+        target.applyEffect("defDown", 2, source);
       }
     }
   },
@@ -9117,7 +9117,7 @@ const moveExecutes = {
 
       // if not miss, flinch for 1 turn
       if (!miss) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
 
@@ -9165,7 +9165,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply redirect for 1 turn
-      target.addEffect("redirect", 1, source);
+      target.applyEffect("redirect", 1, source);
     }
   },
   m262(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -9175,8 +9175,8 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       if (!miss) {
         // give 2 turns greater atk, spa down
-        target.addEffect("greaterAtkDown", 2, source);
-        target.addEffect("greaterSpaDown", 2, source);
+        target.applyEffect("greaterAtkDown", 2, source);
+        target.applyEffect("greaterSpaDown", 2, source);
       }
     }
     // cause self to faint
@@ -9187,9 +9187,9 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply charge for 1 turn
-      target.addEffect("charge", 1, source);
+      target.applyEffect("charge", 1, source);
       // apply spd up for 1 turn
-      target.addEffect("spdUp", 1, source);
+      target.applyEffect("spdUp", 1, source);
     }
   },
   m269(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -9202,7 +9202,7 @@ const moveExecutes = {
       }
 
       // add taunt for 2 turns
-      target.addEffect("taunt", 2, source);
+      target.applyEffect("taunt", 2, source);
     }
   },
   "m269-1": function (
@@ -9221,7 +9221,7 @@ const moveExecutes = {
       }
 
       // add reverse taunt for 2 turns
-      target.addEffect("reverseTaunt", 2, source);
+      target.applyEffect("reverseTaunt", 2, source);
     }
   },
   m270(_battle, source, _primaryTarget, allTargets, _missedTargets) {
@@ -9229,8 +9229,8 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply atk up and spa up 1 turn
-      target.addEffect("atkUp", 1, source);
-      target.addEffect("spaUp", 1, source);
+      target.applyEffect("atkUp", 1, source);
+      target.applyEffect("spaUp", 1, source);
     }
   },
   m273(battle, source, _primaryTarget, allTargets, _missedTargets) {
@@ -9239,7 +9239,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // give delayed heal
       battle.addToLog(`${target.name} recieved ${source.name}'s wish!`);
-      target.addEffect("delayedHeal", 1, source, {
+      target.applyEffect("delayedHeal", 1, source, {
         healAmount: Math.floor(source.maxHp * 0.5),
       });
     }
@@ -9256,8 +9256,8 @@ const moveExecutes = {
       });
     }
     // reduce source atk and def
-    source.addEffect("atkDown", 1, source);
-    source.addEffect("defDown", 1, source);
+    source.applyEffect("atkDown", 1, source);
+    source.applyEffect("defDown", 1, source);
   },
   m281(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m281";
@@ -9270,7 +9270,7 @@ const moveExecutes = {
         if (source.status.statusId === statusConditions.SLEEP) {
           target.applyStatus(statusConditions.SLEEP, source);
         } else {
-          target.addEffect("yawn", 1, source);
+          target.applyEffect("yawn", 1, source);
         }
       }
     }
@@ -9350,7 +9350,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply grudge for 1 turn
-      target.addEffect("grudge", 1, source);
+      target.applyEffect("grudge", 1, source);
     }
   },
   m295(battle, source, primaryTarget, allTargets, missedTargets) {
@@ -9396,7 +9396,7 @@ const moveExecutes = {
 
       // if not miss or mist ball, spd down
       if (!miss || mistBallCooldown) {
-        target.addEffect("spdDown", 2, source);
+        target.applyEffect("spdDown", 2, source);
       }
     }
   },
@@ -9431,10 +9431,10 @@ const moveExecutes = {
       });
 
       if (lusterPurgeCooldown) {
-        target.addEffect("atkDown", 2, source);
-        target.addEffect("spaDown", 2, source);
+        target.applyEffect("atkDown", 2, source);
+        target.applyEffect("spaDown", 2, source);
       } else if (!miss) {
-        target.addEffect("spaDown", 1, source);
+        target.applyEffect("spaDown", 1, source);
       }
     }
   },
@@ -9467,7 +9467,7 @@ const moveExecutes = {
       });
 
       // apply def up 2 turns
-      source.addEffect("defUp", 2, source);
+      source.applyEffect("defUp", 2, source);
     }
   },
   m304(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -9504,7 +9504,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
 
     // raise user atk for 2 turn
-    source.addEffect("atkUp", 2, source);
+    source.applyEffect("atkUp", 2, source);
 
     let fainted = false;
     for (const target of allTargets) {
@@ -9592,7 +9592,7 @@ const moveExecutes = {
 
       // if not miss, spe down for 2 turns
       if (!miss) {
-        target.addEffect("speDown", 2, source);
+        target.applyEffect("speDown", 2, source);
       }
     }
   },
@@ -9614,17 +9614,17 @@ const moveExecutes = {
       });
 
       // spe down 2 turns
-      target.addEffect("speDown", 2, source);
+      target.applyEffect("speDown", 2, source);
     }
   },
   m322(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveData = getMove("m322");
     for (const target of allTargets) {
       // raise def, spd
-      target.addEffect("defUp", 3, source);
-      target.addEffect("spdUp", 3, source);
+      target.applyEffect("defUp", 3, source);
+      target.applyEffect("spdUp", 3, source);
       // get 10% defenses as shield
-      target.addEffect("shield", 3, source, {
+      target.applyEffect("shield", 3, source, {
         shield: Math.floor(target.getDef() * 0.1 + target.getSpd() * 0.1),
       });
     }
@@ -9654,7 +9654,7 @@ const moveExecutes = {
 
       // if not miss, 50% acc down 2 turns
       if (!miss && Math.random() < 0.5) {
-        target.addEffect("accDown", 2, source);
+        target.applyEffect("accDown", 2, source);
       }
     }
   },
@@ -9688,7 +9688,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     // if pokemon doesnt have "projectingSpirit" buff, apply it
     if (source.effectIds.projectingSpirit === undefined) {
-      source.addEffect("projectingSpirit", 1, source);
+      source.applyEffect("projectingSpirit", 1, source);
       // remove cd
       source.moveIds[moveId].cooldown = 0;
     } else {
@@ -9730,9 +9730,9 @@ const moveExecutes = {
     const moveData = getMove("m334");
     for (const target of allTargets) {
       // sharply raise def
-      target.addEffect("greaterDefUp", 3, source);
+      target.applyEffect("greaterDefUp", 3, source);
       // get 25% def as shield
-      target.addEffect("shield", 3, source, {
+      target.applyEffect("shield", 3, source, {
         shield: Math.floor(target.getDef() * 0.25),
       });
     }
@@ -9753,15 +9753,15 @@ const moveExecutes = {
     for (const target of allTargets) {
       // if primary target, greater def up, else def up
       if (target === primaryTarget) {
-        target.addEffect("greaterDefUp", 2, source);
+        target.applyEffect("greaterDefUp", 2, source);
         // get 25% def as shield
-        target.addEffect("shield", 2, source, {
+        target.applyEffect("shield", 2, source, {
           shield: Math.floor(source.getDef() * 0.25),
         });
       } else {
-        target.addEffect("defUp", 2, source);
+        target.applyEffect("defUp", 2, source);
         // get 10% def as shield
-        target.addEffect("shield", 2, source, {
+        target.applyEffect("shield", 2, source, {
           shield: Math.floor(source.getDef() * 0.1),
         });
       }
@@ -9777,10 +9777,10 @@ const moveExecutes = {
     const moveData = getMove("m334-2");
     for (const target of allTargets) {
       // sharply raise def & special def
-      target.addEffect("greaterDefUp", 2, source);
-      target.addEffect("greaterSpdUp", 2, source);
+      target.applyEffect("greaterDefUp", 2, source);
+      target.applyEffect("greaterSpdUp", 2, source);
       // lower spe
-      target.addEffect("speDown", 2, source);
+      target.applyEffect("speDown", 2, source);
     }
   },
   m336(_battle, source, _primaryTarget, allTargets, _missedTargets) {
@@ -9788,7 +9788,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // grant atk up 1 turn
-      target.addEffect("atkUp", 1, source);
+      target.applyEffect("atkUp", 1, source);
 
       // grant 15% CR
       target.boostCombatReadiness(source, 15);
@@ -9799,7 +9799,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     // if pokemon doesnt have "sprungUp" buff, apply it
     if (source.effectIds.sprungUp === undefined) {
-      source.addEffect("sprungUp", 1, source);
+      source.applyEffect("sprungUp", 1, source);
       // remove bounce cd
       source.moveIds[moveId].cooldown = 0;
     } else {
@@ -9849,8 +9849,8 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // spa, spd up 3 turns
-      target.addEffect("spaUp", 3, source);
-      target.addEffect("spdUp", 3, source);
+      target.applyEffect("spaUp", 3, source);
+      target.applyEffect("spdUp", 3, source);
 
       // gain 50% cr
       target.boostCombatReadiness(source, 50);
@@ -9880,8 +9880,8 @@ const moveExecutes = {
     const moveData = getMove("m349");
     for (const target of allTargets) {
       // raise attack and speed
-      target.addEffect("atkUp", 3, source);
-      target.addEffect("speUp", 3, source);
+      target.applyEffect("atkUp", 3, source);
+      target.applyEffect("speUp", 3, source);
 
       // gain 50% cr
       target.boostCombatReadiness(source, 50);
@@ -9900,7 +9900,7 @@ const moveExecutes = {
 
       // if not miss, confuse with 25% chance
       if (!miss && Math.random() < 0.25) {
-        target.addEffect("confused", 2, source);
+        target.applyEffect("confused", 2, source);
       }
     }
   },
@@ -9927,19 +9927,19 @@ const moveExecutes = {
       );
       switch (highestStatIndex + 1) {
         case 1:
-          ally.addEffect("greaterAtkUp", 2, source);
+          ally.applyEffect("greaterAtkUp", 2, source);
           break;
         case 2:
-          ally.addEffect("greaterDefUp", 2, source);
+          ally.applyEffect("greaterDefUp", 2, source);
           break;
         case 3:
-          ally.addEffect("greaterSpaUp", 2, source);
+          ally.applyEffect("greaterSpaUp", 2, source);
           break;
         case 4:
-          ally.addEffect("greaterSpdUp", 2, source);
+          ally.applyEffect("greaterSpdUp", 2, source);
           break;
         case 5:
-          ally.addEffect("greaterSpeUp", 2, source);
+          ally.applyEffect("greaterSpeUp", 2, source);
           break;
         default:
           break;
@@ -9978,9 +9978,9 @@ const moveExecutes = {
 
     // lower attack or special attack
     if (useAtk) {
-      source.addEffect("greaterAtkDown", 2, source);
+      source.applyEffect("greaterAtkDown", 2, source);
     } else {
-      source.addEffect("greaterSpaDown", 2, source);
+      source.applyEffect("greaterSpaDown", 2, source);
     }
   },
   "m354-2": function (
@@ -9993,7 +9993,7 @@ const moveExecutes = {
     const moveData = getMove("m354-2");
     for (const target of allTargets) {
       // get 25% def, spd as shield
-      target.addEffect("shield", 3, source, {
+      target.applyEffect("shield", 3, source, {
         shield: Math.floor(source.getDef() * 0.25 + source.getSpd() * 0.25),
       });
     }
@@ -10009,7 +10009,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply extra turn buff for 1 (2) turn
-      target.addEffect("extraTurn", 1, source);
+      target.applyEffect("extraTurn", 1, source);
     }
   },
   m355(_battle, source, _primaryTarget, allTargets) {
@@ -10025,7 +10025,7 @@ const moveExecutes = {
       );
 
       // lose flying type
-      target.addEffect("loseFlying", 1, source);
+      target.applyEffect("loseFlying", 1, source);
     }
   },
   m359(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -10041,7 +10041,7 @@ const moveExecutes = {
     }
 
     // source spe down 1 turns
-    source.addEffect("speDown", 1, source);
+    source.applyEffect("speDown", 1, source);
   },
   m361(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m361";
@@ -10072,7 +10072,7 @@ const moveExecutes = {
 
     for (const target of allTargets) {
       // grant greater spe up for 2 turns
-      target.addEffect("greaterSpeUp", 2, source);
+      target.applyEffect("greaterSpeUp", 2, source);
 
       // grant 15% CR to backmost row
       if (boostTargets.includes(target)) {
@@ -10121,8 +10121,8 @@ const moveExecutes = {
     }
 
     // lower self def, spd 1 turn
-    source.addEffect("defDown", 1, source);
-    source.addEffect("spdDown", 1, source);
+    source.applyEffect("defDown", 1, source);
+    source.applyEffect("spdDown", 1, source);
   },
   "m370-1": function (
     _battle,
@@ -10143,8 +10143,8 @@ const moveExecutes = {
     }
 
     // sharply lower self def, spd 1 turn
-    source.addEffect("greaterDefDown", 1, source);
-    source.addEffect("greaterSpdDown", 1, source);
+    source.applyEffect("greaterDefDown", 1, source);
+    source.applyEffect("greaterSpdDown", 1, source);
   },
   m387(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m387";
@@ -10170,10 +10170,10 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // add regeneration and def up
-      target.addEffect("regeneration", 3, source, {
+      target.applyEffect("regeneration", 3, source, {
         healAmount: Math.floor(source.maxHp * 0.25),
       });
-      target.addEffect("defUp", 2, source);
+      target.applyEffect("defUp", 2, source);
     }
   },
   m394(battle, source, primaryTarget, allTargets, missedTargets) {
@@ -10285,7 +10285,7 @@ const moveExecutes = {
 
       // 25% chance to flinch 1 turn
       if (!miss && Math.random() < 0.35) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
@@ -10319,7 +10319,7 @@ const moveExecutes = {
 
       // if not miss, 25% to flinch 1 turn
       if (!miss && Math.random() < 0.25) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
@@ -10355,7 +10355,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       // if not miss, 80% to spd down
       if (!miss && Math.random() < 0.8) {
-        target.addEffect("spdDown", 2, source);
+        target.applyEffect("spdDown", 2, source);
       }
 
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10390,7 +10390,7 @@ const moveExecutes = {
 
       // if not miss, 30% chance to flinch
       if (!miss && Math.random() < 0.3) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
@@ -10426,7 +10426,7 @@ const moveExecutes = {
 
       // if not miss, 85% chance to reduce sp def
       if (!miss && Math.random() < 0.85) {
-        target.addEffect("spdDown", 2, source);
+        target.applyEffect("spdDown", 2, source);
       }
     }
   },
@@ -10463,7 +10463,7 @@ const moveExecutes = {
 
       // if not miss, 20% spd down 2 turns
       if (!miss && Math.random() < 0.2) {
-        target.addEffect("spdDown", 2, source);
+        target.applyEffect("spdDown", 2, source);
       }
     }
   },
@@ -10484,7 +10484,7 @@ const moveExecutes = {
       );
     }
     // apply recharge to self
-    source.addEffect("recharge", 1, source);
+    source.applyEffect("recharge", 1, source);
   },
   "m416-1": function (
     _battle,
@@ -10509,14 +10509,14 @@ const moveExecutes = {
       );
     }
     // apply greater spe down to self
-    source.addEffect("greaterSpeDown", 1, source);
+    source.applyEffect("greaterSpeDown", 1, source);
   },
   m417(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m417";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // sharply raise spatk
-      target.addEffect("greaterSpaUp", 3, source);
+      target.applyEffect("greaterSpaUp", 3, source);
 
       // boost cr 60%
       source.boostCombatReadiness(source, 60);
@@ -10533,8 +10533,8 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // sharply raise spatk, eva
-      target.addEffect("greaterSpaUp", 2, source);
-      target.addEffect("greaterEvaUp", 2, source);
+      target.applyEffect("greaterSpaUp", 2, source);
+      target.applyEffect("greaterEvaUp", 2, source);
 
       // boost cr 60%
       source.boostCombatReadiness(source, 60);
@@ -10587,7 +10587,7 @@ const moveExecutes = {
       }
       // if not miss, 10% chance to flinch for 1 turn
       if (!miss && Math.random() < 0.1) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
@@ -10619,7 +10619,7 @@ const moveExecutes = {
 
       // if not miss, flinch for 1 turn
       if (!miss) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
@@ -10636,7 +10636,7 @@ const moveExecutes = {
 
       // if not miss, 20% to spd down
       if (!miss && Math.random() < 0.2) {
-        target.addEffect("spdDown", 2, source);
+        target.applyEffect("spdDown", 2, source);
       }
     }
   },
@@ -10697,13 +10697,13 @@ const moveExecutes = {
     for (const target of targets) {
       const spe = target.getSpe();
       if (spe > 1.25 * meanSpe) {
-        target.addEffect("greaterSpeDown", 3, source);
+        target.applyEffect("greaterSpeDown", 3, source);
       } else if (spe > meanSpe) {
-        target.addEffect("speDown", 3, source);
+        target.applyEffect("speDown", 3, source);
       } else if (spe > meanSpe * 0.75) {
-        target.addEffect("speUp", 3, source);
+        target.applyEffect("speUp", 3, source);
       } else {
-        target.addEffect("greaterSpeUp", 3, source);
+        target.applyEffect("greaterSpeUp", 3, source);
       }
 
       // append to allTargets if not already in
@@ -10771,7 +10771,12 @@ const moveExecutes = {
         }
 
         // apply debuff to target
-        target.addEffect(debuffId, debuff.duration, source, debuff.initialArgs);
+        target.applyEffect(
+          debuffId,
+          debuff.duration,
+          source,
+          debuff.initialArgs
+        );
       }
     }
   },
@@ -10788,7 +10793,7 @@ const moveExecutes = {
     }
 
     // apply greater spa down to user 2 turns
-    source.addEffect("greaterSpaDown", 2, source);
+    source.applyEffect("greaterSpaDown", 2, source);
   },
   m441(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m441";
@@ -10842,7 +10847,7 @@ const moveExecutes = {
     );
     for (const target of allTargets) {
       // give target stealthRock
-      target.addEffect("stealthRock", 3, source);
+      target.applyEffect("stealthRock", 3, source);
     }
   },
   m450(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -10880,7 +10885,7 @@ const moveExecutes = {
           return;
         }
         // apply buff to self
-        source.addEffect(
+        source.applyEffect(
           buffIdToSteal,
           buffToSteal.duration,
           buffToSteal.source,
@@ -10909,7 +10914,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply wide guard 3 turn
-      target.addEffect("wideGuard", 3, source);
+      target.applyEffect("wideGuard", 3, source);
     }
   },
   m476(_battle, source, _primaryTarget, allTargets, _missedTargets) {
@@ -10917,7 +10922,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply redirect for 1 turn
-      target.addEffect("redirect", 1, source);
+      target.applyEffect("redirect", 1, source);
     }
   },
   m479(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -10937,7 +10942,7 @@ const moveExecutes = {
         (target.type1 === pokemonTypes.FLYING ||
           target.type2 === pokemonTypes.FLYING)
       ) {
-        target.addEffect("loseFlying", 1, source);
+        target.applyEffect("loseFlying", 1, source);
       }
     }
   },
@@ -10975,9 +10980,9 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // boost spa, spd, spe
-      target.addEffect("spaUp", 3, source);
-      target.addEffect("spdUp", 3, source);
-      target.addEffect("speUp", 3, source);
+      target.applyEffect("spaUp", 3, source);
+      target.applyEffect("spdUp", 3, source);
+      target.applyEffect("speUp", 3, source);
 
       // boost cr 50%
       target.boostCombatReadiness(source, 50);
@@ -11119,7 +11124,7 @@ const moveExecutes = {
 
       // if hit, reduce targets speed for 1 turn
       if (!miss) {
-        target.addEffect("speDown", 1, source);
+        target.applyEffect("speDown", 1, source);
       }
     }
   },
@@ -11145,8 +11150,8 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // give atk up and spa up 2 turns
-      target.addEffect("atkUp", 2, source);
-      target.addEffect("spaUp", 2, source);
+      target.applyEffect("atkUp", 2, source);
+      target.applyEffect("spaUp", 2, source);
     }
   },
   m527(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -11162,7 +11167,7 @@ const moveExecutes = {
 
       // if hit, reduce targets speed for 2 turn
       if (!miss) {
-        target.addEffect("speDown", 2, source);
+        target.applyEffect("speDown", 2, source);
       }
     }
   },
@@ -11219,7 +11224,7 @@ const moveExecutes = {
 
       // if not miss, 50% to def down for 2 turns
       if (!miss && Math.random() < 0.5) {
-        target.addEffect("defDown", 2, source);
+        target.applyEffect("defDown", 2, source);
       }
     }
   },
@@ -11291,7 +11296,7 @@ const moveExecutes = {
 
       // if hit, 30% chance to confuse target
       if (!miss && Math.random() < 0.3) {
-        target.addEffect("confused", 2, source);
+        target.applyEffect("confused", 2, source);
       }
     }
   },
@@ -11321,7 +11326,7 @@ const moveExecutes = {
 
       // if hit, 30% chance to flinch
       if (!miss && Math.random() < 0.3) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
@@ -11333,8 +11338,8 @@ const moveExecutes = {
 
       // if not miss, spe down and restrict 2 turns
       if (!miss) {
-        target.addEffect("speDown", 2, source);
-        target.addEffect("restricted", 2, source);
+        target.applyEffect("speDown", 2, source);
+        target.applyEffect("restricted", 2, source);
       }
     }
   },
@@ -11343,7 +11348,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
 
     // raise atk
-    source.addEffect("greaterAtkUp", 3, source);
+    source.applyEffect("greaterAtkUp", 3, source);
     let defeatedEnemy = false;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -11375,8 +11380,8 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       // if not miss or primary target, atk and spa down 1 turn
       if (!miss || target === primaryTarget) {
-        target.addEffect("atkDown", 1, source);
-        target.addEffect("spaDown", 1, source);
+        target.applyEffect("atkDown", 1, source);
+        target.applyEffect("spaDown", 1, source);
       }
     }
   },
@@ -11445,11 +11450,11 @@ const moveExecutes = {
 
       // if not miss, 70% chance to lower atk
       if (!miss && Math.random() < 0.7) {
-        target.addEffect("atkDown", 1, source);
+        target.applyEffect("atkDown", 1, source);
       }
       // if not miss, 70% chance to lower spe
       if (!miss && Math.random() < 0.7) {
-        target.addEffect("speDown", 1, source);
+        target.applyEffect("speDown", 1, source);
       }
     }
   },
@@ -11466,7 +11471,7 @@ const moveExecutes = {
 
       // if not miss, sharply lower spatk
       if (!miss) {
-        target.addEffect("greaterSpaDown", 2, source);
+        target.applyEffect("greaterSpaDown", 2, source);
       }
     }
   },
@@ -11505,8 +11510,8 @@ const moveExecutes = {
     const moveData = getMove(moveId);
 
     // give user spa, spd up
-    source.addEffect("spaUp", 1, source);
-    source.addEffect("spdUp", 1, source);
+    source.applyEffect("spaUp", 1, source);
+    source.applyEffect("spdUp", 1, source);
 
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -11522,8 +11527,8 @@ const moveExecutes = {
     const moveData = getMove(moveId);
 
     // give user atk, def up
-    source.addEffect("atkUp", 1, source);
-    source.addEffect("defUp", 1, source);
+    source.applyEffect("atkUp", 1, source);
+    source.applyEffect("defUp", 1, source);
 
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -11553,8 +11558,8 @@ const moveExecutes = {
 
     // give user 100% cr, def down spd down 2 turns
     source.boostCombatReadiness(source, 100);
-    source.addEffect("defDown", 2, source);
-    source.addEffect("spdDown", 2, source);
+    source.applyEffect("defDown", 2, source);
+    source.applyEffect("spdDown", 2, source);
   },
   "m620-1": function (
     _battle,
@@ -11605,7 +11610,7 @@ const moveExecutes = {
 
       // if not miss, apply atk down to target 2 turns
       if (!miss) {
-        target.addEffect("atkDown", 2, source);
+        target.applyEffect("atkDown", 2, source);
       }
     }
   },
@@ -11634,7 +11639,7 @@ const moveExecutes = {
 
       // if not miss, 85% chance to reduce def
       if (!miss && Math.random() < 0.85) {
-        target.addEffect("defDown", 2, source);
+        target.applyEffect("defDown", 2, source);
       }
     }
   },
@@ -11693,7 +11698,7 @@ const moveExecutes = {
 
       // if not miss, 30% chance to flinch
       if (!miss && Math.random() < 0.3) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
 
@@ -11713,7 +11718,7 @@ const moveExecutes = {
 
       // if not miss, 30% chance to flinch
       if (!miss && Math.random() < 0.3) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
@@ -11761,7 +11766,7 @@ const moveExecutes = {
       // if primary target, increase cr to 100% and give spe up 2 turns
       if (target === primaryTarget) {
         target.boostCombatReadiness(source, 100);
-        target.addEffect("speUp", 2, source);
+        target.applyEffect("speUp", 2, source);
       } else {
         // else, decrease cr by 30% and spe down 1 turn
         const miss = missedTargets.includes(target);
@@ -11770,7 +11775,7 @@ const moveExecutes = {
         }
 
         target.reduceCombatReadiness(source, 30);
-        target.addEffect("speDown", 1, source);
+        target.applyEffect("speDown", 1, source);
       }
     }
   },
@@ -11870,7 +11875,7 @@ const moveExecutes = {
     for (const target of targets) {
       const effectId =
         target.teamName === source.teamName ? "speUp" : "speDown";
-      target.addEffect(effectId, 2, source);
+      target.applyEffect(effectId, 2, source);
     }
 
     // source cr 100%
@@ -11936,8 +11941,8 @@ const moveExecutes = {
           moveId,
         });
 
-        target.addEffect("greaterDefDown", 1, source);
-        target.addEffect("greaterSpdDown", 1, source);
+        target.applyEffect("greaterDefDown", 1, source);
+        target.applyEffect("greaterSpdDown", 1, source);
       }
 
       // increase all buff durations by 1 if dispellable
@@ -11997,7 +12002,7 @@ const moveExecutes = {
         moveId,
       });
       // apply gear five buff for 3 turns
-      target.addEffect("gearFive", 3, source);
+      target.applyEffect("gearFive", 3, source);
       // boost cr 100%
       target.boostCombatReadiness(source, 100);
     }
@@ -12035,7 +12040,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply extra turn buff for 1 (2) turn
-      target.addEffect("extraTurn", 1, source);
+      target.applyEffect("extraTurn", 1, source);
     }
   },
 };
@@ -12497,8 +12502,8 @@ const abilityConfig = {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Flash Fire was activated by the Fire attack!`
             );
-            targetPokemon.addEffect("atkUp", 1, targetPokemon);
-            targetPokemon.addEffect("spaUp", 1, targetPokemon);
+            targetPokemon.applyEffect("atkUp", 1, targetPokemon);
+            targetPokemon.applyEffect("spaUp", 1, targetPokemon);
             args.damage = 0;
             args.maxDamage = Math.min(args.maxDamage, args.damage);
           }
@@ -12646,7 +12651,7 @@ const abilityConfig = {
           battle.addToLog(
             `${sourcePokemon.name}'s Intimidate affects ${highestAtkPokemon.name}!`
           );
-          highestAtkPokemon.addEffect("atkDown", 1, sourcePokemon);
+          highestAtkPokemon.applyEffect("atkDown", 1, sourcePokemon);
 
           // get pokemon with highest spe
           let highestSpePokemon = enemyPokemons[0];
@@ -12663,7 +12668,7 @@ const abilityConfig = {
           battle.addToLog(
             `${sourcePokemon.name}'s Intimidate affects ${highestSpePokemon.name}!`
           );
-          highestSpePokemon.addEffect("atkDown", 1, sourcePokemon);
+          highestSpePokemon.applyEffect("atkDown", 1, sourcePokemon);
         },
       };
       const listenerId = battle.eventHandler.registerListener(
@@ -12706,7 +12711,7 @@ const abilityConfig = {
           );
 
           for (const pokemon of enemyPokemons) {
-            pokemon.addEffect("restricted", 1, sourcePokemon);
+            pokemon.applyEffect("restricted", 1, sourcePokemon);
           }
         },
       };
@@ -13100,7 +13105,7 @@ const abilityConfig = {
           targetPokemon.battle.addToLog(
             `${targetPokemon.name}'s Lightning Rod was activated by the Electric attack!`
           );
-          targetPokemon.addEffect("spaUp", 1, targetPokemon);
+          targetPokemon.applyEffect("spaUp", 1, targetPokemon);
         },
       };
       const listenerId1 = battle.eventHandler.registerListener(
@@ -13177,7 +13182,7 @@ const abilityConfig = {
             battle.addToLog(
               `${sourcePokemon.name}'s Illuminate affects ${pokemon.name}!`
             );
-            pokemon.addEffect("evaDown", 1, sourcePokemon);
+            pokemon.applyEffect("evaDown", 1, sourcePokemon);
           }
         },
       };
@@ -13709,7 +13714,7 @@ const abilityConfig = {
               `${initialArgs.pokemon.name}'s Pickup gains ${effectData.name}!`
             );
             // apply buff to self
-            source.addEffect(args.effectId, 1, args.source, args.initialArgs);
+            source.applyEffect(args.effectId, 1, args.source, args.initialArgs);
           }
         },
       };
@@ -13754,7 +13759,7 @@ const abilityConfig = {
           }
           if (ability.data.turn % 2 === 0) {
             pokemon.battle.addToLog(`${pokemon.name} is becoming lazy!`);
-            activePokemon.addEffect("recharge", 1, activePokemon);
+            activePokemon.applyEffect("recharge", 1, activePokemon);
           }
           ability.data.turn += 1;
         },
@@ -13804,7 +13809,7 @@ const abilityConfig = {
             pokemon.battle.addToLog(
               `${pokemon.name}'s Old Age is holding it back!`
             );
-            activePokemon.addEffect("greaterSpeDown", 1, activePokemon);
+            activePokemon.applyEffect("greaterSpeDown", 1, activePokemon);
           }
           ability.data.turn += 1;
         },
@@ -13858,7 +13863,7 @@ const abilityConfig = {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Cute Charm affects ${sourcePokemon.name}!`
             );
-            sourcePokemon.addEffect("atkDown", 1, targetPokemon);
+            sourcePokemon.applyEffect("atkDown", 1, targetPokemon);
           }
         },
       };
@@ -14172,7 +14177,7 @@ const abilityConfig = {
               targetPokemon
             ) !== 0
           ) {
-            targetPokemon.addEffect("restricted", 2, sourcePokemon);
+            targetPokemon.applyEffect("restricted", 2, sourcePokemon);
           }
         },
       };
@@ -14635,7 +14640,7 @@ const abilityConfig = {
           );
           args.damage = 0;
           args.maxDamage = 0;
-          targetPokemon.addEffect("spaUp", 1, targetPokemon);
+          targetPokemon.applyEffect("spaUp", 1, targetPokemon);
         },
       };
       const listenerId1 = battle.eventHandler.registerListener(
@@ -15092,12 +15097,12 @@ const abilityConfig = {
             sourcePokemon.battle.addToLog(
               `${sourcePokemon.name}'s Moxie greatly increases its attack!`
             );
-            sourcePokemon.addEffect("greaterAtkUp", 2, sourcePokemon);
+            sourcePokemon.applyEffect("greaterAtkUp", 2, sourcePokemon);
           } else {
             sourcePokemon.battle.addToLog(
               `${sourcePokemon.name}'s Moxie increases its attack!`
             );
-            sourcePokemon.addEffect("atkUp", 2, sourcePokemon);
+            sourcePokemon.applyEffect("atkUp", 2, sourcePokemon);
           }
 
           // gain 10% combat readiness
@@ -15260,7 +15265,7 @@ const abilityConfig = {
           targetPokemon.battle.addToLog(
             `${targetPokemon.name}'s Competitive increases its special attack!`
           );
-          targetPokemon.addEffect("greaterSpaUp", 2, targetPokemon);
+          targetPokemon.applyEffect("greaterSpaUp", 2, targetPokemon);
         },
       };
       const listenerId = battle.eventHandler.registerListener(
@@ -15743,7 +15748,7 @@ const abilityConfig = {
           targetPokemon.battle.addToLog(
             `${targetPokemon.name} suffers under ${initialArgs.pokemon.name}'s False Democracy!`
           );
-          targetPokemon.addEffect("disable", 1, initialArgs.pokemon);
+          targetPokemon.applyEffect("disable", 1, initialArgs.pokemon);
           abilityData.affectedPokemons.push(targetPokemon);
         },
       };
@@ -15962,7 +15967,7 @@ const abilityConfig = {
         execute(initialArgs, _args) {
           const { pokemon } = initialArgs;
           // add moneybags buff
-          pokemon.addEffect("moneyBags", 2, pokemon);
+          pokemon.applyEffect("moneyBags", 2, pokemon);
         },
       };
 
@@ -15995,7 +16000,7 @@ const abilityConfig = {
         execute(initialArgs, _args) {
           const { pokemon } = initialArgs;
           // add immortality buff
-          pokemon.addEffect("immortal", 2, pokemon);
+          pokemon.applyEffect("immortal", 2, pokemon);
         },
       };
 
@@ -16431,13 +16436,13 @@ const abilityConfig = {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Cosmic Strength increases its special attack!`
             );
-            targetPokemon.addEffect("greaterSpaUp", 1, targetPokemon);
+            targetPokemon.applyEffect("greaterSpaUp", 1, targetPokemon);
           } else if (effectId === "spaDown" || effectId === "greaterSpaDown") {
             // increase attack
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Cosmic Strength increases its attack!`
             );
-            targetPokemon.addEffect("greaterAtkUp", 1, targetPokemon);
+            targetPokemon.applyEffect("greaterAtkUp", 1, targetPokemon);
           }
         },
       };

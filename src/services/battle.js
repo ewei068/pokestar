@@ -77,11 +77,7 @@ const { validateParty } = require("./party");
 const { addRewards, getRewardsString } = require("../utils/trainerUtils");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
 const { getMove, executeMove } = require("../battleEngine/moveService");
-const {
-  getEffect,
-  applyEffect,
-  removeEffect,
-} = require("../battleEngine/effectService");
+const { getEffect } = require("../battleEngine/effectRegistry");
 
 class NPC {
   constructor(
@@ -1512,11 +1508,16 @@ class Pokemon {
    * @param {K} effectId
    * @param {number} duration
    * @param {BattlePokemon} source
-   * @param {EffectInitialArgsTypeFromId<K>} args
+   * @param {EffectInitialArgsTypeFromId<K>} initialArgs
    */
-  addEffect(effectId, duration, source, args) {
+  applyEffect(effectId, duration, source, initialArgs) {
     // if faint, do nothing
     if (this.isFainted) {
+      return;
+    }
+    const effect = getEffect(effectId);
+    if (!effect) {
+      logger.error(`Effect ${effectId} does not exist.`);
       return;
     }
 
@@ -1548,7 +1549,7 @@ class Pokemon {
       source,
       effectId,
       duration,
-      initialArgs: args,
+      initialArgs,
       canAdd: true,
     };
     this.battle.eventHandler.emit(
@@ -1571,19 +1572,25 @@ class Pokemon {
     this.effectIds[effectId] = {
       duration,
       source,
-      initialArgs: args,
+      initialArgs,
     };
     if (oldShield) {
       this.effectIds[effectId].args = oldShield;
     }
-    this.effectIds[effectId].args =
-      applyEffect({
-        effectId,
-        battle: this.battle,
-        source,
-        target: this,
-        initialArgs: args,
-      }) || {};
+
+    if (!effect.isLegacyEffect) {
+      this.effectIds[effectId].args =
+        effect.effectAdd({
+          battle: this.battle,
+          source,
+          target: this,
+          initialArgs,
+        }) || {};
+    } else {
+      const legacyEffect = /** @type {any} */ (effect);
+      this.effectIds[effectId].args =
+        legacyEffect.effectAdd(this.battle, source, this, initialArgs) || {};
+    }
 
     if (this.effectIds[effectId] !== undefined) {
       // trigger after add effect events
@@ -1592,7 +1599,7 @@ class Pokemon {
         source,
         effectId,
         duration,
-        initialArgs: args,
+        initialArgs: initialArgs,
         args: this.effectIds[effectId].args,
       };
       this.battle.eventHandler.emit(
@@ -1646,14 +1653,29 @@ class Pokemon {
     if (!this.effectIds[effectId]) {
       return false;
     }
+    const effect = getEffect(effectId);
+    if (!effect) {
+      logger.error(`Effect ${effectId} does not exist.`);
+      return;
+    }
 
-    removeEffect({
-      effectId,
-      battle: this.battle,
-      target: this,
-      properties: this.effectIds[effectId].args,
-      initialArgs: this.effectIds[effectId].initialArgs,
-    });
+    if (!effect.isLegacyEffect) {
+      // @ts-ignore
+      effect.effectRemove({
+        battle: this.battle,
+        target: this,
+        properties: this.effectIds[effectId].args,
+        initialArgs: this.effectIds[effectId].initialArgs,
+      });
+    } else {
+      const legacyEffect = /** @type {any} */ (effect);
+      legacyEffect.effectRemove(
+        this.battle,
+        this,
+        this.effectIds[effectId].args,
+        this.effectIds[effectId].initialArgs
+      );
+    }
 
     if (this.effectIds[effectId] !== undefined) {
       const afterRemoveArgs = {

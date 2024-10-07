@@ -11,7 +11,7 @@ const { difficultyConfig } = require("../config/npcConfig");
 const { pokemonConfig, typeConfig } = require("../config/pokemonConfig");
 const { getRewardsString, flattenRewards } = require("./trainerUtils");
 const { getPBar, formatMoney } = require("./utils");
-const { getEffect } = require("../battleEngine/effectService");
+const { getEffect } = require("../battleEngine/effectRegistry");
 
 const buildPartyString = (
   pokemons,
