@@ -76,8 +76,8 @@ const { generateRandomPokemon } = require("./gacha");
 const { validateParty } = require("./party");
 const { addRewards, getRewardsString } = require("../utils/trainerUtils");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
-const { getMove, executeMove } = require("../battleEngine/moveService");
-const { getEffect } = require("../battleEngine/effectRegistry");
+const { getMove, executeMove } = require("../battleEngine/data/moveService");
+const { getEffect } = require("../battleEngine/data/effectRegistry");
 
 class NPC {
   constructor(

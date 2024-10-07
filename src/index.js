@@ -21,7 +21,7 @@ const { getStateCount } = require("./services/state");
 const { cleanupRaids } = require("./services/raid");
 const {
   initialize: initializeBattleData,
-} = require("./battleEngine/initialize");
+} = require("./battleEngine/data/initialize");
 
 console.log(`STAGE: ${process.env.STAGE}`);
 const FFLAG_ENABLE_SPAWN = process.env.FFLAG_ENABLE_SPAWN === "1";

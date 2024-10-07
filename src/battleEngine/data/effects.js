@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
-const { effectTypes } = require("./battleConfig");
-const { effectIdEnum } = require("../enums/battleEnums");
+const { effectTypes } = require("../battleConfig");
+const { effectIdEnum } = require("../../enums/battleEnums");
 
 /**
  * @template T

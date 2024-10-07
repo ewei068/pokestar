@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
-const { effectIdEnum } = require("../enums/battleEnums"); // TODO: remove after testing
-const { logger } = require("../log");
-const types = require("../../types");
+const { effectIdEnum } = require("../../enums/battleEnums"); // TODO: remove after testing
+const { logger } = require("../../log");
+const types = require("../../../types");
 
 const allEffects = {};
 

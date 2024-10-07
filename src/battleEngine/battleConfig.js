@@ -5,8 +5,8 @@
 /* eslint-disable no-param-reassign */
 const { types: pokemonTypes } = require("../config/pokemonConfig");
 const types = require("../../types");
-const { getMove, getMoveIds, executeMove } = require("./moveService");
-const { getEffect } = require("./effectRegistry");
+const { getMove, getMoveIds, executeMove } = require("./data/moveService");
+const { getEffect } = require("./data/effectRegistry");
 
 /** @typedef {types.Enum<battleEventNames>} BattleEventEnum */
 const battleEventNames = Object.freeze({

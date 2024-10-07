@@ -1,4 +1,4 @@
-const { types: pokemonTypes } = require("../config/pokemonConfig");
+const { types: pokemonTypes } = require("../../config/pokemonConfig");
 const {
   targetTypes,
   targetPositions,
@@ -6,12 +6,12 @@ const {
   damageTypes,
   moveTiers,
   calculateDamage,
-} = require("./battleConfig");
+} = require("../battleConfig");
 const { getMove } = require("./moveService");
-const { moveIdEnum } = require("../enums/battleEnums");
+const { moveIdEnum } = require("../../enums/battleEnums");
 
 /**
- * @typedef {import("../config/pokemonConfig").PokemonTypeEnum} PokemonTypeEnum
+ * @typedef {import("../../config/pokemonConfig").PokemonTypeEnum} PokemonTypeEnum
  */
 
 class Move {

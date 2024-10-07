@@ -13,14 +13,14 @@
  * @typedef {import("./battleConfig").EffectTypeEnum} EffectTypeEnum
  * @typedef {{battle: Battle, source: BattlePokemon, target: BattlePokemon}} EffectAddBasicArgs
  * @typedef {{battle: Battle, target: BattlePokemon}} EffectRemoveBasicArgs
- * @typedef {typeof import("./effects").effectsToRegister} RegisteredEffects
- * @typedef {import("./moves").Move} Move
+ * @typedef {typeof import("./data/effects").effectsToRegister} RegisteredEffects
+ * @typedef {import("./data/moves").Move} Move
  */
 
 /**
  * @template T
  * @template U
- * @typedef {import("./effects").Effect<T, U>} Effect
+ * @typedef {import("./data/effects").Effect<T, U>} Effect
  */
 
 /**

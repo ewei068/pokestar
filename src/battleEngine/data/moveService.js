@@ -1,5 +1,5 @@
-const { logger } = require("../log");
-const types = require("../../types");
+const { logger } = require("../../log");
+const types = require("../../../types");
 
 const allMoves = {};
 

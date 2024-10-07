@@ -8,7 +8,7 @@
  */
 const { ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const { eventNames } = require("../config/eventConfig");
-const { getMove } = require("../battleEngine/moveService");
+const { getMove } = require("../battleEngine/data/moveService");
 const { typeConfig } = require("../config/pokemonConfig");
 
 /**
