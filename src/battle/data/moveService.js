@@ -1,4 +1,5 @@
 const { logger } = require("../../log");
+// eslint-disable-next-line no-unused-vars
 const types = require("../../../types");
 
 const allMoves = {};

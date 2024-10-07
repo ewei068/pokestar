@@ -78,6 +78,7 @@ const { addRewards, getRewardsString } = require("../utils/trainerUtils");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
 const { getMove, executeMove } = require("../battle/data/moveService");
 const { getEffect } = require("../battle/data/effectRegistry");
+const { BattleEventHandler } = require("../battle/engine/events");
 
 class NPC {
   constructor(
@@ -443,64 +444,6 @@ class RaidNPC extends NPC {
       // give random id
       pokemon._id = pokemon._id || uuidv4();
       this.party.pokemons[pokemonData.position - 1] = pokemon;
-    }
-  }
-}
-
-class BattleEventHandler {
-  /* battle;
-  // event name => listenerIds
-  eventNames;
-  // listenerId => listener
-  eventListeners; */
-
-  constructor(battle) {
-    this.battle = battle;
-    this.eventNames = {};
-    this.eventListeners = {};
-  }
-
-  registerListener(eventName, listener) {
-    // generate listener UUID
-    const listenerId = uuidv4();
-
-    getOrSetDefault(this.eventNames, eventName, []).push(listenerId);
-    this.eventListeners[listenerId] = listener;
-    // add listenerId and eventName to listener.initialargs
-    // eslint-disable-next-line no-param-reassign
-    listener.initialArgs = {
-      listenerId,
-      eventName,
-      ...listener.initialArgs,
-    };
-
-    return listenerId;
-  }
-
-  unregisterListener(listenerId) {
-    const listener = this.eventListeners[listenerId];
-    if (listener) {
-      const { eventName } = listener.initialArgs;
-      const listenerIds = this.eventNames[eventName];
-      if (listenerIds) {
-        const index = listenerIds.indexOf(listenerId);
-        if (index > -1) {
-          listenerIds.splice(index, 1);
-        }
-      }
-      delete this.eventListeners[listenerId];
-    }
-  }
-
-  emit(eventName, args) {
-    const listenerIds = this.eventNames[eventName];
-    if (listenerIds) {
-      for (const listenerId of listenerIds) {
-        const listener = this.eventListeners[listenerId];
-        if (listener) {
-          listener.execute(listener.initialArgs, args);
-        }
-      }
     }
   }
 }
@@ -2161,7 +2104,7 @@ class Battle {
       source: null,
     };
     this.log = [];
-    this.eventHandler = new BattleEventHandler(this);
+    this.eventHandler = new BattleEventHandler();
     this.turn = 0;
     this.winner = null;
     this.ended = false;
@@ -3565,7 +3508,6 @@ const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
 
 module.exports = {
   Battle,
-  // BattleEventHandler,
   Pokemon,
   getStartTurnSend,
   buildPveSend,
