@@ -12039,10 +12039,10 @@ const moveExecutes = {
  * @param {BattlePokemon} target
  */
 
-/** @typedef {types.Keys<abilityConfig>} LegacyAbilityIdEnum */
+/** @typedef {types.Keys<typeof abilityConfig>} LegacyAbilityIdEnum */
 
 /**
- * @type {Record<string, {
+ * @satisfies {Record<string | number | symbol, {
  *  name: string,
  *  description: string,
  *  abilityAdd: LegacyAbilityAdd,
@@ -14990,36 +14990,6 @@ const abilityConfig = Object.freeze({
       }
       const abilityData = ability.data;
       battle.eventHandler.unregisterListener(abilityData.listenerId);
-    },
-  },
-  144: {
-    name: "Regenerator",
-    description: "After the user's turn, heal 15% of its max HP.",
-    abilityAdd(battle, _source, target) {
-      return {
-        listenerId: battle.registerListenerFunction({
-          eventName: battleEventEnum.TURN_END,
-          callback: ({ activePokemon }) => {
-            // heal 15% of max hp
-            battle.addToLog(
-              `${activePokemon.name}'s Regenerator restores its health!`
-            );
-            const healAmount = Math.floor(activePokemon.maxHp * 0.15);
-            activePokemon.giveHeal(healAmount, activePokemon, {
-              type: "regenerator",
-            });
-          },
-          conditionCallback: getIsActivePokemonCallback(battle, target),
-        }),
-      };
-    },
-    abilityRemove(battle, _source, target) {
-      const { ability } = target;
-      if (!ability || ability.abilityId !== "144" || !ability.data) {
-        return;
-      }
-      const abilityData = ability.data;
-      battle.unregisterListener(abilityData.listenerId);
     },
   },
   145: {

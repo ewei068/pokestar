@@ -16,7 +16,9 @@
 /**
  * @typedef {{battle: Battle, source: BattlePokemon, target: BattlePokemon}} EffectAddBasicArgs
  * @typedef {{battle: Battle, target: BattlePokemon}} EffectRemoveBasicArgs
+ * @typedef {{battle: Battle, source: BattlePokemon, target: BattlePokemon}} AbilityAddBasicArgs
  * @typedef {typeof import("./data/effects").effectsToRegister} RegisteredEffects
+ * @typedef {typeof import("./data/abilities").abilitiesToRegister} RegisteredAbilities
  * @typedef {import("./data/moves").Move} Move
  */
 
@@ -44,6 +46,21 @@
 /**
  * @template {EffectIdEnum} K
  * @typedef {K extends keyof RegisteredEffects ? EffectPropertiesType<RegisteredEffects[K]> : any} EffectPropertiesTypeFromId
+ */
+
+/**
+ * @template T
+ * @typedef {import("./data/abilities").Ability<T>} Ability
+ */
+
+/**
+ * @template T
+ * @typedef {T extends Ability<infer U> ? U & { abilityId: AbilityIdEnum } : never} AbilityPropertiesType
+ */
+
+/**
+ * @template {AbilityIdEnum} K
+ * @typedef {K extends keyof RegisteredAbilities ? AbilityPropertiesType<RegisteredAbilities[K]> : any} AbilityPropertiesTypeFromId
  */
 
 /**
@@ -81,6 +98,25 @@
  * @param {BattlePokemon} param0.primaryTarget
  * @param {Array<BattlePokemon>} param0.allTargets
  * @param {Array<BattlePokemon>} param0.missedTargets
+ */
+
+/**
+ * @template T
+ * @callback AbilityAddCallback
+ * @this {Ability<any>}
+ * @param {AbilityAddBasicArgs} param0
+ * @returns {T}
+ */
+
+/**
+ * @template T
+ * @callback AbilityRemoveCallback
+ * @this {Ability<T>}
+ * @param {object} param0
+ * @param {Battle} param0.battle
+ * @param {BattlePokemon} param0.source
+ * @param {BattlePokemon} param0.target
+ * @param {T} param0.properties
  */
 
 /**
