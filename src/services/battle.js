@@ -2741,7 +2741,7 @@ class Battle {
   }
 
   /**
-   * @param {string} listenerId
+   * @param {string?=} listenerId
    */
   unregisterListener(listenerId) {
     if (!listenerId) {

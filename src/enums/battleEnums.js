@@ -6,7 +6,6 @@ const types = require("../../types");
  * @typedef {types.Enum<effectIdEnum>} NewEffectIdEnum
  * @typedef {LegacyEffectIdEnum | NewEffectIdEnum} EffectIdEnum
  */
-
 const effectIdEnum = Object.freeze({
   TEST_EFFECT: "testEffect",
   ATK_UP: "atkUp",
@@ -18,11 +17,20 @@ const effectIdEnum = Object.freeze({
  * @typedef {types.Enum<moveIdEnum>} NewMoveIdEnum
  * @typedef {LegacyMoveIdEnum | NewMoveIdEnum} MoveIdEnum
  */
-
 const moveIdEnum = Object.freeze({
   TEST_MOVE: "999",
   TEST_MOVE2: "998",
   VINE_WHIP: "m22",
+});
+
+/**
+ * @typedef {import("../config/battleConfig").LegacyAbilityIdEnum} LegacyAbilityIdEnum
+ * @typedef {types.Enum<abilityIdEnum>} NewAbilityIdEnum
+ * @typedef {LegacyAbilityIdEnum | NewAbilityIdEnum} AbilityIdEnum
+ */
+const abilityIdEnum = Object.freeze({
+  TEST_ABILITY: "testAbility",
+  REGENERATOR: "144",
 });
 
 /** @typedef {types.Enum<battleEventEnum>} BattleEventEnum */
@@ -91,5 +99,6 @@ const battleEventEnum = Object.freeze({
 module.exports = {
   moveIdEnum,
   effectIdEnum,
+  abilityIdEnum,
   battleEventEnum,
 };
