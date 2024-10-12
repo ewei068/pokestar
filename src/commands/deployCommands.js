@@ -35,9 +35,17 @@ for (const commandCategory in commandCategoryConfig) {
 }
 
 // Construct and prepare an instance of the REST module
+if (!token) {
+  logger.error("No token provided.");
+  process.exit(1);
+}
 const rest = new REST().setToken(token);
 
 // and deploy your commands!
+if (!clientId) {
+  logger.error("No client ID provided.");
+  process.exit(1);
+}
 (async () => {
   try {
     logger.info(
@@ -46,9 +54,11 @@ const rest = new REST().setToken(token);
     logger.info(JSON.stringify(commands, null, 2));
 
     // The put method is used to fully refresh all commands in the guild with the current set
-    const data = await rest.put(Routes.applicationCommands(clientId), {
-      body: commands,
-    });
+    const data = /** @type{any} */ (
+      await rest.put(Routes.applicationCommands(clientId), {
+        body: commands,
+      })
+    );
 
     logger.info(
       `Successfully reloaded ${data.length} application (/) commands.`

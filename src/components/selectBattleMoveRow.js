@@ -8,7 +8,7 @@
  */
 const { ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const { eventNames } = require("../config/eventConfig");
-const { moveConfig } = require("../config/battleConfig");
+const { getMove } = require("../battle/data/moveService");
 const { typeConfig } = require("../config/pokemonConfig");
 
 /**
@@ -30,7 +30,7 @@ const buildSelectBattleMoveRow = (battle, stateId, selectedMoveId = null) => {
     .addOptions(
       Object.keys(battle.activePokemon.moveIds).map((moveId) => {
         // TODO: remove moves on cooldown?
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         const { cooldown } = battle.activePokemon.moveIds[moveId];
         const cdString = cooldown > 0 ? `[COOLDOWN ${cooldown}] ` : "";
         const { disabled } = battle.activePokemon.moveIds[moveId];

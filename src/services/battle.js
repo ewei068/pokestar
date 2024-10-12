@@ -15,20 +15,16 @@ const { v4: uuidv4 } = require("uuid");
 const { getOrSetDefault, formatMoney } = require("../utils/utils");
 const { pokemonConfig, types } = require("../config/pokemonConfig");
 const {
-  battleEventNames,
-  moveExecutes,
-  moveConfig,
   targetTypes,
   targetPatterns,
   targetPositions,
-  effectConfig,
   statusConditions,
   moveTiers,
   calculateDamage,
-  abilityConfig,
   typeAdvantages,
   weatherConditions,
 } = require("../config/battleConfig");
+const { battleEventEnum } = require("../enums/battleEnums");
 const {
   buildBattleEmbed,
   buildPveListEmbed,
@@ -79,6 +75,10 @@ const { generateRandomPokemon } = require("./gacha");
 const { validateParty } = require("./party");
 const { addRewards, getRewardsString } = require("../utils/trainerUtils");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
+const { getMove, executeMove } = require("../battle/data/moveService");
+const { getEffect } = require("../battle/data/effectRegistry");
+const { getAbility } = require("../battle/data/abilityRegistry");
+const { BattleEventHandler } = require("../battle/engine/events");
 
 class NPC {
   constructor(
@@ -232,7 +232,7 @@ class NPC {
 
   // eslint-disable-next-line class-methods-use-this
   calculateHeuristic(moveId, source, targetsHit) {
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     let heuristic = 0;
     // special case: if asleep and sleep talk, use sleep talk
@@ -448,64 +448,6 @@ class RaidNPC extends NPC {
   }
 }
 
-class BattleEventHandler {
-  /* battle;
-  // event name => listenerIds
-  eventNames;
-  // listenerId => listener
-  eventListeners; */
-
-  constructor(battle) {
-    this.battle = battle;
-    this.eventNames = {};
-    this.eventListeners = {};
-  }
-
-  registerListener(eventName, listener) {
-    // generate listener UUID
-    const listenerId = uuidv4();
-
-    getOrSetDefault(this.eventNames, eventName, []).push(listenerId);
-    this.eventListeners[listenerId] = listener;
-    // add listenerId and eventName to listener.initialargs
-    // eslint-disable-next-line no-param-reassign
-    listener.initialArgs = {
-      listenerId,
-      eventName,
-      ...listener.initialArgs,
-    };
-
-    return listenerId;
-  }
-
-  unregisterListener(listenerId) {
-    const listener = this.eventListeners[listenerId];
-    if (listener) {
-      const { eventName } = listener.initialArgs;
-      const listenerIds = this.eventNames[eventName];
-      if (listenerIds) {
-        const index = listenerIds.indexOf(listenerId);
-        if (index > -1) {
-          listenerIds.splice(index, 1);
-        }
-      }
-      delete this.eventListeners[listenerId];
-    }
-  }
-
-  emit(eventName, args) {
-    const listenerIds = this.eventNames[eventName];
-    if (listenerIds) {
-      for (const listenerId of listenerIds) {
-        const listener = this.eventListeners[listenerId];
-        if (listener) {
-          listener.execute(listener.initialArgs, args);
-        }
-      }
-    }
-  }
-}
-
 class Pokemon {
   /* battle;
   pokemonData;
@@ -572,19 +514,19 @@ class Pokemon {
     this.teamName = teamName;
     this.name = pokemonData.name;
     this.hp = pokemonData.remainingHp || pokemonData.stats[0];
-    [this.maxHp] = this.pokemonData.stats;
+    [this.maxHp = 0] = this.pokemonData.stats;
     this.level = pokemonData.level;
     [
-      this.atk,
-      this.batk,
+      this.atk = 0,
+      this.batk = 0,
       this.def,
-      this.bdef,
+      this.bdef = 0,
       this.spa,
-      this.bspa,
+      this.bspa = 0,
       this.spd,
-      this.bspd,
+      this.bspd = 0,
       this.spe,
-      this.bspe,
+      this.bspe = 0,
     ] = [
       pokemonData.stats[1],
       pokemonData.stats[1],
@@ -599,12 +541,12 @@ class Pokemon {
     ];
     this.acc = 100;
     this.eva = 100;
-    [this.type1, this.type2 = null] = this.speciesData.type;
+    [this.type1 = null, this.type2 = null] = this.speciesData.type;
     // map effectId => effect data (duration, args)
     this.effectIds = {};
     // map moveId => move data (cooldown, disabled)
     this.addMoves(pokemonData);
-    this.addAbility(pokemonData);
+    this.setAbility(pokemonData);
     this.status = {
       statusId: null,
       turns: 0,
@@ -628,7 +570,7 @@ class Pokemon {
     }, {});
   }
 
-  addAbility(pokemonData) {
+  setAbility(pokemonData) {
     this.ability = {
       abilityId: pokemonData.abilityId,
     };
@@ -672,7 +614,7 @@ class Pokemon {
 
     // set moves and ability
     this.addMoves(this.pokemonData);
-    this.addAbility(this.pokemonData);
+    this.setAbility(this.pokemonData);
     this.applyAbility();
 
     this.battle.addToLog(`${oldName} transformed into ${this.name}!`);
@@ -684,7 +626,7 @@ class Pokemon {
       return;
     }
     // make sure move exists and is not on cooldown & disabled
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     if (
       !moveData ||
       this.moveIds[moveId].cooldown > 0 ||
@@ -766,7 +708,7 @@ class Pokemon {
       };
 
       // trigger before move events
-      this.battle.eventHandler.emit(battleEventNames.BEFORE_MOVE, eventArgs);
+      this.battle.eventHandler.emit(battleEventEnum.BEFORE_MOVE, eventArgs);
 
       canUseMove = eventArgs.canUseMove;
     }
@@ -814,18 +756,19 @@ class Pokemon {
         moveId,
       };
       this.battle.eventHandler.emit(
-        battleEventNames.BEFORE_MOVE_EXECUTE,
+        battleEventEnum.BEFORE_MOVE_EXECUTE,
         executeEventArgs
       );
 
       // execute move
-      moveExecutes[moveId](
-        this.battle,
-        this,
+      executeMove({
+        moveId,
+        battle: this.battle,
+        source: this,
         primaryTarget,
         allTargets,
-        missedTargets
-      );
+        missedTargets,
+      });
 
       // after move event
       const eventArgs = {
@@ -835,7 +778,7 @@ class Pokemon {
         missedTargets,
         moveId,
       };
-      this.battle.eventHandler.emit(battleEventNames.AFTER_MOVE, eventArgs);
+      this.battle.eventHandler.emit(battleEventEnum.AFTER_MOVE, eventArgs);
     }
 
     // end turn
@@ -946,7 +889,7 @@ class Pokemon {
       multiplier: mult,
     };
     this.battle.eventHandler.emit(
-      battleEventNames.CALCULATE_TYPE_MULTIPLIER,
+      battleEventEnum.CALCULATE_TYPE_MULTIPLIER,
       eventArgs
     );
 
@@ -1064,7 +1007,7 @@ class Pokemon {
   }
 
   getTargets(moveId, targetPokemonId) {
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // make sure target exists and is alive
     const target = this.battle.allPokemon[targetPokemonId];
     if (!target) {
@@ -1087,7 +1030,7 @@ class Pokemon {
   }
 
   getMisses(moveId, targetPokemons) {
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     const misses = [];
     if (!moveData.accuracy) {
       return misses;
@@ -1142,7 +1085,7 @@ class Pokemon {
         source: this,
       };
       this.battle.eventHandler.emit(
-        battleEventNames.CALCULATE_MISS,
+        battleEventEnum.CALCULATE_MISS,
         calculateMissArgs
       );
 
@@ -1245,7 +1188,7 @@ class Pokemon {
     };
 
     this.battle.eventHandler.emit(
-      battleEventNames.BEFORE_DAMAGE_DEALT,
+      battleEventEnum.BEFORE_DAMAGE_DEALT,
       eventArgs
     );
     damage = eventArgs.damage;
@@ -1260,7 +1203,7 @@ class Pokemon {
         damageInfo,
       };
       this.battle.eventHandler.emit(
-        battleEventNames.AFTER_DAMAGE_DEALT,
+        battleEventEnum.AFTER_DAMAGE_DEALT,
         afterDamageArgs
       );
     }
@@ -1277,8 +1220,8 @@ class Pokemon {
     const freezeCheck =
       this.status.statusId === statusConditions.FREEZE &&
       damageInfo.type === "move" &&
-      moveConfig[damageInfo.moveId] !== undefined &&
-      (moveConfig[damageInfo.moveId].type === types.FIRE ||
+      getMove(damageInfo.moveId) !== undefined &&
+      (getMove(damageInfo.moveId).type === types.FIRE ||
         damageInfo.moveId === "m503");
     if (freezeCheck) {
       if (this.removeStatus()) {
@@ -1310,7 +1253,7 @@ class Pokemon {
     };
 
     this.battle.eventHandler.emit(
-      battleEventNames.BEFORE_DAMAGE_TAKEN,
+      battleEventEnum.BEFORE_DAMAGE_TAKEN,
       eventArgs
     );
     damage = Math.min(eventArgs.damage, eventArgs.maxDamage);
@@ -1335,7 +1278,7 @@ class Pokemon {
         damageInfo,
       };
       this.battle.eventHandler.emit(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         afterDamageArgs
       );
     }
@@ -1354,7 +1297,7 @@ class Pokemon {
       canFaint: true,
     };
     this.battle.eventHandler.emit(
-      battleEventNames.BEFORE_CAUSE_FAINT,
+      battleEventEnum.BEFORE_CAUSE_FAINT,
       beforeCauseFaintArgs
     );
     if (!beforeCauseFaintArgs.canFaint) {
@@ -1377,7 +1320,7 @@ class Pokemon {
       target: this,
       source,
     };
-    this.battle.eventHandler.emit(battleEventNames.AFTER_FAINT, afterFaintArgs);
+    this.battle.eventHandler.emit(battleEventEnum.AFTER_FAINT, afterFaintArgs);
   }
 
   // eslint-disable-next-line no-unused-vars
@@ -1399,21 +1342,52 @@ class Pokemon {
 
   applyAbility() {
     const { abilityId } = this.ability;
-    const abilityData = abilityConfig[abilityId];
+    const abilityData = getAbility(/** @type {AbilityIdEnum} */ (abilityId));
     if (!abilityData || !abilityData.abilityAdd) {
+      // TODO: not all abilities are implemented
+      // logger.error(`Ability ${abilityId} does not exist.`);
       return;
     }
 
-    this.ability.data = abilityData.abilityAdd(this.battle, this, this);
+    if (!abilityData.isLegacyAbility) {
+      this.ability.data = abilityData.abilityAdd({
+        battle: this.battle,
+        source: this,
+        target: this,
+      });
+    } else {
+      const legacyAbility = /** @type {any} */ (abilityData);
+      legacyAbility.abilityAdd(this.battle, this, this);
+    }
     this.ability.applied = true;
   }
 
   removeAbility() {
     // remove ability effects
-    const { abilityId } = this.ability;
-    const abilityData = abilityConfig[abilityId];
-    if (abilityData && abilityData.abilityRemove) {
-      abilityData.abilityRemove(this.battle, this, this);
+    const { abilityId, applied } = this.ability;
+    const abilityData = getAbility(/** @type {AbilityIdEnum} */ (abilityId));
+    if (!abilityData || !abilityData.abilityRemove) {
+      // TODO: not all abilities are implemented
+      // logger.error(`Ability ${abilityId} does not exist.`);
+      return;
+    }
+    if (!abilityId || !applied) {
+      logger.error(
+        `Ability ${abilityId} is not applied to Pokemon ${this.id} ${this.name}.`
+      );
+      return;
+    }
+
+    if (!abilityData.isLegacyAbility) {
+      abilityData.abilityRemove({
+        battle: this.battle,
+        source: this,
+        target: this,
+        properties: this.ability.data,
+      });
+    } else {
+      const legacyAbility = /** @type {any} */ (abilityData);
+      legacyAbility.abilityRemove(this.battle, this, this);
     }
   }
 
@@ -1456,7 +1430,7 @@ class Pokemon {
     };
     if (triggerEvents) {
       this.battle.eventHandler.emit(
-        battleEventNames.BEFORE_CR_GAINED,
+        battleEventEnum.BEFORE_CR_GAINED,
         beforeBoostArgs
       );
     }
@@ -1479,10 +1453,7 @@ class Pokemon {
         source,
         combatReadinessGained: amount,
       };
-      this.battle.eventHandler.emit(
-        battleEventNames.AFTER_CR_GAINED,
-        eventArgs
-      );
+      this.battle.eventHandler.emit(battleEventEnum.AFTER_CR_GAINED, eventArgs);
     }
 
     return combatReadinessGained;
@@ -1503,14 +1474,25 @@ class Pokemon {
     return combatReadinessLost;
   }
 
-  addEffect(effectId, duration, source, args) {
+  /**
+   * @template {EffectIdEnum} K
+   * @param {K} effectId
+   * @param {number} duration
+   * @param {BattlePokemon} source
+   * @param {EffectInitialArgsTypeFromId<K>} initialArgs
+   */
+  applyEffect(effectId, duration, source, initialArgs) {
     // if faint, do nothing
     if (this.isFainted) {
       return;
     }
+    const effect = getEffect(effectId);
+    if (!effect) {
+      logger.error(`Effect ${effectId} does not exist.`);
+      return;
+    }
 
     duration = this.battle.activePokemon === this ? duration + 1 : duration;
-    const effectData = effectConfig[effectId];
 
     // if effect already exists for longer or equal duration, do nothing (special case for shield)
     if (
@@ -1538,11 +1520,11 @@ class Pokemon {
       source,
       effectId,
       duration,
-      initialArgs: args,
+      initialArgs,
       canAdd: true,
     };
     this.battle.eventHandler.emit(
-      battleEventNames.BEFORE_EFFECT_ADD,
+      battleEventEnum.BEFORE_EFFECT_ADD,
       beforeAddArgs
     );
     if (!beforeAddArgs.canAdd) {
@@ -1561,13 +1543,25 @@ class Pokemon {
     this.effectIds[effectId] = {
       duration,
       source,
-      initialArgs: args,
+      initialArgs,
     };
     if (oldShield) {
       this.effectIds[effectId].args = oldShield;
     }
-    this.effectIds[effectId].args =
-      effectData.effectAdd(this.battle, source, this, args) || {};
+
+    if (!effect.isLegacyEffect) {
+      this.effectIds[effectId].args =
+        effect.effectAdd({
+          battle: this.battle,
+          source,
+          target: this,
+          initialArgs,
+        }) || {};
+    } else {
+      const legacyEffect = /** @type {any} */ (effect);
+      this.effectIds[effectId].args =
+        legacyEffect.effectAdd(this.battle, source, this, initialArgs) || {};
+    }
 
     if (this.effectIds[effectId] !== undefined) {
       // trigger after add effect events
@@ -1576,18 +1570,18 @@ class Pokemon {
         source,
         effectId,
         duration,
-        initialArgs: args,
+        initialArgs,
         args: this.effectIds[effectId].args,
       };
       this.battle.eventHandler.emit(
-        battleEventNames.AFTER_EFFECT_ADD,
+        battleEventEnum.AFTER_EFFECT_ADD,
         afterAddArgs
       );
     }
   }
 
   dispellEffect(effectId) {
-    const effectData = effectConfig[effectId];
+    const effectData = getEffect(effectId);
 
     // if effect doesn't exist, do nothing
     if (!this.effectIds[effectId]) {
@@ -1602,20 +1596,57 @@ class Pokemon {
     return this.removeEffect(effectId);
   }
 
-  removeEffect(effectId) {
-    const effectData = effectConfig[effectId];
+  /**
+   * @template {EffectIdEnum} K
+   * @param {K} effectId
+   * @returns {{
+   *  duration: number,
+   *  source: Pokemon,
+   *  initialArgs: K extends keyof RegisteredEffects ? EffectInitialArgsType<RegisteredEffects[K]> : any,
+   *  args: K extends keyof RegisteredEffects ? EffectPropertiesType<RegisteredEffects[K]> : any
+   * } | undefined}
+   */
+  getEffectInstance(effectId) {
+    // @ts-ignore
+    return this.effectIds[effectId];
+  }
 
+  /**
+   * Forcefully deletes the effect instance from this Pokemon. ONLY USE to bypass effect removal logic.
+   * @param {EffectIdEnum} effectId
+   */
+  deleteEffectInstance(effectId) {
+    delete this.effectIds[effectId];
+  }
+
+  removeEffect(effectId) {
     // if effect doesn't exist, do nothing
     if (!this.effectIds[effectId]) {
       return false;
     }
+    const effect = getEffect(effectId);
+    if (!effect) {
+      logger.error(`Effect ${effectId} does not exist.`);
+      return;
+    }
 
-    effectData.effectRemove(
-      this.battle,
-      this,
-      this.effectIds[effectId].args,
-      this.effectIds[effectId].initialArgs
-    );
+    if (!effect.isLegacyEffect) {
+      // @ts-ignore
+      effect.effectRemove({
+        battle: this.battle,
+        target: this,
+        properties: this.effectIds[effectId].args,
+        initialArgs: this.effectIds[effectId].initialArgs,
+      });
+    } else {
+      const legacyEffect = /** @type {any} */ (effect);
+      legacyEffect.effectRemove(
+        this.battle,
+        this,
+        this.effectIds[effectId].args,
+        this.effectIds[effectId].initialArgs
+      );
+    }
 
     if (this.effectIds[effectId] !== undefined) {
       const afterRemoveArgs = {
@@ -1627,7 +1658,7 @@ class Pokemon {
         args: this.effectIds[effectId].args,
       };
       this.battle.eventHandler.emit(
-        battleEventNames.AFTER_EFFECT_REMOVE,
+        battleEventEnum.AFTER_EFFECT_REMOVE,
         afterRemoveArgs
       );
     }
@@ -1656,7 +1687,7 @@ class Pokemon {
       canApply: true,
     };
     this.battle.eventHandler.emit(
-      battleEventNames.BEFORE_STATUS_APPLY,
+      battleEventEnum.BEFORE_STATUS_APPLY,
       beforeApplyArgs
     );
     if (!beforeApplyArgs.canApply) {
@@ -1776,7 +1807,7 @@ class Pokemon {
         statusId,
       };
       this.battle.eventHandler.emit(
-        battleEventNames.AFTER_STATUS_APPLY,
+        battleEventEnum.AFTER_STATUS_APPLY,
         afterStatusArgs
       );
     }
@@ -1874,7 +1905,7 @@ class Pokemon {
 
     // disable move
     this.moveIds[moveId].disabled = true;
-    // this.battle.addToLog(`${this.name}'s ${moveConfig[moveId].name} was disabled!`);
+    // this.battle.addToLog(`${this.name}'s ${getMove(moveId).name} was disabled!`);
   }
 
   // eslint-disable-next-line no-unused-vars
@@ -1891,7 +1922,7 @@ class Pokemon {
 
     // enable move
     this.moveIds[moveId].disabled = false;
-    // this.battle.addToLog(`${this.name}'s ${moveConfig[moveId].name} is no longer disabled!`);
+    // this.battle.addToLog(`${this.name}'s ${getMove(moveId).name} is no longer disabled!`);
   }
 
   tickEffectDurations() {
@@ -1932,7 +1963,7 @@ class Pokemon {
 
     if (!silenced) {
       this.battle.addToLog(
-        `${this.name}'s ${moveConfig[moveId].name}'s cooldown was reduced by ${
+        `${this.name}'s ${getMove(moveId).name}'s cooldown was reduced by ${
           oldCooldown - newCooldown
         } turns!`
       );
@@ -2043,6 +2074,22 @@ class Battle {
   difficulty;
   isPvp; */
 
+  /**
+   * @param {object} param0
+   * @param {number?=} param0.moneyMultiplier
+   * @param {number?=} param0.expMultiplier
+   * @param {number?=} param0.pokemonExpMultiplier
+   * @param {number?=} param0.level
+   * @param {number?=} param0.equipmentLevel
+   * @param {object?=} param0.rewards
+   * @param {string?=} param0.rewardString
+   * @param {object?=} param0.dailyRewards
+   * @param {Function?=} param0.winCallback
+   * @param {Function?=} param0.loseCallback
+   * @param {string?=} param0.npcId
+   * @param {string?=} param0.difficulty
+   * @param {boolean?=} param0.isPvp
+   */
   constructor({
     moneyMultiplier = 1,
     expMultiplier = 1,
@@ -2085,7 +2132,7 @@ class Battle {
       source: null,
     };
     this.log = [];
-    this.eventHandler = new BattleEventHandler(this);
+    this.eventHandler = new BattleEventHandler();
     this.turn = 0;
     this.winner = null;
     this.ended = false;
@@ -2228,7 +2275,7 @@ class Battle {
       pokemon.applyAbility();
     });
 
-    this.eventHandler.emit(battleEventNames.BATTLE_BEGIN, {
+    this.eventHandler.emit(battleEventEnum.BATTLE_BEGIN, {
       battle: this,
     });
 
@@ -2246,7 +2293,7 @@ class Battle {
     }
 
     // begin turn
-    this.eventHandler.emit(battleEventNames.TURN_BEGIN);
+    this.eventHandler.emit(battleEventEnum.TURN_BEGIN);
 
     // log
     const userIsNpc = this.isNpc(this.activePokemon.userId);
@@ -2266,7 +2313,9 @@ class Battle {
 
   nextTurn() {
     // end turn logic
-    this.eventHandler.emit(battleEventNames.TURN_END);
+    this.emitEvent(battleEventEnum.TURN_END, {
+      activePokemon: this.activePokemon,
+    });
 
     // tick status effects
     if (!this.activePokemon.isFainted) {
@@ -2535,7 +2584,7 @@ class Battle {
   }
 
   getEligibleTargets(source, moveId) {
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     const eligibleTargets = [];
     const eventArgs = {
       user: source,
@@ -2543,7 +2592,7 @@ class Battle {
       eligibleTargets,
       shouldReturn: false,
     };
-    this.eventHandler.emit(battleEventNames.GET_ELIGIBLE_TARGETS, eventArgs);
+    this.eventHandler.emit(battleEventEnum.GET_ELIGIBLE_TARGETS, eventArgs);
     if (eventArgs.shouldReturn) {
       return eligibleTargets;
     }
@@ -2704,6 +2753,41 @@ class Battle {
     }
 
     return true;
+  }
+
+  /**
+   * @template {BattleEventEnum} K
+   * @param {object} param0
+   * @param {K} param0.eventName
+   * @param { BattleEventListenerCallback<K> } param0.callback
+   * @param { BattleEventListenerConditionCallback<K>= } param0.conditionCallback function that returns true if the event should be executed. If undefined, always execute for event.
+   * @returns {string} listenerId
+   */
+  registerListenerFunction({ eventName, callback, conditionCallback }) {
+    return this.eventHandler.registerListener(eventName, {
+      isNewListener: true,
+      execute: callback,
+      conditionCallback,
+    });
+  }
+
+  /**
+   * @param {string?=} listenerId
+   */
+  unregisterListener(listenerId) {
+    if (!listenerId) {
+      return;
+    }
+    this.eventHandler.unregisterListener(listenerId);
+  }
+
+  /**
+   * @template {BattleEventEnum} K
+   * @param {K} eventName
+   * @param {BattleEventArgsWithoutEventName<K>} args
+   */
+  emitEvent(eventName, args) {
+    this.eventHandler.emit(eventName, args || {});
   }
 
   clearLog() {
@@ -3420,6 +3504,13 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
   return { err: null };
 };
 
+/**
+ *
+ * @param {object} param0
+ * @param {string?=} param0.stateId
+ * @param {User?=} param0.user
+ * @returns
+ */
 const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
   // get state
   const state = getState(stateId);
@@ -3482,8 +3573,7 @@ const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
 
 module.exports = {
   Battle,
-  // BattleEventHandler,
-  // Pokemon,
+  Pokemon,
   getStartTurnSend,
   buildPveSend,
   buildDungeonSend,

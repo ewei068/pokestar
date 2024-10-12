@@ -3,46 +3,32 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-param-reassign */
-const { types } = require("./pokemonConfig");
+const { types: pokemonTypes } = require("./pokemonConfig");
+const types = require("../../types");
+const {
+  getMove,
+  getMoveIds,
+  executeMove,
+} = require("../battle/data/moveService");
+const { getEffect } = require("../battle/data/effectRegistry");
+const { battleEventEnum } = require("../enums/battleEnums");
+const {
+  getIsActivePokemonCallback,
+} = require("../battle/engine/eventConditions");
 
-const battleEventNames = {
-  BATTLE_BEGIN: "battleStart",
-  TURN_END: "turnEnd",
-  TURN_BEGIN: "turnBegin",
-  BEFORE_MOVE: "beforeMove",
-  BEFORE_MOVE_EXECUTE: "beforeMoveExecute",
-  AFTER_MOVE: "afterMove",
-  BEFORE_DAMAGE_DEALT: "beforeDamageDealt",
-  AFTER_DAMAGE_DEALT: "afterDamageDealt",
-  BEFORE_DAMAGE_TAKEN: "beforeDamageTaken",
-  AFTER_DAMAGE_TAKEN: "afterDamageTaken",
-  BEFORE_CR_GAINED: "beforeCRGained",
-  AFTER_CR_GAINED: "afterCRGained",
-  BEFORE_EFFECT_ADD: "beforeEffectAdd",
-  AFTER_EFFECT_ADD: "afterEffectAdd",
-  BEFORE_EFFECT_REMOVE: "beforeEffectRemove",
-  AFTER_EFFECT_REMOVE: "afterEffectRemove",
-  BEFORE_STATUS_APPLY: "beforeStatusApply",
-  AFTER_STATUS_APPLY: "afterStatusApply",
-  BEFORE_CAUSE_FAINT: "beforeCauseFaint",
-  BEFORE_FAINT: "beforeFaint",
-  AFTER_FAINT: "afterFaint",
-  CALCULATE_TYPE_MULTIPLIER: "calculateTypeMultiplier",
-  CALCULATE_MISS: "calculateMiss",
-  GET_ELIGIBLE_TARGETS: "getEligibleTargets",
-};
-
-const damageTypes = {
+/** @typedef {types.Enum<damageTypes>} DamageTypeEnum */
+const damageTypes = Object.freeze({
   PHYSICAL: "Physical",
   SPECIAL: "Special",
   OTHER: "Other",
-};
+});
 
-const moveTiers = {
+/** @typedef {types.Enum<moveTiers>} MoveTierEnum */
+const moveTiers = Object.freeze({
   BASIC: "Basic",
   POWER: "Power",
   ULTIMATE: "Ultimate",
-};
+});
 // create pokemon type advantage matrix
 /*
 
@@ -68,157 +54,166 @@ steel = {'fire': .5, 'water': .5, 'electric': .5, 'ice': 2, 'rock': 2, 'steel': 
 fairy = {'fire': .5, 'fighting': 2, 'poison': .5, 'dragon': 2, 'dark': 2, 'steel': .5}
 */
 const typeAdvantages = {
-  [types.NORMAL]: { [types.ROCK]: 0.5, [types.GHOST]: 0, [types.STEEL]: 0.5 },
-  [types.FIRE]: {
-    [types.FIRE]: 0.5,
-    [types.WATER]: 0.5,
-    [types.GRASS]: 2,
-    [types.ICE]: 2,
-    [types.BUG]: 2,
-    [types.ROCK]: 0.5,
-    [types.DRAGON]: 0.5,
-    [types.STEEL]: 2,
+  [pokemonTypes.NORMAL]: {
+    [pokemonTypes.ROCK]: 0.5,
+    [pokemonTypes.GHOST]: 0,
+    [pokemonTypes.STEEL]: 0.5,
   },
-  [types.WATER]: {
-    [types.FIRE]: 2,
-    [types.WATER]: 0.5,
-    [types.GRASS]: 0.5,
-    [types.GROUND]: 2,
-    [types.ROCK]: 2,
-    [types.DRAGON]: 0.5,
+  [pokemonTypes.FIRE]: {
+    [pokemonTypes.FIRE]: 0.5,
+    [pokemonTypes.WATER]: 0.5,
+    [pokemonTypes.GRASS]: 2,
+    [pokemonTypes.ICE]: 2,
+    [pokemonTypes.BUG]: 2,
+    [pokemonTypes.ROCK]: 0.5,
+    [pokemonTypes.DRAGON]: 0.5,
+    [pokemonTypes.STEEL]: 2,
   },
-  [types.ELECTRIC]: {
-    [types.WATER]: 2,
-    [types.ELECTRIC]: 0.5,
-    [types.GRASS]: 0.5,
-    [types.GROUND]: 0,
-    [types.FLYING]: 2,
-    [types.DRAGON]: 0.5,
+  [pokemonTypes.WATER]: {
+    [pokemonTypes.FIRE]: 2,
+    [pokemonTypes.WATER]: 0.5,
+    [pokemonTypes.GRASS]: 0.5,
+    [pokemonTypes.GROUND]: 2,
+    [pokemonTypes.ROCK]: 2,
+    [pokemonTypes.DRAGON]: 0.5,
   },
-  [types.GRASS]: {
-    [types.FIRE]: 0.5,
-    [types.WATER]: 2,
-    [types.GRASS]: 0.5,
-    [types.POISON]: 0.5,
-    [types.GROUND]: 2,
-    [types.FLYING]: 0.5,
-    [types.BUG]: 0.5,
-    [types.ROCK]: 2,
-    [types.DRAGON]: 0.5,
-    [types.STEEL]: 0.5,
+  [pokemonTypes.ELECTRIC]: {
+    [pokemonTypes.WATER]: 2,
+    [pokemonTypes.ELECTRIC]: 0.5,
+    [pokemonTypes.GRASS]: 0.5,
+    [pokemonTypes.GROUND]: 0,
+    [pokemonTypes.FLYING]: 2,
+    [pokemonTypes.DRAGON]: 0.5,
   },
-  [types.ICE]: {
-    [types.FIRE]: 0.5,
-    [types.WATER]: 0.5,
-    [types.GRASS]: 2,
-    [types.ICE]: 0.5,
-    [types.GROUND]: 2,
-    [types.FLYING]: 2,
-    [types.DRAGON]: 2,
-    [types.STEEL]: 0.5,
+  [pokemonTypes.GRASS]: {
+    [pokemonTypes.FIRE]: 0.5,
+    [pokemonTypes.WATER]: 2,
+    [pokemonTypes.GRASS]: 0.5,
+    [pokemonTypes.POISON]: 0.5,
+    [pokemonTypes.GROUND]: 2,
+    [pokemonTypes.FLYING]: 0.5,
+    [pokemonTypes.BUG]: 0.5,
+    [pokemonTypes.ROCK]: 2,
+    [pokemonTypes.DRAGON]: 0.5,
+    [pokemonTypes.STEEL]: 0.5,
   },
-  [types.FIGHTING]: {
-    [types.NORMAL]: 2,
-    [types.ICE]: 2,
-    [types.POISON]: 0.5,
-    [types.FLYING]: 0.5,
-    [types.PSYCHIC]: 0.5,
-    [types.BUG]: 0.5,
-    [types.ROCK]: 2,
-    [types.GHOST]: 0,
-    [types.DARK]: 2,
-    [types.STEEL]: 2,
-    [types.FAIRY]: 0.5,
+  [pokemonTypes.ICE]: {
+    [pokemonTypes.FIRE]: 0.5,
+    [pokemonTypes.WATER]: 0.5,
+    [pokemonTypes.GRASS]: 2,
+    [pokemonTypes.ICE]: 0.5,
+    [pokemonTypes.GROUND]: 2,
+    [pokemonTypes.FLYING]: 2,
+    [pokemonTypes.DRAGON]: 2,
+    [pokemonTypes.STEEL]: 0.5,
   },
-  [types.POISON]: {
-    [types.GRASS]: 2,
-    [types.POISON]: 0.5,
-    [types.GROUND]: 0.5,
-    [types.ROCK]: 0.5,
-    [types.GHOST]: 0.5,
-    [types.STEEL]: 0,
-    [types.FAIRY]: 2,
+  [pokemonTypes.FIGHTING]: {
+    [pokemonTypes.NORMAL]: 2,
+    [pokemonTypes.ICE]: 2,
+    [pokemonTypes.POISON]: 0.5,
+    [pokemonTypes.FLYING]: 0.5,
+    [pokemonTypes.PSYCHIC]: 0.5,
+    [pokemonTypes.BUG]: 0.5,
+    [pokemonTypes.ROCK]: 2,
+    [pokemonTypes.GHOST]: 0,
+    [pokemonTypes.DARK]: 2,
+    [pokemonTypes.STEEL]: 2,
+    [pokemonTypes.FAIRY]: 0.5,
   },
-  [types.GROUND]: {
-    [types.FIRE]: 2,
-    [types.ELECTRIC]: 2,
-    [types.GRASS]: 0.5,
-    [types.POISON]: 2,
-    [types.FLYING]: 0,
-    [types.BUG]: 0.5,
-    [types.ROCK]: 2,
-    [types.STEEL]: 2,
+  [pokemonTypes.POISON]: {
+    [pokemonTypes.GRASS]: 2,
+    [pokemonTypes.POISON]: 0.5,
+    [pokemonTypes.GROUND]: 0.5,
+    [pokemonTypes.ROCK]: 0.5,
+    [pokemonTypes.GHOST]: 0.5,
+    [pokemonTypes.STEEL]: 0,
+    [pokemonTypes.FAIRY]: 2,
   },
-  [types.FLYING]: {
-    [types.ELECTRIC]: 0.5,
-    [types.GRASS]: 2,
-    [types.FIGHTING]: 2,
-    [types.BUG]: 2,
-    [types.ROCK]: 0.5,
-    [types.STEEL]: 0.5,
+  [pokemonTypes.GROUND]: {
+    [pokemonTypes.FIRE]: 2,
+    [pokemonTypes.ELECTRIC]: 2,
+    [pokemonTypes.GRASS]: 0.5,
+    [pokemonTypes.POISON]: 2,
+    [pokemonTypes.FLYING]: 0,
+    [pokemonTypes.BUG]: 0.5,
+    [pokemonTypes.ROCK]: 2,
+    [pokemonTypes.STEEL]: 2,
   },
-  [types.PSYCHIC]: {
-    [types.FIGHTING]: 2,
-    [types.POISON]: 2,
-    [types.PSYCHIC]: 0.5,
-    [types.DARK]: 0,
-    [types.STEEL]: 0.5,
+  [pokemonTypes.FLYING]: {
+    [pokemonTypes.ELECTRIC]: 0.5,
+    [pokemonTypes.GRASS]: 2,
+    [pokemonTypes.FIGHTING]: 2,
+    [pokemonTypes.BUG]: 2,
+    [pokemonTypes.ROCK]: 0.5,
+    [pokemonTypes.STEEL]: 0.5,
   },
-  [types.BUG]: {
-    [types.FIRE]: 0.5,
-    [types.GRASS]: 2,
-    [types.FIGHTING]: 0.5,
-    [types.POISON]: 0.5,
-    [types.FLYING]: 0.5,
-    [types.PSYCHIC]: 2,
-    [types.GHOST]: 0.5,
-    [types.DARK]: 2,
-    [types.STEEL]: 0.5,
-    [types.FAIRY]: 0.5,
+  [pokemonTypes.PSYCHIC]: {
+    [pokemonTypes.FIGHTING]: 2,
+    [pokemonTypes.POISON]: 2,
+    [pokemonTypes.PSYCHIC]: 0.5,
+    [pokemonTypes.DARK]: 0,
+    [pokemonTypes.STEEL]: 0.5,
   },
-  [types.ROCK]: {
-    [types.FIRE]: 2,
-    [types.ICE]: 2,
-    [types.FIGHTING]: 0.5,
-    [types.GROUND]: 0.5,
-    [types.FLYING]: 2,
-    [types.BUG]: 2,
-    [types.STEEL]: 0.5,
+  [pokemonTypes.BUG]: {
+    [pokemonTypes.FIRE]: 0.5,
+    [pokemonTypes.GRASS]: 2,
+    [pokemonTypes.FIGHTING]: 0.5,
+    [pokemonTypes.POISON]: 0.5,
+    [pokemonTypes.FLYING]: 0.5,
+    [pokemonTypes.PSYCHIC]: 2,
+    [pokemonTypes.GHOST]: 0.5,
+    [pokemonTypes.DARK]: 2,
+    [pokemonTypes.STEEL]: 0.5,
+    [pokemonTypes.FAIRY]: 0.5,
   },
-  [types.GHOST]: {
-    [types.NORMAL]: 0,
-    [types.PSYCHIC]: 2,
-    [types.GHOST]: 2,
-    [types.DARK]: 0.5,
+  [pokemonTypes.ROCK]: {
+    [pokemonTypes.FIRE]: 2,
+    [pokemonTypes.ICE]: 2,
+    [pokemonTypes.FIGHTING]: 0.5,
+    [pokemonTypes.GROUND]: 0.5,
+    [pokemonTypes.FLYING]: 2,
+    [pokemonTypes.BUG]: 2,
+    [pokemonTypes.STEEL]: 0.5,
   },
-  [types.DRAGON]: { [types.DRAGON]: 2, [types.STEEL]: 0.5, [types.FAIRY]: 0 },
-  [types.DARK]: {
-    [types.FIGHTING]: 0.5,
-    [types.PSYCHIC]: 2,
-    [types.GHOST]: 2,
-    [types.DARK]: 0.5,
-    [types.FAIRY]: 0.5,
+  [pokemonTypes.GHOST]: {
+    [pokemonTypes.NORMAL]: 0,
+    [pokemonTypes.PSYCHIC]: 2,
+    [pokemonTypes.GHOST]: 2,
+    [pokemonTypes.DARK]: 0.5,
   },
-  [types.STEEL]: {
-    [types.FIRE]: 0.5,
-    [types.WATER]: 0.5,
-    [types.ELECTRIC]: 0.5,
-    [types.ICE]: 2,
-    [types.ROCK]: 2,
-    [types.STEEL]: 0.5,
-    [types.FAIRY]: 2,
+  [pokemonTypes.DRAGON]: {
+    [pokemonTypes.DRAGON]: 2,
+    [pokemonTypes.STEEL]: 0.5,
+    [pokemonTypes.FAIRY]: 0,
   },
-  [types.FAIRY]: {
-    [types.FIRE]: 0.5,
-    [types.FIGHTING]: 2,
-    [types.POISON]: 0.5,
-    [types.DRAGON]: 2,
-    [types.DARK]: 2,
-    [types.STEEL]: 0.5,
+  [pokemonTypes.DARK]: {
+    [pokemonTypes.FIGHTING]: 0.5,
+    [pokemonTypes.PSYCHIC]: 2,
+    [pokemonTypes.GHOST]: 2,
+    [pokemonTypes.DARK]: 0.5,
+    [pokemonTypes.FAIRY]: 0.5,
+  },
+  [pokemonTypes.STEEL]: {
+    [pokemonTypes.FIRE]: 0.5,
+    [pokemonTypes.WATER]: 0.5,
+    [pokemonTypes.ELECTRIC]: 0.5,
+    [pokemonTypes.ICE]: 2,
+    [pokemonTypes.ROCK]: 2,
+    [pokemonTypes.STEEL]: 0.5,
+    [pokemonTypes.FAIRY]: 2,
+  },
+  [pokemonTypes.FAIRY]: {
+    [pokemonTypes.FIRE]: 0.5,
+    [pokemonTypes.FIGHTING]: 2,
+    [pokemonTypes.POISON]: 0.5,
+    [pokemonTypes.DRAGON]: 2,
+    [pokemonTypes.DARK]: 2,
+    [pokemonTypes.STEEL]: 0.5,
   },
 };
 
 // unqiue status conditions
+/** @typedef {types.Enum<statusConditions>} StatusConditionEnum */
 const statusConditions = {
   BURN: "Burn",
   FREEZE: "Freeze",
@@ -236,6 +231,15 @@ const weatherConditions = {
   HAIL: "Hail",
 };
 
+/**
+ *
+ * @param {*} move
+ * @param {BattlePokemon} source
+ * @param {BattlePokemon} target
+ * @param {boolean} miss
+ * @param {*} param4
+ * @returns
+ */
 const calculateDamage = (
   move,
   source,
@@ -249,6 +253,7 @@ const calculateDamage = (
     power = null,
     type = null,
     moveType = null,
+    finalDamageMultipler = 1,
   } = {}
 ) => {
   /* eslint-disable-code-block no-param-reassign */
@@ -291,15 +296,15 @@ const calculateDamage = (
   if (!source.battle.isWeatherNegated()) {
     const { weather } = source.battle;
     if (weather.weatherId === weatherConditions.SUN) {
-      if (move.type === types.FIRE) {
+      if (move.type === pokemonTypes.FIRE) {
         weatherMult = 1.5;
-      } else if (move.type === types.WATER) {
+      } else if (move.type === pokemonTypes.WATER) {
         weatherMult = 0.5;
       }
     } else if (weather.weatherId === weatherConditions.RAIN) {
-      if (move.type === types.FIRE) {
+      if (move.type === pokemonTypes.FIRE) {
         weatherMult = 0.5;
-      } else if (move.type === types.WATER) {
+      } else if (move.type === pokemonTypes.WATER) {
         weatherMult = 1.5;
       }
     }
@@ -320,25 +325,29 @@ const calculateDamage = (
       random *
       burn *
       weatherMult *
-      missMult
+      missMult *
+      finalDamageMultipler
   );
 
   return Math.max(damage, 1);
 };
 
-const targetTypes = {
+/** @typedef {types.Enum<targetTypes>} TargetTypeEnum */
+const targetTypes = Object.freeze({
   ALLY: "Ally",
   ENEMY: "Enemy",
   ANY: "Any",
-};
-const targetPositions = {
+});
+/** @typedef {types.Enum<targetPositions>} TargetPositionEnum */
+const targetPositions = Object.freeze({
   SELF: "Self",
   NON_SELF: "Non-self",
   ANY: "Any",
   FRONT: "Front",
   BACK: "Back",
-};
-const targetPatterns = {
+});
+/** @typedef {types.Enum<targetPatterns>} TargetPatternEnum */
+const targetPatterns = Object.freeze({
   SINGLE: "Single",
   ALL: "All",
   ALL_EXCEPT_SELF: "All-except-self",
@@ -347,65 +356,17 @@ const targetPatterns = {
   RANDOM: "Random",
   SQUARE: "Square",
   CROSS: "Cross",
-};
+});
 
-// TODO: is it worth having classes for these?
-
-const effectTypes = {
+/** @typedef {types.Enum<effectTypes>} EffectTypeEnum */
+const effectTypes = Object.freeze({
   BUFF: "Buff",
   DEBUFF: "Debuff",
   NEUTRAL: "Neutral",
-};
-const effectConfig = {
-  shield: {
-    name: "Shield",
-    description: "The target's takes shielded damage.",
-    type: effectTypes.BUFF,
-    dispellable: true,
-    effectAdd(battle, _source, target, initialArgs) {
-      const shield = initialArgs && initialArgs.shield;
-      if (!shield) {
-        return {};
-      }
+});
 
-      let oldShield =
-        target.effectIds.shield &&
-        target.effectIds.shield.args &&
-        target.effectIds.shield.args.shield;
-      oldShield = oldShield || 0;
-
-      const newShield = Math.max(oldShield, shield);
-      battle.addToLog(`${target.name} is shielded for ${newShield} damage!`);
-      initialArgs.shield = newShield;
-      return initialArgs;
-    },
-    effectRemove(battle, target) {
-      battle.addToLog(`${target.name}'s shield was removed!`);
-    },
-  },
-  atkUp: {
-    name: "Atk. Up",
-    description: "The target's Attack increased.",
-    type: effectTypes.BUFF,
-    dispellable: true,
-    effectAdd(battle, _source, target) {
-      // if greaterAtkUp exists on target, remove atkUp and refresh greaterAtkUp
-      if (target.effectIds.greaterAtkUp) {
-        const currentDuration = target.effectIds.atkUp.duration;
-        delete target.effectIds.atkUp;
-        if (target.effectIds.greaterAtkUp.duration < currentDuration) {
-          target.effectIds.greaterAtkUp.duration = currentDuration;
-        }
-      } else {
-        battle.addToLog(`${target.name}'s Attack rose!`);
-        target.atk += Math.floor(target.batk * 0.5);
-      }
-    },
-    effectRemove(battle, target) {
-      battle.addToLog(`${target.name}'s Attack boost wore off!`);
-      target.atk -= Math.floor(target.batk * 0.5);
-    },
-  },
+/** @typedef {types.Keys<effectConfig>} LegacyEffectIdEnum */
+const effectConfig = Object.freeze({
   greaterAtkUp: {
     name: "Greater Atk. Up",
     description: "The target's Attack greatly increased.",
@@ -1003,7 +964,7 @@ const effectConfig = {
               {
                 power: 40,
                 damageType: damageTypes.PHYSICAL,
-                type: types.UNKNOWN,
+                type: pokemonTypes.UNKNOWN,
               },
               inflictedPokemon,
               inflictedPokemon,
@@ -1023,7 +984,7 @@ const effectConfig = {
       };
       battle.addToLog(`${target.name} became confused!`);
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_MOVE,
+        battleEventEnum.BEFORE_MOVE,
         listener
       );
       return {
@@ -1051,7 +1012,7 @@ const effectConfig = {
           if (args.damageInfo.type !== "move") {
             return;
           }
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (!moveData || moveData.damageType !== damageTypes.PHYSICAL) {
             return;
           }
@@ -1069,7 +1030,7 @@ const effectConfig = {
             {
               power: moveData.power ? moveData.power * 1.5 : 40,
               damageType: damageTypes.PHYSICAL,
-              type: types.FIGHTING,
+              type: pokemonTypes.FIGHTING,
             },
             targetPokemon,
             sourcePokemon,
@@ -1085,7 +1046,7 @@ const effectConfig = {
       };
       battle.addToLog(`${target.name} assumes a counter stance!`);
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -1113,7 +1074,7 @@ const effectConfig = {
           if (args.damageInfo.type !== "move") {
             return;
           }
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (!moveData || moveData.damageType !== damageTypes.SPECIAL) {
             return;
           }
@@ -1131,7 +1092,7 @@ const effectConfig = {
             {
               power: moveData.power ? moveData.power * 1.5 : 40,
               damageType: damageTypes.SPECIAL,
-              type: types.PSYCHIC,
+              type: pokemonTypes.PSYCHIC,
             },
             targetPokemon,
             sourcePokemon,
@@ -1147,7 +1108,7 @@ const effectConfig = {
       };
       battle.addToLog(`${target.name} puts up a reflective field!`);
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -1230,7 +1191,7 @@ const effectConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -1273,7 +1234,7 @@ const effectConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -1319,7 +1280,7 @@ const effectConfig = {
           // get move data
           const { moveId } = args.damageInfo;
           // eslint-disable-next-line no-use-before-define
-          const moveData = moveConfig[moveId];
+          const moveData = getMove(moveId);
           if (!moveData) {
             return;
           }
@@ -1335,18 +1296,19 @@ const effectConfig = {
             invulnPokemon.battle.addToLog(
               `${invulnPokemon.name} reflected the move back at ${sourcePokemon.name}!`
             );
-            moveExecutes[moveId](
-              invulnPokemon.battle,
-              invulnPokemon,
-              sourcePokemon,
-              [sourcePokemon],
-              []
-            );
+            executeMove({
+              moveId,
+              battle: invulnPokemon.battle,
+              source: invulnPokemon,
+              primaryTarget: sourcePokemon,
+              allTargets: [sourcePokemon],
+              missedTargets: [],
+            });
           }
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -1373,7 +1335,7 @@ const effectConfig = {
           if (args.damageInfo.type !== "move") {
             return;
           }
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           let multiplier = 0.7;
           if (moveData.targetPattern === targetPatterns.SINGLE) {
             multiplier = 0.4;
@@ -1396,7 +1358,7 @@ const effectConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -1451,7 +1413,7 @@ const effectConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -1487,7 +1449,7 @@ const effectConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_STATUS_APPLY,
+        battleEventEnum.BEFORE_STATUS_APPLY,
         listener
       );
       return {
@@ -1548,7 +1510,7 @@ const effectConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
       battle.addToLog(`${target.name} is regenerating health!`);
@@ -1589,7 +1551,7 @@ const effectConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
       battle.addToLog(`${target.name} is taking damage from a DoT effect!`);
@@ -1637,7 +1599,7 @@ const effectConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
       battle.addToLog(`${target.name} is affected by a Leech Seed!`);
@@ -1674,7 +1636,7 @@ const effectConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
       battle.addToLog(`${target.name} is taking extra turns!!`);
@@ -1707,14 +1669,14 @@ const effectConfig = {
           // only allow buffs to trigger
           if (
             args.effectId &&
-            effectConfig[args.effectId].type !== effectTypes.BUFF
+            getEffect(args.effectId).type !== effectTypes.BUFF
           ) {
             return;
           }
 
           // get damage multiplier
           let mult = targetPokemon.getTypeDamageMultiplier(
-            types.ROCK,
+            pokemonTypes.ROCK,
             targetPokemon
           );
           if (mult >= 4) {
@@ -1739,11 +1701,11 @@ const effectConfig = {
       };
 
       const crListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_CR_GAINED,
+        battleEventEnum.AFTER_CR_GAINED,
         listener
       );
       const buffListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_EFFECT_ADD,
+        battleEventEnum.AFTER_EFFECT_ADD,
         listener
       );
       return {
@@ -1806,11 +1768,11 @@ const effectConfig = {
       };
 
       const crListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_CR_GAINED,
+        battleEventEnum.AFTER_CR_GAINED,
         crListener
       );
       const beforeMoveListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_MOVE,
+        battleEventEnum.BEFORE_MOVE,
         beforeMoveListener
       );
       return {
@@ -1834,7 +1796,7 @@ const effectConfig = {
       const disabledMoves = [];
       // disable ultimate moves
       for (const moveId of Object.keys(target.moveIds)) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (moveData.tier === moveTiers.ULTIMATE) {
           target.disableMove(moveId, source);
           disabledMoves.push(moveData.name);
@@ -1855,7 +1817,7 @@ const effectConfig = {
       battle.addToLog(`${target.name}'s ultimate moves are now available!`);
       // enable ultimate moves
       for (const moveId of Object.keys(target.moveIds)) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (moveData.tier === moveTiers.ULTIMATE) {
           target.enableMove(moveId, args.source);
         }
@@ -1872,7 +1834,7 @@ const effectConfig = {
         `${target.name} is silenced and can only use basic moves!`
       );
       for (const moveId in target.moveIds) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (moveData.tier !== moveTiers.BASIC) {
           target.disableMove(moveId, source);
         }
@@ -1884,7 +1846,7 @@ const effectConfig = {
     effectRemove(battle, target, args) {
       battle.addToLog(`${target.name} is no longer silenced!`);
       for (const moveId in target.moveIds) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (moveData.tier !== moveTiers.BASIC) {
           target.enableMove(moveId, args.source);
         }
@@ -1900,7 +1862,7 @@ const effectConfig = {
       battle.addToLog(`${target.name} was taunted!`);
       // disable moves with no power
       for (const moveId of Object.keys(target.moveIds)) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (!moveData.power) {
           target.disableMove(moveId, source);
         }
@@ -1913,7 +1875,7 @@ const effectConfig = {
       battle.addToLog(`${target.name} is no longer taunted!`);
       // enable moves with no power
       for (const moveId of Object.keys(target.moveIds)) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (!moveData.power) {
           target.enableMove(moveId, args.source);
         }
@@ -1929,7 +1891,7 @@ const effectConfig = {
       battle.addToLog(`${target.name} was reverse-taunted!`);
       // disable moves with power
       for (const moveId of Object.keys(target.moveIds)) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (moveData.power) {
           target.disableMove(moveId, source);
         }
@@ -1942,7 +1904,7 @@ const effectConfig = {
       battle.addToLog(`${target.name} is no longer reverse-taunted!`);
       // enable moves with no power
       for (const moveId of Object.keys(target.moveIds)) {
-        const moveData = moveConfig[moveId];
+        const moveData = getMove(moveId);
         if (moveData.power) {
           target.enableMove(moveId, args.source);
         }
@@ -1968,7 +1930,7 @@ const effectConfig = {
 
           // check that enemy used non-ally move
           const moveUser = args.user;
-          const moveData = moveConfig[args.moveId];
+          const moveData = getMove(args.moveId);
           if (moveUser.teamName === initialArgs.pokemon.teamName) {
             return;
           }
@@ -1982,7 +1944,7 @@ const effectConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.GET_ELIGIBLE_TARGETS,
+        battleEventEnum.GET_ELIGIBLE_TARGETS,
         listener
       );
       return {
@@ -2012,8 +1974,8 @@ const effectConfig = {
             return;
           }
           const { moveId } = args.damageInfo;
-          const moveData = moveConfig[moveId];
-          if (moveData.type !== types.ELECTRIC) {
+          const moveData = getMove(moveId);
+          if (moveData.type !== pokemonTypes.ELECTRIC) {
             return;
           }
 
@@ -2027,7 +1989,7 @@ const effectConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -2048,26 +2010,26 @@ const effectConfig = {
     effectAdd(battle, _source, target) {
       battle.addToLog(`${target.name} lost its Flying type!`);
       // if pure flying, change to pure normal
-      if (target.type1 === types.FLYING && target.type2 === null) {
-        target.type1 = types.NORMAL;
+      if (target.type1 === pokemonTypes.FLYING && target.type2 === null) {
+        target.type1 = pokemonTypes.NORMAL;
         return {
           typeSlot: "type1",
         };
         // else
       }
-      if (target.type1 === types.FLYING) {
+      if (target.type1 === pokemonTypes.FLYING) {
         target.type1 = null;
         return {
           typeSlot: "type1",
         };
       }
-      if (target.type2 === types.FLYING && target.type1 === null) {
-        target.type2 = types.NORMAL;
+      if (target.type2 === pokemonTypes.FLYING && target.type1 === null) {
+        target.type2 = pokemonTypes.NORMAL;
         return {
           typeSlot: "type2",
         };
       }
-      if (target.type2 === types.FLYING) {
+      if (target.type2 === pokemonTypes.FLYING) {
         target.type2 = null;
         return {
           typeSlot: "type2",
@@ -2077,7 +2039,7 @@ const effectConfig = {
     },
     effectRemove(battle, target, args) {
       battle.addToLog(`${target.name} regained its Flying type!`);
-      if (args.typeSlot) target[args.typeSlot] = types.FLYING;
+      if (args.typeSlot) target[args.typeSlot] = pokemonTypes.FLYING;
     },
   },
   absorbLight: {
@@ -2253,7 +2215,7 @@ const effectConfig = {
       battle.addToLog(
         `${target.name} was hit by ${source.name}'s Future Sight!`
       );
-      const damageCalc = calculateDamage(moveConfig.m248, source, target);
+      const damageCalc = calculateDamage(getMove("m248"), source, target);
       // calculate damage based on remaining duration. 0 => 100%, 1 => 50%, >= 2 => 25%
       let damageToDeal = damageCalc;
       if (remainingDuration === 0) {
@@ -2365,12 +2327,12 @@ const effectConfig = {
             `${targetPokemon.name}'s holds a grudge!`
           );
           for (const enemyPokemon of enemyPokemons) {
-            enemyPokemon.addEffect("silenced", 2, targetPokemon);
+            enemyPokemon.applyEffect("silenced", 2, targetPokemon);
           }
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_FAINT,
+        battleEventEnum.AFTER_FAINT,
         listener
       );
       return {
@@ -2412,7 +2374,7 @@ const effectConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_FAINT,
+        battleEventEnum.AFTER_FAINT,
         listener
       );
       return {
@@ -2432,7 +2394,7 @@ const effectConfig = {
     dispellable: false,
     effectAdd(battle, _source, target, initialArgs) {
       const mimicMoveId = initialArgs.moveId;
-      const moveData = moveConfig[mimicMoveId];
+      const moveData = getMove(mimicMoveId);
       if (!mimicMoveId) return;
       if (!moveData) return;
       // if target already knows move, ignore
@@ -2495,18 +2457,19 @@ const effectConfig = {
 
       // if knows Gear Fifth, set cooldown to max
       const gearFifthMoveId = "m20010";
-      const moveData = moveConfig[gearFifthMoveId];
+      const moveData = getMove(gearFifthMoveId);
       if (target.moveIds[gearFifthMoveId]) {
         target.moveIds[gearFifthMoveId].cooldown = moveData.cooldown;
       }
     },
   },
-};
+});
 
-const moveConfig = {
+/** @typedef{types.Keys<moveConfig>} LegacyMoveIdEnum */
+const moveConfig = Object.freeze({
   m6: {
     name: "Pay Day",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 45,
     accuracy: 100,
     cooldown: 0,
@@ -2520,7 +2483,7 @@ const moveConfig = {
   },
   "m6-1": {
     name: "Gold Rush",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 35,
     accuracy: 80,
     cooldown: 6,
@@ -2534,7 +2497,7 @@ const moveConfig = {
   },
   "m7-1": {
     name: "Red Hawk",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 80,
     accuracy: 100,
     cooldown: 3,
@@ -2548,7 +2511,7 @@ const moveConfig = {
   },
   m10: {
     name: "Scratch",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -2562,7 +2525,7 @@ const moveConfig = {
   },
   m14: {
     name: "Swords Dance",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -2576,7 +2539,7 @@ const moveConfig = {
   },
   m16: {
     name: "Gust",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 45,
     accuracy: 100,
     cooldown: 0,
@@ -2590,7 +2553,7 @@ const moveConfig = {
   },
   m17: {
     name: "Wing Attack",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 55,
     accuracy: 100,
     cooldown: 0,
@@ -2604,7 +2567,7 @@ const moveConfig = {
   },
   m21: {
     name: "Slam",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 90,
     accuracy: 80,
     cooldown: 2,
@@ -2616,23 +2579,9 @@ const moveConfig = {
     description:
       "The target is slammed with a long tail, vines, etc., to inflict damage.",
   },
-  m22: {
-    name: "Vine Whip",
-    type: types.GRASS,
-    power: 55,
-    accuracy: 100,
-    cooldown: 0,
-    targetType: targetTypes.ENEMY,
-    targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.SINGLE,
-    tier: moveTiers.BASIC,
-    damageType: damageTypes.PHYSICAL,
-    description:
-      "The target is struck with slender, whiplike vines to inflict damage.",
-  },
   m23: {
     name: "Stomp",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 90,
     accuracy: 100,
     cooldown: 3,
@@ -2646,7 +2595,7 @@ const moveConfig = {
   },
   m30: {
     name: "Horn Attack",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 75,
     accuracy: 100,
     cooldown: 2,
@@ -2660,7 +2609,7 @@ const moveConfig = {
   },
   m33: {
     name: "Tackle",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -2674,7 +2623,7 @@ const moveConfig = {
   },
   m34: {
     name: "Body Slam",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 95,
     accuracy: 85,
     cooldown: 3,
@@ -2688,7 +2637,7 @@ const moveConfig = {
   },
   "m34-1": {
     name: "Groggy Slam",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 75,
     accuracy: 75,
     cooldown: 4,
@@ -2702,7 +2651,7 @@ const moveConfig = {
   },
   m35: {
     name: "Wrap",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 20,
     accuracy: 90,
     cooldown: 0,
@@ -2716,7 +2665,7 @@ const moveConfig = {
   },
   m36: {
     name: "Take Down",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 120,
     accuracy: 85,
     cooldown: 3,
@@ -2730,7 +2679,7 @@ const moveConfig = {
   },
   m38: {
     name: "Double-Edge",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 160,
     accuracy: 100,
     cooldown: 4,
@@ -2744,7 +2693,7 @@ const moveConfig = {
   },
   m40: {
     name: "Poison Sting",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 20,
     accuracy: 100,
     cooldown: 0,
@@ -2758,7 +2707,7 @@ const moveConfig = {
   },
   m43: {
     name: "Leer",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
     cooldown: 0,
@@ -2772,7 +2721,7 @@ const moveConfig = {
   },
   m46: {
     name: "Roar",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -2786,7 +2735,7 @@ const moveConfig = {
   },
   m47: {
     name: "Sing",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 55,
     cooldown: 4,
@@ -2800,7 +2749,7 @@ const moveConfig = {
   },
   m50: {
     name: "Disable",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
     cooldown: 2,
@@ -2813,7 +2762,7 @@ const moveConfig = {
   },
   m51: {
     name: "Acid",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -2827,7 +2776,7 @@ const moveConfig = {
   },
   m52: {
     name: "Ember",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -2841,7 +2790,7 @@ const moveConfig = {
   },
   m53: {
     name: "Flamethrower",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 70,
     accuracy: 100,
     cooldown: 4,
@@ -2855,7 +2804,7 @@ const moveConfig = {
   },
   m55: {
     name: "Water Gun",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -2868,7 +2817,7 @@ const moveConfig = {
   },
   m56: {
     name: "Hydro Pump",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 100,
     accuracy: 80,
     cooldown: 5,
@@ -2882,7 +2831,7 @@ const moveConfig = {
   },
   "m56-1": {
     name: "Hydro Artilery Pump",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 90,
     accuracy: 80,
     cooldown: 6,
@@ -2896,7 +2845,7 @@ const moveConfig = {
   },
   "m56-2": {
     name: "Holy Pump",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 110,
     accuracy: 60,
     cooldown: 5,
@@ -2910,7 +2859,7 @@ const moveConfig = {
   },
   m57: {
     name: "Surf",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 65,
     accuracy: 90,
     cooldown: 5,
@@ -2924,7 +2873,7 @@ const moveConfig = {
   },
   m58: {
     name: "Ice Beam",
-    type: types.ICE,
+    type: pokemonTypes.ICE,
     power: 70,
     accuracy: 90,
     cooldown: 4,
@@ -2938,7 +2887,7 @@ const moveConfig = {
   },
   m59: {
     name: "Blizzard",
-    type: types.ICE,
+    type: pokemonTypes.ICE,
     power: 70,
     accuracy: 70,
     cooldown: 6,
@@ -2952,7 +2901,7 @@ const moveConfig = {
   },
   m60: {
     name: "Psybeam",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 80,
     accuracy: 100,
     cooldown: 2,
@@ -2966,7 +2915,7 @@ const moveConfig = {
   },
   m63: {
     name: "Hyper Beam",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 160,
     accuracy: 90,
     cooldown: 6,
@@ -2980,7 +2929,7 @@ const moveConfig = {
   },
   m64: {
     name: "Peck",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 45,
     accuracy: 100,
     cooldown: 0,
@@ -2993,7 +2942,7 @@ const moveConfig = {
   },
   m65: {
     name: "Drill Peck",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 85,
     accuracy: 100,
     cooldown: 2,
@@ -3007,7 +2956,7 @@ const moveConfig = {
   },
   m68: {
     name: "Counter",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -3021,7 +2970,7 @@ const moveConfig = {
   },
   m70: {
     name: "Strength",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 80,
     accuracy: 100,
     cooldown: 2,
@@ -3035,7 +2984,7 @@ const moveConfig = {
   },
   m71: {
     name: "Absorb",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 40,
     accuracy: 100,
     cooldown: 0,
@@ -3049,7 +2998,7 @@ const moveConfig = {
   },
   m73: {
     name: "Leech Seed",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: null,
     accuracy: 90,
     cooldown: 3,
@@ -3063,7 +3012,7 @@ const moveConfig = {
   },
   m76: {
     name: "Solar Beam",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 120,
     accuracy: 100,
     cooldown: 5,
@@ -3084,7 +3033,7 @@ const moveConfig = {
   },
   m77: {
     name: "Poison Powder",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: null,
     accuracy: 70,
     cooldown: 0,
@@ -3098,7 +3047,7 @@ const moveConfig = {
   },
   m79: {
     name: "Sleep Powder",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: null,
     accuracy: 85,
     cooldown: 4,
@@ -3112,7 +3061,7 @@ const moveConfig = {
   },
   m81: {
     name: "String Shot",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: null,
     accuracy: 95,
     cooldown: 0,
@@ -3126,7 +3075,7 @@ const moveConfig = {
   },
   m84: {
     name: "Thunder Shock",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -3140,7 +3089,7 @@ const moveConfig = {
   },
   m85: {
     name: "Thunderbolt",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 95,
     accuracy: 100,
     cooldown: 3,
@@ -3154,7 +3103,7 @@ const moveConfig = {
   },
   m86: {
     name: "Thunder Wave",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: null,
     accuracy: 90,
     cooldown: 3,
@@ -3168,7 +3117,7 @@ const moveConfig = {
   },
   m87: {
     name: "Thunder",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 95,
     accuracy: 70,
     cooldown: 5,
@@ -3182,7 +3131,7 @@ const moveConfig = {
   },
   "m87-1": {
     name: "Thunder Charge",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 110,
     accuracy: 80,
     cooldown: 5,
@@ -3196,7 +3145,7 @@ const moveConfig = {
   },
   m88: {
     name: "Rock Throw",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 60,
     accuracy: 70,
     cooldown: 0,
@@ -3210,7 +3159,7 @@ const moveConfig = {
   },
   m89: {
     name: "Earthquake",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: 100,
     accuracy: 100,
     cooldown: 6,
@@ -3224,7 +3173,7 @@ const moveConfig = {
   },
   m91: {
     name: "Dig",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -3241,7 +3190,7 @@ const moveConfig = {
   },
   m92: {
     name: "Toxic",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: null,
     accuracy: 90,
     cooldown: 2,
@@ -3255,7 +3204,7 @@ const moveConfig = {
   },
   m93: {
     name: "Confusion",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -3269,7 +3218,7 @@ const moveConfig = {
   },
   m94: {
     name: "Psychic",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 65,
     accuracy: 90,
     cooldown: 4,
@@ -3283,7 +3232,7 @@ const moveConfig = {
   },
   m97: {
     name: "Agility",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3297,7 +3246,7 @@ const moveConfig = {
   },
   "m97-1": {
     name: "Ifrit Jambe",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3311,7 +3260,7 @@ const moveConfig = {
   },
   m98: {
     name: "Quick Attack",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -3325,7 +3274,7 @@ const moveConfig = {
   },
   m100: {
     name: "Teleport",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -3339,7 +3288,7 @@ const moveConfig = {
   },
   m101: {
     name: "Night Shade",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -3353,7 +3302,7 @@ const moveConfig = {
   },
   m102: {
     name: "Mimic",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -3367,7 +3316,7 @@ const moveConfig = {
   },
   m103: {
     name: "Screech",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 85,
     cooldown: 4,
@@ -3381,7 +3330,7 @@ const moveConfig = {
   },
   m105: {
     name: "Recover",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -3394,7 +3343,7 @@ const moveConfig = {
   },
   m106: {
     name: "Harden",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -3408,7 +3357,7 @@ const moveConfig = {
   },
   m108: {
     name: "Smokescreen",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
     cooldown: 4,
@@ -3422,7 +3371,7 @@ const moveConfig = {
   },
   "m108-1": {
     name: "Rocket Smokescreen",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: 100,
     cooldown: 5,
@@ -3436,7 +3385,7 @@ const moveConfig = {
   },
   m110: {
     name: "Withdraw",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -3450,7 +3399,7 @@ const moveConfig = {
   },
   m111: {
     name: "Defense Curl",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -3464,7 +3413,7 @@ const moveConfig = {
   },
   m113: {
     name: "Light Screen",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3478,7 +3427,7 @@ const moveConfig = {
   },
   m115: {
     name: "Reflect",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3492,7 +3441,7 @@ const moveConfig = {
   },
   m116: {
     name: "Focus Energy",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -3506,7 +3455,7 @@ const moveConfig = {
   },
   m118: {
     name: "Metronome",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -3520,7 +3469,7 @@ const moveConfig = {
   },
   m122: {
     name: "Lick",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: 20,
     accuracy: 100,
     cooldown: 0,
@@ -3534,7 +3483,7 @@ const moveConfig = {
   },
   m123: {
     name: "Smog",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 35,
     accuracy: 70,
     cooldown: 0,
@@ -3548,7 +3497,7 @@ const moveConfig = {
   },
   m126: {
     name: "Fire Blast",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 90,
     accuracy: 85,
     cooldown: 5,
@@ -3562,7 +3511,7 @@ const moveConfig = {
   },
   m127: {
     name: "Waterfall",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -3576,7 +3525,7 @@ const moveConfig = {
   },
   m134: {
     name: "Kinesis",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 45,
     accuracy: 80,
     cooldown: 0,
@@ -3590,7 +3539,7 @@ const moveConfig = {
   },
   m135: {
     name: "Soft-Boiled",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -3604,7 +3553,7 @@ const moveConfig = {
   },
   m136: {
     name: "High Jump Kick",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 150,
     accuracy: 70,
     cooldown: 4,
@@ -3618,7 +3567,7 @@ const moveConfig = {
   },
   m137: {
     name: "Glare",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -3632,7 +3581,7 @@ const moveConfig = {
   },
   "m137-1": {
     name: "Rocket Glare",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: 80,
     cooldown: 3,
@@ -3645,7 +3594,7 @@ const moveConfig = {
   },
   m143: {
     name: "Sky Attack",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 200,
     accuracy: 90,
     cooldown: 6,
@@ -3662,7 +3611,7 @@ const moveConfig = {
   },
   m147: {
     name: "Spore",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -3676,7 +3625,7 @@ const moveConfig = {
   },
   m150: {
     name: "Splash",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -3689,7 +3638,7 @@ const moveConfig = {
   },
   m152: {
     name: "Crabhammer",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 100,
     accuracy: 90,
     cooldown: 5,
@@ -3703,7 +3652,7 @@ const moveConfig = {
   },
   m153: {
     name: "Explosion",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 150,
     accuracy: 100,
     cooldown: 7,
@@ -3717,7 +3666,7 @@ const moveConfig = {
   },
   "m154-1": {
     name: "Paws of Fury",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 20,
     accuracy: 100,
     cooldown: 5,
@@ -3731,7 +3680,7 @@ const moveConfig = {
   },
   m156: {
     name: "Rest",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -3745,7 +3694,7 @@ const moveConfig = {
   },
   m157: {
     name: "Rock Slide",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 75,
     accuracy: 90,
     cooldown: 5,
@@ -3759,7 +3708,7 @@ const moveConfig = {
   },
   m162: {
     name: "Super Fang",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -3773,7 +3722,7 @@ const moveConfig = {
   },
   m167: {
     name: "Triple Kick",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 33,
     accuracy: 90,
     cooldown: 5,
@@ -3787,7 +3736,7 @@ const moveConfig = {
   },
   m168: {
     name: "Thief",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 70,
     accuracy: 100,
     cooldown: 4,
@@ -3801,7 +3750,7 @@ const moveConfig = {
   },
   m175: {
     name: "Flail",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
     cooldown: 0,
@@ -3815,7 +3764,7 @@ const moveConfig = {
   },
   m177: {
     name: "Aeroblast",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 100,
     accuracy: 90,
     cooldown: 6,
@@ -3829,7 +3778,7 @@ const moveConfig = {
   },
   "m177-1": {
     name: "Shadowblast",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 80,
     accuracy: 80,
     cooldown: 6,
@@ -3843,7 +3792,7 @@ const moveConfig = {
   },
   m182: {
     name: "Protect",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3856,7 +3805,7 @@ const moveConfig = {
   },
   "m182-1": {
     name: "Stretchy Defense",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3870,7 +3819,7 @@ const moveConfig = {
   },
   m183: {
     name: "Mach Punch",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -3884,7 +3833,7 @@ const moveConfig = {
   },
   "m183-1": {
     name: "Mach Pistol",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 45,
     accuracy: 100,
     cooldown: 0,
@@ -3898,7 +3847,7 @@ const moveConfig = {
   },
   m186: {
     name: "Sweet Kiss",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: null,
     accuracy: 85,
     cooldown: 3,
@@ -3912,7 +3861,7 @@ const moveConfig = {
   },
   m187: {
     name: "Belly Drum",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3926,7 +3875,7 @@ const moveConfig = {
   },
   m188: {
     name: "Sludge Bomb",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 65,
     accuracy: 100,
     cooldown: 4,
@@ -3940,7 +3889,7 @@ const moveConfig = {
   },
   m189: {
     name: "Mud Slap",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: 35,
     accuracy: 100,
     cooldown: 0,
@@ -3954,7 +3903,7 @@ const moveConfig = {
   },
   m191: {
     name: "Spikes",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: null,
     accuracy: 100,
     cooldown: 5,
@@ -3968,7 +3917,7 @@ const moveConfig = {
   },
   m192: {
     name: "Zap Cannon",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 140,
     accuracy: 50,
     cooldown: 4,
@@ -3982,7 +3931,7 @@ const moveConfig = {
   },
   m194: {
     name: "Destiny Bond",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -3996,7 +3945,7 @@ const moveConfig = {
   },
   m195: {
     name: "Perish Song",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 7,
@@ -4010,7 +3959,7 @@ const moveConfig = {
   },
   m199: {
     name: "Lock-On",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -4024,7 +3973,7 @@ const moveConfig = {
   },
   m200: {
     name: "Outrage",
-    type: types.DRAGON,
+    type: pokemonTypes.DRAGON,
     power: 130,
     accuracy: 100,
     cooldown: 5,
@@ -4038,7 +3987,7 @@ const moveConfig = {
   },
   m202: {
     name: "Giga Drain",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 90,
     accuracy: 100,
     cooldown: 3,
@@ -4052,7 +4001,7 @@ const moveConfig = {
   },
   m203: {
     name: "Endure",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4065,7 +4014,7 @@ const moveConfig = {
   },
   m204: {
     name: "Charm",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: null,
     accuracy: 100,
     cooldown: 2,
@@ -4079,7 +4028,7 @@ const moveConfig = {
   },
   m205: {
     name: "Rollout",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 40,
     accuracy: 90,
     cooldown: 0,
@@ -4093,7 +4042,7 @@ const moveConfig = {
   },
   m208: {
     name: "Milk Drink",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -4107,7 +4056,7 @@ const moveConfig = {
   },
   "m208-1": {
     name: "Shuron Hakke",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4121,7 +4070,7 @@ const moveConfig = {
   },
   m210: {
     name: "Fury Cutter",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: 40,
     accuracy: 90,
     cooldown: 0,
@@ -4135,7 +4084,7 @@ const moveConfig = {
   },
   m212: {
     name: "Mean Look",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
     cooldown: 5,
@@ -4149,7 +4098,7 @@ const moveConfig = {
   },
   "m212-1": {
     name: "Slow Down!",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: null,
     accuracy: 75,
     cooldown: 5,
@@ -4163,7 +4112,7 @@ const moveConfig = {
   },
   m214: {
     name: "Sleep Talk",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -4177,7 +4126,7 @@ const moveConfig = {
   },
   m215: {
     name: "Heal Bell",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4191,7 +4140,7 @@ const moveConfig = {
   },
   m216: {
     name: "Return",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 102,
     accuracy: 100,
     cooldown: 3,
@@ -4205,7 +4154,7 @@ const moveConfig = {
   },
   m219: {
     name: "Safeguard",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -4219,7 +4168,7 @@ const moveConfig = {
   },
   m221: {
     name: "Sacred Fire",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 100,
     accuracy: 90,
     cooldown: 6,
@@ -4233,7 +4182,7 @@ const moveConfig = {
   },
   m223: {
     name: "Dynamic Punch",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 140,
     accuracy: 50,
     cooldown: 4,
@@ -4247,7 +4196,7 @@ const moveConfig = {
   },
   m224: {
     name: "Megahorn",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: 120,
     accuracy: 85,
     cooldown: 4,
@@ -4261,7 +4210,7 @@ const moveConfig = {
   },
   m226: {
     name: "Baton Pass",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -4275,7 +4224,7 @@ const moveConfig = {
   },
   "m226-1": {
     name: "Attack Cuisine",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4289,7 +4238,7 @@ const moveConfig = {
   },
   m229: {
     name: "Rapid Spin",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 50,
     accuracy: 100,
     cooldown: 4,
@@ -4303,7 +4252,7 @@ const moveConfig = {
   },
   m231: {
     name: "Iron Tail",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: 100,
     accuracy: 75,
     cooldown: 6,
@@ -4317,7 +4266,7 @@ const moveConfig = {
   },
   m235: {
     name: "Synthesis",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -4331,7 +4280,7 @@ const moveConfig = {
   },
   m236: {
     name: "Moonlight",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -4345,7 +4294,7 @@ const moveConfig = {
   },
   m238: {
     name: "Cross Chop",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 80,
     accuracy: 80,
     cooldown: 4,
@@ -4359,7 +4308,7 @@ const moveConfig = {
   },
   m239: {
     name: "Twister",
-    type: types.DRAGON,
+    type: pokemonTypes.DRAGON,
     power: 40,
     accuracy: 100,
     cooldown: 0,
@@ -4373,7 +4322,7 @@ const moveConfig = {
   },
   m240: {
     name: "Rain Dance",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -4386,7 +4335,7 @@ const moveConfig = {
   },
   m241: {
     name: "Sunny Day",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -4399,7 +4348,7 @@ const moveConfig = {
   },
   m242: {
     name: "Crunch",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -4413,7 +4362,7 @@ const moveConfig = {
   },
   m243: {
     name: "Mirror Coat",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4427,7 +4376,7 @@ const moveConfig = {
   },
   m245: {
     name: "Extreme Speed",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 95,
     accuracy: 100,
     cooldown: 3,
@@ -4441,7 +4390,7 @@ const moveConfig = {
   },
   m246: {
     name: "Ancient Power",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 40,
     accuracy: 100,
     cooldown: 0,
@@ -4455,7 +4404,7 @@ const moveConfig = {
   },
   m247: {
     name: "Shadow Ball",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -4469,7 +4418,7 @@ const moveConfig = {
   },
   m248: {
     name: "Future Sight",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 100,
     accuracy: 100,
     cooldown: 5,
@@ -4483,7 +4432,7 @@ const moveConfig = {
   },
   m249: {
     name: "Rock Smash",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 45,
     accuracy: 80,
     cooldown: 0,
@@ -4497,7 +4446,7 @@ const moveConfig = {
   },
   m252: {
     name: "Fake Out",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 50,
     accuracy: 100,
     cooldown: 4,
@@ -4511,7 +4460,7 @@ const moveConfig = {
   },
   m257: {
     name: "Heat Wave",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 80,
     accuracy: 100,
     cooldown: 5,
@@ -4525,7 +4474,7 @@ const moveConfig = {
   },
   m258: {
     name: "Hail",
-    type: types.ICE,
+    type: pokemonTypes.ICE,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -4538,7 +4487,7 @@ const moveConfig = {
   },
   m262: {
     name: "Memento",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: 100,
     cooldown: 5,
@@ -4552,7 +4501,7 @@ const moveConfig = {
   },
   m266: {
     name: "Follow Me",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -4565,7 +4514,7 @@ const moveConfig = {
   },
   m268: {
     name: "Charge",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -4579,7 +4528,7 @@ const moveConfig = {
   },
   m269: {
     name: "Taunt",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: 100,
     cooldown: 4,
@@ -4593,7 +4542,7 @@ const moveConfig = {
   },
   "m269-1": {
     name: "Reverse Taunt",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: 100,
     cooldown: 4,
@@ -4607,7 +4556,7 @@ const moveConfig = {
   },
   m270: {
     name: "Helping Hand",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -4621,7 +4570,7 @@ const moveConfig = {
   },
   m273: {
     name: "Wish",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -4635,7 +4584,7 @@ const moveConfig = {
   },
   m276: {
     name: "Superpower",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 130,
     accuracy: 100,
     cooldown: 4,
@@ -4649,7 +4598,7 @@ const moveConfig = {
   },
   m281: {
     name: "Yawn",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
     cooldown: 4,
@@ -4663,7 +4612,7 @@ const moveConfig = {
   },
   m282: {
     name: "Knock Off",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 75,
     accuracy: 100,
     cooldown: 3,
@@ -4677,7 +4626,7 @@ const moveConfig = {
   },
   m283: {
     name: "Endeavor",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
     cooldown: 5,
@@ -4691,7 +4640,7 @@ const moveConfig = {
   },
   m284: {
     name: "Eruption",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 130,
     accuracy: 100,
     cooldown: 5,
@@ -4705,7 +4654,7 @@ const moveConfig = {
   },
   m288: {
     name: "Grudge",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4719,7 +4668,7 @@ const moveConfig = {
   },
   m295: {
     name: "Luster Purge",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 80,
     accuracy: 80,
     cooldown: 5,
@@ -4733,7 +4682,7 @@ const moveConfig = {
   },
   m296: {
     name: "Mist Ball",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 55,
     accuracy: 80,
     cooldown: 5,
@@ -4747,7 +4696,7 @@ const moveConfig = {
   },
   m299: {
     name: "Blaze Kick",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 85,
     accuracy: 90,
     cooldown: 3,
@@ -4761,7 +4710,7 @@ const moveConfig = {
   },
   m303: {
     name: "Slack Off",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -4775,7 +4724,7 @@ const moveConfig = {
   },
   m304: {
     name: "Hyper Voice",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 85,
     accuracy: 100,
     cooldown: 5,
@@ -4789,7 +4738,7 @@ const moveConfig = {
   },
   m305: {
     name: "Poison Fang",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 50,
     accuracy: 100,
     cooldown: 2,
@@ -4803,7 +4752,7 @@ const moveConfig = {
   },
   m309: {
     name: "Meteor Mash",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: 90,
     accuracy: 90,
     cooldown: 4,
@@ -4817,7 +4766,7 @@ const moveConfig = {
   },
   m311: {
     name: "Weather Ball",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -4831,7 +4780,7 @@ const moveConfig = {
   },
   m316: {
     name: "Aromatherapy",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -4845,7 +4794,7 @@ const moveConfig = {
   },
   m317: {
     name: "Rock Tomb",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 80,
     accuracy: 95,
     cooldown: 3,
@@ -4859,7 +4808,7 @@ const moveConfig = {
   },
   "m317-1": {
     name: "Holy Tomb",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 90,
     accuracy: 70,
     cooldown: 3,
@@ -4873,7 +4822,7 @@ const moveConfig = {
   },
   m322: {
     name: "Cosmic Power",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4887,7 +4836,7 @@ const moveConfig = {
   },
   m325: {
     name: "Shadow Punch",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: 75,
     accuracy: null,
     cooldown: 2,
@@ -4901,7 +4850,7 @@ const moveConfig = {
   },
   m330: {
     name: "Muddy Water",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 50,
     accuracy: 70,
     cooldown: 5,
@@ -4915,7 +4864,7 @@ const moveConfig = {
   },
   m331: {
     name: "Bullet Seed",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 30,
     accuracy: 100,
     cooldown: 3,
@@ -4929,7 +4878,7 @@ const moveConfig = {
   },
   "m331-1": {
     name: "Ashura Bakkei",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 15,
     accuracy: 80,
     cooldown: 5,
@@ -4946,7 +4895,7 @@ const moveConfig = {
   },
   m332: {
     name: "Aerial Ace",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 80,
     accuracy: null,
     cooldown: 2,
@@ -4960,7 +4909,7 @@ const moveConfig = {
   },
   m334: {
     name: "Iron Defense",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -4974,7 +4923,7 @@ const moveConfig = {
   },
   "m334-1": {
     name: "Titanium Defense",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -4988,7 +4937,7 @@ const moveConfig = {
   },
   "m334-2": {
     name: "Genetic Defense",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5002,7 +4951,7 @@ const moveConfig = {
   },
   m336: {
     name: "Howl",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -5016,7 +4965,7 @@ const moveConfig = {
   },
   m340: {
     name: "Bounce",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 105,
     accuracy: 85,
     cooldown: 3,
@@ -5033,7 +4982,7 @@ const moveConfig = {
   },
   m344: {
     name: "Volt Tackle",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 80,
     accuracy: 80,
     cooldown: 4,
@@ -5047,7 +4996,7 @@ const moveConfig = {
   },
   m347: {
     name: "Calm Mind",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -5061,7 +5010,7 @@ const moveConfig = {
   },
   m348: {
     name: "Leaf Blade",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 80,
     accuracy: 100,
     cooldown: 4,
@@ -5075,7 +5024,7 @@ const moveConfig = {
   },
   m349: {
     name: "Dragon Dance",
-    type: types.DRAGON,
+    type: pokemonTypes.DRAGON,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5089,7 +5038,7 @@ const moveConfig = {
   },
   m352: {
     name: "Water Pulse",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 60,
     accuracy: 100,
     cooldown: 4,
@@ -5103,7 +5052,7 @@ const moveConfig = {
   },
   m354: {
     name: "Psycho Boost",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 20,
     accuracy: 90,
     cooldown: 6,
@@ -5117,7 +5066,7 @@ const moveConfig = {
   },
   "m354-1": {
     name: "Psycho Boost - Attack",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 100,
     accuracy: 90,
     cooldown: 6,
@@ -5131,7 +5080,7 @@ const moveConfig = {
   },
   "m354-2": {
     name: "Psycho Boost - Defense",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5145,7 +5094,7 @@ const moveConfig = {
   },
   "m354-3": {
     name: "Psycho Boost - Speed",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 7,
@@ -5159,7 +5108,7 @@ const moveConfig = {
   },
   m355: {
     name: "Roost",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -5173,7 +5122,7 @@ const moveConfig = {
   },
   m359: {
     name: "Hammer Arm",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 80,
     accuracy: 90,
     cooldown: 4,
@@ -5187,7 +5136,7 @@ const moveConfig = {
   },
   m361: {
     name: "Healing Wish",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5201,7 +5150,7 @@ const moveConfig = {
   },
   m366: {
     name: "Tailwind",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: null,
     accuracy: null,
     cooldown: 6,
@@ -5215,7 +5164,7 @@ const moveConfig = {
   },
   m369: {
     name: "U-Turn",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: 70,
     accuracy: 100,
     cooldown: 2,
@@ -5229,7 +5178,7 @@ const moveConfig = {
   },
   m370: {
     name: "Close Combat",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 150,
     accuracy: 100,
     cooldown: 4,
@@ -5243,7 +5192,7 @@ const moveConfig = {
   },
   "m370-1": {
     name: "Gattling Combat",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 90,
     accuracy: 80,
     cooldown: 5,
@@ -5257,7 +5206,7 @@ const moveConfig = {
   },
   m387: {
     name: "Last Resort",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 80,
     accuracy: 100,
     cooldown: 3,
@@ -5271,7 +5220,7 @@ const moveConfig = {
   },
   m392: {
     name: "Aqua Ring",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5285,7 +5234,7 @@ const moveConfig = {
   },
   m394: {
     name: "Flare Blitz",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 110,
     accuracy: 100,
     cooldown: 5,
@@ -5299,7 +5248,7 @@ const moveConfig = {
   },
   "m394-1": {
     name: "Dark Blitz",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 90,
     accuracy: 100,
     cooldown: 5,
@@ -5313,7 +5262,7 @@ const moveConfig = {
   },
   m396: {
     name: "Aura Sphere",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 100,
     accuracy: null,
     cooldown: 3,
@@ -5327,7 +5276,7 @@ const moveConfig = {
   },
   m398: {
     name: "Poison Jab",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -5341,7 +5290,7 @@ const moveConfig = {
   },
   m399: {
     name: "Dark Pulse",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 65,
     accuracy: 100,
     cooldown: 4,
@@ -5355,7 +5304,7 @@ const moveConfig = {
   },
   m402: {
     name: "Seed Bomb",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 80,
     accuracy: 80,
     cooldown: 3,
@@ -5369,7 +5318,7 @@ const moveConfig = {
   },
   m403: {
     name: "Air Slash",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 65,
     accuracy: 90,
     cooldown: 4,
@@ -5383,7 +5332,7 @@ const moveConfig = {
   },
   m404: {
     name: "X-Scissor",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: 45,
     accuracy: 100,
     cooldown: 4,
@@ -5397,7 +5346,7 @@ const moveConfig = {
   },
   m405: {
     name: "Bug Buzz",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: 70,
     accuracy: 100,
     cooldown: 5,
@@ -5411,7 +5360,7 @@ const moveConfig = {
   },
   m406: {
     name: "Dragon Pulse",
-    type: types.DRAGON,
+    type: pokemonTypes.DRAGON,
     power: 70,
     accuracy: 100,
     cooldown: 4,
@@ -5425,7 +5374,7 @@ const moveConfig = {
   },
   m407: {
     name: "Dragon Rush",
-    type: types.DRAGON,
+    type: pokemonTypes.DRAGON,
     power: 120,
     accuracy: 75,
     cooldown: 3,
@@ -5439,7 +5388,7 @@ const moveConfig = {
   },
   m409: {
     name: "Drain Punch",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 90,
     accuracy: 100,
     cooldown: 3,
@@ -5453,7 +5402,7 @@ const moveConfig = {
   },
   m412: {
     name: "Energy Ball",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -5467,7 +5416,7 @@ const moveConfig = {
   },
   m413: {
     name: "Brave Bird",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 110,
     accuracy: 80,
     cooldown: 5,
@@ -5481,7 +5430,7 @@ const moveConfig = {
   },
   m414: {
     name: "Earth Power",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: 70,
     accuracy: 100,
     cooldown: 4,
@@ -5495,7 +5444,7 @@ const moveConfig = {
   },
   m416: {
     name: "Giga Impact",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 160,
     accuracy: 90,
     cooldown: 6,
@@ -5509,7 +5458,7 @@ const moveConfig = {
   },
   "m416-1": {
     name: "Galaxy Impact",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 150,
     accuracy: 90,
     cooldown: 6,
@@ -5523,7 +5472,7 @@ const moveConfig = {
   },
   m417: {
     name: "Nasty Plot",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -5537,7 +5486,7 @@ const moveConfig = {
   },
   "m417-1": {
     name: "Uncontrollable Joy",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -5551,7 +5500,7 @@ const moveConfig = {
   },
   m418: {
     name: "Bullet Punch",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -5565,7 +5514,7 @@ const moveConfig = {
   },
   m420: {
     name: "Ice Shard",
-    type: types.ICE,
+    type: pokemonTypes.ICE,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -5579,7 +5528,7 @@ const moveConfig = {
   },
   m424: {
     name: "Fire Fang",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: 80,
     accuracy: 95,
     cooldown: 2,
@@ -5593,7 +5542,7 @@ const moveConfig = {
   },
   m425: {
     name: "Shadow Sneak",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: 40,
     accuracy: 100,
     cooldown: 0,
@@ -5607,7 +5556,7 @@ const moveConfig = {
   },
   m428: {
     name: "Zen Headbutt",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 120,
     accuracy: 90,
     cooldown: 4,
@@ -5621,7 +5570,7 @@ const moveConfig = {
   },
   m430: {
     name: "Flash Cannon",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: 65,
     accuracy: 100,
     cooldown: 4,
@@ -5635,7 +5584,7 @@ const moveConfig = {
   },
   m432: {
     name: "Defog",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -5650,7 +5599,7 @@ const moveConfig = {
   // TODO: possibly rework this move
   m433: {
     name: "Trick Room",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5664,7 +5613,7 @@ const moveConfig = {
   },
   m435: {
     name: "Discharge",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 65,
     accuracy: 100,
     cooldown: 4,
@@ -5678,7 +5627,7 @@ const moveConfig = {
   },
   "m435-1": {
     name: "Volt Discharge",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 70,
     accuracy: 100,
     cooldown: 5,
@@ -5692,7 +5641,7 @@ const moveConfig = {
   },
   m437: {
     name: "Leaf Storm",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 100,
     accuracy: 90,
     cooldown: 5,
@@ -5706,7 +5655,7 @@ const moveConfig = {
   },
   m441: {
     name: "Gunk Shot",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 100,
     accuracy: 80,
     cooldown: 3,
@@ -5720,7 +5669,7 @@ const moveConfig = {
   },
   m444: {
     name: "Stone Edge",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 80,
     accuracy: 80,
     cooldown: 4,
@@ -5734,7 +5683,7 @@ const moveConfig = {
   },
   m446: {
     name: "Stealth Rock",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5748,7 +5697,7 @@ const moveConfig = {
   },
   m450: {
     name: "Bug Bite",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: 80,
     accuracy: 100,
     cooldown: 2,
@@ -5762,7 +5711,7 @@ const moveConfig = {
   },
   m453: {
     name: "Aqua Jet",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 40,
     accuracy: 100,
     cooldown: 0,
@@ -5776,7 +5725,7 @@ const moveConfig = {
   },
   m469: {
     name: "Wide Guard",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -5790,7 +5739,7 @@ const moveConfig = {
   },
   m476: {
     name: "Rage Powder",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: null,
     accuracy: null,
     cooldown: 3,
@@ -5804,7 +5753,7 @@ const moveConfig = {
   },
   m479: {
     name: "Smack Down",
-    type: types.ROCK,
+    type: pokemonTypes.ROCK,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -5818,7 +5767,7 @@ const moveConfig = {
   },
   m482: {
     name: "Sludge Wave",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: 85,
     accuracy: 100,
     cooldown: 5,
@@ -5832,7 +5781,7 @@ const moveConfig = {
   },
   m483: {
     name: "Quiver Dance",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -5846,7 +5795,7 @@ const moveConfig = {
   },
   m484: {
     name: "Heavy Slam",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: null,
     accuracy: 100,
     cooldown: 3,
@@ -5860,7 +5809,7 @@ const moveConfig = {
   },
   m492: {
     name: "Foul Play",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 105,
     accuracy: 100,
     cooldown: 3,
@@ -5874,7 +5823,7 @@ const moveConfig = {
   },
   m503: {
     name: "Scald",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -5888,7 +5837,7 @@ const moveConfig = {
   },
   m505: {
     name: "Heal Pulse",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 2,
@@ -5902,7 +5851,7 @@ const moveConfig = {
   },
   m506: {
     name: "Hex",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: 45,
     accuracy: 100,
     cooldown: 0,
@@ -5916,7 +5865,7 @@ const moveConfig = {
   },
   m521: {
     name: "Volt Switch",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 70,
     accuracy: 100,
     cooldown: 2,
@@ -5930,7 +5879,7 @@ const moveConfig = {
   },
   m523: {
     name: "Bulldoze",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: 30,
     accuracy: 100,
     cooldown: 4,
@@ -5944,7 +5893,7 @@ const moveConfig = {
   },
   m525: {
     name: "Dragon Tail",
-    type: types.DRAGON,
+    type: pokemonTypes.DRAGON,
     power: 75,
     accuracy: 90,
     cooldown: 2,
@@ -5958,7 +5907,7 @@ const moveConfig = {
   },
   m526: {
     name: "Work Up",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 0,
@@ -5972,7 +5921,7 @@ const moveConfig = {
   },
   m527: {
     name: "Electroweb",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 50,
     accuracy: 90,
     cooldown: 5,
@@ -5986,7 +5935,7 @@ const moveConfig = {
   },
   m528: {
     name: "Wild Charge",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 100,
     accuracy: 100,
     cooldown: 4,
@@ -6000,7 +5949,7 @@ const moveConfig = {
   },
   m529: {
     name: "Drill Run",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: 85,
     accuracy: 95,
     cooldown: 2,
@@ -6014,7 +5963,7 @@ const moveConfig = {
   },
   m534: {
     name: "Razor Shell",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 90,
     accuracy: 95,
     cooldown: 4,
@@ -6028,7 +5977,7 @@ const moveConfig = {
   },
   m540: {
     name: "Psystrike",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 95,
     accuracy: 100,
     cooldown: 5,
@@ -6042,7 +5991,7 @@ const moveConfig = {
   },
   "m540-1": {
     name: "Divine Departure",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: 85,
     accuracy: 100,
     cooldown: 5,
@@ -6056,7 +6005,7 @@ const moveConfig = {
   },
   m542: {
     name: "Hurricane",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 70,
     accuracy: 70,
     cooldown: 5,
@@ -6070,7 +6019,7 @@ const moveConfig = {
   },
   "m542-1": {
     name: "Shadow Storm",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: 40,
     accuracy: 80,
     cooldown: 5,
@@ -6084,7 +6033,7 @@ const moveConfig = {
   },
   m564: {
     name: "Sticky Web",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -6098,7 +6047,7 @@ const moveConfig = {
   },
   m565: {
     name: "Fell Stinger",
-    type: types.BUG,
+    type: pokemonTypes.BUG,
     power: 100,
     accuracy: 100,
     cooldown: 4,
@@ -6112,7 +6061,7 @@ const moveConfig = {
   },
   m568: {
     name: "Noble Roar",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 70,
     cooldown: 4,
@@ -6126,7 +6075,7 @@ const moveConfig = {
   },
   m573: {
     name: "Freeze-Dry",
-    type: types.ICE,
+    type: pokemonTypes.ICE,
     power: 90,
     accuracy: 90,
     cooldown: 3,
@@ -6140,7 +6089,7 @@ const moveConfig = {
   },
   m572: {
     name: "Petal Blizzard",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: 90,
     accuracy: 100,
     cooldown: 5,
@@ -6154,7 +6103,7 @@ const moveConfig = {
   },
   m574: {
     name: "Disarming Voice",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: 50,
     accuracy: null,
     cooldown: 0,
@@ -6168,7 +6117,7 @@ const moveConfig = {
   },
   m583: {
     name: "Play Rough",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: 95,
     accuracy: 90,
     cooldown: 3,
@@ -6182,7 +6131,7 @@ const moveConfig = {
   },
   m585: {
     name: "Moonblast",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: 80,
     accuracy: 70,
     cooldown: 5,
@@ -6196,7 +6145,7 @@ const moveConfig = {
   },
   m586: {
     name: "Boomburst",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 130,
     accuracy: 100,
     cooldown: 7,
@@ -6210,7 +6159,7 @@ const moveConfig = {
   },
   m605: {
     name: "Dazzling Gleam",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: 75,
     accuracy: 100,
     cooldown: 4,
@@ -6223,7 +6172,7 @@ const moveConfig = {
   },
   m618: {
     name: "Origin Pulse",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 45,
     accuracy: 85,
     cooldown: 6,
@@ -6237,7 +6186,7 @@ const moveConfig = {
   },
   m619: {
     name: "Precipice Blades",
-    type: types.GROUND,
+    type: pokemonTypes.GROUND,
     power: 50,
     accuracy: 85,
     cooldown: 6,
@@ -6251,7 +6200,7 @@ const moveConfig = {
   },
   m620: {
     name: "Dragon Ascent",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 85,
     accuracy: 100,
     cooldown: 7,
@@ -6265,7 +6214,7 @@ const moveConfig = {
   },
   "m620-1": {
     name: "Bolo Breath",
-    type: types.DRAGON,
+    type: pokemonTypes.DRAGON,
     power: 95,
     accuracy: 100,
     cooldown: 6,
@@ -6279,7 +6228,7 @@ const moveConfig = {
   },
   m668: {
     name: "Strength Sap",
-    type: types.GRASS,
+    type: pokemonTypes.GRASS,
     power: null,
     accuracy: 100,
     cooldown: 3,
@@ -6293,7 +6242,7 @@ const moveConfig = {
   },
   m672: {
     name: "Toxic Thread",
-    type: types.POISON,
+    type: pokemonTypes.POISON,
     power: null,
     accuracy: 100,
     cooldown: 5,
@@ -6307,7 +6256,7 @@ const moveConfig = {
   },
   m710: {
     name: "Liquidation",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: 100,
     accuracy: 100,
     cooldown: 3,
@@ -6321,7 +6270,7 @@ const moveConfig = {
   },
   m719: {
     name: "10,000,000 Volt Thunderbolt",
-    type: types.ELECTRIC,
+    type: pokemonTypes.ELECTRIC,
     power: 100,
     accuracy: 100,
     cooldown: 6,
@@ -6335,7 +6284,7 @@ const moveConfig = {
   },
   m742: {
     name: "Double Iron Bash",
-    type: types.STEEL,
+    type: pokemonTypes.STEEL,
     power: 60,
     accuracy: 100,
     cooldown: 6,
@@ -6349,7 +6298,7 @@ const moveConfig = {
   },
   m814: {
     name: "Dual Wingbeat",
-    type: types.FLYING,
+    type: pokemonTypes.FLYING,
     power: 45,
     accuracy: 90,
     cooldown: 4,
@@ -6363,7 +6312,7 @@ const moveConfig = {
   },
   m876: {
     name: "Pound",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: 50,
     accuracy: 100,
     cooldown: 0,
@@ -6376,7 +6325,7 @@ const moveConfig = {
   },
   m20001: {
     name: "Democracy",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: 100,
     cooldown: 4,
@@ -6390,7 +6339,7 @@ const moveConfig = {
   },
   m20002: {
     name: "HM Master",
-    type: types.NORMAL,
+    type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -6404,7 +6353,7 @@ const moveConfig = {
   },
   m20003: {
     name: "Rocket Thievery",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: null,
     cooldown: 7,
@@ -6418,7 +6367,7 @@ const moveConfig = {
   },
   m20004: {
     name: "Time Dilation",
-    type: types.PSYCHIC,
+    type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -6432,7 +6381,7 @@ const moveConfig = {
   },
   m20005: {
     name: "Stoke the Fire!",
-    type: types.FIRE,
+    type: pokemonTypes.FIRE,
     power: null,
     accuracy: null,
     cooldown: 4,
@@ -6446,7 +6395,7 @@ const moveConfig = {
   },
   m20006: {
     name: "Destructor Beam",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 50,
     accuracy: 100,
     cooldown: 4,
@@ -6460,7 +6409,7 @@ const moveConfig = {
   },
   m20007: {
     name: "Scammed!",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: null,
     accuracy: null,
     cooldown: 6,
@@ -6474,7 +6423,7 @@ const moveConfig = {
   },
   m20008: {
     name: "All-In",
-    type: types.GHOST,
+    type: pokemonTypes.GHOST,
     power: null,
     accuracy: null,
     cooldown: 5,
@@ -6488,7 +6437,7 @@ const moveConfig = {
   },
   m20009: {
     name: "King of Hell",
-    type: types.DARK,
+    type: pokemonTypes.DARK,
     power: 50,
     accuracy: 90,
     cooldown: 6,
@@ -6502,7 +6451,7 @@ const moveConfig = {
   },
   m20010: {
     name: "Gear Fifth",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: null,
     accuracy: null,
     cooldown: 7,
@@ -6516,7 +6465,7 @@ const moveConfig = {
   },
   m20011: {
     name: "Dawn Rocket",
-    type: types.FAIRY,
+    type: pokemonTypes.FAIRY,
     power: 85,
     accuracy: null,
     cooldown: 2,
@@ -6530,7 +6479,7 @@ const moveConfig = {
   },
   m20012: {
     name: "Monkey God Gun",
-    type: types.FIGHTING,
+    type: pokemonTypes.FIGHTING,
     power: 80,
     accuracy: 100,
     cooldown: 6,
@@ -6544,7 +6493,7 @@ const moveConfig = {
   },
   m20013: {
     name: "ZA WATER!!!",
-    type: types.WATER,
+    type: pokemonTypes.WATER,
     power: null,
     accuracy: null,
     cooldown: 6,
@@ -6556,12 +6505,24 @@ const moveConfig = {
     description:
       "The user activates its Stand, ZA WATER!!!, forcing time to stop for all other Pokemon. This provides the user a buff granting it 2 extra turns.",
   },
-};
+});
 
+/**
+ * @callback LegacyMoveExecute
+ * @param {Battle} battle
+ * @param {BattlePokemon} source
+ * @param {BattlePokemon} primaryTarget
+ * @param {BattlePokemon[]} allTargets
+ * @param {BattlePokemon[]} missedTargets
+ * @returns {void}
+ */
+/**
+ * @type {Record<LegacyMoveIdEnum, LegacyMoveExecute>}
+ */
 const moveExecutes = {
   m6(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m6";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const damageToDeal = calculateDamage(
         moveData,
@@ -6595,7 +6556,7 @@ const moveExecutes = {
   },
   "m6-1": function (battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m6-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6634,7 +6595,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m7-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // if not miss, attempt to remove defUp, greaterDefUp, spdUp, greaterSpdUp
@@ -6663,7 +6624,7 @@ const moveExecutes = {
   },
   m10(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m10";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const damageToDeal = calculateDamage(
         moveData,
@@ -6680,14 +6641,14 @@ const moveExecutes = {
   m14(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply greater atk up for 3 turns
-      target.addEffect("greaterAtkUp", 3, source);
+      target.applyEffect("greaterAtkUp", 3, source);
       // gain 60% cr
       source.boostCombatReadiness(source, 60);
     }
   },
   m16(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m16";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // if sprungUp, have 2x power
       const sprungUp = target.effectIds.sprungUp !== undefined;
@@ -6703,7 +6664,7 @@ const moveExecutes = {
   },
   m17(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m17";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const damageToDeal = calculateDamage(
         moveData,
@@ -6719,19 +6680,7 @@ const moveExecutes = {
   },
   m21(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m21";
-    const moveData = moveConfig[moveId];
-    for (const target of allTargets) {
-      const miss = missedTargets.includes(target);
-      const damageToDeal = calculateDamage(moveData, source, target, miss);
-      source.dealDamage(damageToDeal, target, {
-        type: "move",
-        moveId,
-      });
-    }
-  },
-  m22(_battle, source, _primaryTarget, allTargets, missedTargets) {
-    const moveId = "m22";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6743,7 +6692,7 @@ const moveExecutes = {
   },
   m23(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m23";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6754,13 +6703,13 @@ const moveExecutes = {
 
       // if not miss, flinch with 30% chance
       if (!miss && Math.random() < 0.3) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
   m30(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m30";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6772,7 +6721,7 @@ const moveExecutes = {
   },
   m33(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m33";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6784,7 +6733,7 @@ const moveExecutes = {
   },
   m34(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m34";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6807,7 +6756,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m34-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6824,7 +6773,7 @@ const moveExecutes = {
   },
   m35(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m35";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6835,7 +6784,7 @@ const moveExecutes = {
 
       // if not miss, apply 1/8 hp DoT for 2 turns
       if (!miss) {
-        target.addEffect("dot", 2, source, {
+        target.applyEffect("dot", 2, source, {
           damage: Math.max(Math.floor(target.maxHp / 8), 1),
         });
       }
@@ -6843,7 +6792,7 @@ const moveExecutes = {
   },
   m36(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m36";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -6862,7 +6811,7 @@ const moveExecutes = {
   },
   m38(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m38";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const damageToDeal = calculateDamage(
@@ -6885,7 +6834,7 @@ const moveExecutes = {
   },
   m40(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m40";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6905,7 +6854,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       if (!miss) {
         // def down 2 turns
-        target.addEffect("defDown", 2, source);
+        target.applyEffect("defDown", 2, source);
       }
     }
   },
@@ -6913,7 +6862,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // remove all buffs
       for (const effectId of Object.keys(target.effectIds)) {
-        const effectData = effectConfig[effectId];
+        const effectData = getEffect(effectId);
         if (effectData.type === effectTypes.BUFF) {
           target.dispellEffect(effectId);
         }
@@ -6934,13 +6883,13 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (!miss) {
-        target.addEffect("disable", 1, source);
+        target.applyEffect("disable", 1, source);
       }
     }
   },
   m51(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m51";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6951,13 +6900,13 @@ const moveExecutes = {
 
       // 20% chance spd down 1 turn
       if (!miss && Math.random() < 0.2) {
-        target.addEffect("spdDown", 1, source);
+        target.applyEffect("spdDown", 1, source);
       }
     }
   },
   m52(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m52";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6974,7 +6923,7 @@ const moveExecutes = {
   },
   m53(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m53";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -6991,7 +6940,7 @@ const moveExecutes = {
   },
   m55(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m55";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7003,7 +6952,7 @@ const moveExecutes = {
   },
   m56(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m56";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7026,7 +6975,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m56-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     const multiplier = allTargets.length === 1 ? 1.5 : 1;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -7050,7 +6999,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m56-2";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7060,13 +7009,13 @@ const moveExecutes = {
       });
 
       // reduce atk and spa for 1 turn
-      target.addEffect("atkDown", 1, source);
-      target.addEffect("spaDown", 1, source);
+      target.applyEffect("atkDown", 1, source);
+      target.applyEffect("spaDown", 1, source);
     }
   },
   m57(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m57";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // deal less damage if more targets
     const numTargets = allTargets.length;
     const power = moveData.power - (numTargets - 1) * 5;
@@ -7083,7 +7032,7 @@ const moveExecutes = {
   },
   m58(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m58";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7100,7 +7049,7 @@ const moveExecutes = {
   },
   m59(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m59";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7117,7 +7066,7 @@ const moveExecutes = {
   },
   m60(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m60";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7128,13 +7077,13 @@ const moveExecutes = {
 
       // if not miss, 50% chance to confuse for 1 turn
       if (!miss && Math.random() < 0.5) {
-        target.addEffect("confused", 1, source);
+        target.applyEffect("confused", 1, source);
       }
     }
   },
   m63(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m63";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7149,11 +7098,11 @@ const moveExecutes = {
       );
     }
     // apply recharge to self
-    source.addEffect("recharge", 1, source);
+    source.applyEffect("recharge", 1, source);
   },
   m64(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m64";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7165,7 +7114,7 @@ const moveExecutes = {
   },
   m65(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m65";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7178,12 +7127,12 @@ const moveExecutes = {
   m68(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply counter 2 turn
-      target.addEffect("counter", 2, source);
+      target.applyEffect("counter", 2, source);
     }
   },
   m70(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m70";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // 5% of atk true damage
@@ -7198,7 +7147,7 @@ const moveExecutes = {
   },
   m71(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m71";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -7218,7 +7167,10 @@ const moveExecutes = {
   m73(battle, source, _primaryTarget, allTargets, missedTargets) {
     for (const target of allTargets) {
       // check if target is grass type
-      if (target.type1 === types.GRASS || target.type2 === types.GRASS) {
+      if (
+        target.type1 === pokemonTypes.GRASS ||
+        target.type2 === pokemonTypes.GRASS
+      ) {
         battle.addToLog(
           `${target.name}'s Grass type renders it immune to Leech Seed!`
         );
@@ -7231,19 +7183,19 @@ const moveExecutes = {
       }
 
       // apply leech seed 5 turns
-      target.addEffect("leechSeed", 5, source);
+      target.applyEffect("leechSeed", 5, source);
     }
   },
   m76(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m76";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // if pokemon doesnt have "abosrb light" buff, apply it
     if (
       source.effectIds.absorbLight === undefined &&
       !battle.isWeatherNegated() &&
       battle.weather.weatherId !== weatherConditions.SUN
     ) {
-      source.addEffect("absorbLight", 1, source);
+      source.applyEffect("absorbLight", 1, source);
       // remove solar beam cd
       source.moveIds[moveId].cooldown = 0;
     } else {
@@ -7270,7 +7222,10 @@ const moveExecutes = {
   m77(battle, source, _primaryTarget, allTargets, missedTargets) {
     for (const target of allTargets) {
       // check if target is grass type
-      if (target.type1 === types.GRASS || target.type2 === types.GRASS) {
+      if (
+        target.type1 === pokemonTypes.GRASS ||
+        target.type2 === pokemonTypes.GRASS
+      ) {
         battle.addToLog(
           `${target.name}'s Grass type renders it immune to spore moves!`
         );
@@ -7288,7 +7243,10 @@ const moveExecutes = {
   m79(battle, source, _primaryTarget, allTargets, missedTargets) {
     for (const target of allTargets) {
       // check if target is grass type
-      if (target.type1 === types.GRASS || target.type2 === types.GRASS) {
+      if (
+        target.type1 === pokemonTypes.GRASS ||
+        target.type2 === pokemonTypes.GRASS
+      ) {
         battle.addToLog(
           `${target.name}'s Grass type renders it immune to spore moves!`
         );
@@ -7311,14 +7269,14 @@ const moveExecutes = {
       }
 
       // sharply lower speed for 1 turn
-      target.addEffect("greaterSpeDown", 1, source);
+      target.applyEffect("greaterSpeDown", 1, source);
       // lower cr by 15%
       target.reduceCombatReadiness(source, 15);
     }
   },
   m84(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m84";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7335,7 +7293,7 @@ const moveExecutes = {
   },
   m85(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m85";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7365,7 +7323,7 @@ const moveExecutes = {
   },
   m87(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m87";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // if sprungUp, have 2x power
       const sprungUp = target.effectIds.sprungUp !== undefined;
@@ -7392,7 +7350,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m87-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // if sprungUp, have 2x power
       const sprungUp = target.effectIds.sprungUp !== undefined;
@@ -7407,11 +7365,11 @@ const moveExecutes = {
     }
 
     // add spe down to user 1 turn
-    source.addEffect("speDown", 1, source);
+    source.applyEffect("speDown", 1, source);
   },
   m88(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m88";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7423,7 +7381,7 @@ const moveExecutes = {
   },
   m89(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m89";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // deal less damage if more targets
     const numTargets = allTargets.length;
     const power = moveData.power - (numTargets - 1) * 7;
@@ -7448,10 +7406,10 @@ const moveExecutes = {
 
   m91(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m91";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // if pokemon doesnt have "burrowed" buff, apply it
     if (source.effectIds.burrowed === undefined) {
-      source.addEffect("burrowed", 1, source);
+      source.applyEffect("burrowed", 1, source);
       // remove dig cd
       source.moveIds[moveId].cooldown = 0;
     } else {
@@ -7472,7 +7430,8 @@ const moveExecutes = {
       // if not miss or user poison, apply badly poisoned
       const miss = missedTargets.includes(target);
       const poisonType =
-        source.type1 === types.POISON || source.type2 === types.POISON;
+        source.type1 === pokemonTypes.POISON ||
+        source.type2 === pokemonTypes.POISON;
       if (!miss || poisonType) {
         target.applyStatus(statusConditions.BADLY_POISON, source);
       }
@@ -7480,7 +7439,7 @@ const moveExecutes = {
   },
   m93(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m93";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7491,13 +7450,13 @@ const moveExecutes = {
 
       // if not miss, 25% to confuse
       if (!miss && Math.random() < 0.25) {
-        target.addEffect("confused", 1, source);
+        target.applyEffect("confused", 1, source);
       }
     }
   },
   m94(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m94";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7508,14 +7467,14 @@ const moveExecutes = {
 
       // if not miss, 60% chance to spd down 1 turn
       if (!miss && Math.random() < 0.6) {
-        target.addEffect("spdDown", 1, source);
+        target.applyEffect("spdDown", 1, source);
       }
     }
   },
   m97(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply greaterSpeUp buff
-      target.addEffect("greaterSpeUp", 4, source);
+      target.applyEffect("greaterSpeUp", 4, source);
       // boost combat readiness by 80
       target.boostCombatReadiness(source, 80);
     }
@@ -7523,19 +7482,22 @@ const moveExecutes = {
   "m97-1": function (_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply atkUp, speUp buff
-      target.addEffect("atkUp", 4, source);
-      target.addEffect("speUp", 4, source);
+      target.applyEffect("atkUp", 4, source, undefined);
+      target.applyEffect("speUp", 4, source, undefined);
 
       // boost combat readiness by 60
       target.boostCombatReadiness(source, 80);
     }
     // if user not fire, change second type to fire
-    if (source.type1 !== types.FIRE && source.type2 !== types.FIRE) {
-      source.type2 = types.FIRE;
+    if (
+      source.type1 !== pokemonTypes.FIRE &&
+      source.type2 !== pokemonTypes.FIRE
+    ) {
+      source.type2 = pokemonTypes.FIRE;
     }
   },
   m98(_battle, source, _primaryTarget, allTargets, missedTargets) {
-    const moveData = moveConfig.m98;
+    const moveData = getMove("m98");
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7581,7 +7543,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // attempt to get targets ultimate move
       const ultimateMoveIds = Object.keys(target.moveIds).filter(
-        (moveId) => moveConfig[moveId].tier === moveTiers.ULTIMATE
+        (moveId) => getMove(moveId).tier === moveTiers.ULTIMATE
       );
       if (ultimateMoveIds.length === 0) {
         battle.addToLog(`But if failed!`);
@@ -7590,7 +7552,7 @@ const moveExecutes = {
       const ultimateMoveId = ultimateMoveIds[0];
 
       // replace move with ultimate move
-      source.addEffect("mimic", 3, source, {
+      source.applyEffect("mimic", 3, source, {
         moveId: ultimateMoveId,
         oldMoveId,
       });
@@ -7604,7 +7566,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       if (!miss) {
         // greater def down for 2 turns
-        target.addEffect("greaterDefDown", 2, source);
+        target.applyEffect("greaterDefDown", 2, source);
       }
     }
   },
@@ -7622,9 +7584,9 @@ const moveExecutes = {
   m106(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // def up for 2 turns
-      target.addEffect("defUp", 2, source);
+      target.applyEffect("defUp", 2, source);
       // gain 15% def as shield
-      target.addEffect("shield", 2, source, {
+      target.applyEffect("shield", 2, source, {
         shield: Math.floor(target.getDef() * 0.15),
       });
     }
@@ -7634,22 +7596,22 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       // if not miss, greater acc down 2 turns
       if (!miss) {
-        target.addEffect("greaterAccDown", 2, source);
+        target.applyEffect("greaterAccDown", 2, source);
       }
     }
   },
   "m108-1": function (_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // greater eva up 2 turns
-      target.addEffect("greaterEvaUp", 2, source);
+      target.applyEffect("greaterEvaUp", 2, source);
     }
   },
   m110(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // def up for 2 turns
-      target.addEffect("defUp", 2, source);
+      target.applyEffect("defUp", 2, source);
       // gain 15% def as shield
-      target.addEffect("shield", 2, source, {
+      target.applyEffect("shield", 2, source, {
         shield: Math.floor(target.getDef() * 0.15),
       });
     }
@@ -7657,9 +7619,9 @@ const moveExecutes = {
   m111(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // def up for 4 turns
-      target.addEffect("defUp", 4, source);
+      target.applyEffect("defUp", 4, source);
       // rollout 4 turns
-      target.addEffect("rollout", 4, source);
+      target.applyEffect("rollout", 4, source);
     }
   },
   m113(battle, source, primaryTarget, allTargets) {
@@ -7673,10 +7635,10 @@ const moveExecutes = {
     for (const target of allTargets) {
       if (targetRow.includes(target)) {
         // greater spd up for 3 turns
-        target.addEffect("greaterSpdUp", 3, source);
+        target.applyEffect("greaterSpdUp", 3, source);
       } else {
         // spd up for 3 turns
-        target.addEffect("spdUp", 3, source);
+        target.applyEffect("spdUp", 3, source);
       }
     }
   },
@@ -7691,17 +7653,17 @@ const moveExecutes = {
     for (const target of allTargets) {
       if (targetRow.includes(target)) {
         // greater def up for 3 turns
-        target.addEffect("greaterDefUp", 3, source);
+        target.applyEffect("greaterDefUp", 3, source);
       } else {
         // def up for 3 turns
-        target.addEffect("defUp", 3, source);
+        target.applyEffect("defUp", 3, source);
       }
     }
   },
   m116(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // greater atk up for 1 turn
-      target.addEffect("greaterAtkUp", 1, source);
+      target.applyEffect("greaterAtkUp", 1, source);
 
       // boost 50% cr
       target.boostCombatReadiness(source, 50);
@@ -7709,12 +7671,12 @@ const moveExecutes = {
   },
   m118(battle, source) {
     // get random basic moves
-    const basicMoves = Object.keys(moveConfig).filter(
-      (moveId) => moveConfig[moveId].tier === moveTiers.BASIC
-    );
+    const basicMoves = getMoveIds({
+      fieldFilter: { tier: moveTiers.BASIC },
+    });
     const randomMoveId =
       basicMoves[Math.floor(Math.random() * basicMoves.length)];
-    const randomMoveData = moveConfig[randomMoveId];
+    const randomMoveData = getMove(randomMoveId);
     battle.addToLog(`${source.name} used ${randomMoveData.name}!`);
 
     // get eligible targets
@@ -7727,17 +7689,18 @@ const moveExecutes = {
     // get random target & use move
     const randomTarget =
       eligibleTargets[Math.floor(Math.random() * eligibleTargets.length)];
-    moveExecutes[randomMoveId](
+    executeMove({
+      moveId: randomMoveId,
       battle,
       source,
-      randomTarget,
-      [randomTarget],
-      []
-    );
+      primaryTarget: randomTarget,
+      allTargets: [randomTarget],
+      missedTargets: [],
+    });
   },
   m122(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m122";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7754,7 +7717,7 @@ const moveExecutes = {
   },
   m123(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m123";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7771,7 +7734,7 @@ const moveExecutes = {
   },
   m126(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m126";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7788,7 +7751,7 @@ const moveExecutes = {
   },
   m127(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m127";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7801,13 +7764,13 @@ const moveExecutes = {
       const flinchChance =
         source.atk > target.atk ? 0.2 + (source.atk / target.atk - 1) : 0.2;
       if (!miss && Math.random() < flinchChance) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
   m134(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m134";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7818,7 +7781,7 @@ const moveExecutes = {
 
       // if not miss, apply accDown
       if (!miss) {
-        target.addEffect("accDown", 1, source);
+        target.applyEffect("accDown", 1, source);
       }
     }
   },
@@ -7845,7 +7808,7 @@ const moveExecutes = {
   },
   m136(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m136";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -7894,11 +7857,11 @@ const moveExecutes = {
   },
   m143(battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m143";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let defeatedEnemy = false;
     // two turn move logic
     if (source.effectIds.skyCharge === undefined) {
-      source.addEffect("skyCharge", 1, source);
+      source.applyEffect("skyCharge", 1, source);
       // remove sky attack cd
       source.moveIds[moveId].cooldown = 0;
     } else {
@@ -7932,14 +7895,17 @@ const moveExecutes = {
       // flinch chance = (30 + source speed/10)
       const flinchChance = Math.min(0.3 + source.getSpe() / 10 / 100, 0.75);
       if (Math.random() < flinchChance) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
   m147(battle, source, _primaryTarget, allTargets, missedTargets) {
     for (const target of allTargets) {
       // check if target is grass type
-      if (target.type1 === types.GRASS || target.type2 === types.GRASS) {
+      if (
+        target.type1 === pokemonTypes.GRASS ||
+        target.type2 === pokemonTypes.GRASS
+      ) {
         battle.addToLog(
           `${target.name}'s Grass type renders it immune to spore moves!`
         );
@@ -7968,7 +7934,7 @@ const moveExecutes = {
   },
   m152(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m152";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // 5% of atk true damage
@@ -7983,7 +7949,7 @@ const moveExecutes = {
   },
   m153(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m153";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // power = base power + percent hp * 100
     const power = moveData.power + (source.hp / source.maxHp) * 100;
     for (const target of allTargets) {
@@ -8032,7 +7998,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m154-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8043,7 +8009,7 @@ const moveExecutes = {
 
       // if not miss, lower def 1 turn
       if (!miss) {
-        target.addEffect("defDown", 1, source);
+        target.applyEffect("defDown", 1, source);
       }
     }
 
@@ -8061,7 +8027,7 @@ const moveExecutes = {
   },
   m156(battle, source, _primaryTarget, allTargets) {
     const moveId = "m156";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // if source asleep or max HP, fail
     if (
@@ -8077,7 +8043,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // remove all debuffs
       for (const effectId of Object.keys(target.effectIds)) {
-        const effectData = effectConfig[effectId];
+        const effectData = getEffect(effectId);
         if (effectData.type === effectTypes.DEBUFF) {
           target.removeEffect(effectId);
         }
@@ -8096,7 +8062,7 @@ const moveExecutes = {
   },
   m157(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m157";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8107,7 +8073,7 @@ const moveExecutes = {
 
       // if not miss, 70% chance to flinch for 1 turn
       if (!miss && Math.random() < 0.7) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
@@ -8124,7 +8090,7 @@ const moveExecutes = {
   },
   m167(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m167";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       let damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8146,7 +8112,7 @@ const moveExecutes = {
   },
   m168(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m168";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8159,7 +8125,7 @@ const moveExecutes = {
       if (!miss) {
         const possibleBuffs = Object.keys(target.effectIds).filter(
           (effectId) => {
-            const effectData = effectConfig[effectId];
+            const effectData = getEffect(effectId);
             return (
               effectData.type === effectTypes.BUFF && effectData.dispellable
             );
@@ -8177,7 +8143,7 @@ const moveExecutes = {
             continue;
           }
           // apply buff to self
-          source.addEffect(
+          source.applyEffect(
             buffIdToSteal,
             buffToSteal.duration,
             buffToSteal.source,
@@ -8189,7 +8155,7 @@ const moveExecutes = {
   },
   m175(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m175";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // calculate power (lower hp = higher power)
       const n = Math.floor((source.hp / source.maxHp) * 100);
@@ -8217,7 +8183,7 @@ const moveExecutes = {
   },
   m177(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m177";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // filter out allTargets => just the primary target and up to 2 random other targets
     let damagedTargets = [];
     if (allTargets.length > 3) {
@@ -8259,7 +8225,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m177-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       let type = source.getTypeDamageMultiplier(moveData.type, target);
@@ -8279,18 +8245,18 @@ const moveExecutes = {
   m182(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply move invulnerable
-      target.addEffect("moveInvulnerable", 1, source);
+      target.applyEffect("moveInvulnerable", 1, source);
     }
   },
   "m182-1": function (_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply super stretchy
-      target.addEffect("superStretchy", 1, source);
+      target.applyEffect("superStretchy", 1, source);
     }
   },
   m183(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m183";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8311,7 +8277,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m183-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8329,7 +8295,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       if (!miss) {
         // apply confused for 3 turns
-        target.addEffect("confused", 3, source);
+        target.applyEffect("confused", 3, source);
       }
     }
   },
@@ -8353,7 +8319,7 @@ const moveExecutes = {
   },
   m188(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m188";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8370,7 +8336,7 @@ const moveExecutes = {
   },
   m189(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m189";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8381,7 +8347,7 @@ const moveExecutes = {
 
       // if not missed, acc down
       if (!miss) {
-        target.addEffect("accDown", 1, source);
+        target.applyEffect("accDown", 1, source);
       }
     }
   },
@@ -8393,13 +8359,13 @@ const moveExecutes = {
     for (const target of allTargets) {
       // if not miss, apply spikes 3 turns
       if (!missedTargets.includes(target)) {
-        target.addEffect("spikes", 3, source);
+        target.applyEffect("spikes", 3, source);
       }
     }
   },
   m192(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m192";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8417,7 +8383,7 @@ const moveExecutes = {
   m194(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply destiny bond 1 turn to user
-      source.addEffect("destinyBond", 1, source, {
+      source.applyEffect("destinyBond", 1, source, {
         boundPokemon: target,
       });
     }
@@ -8426,7 +8392,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // if not miss, apply perish song 3 turns
       if (!missedTargets.includes(target)) {
-        target.addEffect("perishSong", 3, source);
+        target.applyEffect("perishSong", 3, source);
       }
     }
 
@@ -8438,7 +8404,7 @@ const moveExecutes = {
       source.position
     );
     for (const target of allyTargets) {
-      target.addEffect("perishSong", 3, source);
+      target.applyEffect("perishSong", 3, source);
     }
 
     // append ally targets to all targets
@@ -8447,16 +8413,16 @@ const moveExecutes = {
   m199(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply redirect and greaterEvaDown 1 turn
-      target.addEffect("redirect", 1, source);
-      target.addEffect("greaterEvaDown", 1, source);
+      target.applyEffect("redirect", 1, source);
+      target.applyEffect("greaterEvaDown", 1, source);
     }
   },
   m200(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m200";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // if source doesn't have outrage, apply it
     if (source.effectIds.outrage === undefined) {
-      source.addEffect("outrage", 2, source);
+      source.applyEffect("outrage", 2, source);
     }
 
     for (const target of allTargets) {
@@ -8475,12 +8441,12 @@ const moveExecutes = {
       // remove outrage
       source.removeEffect("outrage");
       // confuse self
-      source.addEffect("confused", 2, source);
+      source.applyEffect("confused", 2, source);
     }
   },
   m202(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m202";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -8500,7 +8466,7 @@ const moveExecutes = {
   m203(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply 1 turn immortality
-      target.addEffect("immortal", 1, source);
+      target.applyEffect("immortal", 1, source);
     }
   },
   m204(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -8508,13 +8474,13 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       if (!miss) {
         // greater atk down for 2 turns
-        target.addEffect("greaterAtkDown", 2, source);
+        target.applyEffect("greaterAtkDown", 2, source);
       }
     }
   },
   m205(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m205";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let targetHit = false;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -8534,7 +8500,7 @@ const moveExecutes = {
 
     if (targetHit) {
       // add rollout for 1 turn
-      source.addEffect("rollout", 1, source);
+      source.applyEffect("rollout", 1, source);
     }
   },
   m208(_battle, source, _primaryTarget, allTargets) {
@@ -8543,7 +8509,7 @@ const moveExecutes = {
       let effects = 0;
       // remove all debuffs
       for (const effectId of Object.keys(target.effectIds)) {
-        const effectData = effectConfig[effectId];
+        const effectData = getEffect(effectId);
         if (effectData.type === effectTypes.DEBUFF) {
           if (target.dispellEffect(effectId)) {
             effects += 1;
@@ -8569,11 +8535,11 @@ const moveExecutes = {
     const moveId = "m208-1";
     for (const target of allTargets) {
       // give all stats up 1 turn
-      target.addEffect("atkUp", 1, source);
-      target.addEffect("defUp", 1, source);
-      target.addEffect("spaUp", 1, source);
-      target.addEffect("spdUp", 1, source);
-      target.addEffect("speUp", 1, source);
+      target.applyEffect("atkUp", 1, source);
+      target.applyEffect("defUp", 1, source);
+      target.applyEffect("spaUp", 1, source);
+      target.applyEffect("spdUp", 1, source);
+      target.applyEffect("speUp", 1, source);
 
       // heal
       source.giveHeal(Math.floor(source.maxHp * 0.25), source, {
@@ -8584,7 +8550,7 @@ const moveExecutes = {
   },
   m210(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m210";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let targetHit = false;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -8604,7 +8570,7 @@ const moveExecutes = {
 
     if (targetHit) {
       // add fury cutter for 1 turn
-      source.addEffect("furyCutter", 1, source);
+      source.applyEffect("furyCutter", 1, source);
     }
   },
   m212(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -8614,7 +8580,7 @@ const moveExecutes = {
       // if not miss, cr down 50% and restrict 2 turns
       if (!miss) {
         target.reduceCombatReadiness(source, 50);
-        target.addEffect("restricted", 2, source);
+        target.applyEffect("restricted", 2, source);
       }
     }
   },
@@ -8630,7 +8596,7 @@ const moveExecutes = {
 
       // if not miss, greater spe down 2 turns
       if (!miss) {
-        target.addEffect("greaterSpeDown", 2, source);
+        target.applyEffect("greaterSpeDown", 2, source);
       }
     }
   },
@@ -8653,7 +8619,7 @@ const moveExecutes = {
     }
     const randomMoveId =
       sleepTalkMoves[Math.floor(Math.random() * sleepTalkMoves.length)];
-    const randomMoveData = moveConfig[randomMoveId];
+    const randomMoveData = getMove(randomMoveId);
     battle.addToLog(`${source.name} used ${randomMoveData.name}!`);
 
     // get valid targets
@@ -8678,7 +8644,14 @@ const moveExecutes = {
     );
     // use move against target
     battle.addToLog(`${randomMoveData.name} hit ${randomTarget.name}!`);
-    moveExecutes[randomMoveId](battle, source, randomTarget, targets, []);
+    executeMove({
+      moveId: randomMoveId,
+      battle,
+      source,
+      primaryTarget: randomTarget,
+      allTargets: targets,
+      missedTargets: [],
+    });
 
     // roll wakeup
     // sleep wakeup chance: 0 turns: 0%, 1 turn: 66%, 2 turns: 100%
@@ -8707,7 +8680,7 @@ const moveExecutes = {
   },
   m216(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m216";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // 20 less bp if source is damaged
@@ -8723,12 +8696,12 @@ const moveExecutes = {
   m219(_battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // apply status immunity for 3 turns
-      target.addEffect("statusImmunity", 3, source);
+      target.applyEffect("statusImmunity", 3, source);
     }
   },
   m221(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m221";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // filter out allTargets => just the primary target and up to 2 random other targets
     let damagedTargets = [];
     if (allTargets.length > 3) {
@@ -8761,7 +8734,7 @@ const moveExecutes = {
   },
   m223(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m223";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8780,14 +8753,14 @@ const moveExecutes = {
           moveId
         );
         for (const enemyTarget of enemyTargets) {
-          enemyTarget.addEffect("confused", 2, source);
+          enemyTarget.applyEffect("confused", 2, source);
         }
       }
     }
   },
   m224(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m224";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8810,7 +8783,7 @@ const moveExecutes = {
           return;
         }
         // apply effect to target
-        target.addEffect(
+        target.applyEffect(
           effectId,
           effect.duration,
           effect.source,
@@ -8825,13 +8798,13 @@ const moveExecutes = {
       target.boostCombatReadiness(source, 100);
 
       // give greater atkup, defup 2 turns
-      target.addEffect("greaterAtkUp", 2, source);
-      target.addEffect("greaterDefUp", 2, source);
+      target.applyEffect("greaterAtkUp", 2, source);
+      target.applyEffect("greaterDefUp", 2, source);
     }
   },
   m229(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m229";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8850,7 +8823,7 @@ const moveExecutes = {
     );
     for (const ally of allyTargets) {
       for (const effectId of Object.keys(ally.effectIds)) {
-        const effectData = effectConfig[effectId];
+        const effectData = getEffect(effectId);
         if (effectData.type !== effectTypes.DEBUFF) {
           continue;
         }
@@ -8864,14 +8837,14 @@ const moveExecutes = {
   },
   m231(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m231";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // check if user def is higher, if so apply effects before damage
       const beforeDamage = source.getDef() > target.getDef();
       if (!miss && beforeDamage) {
         // apply def down 2 turns
-        target.addEffect("defDown", 2, source);
+        target.applyEffect("defDown", 2, source);
       }
       const damageToDeal = calculateDamage(moveData, source, target, miss);
       source.dealDamage(damageToDeal, target, {
@@ -8881,7 +8854,7 @@ const moveExecutes = {
 
       if (!miss && !beforeDamage) {
         // apply def down 2 turns
-        target.addEffect("defDown", 2, source);
+        target.applyEffect("defDown", 2, source);
       }
     }
   },
@@ -8897,8 +8870,8 @@ const moveExecutes = {
           fraction = 0.33;
 
           // gain 2 turns spa, spd up
-          target.addEffect("spaUp", 2, source);
-          target.addEffect("spdUp", 2, source);
+          target.applyEffect("spaUp", 2, source);
+          target.applyEffect("spdUp", 2, source);
         } else {
           fraction = 0.25;
         }
@@ -8934,7 +8907,7 @@ const moveExecutes = {
   },
   m238(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m238";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8951,7 +8924,7 @@ const moveExecutes = {
   },
   m239(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m239";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8962,7 +8935,7 @@ const moveExecutes = {
 
       // if not missed, 30% chance to flinch
       if (!miss && Math.random() < 0.3) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
@@ -8976,7 +8949,7 @@ const moveExecutes = {
   },
   m242(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m242";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -8987,21 +8960,21 @@ const moveExecutes = {
 
       // if not miss, 85% chance to reduce def
       if (!miss && Math.random() < 0.85) {
-        target.addEffect("defDown", 2, source);
+        target.applyEffect("defDown", 2, source);
       }
     }
   },
   m243(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m243";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply mirror coat 2 turn
-      target.addEffect("mirrorCoat", 2, source);
+      target.applyEffect("mirrorCoat", 2, source);
     }
   },
   m245(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m245";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9016,7 +8989,7 @@ const moveExecutes = {
   },
   m246(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m246";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9046,19 +9019,19 @@ const moveExecutes = {
     );
     switch (highestStatIndex + 1) {
       case 1:
-        source.addEffect("atkUp", 1, source);
+        source.applyEffect("atkUp", 1, source);
         break;
       case 2:
-        source.addEffect("defUp", 1, source);
+        source.applyEffect("defUp", 1, source);
         break;
       case 3:
-        source.addEffect("spaUp", 1, source);
+        source.applyEffect("spaUp", 1, source);
         break;
       case 4:
-        source.addEffect("spdUp", 1, source);
+        source.applyEffect("spdUp", 1, source);
         break;
       case 5:
-        source.addEffect("speUp", 1, source);
+        source.applyEffect("speUp", 1, source);
         break;
       default:
         break;
@@ -9066,7 +9039,7 @@ const moveExecutes = {
   },
   m247(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m247";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9077,13 +9050,13 @@ const moveExecutes = {
 
       // if not miss, 85% chance to reduce sp def
       if (!miss && Math.random() < 0.85) {
-        target.addEffect("spdDown", 2, source);
+        target.applyEffect("spdDown", 2, source);
       }
     }
   },
   m248(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m248";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (miss) {
@@ -9091,12 +9064,12 @@ const moveExecutes = {
       }
 
       // apply 2 turns future sight
-      target.addEffect("futureSight", 2, source);
+      target.applyEffect("futureSight", 2, source);
     }
   },
   m249(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m249";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9107,13 +9080,13 @@ const moveExecutes = {
 
       // if not miss, def down 2 turns 70% chance
       if (!miss && Math.random() < 0.7) {
-        target.addEffect("defDown", 2, source);
+        target.applyEffect("defDown", 2, source);
       }
     }
   },
   m252(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m252";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9124,7 +9097,7 @@ const moveExecutes = {
 
       // if not miss, flinch for 1 turn
       if (!miss) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
 
@@ -9133,7 +9106,7 @@ const moveExecutes = {
   },
   m257(battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m257";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // get only target row
     const targetParty = battle.parties[primaryTarget.teamName];
@@ -9162,28 +9135,28 @@ const moveExecutes = {
   },
   m258(battle, source, _primaryTarget, _allTargets, _missedTargets) {
     const moveId = "m258";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // hail weather
     battle.createWeather(weatherConditions.HAIL, source);
   },
   m266(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m266";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply redirect for 1 turn
-      target.addEffect("redirect", 1, source);
+      target.applyEffect("redirect", 1, source);
     }
   },
   m262(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m262";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (!miss) {
         // give 2 turns greater atk, spa down
-        target.addEffect("greaterAtkDown", 2, source);
-        target.addEffect("greaterSpaDown", 2, source);
+        target.applyEffect("greaterAtkDown", 2, source);
+        target.applyEffect("greaterSpaDown", 2, source);
       }
     }
     // cause self to faint
@@ -9191,17 +9164,17 @@ const moveExecutes = {
   },
   m268(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m266";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply charge for 1 turn
-      target.addEffect("charge", 1, source);
+      target.applyEffect("charge", 1, source);
       // apply spd up for 1 turn
-      target.addEffect("spdUp", 1, source);
+      target.applyEffect("spdUp", 1, source);
     }
   },
   m269(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m269";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (miss) {
@@ -9209,7 +9182,7 @@ const moveExecutes = {
       }
 
       // add taunt for 2 turns
-      target.addEffect("taunt", 2, source);
+      target.applyEffect("taunt", 2, source);
     }
   },
   "m269-1": function (
@@ -9220,7 +9193,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m269-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (miss) {
@@ -9228,32 +9201,32 @@ const moveExecutes = {
       }
 
       // add reverse taunt for 2 turns
-      target.addEffect("reverseTaunt", 2, source);
+      target.applyEffect("reverseTaunt", 2, source);
     }
   },
   m270(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m270";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply atk up and spa up 1 turn
-      target.addEffect("atkUp", 1, source);
-      target.addEffect("spaUp", 1, source);
+      target.applyEffect("atkUp", 1, source);
+      target.applyEffect("spaUp", 1, source);
     }
   },
   m273(battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m273";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // give delayed heal
       battle.addToLog(`${target.name} recieved ${source.name}'s wish!`);
-      target.addEffect("delayedHeal", 1, source, {
+      target.applyEffect("delayedHeal", 1, source, {
         healAmount: Math.floor(source.maxHp * 0.5),
       });
     }
   },
   m276(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m276";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9263,12 +9236,12 @@ const moveExecutes = {
       });
     }
     // reduce source atk and def
-    source.addEffect("atkDown", 1, source);
-    source.addEffect("defDown", 1, source);
+    source.applyEffect("atkDown", 1, source);
+    source.applyEffect("defDown", 1, source);
   },
   m281(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m281";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // if not miss  apply yawn debuff
       const miss = missedTargets.includes(target);
@@ -9277,14 +9250,14 @@ const moveExecutes = {
         if (source.status.statusId === statusConditions.SLEEP) {
           target.applyStatus(statusConditions.SLEEP, source);
         } else {
-          target.addEffect("yawn", 1, source);
+          target.applyEffect("yawn", 1, source);
         }
       }
     }
   },
   m282(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m282";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
 
@@ -9292,7 +9265,7 @@ const moveExecutes = {
       // if not miss, remove all buffs
       if (!miss) {
         for (const effectId of Object.keys(target.effectIds)) {
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (effectData.type !== effectTypes.BUFF) {
             continue;
           }
@@ -9316,7 +9289,7 @@ const moveExecutes = {
   },
   m283(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m283";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (miss) {
@@ -9338,7 +9311,7 @@ const moveExecutes = {
   },
   m284(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m284";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // power = power * proportion source HP
@@ -9354,15 +9327,15 @@ const moveExecutes = {
   },
   m288(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m288";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply grudge for 1 turn
-      target.addEffect("grudge", 1, source);
+      target.applyEffect("grudge", 1, source);
     }
   },
   m295(battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m295";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // check if ally has mist ball on cooldown
     const allyPokemons = Object.values(battle.allPokemon).filter(
@@ -9403,13 +9376,13 @@ const moveExecutes = {
 
       // if not miss or mist ball, spd down
       if (!miss || mistBallCooldown) {
-        target.addEffect("spdDown", 2, source);
+        target.applyEffect("spdDown", 2, source);
       }
     }
   },
   m296(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m296";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // check if ally has luster purge on cooldown
     const allyPokemons = Object.values(battle.allPokemon).filter(
@@ -9438,16 +9411,16 @@ const moveExecutes = {
       });
 
       if (lusterPurgeCooldown) {
-        target.addEffect("atkDown", 2, source);
-        target.addEffect("spaDown", 2, source);
+        target.applyEffect("atkDown", 2, source);
+        target.applyEffect("spaDown", 2, source);
       } else if (!miss) {
-        target.addEffect("spaDown", 1, source);
+        target.applyEffect("spaDown", 1, source);
       }
     }
   },
   m299(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m299";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9464,7 +9437,7 @@ const moveExecutes = {
   },
   m303(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m303";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const _target of allTargets) {
       // heal 50%
       const healAmount = Math.floor(source.maxHp * 0.5);
@@ -9474,12 +9447,12 @@ const moveExecutes = {
       });
 
       // apply def up 2 turns
-      source.addEffect("defUp", 2, source);
+      source.applyEffect("defUp", 2, source);
     }
   },
   m304(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m304";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9491,7 +9464,7 @@ const moveExecutes = {
   },
   m305(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m305";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9508,10 +9481,10 @@ const moveExecutes = {
   },
   m309(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m309";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // raise user atk for 2 turn
-    source.addEffect("atkUp", 2, source);
+    source.applyEffect("atkUp", 2, source);
 
     let fainted = false;
     for (const target of allTargets) {
@@ -9533,18 +9506,18 @@ const moveExecutes = {
   },
   m311(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m311";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       let { type } = moveData;
       if (!battle.isWeatherNegated()) {
         if (battle.weather.weatherId === weatherConditions.SUN) {
-          type = types.FIRE;
+          type = pokemonTypes.FIRE;
         } else if (battle.weather.weatherId === weatherConditions.RAIN) {
-          type = types.WATER;
+          type = pokemonTypes.WATER;
         } else if (battle.weather.weatherId === weatherConditions.SANDSTORM) {
-          type = types.ROCK;
+          type = pokemonTypes.ROCK;
         } else if (battle.weather.weatherId === weatherConditions.HAIL) {
-          type = types.ICE;
+          type = pokemonTypes.ICE;
         }
       }
       const miss = missedTargets.includes(target);
@@ -9564,13 +9537,13 @@ const moveExecutes = {
   },
   m316(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m316";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // remove status conditions
       target.removeStatus();
       // remove debuffs
       for (const effectId of Object.keys(target.effectIds)) {
-        const effectData = effectConfig[effectId];
+        const effectData = getEffect(effectId);
         if (effectData.type !== effectTypes.DEBUFF) {
           continue;
         }
@@ -9588,7 +9561,7 @@ const moveExecutes = {
   },
   m317(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m317";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9599,7 +9572,7 @@ const moveExecutes = {
 
       // if not miss, spe down for 2 turns
       if (!miss) {
-        target.addEffect("speDown", 2, source);
+        target.applyEffect("speDown", 2, source);
       }
     }
   },
@@ -9611,7 +9584,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m317-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9621,24 +9594,24 @@ const moveExecutes = {
       });
 
       // spe down 2 turns
-      target.addEffect("speDown", 2, source);
+      target.applyEffect("speDown", 2, source);
     }
   },
   m322(_battle, source, _primaryTarget, allTargets, _missedTargets) {
-    const moveData = moveConfig.m322;
+    const moveData = getMove("m322");
     for (const target of allTargets) {
       // raise def, spd
-      target.addEffect("defUp", 3, source);
-      target.addEffect("spdUp", 3, source);
+      target.applyEffect("defUp", 3, source);
+      target.applyEffect("spdUp", 3, source);
       // get 10% defenses as shield
-      target.addEffect("shield", 3, source, {
+      target.applyEffect("shield", 3, source, {
         shield: Math.floor(target.getDef() * 0.1 + target.getSpd() * 0.1),
       });
     }
   },
   m325(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m325";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // ignore miss
       const damageToDeal = calculateDamage(moveData, source, target, false);
@@ -9650,7 +9623,7 @@ const moveExecutes = {
   },
   m330(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m330";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9661,13 +9634,13 @@ const moveExecutes = {
 
       // if not miss, 50% acc down 2 turns
       if (!miss && Math.random() < 0.5) {
-        target.addEffect("accDown", 2, source);
+        target.applyEffect("accDown", 2, source);
       }
     }
   },
   m331(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m331";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // loop 5 times, hitting random non-fainted target
     for (let i = 0; i < 5; i += 1) {
       allTargets = allTargets.filter((target) => !target.isFainted);
@@ -9692,10 +9665,10 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m331-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // if pokemon doesnt have "projectingSpirit" buff, apply it
     if (source.effectIds.projectingSpirit === undefined) {
-      source.addEffect("projectingSpirit", 1, source);
+      source.applyEffect("projectingSpirit", 1, source);
       // remove cd
       source.moveIds[moveId].cooldown = 0;
     } else {
@@ -9723,7 +9696,7 @@ const moveExecutes = {
   },
   m332(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m332";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // ignore miss
       const damageToDeal = calculateDamage(moveData, source, target, false);
@@ -9734,12 +9707,12 @@ const moveExecutes = {
     }
   },
   m334(_battle, source, _primaryTarget, allTargets, _missedTargets) {
-    const moveData = moveConfig.m334;
+    const moveData = getMove("m334");
     for (const target of allTargets) {
       // sharply raise def
-      target.addEffect("greaterDefUp", 3, source);
+      target.applyEffect("greaterDefUp", 3, source);
       // get 25% def as shield
-      target.addEffect("shield", 3, source, {
+      target.applyEffect("shield", 3, source, {
         shield: Math.floor(target.getDef() * 0.25),
       });
     }
@@ -9751,7 +9724,7 @@ const moveExecutes = {
     allTargets,
     _missedTargets
   ) {
-    const moveData = moveConfig["m334-1"];
+    const moveData = getMove("m334-1");
     // put primary target at front of allTargets
     if (allTargets.includes(primaryTarget)) {
       allTargets = allTargets.filter((target) => target !== primaryTarget);
@@ -9760,15 +9733,15 @@ const moveExecutes = {
     for (const target of allTargets) {
       // if primary target, greater def up, else def up
       if (target === primaryTarget) {
-        target.addEffect("greaterDefUp", 2, source);
+        target.applyEffect("greaterDefUp", 2, source);
         // get 25% def as shield
-        target.addEffect("shield", 2, source, {
+        target.applyEffect("shield", 2, source, {
           shield: Math.floor(source.getDef() * 0.25),
         });
       } else {
-        target.addEffect("defUp", 2, source);
+        target.applyEffect("defUp", 2, source);
         // get 10% def as shield
-        target.addEffect("shield", 2, source, {
+        target.applyEffect("shield", 2, source, {
           shield: Math.floor(source.getDef() * 0.1),
         });
       }
@@ -9781,21 +9754,21 @@ const moveExecutes = {
     allTargets,
     _missedTargets
   ) {
-    const moveData = moveConfig["m334-2"];
+    const moveData = getMove("m334-2");
     for (const target of allTargets) {
       // sharply raise def & special def
-      target.addEffect("greaterDefUp", 2, source);
-      target.addEffect("greaterSpdUp", 2, source);
+      target.applyEffect("greaterDefUp", 2, source);
+      target.applyEffect("greaterSpdUp", 2, source);
       // lower spe
-      target.addEffect("speDown", 2, source);
+      target.applyEffect("speDown", 2, source);
     }
   },
   m336(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m336";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // grant atk up 1 turn
-      target.addEffect("atkUp", 1, source);
+      target.applyEffect("atkUp", 1, source);
 
       // grant 15% CR
       target.boostCombatReadiness(source, 15);
@@ -9803,10 +9776,10 @@ const moveExecutes = {
   },
   m340(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m340";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // if pokemon doesnt have "sprungUp" buff, apply it
     if (source.effectIds.sprungUp === undefined) {
-      source.addEffect("sprungUp", 1, source);
+      source.applyEffect("sprungUp", 1, source);
       // remove bounce cd
       source.moveIds[moveId].cooldown = 0;
     } else {
@@ -9829,7 +9802,7 @@ const moveExecutes = {
   },
   m344(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m344";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -9853,11 +9826,11 @@ const moveExecutes = {
   },
   m347(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m347";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // spa, spd up 3 turns
-      target.addEffect("spaUp", 3, source);
-      target.addEffect("spdUp", 3, source);
+      target.applyEffect("spaUp", 3, source);
+      target.applyEffect("spdUp", 3, source);
 
       // gain 50% cr
       target.boostCombatReadiness(source, 50);
@@ -9865,7 +9838,7 @@ const moveExecutes = {
   },
   m348(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m348";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // 5% atk true damage
@@ -9884,11 +9857,11 @@ const moveExecutes = {
     }
   },
   m349(_battle, source, _primaryTarget, allTargets, _missedTargets) {
-    const moveData = moveConfig.m349;
+    const moveData = getMove("m349");
     for (const target of allTargets) {
       // raise attack and speed
-      target.addEffect("atkUp", 3, source);
-      target.addEffect("speUp", 3, source);
+      target.applyEffect("atkUp", 3, source);
+      target.applyEffect("speUp", 3, source);
 
       // gain 50% cr
       target.boostCombatReadiness(source, 50);
@@ -9896,7 +9869,7 @@ const moveExecutes = {
   },
   m352(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m352";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -9907,13 +9880,13 @@ const moveExecutes = {
 
       // if not miss, confuse with 25% chance
       if (!miss && Math.random() < 0.25) {
-        target.addEffect("confused", 2, source);
+        target.applyEffect("confused", 2, source);
       }
     }
   },
   m354(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m354";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     const allAllies = battle.parties[source.teamName].pokemons.filter(
       (p) => p && !p.isFainted
@@ -9934,19 +9907,19 @@ const moveExecutes = {
       );
       switch (highestStatIndex + 1) {
         case 1:
-          ally.addEffect("greaterAtkUp", 2, source);
+          ally.applyEffect("greaterAtkUp", 2, source);
           break;
         case 2:
-          ally.addEffect("greaterDefUp", 2, source);
+          ally.applyEffect("greaterDefUp", 2, source);
           break;
         case 3:
-          ally.addEffect("greaterSpaUp", 2, source);
+          ally.applyEffect("greaterSpaUp", 2, source);
           break;
         case 4:
-          ally.addEffect("greaterSpdUp", 2, source);
+          ally.applyEffect("greaterSpdUp", 2, source);
           break;
         case 5:
-          ally.addEffect("greaterSpeUp", 2, source);
+          ally.applyEffect("greaterSpeUp", 2, source);
           break;
         default:
           break;
@@ -9970,7 +9943,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m354-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     const useAtk = source.atk > source.spa;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -9985,9 +9958,9 @@ const moveExecutes = {
 
     // lower attack or special attack
     if (useAtk) {
-      source.addEffect("greaterAtkDown", 2, source);
+      source.applyEffect("greaterAtkDown", 2, source);
     } else {
-      source.addEffect("greaterSpaDown", 2, source);
+      source.applyEffect("greaterSpaDown", 2, source);
     }
   },
   "m354-2": function (
@@ -9997,10 +9970,10 @@ const moveExecutes = {
     allTargets,
     _missedTargets
   ) {
-    const moveData = moveConfig["m354-2"];
+    const moveData = getMove("m354-2");
     for (const target of allTargets) {
       // get 25% def, spd as shield
-      target.addEffect("shield", 3, source, {
+      target.applyEffect("shield", 3, source, {
         shield: Math.floor(source.getDef() * 0.25 + source.getSpd() * 0.25),
       });
     }
@@ -10013,10 +9986,10 @@ const moveExecutes = {
     _missedTargets
   ) {
     const moveId = "m354-3";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply extra turn buff for 1 (2) turn
-      target.addEffect("extraTurn", 1, source);
+      target.applyEffect("extraTurn", 1, source);
     }
   },
   m355(_battle, source, _primaryTarget, allTargets) {
@@ -10032,12 +10005,12 @@ const moveExecutes = {
       );
 
       // lose flying type
-      target.addEffect("loseFlying", 1, source);
+      target.applyEffect("loseFlying", 1, source);
     }
   },
   m359(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m359";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10048,11 +10021,11 @@ const moveExecutes = {
     }
 
     // source spe down 1 turns
-    source.addEffect("speDown", 1, source);
+    source.applyEffect("speDown", 1, source);
   },
   m361(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m361";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // fully heal
       source.giveHeal(target.maxHp, target, {
@@ -10067,7 +10040,7 @@ const moveExecutes = {
   },
   m366(battle, source, primaryTarget, allTargets, _missedTargets) {
     const moveId = "m366";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // get only target row
     const targetParty = battle.parties[primaryTarget.teamName];
@@ -10079,7 +10052,7 @@ const moveExecutes = {
 
     for (const target of allTargets) {
       // grant greater spe up for 2 turns
-      target.addEffect("greaterSpeUp", 2, source);
+      target.applyEffect("greaterSpeUp", 2, source);
 
       // grant 15% CR to backmost row
       if (boostTargets.includes(target)) {
@@ -10089,7 +10062,7 @@ const moveExecutes = {
   },
   m369(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m369";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const damageToDeal = calculateDamage(
         moveData,
@@ -10117,7 +10090,7 @@ const moveExecutes = {
   },
   m370(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m370";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10128,8 +10101,8 @@ const moveExecutes = {
     }
 
     // lower self def, spd 1 turn
-    source.addEffect("defDown", 1, source);
-    source.addEffect("spdDown", 1, source);
+    source.applyEffect("defDown", 1, source);
+    source.applyEffect("spdDown", 1, source);
   },
   "m370-1": function (
     _battle,
@@ -10139,7 +10112,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m370-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10150,12 +10123,12 @@ const moveExecutes = {
     }
 
     // sharply lower self def, spd 1 turn
-    source.addEffect("greaterDefDown", 1, source);
-    source.addEffect("greaterSpdDown", 1, source);
+    source.applyEffect("greaterDefDown", 1, source);
+    source.applyEffect("greaterSpdDown", 1, source);
   },
   m387(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m387";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // calculate power = base power * moves on cooldown
       const numCooldownMoves = Object.values(source.moveIds).filter(
@@ -10174,18 +10147,18 @@ const moveExecutes = {
   },
   m392(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m392";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // add regeneration and def up
-      target.addEffect("regeneration", 3, source, {
+      target.applyEffect("regeneration", 3, source, {
         healAmount: Math.floor(source.maxHp * 0.25),
       });
-      target.addEffect("defUp", 2, source);
+      target.applyEffect("defUp", 2, source);
     }
   },
   m394(battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m394";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -10221,13 +10194,19 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m394-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // get max of fire, dark multiplier
-      const fireMultiplier = source.getTypeDamageMultiplier(types.FIRE, target);
-      const darkMultiplier = source.getTypeDamageMultiplier(types.DARK, target);
+      const fireMultiplier = source.getTypeDamageMultiplier(
+        pokemonTypes.FIRE,
+        target
+      );
+      const darkMultiplier = source.getTypeDamageMultiplier(
+        pokemonTypes.DARK,
+        target
+      );
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
         type: Math.max(fireMultiplier, darkMultiplier),
       });
@@ -10246,7 +10225,7 @@ const moveExecutes = {
   },
   m396(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m398";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // ignore miss
       const damageToDeal = calculateDamage(moveData, source, target, false);
@@ -10258,7 +10237,7 @@ const moveExecutes = {
   },
   m398(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m398";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10275,7 +10254,7 @@ const moveExecutes = {
   },
   m399(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m399";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10286,13 +10265,13 @@ const moveExecutes = {
 
       // 25% chance to flinch 1 turn
       if (!miss && Math.random() < 0.35) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
   m402(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m402";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10309,7 +10288,7 @@ const moveExecutes = {
   },
   m403(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m403";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10320,13 +10299,13 @@ const moveExecutes = {
 
       // if not miss, 25% to flinch 1 turn
       if (!miss && Math.random() < 0.25) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
   m404(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m404";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10351,12 +10330,12 @@ const moveExecutes = {
   },
   m405(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m405";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // if not miss, 80% to spd down
       if (!miss && Math.random() < 0.8) {
-        target.addEffect("spdDown", 2, source);
+        target.applyEffect("spdDown", 2, source);
       }
 
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10368,7 +10347,7 @@ const moveExecutes = {
   },
   m406(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m406";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10380,7 +10359,7 @@ const moveExecutes = {
   },
   m407(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m407";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10391,13 +10370,13 @@ const moveExecutes = {
 
       // if not miss, 30% chance to flinch
       if (!miss && Math.random() < 0.3) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
   m409(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m409";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -10416,7 +10395,7 @@ const moveExecutes = {
   },
   m412(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m412";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10427,13 +10406,13 @@ const moveExecutes = {
 
       // if not miss, 85% chance to reduce sp def
       if (!miss && Math.random() < 0.85) {
-        target.addEffect("spdDown", 2, source);
+        target.applyEffect("spdDown", 2, source);
       }
     }
   },
   m413(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m413";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -10453,7 +10432,7 @@ const moveExecutes = {
   },
   m414(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m414";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10464,13 +10443,13 @@ const moveExecutes = {
 
       // if not miss, 20% spd down 2 turns
       if (!miss && Math.random() < 0.2) {
-        target.addEffect("spdDown", 2, source);
+        target.applyEffect("spdDown", 2, source);
       }
     }
   },
   m416(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m416";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10485,7 +10464,7 @@ const moveExecutes = {
       );
     }
     // apply recharge to self
-    source.addEffect("recharge", 1, source);
+    source.applyEffect("recharge", 1, source);
   },
   "m416-1": function (
     _battle,
@@ -10495,7 +10474,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m416-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10510,14 +10489,14 @@ const moveExecutes = {
       );
     }
     // apply greater spe down to self
-    source.addEffect("greaterSpeDown", 1, source);
+    source.applyEffect("greaterSpeDown", 1, source);
   },
   m417(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m417";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // sharply raise spatk
-      target.addEffect("greaterSpaUp", 3, source);
+      target.applyEffect("greaterSpaUp", 3, source);
 
       // boost cr 60%
       source.boostCombatReadiness(source, 60);
@@ -10531,11 +10510,11 @@ const moveExecutes = {
     _missedTargets
   ) {
     const moveId = "m417-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // sharply raise spatk, eva
-      target.addEffect("greaterSpaUp", 2, source);
-      target.addEffect("greaterEvaUp", 2, source);
+      target.applyEffect("greaterSpaUp", 2, source);
+      target.applyEffect("greaterEvaUp", 2, source);
 
       // boost cr 60%
       source.boostCombatReadiness(source, 60);
@@ -10543,7 +10522,7 @@ const moveExecutes = {
   },
   m418(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m418";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10558,7 +10537,7 @@ const moveExecutes = {
   },
   m420(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m420";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10573,7 +10552,7 @@ const moveExecutes = {
   },
   m424(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m424";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10588,13 +10567,13 @@ const moveExecutes = {
       }
       // if not miss, 10% chance to flinch for 1 turn
       if (!miss && Math.random() < 0.1) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
   m425(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m425";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10609,7 +10588,7 @@ const moveExecutes = {
   },
   m428(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m428";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10620,13 +10599,13 @@ const moveExecutes = {
 
       // if not miss, flinch for 1 turn
       if (!miss) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
   m430(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m430";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10637,13 +10616,13 @@ const moveExecutes = {
 
       // if not miss, 20% to spd down
       if (!miss && Math.random() < 0.2) {
-        target.addEffect("spdDown", 2, source);
+        target.applyEffect("spdDown", 2, source);
       }
     }
   },
   m432(battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m432";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     const targets = Object.values(battle.allPokemon).filter((p) =>
       battle.isPokemonHittable(p, moveId)
     );
@@ -10656,14 +10635,14 @@ const moveExecutes = {
       // if ally, dispell debuffs. if enemy, dispell buffs
       if (target.teamName === source.teamName) {
         for (const effectId of Object.keys(target.effectIds)) {
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (effectData.type === effectTypes.DEBUFF) {
             target.dispellEffect(effectId);
           }
         }
       } else {
         for (const effectId of Object.keys(target.effectIds)) {
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (effectData.type === effectTypes.BUFF) {
             target.dispellEffect(effectId);
           }
@@ -10698,13 +10677,13 @@ const moveExecutes = {
     for (const target of targets) {
       const spe = target.getSpe();
       if (spe > 1.25 * meanSpe) {
-        target.addEffect("greaterSpeDown", 3, source);
+        target.applyEffect("greaterSpeDown", 3, source);
       } else if (spe > meanSpe) {
-        target.addEffect("speDown", 3, source);
+        target.applyEffect("speDown", 3, source);
       } else if (spe > meanSpe * 0.75) {
-        target.addEffect("speUp", 3, source);
+        target.applyEffect("speUp", 3, source);
       } else {
-        target.addEffect("greaterSpeUp", 3, source);
+        target.applyEffect("greaterSpeUp", 3, source);
       }
 
       // append to allTargets if not already in
@@ -10715,7 +10694,7 @@ const moveExecutes = {
   },
   m435(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m435";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10738,7 +10717,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m435-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10751,7 +10730,7 @@ const moveExecutes = {
       if (!miss) {
         const possibleDebuffs = Object.keys(source.effectIds).filter(
           (effectId) => {
-            const effectData = effectConfig[effectId];
+            const effectData = getEffect(effectId);
             return (
               effectData.type === effectTypes.DEBUFF && effectData.dispellable
             );
@@ -10772,13 +10751,18 @@ const moveExecutes = {
         }
 
         // apply debuff to target
-        target.addEffect(debuffId, debuff.duration, source, debuff.initialArgs);
+        target.applyEffect(
+          debuffId,
+          debuff.duration,
+          source,
+          debuff.initialArgs
+        );
       }
     }
   },
   m437(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m437";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10789,11 +10773,11 @@ const moveExecutes = {
     }
 
     // apply greater spa down to user 2 turns
-    source.addEffect("greaterSpaDown", 2, source);
+    source.applyEffect("greaterSpaDown", 2, source);
   },
   m441(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m441";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       let damageToDeal = calculateDamage(
@@ -10824,7 +10808,7 @@ const moveExecutes = {
   },
   m444(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m444";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10836,19 +10820,19 @@ const moveExecutes = {
   },
   m446(battle, source, primaryTarget, allTargets, _missedTargets) {
     const moveId = "m446";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // stealth rock log
     battle.addToLog(
       `Sharp rocks were scattered on the ground near ${primaryTarget.teamName}'s side!`
     );
     for (const target of allTargets) {
       // give target stealthRock
-      target.addEffect("stealthRock", 3, source);
+      target.applyEffect("stealthRock", 3, source);
     }
   },
   m450(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m450";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10861,7 +10845,7 @@ const moveExecutes = {
       if (!miss) {
         const possibleBuffs = Object.keys(target.effectIds).filter(
           (effectId) => {
-            const effectData = effectConfig[effectId];
+            const effectData = getEffect(effectId);
             return (
               effectData.type === effectTypes.BUFF && effectData.dispellable
             );
@@ -10881,7 +10865,7 @@ const moveExecutes = {
           return;
         }
         // apply buff to self
-        source.addEffect(
+        source.applyEffect(
           buffIdToSteal,
           buffToSteal.duration,
           buffToSteal.source,
@@ -10892,7 +10876,7 @@ const moveExecutes = {
   },
   m453(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m453";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10907,23 +10891,23 @@ const moveExecutes = {
   },
   m469(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m469";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply wide guard 3 turn
-      target.addEffect("wideGuard", 3, source);
+      target.applyEffect("wideGuard", 3, source);
     }
   },
   m476(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m476";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply redirect for 1 turn
-      target.addEffect("redirect", 1, source);
+      target.applyEffect("redirect", 1, source);
     }
   },
   m479(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m479";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -10935,15 +10919,16 @@ const moveExecutes = {
       // if not miss and target has flying type, apply loseFlying to target
       if (
         !miss &&
-        (target.type1 === types.FLYING || target.type2 === types.FLYING)
+        (target.type1 === pokemonTypes.FLYING ||
+          target.type2 === pokemonTypes.FLYING)
       ) {
-        target.addEffect("loseFlying", 1, source);
+        target.applyEffect("loseFlying", 1, source);
       }
     }
   },
   m482(battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m482";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // get only target row
     const targetParty = battle.parties[primaryTarget.teamName];
@@ -10972,12 +10957,12 @@ const moveExecutes = {
   },
   m483(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m483";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // boost spa, spd, spe
-      target.addEffect("spaUp", 3, source);
-      target.addEffect("spdUp", 3, source);
-      target.addEffect("speUp", 3, source);
+      target.applyEffect("spaUp", 3, source);
+      target.applyEffect("spdUp", 3, source);
+      target.applyEffect("speUp", 3, source);
 
       // boost cr 50%
       target.boostCombatReadiness(source, 50);
@@ -10985,7 +10970,7 @@ const moveExecutes = {
   },
   m484(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m484";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       let speedPower = 0;
       if (source.getSpe() < 150) {
@@ -11012,7 +10997,7 @@ const moveExecutes = {
   },
   m492(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m492";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // use target's attack
@@ -11027,7 +11012,7 @@ const moveExecutes = {
   },
   m503(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m503";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11044,7 +11029,7 @@ const moveExecutes = {
   },
   m505(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m505";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // heal 50%
       const healAmount = Math.floor(target.maxHp / 2);
@@ -11056,13 +11041,13 @@ const moveExecutes = {
   },
   m506(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m506";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
 
       let hasDebuff = false;
       for (const effect of Object.keys(target.effectIds)) {
-        const effectData = effectConfig[effect];
+        const effectData = getEffect(effect);
         if (effectData.type === effectTypes.DEBUFF) {
           hasDebuff = true;
           break;
@@ -11080,7 +11065,7 @@ const moveExecutes = {
   },
   m521(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m521";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const damageToDeal = calculateDamage(
         moveData,
@@ -11108,7 +11093,7 @@ const moveExecutes = {
   },
   m523(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m523";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11119,13 +11104,13 @@ const moveExecutes = {
 
       // if hit, reduce targets speed for 1 turn
       if (!miss) {
-        target.addEffect("speDown", 1, source);
+        target.applyEffect("speDown", 1, source);
       }
     }
   },
   m525(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m525";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11142,16 +11127,16 @@ const moveExecutes = {
   },
   m526(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m526";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // give atk up and spa up 2 turns
-      target.addEffect("atkUp", 2, source);
-      target.addEffect("spaUp", 2, source);
+      target.applyEffect("atkUp", 2, source);
+      target.applyEffect("spaUp", 2, source);
     }
   },
   m527(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m527";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11162,13 +11147,13 @@ const moveExecutes = {
 
       // if hit, reduce targets speed for 2 turn
       if (!miss) {
-        target.addEffect("speDown", 2, source);
+        target.applyEffect("speDown", 2, source);
       }
     }
   },
   m528(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m528";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let damageDealt = 0;
     for (const target of allTargets) {
       const damageToDeal = calculateDamage(
@@ -11194,7 +11179,7 @@ const moveExecutes = {
   },
   m529(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m529";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11206,7 +11191,7 @@ const moveExecutes = {
   },
   m534(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m534";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
@@ -11219,13 +11204,13 @@ const moveExecutes = {
 
       // if not miss, 50% to def down for 2 turns
       if (!miss && Math.random() < 0.5) {
-        target.addEffect("defDown", 2, source);
+        target.applyEffect("defDown", 2, source);
       }
     }
   },
   m540(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m540";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
@@ -11250,7 +11235,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m540-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let targetsFainted = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -11280,7 +11265,7 @@ const moveExecutes = {
   },
   m542(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m542";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11291,7 +11276,7 @@ const moveExecutes = {
 
       // if hit, 30% chance to confuse target
       if (!miss && Math.random() < 0.3) {
-        target.addEffect("confused", 2, source);
+        target.applyEffect("confused", 2, source);
       }
     }
   },
@@ -11303,7 +11288,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m542-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       let type = source.getTypeDamageMultiplier(moveData.type, target);
@@ -11321,29 +11306,29 @@ const moveExecutes = {
 
       // if hit, 30% chance to flinch
       if (!miss && Math.random() < 0.3) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
   m564(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m564";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
 
       // if not miss, spe down and restrict 2 turns
       if (!miss) {
-        target.addEffect("speDown", 2, source);
-        target.addEffect("restricted", 2, source);
+        target.applyEffect("speDown", 2, source);
+        target.applyEffect("restricted", 2, source);
       }
     }
   },
   m565(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m565";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // raise atk
-    source.addEffect("greaterAtkUp", 3, source);
+    source.applyEffect("greaterAtkUp", 3, source);
     let defeatedEnemy = false;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -11370,23 +11355,24 @@ const moveExecutes = {
   },
   m568(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m568";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // if not miss or primary target, atk and spa down 1 turn
       if (!miss || target === primaryTarget) {
-        target.addEffect("atkDown", 1, source);
-        target.addEffect("spaDown", 1, source);
+        target.applyEffect("atkDown", 1, source);
+        target.applyEffect("spaDown", 1, source);
       }
     }
   },
   m573(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m573";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // see if target is water type
       const waterType =
-        target.type1 === types.WATER || target.type2 === types.WATER;
+        target.type1 === pokemonTypes.WATER ||
+        target.type2 === pokemonTypes.WATER;
       const miss = !waterType && missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
         type: waterType ? 2 : null,
@@ -11404,7 +11390,7 @@ const moveExecutes = {
   },
   m572(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m572";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // deal less damage if more targets
     const numTargets = allTargets.length;
     const power = moveData.power - (numTargets - 1) * 5;
@@ -11421,7 +11407,7 @@ const moveExecutes = {
   },
   m574(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m574";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // ignore miss
       const damageToDeal = calculateDamage(moveData, source, target, false);
@@ -11433,7 +11419,7 @@ const moveExecutes = {
   },
   m583(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m583";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11444,17 +11430,17 @@ const moveExecutes = {
 
       // if not miss, 70% chance to lower atk
       if (!miss && Math.random() < 0.7) {
-        target.addEffect("atkDown", 1, source);
+        target.applyEffect("atkDown", 1, source);
       }
       // if not miss, 70% chance to lower spe
       if (!miss && Math.random() < 0.7) {
-        target.addEffect("speDown", 1, source);
+        target.applyEffect("speDown", 1, source);
       }
     }
   },
   m585(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m585";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11465,13 +11451,13 @@ const moveExecutes = {
 
       // if not miss, sharply lower spatk
       if (!miss) {
-        target.addEffect("greaterSpaDown", 2, source);
+        target.applyEffect("greaterSpaDown", 2, source);
       }
     }
   },
   m586(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m586";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11489,7 +11475,7 @@ const moveExecutes = {
   },
   m605(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m605";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11501,11 +11487,11 @@ const moveExecutes = {
   },
   m618(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m618";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // give user spa, spd up
-    source.addEffect("spaUp", 1, source);
-    source.addEffect("spdUp", 1, source);
+    source.applyEffect("spaUp", 1, source);
+    source.applyEffect("spdUp", 1, source);
 
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -11518,11 +11504,11 @@ const moveExecutes = {
   },
   m619(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m619";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // give user atk, def up
-    source.addEffect("atkUp", 1, source);
-    source.addEffect("defUp", 1, source);
+    source.applyEffect("atkUp", 1, source);
+    source.applyEffect("defUp", 1, source);
 
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -11535,7 +11521,7 @@ const moveExecutes = {
   },
   m620(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m620";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
@@ -11552,8 +11538,8 @@ const moveExecutes = {
 
     // give user 100% cr, def down spd down 2 turns
     source.boostCombatReadiness(source, 100);
-    source.addEffect("defDown", 2, source);
-    source.addEffect("spdDown", 2, source);
+    source.applyEffect("defDown", 2, source);
+    source.applyEffect("spdDown", 2, source);
   },
   "m620-1": function (
     _battle,
@@ -11563,7 +11549,7 @@ const moveExecutes = {
     missedTargets
   ) {
     const moveId = "m620-1";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     let hits = 0;
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -11592,7 +11578,7 @@ const moveExecutes = {
   },
   m668(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m668";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // heal hp equal to targets atk
@@ -11604,13 +11590,13 @@ const moveExecutes = {
 
       // if not miss, apply atk down to target 2 turns
       if (!miss) {
-        target.addEffect("atkDown", 2, source);
+        target.applyEffect("atkDown", 2, source);
       }
     }
   },
   m672(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m672";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // if not miss, badly poison and fully reduce cr
@@ -11622,7 +11608,7 @@ const moveExecutes = {
   },
   m710(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m710";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11633,13 +11619,13 @@ const moveExecutes = {
 
       // if not miss, 85% chance to reduce def
       if (!miss && Math.random() < 0.85) {
-        target.addEffect("defDown", 2, source);
+        target.applyEffect("defDown", 2, source);
       }
     }
   },
   m719(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m719";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // filter out allTargets => just the primary target and up to 2 random other targets
     let damagedTargets = [];
     if (allTargets.length > 3) {
@@ -11672,7 +11658,7 @@ const moveExecutes = {
   },
   m742(battle, source, primaryTarget, _allTargets, missedTargets) {
     const moveId = "m742";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // get row targets
     const enemyParty = battle.parties[primaryTarget.teamName];
@@ -11692,7 +11678,7 @@ const moveExecutes = {
 
       // if not miss, 30% chance to flinch
       if (!miss && Math.random() < 0.3) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
 
@@ -11712,13 +11698,13 @@ const moveExecutes = {
 
       // if not miss, 30% chance to flinch
       if (!miss && Math.random() < 0.3) {
-        target.addEffect("flinched", 1, source);
+        target.applyEffect("flinched", 1, source);
       }
     }
   },
   m814(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m814";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11743,7 +11729,7 @@ const moveExecutes = {
   },
   m876(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m876";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11755,12 +11741,12 @@ const moveExecutes = {
   },
   m20001(_battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m20001";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // if primary target, increase cr to 100% and give spe up 2 turns
       if (target === primaryTarget) {
         target.boostCombatReadiness(source, 100);
-        target.addEffect("speUp", 2, source);
+        target.applyEffect("speUp", 2, source);
       } else {
         // else, decrease cr by 30% and spe down 1 turn
         const miss = missedTargets.includes(target);
@@ -11769,13 +11755,13 @@ const moveExecutes = {
         }
 
         target.reduceCombatReadiness(source, 30);
-        target.addEffect("speDown", 1, source);
+        target.applyEffect("speDown", 1, source);
       }
     }
   },
   m20002(battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m20002";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // use all HM moves
       const hmMoveIds = ["m57", "m70", "m127", "m249"];
@@ -11788,7 +11774,7 @@ const moveExecutes = {
         if (move.cooldown > 0) {
           source.reduceMoveCooldown(moveId, move.cooldown, source);
         } else {
-          const moveData = moveConfig[moveId];
+          const moveData = getMove(moveId);
           // else, use move and set cooldown
           battle.addToLog(`${source.name} used ${moveData.name}!`);
           // get target
@@ -11799,7 +11785,14 @@ const moveExecutes = {
             target.position,
             moveId
           );
-          moveExecutes[moveId](battle, source, target, targets, []);
+          executeMove({
+            moveId,
+            battle,
+            source,
+            primaryTarget: target,
+            allTargets: targets,
+            missedTargets: [],
+          });
 
           // set cd
           move.cooldown = moveData.cooldown;
@@ -11809,7 +11802,7 @@ const moveExecutes = {
   },
   m20003(battle, source, primaryTarget, _allTargets, _missedTargets) {
     const moveId = "m20003";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // get random fainted enemy of primary target
     const enemyParty = primaryTarget.getEnemyParty();
@@ -11854,7 +11847,7 @@ const moveExecutes = {
   },
   m20004(battle, source, _primaryTarget, _allTargets, _missedTargets) {
     const moveId = "m20004";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // get all non-fainted, hitable pokemon
     const targets = Object.values(battle.allPokemon).filter((p) =>
       battle.isPokemonHittable(p, moveId)
@@ -11862,7 +11855,7 @@ const moveExecutes = {
     for (const target of targets) {
       const effectId =
         target.teamName === source.teamName ? "speUp" : "speDown";
-      target.addEffect(effectId, 2, source);
+      target.applyEffect(effectId, 2, source);
     }
 
     // source cr 100%
@@ -11870,7 +11863,7 @@ const moveExecutes = {
   },
   m20005(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m20005";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // heal 40%
       const healAmount = Math.floor(target.maxHp * 0.4);
@@ -11885,7 +11878,7 @@ const moveExecutes = {
   },
   m20006(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m20006";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -11897,7 +11890,7 @@ const moveExecutes = {
       if (!miss) {
         // remove all buffs
         for (const effectId of Object.keys(target.effectIds)) {
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (effectData.type === effectTypes.BUFF) {
             target.dispellEffect(effectId);
           }
@@ -11907,7 +11900,7 @@ const moveExecutes = {
   },
   m20007(battle, source, _primaryTarget, _allTargets, _missedTargets) {
     const moveId = "m20007";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     // get all non-fainted, hitable pokemon
     const targets = Object.values(battle.allPokemon).filter((p) =>
       battle.isPokemonHittable(p, moveId)
@@ -11919,7 +11912,7 @@ const moveExecutes = {
   },
   m20008(battle, source, primaryTarget, allTargets, _missedTargets) {
     const moveId = "m20008";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // if primary, reduce hp by 50% and apply greater def down, spd down 1 turns
       if (target === primaryTarget) {
@@ -11928,14 +11921,14 @@ const moveExecutes = {
           moveId,
         });
 
-        target.addEffect("greaterDefDown", 1, source);
-        target.addEffect("greaterSpdDown", 1, source);
+        target.applyEffect("greaterDefDown", 1, source);
+        target.applyEffect("greaterSpdDown", 1, source);
       }
 
       // increase all buff durations by 1 if dispellable
       battle.addToLog(`${target.name} is invigorated!`);
       for (const effectId of Object.keys(target.effectIds)) {
-        const effectData = effectConfig[effectId];
+        const effectData = getEffect(effectId);
         if (effectData.type === effectTypes.BUFF && effectData.dispellable) {
           target.effectIds[effectId].duration += 1;
         }
@@ -11944,7 +11937,7 @@ const moveExecutes = {
   },
   m20009(battle, source, primaryTarget, _allTargets, missedTargets) {
     const moveId = "m20009";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (let i = 0; i < 3; i += 1) {
       let target = primaryTarget;
       if (primaryTarget.isFainted) {
@@ -11973,7 +11966,7 @@ const moveExecutes = {
   },
   m20010(battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m20010";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
 
     // if source not under 25% hp, do nothing
     if (source.hp > source.maxHp * 0.25) {
@@ -11989,14 +11982,14 @@ const moveExecutes = {
         moveId,
       });
       // apply gear five buff for 3 turns
-      target.addEffect("gearFive", 3, source);
+      target.applyEffect("gearFive", 3, source);
       // boost cr 100%
       target.boostCombatReadiness(source, 100);
     }
   },
   m20011(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m20011";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // ignore miss
       // def is min user, target spd
@@ -12012,7 +12005,7 @@ const moveExecutes = {
   },
   m20012(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m20012";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
@@ -12024,15 +12017,39 @@ const moveExecutes = {
   },
   m20013(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m20013";
-    const moveData = moveConfig[moveId];
+    const moveData = getMove(moveId);
     for (const target of allTargets) {
       // apply extra turn buff for 1 (2) turn
-      target.addEffect("extraTurn", 1, source);
+      target.applyEffect("extraTurn", 1, source);
     }
   },
 };
 
-const abilityConfig = {
+/**
+ * @callback LegacyAbilityAdd
+ * @param {Battle} battle
+ * @param {BattlePokemon} source
+ * @param {BattlePokemon} target
+ */
+
+/**
+ * @callback LegacyAbilityRemove
+ * @param {Battle} battle
+ * @param {BattlePokemon} source
+ * @param {BattlePokemon} target
+ */
+
+/** @typedef {types.Keys<typeof abilityConfig>} LegacyAbilityIdEnum */
+
+/**
+ * @satisfies {Record<string | number | symbol, {
+ *  name: string,
+ *  description: string,
+ *  abilityAdd: LegacyAbilityAdd,
+ *  abilityRemove: LegacyAbilityRemove
+ * }>}
+ */
+const abilityConfig = Object.freeze({
   2: {
     name: "Drizzle",
     description: "At the start of battle, stir up a rainy storm.",
@@ -12054,7 +12071,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
       return {
@@ -12109,7 +12126,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
       return {
@@ -12164,7 +12181,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -12208,7 +12225,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_STATUS_APPLY,
+        battleEventEnum.BEFORE_STATUS_APPLY,
         listener
       );
       return {
@@ -12248,7 +12265,7 @@ const abilityConfig = {
           }
 
           // if physical, 30% chance to paralyze
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
             Math.random() < 0.3
@@ -12264,7 +12281,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -12303,8 +12320,8 @@ const abilityConfig = {
           }
 
           // if electric, negate damage and heal 25% of max hp
-          const moveData = moveConfig[args.damageInfo.moveId];
-          if (moveData.type === types.ELECTRIC) {
+          const moveData = getMove(args.damageInfo.moveId);
+          if (moveData.type === pokemonTypes.ELECTRIC) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name} is healed by Volt Absorb!`
             );
@@ -12321,7 +12338,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -12360,8 +12377,8 @@ const abilityConfig = {
           }
 
           // if water, negate damage and heal 25% of max hp
-          const moveData = moveConfig[args.damageInfo.moveId];
-          if (moveData.type === types.WATER) {
+          const moveData = getMove(args.damageInfo.moveId);
+          if (moveData.type === pokemonTypes.WATER) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name} is healed by Water Absorb!`
             );
@@ -12378,7 +12395,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -12445,7 +12462,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_STATUS_APPLY,
+        battleEventEnum.BEFORE_STATUS_APPLY,
         listener
       );
       return {
@@ -12484,20 +12501,20 @@ const abilityConfig = {
           }
 
           // if fire, negate damage and grant atk up, spa up
-          const moveData = moveConfig[args.damageInfo.moveId];
-          if (moveData.type === types.FIRE) {
+          const moveData = getMove(args.damageInfo.moveId);
+          if (moveData.type === pokemonTypes.FIRE) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Flash Fire was activated by the Fire attack!`
             );
-            targetPokemon.addEffect("atkUp", 1, targetPokemon);
-            targetPokemon.addEffect("spaUp", 1, targetPokemon);
+            targetPokemon.applyEffect("atkUp", 1, targetPokemon);
+            targetPokemon.applyEffect("spaUp", 1, targetPokemon);
             args.damage = 0;
             args.maxDamage = Math.min(args.maxDamage, args.damage);
           }
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -12524,7 +12541,7 @@ const abilityConfig = {
         },
         execute(initialArgs, args) {
           const { effectId } = args;
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (!effectData) {
             return;
           }
@@ -12548,7 +12565,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         listener
       );
 
@@ -12590,7 +12607,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         listener
       );
       return {
@@ -12638,7 +12655,7 @@ const abilityConfig = {
           battle.addToLog(
             `${sourcePokemon.name}'s Intimidate affects ${highestAtkPokemon.name}!`
           );
-          highestAtkPokemon.addEffect("atkDown", 1, sourcePokemon);
+          highestAtkPokemon.applyEffect("atkDown", 1, sourcePokemon);
 
           // get pokemon with highest spe
           let highestSpePokemon = enemyPokemons[0];
@@ -12655,11 +12672,11 @@ const abilityConfig = {
           battle.addToLog(
             `${sourcePokemon.name}'s Intimidate affects ${highestSpePokemon.name}!`
           );
-          highestSpePokemon.addEffect("atkDown", 1, sourcePokemon);
+          highestSpePokemon.applyEffect("atkDown", 1, sourcePokemon);
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
       return {
@@ -12698,13 +12715,13 @@ const abilityConfig = {
           );
 
           for (const pokemon of enemyPokemons) {
-            pokemon.addEffect("restricted", 1, sourcePokemon);
+            pokemon.applyEffect("restricted", 1, sourcePokemon);
           }
         },
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
 
@@ -12741,7 +12758,7 @@ const abilityConfig = {
             return;
           }
           const { moveId } = args.damageInfo;
-          const moveData = moveConfig[moveId];
+          const moveData = getMove(moveId);
           if (!moveData) {
             return;
           }
@@ -12762,7 +12779,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
 
@@ -12798,14 +12815,14 @@ const abilityConfig = {
           }
 
           const { moveType } = args;
-          if (moveType !== types.GROUND) {
+          if (moveType !== pokemonTypes.GROUND) {
             return;
           }
           args.multiplier = 0;
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.CALCULATE_TYPE_MULTIPLIER,
+        battleEventEnum.CALCULATE_TYPE_MULTIPLIER,
         listener
       );
       return {
@@ -12845,7 +12862,7 @@ const abilityConfig = {
           }
 
           // if physical, 30% chance to status
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
             Math.random() < 0.3
@@ -12868,7 +12885,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -12915,7 +12932,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_STATUS_APPLY,
+        battleEventEnum.AFTER_STATUS_APPLY,
         listener
       );
       return {
@@ -12949,7 +12966,7 @@ const abilityConfig = {
           }
 
           const { effectId } = args;
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (!effectData || effectData.type !== effectTypes.DEBUFF) {
             return;
           }
@@ -12961,7 +12978,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         listener
       );
       return {
@@ -13004,10 +13021,10 @@ const abilityConfig = {
               `${sourcePokemon.name}'s Natural Cure remedies ${target.name}!`
             );
             target.removeStatus();
-            const moveData = moveConfig[args.moveId];
+            const moveData = getMove(args.moveId);
             if (moveData && moveData.tier === moveTiers.ULTIMATE) {
               for (const effectId in target.effectIds) {
-                const effectData = effectConfig[effectId];
+                const effectData = getEffect(effectId);
                 if (effectData.type === effectTypes.DEBUFF) {
                   target.dispellEffect(effectId);
                 }
@@ -13017,7 +13034,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_MOVE,
+        battleEventEnum.AFTER_MOVE,
         listener
       );
       return {
@@ -13051,8 +13068,8 @@ const abilityConfig = {
 
           // check that enemy used non-ally move, and that move is electric
           const moveUser = args.user;
-          const moveData = moveConfig[args.moveId];
-          if (moveData.type !== types.ELECTRIC) {
+          const moveData = getMove(args.moveId);
+          if (moveData.type !== pokemonTypes.ELECTRIC) {
             return;
           }
           if (moveUser.teamName === initialArgs.pokemon.teamName) {
@@ -13076,8 +13093,8 @@ const abilityConfig = {
             return;
           }
 
-          const moveData = moveConfig[args.damageInfo.moveId];
-          if (moveData.type !== types.ELECTRIC) {
+          const moveData = getMove(args.damageInfo.moveId);
+          if (moveData.type !== pokemonTypes.ELECTRIC) {
             return;
           }
 
@@ -13092,15 +13109,15 @@ const abilityConfig = {
           targetPokemon.battle.addToLog(
             `${targetPokemon.name}'s Lightning Rod was activated by the Electric attack!`
           );
-          targetPokemon.addEffect("spaUp", 1, targetPokemon);
+          targetPokemon.applyEffect("spaUp", 1, targetPokemon);
         },
       };
       const listenerId1 = battle.eventHandler.registerListener(
-        battleEventNames.GET_ELIGIBLE_TARGETS,
+        battleEventEnum.GET_ELIGIBLE_TARGETS,
         listener1
       );
       const listenerId2 = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener2
       );
       return {
@@ -13169,12 +13186,12 @@ const abilityConfig = {
             battle.addToLog(
               `${sourcePokemon.name}'s Illuminate affects ${pokemon.name}!`
             );
-            pokemon.addEffect("evaDown", 1, sourcePokemon);
+            pokemon.applyEffect("evaDown", 1, sourcePokemon);
           }
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
       return {
@@ -13227,7 +13244,7 @@ const abilityConfig = {
           }
 
           // if physical, 30% chance to poison
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
             Math.random() < 0.3
@@ -13240,7 +13257,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -13281,7 +13298,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         listener
       );
       return {
@@ -13318,7 +13335,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
       return {
@@ -13373,7 +13390,7 @@ const abilityConfig = {
           const targetMoveIds = targetPokemon.moveIds;
           const possibleMoves = Object.entries(targetMoveIds).filter(
             ([moveId, move]) => {
-              const moveData = moveConfig[moveId];
+              const moveData = getMove(moveId);
               const currentCooldown = move.cooldown;
               return moveData.cooldown && currentCooldown === 0;
             }
@@ -13387,7 +13404,7 @@ const abilityConfig = {
           targetPokemon.battle.addToLog(
             `${initialArgs.pokemon.name} is exerting Pressure against ${
               targetPokemon.name
-            }'s ${moveConfig[randomMove[0]].name}!`
+            }'s ${getMove(randomMove[0]).name}!`
           );
           abilityData.affectedPokemons.push(targetPokemon);
         },
@@ -13395,11 +13412,11 @@ const abilityConfig = {
 
       // add listener to after damage dealt and after damage taken
       const dealtListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_DEALT,
+        battleEventEnum.AFTER_DAMAGE_DEALT,
         listener
       );
       const takenListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
 
@@ -13434,7 +13451,7 @@ const abilityConfig = {
             return;
           }
           const { moveId } = args.damageInfo;
-          const moveData = moveConfig[moveId];
+          const moveData = getMove(moveId);
           if (!moveData) {
             return;
           }
@@ -13473,7 +13490,7 @@ const abilityConfig = {
             {
               power,
               damageType: damageTypes.PHYSICAL,
-              type: types.PSYCHIC,
+              type: pokemonTypes.PSYCHIC,
             },
             initialArgs.pokemon,
             targetPokemon,
@@ -13490,11 +13507,11 @@ const abilityConfig = {
 
       // add listener to after damage dealt and after damage taken
       const dealtListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_DEALT,
+        battleEventEnum.AFTER_DAMAGE_DEALT,
         listener
       );
       const takenListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
 
@@ -13533,8 +13550,11 @@ const abilityConfig = {
           }
 
           // if move type === fire or ice, reduce damage by 50%
-          const moveData = moveConfig[args.damageInfo.moveId];
-          if (moveData.type === types.FIRE || moveData.type === types.ICE) {
+          const moveData = getMove(args.damageInfo.moveId);
+          if (
+            moveData.type === pokemonTypes.FIRE ||
+            moveData.type === pokemonTypes.ICE
+          ) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Thick Fat reduces damage taken!`
             );
@@ -13544,7 +13564,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
 
@@ -13601,7 +13621,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
 
@@ -13648,7 +13668,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         listener
       );
 
@@ -13683,7 +13703,7 @@ const abilityConfig = {
             return;
           }
 
-          const effectData = effectConfig[args.effectId];
+          const effectData = getEffect(args.effectId);
           if (
             !effectData ||
             !effectData.dispellable ||
@@ -13698,13 +13718,13 @@ const abilityConfig = {
               `${initialArgs.pokemon.name}'s Pickup gains ${effectData.name}!`
             );
             // apply buff to self
-            source.addEffect(args.effectId, 1, args.source, args.initialArgs);
+            source.applyEffect(args.effectId, 1, args.source, args.initialArgs);
           }
         },
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_EFFECT_REMOVE,
+        battleEventEnum.AFTER_EFFECT_REMOVE,
         listener
       );
 
@@ -13743,14 +13763,14 @@ const abilityConfig = {
           }
           if (ability.data.turn % 2 === 0) {
             pokemon.battle.addToLog(`${pokemon.name} is becoming lazy!`);
-            activePokemon.addEffect("recharge", 1, activePokemon);
+            activePokemon.applyEffect("recharge", 1, activePokemon);
           }
           ability.data.turn += 1;
         },
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
 
@@ -13793,14 +13813,14 @@ const abilityConfig = {
             pokemon.battle.addToLog(
               `${pokemon.name}'s Old Age is holding it back!`
             );
-            activePokemon.addEffect("greaterSpeDown", 1, activePokemon);
+            activePokemon.applyEffect("greaterSpeDown", 1, activePokemon);
           }
           ability.data.turn += 1;
         },
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
 
@@ -13839,7 +13859,7 @@ const abilityConfig = {
           }
 
           // if move is physical, 30% chance to lower attacker's attack for 1 turn
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
             Math.random() < 0.3
@@ -13847,13 +13867,13 @@ const abilityConfig = {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Cute Charm affects ${sourcePokemon.name}!`
             );
-            sourcePokemon.addEffect("atkDown", 1, targetPokemon);
+            sourcePokemon.applyEffect("atkDown", 1, targetPokemon);
           }
         },
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
 
@@ -13892,7 +13912,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_STATUS_APPLY,
+        battleEventEnum.AFTER_STATUS_APPLY,
         listener
       );
 
@@ -13928,9 +13948,9 @@ const abilityConfig = {
           }
 
           // if move type === grass and hp < 1/3, increase damage by 50%
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
-            moveData.type === types.GRASS &&
+            moveData.type === pokemonTypes.GRASS &&
             userPokemon.hp < userPokemon.maxHp / 3
           ) {
             userPokemon.battle.addToLog(
@@ -13941,7 +13961,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -13976,9 +13996,9 @@ const abilityConfig = {
           }
 
           // if move type === fire and hp < 1/3, increase damage by 50%
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
-            moveData.type === types.FIRE &&
+            moveData.type === pokemonTypes.FIRE &&
             userPokemon.hp < userPokemon.maxHp / 3
           ) {
             userPokemon.battle.addToLog(
@@ -13989,7 +14009,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14024,9 +14044,9 @@ const abilityConfig = {
           }
 
           // if move type === water and hp < 1/3, increase damage by 50%
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
-            moveData.type === types.WATER &&
+            moveData.type === pokemonTypes.WATER &&
             userPokemon.hp < userPokemon.maxHp / 3
           ) {
             userPokemon.battle.addToLog(
@@ -14037,7 +14057,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14072,9 +14092,9 @@ const abilityConfig = {
           }
 
           // if move type === bug and hp < 1/3, increase damage by 50%
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
-            moveData.type === types.BUG &&
+            moveData.type === pokemonTypes.BUG &&
             userPokemon.hp < userPokemon.maxHp / 3
           ) {
             userPokemon.battle.addToLog(
@@ -14085,7 +14105,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14122,7 +14142,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
       return {
@@ -14157,16 +14177,16 @@ const abilityConfig = {
           // if target is not flying, restrict combat readiness boosts for 2 turns
           if (
             sourcePokemon.getTypeDamageMultiplier(
-              types.GROUND,
+              pokemonTypes.GROUND,
               targetPokemon
             ) !== 0
           ) {
-            targetPokemon.addEffect("restricted", 2, sourcePokemon);
+            targetPokemon.applyEffect("restricted", 2, sourcePokemon);
           }
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_DEALT,
+        battleEventEnum.AFTER_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14208,7 +14228,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -14253,7 +14273,7 @@ const abilityConfig = {
           }
 
           // if move type === punch, increase damage by 20%
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (moveData.name.toLowerCase().includes("punch")) {
             userPokemon.battle.addToLog(
               `${userPokemon.name}'s Iron Fist increases the damage!`
@@ -14263,7 +14283,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14307,7 +14327,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14350,7 +14370,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14388,7 +14408,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.CALCULATE_MISS,
+        battleEventEnum.CALCULATE_MISS,
         listener
       );
       return {
@@ -14425,7 +14445,7 @@ const abilityConfig = {
           }
 
           // if move has 60 base power or less, increase damage by 50%
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (moveData.power <= 70) {
             sourcePokemon.battle.addToLog(
               `${sourcePokemon.name}'s Technician is increasing its damage!`
@@ -14435,7 +14455,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14471,7 +14491,7 @@ const abilityConfig = {
             return;
           }
 
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (!moveData) {
             return;
           }
@@ -14492,7 +14512,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -14527,7 +14547,7 @@ const abilityConfig = {
             return;
           }
 
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (!moveData) {
             return;
           }
@@ -14547,7 +14567,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -14581,8 +14601,8 @@ const abilityConfig = {
 
           // check that enemy used non-ally move, and that move is water
           const moveUser = args.user;
-          const moveData = moveConfig[args.moveId];
-          if (moveData.type !== types.WATER) {
+          const moveData = getMove(args.moveId);
+          if (moveData.type !== pokemonTypes.WATER) {
             return;
           }
           if (moveUser.teamName === initialArgs.pokemon.teamName) {
@@ -14606,8 +14626,8 @@ const abilityConfig = {
             return;
           }
 
-          const moveData = moveConfig[args.damageInfo.moveId];
-          if (moveData.type !== types.WATER) {
+          const moveData = getMove(args.damageInfo.moveId);
+          if (moveData.type !== pokemonTypes.WATER) {
             return;
           }
 
@@ -14624,15 +14644,15 @@ const abilityConfig = {
           );
           args.damage = 0;
           args.maxDamage = 0;
-          targetPokemon.addEffect("spaUp", 1, targetPokemon);
+          targetPokemon.applyEffect("spaUp", 1, targetPokemon);
         },
       };
       const listenerId1 = battle.eventHandler.registerListener(
-        battleEventNames.GET_ELIGIBLE_TARGETS,
+        battleEventEnum.GET_ELIGIBLE_TARGETS,
         listener1
       );
       const listenerId2 = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener2
       );
       return {
@@ -14685,7 +14705,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
       return {
@@ -14748,15 +14768,15 @@ const abilityConfig = {
 
       battle.addToLog(`${target.name}'s Sheer Force is increasing its damage!`);
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         damageListener
       );
       const effectListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         effectAndStatusListener
       );
       const statusListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_STATUS_APPLY,
+        battleEventEnum.BEFORE_STATUS_APPLY,
         effectAndStatusListener
       );
       return {
@@ -14810,7 +14830,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -14845,8 +14865,8 @@ const abilityConfig = {
             return;
           }
           const { moveId } = args.damageInfo;
-          const moveData = moveConfig[moveId];
-          if (!moveData || moveData.type !== types.STEEL) {
+          const moveData = getMove(moveId);
+          if (!moveData || moveData.type !== pokemonTypes.STEEL) {
             return;
           }
 
@@ -14859,7 +14879,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -14903,7 +14923,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -14943,7 +14963,7 @@ const abilityConfig = {
           }
 
           // if physical, 30% chance to poison
-          const moveData = moveConfig[args.damageInfo.moveId];
+          const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
             Math.random() < 0.3
@@ -14956,7 +14976,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -14966,48 +14986,6 @@ const abilityConfig = {
     abilityRemove(battle, _source, target) {
       const { ability } = target;
       if (!ability || ability.abilityId !== "143" || !ability.data) {
-        return;
-      }
-      const abilityData = ability.data;
-      battle.eventHandler.unregisterListener(abilityData.listenerId);
-    },
-  },
-  144: {
-    name: "Regenerator",
-    description: "After the user's turn, heal 15% of its max HP.",
-    abilityAdd(battle, _source, target) {
-      const listener = {
-        initialArgs: {
-          pokemon: target,
-        },
-        execute(initialArgs, _args) {
-          const { battle } = initialArgs.pokemon;
-          const { activePokemon } = battle;
-          if (activePokemon !== initialArgs.pokemon) {
-            return;
-          }
-
-          // heal 15% of max hp
-          battle.addToLog(
-            `${activePokemon.name}'s Regenerator restores its health!`
-          );
-          const healAmount = Math.floor(activePokemon.maxHp * 0.15);
-          activePokemon.giveHeal(healAmount, activePokemon, {
-            type: "regenerator",
-          });
-        },
-      };
-      const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
-        listener
-      );
-      return {
-        listenerId,
-      };
-    },
-    abilityRemove(battle, _source, target) {
-      const { ability } = target;
-      if (!ability || ability.abilityId !== "144" || !ability.data) {
         return;
       }
       const abilityData = ability.data;
@@ -15042,7 +15020,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         listener
       );
       return {
@@ -15081,12 +15059,12 @@ const abilityConfig = {
             sourcePokemon.battle.addToLog(
               `${sourcePokemon.name}'s Moxie greatly increases its attack!`
             );
-            sourcePokemon.addEffect("greaterAtkUp", 2, sourcePokemon);
+            sourcePokemon.applyEffect("greaterAtkUp", 2, sourcePokemon);
           } else {
             sourcePokemon.battle.addToLog(
               `${sourcePokemon.name}'s Moxie increases its attack!`
             );
-            sourcePokemon.addEffect("atkUp", 2, sourcePokemon);
+            sourcePokemon.applyEffect("atkUp", 2, sourcePokemon);
           }
 
           // gain 10% combat readiness
@@ -15094,7 +15072,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_FAINT,
+        battleEventEnum.AFTER_FAINT,
         listener
       );
       return {
@@ -15131,7 +15109,7 @@ const abilityConfig = {
           }
 
           // make sure move is non-damaging
-          const moveData = moveConfig[args.moveId];
+          const moveData = getMove(args.moveId);
           if (!moveData || moveData.damageType !== damageTypes.OTHER) {
             return;
           }
@@ -15144,17 +15122,18 @@ const abilityConfig = {
           initialPokemon.battle.addToLog(
             `${initialPokemon.name}'s Magic Bounce reflects the move!`
           );
-          moveExecutes[args.moveId](
+          executeMove({
+            moveId: args.moveId,
             battle,
-            initialPokemon,
-            sourcePokemon,
-            [sourcePokemon],
-            []
-          );
+            source: initialPokemon,
+            primaryTarget: sourcePokemon,
+            allTargets: [sourcePokemon],
+            missedTargets: [],
+          });
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_MOVE_EXECUTE,
+        battleEventEnum.BEFORE_MOVE_EXECUTE,
         listener
       );
       return {
@@ -15190,7 +15169,7 @@ const abilityConfig = {
 
           // make sure move is non-damaging
           const { moveId } = args;
-          const moveData = moveConfig[moveId];
+          const moveData = getMove(moveId);
           if (!moveData || moveData.damageType !== damageTypes.OTHER) {
             return;
           }
@@ -15203,7 +15182,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_MOVE,
+        battleEventEnum.AFTER_MOVE,
         listener
       );
       return {
@@ -15239,7 +15218,7 @@ const abilityConfig = {
           }
 
           const { effectId } = args;
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (!effectData || effectData.type !== effectTypes.DEBUFF) {
             return;
           }
@@ -15248,11 +15227,11 @@ const abilityConfig = {
           targetPokemon.battle.addToLog(
             `${targetPokemon.name}'s Competitive increases its special attack!`
           );
-          targetPokemon.addEffect("greaterSpaUp", 2, targetPokemon);
+          targetPokemon.applyEffect("greaterSpaUp", 2, targetPokemon);
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_EFFECT_ADD,
+        battleEventEnum.AFTER_EFFECT_ADD,
         listener
       );
       return {
@@ -15295,7 +15274,7 @@ const abilityConfig = {
         },
       };
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener
       );
       return {
@@ -15374,15 +15353,15 @@ const abilityConfig = {
       };
 
       const turnListenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         turnListener
       );
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
       );
       const faintListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_CAUSE_FAINT,
+        battleEventEnum.BEFORE_CAUSE_FAINT,
         faintListener
       );
       return {
@@ -15481,15 +15460,15 @@ const abilityConfig = {
       };
 
       const afterDamageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         afterDamageListener
       );
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
       );
       const faintListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_CAUSE_FAINT,
+        battleEventEnum.BEFORE_CAUSE_FAINT,
         faintListener
       );
       return {
@@ -15578,15 +15557,15 @@ const abilityConfig = {
       };
 
       const turnListenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         turnListener
       );
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
       );
       const faintListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_CAUSE_FAINT,
+        battleEventEnum.BEFORE_CAUSE_FAINT,
         faintListener
       );
       return {
@@ -15669,15 +15648,15 @@ const abilityConfig = {
       };
 
       const afterFaintListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_FAINT,
+        battleEventEnum.AFTER_FAINT,
         afterFaintListener
       );
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
       );
       const faintListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_CAUSE_FAINT,
+        battleEventEnum.BEFORE_CAUSE_FAINT,
         faintListener
       );
       return {
@@ -15731,14 +15710,14 @@ const abilityConfig = {
           targetPokemon.battle.addToLog(
             `${targetPokemon.name} suffers under ${initialArgs.pokemon.name}'s False Democracy!`
           );
-          targetPokemon.addEffect("disable", 1, initialArgs.pokemon);
+          targetPokemon.applyEffect("disable", 1, initialArgs.pokemon);
           abilityData.affectedPokemons.push(targetPokemon);
         },
       };
 
       // add listener to after cr gain
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_CR_GAINED,
+        battleEventEnum.AFTER_CR_GAINED,
         listener
       );
 
@@ -15797,7 +15776,7 @@ const abilityConfig = {
 
       // add listener to after turn end
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_END,
+        battleEventEnum.TURN_END,
         listener
       );
 
@@ -15855,7 +15834,7 @@ const abilityConfig = {
 
       // add listener to after faint
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_FAINT,
+        battleEventEnum.AFTER_FAINT,
         listener
       );
 
@@ -15909,7 +15888,7 @@ const abilityConfig = {
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         listener
       );
       return {
@@ -15950,12 +15929,12 @@ const abilityConfig = {
         execute(initialArgs, _args) {
           const { pokemon } = initialArgs;
           // add moneybags buff
-          pokemon.addEffect("moneyBags", 2, pokemon);
+          pokemon.applyEffect("moneyBags", 2, pokemon);
         },
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
       return {
@@ -15983,12 +15962,12 @@ const abilityConfig = {
         execute(initialArgs, _args) {
           const { pokemon } = initialArgs;
           // add immortality buff
-          pokemon.addEffect("immortal", 2, pokemon);
+          pokemon.applyEffect("immortal", 2, pokemon);
         },
       };
 
       const listenerId = battle.eventHandler.registerListener(
-        battleEventNames.BATTLE_BEGIN,
+        battleEventEnum.BATTLE_BEGIN,
         listener
       );
       return {
@@ -16021,7 +16000,7 @@ const abilityConfig = {
           }
 
           const { effectId } = args;
-          const effectData = effectConfig[effectId];
+          const effectData = getEffect(effectId);
           if (!effectData) {
             return;
           }
@@ -16050,7 +16029,7 @@ const abilityConfig = {
           // see if buff
           let isBuffed = false;
           for (const effectId of Object.keys(pokemon.effectIds)) {
-            const effectData = effectConfig[effectId];
+            const effectData = getEffect(effectId);
             if (!effectData) {
               continue;
             }
@@ -16073,11 +16052,11 @@ const abilityConfig = {
       };
 
       const listenerId1 = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_EFFECT_ADD,
+        battleEventEnum.BEFORE_EFFECT_ADD,
         listener
       );
       const listenerId2 = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_DEALT,
+        battleEventEnum.BEFORE_DAMAGE_DEALT,
         listener2
       );
       return {
@@ -16142,7 +16121,7 @@ const abilityConfig = {
           }
           const randomMoveId =
             validMoves[Math.floor(Math.random() * validMoves.length)];
-          const randomMoveData = moveConfig[randomMoveId];
+          const randomMoveData = getMove(randomMoveId);
           battle.addToLog(
             `${targetPokemon.name} countered with ${randomMoveData.name}!`
           );
@@ -16170,13 +16149,14 @@ const abilityConfig = {
           // use move against target
           battle.addToLog(`${randomMoveData.name} hit ${target.name}!`);
           // yes I know the targets are confusing
-          moveExecutes[randomMoveId](
-            targetPokemon.battle,
-            targetPokemon,
-            target,
-            targets,
-            []
-          );
+          executeMove({
+            moveId: randomMoveId,
+            battle: targetPokemon.battle,
+            source: targetPokemon,
+            primaryTarget: target,
+            allTargets: targets,
+            missedTargets: [],
+          });
         },
       };
       const damageListener = {
@@ -16235,15 +16215,15 @@ const abilityConfig = {
       };
 
       const afterDamageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         afterDamageListener
       );
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
       );
       const faintListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_CAUSE_FAINT,
+        battleEventEnum.BEFORE_CAUSE_FAINT,
         faintListener
       );
       return {
@@ -16363,15 +16343,15 @@ const abilityConfig = {
       };
 
       const afterDamageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_DAMAGE_TAKEN,
+        battleEventEnum.AFTER_DAMAGE_TAKEN,
         afterDamageListener
       );
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
       );
       const faintListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_CAUSE_FAINT,
+        battleEventEnum.BEFORE_CAUSE_FAINT,
         faintListener
       );
       return {
@@ -16418,19 +16398,19 @@ const abilityConfig = {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Cosmic Strength increases its special attack!`
             );
-            targetPokemon.addEffect("greaterSpaUp", 1, targetPokemon);
+            targetPokemon.applyEffect("greaterSpaUp", 1, targetPokemon);
           } else if (effectId === "spaDown" || effectId === "greaterSpaDown") {
             // increase attack
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Cosmic Strength increases its attack!`
             );
-            targetPokemon.addEffect("greaterAtkUp", 1, targetPokemon);
+            targetPokemon.applyEffect("greaterAtkUp", 1, targetPokemon);
           }
         },
       };
 
       const debuffListenerId = battle.eventHandler.registerListener(
-        battleEventNames.AFTER_EFFECT_ADD,
+        battleEventEnum.AFTER_EFFECT_ADD,
         debuffListener
       );
       return {
@@ -16467,7 +16447,7 @@ const abilityConfig = {
       };
 
       const damageListenerId = battle.eventHandler.registerListener(
-        battleEventNames.BEFORE_DAMAGE_TAKEN,
+        battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
       );
       battle.addToLog(
@@ -16530,7 +16510,7 @@ const abilityConfig = {
       };
 
       const turnListenerId = battle.eventHandler.registerListener(
-        battleEventNames.TURN_BEGIN,
+        battleEventEnum.TURN_BEGIN,
         turnListener
       );
       return {
@@ -16547,11 +16527,10 @@ const abilityConfig = {
       battle.eventHandler.unregisterListener(abilityData.turnListenerId);
     },
   },
-};
+});
 
 module.exports = {
   typeAdvantages,
-  battleEventNames,
   moveConfig,
   moveExecutes,
   moveTiers,
@@ -16564,4 +16543,5 @@ module.exports = {
   weatherConditions,
   calculateDamage,
   abilityConfig,
+  damageTypes,
 };

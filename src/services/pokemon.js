@@ -876,6 +876,14 @@ const buildPokemonAllInfoSend = async ({
   return { send, err: null };
 };
 
+/**
+ * @param {Object} param0
+ * @param {Object?=} param0.user
+ * @param {string?=} param0.pokemonId
+ * @param {string?=} param0.tab
+ * @param {string?=} param0.action
+ * @returns
+ */
 const buildPokemonInfoSend = async ({
   user = null,
   pokemonId = null,

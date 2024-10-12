@@ -14,7 +14,7 @@ import pluginJs from "@eslint/js";
 
 export default [
   // mimic ESLintRC-style extends
-  ...compat.extends("airbnb", "prettier"),
+  ...compat.extends("airbnb", "prettier", "plugin:jsdoc/recommended"),
   {
     files: ["**/*.js"],
     languageOptions: {
@@ -34,6 +34,12 @@ export default [
       "guard-for-in": "off", // TODO: enable but make better lol
       "no-continue": "off", // doesn't seem to work properly
       "no-await-in-loop": "off", // TODO: use promise.all
+      "jsdoc/no-undefined-types": "off", // doesn't seem to work with TS types
+      "jsdoc/require-param-description": "off", // TODO: maybe add descriptions
+      "jsdoc/require-returns-description": "off", // TODO: maybe add descriptions
+      "jsdoc/require-property-description": "off", // TODO: maybe add descriptions
+      "jsdoc/valid-types": "off", // doesn't seem to work with TS types
+      "jsdoc/require-returns": "off",
     },
   },
   pluginJs.configs.recommended,

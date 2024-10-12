@@ -13,7 +13,6 @@ const {
   backpackItemConfig,
   backpackItems,
 } = require("../config/backpackConfig");
-const { moveConfig } = require("../config/battleConfig");
 const { collectionNames } = require("../config/databaseConfig");
 const { eventNames } = require("../config/eventConfig");
 const { getCelebiPool } = require("../config/gachaConfig");
@@ -47,6 +46,7 @@ const {
   calculateAndUpdatePokemonStats,
 } = require("./pokemon");
 const { getTrainer, updateTrainer } = require("./trainer");
+const { getMoves } = require("../battle/data/moveService");
 
 const getMythic = async (trainer, speciesId) => {
   const speciesData = pokemonConfig[speciesId];
@@ -259,25 +259,25 @@ const buildMewSend = async ({ user = null, tab = "basic" } = {}) => {
       selectIds = mythicConfig.basicMoveIds;
       // filter out moves that mew already knows
       selectIds = selectIds.filter((moveId) => !mew.moveIds.includes(moveId));
-      selectConfig = moveConfig;
+      selectConfig = getMoves({});
       break;
     case "power1":
       selectIds = mythicConfig.powerMoveIds;
       // filter out moves that mew already knows
       selectIds = selectIds.filter((moveId) => !mew.moveIds.includes(moveId));
-      selectConfig = moveConfig;
+      selectConfig = getMoves({});
       break;
     case "power2":
       selectIds = mythicConfig.powerMoveIds;
       // filter out moves that mew already knows
       selectIds = selectIds.filter((moveId) => !mew.moveIds.includes(moveId));
-      selectConfig = moveConfig;
+      selectConfig = getMoves({});
       break;
     case "ultimate":
       selectIds = mythicConfig.ultimateMoveIds;
       // filter out moves that mew already knows
       selectIds = selectIds.filter((moveId) => !mew.moveIds.includes(moveId));
-      selectConfig = moveConfig;
+      selectConfig = getMoves({});
       break;
     case "nature":
       selectIds = Object.keys(natureConfig);
