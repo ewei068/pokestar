@@ -12,7 +12,7 @@ const {
   growthRateConfig,
 } = require("../config/pokemonConfig");
 const { getPBar, getWhitespace } = require("./utils");
-const { abilityConfig } = require("../config/battleConfig");
+const { getAbility } = require("../battle/data/abilityRegistry");
 const {
   equipmentConfig,
   modifierSlotConfig,
@@ -175,8 +175,8 @@ const calculateEffectiveEvasion = (evasion) => {
 };
 
 const getAbilityName = (abilityId) => {
-  if (abilityConfig[abilityId]) {
-    return `#${abilityId} ${abilityConfig[abilityId].name}`;
+  if (getAbility(abilityId)) {
+    return `#${abilityId} ${getAbility(abilityId).name}`;
   }
   return `#${abilityId}`;
 };

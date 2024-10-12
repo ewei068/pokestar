@@ -21,7 +21,6 @@ const {
   statusConditions,
   moveTiers,
   calculateDamage,
-  abilityConfig,
   typeAdvantages,
   weatherConditions,
 } = require("../config/battleConfig");
@@ -78,6 +77,7 @@ const { addRewards, getRewardsString } = require("../utils/trainerUtils");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
 const { getMove, executeMove } = require("../battle/data/moveService");
 const { getEffect } = require("../battle/data/effectRegistry");
+const { getAbility } = require("../battle/data/abilityRegistry");
 const { BattleEventHandler } = require("../battle/engine/events");
 
 class NPC {
@@ -1342,21 +1342,52 @@ class Pokemon {
 
   applyAbility() {
     const { abilityId } = this.ability;
-    const abilityData = abilityConfig[abilityId];
+    const abilityData = getAbility(/** @type {AbilityIdEnum} */ (abilityId));
     if (!abilityData || !abilityData.abilityAdd) {
+      // TODO: not all abilities are implemented
+      // logger.error(`Ability ${abilityId} does not exist.`);
       return;
     }
 
-    this.ability.data = abilityData.abilityAdd(this.battle, this, this);
+    if (!abilityData.isLegacyAbility) {
+      this.ability.data = abilityData.abilityAdd({
+        battle: this.battle,
+        source: this,
+        target: this,
+      });
+    } else {
+      const legacyAbility = /** @type {any} */ (abilityData);
+      legacyAbility.abilityAdd(this.battle, this, this);
+    }
     this.ability.applied = true;
   }
 
   removeAbility() {
     // remove ability effects
-    const { abilityId } = this.ability;
-    const abilityData = abilityConfig[abilityId];
-    if (abilityData && abilityData.abilityRemove) {
-      abilityData.abilityRemove(this.battle, this, this);
+    const { abilityId, applied } = this.ability;
+    const abilityData = getAbility(/** @type {AbilityIdEnum} */ (abilityId));
+    if (!abilityData || !abilityData.abilityRemove) {
+      // TODO: not all abilities are implemented
+      // logger.error(`Ability ${abilityId} does not exist.`);
+      return;
+    }
+    if (!abilityId || !applied) {
+      logger.error(
+        `Ability ${abilityId} is not applied to Pokemon ${this.id} ${this.name}.`
+      );
+      return;
+    }
+
+    if (!abilityData.isLegacyAbility) {
+      abilityData.abilityRemove({
+        battle: this.battle,
+        source: this,
+        target: this,
+        properties: this.ability.data,
+      });
+    } else {
+      const legacyAbility = /** @type {any} */ (abilityData);
+      legacyAbility.abilityRemove(this.battle, this, this);
     }
   }
 

@@ -55,7 +55,7 @@
 
 /**
  * @template T
- * @typedef {T extends Ability<infer U> ? U & { abilityId: AbilityIdEnum } : never} AbilityPropertiesType
+ * @typedef {T extends Ability<infer U> ? U : never} AbilityPropertiesType
  */
 
 /**

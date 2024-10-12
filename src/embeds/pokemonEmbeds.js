@@ -15,7 +15,7 @@ const {
   typeConfig,
   growthRateConfig,
 } = require("../config/pokemonConfig");
-const { abilityConfig } = require("../config/battleConfig");
+const { getAbility } = require("../battle/data/abilityRegistry");
 const { getMove } = require("../battle/data/moveService");
 const {
   getWhitespace,
@@ -380,7 +380,7 @@ const buildPokemonEmbed = (
     }
 
     // add ability field
-    const abilityData = abilityConfig[pokemon.abilityId];
+    const abilityData = getAbility(pokemon.abilityId);
     embed.addFields({
       name: `Ability: ${getAbilityName(pokemon.abilityId)}`,
       value: abilityData ? abilityData.description : "Not yet implemented!",
@@ -762,7 +762,7 @@ const buildSpeciesDexEmbed = (id, speciesData, tab, ownershipData) => {
     // display: ability strings
     const fields = getAbilityOrder(speciesData.abilities).map((abilityId) => {
       const abilityProbability = speciesData.abilities[abilityId];
-      const abilityData = abilityConfig[abilityId];
+      const abilityData = getAbility(abilityId);
       const abilityHeader = `${getAbilityName(abilityId)} (${Math.floor(
         abilityProbability * 100
       )}%)`;

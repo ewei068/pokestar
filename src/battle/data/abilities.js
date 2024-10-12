@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 const { abilityIdEnum, battleEventEnum } = require("../../enums/battleEnums");
+const { logger } = require("../../log");
 const { getIsActivePokemonCallback } = require("../engine/eventConditions");
 
 /**
@@ -21,6 +22,23 @@ class Ability {
     this.abilityAdd = abilityAdd;
     this.abilityRemove = abilityRemove;
     this.isLegacyAbility = false;
+  }
+
+  // eslint-disable-next-line jsdoc/require-returns-check
+  /**
+   * @param {BattlePokemon} pokemon
+   * @returns {{ abilityId: AbilityIdEnum, data: T, applied: boolean }=}
+   */
+  getAbilityInstance(pokemon) {
+    const abilityInstance = pokemon.ability;
+    if (abilityInstance?.abilityId !== this.id) {
+      logger.error(
+        `Ability ${this.id} not found on Pokemon ${pokemon.id} ${pokemon.name}. Real Ability ID: ${abilityInstance?.abilityId}`
+      );
+      return;
+    }
+
+    return /** @type {any} */ (abilityInstance);
   }
 }
 

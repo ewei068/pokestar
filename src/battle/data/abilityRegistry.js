@@ -7,7 +7,7 @@ const types = require("../../../types");
 const allAbilities = {};
 
 /**
- * @param {Record<EffectIdEnum, Effect<any, any>>} abilities
+ * @param {Record<AbilityIdEnum, Ability<any>>} abilities
  */
 const registerAbilities = (abilities) => {
   let abilitiesRegistered = 0;
@@ -19,7 +19,7 @@ const registerAbilities = (abilities) => {
 };
 
 /**
- * @param {Record<EffectIdEnum, object>} abilityConfig
+ * @param {Record<AbilityIdEnum, object>} abilityConfig
  */
 const registerLegacyAbilities = (abilityConfig) => {
   let abilitiesRegistered = 0;
@@ -40,9 +40,9 @@ const registerLegacyAbilities = (abilityConfig) => {
 };
 
 /**
- * @template {EffectIdEnum} K
+ * @template {AbilityIdEnum} K
  * @param {K} abilityId
- * @returns {K extends keyof RegisteredEffects ? RegisteredEffects[K] : Effect<any, any>}
+ * @returns {K extends keyof RegisteredAbilities ? RegisteredAbilities[K] : Ability<any>?}
  */
 const getAbility = (abilityId) =>
   // @ts-ignore
@@ -52,7 +52,7 @@ const getAbility = (abilityId) =>
  * @param {object} param0
  * @param {Record<string, any>=} param0.fieldFilter
  * @param {Function=} param0.customFilter
- * @returns {types.PartialRecord<EffectIdEnum, Effect<any, any>>}
+ * @returns {types.PartialRecord<AbilityIdEnum, Ability<any>>}
  */
 const getAbilities = ({ fieldFilter, customFilter }) => {
   if (customFilter) {
@@ -80,11 +80,12 @@ const getAbilities = ({ fieldFilter, customFilter }) => {
     ...allAbilities,
   };
 };
+
 /**
  * @param {object} param0
  * @param {Record<string, any>=} param0.fieldFilter
  * @param {Function=} param0.customFilter
- * @returns {EffectIdEnum[]}
+ * @returns {AbilityIdEnum[]}
  */
 const getAbilityIds = ({ fieldFilter, customFilter }) => {
   const abilities = getAbilities({ fieldFilter, customFilter });

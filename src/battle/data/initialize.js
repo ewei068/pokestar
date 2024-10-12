@@ -7,14 +7,22 @@ const {
   moveConfig,
   moveExecutes,
   effectConfig,
+  abilityConfig,
 } = require("../../config/battleConfig");
 const { movesToRegister } = require("./moves");
+const {
+  registerAbilities,
+  registerLegacyAbilities,
+} = require("./abilityRegistry");
+const { abilitiesToRegister } = require("./abilities");
 
 const initialize = () => {
   registerEffects(effectsToRegister);
   registerLegacyEffects(effectConfig);
   registerMoves(movesToRegister);
   registerLegacyMoves(moveConfig, moveExecutes);
+  registerAbilities(abilitiesToRegister);
+  registerLegacyAbilities(abilityConfig);
 };
 
 module.exports = {
