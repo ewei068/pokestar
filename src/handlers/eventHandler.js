@@ -10,6 +10,11 @@ const path = require("path");
 const { eventConfig } = require("../config/eventConfig");
 const { logger } = require("../log");
 const { addExpAndMoney } = require("../services/trainer");
+const { triggerBoundCallback } = require("../deact/deact");
+const {
+  setInteractionInstance,
+  removeInteractionInstance,
+} = require("../deact/interactions");
 
 const eventHandlers = {};
 const eventsDirectory = path.join(__dirname, "../events");
@@ -34,14 +39,21 @@ const handleEvent = async (interaction, client) => {
   const { eventName } = data;
 
   // if event not in handler, return
-  if (!eventHandlers[eventName]) {
+  if (!eventHandlers[eventName] && !data.isDeact) {
     // logger.warn(`Event ${eventName} not found in event handlers`);
     return;
   }
 
   // execute event
   try {
-    const res = await eventHandlers[eventName](interaction, data, client);
+    let res;
+    if (data.isDeact) {
+      setInteractionInstance(interaction);
+      res = await triggerBoundCallback(interaction, data);
+    } else {
+      res = await eventHandlers[eventName](interaction, data, client);
+    }
+    removeInteractionInstance(interaction);
     if (res && res.err) {
       // send ephemeral message
       const send = {
@@ -57,9 +69,10 @@ const handleEvent = async (interaction, client) => {
       return;
     }
 
+    // TODO: Deact handler?
     // add exp & money if possible
-    const exp = eventConfig[eventName].exp || 0;
-    const money = eventConfig[eventName].money || 0;
+    const exp = eventConfig[eventName]?.exp || 0;
+    const money = eventConfig[eventName]?.money || 0;
     if (exp > 0 || money > 0) {
       const { level, err } = await addExpAndMoney(interaction.user, exp, money);
       if (level && !err) {

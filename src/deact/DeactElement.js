@@ -3,11 +3,11 @@ const { logger } = require("../log");
 
 class DeactElement {
   /**
-   * @param {import("./DeactInstance").DeactInstance} parentInstance
+   * @param {import("./DeactInstance").DeactInstance} rootInstance
    * @param {Function} renderCallback
    */
-  constructor(parentInstance, renderCallback) {
-    this.parentInstance = parentInstance;
+  constructor(rootInstance, renderCallback) {
+    this.rootInstance = rootInstance;
     this.renderCallback = renderCallback;
     this.id = shortId.generate();
     this.resetLifecycle();

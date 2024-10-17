@@ -15,9 +15,8 @@ class InteractionInstance {
   }
 
   async deferUpdate() {
-    this.messageRef = await this.interaction.update({
-      content: "Loading...",
-    });
+    // TODO: is this right?
+    this.messageRef = await this.interaction.deferUpdate();
     this.deferred = true;
   }
 

@@ -323,6 +323,7 @@ const runSlashCommand = async (interaction, client) => {
     }
 
     const res = await slashCommands[command](interaction, client);
+    removeInteractionInstance(interaction);
     if (res && res.err) {
       return;
     }
@@ -343,9 +344,6 @@ const runSlashCommand = async (interaction, client) => {
           );
         }
       }
-    }
-    if (commandData.isDeact) {
-      removeInteractionInstance(interaction);
     }
   } catch (error) {
     logger.error(error);
