@@ -73,7 +73,7 @@ module.exports._typesOnly = true;
  *
  * Party info
  * @property {PartyInfo} party
- * @property {Object<number, PartyInfo>} savedParties
+ * @property {{[key: string]: PartyInfo}} savedParties
  *
  * Banner
  * @property {number} beginnerRolls
@@ -90,6 +90,32 @@ module.exports._typesOnly = true;
  * @property {number} lastCommand
  * @property {boolean} spawnDisabled
  * @property {Array<string>} spawnDisabledChannels
+ */
+
+/**
+ * TODO: organize
+ * @typedef {object} Pokemon
+ * @property {string} userId
+ * @property {PokemonIdEnum} speciesId
+ * @property {string} name
+ * @property {number} level
+ * @property {number} exp
+ * @property {[number, number, number, number, number, number]} evs
+ * @property {[number, number, number, number, number, number]} ivs
+ * @property {[number, number, number, number, number, number]} stats
+ * @property {number} combatPower
+ * @property {NatureEnum} natureId
+ * @property {AbilityIdEnum | string | number} abilityId
+ * @property {string} item
+ * @property {MoveIdEnum[]} moveIds
+ * @property {boolean} shiny
+ * @property {number} dateAcquired
+ * @property {number} ivTotal
+ * @property {string} originalOwner
+ * @property {RarityEnum} rarity
+ * @property {any} equipments
+ * @property {boolean} locked
+ * @property {boolean} battleEligible
  */
 
 /**

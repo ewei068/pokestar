@@ -1,13 +1,14 @@
+/* eslint-disable-next-line no-unused-vars */
 const types = require("../../types");
 
-/** @typedef{types.Enum<backpackCategories>} BackpackCategoryEnum */
+/** @typedef {types.Enum<backpackCategories>} BackpackCategoryEnum */
 const backpackCategories = Object.freeze({
   POKEBALLS: "0",
   MATERIALS: "1",
   CONSUMABLES: "2",
 });
 
-/** @typedef{types.Enum<backpackItems>} BackpackItemEnum */
+/** @typedef {types.Enum<backpackItems>} BackpackItemEnum */
 const backpackItems = Object.freeze({
   POKEBALL: "0",
   GREATBALL: "1",
