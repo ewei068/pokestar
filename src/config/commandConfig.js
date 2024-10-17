@@ -1,9 +1,21 @@
 const { stageNames, stageConfig } = require("./stageConfig");
+/* eslint-disable no-unused-vars */
+const types = require("../../types");
 
 const { prefix } = stageConfig[process.env.STAGE];
 
+/** @typedef {types.Keys<commandCategoryConfig>} CommandCategoryEnum */
+
 // TODO: re-order commands and categories
 // TODO: add long descriptions
+/**
+ * @satisfies {Record<string, {
+ *  name: string,
+ *  description: string,
+ *  folder: string,
+ *  commands: CommandEnum[]
+ * }>}
+ */
 const commandCategoryConfig = Object.freeze({
   trainer: {
     name: "Trainer",
@@ -88,6 +100,29 @@ const commandCategoryConfig = Object.freeze({
   },
 });
 
+/** @typedef {types.Keys<commandConfig>} CommandEnum */
+
+/**
+ * @satisfies {Record<string, {
+ *  name: string,
+ *  aliases: string[],
+ *  description: string,
+ *  longDescription?: string,
+ *  execute?: string,
+ *  args: Record<string, {
+ *    type: string,
+ *    description: string,
+ *    optional: boolean,
+ *    variable: boolean,
+ *    enum?: any[],
+ *  }>,
+ *  stages: string[],
+ *  exp?: number,
+ *  money?: number,
+ *  parent?: string,
+ *  subcommands?: string[],
+ * }>}
+ */
 const commandConfig = Object.freeze({
   ping: {
     name: "Ping",
