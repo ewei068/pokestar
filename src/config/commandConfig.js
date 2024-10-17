@@ -4,7 +4,7 @@ const { prefix } = stageConfig[process.env.STAGE];
 
 // TODO: re-order commands and categories
 // TODO: add long descriptions
-const commandCategoryConfig = {
+const commandCategoryConfig = Object.freeze({
   trainer: {
     name: "Trainer",
     description: "Commands involving your trainer",
@@ -86,9 +86,9 @@ const commandCategoryConfig = {
     folder: "heartbeat",
     commands: ["ping", "echo", "give", "test"],
   },
-};
+});
 
-const commandConfig = {
+const commandConfig = Object.freeze({
   ping: {
     name: "Ping",
     aliases: ["ping"],
@@ -1021,7 +1021,7 @@ const commandConfig = {
     },
     stages: [stageNames.ALPHA],
   },
-};
+});
 
 module.exports = {
   commandCategoryConfig,
