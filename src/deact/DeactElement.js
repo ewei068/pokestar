@@ -46,6 +46,14 @@ class DeactElement {
       return { err: "Big error lol" };
     }
   }
+
+  getCallbackKey() {
+    return `${this.id},${this.callbacks.length - 1}`;
+  }
+
+  unmount() {
+    // todo
+  }
 }
 
 module.exports = {

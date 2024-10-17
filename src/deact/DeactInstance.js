@@ -15,6 +15,7 @@ class DeactInstance {
     };
     this.currentElementId = initialElement.id;
     this.sharedState = {};
+    this.locked = false;
   }
 
   async renderCurrentElement() {

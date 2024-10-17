@@ -10,7 +10,7 @@ const { DeactElement } = require("./DeactElement");
  * @param {object} param3
  * @param {boolean=} param3.defer
  * @param {number=} param3.ttl
- * @returns
+ * @returns {Promise<any>}
  */
 const createInstance = async (
   render,
@@ -58,10 +58,9 @@ async function forceUpdate(interaction, ref, { defer = true }) {
 }
 
 /**
- * @callback useCallbackBindingType
  * @param {Function} callback
  * @param {DeactElement} ref
- * @returns {number} binding index of the callback
+ * @returns {string} binding key of the callback
  */
 function useCallbackBinding(callback, ref) {
   ref.callbacks.push(
@@ -70,7 +69,7 @@ function useCallbackBinding(callback, ref) {
       await callback(interaction, data)
   );
 
-  return ref.callbacks.length - 1;
+  return ref.getCallbackKey();
 }
 
 module.exports = {
