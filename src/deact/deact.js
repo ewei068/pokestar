@@ -5,17 +5,17 @@ const { DeactElement } = require("./DeactElement");
 
 /**
  * @param {Function} render
- * @param {any} props
  * @param {any} interaction
+ * @param {any} props
  * @param {object} param3
  * @param {boolean=} param3.defer
  * @param {number=} param3.ttl
  * @returns {Promise<any>}
  */
-const createInstance = async (
+const createRoot = async (
   render,
-  props,
   interaction,
+  props,
   { defer = true, ttl }
 ) => {
   const interactionInstance = getInteractionInstance(interaction);
@@ -36,28 +36,6 @@ const createInstance = async (
 // TODO: figure out how to remove ref parameter
 
 /**
- * @param {any} interaction // TODO
- * @param {DeactElement} ref
- * @param {object} root0
- * @param {boolean} root0.defer
- */
-async function forceUpdate(interaction, ref, { defer = true }) {
-  const instance = ref.parentInstance;
-  const interactionInstance = getInteractionInstance(interaction);
-  if (!interactionInstance) {
-    return {
-      err: "Error getting interaction instance",
-    };
-  }
-  if (defer) {
-    await interactionInstance.deferUpdate();
-  }
-  const renderedElement = await instance.renderCurrentElement();
-  await interactionInstance.update(renderedElement);
-  return renderedElement;
-}
-
-/**
  * @param {Function} callback
  * @param {DeactElement} ref
  * @returns {string} binding key of the callback
@@ -73,7 +51,6 @@ function useCallbackBinding(callback, ref) {
 }
 
 module.exports = {
-  createInstance,
-  forceUpdate,
+  createRoot,
   useCallbackBinding,
 };

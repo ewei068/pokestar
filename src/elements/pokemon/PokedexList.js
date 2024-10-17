@@ -13,6 +13,7 @@ module.exports = async (ref, { page = 1 }) => {
 
   return {
     element: {
+      content: "",
       embeds: [buildDexListEmbed(ids, page)],
       components: [],
     },

@@ -54,6 +54,10 @@ class DeactElement {
   unmount() {
     // todo
   }
+
+  isDoneRendering() {
+    return true; // TODO
+  }
 }
 
 module.exports = {

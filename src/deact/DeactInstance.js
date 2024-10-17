@@ -1,5 +1,6 @@
 const { setState, updateState } = require("../services/state");
 const { DeactElement } = require("./DeactElement");
+const { logger } = require("../log");
 
 class DeactInstance {
   /**
@@ -18,10 +19,36 @@ class DeactInstance {
     this.locked = false;
   }
 
+  getCurrentElement() {
+    return this.elements[this.currentElementId];
+  }
+
   async renderCurrentElement() {
-    const res = this.elements[this.currentElementId].render();
     this.flushState();
-    return await res;
+    const element = this.getCurrentElement();
+    let renders = 0;
+    let res;
+    while (true) {
+      res = await element.render();
+      if (res.err || element.isDoneRendering()) {
+        break;
+      }
+
+      renders += 1;
+      if (renders === 10) {
+        // TODO: name handling
+        logger.warn("Many renders detected.");
+      } else if (renders > 20) {
+        logger.error("Too many renders detected.");
+        res = {
+          ...res,
+          err: "Your request took too long.",
+        };
+        break;
+      }
+    }
+    this.flushState();
+    return res;
   }
 
   getStateToSet() {
