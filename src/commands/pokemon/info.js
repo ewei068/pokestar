@@ -13,8 +13,8 @@ const {
 
 /**
  * Gets information about a Pokemon, returning an embed with the Pokemon's info.
- * @param {Object} user User who initiated the command.
- * @param {String} pokemonId ID of the Pokemon to get info about.
+ * @param {object} user User who initiated the command.
+ * @param {string} pokemonId ID of the Pokemon to get info about.
  * @returns Embed with Pokemon's info.
  */
 const info = async (user, pokemonId) =>

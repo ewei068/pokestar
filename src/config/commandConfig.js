@@ -121,6 +121,7 @@ const commandCategoryConfig = Object.freeze({
  *  money?: number,
  *  parent?: string,
  *  subcommands?: string[],
+ *  isDeact?: boolean,
  * }>}
  */
 const commandConfig = Object.freeze({
@@ -335,6 +336,7 @@ const commandConfig = Object.freeze({
       },
     },
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    isDeact: true,
   },
   release: {
     name: "Release",

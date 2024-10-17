@@ -3,6 +3,15 @@ const { getInteractionInstance } = require("./interactions");
 /* eslint-disable-next-line no-unused-vars */
 const { DeactElement } = require("./DeactElement");
 
+/**
+ * @param {Function} render
+ * @param {any} props
+ * @param {any} interaction
+ * @param {object} param3
+ * @param {boolean=} param3.defer
+ * @param {number=} param3.ttl
+ * @returns
+ */
 const createInstance = async (
   render,
   props,
@@ -24,19 +33,16 @@ const createInstance = async (
   return renderedElement;
 };
 
+// TODO: figure out how to remove ref parameter
+
 /**
- * @callback forceUpdateType
- * @this {DeactElement}
  * @param {any} interaction // TODO
+ * @param {DeactElement} ref
  * @param {object} root0
  * @param {boolean} root0.defer
  */
-
-/**
- * @type {forceUpdateType}
- */
-async function forceUpdate(interaction, { defer = true }) {
-  const instance = this.parentInstance;
+async function forceUpdate(interaction, ref, { defer = true }) {
+  const instance = ref.parentInstance;
   const interactionInstance = getInteractionInstance(interaction);
   if (!interactionInstance) {
     return {
@@ -53,24 +59,18 @@ async function forceUpdate(interaction, { defer = true }) {
 
 /**
  * @callback useCallbackBindingType
- * @this {DeactElement}
  * @param {Function} callback
- * @returns
- */
-
-/**
- * @type {useCallbackBindingType}
- * @param {Function} callback
+ * @param {DeactElement} ref
  * @returns {number} binding index of the callback
  */
-function useCallbackBinding(callback) {
-  this.callbacks.push(
+function useCallbackBinding(callback, ref) {
+  ref.callbacks.push(
     async (interaction, data) =>
       // TODO, probably
       await callback(interaction, data)
   );
 
-  return this.callbacks.length - 1;
+  return ref.callbacks.length - 1;
 }
 
 module.exports = {

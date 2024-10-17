@@ -1,8 +1,8 @@
 const shortId = require("shortid");
+const { logger } = require("../log");
 
 class DeactElement {
   /**
-   *
    * @param {import("./DeactInstance").DeactInstance} parentInstance
    * @param {Function} renderCallback
    * @param {any} props
@@ -15,14 +15,36 @@ class DeactElement {
     this.resetLifecycle();
   }
 
+  updateProps(props) {
+    this.props = props;
+  }
+
   resetLifecycle() {
+    this.oldState = [];
+    this.callbacks = [];
     this.state = [];
     this.callbacks = [];
   }
 
+  restoreLifecycle() {
+    this.state = this.oldState;
+    this.oldState = [];
+  }
+
   async render() {
     this.resetLifecycle();
-    return await this.renderCallback(this.props);
+    try {
+      // TODO: optimize by listening for props/state changes
+      const res = await this.renderCallback(this, this.props);
+      if (res.err) {
+        this.restoreLifecycle();
+      }
+      return res;
+    } catch (e) {
+      logger.error(e);
+      this.restoreLifecycle();
+      return { err: "Big error lol" };
+    }
   }
 }
 
