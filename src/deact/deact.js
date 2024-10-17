@@ -50,7 +50,30 @@ function useCallbackBinding(callback, ref) {
   return ref.getCallbackKey();
 }
 
+/**
+ * @param {any} initialValue
+ * @param {DeactElement} ref
+ */
+function useState(initialValue, ref) {
+  ref.state.push(initialValue);
+  const index = ref.state.length - 1;
+  return [
+    ref.oldState[index] || initialValue,
+    (newValue) => {
+      if (newValue === ref.state[index]) {
+        return;
+      }
+      // this might be incorrect
+      // eslint-disable-next-line no-param-reassign
+      ref.state[index] = newValue;
+      // eslint-disable-next-line no-param-reassign
+      ref.isDoneRendering = false;
+    },
+  ];
+}
+
 module.exports = {
   createRoot,
   useCallbackBinding,
+  useState,
 };

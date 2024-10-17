@@ -10,7 +10,8 @@ class DeactInstance {
    */
   constructor(render, props, { ttl = 300 }) {
     this.stateId = setState(this.getStateToSet(), ttl);
-    const initialElement = new DeactElement(this, render, props);
+    const initialElement = new DeactElement(this, render);
+    this.rootProps = props;
     this.elements = {
       [initialElement.id]: initialElement,
     };
@@ -28,9 +29,10 @@ class DeactInstance {
     const element = this.getCurrentElement();
     let renders = 0;
     let res;
+    // eslint-disable-next-line no-constant-condition
     while (true) {
-      res = await element.render();
-      if (res.err || element.isDoneRendering()) {
+      res = await element.render(this.rootProps);
+      if (res.err || element.getIsDoneRendering()) {
         break;
       }
 

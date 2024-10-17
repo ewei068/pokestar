@@ -5,34 +5,34 @@ class DeactElement {
   /**
    * @param {import("./DeactInstance").DeactInstance} parentInstance
    * @param {Function} renderCallback
-   * @param {any} props
    */
-  constructor(parentInstance, renderCallback, props) {
+  constructor(parentInstance, renderCallback) {
     this.parentInstance = parentInstance;
     this.renderCallback = renderCallback;
-    this.props = props;
     this.id = shortId.generate();
     this.resetLifecycle();
-  }
-
-  updateProps(props) {
-    this.props = props;
+    this.isDoneRendering = true;
   }
 
   resetLifecycle() {
-    this.oldState = [];
-    this.callbacks = [];
+    this.isDoneRendering = true;
+    this.oldState = this.state;
+    this.oldCallbacks = this.callbacks;
+    this.oldProps = this.props;
     this.state = [];
     this.callbacks = [];
   }
 
   restoreLifecycle() {
+    this.isDoneRendering = true;
     this.state = this.oldState;
-    this.oldState = [];
+    this.callbacks = this.oldCallbacks;
+    this.props = this.oldProps;
   }
 
-  async render() {
+  async render(props) {
     this.resetLifecycle();
+    this.props = props;
     try {
       // TODO: optimize by listening for props/state changes
       const res = await this.renderCallback(this, this.props);
@@ -51,12 +51,13 @@ class DeactElement {
     return `${this.id},${this.callbacks.length - 1}`;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   unmount() {
     // todo
   }
 
-  isDoneRendering() {
-    return true; // TODO
+  getIsDoneRendering() {
+    return this.isDoneRendering; // TODO
   }
 }
 
