@@ -45,10 +45,10 @@ class DeactInstance {
       }
 
       renders += 1;
-      if (renders === 10) {
+      if (renders === 15) {
         // TODO: name handling
         logger.warn("Many renders detected.");
-      } else if (renders > 20) {
+      } else if (renders > 40) {
         logger.error("Too many renders detected.");
         res = {
           ...res,

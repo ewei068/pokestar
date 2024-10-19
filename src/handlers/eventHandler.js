@@ -39,7 +39,7 @@ const handleEvent = async (interaction, client) => {
   const { eventName } = data;
 
   // if event not in handler, return
-  if (!eventHandlers[eventName] && !data.isDeact) {
+  if (!eventHandlers[eventName] && !data.dSID) {
     // logger.warn(`Event ${eventName} not found in event handlers`);
     return;
   }
@@ -47,7 +47,7 @@ const handleEvent = async (interaction, client) => {
   // execute event
   try {
     let res;
-    if (data.isDeact) {
+    if (data.dSID) {
       setInteractionInstance(interaction);
       res = await triggerBoundCallback(interaction, data);
     } else {

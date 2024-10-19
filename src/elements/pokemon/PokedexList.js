@@ -1,7 +1,13 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { getPokemonOrder } = require("../../utils/pokemonUtils");
 const { buildDexListEmbed } = require("../../embeds/pokemonEmbeds");
-const { useState, useCallbackBinding } = require("../../deact/deact");
+const {
+  useState,
+  useCallbackBinding,
+  makeComponentId,
+  createElement,
+} = require("../../deact/deact");
+const Button = require("../../deact/foundation/Button");
 
 /**
  *
@@ -26,39 +32,30 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
     setPage(data.page);
   }, ref);
 
-  // TODO: componentify
-  const actionRow = new ActionRowBuilder();
-  const leftButtonId = {
-    page: page - 1,
-    key: pageActionBindng,
-    isDeact: true,
-    stateId: ref.rootInstance.stateId,
-  };
-  const leftButton = new ButtonBuilder()
-    .setCustomId(`${JSON.stringify(leftButtonId)}`)
-    .setLabel("◄")
-    .setStyle(ButtonStyle.Secondary)
-    .setDisabled(page <= 1);
-  const rightButtonId = {
-    page: page + 1,
-    key: pageActionBindng,
-    isDeact: true,
-    stateId: ref.rootInstance.stateId,
-  };
-  const rightButton = new ButtonBuilder()
-    .setCustomId(`${JSON.stringify(rightButtonId)}`)
-    .setLabel("►")
-    .setStyle(ButtonStyle.Secondary)
-    .setDisabled(page >= Math.ceil(allIds.length / 10));
-  actionRow.addComponents(leftButton, rightButton);
-
   return {
     elements: [
       {
         content: "",
         embeds: [buildDexListEmbed(ids, page)],
-        components: [actionRow],
       },
+    ],
+    components: [
+      [
+        createElement(Button, {
+          label: "◄",
+          style: ButtonStyle.Secondary,
+          bindingKey: pageActionBindng,
+          disabled: page === 1,
+          data: { page: page - 1 },
+        }),
+        createElement(Button, {
+          label: "►",
+          style: ButtonStyle.Secondary,
+          bindingKey: pageActionBindng,
+          disabled: page >= Math.ceil(allIds.length / 10),
+          data: { page: page + 1 },
+        }),
+      ],
     ],
   };
 };

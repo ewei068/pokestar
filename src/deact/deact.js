@@ -34,7 +34,11 @@ const createRoot = async (
   return renderedElement;
 };
 
-const createElement = (render, props, { isHidden = false, key }) => ({
+const createElement = (
+  render,
+  props,
+  { isHidden = false, key = undefined } = {}
+) => ({
   render,
   props,
   isHidden,
@@ -58,7 +62,7 @@ async function triggerBoundCallback(interaction, interactionData) {
   }
 
   // get state
-  const state = getState(interactionData.stateId);
+  const state = getState(interactionData.dSID);
   if (!state) {
     // TODO: bad?
     await interaction.update({
@@ -72,7 +76,7 @@ async function triggerBoundCallback(interaction, interactionData) {
     return { err: "An error has occured." };
   }
 
-  const bindingKey = interactionData.key;
+  const bindingKey = interactionData.dKey;
   if (!bindingKey) {
     return { err: "Invalid interaction." };
   }
@@ -95,6 +99,20 @@ async function triggerBoundCallback(interaction, interactionData) {
   const renderedElement = await rootInstance.renderCurrentElement();
   await interactionInstance.update(renderedElement);
   return renderedElement;
+}
+
+/**
+ * @param {DeactElement} ref
+ * @param {string} bindingKey
+ * @param {object} data
+ * @returns
+ */
+function makeComponentId(ref, bindingKey, data = {}) {
+  return JSON.stringify({
+    dSID: ref.rootInstance.stateId,
+    dKey: bindingKey,
+    ...data,
+  });
 }
 
 /**
@@ -139,6 +157,7 @@ module.exports = {
   createRoot,
   createElement,
   triggerBoundCallback,
+  makeComponentId,
   useCallbackBinding,
   useState,
 };
