@@ -1,13 +1,11 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { getPokemonOrder } = require("../../utils/pokemonUtils");
 const { buildDexListEmbed } = require("../../embeds/pokemonEmbeds");
 const {
   useState,
   useCallbackBinding,
-  makeComponentId,
   createElement,
 } = require("../../deact/deact");
-const Button = require("../../deact/foundation/Button");
+const ScrollButtons = require("../foundation/ScrollButtons");
 
 /**
  *
@@ -28,8 +26,11 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
   const end = start + 10;
   const ids = allIds.slice(start, end);
 
-  const pageActionBindng = useCallbackBinding((interaction, data) => {
-    setPage(data.page);
+  const prevActionBindng = useCallbackBinding(() => {
+    setPage(page - 1);
+  }, ref);
+  const nextActionBindng = useCallbackBinding(() => {
+    setPage(page + 1);
   }, ref);
 
   return {
@@ -40,22 +41,13 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
       },
     ],
     components: [
-      [
-        createElement(Button, {
-          label: "◄",
-          style: ButtonStyle.Secondary,
-          bindingKey: pageActionBindng,
-          disabled: page === 1,
-          data: { page: page - 1 },
-        }),
-        createElement(Button, {
-          label: "►",
-          style: ButtonStyle.Secondary,
-          bindingKey: pageActionBindng,
-          disabled: page >= Math.ceil(allIds.length / 10),
-          data: { page: page + 1 },
-        }),
-      ],
+      createElement(ScrollButtons, {
+        onPrevPressedKey: prevActionBindng,
+        onNextPressedKey: nextActionBindng,
+        onPresssedKey: prevActionBindng,
+        isPrevDisabled: page === 1,
+        isNextDisabled: page === Math.ceil(allIds.length / 10),
+      }),
     ],
   };
 };
