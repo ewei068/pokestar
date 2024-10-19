@@ -85,7 +85,10 @@ async function triggerBoundCallback(interaction, interactionData) {
   /* if (state.userId && interaction.user.id !== state.userId) {
     return { err: "This interaction was not initiated by you." };
   } */
-  rootInstance.messageRef = await interactionInstance.deferUpdate();
+  const callbackOptions = rootInstance.getCallbackOptionsFromKey(bindingKey);
+  if (callbackOptions.defer) {
+    rootInstance.messageRef = await interactionInstance.deferUpdate();
+  }
 
   const res = await rootInstance.triggerCallbackFromKey(
     bindingKey,
@@ -118,14 +121,17 @@ function makeComponentId(ref, bindingKey, data = {}) {
 /**
  * @param {Function} callback
  * @param {DeactElement} ref
+ * @param {object} options
+ * @param {boolean=} options.defer
  * @returns {string} binding key of the callback
  */
-function useCallbackBinding(callback, ref) {
-  ref.callbacks.push(
-    async (interaction, interactionData) =>
+function useCallbackBinding(callback, ref, options = {}) {
+  ref.callbacks.push({
+    callback: async (interaction, interactionData) =>
       // TODO, probably
-      await callback(interaction, interactionData)
-  );
+      await callback(interaction, interactionData),
+    options,
+  });
 
   return ref.getCallbackKey();
 }

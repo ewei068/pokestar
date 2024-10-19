@@ -26,12 +26,21 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
   const end = start + 10;
   const ids = allIds.slice(start, end);
 
-  const prevActionBindng = useCallbackBinding(() => {
-    setPage(page - 1);
-  }, ref);
-  const nextActionBindng = useCallbackBinding(() => {
-    setPage(page + 1);
-  }, ref);
+  const callbackOptions = { defer: false };
+  const prevActionBindng = useCallbackBinding(
+    () => {
+      setPage(page - 1);
+    },
+    ref,
+    callbackOptions
+  );
+  const nextActionBindng = useCallbackBinding(
+    () => {
+      setPage(page + 1);
+    },
+    ref,
+    callbackOptions
+  );
 
   return {
     elements: [

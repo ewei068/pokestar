@@ -1,6 +1,6 @@
 const { ButtonStyle } = require("discord.js");
 const { createElement } = require("../../deact/deact");
-const Button = require("../../deact/components/Button");
+const Button = require("../../deact/elements/Button");
 
 module.exports = async (
   ref,
