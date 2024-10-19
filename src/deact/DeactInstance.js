@@ -20,6 +20,14 @@ class DeactInstance {
     this.locked = false;
   }
 
+  addElement(element) {
+    this.elements[element.id] = element;
+  }
+
+  removeElement(element) {
+    delete this.elements[element.id];
+  }
+
   getCurrentElement() {
     return this.elements[this.currentElementId];
   }
@@ -32,7 +40,7 @@ class DeactInstance {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       res = await element.render(this.rootProps);
-      if (res.err || element.getIsDoneRendering()) {
+      if (res.err !== undefined || element.getIsDoneRendering()) {
         break;
       }
 
@@ -50,7 +58,13 @@ class DeactInstance {
       }
     }
     this.flushState();
-    return res;
+    return res.err !== undefined
+      ? {
+          err: `${res.err}`,
+        }
+      : {
+          element: res,
+        };
   }
 
   getStateToSet() {

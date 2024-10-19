@@ -53,10 +53,12 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
   actionRow.addComponents(leftButton, rightButton);
 
   return {
-    element: {
-      content: "",
-      embeds: [buildDexListEmbed(ids, page)],
-      components: [actionRow],
-    },
+    elements: [
+      {
+        content: "",
+        embeds: [buildDexListEmbed(ids, page)],
+        components: [actionRow],
+      },
+    ],
   };
 };

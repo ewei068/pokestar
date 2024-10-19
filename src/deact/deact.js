@@ -34,6 +34,14 @@ const createRoot = async (
   return renderedElement;
 };
 
+const createElement = (render, props, { isHidden = false, key }) => ({
+  render,
+  props,
+  isHidden,
+  key,
+  isDeactCreateElement: true,
+});
+
 // TODO: figure out how to remove ref parameter
 
 /**
@@ -129,6 +137,7 @@ function useState(initialValue, ref) {
 
 module.exports = {
   createRoot,
+  createElement,
   triggerBoundCallback,
   useCallbackBinding,
   useState,

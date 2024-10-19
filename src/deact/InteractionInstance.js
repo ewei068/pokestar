@@ -20,6 +20,11 @@ class InteractionInstance {
     this.deferred = true;
   }
 
+  /**
+   * @param {object} param0
+   * @param {string?=} param0.err
+   * @param {any?=} param0.element
+   */
   async reply({ err, element }) {
     const elementToSend = err || element;
     if (this.deferred) {
@@ -29,6 +34,11 @@ class InteractionInstance {
     }
   }
 
+  /**
+   * @param {object} param0
+   * @param {string?=} param0.err
+   * @param {any?=} param0.element
+   */
   async update({ err, element }) {
     const elementToSend = err || element;
     if (this.deferred) {
