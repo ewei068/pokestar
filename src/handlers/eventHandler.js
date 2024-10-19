@@ -48,7 +48,6 @@ const handleEvent = async (interaction, client) => {
   try {
     let res;
     if (data.dSID) {
-      setInteractionInstance(interaction);
       res = await triggerBoundCallback(interaction, data);
     } else {
       res = await eventHandlers[eventName](interaction, data, client);

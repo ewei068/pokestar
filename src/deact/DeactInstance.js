@@ -18,6 +18,7 @@ class DeactInstance {
     this.currentElementId = initialElement.id;
     this.sharedState = {};
     this.locked = false;
+    this.messageRef = null;
   }
 
   addElement(element) {
@@ -61,9 +62,11 @@ class DeactInstance {
     return res.err !== undefined
       ? {
           err: `${res.err}`,
+          messageRef: this.messageRef,
         }
       : {
           element: res,
+          messageRef: this.messageRef,
         };
   }
 

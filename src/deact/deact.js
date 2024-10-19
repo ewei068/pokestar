@@ -27,10 +27,10 @@ const createRoot = async (
   }
   const instance = new DeactInstance(render, props, { ttl });
   if (defer) {
-    await interactionInstance.deferReply();
+    instance.messageRef = await interactionInstance.deferReply();
   }
   const renderedElement = await instance.renderCurrentElement();
-  await interactionInstance.reply(renderedElement);
+  instance.messageRef = await interactionInstance.reply(renderedElement);
   return renderedElement;
 };
 
@@ -85,7 +85,7 @@ async function triggerBoundCallback(interaction, interactionData) {
   /* if (state.userId && interaction.user.id !== state.userId) {
     return { err: "This interaction was not initiated by you." };
   } */
-  await interactionInstance.deferUpdate();
+  rootInstance.messageRef = await interactionInstance.deferUpdate();
 
   const res = await rootInstance.triggerCallbackFromKey(
     bindingKey,
@@ -97,7 +97,7 @@ async function triggerBoundCallback(interaction, interactionData) {
   }
 
   const renderedElement = await rootInstance.renderCurrentElement();
-  await interactionInstance.update(renderedElement);
+  rootInstance.messageRef = await interactionInstance.update(renderedElement);
   return renderedElement;
 }
 

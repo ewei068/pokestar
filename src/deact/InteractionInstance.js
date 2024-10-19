@@ -5,47 +5,62 @@ class InteractionInstance {
     this.interactionActions = 0;
     this.interactionType = ""; // TODO
     this.deferred = false;
+    this.replied = false;
+    this.updated = false;
   }
 
   async deferReply() {
-    this.messageRef = await this.interaction.reply({
+    const messageRef = await this.interaction.reply({
       content: "Loading...",
     });
     this.deferred = true;
+    return messageRef;
   }
 
   async deferUpdate() {
     // TODO: is this right?
-    this.messageRef = await this.interaction.deferUpdate();
+    const messageRef = await this.interaction.deferUpdate();
     this.deferred = true;
+    return messageRef;
   }
 
   /**
    * @param {object} param0
    * @param {string?=} param0.err
    * @param {any?=} param0.element
+   * @param {any?=} param0.messageRef
    */
-  async reply({ err, element }) {
+  async reply({ err, element, messageRef }) {
     const elementToSend = err || element;
-    if (this.deferred) {
-      await this.messageRef.edit(elementToSend);
+    let reply;
+    if (this.replied || this.updated) {
+      reply = this.interaction.followUp(elementToSend);
+    } else if (this.deferred && messageRef) {
+      reply = messageRef.edit(elementToSend);
     } else {
-      await this.interaction.reply(elementToSend);
+      reply = this.interaction.reply(elementToSend);
     }
+    this.replied = true;
+    return await reply;
   }
 
   /**
    * @param {object} param0
    * @param {string?=} param0.err
    * @param {any?=} param0.element
+   * @param {any?=} param0.messageRef
    */
-  async update({ err, element }) {
+  async update({ err, element, messageRef }) {
     const elementToSend = err || element;
-    if (this.deferred) {
-      await this.messageRef.edit(elementToSend);
+    let update;
+    if (messageRef && (this.replied || this.updated || this.deferred)) {
+      update = messageRef.edit(elementToSend);
+      // maybe use editReply?
     } else {
-      await this.interaction.update(elementToSend);
+      update = this.interaction.update(elementToSend);
     }
+    this.updated = true;
+    return await update;
   }
 }
 

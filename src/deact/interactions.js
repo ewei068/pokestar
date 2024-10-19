@@ -23,6 +23,8 @@ const setInteractionInstance = (interaction) => {
   setTimeout(() => {
     handleTimeout(interaction.id);
   }, TTL);
+
+  return interactions[interaction.id];
 };
 
 /**
@@ -34,7 +36,7 @@ const getInteractionInstance = (interaction) => {
     return;
   }
 
-  return interactions[interaction.id];
+  return interactions[interaction.id] || setInteractionInstance(interaction);
 };
 
 const removeInteractionInstance = (interaction) => {

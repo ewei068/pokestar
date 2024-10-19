@@ -22,10 +22,7 @@ const { logger } = require("../log");
 const { buildCommandUsageString } = require("../utils/utils");
 const { QueryBuilder } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
-const {
-  setInteractionInstance,
-  removeInteractionInstance,
-} = require("../deact/interactions");
+const { removeInteractionInstance } = require("../deact/interactions");
 
 const { prefix } = stageConfig[process.env.STAGE];
 
@@ -318,9 +315,6 @@ const runSlashCommand = async (interaction, client) => {
   // execute command
   try {
     const commandData = commandLookup[`${command}`];
-    if (commandData.isDeact) {
-      setInteractionInstance(interaction);
-    }
 
     const res = await slashCommands[command](interaction, client);
     removeInteractionInstance(interaction);

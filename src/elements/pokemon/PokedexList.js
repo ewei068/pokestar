@@ -44,7 +44,6 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
       createElement(ScrollButtons, {
         onPrevPressedKey: prevActionBindng,
         onNextPressedKey: nextActionBindng,
-        onPresssedKey: prevActionBindng,
         isPrevDisabled: page === 1,
         isNextDisabled: page === Math.ceil(allIds.length / 10),
       }),
