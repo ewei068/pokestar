@@ -1,8 +1,5 @@
 const { DeactInstance } = require("./DeactInstance");
-const {
-  getInteractionInstance,
-  setInteractionInstance,
-} = require("./interactions");
+const { getInteractionInstance } = require("./interactions");
 /* eslint-disable-next-line no-unused-vars */
 const { DeactElement } = require("./DeactElement");
 const { getState } = require("../services/state");
@@ -112,10 +109,11 @@ function useCallbackBinding(callback, ref) {
  * @param {DeactElement} ref
  */
 function useState(initialValue, ref) {
-  ref.state.push(initialValue);
-  const index = ref.state.length - 1;
+  const index = ref.state.length;
+  const value = ref.oldState.length ? ref.oldState[index] : initialValue;
+  ref.state.push(value);
   return [
-    ref.oldState[index] || initialValue,
+    value,
     (newValue) => {
       if (newValue === ref.state[index]) {
         return;
