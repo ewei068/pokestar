@@ -1,11 +1,13 @@
 const { getPokemonOrder } = require("../../utils/pokemonUtils");
 const { buildDexListEmbed } = require("../../embeds/pokemonEmbeds");
+const { pokemonConfig } = require("../../config/pokemonConfig");
 const {
   useState,
   useCallbackBinding,
   createElement,
 } = require("../../deact/deact");
 const ScrollButtons = require("../foundation/ScrollButtons");
+const IdConfigSelectMenu = require("../foundation/IdConfigSelectMenu");
 
 /**
  *
@@ -41,6 +43,15 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
     ref,
     callbackOptions
   );
+  const speciesSelectCallbackBinding = useCallbackBinding(
+    (interaction) => {
+      const [id] = interaction.values;
+      setSpeciesId(id);
+      console.log(id);
+    },
+    ref,
+    callbackOptions
+  );
 
   return {
     elements: [
@@ -55,6 +66,12 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
         onNextPressedKey: nextActionBindng,
         isPrevDisabled: page === 1,
         isNextDisabled: page === Math.ceil(allIds.length / 10),
+      }),
+      createElement(IdConfigSelectMenu, {
+        ids,
+        config: pokemonConfig,
+        placeholder: "Select a Pokemon to view",
+        callbackBindingKey: speciesSelectCallbackBinding,
       }),
     ],
   };

@@ -3,10 +3,10 @@ const { makeComponentId } = require("../deact");
 
 module.exports = async (
   ref,
-  { label, style, disabled = false, bindingKey, data }
+  { label, style, disabled = false, callbackBindingKey, data }
 ) => {
   const button = new ButtonBuilder()
-    .setCustomId(makeComponentId(ref, bindingKey, data))
+    .setCustomId(makeComponentId(ref, callbackBindingKey, data))
     .setLabel(label)
     .setStyle(style)
     .setDisabled(disabled);

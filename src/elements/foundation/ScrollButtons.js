@@ -5,9 +5,9 @@ const Button = require("../../deact/elements/Button");
 module.exports = async (
   ref,
   {
-    onPrevPressedKey,
-    onNextPressedKey,
-    onPresssedKey,
+    onPrevPressedKey = undefined,
+    onNextPressedKey = undefined,
+    onPresssedKey = undefined,
     isPrevDisabled = false,
     isNextDisabled = false,
     prevLabel = "◄",
@@ -19,14 +19,14 @@ module.exports = async (
       createElement(Button, {
         label: prevLabel,
         style: ButtonStyle.Secondary,
-        bindingKey: onPrevPressedKey || onPresssedKey,
+        callbackBindingKey: onPrevPressedKey || onPresssedKey,
         disabled: isPrevDisabled,
         data: { action: "prev" },
       }),
       createElement(Button, {
         label: nextLabel,
         style: ButtonStyle.Secondary,
-        bindingKey: onNextPressedKey || onPresssedKey,
+        callbackBindingKey: onNextPressedKey || onPresssedKey,
         disabled: isNextDisabled,
         data: { action: "next" },
       }),

@@ -34,6 +34,14 @@ const createRoot = async (
   return renderedElement;
 };
 
+/**
+ * @template T
+ * @param {DeactElementFunction<T>} render
+ * @param {T} props
+ * @param {object} param2
+ * @param {boolean=} param2.isHidden
+ * @param {string=} param2.key
+ */
 const createElement = (
   render,
   props,
@@ -76,8 +84,8 @@ async function triggerBoundCallback(interaction, interactionData) {
     return { err: "An error has occured." };
   }
 
-  const bindingKey = interactionData.dKey;
-  if (!bindingKey) {
+  const callbackBindingKey = interactionData.dKey;
+  if (!callbackBindingKey) {
     return { err: "Invalid interaction." };
   }
 
@@ -85,13 +93,14 @@ async function triggerBoundCallback(interaction, interactionData) {
   /* if (state.userId && interaction.user.id !== state.userId) {
     return { err: "This interaction was not initiated by you." };
   } */
-  const callbackOptions = rootInstance.getCallbackOptionsFromKey(bindingKey);
+  const callbackOptions =
+    rootInstance.getCallbackOptionsFromKey(callbackBindingKey);
   if (callbackOptions.defer) {
     rootInstance.messageRef = await interactionInstance.deferUpdate();
   }
 
   const res = await rootInstance.triggerCallbackFromKey(
-    bindingKey,
+    callbackBindingKey,
     interaction,
     interactionData
   );
@@ -106,14 +115,14 @@ async function triggerBoundCallback(interaction, interactionData) {
 
 /**
  * @param {DeactElement} ref
- * @param {string} bindingKey
+ * @param {string} callbackBindingKey
  * @param {object} data
  * @returns {string}
  */
-function makeComponentId(ref, bindingKey, data = {}) {
+function makeComponentId(ref, callbackBindingKey, data = {}) {
   return JSON.stringify({
     dSID: ref.rootInstance.stateId,
-    dKey: bindingKey,
+    dKey: callbackBindingKey,
     ...data,
   });
 }

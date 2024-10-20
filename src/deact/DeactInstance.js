@@ -81,18 +81,22 @@ class DeactInstance {
     updateState(this.stateId, this.getStateToSet());
   }
 
-  getCallbackDataFromKey(bindingKey) {
-    const [elementId, callbackIndex] = bindingKey.split(",");
+  getCallbackDataFromKey(callbackBindingKey) {
+    const [elementId, callbackIndex] = callbackBindingKey.split(",");
     const element = this.elements[elementId];
     return element?.callbacks?.[callbackIndex];
   }
 
-  getCallbackOptionsFromKey(bindingKey) {
-    return this.getCallbackDataFromKey(bindingKey)?.options ?? {};
+  getCallbackOptionsFromKey(callbackBindingKey) {
+    return this.getCallbackDataFromKey(callbackBindingKey)?.options ?? {};
   }
 
-  async triggerCallbackFromKey(bindingKey, interaction, interactionData) {
-    const callback = this.getCallbackDataFromKey(bindingKey)?.callback;
+  async triggerCallbackFromKey(
+    callbackBindingKey,
+    interaction,
+    interactionData
+  ) {
+    const callback = this.getCallbackDataFromKey(callbackBindingKey)?.callback;
     if (!callback) {
       return {
         err: "Interaction not supported",
