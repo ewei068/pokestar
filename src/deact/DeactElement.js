@@ -37,6 +37,7 @@ class DeactElement {
     this.isDoneRendering = true;
     this.children = {};
     this.oldChildren = {};
+    this.finishedMounting = false;
 
     /**
      * @type {ComposedElements}
@@ -48,10 +49,12 @@ class DeactElement {
     this.isDoneRendering = true;
     this.oldState = this.state;
     this.oldCallbacks = this.callbacks;
+    this.oldRefs = this.refs;
     this.oldProps = this.props;
     this.lastRes = this.res;
     this.state = [];
     this.callbacks = [];
+    this.refs = [];
   }
 
   resetChildren() {
@@ -63,6 +66,7 @@ class DeactElement {
     this.isDoneRendering = true; // may not be correct
     this.state = this.oldState;
     this.callbacks = this.oldCallbacks;
+    this.refs = this.oldRefs;
     this.props = this.oldProps;
     this.res = this.lastRes;
     this.children = this.oldChildren;
@@ -85,7 +89,8 @@ class DeactElement {
     const willRerender =
       this.getHasPropsChanged(this.props, props) ||
       !this.getIsDoneRendering() ||
-      !this.res;
+      !this.res ||
+      !this.finishedMounting;
     if (willRerender) {
       try {
         this.resetLifecycle();
@@ -203,6 +208,7 @@ class DeactElement {
       }
     }
 
+    this.finishedMounting = true;
     return rv;
   }
 

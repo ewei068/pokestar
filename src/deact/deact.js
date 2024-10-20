@@ -108,7 +108,7 @@ async function triggerBoundCallback(interaction, interactionData) {
  * @param {DeactElement} ref
  * @param {string} bindingKey
  * @param {object} data
- * @returns
+ * @returns {string}
  */
 function makeComponentId(ref, bindingKey, data = {}) {
   return JSON.stringify({
@@ -142,7 +142,7 @@ function useCallbackBinding(callback, ref, options = {}) {
  */
 function useState(initialValue, ref) {
   const index = ref.state.length;
-  const value = ref.oldState.length ? ref.oldState[index] : initialValue;
+  const value = ref.finishedMounting ? ref.oldState[index] : initialValue;
   ref.state.push(value);
   return [
     value,
@@ -159,6 +159,54 @@ function useState(initialValue, ref) {
   ];
 }
 
+/**
+ * @template T
+ * @param {T} initialValue
+ * @param {DeactElement} elementRef
+ * @returns {Ref<T>}
+ */
+function useRef(initialValue, elementRef) {
+  const index = elementRef.refs.length;
+  const ref = elementRef.finishedMounting
+    ? elementRef.oldRefs[index]
+    : {
+        current: initialValue,
+      };
+  elementRef.refs.push(ref);
+  return ref;
+}
+
+/**
+ * @param {any[]} deps
+ * @param {DeactElement} ref
+ * @returns {boolean} have deps changed?
+ */
+function useCompareAndSetDeps(deps, ref) {
+  let haveDepsChanged = false;
+  for (const dep of deps) {
+    const depRef = useRef(dep, ref);
+    if (depRef.current !== dep) {
+      depRef.current = dep;
+      haveDepsChanged = true;
+    }
+  }
+  return haveDepsChanged;
+}
+
+/**
+ * @param {Function} callback
+ * @param {any[]} deps
+ * @param {DeactElement} ref
+ */
+function useMemo(callback, deps, ref) {
+  const memoRef = useRef(null, ref);
+  const haveDepsChanged = useCompareAndSetDeps(deps, ref);
+  if (haveDepsChanged || !ref.finishedMounting) {
+    memoRef.current = callback();
+  }
+  return memoRef.current;
+}
+
 module.exports = {
   createRoot,
   createElement,
@@ -166,4 +214,6 @@ module.exports = {
   makeComponentId,
   useCallbackBinding,
   useState,
+  useRef,
+  useMemo,
 };
