@@ -8,12 +8,15 @@ const {
 } = require("../../deact/deact");
 const ScrollButtons = require("../foundation/ScrollButtons");
 const IdConfigSelectMenu = require("../foundation/IdConfigSelectMenu");
+const PokedexPokemon = require("./PokedexPokemon");
 
 /**
  *
  * @param {import("../../deact/DeactElement").DeactElement} ref
- * @param {*} param1
- * @returns
+ * @param {object} param1
+ * @param {number=} param1.initialPage
+ * @param {string=} param1.initialSpeciesId
+ * @returns {Promise<any>}
  */
 module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
   const [speciesId, setSpeciesId] = useState(initialSpeciesId, ref);
@@ -47,12 +50,17 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
     (interaction) => {
       const [id] = interaction.values;
       setSpeciesId(id);
-      console.log(id);
+      // TODO: set page with use effect
     },
     ref,
     callbackOptions
   );
 
+  if (speciesId) {
+    return {
+      elements: [createElement(PokedexPokemon, { speciesId })],
+    };
+  }
   return {
     elements: [
       {

@@ -5,9 +5,10 @@ const { DeactElement } = require("./DeactElement");
 const { getState } = require("../services/state");
 
 /**
- * @param {Function} render
+ * @template T
+ * @param {DeactElementFunction<T>} render
  * @param {any} interaction
- * @param {any} props
+ * @param {T} props
  * @param {object} param3
  * @param {boolean=} param3.defer
  * @param {number=} param3.ttl
