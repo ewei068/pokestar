@@ -208,6 +208,13 @@ class DeactElement {
       }
     }
 
+    // unmound old children that are not in new children
+    for (const [key, oldChild] of Object.entries(this.oldChildren)) {
+      if (!this.children[key]) {
+        oldChild.unmount();
+      }
+    }
+
     this.finishedMounting = true;
     return rv;
   }
@@ -255,8 +262,10 @@ class DeactElement {
     const key = deactCreateElement?.key ?? this.childCounter;
     this.childCounter += 1;
     const oldChild = this.oldChildren[key];
-    const isSameElement = oldChild?.render === deactCreateElement.render;
+    const isSameElement =
+      oldChild?.renderCallback === deactCreateElement.render;
     if (isSameElement) {
+      this.children[key] = oldChild;
       return oldChild;
     }
     const newChild = new DeactElement(
