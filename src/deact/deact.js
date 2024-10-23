@@ -129,7 +129,7 @@ function makeComponentId(ref, callbackBindingKey, data = {}) {
 }
 
 /**
- * @param {Function} callback
+ * @param {(interaction: any, data: any) => any} callback
  * @param {DeactElement} ref
  * @param {object} options
  * @param {boolean=} options.defer

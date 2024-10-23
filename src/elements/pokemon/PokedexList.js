@@ -46,9 +46,9 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
     ref,
     callbackOptions
   );
-  const speciesSelectCallbackBinding = useCallbackBinding(
+  const onSpeciesSelectKey = useCallbackBinding(
     (interaction) => {
-      const [id] = interaction.values;
+      const id = interaction?.values?.[0];
       setSpeciesId(id);
       // TODO: set page with use effect
     },
@@ -79,7 +79,7 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
         ids,
         config: pokemonConfig,
         placeholder: "Select a Pokemon to view",
-        callbackBindingKey: speciesSelectCallbackBinding,
+        callbackBindingKey: onSpeciesSelectKey,
       }),
     ],
   };
