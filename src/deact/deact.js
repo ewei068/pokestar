@@ -147,29 +147,6 @@ function useCallbackBinding(callback, ref, options = {}) {
 }
 
 /**
- * @param {any} initialValue
- * @param {DeactElement} ref
- */
-function useState(initialValue, ref) {
-  const index = ref.state.length;
-  const value = ref.finishedMounting ? ref.oldState[index] : initialValue;
-  ref.state.push(value);
-  return [
-    value,
-    (newValue) => {
-      if (newValue === ref.state[index]) {
-        return;
-      }
-      // this might be incorrect
-      // eslint-disable-next-line no-param-reassign
-      ref.state[index] = newValue;
-      // eslint-disable-next-line no-param-reassign
-      ref.isDoneRendering = false;
-    },
-  ];
-}
-
-/**
  * @template T
  * @param {T} initialValue
  * @param {DeactElement} elementRef
@@ -184,6 +161,28 @@ function useRef(initialValue, elementRef) {
       };
   elementRef.refs.push(ref);
   return ref;
+}
+
+/**
+ * @param {any} initialValue
+ * @param {DeactElement} ref
+ */
+function useState(initialValue, ref) {
+  const index = ref.state.length;
+  const value = ref.finishedMounting ? ref.oldState[index] : initialValue;
+  ref.state.push(value);
+  // shouldn't have to use useCallback because `ref` and `index` should never change and the setState function should never change
+  const setStateRef = useRef((newValue) => {
+    if (newValue === ref.state[index]) {
+      return;
+    }
+    // this might be incorrect
+    // eslint-disable-next-line no-param-reassign
+    ref.state[index] = newValue;
+    // eslint-disable-next-line no-param-reassign
+    ref.isDoneRendering = false;
+  }, ref);
+  return [value, setStateRef.current];
 }
 
 /**
@@ -231,6 +230,23 @@ async function useAwaitedMemo(callback, deps, ref) {
   return await promise;
 }
 
+/**
+ * @param {(() => (() => void)) | (() => void)} callback
+ * @param {any[]} deps
+ * @param {DeactElement} ref
+ */
+function useEffect(callback, deps, ref) {
+  const cleanupRef = useRef(null, ref);
+  const haveDepsChanged = useCompareAndSetDeps(deps, ref);
+  if (haveDepsChanged || !ref.finishedMounting) {
+    const cleanup = callback();
+    if (cleanupRef.current) {
+      cleanupRef.current();
+    }
+    cleanupRef.current = cleanup;
+  }
+}
+
 module.exports = {
   createRoot,
   createElement,
@@ -241,4 +257,5 @@ module.exports = {
   useRef,
   useMemo,
   useAwaitedMemo,
+  useEffect,
 };

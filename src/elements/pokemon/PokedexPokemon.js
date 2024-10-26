@@ -8,8 +8,16 @@ const {
   useAwaitedMemo,
 } = require("../../deact/deact");
 const Button = require("../../deact/elements/Button");
+const { getPokemonOrder } = require("../../utils/pokemonUtils");
+const ScrollButtons = require("../foundation/ScrollButtons");
+const ReturnButton = require("../foundation/ReturnButton");
 
-module.exports = async (ref, { speciesId, initialTab = "info" }) => {
+module.exports = async (
+  ref,
+  { speciesId, initialTab = "info", setSpeciesId }
+) => {
+  const allIds = getPokemonOrder();
+  const index = allIds.indexOf(speciesId);
   const [tab, setTab] = useState(initialTab, ref);
   const speciesData = pokemonConfig[speciesId];
   const ownershipData = await useAwaitedMemo(
@@ -17,6 +25,7 @@ module.exports = async (ref, { speciesId, initialTab = "info" }) => {
     [speciesId],
     ref
   );
+
   const tabButtonPressedKey = useCallbackBinding(
     (_interaction, data) => {
       const { tab: tabPressed } = data;
@@ -25,6 +34,28 @@ module.exports = async (ref, { speciesId, initialTab = "info" }) => {
     ref,
     { defer: false }
   );
+  const prevActionBindng = useCallbackBinding(
+    () => {
+      setSpeciesId(allIds[index - 1]);
+    },
+    ref,
+    { defer: false }
+  );
+  const nextActionBindng = useCallbackBinding(
+    () => {
+      setSpeciesId(allIds[index + 1]);
+    },
+    ref,
+    { defer: false }
+  );
+  const returnActionBindng = useCallbackBinding(
+    () => {
+      setSpeciesId(null);
+    },
+    ref,
+    { defer: false }
+  );
+
   return {
     elements: [
       {
@@ -67,6 +98,13 @@ module.exports = async (ref, { speciesId, initialTab = "info" }) => {
           data: { tab: "rarity" },
         }),
       ],
+      createElement(ScrollButtons, {
+        onPrevPressedKey: prevActionBindng,
+        onNextPressedKey: nextActionBindng,
+        isPrevDisabled: index === 0,
+        isNextDisabled: index === allIds.length - 1,
+      }),
+      createElement(ReturnButton, { callbackBindingKey: returnActionBindng }),
     ],
   };
 };

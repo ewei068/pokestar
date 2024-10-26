@@ -5,10 +5,13 @@ const {
   useState,
   useCallbackBinding,
   createElement,
+  useEffect,
 } = require("../../deact/deact");
 const ScrollButtons = require("../foundation/ScrollButtons");
 const IdConfigSelectMenu = require("../foundation/IdConfigSelectMenu");
 const PokedexPokemon = require("./PokedexPokemon");
+
+const PAGE_SIZE = 10;
 
 /**
  *
@@ -21,15 +24,25 @@ const PokedexPokemon = require("./PokedexPokemon");
 module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
   const [speciesId, setSpeciesId] = useState(initialSpeciesId, ref);
   const [page, setPage] = useState(initialPage, ref);
-
-  const allIds = getPokemonOrder();
-  if (page < 1 || page > Math.ceil(allIds.length / 10)) {
+  const allIds = getPokemonOrder(); // allIds is readonly so shouldn't need to be a dependency
+  if (page < 1 || page > Math.ceil(allIds.length / PAGE_SIZE)) {
     return { send: null, err: "Invalid page number." };
   }
 
-  const start = (page - 1) * 10;
-  const end = start + 10;
+  const start = (page - 1) * PAGE_SIZE;
+  const end = start + PAGE_SIZE;
   const ids = allIds.slice(start, end);
+
+  useEffect(
+    () => {
+      if (speciesId) {
+        const index = allIds.indexOf(speciesId);
+        setPage(Math.ceil((index + 1) / PAGE_SIZE));
+      }
+    },
+    [speciesId, setPage],
+    ref
+  );
 
   const callbackOptions = { defer: false };
   const prevActionBindng = useCallbackBinding(
@@ -50,7 +63,6 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
     (interaction) => {
       const id = interaction?.values?.[0];
       setSpeciesId(id);
-      // TODO: set page with use effect
     },
     ref,
     callbackOptions
@@ -58,7 +70,7 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
 
   if (speciesId) {
     return {
-      elements: [createElement(PokedexPokemon, { speciesId })],
+      elements: [createElement(PokedexPokemon, { speciesId, setSpeciesId })],
     };
   }
   return {
@@ -73,7 +85,7 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
         onPrevPressedKey: prevActionBindng,
         onNextPressedKey: nextActionBindng,
         isPrevDisabled: page === 1,
-        isNextDisabled: page === Math.ceil(allIds.length / 10),
+        isNextDisabled: page === Math.ceil(allIds.length / PAGE_SIZE),
       }),
       createElement(IdConfigSelectMenu, {
         ids,
