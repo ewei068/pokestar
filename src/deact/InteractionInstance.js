@@ -1,4 +1,17 @@
+const {
+  /* eslint-disable-next-line no-unused-vars */
+  ChatInputCommandInteraction,
+  /* eslint-disable-next-line no-unused-vars */
+  Message,
+  MessageComponentInteraction,
+} = require("discord.js");
+const { logger } = require("../log");
+
 class InteractionInstance {
+  /**
+   * TODO: maybe make this extensible lol
+   * @param {ChatInputCommandInteraction | Message | MessageComponentInteraction} interaction
+   */
   constructor(interaction) {
     this.id = interaction.id;
     this.interaction = interaction;
@@ -10,7 +23,7 @@ class InteractionInstance {
   }
 
   async deferReply() {
-    const messageRef = await this.interaction.reply({
+    const messageRef = await this.replyRaw({
       content: "Loading...",
     });
     this.deferred = true;
@@ -19,9 +32,55 @@ class InteractionInstance {
 
   async deferUpdate() {
     // TODO: is this right?
+    if (!(this.interaction instanceof MessageComponentInteraction)) {
+      logger.warn("Cannot defer update for this interaction type");
+      return;
+    }
     const messageRef = await this.interaction.deferUpdate();
     this.deferred = true;
     return messageRef;
+  }
+
+  async followUpBasedOnInteractionType(elementToSend) {
+    if (this.interaction instanceof ChatInputCommandInteraction) {
+      return await this.interaction.followUp(elementToSend);
+    }
+    if (this.interaction instanceof Message) {
+      return await this.interaction.reply(elementToSend);
+    }
+    if (this.interaction instanceof MessageComponentInteraction) {
+      return await this.interaction.followUp(elementToSend);
+    }
+    return { err: "Unknown interaction type" };
+  }
+
+  async replyBasedOnInteractionType(elementToSend) {
+    if (this.interaction instanceof ChatInputCommandInteraction) {
+      return await this.interaction.reply(elementToSend);
+    }
+    if (this.interaction instanceof Message) {
+      return await this.interaction.reply(elementToSend);
+    }
+    if (this.interaction instanceof MessageComponentInteraction) {
+      return await this.interaction.reply(elementToSend);
+    }
+    return { err: "Unknown interaction type" };
+  }
+
+  async replyRaw(elementToSend, messageRef) {
+    let reply;
+    if (this.replied || this.updated) {
+      reply = this.followUpBasedOnInteractionType(elementToSend);
+    } else if (this.deferred) {
+      if (messageRef) {
+        reply = messageRef.edit(elementToSend);
+      } else {
+        reply = this.followUpBasedOnInteractionType(elementToSend);
+      }
+    } else {
+      reply = this.replyBasedOnInteractionType(elementToSend);
+    }
+    return await reply;
   }
 
   /**
@@ -32,16 +91,9 @@ class InteractionInstance {
    */
   async reply({ err, element, messageRef }) {
     const elementToSend = err || element;
-    let reply;
-    if (this.replied || this.updated) {
-      reply = this.interaction.followUp(elementToSend);
-    } else if (this.deferred && messageRef) {
-      reply = messageRef.edit(elementToSend);
-    } else {
-      reply = this.interaction.reply(elementToSend);
-    }
+    const reply = await this.replyRaw(elementToSend, messageRef);
     this.replied = true;
-    return await reply;
+    return reply;
   }
 
   /**
@@ -51,11 +103,14 @@ class InteractionInstance {
    * @param {any?=} param0.messageRef
    */
   async update({ err, element, messageRef }) {
+    if (!(this.interaction instanceof MessageComponentInteraction)) {
+      logger.warn("Cannot update for this interaction type");
+      return;
+    }
     const elementToSend = err || element;
     let update;
     if (messageRef && (this.replied || this.updated || this.deferred)) {
       update = messageRef.edit(elementToSend);
-      // maybe use editReply?
     } else {
       update = this.interaction.update(elementToSend);
     }
