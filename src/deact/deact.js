@@ -204,9 +204,11 @@ function useCompareAndSetDeps(deps, ref) {
 }
 
 /**
- * @param {Function} callback
+ * @template T
+ * @param {() => T} callback
  * @param {any[]} deps
  * @param {DeactElement} ref
+ * @returns {T}
  */
 function useMemo(callback, deps, ref) {
   const memoRef = useRef(null, ref);
@@ -215,6 +217,18 @@ function useMemo(callback, deps, ref) {
     memoRef.current = callback();
   }
   return memoRef.current;
+}
+
+/**
+ * @template T
+ * @param {() => Promise<T>} callback
+ * @param {any[]} deps
+ * @param {DeactElement} ref
+ * @returns {Promise<T>}
+ */
+async function useAwaitedMemo(callback, deps, ref) {
+  const promise = useMemo(callback, deps, ref);
+  return await promise;
 }
 
 module.exports = {
@@ -226,4 +240,5 @@ module.exports = {
   useState,
   useRef,
   useMemo,
+  useAwaitedMemo,
 };

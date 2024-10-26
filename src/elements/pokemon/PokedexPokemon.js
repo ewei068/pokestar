@@ -5,13 +5,18 @@ const {
   useCallbackBinding,
   useState,
   createElement,
+  useAwaitedMemo,
 } = require("../../deact/deact");
 const Button = require("../../deact/elements/Button");
 
 module.exports = async (ref, { speciesId, initialTab = "info" }) => {
   const [tab, setTab] = useState(initialTab, ref);
   const speciesData = pokemonConfig[speciesId];
-  const ownershipData = await getPokemonOwnershipStats(speciesId); // TODO: use effect
+  const ownershipData = await useAwaitedMemo(
+    () => getPokemonOwnershipStats(speciesId),
+    [speciesId],
+    ref
+  );
   const tabButtonPressedKey = useCallbackBinding(
     (_interaction, data) => {
       const { tab: tabPressed } = data;
