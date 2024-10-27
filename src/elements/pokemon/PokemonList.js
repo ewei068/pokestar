@@ -12,6 +12,8 @@ const { getUserId } = require("../../utils/utils");
 const { listPokemons } = require("../../services/pokemon");
 const { buildPokemonListEmbed } = require("../../embeds/pokemonEmbeds");
 const ScrollButtons = require("../foundation/ScrollButtons");
+const { eventNames } = require("../../config/eventConfig");
+const { buildPokemonSelectRow } = require("../../components/pokemonSelectRow");
 
 const parseFilter = (filterBy, inputFilterValue) => {
   // casts filterValue to boolean if possible
@@ -151,6 +153,11 @@ module.exports = async (
     setPage(page + 1);
   }, ref);
 
+  // legacy button
+  const selectRowData = {
+    stateId: ref.rootInstance.stateId,
+  };
+
   return {
     elements: [
       {
@@ -166,6 +173,11 @@ module.exports = async (
         isPrevDisabled: page === 1,
         isNextDisabled: pokemonsRes.lastPage,
       }),
+      buildPokemonSelectRow(
+        pokemons,
+        selectRowData,
+        eventNames.POKEMON_LIST_SELECT
+      ),
     ],
   };
 };
