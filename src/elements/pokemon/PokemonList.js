@@ -141,9 +141,7 @@ module.exports = async (
     [trainer, listOptions, page],
     ref
   );
-  if (pokemonsRes.err) {
-    return { err: pokemonsRes.err };
-  }
+  const pokemonsErr = pokemonsRes.err;
   const pokemons = pokemonsRes.data;
 
   const prevActionBindng = useCallbackBinding(() => {
@@ -162,22 +160,27 @@ module.exports = async (
     elements: [
       {
         content:
+          pokemonsErr ||
           "**[MOBILE USERS]** Select a pokemon to copy its ID (Hold message -> Copy Text).",
-        embeds: [buildPokemonListEmbed(trainer, pokemons, page)],
+        embeds: pokemonsErr
+          ? undefined
+          : [buildPokemonListEmbed(trainer, pokemons, page)],
       },
     ],
     components: [
       createElement(ScrollButtons, {
         onPrevPressedKey: prevActionBindng,
         onNextPressedKey: nextActionBindng,
-        isPrevDisabled: page === 1,
-        isNextDisabled: pokemonsRes.lastPage,
+        isPrevDisabled: !!pokemonsErr || page === 1,
+        isNextDisabled: !!pokemonsErr || pokemonsRes.lastPage,
       }),
-      buildPokemonSelectRow(
-        pokemons,
-        selectRowData,
-        eventNames.POKEMON_LIST_SELECT
-      ),
+      pokemonsErr
+        ? []
+        : buildPokemonSelectRow(
+            pokemons,
+            selectRowData,
+            eventNames.POKEMON_LIST_SELECT
+          ),
     ],
   };
 };

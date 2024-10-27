@@ -19,6 +19,8 @@ class DeactInstance {
     this.sharedState = {};
     this.locked = false;
     this.messageRef = null;
+    // for backwards compat with old elements
+    this.legacyState = {};
   }
 
   addElement(element) {
@@ -72,6 +74,7 @@ class DeactInstance {
 
   getStateToSet() {
     return {
+      ...this.legacyState,
       instance: this,
       isDeact: true,
     };
