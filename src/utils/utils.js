@@ -7,6 +7,7 @@
  *
  * utils.js functions used by most Utils and other files, most relating to converting information from the mongo database.
  */
+const { Message } = require("discord.js");
 const { ObjectId } = require("mongodb");
 
 const getOrSetDefault = (obj, key, defaultValue) => {
@@ -91,6 +92,13 @@ const getUserId = (string) => {
     return id[1];
   }
   return null;
+};
+
+const getUserFromInteraction = (interaction) => {
+  if (interaction instanceof Message) {
+    return interaction.author;
+  }
+  return interaction.user;
 };
 
 const getChannelId = (string) => {
@@ -229,6 +237,7 @@ module.exports = {
   matrixLoc,
   matrixIndexOf,
   getUserId,
+  getUserFromInteraction,
   getChannelId,
   buildCommandUsageString,
   setTwoInline,

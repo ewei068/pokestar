@@ -2,34 +2,86 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * list.js fetches a list of a trainer's pokemon, returning an embed with the list.
  */
-const { listPokemons } = require("../../services/pokemon");
-const { getTrainer } = require("../../services/trainer");
-const { buildPokemonListEmbed } = require("../../embeds/pokemonEmbeds");
-const { buildScrollActionRow } = require("../../components/scrollActionRow");
-const { eventNames } = require("../../config/eventConfig");
-const { setState } = require("../../services/state");
-const { buildPokemonSelectRow } = require("../../components/pokemonSelectRow");
-const { buildButtonActionRow } = require("../../components/buttonActionRow");
-const { getUserId } = require("../../utils/utils");
+
+const { getUserFromInteraction } = require("../../utils/utils");
+const { createRoot } = require("../../deact/deact");
+const PokemonList = require("../../elements/pokemon/PokemonList");
 
 /**
  * Fetches a list of a trainer's Pokemon, returning an embed with the list.
  * Uses pagination, filtering, and sorting. Also allows users to select a Pokemon
  * to copy its ID.
- * @param {Object} user User who initiated the command.
- * @param {Number} page Page of the list to display.
- * @param {String} filterBy Field to filter by.
- * @param {String | boolean} filterValue Value to filter for equality.
- * @param {String} sortBy Field to sort by.
+ * @param {object} interaction interaction that initiated the command.
+ * @param {number} page Page of the list to display.
+ * @param {string} filterBy Field to filter by.
+ * @param {string | boolean} filterValue Value to filter for equality.
+ * @param {string} sortBy Field to sort by.
  * @param {boolean} descending Sort in descending order.
  * @returns Embed with list of Pokemon, and components for pagination/selection.
  */
-const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
+
+const list = async (
+  interaction,
+  page,
+  filterBy,
+  filterValue,
+  sortBy,
+  descending
+) =>
+  await createRoot(
+    PokemonList,
+    interaction,
+    {
+      user: getUserFromInteraction(interaction),
+      initialPage: page,
+      initialFilterBy: filterBy,
+      initialFilterValue: filterValue,
+      initialSortBy: sortBy,
+      initialSortDescending: descending,
+    },
+    { ttl: 300 }
+  );
+
+const listMessageCommand = async (message) => {
+  const args = message.content.split(" ");
+  const page = args[1] ? parseInt(args[1], 10) : 1;
+  const filterBy = args[2] ? args[2] : "none";
+  const filterValue = args[3] ? args[3] : null;
+  const sortBy = args[4] ? args[4] : null;
+  const descending = args[5] === "true";
+  return await list(message, page, filterBy, filterValue, sortBy, descending);
+};
+
+const listSlashCommand = async (interaction) => {
+  const page = interaction.options.getInteger("page")
+    ? interaction.options.getInteger("page")
+    : 1;
+  const filterBy = interaction.options.getString("filterby")
+    ? interaction.options.getString("filterby")
+    : "none";
+  const filterValue = interaction.options.getString("filtervalue")
+    ? interaction.options.getString("filtervalue")
+    : null;
+  const sortBy = interaction.options.getString("sortby")
+    ? interaction.options.getString("sortby")
+    : null;
+  const descending = interaction.options.getBoolean("descending")
+    ? interaction.options.getBoolean("descending")
+    : false;
+  return await list(
+    interaction,
+    page,
+    filterBy,
+    filterValue,
+    sortBy,
+    descending
+  );
+};
+
+/* const list = async (user, page, filterBy, filterValue, sortBy, descending) => {
   // validate page
   if (page < 1) {
     return { embeds: null, err: "Page must be greater than 0." };
@@ -206,7 +258,7 @@ const listSlashCommand = async (interaction) => {
     return { err };
   }
   await interaction.reply(send);
-};
+}; */
 
 module.exports = {
   message: listMessageCommand,

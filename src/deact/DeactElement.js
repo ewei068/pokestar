@@ -74,6 +74,7 @@ class DeactElement {
         const res = await this.renderCallback(this, this.props);
         if (res.err) {
           this.restoreLifecycle();
+          return { err: res.err };
         }
         this.res = res;
       } catch (e) {

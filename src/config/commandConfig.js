@@ -300,6 +300,7 @@ const commandConfig = Object.freeze({
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 10,
     money: 25,
+    isDeact: true,
   },
   info: {
     name: "Info",
