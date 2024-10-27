@@ -1,3 +1,4 @@
+// @ts-ignore
 const shortId = require("shortid");
 const { logger } = require("../log");
 const {
@@ -7,22 +8,6 @@ const {
   reduceComponents,
   reduceComponentRows,
 } = require("./utils");
-
-/**
- * TODO
- * @typedef {number} Embed
- * @typedef {number} Component
- * @typedef {number} ComponentRow
- */
-
-/**
- * @typedef {object} ComposedElements
- * @property {any[]?} elements
- * @property {string[]?} contents
- * @property {Embed[]?} embeds
- * @property {(ComponentRow[] | Component)[]?} components
- * @property {boolean?} err
- */
 
 class DeactElement {
   /**
@@ -73,15 +58,6 @@ class DeactElement {
   }
 
   /**
-   * @typedef {{
-   *   content?: string,
-   *   embeds?: Embed[],
-   *   components?: ComponentRow[],
-   *   err?: string
-   * }} RenderResult
-   */
-
-  /**
    * @param {*} props
    * @returns {Promise<RenderResult>}
    */
@@ -115,9 +91,11 @@ class DeactElement {
     // TODO: render children async then Promise.all?
     if (this.res.elements !== undefined) {
       for (const element of this.res.elements) {
-        const elementRes = await this.getElementRes(element);
+        const elementRes = await this.getElementResPure(element);
+        // @ts-ignore
         if (elementRes.err) {
           if (!rv.err) {
+            // @ts-ignore
             rv.err = elementRes.err;
           }
         } else {
@@ -134,11 +112,11 @@ class DeactElement {
     // compose contents
     if (this.res.contents !== undefined) {
       for (const content of this.res.contents) {
-        const elementRes = await this.getElementRes(content, {
-          key: "content",
-        });
+        const elementRes = await this.getElementResWithKey(content, "content");
+        // @ts-ignore
         if (elementRes.err) {
           if (!rv.err) {
+            // @ts-ignore
             rv.err = elementRes.err;
           }
         } else {
@@ -150,11 +128,14 @@ class DeactElement {
     // compose embeds
     if (this.res.embeds !== undefined) {
       for (const embed of this.res.embeds) {
-        const elementRes = await this.getElementRes(embed, {
-          arrayKey: "embeds",
-        });
+        const elementRes = await this.getElementResWithArrayKey(
+          embed,
+          "embeds"
+        );
+        // @ts-ignore
         if (elementRes.err) {
           if (!rv.err) {
+            // @ts-ignore
             rv.err = elementRes.err;
           }
         } else {
@@ -169,11 +150,14 @@ class DeactElement {
       for (const componentRow of this.res.components) {
         // if row is not an array, append all components to return value
         if (!Array.isArray(componentRow)) {
-          const elementRes = await this.getElementRes(componentRow, {
-            arrayKey: "components",
-          });
+          const elementRes = await this.getElementResWithArrayKey(
+            componentRow,
+            "components"
+          );
+          // @ts-ignore
           if (elementRes.err) {
             if (!rv.err) {
+              // @ts-ignore
               rv.err = elementRes.err;
             }
           } else {
@@ -188,11 +172,14 @@ class DeactElement {
           let currentActionRow;
           // else, assume one component is returned and make a row from it
           for (const component of componentRow) {
-            const elementRes = await this.getElementRes(component, {
-              arrayKey: "components",
-            });
+            const elementRes = await this.getElementResWithArrayKey(
+              component,
+              "components"
+            );
+            // @ts-ignore
             if (elementRes.err) {
               if (!rv.err) {
+                // @ts-ignore
                 rv.err = elementRes.err;
               }
             } else {
@@ -222,35 +209,69 @@ class DeactElement {
   /**
    * @template T
    * @param {ReturnType<import("./deact").createElement> | T} element
-   * @param {*} param1
-   * @returns {Promise<
-   *    (RenderResult | { [key: string]: T } | { [key: string]: T[] } | T) & { err?: string }
-   *  >
-   * }
+   * @returns {Promise<{ elementResult: (RenderResult | T), isDeactCreateElement: boolean}>}
    */
-  async getElementRes(element, { key = undefined, arrayKey = undefined } = {}) {
+  async getElementRes(element) {
     if (isDeactCreateElement(element)) {
       const deactCreateElement =
         /** @type {ReturnType<import("./deact").createElement>} */ (element);
       const child = this.getOrMountChild(deactCreateElement);
       const childRes = await child.render(deactCreateElement.props);
       if (deactCreateElement.isHidden) {
-        return {};
+        return {
+          elementResult: {},
+          isDeactCreateElement: true,
+        };
       }
-      return childRes;
-    }
-    if (key) {
       return {
-        [key]: element,
-      };
-    }
-    if (arrayKey) {
-      return {
-        [arrayKey]: [element],
+        elementResult: childRes,
+        isDeactCreateElement: true,
       };
     }
 
-    return element;
+    return {
+      elementResult: /** @type {any} */ (element),
+      isDeactCreateElement: false,
+    };
+  }
+
+  /**
+   * @template T
+   * @param {ReturnType<import("./deact").createElement> | T} element
+   * @returns {Promise<RenderResult | T>}
+   */
+  async getElementResPure(element) {
+    return (await this.getElementRes(element)).elementResult;
+  }
+
+  /**
+   * @template T
+   * @param {ReturnType<import("./deact").createElement> | T} element
+   * @param {string} key
+   * @returns {Promise<RenderResult | { [key: string]: T }>}
+   */
+  async getElementResWithKey(element, key) {
+    const elementRes = await this.getElementRes(element);
+    let rv = elementRes.elementResult;
+    if (!elementRes.isDeactCreateElement) {
+      rv = { [key]: rv };
+    }
+    return rv;
+  }
+
+  /**
+   * @template T
+   * @param {ReturnType<import("./deact").createElement> | T} element
+   * @param {string} arrayKey
+   * @returns {Promise<RenderResult | { [arrayKey: string]: T[] }>}
+   */
+  async getElementResWithArrayKey(element, arrayKey) {
+    const elementRes = await this.getElementRes(element);
+    let rv = elementRes.elementResult;
+    if (!elementRes.isDeactCreateElement) {
+      rv = { [arrayKey]: [rv] };
+    }
+    return rv;
   }
 
   /**

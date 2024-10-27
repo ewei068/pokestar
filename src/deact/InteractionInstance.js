@@ -51,6 +51,7 @@ class InteractionInstance {
     if (this.interaction instanceof MessageComponentInteraction) {
       return await this.interaction.followUp(elementToSend);
     }
+    logger.error("Attempt to follow up with unknown interaction type");
     return { err: "Unknown interaction type" };
   }
 
@@ -64,6 +65,7 @@ class InteractionInstance {
     if (this.interaction instanceof MessageComponentInteraction) {
       return await this.interaction.reply(elementToSend);
     }
+    logger.error("Attempt to reply with unknown interaction type");
     return { err: "Unknown interaction type" };
   }
 
