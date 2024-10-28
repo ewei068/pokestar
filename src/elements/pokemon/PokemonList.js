@@ -3,7 +3,6 @@ const { User } = require("discord.js");
 const {
   useState,
   useAwaitedMemo,
-  useMemo,
   useCallbackBinding,
   createElement,
   createModal,
@@ -38,7 +37,11 @@ const parseFilter = (filterBy, inputFilterValue) => {
       originalOwner: id,
     };
   } else if (filterBy !== "none") {
-    if (filterValue == null || filterValue === "") {
+    if (
+      filterValue === null ||
+      filterValue === undefined ||
+      filterValue === ""
+    ) {
       return {};
     }
 
@@ -60,30 +63,6 @@ const parseFilter = (filterBy, inputFilterValue) => {
   return { filter };
 };
 
-const getUpdatedListOptionsWithFilter = (
-  oldListOptions,
-  filterBy,
-  filterValue
-) => {
-  const rv = {
-    ...oldListOptions,
-    filter: {
-      ...(oldListOptions.filter || {}),
-    },
-  };
-  const newFilter = parseFilter(filterBy, filterValue);
-  if (newFilter.err) {
-    return { err: newFilter.err };
-  }
-  if (!newFilter.filter?.[filterBy]) {
-    delete rv.filter[filterBy];
-  } else {
-    rv.filter[filterBy] = newFilter.filter[filterBy];
-  }
-
-  return rv;
-};
-
 const parseSort = (sortBy, sortDescending) => {
   if (sortBy) {
     const sort = {};
@@ -93,23 +72,23 @@ const parseSort = (sortBy, sortDescending) => {
   }
 };
 
-const getInitialListOptions = (
-  filterBy,
-  inputFilterValue,
-  sortBy,
-  sortDescending
-) => {
-  const listOptions = {};
-  // build initial filter
-  const filterRes = parseFilter(filterBy, inputFilterValue);
-  if (filterRes.err) {
-    return { err: filterRes.err };
-  }
-  listOptions.filter = filterRes.filter;
+const computeListOptions = (page, filter, sort) => {
+  const listOptions = {
+    page,
+    filter: {},
+    sort: parseSort(sort.sortBy, sort.sortDescending),
+  };
 
-  // build initial sort
-  const sort = parseSort(sortBy, sortDescending);
-  listOptions.sort = sort;
+  // compute filter
+  for (const [filterBy, filterValue] of Object.entries(filter)) {
+    const filterRes = parseFilter(filterBy, filterValue);
+    if (filterRes.err) {
+      return { err: filterRes.err };
+    }
+    if (filterRes.filter?.[filterBy] !== undefined) {
+      listOptions.filter[filterBy] = filterRes.filter[filterBy];
+    }
+  }
   return listOptions;
 };
 
@@ -135,21 +114,18 @@ module.exports = async (
   }
 ) => {
   const [page, setPage] = useState(initialPage, ref);
-  const initialListOptions = useMemo(
-    () =>
-      getInitialListOptions(
-        initialFilterBy,
-        initialFilterValue,
-        initialSortBy,
-        initialSortDescending
-      ),
-    [], // no deps because should only run once
+  const initialFilter = {};
+  if (initialFilterBy) {
+    initialFilter[initialFilterBy] = initialFilterValue;
+  }
+  const [filter, setFilter] = useState(initialFilter, ref);
+  const [sort] = useState(
+    {
+      sortBy: initialSortBy,
+      sortDescending: initialSortDescending,
+    },
     ref
   );
-  if (initialListOptions.err) {
-    return { err: initialListOptions.err };
-  }
-  const [listOptions, setListOptions] = useState(initialListOptions, ref);
 
   const trainerRes = await useAwaitedMemo(() => getTrainer(user), [user], ref);
   if (trainerRes.err) {
@@ -159,12 +135,8 @@ module.exports = async (
 
   // get list of pokemon
   const pokemonsRes = await useAwaitedMemo(
-    () =>
-      listPokemons(trainer, {
-        ...listOptions,
-        page,
-      }),
-    [trainer, listOptions, page],
+    () => listPokemons(trainer, computeListOptions(page, filter, sort)),
+    [trainer, filter, sort, page],
     ref
   );
   const pokemonsErr = pokemonsRes.err;
@@ -180,21 +152,16 @@ module.exports = async (
     (interaction) => {
       const pokemonSearchInput =
         interaction.fields.getTextInputValue("pokemonSearchInput");
-      const updatedListOptions = getUpdatedListOptionsWithFilter(
-        listOptions,
-        "name",
-        pokemonSearchInput
-      );
-      if (updatedListOptions.err) {
-        return { err: updatedListOptions.err };
-      }
-      setListOptions(updatedListOptions);
+      setFilter({
+        ...filter,
+        name: pokemonSearchInput,
+      });
     },
     ref
   );
   const openSearchModalBinding = useCallbackBinding(
     (interaction) => {
-      const currentName = listOptions.filter?.name?.$regex?.source;
+      const currentName = filter.name;
       return createModal(
         buildPokemonSearchModal,
         {
