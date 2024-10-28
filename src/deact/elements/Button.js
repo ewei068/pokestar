@@ -4,7 +4,8 @@ const { makeComponentId } = require("../deact");
 module.exports = async (
   ref,
   {
-    label,
+    label = undefined,
+    emoji = undefined,
     style = ButtonStyle.Secondary,
     disabled = false,
     callbackBindingKey,
@@ -13,9 +14,15 @@ module.exports = async (
 ) => {
   const button = new ButtonBuilder()
     .setCustomId(makeComponentId(ref, callbackBindingKey, data))
-    .setLabel(label)
     .setStyle(style)
     .setDisabled(disabled);
+
+  if (label) {
+    button.setLabel(label);
+  }
+  if (emoji) {
+    button.setEmoji(emoji);
+  }
 
   return {
     components: [[button]],

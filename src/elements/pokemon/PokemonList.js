@@ -6,6 +6,8 @@ const {
   useMemo,
   useCallbackBinding,
   createElement,
+  createModal,
+  useModalSubmitCallbackBinding,
 } = require("../../deact/deact");
 const { getTrainer } = require("../../services/trainer");
 const { getUserId } = require("../../utils/utils");
@@ -14,6 +16,8 @@ const { buildPokemonListEmbed } = require("../../embeds/pokemonEmbeds");
 const ScrollButtons = require("../foundation/ScrollButtons");
 const { eventNames } = require("../../config/eventConfig");
 const { buildPokemonSelectRow } = require("../../components/pokemonSelectRow");
+const { buildPokemonSearchModal } = require("../../modals/pokemonModals");
+const Button = require("../../deact/elements/Button");
 
 const parseFilter = (filterBy, inputFilterValue) => {
   // casts filterValue to boolean if possible
@@ -34,10 +38,8 @@ const parseFilter = (filterBy, inputFilterValue) => {
       originalOwner: id,
     };
   } else if (filterBy !== "none") {
-    if (filterValue == null) {
-      return {
-        err: "Filter value must be provided if filterBy is provided.",
-      };
+    if (filterValue == null || filterValue === "") {
+      return {};
     }
 
     // if filtervalue is string , use regex
@@ -56,6 +58,30 @@ const parseFilter = (filterBy, inputFilterValue) => {
     }
   }
   return { filter };
+};
+
+const getUpdatedListOptionsWithFilter = (
+  oldListOptions,
+  filterBy,
+  filterValue
+) => {
+  const rv = {
+    ...oldListOptions,
+    filter: {
+      ...(oldListOptions.filter || {}),
+    },
+  };
+  const newFilter = parseFilter(filterBy, filterValue);
+  if (newFilter.err) {
+    return { err: newFilter.err };
+  }
+  if (!newFilter.filter?.[filterBy]) {
+    delete rv.filter[filterBy];
+  } else {
+    rv.filter[filterBy] = newFilter.filter[filterBy];
+  }
+
+  return rv;
 };
 
 const parseSort = (sortBy, sortDescending) => {
@@ -123,7 +149,7 @@ module.exports = async (
   if (initialListOptions.err) {
     return { err: initialListOptions.err };
   }
-  const [listOptions] = useState(initialListOptions, ref);
+  const [listOptions, setListOptions] = useState(initialListOptions, ref);
 
   const trainerRes = await useAwaitedMemo(() => getTrainer(user), [user], ref);
   if (trainerRes.err) {
@@ -150,6 +176,39 @@ module.exports = async (
   const nextActionBindng = useCallbackBinding(() => {
     setPage(page + 1);
   }, ref);
+  const searchSubmittedActionBinding = useModalSubmitCallbackBinding(
+    (interaction) => {
+      const pokemonSearchInput =
+        interaction.fields.getTextInputValue("pokemonSearchInput");
+      const updatedListOptions = getUpdatedListOptionsWithFilter(
+        listOptions,
+        "name",
+        pokemonSearchInput
+      );
+      if (updatedListOptions.err) {
+        return { err: updatedListOptions.err };
+      }
+      setListOptions(updatedListOptions);
+    },
+    ref
+  );
+  const openSearchModalBinding = useCallbackBinding(
+    (interaction) => {
+      const currentName = listOptions.filter?.name?.$regex?.source;
+      return createModal(
+        buildPokemonSearchModal,
+        {
+          value: currentName,
+          required: false,
+        },
+        searchSubmittedActionBinding,
+        interaction,
+        ref
+      );
+    },
+    ref,
+    { defer: false }
+  );
 
   // legacy button
   const selectRowData = {
@@ -163,11 +222,18 @@ module.exports = async (
           pokemonsErr ||
           "**[MOBILE USERS]** Select a pokemon to copy its ID (Hold message -> Copy Text).",
         embeds: pokemonsErr
-          ? undefined
+          ? []
           : [buildPokemonListEmbed(trainer, pokemons, page)],
       },
     ],
     components: [
+      [
+        createElement(Button, {
+          emoji: "🔎",
+          callbackBindingKey: openSearchModalBinding,
+          data: {},
+        }),
+      ],
       createElement(ScrollButtons, {
         onPrevPressedKey: prevActionBindng,
         onNextPressedKey: nextActionBindng,

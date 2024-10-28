@@ -1,16 +1,15 @@
 const {
-  /* eslint-disable-next-line no-unused-vars */
   ChatInputCommandInteraction,
-  /* eslint-disable-next-line no-unused-vars */
   Message,
   MessageComponentInteraction,
+  ModalSubmitInteraction,
 } = require("discord.js");
 const { logger } = require("../log");
 
 class InteractionInstance {
   /**
    * TODO: maybe make this extensible lol
-   * @param {ChatInputCommandInteraction | Message | MessageComponentInteraction} interaction
+   * @param {ChatInputCommandInteraction | Message | MessageComponentInteraction | import("discord.js").ModalMessageModalSubmitInteraction} interaction
    */
   constructor(interaction) {
     this.id = interaction.id;
@@ -105,7 +104,10 @@ class InteractionInstance {
    * @param {any?=} param0.messageRef
    */
   async update({ err, element, messageRef }) {
-    if (!(this.interaction instanceof MessageComponentInteraction)) {
+    if (
+      !(this.interaction instanceof MessageComponentInteraction) &&
+      !(this.interaction instanceof ModalSubmitInteraction)
+    ) {
       logger.warn("Cannot update for this interaction type");
       return;
     }
@@ -118,6 +120,18 @@ class InteractionInstance {
     }
     this.updated = true;
     return await update;
+  }
+
+  async sendModal(modalBuilder) {
+    if (
+      this.interaction instanceof Message ||
+      this.interaction instanceof ModalSubmitInteraction
+    ) {
+      return { err: "Cannot send a modal to a Message or Modal" };
+    }
+    const modalShowRes = await this.interaction.showModal(modalBuilder);
+    this.updated = true;
+    return modalShowRes;
   }
 }
 

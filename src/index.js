@@ -102,7 +102,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;
+  if (
+    !interaction.isButton() &&
+    !interaction.isStringSelectMenu() &&
+    !interaction.isModalSubmit()
+  )
+    return;
 
   try {
     if (!checkRateLimit(interaction.user.id)) return;

@@ -33,7 +33,6 @@ const list = async (
 ) =>
   await createRoot(
     PokemonList,
-    interaction,
     {
       user: getUserFromInteraction(interaction),
       initialPage: page,
@@ -42,6 +41,7 @@ const list = async (
       initialSortBy: sortBy,
       initialSortDescending: descending,
     },
+    interaction,
     { ttl: 300 }
   );
 

@@ -1,3 +1,9 @@
+const {
+  /* eslint-disable-next-line no-unused-vars */
+  MessageComponentInteraction,
+  /* eslint-disable-next-line no-unused-vars */
+  ModalSubmitInteraction,
+} = require("discord.js");
 const { DeactInstance } = require("./DeactInstance");
 const { getInteractionInstance } = require("./interactions");
 /* eslint-disable-next-line no-unused-vars */
@@ -7,8 +13,8 @@ const { getState } = require("../services/state");
 /**
  * @template T
  * @param {DeactElementFunction<T>} render
- * @param {any} interaction
  * @param {T} props
+ * @param {any} interaction
  * @param {object} param3
  * @param {boolean=} param3.defer
  * @param {number=} param3.ttl
@@ -16,8 +22,8 @@ const { getState } = require("../services/state");
  */
 const createRoot = async (
   render,
-  interaction,
   props,
+  interaction,
   { defer = true, ttl }
 ) => {
   const interactionInstance = getInteractionInstance(interaction);
@@ -80,7 +86,7 @@ async function triggerBoundCallback(interaction, interactionData) {
     return { err: "This interaction has expired." };
   }
 
-  const rootInstance = state.instance;
+  const rootInstance = /** @type {DeactInstance?} */ (state.instance);
   if (!state.isDeact || !rootInstance) {
     return { err: "An error has occured." };
   }
@@ -129,13 +135,51 @@ function makeComponentId(ref, callbackBindingKey, data = {}) {
 }
 
 /**
- * @param {(interaction: any, data: any) => any} callback
- * @param {DeactElement} ref
- * @param {object} options
- * @param {boolean=} options.defer
- * @returns {string} binding key of the callback
+ * @template {{
+ *  id: string,
+ *  [key: string]: any
+ * }} T
+ * @callback BuildModalFunction
+ * @param {T} props
+ * @returns {Promise<import("discord.js").ModalBuilder> | import("discord.js").ModalBuilder}
  */
-function useCallbackBinding(callback, ref, options = {}) {
+
+/**
+ * @template {{
+ *  id: string,
+ *  [key: string]: any
+ * }} T
+ * @param {BuildModalFunction<T>} modalFunction
+ * @param {Omit<T, 'id'>} props
+ * @param {string} callbackBindingKey
+ * @param {any} interaction
+ * @param {DeactElement} ref
+ * @param {object=} data
+ */
+const createModal = async (
+  modalFunction,
+  props,
+  callbackBindingKey,
+  interaction,
+  ref,
+  data = {}
+) => {
+  const interactionInstance = getInteractionInstance(interaction);
+  if (!interactionInstance) {
+    return {
+      err: "Error getting interaction instance",
+    };
+  }
+  const id = makeComponentId(ref, callbackBindingKey, data);
+  // @ts-ignore
+  const modal = await modalFunction({
+    ...props,
+    id,
+  });
+  return await interactionInstance.sendModal(modal);
+};
+
+const useCallbackBindingRaw = (callback, ref, options = {}) => {
   ref.callbacks.push({
     callback: async (interaction, interactionData) =>
       // TODO, probably
@@ -144,7 +188,27 @@ function useCallbackBinding(callback, ref, options = {}) {
   });
 
   return ref.getCallbackKey();
-}
+};
+
+/**
+ * @param {(interaction: MessageComponentInteraction, data: any) => any} callback
+ * @param {DeactElement} ref
+ * @param {object} options
+ * @param {boolean=} options.defer
+ * @returns {string} binding key of the callback
+ */
+const useCallbackBinding = (callback, ref, options = {}) =>
+  useCallbackBindingRaw(callback, ref, options);
+
+/**
+ * @param {(interaction: ModalSubmitInteraction, data: any) => any} callback
+ * @param {DeactElement} ref
+ * @param {object} options
+ * @param {boolean=} options.defer
+ * @returns {string} binding key of the callback
+ */
+const useModalSubmitCallbackBinding = (callback, ref, options = {}) =>
+  useCallbackBindingRaw(callback, ref, options);
 
 /**
  * @template T
@@ -250,9 +314,11 @@ function useEffect(callback, deps, ref) {
 module.exports = {
   createRoot,
   createElement,
+  createModal,
   triggerBoundCallback,
   makeComponentId,
   useCallbackBinding,
+  useModalSubmitCallbackBinding,
   useState,
   useRef,
   useMemo,

@@ -16,7 +16,7 @@ const PokedexList = require("../../elements/pokemon/PokedexList");
  * @returns
  */
 const pokedex = async (interaction, id) =>
-  await createRoot(PokedexList, interaction, { initialSpeciesId: id }, {});
+  await createRoot(PokedexList, { initialSpeciesId: id }, interaction, {});
 
 const pokedexMessageCommand = async (interaction) => {
   const args = interaction.content.split(" ");
