@@ -19,6 +19,37 @@ const { buildPokemonSearchModal } = require("../../modals/pokemonModals");
 const Button = require("../../deact/elements/Button");
 const { rarities } = require("../../config/pokemonConfig");
 
+const sortByOptionOrder = [
+  "ivTotal",
+  "combatPower",
+  "level",
+  "name",
+  "pokedexOrder",
+];
+
+const sortByConfig = {
+  ivTotal: {
+    label: "IVs",
+    value: "ivTotal",
+  },
+  combatPower: {
+    label: "Power",
+    value: "combatPower",
+  },
+  level: {
+    label: "Level",
+    value: "level",
+  },
+  name: {
+    label: "Name",
+    value: "name",
+  },
+  pokedexOrder: {
+    label: "Pokedex",
+    value: "pokedexOrder",
+  },
+};
+
 const parseFilter = (filterBy, inputFilterValue) => {
   // casts filterValue to boolean if possible
   let filter;
@@ -131,7 +162,7 @@ module.exports = async (
     initialFilter[initialFilterBy] = initialFilterValue;
   }
   const [filter, setFilter] = useState(initialFilter, ref);
-  const [sort] = useState(
+  const [sort, setSort] = useState(
     {
       sortBy: initialSortBy,
       sortDescending: initialSortDescending,
@@ -154,10 +185,12 @@ module.exports = async (
   const pokemonsErr = pokemonsRes.err;
   const pokemons = pokemonsRes.data;
 
-  // row 1
+  // row 1 -- general
   const settingsActionBinding = useCallbackBinding(() => {
     setFiltersShown(!filtersShown);
   }, ref);
+
+  // row 2 -- filter
   const searchSubmittedActionBinding = useModalSubmitCallbackBinding(
     (interaction) => {
       const pokemonSearchInput =
@@ -186,7 +219,6 @@ module.exports = async (
     ref,
     { defer: false }
   );
-
   const filterButtonActionBinding = useCallbackBinding((interaction, data) => {
     const { filterBy } = data;
     let filterValue;
@@ -222,7 +254,39 @@ module.exports = async (
     });
   }, ref);
 
-  // row 4
+  // row 3 -- sort
+  const sortSelectActionBinding = useCallbackBinding(() => {
+    const currentSortBy = sort.sortBy;
+    let sortBy;
+    // go through the list of sort options
+    if (!currentSortBy) {
+      [sortBy] = sortByOptionOrder;
+    } else {
+      for (let i = 0; i < sortByOptionOrder.length; i += 1) {
+        if (sortByOptionOrder[i] === currentSortBy) {
+          if (i + 1 < sortByOptionOrder.length) {
+            sortBy = sortByOptionOrder[i + 1];
+          } else {
+            sortBy = undefined;
+          }
+          break;
+        }
+      }
+    }
+
+    setSort({
+      ...sort,
+      sortBy,
+    });
+  }, ref);
+  const sortOrderActionBinding = useCallbackBinding(() => {
+    setSort({
+      ...sort,
+      sortDescending: !sort.sortDescending,
+    });
+  }, ref);
+
+  // row 4 -- page
   const prevActionBindng = useCallbackBinding(() => {
     setPage(page - 1);
   }, ref);
@@ -230,7 +294,7 @@ module.exports = async (
     setPage(page + 1);
   }, ref);
 
-  // legacy button
+  // row 5 -- legacy select pokemon button
   const selectRowData = {
     stateId: ref.rootInstance.stateId,
   };
@@ -254,6 +318,8 @@ module.exports = async (
           style: filtersShown ? ButtonStyle.Primary : ButtonStyle.Secondary,
           data: {},
         }),
+      ],
+      [
         // TODO: componentify?
         createElement(Button, {
           emoji: "🔎",
@@ -261,8 +327,6 @@ module.exports = async (
           style: filter.name ? ButtonStyle.Primary : ButtonStyle.Secondary,
           data: {},
         }),
-      ],
-      [
         createElement(Button, {
           emoji: "✨",
           callbackBindingKey: filterButtonActionBinding,
@@ -280,6 +344,19 @@ module.exports = async (
           callbackBindingKey: filterButtonActionBinding,
           style: getDefaultFilterColor(filter.locked),
           data: { filterBy: "locked" },
+        }),
+      ],
+      [
+        createElement(Button, {
+          label: sortByConfig[sort.sortBy]?.label || "Sort By",
+          callbackBindingKey: sortSelectActionBinding,
+          style: sort.sortBy ? ButtonStyle.Primary : ButtonStyle.Secondary,
+          data: { sortBy: "name" },
+        }),
+        createElement(Button, {
+          emoji: sort.sortDescending ? "⬇️" : "⬆️",
+          callbackBindingKey: sortOrderActionBinding,
+          data: {},
         }),
       ],
       createElement(ScrollButtons, {
