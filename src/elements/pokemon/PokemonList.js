@@ -189,6 +189,13 @@ module.exports = async (
   const settingsActionBinding = useCallbackBinding(() => {
     setFiltersShown(!filtersShown);
   }, ref);
+  const clearFiltersActionBinding = useCallbackBinding(() => {
+    setFilter({});
+    setSort({
+      sortBy: undefined,
+      sortDescending: false,
+    });
+  }, ref);
 
   // row 2 -- filter
   const searchSubmittedActionBinding = useModalSubmitCallbackBinding(
@@ -318,47 +325,59 @@ module.exports = async (
           style: filtersShown ? ButtonStyle.Primary : ButtonStyle.Secondary,
           data: {},
         }),
-      ],
-      [
-        // TODO: componentify?
         createElement(Button, {
-          emoji: "🔎",
-          callbackBindingKey: openSearchModalBinding,
-          style: filter.name ? ButtonStyle.Primary : ButtonStyle.Secondary,
-          data: {},
-        }),
-        createElement(Button, {
-          emoji: "✨",
-          callbackBindingKey: filterButtonActionBinding,
-          style: getDefaultFilterColor(filter.shiny),
-          data: { filterBy: "shiny" },
-        }),
-        createElement(Button, {
-          label: filter.rarity || "Rarity",
-          callbackBindingKey: filterButtonActionBinding,
-          style: filter.rarity ? ButtonStyle.Primary : ButtonStyle.Secondary,
-          data: { filterBy: "rarity" },
-        }),
-        createElement(Button, {
-          emoji: "🔒",
-          callbackBindingKey: filterButtonActionBinding,
-          style: getDefaultFilterColor(filter.locked),
-          data: { filterBy: "locked" },
-        }),
-      ],
-      [
-        createElement(Button, {
-          label: sortByConfig[sort.sortBy]?.label || "Sort By",
-          callbackBindingKey: sortSelectActionBinding,
-          style: sort.sortBy ? ButtonStyle.Primary : ButtonStyle.Secondary,
-          data: { sortBy: "name" },
-        }),
-        createElement(Button, {
-          emoji: sort.sortDescending ? "⬇️" : "⬆️",
-          callbackBindingKey: sortOrderActionBinding,
+          emoji: "❌",
+          callbackBindingKey: clearFiltersActionBinding,
+          style: ButtonStyle.Secondary,
           data: {},
         }),
       ],
+      filtersShown
+        ? [
+            // TODO: componentify?
+            createElement(Button, {
+              emoji: "🔎",
+              callbackBindingKey: openSearchModalBinding,
+              style: filter.name ? ButtonStyle.Primary : ButtonStyle.Secondary,
+              data: {},
+            }),
+            createElement(Button, {
+              emoji: "✨",
+              callbackBindingKey: filterButtonActionBinding,
+              style: getDefaultFilterColor(filter.shiny),
+              data: { filterBy: "shiny" },
+            }),
+            createElement(Button, {
+              label: filter.rarity || "Rarity",
+              callbackBindingKey: filterButtonActionBinding,
+              style: filter.rarity
+                ? ButtonStyle.Primary
+                : ButtonStyle.Secondary,
+              data: { filterBy: "rarity" },
+            }),
+            createElement(Button, {
+              emoji: "🔒",
+              callbackBindingKey: filterButtonActionBinding,
+              style: getDefaultFilterColor(filter.locked),
+              data: { filterBy: "locked" },
+            }),
+          ]
+        : [],
+      filtersShown
+        ? [
+            createElement(Button, {
+              label: sortByConfig[sort.sortBy]?.label || "Sort By",
+              callbackBindingKey: sortSelectActionBinding,
+              style: sort.sortBy ? ButtonStyle.Primary : ButtonStyle.Secondary,
+              data: { sortBy: "name" },
+            }),
+            createElement(Button, {
+              emoji: sort.sortDescending ? "⬇️" : "⬆️",
+              callbackBindingKey: sortOrderActionBinding,
+              data: {},
+            }),
+          ]
+        : [],
       createElement(ScrollButtons, {
         onPrevPressedKey: prevActionBindng,
         onNextPressedKey: nextActionBindng,
