@@ -6,7 +6,7 @@
  *
  * pokedex.js shows the pokedex entry of the pokemon id.
  */
-const { createRoot } = require("../../deact/deact");
+const { createRoot, userTypeEnum } = require("../../deact/deact");
 const PokedexList = require("../../elements/pokemon/PokedexList");
 
 /**
@@ -16,7 +16,9 @@ const PokedexList = require("../../elements/pokemon/PokedexList");
  * @returns
  */
 const pokedex = async (interaction, id) =>
-  await createRoot(PokedexList, { initialSpeciesId: id }, interaction, {});
+  await createRoot(PokedexList, { initialSpeciesId: id }, interaction, {
+    userIdForFilter: userTypeEnum.ANY,
+  });
 
 const pokedexMessageCommand = async (interaction) => {
   const args = interaction.content.split(" ");

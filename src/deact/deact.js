@@ -9,6 +9,7 @@ const { getInteractionInstance } = require("./interactions");
 /* eslint-disable-next-line no-unused-vars */
 const { DeactElement } = require("./DeactElement");
 const { getState } = require("../services/state");
+const { userTypeEnum } = require("./enums");
 
 /**
  * @template T
@@ -17,6 +18,7 @@ const { getState } = require("../services/state");
  * @param {any} interaction
  * @param {object} param3
  * @param {boolean=} param3.defer
+ * @param {any=} param3.userIdForFilter TODO: better name?
  * @param {number=} param3.ttl
  * @returns {Promise<any>}
  */
@@ -24,7 +26,7 @@ const createRoot = async (
   render,
   props,
   interaction,
-  { defer = true, ttl }
+  { defer = true, ttl, userIdForFilter = userTypeEnum.DEFAULT }
 ) => {
   const interactionInstance = getInteractionInstance(interaction);
   if (!interactionInstance) {
@@ -32,7 +34,10 @@ const createRoot = async (
       err: "Error getting interaction instance",
     };
   }
-  const instance = new DeactInstance(render, props, { ttl });
+  const instance = new DeactInstance(render, props, interaction.user.id, {
+    ttl,
+    userIdForFilter,
+  });
   if (defer) {
     instance.messageRef = await interactionInstance.deferReply();
   }
@@ -96,13 +101,24 @@ async function triggerBoundCallback(interaction, interactionData) {
     return { err: "Invalid interaction." };
   }
 
-  // TODO: filtering
-  /* if (state.userId && interaction.user.id !== state.userId) {
-    return { err: "This interaction was not initiated by you." };
-  } */
-  const callbackOptions =
+  const { defer, userIdForFilter: callbackUserIdForFilter } =
     rootInstance.getCallbackOptionsFromKey(callbackBindingKey);
-  if (callbackOptions.defer) {
+  const instanceUserIdForFilter = rootInstance.userIdForFilter;
+  const userIdForFilter = callbackUserIdForFilter || instanceUserIdForFilter;
+  // filter by user ID
+  let isValidUser = false;
+  if (userIdForFilter === userTypeEnum.ANY) {
+    isValidUser = true;
+  } else if (userIdForFilter === userTypeEnum.DEFAULT || !userIdForFilter) {
+    isValidUser = interaction.user.id === rootInstance.initialUserId;
+  } else {
+    isValidUser = interaction.user.id === userIdForFilter;
+  }
+  if (!isValidUser) {
+    return { err: "You may not currently take this action." };
+  }
+
+  if (defer) {
     rootInstance.messageRef = await interactionInstance.deferUpdate();
   }
 
@@ -179,7 +195,7 @@ const createModal = async (
   return await interactionInstance.sendModal(modal);
 };
 
-const useCallbackBindingRaw = (callback, ref, options = {}) => {
+const useCallbackBindingRaw = (callback, ref, options) => {
   ref.callbacks.push({
     callback: async (interaction, interactionData) =>
       // TODO, probably
@@ -191,10 +207,15 @@ const useCallbackBindingRaw = (callback, ref, options = {}) => {
 };
 
 /**
+ * @typedef {object} CallbackBindingOptions
+ * @property {boolean=} defer
+ * @property {any=} userIdForFilter
+ */
+
+/**
  * @param {(interaction: MessageComponentInteraction, data: any) => any} callback
  * @param {DeactElement} ref
- * @param {object} options
- * @param {boolean=} options.defer
+ * @param {CallbackBindingOptions} options
  * @returns {string} binding key of the callback
  */
 const useCallbackBinding = (callback, ref, options = {}) =>
@@ -203,8 +224,7 @@ const useCallbackBinding = (callback, ref, options = {}) =>
 /**
  * @param {(interaction: ModalSubmitInteraction, data: any) => any} callback
  * @param {DeactElement} ref
- * @param {object} options
- * @param {boolean=} options.defer
+ * @param {CallbackBindingOptions} options
  * @returns {string} binding key of the callback
  */
 const useModalSubmitCallbackBinding = (callback, ref, options = {}) =>
@@ -312,6 +332,7 @@ function useEffect(callback, deps, ref) {
 }
 
 module.exports = {
+  userTypeEnum,
   createRoot,
   createElement,
   createModal,

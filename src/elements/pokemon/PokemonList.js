@@ -187,6 +187,7 @@ module.exports = async (
               initialReleaseIds: res.data.map((pokemon) =>
                 pokemon._id.toString()
               ),
+              userId: user.id,
             });
           }
           return res;
