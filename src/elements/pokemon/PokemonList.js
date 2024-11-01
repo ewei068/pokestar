@@ -18,6 +18,7 @@ const { buildPokemonSelectRow } = require("../../components/pokemonSelectRow");
 const { buildPokemonSearchModal } = require("../../modals/pokemonModals");
 const Button = require("../../deact/elements/Button");
 const { rarities } = require("../../config/pokemonConfig");
+const { buildButtonActionRow } = require("../../components/buttonActionRow");
 
 const sortByOptionOrder = [
   "ivTotal",
@@ -178,7 +179,19 @@ module.exports = async (
 
   // get list of pokemon
   const pokemonsRes = await useAwaitedMemo(
-    () => listPokemons(trainer, computeListOptions(page, filter, sort)),
+    () =>
+      listPokemons(trainer, computeListOptions(page, filter, sort)).then(
+        (res) => {
+          if (res.data && !res.err) {
+            ref.rootInstance.updateLegacyState({
+              initialReleaseIds: res.data.map((pokemon) =>
+                pokemon._id.toString()
+              ),
+            });
+          }
+          return res;
+        }
+      ),
     [trainer, filter, sort, page],
     ref
   );
@@ -196,6 +209,21 @@ module.exports = async (
       sortDescending: false,
     });
   }, ref);
+  // legacy release button
+  const releasePageData = {
+    stateId: ref.rootInstance.stateId,
+  };
+  const releasePageRow = buildButtonActionRow(
+    [
+      {
+        label: "Release Page",
+        disabled: false,
+        data: releasePageData,
+      },
+    ],
+    eventNames.POKEMON_RELEASE_PAGE,
+    true
+  );
 
   // row 2 -- filter
   const searchSubmittedActionBinding = useModalSubmitCallbackBinding(
@@ -331,6 +359,7 @@ module.exports = async (
           style: ButtonStyle.Secondary,
           data: {},
         }),
+        releasePageRow,
       ],
       filtersShown
         ? [

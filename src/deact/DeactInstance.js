@@ -1,4 +1,4 @@
-const { setState, updateState } = require("../services/state");
+const { setState, getState } = require("../services/state");
 const { DeactElement } = require("./DeactElement");
 const { logger } = require("../log");
 
@@ -36,7 +36,7 @@ class DeactInstance {
   }
 
   async renderCurrentElement() {
-    this.flushState();
+    this.flushState(); // TODO: why is this here?
     const element = this.getCurrentElement();
     let renders = 0;
     let res;
@@ -81,7 +81,20 @@ class DeactInstance {
   }
 
   flushState() {
-    updateState(this.stateId, this.getStateToSet());
+    // it looks like I expect state to be mutated in place
+    const currentState = getState(this.stateId) || {};
+    const stateToSet = this.getStateToSet();
+    for (const key in stateToSet) {
+      currentState[key] = stateToSet[key];
+    }
+  }
+
+  // this may need improvement
+  updateLegacyState(stateUpdate) {
+    for (const key in stateUpdate) {
+      this.legacyState[key] = stateUpdate[key];
+    }
+    this.flushState();
   }
 
   getCallbackDataFromKey(callbackBindingKey) {
