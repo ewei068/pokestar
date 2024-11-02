@@ -209,6 +209,7 @@ module.exports = async (
       sortBy: undefined,
       sortDescending: false,
     });
+    setPage(1);
   }, ref);
   // legacy release button
   const releasePageData = {
@@ -235,6 +236,7 @@ module.exports = async (
         ...filter,
         name: pokemonSearchInput,
       });
+      setPage(1);
     },
     ref
   );
@@ -288,6 +290,7 @@ module.exports = async (
       ...filter,
       [filterBy]: filterValue,
     });
+    setPage(1);
   }, ref);
 
   // row 3 -- sort
@@ -314,6 +317,7 @@ module.exports = async (
       ...sort,
       sortBy,
     });
+    setPage(1);
   }, ref);
   const sortOrderActionBinding = useCallbackBinding(() => {
     setSort({
