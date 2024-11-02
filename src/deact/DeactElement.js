@@ -339,6 +339,10 @@ class DeactElement {
     );
     return this.getIsDoneRendering() && childrenAreDoneRendering;
   }
+
+  forceUpdate() {
+    this.isDoneRendering = false;
+  }
 }
 
 module.exports = {

@@ -137,17 +137,31 @@ async function triggerBoundCallback(interaction, interactionData) {
 }
 
 /**
+ * @param {string} stateId
+ * @param {string} callbackBindingKey
+ * @param {object} data
+ * @returns {string}
+ */
+function makeComponentIdWithStateId(stateId, callbackBindingKey, data = {}) {
+  return JSON.stringify({
+    dSID: stateId,
+    dKey: callbackBindingKey,
+    ...data,
+  });
+}
+
+/**
  * @param {DeactElement} ref
  * @param {string} callbackBindingKey
  * @param {object} data
  * @returns {string}
  */
 function makeComponentId(ref, callbackBindingKey, data = {}) {
-  return JSON.stringify({
-    dSID: ref.rootInstance.stateId,
-    dKey: callbackBindingKey,
-    ...data,
-  });
+  return makeComponentIdWithStateId(
+    ref.rootInstance.stateId,
+    callbackBindingKey,
+    data
+  );
 }
 
 /**
@@ -337,6 +351,7 @@ module.exports = {
   createElement,
   createModal,
   triggerBoundCallback,
+  makeComponentIdWithStateId,
   makeComponentId,
   useCallbackBinding,
   useModalSubmitCallbackBinding,

@@ -61,6 +61,7 @@ module.exports = async (ref, { initialPage = 1, initialSpeciesId = null }) => {
   );
   const onSpeciesSelectKey = useCallbackBinding(
     (interaction) => {
+      // @ts-ignore ts is stupid
       const id = interaction?.values?.[0];
       setSpeciesId(id);
     },

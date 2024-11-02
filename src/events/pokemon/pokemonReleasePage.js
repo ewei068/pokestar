@@ -24,17 +24,14 @@ const pokemonReleasePage = async (interaction, data) => {
     return { err: "This interaction was not initiated by you." };
   }
 
-  // hack: preserve pokemon IDs if changed
-  state.pokemonIds = [...state.initialReleaseIds];
-
   const { send, err } = await buildReleaseSend(
     interaction.user,
-    state.pokemonIds
+    state.initialReleaseIds
   );
   if (err) {
     return { err };
   }
-  await interaction.update(send);
+  await interaction.reply(send);
 };
 
 module.exports = pokemonReleasePage;
