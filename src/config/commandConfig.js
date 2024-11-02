@@ -1,10 +1,22 @@
 const { stageNames, stageConfig } = require("./stageConfig");
+/* eslint-disable no-unused-vars */
+const types = require("../../types");
 
 const { prefix } = stageConfig[process.env.STAGE];
 
+/** @typedef {types.Keys<commandCategoryConfig>} CommandCategoryEnum */
+
 // TODO: re-order commands and categories
 // TODO: add long descriptions
-const commandCategoryConfig = {
+/**
+ * @satisfies {Record<string, {
+ *  name: string,
+ *  description: string,
+ *  folder: string,
+ *  commands: CommandEnum[]
+ * }>}
+ */
+const commandCategoryConfig = Object.freeze({
   trainer: {
     name: "Trainer",
     description: "Commands involving your trainer",
@@ -86,9 +98,33 @@ const commandCategoryConfig = {
     folder: "heartbeat",
     commands: ["ping", "echo", "give", "test"],
   },
-};
+});
 
-const commandConfig = {
+/** @typedef {types.Keys<commandConfig>} CommandEnum */
+
+/**
+ * @satisfies {Record<string, {
+ *  name: string,
+ *  aliases: string[],
+ *  description: string,
+ *  longDescription?: string,
+ *  execute?: string,
+ *  args: Record<string, {
+ *    type: string,
+ *    description: string,
+ *    optional: boolean,
+ *    variable: boolean,
+ *    enum?: any[],
+ *  }>,
+ *  stages: string[],
+ *  exp?: number,
+ *  money?: number,
+ *  parent?: string,
+ *  subcommands?: string[],
+ *  isDeact?: boolean,
+ * }>}
+ */
+const commandConfig = Object.freeze({
   ping: {
     name: "Ping",
     aliases: ["ping"],
@@ -264,6 +300,7 @@ const commandConfig = {
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 10,
     money: 25,
+    isDeact: true,
   },
   info: {
     name: "Info",
@@ -300,6 +337,7 @@ const commandConfig = {
       },
     },
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    isDeact: true,
   },
   release: {
     name: "Release",
@@ -1021,7 +1059,7 @@ const commandConfig = {
     },
     stages: [stageNames.ALPHA],
   },
-};
+});
 
 module.exports = {
   commandCategoryConfig,

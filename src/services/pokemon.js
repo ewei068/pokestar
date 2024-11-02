@@ -797,6 +797,11 @@ const rerollStatSlot = async (trainer, pokemon, equipmentType, slotId) => {
 
 // to be used in mongo aggregate or other
 // eslint-disable-next-line no-shadow
+/**
+ *
+ * @param pokemonConfig
+ * @param pokemon
+ */
 function getBattleEligible(pokemonConfig, pokemon) {
   return !!pokemonConfig[pokemon.speciesId].battleEligible;
 }
@@ -877,8 +882,8 @@ const buildPokemonAllInfoSend = async ({
 };
 
 /**
- * @param {Object} param0
- * @param {Object?=} param0.user
+ * @param {object} param0
+ * @param {object?=} param0.user
  * @param {string?=} param0.pokemonId
  * @param {string?=} param0.tab
  * @param {string?=} param0.action
@@ -1880,6 +1885,7 @@ module.exports = {
   canUpgradeEquipment,
   upgradeEquipmentLevel,
   rerollStatSlot,
+  getPokemonOwnershipStats,
   buildPokemonInfoSend,
   buildPokemonAllInfoSend,
   buildPokedexSend,

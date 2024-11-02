@@ -22,6 +22,7 @@ const { logger } = require("../log");
 const { buildCommandUsageString } = require("../utils/utils");
 const { QueryBuilder } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
+const { removeInteractionInstance } = require("../deact/interactions");
 
 const { prefix } = stageConfig[process.env.STAGE];
 
@@ -313,14 +314,17 @@ const runSlashCommand = async (interaction, client) => {
 
   // execute command
   try {
+    const commandData = commandLookup[`${command}`];
+
     const res = await slashCommands[command](interaction, client);
+    removeInteractionInstance(interaction);
     if (res && res.err) {
       return;
     }
 
     // add exp & money if possible
-    const exp = commandLookup[`${command}`].exp || 0;
-    const money = commandLookup[`${command}`].money || 0;
+    const exp = commandData.exp || 0;
+    const money = commandData.money || 0;
     if (exp > 0 || money > 0) {
       const { level, err } = await addExpAndMoney(interaction.user, exp, money);
       if (level && !err) {

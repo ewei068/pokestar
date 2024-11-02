@@ -45,7 +45,7 @@ const equipmentStatAggregate = function (
 
 const DB_NAME = "pokestar";
 
-const collectionNames = {
+const collectionNames = Object.freeze({
   USERS: "users",
   USER_POKEMON: "userPokemon",
   GUILDS: "guilds",
@@ -54,9 +54,9 @@ const collectionNames = {
   POKEMON_GROUPED: "pokemonGrouped",
   POKEMON_AND_USERS: "pokemonAndUsers",
   EQUIPMENT: "equipment",
-};
+});
 
-const collectionConfig = {
+const collectionConfig = Object.freeze({
   [collectionNames.USERS]: {
     indexes: [
       {
@@ -227,7 +227,7 @@ const collectionConfig = {
       },
     ],
   },
-};
+});
 
 module.exports = {
   DB_NAME,

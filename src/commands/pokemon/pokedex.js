@@ -6,39 +6,30 @@
  *
  * pokedex.js shows the pokedex entry of the pokemon id.
  */
-const { buildPokedexSend } = require("../../services/pokemon");
+const { createRoot, userTypeEnum } = require("../../deact/deact");
+const PokedexList = require("../../elements/pokemon/PokedexList");
 
 /**
  * Shows the pokedex entry of the pokemon id.
+ * @param interaction
  * @param {*} id the id of the pokemon
  * @returns
  */
-const pokedex = async (id) =>
-  await buildPokedexSend({
-    id,
-    view: "species",
+const pokedex = async (interaction, id) =>
+  await createRoot(PokedexList, { initialSpeciesId: id }, interaction, {
+    userIdForFilter: userTypeEnum.ANY,
   });
 
 const pokedexMessageCommand = async (interaction) => {
   const args = interaction.content.split(" ");
   args.shift();
-  const id = !args[0] ? "1" : args.join(" ");
-  const { send, err } = await pokedex(id);
-  if (err) {
-    await interaction.channel.send(`${err}`);
-    return { err };
-  }
-  await interaction.channel.send(send);
+  const id = args[0];
+  return await pokedex(interaction, id);
 };
 
 const pokedexSlashCommand = async (interaction) => {
-  const id = interaction.options.getString("species") || "1";
-  const { send, err } = await pokedex(id);
-  if (err) {
-    await interaction.reply(`${err}`);
-    return { err };
-  }
-  await interaction.reply(send);
+  const id = interaction.options.getString("species");
+  return await pokedex(interaction, id);
 };
 
 module.exports = {

@@ -10,10 +10,6 @@ const {
 const { getMove } = require("./moveService");
 const { moveIdEnum } = require("../../enums/battleEnums");
 
-/**
- * @typedef {import("../../config/pokemonConfig").PokemonTypeEnum} PokemonTypeEnum
- */
-
 class Move {
   /**
    * @param {object} param0

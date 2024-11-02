@@ -26,12 +26,12 @@ const pokemonReleasePage = async (interaction, data) => {
 
   const { send, err } = await buildReleaseSend(
     interaction.user,
-    state.pokemonIds
+    state.initialReleaseIds
   );
   if (err) {
     return { err };
   }
-  await interaction.update(send);
+  await interaction.reply(send);
 };
 
 module.exports = pokemonReleasePage;
