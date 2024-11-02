@@ -1,4 +1,8 @@
-const locations = {
+/* eslint-disable-next-line no-unused-vars */
+const types = require("../../types");
+
+/** @typedef {types.Enum<locations>} LocationEnum */
+const locations = Object.freeze({
   HOME: "0",
   RESTAURANT: "1",
   GYM: "2",
@@ -10,9 +14,9 @@ const locations = {
   BERRY_FARM: "8",
   COMPUTER_LAB: "9",
   ILEX_SHRINE: "50",
-};
+});
 
-const locationConfig = {
+const locationConfig = Object.freeze({
   [locations.HOME]: {
     name: "Home",
     emoji: "🏠",
@@ -202,7 +206,7 @@ const locationConfig = {
       1: {},
     },
   },
-};
+});
 
 module.exports = {
   locations,
