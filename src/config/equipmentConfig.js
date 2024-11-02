@@ -1,7 +1,11 @@
 const { backpackItems } = require("./backpackConfig");
 const { stats } = require("./pokemonConfig");
+/* eslint-disable-next-line */
+const types = require("../../types");
 
-const modifiers = {
+/** @typedef {types.Enum<modifiers>} EquipmentModifierEnum */
+
+const modifiers = Object.freeze({
   BASE_HP: "baseHp",
   BASE_ATK: "baseAtk",
   BASE_DEF: "baseDef",
@@ -20,15 +24,17 @@ const modifiers = {
   FLAT_SPA: "flatSpA",
   FLAT_SPD: "flatSpD",
   FLAT_SPE: "flatSpe",
-};
+});
 
-const modifierTypes = {
+/** @typedef {types.Enum<modifierTypes>} EquipmentModifierTypeEnum */
+
+const modifierTypes = Object.freeze({
   BASE: "base",
   FLAT: "flat",
   PERCENT: "percent",
-};
+});
 
-const modifierConfig = {
+const modifierConfig = Object.freeze({
   [modifiers.BASE_HP]: {
     name: "Base HP",
     description: "Base HP",
@@ -173,17 +179,18 @@ const modifierConfig = {
     min: 6,
     max: 10,
   },
-};
+});
 
-const modifierSlots = {
+/** @typedef {types.Enum<modifierSlots>} EquipmentModifierSlotEnum */
+const modifierSlots = Object.freeze({
   PRIMARY: "primary",
   SECONDARY: "secondary",
   SUBSTAT1: "substat1",
   SUBSTAT2: "substat2",
   SUBSTAT3: "substat3",
-};
+});
 
-const modifierSlotConfig = {
+const modifierSlotConfig = Object.freeze({
   [modifierSlots.PRIMARY]: {
     name: "Primary",
     description: "Primary Modifier",
@@ -214,18 +221,20 @@ const modifierSlotConfig = {
     abbreviation: "Sub",
     level: false,
   },
-};
+});
 
-const equipmentTypes = {
+/** @typedef {types.Enum<equipmentTypes>} EquipmentTypeEnum */
+
+const equipmentTypes = Object.freeze({
   POWER_WEIGHT: "powerWeight",
   POWER_BRACER: "powerBracer",
   POWER_BELT: "powerBelt",
   POWER_LENS: "powerLens",
   POWER_BAND: "powerBand",
   POWER_ANKLET: "powerAnklet",
-};
+});
 
-const SUBSTAT_MODIFIERS = [
+const SUBSTAT_MODIFIERS = Object.freeze([
   modifiers.FLAT_HP,
   modifiers.FLAT_ATK,
   modifiers.FLAT_DEF,
@@ -237,9 +246,9 @@ const SUBSTAT_MODIFIERS = [
   modifiers.PERCENT_DEF,
   modifiers.PERCENT_SPA,
   modifiers.PERCENT_SPD,
-];
+]);
 
-const equipmentConfig = {
+const equipmentConfig = Object.freeze({
   [equipmentTypes.POWER_WEIGHT]: {
     name: "Power Weight",
     description: "Increases HP",
@@ -422,7 +431,7 @@ const equipmentConfig = {
       },
     },
   },
-};
+});
 
 const MAX_EQUIPMENT_LEVEL = 10;
 const STAT_REROLL_COST = 5;
