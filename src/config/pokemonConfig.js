@@ -282,14 +282,15 @@ const statConfig = {
   5: { name: "Spe", emoji: "🏃", description: "Speed" },
 };
 
-const growthRates = {
+/** @typedef {jsTypes.Enum<growthRates>} GrowthRateEnum */
+const growthRates = Object.freeze({
   ERRATIC: 0,
   FAST: 1,
   MEDIUMFAST: 2,
   MEDIUMSLOW: 3,
   SLOW: 4,
   FLUCTUATING: 5,
-};
+});
 
 const growthRateConfig = {
   [growthRates.ERRATIC]: {
@@ -341,9 +342,34 @@ const rarities = Object.freeze({
   MYTHICAL: "Mythical",
 });
 
-/** @typedef {jsTypes.Keys<pokemonConfig>} PokemonIdEnum */
+/** @typedef {jsTypes.Keys<pokemonConfigRaw>} PokemonIdEnum */
 
-const pokemonConfig = Object.freeze({
+/**
+ * @satisfies {{[key: string | number]: {
+ *  name: string,
+ *  emoji: string,
+ *  description: string,
+ *  type: Array<PokemonTypeEnum>,
+ *  baseStats: Array<number>,
+ *  sprite: string,
+ *  shinySprite: string,
+ *  evolution?: Array<{
+ *    level: number,
+ *    id: any // TODO
+ *  }>,
+ *  abilities: {
+ *    [key: number | string]: number
+ *  },
+ *  moveIds: Array<MoveIdEnum>,
+ *  battleEligible: boolean,
+ *  rarity: RarityEnum,
+ *  growthRate: GrowthRateEnum,
+ *  noGacha?: boolean,
+ *  mythicConfig?: any,
+ *  unobtainable?: boolean
+ * }}}
+ */
+const pokemonConfigRaw = {
   1: {
     name: "Bulbasaur",
     emoji: "<:1_:1100279982556708956>",
@@ -7551,7 +7577,8 @@ const pokemonConfig = Object.freeze({
     growthRate: growthRates.SLOW,
     unobtainable: true,
   },
-});
+};
+const pokemonConfig = Object.freeze(pokemonConfigRaw);
 
 const rarityBins = {
   [rarities.COMMON]: [],
