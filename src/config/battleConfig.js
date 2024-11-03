@@ -5,11 +5,7 @@
 /* eslint-disable no-param-reassign */
 const { types: pokemonTypes } = require("./pokemonConfig");
 const types = require("../../types");
-const {
-  getMove,
-  getMoveIds,
-  executeMove,
-} = require("../battle/data/moveService");
+const { getMove, getMoveIds } = require("../battle/data/moveRegistry");
 const { getEffect } = require("../battle/data/effectRegistry");
 const { battleEventEnum } = require("../enums/battleEnums");
 const {
@@ -1296,10 +1292,8 @@ const effectConfig = Object.freeze({
             invulnPokemon.battle.addToLog(
               `${invulnPokemon.name} reflected the move back at ${sourcePokemon.name}!`
             );
-            executeMove({
+            invulnPokemon.executeMove({
               moveId,
-              battle: invulnPokemon.battle,
-              source: invulnPokemon,
               primaryTarget: sourcePokemon,
               allTargets: [sourcePokemon],
               missedTargets: [],
@@ -7689,10 +7683,8 @@ const moveExecutes = {
     // get random target & use move
     const randomTarget =
       eligibleTargets[Math.floor(Math.random() * eligibleTargets.length)];
-    executeMove({
+    source.executeMove({
       moveId: randomMoveId,
-      battle,
-      source,
       primaryTarget: randomTarget,
       allTargets: [randomTarget],
       missedTargets: [],
@@ -8644,10 +8636,8 @@ const moveExecutes = {
     );
     // use move against target
     battle.addToLog(`${randomMoveData.name} hit ${randomTarget.name}!`);
-    executeMove({
+    source.executeMove({
       moveId: randomMoveId,
-      battle,
-      source,
       primaryTarget: randomTarget,
       allTargets: targets,
       missedTargets: [],
@@ -11785,10 +11775,8 @@ const moveExecutes = {
             target.position,
             moveId
           );
-          executeMove({
+          source.executeMove({
             moveId,
-            battle,
-            source,
             primaryTarget: target,
             allTargets: targets,
             missedTargets: [],
@@ -15122,10 +15110,8 @@ const abilityConfig = Object.freeze({
           initialPokemon.battle.addToLog(
             `${initialPokemon.name}'s Magic Bounce reflects the move!`
           );
-          executeMove({
+          initialPokemon.executeMove({
             moveId: args.moveId,
-            battle,
-            source: initialPokemon,
             primaryTarget: sourcePokemon,
             allTargets: [sourcePokemon],
             missedTargets: [],
@@ -16149,10 +16135,8 @@ const abilityConfig = Object.freeze({
           // use move against target
           battle.addToLog(`${randomMoveData.name} hit ${target.name}!`);
           // yes I know the targets are confusing
-          executeMove({
+          targetPokemon.executeMove({
             moveId: randomMoveId,
-            battle: targetPokemon.battle,
-            source: targetPokemon,
             primaryTarget: target,
             allTargets: targets,
             missedTargets: [],

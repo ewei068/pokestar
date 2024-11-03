@@ -8,7 +8,7 @@
  */
 const { EmbedBuilder } = require("discord.js");
 const { weatherConditions } = require("../config/battleConfig");
-const { getMove } = require("../battle/data/moveService");
+const { getMove } = require("../battle/data/moveRegistry");
 const {
   buildPartyString,
   buildMoveString,

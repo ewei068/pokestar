@@ -75,7 +75,7 @@ const { generateRandomPokemon } = require("./gacha");
 const { validateParty } = require("./party");
 const { addRewards, getRewardsString } = require("../utils/trainerUtils");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
-const { getMove, executeMove } = require("../battle/data/moveService");
+const { getMove } = require("../battle/data/moveRegistry");
 const { getEffect } = require("../battle/data/effectRegistry");
 const { getAbility } = require("../battle/data/abilityRegistry");
 const { BattleEventHandler } = require("../battle/engine/events");
@@ -761,10 +761,8 @@ class Pokemon {
       );
 
       // execute move
-      executeMove({
+      this.executeMove({
         moveId,
-        battle: this.battle,
-        source: this,
         primaryTarget,
         allTargets,
         missedTargets,
@@ -783,6 +781,40 @@ class Pokemon {
 
     // end turn
     this.battle.nextTurn();
+  }
+
+  /**
+   * @param {object} param0
+   * @param {MoveIdEnum} param0.moveId
+   * @param {object} param0.primaryTarget
+   * @param {Array<object>} param0.allTargets
+   * @param {Array<object>=} param0.missedTargets
+   */
+  executeMove({ moveId, primaryTarget, allTargets, missedTargets = [] }) {
+    const move = getMove(moveId);
+    if (!move) {
+      logger.error(`Move ${moveId} not found.`);
+      return;
+    }
+
+    if (!move.isLegacyMove) {
+      move.execute({
+        battle: this.battle,
+        source: this,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+      });
+    } else {
+      const legacyMove = /** @type {any} */ (move);
+      legacyMove.execute(
+        this.battle,
+        this,
+        primaryTarget,
+        allTargets,
+        missedTargets
+      );
+    }
   }
 
   /**

@@ -7,7 +7,7 @@ const {
   moveTiers,
   calculateDamage,
 } = require("../../config/battleConfig");
-const { getMove } = require("./moveService");
+const { getMove } = require("./moveRegistry");
 const { moveIdEnum } = require("../../enums/battleEnums");
 
 class Move {
