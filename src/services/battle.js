@@ -13,7 +13,10 @@
  */
 const { v4: uuidv4 } = require("uuid");
 const { getOrSetDefault, formatMoney } = require("../utils/utils");
-const { pokemonConfig, types } = require("../config/pokemonConfig");
+const {
+  pokemonConfig,
+  types: pokemonTypes,
+} = require("../config/pokemonConfig");
 const {
   targetTypes,
   targetPatterns,
@@ -23,6 +26,7 @@ const {
   calculateDamage,
   typeAdvantages,
   weatherConditions,
+  damageTypes,
 } = require("../config/battleConfig");
 const { battleEventEnum } = require("../enums/battleEnums");
 const {
@@ -760,6 +764,10 @@ class Pokemon {
         executeEventArgs
       );
 
+      // HACK: set primary / all targets for later damage calculation
+      this.currentPrimaryTarget = primaryTarget;
+      this.currentAllTargets = allTargets;
+
       // execute move
       this.executeMove({
         moveId,
@@ -767,6 +775,10 @@ class Pokemon {
         allTargets,
         missedTargets,
       });
+
+      // clear primary / all targets
+      this.currentPrimaryTarget = null;
+      this.currentAllTargets = null;
 
       // after move event
       const eventArgs = {
@@ -815,6 +827,123 @@ class Pokemon {
         missedTargets
       );
     }
+  }
+
+  /**
+   * @param {object} param0
+   * @param {Move} param0.move
+   * @param {Pokemon} param0.target
+   * @param {Pokemon} param0.primaryTarget
+   * @param {Array<Pokemon>} param0.allTargets
+   * @param {Array<Pokemon>=} param0.missedTargets
+   * @param {DamageTypeEnum=} param0.atkDamageTypeOverride
+   * @param {number=} param0.attackOverride
+   * @param {DamageTypeEnum=} param0.defDamageTypeOverride
+   * @param {number=} param0.defenseOverride
+   * @param {number=} param0.powerOverride
+   * @param {number=} param0.typeEffectivenessOverride
+   * @param {PokemonTypeEnum=} param0.moveTypeOverride
+   * @param {number=} param0.offTargetDamageMultiplier
+   * @param {number=} param0.missedTargetDamageMultiplier
+   * @returns {number}
+   */
+  calculateMoveDamage({
+    move,
+    target,
+    primaryTarget,
+    allTargets,
+    missedTargets = [],
+    atkDamageTypeOverride = null,
+    attackOverride = null,
+    defDamageTypeOverride = null,
+    defenseOverride = null,
+    powerOverride = null,
+    typeEffectivenessOverride = null,
+    moveTypeOverride = null,
+    offTargetDamageMultiplier = 0.8,
+    missedTargetDamageMultiplier = 0.7,
+  }) {
+    const power = powerOverride || move.power;
+    const { level } = this;
+    const atkDamageType = atkDamageTypeOverride || move.damageType;
+    const attackRaw =
+      attackOverride ||
+      (atkDamageType === damageTypes.PHYSICAL ? this.atk : this.spa);
+    // modify attack amount -- any attack over 800 is only half as effective
+    const attack = attackRaw > 800 ? 800 + (attackRaw - 800) / 2 : attackRaw;
+
+    const defDamageType = defDamageTypeOverride || move.damageType;
+    const defense =
+      defenseOverride ||
+      (defDamageType === damageTypes.PHYSICAL
+        ? target.getDef()
+        : target.getSpd());
+    const stab = this.type1 === move.type || this.type2 === move.type ? 1.5 : 1;
+    const missMult = missedTargets.includes(target) ? 0.7 : 1;
+    const moveType = moveTypeOverride || move.type;
+    const typeEffectiveness =
+      typeEffectivenessOverride !== null
+        ? typeEffectivenessOverride
+        : this.getTypeDamageMultiplier(moveType, target);
+    // balance type
+    let typeMultiplier = 1;
+    if (typeEffectiveness >= 4) {
+      typeMultiplier = 2;
+    } else if (typeEffectiveness >= 2) {
+      typeMultiplier = 1.5;
+    } else if (typeEffectiveness >= 1) {
+      typeMultiplier = 1;
+    } else if (typeEffectiveness >= 0.5) {
+      typeMultiplier = 0.75;
+    } else if (typeEffectiveness >= 0.25) {
+      typeMultiplier = 0.5;
+    } else {
+      typeMultiplier = 0.35;
+    }
+    const random = Math.random() * (1 - 0.85) + 0.85;
+    const burn = this.status.statusId === statusConditions.BURN ? 0.65 : 1;
+
+    let weatherMult = 1;
+    if (!this.battle.isWeatherNegated()) {
+      const { weather } = this.battle;
+      if (weather.weatherId === weatherConditions.SUN) {
+        if (move.type === pokemonTypes.FIRE) {
+          weatherMult = 1.5;
+        } else if (move.type === pokemonTypes.WATER) {
+          weatherMult = 0.5;
+        }
+      } else if (weather.weatherId === weatherConditions.RAIN) {
+        if (move.type === pokemonTypes.FIRE) {
+          weatherMult = 0.5;
+        } else if (move.type === pokemonTypes.WATER) {
+          weatherMult = 1.5;
+        }
+      }
+    }
+
+    const maybeOffTargetMult =
+      target === primaryTarget ? 1 : offTargetDamageMultiplier;
+
+    /* console.log("power", power)
+      console.log("level", level)
+      console.log("attack", attack)
+      console.log("defense", defense)
+      console.log("stab", stab)
+      console.log("type", type)
+      console.log("random", random) */
+
+    const damage = Math.floor(
+      ((((2 * level) / 5 + 2) * power * attack) / defense / 50 + 2) *
+        stab *
+        typeMultiplier *
+        random *
+        burn *
+        weatherMult *
+        missMult *
+        maybeOffTargetMult
+    );
+
+    return Math.max(damage, 1);
   }
 
   /**
@@ -1253,7 +1382,7 @@ class Pokemon {
       this.status.statusId === statusConditions.FREEZE &&
       damageInfo.type === "move" &&
       getMove(damageInfo.moveId) !== undefined &&
-      (getMove(damageInfo.moveId).type === types.FIRE ||
+      (getMove(damageInfo.moveId).type === pokemonTypes.FIRE ||
         damageInfo.moveId === "m503");
     if (freezeCheck) {
       if (this.removeStatus()) {
@@ -1730,7 +1859,10 @@ class Pokemon {
     switch (statusId) {
       // TODO: other status effects
       case statusConditions.BURN:
-        if (this.type1 === types.FIRE || this.type2 === types.FIRE) {
+        if (
+          this.type1 === pokemonTypes.FIRE ||
+          this.type2 === pokemonTypes.FIRE
+        ) {
           this.battle.addToLog(
             `${this.name}'s Fire type renders it immune to burns!`
           );
@@ -1746,7 +1878,10 @@ class Pokemon {
         statusApplied = true;
         break;
       case statusConditions.FREEZE:
-        if (this.type1 === types.ICE || this.type2 === types.ICE) {
+        if (
+          this.type1 === pokemonTypes.ICE ||
+          this.type2 === pokemonTypes.ICE
+        ) {
           this.battle.addToLog(
             `${this.name}'s Ice type renders it immune to freezing!`
           );
@@ -1769,7 +1904,10 @@ class Pokemon {
         statusApplied = true;
         break;
       case statusConditions.PARALYSIS:
-        if (this.type1 === types.ELECTRIC || this.type2 === types.ELECTRIC) {
+        if (
+          this.type1 === pokemonTypes.ELECTRIC ||
+          this.type2 === pokemonTypes.ELECTRIC
+        ) {
           this.battle.addToLog(
             `${this.name}'s Electric type renders it immune to paralysis!`
           );
@@ -1788,7 +1926,10 @@ class Pokemon {
         statusApplied = true;
         break;
       case statusConditions.POISON:
-        if (this.type1 === types.POISON || this.type2 === types.POISON) {
+        if (
+          this.type1 === pokemonTypes.POISON ||
+          this.type2 === pokemonTypes.POISON
+        ) {
           this.battle.addToLog(
             `${this.name}'s Poison type renders it immune to poison!`
           );
@@ -1813,7 +1954,10 @@ class Pokemon {
         statusApplied = true;
         break;
       case statusConditions.BADLY_POISON:
-        if (this.type1 === types.POISON || this.type2 === types.POISON) {
+        if (
+          this.type1 === pokemonTypes.POISON ||
+          this.type2 === pokemonTypes.POISON
+        ) {
           this.battle.addToLog(
             `${this.name}'s Poison type renders it immune to poison!`
           );
@@ -2033,7 +2177,7 @@ class Pokemon {
     if (
       !this.battle.isWeatherNegated() &&
       this.battle.weather.weatherId === weatherConditions.HAIL &&
-      (this.type1 === types.ICE || this.type2 === types.ICE)
+      (this.type1 === pokemonTypes.ICE || this.type2 === pokemonTypes.ICE)
     ) {
       def = Math.floor(def * 1.5);
     }
@@ -2048,7 +2192,7 @@ class Pokemon {
     if (
       !this.battle.isWeatherNegated() &&
       this.battle.weather.weatherId === weatherConditions.SANDSTORM &&
-      (this.type1 === types.ROCK || this.type2 === types.ROCK)
+      (this.type1 === pokemonTypes.ROCK || this.type2 === pokemonTypes.ROCK)
     ) {
       spd = Math.floor(spd * 1.5);
     }
@@ -2543,12 +2687,12 @@ class Battle {
             }
             // if pokemon not rock, steel, or ground, damage 1/16 of max hp
             if (
-              pokemon.type1 !== types.ROCK &&
-              pokemon.type1 !== types.STEEL &&
-              pokemon.type1 !== types.GROUND &&
-              pokemon.type2 !== types.ROCK &&
-              pokemon.type2 !== types.STEEL &&
-              pokemon.type2 !== types.GROUND
+              pokemon.type1 !== pokemonTypes.ROCK &&
+              pokemon.type1 !== pokemonTypes.STEEL &&
+              pokemon.type1 !== pokemonTypes.GROUND &&
+              pokemon.type2 !== pokemonTypes.ROCK &&
+              pokemon.type2 !== pokemonTypes.STEEL &&
+              pokemon.type2 !== pokemonTypes.GROUND
             ) {
               pokemon.takeDamage(
                 Math.floor(pokemon.maxHp / 16),
@@ -2570,7 +2714,10 @@ class Battle {
               continue;
             }
             // if pokemon not ice, damage 1/16 of max hp
-            if (pokemon.type1 !== types.ICE && pokemon.type2 !== types.ICE) {
+            if (
+              pokemon.type1 !== pokemonTypes.ICE &&
+              pokemon.type2 !== pokemonTypes.ICE
+            ) {
               pokemon.takeDamage(
                 Math.floor(pokemon.maxHp / 16),
                 this.weather.source,

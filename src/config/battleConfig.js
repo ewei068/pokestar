@@ -229,7 +229,7 @@ const weatherConditions = {
 
 /**
  *
- * @param {*} move
+ * @param {Move} move
  * @param {BattlePokemon} source
  * @param {BattlePokemon} target
  * @param {boolean} miss
@@ -249,84 +249,22 @@ const calculateDamage = (
     power = null,
     type = null,
     moveType = null,
-    finalDamageMultipler = 1,
   } = {}
-) => {
-  /* eslint-disable-code-block no-param-reassign */
-  power = power || move.power;
-  const { level } = source;
-  atkStat = atkStat || move.damageType;
-  attack =
-    attack || (atkStat === damageTypes.PHYSICAL ? source.atk : source.spa);
-  // modify attack amount -- any attack over 800 is only half as effective
-  attack = attack > 800 ? 800 + (attack - 800) / 2 : attack;
-
-  defStat = defStat || move.damageType;
-  defense =
-    defense ||
-    (defStat === damageTypes.PHYSICAL ? target.getDef() : target.getSpd());
-  const stab =
-    source.type1 === move.type || source.type2 === move.type ? 1.5 : 1;
-  const missMult = miss ? 0.7 : 1;
-  moveType = moveType || move.type;
-  type =
-    type !== null ? type : source.getTypeDamageMultiplier(moveType, target);
-  // balance type
-  if (type >= 4) {
-    type = 2;
-  } else if (type >= 2) {
-    type = 1.5;
-  } else if (type >= 1) {
-    type = 1;
-  } else if (type >= 0.5) {
-    type = 0.75;
-  } else if (type >= 0.25) {
-    type = 0.5;
-  } else {
-    type = 0.35;
-  }
-  const random = Math.random() * (1 - 0.85) + 0.85;
-  const burn = source.status.statusId === statusConditions.BURN ? 0.65 : 1;
-
-  let weatherMult = 1;
-  if (!source.battle.isWeatherNegated()) {
-    const { weather } = source.battle;
-    if (weather.weatherId === weatherConditions.SUN) {
-      if (move.type === pokemonTypes.FIRE) {
-        weatherMult = 1.5;
-      } else if (move.type === pokemonTypes.WATER) {
-        weatherMult = 0.5;
-      }
-    } else if (weather.weatherId === weatherConditions.RAIN) {
-      if (move.type === pokemonTypes.FIRE) {
-        weatherMult = 0.5;
-      } else if (move.type === pokemonTypes.WATER) {
-        weatherMult = 1.5;
-      }
-    }
-  }
-
-  /* console.log("power", power)
-    console.log("level", level)
-    console.log("attack", attack)
-    console.log("defense", defense)
-    console.log("stab", stab)
-    console.log("type", type)
-    console.log("random", random) */
-
-  const damage = Math.floor(
-    ((((2 * level) / 5 + 2) * power * attack) / defense / 50 + 2) *
-      stab *
-      type *
-      random *
-      burn *
-      weatherMult *
-      missMult *
-      finalDamageMultipler
-  );
-
-  return Math.max(damage, 1);
-};
+) =>
+  source.calculateMoveDamage({
+    move,
+    target,
+    primaryTarget: source.currentPrimaryTarget,
+    allTargets: source.currentAllTargets,
+    missedTargets: miss ? [target] : [],
+    atkDamageTypeOverride: atkStat,
+    attackOverride: attack,
+    defDamageTypeOverride: defStat,
+    defenseOverride: defense,
+    powerOverride: power,
+    typeEffectivenessOverride: type,
+    moveTypeOverride: moveType,
+  });
 
 /** @typedef {types.Enum<targetTypes>} TargetTypeEnum */
 const targetTypes = Object.freeze({
