@@ -55,6 +55,7 @@ class Move {
     this.description = description;
     this.execute = execute;
     this.isLegacyMove = false;
+    this.silenceIf = undefined; // TODO
   }
 
   genericDealSingleDamage({

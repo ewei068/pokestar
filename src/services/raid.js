@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 const { v4: uuidv4 } = require("uuid");
+const { Battle } = require("../battle/engine/Battle");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const {
@@ -24,7 +25,7 @@ const { logger } = require("../log");
 const { drawIterable } = require("../utils/gachaUtils");
 const { addRewards, getItems, removeItems } = require("../utils/trainerUtils");
 const { idFrom, errorlessAsync } = require("../utils/utils");
-const { RaidNPC, Battle, getStartTurnSend } = require("./battle");
+const { RaidNPC, getStartTurnSend } = require("./battle");
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
 const { validateParty } = require("./party");
 const { getState, setTtl, setState, deleteState } = require("./state");
