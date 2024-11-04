@@ -25,6 +25,7 @@ const {
   formatMoney,
   getFullUTCFortnight,
   getFullUTCWeek,
+  getFullUTCTimeInterval,
 } = require("../utils/utils");
 const {
   backpackItems,
@@ -156,47 +157,31 @@ const getTrainer = async (discordUser, refresh = true) => {
     }
   }
 
-  // attempt to reset daily rewards
-  const today = getFullUTCDate();
-  const lastDailyTime = new Date(trainer.lastDaily);
-  const lastDaily = getFullUTCDate(lastDailyTime);
-  if (today > lastDaily) {
-    trainer.lastDaily = new Date().getTime();
-    // reset daily rewards
-    for (const field in trainerFields) {
-      if (trainerFields[field].daily) {
-        trainer[field] = trainerFields[field].default;
-      }
+  // attempt to reset time-interval fields
+  const lastCorrectedTime = new Date(trainer.lastCorrected);
+  const newCorrectedTime = new Date();
+  for (const field in trainerFields) {
+    const { refreshInterval } = trainerFields[field];
+    if (!refreshInterval) {
+      continue;
     }
 
-    // check other time granularities
-    // weekly
-    const week = getFullUTCWeek();
-    const lastWeekly = getFullUTCWeek(lastDailyTime);
-    if (week > lastWeekly) {
-      // reset weekly rewards
-      for (const field in trainerFields) {
-        if (trainerFields[field].weekly) {
-          trainer[field] = trainerFields[field].default;
-        }
-      }
+    const currentTimeInterval = getFullUTCTimeInterval(
+      refreshInterval,
+      newCorrectedTime
+    );
+    const lastTimeInterval = getFullUTCTimeInterval(
+      refreshInterval,
+      lastCorrectedTime
+    );
+    if (currentTimeInterval > lastTimeInterval) {
+      trainer[field] = trainerFields[field].default;
+      modified = true;
     }
-    // biweekly
-    const fortnight = getFullUTCFortnight();
-    const lastBiweekly = getFullUTCFortnight(lastDailyTime);
-    if (fortnight > lastBiweekly) {
-      // reset biweekly rewards
-      for (const field in trainerFields) {
-        if (trainerFields[field].biweekly) {
-          trainer[field] = trainerFields[field].default;
-        }
-      }
-    }
-
-    modified = true;
   }
 
   if (modified) {
+    trainer.lastCorrected = newCorrectedTime.getTime();
     try {
       const res = await updateDocument(
         collectionNames.USERS,

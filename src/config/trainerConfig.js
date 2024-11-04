@@ -4,7 +4,7 @@
     user
     level
     money
-    lastDaily (date)
+    lastCorrected (date)
     backpack
 }
 */
@@ -12,6 +12,9 @@
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { bannerTypes } = require("./gachaConfig");
 const { stageNames } = require("./stageConfig");
+/* eslint-disable-next-line no-unused-vars */
+const types = require("../../types");
+const { refreshIntervalEnum } = require("../enums/miscEnums");
 
 const MAX_TRAINER_LEVEL = 100;
 const MAX_POKEMON = 500;
@@ -36,14 +39,14 @@ const trainerFields = {
     type: "number",
     default: 1000,
   },
-  lastDaily: {
+  lastCorrected: {
     type: "number",
     default: new Date(0).getTime(),
   },
   claimedDaily: {
     type: "boolean",
     default: false,
-    daily: true,
+    refreshInterval: refreshIntervalEnum.DAILY,
   },
   backpack: {
     type: "object",
@@ -63,7 +66,7 @@ const trainerFields = {
   purchasedShopItemsToday: {
     type: "object",
     default: {},
-    daily: true,
+    refreshInterval: refreshIntervalEnum.DAILY,
   },
   locations: {
     type: "object",
@@ -278,7 +281,7 @@ const trainerFields = {
   defeatedNPCsToday: {
     type: "object",
     default: {},
-    daily: true,
+    refreshInterval: refreshIntervalEnum.DAILY,
   },
   defeatedNPCs: {
     type: "object",
@@ -306,12 +309,12 @@ const trainerFields = {
   usedTimeTravel: {
     type: "boolean",
     default: false,
-    daily: true,
+    refreshInterval: refreshIntervalEnum.DAILY,
   },
   lastTowerStage: {
     type: "number",
     default: 0,
-    biweekly: true,
+    refreshInterval: refreshIntervalEnum.BIWEEKLY,
   },
 };
 

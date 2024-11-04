@@ -139,7 +139,7 @@ const setTwoInline = (fields) => {
 
 /**
  * @param {Date?=} date
- * @returns
+ * @returns {number}
  */
 const getFullUTCDate = (date = null) => {
   if (!date) {
@@ -151,7 +151,7 @@ const getFullUTCDate = (date = null) => {
 
 /**
  * @param {Date?=} date
- * @returns
+ * @returns {number}
  */
 const getFullUTCWeek = (date = null) => {
   if (!date) {
@@ -164,7 +164,7 @@ const getFullUTCWeek = (date = null) => {
 /**
  * nice fortnite
  * @param {Date?=} date
- * @returns
+ * @returns {number}
  */
 const getFullUTCFortnight = (date = null) => {
   if (!date) {
@@ -172,6 +172,19 @@ const getFullUTCFortnight = (date = null) => {
   }
   const time = date.getTime();
   return Math.floor(time / (86400000 * 14));
+};
+
+/**
+ * @param {number} interval
+ * @param {Date?=} date
+ * @returns
+ */
+const getFullUTCTimeInterval = (interval, date = null) => {
+  if (!date) {
+    date = new Date();
+  }
+  const time = date.getTime();
+  return Math.floor(time / interval);
 };
 
 const fortnightToUTCTime = (fortnight) => fortnight * 86400000 * 14;
@@ -244,6 +257,7 @@ module.exports = {
   getFullUTCDate,
   getFullUTCWeek,
   getFullUTCFortnight,
+  getFullUTCTimeInterval,
   fortnightToUTCTime,
   getTimeToNextDay,
   poll,

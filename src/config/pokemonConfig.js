@@ -264,14 +264,15 @@ const natureConfig = Object.freeze({
   },
 });
 
-const stats = {
+/** @typedef {jsTypes.Enum<stats>} StatEnum */
+const stats = Object.freeze({
   HP: 0,
   ATTACK: 1,
   DEFENSE: 2,
   SPATK: 3,
   SPDEF: 4,
   SPEED: 5,
-};
+});
 
 const statConfig = {
   0: { name: "HP", emoji: "❤️", description: "Hit Points" },
@@ -358,7 +359,7 @@ const rarities = Object.freeze({
  *    id: any // TODO
  *  }>,
  *  abilities: {
- *    [key: number | string]: number
+ *    [key: number | string]: number // TODO?
  *  },
  *  moveIds: Array<MoveIdEnum>,
  *  battleEligible: boolean,

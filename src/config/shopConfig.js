@@ -1,12 +1,16 @@
 const { backpackItems } = require("./backpackConfig");
+/* eslint-disable-next-line no-unused-vars */
+const types = require("../../types");
 
-const shopCategories = {
+/** @typedef {types.Enum<shopCategories>} ShopCategoryEnum */
+const shopCategories = Object.freeze({
   GACHA: "0",
   LOCATIONS: "1",
   MATERIALS: "2",
-};
+});
 
-const shopItems = {
+/** @typedef {types.Enum<shopItems>} ShopItemEnum */
+const shopItems = Object.freeze({
   RANDOM_POKEBALL: "0",
   HOME: "1",
   RESTAURANT: "2",
@@ -22,7 +26,7 @@ const shopItems = {
   BERRY_FARM: "12",
   COMPUTER_LAB: "13",
   ILEX_SHRINE: "14",
-};
+});
 
 // training locations
 // exp: home

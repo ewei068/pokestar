@@ -63,7 +63,7 @@ module.exports._typesOnly = true;
  * @property {UserTradeInfo} trade
  *
  * Rewards and time-gated stuff
- * @property {number} lastDaily
+ * @property {number} lastCorrected
  * @property {boolean} claimedDaily
  * @property {object} purchasedShopItemsToday
  * @property {Array<number>} claimedLevelRewards
