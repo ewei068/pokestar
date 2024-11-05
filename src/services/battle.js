@@ -75,67 +75,18 @@ class NPC {
     // this.setPokemon(npcData, difficulty);
   }
 
-  setPokemon(npcData, difficulty) {
-    const npcDifficultyData = npcData.difficulties[difficulty];
+  // eslint trippin dawg
+  // eslint-disable-next-line class-methods-use-this
+  setPokemon() {
+    throw new Error("setPokemon not implemented");
+  }
+
+  initializeParty(rows, cols) {
     this.party = {
-      rows: 3,
-      cols: 4,
-      pokemons: [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-      ],
+      rows,
+      cols,
+      pokemons: Array(rows * cols).fill(null),
     };
-
-    // generate party
-    // generate numPokemon - 1 pokemon, then 1 for the ace
-    const { numPokemon } = npcDifficultyData;
-    const pokemons = [];
-    const pokemonIds = drawIterable(
-      npcDifficultyData.pokemonIds,
-      numPokemon - 1
-    );
-    for (const pokemonId of pokemonIds) {
-      const pokemon = generateRandomPokemon(
-        this.userId,
-        pokemonId,
-        drawUniform(
-          npcDifficultyData.minLevel,
-          npcDifficultyData.maxLevel,
-          1
-        )[0]
-      );
-      // give random id
-      pokemon._id = uuidv4();
-      pokemons.push(pokemon);
-    }
-    // push ace
-    const acePokemon = generateRandomPokemon(
-      this.userId,
-      npcDifficultyData.aceId,
-      npcDifficultyData.maxLevel + 1
-    );
-    acePokemon._id = uuidv4();
-    pokemons.push(acePokemon);
-
-    // put parties in random indices with no overlap
-    let i = 0;
-    while (i < numPokemon) {
-      const index = drawUniform(0, this.party.rows * this.party.cols - 1, 1)[0];
-      if (this.party.pokemons[index] === null) {
-        this.party.pokemons[index] = pokemons[i];
-        i += 1;
-      }
-    }
   }
 
   action(battle) {
@@ -268,6 +219,54 @@ class NPC {
   }
 }
 
+class BasicNPC extends NPC {
+  setPokemon(npcData, difficulty) {
+    const npcDifficultyData = npcData.difficulties[difficulty];
+    this.initializeParty(3, 4);
+
+    // generate party
+    // generate numPokemon - 1 pokemon, then 1 for the ace
+    const { numPokemon } = npcDifficultyData;
+    const pokemons = [];
+    const pokemonIds = drawIterable(
+      npcDifficultyData.pokemonIds,
+      numPokemon - 1
+    );
+    for (const pokemonId of pokemonIds) {
+      const pokemon = generateRandomPokemon(
+        this.userId,
+        pokemonId,
+        drawUniform(
+          npcDifficultyData.minLevel,
+          npcDifficultyData.maxLevel,
+          1
+        )[0]
+      );
+      // give random id
+      pokemon._id = uuidv4();
+      pokemons.push(pokemon);
+    }
+    // push ace
+    const acePokemon = generateRandomPokemon(
+      this.userId,
+      npcDifficultyData.aceId,
+      npcDifficultyData.maxLevel + 1
+    );
+    acePokemon._id = uuidv4();
+    pokemons.push(acePokemon);
+
+    // put parties in random indices with no overlap
+    let i = 0;
+    while (i < numPokemon) {
+      const index = drawUniform(0, this.party.rows * this.party.cols - 1, 1)[0];
+      if (this.party.pokemons[index] === null) {
+        this.party.pokemons[index] = pokemons[i];
+        i += 1;
+      }
+    }
+  }
+}
+
 class DungeonNPC extends NPC {
   constructor(dungeonData, difficulty) {
     super(dungeonData, difficulty);
@@ -279,17 +278,12 @@ class DungeonNPC extends NPC {
     this.user.nextPhase = (battle) => this.nextPhase(battle);
   }
 
-  // eslint-disable-next-line no-unused-vars
-  setPokemon(dungeonData, difficulty) {
+  setPokemon() {
     const phase = this.phases[this.phaseNumber];
     if (phase === undefined) {
       return;
     }
-    this.party = {
-      rows: phase.rows,
-      cols: phase.cols,
-      pokemons: Array(phase.rows * phase.cols).fill(null),
-    };
+    this.initializeParty(phase.rows, phase.cols);
 
     // generate party
     for (const pokemonData of phase.pokemons) {
@@ -310,7 +304,7 @@ class DungeonNPC extends NPC {
     if (this.phaseNumber >= this.phases.length) {
       return false;
     }
-    this.setPokemon(this.dungeonData, this.difficulty);
+    this.setPokemon();
 
     return {
       trainer: this,
@@ -319,7 +313,7 @@ class DungeonNPC extends NPC {
   }
 }
 
-class TowerNPC extends NPC {
+class TowerNPC extends BasicNPC {
   constructor(towerData, difficulty) {
     const npcData = npcConfig[towerData.npcId];
     super(npcData, difficulty);
@@ -327,62 +321,7 @@ class TowerNPC extends NPC {
 
   setPokemon(towerData, difficulty) {
     const npcData = npcConfig[towerData.npcId];
-    const npcDifficultyData = npcData.difficulties[difficulty];
-    this.party = {
-      rows: 3,
-      cols: 4,
-      pokemons: [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-      ],
-    };
-
-    // generate party
-    // generate numPokemon - 1 pokemon, then 1 for the ace
-    const { numPokemon } = npcDifficultyData;
-    const pokemons = [];
-    const pokemonIds = drawIterable(
-      npcDifficultyData.pokemonIds,
-      numPokemon - 1
-    );
-    for (const pokemonId of pokemonIds) {
-      const pokemon = generateRandomPokemon(
-        this.userId,
-        pokemonId,
-        drawUniform(towerData.minLevel, towerData.maxLevel, 1)[0]
-      );
-      // give random id
-      pokemon._id = uuidv4();
-      pokemons.push(pokemon);
-    }
-    // push ace
-    const acePokemon = generateRandomPokemon(
-      this.userId,
-      npcDifficultyData.aceId,
-      towerData.maxLevel + 1
-    );
-    acePokemon._id = uuidv4();
-    pokemons.push(acePokemon);
-
-    // put parties in random indices with no overlap
-    let i = 0;
-    while (i < numPokemon) {
-      const index = drawUniform(0, this.party.rows * this.party.cols - 1, 1)[0];
-      if (this.party.pokemons[index] === null) {
-        this.party.pokemons[index] = pokemons[i];
-        i += 1;
-      }
-    }
+    super.setPokemon(npcData, difficulty);
   }
 }
 
@@ -398,13 +337,7 @@ class RaidNPC extends NPC {
 
   setPokemon(raidData, difficulty) {
     const raidDifficultyData = raidData.difficulties[difficulty];
-    this.party = {
-      rows: raidDifficultyData.rows,
-      cols: raidDifficultyData.cols,
-      pokemons: Array(raidDifficultyData.rows * raidDifficultyData.cols).fill(
-        null
-      ),
-    };
+    this.initializeParty(raidDifficultyData.rows, raidDifficultyData.cols);
 
     // generate party
     for (const pokemonData of raidDifficultyData.pokemons) {
@@ -769,7 +702,7 @@ const buildPveSend = async ({
     }
 
     // add npc to battle
-    const npc = new NPC(npcData, state.difficulty);
+    const npc = new BasicNPC(npcData, state.difficulty);
     npc.setPokemon(npcData, state.difficulty);
     const rewardMultipliers =
       npcDifficultyData.rewardMultipliers ||
