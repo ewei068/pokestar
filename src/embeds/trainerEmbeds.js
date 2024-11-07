@@ -25,7 +25,7 @@ const { locationConfig } = require("../config/locationConfig");
     level
     money
     exp
-    lastDaily (date)
+    lastCorrected (date)
     backpack
 }
 */

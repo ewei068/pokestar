@@ -1,5 +1,3 @@
-module.exports._typesOnly = true;
-
 // TODO: organize this lol
 
 /**
@@ -63,7 +61,7 @@ module.exports._typesOnly = true;
  * @property {UserTradeInfo} trade
  *
  * Rewards and time-gated stuff
- * @property {number} lastDaily
+ * @property {number} lastCorrected
  * @property {boolean} claimedDaily
  * @property {object} purchasedShopItemsToday
  * @property {Array<number>} claimedLevelRewards
@@ -93,6 +91,23 @@ module.exports._typesOnly = true;
  */
 
 /**
+ * @typedef {object} Equipment
+ * @property {number} level
+ * @property {{
+ *  [key in EquipmentModifierSlotEnum]: {
+ *   modifier: EquipmentModifierEnum,
+ *   quality: number
+ *  }
+ * }} slots
+ */
+
+/**
+ * @typedef {{
+ *  [key in EquipmentTypeEnum]: Equipment
+ * }} EquipmentSet
+ */
+
+/**
  * TODO: organize
  * @typedef {object} Pokemon
  * @property {string} userId
@@ -113,7 +128,7 @@ module.exports._typesOnly = true;
  * @property {number} ivTotal
  * @property {string} originalOwner
  * @property {RarityEnum} rarity
- * @property {any} equipments
+ * @property {EquipmentSet} equipments
  * @property {boolean} locked
  * @property {boolean} battleEligible
  */

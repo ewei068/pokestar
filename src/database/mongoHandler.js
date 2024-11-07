@@ -45,6 +45,10 @@ const updateDocuments = async (collectionName, filter, update) => {
 };
 
 /**
+ * @param collectionName
+ * @param filter
+ * @param limit
+ * @param page
  * @deprecated Use query builder instead
  */
 const findDocuments = async (collectionName, filter, limit = 100, page = 0) => {
@@ -65,6 +69,8 @@ const deleteDocuments = async (collectionName, filter) => {
 };
 
 /**
+ * @param collectionName
+ * @param filter
  * @deprecated Use query builder instead
  */
 const countDocuments = async (collectionName, filter) => {
@@ -168,6 +174,9 @@ class QueryBuilder {
     return await query;
   }
 
+  /**
+   * @returns {Promise<import('mongodb').InsertManyResult<Document>>}
+   */
   async insertMany() {
     let query = await getCollection(this.collectionName);
     query = query.insertMany(this.documents);

@@ -1,4 +1,5 @@
-const eventNames = {
+/** @typedef {Enum<eventNames>} EventNameEnum */
+const eventNames = Object.freeze({
   POKEMON_SCROLL: "pokemonScroll",
   POKEMON_RELEASE: "pokemonRelease",
   POKEMON_LIST_SELECT: "pokemonSelect",
@@ -52,7 +53,7 @@ const eventNames = {
   TUTORIAL_BUTTON: "tutorialButton",
   BACK: "back",
   POKEMON_ID_SELECT: "pokemonIdSelect",
-};
+});
 
 const eventConfig = {
   [eventNames.POKEMON_SCROLL]: {

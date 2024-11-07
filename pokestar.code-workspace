@@ -11,7 +11,8 @@
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "always"
     },
-    "eslint.validate": ["javascript"]
+    "eslint.validate": ["javascript"],
+    "typescript.tsdk": "node_modules/typescript/lib"
   },
   "extensions": {
     "recommendations": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]

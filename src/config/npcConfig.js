@@ -9,7 +9,8 @@ const { rarities, rarityBins } = require("./pokemonConfig");
 const { drawIterable } = require("../utils/gachaUtils");
 const { stageNames } = require("./stageConfig");
 
-const npcs = {
+/** @typedef {Enum<npcs>} NpcEnum */
+const npcs = Object.freeze({
   BUG_CATCHER: "bugCatcher",
   YOUNGSTER: "youngster",
   LASS: "lass",
@@ -29,20 +30,21 @@ const npcs = {
   // STRAW_HATS: "strawHats",
   // TEAM_ROCKET: "teamRocket",
   // GOLD_RUSH: "goldRush",
-};
+});
 
-const difficulties = {
+/** @typedef {Enum<difficulties>} NpcDifficultyEnum */
+const difficulties = Object({
   VERY_EASY: "veryEasy",
   EASY: "easy",
   MEDIUM: "medium",
   HARD: "hard",
   VERY_HARD: "veryHard",
-};
+});
 
 // seed in case of changing days
 const seed = getFullUTCDate();
 
-const npcConfig = {
+const npcConfig = Object.freeze({
   [npcs.BUG_CATCHER]: {
     name: "Bug Catcher",
     sprite:
@@ -706,9 +708,9 @@ const npcConfig = {
             },
         }
     },      */
-};
+});
 
-const battleTowerConfig = {
+const battleTowerConfig = Object.freeze({
   1: {
     npcId: npcs.BUG_CATCHER,
     difficulty: difficulties.HARD,
@@ -1013,23 +1015,24 @@ const battleTowerConfig = {
       },
     },
   },
-};
+});
 
 // TEMP: 2x money
 for (const towerData of Object.values(battleTowerConfig)) {
   towerData.rewards.money *= 2;
 }
 
-const dungeons = {
+/** @typedef {Enum<dungeons>} DungeonEnum */
+const dungeons = Object.freeze({
   MIND_TEMPLE: "mindTemple",
   SOUL_CAVE: "soulCave",
   SPIRIT_ALTAR: "spiritAltar",
   NEW_ISLAND: "newIsland",
   // ONIGASHIMA: "onigashima",
   // BLOODY_SUNDAY: "bloodySunday",
-};
+});
 
-const dungeonConfig = {
+const dungeonConfig = Object.freeze({
   [dungeons.MIND_TEMPLE]: {
     name: "Mind Temple",
     sprite:
@@ -2332,16 +2335,17 @@ const dungeonConfig = {
             },
         },
     }, */
-};
+});
 
-const raids = {
+/** @typedef {Enum<raids>} RaidEnum */
+const raids = Object.freeze({
   ARMORED_MEWTWO: "armoredMewtwoRaid",
   SHADOW_LUGIA: "shadowLugiaRaid",
-};
+});
 
 const SHINY_CHANCE = 0.0033; // process.env.STAGE === stageNames.ALPHA ? 0.8 : 0.0033;
 
-const raidConfig = {
+const raidConfig = Object.freeze({
   [raids.ARMORED_MEWTWO]: {
     name: "Armored Mewtwo",
     sprite:
@@ -2444,9 +2448,9 @@ const raidConfig = {
       },
     },
   },
-};
+});
 
-const difficultyConfig = {
+const difficultyConfig = Object.freeze({
   [difficulties.VERY_EASY]: {
     name: "Very Easy",
     rewardMultipliers: {
@@ -2487,7 +2491,7 @@ const difficultyConfig = {
       pokemonExpMultiplier: 0.25,
     },
   },
-};
+});
 
 module.exports = {
   npcs,

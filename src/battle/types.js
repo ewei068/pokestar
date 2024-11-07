@@ -1,6 +1,6 @@
 /**
- * @typedef {import("../services/battle").Battle} Battle
- * @typedef {import("../services/battle").Pokemon} BattlePokemon
+ * @typedef {import("./engine/Battle").Battle} Battle
+ * @typedef {import("./engine/BattlePokemon").BattlePokemon} BattlePokemon
  */
 
 /**

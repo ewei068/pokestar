@@ -1,14 +1,12 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * pvp.js is the encapsulating program for the PVP system.
  */
 const { getTrainerInfo } = require("../../services/trainer");
 const { validateParty } = require("../../services/party");
-const { Battle } = require("../../services/battle");
+const { Battle } = require("../../battle/engine/Battle");
 const { setState } = require("../../services/state");
 const { buildButtonActionRow } = require("../../components/buttonActionRow");
 const { buildTrainerEmbed } = require("../../embeds/trainerEmbeds");
@@ -20,7 +18,7 @@ const { getUserId } = require("../../utils/utils");
  * @param {*} user the user given to get the relevant data from.
  * @param {*} opponentUserId the user you want to battle.
  * @param {*} level the balancing level of the battle for both team's pokemon.
- * @returns Error or message to send.
+ * @returns {Promise<any>} Error or message to send.
  */
 const pvp = async (user, opponentUserId, level) => {
   // if opponent user ID equals user ID, return error

@@ -1,6 +1,4 @@
 const { logger } = require("../../log");
-// eslint-disable-next-line no-unused-vars
-const types = require("../../../types");
 
 const allMoves = {};
 
@@ -56,7 +54,7 @@ const getMove = (moveId) => allMoves[moveId];
  * @param {object} param0
  * @param {Record<string, any>=} param0.fieldFilter
  * @param {Function=} param0.customFilter
- * @returns {types.PartialRecord<MoveIdEnum, Move>}
+ * @returns {PartialRecord<MoveIdEnum, Move>}
  */
 const getMoves = ({ fieldFilter, customFilter }) => {
   if (customFilter) {
@@ -97,54 +95,10 @@ const getMoveIds = ({ fieldFilter, customFilter }) => {
   return Object.keys(moves);
 };
 
-/**
- * @param {object} param0
- * @param {MoveIdEnum} param0.moveId
- * @param {object} param0.battle
- * @param {object} param0.source
- * @param {object} param0.primaryTarget
- * @param {Array<object>} param0.allTargets
- * @param {Array<object>=} param0.missedTargets
- */
-const executeMove = ({
-  moveId,
-  battle,
-  source,
-  primaryTarget,
-  allTargets,
-  missedTargets = [],
-}) => {
-  const move = getMove(moveId);
-  if (!move) {
-    logger.error(`Move ${moveId} not found.`);
-    return;
-  }
-
-  if (!move.isLegacyMove) {
-    move.execute({
-      battle,
-      source,
-      primaryTarget,
-      allTargets,
-      missedTargets,
-    });
-  } else {
-    const legacyMove = /** @type {any} */ (move);
-    legacyMove.execute(
-      battle,
-      source,
-      primaryTarget,
-      allTargets,
-      missedTargets
-    );
-  }
-};
-
 module.exports = {
   registerMoves,
   registerLegacyMoves,
   getMove,
   getMoves,
   getMoveIds,
-  executeMove,
 };

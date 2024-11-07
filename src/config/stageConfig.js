@@ -1,3 +1,4 @@
+/** @typedef {Enum<stageNames>} StageEnum */
 const stageNames = {
   ALPHA: "ALPHA",
   BETA: "BETA",

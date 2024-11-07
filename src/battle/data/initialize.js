@@ -1,6 +1,6 @@
 // @ts-nocheck
 // TODO: remove ts-nocheck when all moves, effects, abilities, and events are migrated
-const { registerMoves, registerLegacyMoves } = require("./moveService");
+const { registerMoves, registerLegacyMoves } = require("./moveRegistry");
 const { registerEffects, registerLegacyEffects } = require("./effectRegistry");
 const { effectsToRegister } = require("./effects");
 const {

@@ -12,6 +12,7 @@ const {
   updateDocument,
   deleteDocuments,
   QueryBuilder,
+  countDocuments,
 } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { getOrSetDefault, idFrom, formatMoney } = require("../utils/utils");
@@ -23,7 +24,11 @@ const {
   rarities,
   rarityConfig,
 } = require("../config/pokemonConfig");
-const { expMultiplier, MAX_RELEASE } = require("../config/trainerConfig");
+const {
+  expMultiplier,
+  MAX_RELEASE,
+  MAX_POKEMON,
+} = require("../config/trainerConfig");
 const {
   getPokemonExpNeeded,
   calculateEffectiveSpeed,
@@ -70,6 +75,7 @@ const { drawIterable, drawUniform } = require("../utils/gachaUtils");
 const { partyAddRow } = require("../components/partyAddRow");
 const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
 const { buildEquipmentSelectRow } = require("../components/equipmentSelectRow");
+const { stageNames } = require("../config/stageConfig");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
@@ -1866,6 +1872,36 @@ const buildNatureSend = async ({ stateId = null, user = null } = {}) => {
   return { send, err: null };
 };
 
+const checkNumPokemon = async (trainer, quantity) => {
+  let pokemonLimit = MAX_POKEMON;
+  // if trainer has computer lab locations, increase pokemon limit
+  const labLevel = trainer.locations[locations.COMPUTER_LAB];
+  if (labLevel) {
+    pokemonLimit =
+      locationConfig[locations.COMPUTER_LAB].levelConfig[labLevel].storage;
+  }
+
+  // check for max pokemon
+  try {
+    const numPokemon = await countDocuments(collectionNames.USER_POKEMON, {
+      userId: trainer.userId,
+    });
+    if (
+      numPokemon + quantity > pokemonLimit &&
+      process.env.STAGE !== stageNames.ALPHA
+    ) {
+      return {
+        err: "Max pokemon reached! Use `/release` or `/list` to release some pokemon, or get more storage by purchasing the Computer Lab location in the `/pokemart`!",
+      };
+    }
+  } catch (error) {
+    logger.error(error);
+    return { err: "Error checking max Pokemon." };
+  }
+
+  return { err: null };
+};
+
 module.exports = {
   updatePokemon,
   listPokemons,
@@ -1886,6 +1922,7 @@ module.exports = {
   upgradeEquipmentLevel,
   rerollStatSlot,
   getPokemonOwnershipStats,
+  checkNumPokemon,
   buildPokemonInfoSend,
   buildPokemonAllInfoSend,
   buildPokedexSend,
