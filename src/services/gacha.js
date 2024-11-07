@@ -1,5 +1,8 @@
 // TODO: can probably fix
 /* eslint-disable no-param-reassign */
+
+// TODO: should i move a bunch of this stuff out of here?
+
 /**
  * @file
  * @author Elvis Wei
@@ -26,11 +29,7 @@ const {
   rarities,
 } = require("../config/pokemonConfig");
 const { collectionNames } = require("../config/databaseConfig");
-const {
-  updateDocument,
-  countDocuments,
-  QueryBuilder,
-} = require("../database/mongoHandler");
+const { updateDocument, QueryBuilder } = require("../database/mongoHandler");
 const { stageNames } = require("../config/stageConfig");
 const {
   drawDiscrete,
@@ -38,7 +37,6 @@ const {
   drawUniform,
 } = require("../utils/gachaUtils");
 const {
-  MAX_POKEMON,
   trainerFields,
   NUM_DAILY_SHARDS,
   NUM_DAILY_REWARDS,
@@ -48,7 +46,11 @@ const { getState } = require("./state");
 
 const { logger } = require("../log");
 const { getOrSetDefault } = require("../utils/utils");
-const { calculatePokemonStats, getBattleEligible } = require("./pokemon");
+const {
+  calculatePokemonStats,
+  getBattleEligible,
+  checkNumPokemon,
+} = require("./pokemon");
 const { getPokemonExpNeeded } = require("../utils/pokemonUtils");
 const { buildBannerEmbed } = require("../embeds/pokemonEmbeds");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
@@ -56,7 +58,6 @@ const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { addItems } = require("../utils/trainerUtils");
 const { equipmentConfig } = require("../config/equipmentConfig");
-const { locationConfig, locations } = require("../config/locationConfig");
 
 const DAILY_MONEY = process.env.STAGE === stageNames.ALPHA ? 100000 : 300;
 
@@ -293,36 +294,6 @@ const beginnerRoll = (trainer, quantity) => {
   return rolls;
 };
 
-const checkNumPokemon = async (trainer, quantity) => {
-  let pokemonLimit = MAX_POKEMON;
-  // if trainer has computer lab locations, increase pokemon limit
-  const labLevel = trainer.locations[locations.COMPUTER_LAB];
-  if (labLevel) {
-    pokemonLimit =
-      locationConfig[locations.COMPUTER_LAB].levelConfig[labLevel].storage;
-  }
-
-  // check for max pokemon
-  try {
-    const numPokemon = await countDocuments(collectionNames.USER_POKEMON, {
-      userId: trainer.userId,
-    });
-    if (
-      numPokemon + quantity > pokemonLimit &&
-      process.env.STAGE !== stageNames.ALPHA
-    ) {
-      return {
-        err: "Max pokemon reached! Use `/release` or `/list` to release some pokemon, or get more storage by purchasing the Computer Lab location in the `/pokemart`!",
-      };
-    }
-  } catch (error) {
-    logger.error(error);
-    return { err: "Error checking max Pokemon." };
-  }
-
-  return { err: null };
-};
-
 const usePokeball = async (trainer, pokeballId, bannerIndex, quantity = 1) => {
   // validate quantity
   if (quantity < 1 || quantity > 10) {
@@ -466,9 +437,9 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity = 1) => {
 };
 
 /**
- * @param {Object} param0
+ * @param {object} param0
  * @param {number?=} param0.stateId
- * @param {Object?=} param0.user
+ * @param {object?=} param0.user
  * @param {number?=} param0.page
  * @returns
  */
@@ -621,6 +592,5 @@ module.exports = {
   giveNewPokemons,
   usePokeball,
   generateRandomPokemon,
-  checkNumPokemon,
   buildBannerSend,
 };

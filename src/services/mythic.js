@@ -34,16 +34,13 @@ const { logger } = require("../log");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
 const { drawDiscrete, drawIterable } = require("../utils/gachaUtils");
 const { getItems, removeItems } = require("../utils/trainerUtils");
-const {
-  generateRandomPokemon,
-  checkNumPokemon,
-  giveNewPokemons,
-} = require("./gacha");
+const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
 const {
   listPokemons,
   getPokemon,
   calculatePokemonStats,
   calculateAndUpdatePokemonStats,
+  checkNumPokemon,
 } = require("./pokemon");
 const { getTrainer, updateTrainer } = require("./trainer");
 const { getMoves } = require("../battle/data/moveRegistry");
