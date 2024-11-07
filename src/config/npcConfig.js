@@ -8,10 +8,8 @@ const { getFullUTCDate } = require("../utils/utils");
 const { rarities, rarityBins } = require("./pokemonConfig");
 const { drawIterable } = require("../utils/gachaUtils");
 const { stageNames } = require("./stageConfig");
-/* eslint-disable-next-line no-unused-vars */
-const types = require("../../types");
 
-/** @typedef {types.Enum<npcs>} NpcEnum */
+/** @typedef {Enum<npcs>} NpcEnum */
 const npcs = Object.freeze({
   BUG_CATCHER: "bugCatcher",
   YOUNGSTER: "youngster",
@@ -34,7 +32,7 @@ const npcs = Object.freeze({
   // GOLD_RUSH: "goldRush",
 });
 
-/** @typedef {types.Enum<difficulties>} NpcDifficultyEnum */
+/** @typedef {Enum<difficulties>} NpcDifficultyEnum */
 const difficulties = Object({
   VERY_EASY: "veryEasy",
   EASY: "easy",
@@ -1024,7 +1022,7 @@ for (const towerData of Object.values(battleTowerConfig)) {
   towerData.rewards.money *= 2;
 }
 
-/** @typedef {types.Enum<dungeons>} DungeonEnum */
+/** @typedef {Enum<dungeons>} DungeonEnum */
 const dungeons = Object.freeze({
   MIND_TEMPLE: "mindTemple",
   SOUL_CAVE: "soulCave",
@@ -2339,7 +2337,7 @@ const dungeonConfig = Object.freeze({
     }, */
 });
 
-/** @typedef {types.Enum<raids>} RaidEnum */
+/** @typedef {Enum<raids>} RaidEnum */
 const raids = Object.freeze({
   ARMORED_MEWTWO: "armoredMewtwoRaid",
   SHADOW_LUGIA: "shadowLugiaRaid",

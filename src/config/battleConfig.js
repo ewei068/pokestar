@@ -4,7 +4,6 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-param-reassign */
 const { types: pokemonTypes } = require("./pokemonConfig");
-const types = require("../../types");
 const { getMove, getMoveIds } = require("../battle/data/moveRegistry");
 const { getEffect } = require("../battle/data/effectRegistry");
 const { battleEventEnum } = require("../enums/battleEnums");
@@ -12,14 +11,14 @@ const {
   getIsActivePokemonCallback,
 } = require("../battle/engine/eventConditions");
 
-/** @typedef {types.Enum<damageTypes>} DamageTypeEnum */
+/** @typedef {Enum<damageTypes>} DamageTypeEnum */
 const damageTypes = Object.freeze({
   PHYSICAL: "Physical",
   SPECIAL: "Special",
   OTHER: "Other",
 });
 
-/** @typedef {types.Enum<moveTiers>} MoveTierEnum */
+/** @typedef {Enum<moveTiers>} MoveTierEnum */
 const moveTiers = Object.freeze({
   BASIC: "Basic",
   POWER: "Power",
@@ -209,7 +208,7 @@ const typeAdvantages = {
 };
 
 // unqiue status conditions
-/** @typedef {types.Enum<statusConditions>} StatusConditionEnum */
+/** @typedef {Enum<statusConditions>} StatusConditionEnum */
 const statusConditions = {
   BURN: "Burn",
   FREEZE: "Freeze",
@@ -266,13 +265,13 @@ const calculateDamage = (
     moveTypeOverride: moveType,
   });
 
-/** @typedef {types.Enum<targetTypes>} TargetTypeEnum */
+/** @typedef {Enum<targetTypes>} TargetTypeEnum */
 const targetTypes = Object.freeze({
   ALLY: "Ally",
   ENEMY: "Enemy",
   ANY: "Any",
 });
-/** @typedef {types.Enum<targetPositions>} TargetPositionEnum */
+/** @typedef {Enum<targetPositions>} TargetPositionEnum */
 const targetPositions = Object.freeze({
   SELF: "Self",
   NON_SELF: "Non-self",
@@ -280,7 +279,7 @@ const targetPositions = Object.freeze({
   FRONT: "Front",
   BACK: "Back",
 });
-/** @typedef {types.Enum<targetPatterns>} TargetPatternEnum */
+/** @typedef {Enum<targetPatterns>} TargetPatternEnum */
 const targetPatterns = Object.freeze({
   SINGLE: "Single",
   ALL: "All",
@@ -292,14 +291,14 @@ const targetPatterns = Object.freeze({
   CROSS: "Cross",
 });
 
-/** @typedef {types.Enum<effectTypes>} EffectTypeEnum */
+/** @typedef {Enum<effectTypes>} EffectTypeEnum */
 const effectTypes = Object.freeze({
   BUFF: "Buff",
   DEBUFF: "Debuff",
   NEUTRAL: "Neutral",
 });
 
-/** @typedef {types.Keys<effectConfig>} LegacyEffectIdEnum */
+/** @typedef {Keys<effectConfig>} LegacyEffectIdEnum */
 const effectConfig = Object.freeze({
   greaterAtkUp: {
     name: "Greater Atk. Up",
@@ -2397,7 +2396,7 @@ const effectConfig = Object.freeze({
   },
 });
 
-/** @typedef{types.Keys<moveConfig>} LegacyMoveIdEnum */
+/** @typedef {Keys<moveConfig>} LegacyMoveIdEnum */
 const moveConfig = Object.freeze({
   m6: {
     name: "Pay Day",
@@ -11965,7 +11964,7 @@ const moveExecutes = {
  * @param {BattlePokemon} target
  */
 
-/** @typedef {types.Keys<typeof abilityConfig>} LegacyAbilityIdEnum */
+/** @typedef {Keys<typeof abilityConfig>} LegacyAbilityIdEnum */
 
 /**
  * @satisfies {Record<string | number | symbol, {

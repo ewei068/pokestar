@@ -1,5 +1,3 @@
-module.exports._typesOnly = true;
-
 // TODO: organize this lol
 
 /**

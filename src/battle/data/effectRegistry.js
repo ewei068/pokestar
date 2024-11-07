@@ -1,8 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 const { effectIdEnum } = require("../../enums/battleEnums"); // TODO: remove after testing
 const { logger } = require("../../log");
-// eslint-disable-next-line no-unused-vars
-const types = require("../../../types");
 
 const allEffects = {};
 
@@ -52,7 +50,7 @@ const getEffect = (effectId) =>
  * @param {object} param0
  * @param {Record<string, any>=} param0.fieldFilter
  * @param {Function=} param0.customFilter
- * @returns {types.PartialRecord<EffectIdEnum, Effect<any, any>>}
+ * @returns {PartialRecord<EffectIdEnum, Effect<any, any>>}
  */
 const getEffects = ({ fieldFilter, customFilter }) => {
   if (customFilter) {

@@ -8,8 +8,6 @@ const {
 } = require("./pokemonConfig");
 const { drawIterable } = require("../utils/gachaUtils");
 const { getFullUTCDate } = require("../utils/utils");
-/* eslint-disable-next-line no-unused-vars */
-const types = require("../../types");
 
 const dailyRewardChances = Object.freeze({
   [backpackItems.POKEBALL]: 0.7,
@@ -54,7 +52,7 @@ const pokeballConfig = Object.freeze({
   },
 });
 
-/** @typedef {types.Enum<bannerTypes>} BannerTypeEnum */
+/** @typedef {Enum<bannerTypes>} BannerTypeEnum */
 const bannerTypes = Object.freeze({
   STANDARD: "standard",
   ROTATING: "rotating",

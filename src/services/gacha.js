@@ -134,6 +134,10 @@ const drawDaily = async (trainer) => {
   return { data: rv, err: null };
 };
 
+/**
+ * @param {number} equipmentLevel
+ * @returns
+ */
 const generateRandomEquipments = (equipmentLevel = 1) => {
   const equipments = {};
   for (const equipmentType in equipmentConfig) {

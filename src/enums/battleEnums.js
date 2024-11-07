@@ -1,9 +1,6 @@
-// eslint-disable-next-line no-unused-vars
-const types = require("../../types");
-
 /**
  * @typedef {import("../config/battleConfig").LegacyEffectIdEnum} LegacyEffectIdEnum
- * @typedef {types.Enum<effectIdEnum>} NewEffectIdEnum
+ * @typedef {Enum<effectIdEnum>} NewEffectIdEnum
  * @typedef {LegacyEffectIdEnum | NewEffectIdEnum} EffectIdEnum
  */
 const effectIdEnum = Object.freeze({
@@ -14,7 +11,7 @@ const effectIdEnum = Object.freeze({
 
 /**
  * @typedef {import("../config/battleConfig").LegacyMoveIdEnum} LegacyMoveIdEnum
- * @typedef {types.Enum<moveIdEnum>} NewMoveIdEnum
+ * @typedef {Enum<moveIdEnum>} NewMoveIdEnum
  * @typedef {LegacyMoveIdEnum | NewMoveIdEnum} MoveIdEnum
  */
 const moveIdEnum = Object.freeze({
@@ -25,7 +22,7 @@ const moveIdEnum = Object.freeze({
 
 /**
  * @typedef {import("../config/battleConfig").LegacyAbilityIdEnum} LegacyAbilityIdEnum
- * @typedef {types.Enum<abilityIdEnum>} NewAbilityIdEnum
+ * @typedef {Enum<abilityIdEnum>} NewAbilityIdEnum
  * @typedef {LegacyAbilityIdEnum | NewAbilityIdEnum} AbilityIdEnum
  */
 const abilityIdEnum = Object.freeze({
@@ -33,7 +30,7 @@ const abilityIdEnum = Object.freeze({
   REGENERATOR: "144",
 });
 
-/** @typedef {types.Enum<battleEventEnum>} BattleEventEnum */
+/** @typedef {Enum<battleEventEnum>} BattleEventEnum */
 const battleEventEnum = Object.freeze({
   BATTLE_BEGIN: "battleStart",
   TURN_END: "turnEnd",

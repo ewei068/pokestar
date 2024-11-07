@@ -1,9 +1,7 @@
 const { backpackItems } = require("./backpackConfig");
 const { stats } = require("./pokemonConfig");
-/* eslint-disable-next-line */
-const types = require("../../types");
 
-/** @typedef {types.Enum<modifiers>} EquipmentModifierEnum */
+/** @typedef {Enum<modifiers>} EquipmentModifierEnum */
 
 const modifiers = Object.freeze({
   BASE_HP: "baseHp",
@@ -26,7 +24,7 @@ const modifiers = Object.freeze({
   FLAT_SPE: "flatSpe",
 });
 
-/** @typedef {types.Enum<modifierTypes>} EquipmentModifierTypeEnum */
+/** @typedef {Enum<modifierTypes>} EquipmentModifierTypeEnum */
 
 const modifierTypes = Object.freeze({
   BASE: "base",
@@ -181,7 +179,7 @@ const modifierConfig = Object.freeze({
   },
 });
 
-/** @typedef {types.Enum<modifierSlots>} EquipmentModifierSlotEnum */
+/** @typedef {Enum<modifierSlots>} EquipmentModifierSlotEnum */
 const modifierSlots = Object.freeze({
   PRIMARY: "primary",
   SECONDARY: "secondary",
@@ -223,7 +221,7 @@ const modifierSlotConfig = Object.freeze({
   },
 });
 
-/** @typedef {types.Enum<equipmentTypes>} EquipmentTypeEnum */
+/** @typedef {Enum<equipmentTypes>} EquipmentTypeEnum */
 
 const equipmentTypes = Object.freeze({
   POWER_WEIGHT: "powerWeight",

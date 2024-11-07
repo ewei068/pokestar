@@ -1,7 +1,4 @@
-/* eslint-disable-next-line no-unused-vars */
-const types = require("../../types");
-
-/** @typedef {types.Enum<stageNames>} StageEnum */
+/** @typedef {Enum<stageNames>} StageEnum */
 const stageNames = {
   ALPHA: "ALPHA",
   BETA: "BETA",

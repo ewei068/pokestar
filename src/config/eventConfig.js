@@ -1,7 +1,4 @@
-/* eslint-disable-next-line no-unused-vars */
-const types = require("../../types");
-
-/** @typedef {types.Enum<eventNames>} EventNameEnum */
+/** @typedef {Enum<eventNames>} EventNameEnum */
 const eventNames = Object.freeze({
   POKEMON_SCROLL: "pokemonScroll",
   POKEMON_RELEASE: "pokemonRelease",

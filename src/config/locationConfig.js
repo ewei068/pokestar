@@ -1,7 +1,4 @@
-/* eslint-disable-next-line no-unused-vars */
-const types = require("../../types");
-
-/** @typedef {types.Enum<locations>} LocationEnum */
+/** @typedef {Enum<locations>} LocationEnum */
 const locations = Object.freeze({
   HOME: "0",
   RESTAURANT: "1",

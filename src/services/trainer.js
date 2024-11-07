@@ -20,13 +20,7 @@ const {
   levelConfig,
 } = require("../config/trainerConfig");
 const { logger } = require("../log");
-const {
-  getFullUTCDate,
-  formatMoney,
-  getFullUTCFortnight,
-  getFullUTCWeek,
-  getFullUTCTimeInterval,
-} = require("../utils/utils");
+const { formatMoney, getFullUTCTimeInterval } = require("../utils/utils");
 const {
   backpackItems,
   backpackCategories,
@@ -38,7 +32,7 @@ const {
   getBackpackItemsString,
 } = require("../utils/trainerUtils");
 const { getVoteMultiplier } = require("../config/socialConfig");
-const types = require("../../types");
+
 /* 
 "user": {
     "username": "Mason",
@@ -78,10 +72,9 @@ const initTrainer = async (user) => {
 const getTrainerFromId = async (userId) => {
   try {
     // check if trainer exists
-    const trainers =
-      /** @type{Array<import("mongodb").WithId<types.Trainer>>} */ (
-        await findDocuments(collectionNames.USERS, { userId })
-      );
+    const trainers = /** @type {Array<import("mongodb").WithId<Trainer>>} */ (
+      await findDocuments(collectionNames.USERS, { userId })
+    );
     if (trainers.length === 0) {
       return { data: null, err: "Error finding trainer." };
     }
@@ -113,7 +106,7 @@ const getTrainer = async (discordUser, refresh = true) => {
   try {
     // check if trainer exists
     trainers =
-      /** @type{Array<import("mongodb").WithId<types.Trainer>>} */
+      /** @type {Array<import("mongodb").WithId<Trainer>>} */
       (await findDocuments(collectionNames.USERS, { userId: user.id }));
   } catch (error) {
     logger.error(error);
@@ -123,7 +116,7 @@ const getTrainer = async (discordUser, refresh = true) => {
   let trainer;
   if (trainers.length === 0) {
     try {
-      trainer = /** @type{types.Trainer} */ (await initTrainer(user));
+      trainer = /** @type {Trainer} */ (await initTrainer(user));
       if (trainer === null) {
         return { data: null, err: "Error creating trainer." };
       }

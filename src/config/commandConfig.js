@@ -1,10 +1,8 @@
 const { stageNames, stageConfig } = require("./stageConfig");
-/* eslint-disable no-unused-vars */
-const types = require("../../types");
 
 const { prefix } = stageConfig[process.env.STAGE];
 
-/** @typedef {types.Keys<commandCategoryConfig>} CommandCategoryEnum */
+/** @typedef {Keys<commandCategoryConfig>} CommandCategoryEnum */
 
 // TODO: re-order commands and categories
 // TODO: add long descriptions
@@ -100,7 +98,7 @@ const commandCategoryConfig = Object.freeze({
   },
 });
 
-/** @typedef {types.Keys<commandConfig>} CommandEnum */
+/** @typedef {Keys<commandConfig>} CommandEnum */
 
 /**
  * @satisfies {Record<string, {

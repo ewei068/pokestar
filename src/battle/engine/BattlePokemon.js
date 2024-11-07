@@ -2,8 +2,6 @@
 // TODO: probably fix both
 /* eslint-disable no-param-reassign */
 
-/* eslint-disable-next-line no-unused-vars */
-const types = require("../../../types");
 const {
   pokemonConfig,
   types: pokemonTypes,
@@ -126,7 +124,7 @@ class BattlePokemon {
     [this.type1 = null, this.type2 = null] = this.speciesData.type;
     // map effectId => effect data (duration, args)
     /**
-     * @type {types.PartialRecord<EffectIdEnum, any>}
+     * @type {PartialRecord<EffectIdEnum, any>}
      */
     this.effectIds = {};
     // map moveId => move data (cooldown, disabled)

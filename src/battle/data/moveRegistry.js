@@ -1,6 +1,4 @@
 const { logger } = require("../../log");
-// eslint-disable-next-line no-unused-vars
-const types = require("../../../types");
 
 const allMoves = {};
 
@@ -56,7 +54,7 @@ const getMove = (moveId) => allMoves[moveId];
  * @param {object} param0
  * @param {Record<string, any>=} param0.fieldFilter
  * @param {Function=} param0.customFilter
- * @returns {types.PartialRecord<MoveIdEnum, Move>}
+ * @returns {PartialRecord<MoveIdEnum, Move>}
  */
 const getMoves = ({ fieldFilter, customFilter }) => {
   if (customFilter) {

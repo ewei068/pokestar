@@ -1,8 +1,6 @@
-/* eslint-disable-next-line no-unused-vars */
-const jsTypes = require("../../types");
 const { moveIdEnum } = require("../enums/battleEnums");
 
-/** @typedef {jsTypes.Enum<types>} PokemonTypeEnum */
+/** @typedef {Enum<types>} PokemonTypeEnum */
 const types = Object.freeze({
   NORMAL: 0,
   FIGHTING: 1,
@@ -139,7 +137,7 @@ const typeConfig = {
   19: { name: "Shadow", color: "#705848", id: 19, emoji: "⬛" },
 };
 
-/** @typedef {jsTypes.Keys<natureConfig>} NatureEnum */
+/** @typedef {Keys<natureConfig>} NatureEnum */
 const natureConfig = Object.freeze({
   0: {
     name: "Hardy",
@@ -264,7 +262,7 @@ const natureConfig = Object.freeze({
   },
 });
 
-/** @typedef {jsTypes.Enum<stats>} StatEnum */
+/** @typedef {Enum<stats>} StatEnum */
 const stats = Object.freeze({
   HP: 0,
   ATTACK: 1,
@@ -283,7 +281,7 @@ const statConfig = {
   5: { name: "Spe", emoji: "🏃", description: "Speed" },
 };
 
-/** @typedef {jsTypes.Enum<growthRates>} GrowthRateEnum */
+/** @typedef {Enum<growthRates>} GrowthRateEnum */
 const growthRates = Object.freeze({
   ERRATIC: 0,
   FAST: 1,
@@ -334,7 +332,7 @@ const growthRateConfig = {
   },
 };
 
-/** @typedef {jsTypes.Enum<rarities>} RarityEnum */
+/** @typedef {Enum<rarities>} RarityEnum */
 const rarities = Object.freeze({
   COMMON: "Common",
   RARE: "Rare",
@@ -343,7 +341,7 @@ const rarities = Object.freeze({
   MYTHICAL: "Mythical",
 });
 
-/** @typedef {jsTypes.Keys<pokemonConfigRaw>} PokemonIdEnum */
+/** @typedef {Keys<pokemonConfigRaw>} PokemonIdEnum */
 
 /**
  * @satisfies {{[key: string | number]: {
