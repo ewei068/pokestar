@@ -6,8 +6,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * gacha.js handles all basic gacha logic, draws, dailies etc.
  */
@@ -160,6 +158,16 @@ const generateRandomEquipments = (equipmentLevel = 1) => {
   return equipments;
 };
 
+/**
+ * @param {string} userId
+ * @param {string} pokemonId
+ * @param {number=} level
+ * @param {object} options
+ * @param {number?=} options.equipmentLevel
+ * @param {boolean?=} options.isShiny
+ * @param {boolean?=} options.betterIvs
+ * @returns {Pokemon}
+ */
 const generateRandomPokemon = (
   userId,
   pokemonId,
@@ -221,9 +229,17 @@ const generateRandomPokemon = (
   // get battle eligible
   pokemon.battleEligible = getBattleEligible(pokemonConfig, pokemon);
 
+  // @ts-ignore
   return pokemon;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {Array<string>} pokemonIds
+ * @param {number=} level
+ * @param {any} options
+ * @returns {Promise<{data?: { pokemons: Array<import("mongodb").WithId<Pokemon>> }, err?: any}>}
+ */
 const giveNewPokemons = async (
   trainer,
   pokemonIds,
@@ -255,14 +271,19 @@ const giveNewPokemons = async (
 
     // for each pokemon, add their _id
     for (let i = 0; i < pokemons.length; i += 1) {
+      // @ts-ignore
       pokemons[i]._id = res.insertedIds[i];
     }
 
     const rv = {
-      pokemons,
+      // @ts-ignore
+      /** @type {Array<import("mongodb").WithId<Pokemon>>} */ pokemons,
     };
 
-    return { data: rv, err: null };
+    return {
+      data: rv,
+      err: null,
+    };
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error drawing Pokemon." };
@@ -445,7 +466,7 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity = 1) => {
  * @param {number?=} param0.stateId
  * @param {object?=} param0.user
  * @param {number?=} param0.page
- * @returns
+ * @returns {Promise<any>}
  */
 const buildBannerSend = async ({
   stateId = null,
