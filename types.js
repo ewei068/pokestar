@@ -91,6 +91,23 @@
  */
 
 /**
+ * @typedef {object} Equipment
+ * @property {number} level
+ * @property {{
+ *  [key in EquipmentModifierSlotEnum]: {
+ *   modifier: EquipmentModifierEnum,
+ *   quality: number
+ *  }
+ * }} slots
+ */
+
+/**
+ * @typedef {{
+ *  [key in EquipmentTypeEnum]: Equipment
+ * }} EquipmentSet
+ */
+
+/**
  * TODO: organize
  * @typedef {object} Pokemon
  * @property {string} userId
@@ -111,7 +128,7 @@
  * @property {number} ivTotal
  * @property {string} originalOwner
  * @property {RarityEnum} rarity
- * @property {any} equipments
+ * @property {EquipmentSet} equipments
  * @property {boolean} locked
  * @property {boolean} battleEligible
  */

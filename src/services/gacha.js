@@ -136,18 +136,18 @@ const drawDaily = async (trainer) => {
 
 /**
  * @param {number} equipmentLevel
- * @returns
+ * @returns {EquipmentSet}
  */
 const generateRandomEquipments = (equipmentLevel = 1) => {
-  const equipments = {};
-  for (const equipmentType in equipmentConfig) {
-    const equipmentData = equipmentConfig[equipmentType];
+  const equipments = /** @type {EquipmentSet} */ ({});
+  for (const [equipmentType, equipmentData] of Object.entries(
+    equipmentConfig
+  )) {
     const equipment = {
       level: equipmentLevel,
       slots: {},
     };
-    for (const slot in equipmentData.slots) {
-      const slotData = equipmentData.slots[slot];
+    for (const [slot, slotData] of Object.entries(equipmentData.slots)) {
       equipment.slots[slot] = {
         modifier: drawIterable(slotData.modifiers, 1)[0],
         quality: drawUniform(0, 100, 1)[0],
