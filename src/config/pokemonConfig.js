@@ -344,29 +344,7 @@ const rarities = Object.freeze({
 /** @typedef {Keys<pokemonConfigRaw>} PokemonIdEnum */
 
 /**
- * @satisfies {{[key: string | number]: {
- *  name: string,
- *  emoji: string,
- *  description: string,
- *  type: Array<PokemonTypeEnum>,
- *  baseStats: Array<number>,
- *  sprite: string,
- *  shinySprite: string,
- *  evolution?: Array<{
- *    level: number,
- *    id: any // TODO
- *  }>,
- *  abilities: {
- *    [key: number | string]: number // TODO?
- *  },
- *  moveIds: Array<MoveIdEnum>,
- *  battleEligible: boolean,
- *  rarity: RarityEnum,
- *  growthRate: GrowthRateEnum,
- *  noGacha?: boolean,
- *  mythicConfig?: any,
- *  unobtainable?: boolean
- * }}}
+ * @satisfies {{[key: string | number]: PokemonConfigData}}
  */
 const pokemonConfigRaw = {
   1: {

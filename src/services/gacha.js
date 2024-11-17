@@ -238,7 +238,7 @@ const generateRandomPokemon = (
  * @param {Array<string>} pokemonIds
  * @param {number=} level
  * @param {any} options
- * @returns {Promise<{data?: { pokemons: Array<import("mongodb").WithId<Pokemon>> }, err?: any}>}
+ * @returns {Promise<{data?: { pokemons: Array<WithId<Pokemon>> }, err?: any}>}
  */
 const giveNewPokemons = async (
   trainer,

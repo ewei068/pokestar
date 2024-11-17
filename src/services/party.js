@@ -41,7 +41,7 @@ const updateParty = async (trainer, party) => {
 
 /**
  * @param {Trainer} trainer
- * @returns {Promise<{data: Pokemon[]?, err: string?}>}
+ * @returns {Promise<{data: WithId<Pokemon>[]?, err: string?}>}
  */
 const getPartyPokemons = async (trainer) => {
   const pokemonIds = trainer.party.pokemonIds.reduce((acc, curr) => {
@@ -85,7 +85,7 @@ const getPartyPokemons = async (trainer) => {
 
 /**
  * @param {Trainer} trainer
- * @returns {Promise<{data: Pokemon[], err: string?}>}
+ * @returns {Promise<{data: WithId<Pokemon>[], err: string?}>}
  */
 const validateParty = async (trainer) => {
   const { party } = trainer;

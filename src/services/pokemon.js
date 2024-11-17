@@ -80,6 +80,10 @@ const { stageNames } = require("../config/stageConfig");
 // TODO: move this?
 const PAGE_SIZE = 10;
 
+/**
+ * @param {WithId<Pokemon>} pokemon
+ * @returns {Promise<{err: string?}>}
+ */
 const updatePokemon = async (pokemon) => {
   try {
     const res = await updateDocument(
@@ -96,6 +100,11 @@ const updatePokemon = async (pokemon) => {
   }
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {any} listOptions
+ * @returns {Promise<{data: WithId<Pokemon>[]?, lastPage?: boolean, err: string?}>}
+ */
 const listPokemons = async (trainer, listOptions) => {
   // listOptions: { page, pageSize, filter, sort, allowNone }
   const filter = { userId: trainer.userId, ...listOptions.filter };
@@ -130,6 +139,11 @@ const listPokemons = async (trainer, listOptions) => {
   }
 };
 
+/**
+ * @param {any} pokemon
+ * @param {PokemonConfigData} speciesData
+ * @returns {WithId<Pokemon>}
+ */
 const calculatePokemonStats = (pokemon, speciesData) => {
   // get nature, IVs, EVs, level, base stats, equips
   const { natureId, ivs, evs, level, equipments = {} } = pokemon;
@@ -221,6 +235,11 @@ const calculatePokemonStats = (pokemon, speciesData) => {
   return pokemon;
 };
 
+/**
+ * @param {any} pokemon
+ * @param {PokemonConfigData} speciesData
+ * @returns {Pokemon}
+ */
 const calculatePokemonStatsNoEquip = (pokemon, speciesData) => {
   // copy pokemon
   const newPokemon = { ...pokemon };
@@ -228,6 +247,12 @@ const calculatePokemonStatsNoEquip = (pokemon, speciesData) => {
   return calculatePokemonStats(newPokemon, speciesData);
 };
 
+/**
+ * @param {WithId<Pokemon>} pokemon
+ * @param {PokemonConfigData} speciesData
+ * @param {boolean=} force
+ * @returns {Promise<{data: WithId<Pokemon>?, err: string?}>}
+ */
 const calculateAndUpdatePokemonStats = async (
   pokemon,
   speciesData,
@@ -239,7 +264,9 @@ const calculateAndUpdatePokemonStats = async (
   const oldIvTotal = getOrSetDefault(pokemon, "ivTotal", 0);
 
   // get updated pokemon
-  pokemon = calculatePokemonStats(pokemon, speciesData);
+  pokemon = /** @type {WithId<Pokemon>} */ (
+    calculatePokemonStats(pokemon, speciesData)
+  );
 
   // check if old stats and combat power are the same
   if (
@@ -272,6 +299,12 @@ const calculateAndUpdatePokemonStats = async (
   return { data: pokemon, err: null };
 };
 
+/**
+ *
+ * @param {string} userId
+ * @param {string} pokemonId
+ * @returns {Promise<{data: WithId<Pokemon>?, err: string?}>}
+ */
 const getPokemonFromUserId = async (userId, pokemonId) => {
   // find instance of pokemon in trainer's collection
   try {
@@ -304,6 +337,11 @@ const getPokemonFromUserId = async (userId, pokemonId) => {
   }
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {string} pokemonId
+ * @returns {ReturnType<typeof getPokemonFromUserId>}
+ */
 const getPokemon = async (trainer, pokemonId) =>
   await getPokemonFromUserId(trainer.userId, pokemonId);
 
@@ -405,6 +443,11 @@ const getIdFromNameOrId = async (user, nameOrId, interaction, defer = true) => {
   return { data: selection, err: null };
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {string[]} pokemonIds
+ * @returns {Promise<{data: number?, err: string?}>}
+ */
 const releasePokemons = async (trainer, pokemonIds) => {
   // remove pokemon from trainer's collection
   try {
@@ -425,6 +468,11 @@ const releasePokemons = async (trainer, pokemonIds) => {
   }
 };
 
+/**
+ * @param {WithId<Pokemon>} pokemon
+ * @param {PokemonIdEnum} evolutionSpeciesId
+ * @returns {WithId<Pokemon>}
+ */
 const getEvolvedPokemon = (pokemon, evolutionSpeciesId) => {
   // get species data
   const speciesData = pokemonConfig[pokemon.speciesId];
@@ -451,6 +499,7 @@ const getEvolvedPokemon = (pokemon, evolutionSpeciesId) => {
   } else {
     // get current ability slot
     let slot = 1;
+    // @ts-ignore
     let index = abilities.indexOf(pokemon.abilityId);
     if (index === -1) {
       index = 0;
@@ -481,6 +530,11 @@ const getEvolvedPokemon = (pokemon, evolutionSpeciesId) => {
   return pokemon;
 };
 
+/**
+ * @param {WithId<Pokemon>} pokemon
+ * @param {PokemonIdEnum} evolutionSpeciesId
+ * @returns {Promise<{data: {pokemon: WithId<Pokemon>, species: string}?, err: string?}>}
+ */
 const evolvePokemon = async (pokemon, evolutionSpeciesId) => {
   // get evolved pokemon
   pokemon = getEvolvedPokemon(pokemon, evolutionSpeciesId);
@@ -505,6 +559,13 @@ const evolvePokemon = async (pokemon, evolutionSpeciesId) => {
   }
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {WithId<Pokemon>} pokemon
+ * @param {number} exp
+ * @param {StatArray=} evs
+ * @returns {Promise<{data: {exp: number, level: number, evs: number[]}, err: string?}>}
+ */
 const addPokemonExpAndEVs = async (
   trainer,
   pokemon,
@@ -599,6 +660,13 @@ const addPokemonExpAndEVs = async (
   return { data, err: null };
 };
 
+/**
+ *
+ * @param {Trainer} trainer
+ * @param {WithId<Pokemon>} pokemon
+ * @param {LocationEnum} locationId
+ * @returns {ReturnType<addPokemonExpAndEVs>}
+ */
 const trainPokemon = async (trainer, pokemon, locationId) => {
   const locationData = locationConfig[locationId];
 
@@ -606,7 +674,7 @@ const trainPokemon = async (trainer, pokemon, locationId) => {
   const locationLevel = trainer.locations[locationId];
 
   let exp = 2;
-  let evs = [0, 0, 0, 0, 0, 0];
+  let evs = /** @type {StatArray} */ ([0, 0, 0, 0, 0, 0]);
   // get exp and evs based on location
   if (!locationLevel) {
     // if home (no location), continue
@@ -626,6 +694,15 @@ const trainPokemon = async (trainer, pokemon, locationId) => {
   return await addPokemonExpAndEVs(trainer, pokemon, exp, evs);
 };
 
+/**
+ *
+ * @param {Trainer} trainer
+ * @param {Pokemon} pokemon
+ * @param {EquipmentTypeEnum} equipmentType
+ * @param {boolean=} upgrade Whether the equipment's level should be upgraded
+ * @param {boolean=} slot Whether the equipment's slot should be rerolled
+ * @returns {boolean}
+ */
 const canUpgradeEquipment = (
   trainer,
   pokemon,
@@ -675,6 +752,12 @@ const canUpgradeEquipment = (
   return true;
 };
 
+/**
+ * @param {WithId<Trainer>} trainer
+ * @param {WithId<Pokemon>} pokemon
+ * @param {EquipmentTypeEnum} equipmentType
+ * @returns {Promise<{data: string?, err: string?}>}
+ */
 const upgradeEquipmentLevel = async (trainer, pokemon, equipmentType) => {
   const equipment = pokemon.equipments[equipmentType];
   if (!equipment) {
@@ -724,6 +807,10 @@ const upgradeEquipmentLevel = async (trainer, pokemon, equipmentType) => {
   };
 };
 
+/**
+ * @param {WithId<Pokemon>} pokemon
+ * @returns  {Promise<{data?: string?, err: string?}>}
+ */
 const toggleLock = async (pokemon) => {
   pokemon.locked = !pokemon.locked;
   try {
@@ -744,6 +831,14 @@ const toggleLock = async (pokemon) => {
   return { err: null };
 };
 
+/**
+ *
+ * @param {WithId<Trainer>} trainer
+ * @param {WithId<Pokemon>} pokemon
+ * @param {EquipmentTypeEnum} equipmentType
+ * @param {EquipmentModifierSlotEnum} slotId
+ * @returns
+ */
 const rerollStatSlot = async (trainer, pokemon, equipmentType, slotId) => {
   const equipment = pokemon.equipments[equipmentType];
   if (!equipment) {
@@ -802,14 +897,12 @@ const rerollStatSlot = async (trainer, pokemon, equipmentType, slotId) => {
 };
 
 // to be used in mongo aggregate or other
-// eslint-disable-next-line no-shadow
 /**
- *
- * @param pokemonConfig
- * @param pokemon
+ * @param {PokemonConfigData} pokemonConfigData
+ * @param {Pokemon} pokemon
  */
-function getBattleEligible(pokemonConfig, pokemon) {
-  return !!pokemonConfig[pokemon.speciesId].battleEligible;
+function getBattleEligible(pokemonConfigData, pokemon) {
+  return !!pokemonConfigData[pokemon.speciesId].battleEligible;
 }
 
 /**
@@ -1243,6 +1336,12 @@ const buildPokedexSend = async ({
   return { send, err: null };
 };
 
+/**
+ *
+ * @param {WithId<Trainer>} trainer
+ * @param {string[]} pokemonIds
+ * @returns {Promise<{toRelease?: WithId<Pokemon>[], err: string?}>}
+ */
 const canRelease = async (trainer, pokemonIds) => {
   // get pokemon to release
   const toRelease = await listPokemons(trainer, {
@@ -1872,6 +1971,11 @@ const buildNatureSend = async ({ stateId = null, user = null } = {}) => {
   return { send, err: null };
 };
 
+/**
+ * @param {WithId<Trainer>} trainer
+ * @param {number} quantity
+ * @returns {Promise<{err: string?}>}
+ */
 const checkNumPokemon = async (trainer, quantity) => {
   let pokemonLimit = MAX_POKEMON;
   // if trainer has computer lab locations, increase pokemon limit

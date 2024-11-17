@@ -107,6 +107,8 @@
  * }} EquipmentSet
  */
 
+/** @typedef {[number, number, number, number, number, number]} StatArray */
+
 /**
  * TODO: organize
  * @typedef {object} Pokemon
@@ -115,9 +117,9 @@
  * @property {string} name
  * @property {number} level
  * @property {number} exp
- * @property {[number, number, number, number, number, number]} evs
- * @property {[number, number, number, number, number, number]} ivs
- * @property {[number, number, number, number, number, number]} stats
+ * @property {StatArray} evs
+ * @property {StatArray} ivs
+ * @property {StatArray} stats
  * @property {number} combatPower
  * @property {NatureEnum} natureId
  * @property {AbilityIdEnum | string | number} abilityId
@@ -136,4 +138,9 @@
 /**
  * @template T
  * @typedef {import('mongodb').Collection & T} MongoCollection
+ */
+
+/**
+ * @template T
+ * @typedef {import('mongodb').WithId<T>} WithId
  */

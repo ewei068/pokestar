@@ -132,6 +132,9 @@ class QueryBuilder {
     return await query.toArray();
   }
 
+  /**
+   * @returns {Promise<WithId<any>>}
+   */
   async findOne() {
     let query = await getCollection(this.collectionName);
     query = query.findOne(this.filter);

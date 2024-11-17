@@ -48,7 +48,7 @@ const { getMoves } = require("../battle/data/moveRegistry");
 /**
  * @param {Trainer} trainer
  * @param {string | number} speciesId
- * @returns {Promise<{data?: Pokemon, err?: string}>}
+ * @returns {Promise<{data?: WithId<Pokemon>, err?: string}>}
  */
 const getMythic = async (trainer, speciesId) => {
   const speciesData = pokemonConfig[speciesId];
