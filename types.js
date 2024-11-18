@@ -1,6 +1,10 @@
 // TODO: organize this lol
 
 /**
+ * @typedef {import("discord.js").User} DiscordUser
+ */
+
+/**
  * @template T
  * @typedef {T[keyof T]} Enum<T>
  */
@@ -110,29 +114,40 @@
 /** @typedef {[number, number, number, number, number, number]} StatArray */
 
 /**
- * TODO: organize
  * @typedef {object} Pokemon
+ *
+ * Basic info
  * @property {string} userId
  * @property {PokemonIdEnum} speciesId
  * @property {string} name
+ * @property {number} dateAcquired
+ * @property {string} originalOwner
+ *
+ * Progression
  * @property {number} level
  * @property {number} exp
+ *
+ * Stats
  * @property {StatArray} evs
  * @property {StatArray} ivs
+ * @property {number} ivTotal
  * @property {StatArray} stats
  * @property {number} combatPower
+ *
+ * Important info (IDK)
  * @property {NatureEnum} natureId
  * @property {AbilityIdEnum | string | number} abilityId
- * @property {string} item
- * @property {MoveIdEnum[]} moveIds
  * @property {boolean} shiny
- * @property {number} dateAcquired
- * @property {number} ivTotal
- * @property {string} originalOwner
- * @property {RarityEnum} rarity
+ * @property {MoveIdEnum[]} moveIds
+ *
+ * Equipment
  * @property {EquipmentSet} equipments
+ * @property {string} item Unused currently
+ *
+ * Other tags
+ * @property {RarityEnum} rarity
  * @property {boolean} locked
- * @property {boolean} battleEligible
+ * @property {boolean} battleEligible All Pokemon are battle eligible now
  */
 
 /**
@@ -143,4 +158,17 @@
 /**
  * @template T
  * @typedef {import('mongodb').WithId<T>} WithId
+ */
+
+/**
+ * @typedef {object} Raid
+ * @property {string} userId
+ * @property {RaidEnum} raidId
+ * @property {string} raidUserId Placeholder user ID for raid enemy
+ * @property {string} bossPokemonId Placeholder Pokemon ID for raid boss
+ * @property {NpcDifficultyEnum} difficulty
+ * @property {Pokemon & {remainingHp: number, _id: string}} boss
+ * @property {number} ttl
+ * @property {Record<string, number>} participants Map participant user ID to damage dealt
+ * @property {string[]} stateIds
  */

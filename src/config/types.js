@@ -8,6 +8,8 @@
 /** @typedef {import("./equipmentConfig").EquipmentTypeEnum} EquipmentTypeEnum */
 /** @typedef {import("./equipmentConfig").EquipmentModifierEnum} EquipmentModifierEnum */
 /** @typedef {import("./locationConfig").LocationEnum} LocationEnum */
+/** @typedef {import("./npcConfig").RaidEnum} RaidEnum  */
+/** @typedef {import("./npcConfig").NpcDifficultyEnum} NpcDifficultyEnum  */
 
 /**
  * @typedef {{
