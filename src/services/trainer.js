@@ -42,6 +42,11 @@ const { getVoteMultiplier } = require("../config/socialConfig");
 } 
 */
 
+/**
+ *
+ * @param {DiscordUser} user
+ * @returns {Promise<WithId<Trainer>>}
+ */
 const initTrainer = async (user) => {
   const trainer = {
     userId: user.id,
@@ -56,12 +61,14 @@ const initTrainer = async (user) => {
 
   try {
     const res = await insertDocument(collectionNames.USERS, trainer);
+    // TODO: fix
     if (res.insertedCount === 0) {
       logger.error(`Failed to insert trainer ${user.username}.`);
       return null;
     }
 
     logger.info(`Trainer ${user.username} created at ID ${res.insertedId}.`);
+    // @ts-ignore
     return trainer;
   } catch (error) {
     logger.error(error);
@@ -69,6 +76,10 @@ const initTrainer = async (user) => {
   }
 };
 
+/**
+ * @param {string} userId
+ * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
+ */
 const getTrainerFromId = async (userId) => {
   try {
     // check if trainer exists
@@ -88,9 +99,9 @@ const getTrainerFromId = async (userId) => {
 
 /**
  *
- * @param {any} discordUser
+ * @param {DiscordUser} discordUser
  * @param {boolean?} refresh
- * @returns
+ * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
  */
 const getTrainer = async (discordUser, refresh = true) => {
   // only keep desired fields
@@ -196,9 +207,15 @@ const getTrainer = async (discordUser, refresh = true) => {
     return await getTrainerFromId(user.id);
   }
 
+  // @ts-ignore
   return { data: trainer, err: null };
 };
 
+/**
+ *
+ * @param {DiscordUser} user
+ * @returns {Promise<{data?: Trainer & {pokemon: object, numPokemon: number}, err?: string}>}
+ */
 const getTrainerInfo = async (user) => {
   const trainer = await getTrainer(user);
   if (trainer.err) {
@@ -248,6 +265,12 @@ const getTrainerInfo = async (user) => {
   }
 };
 
+/**
+ * @param {WithId<Trainer>} trainer
+ * @param {number} exp
+ * @param {number} money
+ * @returns {Promise<{level?: number, money?: number, err?: string}>}
+ */
 const addExpAndMoneyTrainer = async (trainer, exp, money) => {
   // levelup/exp
   const newExp = trainer.exp + exp;
@@ -287,6 +310,11 @@ const addExpAndMoneyTrainer = async (trainer, exp, money) => {
   }
 };
 
+/**
+ * @param {DiscordUser} user
+ * @param {number} exp
+ * @param {number} money
+ */
 const addExpAndMoney = async (user, exp, money) => {
   const trainer = await getTrainer(user);
   if (trainer.err) {
@@ -296,6 +324,10 @@ const addExpAndMoney = async (user, exp, money) => {
   return await addExpAndMoneyTrainer(trainer.data, exp, money);
 };
 
+/**
+ * @param {DiscordUser} user
+ * @returns {Promise<{data?: string, err?: string}>}
+ */
 const getLevelRewards = async (user) => {
   const { data: trainer, err } = await getTrainer(user);
   if (err) {
@@ -363,6 +395,11 @@ const getLevelRewards = async (user) => {
   return { data: rewardsString, err: null };
 };
 
+/**
+ * @param {DiscordUser} user
+ * @param {number} votes
+ * @returns {Promise<{data?: null, err?: string}>}
+ */
 const addVote = async (user, votes = 1) => {
   const trainer = await getTrainer(user, false);
   if (trainer.err) {
@@ -399,12 +436,16 @@ const addVote = async (user, votes = 1) => {
   }
 };
 
+/**
+ * @param {DiscordUser} user
+ * @returns {Promise<{data?: string, err?: string}>}
+ */
 const getVoteRewards = async (user) => {
-  let trainer = await getTrainer(user);
-  if (trainer.err) {
-    return { data: null, err: trainer.err };
+  const trainerRes = await getTrainer(user);
+  if (trainerRes.err) {
+    return { data: null, err: trainerRes.err };
   }
-  trainer = trainer.data;
+  const trainer = trainerRes.data;
 
   const { rewards } = trainer.voting;
   if (rewards < 1) {
@@ -468,6 +509,10 @@ const getVoteRewards = async (user) => {
   return { data: rewardsString, err: null };
 };
 
+/**
+ * @param {WithId<Trainer>} trainer
+ * @returns {Promise<{data?: null, err?: string}>}
+ */
 const updateTrainer = async (trainer) => {
   try {
     const res = await updateDocument(
