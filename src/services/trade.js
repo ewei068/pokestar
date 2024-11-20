@@ -16,6 +16,10 @@ const { canRelease, listPokemons, updatePokemon } = require("./pokemon");
 const { getState } = require("./state");
 const { getTrainer, updateTrainer } = require("./trainer");
 
+/**
+ * @param {WithId<Trainer>} trainer
+ * @returns {Promise<{data?: boolean, err: string?}>}
+ */
 const canTrade = async (trainer) => {
   const levelReq = process.env.STAGE === stageNames.ALPHA ? 5 : 50;
   if (trainer.level < levelReq) {
@@ -27,6 +31,12 @@ const canTrade = async (trainer) => {
   return { err: null };
 };
 
+/**
+ *
+ * @param {WithId<Trainer>} trainer
+ * @param {UserTradeInfo} trade
+ * @returns {Promise<{data: WithId<Pokemon>[], err: string?}>}
+ */
 const getTradePokemons = async (trainer, trade = null) => {
   const pokemonIds = trade ? trade.pokemonIds : trainer.trade.pokemonIds;
 
@@ -295,6 +305,12 @@ const buildTradeInfoSend = async ({ user = null } = {}) => {
   return { send: offerSend.send, err: null };
 };
 
+/**
+ *
+ * @param {WithId<Trainer>} trainer
+ * @param {UserTradeInfo} trade
+ * @returns {Promise<{err: string?}>}
+ */
 const validateTrade = async (trainer, trade) => {
   // get trade pokemons
   const tradePokemons = await getTradePokemons(trainer, trade);
@@ -331,6 +347,13 @@ const validateTrade = async (trainer, trade) => {
   return { err: null };
 };
 
+/**
+ * @param {WithId<Trainer>} trainer1
+ * @param {WithId<Trainer>} trainer2
+ * @param {UserTradeInfo} trade1
+ * @param {UserTradeInfo} trade2
+ * @returns {Promise<{err: string?}>}
+ */
 const validateTrades = async (trainer1, trainer2, trade1, trade2) => {
   // make sure both trainers can trade
   const canTrade1 = await canTrade(trainer1);

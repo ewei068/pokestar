@@ -10,6 +10,8 @@
 /** @typedef {import("./locationConfig").LocationEnum} LocationEnum */
 /** @typedef {import("./npcConfig").RaidEnum} RaidEnum  */
 /** @typedef {import("./npcConfig").NpcDifficultyEnum} NpcDifficultyEnum  */
+/** @typedef {import("./backpackConfig").BackpackItemEnum} BackpackItemEnum */
+/** @typedef {import("./backpackConfig").BackpackCategoryEnum} BackpackCategoryEnum */
 
 /**
  * @typedef {{
