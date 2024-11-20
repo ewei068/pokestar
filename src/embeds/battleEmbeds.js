@@ -225,9 +225,7 @@ const buildBattleEmbed = (battle) => {
         team1Party.pokemons,
         team1Party.rows,
         team1Party.cols,
-        true,
-        true,
-        team1EmphPosition
+        { reverse: true, showHp: true, emphPosition: team1EmphPosition }
       ),
       inline: false,
     },
@@ -237,9 +235,7 @@ const buildBattleEmbed = (battle) => {
         team2Party.pokemons,
         team2Party.rows,
         team2Party.cols,
-        false,
-        true,
-        team2EmphPosition
+        { showHp: true, emphPosition: team2EmphPosition }
       ),
       inline: false,
     }

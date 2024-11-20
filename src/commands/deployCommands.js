@@ -54,7 +54,7 @@ if (!clientId) {
     logger.info(JSON.stringify(commands, null, 2));
 
     // The put method is used to fully refresh all commands in the guild with the current set
-    const data = /** @type{any} */ (
+    const data = /** @type {any} */ (
       await rest.put(Routes.applicationCommands(clientId), {
         body: commands,
       })
