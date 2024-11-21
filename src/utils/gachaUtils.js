@@ -1,10 +1,15 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * gachaUtils.js the lowest level of gacha code used by gacha.js
+ */
+
+/**
+ * @template T
+ * @param {{T: number}} probabilityDistribution
+ * @param {number} times
+ * @returns {T[]}
  */
 const drawDiscrete = (probabilityDistribution, times) => {
   const results = [];
@@ -19,9 +24,19 @@ const drawDiscrete = (probabilityDistribution, times) => {
       }
     }
   }
+  // @ts-ignore
   return results;
 };
 
+/**
+ * @template T
+ * @param {T[]} iterable
+ * @param {number} times
+ * @param {object} param2
+ * @param {boolean?=} param2.replacement
+ * @param {(() => number)?=} param2.rng
+ * @returns {T[]}
+ */
 const drawIterable = (
   iterable,
   times,
@@ -50,6 +65,12 @@ const drawIterable = (
   return results;
 };
 
+/**
+ * @param {number} min
+ * @param {number} max
+ * @param {number} times
+ * @returns {number[]}
+ */
 const drawUniform = (min, max, times) => {
   const results = [];
   for (let i = 0; i < times; i += 1) {
