@@ -8,10 +8,14 @@
 /** @typedef {import("./equipmentConfig").EquipmentTypeEnum} EquipmentTypeEnum */
 /** @typedef {import("./equipmentConfig").EquipmentModifierEnum} EquipmentModifierEnum */
 /** @typedef {import("./locationConfig").LocationEnum} LocationEnum */
+/** @typedef {import("./npcConfig").NpcEnum} NpcEnum */
+/** @typedef {import("./npcConfig").DungeonEnum} DungeonEnum */
 /** @typedef {import("./npcConfig").RaidEnum} RaidEnum  */
 /** @typedef {import("./npcConfig").NpcDifficultyEnum} NpcDifficultyEnum  */
 /** @typedef {import("./backpackConfig").BackpackItemEnum} BackpackItemEnum */
 /** @typedef {import("./backpackConfig").BackpackCategoryEnum} BackpackCategoryEnum */
+/** @typedef {import("./shopConfig").ShopItemEnum} ShopItemEnum */
+/** @typedef {import("./shopConfig").ShopCategoryEnum} ShopCategoryEnum */
 
 /**
  * @typedef {{

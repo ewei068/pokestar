@@ -1,12 +1,9 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * battleUtils.js the lowest level of code for battles used by the battle.js
  */
-const { LEGAL_TCP_SOCKET_OPTIONS } = require("mongodb");
 const { statusConditions } = require("../config/battleConfig");
 const { difficultyConfig } = require("../config/npcConfig");
 const { pokemonConfig, typeConfig } = require("../config/pokemonConfig");
@@ -152,8 +149,8 @@ const buildPartyString = (
 
 /**
  * @param {PartyInfo} party
- * @param {number} id
- * @param {object} pokemonMap
+ * @param {any} id
+ * @param {Record<string, Pokemon>} pokemonMap
  * @param {boolean=} active
  * @returns {{partyHeader: string, partyString: string}}
  */
@@ -194,7 +191,7 @@ const buildCompactPartyString = (party, id, pokemonMap, active = false) => {
 /**
  * @param {Move} moveData
  * @param {number=} cooldown
- * @returns {string}
+ * @returns {{moveHeader: string, moveString: string}}
  */
 const buildMoveString = (moveData, cooldown = 0) => {
   let moveHeader = "";

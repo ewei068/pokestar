@@ -49,6 +49,28 @@
  */
 
 /**
+ * @typedef {PartialRecord<BackpackCategoryEnum, PartialRecord<BackpackItemEnum, number>>} Backpack
+ */
+
+/**
+ * @typedef {PartialRecord<BackpackItemEnum, number>} FlattenedBackpack
+ */
+
+/**
+ * @typedef {{
+ *  money?: number,
+ *  backpack?: Backpack
+ * }} Rewards
+ */
+
+/**
+ * @typedef {{
+ *  money?: number,
+ *  backpack?: FlattenedBackpack
+ * }} FlattenedRewards
+ */
+
+/**
  * @typedef {object} Trainer
  *
  * Discord user info
@@ -60,17 +82,17 @@
  * @property {number} level
  * @property {number} exp
  * @property {number} money
- * @property {object} backpack
- * @property {object} locations
+ * @property {Backpack} backpack
+ * @property {PartialRecord<LocationEnum, number>} locations
  * @property {UserTradeInfo} trade
  *
  * Rewards and time-gated stuff
  * @property {number} lastCorrected
  * @property {boolean} claimedDaily
- * @property {object} purchasedShopItemsToday
+ * @property {PartialRecord<ShopItemEnum, number>} purchasedShopItemsToday
  * @property {Array<number>} claimedLevelRewards
- * @property {object} defeatedNPCsToday
- * @property {object} defeatedNPCs
+ * @property {PartialRecord<NpcEnum | RaidEnum | DungeonEnum | number, NpcDifficultyEnum[]>} defeatedNPCsToday
+ * @property {PartialRecord<NpcEnum | RaidEnum | DungeonEnum | number, NpcDifficultyEnum[]>} defeatedNPCs
  * @property {number} lastTowerStage
  *
  * Party info

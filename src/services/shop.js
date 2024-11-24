@@ -42,7 +42,7 @@ const {
 /**
  *
  * @param {WithId<Trainer>} trainer
- * @param {BackpackItemEnum} itemId
+ * @param {ShopItemEnum} itemId
  * @param {number} quantity
  * @returns {object}
  */
@@ -141,7 +141,7 @@ const canBuyItem = (trainer, itemId, quantity) => {
 
 /**
  * @param {WithId<Trainer>} trainer
- * @param {BackpackItemEnum} itemId
+ * @param {ShopItemEnum} itemId
  * @param {number} quantity
  * @returns {Promise<{data: string?, err: string?}>}
  */

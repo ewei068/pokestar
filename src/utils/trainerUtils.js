@@ -39,10 +39,7 @@ const getBackpackItemsString = (trainer) => {
 
 /**
  *
- * @param {{
- *  money?: number,
- *  backpack?: PartialRecord<BackpackItemEnum, number>
- * }} rewards
+ * @param {FlattenedRewards} rewards
  * @param {boolean=} received
  * @returns {string}
  */
@@ -61,8 +58,8 @@ const getRewardsString = (rewards, received = true) => {
 };
 
 /**
- * @param {PartialRecord<BackpackCategoryEnum, PartialRecord<BackpackItemEnum, number>>} backpack
- * @returns {PartialRecord<BackpackItemEnum, number>}
+ * @param {Backpack} backpack
+ * @returns {FlattenedBackpack}
  */
 const flattenCategories = (backpack) => {
   const flattenedBackpack = {};
@@ -78,14 +75,8 @@ const flattenCategories = (backpack) => {
 
 /**
  *
- * @param {{
- *  money?: number,
- *  backpack?: PartialRecord<BackpackCategoryEnum, PartialRecord<BackpackItemEnum, number>>
- * }} rewards
- * @returns {{
- *  money?: number,
- *  backpack?: PartialRecord<BackpackItemEnum, number>
- * }}
+ * @param {Rewards} rewards
+ * @returns {FlattenedRewards}
  */
 const flattenRewards = (rewards) => {
   const flattenedRewards = {
@@ -102,15 +93,9 @@ const flattenRewards = (rewards) => {
 /**
  *
  * @param {Trainer} trainer
- * @param {{
- *  money?: number,
- *  backpack?: PartialRecord<BackpackCategoryEnum, PartialRecord<BackpackItemEnum, number>>
- * }} rewards
+ * @param {Rewards} rewards
  * @param {any} accumulator
- * @returns {{
- *  money?: number,
- *  backpack?: PartialRecord<BackpackCategoryEnum, PartialRecord<BackpackItemEnum, number>>
- * }}
+ * @returns {Rewards}
  */
 const addRewards = (trainer, rewards, accumulator = {}) => {
   if (rewards.money) {
