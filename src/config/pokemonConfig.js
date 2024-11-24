@@ -7555,6 +7555,8 @@ const pokemonConfigRaw = {
     unobtainable: true,
   },
 };
+
+/** @type {Record<PokemonIdEnum, PokemonConfigData>} */
 const pokemonConfig = Object.freeze(pokemonConfigRaw);
 
 const rarityBins = {

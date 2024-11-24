@@ -10,7 +10,7 @@
 /** @typedef {import("./locationConfig").LocationEnum} LocationEnum */
 /** @typedef {import("./npcConfig").NpcEnum} NpcEnum */
 /** @typedef {import("./npcConfig").DungeonEnum} DungeonEnum */
-/** @typedef {import("./npcConfig").RaidEnum} RaidEnum  */
+/** @typedef {import("./npcConfig").RaidEnum} RaidEnum */
 /** @typedef {import("./npcConfig").NpcDifficultyEnum} NpcDifficultyEnum  */
 /** @typedef {import("./backpackConfig").BackpackItemEnum} BackpackItemEnum */
 /** @typedef {import("./backpackConfig").BackpackCategoryEnum} BackpackCategoryEnum */
@@ -19,6 +19,7 @@
 /** @typedef {import("./commandConfig").CommandCategoryEnum} CommandCategoryEnum */
 /** @typedef {import("./commandConfig").CommandEnum} CommandEnum */
 /** @typedef {import("./helpConfig").EventData} EventData */
+/** @typedef {import("./gachaConfig").BannerData} BannerData */
 
 /**
  * @typedef {{

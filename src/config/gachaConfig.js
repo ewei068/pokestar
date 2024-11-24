@@ -75,7 +75,19 @@ const bannerTypeConfig = Object.freeze({
   },
 });
 
-const bannerConfig = Object.freeze([
+/**
+ * @typedef {object} BannerData
+ * @property {BannerTypeEnum} bannerType
+ * @property {string} name
+ * @property {string} description
+ * @property {function(): PartialRecord<RarityEnum, Array<PokemonIdEnum>> } rateUp
+ * @property {string=} image
+ */
+
+/**
+ * @type {Array<BannerData>}
+ */
+const bannerConfigRaw = [
   {
     bannerType: bannerTypes.SPECIAL,
     name: "[EVENT] Launch Celebration Re-Run",
@@ -393,7 +405,8 @@ const bannerConfig = Object.freeze([
     description: "Standard banner with all currently available gacha Pokemon.",
     rateUp: () => {},
   },
-]);
+];
+const bannerConfig = Object.freeze(bannerConfigRaw);
 
 const getCelebiPool = () => {
   const celebiId = "251";

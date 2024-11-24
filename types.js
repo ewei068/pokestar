@@ -10,10 +10,9 @@
  */
 
 /**
- * @template T
- * @typedef {keyof T} Keys<T>
+ * @template {{[key in string | number]: any}} T
+ * @typedef {keyof T extends string | number ? `${keyof T}` : any} Keys<T>
  */
-
 /**
  * @template {string | number | symbol} T
  * @template U
