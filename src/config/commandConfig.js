@@ -14,7 +14,7 @@ const { prefix } = stageConfig[process.env.STAGE];
  *  commands: CommandEnum[]
  * }>}
  */
-const commandCategoryConfig = Object.freeze({
+const commandCategoryConfigRaw = {
   trainer: {
     name: "Trainer",
     description: "Commands involving your trainer",
@@ -96,12 +96,13 @@ const commandCategoryConfig = Object.freeze({
     folder: "heartbeat",
     commands: ["ping", "echo", "give", "test"],
   },
-});
+};
+const commandCategoryConfig = Object.freeze(commandCategoryConfigRaw);
 
-/** @typedef {Keys<commandConfig>} CommandEnum */
+/** @typedef {Keys<commandConfigRaw>} CommandEnum */
 
 /**
- * @satisfies {Record<string, {
+ * @typedef {{
  *  name: string,
  *  aliases: string[],
  *  description: string,
@@ -120,9 +121,13 @@ const commandCategoryConfig = Object.freeze({
  *  parent?: string,
  *  subcommands?: string[],
  *  isDeact?: boolean,
- * }>}
+ * }} CommandConfigData
  */
-const commandConfig = Object.freeze({
+
+/**
+ * @satisfies {Record<string, CommandConfigData>}
+ */
+const commandConfigRaw = {
   ping: {
     name: "Ping",
     aliases: ["ping"],
@@ -1057,7 +1062,10 @@ const commandConfig = Object.freeze({
     },
     stages: [stageNames.ALPHA],
   },
-});
+};
+
+/** @type {Record<CommandEnum, CommandConfigData>} */
+const commandConfig = Object.freeze(commandConfigRaw);
 
 module.exports = {
   commandCategoryConfig,

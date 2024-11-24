@@ -128,6 +128,17 @@ Pokestar is officially out of Beta, and our support server has hit 100 members! 
 * Shiny Hat Pikachu: https://www.deviantart.com/lukethefoxen/art/Pikachu-with-Ash-s-Hat-923733788
 `;
 
+/**
+ * @typedef {{
+ *  name: string,
+ *  description: string,
+ *  image?: string
+ * }} EventData
+ */
+
+/**
+ * @type {EventData[]}
+ */
 const gameEventConfig = [
   {
     name: "100 Members + Official Launch",

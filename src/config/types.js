@@ -16,6 +16,9 @@
 /** @typedef {import("./backpackConfig").BackpackCategoryEnum} BackpackCategoryEnum */
 /** @typedef {import("./shopConfig").ShopItemEnum} ShopItemEnum */
 /** @typedef {import("./shopConfig").ShopCategoryEnum} ShopCategoryEnum */
+/** @typedef {import("./commandConfig").CommandCategoryEnum} CommandCategoryEnum */
+/** @typedef {import("./commandConfig").CommandEnum} CommandEnum */
+/** @typedef {import("./helpConfig").EventData} EventData */
 
 /**
  * @typedef {{
