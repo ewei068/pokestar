@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * trainerEmbeds.js Creates the embed for the trainer and their backpack and interactions to show them and the trainer's owned locations.
  */
@@ -30,6 +28,15 @@ const { locationConfig } = require("../config/locationConfig");
 }
 */
 
+/**
+ * @param {Trainer & {
+ *  numPokemon: number,
+ *  totalPower: number,
+ *  totalWorth: number,
+ *  totalShiny: number
+ * }} trainerInfo
+ * @returns {EmbedBuilder}
+ */
 const buildTrainerEmbed = (trainerInfo) => {
   const oldLevelExp = getTrainerLevelExp(trainerInfo.level);
   const newLevelExp = getTrainerLevelExp(trainerInfo.level + 1);
@@ -68,6 +75,10 @@ const buildTrainerEmbed = (trainerInfo) => {
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @returns {EmbedBuilder}
+ */
 const buildBackpackEmbed = (trainer) => {
   // create string with backpack categories and their item quantities
   const fields = Object.entries(trainer.backpack).map(([category, items]) => {
@@ -113,6 +124,10 @@ const buildBackpackEmbed = (trainer) => {
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @returns {EmbedBuilder}
+ */
 const buildLocationsEmbed = (trainer) => {
   // create a string with all locations
   let locationString = "";
