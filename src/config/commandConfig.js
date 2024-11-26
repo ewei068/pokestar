@@ -561,7 +561,7 @@ const commandConfigRaw = {
   pokemart: {
     name: "Pokemart",
     aliases: ["pokemart", "pm", "shop"],
-    description: "Get info about the items in stock at the Pokemart",
+    description: "Get info about the items in stock at the Pokemart (shop)",
     execute: "pokemart.js",
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
