@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * socialEmbeds.js Creates the embed's for social interactions such as the leaderboards and voting.
  */
@@ -12,6 +10,13 @@ const { getVoteMultiplier } = require("../config/socialConfig");
 const { formatMoney } = require("../utils/utils");
 const { pokemonConfig } = require("../config/pokemonConfig");
 
+/**
+ *
+ * @param {any} leaderboardInfo
+ * @param {any} categoryData
+ * @param {any} scope
+ * @returns {EmbedBuilder}
+ */
 const buildLeaderboardEmbed = (leaderboardInfo, categoryData, scope) => {
   let leaderboardString = "";
   let prevPosition = 0;
@@ -37,6 +42,10 @@ const buildLeaderboardEmbed = (leaderboardInfo, categoryData, scope) => {
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @returns {EmbedBuilder}
+ */
 const buildVoteEmbed = (trainer) => {
   const { voting } = trainer;
 
@@ -70,6 +79,12 @@ const buildVoteEmbed = (trainer) => {
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {WithId<Pokemon>[]} pokemons
+ * @param {number} money
+ * @returns {EmbedBuilder}
+ */
 const buildTradeEmbed = (trainer, pokemons, money) => {
   let pokemonString = `**${formatMoney(money)}**\n\n`;
   for (let i = 0; i < pokemons.length; i += 1) {
