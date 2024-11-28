@@ -1,20 +1,20 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * migration.js Only run once. Migrates all of the necessary components for new use.
  */
 require("dotenv").config();
 const { MongoClient } = require("mongodb");
-const { DB_NAME, collectionConfig } = require("../config/databaseConfig");
-const { logger } = require("../log");
+const {
+  DB_NAME,
+  collectionConfig,
+} = require("../../src/config/databaseConfig");
+const { logger } = require("../../src/log");
 
 const baseURL = process.env.MONGODB_URL;
 
 const client = new MongoClient(`${baseURL}/${DB_NAME}`, {
-  useUnifiedTopology: true,
   connectTimeoutMS: 5000,
 });
 
