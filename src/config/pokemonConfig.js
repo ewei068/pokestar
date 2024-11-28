@@ -341,10 +341,8 @@ const rarities = Object.freeze({
   MYTHICAL: "Mythical",
 });
 
-/** @typedef {Keys<pokemonConfigRaw>} PokemonIdEnum */
-
 /**
- * @satisfies {{[key: string | number]: PokemonConfigData}}
+ * @type {Record<PokemonIdEnum, PokemonConfigData>}
  */
 const pokemonConfigRaw = {
   1: {

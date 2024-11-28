@@ -1,4 +1,3 @@
-/** @typedef {import("./pokemonConfig").PokemonIdEnum} PokemonIdEnum */
 /** @typedef {import("./pokemonConfig").PokemonTypeEnum} PokemonTypeEnum */
 /** @typedef {import("./pokemonConfig").GrowthRateEnum} GrowthRateEnum */
 /** @typedef {import("./pokemonConfig").NatureEnum} NatureEnum  */
