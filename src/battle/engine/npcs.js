@@ -14,6 +14,8 @@ const { drawIterable, drawUniform } = require("../../utils/gachaUtils");
 const { generateRandomPokemon } = require("../../services/gacha");
 const { getMove } = require("../data/moveRegistry");
 
+/** @typedef {NPC} BattleNPC */
+
 class NPC {
   constructor(
     npcData,

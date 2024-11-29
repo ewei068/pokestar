@@ -219,6 +219,7 @@ const statusConditions = {
 };
 
 // unique weather conditions
+/** @typedef {Enum<weatherConditions>} WeatherConditionEnum */
 const weatherConditions = {
   RAIN: "Rain",
   SUN: "Sun",

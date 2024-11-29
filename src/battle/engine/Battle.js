@@ -87,24 +87,39 @@ class Battle {
     this.expReward = 0;
     this.pokemonExpReward = 0;
     this.hasStarted = false;
+    /** @type {string[]} */
     this.userIds = [];
     // map userId to user
+    /** @type {Record<string, BattleUser>} */
     this.users = {};
     // map teamName to team
+    /** @type {Record<string, BattleTeam>} */
     this.teams = {};
+    /** @type {BattlePokemon} */
     this.activePokemon = null;
     // map teamName to party
+    /** @type {Record<string, BattleParty>} */
     this.parties = {};
     // map pokemonId to pokemon
+    /** @type {Record<string, BattlePokemon>} */
     this.allPokemon = {};
+    /**
+     * @type {{
+     *  weatherId?: WeatherConditionEnum,
+     *  duration: number,
+     *  source?: BattlePokemon
+     * }}
+     */
     this.weather = {
       weatherId: null,
       duration: 0,
       source: null,
     };
+    /** @type {string[]} */
     this.log = [];
     this.eventHandler = new BattleEventHandler();
     this.turn = 0;
+    /** @type {string?} */
     this.winner = null;
     this.ended = false;
     if (equipmentLevel) {
@@ -130,6 +145,10 @@ class Battle {
     this.isPvp = isPvp;
   }
 
+  /**
+   * @param {string} teamName
+   * @param {boolean} isNpc
+   */
   addTeam(teamName, isNpc) {
     this.teams[teamName] = {
       name: teamName,
@@ -138,6 +157,13 @@ class Battle {
     };
   }
 
+  /**
+   * @param {any} trainer
+   * @param {WithId<Pokemon>[]} pokemons
+   * @param {string} teamName
+   * @param {number=} rows
+   * @param {number=} cols
+   */
   addTrainer(trainer, pokemons, teamName, rows = 3, cols = 4) {
     // if user already exists, return
     if (this.users[trainer.userId]) {
@@ -154,6 +180,13 @@ class Battle {
     this.addPokemons(trainer, pokemons, teamName, rows, cols);
   }
 
+  /**
+   * @param {any} trainer
+   * @param {WithId<Pokemon>[]} pokemons
+   * @param {string} teamName
+   * @param {number} rows
+   * @param {number} cols
+   */
   addPokemons(trainer, pokemons, teamName, rows, cols) {
     const partyPokemons = [];
     for (const pokemonData of pokemons) {
@@ -405,6 +438,11 @@ class Battle {
     );
   }
 
+  /**
+   * @param {WeatherConditionEnum} weatherId
+   * @param {BattlePokemon} source
+   * @returns {boolean}
+   */
   createWeather(weatherId, source) {
     // calculate turns = 10 + number of non-fainted Pokemon
     const duration =
@@ -534,6 +572,9 @@ class Battle {
     }
   }
 
+  /**
+   * @returns {boolean}
+   */
   isWeatherNegated() {
     // for all non-fainted pokemon, check if they have cloud nine or air lock
     for (const pokemon of Object.values(this.allPokemon)) {
@@ -552,11 +593,20 @@ class Battle {
     return false;
   }
 
+  /**
+   * @param {string} userId
+   * @returns {boolean}
+   */
   isNpc(userId) {
     const user = this.users[userId];
     return user.npc !== undefined;
   }
 
+  /**
+   * @param {BattlePokemon} source
+   * @param {MoveIdEnum} moveId
+   * @returns {BattlePokemon[]}
+   */
   getEligibleTargets(source, moveId) {
     const moveData = getMove(moveId);
     const eligibleTargets = [];
@@ -665,6 +715,11 @@ class Battle {
     return eligibleTargets;
   }
 
+  /**
+   * @param {BattlePokemon} pokemon
+   * @param {MoveIdEnum} moveId
+   * @returns {boolean}
+   */
   // eslint-disable-next-line class-methods-use-this
   isPokemonTargetable(pokemon, moveId = null) {
     if (!pokemon || pokemon.isFainted) {
@@ -697,6 +752,11 @@ class Battle {
     return true;
   }
 
+  /**
+   * @param {BattlePokemon} pokemon
+   * @param {MoveIdEnum} moveId
+   * @returns {boolean}
+   */
   // eslint-disable-next-line class-methods-use-this
   isPokemonHittable(pokemon, moveId = null) {
     if (!pokemon || pokemon.isFainted) {
@@ -733,8 +793,8 @@ class Battle {
    * @template {BattleEventEnum} K
    * @param {object} param0
    * @param {K} param0.eventName
-   * @param { BattleEventListenerCallback<K> } param0.callback
-   * @param { BattleEventListenerConditionCallback<K>= } param0.conditionCallback function that returns true if the event should be executed. If undefined, always execute for event.
+   * @param {BattleEventListenerCallback<K>} param0.callback
+   * @param {BattleEventListenerConditionCallback<K>=} param0.conditionCallback function that returns true if the event should be executed. If undefined, always execute for event.
    * @returns {string} listenerId
    */
   registerListenerFunction({ eventName, callback, conditionCallback }) {
@@ -768,6 +828,9 @@ class Battle {
     this.log = [];
   }
 
+  /**
+   * @param {string} message
+   */
   addToLog(message) {
     this.log.push(message);
   }
