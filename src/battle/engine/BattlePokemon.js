@@ -71,6 +71,13 @@ class BattlePokemon {
   incapacitated;
   restricted; */
 
+  /**
+   * @param {Battle} battle
+   * @param {any} trainer
+   * @param {WithId<Pokemon> & { remainingHp?: number }} pokemonData
+   * @param {string} teamName
+   * @param {number} position
+   */
   constructor(battle, trainer, pokemonData, teamName, position) {
     this.battle = battle;
     this.speciesId = pokemonData.speciesId;
@@ -99,13 +106,13 @@ class BattlePokemon {
     [
       this.atk = 0,
       this.batk = 0,
-      this.def,
+      this.def = 0,
       this.bdef = 0,
-      this.spa,
+      this.spa = 0,
       this.bspa = 0,
-      this.spd,
+      this.spd = 0,
       this.bspd = 0,
-      this.spe,
+      this.spe = 0,
       this.bspe = 0,
     ] = [
       pokemonData.stats[1],
@@ -127,9 +134,13 @@ class BattlePokemon {
      * @type {PartialRecord<EffectIdEnum, any>}
      */
     this.effectIds = {};
+
+    /** @type {PartialRecord<MoveIdEnum, { cooldown: number, disabled: boolean}>} */
+    this.moveIds = {};
     // map moveId => move data (cooldown, disabled)
     this.addMoves(pokemonData);
     this.setAbility(pokemonData);
+    /** @type {{ statusId?: StatusConditionEnum, source?: BattlePokemon, turns: number }} */
     this.status = {
       statusId: null,
       turns: 0,
@@ -143,6 +154,9 @@ class BattlePokemon {
     this.restricted = false;
   }
 
+  /**
+   * @param {Pokemon} pokemonData
+   */
   addMoves(pokemonData) {
     this.moveIds = getMoveIds(pokemonData).reduce((acc, moveId) => {
       acc[moveId] = {
@@ -153,12 +167,21 @@ class BattlePokemon {
     }, {});
   }
 
+  /**
+   * @param {Pokemon} pokemonData
+   */
   setAbility(pokemonData) {
     this.ability = {
       abilityId: pokemonData.abilityId,
     };
   }
 
+  /**
+   * @param {PokemonIdEnum} speciesId
+   * @param {object} param1
+   * @param {string?=} param1.abilityId
+   * @param {MoveIdEnum[]?=} param1.moveIds
+   */
   transformInto(speciesId, { abilityId = null, moveIds = [] } = {}) {
     const oldName = this.name;
     // remove ability
@@ -203,6 +226,10 @@ class BattlePokemon {
     this.battle.addToLog(`${oldName} transformed into ${this.name}!`);
   }
 
+  /**
+   * @param {MoveIdEnum} moveId
+   * @param {string} targetPokemonId
+   */
   useMove(moveId, targetPokemonId) {
     // make sure pokemon can move
     if (!this.canMove()) {
@@ -343,10 +370,6 @@ class BattlePokemon {
         executeEventArgs
       );
 
-      // HACK: set primary / all targets for later damage calculation
-      this.currentPrimaryTarget = primaryTarget;
-      this.currentAllTargets = allTargets;
-
       // execute move
       this.executeMove({
         moveId,
@@ -354,10 +377,6 @@ class BattlePokemon {
         allTargets,
         missedTargets,
       });
-
-      // clear primary / all targets
-      this.currentPrimaryTarget = null;
-      this.currentAllTargets = null;
 
       // after move event
       const eventArgs = {
@@ -388,6 +407,9 @@ class BattlePokemon {
       return;
     }
 
+    // HACK: set primary / all targets for later damage calculation
+    this.currentPrimaryTarget = primaryTarget;
+    this.currentAllTargets = allTargets;
     if (!move.isLegacyMove) {
       move.execute({
         battle: this.battle,
@@ -406,6 +428,9 @@ class BattlePokemon {
         missedTargets
       );
     }
+    // clear primary / all targets
+    this.currentPrimaryTarget = null;
+    this.currentAllTargets = null;
   }
 
   /**
@@ -596,7 +621,8 @@ class BattlePokemon {
     }
 
     // for all non-disabled moves not on cooldown, check to see if valid targets exist
-    for (const moveId in this.moveIds) {
+    for (const _moveId in this.moveIds) {
+      const moveId = /** @type {MoveIdEnum} */ (_moveId);
       if (this.moveIds[moveId].disabled || this.moveIds[moveId].cooldown > 0) {
         continue;
       }
@@ -610,6 +636,11 @@ class BattlePokemon {
     return false;
   }
 
+  /**
+   * @param {PokemonTypeEnum} moveType
+   * @param {BattlePokemon} targetPokemon
+   * @returns {number}
+   */
   getTypeDamageMultiplier(moveType, targetPokemon) {
     let mult = 1;
     if (typeAdvantages[moveType]) {
@@ -638,6 +669,13 @@ class BattlePokemon {
     return eventArgs.multiplier;
   }
 
+  /**
+   * @param {BattleParty} targetParty
+   * @param {TargetPatternEnum} targetPattern
+   * @param {number} targetPosition
+   * @param {MoveIdEnum} moveId
+   * @returns {BattlePokemon[]} targets
+   */
   getPatternTargets(targetParty, targetPattern, targetPosition, moveId = null) {
     const targetRow = Math.floor((targetPosition - 1) / targetParty.cols);
     const targetCol = (targetPosition - 1) % targetParty.cols;
@@ -748,6 +786,11 @@ class BattlePokemon {
     return targets;
   }
 
+  /**
+   * @param {MoveIdEnum} moveId
+   * @param {string} targetPokemonId
+   * @returns {BattlePokemon[]}
+   */
   getTargets(moveId, targetPokemonId) {
     const moveData = getMove(moveId);
     // make sure target exists and is alive
@@ -771,6 +814,11 @@ class BattlePokemon {
     ];
   }
 
+  /**
+   * @param {MoveIdEnum} moveId
+   * @param {BattlePokemon[]} targetPokemons
+   * @returns {BattlePokemon[]}
+   */
   getMisses(moveId, targetPokemons) {
     const moveData = getMove(moveId);
     const misses = [];
@@ -838,6 +886,11 @@ class BattlePokemon {
     return misses;
   }
 
+  /**
+   * Makes the Pokemon switch owners to the given userId.
+   * @param {string} userId
+   * @returns {boolean}
+   */
   switchUsers(userId) {
     if (this.userId === userId) {
       return false;
@@ -861,6 +914,12 @@ class BattlePokemon {
     return true;
   }
 
+  /**
+   * @param {string} userId
+   * @param {number} newPosition
+   * @param {BattlePokemon} source
+   * @returns {boolean}
+   */
   // eslint-disable-next-line no-unused-vars
   switchPositions(userId, newPosition, source) {
     const currentIndex = this.position - 1;
@@ -912,6 +971,12 @@ class BattlePokemon {
     return true;
   }
 
+  /**
+   * @param {number} damage
+   * @param {BattlePokemon} target
+   * @param {any} damageInfo TODO: improve damage info
+   * @returns {number}
+   */
   dealDamage(damage, target, damageInfo) {
     if (damage <= 0) {
       return 0;
@@ -953,6 +1018,12 @@ class BattlePokemon {
     return damageDealt;
   }
 
+  /**
+   * @param {number} damage
+   * @param {BattlePokemon} source
+   * @param {any} damageInfo TODO: improve damage info
+   * @returns {number}
+   */
   takeDamage(damage, source, damageInfo) {
     if (this.isFainted) {
       return 0;
@@ -1028,6 +1099,9 @@ class BattlePokemon {
     return damageTaken;
   }
 
+  /**
+   * @param {BattlePokemon} source
+   */
   takeFaint(source) {
     if (this.isFainted) {
       return;
@@ -1049,6 +1123,9 @@ class BattlePokemon {
     this.faint(source);
   }
 
+  /**
+   * @param {BattlePokemon} source
+   */
   faint(source) {
     // TODO: trigger before faint effects
 
@@ -1065,6 +1142,10 @@ class BattlePokemon {
     this.battle.eventHandler.emit(battleEventEnum.AFTER_FAINT, afterFaintArgs);
   }
 
+  /**
+   * @param {number} reviveHp
+   * @param {BattlePokemon} source
+   */
   // eslint-disable-next-line no-unused-vars
   beRevived(reviveHp, source) {
     if (!this.isFainted) {
@@ -1133,11 +1214,23 @@ class BattlePokemon {
     }
   }
 
+  /**
+   * @param {number} heal
+   * @param {BattlePokemon} target
+   * @param {any} healInfo TODO: improve heal info
+   * @returns {number}
+   */
   giveHeal(heal, target, healInfo) {
     const healGiven = target.takeHeal(heal, this, healInfo);
     return healGiven;
   }
 
+  /**
+   * @param {number} heal
+   * @param {BattlePokemon} source
+   * @param {any} healInfo
+   * @returns {number}
+   */
   // eslint-disable-next-line no-unused-vars
   takeHeal(heal, source, healInfo) {
     const oldHp = this.hp;
@@ -1152,6 +1245,12 @@ class BattlePokemon {
     return healTaken;
   }
 
+  /**
+   * @param {BattlePokemon} source
+   * @param {number} amount
+   * @param {boolean=} triggerEvents
+   * @returns {number} CR boosted
+   */
   boostCombatReadiness(source, amount, triggerEvents = true) {
     // if faint, do nothing
     if (this.isFainted) {
@@ -1201,6 +1300,11 @@ class BattlePokemon {
     return combatReadinessGained;
   }
 
+  /**
+   * @param {BattlePokemon} source
+   * @param {number} amount
+   * @returns {number} CR reduced
+   */
   reduceCombatReadiness(source, amount) {
     // if faint, do nothing
     if (this.isFainted) {
@@ -1322,6 +1426,10 @@ class BattlePokemon {
     }
   }
 
+  /**
+   * @param {EffectIdEnum} effectId
+   * @returns {boolean} whether the effect was dispelled
+   */
   dispellEffect(effectId) {
     const effectData = getEffect(effectId);
 
@@ -1361,6 +1469,9 @@ class BattlePokemon {
     delete this.effectIds[effectId];
   }
 
+  /**
+   * @param {EffectIdEnum} effectId
+   */
   removeEffect(effectId) {
     // if effect doesn't exist, do nothing
     if (!this.effectIds[effectId]) {
@@ -1409,6 +1520,12 @@ class BattlePokemon {
     return true;
   }
 
+  /**
+   * @param {StatusConditionEnum} statusId
+   * @param {BattlePokemon} source
+   * @param {object} options
+   * @param {number?=} options.startingTurns
+   */
   applyStatus(statusId, source, { startingTurns = 0 } = {}) {
     // if faint, do nothing
     if (this.isFainted) {
@@ -1609,6 +1726,9 @@ class BattlePokemon {
     this.status.turns += 1;
   }
 
+  /**
+   * @returns {boolean} whether the status was removed
+   */
   removeStatus() {
     // if status doesn't exist, do nothing
     if (!this.status.statusId) {
@@ -1648,6 +1768,10 @@ class BattlePokemon {
     return true;
   }
 
+  /**
+   * @param {MoveIdEnum} moveId
+   * @param {BattlePokemon} source
+   */
   // eslint-disable-next-line no-unused-vars
   disableMove(moveId, source) {
     // check that move exists
@@ -1665,6 +1789,10 @@ class BattlePokemon {
     // this.battle.addToLog(`${this.name}'s ${getMove(moveId).name} was disabled!`);
   }
 
+  /**
+   * @param {MoveIdEnum} moveId
+   * @param {BattlePokemon} source
+   */
   // eslint-disable-next-line no-unused-vars
   enableMove(moveId, source) {
     // check that move exists
@@ -1686,6 +1814,7 @@ class BattlePokemon {
     for (const effectId in this.effectIds) {
       this.effectIds[effectId].duration -= 1;
       if (this.effectIds[effectId].duration <= 0) {
+        // @ts-ignore
         this.removeEffect(effectId);
       }
     }
@@ -1699,7 +1828,13 @@ class BattlePokemon {
     }
   }
 
-  reduceMoveCooldown(moveId, amount, source, silenced = false) {
+  /**
+   * @param {MoveIdEnum} moveId
+   * @param {number} amount
+   * @param {BattlePokemon} source
+   * @param {boolean=} silenceLog
+   */
+  reduceMoveCooldown(moveId, amount, source, silenceLog = false) {
     // check that move exists
     if (!this.moveIds[moveId]) {
       return;
@@ -1718,7 +1853,7 @@ class BattlePokemon {
     }
     const newCooldown = this.moveIds[moveId].cooldown;
 
-    if (!silenced) {
+    if (!silenceLog) {
       this.battle.addToLog(
         `${this.name}'s ${getMove(moveId).name}'s cooldown was reduced by ${
           oldCooldown - newCooldown

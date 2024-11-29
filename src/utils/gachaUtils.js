@@ -6,8 +6,8 @@
  */
 
 /**
- * @template T
- * @param {{T: number}} probabilityDistribution
+ * @template {string | number | symbol} T
+ * @param {Record<T, number>} probabilityDistribution
  * @param {number} times
  * @returns {T[]}
  */
