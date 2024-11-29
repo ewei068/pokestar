@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 const { v4: uuidv4 } = require("uuid");
+const { Battle } = require("../battle/engine/Battle");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const {
@@ -24,12 +25,15 @@ const { logger } = require("../log");
 const { drawIterable } = require("../utils/gachaUtils");
 const { addRewards, getItems, removeItems } = require("../utils/trainerUtils");
 const { idFrom, errorlessAsync } = require("../utils/utils");
-const { RaidNPC, Battle, getStartTurnSend } = require("./battle");
+const { RaidNPC, getStartTurnSend } = require("./battle");
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
 const { validateParty } = require("./party");
 const { getState, setTtl, setState, deleteState } = require("./state");
 const { getTrainer, updateTrainer, getTrainerFromId } = require("./trainer");
 
+/**
+ * @param {WithId<Raid>} raid
+ */
 const updateRaid = async (raid) => {
   await updateDocument(
     collectionNames.RAIDS,
@@ -42,6 +46,9 @@ const updateRaid = async (raid) => {
   );
 };
 
+/**
+ * @param {WithId<Raid>} raid
+ */
 const deleteRaid = async (raid) => {
   // delete all state IDs
   const stateIds = raid.stateIds || [];
@@ -53,7 +60,11 @@ const deleteRaid = async (raid) => {
   });
 };
 
-// return true if raid not expired
+/**
+ * Return true if TTL not expired
+ * @param {WithId<Raid>} raid
+ * @returns {Promise<boolean>}
+ */
 const checkTtl = async (raid) => {
   if (!raid) {
     return false;
@@ -67,6 +78,11 @@ const checkTtl = async (raid) => {
   return true;
 };
 
+/**
+ * @param {object} param0
+ * @param {DiscordUser?=} param0.user
+ * @returns {Promise<WithId<Raid>?>}
+ */
 const getRaidForUser = async ({ user = null } = {}) => {
   const query = new QueryBuilder(collectionNames.RAIDS).setFilter({
     userId: user.id,
@@ -80,6 +96,11 @@ const getRaidForUser = async ({ user = null } = {}) => {
   return raid;
 };
 
+/**
+ * @param {object} param0
+ * @param {string?=} param0.raidInstanceId
+ * @returns {Promise<WithId<Raid>?>}
+ */
 const getRaidByInstanceId = async ({ raidInstanceId = null } = {}) => {
   const query = new QueryBuilder(collectionNames.RAIDS).setFilter({
     _id: idFrom(raidInstanceId),
@@ -93,6 +114,10 @@ const getRaidByInstanceId = async ({ raidInstanceId = null } = {}) => {
   return raid;
 };
 
+/**
+ * @param {WithId<Trainer>} trainer
+ * @returns {boolean}
+ */
 const canStartRaid = (trainer) => {
   const numRaidPasses = getItems(trainer, backpackItems.RAID_PASS);
   return numRaidPasses > 0;

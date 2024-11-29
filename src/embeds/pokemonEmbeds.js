@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * pokemonEmbeds.js is a file that creates all relevant embeds for pokemon-related actions by the user.
  */
@@ -16,7 +14,7 @@ const {
   growthRateConfig,
 } = require("../config/pokemonConfig");
 const { getAbility } = require("../battle/data/abilityRegistry");
-const { getMove } = require("../battle/data/moveService");
+const { getMove } = require("../battle/data/moveRegistry");
 const {
   getWhitespace,
   getPBar,
@@ -59,6 +57,12 @@ const {
   SWAP_COST,
 } = require("../config/equipmentConfig");
 
+/**
+ *
+ * @param {Trainer} trainer
+ * @param {BannerData} bannerData
+ * @returns {EmbedBuilder}
+ */
 const buildBannerEmbed = (trainer, bannerData) => {
   const type = bannerData.bannerType;
   const rateUp = bannerData.rateUp() || {};
@@ -144,6 +148,12 @@ const buildGachaInfoString = () => {
   return infoString;
 };
 
+/**
+ * @param {PokemonIdEnum} speciesId
+ * @param {number} level
+ * @param {boolean=} shiny
+ * @returns {EmbedBuilder}
+ */
 const buildPokemonSpawnEmbed = (speciesId, level, shiny = false) => {
   const speciesData = pokemonConfig[speciesId];
   const embed = new EmbedBuilder();
@@ -159,6 +169,13 @@ const buildPokemonSpawnEmbed = (speciesId, level, shiny = false) => {
 
 // pokemon: user's pokemon data
 // speciesData: pokemon species config data
+/**
+ *
+ * @param {Pokemon} pokemon
+ * @param {BackpackItemEnum} pokeballId
+ * @param {number=} remaining
+ * @returns {EmbedBuilder}
+ */
 const buildNewPokemonEmbed = (
   pokemon,
   pokeballId = backpackItems.POKEBALL,
@@ -219,6 +236,12 @@ const buildNewPokemonEmbed = (
   return embed;
 };
 
+/**
+ * @param {Pokemon[]} pokemons
+ * @param {BackpackItemEnum} pokeballId
+ * @param {number=} remaining
+ * @returns {EmbedBuilder}
+ */
 const buildNewPokemonListEmbed = (
   pokemons,
   pokeballId = backpackItems.POKEBALL,
@@ -248,6 +271,12 @@ const buildNewPokemonListEmbed = (
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {Pokemon[]} pokemons
+ * @param {number} page
+ * @returns {EmbedBuilder}
+ */
 const buildPokemonListEmbed = (trainer, pokemons, page) => {
   let pokemonString = "\n";
   for (let i = 0; i < pokemons.length; i += 1) {
@@ -271,6 +300,14 @@ const buildPokemonListEmbed = (trainer, pokemons, page) => {
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {Pokemon} pokemon
+ * @param {string=} tab
+ * @param {Pokemon=} oldPokemon
+ * @param {string=} originalOwnerId
+ * @returns {EmbedBuilder}
+ */
 const buildPokemonEmbed = (
   trainer,
   pokemon,
@@ -435,6 +472,11 @@ const buildPokemonEmbed = (
   return embed;
 };
 
+/**
+ * @param {Pokemon} pokemon
+ * @param {Pokemon} oldPokemon
+ * @returns {EmbedBuilder}
+ */
 const buildEquipmentEmbed = (pokemon, oldPokemon) => {
   const speciesData = pokemonConfig[pokemon.speciesId];
   const embed = new EmbedBuilder();
@@ -476,6 +518,15 @@ const buildEquipmentEmbed = (pokemon, oldPokemon) => {
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {Pokemon} pokemon
+ * @param {EquipmentTypeEnum} equipmentType
+ * @param {Equipment} equipment
+ * @param {boolean=} upgrade
+ * @param {boolean=} slotReroll
+ * @returns {EmbedBuilder}
+ */
 const buildEquipmentUpgradeEmbed = (
   trainer,
   pokemon,
@@ -559,6 +610,12 @@ const buildEquipmentUpgradeEmbed = (
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {any[]} equipments This is complicated
+ * @param {number} page
+ * @returns {EmbedBuilder}
+ */
 const buildEquipmentListEmbed = (trainer, equipments, page) => {
   const equipmentString = equipments
     .map((equipment) => {
@@ -582,6 +639,13 @@ const buildEquipmentListEmbed = (trainer, equipments, page) => {
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {Pokemon} pokemon1
+ * @param {Pokemon} pokemon2
+ * @param {EquipmentTypeEnum} equipmentType
+ * @returns {EmbedBuilder}
+ */
 const buildEquipmentSwapEmbed = (
   trainer,
   pokemon1,
@@ -637,6 +701,11 @@ const buildEquipmentSwapEmbed = (
   return embed;
 };
 
+/**
+ * @param {PokemonIdEnum} speciesIds
+ * @param {number} page
+ * @returns {EmbedBuilder}
+ */
 const buildDexListEmbed = (speciesIds, page) => {
   const pokedexString = speciesIds
     .map((id) => {
@@ -656,6 +725,13 @@ const buildDexListEmbed = (speciesIds, page) => {
   return embed;
 };
 
+/**
+ * @param {PokemonIdEnum} id
+ * @param {PokemonConfigData} speciesData
+ * @param {string} tab
+ * @param {any} ownershipData
+ * @returns {EmbedBuilder}
+ */
 const buildSpeciesDexEmbed = (id, speciesData, tab, ownershipData) => {
   const embed = new EmbedBuilder();
   embed.setTitle(`${speciesData.emoji} #${id} ${speciesData.name}`);
@@ -810,6 +886,10 @@ const buildSpeciesDexEmbed = (id, speciesData, tab, ownershipData) => {
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @returns {EmbedBuilder}
+ */
 const buildCelebiAbilityEmbed = (trainer) => {
   const celebiPool = getCelebiPool();
   let timeTravelString =

@@ -2,7 +2,7 @@
 require("dotenv").config();
 
 const { Client, Events, GatewayIntentBits } = require("discord.js");
-const { logger } = require("./log");
+const { logger } = require("../../src/log");
 
 // Create a new client instance
 const client = new Client({

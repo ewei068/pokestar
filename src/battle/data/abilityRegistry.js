@@ -1,8 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 const { abilityIdEnum } = require("../../enums/battleEnums"); // TODO: remove after testing
 const { logger } = require("../../log");
-// eslint-disable-next-line no-unused-vars
-const types = require("../../../types");
 
 const allAbilities = {};
 
@@ -52,7 +50,7 @@ const getAbility = (abilityId) =>
  * @param {object} param0
  * @param {Record<string, any>=} param0.fieldFilter
  * @param {Function=} param0.customFilter
- * @returns {types.PartialRecord<AbilityIdEnum, Ability<any>>}
+ * @returns {PartialRecord<AbilityIdEnum, Ability<any>>}
  */
 const getAbilities = ({ fieldFilter, customFilter }) => {
   if (customFilter) {

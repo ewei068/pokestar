@@ -1,12 +1,14 @@
 const { backpackItems } = require("./backpackConfig");
 
-const shopCategories = {
+/** @typedef {Enum<shopCategories>} ShopCategoryEnum */
+const shopCategories = Object.freeze({
   GACHA: "0",
   LOCATIONS: "1",
   MATERIALS: "2",
-};
+});
 
-const shopItems = {
+/** @typedef {Enum<shopItems>} ShopItemEnum */
+const shopItems = Object.freeze({
   RANDOM_POKEBALL: "0",
   HOME: "1",
   RESTAURANT: "2",
@@ -22,7 +24,7 @@ const shopItems = {
   BERRY_FARM: "12",
   COMPUTER_LAB: "13",
   ILEX_SHRINE: "14",
-};
+});
 
 // training locations
 // exp: home

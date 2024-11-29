@@ -38,8 +38,14 @@ const {
   addItems,
   getItems,
 } = require("../utils/trainerUtils");
-const { User } = require("discord.js");
 
+/**
+ *
+ * @param {WithId<Trainer>} trainer
+ * @param {ShopItemEnum} itemId
+ * @param {number} quantity
+ * @returns {object}
+ */
 const canBuyItem = (trainer, itemId, quantity) => {
   getOrSetDefault(trainer.purchasedShopItemsToday, itemId, 0);
 
@@ -133,6 +139,12 @@ const canBuyItem = (trainer, itemId, quantity) => {
   };
 };
 
+/**
+ * @param {WithId<Trainer>} trainer
+ * @param {ShopItemEnum} itemId
+ * @param {number} quantity
+ * @returns {Promise<{data: string?, err: string?}>}
+ */
 const buyItem = async (trainer, itemId, quantity) => {
   getOrSetDefault(trainer.purchasedShopItemsToday, itemId, 0);
 
@@ -308,9 +320,9 @@ const buyItem = async (trainer, itemId, quantity) => {
 
 /**
  *
- * @param {Object} param0
+ * @param {object} param0
  * @param {string?=} param0.stateId
- * @param {User?=} param0.user
+ * @param {DiscordUser?=} param0.user
  * @param {string?=} param0.view
  * @param {string?=} param0.option
  * @param {boolean?=} param0.back

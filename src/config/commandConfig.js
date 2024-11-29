@@ -1,10 +1,8 @@
 const { stageNames, stageConfig } = require("./stageConfig");
-/* eslint-disable no-unused-vars */
-const types = require("../../types");
 
 const { prefix } = stageConfig[process.env.STAGE];
 
-/** @typedef {types.Keys<commandCategoryConfig>} CommandCategoryEnum */
+/** @typedef {Keys<commandCategoryConfig>} CommandCategoryEnum */
 
 // TODO: re-order commands and categories
 // TODO: add long descriptions
@@ -16,7 +14,7 @@ const { prefix } = stageConfig[process.env.STAGE];
  *  commands: CommandEnum[]
  * }>}
  */
-const commandCategoryConfig = Object.freeze({
+const commandCategoryConfigRaw = {
   trainer: {
     name: "Trainer",
     description: "Commands involving your trainer",
@@ -98,12 +96,13 @@ const commandCategoryConfig = Object.freeze({
     folder: "heartbeat",
     commands: ["ping", "echo", "give", "test"],
   },
-});
+};
+const commandCategoryConfig = Object.freeze(commandCategoryConfigRaw);
 
-/** @typedef {types.Keys<commandConfig>} CommandEnum */
+/** @typedef {Keys<commandConfigRaw>} CommandEnum */
 
 /**
- * @satisfies {Record<string, {
+ * @typedef {{
  *  name: string,
  *  aliases: string[],
  *  description: string,
@@ -122,9 +121,13 @@ const commandCategoryConfig = Object.freeze({
  *  parent?: string,
  *  subcommands?: string[],
  *  isDeact?: boolean,
- * }>}
+ * }} CommandConfigData
  */
-const commandConfig = Object.freeze({
+
+/**
+ * @satisfies {Record<string, CommandConfigData>}
+ */
+const commandConfigRaw = {
   ping: {
     name: "Ping",
     aliases: ["ping"],
@@ -558,7 +561,7 @@ const commandConfig = Object.freeze({
   pokemart: {
     name: "Pokemart",
     aliases: ["pokemart", "pm", "shop"],
-    description: "Get info about the items in stock at the Pokemart",
+    description: "Get info about the items in stock at the Pokemart (shop)",
     execute: "pokemart.js",
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
@@ -1059,7 +1062,10 @@ const commandConfig = Object.freeze({
     },
     stages: [stageNames.ALPHA],
   },
-});
+};
+
+/** @type {Record<CommandEnum, CommandConfigData>} */
+const commandConfig = Object.freeze(commandConfigRaw);
 
 module.exports = {
   commandCategoryConfig,

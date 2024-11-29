@@ -1,6 +1,8 @@
-module.exports._typesOnly = true;
-
 // TODO: organize this lol
+
+/**
+ * @typedef {import("discord.js").User} DiscordUser
+ */
 
 /**
  * @template T
@@ -8,10 +10,9 @@ module.exports._typesOnly = true;
  */
 
 /**
- * @template T
- * @typedef {keyof T} Keys<T>
+ * @template {{[key in string | number]: any}} T
+ * @typedef {keyof T extends string | number ? `${keyof T}` : any} Keys<T>
  */
-
 /**
  * @template {string | number | symbol} T
  * @template U
@@ -47,6 +48,28 @@ module.exports._typesOnly = true;
  */
 
 /**
+ * @typedef {PartialRecord<BackpackCategoryEnum, PartialRecord<BackpackItemEnum, number>>} Backpack
+ */
+
+/**
+ * @typedef {PartialRecord<BackpackItemEnum, number>} FlattenedBackpack
+ */
+
+/**
+ * @typedef {{
+ *  money?: number,
+ *  backpack?: Backpack
+ * }} Rewards
+ */
+
+/**
+ * @typedef {{
+ *  money?: number,
+ *  backpack?: FlattenedBackpack
+ * }} FlattenedRewards
+ */
+
+/**
  * @typedef {object} Trainer
  *
  * Discord user info
@@ -58,17 +81,17 @@ module.exports._typesOnly = true;
  * @property {number} level
  * @property {number} exp
  * @property {number} money
- * @property {object} backpack
- * @property {object} locations
+ * @property {Backpack} backpack
+ * @property {PartialRecord<LocationEnum, number>} locations
  * @property {UserTradeInfo} trade
  *
  * Rewards and time-gated stuff
- * @property {number} lastDaily
+ * @property {number} lastCorrected
  * @property {boolean} claimedDaily
- * @property {object} purchasedShopItemsToday
+ * @property {PartialRecord<ShopItemEnum, number>} purchasedShopItemsToday
  * @property {Array<number>} claimedLevelRewards
- * @property {object} defeatedNPCsToday
- * @property {object} defeatedNPCs
+ * @property {PartialRecord<NpcEnum | RaidEnum | DungeonEnum | number, NpcDifficultyEnum[]>} defeatedNPCsToday
+ * @property {PartialRecord<NpcEnum | RaidEnum | DungeonEnum | number, NpcDifficultyEnum[]>} defeatedNPCs
  * @property {number} lastTowerStage
  *
  * Party info
@@ -93,32 +116,80 @@ module.exports._typesOnly = true;
  */
 
 /**
- * TODO: organize
+ * @typedef {object} Equipment
+ * @property {number} level
+ * @property {{
+ *  [key in EquipmentModifierSlotEnum]: {
+ *   modifier: EquipmentModifierEnum,
+ *   quality: number
+ *  }
+ * }} slots
+ */
+
+/**
+ * @typedef {{
+ *  [key in EquipmentTypeEnum]: Equipment
+ * }} EquipmentSet
+ */
+
+/** @typedef {[number, number, number, number, number, number]} StatArray */
+
+/**
  * @typedef {object} Pokemon
+ *
+ * Basic info
  * @property {string} userId
  * @property {PokemonIdEnum} speciesId
  * @property {string} name
+ * @property {number} dateAcquired
+ * @property {string} originalOwner
+ *
+ * Progression
  * @property {number} level
  * @property {number} exp
- * @property {[number, number, number, number, number, number]} evs
- * @property {[number, number, number, number, number, number]} ivs
- * @property {[number, number, number, number, number, number]} stats
+ *
+ * Stats
+ * @property {StatArray} evs
+ * @property {StatArray} ivs
+ * @property {number} ivTotal
+ * @property {StatArray} stats
  * @property {number} combatPower
+ *
+ * Important info (IDK)
  * @property {NatureEnum} natureId
  * @property {AbilityIdEnum | string | number} abilityId
- * @property {string} item
- * @property {MoveIdEnum[]} moveIds
  * @property {boolean} shiny
- * @property {number} dateAcquired
- * @property {number} ivTotal
- * @property {string} originalOwner
+ * @property {MoveIdEnum[]} moveIds
+ *
+ * Equipment
+ * @property {EquipmentSet} equipments
+ * @property {string} item Unused currently
+ *
+ * Other tags
  * @property {RarityEnum} rarity
- * @property {any} equipments
  * @property {boolean} locked
- * @property {boolean} battleEligible
+ * @property {boolean} battleEligible All Pokemon are battle eligible now
  */
 
 /**
  * @template T
  * @typedef {import('mongodb').Collection & T} MongoCollection
+ */
+
+/**
+ * @template T
+ * @typedef {import('mongodb').WithId<T>} WithId
+ */
+
+/**
+ * @typedef {object} Raid
+ * @property {string} userId
+ * @property {RaidEnum} raidId
+ * @property {string} raidUserId Placeholder user ID for raid enemy
+ * @property {string} bossPokemonId Placeholder Pokemon ID for raid boss
+ * @property {NpcDifficultyEnum} difficulty
+ * @property {Pokemon & {remainingHp: number, _id: string}} boss
+ * @property {number} ttl
+ * @property {Record<string, number>} participants Map participant user ID to damage dealt
+ * @property {string[]} stateIds
  */

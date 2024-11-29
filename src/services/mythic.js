@@ -34,20 +34,22 @@ const { logger } = require("../log");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
 const { drawDiscrete, drawIterable } = require("../utils/gachaUtils");
 const { getItems, removeItems } = require("../utils/trainerUtils");
-const {
-  generateRandomPokemon,
-  checkNumPokemon,
-  giveNewPokemons,
-} = require("./gacha");
+const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
 const {
   listPokemons,
   getPokemon,
   calculatePokemonStats,
   calculateAndUpdatePokemonStats,
+  checkNumPokemon,
 } = require("./pokemon");
 const { getTrainer, updateTrainer } = require("./trainer");
-const { getMoves } = require("../battle/data/moveService");
+const { getMoves } = require("../battle/data/moveRegistry");
 
+/**
+ * @param {Trainer} trainer
+ * @param {string | number} speciesId
+ * @returns {Promise<{data?: WithId<Pokemon>, err?: string}>}
+ */
 const getMythic = async (trainer, speciesId) => {
   const speciesData = pokemonConfig[speciesId];
   if (!speciesData) {
@@ -403,7 +405,7 @@ const getCelebi = async (trainer) => {
     // set locked to true
     celebi.locked = true;
     // set nature to 0
-    celebi.natureId = "0";
+    celebi.natureId = 0;
     // recalculate stats
     calculatePokemonStats(celebi, celebiData);
     modified = true;
@@ -589,7 +591,7 @@ const getDeoxys = async (trainer) => {
     // set locked to true
     deoxys.locked = true;
     // set nature to 0
-    deoxys.natureId = "0";
+    deoxys.natureId = 0;
     // recalculate stats
     calculatePokemonStats(deoxys, deoxysData);
     modified = true;

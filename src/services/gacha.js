@@ -1,10 +1,11 @@
 // TODO: can probably fix
 /* eslint-disable no-param-reassign */
+
+// TODO: should i move a bunch of this stuff out of here?
+
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * gacha.js handles all basic gacha logic, draws, dailies etc.
  */
@@ -26,11 +27,7 @@ const {
   rarities,
 } = require("../config/pokemonConfig");
 const { collectionNames } = require("../config/databaseConfig");
-const {
-  updateDocument,
-  countDocuments,
-  QueryBuilder,
-} = require("../database/mongoHandler");
+const { updateDocument, QueryBuilder } = require("../database/mongoHandler");
 const { stageNames } = require("../config/stageConfig");
 const {
   drawDiscrete,
@@ -38,7 +35,6 @@ const {
   drawUniform,
 } = require("../utils/gachaUtils");
 const {
-  MAX_POKEMON,
   trainerFields,
   NUM_DAILY_SHARDS,
   NUM_DAILY_REWARDS,
@@ -48,7 +44,11 @@ const { getState } = require("./state");
 
 const { logger } = require("../log");
 const { getOrSetDefault } = require("../utils/utils");
-const { calculatePokemonStats, getBattleEligible } = require("./pokemon");
+const {
+  calculatePokemonStats,
+  getBattleEligible,
+  checkNumPokemon,
+} = require("./pokemon");
 const { getPokemonExpNeeded } = require("../utils/pokemonUtils");
 const { buildBannerEmbed } = require("../embeds/pokemonEmbeds");
 const { buildScrollActionRow } = require("../components/scrollActionRow");
@@ -56,7 +56,6 @@ const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { addItems } = require("../utils/trainerUtils");
 const { equipmentConfig } = require("../config/equipmentConfig");
-const { locationConfig, locations } = require("../config/locationConfig");
 
 const DAILY_MONEY = process.env.STAGE === stageNames.ALPHA ? 100000 : 300;
 
@@ -133,16 +132,20 @@ const drawDaily = async (trainer) => {
   return { data: rv, err: null };
 };
 
+/**
+ * @param {number} equipmentLevel
+ * @returns {EquipmentSet}
+ */
 const generateRandomEquipments = (equipmentLevel = 1) => {
-  const equipments = {};
-  for (const equipmentType in equipmentConfig) {
-    const equipmentData = equipmentConfig[equipmentType];
+  const equipments = /** @type {EquipmentSet} */ ({});
+  for (const [equipmentType, equipmentData] of Object.entries(
+    equipmentConfig
+  )) {
     const equipment = {
       level: equipmentLevel,
       slots: {},
     };
-    for (const slot in equipmentData.slots) {
-      const slotData = equipmentData.slots[slot];
+    for (const [slot, slotData] of Object.entries(equipmentData.slots)) {
       equipment.slots[slot] = {
         modifier: drawIterable(slotData.modifiers, 1)[0],
         quality: drawUniform(0, 100, 1)[0],
@@ -155,6 +158,16 @@ const generateRandomEquipments = (equipmentLevel = 1) => {
   return equipments;
 };
 
+/**
+ * @param {string} userId
+ * @param {string} pokemonId
+ * @param {number=} level
+ * @param {object} options
+ * @param {number?=} options.equipmentLevel
+ * @param {boolean?=} options.isShiny
+ * @param {boolean?=} options.betterIvs
+ * @returns {Pokemon}
+ */
 const generateRandomPokemon = (
   userId,
   pokemonId,
@@ -216,9 +229,17 @@ const generateRandomPokemon = (
   // get battle eligible
   pokemon.battleEligible = getBattleEligible(pokemonConfig, pokemon);
 
+  // @ts-ignore
   return pokemon;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {Array<string>} pokemonIds
+ * @param {number=} level
+ * @param {any} options
+ * @returns {Promise<{data?: { pokemons: Array<WithId<Pokemon>> }, err?: any}>}
+ */
 const giveNewPokemons = async (
   trainer,
   pokemonIds,
@@ -250,14 +271,19 @@ const giveNewPokemons = async (
 
     // for each pokemon, add their _id
     for (let i = 0; i < pokemons.length; i += 1) {
+      // @ts-ignore
       pokemons[i]._id = res.insertedIds[i];
     }
 
     const rv = {
-      pokemons,
+      // @ts-ignore
+      /** @type {Array<import("mongodb").WithId<Pokemon>>} */ pokemons,
     };
 
-    return { data: rv, err: null };
+    return {
+      data: rv,
+      err: null,
+    };
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error drawing Pokemon." };
@@ -291,36 +317,6 @@ const beginnerRoll = (trainer, quantity) => {
   trainer.beginnerRolls = Math.min(currentNumRolls + quantity, 10);
 
   return rolls;
-};
-
-const checkNumPokemon = async (trainer, quantity) => {
-  let pokemonLimit = MAX_POKEMON;
-  // if trainer has computer lab locations, increase pokemon limit
-  const labLevel = trainer.locations[locations.COMPUTER_LAB];
-  if (labLevel) {
-    pokemonLimit =
-      locationConfig[locations.COMPUTER_LAB].levelConfig[labLevel].storage;
-  }
-
-  // check for max pokemon
-  try {
-    const numPokemon = await countDocuments(collectionNames.USER_POKEMON, {
-      userId: trainer.userId,
-    });
-    if (
-      numPokemon + quantity > pokemonLimit &&
-      process.env.STAGE !== stageNames.ALPHA
-    ) {
-      return {
-        err: "Max pokemon reached! Use `/release` or `/list` to release some pokemon, or get more storage by purchasing the Computer Lab location in the `/pokemart`!",
-      };
-    }
-  } catch (error) {
-    logger.error(error);
-    return { err: "Error checking max Pokemon." };
-  }
-
-  return { err: null };
 };
 
 const usePokeball = async (trainer, pokeballId, bannerIndex, quantity = 1) => {
@@ -466,11 +462,11 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity = 1) => {
 };
 
 /**
- * @param {Object} param0
+ * @param {object} param0
  * @param {number?=} param0.stateId
- * @param {Object?=} param0.user
+ * @param {object?=} param0.user
  * @param {number?=} param0.page
- * @returns
+ * @returns {Promise<any>}
  */
 const buildBannerSend = async ({
   stateId = null,
@@ -621,6 +617,5 @@ module.exports = {
   giveNewPokemons,
   usePokeball,
   generateRandomPokemon,
-  checkNumPokemon,
   buildBannerSend,
 };

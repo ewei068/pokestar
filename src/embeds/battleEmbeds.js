@@ -1,14 +1,12 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * battleEmbeds.js Handles all embedded instructions for battles.
  */
 const { EmbedBuilder } = require("discord.js");
 const { weatherConditions } = require("../config/battleConfig");
-const { getMove } = require("../battle/data/moveService");
+const { getMove } = require("../battle/data/moveRegistry");
 const {
   buildPartyString,
   buildMoveString,
@@ -45,10 +43,10 @@ const {
 
 /**
  * Handles building the party embedded instructions for building a party.
- * @param {*} trainer the trainer to build the party for.
- * @param {*} pokemons the pokemon the trainer has.
- * @param {*} detailed whether it's a detailed party formation.
- * @returns an embeded.
+ * @param {Trainer} trainer the trainer to build the party for.
+ * @param {WithId<Pokemon>[]} pokemons the pokemon the trainer has.
+ * @param {boolean=} detailed whether it's a detailed party formation.
+ * @returns {EmbedBuilder} an embeded.
  */
 const buildPartyEmbed = (trainer, pokemons, detailed = false) => {
   const { party } = trainer;
@@ -101,9 +99,9 @@ const buildPartyEmbed = (trainer, pokemons, detailed = false) => {
 };
 /**
  * Shows the built parties of the user.
- * @param {*} trainer the trainer who's parties we're showing.
- * @param {*} pokemonMap the map of pokemon the user has?
- * @returns an embeded.
+ * @param {Trainer} trainer the trainer who's parties we're showing.
+ * @param {Record<string, Pokemon>} pokemonMap map of pokemon ID to pokemon
+ * @returns {EmbedBuilder} an embeded.
  */
 const buildPartiesEmbed = (trainer, pokemonMap) => {
   // active party field
@@ -146,8 +144,8 @@ const buildPartiesEmbed = (trainer, pokemonMap) => {
 };
 /**
  * Builds the battle the players/players and npcs will use.
- * @param {*} battle the battle itself.
- * @returns an embeded.
+ * @param {Battle} battle the battle itself.
+ * @returns {EmbedBuilder} an embeded.
  */
 const buildBattleEmbed = (battle) => {
   // assume two teams
@@ -225,9 +223,7 @@ const buildBattleEmbed = (battle) => {
         team1Party.pokemons,
         team1Party.rows,
         team1Party.cols,
-        true,
-        true,
-        team1EmphPosition
+        { reverse: true, showHp: true, emphPosition: team1EmphPosition }
       ),
       inline: false,
     },
@@ -237,9 +233,7 @@ const buildBattleEmbed = (battle) => {
         team2Party.pokemons,
         team2Party.rows,
         team2Party.cols,
-        false,
-        true,
-        team2EmphPosition
+        { showHp: true, emphPosition: team2EmphPosition }
       ),
       inline: false,
     }
@@ -250,20 +244,22 @@ const buildBattleEmbed = (battle) => {
 
 /**
  * Builds the moveset of the pokemon in the battle.
- * @param {*} pokemon the pokemon to build the moves for.
- * @returns an embeded
+ * @param {BattlePokemon} pokemon the pokemon to build the moves for.
+ * @returns {EmbedBuilder} an embeded
  */
 const buildBattleMovesetEmbed = (pokemon) => {
-  const fields = Object.keys(pokemon.moveIds).map((moveId) => {
-    const { cooldown } = pokemon.moveIds[moveId];
-    const moveData = getMove(moveId);
-    const { moveHeader, moveString } = buildMoveString(moveData, cooldown);
-    return {
-      name: moveHeader,
-      value: moveString,
-      inline: true,
-    };
-  });
+  const fields = Object.keys(pokemon.moveIds).map(
+    (/** @type {MoveIdEnum} */ moveId) => {
+      const { cooldown } = pokemon.moveIds[moveId];
+      const moveData = getMove(moveId);
+      const { moveHeader, moveString } = buildMoveString(moveData, cooldown);
+      return {
+        name: moveHeader,
+        value: moveString,
+        inline: true,
+      };
+    }
+  );
 
   setTwoInline(fields);
 
@@ -279,9 +275,9 @@ const buildBattleMovesetEmbed = (pokemon) => {
 };
 /**
  * Builds the team for the battle to be embeded.
- * @param {*} battle the battle itself.
- * @param {*} teamName the name of the team we're looking at. (a specific user's team)
- * @returns an embeded.
+ * @param {Battle} battle the battle itself.
+ * @param {string} teamName the name of the team we're looking at. (a specific user's team)
+ * @returns {EmbedBuilder} an embeded.
  */
 const buildBattleTeamEmbed = (battle, teamName) => {
   const teamUserIds = battle.teams[teamName].userIds;
@@ -317,10 +313,11 @@ const buildBattleTeamEmbed = (battle, teamName) => {
 };
 
 /**
+ * TODO: maybe make embed functionality reusable idk
  * Builds the list of pve options as an embeded.
- * @param {*} npcIds the npc's available for battle.
- * @param {*} page the page number.
- * @returns an embeded
+ * @param {NpcEnum[]} npcIds the npc's available for battle.
+ * @param {number} page the page number.
+ * @returns {EmbedBuilder} an embeded
  */
 const buildPveListEmbed = (npcIds, page) => {
   let npcString = "";
@@ -346,10 +343,11 @@ const buildPveListEmbed = (npcIds, page) => {
 
   return embed;
 };
+
 /**
  * Builds a specific npc for pve.
- * @param {*} npcId the id of the npc we're building.
- * @returns an embeded
+ * @param {NpcEnum} npcId the id of the npc we're building.
+ * @returns {EmbedBuilder} an embeded
  */
 const buildPveNpcEmbed = (npcId) => {
   const npc = npcConfig[npcId];
@@ -380,7 +378,7 @@ const buildPveNpcEmbed = (npcId) => {
 
 /**
  * Builds the list of Dungeons as an embeded.
- * @returns an embeded list of the dungeons.
+ * @returns {EmbedBuilder} an embeded list of the dungeons.
  */
 const buildDungeonListEmbed = () => {
   let dungeonString = "";
@@ -398,8 +396,8 @@ const buildDungeonListEmbed = () => {
 };
 /**
  * Builds a specific dungeon for the embeded dungeon list.
- * @param {*} dungeonId the Id of the specific dungeon we're building.
- * @returns an embeded dungeon.
+ * @param {DungeonEnum} dungeonId the Id of the specific dungeon we're building.
+ * @returns {EmbedBuilder} an embeded dungeon.
  */
 const buildDungeonEmbed = (dungeonId) => {
   const dungeonData = dungeonConfig[dungeonId];
@@ -432,6 +430,10 @@ const buildDungeonEmbed = (dungeonId) => {
   return embed;
 };
 
+/**
+ * @param {number} towerStage
+ * @returns {EmbedBuilder}
+ */
 const buildBattleTowerEmbed = (towerStage) => {
   const battleTowerData = battleTowerConfig[towerStage];
   const npcData = npcConfig[battleTowerData.npcId];
@@ -479,6 +481,9 @@ const buildBattleTowerEmbed = (towerStage) => {
   return embed;
 };
 
+/**
+ * @returns {EmbedBuilder}
+ */
 const buildRaidListEmbed = () => {
   let raidString = "";
   Object.entries(raidConfig).forEach(([, raidData]) => {
@@ -494,6 +499,10 @@ const buildRaidListEmbed = () => {
   return embed;
 };
 
+/**
+ * @param {RaidEnum} raidId
+ * @returns {EmbedBuilder}
+ */
 const buildRaidEmbed = (raidId) => {
   const raidData = raidConfig[raidId];
 
@@ -539,6 +548,10 @@ const buildRaidEmbed = (raidId) => {
   return embed;
 };
 
+/**
+ * @param {Raid} raid
+ * @returns {EmbedBuilder}
+ */
 const buildRaidInstanceEmbed = (raid) => {
   const { userId, raidId, boss, ttl, participants } = raid;
   const raidData = raidConfig[raidId];
@@ -585,6 +598,11 @@ const buildRaidInstanceEmbed = (raid) => {
   return embed;
 };
 
+/**
+ * @param {Raid} raid
+ * @param {Rewards & {shiny?: boolean}} rewards
+ * @returns {EmbedBuilder}
+ */
 const buildRaidWinEmbed = (raid, rewards) => {
   const { raidId, boss, participants } = raid;
   const raidData = raidConfig[raidId];

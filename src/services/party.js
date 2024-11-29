@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * party.js all basic logic for parties.
  */
@@ -15,6 +13,12 @@ const { pokemonConfig } = require("../config/pokemonConfig");
 const { getTrainer } = require("./trainer");
 const { buildPartyEmbed } = require("../embeds/battleEmbeds");
 
+/**
+ *
+ * @param {Trainer} trainer
+ * @param {PartyInfo} party
+ * @returns {Promise<{data: null, err: string?}>}
+ */
 const updateParty = async (trainer, party) => {
   try {
     const res = await updateDocument(
@@ -35,6 +39,10 @@ const updateParty = async (trainer, party) => {
   return { data: null, err: null };
 };
 
+/**
+ * @param {Trainer} trainer
+ * @returns {Promise<{data: WithId<Pokemon>[]?, err: string?}>}
+ */
 const getPartyPokemons = async (trainer) => {
   const pokemonIds = trainer.party.pokemonIds.reduce((acc, curr) => {
     if (curr) {
@@ -75,6 +83,10 @@ const getPartyPokemons = async (trainer) => {
   return { data: partyPokemons, err: null };
 };
 
+/**
+ * @param {Trainer} trainer
+ * @returns {Promise<{data: WithId<Pokemon>[], err: string?}>}
+ */
 const validateParty = async (trainer) => {
   const { party } = trainer;
 

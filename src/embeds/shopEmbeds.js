@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * shopEmbeds.js Creates the embeded options for the shop for user interaction.
  */
@@ -10,6 +8,10 @@ const { EmbedBuilder } = require("discord.js");
 const { shopCategoryConfig, shopItemConfig } = require("../config/shopConfig");
 const { formatMoney } = require("../utils/utils");
 
+/**
+ * @param {Trainer} trainer
+ * @returns {EmbedBuilder}
+ */
 const buildShopEmbed = (trainer) => {
   let shopString = " ";
   for (const categoryId in shopCategoryConfig) {
@@ -30,6 +32,11 @@ const buildShopEmbed = (trainer) => {
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {ShopCategoryEnum} categoryId
+ * @returns {EmbedBuilder}
+ */
 const buildShopCategoryEmbed = (trainer, categoryId) => {
   const categoryData = shopCategoryConfig[categoryId];
   const { items } = categoryData;
@@ -39,7 +46,7 @@ const buildShopCategoryEmbed = (trainer, categoryId) => {
     if (item.price.length === 1) {
       shopString += `${item.emoji} **#${items[i]} ${
         item.name
-      }** - ${formatMoney(item.price)}\n`;
+      }** - ${formatMoney(item.price[0])}\n`;
     } else {
       // multi-price items
       // TODO: make this better or remove if multi-prices are too many
@@ -70,12 +77,17 @@ const buildShopCategoryEmbed = (trainer, categoryId) => {
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {ShopItemEnum} itemId
+ * @returns {EmbedBuilder}
+ */
 const buildShopItemEmbed = (trainer, itemId) => {
   const itemData = shopItemConfig[itemId];
 
   let priceString = "";
   if (itemData.price.length === 1) {
-    priceString = `${formatMoney(itemData.price)}`;
+    priceString = `${formatMoney(itemData.price[0])}`;
   } else {
     // multi-price items are based on upgrade level (for now)
     for (let i = 0; i < itemData.price.length; i += 1) {

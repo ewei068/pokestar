@@ -9,9 +9,9 @@ const { REST, Routes } = require("discord.js");
 const {
   commandConfig,
   commandCategoryConfig,
-} = require("../config/commandConfig");
-const { buildSlashCommand } = require("../handlers/commandHandler");
-const { logger } = require("../log");
+} = require("../../src/config/commandConfig");
+const { buildSlashCommand } = require("../../src/handlers/commandHandler");
+const { logger } = require("../../src/log");
 
 const clientId = process.env.CLIENT_ID;
 const token = process.env.DISCORD_TOKEN;
@@ -54,7 +54,7 @@ if (!clientId) {
     logger.info(JSON.stringify(commands, null, 2));
 
     // The put method is used to fully refresh all commands in the guild with the current set
-    const data = /** @type{any} */ (
+    const data = /** @type {any} */ (
       await rest.put(Routes.applicationCommands(clientId), {
         body: commands,
       })

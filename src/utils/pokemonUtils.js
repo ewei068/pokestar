@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * pokemonUtils.js the lowest level of pokemon code used by pokemonUtils.js
  */
@@ -20,6 +18,12 @@ const {
   modifierTypes,
 } = require("../config/equipmentConfig");
 
+/**
+ *
+ * @param {number} level
+ * @param {GrowthRateEnum} growthRate
+ * @returns {number}
+ */
 const getPokemonExpNeeded = (level, growthRate) => {
   if (level <= 1) {
     return 0;
@@ -28,6 +32,11 @@ const getPokemonExpNeeded = (level, growthRate) => {
   return growthRateConfig[growthRate].growthFn(level);
 };
 
+/**
+ * @param {Pokemon[]} pokemons
+ * @param {PokemonIdEnum[]} speciesIds
+ * @returns {number}
+ */
 const calculateWorth = (pokemons = null, speciesIds = null) => {
   let worth = 0;
   if (pokemons) {
@@ -45,6 +54,12 @@ const calculateWorth = (pokemons = null, speciesIds = null) => {
   return worth;
 };
 
+/**
+ * @param {Pokemon} pokemon
+ * @param {number=} size
+ * @param {boolean=} compact
+ * @returns {string}
+ */
 const buildPokemonStatString = (pokemon, size = 20, compact = false) => {
   const statArray = [
     `${pokemon.stats[0]}${
@@ -97,6 +112,11 @@ const buildPokemonStatString = (pokemon, size = 20, compact = false) => {
   return statString;
 };
 
+/**
+ * @param {PokemonConfigData} speciesData
+ * @param {number=} size
+ * @returns {string}
+ */
 const buildPokemonBaseStatString = (speciesData, size = 20) => {
   const statArray = [
     `${speciesData.baseStats[0]}`,
@@ -137,6 +157,10 @@ const buildPokemonBaseStatString = (speciesData, size = 20) => {
   return statString;
 };
 
+/**
+ * @param {number} speed
+ * @returns {number}
+ */
 const calculateEffectiveSpeed = (speed) => {
   // use formula:
   // y\ =\ 100\ \left\{x\ \le\ 0\right\}
@@ -152,6 +176,10 @@ const calculateEffectiveSpeed = (speed) => {
   return Math.floor(speed / 3 + 166);
 };
 
+/**
+ * @param {number} accuracy
+ * @returns {number}
+ */
 const calculateEffectiveAccuracy = (accuracy) => {
   // use formula:
   // if acc <= 20: acc = 0.2
@@ -163,6 +191,10 @@ const calculateEffectiveAccuracy = (accuracy) => {
   return accuracy / 100;
 };
 
+/**
+ * @param {number} evasion
+ * @returns {number}
+ */
 const calculateEffectiveEvasion = (evasion) => {
   // use formula:
   // if eva <= 20: eva = 0.2
@@ -174,6 +206,10 @@ const calculateEffectiveEvasion = (evasion) => {
   return evasion / 100;
 };
 
+/**
+ * @param {AbilityIdEnum | any} abilityId
+ * @returns {string}
+ */
 const getAbilityName = (abilityId) => {
   if (getAbility(abilityId)) {
     return `#${abilityId} ${getAbility(abilityId).name}`;
@@ -181,7 +217,11 @@ const getAbilityName = (abilityId) => {
   return `#${abilityId}`;
 };
 
-// speciesAbilities = abilityId => probability
+/**
+ * speciesAbilities = abilityId => probability
+ * @param {Record<any, number>} speciesAbilities
+ * @returns {string[]}
+ */
 const getAbilityOrder = (speciesAbilities) => {
   if (Object.keys(speciesAbilities).length === 1) {
     return Object.keys(speciesAbilities);
@@ -203,6 +243,9 @@ const getAbilityOrder = (speciesAbilities) => {
   return sortedAbilities;
 };
 
+/**
+ * @param {any} pokemons
+ */
 const getPokemonOrder = (pokemons = pokemonConfig) =>
   // sort: split by dash and sort accordingly
   Object.keys(pokemons).sort((a, b) => {
@@ -221,6 +264,9 @@ const getPokemonOrder = (pokemons = pokemonConfig) =>
     return 0;
   });
 
+/**
+ * @param {any} pokemons
+ */
 const getPokemonIdToIndex = (pokemons = pokemonConfig) => {
   const pokemonOrder = getPokemonOrder(pokemons);
   const pokemonIdToIndex = {};
@@ -230,6 +276,13 @@ const getPokemonIdToIndex = (pokemons = pokemonConfig) => {
   return pokemonIdToIndex;
 };
 
+/**
+ *
+ * @param {EquipmentModifierSlotEnum} slotId
+ * @param {{modifier: EquipmentModifierEnum, quality: number}} slot
+ * @param {any} level
+ * @returns {number}
+ */
 const getEquipmentSlotValue = (slotId, slot, level) => {
   const slotData = modifierSlotConfig[slotId];
   const modifierData = modifierConfig[slot.modifier];
@@ -240,6 +293,11 @@ const getEquipmentSlotValue = (slotId, slot, level) => {
   return value;
 };
 
+/**
+ * @param {EquipmentTypeEnum} equipmentType
+ * @param {Equipment} equipment
+ * @returns {{equipmentHeader: string, equipmentString: string}}
+ */
 const buildEquipmentString = (equipmentType, equipment) => {
   const { level = 1, slots = {} } = equipment;
   const equipmentData = equipmentConfig[equipmentType];
@@ -250,6 +308,7 @@ const buildEquipmentString = (equipmentType, equipment) => {
   for (const [slotId, slot] of Object.entries(slots)) {
     const slotData = modifierSlotConfig[slotId];
     const modifierData = modifierConfig[slot.modifier];
+    // @ts-ignore
     const value = getEquipmentSlotValue(slotId, slot, level);
 
     modifierNames.push(`[${slotData.abbreviation}] ${modifierData.name}`);
@@ -275,12 +334,19 @@ const buildEquipmentString = (equipmentType, equipment) => {
   };
 };
 
+/**
+ * @param {EquipmentTypeEnum} equipmentType
+ * @param {Equipment} equipment
+ * @param {WithId<Pokemon>} pokemon
+ * @returns {string}
+ */
 const buildCompactEquipmentString = (equipmentType, equipment, pokemon) => {
   const { level = 1, slots = {} } = equipment;
   const equipmentData = equipmentConfig[equipmentType];
   let equipmentString = `${equipmentData.emoji} **[Lv. ${level}]** `;
   for (const [slotId, slot] of Object.entries(slots)) {
     const modifierData = modifierConfig[slot.modifier];
+    // @ts-ignore
     const value = getEquipmentSlotValue(slotId, slot, level);
 
     equipmentString += `${modifierData.name} `;
@@ -297,6 +363,11 @@ const buildCompactEquipmentString = (equipmentType, equipment, pokemon) => {
   return equipmentString;
 };
 
+/**
+ * @param {Pokemon} oldPokemon
+ * @param {Pokemon} newPokemon
+ * @returns {string}
+ */
 const buildBoostString = (oldPokemon, newPokemon) => {
   const boostStrings = ["HP", "Atk", "Def", "SpA", "SpD", "Spe", "Power"];
   const boostValues = [];
@@ -318,6 +389,10 @@ const buildBoostString = (oldPokemon, newPokemon) => {
   return boostString;
 };
 
+/**
+ * @param {WithId<Trainer>} trainer
+ * @returns {string[]}
+ */
 const getPartyPokemonIds = (trainer) => {
   // get unique pokemon ids in all parties
   const allIds = trainer.party.pokemonIds;
@@ -329,6 +404,10 @@ const getPartyPokemonIds = (trainer) => {
   return uniqueIds;
 };
 
+/**
+ * @param {Pokemon} pokemon
+ * @returns {MoveIdEnum[]}
+ */
 const getMoveIds = (pokemon) => {
   if (pokemon.moveIds && pokemon.moveIds.length > 0) {
     return pokemon.moveIds;

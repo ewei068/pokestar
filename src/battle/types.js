@@ -1,12 +1,14 @@
 /**
- * @typedef {import("../services/battle").Battle} Battle
- * @typedef {import("../services/battle").Pokemon} BattlePokemon
+ * @typedef {import("./engine/Battle").Battle} Battle
+ * @typedef {import("./engine/BattlePokemon").BattlePokemon} BattlePokemon
+ * @typedef {import("./engine/npcs").BattleNPC} BattleNPC
  */
 
 /**
  * @typedef {import("../config/battleConfig").DamageTypeEnum} DamageTypeEnum
  * @typedef {import("../config/battleConfig").MoveTierEnum} MoveTierEnum
  * @typedef {import("../config/battleConfig").StatusConditionEnum} StatusConditionEnum
+ * @typedef {import("../config/battleConfig").WeatherConditionEnum} WeatherConditionEnum
  * @typedef {import("../config/battleConfig").TargetTypeEnum} TargetTypeEnum
  * @typedef {import("../config/battleConfig").TargetPositionEnum} TargetPositionEnum
  * @typedef {import("../config/battleConfig").TargetPatternEnum} TargetPatternEnum
@@ -20,6 +22,33 @@
  * @typedef {typeof import("./data/effects").effectsToRegister} RegisteredEffects
  * @typedef {typeof import("./data/abilities").abilitiesToRegister} RegisteredAbilities
  * @typedef {import("./data/moves").Move} Move
+ */
+
+/**
+ * @typedef {{
+ *  pokemons: BattlePokemon[],
+ *  rows: number,
+ *  cols: number,
+ * }} BattleParty
+ */
+
+/**
+ * @typedef {{
+ *  name: string,
+ *  isNpc: boolean,
+ *  userIds: string[]
+ * }} BattleTeam
+ */
+
+/**
+ * @typedef {{
+ *  teamName: string,
+ *  username: string,
+ *  discriminator: string,
+ *  userId: string,
+ *  npc?: BattleNPC,
+ *  nextPhase?: (Battle) => any
+ * }} BattleUser
  */
 
 /**

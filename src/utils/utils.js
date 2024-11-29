@@ -2,14 +2,18 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * utils.js functions used by most Utils and other files, most relating to converting information from the mongo database.
  */
 const { Message } = require("discord.js");
 const { ObjectId } = require("mongodb");
 
+/**
+ * @param {Record<any, any>} obj
+ * @param {string | number} key
+ * @param {any} defaultValue
+ * @returns {any}
+ */
 const getOrSetDefault = (obj, key, defaultValue) => {
   if (!obj[key]) {
     obj[key] = defaultValue;
@@ -17,6 +21,11 @@ const getOrSetDefault = (obj, key, defaultValue) => {
   return obj[key];
 };
 
+/**
+ * @param {number} percent
+ * @param {number=} size
+ * @returns {string}
+ */
 const getPBar = (percent, size = 20) => {
   if (percent > 100) {
     percent = 100;
@@ -27,6 +36,11 @@ const getPBar = (percent, size = 20) => {
   return `${"▓".repeat(progress)}${"░".repeat(size - progress)}`;
 };
 
+/**
+ * @param {string[]} strings
+ * @param {number} len
+ * @returns {string[]}
+ */
 const getWhitespace = (strings, len = 0) => {
   const maxLen = len || Math.max(...strings.map((s) => s.length));
   const whitespace = [];
@@ -36,8 +50,13 @@ const getWhitespace = (strings, len = 0) => {
   return whitespace;
 };
 
-// line break string, first split into words, then
-// line break when sum of words is greater than maxLen
+/**
+ * line break string, first split into words, then
+ * line break when sum of words is greater than maxLen
+ * @param {string} str
+ * @param {number=} maxLen
+ * @returns {string}
+ */
 const linebreakString = (str, maxLen = 20) => {
   const words = str.split(" ");
   const lines = [];
@@ -55,20 +74,41 @@ const linebreakString = (str, maxLen = 20) => {
   return lines.join("\n");
 };
 
+/**
+ * @param {string} str
+ * @returns {ObjectId}
+ */
 const idFrom = (str) => new ObjectId(str);
 
+/**
+ * @template T
+ * @param {T[][]} matrix
+ * @param {number} index
+ * @returns {T}
+ */
 const matrixLoc = (matrix, index) => {
   const row = Math.floor(index / matrix[0].length);
   const col = index % matrix[0].length;
   return matrix[row][col];
 };
 
+/**
+ * @param {any[][]} matrix
+ * @param {number} index
+ * @returns {[number, number]}
+ */
 const matrixIndex = (matrix, index) => {
   const row = Math.floor(index / matrix[0].length);
   const col = index % matrix[0].length;
   return [row, col];
 };
 
+/**
+ * @template T
+ * @param {T[][]} matrix
+ * @param {T} value
+ * @returns {[number, number]?}
+ */
 const matrixIndexOf = (matrix, value) => {
   for (let i = 0; i < matrix.length; i += 1) {
     const row = matrix[i];
@@ -82,6 +122,10 @@ const matrixIndexOf = (matrix, value) => {
   return null;
 };
 
+/**
+ * @param {string} string
+ * @returns {string?}
+ */
 const getUserId = (string) => {
   if (!string) {
     return null;
@@ -94,6 +138,10 @@ const getUserId = (string) => {
   return null;
 };
 
+/**
+ * @param {Message | import("discord.js").Interaction} interaction
+ * @returns {DiscordUser}
+ */
 const getUserFromInteraction = (interaction) => {
   if (interaction instanceof Message) {
     return interaction.author;
@@ -101,6 +149,10 @@ const getUserFromInteraction = (interaction) => {
   return interaction.user;
 };
 
+/**
+ * @param {string} string
+ * @returns {string?}
+ */
 const getChannelId = (string) => {
   if (!string) {
     return null;
@@ -113,6 +165,11 @@ const getChannelId = (string) => {
   return null;
 };
 
+/**
+ * @param {any} prefix
+ * @param {any} commandData
+ * @returns {string}
+ */
 const buildCommandUsageString = (prefix, commandData) => {
   let usageString = `\`/${commandData.aliases[0]}`;
   if (commandData.args) {
@@ -127,6 +184,10 @@ const buildCommandUsageString = (prefix, commandData) => {
   return usageString;
 };
 
+/**
+ * @param {any[]} fields
+ * @returns {any[]}
+ */
 const setTwoInline = (fields) => {
   // every 2 fields, add a blank field
   if (fields.length > 2) {
@@ -139,7 +200,7 @@ const setTwoInline = (fields) => {
 
 /**
  * @param {Date?=} date
- * @returns
+ * @returns {number}
  */
 const getFullUTCDate = (date = null) => {
   if (!date) {
@@ -151,7 +212,7 @@ const getFullUTCDate = (date = null) => {
 
 /**
  * @param {Date?=} date
- * @returns
+ * @returns {number}
  */
 const getFullUTCWeek = (date = null) => {
   if (!date) {
@@ -164,7 +225,7 @@ const getFullUTCWeek = (date = null) => {
 /**
  * nice fortnite
  * @param {Date?=} date
- * @returns
+ * @returns {number}
  */
 const getFullUTCFortnight = (date = null) => {
   if (!date) {
@@ -174,6 +235,23 @@ const getFullUTCFortnight = (date = null) => {
   return Math.floor(time / (86400000 * 14));
 };
 
+/**
+ * @param {number} interval
+ * @param {Date?=} date
+ * @returns {number}
+ */
+const getFullUTCTimeInterval = (interval, date = null) => {
+  if (!date) {
+    date = new Date();
+  }
+  const time = date.getTime();
+  return Math.floor(time / interval);
+};
+
+/**
+ * @param {number} fortnight fortnite lol
+ * @returns {number}
+ */
 const fortnightToUTCTime = (fortnight) => fortnight * 86400000 * 14;
 
 /* const getFullUTCMonth = (date=null) => {
@@ -184,6 +262,10 @@ const fortnightToUTCTime = (fortnight) => fortnight * 86400000 * 14;
     return Math.floor(time / (86400000 * 30));
 } */
 
+/**
+ * @param {Date?=} date
+ * @returns {{hours: number, minutes: number, seconds: number}}
+ */
 const getTimeToNextDay = (date = null) => {
   if (!date) {
     date = new Date();
@@ -198,11 +280,19 @@ const getTimeToNextDay = (date = null) => {
   };
 };
 
+/**
+ * @param {Function} fn
+ * @param {number=} interval
+ */
 const poll = async (fn, interval = 60 * 1000) => {
   fn();
   setTimeout(() => poll(fn, interval), interval);
 };
 
+/**
+ * @param {number} amount
+ * @returns {string}
+ */
 const formatMoney = (amount) => {
   // break into commas
   let str = amount.toString();
@@ -219,6 +309,11 @@ const formatMoney = (amount) => {
   return `₽${formatted}`;
 };
 
+/**
+ * @template {Function} T
+ * @param {T} fn
+ * @returns {Promise<ReturnType<T>?>}
+ */
 const errorlessAsync = async (fn) => {
   try {
     return await fn();
@@ -244,6 +339,7 @@ module.exports = {
   getFullUTCDate,
   getFullUTCWeek,
   getFullUTCFortnight,
+  getFullUTCTimeInterval,
   fortnightToUTCTime,
   getTimeToNextDay,
   poll,

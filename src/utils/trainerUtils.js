@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * trainerUtils.js the lowest level of trainer code used by trainer.js
  */
@@ -12,6 +10,10 @@ const {
 } = require("../config/backpackConfig");
 const { getOrSetDefault, formatMoney } = require("./utils");
 
+/**
+ * @param {Trainer} trainer
+ * @returns {string}
+ */
 const getPokeballsString = (trainer) => {
   let pokeballsString = "";
   for (const item in trainer.backpack[backpackCategories.POKEBALLS]) {
@@ -21,7 +23,10 @@ const getPokeballsString = (trainer) => {
   }
   return pokeballsString;
 };
-
+/**
+ * @param {Trainer} trainer
+ * @returns {string}
+ */
 const getBackpackItemsString = (trainer) => {
   let backpackItemsString = "";
   for (const category in trainer.backpack) {
@@ -32,6 +37,12 @@ const getBackpackItemsString = (trainer) => {
   return backpackItemsString;
 };
 
+/**
+ *
+ * @param {FlattenedRewards} rewards
+ * @param {boolean=} received
+ * @returns {string}
+ */
 const getRewardsString = (rewards, received = true) => {
   let rewardsString = received ? "**You received:**" : "";
   if (rewards.money) {
@@ -46,6 +57,10 @@ const getRewardsString = (rewards, received = true) => {
   return rewardsString;
 };
 
+/**
+ * @param {Backpack} backpack
+ * @returns {FlattenedBackpack}
+ */
 const flattenCategories = (backpack) => {
   const flattenedBackpack = {};
   for (const categoryId in backpack) {
@@ -58,16 +73,30 @@ const flattenCategories = (backpack) => {
   return flattenedBackpack;
 };
 
+/**
+ *
+ * @param {Rewards} rewards
+ * @returns {FlattenedRewards}
+ */
 const flattenRewards = (rewards) => {
   const flattenedRewards = {
     ...rewards,
   };
   if (rewards.backpack) {
+    // @ts-ignore
     flattenedRewards.backpack = flattenCategories(rewards.backpack);
   }
+  // @ts-ignore
   return flattenedRewards;
 };
 
+/**
+ *
+ * @param {Trainer} trainer
+ * @param {Rewards} rewards
+ * @param {any} accumulator
+ * @returns {Rewards}
+ */
 const addRewards = (trainer, rewards, accumulator = {}) => {
   if (rewards.money) {
     accumulator.money = (accumulator.money || 0) + rewards.money;
@@ -96,30 +125,54 @@ const addRewards = (trainer, rewards, accumulator = {}) => {
   return accumulator;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {BackpackItemEnum} itemId
+ * @returns {number}
+ */
 const getItems = (trainer, itemId) => {
   const { category } = backpackItemConfig[itemId];
   const items = getOrSetDefault(trainer.backpack, category, {});
   return getOrSetDefault(items, itemId, 0);
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {BackpackItemEnum} itemId
+ * @param {number} quantity
+ */
 const setItems = (trainer, itemId, quantity) => {
   const { category } = backpackItemConfig[itemId];
   const items = getOrSetDefault(trainer.backpack, category, {});
   items[itemId] = quantity;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {BackpackItemEnum} itemId
+ * @param {number} quantity
+ */
 const addItems = (trainer, itemId, quantity = 1) => {
   const { category } = backpackItemConfig[itemId];
   const items = getOrSetDefault(trainer.backpack, category, {});
   items[itemId] = getOrSetDefault(items, itemId, 0) + quantity;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {BackpackItemEnum} itemId
+ * @param {number} quantity
+ */
 const removeItems = (trainer, itemId, quantity = 1) => {
   const { category } = backpackItemConfig[itemId];
   const items = getOrSetDefault(trainer.backpack, category, {});
   items[itemId] = getOrSetDefault(items, itemId, 0) - quantity;
 };
 
+/**
+ * @param {DiscordUser} user
+ * @returns {string}
+ */
 const getFullUsername = (user) => {
   const discriminator =
     user.discriminator === "0" || user.discriminator === "0000"

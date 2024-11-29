@@ -1,8 +1,6 @@
-/* eslint-disable-next-line no-unused-vars */
-const jsTypes = require("../../types");
 const { moveIdEnum } = require("../enums/battleEnums");
 
-/** @typedef {jsTypes.Enum<types>} PokemonTypeEnum */
+/** @typedef {Enum<types>} PokemonTypeEnum */
 const types = Object.freeze({
   NORMAL: 0,
   FIGHTING: 1,
@@ -139,7 +137,7 @@ const typeConfig = {
   19: { name: "Shadow", color: "#705848", id: 19, emoji: "⬛" },
 };
 
-/** @typedef {jsTypes.Keys<natureConfig>} NatureEnum */
+/** @typedef {Keys<natureConfig>} NatureEnum */
 const natureConfig = Object.freeze({
   0: {
     name: "Hardy",
@@ -264,14 +262,15 @@ const natureConfig = Object.freeze({
   },
 });
 
-const stats = {
+/** @typedef {Enum<stats>} StatEnum */
+const stats = Object.freeze({
   HP: 0,
   ATTACK: 1,
   DEFENSE: 2,
   SPATK: 3,
   SPDEF: 4,
   SPEED: 5,
-};
+});
 
 const statConfig = {
   0: { name: "HP", emoji: "❤️", description: "Hit Points" },
@@ -282,14 +281,15 @@ const statConfig = {
   5: { name: "Spe", emoji: "🏃", description: "Speed" },
 };
 
-const growthRates = {
+/** @typedef {Enum<growthRates>} GrowthRateEnum */
+const growthRates = Object.freeze({
   ERRATIC: 0,
   FAST: 1,
   MEDIUMFAST: 2,
   MEDIUMSLOW: 3,
   SLOW: 4,
   FLUCTUATING: 5,
-};
+});
 
 const growthRateConfig = {
   [growthRates.ERRATIC]: {
@@ -332,7 +332,7 @@ const growthRateConfig = {
   },
 };
 
-/** @typedef {jsTypes.Enum<rarities>} RarityEnum */
+/** @typedef {Enum<rarities>} RarityEnum */
 const rarities = Object.freeze({
   COMMON: "Common",
   RARE: "Rare",
@@ -341,9 +341,10 @@ const rarities = Object.freeze({
   MYTHICAL: "Mythical",
 });
 
-/** @typedef {jsTypes.Keys<pokemonConfig>} PokemonIdEnum */
-
-const pokemonConfig = Object.freeze({
+/**
+ * @type {Record<PokemonIdEnum, PokemonConfigData>}
+ */
+const pokemonConfigRaw = {
   1: {
     name: "Bulbasaur",
     emoji: "<:1_:1100279982556708956>",
@@ -7551,7 +7552,10 @@ const pokemonConfig = Object.freeze({
     growthRate: growthRates.SLOW,
     unobtainable: true,
   },
-});
+};
+
+/** @type {Record<PokemonIdEnum, PokemonConfigData>} */
+const pokemonConfig = Object.freeze(pokemonConfigRaw);
 
 const rarityBins = {
   [rarities.COMMON]: [],

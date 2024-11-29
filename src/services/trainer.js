@@ -20,12 +20,7 @@ const {
   levelConfig,
 } = require("../config/trainerConfig");
 const { logger } = require("../log");
-const {
-  getFullUTCDate,
-  formatMoney,
-  getFullUTCFortnight,
-  getFullUTCWeek,
-} = require("../utils/utils");
+const { formatMoney, getFullUTCTimeInterval } = require("../utils/utils");
 const {
   backpackItems,
   backpackCategories,
@@ -37,7 +32,7 @@ const {
   getBackpackItemsString,
 } = require("../utils/trainerUtils");
 const { getVoteMultiplier } = require("../config/socialConfig");
-const types = require("../../types");
+
 /* 
 "user": {
     "username": "Mason",
@@ -47,6 +42,11 @@ const types = require("../../types");
 } 
 */
 
+/**
+ *
+ * @param {DiscordUser} user
+ * @returns {Promise<WithId<Trainer>>}
+ */
 const initTrainer = async (user) => {
   const trainer = {
     userId: user.id,
@@ -61,12 +61,14 @@ const initTrainer = async (user) => {
 
   try {
     const res = await insertDocument(collectionNames.USERS, trainer);
+    // TODO: fix
     if (res.insertedCount === 0) {
       logger.error(`Failed to insert trainer ${user.username}.`);
       return null;
     }
 
     logger.info(`Trainer ${user.username} created at ID ${res.insertedId}.`);
+    // @ts-ignore
     return trainer;
   } catch (error) {
     logger.error(error);
@@ -74,13 +76,16 @@ const initTrainer = async (user) => {
   }
 };
 
+/**
+ * @param {string} userId
+ * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
+ */
 const getTrainerFromId = async (userId) => {
   try {
     // check if trainer exists
-    const trainers =
-      /** @type{Array<import("mongodb").WithId<types.Trainer>>} */ (
-        await findDocuments(collectionNames.USERS, { userId })
-      );
+    const trainers = /** @type {Array<import("mongodb").WithId<Trainer>>} */ (
+      await findDocuments(collectionNames.USERS, { userId })
+    );
     if (trainers.length === 0) {
       return { data: null, err: "Error finding trainer." };
     }
@@ -94,9 +99,9 @@ const getTrainerFromId = async (userId) => {
 
 /**
  *
- * @param {any} discordUser
+ * @param {DiscordUser} discordUser
  * @param {boolean?} refresh
- * @returns
+ * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
  */
 const getTrainer = async (discordUser, refresh = true) => {
   // only keep desired fields
@@ -112,7 +117,7 @@ const getTrainer = async (discordUser, refresh = true) => {
   try {
     // check if trainer exists
     trainers =
-      /** @type{Array<import("mongodb").WithId<types.Trainer>>} */
+      /** @type {Array<import("mongodb").WithId<Trainer>>} */
       (await findDocuments(collectionNames.USERS, { userId: user.id }));
   } catch (error) {
     logger.error(error);
@@ -122,7 +127,7 @@ const getTrainer = async (discordUser, refresh = true) => {
   let trainer;
   if (trainers.length === 0) {
     try {
-      trainer = /** @type{types.Trainer} */ (await initTrainer(user));
+      trainer = /** @type {Trainer} */ (await initTrainer(user));
       if (trainer === null) {
         return { data: null, err: "Error creating trainer." };
       }
@@ -156,47 +161,31 @@ const getTrainer = async (discordUser, refresh = true) => {
     }
   }
 
-  // attempt to reset daily rewards
-  const today = getFullUTCDate();
-  const lastDailyTime = new Date(trainer.lastDaily);
-  const lastDaily = getFullUTCDate(lastDailyTime);
-  if (today > lastDaily) {
-    trainer.lastDaily = new Date().getTime();
-    // reset daily rewards
-    for (const field in trainerFields) {
-      if (trainerFields[field].daily) {
-        trainer[field] = trainerFields[field].default;
-      }
+  // attempt to reset time-interval fields
+  const lastCorrectedTime = new Date(trainer.lastCorrected);
+  const newCorrectedTime = new Date();
+  for (const field in trainerFields) {
+    const { refreshInterval } = trainerFields[field];
+    if (!refreshInterval) {
+      continue;
     }
 
-    // check other time granularities
-    // weekly
-    const week = getFullUTCWeek();
-    const lastWeekly = getFullUTCWeek(lastDailyTime);
-    if (week > lastWeekly) {
-      // reset weekly rewards
-      for (const field in trainerFields) {
-        if (trainerFields[field].weekly) {
-          trainer[field] = trainerFields[field].default;
-        }
-      }
+    const currentTimeInterval = getFullUTCTimeInterval(
+      refreshInterval,
+      newCorrectedTime
+    );
+    const lastTimeInterval = getFullUTCTimeInterval(
+      refreshInterval,
+      lastCorrectedTime
+    );
+    if (currentTimeInterval > lastTimeInterval) {
+      trainer[field] = trainerFields[field].default;
+      modified = true;
     }
-    // biweekly
-    const fortnight = getFullUTCFortnight();
-    const lastBiweekly = getFullUTCFortnight(lastDailyTime);
-    if (fortnight > lastBiweekly) {
-      // reset biweekly rewards
-      for (const field in trainerFields) {
-        if (trainerFields[field].biweekly) {
-          trainer[field] = trainerFields[field].default;
-        }
-      }
-    }
-
-    modified = true;
   }
 
   if (modified) {
+    trainer.lastCorrected = newCorrectedTime.getTime();
     try {
       const res = await updateDocument(
         collectionNames.USERS,
@@ -218,9 +207,15 @@ const getTrainer = async (discordUser, refresh = true) => {
     return await getTrainerFromId(user.id);
   }
 
+  // @ts-ignore
   return { data: trainer, err: null };
 };
 
+/**
+ *
+ * @param {DiscordUser} user
+ * @returns {Promise<{data?: Trainer & {pokemon: object, numPokemon: number}, err?: string}>}
+ */
 const getTrainerInfo = async (user) => {
   const trainer = await getTrainer(user);
   if (trainer.err) {
@@ -270,6 +265,12 @@ const getTrainerInfo = async (user) => {
   }
 };
 
+/**
+ * @param {WithId<Trainer>} trainer
+ * @param {number} exp
+ * @param {number} money
+ * @returns {Promise<{level?: number, money?: number, err?: string}>}
+ */
 const addExpAndMoneyTrainer = async (trainer, exp, money) => {
   // levelup/exp
   const newExp = trainer.exp + exp;
@@ -309,6 +310,11 @@ const addExpAndMoneyTrainer = async (trainer, exp, money) => {
   }
 };
 
+/**
+ * @param {DiscordUser} user
+ * @param {number} exp
+ * @param {number} money
+ */
 const addExpAndMoney = async (user, exp, money) => {
   const trainer = await getTrainer(user);
   if (trainer.err) {
@@ -318,6 +324,10 @@ const addExpAndMoney = async (user, exp, money) => {
   return await addExpAndMoneyTrainer(trainer.data, exp, money);
 };
 
+/**
+ * @param {DiscordUser} user
+ * @returns {Promise<{data?: string, err?: string}>}
+ */
 const getLevelRewards = async (user) => {
   const { data: trainer, err } = await getTrainer(user);
   if (err) {
@@ -385,6 +395,11 @@ const getLevelRewards = async (user) => {
   return { data: rewardsString, err: null };
 };
 
+/**
+ * @param {DiscordUser} user
+ * @param {number} votes
+ * @returns {Promise<{data?: null, err?: string}>}
+ */
 const addVote = async (user, votes = 1) => {
   const trainer = await getTrainer(user, false);
   if (trainer.err) {
@@ -421,12 +436,16 @@ const addVote = async (user, votes = 1) => {
   }
 };
 
+/**
+ * @param {DiscordUser} user
+ * @returns {Promise<{data?: string, err?: string}>}
+ */
 const getVoteRewards = async (user) => {
-  let trainer = await getTrainer(user);
-  if (trainer.err) {
-    return { data: null, err: trainer.err };
+  const trainerRes = await getTrainer(user);
+  if (trainerRes.err) {
+    return { data: null, err: trainerRes.err };
   }
-  trainer = trainer.data;
+  const trainer = trainerRes.data;
 
   const { rewards } = trainer.voting;
   if (rewards < 1) {
@@ -490,6 +509,10 @@ const getVoteRewards = async (user) => {
   return { data: rewardsString, err: null };
 };
 
+/**
+ * @param {WithId<Trainer>} trainer
+ * @returns {Promise<{data?: null, err?: string}>}
+ */
 const updateTrainer = async (trainer) => {
   try {
     const res = await updateDocument(

@@ -5,9 +5,8 @@ const {
   targetPatterns,
   damageTypes,
   moveTiers,
-  calculateDamage,
 } = require("../../config/battleConfig");
-const { getMove } = require("./moveService");
+const { getMove } = require("./moveRegistry");
 const { moveIdEnum } = require("../../enums/battleEnums");
 
 class Move {
@@ -56,6 +55,29 @@ class Move {
     this.description = description;
     this.execute = execute;
     this.isLegacyMove = false;
+    this.silenceIf = undefined; // TODO
+  }
+
+  genericDealSingleDamage({
+    source,
+    target,
+    primaryTarget,
+    allTargets,
+    missedTargets = [],
+    offTargetDamageMultiplier = 0.8,
+  }) {
+    const damageToDeal = source.calculateMoveDamage({
+      move: getMove(this.id),
+      target,
+      primaryTarget,
+      allTargets,
+      missedTargets,
+      offTargetDamageMultiplier,
+    });
+    return source.dealDamage(damageToDeal, target, {
+      type: "move",
+      moveId: this.id,
+    });
   }
 
   /**
@@ -66,7 +88,7 @@ class Move {
    * @param {Array<BattlePokemon>=} param0.missedTargets
    * @param {number=} param0.offTargetDamageMultiplier
    */
-  genericDealDamage({
+  genericDealAllDamage({
     source,
     primaryTarget,
     allTargets,
@@ -74,20 +96,13 @@ class Move {
     offTargetDamageMultiplier = 0.8,
   }) {
     for (const target of allTargets) {
-      const miss = missedTargets.includes(target);
-      const damageToDeal = calculateDamage(
-        getMove(this.id),
+      this.genericDealSingleDamage({
         source,
         target,
-        miss,
-        {
-          finalDamageMultiplier:
-            target === primaryTarget ? 1 : offTargetDamageMultiplier,
-        }
-      );
-      source.dealDamage(damageToDeal, target, {
-        type: "move",
-        moveId: this.id,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+        offTargetDamageMultiplier,
       });
     }
   }
@@ -109,7 +124,7 @@ const movesToRegister = Object.freeze({
     description:
       "The target is struck with slender, whiplike vines to inflict damage.",
     execute({ source, primaryTarget, allTargets, missedTargets }) {
-      this.genericDealDamage({
+      this.genericDealAllDamage({
         source,
         primaryTarget,
         allTargets,

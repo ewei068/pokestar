@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * helpEmbeds.js Handles all of the embeded options for help.
  */
@@ -24,7 +22,7 @@ const { prefix } = stageConfig[process.env.STAGE];
 
 /**
  * help for no command name (show categories and descriptions)
- * @returns an embeded
+ * @returns {EmbedBuilder} an embeded
  */
 const buildHelpEmbed = () => {
   let categoriesString = "";
@@ -48,8 +46,8 @@ const buildHelpEmbed = () => {
 };
 /**
  * Builds an embeded section for a selected category.
- * @param {*} category the category to add to the help.
- * @returns an embed
+ * @param {CommandCategoryEnum} category the category to add to the help.
+ * @returns {EmbedBuilder} an embed
  */
 const buildHelpCategoryEmbed = (category) => {
   let commandsString = "";
@@ -73,6 +71,10 @@ const buildHelpCategoryEmbed = (category) => {
   return embed;
 };
 
+/**
+ * @param {CommandEnum} commandName
+ * @returns {EmbedBuilder}
+ */
 const buildHelpCommandEmbed = (commandName) => {
   const commandData = commandConfig[commandName];
 
@@ -111,6 +113,10 @@ const buildHelpCommandEmbed = (commandName) => {
   return embed;
 };
 
+/**
+ * @param {EventData} eventData
+ * @returns {EmbedBuilder}
+ */
 const buildEventEmbed = (eventData) => {
   const embed = new EmbedBuilder();
   embed.setTitle(`[Event] ${eventData.name}`);
@@ -127,6 +133,7 @@ const buildEventEmbed = (eventData) => {
   return embed;
 };
 
+// outdated
 const buildTutorialEmbed = (tutorialData, pageNumber) => {
   const embed = new EmbedBuilder();
   embed.setTitle(`${tutorialData.name}`);

@@ -9,14 +9,14 @@ const {
 const { drawIterable } = require("../utils/gachaUtils");
 const { getFullUTCDate } = require("../utils/utils");
 
-const dailyRewardChances = {
+const dailyRewardChances = Object.freeze({
   [backpackItems.POKEBALL]: 0.7,
   [backpackItems.GREATBALL]: 0.25,
   [backpackItems.ULTRABALL]: 0.04,
   [backpackItems.MASTERBALL]: 0.01,
-};
+});
 
-const pokeballConfig = {
+const pokeballConfig = Object.freeze({
   [backpackItems.POKEBALL]: {
     chances: {
       [rarities.COMMON]: 0.7,
@@ -50,15 +50,16 @@ const pokeballConfig = {
     },
     pity: 10,
   },
-};
+});
 
-const bannerTypes = {
+/** @typedef {Enum<bannerTypes>} BannerTypeEnum */
+const bannerTypes = Object.freeze({
   STANDARD: "standard",
   ROTATING: "rotating",
   SPECIAL: "special",
-};
+});
 
-const bannerTypeConfig = {
+const bannerTypeConfig = Object.freeze({
   [bannerTypes.STANDARD]: {
     name: "Standard",
     description: "Standard banner with all currently available gacha Pokemon.",
@@ -72,9 +73,21 @@ const bannerTypeConfig = {
     description:
       "Special banner with a limited-time or hand-chosen rate-up Pokemon.",
   },
-};
+});
 
-const bannerConfig = [
+/**
+ * @typedef {object} BannerData
+ * @property {BannerTypeEnum} bannerType
+ * @property {string} name
+ * @property {string} description
+ * @property {function(): PartialRecord<RarityEnum, Array<PokemonIdEnum>> } rateUp
+ * @property {string=} image
+ */
+
+/**
+ * @type {Array<BannerData>}
+ */
+const bannerConfigRaw = [
   {
     bannerType: bannerTypes.SPECIAL,
     name: "[EVENT] Launch Celebration Re-Run",
@@ -393,6 +406,7 @@ const bannerConfig = [
     rateUp: () => {},
   },
 ];
+const bannerConfig = Object.freeze(bannerConfigRaw);
 
 const getCelebiPool = () => {
   const celebiId = "251";

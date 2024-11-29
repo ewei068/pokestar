@@ -2,7 +2,7 @@
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
-const { pokemonConfig } = require("./config/pokemonConfig");
+const { pokemonConfig } = require("../../src/config/pokemonConfig");
 
 const saveDirectory = "../extra_data/images/tier_list";
 

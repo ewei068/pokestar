@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * battleUtils.js the lowest level of code for battles used by the battle.js
  */
@@ -13,13 +11,22 @@ const { getRewardsString, flattenRewards } = require("./trainerUtils");
 const { getPBar, formatMoney } = require("./utils");
 const { getEffect } = require("../battle/data/effectRegistry");
 
+/**
+ *
+ * @param {Pokemon[] | BattlePokemon[]} pokemons
+ * @param {number} rows
+ * @param {number} cols
+ * @param {object} options
+ * @param {boolean?=} options.reverse
+ * @param {boolean?=} options.showHp
+ * @param {number?=} options.emphPosition
+ * @returns {string}
+ */
 const buildPartyString = (
   pokemons,
   rows,
   cols,
-  reverse = false,
-  hp = false,
-  emphPosition = null
+  { reverse = false, showHp = false, emphPosition = null } = {}
 ) => {
   let globalIndex = 0;
   let partyString = "";
@@ -42,9 +49,11 @@ const buildPartyString = (
         emphPosition && emphPosition - 1 === globalIndex ? "╬" : "+";
       const border =
         emphPosition && emphPosition - 1 === globalIndex ? "=" : "-";
-      const pokemon = pokemons[globalIndex];
+      let pokemon = pokemons[globalIndex];
       let headerString = "";
-      if (hp && pokemon) {
+      if (showHp && pokemon) {
+        // eslint-disable-next-line no-self-assign
+        pokemon = /** @type {BattlePokemon} */ (pokemon);
         // get hp percent
         let hpPercent = 0;
         if (pokemon.hp > 0) {
@@ -138,6 +147,13 @@ const buildPartyString = (
   return partyString;
 };
 
+/**
+ * @param {PartyInfo} party
+ * @param {any} id
+ * @param {Record<string, Pokemon>} pokemonMap
+ * @param {boolean=} active
+ * @returns {{partyHeader: string, partyString: string}}
+ */
 const buildCompactPartyString = (party, id, pokemonMap, active = false) => {
   const partyHeader = active
     ? "Active Party"
@@ -172,6 +188,11 @@ const buildCompactPartyString = (party, id, pokemonMap, active = false) => {
   };
 };
 
+/**
+ * @param {Move} moveData
+ * @param {number=} cooldown
+ * @returns {{moveHeader: string, moveString: string}}
+ */
 const buildMoveString = (moveData, cooldown = 0) => {
   let moveHeader = "";
   if (cooldown) {
@@ -194,6 +215,10 @@ const buildMoveString = (moveData, cooldown = 0) => {
   };
 };
 
+/**
+ * @param {BattlePokemon} pokemon
+ * @returns {{pokemonHeader: string, pokemonString: string}}
+ */
 const buildBattlePokemonString = (pokemon) => {
   let pokemonHeader = "";
   if (pokemon.isFainted) {
@@ -265,6 +290,11 @@ const buildBattlePokemonString = (pokemon) => {
   };
 };
 
+/**
+ * @param {NpcDifficultyEnum} difficulty
+ * @param {any} npcDifficultyData
+ * @returns {{difficultyHeader: string, difficultyString: string}}
+ */
 const buildNpcDifficultyString = (difficulty, npcDifficultyData) => {
   const difficultyData = difficultyConfig[difficulty];
   // + 1 here because ace pokemon is one level higher than max level
@@ -301,6 +331,11 @@ const buildNpcDifficultyString = (difficulty, npcDifficultyData) => {
   };
 };
 
+/**
+ * @param {NpcDifficultyEnum} difficulty
+ * @param {any} dungeonDifficultyData
+ * @returns {{difficultyHeader: string, difficultyString: string}}
+ */
 const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
   const difficultyData = difficultyConfig[difficulty];
   const allDungeonPokemons = dungeonDifficultyData.phases.reduce(
@@ -334,6 +369,11 @@ const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
   };
 };
 
+/**
+ * @param {RaidDifficultyEnum} difficulty
+ * @param {any} raidDifficultyData
+ * @returns {{difficultyHeader: string, difficultyString: string}}
+ */
 const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
   const difficultyData = difficultyConfig[difficulty];
   const allRaidPokemons = raidDifficultyData.pokemons;
@@ -363,6 +403,10 @@ const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
   };
 };
 
+/**
+ * @param {number} towerStage
+ * @returns {string}
+ */
 const getIdFromTowerStage = (towerStage) => `battleTowerStage${towerStage}`;
 
 module.exports = {

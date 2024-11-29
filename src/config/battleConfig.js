@@ -4,26 +4,21 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-param-reassign */
 const { types: pokemonTypes } = require("./pokemonConfig");
-const types = require("../../types");
-const {
-  getMove,
-  getMoveIds,
-  executeMove,
-} = require("../battle/data/moveService");
+const { getMove, getMoveIds } = require("../battle/data/moveRegistry");
 const { getEffect } = require("../battle/data/effectRegistry");
 const { battleEventEnum } = require("../enums/battleEnums");
 const {
   getIsActivePokemonCallback,
 } = require("../battle/engine/eventConditions");
 
-/** @typedef {types.Enum<damageTypes>} DamageTypeEnum */
+/** @typedef {Enum<damageTypes>} DamageTypeEnum */
 const damageTypes = Object.freeze({
   PHYSICAL: "Physical",
   SPECIAL: "Special",
   OTHER: "Other",
 });
 
-/** @typedef {types.Enum<moveTiers>} MoveTierEnum */
+/** @typedef {Enum<moveTiers>} MoveTierEnum */
 const moveTiers = Object.freeze({
   BASIC: "Basic",
   POWER: "Power",
@@ -213,7 +208,7 @@ const typeAdvantages = {
 };
 
 // unqiue status conditions
-/** @typedef {types.Enum<statusConditions>} StatusConditionEnum */
+/** @typedef {Enum<statusConditions>} StatusConditionEnum */
 const statusConditions = {
   BURN: "Burn",
   FREEZE: "Freeze",
@@ -224,6 +219,7 @@ const statusConditions = {
 };
 
 // unique weather conditions
+/** @typedef {Enum<weatherConditions>} WeatherConditionEnum */
 const weatherConditions = {
   RAIN: "Rain",
   SUN: "Sun",
@@ -233,7 +229,7 @@ const weatherConditions = {
 
 /**
  *
- * @param {*} move
+ * @param {Move} move
  * @param {BattlePokemon} source
  * @param {BattlePokemon} target
  * @param {boolean} miss
@@ -253,92 +249,30 @@ const calculateDamage = (
     power = null,
     type = null,
     moveType = null,
-    finalDamageMultipler = 1,
   } = {}
-) => {
-  /* eslint-disable-code-block no-param-reassign */
-  power = power || move.power;
-  const { level } = source;
-  atkStat = atkStat || move.damageType;
-  attack =
-    attack || (atkStat === damageTypes.PHYSICAL ? source.atk : source.spa);
-  // modify attack amount -- any attack over 800 is only half as effective
-  attack = attack > 800 ? 800 + (attack - 800) / 2 : attack;
+) =>
+  source.calculateMoveDamage({
+    move,
+    target,
+    primaryTarget: source.currentPrimaryTarget,
+    allTargets: source.currentAllTargets,
+    missedTargets: miss ? [target] : [],
+    atkDamageTypeOverride: atkStat,
+    attackOverride: attack,
+    defDamageTypeOverride: defStat,
+    defenseOverride: defense,
+    powerOverride: power,
+    typeEffectivenessOverride: type,
+    moveTypeOverride: moveType,
+  });
 
-  defStat = defStat || move.damageType;
-  defense =
-    defense ||
-    (defStat === damageTypes.PHYSICAL ? target.getDef() : target.getSpd());
-  const stab =
-    source.type1 === move.type || source.type2 === move.type ? 1.5 : 1;
-  const missMult = miss ? 0.7 : 1;
-  moveType = moveType || move.type;
-  type =
-    type !== null ? type : source.getTypeDamageMultiplier(moveType, target);
-  // balance type
-  if (type >= 4) {
-    type = 2;
-  } else if (type >= 2) {
-    type = 1.5;
-  } else if (type >= 1) {
-    type = 1;
-  } else if (type >= 0.5) {
-    type = 0.75;
-  } else if (type >= 0.25) {
-    type = 0.5;
-  } else {
-    type = 0.35;
-  }
-  const random = Math.random() * (1 - 0.85) + 0.85;
-  const burn = source.status.statusId === statusConditions.BURN ? 0.65 : 1;
-
-  let weatherMult = 1;
-  if (!source.battle.isWeatherNegated()) {
-    const { weather } = source.battle;
-    if (weather.weatherId === weatherConditions.SUN) {
-      if (move.type === pokemonTypes.FIRE) {
-        weatherMult = 1.5;
-      } else if (move.type === pokemonTypes.WATER) {
-        weatherMult = 0.5;
-      }
-    } else if (weather.weatherId === weatherConditions.RAIN) {
-      if (move.type === pokemonTypes.FIRE) {
-        weatherMult = 0.5;
-      } else if (move.type === pokemonTypes.WATER) {
-        weatherMult = 1.5;
-      }
-    }
-  }
-
-  /* console.log("power", power)
-    console.log("level", level)
-    console.log("attack", attack)
-    console.log("defense", defense)
-    console.log("stab", stab)
-    console.log("type", type)
-    console.log("random", random) */
-
-  const damage = Math.floor(
-    ((((2 * level) / 5 + 2) * power * attack) / defense / 50 + 2) *
-      stab *
-      type *
-      random *
-      burn *
-      weatherMult *
-      missMult *
-      finalDamageMultipler
-  );
-
-  return Math.max(damage, 1);
-};
-
-/** @typedef {types.Enum<targetTypes>} TargetTypeEnum */
+/** @typedef {Enum<targetTypes>} TargetTypeEnum */
 const targetTypes = Object.freeze({
   ALLY: "Ally",
   ENEMY: "Enemy",
   ANY: "Any",
 });
-/** @typedef {types.Enum<targetPositions>} TargetPositionEnum */
+/** @typedef {Enum<targetPositions>} TargetPositionEnum */
 const targetPositions = Object.freeze({
   SELF: "Self",
   NON_SELF: "Non-self",
@@ -346,7 +280,7 @@ const targetPositions = Object.freeze({
   FRONT: "Front",
   BACK: "Back",
 });
-/** @typedef {types.Enum<targetPatterns>} TargetPatternEnum */
+/** @typedef {Enum<targetPatterns>} TargetPatternEnum */
 const targetPatterns = Object.freeze({
   SINGLE: "Single",
   ALL: "All",
@@ -358,14 +292,14 @@ const targetPatterns = Object.freeze({
   CROSS: "Cross",
 });
 
-/** @typedef {types.Enum<effectTypes>} EffectTypeEnum */
+/** @typedef {Enum<effectTypes>} EffectTypeEnum */
 const effectTypes = Object.freeze({
   BUFF: "Buff",
   DEBUFF: "Debuff",
   NEUTRAL: "Neutral",
 });
 
-/** @typedef {types.Keys<effectConfig>} LegacyEffectIdEnum */
+/** @typedef {Keys<effectConfig>} LegacyEffectIdEnum */
 const effectConfig = Object.freeze({
   greaterAtkUp: {
     name: "Greater Atk. Up",
@@ -1296,10 +1230,8 @@ const effectConfig = Object.freeze({
             invulnPokemon.battle.addToLog(
               `${invulnPokemon.name} reflected the move back at ${sourcePokemon.name}!`
             );
-            executeMove({
+            invulnPokemon.executeMove({
               moveId,
-              battle: invulnPokemon.battle,
-              source: invulnPokemon,
               primaryTarget: sourcePokemon,
               allTargets: [sourcePokemon],
               missedTargets: [],
@@ -2465,7 +2397,7 @@ const effectConfig = Object.freeze({
   },
 });
 
-/** @typedef{types.Keys<moveConfig>} LegacyMoveIdEnum */
+/** @typedef {Keys<moveConfig>} LegacyMoveIdEnum */
 const moveConfig = Object.freeze({
   m6: {
     name: "Pay Day",
@@ -7689,10 +7621,8 @@ const moveExecutes = {
     // get random target & use move
     const randomTarget =
       eligibleTargets[Math.floor(Math.random() * eligibleTargets.length)];
-    executeMove({
+    source.executeMove({
       moveId: randomMoveId,
-      battle,
-      source,
       primaryTarget: randomTarget,
       allTargets: [randomTarget],
       missedTargets: [],
@@ -8644,10 +8574,8 @@ const moveExecutes = {
     );
     // use move against target
     battle.addToLog(`${randomMoveData.name} hit ${randomTarget.name}!`);
-    executeMove({
+    source.executeMove({
       moveId: randomMoveId,
-      battle,
-      source,
       primaryTarget: randomTarget,
       allTargets: targets,
       missedTargets: [],
@@ -11785,10 +11713,8 @@ const moveExecutes = {
             target.position,
             moveId
           );
-          executeMove({
+          source.executeMove({
             moveId,
-            battle,
-            source,
             primaryTarget: target,
             allTargets: targets,
             missedTargets: [],
@@ -12039,7 +11965,7 @@ const moveExecutes = {
  * @param {BattlePokemon} target
  */
 
-/** @typedef {types.Keys<typeof abilityConfig>} LegacyAbilityIdEnum */
+/** @typedef {Keys<typeof abilityConfig>} LegacyAbilityIdEnum */
 
 /**
  * @satisfies {Record<string | number | symbol, {
@@ -15122,10 +15048,8 @@ const abilityConfig = Object.freeze({
           initialPokemon.battle.addToLog(
             `${initialPokemon.name}'s Magic Bounce reflects the move!`
           );
-          executeMove({
+          initialPokemon.executeMove({
             moveId: args.moveId,
-            battle,
-            source: initialPokemon,
             primaryTarget: sourcePokemon,
             allTargets: [sourcePokemon],
             missedTargets: [],
@@ -16149,10 +16073,8 @@ const abilityConfig = Object.freeze({
           // use move against target
           battle.addToLog(`${randomMoveData.name} hit ${target.name}!`);
           // yes I know the targets are confusing
-          executeMove({
+          targetPokemon.executeMove({
             moveId: randomMoveId,
-            battle: targetPokemon.battle,
-            source: targetPokemon,
             primaryTarget: target,
             allTargets: targets,
             missedTargets: [],
