@@ -1,21 +1,44 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * battleTargetSelect.js Gets the relevant data for the target selection for the user and calculates the results of the choice.
  */
+const { ButtonStyle, ActionRowBuilder } = require("discord.js");
 const { getState } = require("../../services/state");
 const { getStartTurnSend } = require("../../services/battle");
 const { logger } = require("../../log");
 const { stageNames } = require("../../config/stageConfig");
+const { setCurrentTargetting } = require("../../utils/battleUtils");
+const {
+  buildSelectBattleTargetRow,
+} = require("../../components/selectBattleTargetRow");
+const { buildSingleButton } = require("../../components/singleButton");
+const { eventNames } = require("../../config/eventConfig");
+
+/**
+ * @param {any} interaction
+ * @param {any} data
+ * @returns {{ moveId?: MoveIdEnum, targetId?: string, err?: string }}
+ */
+const getMoveAndTargetIds = (interaction, data) => {
+  const { moveId } = data;
+  if (!moveId) {
+    return { err: "No move selected." };
+  }
+
+  const targetId = interaction.values[0];
+  if (!targetId) {
+    return { err: "No target selected." };
+  }
+
+  return { moveId, targetId };
+};
 
 /**
  * Gets the relevant data for the target selection for the user and calculates the results of the choice.
- * @param {*} interaction the choice selected by the user in response to being requested to choose a target.
+ * @param {import("discord.js").StringSelectMenuInteraction} interaction the choice selected by the user in response to being requested to choose a target.
  * @param {*} data the relevant data with the state information.
- * @returns
  */
 const battleTargetSelect = async (interaction, data) => {
   // get state
@@ -48,39 +71,90 @@ const battleTargetSelect = async (interaction, data) => {
   const start = Date.now();
 
   // if skip turn, skip turn
-  if (data.skipTurn) {
-    // if npc turn. have npc use move
-    if (battle.isNpc(battle.activePokemon.userId)) {
-      const { npc } = battle.users[battle.activePokemon.userId];
-      npc.action(battle);
+  if (data.skipTurn || false) {
+    if (data.skipTurn) {
+      // if npc turn. have npc use move
+      if (battle.isNpc(battle.activePokemon.userId)) {
+        const { npc } = battle.users[battle.activePokemon.userId];
+        npc.action(battle);
+      } else {
+        battle.activePokemon.skipTurn();
+      }
+      // TODO: setting to disable target confirmation
     } else {
-      battle.activePokemon.skipTurn();
+      const { moveId, targetId, err } = getMoveAndTargetIds(interaction, data);
+      if (err) {
+        return { err };
+      }
+
+      // use move on target
+      // TODO: do something with result?
+      battle.activePokemon.useMove(moveId, targetId);
     }
-  } else {
-    // get move ID from data
-    const { moveId } = data;
-    if (!moveId) {
-      return { err: "No move selected." };
+    const send = await getStartTurnSend(battle, data.stateId);
+
+    const end = Date.now();
+    if (process.env.STAGE === stageNames.ALPHA) {
+      logger.info(`Execution time: ${end - start} ms`);
     }
 
-    // get target ID from interaction
-    const targetId = interaction.values[0];
-    if (!targetId) {
-      return { err: "No target selected." };
-    }
-
-    // use move on target
-    // TODO: do something with result?
-    battle.activePokemon.useMove(moveId, targetId);
-  }
-  const send = await getStartTurnSend(battle, data.stateId);
-
-  const end = Date.now();
-  if (process.env.STAGE === stageNames.ALPHA) {
-    logger.info(`Execution time: ${end - start} ms`);
+    await interaction.update(send);
   }
 
-  await interaction.update(send);
+  const { moveId, targetId, err } = getMoveAndTargetIds(interaction, data);
+  if (err) {
+    return { err };
+  }
+
+  // find valid targets for move
+  const targets = battle.getEligibleTargets(battle.activePokemon, moveId);
+  // if no targets, return error
+  if (targets.length === 0) {
+    return { err: "No eligible targets! Choose another move." };
+  }
+
+  // save current targets
+  setCurrentTargetting(state, moveId, targetId);
+
+  // TODO: change if position of menu changes
+  // if components length > 3, pop all components except first two
+  while (interaction.message.components.length > 3) {
+    interaction.message.components.pop();
+  }
+
+  // pop target select menu and override default target
+  interaction.message.components.pop();
+  const targetSelectMenu = buildSelectBattleTargetRow(
+    battle,
+    targets,
+    moveId,
+    data.stateId,
+    targetId
+  );
+
+  // build target confirmation button
+  const confirmButton = buildSingleButton(
+    "Confirm",
+    "⚔️",
+    {
+      stateId: data.stateId,
+    },
+    ButtonStyle.Success,
+    false,
+    eventNames.BATTLE_TARGET_CONFIRM
+  );
+  const confirmButtonActionRow = new ActionRowBuilder().addComponents(
+    confirmButton
+  );
+
+  // update message
+  await interaction.update({
+    components: interaction.message.components
+      // @ts-ignore
+      .concat(targetSelectMenu)
+      // @ts-ignore
+      .concat(confirmButtonActionRow),
+  });
 };
 
 module.exports = battleTargetSelect;

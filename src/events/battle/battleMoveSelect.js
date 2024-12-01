@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * battleMoveSelect.js Gets the relevant information from the user interaction and sets up for target selection.
  */
@@ -18,7 +16,6 @@ const { getState } = require("../../services/state");
  * Gets the relevant information from the user interaction and sets up for target selection.
  * @param {*} interaction the interaction from the trainer, move selected.
  * @param {*} data used to get the state. data from the interaction.
- * @returns
  */
 const battleMoveSelect = async (interaction, data) => {
   // get state
@@ -74,9 +71,9 @@ const battleMoveSelect = async (interaction, data) => {
     data.stateId
   );
 
-  // TODO: change when we have more than one component
-  // if components length > 2, remove last component
-  if (interaction.message.components.length > 2) {
+  // TODO: change if position of menu changes
+  // if components length > 2, pop all components except first two
+  while (interaction.message.components.length > 2) {
     interaction.message.components.pop();
   }
 

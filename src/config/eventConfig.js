@@ -38,6 +38,7 @@ const eventNames = Object.freeze({
   BATTLE_INFO: "battleInfo",
   BATTLE_MOVE_SELECT: "battleMoveSelect",
   BATTLE_TARGET_SELECT: "battleTargetSelect",
+  BATTLE_TARGET_CONFIRM: "battleTargetConfirm",
   BANNER_SCROLL: "bannerScroll",
   BANNER_BUTTON: "bannerButton",
   BANNER_GACHA: "bannerGacha",
@@ -269,6 +270,13 @@ const eventConfig = {
   [eventNames.BATTLE_TARGET_SELECT]: {
     name: "Battle Target Select",
     execute: "battleTargetSelect.js",
+    directory: "battle",
+    exp: 10,
+    money: 25,
+  },
+  [eventNames.BATTLE_TARGET_CONFIRM]: {
+    name: "Battle Target Confirm",
+    execute: "battleTargetConfirm.js",
     directory: "battle",
     exp: 10,
     money: 25,

@@ -409,6 +409,34 @@ const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
  */
 const getIdFromTowerStage = (towerStage) => `battleTowerStage${towerStage}`;
 
+const clearCurrentTargetting = (state) => {
+  // eslint-disable-next-line no-param-reassign
+  state.currentMoveId = null;
+  // eslint-disable-next-line no-param-reassign
+  state.currentTargetId = null;
+};
+
+/**
+ * @param {any} state
+ * @returns {{currentMoveId: MoveIdEnum, currentTargetId: string}}
+ */
+const getCurrentTargetting = (state) => {
+  const { currentMoveId, currentTargetId } = state;
+  return { currentMoveId, currentTargetId };
+};
+
+/**
+ * @param {any} state
+ * @param {MoveIdEnum} moveId
+ * @param {string} targetId
+ */
+const setCurrentTargetting = (state, moveId, targetId) => {
+  // eslint-disable-next-line no-param-reassign
+  state.currentMoveId = moveId;
+  // eslint-disable-next-line no-param-reassign
+  state.currentTargetId = targetId;
+};
+
 module.exports = {
   buildPartyString,
   buildCompactPartyString,
@@ -418,4 +446,7 @@ module.exports = {
   buildDungeonDifficultyString,
   getIdFromTowerStage,
   buildRaidDifficultyString,
+  clearCurrentTargetting,
+  getCurrentTargetting,
+  setCurrentTargetting,
 };
