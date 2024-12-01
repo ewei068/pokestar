@@ -31,6 +31,7 @@ export default [
       "no-return-await": "off", // deprecated
       "no-restricted-syntax": "off", // TODO: enable but make better lol
       "no-underscore-dangle": "off", // Needed for mongo _id
+      "no-restricted-globals": "off", // globals work differently
       "guard-for-in": "off", // TODO: enable but make better lol
       "no-continue": "off", // doesn't seem to work properly
       "no-await-in-loop": "off", // TODO: use promise.all
