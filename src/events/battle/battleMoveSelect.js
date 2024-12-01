@@ -10,6 +10,7 @@ const {
 const {
   buildSelectBattleTargetRow,
 } = require("../../components/selectBattleTargetRow");
+const { buildBattleEmbed } = require("../../embeds/battleEmbeds");
 const { getState } = require("../../services/state");
 
 /**
@@ -81,8 +82,12 @@ const battleMoveSelect = async (interaction, data) => {
   interaction.message.components.pop();
   const moveSelectMenu = buildSelectBattleMoveRow(battle, data.stateId, moveId);
 
+  // pop first embed
+  interaction.message.embeds.shift();
+
   // update message
   await interaction.update({
+    embeds: [buildBattleEmbed(battle), ...interaction.message.embeds],
     components: interaction.message.components
       .concat(moveSelectMenu)
       .concat(targetSelectMenu),

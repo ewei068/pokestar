@@ -710,6 +710,31 @@ class BattlePokemon {
   }
 
   /**
+   * Not to be used for exact targetting, only util for now
+   * TODO: use move itself?
+   * @param {MoveIdEnum} moveId
+   * @param {string} targetPokemonId
+   * @returns {Record<string, number[]>} map of team name to target indices
+   */
+  getTargetIndices(moveId, targetPokemonId) {
+    const moveData = getMove(moveId);
+    const target = this.battle.allPokemon[targetPokemonId];
+    if (!target) {
+      return {};
+    }
+
+    const targetParty = this.battle.parties[target.teamName];
+
+    return {
+      [target.teamName]: getPatternTargetIndices(
+        targetParty,
+        moveData.targetPattern,
+        target.position
+      ),
+    };
+  }
+
+  /**
    * @param {MoveIdEnum} moveId
    * @param {string} targetPokemonId
    * @returns {BattlePokemon[]}

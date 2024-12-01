@@ -11,6 +11,16 @@ const { getRewardsString, flattenRewards } = require("./trainerUtils");
 const { getPBar, formatMoney } = require("./utils");
 const { getEffect } = require("../battle/data/effectRegistry");
 
+const plus = "┼";
+const plusEmph = "*";
+const plusTarget = "╬";
+const hLine = "─";
+const hLineEmph = "*";
+const hLineTarget = "═";
+const vLine = "│";
+const vLineEmph = "*";
+const vLineTarget = "║";
+
 /**
  *
  * @param {Pokemon[] | BattlePokemon[]} pokemons
@@ -20,14 +30,21 @@ const { getEffect } = require("../battle/data/effectRegistry");
  * @param {boolean?=} options.reverse
  * @param {boolean?=} options.showHp
  * @param {number?=} options.emphPosition
+ * @param {number[]?=} options.targetIndices
  * @returns {string}
  */
 const buildPartyString = (
   pokemons,
   rows,
   cols,
-  { reverse = false, showHp = false, emphPosition = null } = {}
+  {
+    reverse = false,
+    showHp = false,
+    emphPosition = null,
+    targetIndices = null,
+  } = {}
 ) => {
+  const targetIndexSet = new Set(targetIndices || []);
   let globalIndex = 0;
   let partyString = "";
   // set rows to be a range to iterate over
@@ -39,16 +56,45 @@ const buildPartyString = (
     let rowString = "`";
     globalIndex = i * cols;
     for (let j = 0; j < cols; j += 1) {
-      const lplus =
+      let lplus =
         emphPosition &&
         (emphPosition - 1 === globalIndex ||
           (emphPosition === globalIndex && j !== 0))
-          ? "╬"
-          : "+";
-      const rplus =
-        emphPosition && emphPosition - 1 === globalIndex ? "╬" : "+";
-      const border =
-        emphPosition && emphPosition - 1 === globalIndex ? "=" : "-";
+          ? plusEmph
+          : plus;
+      let rplus =
+        emphPosition && emphPosition - 1 === globalIndex ? plusEmph : plus;
+      let border =
+        emphPosition && emphPosition - 1 === globalIndex ? hLineEmph : hLine;
+      // check for selected index, OVERRIDES existing border
+      const leftIndex = globalIndex - 1;
+      const topIndex = reverse ? globalIndex + cols : globalIndex - cols;
+      if (targetIndexSet.has(leftIndex) && j !== 0) {
+        // position surrounded with targets, *. if the position is also a target, add space instead
+        const topLeftIndex = topIndex - 1;
+        if (
+          targetIndexSet.has(globalIndex) &&
+          targetIndexSet.has(topIndex) &&
+          targetIndexSet.has(topLeftIndex)
+        ) {
+          lplus = " ";
+        } else {
+          lplus = plusTarget;
+        }
+      } else if (targetIndexSet.has(globalIndex)) {
+        // position is target, add indicator to left border
+        lplus = plusTarget;
+      }
+
+      if (targetIndexSet.has(globalIndex)) {
+        // position directly above has target, add space as border. else, add indicator
+        if (targetIndexSet.has(topIndex)) {
+          border = " ";
+        } else {
+          border = hLineTarget;
+        }
+        rplus = plusTarget;
+      }
       let pokemon = pokemons[globalIndex];
       let headerString = "";
       if (showHp && pokemon) {
@@ -93,14 +139,31 @@ const buildPartyString = (
     // build pokemon line
     rowString = "`";
     for (let j = 0; j < cols; j += 1) {
-      const lborder =
+      let lborder =
         emphPosition &&
         (emphPosition - 1 === globalIndex ||
           (emphPosition === globalIndex && j !== 0))
-          ? "║"
-          : "|";
-      const rborder =
-        emphPosition && emphPosition - 1 === globalIndex ? "║" : "|";
+          ? vLineEmph
+          : vLine;
+
+      const leftIndex = globalIndex - 1;
+      if (targetIndexSet.has(leftIndex) && j !== 0) {
+        // position directly to the left has target, *. if the position is also a target, add space instead
+        if (targetIndexSet.has(globalIndex)) {
+          lborder = " ";
+        } else {
+          lborder = vLineTarget;
+        }
+      } else if (targetIndexSet.has(globalIndex)) {
+        // position is target, add indicator to left border
+        lborder = vLineTarget;
+      }
+
+      let rborder =
+        emphPosition && emphPosition - 1 === globalIndex ? vLineEmph : vLine;
+      if (targetIndexSet.has(globalIndex)) {
+        rborder = vLineTarget;
+      }
       const pokemon = pokemons[globalIndex];
       const emoji = pokemon ? pokemonConfig[pokemon.speciesId].emoji : "⬛";
       // if j is divisible by 3 and not 0, remove a space from the left
@@ -117,16 +180,45 @@ const buildPartyString = (
     // build bottom line with position
     rowString = "`";
     for (let j = 0; j < cols; j += 1) {
-      const lplus =
+      let lplus =
         emphPosition &&
         (emphPosition - 1 === globalIndex ||
           (emphPosition === globalIndex && j !== 0))
-          ? "╬"
-          : "+";
-      const rplus =
-        emphPosition && emphPosition - 1 === globalIndex ? "╬" : "+";
-      const border =
-        emphPosition && emphPosition - 1 === globalIndex ? "=" : "-";
+          ? plusEmph
+          : plus;
+      let rplus =
+        emphPosition && emphPosition - 1 === globalIndex ? plusEmph : plus;
+      let border =
+        emphPosition && emphPosition - 1 === globalIndex ? hLineEmph : hLine;
+      // check for selected index, OVERRIDES existing border
+      const leftIndex = globalIndex - 1;
+      const buttomIndex = reverse ? globalIndex - cols : globalIndex + cols;
+      if (targetIndexSet.has(leftIndex) && j !== 0) {
+        // position surrounded with targets, *. if the position is also a target, add space instead
+        const bottomLeftIndex = buttomIndex - 1;
+        if (
+          targetIndexSet.has(globalIndex) &&
+          targetIndexSet.has(buttomIndex) &&
+          targetIndexSet.has(bottomLeftIndex)
+        ) {
+          lplus = " ";
+        } else {
+          lplus = plusTarget;
+        }
+      } else if (targetIndexSet.has(globalIndex)) {
+        // position is target, add indicator to left border
+        lplus = plusTarget;
+      }
+
+      if (targetIndexSet.has(globalIndex)) {
+        // position directly below has target, add space as border. else, add indicator
+        if (targetIndexSet.has(buttomIndex)) {
+          border = " ";
+        } else {
+          border = hLineTarget;
+        }
+        rplus = plusTarget;
+      }
       const position = globalIndex + 1;
       if (position < 10) {
         rowString += `${lplus}${border}${border}${position}${border}${border}`;
@@ -450,12 +542,12 @@ const getPatternTargetIndices = (
 ) => {
   const targetIndex = targetPosition - 1;
   const targetRow = Math.floor(targetIndex / targetParty.cols);
-  const targetCol = (targetIndex - 1) % targetParty.cols;
+  const targetCol = targetIndex % targetParty.cols;
   const targetIndices = [];
 
-  const { cols: targetNumCols } = targetParty;
+  const { rows: targetNumRows, cols: targetNumCols } = targetParty;
 
-  for (let index = 0; index < targetParty.pokemons.length; index += 1) {
+  for (let index = 0; index < targetNumRows * targetNumCols; index += 1) {
     const currentRow = Math.floor(index / targetNumCols);
     const currentCol = index % targetNumCols;
     switch (targetPattern) {

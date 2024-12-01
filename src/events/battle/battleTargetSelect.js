@@ -15,6 +15,7 @@ const {
 } = require("../../components/selectBattleTargetRow");
 const { buildSingleButton } = require("../../components/singleButton");
 const { eventNames } = require("../../config/eventConfig");
+const { buildBattleEmbed } = require("../../embeds/battleEmbeds");
 
 /**
  * @param {any} interaction
@@ -51,7 +52,7 @@ const battleTargetSelect = async (interaction, data) => {
   }
 
   // get battle
-  const { battle } = state;
+  const { battle } = /** @type {{ battle: Battle }} */ (state);
   if (!battle) {
     return { err: "No battle data." };
   }
@@ -98,7 +99,7 @@ const battleTargetSelect = async (interaction, data) => {
       logger.info(`Execution time: ${end - start} ms`);
     }
 
-    await interaction.update(send);
+    return await interaction.update(send);
   }
 
   const { moveId, targetId, err } = getMoveAndTargetIds(interaction, data);
@@ -147,8 +148,16 @@ const battleTargetSelect = async (interaction, data) => {
     confirmButton
   );
 
+  // pop first embed and rebuild with target indices
+  interaction.message.embeds.shift();
+  const targetIndices = battle.activePokemon.getTargetIndices(moveId, targetId);
+
   // update message
   await interaction.update({
+    embeds: [
+      buildBattleEmbed(battle, targetIndices),
+      ...interaction.message.embeds,
+    ],
     components: interaction.message.components
       // @ts-ignore
       .concat(targetSelectMenu)

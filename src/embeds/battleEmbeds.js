@@ -142,12 +142,14 @@ const buildPartiesEmbed = (trainer, pokemonMap) => {
 
   return embed;
 };
+
 /**
  * Builds the battle the players/players and npcs will use.
  * @param {Battle} battle the battle itself.
+ * @param {Record<string, number[]>?=} targetIndices map of team name to target indices.
  * @returns {EmbedBuilder} an embeded.
  */
-const buildBattleEmbed = (battle) => {
+const buildBattleEmbed = (battle, targetIndices = null) => {
   // assume two teams
   const team1 = Object.values(battle.teams)[0];
   const team2 = Object.values(battle.teams)[1];
@@ -161,6 +163,9 @@ const buildBattleEmbed = (battle) => {
     battle.activePokemon.teamName === team2.name
       ? battle.activePokemon.position
       : null;
+  const team1TargetIndicies = targetIndices?.[team1.name];
+  const team2TargetIndicies = targetIndices?.[team2.name];
+  console.log(team1TargetIndicies, team2TargetIndicies);
 
   // TODO: deal with NPCs
   const team1UserString = team1.userIds
@@ -223,7 +228,12 @@ const buildBattleEmbed = (battle) => {
         team1Party.pokemons,
         team1Party.rows,
         team1Party.cols,
-        { reverse: true, showHp: true, emphPosition: team1EmphPosition }
+        {
+          reverse: true,
+          showHp: true,
+          emphPosition: team1EmphPosition,
+          targetIndices: team1TargetIndicies,
+        }
       ),
       inline: false,
     },
@@ -233,7 +243,11 @@ const buildBattleEmbed = (battle) => {
         team2Party.pokemons,
         team2Party.rows,
         team2Party.cols,
-        { showHp: true, emphPosition: team2EmphPosition }
+        {
+          showHp: true,
+          emphPosition: team2EmphPosition,
+          targetIndices: team2TargetIndicies,
+        }
       ),
       inline: false,
     }
