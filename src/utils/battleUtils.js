@@ -4,7 +4,7 @@
  *
  * battleUtils.js the lowest level of code for battles used by the battle.js
  */
-const { statusConditions } = require("../config/battleConfig");
+const { statusConditions, targetPatterns } = require("../config/battleConfig");
 const { difficultyConfig } = require("../config/npcConfig");
 const { pokemonConfig, typeConfig } = require("../config/pokemonConfig");
 const { getRewardsString, flattenRewards } = require("./trainerUtils");
@@ -437,6 +437,79 @@ const setCurrentTargetting = (state, moveId, targetId) => {
   state.currentTargetId = targetId;
 };
 
+/**
+ * @param {BattleParty} targetParty
+ * @param {TargetPatternEnum} targetPattern
+ * @param {number} targetPosition
+ * @returns {number[]} indices of targets
+ */
+const getPatternTargetIndices = (
+  targetParty,
+  targetPattern,
+  targetPosition
+) => {
+  const targetIndex = targetPosition - 1;
+  const targetRow = Math.floor(targetIndex / targetParty.cols);
+  const targetCol = (targetIndex - 1) % targetParty.cols;
+  const targetIndices = [];
+
+  const { cols: targetNumCols } = targetParty;
+
+  for (let index = 0; index < targetParty.pokemons.length; index += 1) {
+    const currentRow = Math.floor(index / targetNumCols);
+    const currentCol = index % targetNumCols;
+    switch (targetPattern) {
+      case targetPatterns.ALL:
+        targetIndices.push(index);
+        break;
+      case targetPatterns.ALL_EXCEPT_SELF:
+        if (index !== targetIndex) {
+          targetIndices.push(index);
+        }
+        break;
+      case targetPatterns.COLUMN:
+        if (currentCol === targetCol) {
+          targetIndices.push(index);
+        }
+        break;
+      case targetPatterns.ROW:
+        if (currentRow === targetRow) {
+          targetIndices.push(index);
+        }
+        break;
+      case targetPatterns.RANDOM:
+        // special case; return nothing
+        break;
+      case targetPatterns.SQUARE:
+        // if row index or column index within 1 of target, add to targets
+        if (
+          Math.abs(targetRow - currentRow) <= 1 &&
+          Math.abs(targetCol - currentCol) <= 1
+        ) {
+          targetIndices.push(index);
+        }
+
+        break;
+      case targetPatterns.CROSS:
+        // target manhattan distance <= 1, add to targets
+        if (
+          Math.abs(targetRow - currentRow) + Math.abs(targetCol - currentCol) <=
+          1
+        ) {
+          targetIndices.push(index);
+        }
+        break;
+      default:
+        // default is single
+
+        if (index === targetIndex) {
+          targetIndices.push(index);
+        }
+    }
+  }
+  return targetIndices;
+};
+
 module.exports = {
   buildPartyString,
   buildCompactPartyString,
@@ -449,4 +522,5 @@ module.exports = {
   clearCurrentTargetting,
   getCurrentTargetting,
   setCurrentTargetting,
+  getPatternTargetIndices,
 };

@@ -27,6 +27,7 @@ const { drawDiscrete } = require("../../utils/gachaUtils");
 const { getMove } = require("../data/moveRegistry");
 const { getEffect } = require("../data/effectRegistry");
 const { getAbility } = require("../data/abilityRegistry");
+const { getPatternTargetIndices } = require("../../utils/battleUtils");
 
 class BattlePokemon {
   /* battle;
@@ -677,110 +678,32 @@ class BattlePokemon {
    * @returns {BattlePokemon[]} targets
    */
   getPatternTargets(targetParty, targetPattern, targetPosition, moveId = null) {
-    const targetRow = Math.floor((targetPosition - 1) / targetParty.cols);
-    const targetCol = (targetPosition - 1) % targetParty.cols;
     const targets = [];
 
-    switch (targetPattern) {
-      case targetPatterns.ALL:
-        // return all pokemon in party
-        for (const pokemon of targetParty.pokemons) {
-          if (this.battle.isPokemonHittable(pokemon, moveId)) {
-            targets.push(pokemon);
-          }
+    // special case: random
+    if (targetPattern === targetPatterns.RANDOM) {
+      // return random pokemon in party
+      const validPokemons = [];
+      for (const pokemon of targetParty.pokemons) {
+        if (this.battle.isPokemonHittable(pokemon, moveId)) {
+          validPokemons.push(pokemon);
         }
-        break;
-      case targetPatterns.ALL_EXCEPT_SELF:
-        // return all pokemon in party except self
-        for (const pokemon of targetParty.pokemons) {
-          if (
-            this.battle.isPokemonHittable(pokemon, moveId) &&
-            pokemon !== this
-          ) {
-            targets.push(pokemon);
-          }
+      }
+      targets.push(
+        validPokemons[Math.floor(Math.random() * validPokemons.length)]
+      );
+    } else {
+      const targetIndices = getPatternTargetIndices(
+        targetParty,
+        targetPattern,
+        targetPosition
+      );
+      for (const index of targetIndices) {
+        const target = targetParty.pokemons[index];
+        if (target && this.battle.isPokemonHittable(target, moveId)) {
+          targets.push(target);
         }
-        break;
-      case targetPatterns.COLUMN:
-        // return all pokemon in column
-        for (const pokemon of targetParty.pokemons) {
-          if (
-            this.battle.isPokemonHittable(pokemon, moveId) &&
-            (pokemon.position - 1) % targetParty.cols === targetCol
-          ) {
-            targets.push(pokemon);
-          }
-        }
-        break;
-      case targetPatterns.ROW:
-        // return all pokemon in row
-        for (const pokemon of targetParty.pokemons) {
-          if (
-            this.battle.isPokemonHittable(pokemon, moveId) &&
-            Math.floor((pokemon.position - 1) / targetParty.cols) === targetRow
-          ) {
-            targets.push(pokemon);
-          }
-        }
-        break;
-      case targetPatterns.RANDOM:
-        // return random pokemon in party
-        const validPokemons = [];
-        for (const pokemon of targetParty.pokemons) {
-          if (this.battle.isPokemonHittable(pokemon, moveId)) {
-            validPokemons.push(pokemon);
-          }
-        }
-        targets.push(
-          validPokemons[Math.floor(Math.random() * validPokemons.length)]
-        );
-        break;
-      case targetPatterns.SQUARE:
-        // if row index or column index within 1 of target, add to targets
-        for (const pokemon of targetParty.pokemons) {
-          if (this.battle.isPokemonHittable(pokemon, moveId)) {
-            const pokemonRow = Math.floor(
-              (pokemon.position - 1) / targetParty.cols
-            );
-            const pokemonCol = (pokemon.position - 1) % targetParty.cols;
-            if (
-              Math.abs(targetRow - pokemonRow) <= 1 &&
-              Math.abs(targetCol - pokemonCol) <= 1
-            ) {
-              targets.push(pokemon);
-            }
-          }
-        }
-        break;
-      case targetPatterns.CROSS:
-        // target manhattan distance <= 1, add to targets
-        for (const pokemon of targetParty.pokemons) {
-          if (this.battle.isPokemonHittable(pokemon, moveId)) {
-            const pokemonRow = Math.floor(
-              (pokemon.position - 1) / targetParty.cols
-            );
-            const pokemonCol = (pokemon.position - 1) % targetParty.cols;
-            if (
-              Math.abs(targetRow - pokemonRow) +
-                Math.abs(targetCol - pokemonCol) <=
-              1
-            ) {
-              targets.push(pokemon);
-            }
-          }
-        }
-        break;
-      default:
-        // default is single
-
-        // get target pokemon
-        const targetPokemon =
-          targetParty.pokemons[targetRow * targetParty.cols + targetCol];
-        if (this.battle.isPokemonHittable(targetPokemon, moveId)) {
-          targets.push(targetPokemon);
-        }
-
-        break;
+      }
     }
 
     return targets;
