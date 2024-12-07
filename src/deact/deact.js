@@ -3,6 +3,8 @@ const {
   MessageComponentInteraction,
   /* eslint-disable-next-line no-unused-vars */
   ModalSubmitInteraction,
+  // eslint-disable-next-line no-unused-vars
+  StringSelectMenuInteraction,
 } = require("discord.js");
 const { DeactInstance } = require("./DeactInstance");
 const { getInteractionInstance } = require("./interactions");
@@ -227,7 +229,7 @@ const useCallbackBindingRaw = (callback, ref, options) => {
  */
 
 /**
- * @param {(interaction: MessageComponentInteraction, data: any) => any} callback
+ * @param {(interaction: MessageComponentInteraction & StringSelectMenuInteraction, data: any) => any} callback
  * @param {DeactElement} ref
  * @param {CallbackBindingOptions} options
  * @returns {string} binding key of the callback
