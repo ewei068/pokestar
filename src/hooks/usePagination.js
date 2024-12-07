@@ -17,7 +17,7 @@ const ScrollButtons = require("../elements/foundation/ScrollButtons");
  *  page: number,
  *  setPage: (page: number) => void,
  *  items: T[],
- *  element: CreateElementResult,
+ *  scrollButtonsElement: CreateElementResult,
  * }}
  */
 module.exports = (
@@ -46,7 +46,7 @@ module.exports = (
     callbackOptions
   );
 
-  const ScrollButtonsElement = createElement(ScrollButtons, {
+  const scrollButtonsElement = createElement(ScrollButtons, {
     onPrevPressedKey: prevActionBindng,
     onNextPressedKey: nextActionBindng,
     isPrevDisabled: pageClamped === 1,
@@ -57,6 +57,6 @@ module.exports = (
     page: pageClamped,
     setPage,
     items,
-    element: ScrollButtonsElement,
+    scrollButtonsElement,
   };
 };
