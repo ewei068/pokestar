@@ -702,7 +702,7 @@ const buildEquipmentSwapEmbed = (
 };
 
 /**
- * @param {PokemonIdEnum} speciesIds
+ * @param {PokemonIdEnum[]} speciesIds
  * @param {number} page
  * @returns {EmbedBuilder}
  */
