@@ -1,15 +1,9 @@
 const { getPokemonOrder } = require("../../utils/pokemonUtils");
 const { buildDexListEmbed } = require("../../embeds/pokemonEmbeds");
 const { pokemonConfig } = require("../../config/pokemonConfig");
-const {
-  useState,
-  useCallbackBinding,
-  createElement,
-  useEffect,
-} = require("../../deact/deact");
-const ScrollButtons = require("../foundation/ScrollButtons");
-const IdConfigSelectMenu = require("../foundation/IdConfigSelectMenu");
+const { createElement, useMemo } = require("../../deact/deact");
 const PokedexPokemon = require("./PokedexPokemon");
+const usePaginationAndSelection = require("../../hooks/usePaginationAndSelection");
 
 const PAGE_SIZE = 10;
 
@@ -25,72 +19,61 @@ module.exports = async (
   ref,
   { initialPage = 1, initialSpeciesIdOrName = null }
 ) => {
-  const [speciesIdOrName, setSpeciesId] = useState(initialSpeciesIdOrName, ref);
-  const [page, setPage] = useState(initialPage, ref);
   const allIds = getPokemonOrder(); // allIds is readonly so shouldn't need to be a dependency
-  if (page < 1 || page > Math.ceil(allIds.length / PAGE_SIZE)) {
-    return { send: null, err: "Invalid page number." };
-  }
   // TODO: parse beforehand and error gracefully?
-  let speciesId = speciesIdOrName;
-  if (
-    speciesIdOrName !== null &&
-    pokemonConfig[speciesIdOrName] === undefined
-  ) {
-    // if ID undefined, check all species for name match
-    const selectedSpeciesId = allIds.find(
-      (foundSpeciesId) =>
-        pokemonConfig[foundSpeciesId].name.toLowerCase() ===
-        speciesIdOrName.toLowerCase()
-    );
-    if (selectedSpeciesId) {
-      speciesId = selectedSpeciesId;
-    } else {
-      return {
-        send: null,
-        err: "Invalid Pokemon species or Pokemon not added yet!",
-      };
-    }
-  }
-
-  const start = (page - 1) * PAGE_SIZE;
-  const end = start + PAGE_SIZE;
-  const ids = allIds.slice(start, end);
-
-  useEffect(
+  const { initialSpeciesIdFound, err } = useMemo(
     () => {
-      if (speciesId) {
-        const index = allIds.indexOf(speciesId);
-        setPage(Math.ceil((index + 1) / PAGE_SIZE));
+      let initialSpeciesId = initialSpeciesIdOrName;
+      if (
+        initialSpeciesIdOrName !== null &&
+        pokemonConfig[initialSpeciesIdOrName] === undefined
+      ) {
+        // if ID undefined, check all species for name match
+        const selectedSpeciesId = allIds.find(
+          (foundSpeciesId) =>
+            pokemonConfig[foundSpeciesId].name.toLowerCase() ===
+            initialSpeciesIdOrName.toLowerCase()
+        );
+        if (selectedSpeciesId) {
+          initialSpeciesId = selectedSpeciesId;
+        } else {
+          return {
+            initialSpeciesIdFound: null,
+            err: "Invalid Pokemon species or Pokemon not added yet!",
+          };
+        }
       }
+
+      return { initialSpeciesIdFound: initialSpeciesId, err: null };
     },
-    [speciesId, setPage],
+    [],
     ref
   );
+  if (err) {
+    return {
+      err,
+    };
+  }
 
-  const callbackOptions = { defer: false };
-  const prevActionBindng = useCallbackBinding(
-    () => {
-      setPage(page - 1);
+  const {
+    page,
+    items: ids,
+    currentItem: speciesId,
+    setItem: setSpeciesId,
+    scrollButtonsElement,
+    selectMenuElement,
+  } = usePaginationAndSelection(
+    {
+      allItems: allIds,
+      pageSize: PAGE_SIZE,
+      initialPage,
+      initialItem: /** @type {PokemonIdEnum} */ (initialSpeciesIdFound),
+      selectionPlaceholder: "Select a Pokemon to view",
+      itemConfig: pokemonConfig,
+      selectionCallbackOptions: { defer: false },
+      paginationCallbackOptions: { defer: false },
     },
-    ref,
-    callbackOptions
-  );
-  const nextActionBindng = useCallbackBinding(
-    () => {
-      setPage(page + 1);
-    },
-    ref,
-    callbackOptions
-  );
-  const onSpeciesSelectKey = useCallbackBinding(
-    (interaction) => {
-      // @ts-ignore ts is stupid
-      const id = interaction?.values?.[0];
-      setSpeciesId(id);
-    },
-    ref,
-    callbackOptions
+    ref
   );
 
   if (speciesId) {
@@ -105,19 +88,6 @@ module.exports = async (
         embeds: [buildDexListEmbed(ids, page)],
       },
     ],
-    components: [
-      createElement(ScrollButtons, {
-        onPrevPressedKey: prevActionBindng,
-        onNextPressedKey: nextActionBindng,
-        isPrevDisabled: page === 1,
-        isNextDisabled: page === Math.ceil(allIds.length / PAGE_SIZE),
-      }),
-      createElement(IdConfigSelectMenu, {
-        ids,
-        config: pokemonConfig,
-        placeholder: "Select a Pokemon to view",
-        callbackBindingKey: onSpeciesSelectKey,
-      }),
-    ],
+    components: [scrollButtonsElement, selectMenuElement],
   };
 };

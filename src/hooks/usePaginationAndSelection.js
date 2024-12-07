@@ -19,7 +19,7 @@ const IdConfigSelectMenu = require("../elements/foundation/IdConfigSelectMenu");
  * @param {CallbackBindingOptions=} param0.paginationCallbackOptions
  * @param {CallbackBindingOptions=} param0.selectionCallbackOptions
  * @param {DeactElement} ref
- * @returns {ReturnType<usePagination> & {
+ * @returns {ReturnType<typeof usePagination<T>> & {
  *  currentItem: T?,
  *  setItem: (item: T?) => void,
  *  selectMenuElement: CreateElementResult,
