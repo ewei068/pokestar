@@ -6,18 +6,18 @@ const {
   useState,
   createElement,
   useAwaitedMemo,
+  useMemo,
 } = require("../../deact/deact");
 const Button = require("../../deact/elements/Button");
 const { getPokemonOrder } = require("../../utils/pokemonUtils");
-const ScrollButtons = require("../foundation/ScrollButtons");
 const ReturnButton = require("../foundation/ReturnButton");
+const useSingleItemScroll = require("../../hooks/useSingleItemScroll");
 
 module.exports = async (
   ref,
   { speciesId, initialTab = "info", setSpeciesId }
 ) => {
-  const allIds = getPokemonOrder();
-  const index = allIds.indexOf(speciesId);
+  const allIds = useMemo(getPokemonOrder, [], ref);
   const [tab, setTab] = useState(initialTab, ref);
   const speciesData = pokemonConfig[speciesId];
   const ownershipData = await useAwaitedMemo(
@@ -34,19 +34,14 @@ module.exports = async (
     ref,
     { defer: false }
   );
-  const prevActionBindng = useCallbackBinding(
-    () => {
-      setSpeciesId(allIds[index - 1]);
+  const { scrollButtonsElement } = useSingleItemScroll(
+    {
+      allItems: allIds,
+      itemOverride: speciesId,
+      setItemOverride: setSpeciesId,
+      callbackOptions: { defer: true },
     },
-    ref,
-    { defer: false }
-  );
-  const nextActionBindng = useCallbackBinding(
-    () => {
-      setSpeciesId(allIds[index + 1]);
-    },
-    ref,
-    { defer: false }
+    ref
   );
   const returnActionBindng = useCallbackBinding(
     () => {
@@ -98,12 +93,7 @@ module.exports = async (
           data: { tab: "rarity" },
         }),
       ],
-      createElement(ScrollButtons, {
-        onPrevPressedKey: prevActionBindng,
-        onNextPressedKey: nextActionBindng,
-        isPrevDisabled: index === 0,
-        isNextDisabled: index === allIds.length - 1,
-      }),
+      scrollButtonsElement,
       createElement(ReturnButton, { callbackBindingKey: returnActionBindng }),
     ],
   };
