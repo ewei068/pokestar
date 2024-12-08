@@ -2,17 +2,21 @@ const { stageNames, stageConfig } = require("./stageConfig");
 
 const { prefix } = stageConfig[process.env.STAGE];
 
-/** @typedef {Keys<commandCategoryConfig>} CommandCategoryEnum */
+/** @typedef {Keys<commandCategoryConfigRaw>} CommandCategoryEnum */
 
-// TODO: re-order commands and categories
-// TODO: add long descriptions
 /**
- * @satisfies {Record<string, {
+ * @typedef {{
  *  name: string,
  *  description: string,
  *  folder: string,
  *  commands: CommandEnum[]
- * }>}
+ * }} CommandCategoryData
+ */
+
+// TODO: re-order commands and categories
+// TODO: add long descriptions
+/**
+ * @satisfies {Record<string, CommandCategoryData>}
  */
 const commandCategoryConfigRaw = {
   trainer: {
@@ -97,6 +101,7 @@ const commandCategoryConfigRaw = {
     commands: ["ping", "echo", "give", "test"],
   },
 };
+/** @type {Record<CommandCategoryEnum, CommandCategoryData>} */
 const commandCategoryConfig = Object.freeze(commandCategoryConfigRaw);
 
 /** @typedef {Keys<commandConfigRaw>} CommandEnum */
