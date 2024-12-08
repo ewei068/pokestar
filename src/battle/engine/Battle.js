@@ -716,6 +716,7 @@ class Battle {
   }
 
   /**
+   * TODO: move to pokemon
    * @param {BattlePokemon} pokemon
    * @param {MoveIdEnum} moveId
    * @returns {boolean}
@@ -753,6 +754,7 @@ class Battle {
   }
 
   /**
+   * TODO: move to pokemon
    * @param {BattlePokemon} pokemon
    * @param {MoveIdEnum} moveId
    * @returns {boolean}
