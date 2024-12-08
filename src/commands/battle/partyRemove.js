@@ -25,7 +25,7 @@ const partyRemove = async (user, option) => {
   const partyPokemon = trainer.data.party.pokemonIds;
 
   // if option is a number convert to number and use as position
-  if (!Number.isNaN(option)) {
+  if (!isNaN(option)) {
     const position = parseInt(option, 10);
     const index = position - 1;
 
