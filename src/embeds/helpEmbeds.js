@@ -22,11 +22,14 @@ const { prefix } = stageConfig[process.env.STAGE];
 
 /**
  * help for no command name (show categories and descriptions)
+ * @param {any} commandCategories
  * @returns {EmbedBuilder} an embeded
  */
-const buildHelpEmbed = () => {
+const buildHelpEmbed = (
+  commandCategories = Object.keys(commandCategoryConfig)
+) => {
   let categoriesString = "";
-  for (const commandCategory in commandCategoryConfig) {
+  for (const commandCategory of commandCategories) {
     const commandCategoryData = commandCategoryConfig[commandCategory];
     categoriesString += `**${commandCategoryData.name}** - ${commandCategoryData.description}\n`;
   }
