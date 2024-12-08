@@ -166,7 +166,7 @@ const validateArgs = (command, args) => {
 
       // type check
       if (argConfig.type === "int") {
-        if (Number.isNaN(providedArg)) {
+        if (isNaN(providedArg)) {
           return false;
         }
       } else if (argConfig.type === "bool") {

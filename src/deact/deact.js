@@ -36,10 +36,15 @@ const createRoot = async (
       err: "Error getting interaction instance",
     };
   }
-  const instance = new DeactInstance(render, props, interaction.user.id, {
-    ttl,
-    userIdForFilter,
-  });
+  const instance = new DeactInstance(
+    render,
+    props,
+    interaction?.user?.id ?? interaction?.author?.id,
+    {
+      ttl,
+      userIdForFilter,
+    }
+  );
   if (defer) {
     instance.messageRef = await interactionInstance.deferReply();
   }

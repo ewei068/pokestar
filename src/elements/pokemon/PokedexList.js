@@ -19,7 +19,7 @@ module.exports = async (
   ref,
   { initialPage = 1, initialSpeciesIdOrName = null }
 ) => {
-  const allIds = getPokemonOrder(); // allIds is readonly so shouldn't need to be a dependency
+  const allIds = useMemo(getPokemonOrder, [], ref); // allIds is readonly so shouldn't need to be a dependency
   // TODO: parse beforehand and error gracefully?
   const { initialSpeciesIdFound, err } = useMemo(
     () => {
@@ -70,7 +70,7 @@ module.exports = async (
       initialItem: /** @type {PokemonIdEnum} */ (initialSpeciesIdFound),
       selectionPlaceholder: "Select a Pokemon to view",
       itemConfig: pokemonConfig,
-      selectionCallbackOptions: { defer: false },
+      selectionCallbackOptions: { defer: true },
       paginationCallbackOptions: { defer: false },
     },
     ref
