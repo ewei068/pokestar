@@ -7,7 +7,6 @@
 
 /**
  * @typedef {import("./DeactElement").DeactElement} DeactElement
- * @typedef {import("./deact").CallbackBindingOptions} CallbackBindingOptions
  */
 
 /**
@@ -36,7 +35,7 @@
  *   embeds?: Embed[],
  *   components?: ComponentRow[],
  * }} ElementPayload
- * @typedef {ElementPayload & {
+ * @typedef {ElementPayload &{
  *   err?: string
  * }} RenderResult
  * @typedef {ReturnType<import('./deact').createElement>} CreateElementResult
@@ -44,7 +43,7 @@
 
 /**
  * @typedef {object} ComposedElements
- * @property {(CreateElementResult | ElementPayload)[]?=} elements
+ * @property {(CreateElementResult| ElementPayload)[]?=} elements
  * @property {(CreateElementResult | string)[]?=} contents
  * @property {(CreateElementResult | Embed)[]?=} embeds
  * @property {((ComponentRow | Component | CreateElementResult)[] | ComponentRow | CreateElementResult)[]?=} components

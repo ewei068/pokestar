@@ -22,14 +22,11 @@ const { prefix } = stageConfig[process.env.STAGE];
 
 /**
  * help for no command name (show categories and descriptions)
- * @param {any} commandCategories
  * @returns {EmbedBuilder} an embeded
  */
-const buildHelpEmbed = (
-  commandCategories = Object.keys(commandCategoryConfig)
-) => {
+const buildHelpEmbed = () => {
   let categoriesString = "";
-  for (const commandCategory of commandCategories) {
+  for (const commandCategory in commandCategoryConfig) {
     const commandCategoryData = commandCategoryConfig[commandCategory];
     categoriesString += `**${commandCategoryData.name}** - ${commandCategoryData.description}\n`;
   }
@@ -50,14 +47,11 @@ const buildHelpEmbed = (
 /**
  * Builds an embeded section for a selected category.
  * @param {CommandCategoryEnum} category the category to add to the help.
- * @param {CommandEnum[]?=} commands the commands in the category.
  * @returns {EmbedBuilder} an embed
  */
-const buildHelpCategoryEmbed = (category, commands) => {
+const buildHelpCategoryEmbed = (category) => {
   let commandsString = "";
-  const commandsToDisplay =
-    commands ?? commandCategoryConfig[category].commands;
-  for (const commandName of commandsToDisplay) {
+  for (const commandName of commandCategoryConfig[category].commands) {
     const commandData = commandConfig[commandName];
     if (!commandData.stages.includes(process.env.STAGE)) {
       continue;

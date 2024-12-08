@@ -244,12 +244,10 @@ const getAbilityOrder = (speciesAbilities) => {
 };
 
 /**
- * @param {Record<PokemonIdEnum, any>} pokemons
- * @returns {PokemonIdEnum[]}
+ * @param {any} pokemons
  */
 const getPokemonOrder = (pokemons = pokemonConfig) =>
   // sort: split by dash and sort accordingly
-  // @ts-ignore
   Object.keys(pokemons).sort((a, b) => {
     const aSplit = a.split("-");
     const bSplit = b.split("-");

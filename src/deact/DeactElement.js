@@ -62,7 +62,6 @@ class DeactElement {
    * @returns {Promise<RenderResult>}
    */
   async render(props) {
-    // TODO: children
     const willRerender =
       this.getHasPropsChanged(this.props, props) ||
       !this.getIsDoneRendering() ||
