@@ -42,42 +42,6 @@ module.exports = async (
     [],
     ref
   ); // readonly
-  // TODO: parse beforehand and error gracefully?
-  // TODO:
-  // intial command handling
-  /* const { initialSpeciesIdFound, err } = useMemo(
-    () => {
-      let initialSpeciesId = initialSpeciesIdOrName;
-      if (
-        initialSpeciesIdOrName !== null &&
-        pokemonConfig[initialSpeciesIdOrName] === undefined
-      ) {
-        // if ID undefined, check all species for name match
-        const selectedSpeciesId = allIds.find(
-          (foundSpeciesId) =>
-            pokemonConfig[foundSpeciesId].name.toLowerCase() ===
-            initialSpeciesIdOrName.toLowerCase()
-        );
-        if (selectedSpeciesId) {
-          initialSpeciesId = selectedSpeciesId;
-        } else {
-          return {
-            initialSpeciesIdFound: null,
-            err: "Invalid Pokemon species or Pokemon not added yet!",
-          };
-        }
-      }
-
-      return { initialSpeciesIdFound: initialSpeciesId, err: null };
-    },
-    [],
-    ref
-  );
-  if (err) {
-    return {
-      err,
-    };
-  } */
 
   const {
     items: commands,
@@ -90,7 +54,7 @@ module.exports = async (
       allItems: categoryCommands,
       pageSize: PAGE_SIZE,
       initialPage,
-      // initialItem: initialCategory,
+      initialItem: initialCommand,
       selectionPlaceholder: "Select a command:",
       itemConfig: commandConfig,
       showId: false,
@@ -122,6 +86,7 @@ module.exports = async (
     elements: [
       {
         content: "",
+        // @ts-ignore
         embeds: [buildHelpCategoryEmbed(commandCategory, commands)],
       },
     ],

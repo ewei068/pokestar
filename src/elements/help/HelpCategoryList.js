@@ -1,6 +1,9 @@
 const { createElement, useMemo } = require("../../deact/deact");
 const usePaginationAndSelection = require("../../hooks/usePaginationAndSelection");
-const { commandCategoryConfig } = require("../../config/commandConfig");
+const {
+  commandCategoryConfig,
+  commandConfig,
+} = require("../../config/commandConfig");
 const { buildHelpEmbed } = require("../../embeds/helpEmbeds");
 const HelpCategory = require("./HelpCategory");
 
@@ -21,33 +24,34 @@ module.exports = async (ref, { initialPage = 1, initialCommand = null }) => {
     ref
   ); // readonly
   // TODO: parse beforehand and error gracefully?
-  // TODO:
   // Parse intial category from initial command
   // Pass in initial command as props
-  /* const { initialSpeciesIdFound, err } = useMemo(
+  const { initialCategoryFound, initialCommandFound, err } = useMemo(
     () => {
-      let initialSpeciesId = initialSpeciesIdOrName;
-      if (
-        initialSpeciesIdOrName !== null &&
-        pokemonConfig[initialSpeciesIdOrName] === undefined
-      ) {
-        // if ID undefined, check all species for name match
-        const selectedSpeciesId = allIds.find(
-          (foundSpeciesId) =>
-            pokemonConfig[foundSpeciesId].name.toLowerCase() ===
-            initialSpeciesIdOrName.toLowerCase()
-        );
-        if (selectedSpeciesId) {
-          initialSpeciesId = selectedSpeciesId;
-        } else {
-          return {
-            initialSpeciesIdFound: null,
-            err: "Invalid Pokemon species or Pokemon not added yet!",
-          };
+      const providedCommand = initialCommand;
+      // search through command config for alias
+      for (const commandName in commandConfig) {
+        const commandData = commandConfig[commandName];
+        if (
+          commandData.aliases.includes(providedCommand) &&
+          commandData.stages.includes(process.env.STAGE)
+        ) {
+          // attempt to find category
+          for (const category in commandCategoryConfig) {
+            if (
+              commandCategoryConfig[category].commands.includes(commandName)
+            ) {
+              return {
+                initialCategoryFound: category,
+                initialCommandFound: providedCommand,
+                err: null,
+              };
+            }
+          }
         }
       }
 
-      return { initialSpeciesIdFound: initialSpeciesId, err: null };
+      return { err: "Invalid command." };
     },
     [],
     ref
@@ -56,7 +60,7 @@ module.exports = async (ref, { initialPage = 1, initialCommand = null }) => {
     return {
       err,
     };
-  } */
+  }
 
   const {
     items: commandCategories,
@@ -69,7 +73,7 @@ module.exports = async (ref, { initialPage = 1, initialCommand = null }) => {
       allItems: allCategories,
       pageSize: PAGE_SIZE,
       initialPage,
-      // initialItem: initialCategory,
+      initialItem: initialCategoryFound,
       selectionPlaceholder: "Select a command category:",
       itemConfig: commandCategoryConfig,
       showId: false,
@@ -82,8 +86,12 @@ module.exports = async (ref, { initialPage = 1, initialCommand = null }) => {
   if (commandCategory) {
     return {
       elements: [
-        // @ts-ignore
-        createElement(HelpCategory, { commandCategory, setCommandCategory }),
+        createElement(HelpCategory, {
+          initialCommand: initialCommandFound,
+          // @ts-ignore
+          commandCategory,
+          setCommandCategory,
+        }),
       ],
     };
   }
