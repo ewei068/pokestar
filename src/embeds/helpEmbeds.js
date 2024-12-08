@@ -50,11 +50,14 @@ const buildHelpEmbed = (
 /**
  * Builds an embeded section for a selected category.
  * @param {CommandCategoryEnum} category the category to add to the help.
+ * @param {CommandEnum[]?=} commands the commands in the category.
  * @returns {EmbedBuilder} an embed
  */
-const buildHelpCategoryEmbed = (category) => {
+const buildHelpCategoryEmbed = (category, commands) => {
   let commandsString = "";
-  for (const commandName of commandCategoryConfig[category].commands) {
+  const commandsToDisplay =
+    commands ?? commandCategoryConfig[category].commands;
+  for (const commandName of commandsToDisplay) {
     const commandData = commandConfig[commandName];
     if (!commandData.stages.includes(process.env.STAGE)) {
       continue;

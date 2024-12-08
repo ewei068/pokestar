@@ -1,8 +1,18 @@
-const { createElement, useMemo } = require("../../deact/deact");
+const {
+  createElement,
+  useMemo,
+  useCallbackBinding,
+} = require("../../deact/deact");
 const usePaginationAndSelection = require("../../hooks/usePaginationAndSelection");
-const { commandCategoryConfig } = require("../../config/commandConfig");
-const { buildHelpEmbed } = require("../../embeds/helpEmbeds");
-const HelpCategory = require("./HelpCategory");
+const {
+  commandCategoryConfig,
+  commandConfig,
+} = require("../../config/commandConfig");
+const {
+  buildHelpEmbed,
+  buildHelpCategoryEmbed,
+} = require("../../embeds/helpEmbeds");
+const ReturnButton = require("../foundation/ReturnButton");
 
 const PAGE_SIZE = 10;
 
@@ -10,20 +20,33 @@ const PAGE_SIZE = 10;
  *
  * @param {import("../../deact/DeactElement").DeactElement} ref
  * @param {object} param1
+ * @param {CommandCategoryEnum} param1.commandCategory
+ * @param {((category: CommandCategoryEnum) => void)=} param1.setCommandCategory
  * @param {number=} param1.initialPage
  * @param {string=} param1.initialCommand
  * @returns {Promise<any>}
  */
-module.exports = async (ref, { initialPage = 1, initialCommand = null }) => {
-  const allCategories = useMemo(
-    () => Object.keys(commandCategoryConfig),
+module.exports = async (
+  ref,
+  {
+    commandCategory,
+    setCommandCategory,
+    initialPage = 1,
+    initialCommand = null,
+  }
+) => {
+  const commandCategoryData = commandCategoryConfig[commandCategory];
+  const categoryCommands = useMemo(
+    () =>
+      commandCategoryData.commands.filter((command) =>
+        commandConfig[command].stages.includes(process.env.STAGE)
+      ),
     [],
     ref
   ); // readonly
   // TODO: parse beforehand and error gracefully?
   // TODO:
-  // Parse intial category from initial command
-  // Pass in initial command as props
+  // intial command handling
   /* const { initialSpeciesIdFound, err } = useMemo(
     () => {
       let initialSpeciesId = initialSpeciesIdOrName;
@@ -59,41 +82,44 @@ module.exports = async (ref, { initialPage = 1, initialCommand = null }) => {
   } */
 
   const {
-    items: commandCategories,
-    currentItem: commandCategory,
-    setItem: setCommandCategory,
+    items: commands,
+    currentItem: command,
+    setItem: setCommand,
     scrollButtonsElement,
     selectMenuElement,
   } = usePaginationAndSelection(
     {
-      allItems: allCategories,
+      allItems: categoryCommands,
       pageSize: PAGE_SIZE,
       initialPage,
       // initialItem: initialCategory,
-      selectionPlaceholder: "Select a command category:",
-      itemConfig: commandCategoryConfig,
+      selectionPlaceholder: "Select a command:",
+      itemConfig: commandConfig,
       showId: false,
       selectionCallbackOptions: { defer: false },
       paginationCallbackOptions: { defer: false },
     },
     ref
   );
+  const returnActionBindng = useCallbackBinding(
+    () => {
+      setCommandCategory?.(null);
+    },
+    ref,
+    { defer: false }
+  );
 
-  if (commandCategory) {
-    return {
-      elements: [
-        // @ts-ignore
-        createElement(HelpCategory, { commandCategory, setCommandCategory }),
-      ],
-    };
-  }
   return {
     elements: [
       {
         content: "",
-        embeds: [buildHelpEmbed(commandCategories)],
+        embeds: [buildHelpCategoryEmbed(commandCategory, commands)],
       },
     ],
-    components: [scrollButtonsElement, selectMenuElement],
+    components: [
+      scrollButtonsElement,
+      selectMenuElement,
+      createElement(ReturnButton, { callbackBindingKey: returnActionBindng }),
+    ],
   };
 };
