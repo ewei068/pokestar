@@ -8,11 +8,9 @@ const {
   commandCategoryConfig,
   commandConfig,
 } = require("../../config/commandConfig");
-const {
-  buildHelpEmbed,
-  buildHelpCategoryEmbed,
-} = require("../../embeds/helpEmbeds");
+const { buildHelpCategoryEmbed } = require("../../embeds/helpEmbeds");
 const ReturnButton = require("../foundation/ReturnButton");
+const HelpCommand = require("./HelpCommand");
 
 const PAGE_SIZE = 10;
 
@@ -109,6 +107,17 @@ module.exports = async (
     { defer: false }
   );
 
+  if (command) {
+    return {
+      elements: [
+        createElement(HelpCommand, {
+          command,
+          categoryCommands,
+          setCommand,
+        }),
+      ],
+    };
+  }
   return {
     elements: [
       {
