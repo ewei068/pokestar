@@ -13,6 +13,7 @@ const { getIdFromNameOrId } = require("../../services/pokemon");
  * Adds the given pokemon via ID to the position in the given user's trade.
  * @param user user required for getting specific user's data.
  * @param pokemonId the Id of the pokemon the user wants to add to their trade
+ * @param money
  * @returns Error or message to send.
  */
 // tradeRemove sends off the relevent user, pokemonId and position to buildtradeRemoveSend from the trade.js dependency and waits for it to return.
@@ -32,7 +33,7 @@ const tradeRemoveMessageCommand = async (message) => {
 
   if (option === "ALL") {
     // pass
-  } else if (!Number.isNaN(option)) {
+  } else if (!isNaN(option)) {
     // if parseInt money is NaN, then it will return null
     money = parseInt(option, 10);
   } else {
@@ -55,7 +56,7 @@ const tradeRemoveSlashCommand = async (interaction) => {
   if (option === "ALL") {
     // pass
     await interaction.deferReply();
-  } else if (!Number.isNaN(option)) {
+  } else if (!isNaN(option)) {
     // if parseInt money is NaN, then it will return null
     money = parseInt(option, 10);
     await interaction.deferReply();
