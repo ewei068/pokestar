@@ -12,14 +12,28 @@
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { bannerTypes } = require("./gachaConfig");
 const { stageNames } = require("./stageConfig");
-/* eslint-disable-next-line no-unused-vars */
-const types = require("../../types");
 const { refreshIntervalEnum } = require("../enums/miscEnums");
 
 const MAX_TRAINER_LEVEL = 100;
 const MAX_POKEMON = 500;
 const MAX_RELEASE = 10;
 
+/**
+ * @typedef {{
+ *  type: "string" | "number" | "boolean" | "object" | "array",
+ *  default?: any,
+ *  refreshInterval?: number
+ *  config?: TrainerFieldConfig
+ * }} TrainerFieldData
+ */
+
+/**
+ * @typedef {Record<string, TrainerFieldData>} TrainerFieldConfig
+ */
+
+/**
+ * @type {TrainerFieldConfig}
+ */
 const trainerFields = {
   userId: {
     type: "string",

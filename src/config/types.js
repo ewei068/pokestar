@@ -19,6 +19,8 @@
 /** @typedef {import("./commandConfig").CommandEnum} CommandEnum */
 /** @typedef {import("./helpConfig").EventData} EventData */
 /** @typedef {import("./gachaConfig").BannerData} BannerData */
+/** @typedef {import("./trainerConfig").TrainerFieldData} TrainerFieldData */
+/** @typedef {import("./trainerConfig").TrainerFieldConfig} TrainerFieldConfig */
 
 /**
  * @typedef {{
