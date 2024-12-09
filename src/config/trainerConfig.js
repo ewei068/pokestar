@@ -28,8 +28,76 @@ const MAX_RELEASE = 10;
  */
 
 /**
+ * @typedef {{
+ *  name: string,
+ *  options: Array<{value: any, display: string}>,
+ *  trainerField: TrainerFieldData,
+ * }} UserSettingsData
+ */
+/** @typedef {Keys<userSettingsConfigRaw>} UserSettingsEnum */
+
+/** @satisfies {Record<string, UserSettingsData>} */
+const userSettingsConfigRaw = {
+  showTargetIndicator: {
+    name: "Show Target Indicator",
+    options: /** @type {const} */ ([
+      {
+        value: true,
+        display: "Yes",
+      },
+      {
+        value: false,
+        display: "No",
+      },
+    ]),
+    trainerField: {
+      type: "boolean",
+      default: true,
+    },
+  },
+  deviceType: {
+    name: "Device Type",
+    options: /** @type {const} */ ([
+      {
+        value: "automatic",
+        display: "Automatic",
+      },
+      {
+        value: "mobile",
+        display: "Mobile",
+      },
+      {
+        value: "desktop",
+        display: "Desktop",
+      },
+    ]),
+    trainerField: {
+      type: "string",
+      default: "automatic",
+    },
+  },
+};
+/** @type {Record<UserSettingsEnum, UserSettingsData>} */
+const userSettingsConfig = Object.freeze(userSettingsConfigRaw);
+/**
+ * Given a settings enum, get an enum of its options
+ * @template {UserSettingsEnum} T
+ * @typedef {(typeof userSettingsConfigRaw[T]["options"][number]["value"])} UserSettingsOptions
+ */
+
+/**
  * @typedef {Record<string, TrainerFieldData>} TrainerFieldConfig
  */
+
+/**
+ * @type {TrainerFieldConfig}
+ */
+const userSettingsTrainerFieldsConfig = Object.entries(
+  userSettingsConfig
+).reduce((acc, [key, value]) => {
+  acc[key] = value.trainerField;
+  return acc;
+}, {});
 
 /**
  * @type {TrainerFieldConfig}
@@ -329,6 +397,11 @@ const trainerFields = {
     type: "number",
     default: 0,
     refreshInterval: refreshIntervalEnum.BIWEEKLY,
+  },
+  settings: {
+    type: "object",
+    default: {},
+    config: userSettingsTrainerFieldsConfig,
   },
 };
 
@@ -1474,64 +1547,6 @@ const expMultiplier = (level) =>
 
 const NUM_DAILY_REWARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 5;
 const NUM_DAILY_SHARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 5;
-
-/**
- * @typedef {{
- *  name: string,
- *  options: Array<{value: any, display: string}>,
- *  trainerField: TrainerFieldData,
- * }} UserSettingsData
- */
-/** @typedef {Keys<userSettingsConfigRaw>} UserSettingsEnum */
-
-/** @satisfies {Record<string, UserSettingsData>} */
-const userSettingsConfigRaw = {
-  showTargetIndicator: {
-    name: "Show Target Indicator",
-    options: /** @type {const} */ ([
-      {
-        value: true,
-        display: "Yes",
-      },
-      {
-        value: false,
-        display: "No",
-      },
-    ]),
-    trainerField: {
-      type: "boolean",
-      default: true,
-    },
-  },
-  deviceType: {
-    name: "Device Type",
-    options: /** @type {const} */ ([
-      {
-        value: "automatic",
-        display: "Automatic",
-      },
-      {
-        value: "mobile",
-        display: "Mobile",
-      },
-      {
-        value: "desktop",
-        display: "Desktop",
-      },
-    ]),
-    trainerField: {
-      type: "string",
-      default: "automatic",
-    },
-  },
-};
-/** @type {Record<UserSettingsEnum, UserSettingsData>} */
-const userSettingsConfig = Object.freeze(userSettingsConfigRaw);
-/**
- * Given a settings enum, get an enum of its options
- * @template {UserSettingsEnum} T
- * @typedef {(typeof userSettingsConfigRaw[T]["options"][number]["value"])} UserSettingsOptions
- */
 
 module.exports = {
   trainerFields,
