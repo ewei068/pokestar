@@ -21,6 +21,12 @@
 /** @typedef {import("./gachaConfig").BannerData} BannerData */
 /** @typedef {import("./trainerConfig").TrainerFieldData} TrainerFieldData */
 /** @typedef {import("./trainerConfig").TrainerFieldConfig} TrainerFieldConfig */
+/** @typedef {import("./trainerConfig").UserSettingsEnum} UserSettingsEnum */
+/** @typedef {import("./trainerConfig").UserSettingsData} UserSettingsData */
+/**
+ * @template {UserSettingsEnum} T
+ * @typedef {import("./trainerConfig").UserSettingsOptions<T>} UserSettingsOptions
+ */
 
 /**
  * @typedef {{
