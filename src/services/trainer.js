@@ -307,6 +307,19 @@ const getTrainerInfo = async (user) => {
 };
 
 /**
+ * @param {DiscordUser} user
+ * @returns {Promise<{data?: UserSettings, err?: string}>}
+ */
+const getUserSettings = async (user) => {
+  const trainer = await getTrainer(user);
+  if (trainer.err) {
+    return { data: null, err: trainer.err };
+  }
+
+  return { data: trainer.data.settings, err: null };
+};
+
+/**
  * @param {WithId<Trainer>} trainer
  * @param {number} exp
  * @param {number} money
@@ -576,6 +589,7 @@ module.exports = {
   getTrainer,
   getTrainerFromId,
   getTrainerInfo,
+  getUserSettings,
   addExpAndMoneyTrainer,
   addExpAndMoney,
   getLevelRewards,
