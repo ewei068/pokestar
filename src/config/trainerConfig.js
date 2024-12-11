@@ -38,16 +38,16 @@ const MAX_RELEASE = 10;
 
 /** @satisfies {Record<string, UserSettingsData>} */
 const userSettingsConfigRaw = {
-  showTargetIndicator: {
-    name: "Show Target Indicator",
+  publicProfile: {
+    name: "Profile Prviacy",
     options: /** @type {const} */ ([
       {
         value: true,
-        display: "Yes",
+        display: "Public",
       },
       {
         value: false,
-        display: "No",
+        display: "Private",
       },
     ]),
     trainerField: {
@@ -74,6 +74,23 @@ const userSettingsConfigRaw = {
     trainerField: {
       type: "string",
       default: "automatic",
+    },
+  },
+  showTargetIndicator: {
+    name: "Show Target Indicator",
+    options: /** @type {const} */ ([
+      {
+        value: true,
+        display: "Yes",
+      },
+      {
+        value: false,
+        display: "No",
+      },
+    ]),
+    trainerField: {
+      type: "boolean",
+      default: true,
     },
   },
 };

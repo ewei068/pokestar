@@ -23,7 +23,14 @@ const commandCategoryConfigRaw = {
     name: "Trainer",
     description: "Commands involving your trainer",
     folder: "trainer",
-    commands: ["trainerinfo", "daily", "backpack", "levelrewards", "locations"],
+    commands: [
+      "trainerinfo",
+      "daily",
+      "backpack",
+      "settings",
+      "levelrewards",
+      "locations",
+    ],
   },
   pokemon: {
     name: "Pokemon",
@@ -216,6 +223,17 @@ const commandConfigRaw = {
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 50,
+  },
+  settings: {
+    name: "User Settings",
+    aliases: ["settings", "options", "config", "usersettings"],
+    description: "Modify your user settings and options",
+    longDescription:
+      "Modify your user settings and options such as privacy and default device.",
+    execute: "userSettings.js",
+    args: {},
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    exp: 0,
   },
   vote: {
     name: "Vote",
