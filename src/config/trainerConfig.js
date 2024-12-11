@@ -39,7 +39,7 @@ const MAX_RELEASE = 10;
 /** @satisfies {Record<string, UserSettingsData>} */
 const userSettingsConfigRaw = {
   publicProfile: {
-    name: "Profile Prviacy",
+    name: "Profile Privacy",
     options: /** @type {const} */ ([
       {
         value: true,
