@@ -41,12 +41,23 @@ const buildSettingsListEmbed = ({
     },
     { settingsNames: [], settingsDisplayValues: [] }
   );
-  const settingsWhitespaces = getWhitespace(settingsNames, 20);
+  const settingsWhitespaces = getWhitespace(settingsNames, 35);
+  const settingsSuffixWhitespaces = getWhitespace(settingsDisplayValues);
 
   let description = "";
-  zip(settingsNames, settingsWhitespaces, settingsDisplayValues).forEach(
-    ([settingName, whitespace, settingDisplayValue]) => {
-      description += `\`${settingName}:${whitespace}${settingDisplayValue}\`\n`;
+  zip(
+    settingsNames,
+    settingsWhitespaces,
+    settingsDisplayValues,
+    settingsSuffixWhitespaces
+  ).forEach(
+    ([
+      settingName,
+      whitespace,
+      settingDisplayValue,
+      settingSuffixWhitespace,
+    ]) => {
+      description += `\`${settingName}:${whitespace}${settingDisplayValue}${settingSuffixWhitespace}\`\n`;
     }
   );
   embed.setDescription(description);
