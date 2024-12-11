@@ -1,10 +1,18 @@
 // TODO: generalze this component to be used for all settings?
 
-const { useMemo, useState, useAwaitedEffect } = require("../../deact/deact");
+const {
+  useMemo,
+  useState,
+  useAwaitedEffect,
+  useCallbackBinding,
+  createElement,
+} = require("../../deact/deact");
 const usePaginationAndSelection = require("../../hooks/usePaginationAndSelection");
 const { userSettingsConfig } = require("../../config/trainerConfig");
 const { buildSettingsListEmbed } = require("../../embeds/settingsEmbeds");
-const { getUserSettings } = require("../../services/trainer");
+const { getUserSettings, setUserSetting } = require("../../services/trainer");
+const SettingsSelection = require("./SettingsSelection");
+const { logger } = require("../../log");
 
 const PAGE_SIZE = 10;
 
@@ -28,7 +36,8 @@ module.exports = async (ref, { user, initialPage = 1 }) => {
         setUserSettingsErr(settingsRes.err);
       })
       .catch((err) => {
-        setUserSettingsErr(`${err}`);
+        logger.error(err);
+        setUserSettingsErr("Error fetching settings.");
       });
   };
   await useAwaitedEffect(fetchUserSettings, [], ref);
@@ -37,7 +46,6 @@ module.exports = async (ref, { user, initialPage = 1 }) => {
     page,
     items: settings,
     currentItem: selectedSetting,
-    setItem: setSetting,
     scrollButtonsElement,
     selectMenuElement,
   } = usePaginationAndSelection(
@@ -53,6 +61,25 @@ module.exports = async (ref, { user, initialPage = 1 }) => {
       paginationCallbackOptions: { defer: false },
     },
     ref
+  );
+
+  const onSettingEditBindingKey = useCallbackBinding(
+    async (_interaction, data) => {
+      await setUserSetting(user, selectedSetting, data.value)
+        .then((updateRes) => {
+          if (updateRes.err) {
+            setUserSettingsErr(updateRes.err);
+          } else {
+            return fetchUserSettings();
+          }
+        })
+        .catch((err) => {
+          logger.error(err);
+          setUserSettingsErr("Error updating settings.");
+        });
+    },
+    ref,
+    { defer: false }
   );
 
   return {
@@ -74,6 +101,14 @@ module.exports = async (ref, { user, initialPage = 1 }) => {
     components: [
       scrollButtonsElement,
       userSettingsErr ? [] : selectMenuElement,
+      userSettingsErr || !selectedSetting
+        ? []
+        : createElement(SettingsSelection, {
+            setting: selectedSetting,
+            settingsConfig: userSettingsConfig,
+            currentSettings: userSettings,
+            callbackBindingKey: onSettingEditBindingKey,
+          }),
     ],
   };
 };

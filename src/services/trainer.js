@@ -320,6 +320,38 @@ const getUserSettings = async (user) => {
 };
 
 /**
+ * @template {UserSettingsEnum} T
+ * @param {DiscordUser} user
+ * @param {T} setting
+ * @param {UserSettingsOptions<T>} newValue
+ * @returns {Promise<{data?: null, err?: string}>}
+ */
+const setUserSetting = async (user, setting, newValue) => {
+  const { data: settings, err } = await getUserSettings(user);
+  if (err) {
+    return { data: null, err };
+  }
+
+  // @ts-ignore
+  settings[setting] = newValue;
+
+  try {
+    await updateDocument(
+      collectionNames.USERS,
+      { userId: user.id },
+      { $set: { settings } }
+    );
+
+    // TODO: error check? I don't think error reporting is critical here
+  } catch (error) {
+    logger.error(error);
+    return { data: null, err: "Error updating settings." };
+  }
+
+  return { data: null, err: null };
+};
+
+/**
  * @param {WithId<Trainer>} trainer
  * @param {number} exp
  * @param {number} money
@@ -590,6 +622,7 @@ module.exports = {
   getTrainerFromId,
   getTrainerInfo,
   getUserSettings,
+  setUserSetting,
   addExpAndMoneyTrainer,
   addExpAndMoney,
   getLevelRewards,
