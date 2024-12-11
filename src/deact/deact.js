@@ -350,6 +350,18 @@ function useEffect(callback, deps, ref) {
     }
     cleanupRef.current = cleanup;
   }
+  return cleanupRef.current;
+}
+
+/**
+ * @param {(() => Promise<(() => void)>) | (() => Promise<void>)} callback
+ * @param {any[]} deps
+ * @param {DeactElement} ref
+ * @returns {Promise<(() => void) | void>}
+ */
+async function useAwaitedEffect(callback, deps, ref) {
+  const promise = await useEffect(callback, deps, ref);
+  return await promise;
 }
 
 module.exports = {
@@ -367,4 +379,5 @@ module.exports = {
   useMemo,
   useAwaitedMemo,
   useEffect,
+  useAwaitedEffect,
 };

@@ -15,6 +15,7 @@ const IdConfigSelectMenu = require("../elements/foundation/IdConfigSelectMenu");
  * @param {number=} param0.initialPage
  * @param {T=} param0.initialItem
  * @param {string=} param0.selectionPlaceholder
+ * @param {boolean=} param0.useCurrentItemDefault
  * @param {PartialRecord<T, any>} param0.itemConfig
  * @param {boolean=} param0.showId
  * @param {CallbackBindingOptions=} param0.paginationCallbackOptions
@@ -33,6 +34,7 @@ module.exports = (
     initialPage = 1,
     initialItem,
     selectionPlaceholder = "Select an item",
+    useCurrentItemDefault = false,
     itemConfig,
     showId = true,
     paginationCallbackOptions = {},
@@ -78,6 +80,7 @@ module.exports = (
     config: itemConfig,
     callbackBindingKey: onSelectKey,
     showId,
+    defaultId: useCurrentItemDefault ? currentItem : undefined,
   });
 
   return {

@@ -99,6 +99,67 @@ const getTrainerFromId = async (userId) => {
 
 /**
  *
+ * @param {any} root
+ * @param {TrainerFieldConfig} fieldConfig
+ * @param {Date} lastCorrectedTime
+ * @param {Date} newCorrectedTime
+ * @returns {boolean} if field was modified
+ */
+const setTrainerFields = (
+  root,
+  fieldConfig,
+  lastCorrectedTime,
+  newCorrectedTime
+) => {
+  let modified = false;
+  // check if all fields are present
+  for (const field in fieldConfig) {
+    const fieldData = fieldConfig[field];
+    if (root[field] === undefined) {
+      // eslint-disable-next-line no-param-reassign
+      root[field] = fieldData.default;
+      modified = true;
+    }
+
+    // if the field has its own config, attempt to set it
+    if (fieldData.type === "object" && fieldData.config) {
+      modified =
+        setTrainerFields(
+          root[field] ?? {},
+          fieldData.config,
+          lastCorrectedTime,
+          newCorrectedTime
+        ) || modified;
+    }
+  }
+
+  // attempt to reset time-interval fields
+  for (const field in fieldConfig) {
+    const { refreshInterval } = fieldConfig[field];
+    if (!refreshInterval) {
+      continue;
+    }
+
+    const currentTimeInterval = getFullUTCTimeInterval(
+      refreshInterval,
+      newCorrectedTime
+    );
+    const lastTimeInterval = getFullUTCTimeInterval(
+      refreshInterval,
+      lastCorrectedTime
+    );
+    if (currentTimeInterval > lastTimeInterval) {
+      // eslint-disable-next-line no-param-reassign
+      root[field] = fieldConfig[field].default;
+      modified = true;
+    }
+
+    return modified;
+  }
+};
+
+/**
+ *
  * @param {DiscordUser} discordUser
  * @param {boolean?} refresh
  * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
@@ -153,36 +214,16 @@ const getTrainer = async (discordUser, refresh = true) => {
     }
   }
 
-  // check if all fields are present
-  for (const field in trainerFields) {
-    if (trainer[field] === undefined) {
-      trainer[field] = trainerFields[field].default;
-      modified = true;
-    }
-  }
-
   // attempt to reset time-interval fields
   const lastCorrectedTime = new Date(trainer.lastCorrected);
   const newCorrectedTime = new Date();
-  for (const field in trainerFields) {
-    const { refreshInterval } = trainerFields[field];
-    if (!refreshInterval) {
-      continue;
-    }
-
-    const currentTimeInterval = getFullUTCTimeInterval(
-      refreshInterval,
+  modified =
+    setTrainerFields(
+      trainer,
+      trainerFields,
+      lastCorrectedTime,
       newCorrectedTime
-    );
-    const lastTimeInterval = getFullUTCTimeInterval(
-      refreshInterval,
-      lastCorrectedTime
-    );
-    if (currentTimeInterval > lastTimeInterval) {
-      trainer[field] = trainerFields[field].default;
-      modified = true;
-    }
-  }
+    ) || modified;
 
   if (modified) {
     trainer.lastCorrected = newCorrectedTime.getTime();
@@ -263,6 +304,51 @@ const getTrainerInfo = async (user) => {
     logger.error(error);
     return { data: null, err: "Error finding trainer." };
   }
+};
+
+/**
+ * @param {DiscordUser} user
+ * @returns {Promise<{data?: UserSettings, err?: string}>}
+ */
+const getUserSettings = async (user) => {
+  const trainer = await getTrainer(user);
+  if (trainer.err) {
+    return { data: null, err: trainer.err };
+  }
+
+  return { data: trainer.data.settings, err: null };
+};
+
+/**
+ * @template {UserSettingsEnum} T
+ * @param {DiscordUser} user
+ * @param {T} setting
+ * @param {UserSettingsOptions<T>} newValue
+ * @returns {Promise<{data?: null, err?: string}>}
+ */
+const setUserSetting = async (user, setting, newValue) => {
+  const { data: settings, err } = await getUserSettings(user);
+  if (err) {
+    return { data: null, err };
+  }
+
+  // @ts-ignore
+  settings[setting] = newValue;
+
+  try {
+    await updateDocument(
+      collectionNames.USERS,
+      { userId: user.id },
+      { $set: { settings } }
+    );
+
+    // TODO: error check? I don't think error reporting is critical here
+  } catch (error) {
+    logger.error(error);
+    return { data: null, err: "Error updating settings." };
+  }
+
+  return { data: null, err: null };
 };
 
 /**
@@ -535,6 +621,8 @@ module.exports = {
   getTrainer,
   getTrainerFromId,
   getTrainerInfo,
+  getUserSettings,
+  setUserSetting,
   addExpAndMoneyTrainer,
   addExpAndMoney,
   getLevelRewards,

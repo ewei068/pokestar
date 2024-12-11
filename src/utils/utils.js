@@ -322,6 +322,11 @@ const errorlessAsync = async (fn) => {
   }
 };
 
+const zip = (...arr) =>
+  Array(Math.max(...arr.map((a) => a.length)))
+    .fill()
+    .map((_, i) => arr.map((a) => a[i]));
+
 module.exports = {
   getOrSetDefault,
   getPBar,
@@ -345,4 +350,5 @@ module.exports = {
   poll,
   formatMoney,
   errorlessAsync,
+  zip,
 };
