@@ -12,14 +12,113 @@
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { bannerTypes } = require("./gachaConfig");
 const { stageNames } = require("./stageConfig");
-/* eslint-disable-next-line no-unused-vars */
-const types = require("../../types");
 const { refreshIntervalEnum } = require("../enums/miscEnums");
 
 const MAX_TRAINER_LEVEL = 100;
 const MAX_POKEMON = 500;
 const MAX_RELEASE = 10;
 
+/**
+ * @typedef {{
+ *  type: "string" | "number" | "boolean" | "object" | "array",
+ *  default?: any,
+ *  refreshInterval?: number
+ *  config?: TrainerFieldConfig
+ * }} TrainerFieldData
+ */
+
+/**
+ * @typedef {{
+ *  name: string,
+ *  options: Array<{value: any, display: string}>,
+ *  trainerField: TrainerFieldData,
+ * }} UserSettingsData
+ */
+/** @typedef {Keys<userSettingsConfigRaw>} UserSettingsEnum */
+
+/** @satisfies {Record<string, UserSettingsData>} */
+const userSettingsConfigRaw = {
+  publicProfile: {
+    name: "Profile Privacy",
+    options: /** @type {const} */ ([
+      {
+        value: true,
+        display: "Public",
+      },
+      {
+        value: false,
+        display: "Private",
+      },
+    ]),
+    trainerField: {
+      type: "boolean",
+      default: true,
+    },
+  },
+  deviceType: {
+    name: "Device Type",
+    options: /** @type {const} */ ([
+      {
+        value: "automatic",
+        display: "Automatic",
+      },
+      {
+        value: "mobile",
+        display: "Mobile",
+      },
+      {
+        value: "desktop",
+        display: "Desktop",
+      },
+    ]),
+    trainerField: {
+      type: "string",
+      default: "automatic",
+    },
+  },
+  showTargetIndicator: {
+    name: "Show Target Indicator",
+    options: /** @type {const} */ ([
+      {
+        value: true,
+        display: "Yes",
+      },
+      {
+        value: false,
+        display: "No",
+      },
+    ]),
+    trainerField: {
+      type: "boolean",
+      default: true,
+    },
+  },
+};
+/** @type {Record<UserSettingsEnum, UserSettingsData>} */
+const userSettingsConfig = Object.freeze(userSettingsConfigRaw);
+/**
+ * Given a settings enum, get an enum of its options
+ * @template {UserSettingsEnum} T
+ * @typedef {(typeof userSettingsConfigRaw[T]["options"][number]["value"])} UserSettingsOptions
+ */
+
+/**
+ * @typedef {Record<string, TrainerFieldData>} TrainerFieldConfig
+ */
+
+/**
+ * @type {TrainerFieldConfig}
+ */
+const userSettingsTrainerFieldsConfig = Object.entries(
+  userSettingsConfig
+).reduce((acc, [key, value]) => {
+  acc[key] = value.trainerField;
+  return acc;
+}, {});
+
+/**
+ * @type {TrainerFieldConfig}
+ */
 const trainerFields = {
   userId: {
     type: "string",
@@ -315,6 +414,11 @@ const trainerFields = {
     type: "number",
     default: 0,
     refreshInterval: refreshIntervalEnum.BIWEEKLY,
+  },
+  settings: {
+    type: "object",
+    default: {},
+    config: userSettingsTrainerFieldsConfig,
   },
 };
 
@@ -1471,4 +1575,5 @@ module.exports = {
   expMultiplier,
   NUM_DAILY_REWARDS,
   NUM_DAILY_SHARDS,
+  userSettingsConfig,
 };
