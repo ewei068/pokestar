@@ -307,6 +307,7 @@ const getTrainerInfo = async (user) => {
 };
 
 /**
+ * TODO: caching?
  * @param {DiscordUser} user
  * @returns {Promise<{data?: UserSettings, err?: string}>}
  */

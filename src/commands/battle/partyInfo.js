@@ -12,6 +12,7 @@ const { getPartyPokemons } = require("../../services/party");
 const { buildPartyEmbed } = require("../../embeds/battleEmbeds");
 const { buildPokemonSelectRow } = require("../../components/pokemonSelectRow");
 const { eventNames } = require("../../config/eventConfig");
+const { getUserSelectedDevice } = require("../../utils/trainerUtils");
 
 /**
  * partyInfo reads the given user's data in order to output the information on the party of the user.
@@ -43,7 +44,10 @@ const partyInfo = async (user) => {
   }
 
   // build embed
-  const partyEmbed = buildPartyEmbed(trainer.data, partyPokemons.data, true);
+  const partyEmbed = buildPartyEmbed(trainer.data, partyPokemons.data, {
+    detailed: true,
+    isMobile: getUserSelectedDevice(user, trainer.data.settings) === "mobile",
+  });
 
   // build selection row for pokemon Ids
   const selectRowData = {};

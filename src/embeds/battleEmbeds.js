@@ -45,10 +45,16 @@ const {
  * Handles building the party embedded instructions for building a party.
  * @param {Trainer} trainer the trainer to build the party for.
  * @param {WithId<Pokemon>[]} pokemons the pokemon the trainer has.
- * @param {boolean=} detailed whether it's a detailed party formation.
+ * @param {object} options
+ * @param {boolean=} options.detailed whether it's a detailed party formation.
+ * @param {boolean=} options.isMobile whether it's a mobile device.
  * @returns {EmbedBuilder} an embeded.
  */
-const buildPartyEmbed = (trainer, pokemons, detailed = false) => {
+const buildPartyEmbed = (
+  trainer,
+  pokemons,
+  { detailed = false, isMobile = false } = {}
+) => {
   const { party } = trainer;
 
   const power = pokemons.reduce(
@@ -66,7 +72,7 @@ const buildPartyEmbed = (trainer, pokemons, detailed = false) => {
     { name: "Power", value: `${power}`, inline: true },
     {
       name: "Pokemon",
-      value: buildPartyString(pokemons, party.rows, party.cols),
+      value: buildPartyString(pokemons, party.rows, party.cols, { isMobile }),
       inline: false,
     }
   );
@@ -237,6 +243,7 @@ const buildBattleEmbed = (
           showHp: true,
           emphPosition: team1EmphPosition,
           targetIndices: team1TargetIndicies,
+          isMobile,
         }
       ),
       inline: false,
@@ -251,6 +258,7 @@ const buildBattleEmbed = (
           showHp: true,
           emphPosition: team2EmphPosition,
           targetIndices: team2TargetIndicies,
+          isMobile,
         }
       ),
       inline: false,

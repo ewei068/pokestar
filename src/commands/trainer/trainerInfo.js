@@ -10,10 +10,11 @@ const { getTrainerInfo } = require("../../services/trainer");
 const { buildTrainerEmbed } = require("../../embeds/trainerEmbeds");
 const { getPartyPokemons } = require("../../services/party");
 const { buildPartyEmbed } = require("../../embeds/battleEmbeds");
+const { getUserSelectedDevice } = require("../../utils/trainerUtils");
 
 /**
  * Displays the user's trainer info (trainer card).
- * @param {Object} user User who initiated the command.
+ * @param {object} user User who initiated the command.
  * @returns Embed with user's trainer info.
  */
 const trainerInfo = async (user) => {
@@ -33,7 +34,9 @@ const trainerInfo = async (user) => {
   // build embeds
   const trainerEmbed = buildTrainerEmbed(trainer.data);
   // TODO: should remove?
-  const partyEmbed = buildPartyEmbed(trainer.data, partyPokemons.data);
+  const partyEmbed = buildPartyEmbed(trainer.data, partyPokemons.data, {
+    isMobile: getUserSelectedDevice(user, trainer.data.settings) === "mobile",
+  });
 
   const send = {
     embeds: [trainerEmbed, partyEmbed],

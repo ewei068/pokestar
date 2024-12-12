@@ -12,6 +12,8 @@ const {
 } = require("../../components/selectBattleTargetRow");
 const { buildBattleEmbed } = require("../../embeds/battleEmbeds");
 const { getState } = require("../../services/state");
+const { getTrainer } = require("../../services/trainer");
+const { getUserSelectedDevice } = require("../../utils/trainerUtils");
 
 /**
  * Gets the relevant information from the user interaction and sets up for target selection.
@@ -64,6 +66,8 @@ const battleMoveSelect = async (interaction, data) => {
     return { err: "No eligible targets! Choose another move." };
   }
 
+  const { data: trainer } = await getTrainer(interaction.user);
+
   // build selection menu of eligible targets
   const targetSelectMenu = buildSelectBattleTargetRow(
     battle,
@@ -87,7 +91,14 @@ const battleMoveSelect = async (interaction, data) => {
 
   // update message
   await interaction.update({
-    embeds: [buildBattleEmbed(battle), ...interaction.message.embeds],
+    embeds: [
+      buildBattleEmbed(battle, {
+        isMobile:
+          getUserSelectedDevice(interaction.user, trainer?.settings) ===
+          "mobile",
+      }),
+      ...interaction.message.embeds,
+    ],
     components: interaction.message.components
       .concat(moveSelectMenu)
       .concat(targetSelectMenu),

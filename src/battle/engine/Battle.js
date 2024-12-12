@@ -599,7 +599,7 @@ class Battle {
    */
   isNpc(userId) {
     const user = this.users[userId];
-    return user.npc !== undefined;
+    return user?.npc !== undefined;
   }
 
   /**

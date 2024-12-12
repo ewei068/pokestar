@@ -16,6 +16,8 @@ const {
 const { buildSingleButton } = require("../../components/singleButton");
 const { eventNames } = require("../../config/eventConfig");
 const { buildBattleEmbed } = require("../../embeds/battleEmbeds");
+const { getTrainer } = require("../../services/trainer");
+const { getUserSelectedDevice } = require("../../utils/trainerUtils");
 
 /**
  * @param {any} interaction
@@ -67,6 +69,8 @@ const battleTargetSelect = async (interaction, data) => {
   else if (battle.activePokemon.userId !== interaction.user.id) {
     return { err: "It's not your turn." };
   }
+
+  const { data: trainer } = await getTrainer(interaction.user);
 
   // in alpha, measure execution time
   const start = Date.now();
@@ -155,7 +159,12 @@ const battleTargetSelect = async (interaction, data) => {
   // update message
   await interaction.update({
     embeds: [
-      buildBattleEmbed(battle, { targetIndices }),
+      buildBattleEmbed(battle, {
+        targetIndices,
+        isMobile:
+          getUserSelectedDevice(interaction.user, trainer?.settings) ===
+          "mobile",
+      }),
       ...interaction.message.embeds,
     ],
     components: interaction.message.components
