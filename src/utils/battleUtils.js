@@ -43,10 +43,9 @@ const buildPartyString = (
     showHp = false,
     emphPosition = null,
     targetIndices = null,
-    isMobile = true, // TODO
+    isMobile = false, // TODO
   } = {}
 ) => {
-  console.log(targetIndices);
   const targetIndexSet = new Set(targetIndices || []);
   let globalIndex = 0;
   let partyString = "";
@@ -121,14 +120,18 @@ const buildPartyString = (
 
       // add to row string based on length of hp string
       const headerLength = headerString.length;
+      rowString += lplus;
+      if (!isMobile) {
+        rowString += border;
+      }
       if (headerLength === 0) {
-        rowString += `${lplus}${border}${border}${border}${border}${border}`;
+        rowString += `${border}${border}${border}${border}`;
       } else if (headerLength === 2) {
-        rowString += `${lplus}${border}${border}${headerString}${border}`;
+        rowString += `${border}${headerString}${border}`;
       } else if (headerLength === 3) {
-        rowString += `${lplus}${border}${headerString}${border}`;
+        rowString += `${headerString}${border}`;
       } else if (headerLength === 4) {
-        rowString += `${lplus}${border}${headerString}`;
+        rowString += `${headerString}`;
       }
 
       if (j === cols - 1) {
@@ -171,7 +174,8 @@ const buildPartyString = (
       const emoji = pokemon ? pokemonConfig[pokemon.speciesId].emoji : "⬛";
       // if j is divisible by 3 and not 0, remove a space from the left
       // const leftSpace = j % 3 === 0 && j !== 0 ? "" : " ";
-      rowString += `\`${lborder} \`${emoji}-`;
+      const leftSpace = isMobile ? "\u2002\u2005" : "\u2005\u2006";
+      rowString += `\`${lborder} \`${emoji}${leftSpace}`;
       globalIndex += 1;
       if (j === cols - 1) {
         rowString += `\`${rborder}\``;
@@ -223,10 +227,14 @@ const buildPartyString = (
         rplus = plusTarget;
       }
       const position = globalIndex + 1;
+      rowString += lplus;
+      if (!isMobile) {
+        rowString += border;
+      }
       if (position < 10) {
-        rowString += `${lplus}${border}${border}${position}${border}${border}`;
+        rowString += `${border}${position}${border}${border}`;
       } else {
-        rowString += `${lplus}${border}${border}${position}${border}`;
+        rowString += `${border}${position}${border}`;
       }
       if (j === cols - 1) {
         rowString += `${rplus}\``;
