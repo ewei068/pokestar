@@ -76,7 +76,7 @@ const battleTargetSelect = async (interaction, data) => {
   const start = Date.now();
 
   // if skip turn, skip turn
-  if (data.skipTurn || false) {
+  if (data.skipTurn || trainer?.settings?.showTargetIndicator === false) {
     if (data.skipTurn) {
       // if npc turn. have npc use move
       if (battle.isNpc(battle.activePokemon.userId)) {
