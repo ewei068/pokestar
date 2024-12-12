@@ -3,6 +3,8 @@ const {
   MessageComponentInteraction,
   /* eslint-disable-next-line no-unused-vars */
   ModalSubmitInteraction,
+  // eslint-disable-next-line no-unused-vars
+  StringSelectMenuInteraction,
 } = require("discord.js");
 const { DeactInstance } = require("./DeactInstance");
 const { getInteractionInstance } = require("./interactions");
@@ -34,10 +36,15 @@ const createRoot = async (
       err: "Error getting interaction instance",
     };
   }
-  const instance = new DeactInstance(render, props, interaction.user.id, {
-    ttl,
-    userIdForFilter,
-  });
+  const instance = new DeactInstance(
+    render,
+    props,
+    interaction?.user?.id ?? interaction?.author?.id,
+    {
+      ttl,
+      userIdForFilter,
+    }
+  );
   if (defer) {
     instance.messageRef = await interactionInstance.deferReply();
   }
@@ -227,7 +234,7 @@ const useCallbackBindingRaw = (callback, ref, options) => {
  */
 
 /**
- * @param {(interaction: MessageComponentInteraction, data: any) => any} callback
+ * @param {(interaction: MessageComponentInteraction & StringSelectMenuInteraction, data: any) => any} callback
  * @param {DeactElement} ref
  * @param {CallbackBindingOptions} options
  * @returns {string} binding key of the callback
@@ -343,6 +350,18 @@ function useEffect(callback, deps, ref) {
     }
     cleanupRef.current = cleanup;
   }
+  return cleanupRef.current;
+}
+
+/**
+ * @param {(() => Promise<(() => void)>) | (() => Promise<void>)} callback
+ * @param {any[]} deps
+ * @param {DeactElement} ref
+ * @returns {Promise<(() => void) | void>}
+ */
+async function useAwaitedEffect(callback, deps, ref) {
+  const promise = await useEffect(callback, deps, ref);
+  return await promise;
 }
 
 module.exports = {
@@ -360,4 +379,5 @@ module.exports = {
   useMemo,
   useAwaitedMemo,
   useEffect,
+  useAwaitedEffect,
 };
