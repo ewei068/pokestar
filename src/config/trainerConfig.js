@@ -59,21 +59,17 @@ const userSettingsConfigRaw = {
     name: "Device Type",
     options: /** @type {const} */ ([
       {
-        value: "automatic",
-        display: "Automatic",
+        value: "desktop",
+        display: "Desktop",
       },
       {
         value: "mobile",
         display: "Mobile",
       },
-      {
-        value: "desktop",
-        display: "Desktop",
-      },
     ]),
     trainerField: {
       type: "string",
-      default: "automatic",
+      default: "desktop",
     },
   },
   showTargetIndicator: {

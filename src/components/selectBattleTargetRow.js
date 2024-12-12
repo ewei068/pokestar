@@ -17,13 +17,15 @@ const { pokemonConfig } = require("../config/pokemonConfig");
  * @param {*} eligibleTargets the targets the user's pokemon's attack can hit.
  * @param {*} moveId the move Id of the attack.
  * @param {*} stateId the Id of the current state.
+ * @param {*} selectedTargetId the Id of the target selected. starts as null
  * @returns ActionRowBuilder
  */
 const buildSelectBattleTargetRow = (
   battle,
   eligibleTargets,
   moveId,
-  stateId
+  stateId,
+  selectedTargetId = null
 ) => {
   const selectMenu = new StringSelectMenuBuilder()
     .setCustomId(
@@ -45,6 +47,7 @@ const buildSelectBattleTargetRow = (
           }`,
           value: `${target.id}`,
           emoji: speciesData.emoji,
+          default: selectedTargetId === target.id,
         };
       })
     );
