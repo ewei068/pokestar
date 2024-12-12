@@ -155,7 +155,7 @@ const battleTargetSelect = async (interaction, data) => {
   // update message
   await interaction.update({
     embeds: [
-      buildBattleEmbed(battle, targetIndices),
+      buildBattleEmbed(battle, { targetIndices }),
       ...interaction.message.embeds,
     ],
     components: interaction.message.components

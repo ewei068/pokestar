@@ -146,10 +146,15 @@ const buildPartiesEmbed = (trainer, pokemonMap) => {
 /**
  * Builds the battle the players/players and npcs will use.
  * @param {Battle} battle the battle itself.
- * @param {Record<string, number[]>?=} targetIndices map of team name to target indices.
+ * @param {object} options
+ * @param {Record<string, number[]>?=} options.targetIndices map of team name to target indices.
+ * @param {boolean?=} options.isMobile
  * @returns {EmbedBuilder} an embeded.
  */
-const buildBattleEmbed = (battle, targetIndices = null) => {
+const buildBattleEmbed = (
+  battle,
+  { targetIndices = null, isMobile = false } = {}
+) => {
   // assume two teams
   const team1 = Object.values(battle.teams)[0];
   const team2 = Object.values(battle.teams)[1];
@@ -165,7 +170,6 @@ const buildBattleEmbed = (battle, targetIndices = null) => {
       : null;
   const team1TargetIndicies = targetIndices?.[team1.name];
   const team2TargetIndicies = targetIndices?.[team2.name];
-  console.log(team1TargetIndicies, team2TargetIndicies);
 
   // TODO: deal with NPCs
   const team1UserString = team1.userIds

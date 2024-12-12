@@ -31,6 +31,7 @@ const vLineTarget = "║";
  * @param {boolean?=} options.showHp
  * @param {number?=} options.emphPosition
  * @param {number[]?=} options.targetIndices
+ * @param {boolean?=} options.isMobile
  * @returns {string}
  */
 const buildPartyString = (
@@ -42,8 +43,10 @@ const buildPartyString = (
     showHp = false,
     emphPosition = null,
     targetIndices = null,
+    isMobile = true, // TODO
   } = {}
 ) => {
+  console.log(targetIndices);
   const targetIndexSet = new Set(targetIndices || []);
   let globalIndex = 0;
   let partyString = "";
@@ -137,7 +140,7 @@ const buildPartyString = (
     partyString += `${rowString}\n`;
 
     // build pokemon line
-    rowString = "`";
+    rowString = "";
     for (let j = 0; j < cols; j += 1) {
       let lborder =
         emphPosition &&
@@ -167,11 +170,11 @@ const buildPartyString = (
       const pokemon = pokemons[globalIndex];
       const emoji = pokemon ? pokemonConfig[pokemon.speciesId].emoji : "⬛";
       // if j is divisible by 3 and not 0, remove a space from the left
-      const leftSpace = j % 3 === 0 && j !== 0 ? "" : " ";
-      rowString += `${lborder} \`${emoji}\`${leftSpace}`;
+      // const leftSpace = j % 3 === 0 && j !== 0 ? "" : " ";
+      rowString += `\`${lborder} \`${emoji}-`;
       globalIndex += 1;
       if (j === cols - 1) {
-        rowString += `${rborder}\``;
+        rowString += `\`${rborder}\``;
       }
     }
     globalIndex -= cols;
