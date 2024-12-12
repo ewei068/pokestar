@@ -9,6 +9,7 @@
 const { getTrainer, updateTrainer } = require("../../services/trainer");
 const { getPartyPokemons } = require("../../services/party");
 const { buildPartyEmbed } = require("../../embeds/battleEmbeds");
+const { getUserSelectedDevice } = require("../../utils/trainerUtils");
 
 /**
  * loads a saved party into the active party for the user.
@@ -52,7 +53,9 @@ const partyLoad = async (user, preset) => {
   }
 
   // build pokemon embed
-  const embed = buildPartyEmbed(trainer.data, partyPokemons.data);
+  const embed = buildPartyEmbed(trainer.data, partyPokemons.data, {
+    isMobile: getUserSelectedDevice(user, trainer.data.settings) === "mobile",
+  });
 
   const send = {
     content: `Party ${preset} loaded!`,

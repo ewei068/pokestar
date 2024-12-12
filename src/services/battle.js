@@ -26,7 +26,12 @@ const { buildButtonActionRow } = require("../components/buttonActionRow");
 const {
   buildBattleInfoActionRow,
 } = require("../components/battleInfoActionRow");
-const { getTrainer, addExpAndMoney, updateTrainer } = require("./trainer");
+const {
+  getTrainer,
+  addExpAndMoney,
+  updateTrainer,
+  getTrainerFromId,
+} = require("./trainer");
 const { addPokemonExpAndEVs, getPokemon } = require("./pokemon");
 const { logger } = require("../log");
 const { buildNextTurnActionRow } = require("../components/battleNextTurnRow");
@@ -43,7 +48,11 @@ const { getState } = require("./state");
 const { eventNames } = require("../config/eventConfig");
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const { validateParty } = require("./party");
-const { addRewards, getRewardsString } = require("../utils/trainerUtils");
+const {
+  addRewards,
+  getRewardsString,
+  getUserSelectedDevice,
+} = require("../utils/trainerUtils");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
 const {
   BasicNPC,
@@ -52,6 +61,10 @@ const {
   RaidNPC,
 } = require("../battle/engine/npcs");
 
+/**
+ * @param {Battle} battle
+ * @param {string} stateId
+ */
 const getStartTurnSend = async (battle, stateId) => {
   // clip log to last 20 lines
   if (battle.log.length > 20) {
@@ -60,7 +73,25 @@ const getStartTurnSend = async (battle, stateId) => {
   let content = battle.log.join("\n");
   battle.clearLog();
 
-  const stateEmbed = buildBattleEmbed(battle);
+  // get current user, or first other user if NPC
+  let activeUserId = battle.activePokemon.userId;
+  if (battle.isNpc(activeUserId)) {
+    for (const team of Object.values(battle.teams)) {
+      for (const userId of team.userIds) {
+        if (!battle.isNpc(userId)) {
+          activeUserId = userId;
+          break;
+        }
+      }
+    }
+  }
+  const { data: activeTrainer } = await getTrainerFromId(activeUserId);
+
+  const stateEmbed = buildBattleEmbed(battle, {
+    // TODO: get user from client
+    // @ts-ignore
+    isMobile: getUserSelectedDevice({}, activeTrainer?.settings) === "mobile",
+  });
 
   const components = [];
   if (!battle.ended) {
@@ -117,9 +148,11 @@ const getStartTurnSend = async (battle, stateId) => {
           for (const userId of team.userIds) {
             const user = battle.users[userId];
             // get trainer
+            // @ts-ignore
             const trainer = await getTrainer(user);
             if (trainer.err) {
               logger.warn(
+                // @ts-ignore
                 `Failed to get trainer for user ${user.id} after battle`
               );
               continue;
@@ -131,6 +164,7 @@ const getStartTurnSend = async (battle, stateId) => {
             }
 
             // add trainer rewards
+            // @ts-ignore
             await addExpAndMoney(user, expReward, moneyReward);
             const defeatedDifficultiesToday =
               trainer.data.defeatedNPCsToday[battle.npcId];
@@ -173,6 +207,7 @@ const getStartTurnSend = async (battle, stateId) => {
               const { err } = await updateTrainer(trainer.data);
               if (err) {
                 logger.warn(
+                  // @ts-ignore
                   `Failed to update daily trainer for user ${user.id} after battle`
                 );
                 continue;
@@ -271,6 +306,7 @@ const buildPveSend = async ({
   if (trainer.err) {
     return { send: null, err: trainer.err };
   }
+  // @ts-ignore
   trainer = trainer.data;
 
   const send = {
@@ -288,6 +324,7 @@ const buildPveSend = async ({
     const npcIdsForPage = npcIds.slice((page - 1) * pageSize, page * pageSize);
 
     // build list embed
+    // @ts-ignore
     const embed = buildPveListEmbed(npcIdsForPage, page);
     send.embeds.push(embed);
 
@@ -482,6 +519,7 @@ const buildDungeonSend = async ({
   if (trainer.err) {
     return { send: null, err: trainer.err };
   }
+  // @ts-ignore
   trainer = trainer.data;
 
   const send = {
@@ -781,6 +819,7 @@ const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
   if (trainer.err) {
     return { send: null, err: trainer.err };
   }
+  // @ts-ignore
   trainer = trainer.data;
 
   const send = {
@@ -811,6 +850,7 @@ const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
   const battleButtonConfigs = [
     {
       label: "Battle",
+      // @ts-ignore
       disabled: towerStage !== trainer.lastTowerStage + 1,
       data: battleData,
     },

@@ -70,6 +70,10 @@
  */
 
 /**
+ * @typedef {{[K in UserSettingsEnum]: UserSettingsOptions<K>}} UserSettings
+ */
+
+/**
  * @typedef {object} Trainer
  *
  * Discord user info
@@ -84,6 +88,7 @@
  * @property {Backpack} backpack
  * @property {PartialRecord<LocationEnum, number>} locations
  * @property {UserTradeInfo} trade
+ * @property {UserSettings} settings
  *
  * Rewards and time-gated stuff
  * @property {number} lastCorrected

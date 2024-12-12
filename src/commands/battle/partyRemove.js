@@ -9,6 +9,7 @@
 const { getTrainer } = require("../../services/trainer");
 const { updateParty, getPartyPokemons } = require("../../services/party");
 const { buildPartyEmbed } = require("../../embeds/battleEmbeds");
+const { getUserSelectedDevice } = require("../../utils/trainerUtils");
 
 /**
  * removes a specific pokemon from a saved party.
@@ -77,7 +78,9 @@ const partyRemove = async (user, option) => {
   }
 
   // build pokemon embed
-  const embed = buildPartyEmbed(trainer.data, partyPokemons.data);
+  const embed = buildPartyEmbed(trainer.data, partyPokemons.data, {
+    isMobile: getUserSelectedDevice(user, trainer.data.settings) === "mobile",
+  });
 
   const send = {
     content: `Pokemon was removed from your party!`,

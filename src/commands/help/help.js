@@ -1,15 +1,39 @@
-const { commandConfig } = require("../../config/commandConfig");
-const {
-  buildHelpCommandEmbed,
-  buildHelpSend,
-} = require("../../embeds/helpEmbeds");
-const { setState } = require("../../services/state");
+const { createRoot, userTypeEnum } = require("../../deact/deact");
+const HelpCategoryList = require("../../elements/help/HelpCategoryList");
 
 /**
  * Parses the command config, returning an embed that allows users to browse for commands.
- * @param {String} command If provided, returns an embed for the specified command.
+ * @param {string} command If provided, returns an embed for the specified command.
  * @returns Embed or message to send.
  */
+
+const help = async (interaction, command) =>
+  await createRoot(
+    HelpCategoryList,
+    {
+      initialCommand: command,
+    },
+    interaction,
+    {
+      userIdForFilter: userTypeEnum.ANY,
+      ttl: 150,
+    }
+  );
+
+const helpMessageCommand = async (message) => {
+  const args = message.content.split(" ");
+  args.shift();
+  const command = args[0] || ""; // default to nothing if no args
+
+  return await help(message, command);
+};
+
+const helpSlashCommand = async (interaction) => {
+  const command = interaction.options.getString("command") || ""; // default to nothing if no args
+
+  return await help(interaction, command);
+};
+/*
 const help = async (command) => {
   // if no args, send help message
   if (command === "") {
@@ -63,7 +87,7 @@ const helpSlashCommand = async (interaction) => {
 
   const helpMessage = await help(command);
   await interaction.reply(helpMessage);
-};
+}; */
 
 module.exports = {
   message: helpMessageCommand,
