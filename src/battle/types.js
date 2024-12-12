@@ -36,7 +36,8 @@
  * @typedef {{
  *  name: string,
  *  isNpc: boolean,
- *  userIds: string[]
+ *  userIds: string[],
+ *  emoji: string,
  * }} BattleTeam
  */
 

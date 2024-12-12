@@ -233,7 +233,7 @@ const buildBattleEmbed = (
   }
   embed.addFields(
     {
-      name: `${team1.name} | ${team1UserString}`,
+      name: `${team1.emoji} ${team1.name} | ${team1UserString}`,
       value: buildPartyString(
         team1Party.pokemons,
         team1Party.rows,
@@ -249,7 +249,7 @@ const buildBattleEmbed = (
       inline: false,
     },
     {
-      name: `${team2.name} | ${team2UserString}`,
+      name: `${team2.emoji} ${team2.name} | ${team2UserString}`,
       value: buildPartyString(
         team2Party.pokemons,
         team2Party.rows,

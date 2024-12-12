@@ -154,6 +154,7 @@ class Battle {
       name: teamName,
       isNpc,
       userIds: [],
+      emoji: Object.keys(this.teams).length === 0 ? "🔴" : "🔵",
     };
   }
 
