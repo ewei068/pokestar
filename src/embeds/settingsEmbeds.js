@@ -41,7 +41,7 @@ const buildSettingsListEmbed = ({
     },
     { settingsNames: [], settingsDisplayValues: [] }
   );
-  const settingsWhitespaces = getWhitespace(settingsNames, 35);
+  const settingsWhitespaces = getWhitespace(settingsNames, 30);
   const settingsSuffixWhitespaces = getWhitespace(settingsDisplayValues);
 
   let description = "";
@@ -57,7 +57,7 @@ const buildSettingsListEmbed = ({
       settingDisplayValue,
       settingSuffixWhitespace,
     ]) => {
-      description += `\`${settingName}:${whitespace}${settingDisplayValue}${settingSuffixWhitespace}\`\n`;
+      description += `\`\`\`ansi\n\u001b[1;2m${settingName}:\u001b[0m${whitespace}${settingDisplayValue}${settingSuffixWhitespace}\n\`\`\``;
     }
   );
   embed.setDescription(description);
