@@ -164,6 +164,7 @@ const battleTargetSelect = async (interaction, data) => {
         isMobile:
           getUserSelectedDevice(interaction.user, trainer?.settings) ===
           "mobile",
+        selectedMoveId: moveId,
       }),
       ...interaction.message.embeds,
     ],

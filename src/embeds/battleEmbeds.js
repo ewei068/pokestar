@@ -155,11 +155,12 @@ const buildPartiesEmbed = (trainer, pokemonMap) => {
  * @param {object} options
  * @param {Record<string, number[]>=} options.targetIndices map of team name to target indices.
  * @param {boolean=} options.isMobile
+ * @param {MoveIdEnum=} options.selectedMoveId the move id selected.
  * @returns {EmbedBuilder} an embeded.
  */
 const buildBattleEmbed = (
   battle,
-  { targetIndices = null, isMobile = false } = {}
+  { targetIndices = null, isMobile = false, selectedMoveId } = {}
 ) => {
   // assume two teams
   const team1 = Object.values(battle.teams)[0];
@@ -279,6 +280,16 @@ const buildBattleEmbed = (
     embed.addFields({
       name: "Up Next (Estimate)",
       value: `${upNextStringTop}\n${upNextBottomString}`,
+      inline: false,
+    });
+  }
+
+  const move = selectedMoveId ? getMove(selectedMoveId) : null;
+  if (move) {
+    const { moveHeader, moveString } = buildMoveString(move);
+    embed.addFields({
+      name: moveHeader,
+      value: moveString,
       inline: false,
     });
   }
