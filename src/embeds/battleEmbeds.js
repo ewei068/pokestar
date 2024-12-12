@@ -153,8 +153,8 @@ const buildPartiesEmbed = (trainer, pokemonMap) => {
  * Builds the battle the players/players and npcs will use.
  * @param {Battle} battle the battle itself.
  * @param {object} options
- * @param {Record<string, number[]>?=} options.targetIndices map of team name to target indices.
- * @param {boolean?=} options.isMobile
+ * @param {Record<string, number[]>=} options.targetIndices map of team name to target indices.
+ * @param {boolean=} options.isMobile
  * @returns {EmbedBuilder} an embeded.
  */
 const buildBattleEmbed = (
@@ -264,6 +264,24 @@ const buildBattleEmbed = (
       inline: false,
     }
   );
+
+  const upNextPokemon = battle.getNextNPokemon(3);
+  if (upNextPokemon.length > 0) {
+    const upNextStringTop = upNextPokemon
+      .map((pokemon) => pokemonConfig[pokemon.speciesId].emoji)
+      .join("\u2001");
+    const upNextBottomString = upNextPokemon
+      .map((pokemon) => {
+        const team = battle.teams[pokemon.teamName];
+        return `${team?.emoji}`;
+      })
+      .join("\u2001");
+    embed.addFields({
+      name: "Up Next (Estimate)",
+      value: `${upNextStringTop}\n${upNextBottomString}`,
+      inline: false,
+    });
+  }
 
   return embed;
 };

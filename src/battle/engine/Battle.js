@@ -14,6 +14,8 @@ const { getMove } = require("../data/moveRegistry");
 const { BattleEventHandler } = require("./events");
 const { BattlePokemon } = require("./BattlePokemon");
 
+const MAX_CR = 100;
+
 class Battle {
   /* TODO: fix
   moneyMultiplier;
@@ -215,7 +217,6 @@ class Battle {
 
   increaseCombatReadiness() {
     // get min ticks for a pokemon to be ready
-    const MAX_CR = 100;
     let minTicks = Number.MAX_SAFE_INTEGER;
     let minTicksPokemon = null;
     for (const partyName in this.parties) {
@@ -257,6 +258,45 @@ class Battle {
         }
       }
     }
+  }
+
+  getNextNPokemon(n = 1) {
+    // TODO: maybe functionify or something lol
+    // get min ticks for a pokemon to be ready
+    const allEligiblePokemon = [];
+    for (const partyName in this.parties) {
+      const party = this.parties[partyName];
+      for (const pokemon of party.pokemons) {
+        if (pokemon && !pokemon.isFainted) {
+          allEligiblePokemon.push(pokemon);
+        }
+      }
+    }
+    const pokemonOrder = [];
+    while (pokemonOrder.length < n && allEligiblePokemon.length > 0) {
+      let minTicks = Number.MAX_SAFE_INTEGER;
+      let minTicksPokemon = null;
+      for (const pokemon of allEligiblePokemon) {
+        const currentCombatReadiness =
+          this.activePokemon === pokemon ? 0 : pokemon.combatReadiness;
+        const requiredCr = MAX_CR - currentCombatReadiness;
+        const ticks = requiredCr / pokemon.effectiveSpeed();
+        if (ticks < minTicks) {
+          minTicks = ticks;
+          minTicksPokemon = pokemon;
+        }
+      }
+      if (minTicksPokemon) {
+        pokemonOrder.push(minTicksPokemon);
+        allEligiblePokemon.splice(
+          allEligiblePokemon.indexOf(minTicksPokemon),
+          1
+        );
+      } else {
+        break;
+      }
+    }
+    return pokemonOrder;
   }
 
   start() {

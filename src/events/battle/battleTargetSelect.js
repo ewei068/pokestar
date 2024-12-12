@@ -152,7 +152,7 @@ const battleTargetSelect = async (interaction, data) => {
     confirmButton
   );
 
-  // pop first embed and rebuild with target indices
+  // pop first embed and rebuild with target indices and up next indicator
   interaction.message.embeds.shift();
   const targetIndices = battle.activePokemon.getTargetIndices(moveId, targetId);
 
