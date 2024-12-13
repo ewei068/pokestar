@@ -48,10 +48,24 @@ const newTutorialConfigRaw = {
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/gacha.gif",
   },
+  // terminal stage to prevent overflow
+  completed: {
+    name: "Tutorial Complete!",
+    description: `Congratulations! You have completed the tutorial! You are now ready to explore the world of Pokestar! **For more information, please [join the support server](${SUPPORT_SERVER_INVITE}) or use \`/help\` for help with commands!**`,
+    requirementString: "Prove P = NP",
+    checkRequirements: async () => false,
+    rewards: {
+      money: 286,
+    },
+    image:
+      "https://dbl-static.usercontent.prism.gg/02f7065e82d8c66e66299b74eda565b6.png",
+  },
 };
 /** @type {Record<TutorialStageEnum, TutorialStageData>} */
 const newTutorialConfig = Object.freeze(newTutorialConfigRaw);
-const newTutorialStages = Object.keys(newTutorialConfig);
+const newTutorialStages = /** @type {TutorialStageEnum[]} */ (
+  Object.keys(newTutorialConfig)
+);
 
 module.exports = {
   newTutorialConfig,
