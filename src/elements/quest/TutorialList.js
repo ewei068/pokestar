@@ -1,4 +1,8 @@
-const { useAwaitedMemo, useState } = require("../../deact/deact");
+const {
+  useAwaitedMemo,
+  useState,
+  createElement,
+} = require("../../deact/deact");
 const usePaginationAndSelection = require("../../hooks/usePaginationAndSelection");
 const {
   newTutorialStages,
@@ -6,6 +10,7 @@ const {
 } = require("../../config/questConfig");
 const { buildTutorialListEmbed } = require("../../embeds/questEmbeds");
 const { getTrainer } = require("../../services/trainer");
+const TutorialStage = require("./TutorialStage");
 
 const PAGE_SIZE = 10;
 
@@ -58,11 +63,18 @@ module.exports = async (ref, { user, initialStagePage }) => {
     ref
   );
 
-  /* if (speciesId) {
+  if (currentStage) {
     return {
-      elements: [createElement(PokedexPokemon, { speciesId, setSpeciesId })],
+      elements: [
+        createElement(TutorialStage, {
+          currentStage,
+          setTutorialStage,
+          userTutorialData,
+          setUserTutorialData,
+        }),
+      ],
     };
-  } */
+  }
   return {
     elements: [
       {

@@ -16,6 +16,7 @@ const ScrollButtons = require("../elements/foundation/ScrollButtons");
  * @param {CallbackBindingOptions=} param0.callbackOptions
  * @param {DeactElement} ref
  * @returns {{
+ *  page: number,
  *  item: T,
  *  scrollButtonsElement: CreateElementResult,
  * }}
@@ -60,6 +61,7 @@ module.exports = (
   });
 
   return {
+    page: index + 1,
     item,
     scrollButtonsElement,
   };
