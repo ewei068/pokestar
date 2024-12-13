@@ -21,7 +21,7 @@ const hasMetTutorialStageRequirements = async (trainer, stage) =>
  */
 const completeTutorialStage = async (trainer, stage) => {
   // check if trainer already has stage complete
-  if (trainer.tutorial.completedTutorialStages[stage]) {
+  if (trainer.tutorialData.completedTutorialStages[stage]) {
     return { err: "You have already completed this stage!" };
   }
 
@@ -39,19 +39,21 @@ const completeTutorialStage = async (trainer, stage) => {
   addRewards(trainer, rewards);
 
   // set stage as complete. if current stage is the same as the completed stage, find next incomplete stage
-  trainer.tutorial.completedTutorialStages[stage] = true;
+  trainer.tutorialData.completedTutorialStages[stage] = true;
   if (
-    trainer.tutorial.currentTutorialStage === stage ||
+    trainer.tutorialData.currentTutorialStage === stage ||
     stage === "completed"
   ) {
     let stageIndex = newTutorialStages.indexOf(stage);
     while (
       stageIndex < newTutorialStages.length - 1 && // -1 to prevent overflow
-      trainer.tutorial.completedTutorialStages[newTutorialStages[stageIndex]]
+      trainer.tutorialData.completedTutorialStages[
+        newTutorialStages[stageIndex]
+      ]
     ) {
       stageIndex += 1;
     }
-    trainer.tutorial.currentTutorialStage =
+    trainer.tutorialData.currentTutorialStage =
       newTutorialStages[stageIndex] ?? "completed";
   }
 

@@ -49,9 +49,6 @@
 
 /**
  * @typedef {PartialRecord<BackpackCategoryEnum, PartialRecord<BackpackItemEnum, number>>} Backpack
- */
-
-/**
  * @typedef {PartialRecord<BackpackItemEnum, number>} FlattenedBackpack
  */
 
@@ -60,9 +57,6 @@
  *  money?: number,
  *  backpack?: Backpack
  * }} Rewards
- */
-
-/**
  * @typedef {{
  *  money?: number,
  *  backpack?: FlattenedBackpack
@@ -71,6 +65,7 @@
 
 /**
  * @typedef {{[K in UserSettingsEnum]: UserSettingsOptions<K>}} UserSettings
+ * @typedef {{ completedTutorialStages: PartialRecord<TutorialStageEnum, boolean>, currentTutorialStage: TutorialStageEnum, }} UserTutorialData
  */
 
 /**
@@ -98,7 +93,7 @@
  * @property {PartialRecord<NpcEnum | RaidEnum | DungeonEnum | number, NpcDifficultyEnum[]>} defeatedNPCsToday
  * @property {PartialRecord<NpcEnum | RaidEnum | DungeonEnum | number, NpcDifficultyEnum[]>} defeatedNPCs
  * @property {number} lastTowerStage
- * @property {{ completedTutorialStages: PartialRecord<TutorialStageEnum, boolean>, currentTutorialStage: TutorialStageEnum, }} tutorial
+ * @property {UserTutorialData} tutorialData
  *
  * Party info
  * @property {PartyInfo} party

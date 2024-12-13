@@ -416,7 +416,7 @@ const trainerFields = {
     default: {},
     config: userSettingsTrainerFieldsConfig,
   },
-  tutorial: {
+  tutorialData: {
     type: "object",
     default: {
       completedTutorialStages: {},
