@@ -27,7 +27,7 @@ const buildTutorialListEmbed = ({
     } else if (userTutorialData.currentTutorialStage === stage) {
       stageEmoji = "⏳ ";
     }
-    description += `${stageEmoji}${stageData.name}`;
+    description += `- ${stageEmoji}${stageData.name}\n`;
   });
 
   embed.setDescription(description);
