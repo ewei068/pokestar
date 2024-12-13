@@ -416,6 +416,13 @@ const trainerFields = {
     default: {},
     config: userSettingsTrainerFieldsConfig,
   },
+  tutorial: {
+    type: "object",
+    default: {
+      completedTutorialStages: {},
+      currentTutorialStage: "welcome", // keep in sync with first stage in tutorialConfig
+    },
+  },
 };
 
 const levelConfig = {

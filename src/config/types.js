@@ -23,6 +23,8 @@
 /** @typedef {import("./trainerConfig").TrainerFieldConfig} TrainerFieldConfig */
 /** @typedef {import("./trainerConfig").UserSettingsEnum} UserSettingsEnum */
 /** @typedef {import("./trainerConfig").UserSettingsData} UserSettingsData */
+/** @typedef {import("./tutorialConfig").TutorialStageEnum} TutorialStageEnum */
+/** @typedef {import("./tutorialConfig").TutorialStageData} TutorialStageData */
 /**
  * @template {UserSettingsEnum} T
  * @typedef {import("./trainerConfig").UserSettingsOptions<T>} UserSettingsOptions

@@ -98,6 +98,7 @@
  * @property {PartialRecord<NpcEnum | RaidEnum | DungeonEnum | number, NpcDifficultyEnum[]>} defeatedNPCsToday
  * @property {PartialRecord<NpcEnum | RaidEnum | DungeonEnum | number, NpcDifficultyEnum[]>} defeatedNPCs
  * @property {number} lastTowerStage
+ * @property {{ completedTutorialStages: PartialRecord<TutorialStageEnum, boolean>, currentTutorialStage: TutorialStageEnum, }} tutorial
  *
  * Party info
  * @property {PartyInfo} party

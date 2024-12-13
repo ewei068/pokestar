@@ -51,7 +51,9 @@ const newTutorialConfigRaw = {
 };
 /** @type {Record<TutorialStageEnum, TutorialStageData>} */
 const newTutorialConfig = Object.freeze(newTutorialConfigRaw);
+const newTutorialStages = Object.keys(newTutorialConfig);
 
 module.exports = {
   newTutorialConfig,
+  newTutorialStages,
 };
