@@ -21,13 +21,14 @@ const buildTutorialListEmbed = ({
   let description = "";
   tutorialStages.forEach((stage) => {
     const stageData = newTutorialConfig[stage];
-    let stageEmoji = "";
+    let stageProgressEmoji = "⬛";
     if (userTutorialData.completedTutorialStages[stage]) {
-      stageEmoji = "✅ ";
+      stageProgressEmoji = "✅";
     } else if (userTutorialData.currentTutorialStage === stage) {
-      stageEmoji = "⏳ ";
+      stageProgressEmoji = "⏳";
     }
-    description += `- ${stageEmoji}${stageData.name}\n`;
+
+    description += `\`[${stageProgressEmoji}]\` • ${stageData.emoji} ${stageData.name}\n`;
   });
 
   embed.setDescription(description);

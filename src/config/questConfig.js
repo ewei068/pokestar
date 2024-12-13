@@ -1,5 +1,6 @@
 // smell -- this config depends on some services to work properly
 // maybe refactor at some point but I don't think it's a big deal because this is an isolated functionality
+const { emojis } = require("../enums/emojis");
 const { checkNumPokemon } = require("../services/pokemon");
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { SUPPORT_SERVER_INVITE } = require("./helpConfig");
@@ -8,6 +9,7 @@ const { SUPPORT_SERVER_INVITE } = require("./helpConfig");
 /**
  * @typedef {{
  *  name: string,
+ *  emoji?: string,
  *  description: string,
  *  requirementString: string,
  *  checkRequirements: (trainer: WithId<Trainer>) => Promise<boolean>,
@@ -20,6 +22,7 @@ const { SUPPORT_SERVER_INVITE } = require("./helpConfig");
 const newTutorialConfigRaw = {
   welcome: {
     name: "Welcome to Pokestar!",
+    emoji: emojis.STARMIE,
     description: `Welcome to Pokestar! Pokestar is a battle-focused Pokemon Discord bot! This tutorial will guide you through the basics of Pokestar. **For more information, please [join the support server](${SUPPORT_SERVER_INVITE}) or use \`/help\` for help with commands!**\n\nHere are some Pokeballs to get you started!`,
     requirementString: "None",
     checkRequirements: async () => true,
@@ -35,6 +38,7 @@ const newTutorialConfigRaw = {
   },
   useGacha: {
     name: "Catching Pokemon",
+    emoji: emojis.POKEBALL,
     description:
       "The first thing to do is catch Pokemon! **To catch new Pokemon, use the `/gacha` command**. The gacha costs Pokeballs, with rare Pokeballs catching rarer Pokemon. I would recommend using 10 Pokeballs on the standard banner.",
     requirementString: "Catch 1x Pokemon",
@@ -51,6 +55,7 @@ const newTutorialConfigRaw = {
   // terminal stage to prevent overflow
   completed: {
     name: "Tutorial Complete!",
+    emoji: emojis.MASTERBALL,
     description: `Congratulations! You have completed the tutorial! You are now ready to explore the world of Pokestar! **For more information, please [join the support server](${SUPPORT_SERVER_INVITE}) or use \`/help\` for help with commands!**`,
     requirementString: "Prove P = NP",
     checkRequirements: async () => false,
