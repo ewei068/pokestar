@@ -12,6 +12,7 @@ const { SUPPORT_SERVER_INVITE } = require("./helpConfig");
  *  emoji?: string,
  *  description: string,
  *  requirementString: string,
+ *  proceedString: string,
  *  checkRequirements: (trainer: WithId<Trainer>) => Promise<boolean>,
  *  rewards: Rewards,
  *  image?: string,
@@ -25,6 +26,7 @@ const newTutorialConfigRaw = {
     emoji: emojis.STARMIE,
     description: `Welcome to Pokestar! Pokestar is a battle-focused Pokemon Discord bot! This tutorial will guide you through the basics of Pokestar. **For more information, please [join the support server](${SUPPORT_SERVER_INVITE}) or use \`/help\` for help with commands!**\n\nHere are some Pokeballs to get you started!`,
     requirementString: "None",
+    proceedString: "If you got here somehow then please tell me lol",
     checkRequirements: async () => true,
     rewards: {
       backpack: {
@@ -42,6 +44,7 @@ const newTutorialConfigRaw = {
     description:
       "The first thing to do is catch Pokemon! **To catch new Pokemon, use the `/gacha` command**. The gacha costs Pokeballs, with rare Pokeballs catching rarer Pokemon. I would recommend using 10 Pokeballs on the standard banner.",
     requirementString: "Catch 1x Pokemon",
+    proceedString: "Use `/gacha` and catch a Pokemon!",
     checkRequirements: async (trainer) =>
       await checkNumPokemon(trainer)
         .then((res) => (res.numPokemon ?? 0) > 0)
@@ -58,6 +61,7 @@ const newTutorialConfigRaw = {
     emoji: emojis.MASTERBALL,
     description: `Congratulations! You have completed the tutorial! You are now ready to explore the world of Pokestar! **For more information, please [join the support server](${SUPPORT_SERVER_INVITE}) or use \`/help\` for help with commands!**`,
     requirementString: "Prove P = NP",
+    proceedString: `This is the end of the tutorial! Please join the support server for the newest updates, guides, and events! ${SUPPORT_SERVER_INVITE}`,
     checkRequirements: async () => false,
     rewards: {
       money: 286,

@@ -11,10 +11,7 @@ const { eventConfig } = require("../config/eventConfig");
 const { logger } = require("../log");
 const { addExpAndMoney } = require("../services/trainer");
 const { triggerBoundCallback } = require("../deact/deact");
-const {
-  setInteractionInstance,
-  removeInteractionInstance,
-} = require("../deact/interactions");
+const { removeInteractionInstance } = require("../deact/interactions");
 
 const eventHandlers = {};
 const eventsDirectory = path.join(__dirname, "../events");

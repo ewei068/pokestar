@@ -4,29 +4,30 @@ const {
   newTutorialStages,
 } = require("../config/questConfig");
 const { addRewards } = require("../utils/trainerUtils");
-const { updateTrainer } = require("./trainer");
+const { updateTrainer, getTrainer, refreshTrainer } = require("./trainer");
 
 /**
  * @param {WithId<Trainer>} trainer
  * @param {TutorialStageEnum} stage
  * @returns {Promise<boolean>}
  */
-const hasMetTutorialStageRequirements = async (trainer, stage) =>
+const hasTrainerMetTutorialStageRequirements = async (trainer, stage) =>
   await newTutorialConfig[stage]?.checkRequirements?.(trainer);
 
 /**
+ * Only use if trainer is up-to-date
  * @param {WithId<Trainer>} trainer
  * @param {TutorialStageEnum} stage
- * @returns {Promise<{ data?: Trainer, err?: string }>}
+ * @returns {Promise<{ data?: WithId<Trainer>, err?: string }>}
  */
-const completeTutorialStage = async (trainer, stage) => {
+const completeTutorialStageForTrainer = async (trainer, stage) => {
   // check if trainer already has stage complete
   if (trainer.tutorialData.completedTutorialStages[stage]) {
     return { err: "You have already completed this stage!" };
   }
 
   // check if met stage requirements
-  const hasMetRequirements = await hasMetTutorialStageRequirements(
+  const hasMetRequirements = await hasTrainerMetTutorialStageRequirements(
     trainer,
     stage
   );
@@ -58,9 +59,29 @@ const completeTutorialStage = async (trainer, stage) => {
   }
 
   // update trainer
-  return await updateTrainer(trainer);
+  const { err: updateErr } = await updateTrainer(trainer);
+  if (updateErr) {
+    return { err: "Failed to claim rewards!" };
+  }
+
+  return refreshTrainer(trainer);
+};
+
+/**
+ * @param {DiscordUser} user
+ * @param {TutorialStageEnum} stage
+ */
+const completeTutorialStageForUser = async (user, stage) => {
+  const { data: trainer, err } = await getTrainer(user);
+  if (err) {
+    return { err };
+  }
+
+  return await completeTutorialStageForTrainer(trainer, stage);
 };
 
 module.exports = {
-  completeTutorialStage,
+  hasTrainerMetTutorialStageRequirements,
+  completeTutorialStageForTrainer,
+  completeTutorialStageForUser,
 };

@@ -1999,12 +1999,11 @@ const checkNumPokemon = async (trainer, quantity = 0) => {
         err: "Max pokemon reached! Use `/release` or `/list` to release some pokemon, or get more storage by purchasing the Computer Lab location in the `/pokemart`!",
       };
     }
+    return { numPokemon, err: null };
   } catch (error) {
     logger.error(error);
     return { err: "Error checking max Pokemon." };
   }
-
-  return { err: null };
 };
 
 module.exports = {

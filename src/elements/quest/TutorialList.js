@@ -24,7 +24,7 @@ const PAGE_SIZE = 10;
  */
 module.exports = async (ref, { user, initialStagePage }) => {
   // TODO: got to current tutorial stage
-  const { data: trainer, err } = await useAwaitedMemo(
+  const { data: initialTrainer, err } = await useAwaitedMemo(
     async () => getTrainer(user),
     [],
     ref
@@ -47,21 +47,18 @@ module.exports = async (ref, { user, initialStagePage }) => {
       initialItem: /** @type {TutorialStageEnum} */ (
         initialStagePage && newTutorialStages[initialStagePage - 1]
           ? newTutorialStages[initialStagePage - 1]
-          : trainer.tutorialData.currentTutorialStage
+          : initialTrainer.tutorialData.currentTutorialStage
       ),
       selectionPlaceholder: "Select a tutorial stage",
       itemConfig: newTutorialConfig,
       showId: false,
-      selectionCallbackOptions: { defer: false },
+      selectionCallbackOptions: { defer: true },
       paginationCallbackOptions: { defer: false },
     },
     ref
   );
 
-  const [userTutorialData, setUserTutorialData] = useState(
-    trainer.tutorialData,
-    ref
-  );
+  const [trainer, setTrainer] = useState(initialTrainer, ref);
 
   if (currentStage) {
     return {
@@ -69,8 +66,9 @@ module.exports = async (ref, { user, initialStagePage }) => {
         createElement(TutorialStage, {
           currentStage,
           setTutorialStage,
-          userTutorialData,
-          setUserTutorialData,
+          user,
+          trainer,
+          setTrainer,
         }),
       ],
     };
@@ -82,7 +80,7 @@ module.exports = async (ref, { user, initialStagePage }) => {
         embeds: [
           buildTutorialListEmbed({
             tutorialStages: stages,
-            userTutorialData,
+            userTutorialData: trainer.tutorialData,
             page,
           }),
         ],
