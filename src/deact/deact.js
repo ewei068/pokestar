@@ -364,6 +364,17 @@ async function useAwaitedEffect(callback, deps, ref) {
   return await promise;
 }
 
+/**
+ * @template {(...any) => any} T
+ * @param {T} callback
+ * @param {any[]} deps
+ * @param {DeactElement} ref
+ * @returns {T}
+ */
+function useCallback(callback, deps, ref) {
+  return useMemo(() => callback, deps, ref);
+}
+
 module.exports = {
   userTypeEnum,
   createRoot,
@@ -380,4 +391,5 @@ module.exports = {
   useAwaitedMemo,
   useEffect,
   useAwaitedEffect,
+  useCallback,
 };

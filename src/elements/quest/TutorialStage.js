@@ -37,7 +37,7 @@ module.exports = async (
 ) => {
   const tutorialStageData = newTutorialConfig[currentStage];
 
-  const { scrollButtonsElement, page } = useSingleItemScroll(
+  const { scrollButtonsElement, page, goToNext } = useSingleItemScroll(
     {
       allItems: newTutorialStages,
       itemOverride: currentStage,
@@ -59,6 +59,7 @@ module.exports = async (
       if (newTrainer) {
         setTrainer?.(newTrainer);
       }
+      goToNext();
       await interactionInstance.reply({
         element: {
           content: getRewardsString(flattenRewards(tutorialStageData.rewards)),

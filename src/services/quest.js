@@ -58,7 +58,7 @@ const completeTutorialStageForTrainer = async (trainer, stage) => {
   trainer.tutorialData.completedTutorialStages[stage] = true;
   if (
     trainer.tutorialData.currentTutorialStage === stage ||
-    stage === "completed"
+    trainer.tutorialData.currentTutorialStage === "completed"
   ) {
     let stageIndex = newTutorialStages.indexOf(stage);
     while (
