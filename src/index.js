@@ -27,6 +27,17 @@ console.log(`STAGE: ${process.env.STAGE}`);
 const FFLAG_ENABLE_SPAWN = process.env.FFLAG_ENABLE_SPAWN === "1";
 console.log(`FFLAG_ENABLE_SPAWN: ${FFLAG_ENABLE_SPAWN}`);
 
+process.on("uncaughtException", (err) => {
+  logger.error("UNCAUGHT EXCEPTION:", err);
+  // Optionally handle the error here, e.g., log it to a file, etc.
+  // Don't exit the process unless necessary
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  logger.error("UNHANDLED PROMISE REJECTION:", promise, "reason:", reason);
+  // Optionally handle the rejection here
+});
+
 initializeBattleData();
 
 const corsOptions = {

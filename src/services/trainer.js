@@ -44,7 +44,10 @@ const { getVoteMultiplier } = require("../config/socialConfig");
 
 /**
  *
- * @param {DiscordUser} user
+ * @param {{
+ *  id: string,
+ *  username?: string,
+ * }} user
  * @returns {Promise<WithId<Trainer>>}
  */
 const initTrainer = async (user) => {
@@ -77,6 +80,7 @@ const initTrainer = async (user) => {
 };
 
 /**
+ * Gets a trainer from a user ID, without initiating it or refreshing time-interval fields
  * @param {string} userId
  * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
  */
@@ -160,7 +164,12 @@ const setTrainerFields = (
 
 /**
  *
- * @param {DiscordUser} discordUser
+ * @param {{
+ *  id: string,
+ *  username?: string,
+ *  discriminator?: string,
+ *  avatar?: string,
+ * }} discordUser
  * @param {boolean?} refresh
  * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
  */
@@ -251,6 +260,11 @@ const getTrainer = async (discordUser, refresh = true) => {
   // @ts-ignore
   return { data: trainer, err: null };
 };
+
+/**
+ * @param {Trainer} trainer
+ */
+const refreshTrainer = async (trainer) => await getTrainer(trainer.user);
 
 /**
  *
@@ -621,6 +635,7 @@ const updateTrainer = async (trainer) => {
 module.exports = {
   getTrainer,
   getTrainerFromId,
+  refreshTrainer,
   getTrainerInfo,
   getUserSettings,
   setUserSetting,

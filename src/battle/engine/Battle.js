@@ -461,14 +461,15 @@ class Battle {
     this.moneyReward = Math.floor(this.baseMoney * this.moneyMultiplier);
     this.expReward = Math.floor(this.baseExp * this.expMultiplier);
     // calculate pokemon exp by summing defeated pokemon's levels
-    this.pokemonExpReward = Math.floor(
-      Object.values(this.allPokemon).reduce((acc, pokemon) => {
-        if (pokemon.isFainted) {
-          return acc + (this.minLevel || pokemon.level);
-        }
-        return acc;
-      }, 0) * this.pokemonExpMultiplier
-    );
+    this.pokemonExpReward =
+      Math.floor(
+        Object.values(this.allPokemon).reduce((acc, pokemon) => {
+          if (pokemon.isFainted) {
+            return acc + (this.minLevel || pokemon.level);
+          }
+          return acc;
+        }, 0) * this.pokemonExpMultiplier
+      ) || 1;
 
     this.addToLog(
       `Winners recieved ${formatMoney(this.moneyReward)}, ${
