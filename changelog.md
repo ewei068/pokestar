@@ -8,6 +8,7 @@
   - Target indicators
   - Improved mobile display
 - Fix help command
+- Add bulk buy to shop
 - Added user settings
   - Profile privacy
   - Default device type

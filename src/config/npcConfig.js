@@ -53,8 +53,8 @@ const npcConfig = Object.freeze({
     catchphrase: "I caught a bunch of bugs! Let's battle with them!",
     difficulties: {
       [difficulties.VERY_EASY]: {
-        minLevel: 3,
-        maxLevel: 5,
+        minLevel: 2,
+        maxLevel: 4,
         numPokemon: 3,
         pokemonIds: ["10", "13", "165", "167", "265"],
         aceId: "14",
@@ -101,8 +101,8 @@ const npcConfig = Object.freeze({
     catchphrase: "I like shorts! They're comfy and easy to wear!",
     difficulties: {
       [difficulties.VERY_EASY]: {
-        minLevel: 5,
-        maxLevel: 7,
+        minLevel: 3,
+        maxLevel: 5,
         numPokemon: 3,
         pokemonIds: ["16", "19", "74", "102", "163"],
         aceId: "16",
@@ -138,8 +138,8 @@ const npcConfig = Object.freeze({
     catchphrase: "I'm cute, but deadly!",
     difficulties: {
       [difficulties.VERY_EASY]: {
-        minLevel: 6,
-        maxLevel: 8,
+        minLevel: 4,
+        maxLevel: 7,
         numPokemon: 3,
         pokemonIds: ["1", "10", "35", "39", "270"],
         aceId: "39",
@@ -175,8 +175,8 @@ const npcConfig = Object.freeze({
     catchphrase: "I'm a natural born fisherman!",
     difficulties: {
       [difficulties.VERY_EASY]: {
-        minLevel: 9,
-        maxLevel: 11,
+        minLevel: 7,
+        maxLevel: 10,
         numPokemon: 3,
         pokemonIds: ["120", "129", "183", "320"],
         aceId: "7",

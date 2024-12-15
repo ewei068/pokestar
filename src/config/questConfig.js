@@ -4,6 +4,7 @@ const { emojis } = require("../enums/emojis");
 const { checkNumPokemon } = require("../services/pokemon");
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { SUPPORT_SERVER_INVITE } = require("./helpConfig");
+const { shopItems } = require("./shopConfig");
 
 /** @typedef {Keys<newTutorialConfigRaw>} TutorialStageEnum */
 /**
@@ -51,6 +52,65 @@ const newTutorialConfigRaw = {
         .catch(() => false),
     rewards: {
       money: 5000,
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/gacha.gif",
+  },
+  buyPokeballs: {
+    name: "Buying Pokeballs",
+    emoji: emojis.POKEBALL,
+    description:
+      "One of the best ways to get more Pokeballs is to buy them from the Pokemart every day. Use `/pokemart` to buy Pokeballs, or use `/buy itemid: 0 quantity: 5` to buy the maximum amount.",
+    requirementString: "Buy 5x Pokeballs",
+    proceedString:
+      "Use `/pokemart` or `/buy itemid: 0 quantity: 5` to buy 5 Pokeballs!",
+    checkRequirements: async (trainer) =>
+      trainer.purchasedShopItemsToday[shopItems.RANDOM_POKEBALL] >= 5,
+    rewards: {
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.GREATBALL]: 5,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pokemart.gif",
+  },
+  dailyRewards: {
+    name: "Daily Rewards",
+    emoji: "📅",
+    description:
+      "You can get more money and Pokeballs for free every day! **Use `/daily` to claim your daily rewards.**",
+    requirementString: "Claim Daily Rewards",
+    proceedString: "Use `/daily` to claim your daily rewards!",
+    checkRequirements: async (trainer) => trainer.claimedDaily,
+    rewards: {
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.ULTRABALL]: 3,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/daily.png",
+  },
+  catchSixPokemon: {
+    name: "Catch More Pokemon",
+    emoji: emojis.GREATBALL,
+    description:
+      "Catch more Pokemon to build your team! **Use `/gacha` to catch 6 Pokemon**.",
+    requirementString: "Catch 6x Pokemon",
+    proceedString: "Use `/gacha` to catch 6 Pokemon!",
+    checkRequirements: async (trainer) =>
+      await checkNumPokemon(trainer)
+        .then((res) => (res.numPokemon ?? 0) >= 6)
+        .catch(() => false),
+    rewards: {
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.GREATBALL]: 5,
+        },
+      },
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/gacha.gif",
