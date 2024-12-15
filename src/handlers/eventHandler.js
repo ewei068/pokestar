@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * eventHandler.js Handles all events the user can create while playing the game.
  */
@@ -12,6 +10,10 @@ const { logger } = require("../log");
 const { addExpAndMoney } = require("../services/trainer");
 const { triggerBoundCallback } = require("../deact/deact");
 const { removeInteractionInstance } = require("../deact/interactions");
+const { attemptToReply } = require("../utils/utils");
+const {
+  hasUserMetCurrentTutorialStageRequirements,
+} = require("../services/quest");
 
 const eventHandlers = {};
 const eventsDirectory = path.join(__dirname, "../events");
@@ -43,6 +45,8 @@ const handleEvent = async (interaction, client) => {
 
   // execute event
   try {
+    const hasCompletedCurrentTutorialStage =
+      await hasUserMetCurrentTutorialStageRequirements(interaction.user);
     let res;
     if (data.dSID) {
       res = await triggerBoundCallback(interaction, data);
@@ -72,13 +76,20 @@ const handleEvent = async (interaction, client) => {
     if (exp > 0 || money > 0) {
       const { level, err } = await addExpAndMoney(interaction.user, exp, money);
       if (level && !err) {
-        const levelString = `You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`;
-        try {
-          await interaction.reply(levelString);
-        } catch (error) {
-          await interaction.followUp(levelString);
-        }
+        await attemptToReply(
+          interaction,
+          `You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`
+        );
       }
+    }
+    if (
+      !hasCompletedCurrentTutorialStage &&
+      (await hasUserMetCurrentTutorialStageRequirements(interaction.user))
+    ) {
+      await attemptToReply(
+        interaction,
+        `You have completed a tutorial stage! Use \`/tutorial\` to claim your rewards.`
+      );
     }
   } catch (error) {
     logger.error(`Error executing event ${eventName}`);

@@ -15,6 +15,21 @@ const hasTrainerMetTutorialStageRequirements = async (trainer, stage) =>
   await newTutorialConfig[stage]?.checkRequirements?.(trainer);
 
 /**
+ * @param {DiscordUser} user
+ */
+const hasUserMetCurrentTutorialStageRequirements = async (user) => {
+  const { data: trainer, err } = await getTrainer(user);
+  if (err) {
+    return false;
+  }
+
+  return await hasTrainerMetTutorialStageRequirements(
+    trainer,
+    trainer?.tutorialData?.currentTutorialStage
+  );
+};
+
+/**
  * Only use if trainer is up-to-date
  * @param {WithId<Trainer>} trainer
  * @param {TutorialStageEnum} stage
@@ -82,6 +97,7 @@ const completeTutorialStageForUser = async (user, stage) => {
 
 module.exports = {
   hasTrainerMetTutorialStageRequirements,
+  hasUserMetCurrentTutorialStageRequirements,
   completeTutorialStageForTrainer,
   completeTutorialStageForUser,
 };
