@@ -53,16 +53,16 @@ const npcConfig = Object.freeze({
     catchphrase: "I caught a bunch of bugs! Let's battle with them!",
     difficulties: {
       [difficulties.VERY_EASY]: {
-        minLevel: 2,
+        minLevel: 3,
         maxLevel: 4,
-        numPokemon: 3,
+        numPokemon: 4,
         pokemonIds: ["10", "13", "165", "167", "265"],
         aceId: "14",
       },
       [difficulties.EASY]: {
         minLevel: 12,
         maxLevel: 16,
-        numPokemon: 4,
+        numPokemon: 5,
         pokemonIds: ["10", "11", "13", "14", "165", "167", "265", "266", "268"],
         aceId: "14",
       },
@@ -103,14 +103,14 @@ const npcConfig = Object.freeze({
       [difficulties.VERY_EASY]: {
         minLevel: 3,
         maxLevel: 5,
-        numPokemon: 3,
+        numPokemon: 4,
         pokemonIds: ["16", "19", "74", "102", "163"],
         aceId: "16",
       },
       [difficulties.EASY]: {
         minLevel: 15,
         maxLevel: 18,
-        numPokemon: 4,
+        numPokemon: 5,
         pokemonIds: ["4", "16", "19", "74", "102", "133", "164", "304"],
         aceId: "16",
       },
@@ -140,14 +140,14 @@ const npcConfig = Object.freeze({
       [difficulties.VERY_EASY]: {
         minLevel: 4,
         maxLevel: 7,
-        numPokemon: 3,
+        numPokemon: 4,
         pokemonIds: ["1", "10", "35", "39", "270"],
         aceId: "39",
       },
       [difficulties.EASY]: {
         minLevel: 16,
         maxLevel: 20,
-        numPokemon: 4,
+        numPokemon: 5,
         pokemonIds: ["1", "11", "35", "39", "133", "270"],
         aceId: "39",
       },
@@ -177,14 +177,14 @@ const npcConfig = Object.freeze({
       [difficulties.VERY_EASY]: {
         minLevel: 7,
         maxLevel: 10,
-        numPokemon: 3,
+        numPokemon: 4,
         pokemonIds: ["120", "129", "183", "320"],
         aceId: "7",
       },
       [difficulties.EASY]: {
         minLevel: 21,
         maxLevel: 26,
-        numPokemon: 4,
+        numPokemon: 5,
         pokemonIds: ["7", "120", "129", "183", "278", "320"],
         aceId: "7",
       },
@@ -224,14 +224,14 @@ const npcConfig = Object.freeze({
       [difficulties.VERY_EASY]: {
         minLevel: 7,
         maxLevel: 9,
-        numPokemon: 3,
+        numPokemon: 4,
         pokemonIds: ["50", "66", "74", "95", "111"],
         aceId: "74",
       },
       [difficulties.EASY]: {
         minLevel: 17,
         maxLevel: 21,
-        numPokemon: 4,
+        numPokemon: 5,
         pokemonIds: ["50", "66", "74", "95", "111", "343"],
         aceId: "74",
       },
@@ -261,14 +261,14 @@ const npcConfig = Object.freeze({
       [difficulties.VERY_EASY]: {
         minLevel: 8,
         maxLevel: 10,
-        numPokemon: 3,
+        numPokemon: 4,
         pokemonIds: ["43", "187", "191", "285"],
         aceId: "152",
       },
       [difficulties.EASY]: {
         minLevel: 18,
         maxLevel: 22,
-        numPokemon: 4,
+        numPokemon: 5,
         pokemonIds: ["43", "152", "187", "192", "285"],
         aceId: "44",
       },
@@ -299,14 +299,14 @@ const npcConfig = Object.freeze({
       [difficulties.VERY_EASY]: {
         minLevel: 8,
         maxLevel: 10,
-        numPokemon: 3,
+        numPokemon: 4,
         pokemonIds: ["66", "236", "255", "296"],
         aceId: "66",
       },
       [difficulties.EASY]: {
         minLevel: 18,
         maxLevel: 22,
-        numPokemon: 4,
+        numPokemon: 5,
         pokemonIds: ["66", "236", "255", "296"],
         aceId: "66",
       },
@@ -2456,7 +2456,7 @@ const difficultyConfig = Object.freeze({
     rewardMultipliers: {
       moneyMultiplier: 0.5,
       expMultiplier: 0.5,
-      pokemonExpMultiplier: 0.15,
+      pokemonExpMultiplier: 0.175,
     },
   },
   [difficulties.EASY]: {
@@ -2464,7 +2464,7 @@ const difficultyConfig = Object.freeze({
     rewardMultipliers: {
       moneyMultiplier: 1,
       expMultiplier: 1,
-      pokemonExpMultiplier: 0.15,
+      pokemonExpMultiplier: 0.175,
     },
   },
   [difficulties.MEDIUM]: {
@@ -2472,7 +2472,7 @@ const difficultyConfig = Object.freeze({
     rewardMultipliers: {
       moneyMultiplier: 1.5,
       expMultiplier: 1.5,
-      pokemonExpMultiplier: 0.175,
+      pokemonExpMultiplier: 0.185,
     },
   },
   [difficulties.HARD]: {
@@ -2480,7 +2480,7 @@ const difficultyConfig = Object.freeze({
     rewardMultipliers: {
       moneyMultiplier: 2,
       expMultiplier: 2,
-      pokemonExpMultiplier: 0.2,
+      pokemonExpMultiplier: 0.21,
     },
   },
   [difficulties.VERY_HARD]: {

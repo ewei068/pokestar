@@ -70,6 +70,10 @@ const buildTutorialStageEmbed = ({ stage, userTutorialData, page = 1 }) => {
     },
   ]);
 
+  if (stageData.image) {
+    embed.setImage(stageData.image);
+  }
+
   return embed;
 };
 

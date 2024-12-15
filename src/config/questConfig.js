@@ -94,6 +94,20 @@ const newTutorialConfigRaw = {
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/daily.png",
   },
+  backpack: {
+    name: "Backpack Management",
+    emoji: "🎒",
+    description: "You can view your items and money by using `/backpack`.",
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "Use `/backpack` to view your backpack, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.dailyRewards,
+    rewards: {
+      money: 1000,
+    },
+    // TODO: image:
+  },
   catchSixPokemon: {
     name: "Catch More Pokemon",
     emoji: emojis.GREATBALL,
@@ -114,6 +128,95 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/gacha.gif",
+  },
+  buildParty: {
+    name: "Building Your Party",
+    emoji: emojis.PIKACHU,
+    description:
+      "Build your party by adding 6 Pokemon to your party! **Use `/party auto` to add your 6 strongest Pokemon to your party**. You can also use `/party add` and `/party remove` to make finer adjustments to your party.",
+    requirementString: "Add 6x Pokemon to Party",
+    proceedString:
+      "Use `/party auto` or `/party add` to add a Pokemon to your party!",
+    checkRequirements: async (trainer) => {
+      const partyPokemon = trainer.party.pokemonIds.filter((id) => id);
+      return partyPokemon.length >= 6;
+    },
+    rewards: {
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: 5,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/partyadd.png",
+  },
+  learnBattleTurns: {
+    name: "Learning to Battle: Taking Turns",
+    emoji: "➡️",
+    description:
+      "Before you battle, you must learn how they work! Battles in Pokestar are unique; all 6 Pokemon fight at a time!\n\n**Taking turns is based off combat readiness.** Pokemon with higher speed gain combat readiness faster.\n\nYou may view the combat readiness of a team by clicking the **NPC** or **Player** tabs.",
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "Read the description to learn about battles, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.buildParty,
+    rewards: {
+      money: 1000,
+    },
+    // TODO image:
+  },
+  learnBattleMoves: {
+    name: "Learning to Battle: Using Moves",
+    emoji: "🔥",
+    description:
+      "When its your turn, you can use a move! **Use the dropdown menu to select a move.**\n\nWhen selecting a move, a description will appear. This includes important move information such as its type, power, effect, and cooldown.",
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "Read the description to learn about battles, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.learnBattleTurns,
+    rewards: {
+      money: 1000,
+    },
+    // TODO image:
+  },
+  learnBattleTargets: {
+    name: "Learning to Battle: Selecting Targets",
+    emoji: "🎯",
+    description:
+      "When using a move, you must select a target! **Click on the Pokemon you want to target from the dropdown menu.** Most moves may only target certain Pokemon, which is indicated in the **Target:** section of the move description." +
+      "\n\n**Some moves may affect an area of Pokemon.** When a target is selected, that area is indicated by a wider border. **When satisfied, click the confirm button to use the move.** This can be disabled in your `/settings`.",
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "Read the description to learn about battles, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.learnBattleMoves,
+    rewards: {
+      money: 1000,
+    },
+    // TODO image:
+  },
+  winNpcBattle: {
+    name: "Battle an NPC!",
+    emoji: "⚔️",
+    description:
+      "Now that you know how to battle, **use `/pve` to battle an NPC!** I'd recommend starting with the Bug Catcher on Very Easy difficulty.",
+    requirementString: "Win any NPC Battle",
+    proceedString: "Use `/pve` to battle an NPC!",
+    checkRequirements: async (trainer) =>
+      Object.keys(trainer.defeatedNPCs).length > 0,
+    rewards: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: 10,
+          [backpackItems.MASTERBALL]: 1,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif",
   },
   // terminal stage to prevent overflow
   completed: {
