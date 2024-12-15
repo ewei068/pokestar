@@ -24,6 +24,7 @@ TODO:
   - Move first penalty?
 - Stretch: Achievements
 - Stretch: New event
+- Stretch: Analytics
 
 ### 1.0.3 - Big Refactor
 
