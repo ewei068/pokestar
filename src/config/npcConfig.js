@@ -33,7 +33,7 @@ const npcs = Object.freeze({
 });
 
 /** @typedef {Enum<difficulties>} NpcDifficultyEnum */
-const difficulties = Object({
+const difficulties = Object.freeze({
   VERY_EASY: "veryEasy",
   EASY: "easy",
   MEDIUM: "medium",

@@ -1,15 +1,16 @@
 // smell -- this config depends on some services to work properly
 // maybe refactor at some point but I don't think it's a big deal because this is an isolated functionality
-const trainerInfo = require("../commands/trainer/trainerInfo");
 const { emojis } = require("../enums/emojis");
+const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const {
   checkNumPokemon,
-  trainPokemon,
   listPokemons,
+  evolvePokemon,
 } = require("../services/pokemon");
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { SUPPORT_SERVER_INVITE } = require("./helpConfig");
 const { locations } = require("./locationConfig");
+const { difficulties } = require("./npcConfig");
 const { shopItems } = require("./shopConfig");
 
 /** @typedef {Keys<newTutorialConfigRaw>} TutorialStageEnum */
@@ -26,6 +27,7 @@ const { shopItems } = require("./shopConfig");
  * }} TutorialStageData
  */
 
+// TODO: progress strngs?
 /** @satisfies {Record<string, TutorialStageData>} */
 const newTutorialConfigRaw = {
   welcome: {
@@ -377,6 +379,287 @@ const newTutorialConfigRaw = {
     },
     // TODO: image:
   },
+  winEasyDifficulty: {
+    name: "Win Easy Difficulty",
+    emoji: "🏆",
+    description:
+      "Now that you have trained your Pokemon, **use `/pve` to win a battle on Easy difficulty.**\n\nFrom now on, **Battling is the most efficient way to gain EXP.**",
+    requirementString: "Win any battle on Easy difficulty",
+    proceedString: "Use `/pve` to win a battle on Easy difficulty!",
+    checkRequirements: async (trainer) => {
+      for (const defeatedDifficulties of Object.values(trainer.defeatedNPCs)) {
+        if (defeatedDifficulties.includes(difficulties.EASY)) {
+          return true;
+        }
+      }
+      return false;
+    },
+    rewards: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.ULTRABALL]: 10,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif",
+  },
+  intermediateLeveling: {
+    name: "Intermediate Pokemon Leveling",
+    emoji: "📈",
+    description:
+      "Now that you can win battles, use `/pve` to **train 6 Pokemon to level 30.**",
+    requirementString: "Train 6x Pokemon to level 30",
+    proceedString: "Use `/train` to train 6 Pokemon to level 30!",
+    checkRequirements: async (trainer) => {
+      const { data: pokemons } = await listPokemons(trainer, {
+        pageSize: 6,
+        page: 1,
+        filter: {
+          level: { $gte: 30 },
+        },
+      });
+      return (pokemons?.length ?? 0) >= 6;
+    },
+    rewards: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.GREATBALL]: 10,
+        },
+      },
+    },
+  },
+  evolvePokemon: {
+    name: "Evolving Pokemon",
+    emoji: "🧬",
+    description:
+      "Some Pokemon can evolve at the right level! Use `/pokedex` and click the growth tab to know when a Pokemon evolves, then **use `/evolve` to evolve a Pokemon.**",
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "Use `/evolve` to evolve a Pokemon, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.intermediateLeveling,
+    rewards: {
+      money: 1000,
+    },
+    // TODO: image
+  },
+  winMediumDifficulty: {
+    name: "Win Medium Difficulty",
+    emoji: "🏆",
+    description:
+      "Now that you have evolved your Pokemon, **use `/pve` to win a battle on Medium difficulty.**",
+    requirementString: "Win any battle on Medium difficulty",
+    proceedString: "Use `/pve` to win a battle on Medium difficulty!",
+    checkRequirements: async (trainer) => {
+      for (const defeatedDifficulties of Object.values(trainer.defeatedNPCs)) {
+        if (defeatedDifficulties.includes(difficulties.MEDIUM)) {
+          return true;
+        }
+      }
+      return false;
+    },
+    rewards: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: 50,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif",
+  },
+  catchMorePokemon: {
+    name: "Catching More Pokemon",
+    emoji: emojis.ULTRABALL,
+    description:
+      "You should keep using the `/gatcha` to catch strong Pokemon. **Catch 50 Pokemon.**",
+    requirementString: "Catch 50x Pokemon",
+    proceedString: "Use `/gacha` to catch 50 Pokemon!",
+    checkRequirements: async (trainer) =>
+      await checkNumPokemon(trainer)
+        .then((res) => (res.numPokemon ?? 0) >= 50)
+        .catch(() => false),
+    rewards: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: 5,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/gacha.gif",
+  },
+  advancedLeveling: {
+    name: "Advanced Pokemon Leveling",
+    emoji: "📈",
+    description:
+      "Now that you have caught more Pokemon, **train 6 Pokemon to level 50.**\n\n**More difficult trainers provide more EXP!**",
+    requirementString: "Train 6x Pokemon to level 50",
+    proceedString: "Use `/train` to train 6 Pokemon to level 50!",
+    checkRequirements: async (trainer) => {
+      const { data: pokemons } = await listPokemons(trainer, {
+        pageSize: 6,
+        page: 1,
+        filter: {
+          level: { $gte: 50 },
+        },
+      });
+      return (pokemons?.length ?? 0) >= 6;
+    },
+    rewards: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.GREATBALL]: 10,
+        },
+      },
+    },
+  },
+  winHardDifficulty: {
+    name: "Win Hard Difficulty",
+    emoji: "🏆",
+    description:
+      "Now that you have trained your Pokemon, **use `/pve` to win a battle on Hard difficulty.**",
+    requirementString: "Win any battle on Hard difficulty",
+    proceedString: "Use `/pve` to win a battle on Hard difficulty!",
+    checkRequirements: async (trainer) => {
+      for (const defeatedDifficulties of Object.values(trainer.defeatedNPCs)) {
+        if (defeatedDifficulties.includes(difficulties.HARD)) {
+          return true;
+        }
+      }
+      return false;
+    },
+    rewards: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.ULTRABALL]: 10,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif",
+  },
+  maximumLeveling: {
+    name: "Maximum Pokemon Leveling",
+    emoji: "📈",
+    description:
+      "Now that you have won battles, **train 6 Pokemon to level 100.** The maximum level for Pokemon from training is 100.\n\nRemember, **more difficult trainers provide more EXP!**",
+    requirementString: "Train 6x Pokemon to level 100",
+    proceedString: "Use `/train` to train 6 Pokemon to level 100!",
+    checkRequirements: async (trainer) => {
+      const { data: pokemons } = await listPokemons(trainer, {
+        pageSize: 6,
+        page: 1,
+        filter: {
+          level: { $gte: 100 },
+        },
+      });
+      return (pokemons?.length ?? 0) >= 6;
+    },
+    rewards: {
+      money: 31000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.MASTERBALL]: 3,
+        },
+      },
+    },
+  },
+  evTrainingLocation: {
+    name: "EV Training: Locations",
+    emoji: "🎓",
+    description:
+      "You can train your Pokemon's EVs at the EV Training locations. **Use `/pokemart` to purchase the Track location and upgrade it to level 3.** The Track location trains Speed EVs.",
+    requirementString: "Have a level 3 Track location",
+    proceedString:
+      "Use `/pokemart` to purchase the Track location and upgrade it to level 3!",
+    checkRequirements: async (trainer) =>
+      (trainer.locations?.[locations.TRACK] ?? 0) >= 3,
+    rewards: {
+      money: 5000,
+    },
+    // TODO: image
+  },
+  evTraining: {
+    name: "EV Training: Training",
+    emoji: "🎓",
+    description:
+      "Now that you have the Track location, **use `/train pokemonid: {pokemon id} location: track` to train a Pokemon's Speed EVs.**\n\nPokemon can have a maximum of 510 total EVs, and 252 EVs in one stat. **Use `/info` to view a Pokemon's EVs.**",
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "Use `/train pokemonid: {pokemon id} location: track` to train a Pokemon's Speed EVs to 252.",
+    checkRequirements: async (trainer) => {
+      const { data: pokemons } = await listPokemons(trainer, {
+        pageSize: 1,
+        page: 1,
+        filter: {
+          "evs.5": { $gte: 252 },
+        },
+      });
+      return (pokemons?.length ?? 0) > 0;
+    },
+    rewards: {
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: 10,
+        },
+      },
+    },
+    // TODO: image
+  },
+  dungeons: {
+    name: "Dungeons: Beat New Island",
+    emoji: "🏝️",
+    description:
+      "Dungeons are end-game content that provide materials to further train your Pokemon. Beating the New Island dungeon for the first time provides the **Mythical Mew. Use `/dungeons` to view and defeat New Island.**",
+    requirementString: "Defeat New Island Dungeon",
+    proceedString: "Use `/dungeons` to view and defeat New Island Dungeon!",
+    checkRequirements: async (trainer) =>
+      (trainer.defeatedNPCs.newIsland?.length ?? 0) > 0,
+    rewards: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.MASTERBALL]: 5,
+        },
+      },
+    },
+    // TODO: image
+  },
+  catchMew: {
+    name: "Catching Mythical Mew",
+    emoji: emojis.MEW,
+    description:
+      "Now that you have defeated New Island, you can catch the Mythical Mew! **Use `/mythic mew` to catch the Mythical Mew.**",
+    requirementString: "Catch Mew",
+    proceedString: "Use `/mythic mew` to catch the Mythical Mew!",
+    checkRequirements: async (trainer) => {
+      const { data: pokemons } = await listPokemons(trainer, {
+        pageSize: 1,
+        page: 1,
+        filter: {
+          speciesId: pokemonIdEnum.MEW,
+        },
+      });
+      return (pokemons?.length ?? 0) > 0;
+    },
+    rewards: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.MASTERBALL]: 5,
+        },
+      },
+    },
+    // TODO: image
+  },
   // terminal stage to prevent overflow
   completed: {
     name: "Tutorial Complete!",
@@ -392,6 +675,7 @@ const newTutorialConfigRaw = {
       "https://dbl-static.usercontent.prism.gg/02f7065e82d8c66e66299b74eda565b6.png",
   },
 };
+
 /** @type {Record<TutorialStageEnum, TutorialStageData>} */
 const newTutorialConfig = Object.freeze(newTutorialConfigRaw);
 const newTutorialStages = /** @type {TutorialStageEnum[]} */ (

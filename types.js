@@ -65,7 +65,8 @@
 
 /**
  * @typedef {{[K in UserSettingsEnum]: UserSettingsOptions<K>}} UserSettings
- * @typedef {{ completedTutorialStages: PartialRecord<TutorialStageEnum, boolean>, currentTutorialStage: TutorialStageEnum, }} UserTutorialData
+ * TODO: fix this type
+ * @typedef {{ completedTutorialStages: PartialRecord<string, boolean>, currentTutorialStage: TutorialStageEnum }} UserTutorialData
  */
 
 /**
