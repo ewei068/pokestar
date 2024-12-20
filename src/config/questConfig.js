@@ -194,7 +194,8 @@ const newTutorialConfigRaw = {
     emoji: "🎯",
     description:
       "When using a move, you must select a target! **Click on the Pokemon you want to target from the dropdown menu.** Most moves may only target certain Pokemon, which is indicated in the **Target:** section of the move description." +
-      "\n\n**Some moves may affect an area of Pokemon.** When a target is selected, that area is indicated by a wider border. **When satisfied, click the confirm button to use the move.** This can be disabled in your `/settings`.",
+      "\n\n**Some moves may affect an area of Pokemon.** When a target is selected, that area is indicated by a wider border. **When satisfied, click the confirm button to use the move.** This can be disabled in your `/settings`." +
+      "\n\nFor more detailed battle mechanics, check out the [documentation on Github](https://github.com/ewei068/pokestar?tab=readme-ov-file#-battle-mechanics).",
     requirementString: "Complete the previous stage",
     proceedString:
       "Read the description to learn about battles, and complete the previous stage.",
@@ -637,7 +638,7 @@ const newTutorialConfigRaw = {
     name: "Catching Mythical Mew",
     emoji: emojis.MEW,
     description:
-      "Now that you have defeated New Island, you can catch the Mythical Mew! **Use `/mythic mew` to catch the Mythical Mew.**",
+      "Now that you have defeated New Island, you can catch the Mythical Mew! **Use `/mythic mew` to catch the Mythical Mew.**\n\nMew is a powerful Pokemon who can learn many different moves!",
     requirementString: "Catch Mew",
     proceedString: "Use `/mythic mew` to catch the Mythical Mew!",
     checkRequirements: async (trainer) => {
