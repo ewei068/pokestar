@@ -102,7 +102,13 @@ const updatePokemon = async (pokemon) => {
 
 /**
  * @param {Trainer} trainer
- * @param {any} listOptions
+ * @param {{
+ *  page?: number,
+ *  pageSize?: number,
+ *  filter?: any,
+ *  sort?: any,
+ *  allowNone?: boolean
+ * }} listOptions
  * @returns {Promise<{data: WithId<Pokemon>[]?, lastPage?: boolean, err: string?}>}
  */
 const listPokemons = async (trainer, listOptions) => {

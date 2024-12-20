@@ -1,9 +1,15 @@
 // smell -- this config depends on some services to work properly
 // maybe refactor at some point but I don't think it's a big deal because this is an isolated functionality
+const trainerInfo = require("../commands/trainer/trainerInfo");
 const { emojis } = require("../enums/emojis");
-const { checkNumPokemon } = require("../services/pokemon");
+const {
+  checkNumPokemon,
+  trainPokemon,
+  listPokemons,
+} = require("../services/pokemon");
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { SUPPORT_SERVER_INVITE } = require("./helpConfig");
+const { locations } = require("./locationConfig");
 const { shopItems } = require("./shopConfig");
 
 /** @typedef {Keys<newTutorialConfigRaw>} TutorialStageEnum */
@@ -217,6 +223,159 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif",
+  },
+  listPokemon: {
+    name: "Viewing Pokemon: List",
+    emoji: "📜",
+    description:
+      "You can view all your Pokemon using `/list`. **Use `/list` to view your Pokemon.**",
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "Use `/list` to view your Pokemon, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.winNpcBattle,
+    rewards: {
+      money: 1000,
+    },
+    // TODO image:
+  },
+  viewPokemon: {
+    name: "Viewing Pokemon: Info",
+    emoji: "🔍",
+    description:
+      "You can view a specific Pokemon using `/info`, or clicking them from the `/list` dropdown menu. **Use `/info` to view a specific Pokemon.**\n\nFor **mobile users**, you can long press + copy to copy a Pokemon's ID from here.",
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "Use `/info` to view a specific Pokemon, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.listPokemon,
+    rewards: {
+      money: 1000,
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/info.png",
+  },
+  trainPokemon: {
+    name: "Training Pokemon",
+    emoji: "🏋️",
+    description:
+      "One way to give your Pokemon more EXP is by training! Copy a Pokemon's ID, then **Use `/train` to train a Pokemon to level 8.**",
+    requirementString: "Have 1x Pokemon at level 8 or higher",
+    proceedString: "Use `/train` to train a Pokemon to level 8.",
+    checkRequirements: async (trainer) => {
+      const { data: pokemons } = await listPokemons(trainer, {
+        pageSize: 1,
+        page: 1,
+        filter: {
+          level: { $gte: 8 },
+        },
+      });
+      return (pokemons?.length ?? 0) > 0;
+    },
+    rewards: {
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: 10,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/train.png",
+  },
+  trainerInfo: {
+    name: "Viewing Trainer Info",
+    emoji: "📊",
+    description:
+      "You can view your trainer info using `/trainerinfo`. **Use `/trainerinfo` to view your trainer info.**",
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "Use `/trainerinfo` to view your trainer info, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.trainPokemon,
+    rewards: {
+      money: 1000,
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/trainerinfo.png",
+  },
+  trainerLevel: {
+    name: "Trainer Level",
+    emoji: "🎓",
+    description:
+      "In your trainer info, you may notice a trainer level. **Leveling your trainer makes your Pokemon gain more EXP.**\n\nMost commands and actions will provide your trainer EXP. **Reach trainer level 3.**",
+    requirementString: "Reach Trainer Level 3",
+    proceedString:
+      "Use commands and actions to level up your trainer to level 3!",
+    checkRequirements: async (trainer) => trainer.level >= 3,
+    rewards: {
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: 10,
+        },
+      },
+    },
+    // TODO image:
+  },
+  levelRewards: {
+    name: "Level Rewards",
+    emoji: "🎁",
+    description:
+      "Every time you level up, you gain level rewards! **Use `/levelrewards` to claim your level rewards.**",
+    requirementString: "Claim Level Rewards",
+    proceedString: "Use `/levelrewards` to claim your level rewards!",
+    checkRequirements: async (trainer) =>
+      trainer.claimedLevelRewards.length > 0,
+    rewards: {
+      money: 31000,
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/levelrewards.png",
+  },
+  locations: {
+    name: "Purchasing Locations",
+    emoji: "🌍",
+    description:
+      "You may purchase and upgrade locations from the `/pokemart` for permanent boosts! **Use `/pokemart` to purchase the Home location and upgrade it to level 3.** The Home locations improves the EXP gained from `/train`!\n\nYou can use `/locations` to view your locations.",
+    requirementString: "Have a level 3 Home location",
+    proceedString:
+      "Use `/pokemart` to purchase the Home location and upgrade it to level 3!",
+    checkRequirements: async (trainer) =>
+      (trainer.locations?.[locations.HOME] ?? 0) >= 3,
+    rewards: {
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: 10,
+        },
+      },
+    },
+    // TODO: image:
+  },
+  beginnerLeveling: {
+    name: "Beginner Pokemon Leveling",
+    emoji: "📈",
+    description:
+      "Now that you can `/train` your Pokemon faster, **train 6 Pokemon to level 15.**",
+    requirementString: "Train 6x Pokemon to level 15",
+    proceedString: "Use `/train` to train 6 Pokemon to level 15!",
+    checkRequirements: async (trainer) => {
+      const { data: pokemons } = await listPokemons(trainer, {
+        pageSize: 6,
+        page: 1,
+        filter: {
+          level: { $gte: 15 },
+        },
+      });
+      return (pokemons?.length ?? 0) >= 6;
+    },
+    rewards: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: 10,
+        },
+      },
+    },
+    // TODO: image:
   },
   // terminal stage to prevent overflow
   completed: {
