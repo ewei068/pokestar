@@ -4,6 +4,8 @@
  * @author Elvis Wei
  *
  * utils.js functions used by most Utils and other files, most relating to converting information from the mongo database.
+ *
+ * TODO: REALLY NEED TO BREAK UP THIS FILE LOLOLOL
  */
 const { Message } = require("discord.js");
 const { ObjectId } = require("mongodb");
@@ -345,6 +347,67 @@ const attemptToReply = async (interaction, message) => {
   }
 };
 
+/**
+ *
+ * @param {any} root
+ * @param {DefaultFieldConfig} fieldConfig
+ * @param {Date} lastCorrectedTime
+ * @param {Date} newCorrectedTime
+ * @returns {boolean} if field was modified
+ */
+const setDefaultFields = (
+  root,
+  fieldConfig,
+  lastCorrectedTime,
+  newCorrectedTime
+) => {
+  let modified = false;
+  // check if all fields are present
+  for (const field in fieldConfig) {
+    const fieldData = fieldConfig[field];
+    if (root[field] === undefined) {
+      // eslint-disable-next-line no-param-reassign
+      root[field] = fieldData.default;
+      modified = true;
+    }
+
+    // if the field has its own config, attempt to set it
+    if (fieldData.type === "object" && fieldData.config) {
+      modified =
+        setDefaultFields(
+          root[field] ?? {},
+          fieldData.config,
+          lastCorrectedTime,
+          newCorrectedTime
+        ) || modified;
+    }
+  }
+
+  // attempt to reset time-interval fields
+  for (const field in fieldConfig) {
+    const { refreshInterval } = fieldConfig[field];
+    if (!refreshInterval) {
+      continue;
+    }
+
+    const currentTimeInterval = getFullUTCTimeInterval(
+      refreshInterval,
+      newCorrectedTime
+    );
+    const lastTimeInterval = getFullUTCTimeInterval(
+      refreshInterval,
+      lastCorrectedTime
+    );
+    if (currentTimeInterval > lastTimeInterval) {
+      // eslint-disable-next-line no-param-reassign
+      root[field] = fieldConfig[field].default;
+      modified = true;
+    }
+
+    return modified;
+  }
+};
+
 module.exports = {
   getOrSetDefault,
   getPBar,
@@ -370,4 +433,5 @@ module.exports = {
   errorlessAsync,
   zip,
   attemptToReply,
+  setDefaultFields,
 };

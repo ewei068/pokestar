@@ -115,11 +115,15 @@
  */
 
 /**
+ * @typedef {{ mode: "allowlist" | "denylist", channelIds: string[] }} SpawnSettings
+ */
+
+/**
  * @typedef {object} Guild
  * @property {string} guildId
  * @property {number} lastCommand
- * @property {boolean} spawnDisabled
- * @property {Array<string>} spawnDisabledChannels
+ * @property {SpawnSettings} spawnSettings
+ * @property {number} lastCorrected
  */
 
 /**
