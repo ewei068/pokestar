@@ -9,7 +9,7 @@ const { makeComponentId } = require("../deact");
  * @param {ButtonStyle?=} param1.style
  * @param {boolean?=} param1.disabled
  * @param {string} param1.callbackBindingKey
- * @param {any} param1.data
+ * @param {any=} param1.data
  */
 module.exports = async (
   ref,
@@ -19,7 +19,7 @@ module.exports = async (
     style = ButtonStyle.Secondary,
     disabled = false,
     callbackBindingKey,
-    data,
+    data = {},
   }
 ) => {
   const button = new ButtonBuilder()

@@ -327,6 +327,24 @@ const zip = (...arr) =>
     .fill()
     .map((_, i) => arr.map((a) => a[i]));
 
+/**
+ * ERRORLESS
+ * @param {any} interaction
+ * @param {any} message
+ */
+const attemptToReply = async (interaction, message) => {
+  try {
+    await interaction.reply(message);
+  } catch {
+    try {
+      await interaction.followUp(message);
+    } catch {
+      // do nothing
+    }
+    // do nothing
+  }
+};
+
 module.exports = {
   getOrSetDefault,
   getPBar,
@@ -351,4 +369,5 @@ module.exports = {
   formatMoney,
   errorlessAsync,
   zip,
+  attemptToReply,
 };

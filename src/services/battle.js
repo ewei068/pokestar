@@ -71,7 +71,6 @@ const getStartTurnSend = async (battle, stateId) => {
     battle.log = battle.log.slice(battle.log.length - 20);
   }
   let content = battle.log.join("\n");
-  battle.clearLog();
 
   // get current user, or first other user if NPC
   let activeUserId = battle.activePokemon.userId;
@@ -93,6 +92,7 @@ const getStartTurnSend = async (battle, stateId) => {
     isMobile: getUserSelectedDevice({}, activeTrainer?.settings) === "mobile",
   });
 
+  battle.clearLog();
   const components = [];
   if (!battle.ended) {
     const infoRow = buildBattleInfoActionRow(

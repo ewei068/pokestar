@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * eventHandler.js Handles all events the user can create while playing the game.
  */
@@ -11,10 +9,12 @@ const { eventConfig } = require("../config/eventConfig");
 const { logger } = require("../log");
 const { addExpAndMoney } = require("../services/trainer");
 const { triggerBoundCallback } = require("../deact/deact");
+const { removeInteractionInstance } = require("../deact/interactions");
+const { attemptToReply } = require("../utils/utils");
 const {
-  setInteractionInstance,
-  removeInteractionInstance,
-} = require("../deact/interactions");
+  hasUserMetCurrentTutorialStageRequirements,
+} = require("../services/quest");
+const { sendUpsells } = require("../services/misc");
 
 const eventHandlers = {};
 const eventsDirectory = path.join(__dirname, "../events");
@@ -46,6 +46,8 @@ const handleEvent = async (interaction, client) => {
 
   // execute event
   try {
+    const hasCompletedCurrentTutorialStage =
+      await hasUserMetCurrentTutorialStageRequirements(interaction.user);
     let res;
     if (data.dSID) {
       res = await triggerBoundCallback(interaction, data);
@@ -68,21 +70,24 @@ const handleEvent = async (interaction, client) => {
       return;
     }
 
-    // TODO: Deact handler?
+    // TODO: Deact to define exp and money?
     // add exp & money if possible
-    const exp = eventConfig[eventName]?.exp || 0;
-    const money = eventConfig[eventName]?.money || 0;
+    const exp = data.dSID ? 5 : eventConfig[eventName]?.exp || 0;
+    const money = data.dSID ? 10 : eventConfig[eventName]?.money || 0;
     if (exp > 0 || money > 0) {
       const { level, err } = await addExpAndMoney(interaction.user, exp, money);
       if (level && !err) {
-        const levelString = `You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`;
-        try {
-          await interaction.reply(levelString);
-        } catch (error) {
-          await interaction.followUp(levelString);
-        }
+        await attemptToReply(
+          interaction,
+          `You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`
+        );
       }
     }
+    await sendUpsells({
+      interaction,
+      user: interaction.user,
+      hasCompletedCurrentTutorialStage,
+    });
   } catch (error) {
     logger.error(`Error executing event ${eventName}`);
     logger.error(error);

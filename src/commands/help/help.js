@@ -1,12 +1,6 @@
 const { createRoot, userTypeEnum } = require("../../deact/deact");
 const HelpCategoryList = require("../../elements/help/HelpCategoryList");
 
-/**
- * Parses the command config, returning an embed that allows users to browse for commands.
- * @param {string} command If provided, returns an embed for the specified command.
- * @returns Embed or message to send.
- */
-
 const help = async (interaction, command) =>
   await createRoot(
     HelpCategoryList,
