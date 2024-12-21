@@ -12,7 +12,7 @@
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { bannerTypes } = require("./gachaConfig");
 const { stageNames } = require("./stageConfig");
-const { refreshIntervalEnum } = require("../enums/miscEnums");
+const { timeEnum } = require("../enums/miscEnums");
 
 const MAX_TRAINER_LEVEL = 100;
 const MAX_POKEMON = 500;
@@ -141,7 +141,7 @@ const trainerFields = {
   claimedDaily: {
     type: "boolean",
     default: false,
-    refreshInterval: refreshIntervalEnum.DAILY,
+    refreshInterval: timeEnum.DAY,
   },
   backpack: {
     type: "object",
@@ -161,7 +161,7 @@ const trainerFields = {
   purchasedShopItemsToday: {
     type: "object",
     default: {},
-    refreshInterval: refreshIntervalEnum.DAILY,
+    refreshInterval: timeEnum.DAY,
   },
   locations: {
     type: "object",
@@ -376,7 +376,7 @@ const trainerFields = {
   defeatedNPCsToday: {
     type: "object",
     default: {},
-    refreshInterval: refreshIntervalEnum.DAILY,
+    refreshInterval: timeEnum.DAY,
   },
   defeatedNPCs: {
     type: "object",
@@ -404,17 +404,21 @@ const trainerFields = {
   usedTimeTravel: {
     type: "boolean",
     default: false,
-    refreshInterval: refreshIntervalEnum.DAILY,
+    refreshInterval: timeEnum.DAY,
   },
   lastTowerStage: {
     type: "number",
     default: 0,
-    refreshInterval: refreshIntervalEnum.BIWEEKLY,
+    refreshInterval: timeEnum.FORTNITE,
   },
   settings: {
     type: "object",
     default: {},
     config: userSettingsTrainerFieldsConfig,
+  },
+  upsells: {
+    type: "object",
+    default: {},
   },
   tutorialData: {
     type: "object",

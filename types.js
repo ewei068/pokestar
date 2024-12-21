@@ -67,6 +67,7 @@
  * @typedef {{[K in UserSettingsEnum]: UserSettingsOptions<K>}} UserSettings
  * TODO: fix this type
  * @typedef {{ completedTutorialStages: PartialRecord<string, boolean>, currentTutorialStage: TutorialStageEnum }} UserTutorialData
+ * @typedef {{ timesSeen: number, lastSeen: number }} UserUpsellData
  */
 
 /**
@@ -107,6 +108,9 @@
  * Mythic Pokemon
  * @property {boolean} hasCelebi
  * @property {boolean} usedTimeTravel
+ *
+ * Misc
+ * @property {PartialRecord<UpsellEnum, UserUpsellData>} upsellData
  */
 
 /**

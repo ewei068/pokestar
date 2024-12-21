@@ -14,6 +14,12 @@ const { updateTrainer, getTrainer, refreshTrainer } = require("./trainer");
 const hasTrainerMetTutorialStageRequirements = async (trainer, stage) =>
   await newTutorialConfig[stage]?.checkRequirements?.(trainer);
 
+const hasTrainerMetCurrentTutorialStageRequirements = async (trainer) =>
+  await hasTrainerMetTutorialStageRequirements(
+    trainer,
+    trainer?.tutorialData?.currentTutorialStage
+  );
+
 /**
  * @param {DiscordUser} user
  */
@@ -23,10 +29,7 @@ const hasUserMetCurrentTutorialStageRequirements = async (user) => {
     return false;
   }
 
-  return await hasTrainerMetTutorialStageRequirements(
-    trainer,
-    trainer?.tutorialData?.currentTutorialStage
-  );
+  return await hasTrainerMetCurrentTutorialStageRequirements(trainer);
 };
 
 /**
@@ -97,6 +100,7 @@ const completeTutorialStageForUser = async (user, stage) => {
 
 module.exports = {
   hasTrainerMetTutorialStageRequirements,
+  hasTrainerMetCurrentTutorialStageRequirements,
   hasUserMetCurrentTutorialStageRequirements,
   completeTutorialStageForTrainer,
   completeTutorialStageForUser,
