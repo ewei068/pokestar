@@ -159,7 +159,7 @@ const newTutorialConfigRaw = {
     name: "Learning to Battle: Taking Turns",
     emoji: "➡️",
     description:
-      "Before you battle, you must learn how they work! Battles in Pokestar are unique; all 6 Pokemon fight at a time!\n\n**Taking turns is based off combat readiness.** Pokemon with higher speed gain combat readiness faster.\n\nYou may view the combat readiness of a team by clicking the **NPC** or **Player** tabs.",
+      "Before you battle, you must learn how they work! Battles in Pokestar are unique; all 6 Pokemon fight at a time!\n\n**Taking turns is based off combat readiness.** Pokemon with higher speed gain combat readiness faster. The current active Pokemon is highlighted in asterisks.\n\nYou may view the combat readiness of a team by clicking the **NPC** or **Player** tabs. There is also an indicator of which Pokemon moves next.",
     requirementString: "Complete the previous stage",
     proceedString:
       "Read the description to learn about battles, and complete the previous stage.",
@@ -313,7 +313,6 @@ const newTutorialConfigRaw = {
         },
       },
     },
-    // TODO image:
   },
   levelRewards: {
     name: "Level Rewards",
@@ -374,7 +373,8 @@ const newTutorialConfigRaw = {
         },
       },
     },
-    // TODO: image:
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/train.png",
   },
   winEasyDifficulty: {
     name: "Win Easy Difficulty",
@@ -596,7 +596,6 @@ const newTutorialConfigRaw = {
     rewards: {
       money: 5000,
     },
-    // TODO: image
   },
   evTraining: {
     name: "EV Training: Training",
