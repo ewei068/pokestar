@@ -24,6 +24,7 @@ const { removeInteractionInstance } = require("../deact/interactions");
 const {
   hasUserMetCurrentTutorialStageRequirements,
 } = require("../services/quest");
+const { sendUpsells } = require("../services/misc");
 
 const { prefix } = stageConfig[process.env.STAGE];
 
@@ -273,15 +274,11 @@ const runMessageCommand = async (message, client) => {
         );
       }
     }
-    if (
-      !hasCompletedCurrentTutorialStage &&
-      (await hasUserMetCurrentTutorialStageRequirements(message.author))
-    ) {
-      await attemptToReply(
-        message,
-        `You have completed a tutorial stage! Use \`/tutorial\` to claim your rewards.`
-      );
-    }
+    await sendUpsells({
+      interaction: message,
+      user: message.author,
+      hasCompletedCurrentTutorialStage,
+    });
   } catch (error) {
     logger.error(error);
     await attemptToReply(
@@ -352,15 +349,11 @@ const runSlashCommand = async (interaction, client) => {
         );
       }
     }
-    if (
-      !hasCompletedCurrentTutorialStage &&
-      (await hasUserMetCurrentTutorialStageRequirements(interaction.user))
-    ) {
-      await attemptToReply(
-        interaction,
-        `You have completed a tutorial stage! Use \`/tutorial\` to claim your rewards.`
-      );
-    }
+    await sendUpsells({
+      interaction,
+      user: interaction.user,
+      hasCompletedCurrentTutorialStage,
+    });
   } catch (error) {
     logger.error(error);
     await attemptToReply(

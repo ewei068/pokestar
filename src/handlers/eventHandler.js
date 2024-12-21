@@ -14,6 +14,7 @@ const { attemptToReply } = require("../utils/utils");
 const {
   hasUserMetCurrentTutorialStageRequirements,
 } = require("../services/quest");
+const { sendUpsells } = require("../services/misc");
 
 const eventHandlers = {};
 const eventsDirectory = path.join(__dirname, "../events");
@@ -82,15 +83,11 @@ const handleEvent = async (interaction, client) => {
         );
       }
     }
-    if (
-      !hasCompletedCurrentTutorialStage &&
-      (await hasUserMetCurrentTutorialStageRequirements(interaction.user))
-    ) {
-      await attemptToReply(
-        interaction,
-        `You have completed a tutorial stage! Use \`/tutorial\` to claim your rewards.`
-      );
-    }
+    await sendUpsells({
+      interaction,
+      user: interaction.user,
+      hasCompletedCurrentTutorialStage,
+    });
   } catch (error) {
     logger.error(`Error executing event ${eventName}`);
     logger.error(error);

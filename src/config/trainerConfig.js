@@ -416,7 +416,7 @@ const trainerFields = {
     default: {},
     config: userSettingsTrainerFieldsConfig,
   },
-  upsells: {
+  upsellData: {
     type: "object",
     default: {},
   },
