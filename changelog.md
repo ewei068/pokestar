@@ -13,10 +13,12 @@
   - Profile privacy
   - Default device type
   - Show target indicators
+- Revamp the `/tutorial`
+  - Longer tutorial with more informative stages
+  - Much better rewards!
 
 TODO:
 
-- Tutorial
 - Fix spawning
 - User profile sharing
 - Balancing
