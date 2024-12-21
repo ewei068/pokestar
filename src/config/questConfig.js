@@ -2,11 +2,7 @@
 // maybe refactor at some point but I don't think it's a big deal because this is an isolated functionality
 const { emojis } = require("../enums/emojis");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
-const {
-  checkNumPokemon,
-  listPokemons,
-  evolvePokemon,
-} = require("../services/pokemon");
+const { checkNumPokemon, listPokemons } = require("../services/pokemon");
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { SUPPORT_SERVER_INVITE } = require("./helpConfig");
 const { locations } = require("./locationConfig");
@@ -405,6 +401,20 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif",
+  },
+  userSettings: {
+    name: "Settings",
+    emoji: "⚙️",
+    description:
+      "You can view and change your settings using `/settings`. **Use `/settings` to view and change your settings.**\n\nIf you're getting the hang of battles, you can speed them up by disabling target indicators. You can also set your device type to mobile for mobile optimizations.",
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "Use `/settings` to view and change your settings, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.winEasyDifficulty,
+    rewards: {
+      money: 1000,
+    },
   },
   intermediateLeveling: {
     name: "Intermediate Pokemon Leveling",

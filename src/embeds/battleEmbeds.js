@@ -204,35 +204,36 @@ const buildBattleEmbed = (
         embed.addFields({
           name: "Weather",
           value: `Harsh Sun${negatedString} (${battle.weather.duration})`,
-          inline: true,
+          inline: false,
         });
         break;
       case weatherConditions.RAIN:
         embed.addFields({
           name: "Weather",
           value: `Rain${negatedString} (${battle.weather.duration})`,
-          inline: true,
+          inline: false,
         });
         break;
       case weatherConditions.SANDSTORM:
         embed.addFields({
           name: "Weather",
           value: `Sandstorm${negatedString} (${battle.weather.duration})`,
-          inline: true,
+          inline: false,
         });
         break;
       case weatherConditions.HAIL:
         embed.addFields({
           name: "Weather",
           value: `Hail${negatedString} (${battle.weather.duration})`,
-          inline: true,
+          inline: false,
         });
         break;
       default:
         break;
     }
   }
-  embed.addFields(
+
+  const fields = [
     {
       name: `${team1.emoji} ${team1.name} | ${team1UserString}`,
       value: buildPartyString(
@@ -247,7 +248,7 @@ const buildBattleEmbed = (
           isMobile,
         }
       ),
-      inline: false,
+      inline: !isMobile,
     },
     {
       name: `${team2.emoji} ${team2.name} | ${team2UserString}`,
@@ -262,9 +263,9 @@ const buildBattleEmbed = (
           isMobile,
         }
       ),
-      inline: false,
-    }
-  );
+      inline: !isMobile,
+    },
+  ];
 
   const upNextPokemon = battle.getNextNPokemon(3);
   if (upNextPokemon.length > 0) {
@@ -277,22 +278,30 @@ const buildBattleEmbed = (
         return `${team?.emoji}`;
       })
       .join("\u2001");
-    embed.addFields({
+    // if mobile, append. else, add to index 1
+    const upNextField = {
       name: "Up Next (Estimate)",
       value: `${upNextStringTop}\n${upNextBottomString}`,
-      inline: false,
-    });
+      inline: !isMobile,
+    };
+    if (isMobile) {
+      fields.push(upNextField);
+    } else {
+      fields.splice(1, 0, upNextField);
+    }
   }
 
   const move = selectedMoveId ? getMove(selectedMoveId) : null;
   if (move) {
     const { moveHeader, moveString } = buildMoveString(move);
-    embed.addFields({
+    fields.push({
       name: moveHeader,
       value: moveString,
-      inline: false,
+      inline: !isMobile,
     });
   }
+
+  embed.addFields(isMobile ? fields : setTwoInline(fields));
 
   return embed;
 };
