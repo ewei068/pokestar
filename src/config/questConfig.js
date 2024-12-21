@@ -110,7 +110,8 @@ const newTutorialConfigRaw = {
     rewards: {
       money: 1000,
     },
-    // TODO: image:
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/backpack.png",
   },
   catchSixPokemon: {
     name: "Catch More Pokemon",
@@ -168,7 +169,8 @@ const newTutorialConfigRaw = {
     rewards: {
       money: 1000,
     },
-    // TODO image:
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/combat-readiness.png",
   },
   learnBattleMoves: {
     name: "Learning to Battle: Using Moves",
@@ -183,7 +185,8 @@ const newTutorialConfigRaw = {
     rewards: {
       money: 1000,
     },
-    // TODO image:
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/battle-move-select.gif",
   },
   learnBattleTargets: {
     name: "Learning to Battle: Selecting Targets",
@@ -200,7 +203,8 @@ const newTutorialConfigRaw = {
     rewards: {
       money: 1000,
     },
-    // TODO image:
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/battle-target-select.gif",
   },
   winNpcBattle: {
     name: "Battle an NPC!",
@@ -236,7 +240,8 @@ const newTutorialConfigRaw = {
     rewards: {
       money: 1000,
     },
-    // TODO image:
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/list.png",
   },
   viewPokemon: {
     name: "Viewing Pokemon: Info",
@@ -346,7 +351,8 @@ const newTutorialConfigRaw = {
         },
       },
     },
-    // TODO: image:
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/home.png",
   },
   beginnerLeveling: {
     name: "Beginner Pokemon Leveling",
@@ -455,7 +461,8 @@ const newTutorialConfigRaw = {
     rewards: {
       money: 1000,
     },
-    // TODO: image
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/evolve.png",
   },
   winMediumDifficulty: {
     name: "Win Medium Difficulty",
@@ -622,7 +629,8 @@ const newTutorialConfigRaw = {
         },
       },
     },
-    // TODO: image
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/ev-train.png",
   },
   dungeons: {
     name: "Dungeons: Beat New Island",
@@ -641,7 +649,8 @@ const newTutorialConfigRaw = {
         },
       },
     },
-    // TODO: image
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/dungeon.gif",
   },
   catchMew: {
     name: "Catching Mythical Mew",
@@ -668,7 +677,8 @@ const newTutorialConfigRaw = {
         },
       },
     },
-    // TODO: image
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/mew.png",
   },
   // terminal stage to prevent overflow
   completed: {
