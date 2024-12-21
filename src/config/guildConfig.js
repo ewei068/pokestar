@@ -7,6 +7,7 @@ const guildFields = {
   },
   lastCommand: {
     type: "number",
+    default: 0,
   },
   spawnSettings: {
     type: "object",

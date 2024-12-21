@@ -41,11 +41,12 @@ const getGuildData = async (guildId) => {
   if (modified) {
     guildData.lastCorrected = newCorrectedTime.getTime();
     try {
-      const res = await updateDocument(
-        collectionNames.GUILDS,
-        { guildId: guildData.guildId },
-        { $set: guildData }
-      );
+      const query = new QueryBuilder(collectionNames.GUILDS)
+        .setFilter({ guildId })
+        .setUpsert({
+          $set: guildData,
+        });
+      const res = await query.upsertOne();
       if (res.modifiedCount === 0) {
         logger.error(`Failed to update guild ${guildData.guildId}.`);
         return { data: null, err: "Error updating guild." };

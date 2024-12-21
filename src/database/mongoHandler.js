@@ -194,6 +194,10 @@ class QueryBuilder {
     return await query;
   }
 
+  /**
+   *
+   * @returns {Promise<import("mongodb").UpdateResult>}
+   */
   async upsertOne() {
     let query = await getCollection(this.collectionName);
     query = query.updateOne(this.filter, this.upsert, { upsert: true });

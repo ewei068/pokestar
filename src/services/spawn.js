@@ -26,11 +26,10 @@ const {
 const { setState } = require("./state");
 const { getTrainer } = require("./trainer");
 const { giveNewPokemons } = require("./gacha");
-const { QueryBuilder } = require("../database/mongoHandler");
-const { collectionNames } = require("../config/databaseConfig");
+const { getGuildData } = require("./guild");
 
 const SPAWN_TIME =
-  process.env.STAGE === stageNames.ALPHA ? 15 * 60 * 1000 : 120 * 60 * 1000;
+  process.env.STAGE === stageNames.ALPHA ? 1 * 60 * 1000 : 120 * 60 * 1000;
 // const SPAWN_TIME_VARIANCE =
 //  process.env.STAGE === stageNames.ALPHA ? 3 * 60 * 1000 : 30 * 60 * 1000;
 // blacklist emoji servers
@@ -304,31 +303,6 @@ const onButtonPress = async (interaction, data, state) => {
   return { err: null };
 };
 
-const getGuildData = async (guildId) => {
-  let guildData = {
-    guildId,
-    spawnDisabled: false,
-    spawnDisabledChannels: [],
-  };
-  try {
-    const query = new QueryBuilder(collectionNames.GUILDS).setFilter({
-      guildId,
-    });
-
-    const guildRes = await query.findOne();
-    if (guildRes) {
-      guildData = guildRes;
-    }
-  } catch (err) {
-    logger.warn(err);
-    // pass
-  }
-  if (!guildData.spawnDisabledChannels) {
-    guildData.spawnDisabledChannels = [];
-  }
-  return guildData;
-};
-
 /* const guildIdToSpawner = {};
 
  class GuildSpawner {
@@ -489,7 +463,10 @@ const addGuild = (client, guild, silence = false) => {
 const spawn = async (guild) => {
   // check if spawn was disabled for guild
   // get guild
-  const guildData = await getGuildData(guild.id);
+  const { data: guildData, err: guildDataErr } = await getGuildData(guild.id);
+  if (guildDataErr) {
+    return { err: guildDataErr };
+  }
 
   if (guildData.spawnDisabled) {
     return {};

@@ -403,9 +403,8 @@ const setDefaultFields = (
       root[field] = fieldConfig[field].default;
       modified = true;
     }
-
-    return modified;
   }
+  return modified;
 };
 
 module.exports = {
