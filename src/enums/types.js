@@ -4,6 +4,7 @@
  * @typedef {import("./battleEnums").AbilityIdEnum} AbilityIdEnum
  * @typedef {import("./battleEnums").BattleEventEnum} BattleEventEnum
  * @typedef {import("./pokemonEnums").PokemonIdEnum} PokemonIdEnum
+ * @typedef {import("./miscEnums").UpsellEnum} UpsellEnum
  */
 
 /**

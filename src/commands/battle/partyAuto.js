@@ -10,6 +10,7 @@ const { getTrainer } = require("../../services/trainer");
 const { updateParty, getPartyPokemons } = require("../../services/party");
 const { listPokemons } = require("../../services/pokemon");
 const { buildPartyEmbed } = require("../../embeds/battleEmbeds");
+const { getUserSelectedDevice } = require("../../utils/trainerUtils");
 
 /**
  * creates an automatic party for the given user, uses dependencies to get other relevant data.
@@ -82,7 +83,9 @@ const partyAuto = async (user, option) => {
   }
 
   // build pokemon embed
-  const embed = buildPartyEmbed(trainer.data, partyPokemons.data);
+  const embed = buildPartyEmbed(trainer.data, partyPokemons.data, {
+    isMobile: getUserSelectedDevice(user, trainer.data.settings) === "mobile",
+  });
 
   const send = {
     content: `Your party has been autofilled with your strongest Pokemon!`,

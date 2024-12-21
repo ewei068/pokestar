@@ -396,6 +396,7 @@ const buildShopSend = async ({
     const buttonData = {
       stateId,
       itemId: option,
+      quantity: 1,
     };
     // create buy button
     const buttonConfigs = [
@@ -405,6 +406,21 @@ const buildShopSend = async ({
         data: buttonData,
       },
     ];
+    // get max quantity trainer can buy, up to 10
+    let maxQuantity = 0;
+    for (let i = 1; i <= 10; i += 1) {
+      if (canBuyItem(trainer, option, i).err !== null) {
+        break;
+      }
+      maxQuantity = i;
+    }
+    if (maxQuantity > 2) {
+      buttonConfigs.push({
+        label: `Buy ${maxQuantity}`,
+        disabled: false,
+        data: { ...buttonData, quantity: maxQuantity },
+      });
+    }
     const buyButton = buildButtonActionRow(buttonConfigs, eventNames.SHOP_BUY);
     send.components.push(buyButton);
     // get back button

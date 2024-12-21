@@ -121,7 +121,7 @@ class DeactInstance {
         err: "Interaction not supported",
       };
     }
-    await callback(interaction, interactionData);
+    return await callback(interaction, interactionData);
   }
 }
 

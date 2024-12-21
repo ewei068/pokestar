@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * commandHandler.js handles all commands and command types the user can use.
  */
@@ -19,10 +17,14 @@ const {
 const { stageConfig } = require("../config/stageConfig");
 const { addExpAndMoney } = require("../services/trainer");
 const { logger } = require("../log");
-const { buildCommandUsageString } = require("../utils/utils");
+const { buildCommandUsageString, attemptToReply } = require("../utils/utils");
 const { QueryBuilder } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { removeInteractionInstance } = require("../deact/interactions");
+const {
+  hasUserMetCurrentTutorialStageRequirements,
+} = require("../services/quest");
+const { sendUpsells } = require("../services/misc");
 
 const { prefix } = stageConfig[process.env.STAGE];
 
@@ -250,6 +252,9 @@ const runMessageCommand = async (message, client) => {
 
   // execute command
   try {
+    // TODO: global trainer context per-interaction? seems like it would be a good idea TBH. Only issue is keeping it up-to-date
+    const hasCompletedCurrentTutorialStage =
+      await hasUserMetCurrentTutorialStageRequirements(message.author);
     // eslint-disable-next-line no-param-reassign
     message.content = message.content.split(" ").slice(1).join(" ");
     const res = await messageCommands[command](message, client);
@@ -263,14 +268,23 @@ const runMessageCommand = async (message, client) => {
     if (exp > 0 || money > 0) {
       const { level, err } = await addExpAndMoney(message.author, exp, money);
       if (level && !err) {
-        await message.reply(
+        await attemptToReply(
+          message,
           `You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`
         );
       }
     }
+    await sendUpsells({
+      interaction: message,
+      user: message.author,
+      hasCompletedCurrentTutorialStage,
+    });
   } catch (error) {
     logger.error(error);
-    await message.reply("There was an error trying to execute that command!");
+    await attemptToReply(
+      message,
+      "There was an error trying to execute that command!"
+    );
   }
 };
 
@@ -278,7 +292,6 @@ const runMessageCommand = async (message, client) => {
  *
  * @param {ChatInputCommandInteraction<import("discord.js").CacheType>} interaction
  * @param {Client<boolean>} client
- * @returns
  */
 const runSlashCommand = async (interaction, client) => {
   try {
@@ -314,6 +327,8 @@ const runSlashCommand = async (interaction, client) => {
 
   // execute command
   try {
+    const hasCompletedCurrentTutorialStage =
+      await hasUserMetCurrentTutorialStageRequirements(interaction.user);
     const commandData = commandLookup[`${command}`];
 
     const res = await slashCommands[command](interaction, client);
@@ -328,28 +343,23 @@ const runSlashCommand = async (interaction, client) => {
     if (exp > 0 || money > 0) {
       const { level, err } = await addExpAndMoney(interaction.user, exp, money);
       if (level && !err) {
-        try {
-          await interaction.reply(
-            `You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`
-          );
-        } catch (error) {
-          await interaction.followUp(
-            `You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`
-          );
-        }
+        await attemptToReply(
+          interaction,
+          `You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`
+        );
       }
     }
+    await sendUpsells({
+      interaction,
+      user: interaction.user,
+      hasCompletedCurrentTutorialStage,
+    });
   } catch (error) {
     logger.error(error);
-    try {
-      await interaction.reply(
-        "There was an error trying to execute that command!"
-      );
-    } catch {
-      await interaction.followUp(
-        "There was an error trying to execute that command!"
-      );
-    }
+    await attemptToReply(
+      interaction,
+      "There was an error trying to execute that command!"
+    );
   }
 };
 

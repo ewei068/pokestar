@@ -12,6 +12,7 @@ const { idFrom } = require("../utils/utils");
 const { pokemonConfig } = require("../config/pokemonConfig");
 const { getTrainer } = require("./trainer");
 const { buildPartyEmbed } = require("../embeds/battleEmbeds");
+const { getUserSelectedDevice } = require("../utils/trainerUtils");
 
 /**
  *
@@ -234,7 +235,9 @@ const buildPartyAddSend = async ({
   }
 
   // build pokemon embed
-  const embed = buildPartyEmbed(trainer.data, partyPokemons.data);
+  const embed = buildPartyEmbed(trainer.data, partyPokemons.data, {
+    isMobile: getUserSelectedDevice(user, trainer.data.settings) === "mobile",
+  });
 
   const send = {
     content: `${pokemon.data.name} was added to your party!`,

@@ -102,7 +102,13 @@ const updatePokemon = async (pokemon) => {
 
 /**
  * @param {Trainer} trainer
- * @param {any} listOptions
+ * @param {{
+ *  page?: number,
+ *  pageSize?: number,
+ *  filter?: any,
+ *  sort?: any,
+ *  allowNone?: boolean
+ * }} listOptions
  * @returns {Promise<{data: WithId<Pokemon>[]?, lastPage?: boolean, err: string?}>}
  */
 const listPokemons = async (trainer, listOptions) => {
@@ -1974,9 +1980,9 @@ const buildNatureSend = async ({ stateId = null, user = null } = {}) => {
 /**
  * @param {WithId<Trainer>} trainer
  * @param {number} quantity
- * @returns {Promise<{err: string?}>}
+ * @returns {Promise<{numPokemon?: number, err?: string}>}
  */
-const checkNumPokemon = async (trainer, quantity) => {
+const checkNumPokemon = async (trainer, quantity = 0) => {
   let pokemonLimit = MAX_POKEMON;
   // if trainer has computer lab locations, increase pokemon limit
   const labLevel = trainer.locations[locations.COMPUTER_LAB];
@@ -1995,15 +2001,15 @@ const checkNumPokemon = async (trainer, quantity) => {
       process.env.STAGE !== stageNames.ALPHA
     ) {
       return {
+        numPokemon: numPokemon + quantity,
         err: "Max pokemon reached! Use `/release` or `/list` to release some pokemon, or get more storage by purchasing the Computer Lab location in the `/pokemart`!",
       };
     }
+    return { numPokemon, err: null };
   } catch (error) {
     logger.error(error);
     return { err: "Error checking max Pokemon." };
   }
-
-  return { err: null };
 };
 
 module.exports = {

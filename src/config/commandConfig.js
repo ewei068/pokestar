@@ -2,24 +2,35 @@ const { stageNames, stageConfig } = require("./stageConfig");
 
 const { prefix } = stageConfig[process.env.STAGE];
 
-/** @typedef {Keys<commandCategoryConfig>} CommandCategoryEnum */
+/** @typedef {Keys<commandCategoryConfigRaw>} CommandCategoryEnum */
 
-// TODO: re-order commands and categories
-// TODO: add long descriptions
 /**
- * @satisfies {Record<string, {
+ * @typedef {{
  *  name: string,
  *  description: string,
  *  folder: string,
  *  commands: CommandEnum[]
- * }>}
+ * }} CommandCategoryData
+ */
+
+// TODO: re-order commands and categories
+// TODO: add long descriptions
+/**
+ * @satisfies {Record<string, CommandCategoryData>}
  */
 const commandCategoryConfigRaw = {
   trainer: {
     name: "Trainer",
     description: "Commands involving your trainer",
     folder: "trainer",
-    commands: ["trainerinfo", "daily", "backpack", "levelrewards", "locations"],
+    commands: [
+      "trainerinfo",
+      "daily",
+      "backpack",
+      "settings",
+      "levelrewards",
+      "locations",
+    ],
   },
   pokemon: {
     name: "Pokemon",
@@ -97,6 +108,7 @@ const commandCategoryConfigRaw = {
     commands: ["ping", "echo", "give", "test"],
   },
 };
+/** @type {Record<CommandCategoryEnum, CommandCategoryData>} */
 const commandCategoryConfig = Object.freeze(commandCategoryConfigRaw);
 
 /** @typedef {Keys<commandConfigRaw>} CommandEnum */
@@ -211,6 +223,17 @@ const commandConfigRaw = {
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 50,
+  },
+  settings: {
+    name: "User Settings",
+    aliases: ["settings", "options", "config", "usersettings"],
+    description: "Modify your user settings and options",
+    longDescription:
+      "Modify your user settings and options such as privacy and default device.",
+    execute: "userSettings.js",
+    args: {},
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    exp: 0,
   },
   vote: {
     name: "Vote",

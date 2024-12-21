@@ -1,12 +1,37 @@
-const { quickstartString } = require("../../config/helpConfig");
-const { buildTutorialSend } = require("../../embeds/helpEmbeds");
+const { createRoot } = require("../../deact/deact");
+const TutorialList = require("../../elements/quest/TutorialList");
+const { getUserFromInteraction } = require("../../utils/utils");
 
-// depreciated for now
-// eslint-disable-next-line no-unused-vars
-const TUTORIAL_URL =
-  "https://github.com/ewei068/pokestar/blob/main/README.md#tutorial";
+const tutorial = async (interaction, page) =>
+  await createRoot(
+    TutorialList,
+    {
+      user: getUserFromInteraction(interaction),
+      initialStagePage: page,
+    },
+    interaction,
+    {
+      ttl: 150,
+    }
+  );
 
-const tutorial = async (page) => {
+const tutorialMessageCommand = async (message) => {
+  const page = message.content.split(" ")[1]
+    ? parseInt(message.content.split(" ")[1], 10)
+    : undefined;
+
+  return await tutorial(message, page);
+};
+
+const tutorialSlashCommand = async (interaction) => {
+  const page = interaction.options.getInteger("page")
+    ? interaction.options.getInteger("page")
+    : undefined;
+
+  return await tutorial(interaction, page);
+};
+
+/* const tutorial = async (page) => {
   const send1 = {
     content: quickstartString,
     ephemeral: true,
@@ -42,7 +67,7 @@ const tutorialSlashCommand = async (interaction) => {
   }
   await interaction.reply(send1);
   await interaction.followUp(send2);
-};
+}; */
 
 module.exports = {
   message: tutorialMessageCommand,
