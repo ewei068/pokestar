@@ -2,6 +2,7 @@
 
 /**
  * @typedef {import("discord.js").User} DiscordUser
+ * @typedef {import("discord.js").Guild} DiscordGuild
  */
 
 /**
