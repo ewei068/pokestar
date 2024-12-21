@@ -3,6 +3,7 @@ const {
   createElement,
   useCallbackBinding,
   useMemo,
+  useCallback,
 } = require("../deact/deact");
 const ScrollButtons = require("../elements/foundation/ScrollButtons");
 
@@ -16,8 +17,11 @@ const ScrollButtons = require("../elements/foundation/ScrollButtons");
  * @param {CallbackBindingOptions=} param0.callbackOptions
  * @param {DeactElement} ref
  * @returns {{
+ *  page: number,
  *  item: T,
  *  scrollButtonsElement: CreateElementResult,
+ *  goToPrev: () => void,
+ *  goToNext: () => void,
  * }}
  */
 module.exports = (
@@ -37,16 +41,31 @@ module.exports = (
   let index = useMemo(() => allItems.indexOf(item), [item, allItems], ref);
   index = Math.max(0, index);
 
-  const prevActionBindng = useCallbackBinding(
+  const goToPrev = useCallback(
     () => {
       setItem(allItems[index - 1]);
+    },
+    [setItem, index, allItems],
+    ref
+  );
+  const goToNext = useCallback(
+    () => {
+      setItem(allItems[index + 1]);
+    },
+    [setItem, index, allItems],
+    ref
+  );
+
+  const prevActionBindng = useCallbackBinding(
+    () => {
+      goToPrev();
     },
     ref,
     callbackOptions
   );
   const nextActionBindng = useCallbackBinding(
     () => {
-      setItem(allItems[index + 1]);
+      goToNext();
     },
     ref,
     callbackOptions
@@ -60,7 +79,10 @@ module.exports = (
   });
 
   return {
+    page: index + 1,
     item,
     scrollButtonsElement,
+    goToPrev,
+    goToNext,
   };
 };

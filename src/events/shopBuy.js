@@ -31,7 +31,7 @@ const shopBuy = async (interaction, data) => {
   }
 
   // buy item
-  const itemBuyResult = await buyItem(trainer.data, itemId, 1);
+  const itemBuyResult = await buyItem(trainer.data, itemId, data.quantity);
   if (itemBuyResult.err) {
     return { embed: null, err: itemBuyResult.err };
   }
