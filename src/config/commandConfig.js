@@ -1060,7 +1060,7 @@ const commandConfigRaw = {
     description: "Manage Pokemon spawns in your server",
     longDescription:
       "Manage Pokemon spawns in your server. You can add or remove channels to spawn Pokemon in.",
-    execute: "toggleSpawn.js",
+    execute: "spawnManage.js",
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     parent: "spawn",
@@ -1070,7 +1070,7 @@ const commandConfigRaw = {
     aliases: ["spawnaddchannel", "sac"],
     description: "Add a channel to the spawn manager",
     longDescription: "Add a channel to the spawn manager.",
-    execute: "toggleSpawn.js",
+    execute: "spawnManage.js",
     args: {
       channel: {
         type: "channel",
@@ -1088,7 +1088,7 @@ const commandConfigRaw = {
     description: "Remove a channel from the spawn manager",
     longDescription:
       "Remove a channel from the spawn manager. The channel must already be in the spawn manager.",
-    execute: "toggleSpawn.js",
+    execute: "spawnManage.js",
     args: {
       channel: {
         type: "channel",

@@ -15,7 +15,7 @@ const guildFields = {
     config: {
       mode: {
         type: "string",
-        default: "allowlist",
+        default: "denylist",
       },
       channelIds: {
         type: "array",

@@ -5,6 +5,8 @@ const {
   ModalSubmitInteraction,
   // eslint-disable-next-line no-unused-vars
   StringSelectMenuInteraction,
+  /* eslint-disable-next-line no-unused-vars */
+  Message,
 } = require("discord.js");
 const { DeactInstance } = require("./DeactInstance");
 const { getInteractionInstance } = require("./interactions");
@@ -12,6 +14,7 @@ const { getInteractionInstance } = require("./interactions");
 const { DeactElement } = require("./DeactElement");
 const { getState } = require("../services/state");
 const { userTypeEnum } = require("./enums");
+const { getUserFromInteraction } = require("../utils/utils");
 
 /**
  * @template T
@@ -21,6 +24,7 @@ const { userTypeEnum } = require("./enums");
  * @param {object} param3
  * @param {boolean=} param3.defer
  * @param {any=} param3.userIdForFilter TODO: better name?
+ * @param {((interaction: import("discord.js").MessageInteraction | Message, user: DiscordUser) => Promise<{err?: string}>)=} param3.customFilter
  * @param {number=} param3.ttl
  * @returns {Promise<any>}
  */
@@ -28,12 +32,26 @@ const createRoot = async (
   render,
   props,
   interaction,
-  { defer = true, ttl, userIdForFilter = userTypeEnum.DEFAULT }
+  {
+    defer = true,
+    ttl,
+    userIdForFilter = userTypeEnum.DEFAULT,
+    customFilter = async () => ({}),
+  }
 ) => {
   const interactionInstance = getInteractionInstance(interaction);
   if (!interactionInstance) {
     return {
       err: "Error getting interaction instance",
+    };
+  }
+  const { err: customFilterErr } = await customFilter(
+    interaction,
+    getUserFromInteraction(interaction)
+  );
+  if (customFilterErr) {
+    return {
+      err: customFilterErr,
     };
   }
   const instance = new DeactInstance(
@@ -43,6 +61,7 @@ const createRoot = async (
     {
       ttl,
       userIdForFilter,
+      customFilter,
     }
   );
   if (defer) {
@@ -123,6 +142,14 @@ async function triggerBoundCallback(interaction, interactionData) {
   }
   if (!isValidUser) {
     return { err: "You may not currently take this action." };
+  }
+
+  const { err: customFilterErr } = await rootInstance.customFilter(
+    interaction,
+    interaction.user
+  );
+  if (customFilterErr) {
+    return { err: customFilterErr };
   }
 
   if (defer) {

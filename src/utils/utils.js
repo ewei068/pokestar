@@ -9,6 +9,7 @@
  */
 const { Message } = require("discord.js");
 const { ObjectId } = require("mongodb");
+const { ansiTokens } = require("../enums/miscEnums");
 
 /**
  * @param {Record<any, any>} obj
@@ -407,6 +408,39 @@ const setDefaultFields = (
   return modified;
 };
 
+const ansiTokenMap = Object.freeze({
+  [ansiTokens.RESET]: "\u001b[0m",
+  [ansiTokens.BOLD]: "\u001b[1m",
+  [ansiTokens.UNDERLINE]: "\u001b[4m",
+  [ansiTokens.INVERSE]: "\u001b[7m",
+  [ansiTokens.TEXT_GRAY]: "\u001b[30m",
+  [ansiTokens.TEXT_RED]: "\u001b[31m",
+  [ansiTokens.TEXT_GREEN]: "\u001b[32m",
+  [ansiTokens.TEXT_YELLOW]: "\u001b[33m",
+  [ansiTokens.TEXT_BLUE]: "\u001b[34m",
+  [ansiTokens.TEXT_MAGENTA]: "\u001b[35m",
+  [ansiTokens.TEXT_CYAN]: "\u001b[36m",
+  [ansiTokens.TEXT_WHITE]: "\u001b[37m",
+  [ansiTokens.BACKGROUND_DARK_BLUE]: "\u001b[40m",
+  [ansiTokens.BACKGROUND_ORANGE]: "\u001b[41m",
+  [ansiTokens.BACKGROUND_MARBLE_BLUE]: "\u001b[42m",
+});
+
+/**
+ * @param {string} str
+ * @returns {string}
+ */
+const buildAnsiString = (str) => {
+  let ansiString = "```ansi\n";
+  // find and replace for all tokens
+  for (const token in ansiTokenMap) {
+    str = str.replaceAll(token, ansiTokenMap[token]);
+  }
+  ansiString += str;
+  ansiString += "\n```";
+  return ansiString;
+};
+
 module.exports = {
   getOrSetDefault,
   getPBar,
@@ -433,4 +467,5 @@ module.exports = {
   zip,
   attemptToReply,
   setDefaultFields,
+  buildAnsiString,
 };

@@ -7,9 +7,14 @@ class DeactInstance {
    * @param {Function} render
    * @param {any} props
    * @param {any} initialUserId
-   * @param {{ ttl?: number, userIdForFilter: any }} param2
+   * @param {{ ttl?: number, userIdForFilter: any, customFilter: any }} param2
    */
-  constructor(render, props, initialUserId, { ttl = 300, userIdForFilter }) {
+  constructor(
+    render,
+    props,
+    initialUserId,
+    { ttl = 300, userIdForFilter, customFilter }
+  ) {
     this.stateId = setState(this.getStateToSet(), ttl);
     const initialElement = new DeactElement(this, render);
     this.rootProps = props;
@@ -21,6 +26,7 @@ class DeactInstance {
     this.locked = false;
     this.messageRef = null;
     this.userIdForFilter = userIdForFilter;
+    this.customFilter = customFilter;
     this.initialUserId = initialUserId;
     // for backwards compat with old elements
     this.legacyState = {};
