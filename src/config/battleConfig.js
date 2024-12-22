@@ -290,6 +290,7 @@ const targetPatterns = Object.freeze({
   RANDOM: "Random",
   SQUARE: "Square",
   CROSS: "Cross",
+  X: "X-shape",
 });
 
 /** @typedef {Enum<effectTypes>} EffectTypeEnum */
@@ -3435,7 +3436,7 @@ const moveConfig = Object.freeze({
     cooldown: 5,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.CROSS,
+    targetPattern: targetPatterns.X,
     tier: moveTiers.ULTIMATE,
     damageType: damageTypes.SPECIAL,
     description:
@@ -4232,7 +4233,7 @@ const moveConfig = Object.freeze({
     cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.CROSS,
+    targetPattern: targetPatterns.X,
     tier: moveTiers.POWER,
     damageType: damageTypes.PHYSICAL,
     description:
@@ -5186,7 +5187,7 @@ const moveConfig = Object.freeze({
     cooldown: 5,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
-    targetPattern: targetPatterns.CROSS,
+    targetPattern: targetPatterns.X,
     tier: moveTiers.ULTIMATE,
     damageType: damageTypes.PHYSICAL,
     description:
@@ -5270,7 +5271,7 @@ const moveConfig = Object.freeze({
     cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.CROSS,
+    targetPattern: targetPatterns.X,
     tier: moveTiers.ULTIMATE,
     damageType: damageTypes.PHYSICAL,
     description:
