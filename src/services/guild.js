@@ -9,7 +9,7 @@ const { setDefaultFields } = require("../utils/utils");
 
 /**
  * @param {string} guildId
- * @returns {Promise<{data?: WithId<Guild>, err?: string}>}
+ * @returns {Promise<{data?: WithId<GuildData>, err?: string}>}
  */
 const getGuildData = async (guildId) => {
   let guildData = {
@@ -75,8 +75,8 @@ const getGuildData = async (guildId) => {
 };
 
 /**
- * @param {Guild} guild
- * @returns {Promise<{data?: WithId<Guild>, err?: string}>}
+ * @param {GuildData} guild
+ * @returns {Promise<{data?: WithId<GuildData>, err?: string}>}
  */
 const updateGuildData = async (guild) => {
   const res = await findAndUpdateDocument(
@@ -100,7 +100,7 @@ const updateGuildData = async (guild) => {
 /**
  * @param {DiscordGuild} guild
  * @param {string} channelId
- * @returns {Promise<{data?: WithId<Guild>, err?: string}>}
+ * @returns {Promise<{data?: WithId<GuildData>, err?: string}>}
  */
 const addSpawnChannel = async (guild, channelId) => {
   // if channel not in guild, return
@@ -134,7 +134,7 @@ const addSpawnChannel = async (guild, channelId) => {
 /**
  * @param {DiscordGuild} guild
  * @param {string} channelId
- * @returns {Promise<{data?: WithId<Guild>, err?: string}>}
+ * @returns {Promise<{data?: WithId<GuildData>, err?: string}>}
  */
 const removeSpawnChannel = async (guild, channelId) => {
   // get guild data
@@ -160,7 +160,7 @@ const removeSpawnChannel = async (guild, channelId) => {
 
 /**
  * @param {DiscordGuild} guild
- * @returns {Promise<{data?: WithId<Guild>, err?: string}>}
+ * @returns {Promise<{data?: WithId<GuildData>, err?: string}>}
  */
 const switchChannelSpawnMode = async (guild) => {
   // get guild data

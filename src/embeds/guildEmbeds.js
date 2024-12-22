@@ -3,7 +3,7 @@ const { buildAnsiString } = require("../utils/utils");
 const { ansiTokens } = require("../enums/miscEnums");
 
 /**
- * @param {Guild} guildData
+ * @param {GuildData} guildData
  * @returns {EmbedBuilder}
  */
 const buildSpawnManagerEmbed = (guildData) => {

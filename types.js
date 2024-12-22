@@ -119,7 +119,7 @@
  */
 
 /**
- * @typedef {object} Guild
+ * @typedef {object} GuildData
  * @property {string} guildId
  * @property {number} lastCommand
  * @property {SpawnSettings} spawnSettings

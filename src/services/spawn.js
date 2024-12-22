@@ -29,7 +29,7 @@ const { giveNewPokemons } = require("./gacha");
 const { getGuildData } = require("./guild");
 
 const SPAWN_TIME =
-  process.env.STAGE === stageNames.ALPHA ? 15 * 60 * 1000 : 120 * 60 * 1000;
+  process.env.STAGE === stageNames.ALPHA ? 30 * 60 * 1000 : 120 * 60 * 1000;
 // const SPAWN_TIME_VARIANCE =
 //  process.env.STAGE === stageNames.ALPHA ? 3 * 60 * 1000 : 30 * 60 * 1000;
 // blacklist emoji servers
@@ -55,18 +55,31 @@ const WHITELISTED_SERVERS = [
 ];
 const QUESTION_TYPES = ["typeAdvantage", "pokemonIcon", "pokemonType"];
 
-const PERMISSIONS_NEEDED = ["ViewChannel", "SendMessages", "EmbedLinks"];
+const PERMISSIONS_NEEDED = /** @type {const} */ ([
+  "ViewChannel",
+  "SendMessages",
+  "EmbedLinks",
+]);
 
+/**
+ * @param {DiscordGuild} guild
+ * @param {import("discord.js").GuildBasedChannel} channel
+ * @param {GuildData} guildData
+ * @returns {boolean}
+ */
 const canSendInChannel = (guild, channel, guildData) => {
-  const blacklistedChannels = guildData.spawnDisabledChannels;
-  const channelInBlacklist =
-    blacklistedChannels && blacklistedChannels.includes(channel.id);
-  const channelParentInBlacklist =
-    blacklistedChannels &&
-    channel.parentId &&
-    blacklistedChannels.includes(channel.parentId);
-  if (channelInBlacklist || channelParentInBlacklist) {
-    return false;
+  const { mode, channelIds } = guildData.spawnSettings;
+  const channelInList = channelIds && channelIds.includes(channel.id);
+  const channelParentInList =
+    channelIds && channel.parentId && channelIds.includes(channel.parentId);
+  if (mode === "allowlist") {
+    if (!channelInList && !channelParentInList) {
+      return false;
+    }
+  } else if (mode === "denylist") {
+    if (channelInList || channelParentInList) {
+      return false;
+    }
   }
   const permissionsIn = guild.members.me.permissionsIn(channel);
   return PERMISSIONS_NEEDED.every((permission) =>
@@ -303,160 +316,6 @@ const onButtonPress = async (interaction, data, state) => {
   return { err: null };
 };
 
-/* const guildIdToSpawner = {};
-
- class GuildSpawner {
-
-  constructor(client, guild) {
-    this.client = client;
-    this.guild = guild;
-    this.guildId = guild.id;
-    this.chachedChannels = [];
-  }
-
-  cacheGuild() {
-    this.guild = this.client.guilds.cache.get(this.guild.id);
-  }
-
-  cacheChannels() {
-    // for every channel
-    this.guild.channels.cache.forEach((channel) => {
-      // if the channel is a text channel
-      if (channel.type !== 0) return;
-
-      // if the bot can't send messages in the channel
-      if (!canSendInChannel(this.guild, channel, this.guildData)) {
-        return;
-      }
-
-      this.chachedChannels.push(channel);
-    });
-  }
-
-  refreshChannels() {
-    this.chachedChannels = [];
-    this.cacheGuild();
-    this.cacheChannels();
-    if (this.chachedChannels.length === 0) {
-      return { err: `${this.guild.name} No channels to spawn in.` };
-    }
-    return {};
-  }
-
-  async spawn(guild) {
-    // check if spawn was disabled for guild
-    // get guild
-    this.guildData = await getGuildData(guild.id);
-
-    if (this.guildData.spawnDisabled) {
-      return {};
-    }
-
-    // TEMP: refresh channels every time
-    // eslint-disable-next-line no-constant-condition
-    if (true) {
-      // this.chachedChannels.length == 0) {
-      const res = this.refreshChannels();
-      if (res.err) {
-        return res;
-      }
-    }
-    guild = this.guild;
-
-    // spawn probability based on number of members
-    let spawnProbability = 0;
-    const memberCount = guild.members.cache.size;
-    if (memberCount < 5) {
-      spawnProbability = 0.33;
-    } else if (memberCount < 20) {
-      spawnProbability = 0.7;
-    } else if (memberCount < 200) {
-      spawnProbability = 1;
-    } else {
-      spawnProbability = 0.8;
-    }
-    let goodSpawn = true;
-    if (
-      Math.random() > spawnProbability &&
-      !WHITELISTED_SERVERS.includes(guild.id)
-    ) {
-      goodSpawn = false;
-    }
-
-    // get random cached channel
-    let channel =
-      this.chachedChannels[
-        Math.floor(Math.random() * this.chachedChannels.length)
-      ];
-    // check if able to send in channel
-    if (!canSendInChannel(guild, channel, this.guildData)) {
-      // re-cache channels
-      const res = this.refreshChannels();
-      if (res.err) {
-        return res;
-      }
-    }
-
-    // get random cached channel
-    channel =
-      this.chachedChannels[
-        Math.floor(Math.random() * this.chachedChannels.length)
-      ];
-    // send in channel
-    const { send, err } = buildPokemonSpawnSend(goodSpawn);
-    if (err) {
-      return { err };
-    }
-    try {
-      await channel.send(send);
-    } catch (error) {
-      return { err: error };
-    }
-
-    return {};
-  }
-
-  async startSpawning() {
-    try {
-      await new Promise((resolve) => {
-        setTimeout(resolve, calculateSpawnCooldown(0.5));
-      });
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const res = await this.spawn(this.guild);
-        if (res.err) {
-          logger.warn(res.err);
-        }
-        const timeout = calculateSpawnCooldown();
-        await new Promise((resolve) => {
-          setTimeout(resolve, timeout);
-        });
-      }
-    } catch (error) {
-      logger.warn(error);
-      try {
-        // TEMP: remove guild from spawner list
-        delete guildIdToSpawner[this.guildId];
-      } catch (delErr) {
-        logger.warn(delErr);
-      }
-    }
-  }
-}
-
-const addGuild = (client, guild, silence = false) => {
-  if (BLACKLISTED_SERVERS.includes(guild.id)) {
-    return;
-  }
-  if (guildIdToSpawner[guild.id]) {
-    return;
-  }
-  const spawner = new GuildSpawner(client, guild);
-  guildIdToSpawner[guild.id] = spawner;
-  spawner.startSpawning();
-  if (!silence) logger.info(`Spawning in ${guild.name}.`);
-}; */
-
 /**
  * @param {DiscordGuild} guild
  */
@@ -466,10 +325,6 @@ const spawn = async (guild) => {
   const { data: guildData, err: guildDataErr } = await getGuildData(guild.id);
   if (guildDataErr) {
     return { err: guildDataErr };
-  }
-
-  if (guildData.spawnDisabled) {
-    return {};
   }
 
   let spawnProbability = 0;
