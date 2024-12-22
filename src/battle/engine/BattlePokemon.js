@@ -498,9 +498,9 @@ class BattlePokemon {
     // balance type
     let typeMultiplier = 1;
     if (typeEffectiveness >= 4) {
-      typeMultiplier = 2;
+      typeMultiplier = 2.5;
     } else if (typeEffectiveness >= 2) {
-      typeMultiplier = 1.5;
+      typeMultiplier = 1.75;
     } else if (typeEffectiveness >= 1) {
       typeMultiplier = 1;
     } else if (typeEffectiveness >= 0.5) {
