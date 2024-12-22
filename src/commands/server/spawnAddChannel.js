@@ -1,11 +1,13 @@
 const { createRoot, userTypeEnum } = require("../../deact/deact");
 const SpawnManager = require("../../elements/guild/SpawnManager");
+const { getChannelId } = require("../../utils/utils");
 
-const spawnManage = async (interaction, guild) =>
+const spawnAddChannel = async (interaction, guild, channelId) =>
   await createRoot(
     SpawnManager,
     {
       guild,
+      initialChannelToAdd: channelId,
     },
     interaction,
     {
@@ -26,13 +28,24 @@ const spawnManage = async (interaction, guild) =>
     }
   );
 
-const spawnManageMessageCommand = async (message, client) =>
-  await spawnManage(message, client.guilds.cache.get(message.guildId));
+const spawnAddChannelMessageCommand = async (message, client) => {
+  const args = message.content.split(" ");
+  const channelId = getChannelId(args[1]);
+  await spawnAddChannel(
+    message,
+    client.guilds.cache.get(message.guildId),
+    channelId
+  );
+};
 
-const spawnManageSlashCommand = async (interaction, client) =>
-  await spawnManage(interaction, client.guilds.cache.get(interaction.guildId));
+const spawnAddChannelSlashCommand = async (interaction, client) =>
+  await spawnAddChannel(
+    interaction,
+    client.guilds.cache.get(interaction.guildId),
+    interaction.options.getChannel("channel")?.id
+  );
 
 module.exports = {
-  message: spawnManageMessageCommand,
-  slash: spawnManageSlashCommand,
+  message: spawnAddChannelMessageCommand,
+  slash: spawnAddChannelSlashCommand,
 };

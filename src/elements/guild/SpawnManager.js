@@ -15,7 +15,7 @@ const {
   removeSpawnChannel,
   switchChannelSpawnMode,
 } = require("../../services/guild");
-const { buildSpawnManagerEmbed } = require("../../embeds/serverEmbeds");
+const { buildSpawnManagerEmbed } = require("../../embeds/guildEmbeds");
 const { buildGenericTextInputModal } = require("../../modals/genericModals");
 
 const TEXT_INPUT_ID = "channelSubmitInput";
@@ -48,7 +48,6 @@ module.exports = async (
     ref
   );
 
-  // TODO: initial channel add/remove
   const addChannelToList = useCallback(
     async (channelId) => {
       await addSpawnChannel(guild, channelId).then((res) => {
@@ -75,6 +74,19 @@ module.exports = async (
       });
     },
     [guild],
+    ref
+  );
+
+  await useAwaitedEffect(
+    async () => {
+      if (initialChannelToAdd) {
+        await addChannelToList(initialChannelToAdd);
+      }
+      if (initialChannelToRemove) {
+        await removeChannelFromList(initialChannelToRemove);
+      }
+    },
+    [],
     ref
   );
 

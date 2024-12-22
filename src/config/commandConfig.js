@@ -1029,23 +1029,6 @@ const commandConfigRaw = {
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
   },
-  /* togglespawn: {
-    name: "Toggle Spawn",
-    aliases: ["togglespawn"],
-    description: "Toggle whether Pokemon spawn in your server",
-    longDescription:
-      "Toggle whether Pokemon spawn in your server. If channel is provided, only toggles spawns in the channel. This command requires the Manage Roles permission.",
-    execute: "toggleSpawn.js",
-    args: {
-      channel: {
-        type: "channel",
-        description: "channel to toggle spawns in",
-        optional: true,
-        variable: false,
-      },
-    },
-    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-  }, */
   spawn: {
     name: "Spawn",
     aliases: ["spawn"],
@@ -1070,7 +1053,7 @@ const commandConfigRaw = {
     aliases: ["spawnaddchannel", "sac"],
     description: "Add a channel to the spawn manager",
     longDescription: "Add a channel to the spawn manager.",
-    execute: "spawnManage.js",
+    execute: "spawnAddChannel.js",
     args: {
       channel: {
         type: "channel",
@@ -1088,7 +1071,7 @@ const commandConfigRaw = {
     description: "Remove a channel from the spawn manager",
     longDescription:
       "Remove a channel from the spawn manager. The channel must already be in the spawn manager.",
-    execute: "spawnManage.js",
+    execute: "spawnRemoveChannel.js",
     args: {
       channel: {
         type: "channel",

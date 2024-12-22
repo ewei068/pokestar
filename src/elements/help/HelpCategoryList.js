@@ -29,6 +29,9 @@ module.exports = async (ref, { initialPage = 1, initialCommand = null }) => {
   const { initialCategoryFound, initialCommandFound, err } = useMemo(
     () => {
       const providedCommand = initialCommand;
+      if (!providedCommand) {
+        return {};
+      }
       // search through command config for alias
       for (const commandName in commandConfig) {
         const commandData = commandConfig[commandName];
