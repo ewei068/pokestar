@@ -163,7 +163,9 @@ const buildPokemonSpawnEmbed = (speciesId, level, shiny = false) => {
   );
   embed.setColor(rarityConfig[speciesData.rarity].color);
   embed.setImage(`${shiny ? speciesData.shinySprite : speciesData.sprite}`);
-  embed.setFooter({ text: "Use /togglespawn to disable wild Pokemon spawns" });
+  embed.setFooter({
+    text: "Use '/spawn manage' to manage where Pokemon can spawn!",
+  });
   return embed;
 };
 

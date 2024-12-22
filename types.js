@@ -2,6 +2,7 @@
 
 /**
  * @typedef {import("discord.js").User} DiscordUser
+ * @typedef {import("discord.js").Guild} DiscordGuild
  */
 
 /**
@@ -114,11 +115,15 @@
  */
 
 /**
- * @typedef {object} Guild
+ * @typedef {{ mode: "allowlist" | "denylist", channelIds: string[] }} SpawnSettings
+ */
+
+/**
+ * @typedef {object} GuildData
  * @property {string} guildId
  * @property {number} lastCommand
- * @property {boolean} spawnDisabled
- * @property {Array<string>} spawnDisabledChannels
+ * @property {SpawnSettings} spawnSettings
+ * @property {number} lastCorrected
  */
 
 /**

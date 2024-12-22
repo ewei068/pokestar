@@ -16,10 +16,12 @@
 - Revamp the `/tutorial`
   - Longer tutorial with more informative stages
   - Much better rewards!
+- Improved Spawning
+  - Overhauled spawning engine so it hopefully crashes less
+  - Greatly improved managing which channels Pokemon spawn in
 
 TODO:
 
-- Fix spawning
 - User profile sharing
 - Balancing
   - Move & ability rework

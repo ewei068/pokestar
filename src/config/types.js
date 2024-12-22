@@ -20,7 +20,7 @@
 /** @typedef {import("./helpConfig").EventData} EventData */
 /** @typedef {import("./gachaConfig").BannerData} BannerData */
 /** @typedef {import("./trainerConfig").TrainerFieldData} TrainerFieldData */
-/** @typedef {import("./trainerConfig").TrainerFieldConfig} TrainerFieldConfig */
+/** @typedef {import("./trainerConfig").DefaultFieldConfig} DefaultFieldConfig */
 /** @typedef {import("./trainerConfig").UserSettingsEnum} UserSettingsEnum */
 /** @typedef {import("./trainerConfig").UserSettingsData} UserSettingsData */
 /** @typedef {import("./questConfig").TutorialStageEnum} TutorialStageEnum */

@@ -23,7 +23,7 @@ const MAX_RELEASE = 10;
  *  type: "string" | "number" | "boolean" | "object" | "array",
  *  default?: any,
  *  refreshInterval?: number
- *  config?: TrainerFieldConfig
+ *  config?: DefaultFieldConfig
  * }} TrainerFieldData
  */
 
@@ -99,11 +99,11 @@ const userSettingsConfig = Object.freeze(userSettingsConfigRaw);
  */
 
 /**
- * @typedef {Record<string, TrainerFieldData>} TrainerFieldConfig
+ * @typedef {Record<string, TrainerFieldData>} DefaultFieldConfig
  */
 
 /**
- * @type {TrainerFieldConfig}
+ * @type {DefaultFieldConfig}
  */
 const userSettingsTrainerFieldsConfig = Object.entries(
   userSettingsConfig
@@ -113,7 +113,7 @@ const userSettingsTrainerFieldsConfig = Object.entries(
 }, {});
 
 /**
- * @type {TrainerFieldConfig}
+ * @type {DefaultFieldConfig}
  */
 const trainerFields = {
   userId: {

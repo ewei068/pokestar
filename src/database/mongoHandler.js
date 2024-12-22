@@ -45,6 +45,27 @@ const updateDocuments = async (collectionName, filter, update) => {
 };
 
 /**
+ *
+ * @param {string} collectionName
+ * @param {any} filter
+ * @param {any} update
+ * @param {import("mongodb").FindOneAndUpdateOptions=} options
+ */
+const findAndUpdateDocument = async (
+  collectionName,
+  filter,
+  update,
+  options = {
+    upsert: true,
+    returnDocument: "after",
+  }
+) => {
+  const collection = await getCollection(collectionName);
+  const res = await collection.findOneAndUpdate(filter, update, options);
+  return res;
+};
+
+/**
  * @param collectionName
  * @param filter
  * @param limit
@@ -194,6 +215,10 @@ class QueryBuilder {
     return await query;
   }
 
+  /**
+   *
+   * @returns {Promise<import("mongodb").UpdateResult>}
+   */
   async upsertOne() {
     let query = await getCollection(this.collectionName);
     query = query.updateOne(this.filter, this.upsert, { upsert: true });
@@ -210,4 +235,5 @@ module.exports = {
   countDocuments,
   deleteDocuments,
   QueryBuilder,
+  findAndUpdateDocument,
 };

@@ -16,7 +16,7 @@ const { checkRateLimit } = require("./services/rateLimit");
 const { addVote } = require("./services/trainer");
 const { stageNames } = require("./config/stageConfig");
 const { poll } = require("./utils/utils");
-const { startSpawning, addGuild } = require("./services/spawn");
+const { startSpawning } = require("./services/spawn");
 const { getStateCount } = require("./services/state");
 const { cleanupRaids } = require("./services/raid");
 const {
@@ -138,7 +138,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 client.on(Events.GuildCreate, (guild) => {
   logger.info(`Joined guild: ${guild.name} (${guild.id})`);
   if (FFLAG_ENABLE_SPAWN) {
-    addGuild(client, guild);
+    // addGuild(client, guild);
   }
 });
 
@@ -154,11 +154,11 @@ client.once(Events.ClientReady, (c) => {
   logger.info(`Ready! Logged in as ${c.user.tag}`);
   client.user.setActivity(`/tutorial /help`);
   // log connected guilds
-  let guildString = "";
+  /* let guildString = "";
   client.guilds.cache.forEach((guild) => {
     guildString += `${guild.name} (${guild.id})\n`;
   });
-  logger.info(`Connected to guilds: \n${guildString}`);
+  logger.info(`Connected to guilds: \n${guildString}`); */
 
   // start spawners
   if (FFLAG_ENABLE_SPAWN) {

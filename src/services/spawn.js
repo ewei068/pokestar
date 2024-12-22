@@ -1,6 +1,7 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable no-param-reassign */
-const { ButtonStyle } = require("discord.js");
+// eslint-disable-next-line no-unused-vars
+const { ButtonStyle, Client } = require("discord.js");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { backpackItems } = require("../config/backpackConfig");
 const { typeAdvantages } = require("../config/battleConfig");
@@ -25,13 +26,12 @@ const {
 const { setState } = require("./state");
 const { getTrainer } = require("./trainer");
 const { giveNewPokemons } = require("./gacha");
-const { QueryBuilder } = require("../database/mongoHandler");
-const { collectionNames } = require("../config/databaseConfig");
+const { getGuildData } = require("./guild");
 
 const SPAWN_TIME =
-  process.env.STAGE === stageNames.ALPHA ? 12 * 60 * 1000 : 120 * 60 * 1000;
-const SPAWN_TIME_VARIANCE =
-  process.env.STAGE === stageNames.ALPHA ? 3 * 60 * 1000 : 30 * 60 * 1000;
+  process.env.STAGE === stageNames.ALPHA ? 30 * 60 * 1000 : 120 * 60 * 1000;
+// const SPAWN_TIME_VARIANCE =
+//  process.env.STAGE === stageNames.ALPHA ? 3 * 60 * 1000 : 30 * 60 * 1000;
 // blacklist emoji servers
 const BLACKLISTED_SERVERS = [
   "1099523950297485323",
@@ -55,18 +55,31 @@ const WHITELISTED_SERVERS = [
 ];
 const QUESTION_TYPES = ["typeAdvantage", "pokemonIcon", "pokemonType"];
 
-const PERMISSIONS_NEEDED = ["ViewChannel", "SendMessages", "EmbedLinks"];
+const PERMISSIONS_NEEDED = /** @type {const} */ ([
+  "ViewChannel",
+  "SendMessages",
+  "EmbedLinks",
+]);
 
+/**
+ * @param {DiscordGuild} guild
+ * @param {import("discord.js").GuildBasedChannel} channel
+ * @param {GuildData} guildData
+ * @returns {boolean}
+ */
 const canSendInChannel = (guild, channel, guildData) => {
-  const blacklistedChannels = guildData.spawnDisabledChannels;
-  const channelInBlacklist =
-    blacklistedChannels && blacklistedChannels.includes(channel.id);
-  const channelParentInBlacklist =
-    blacklistedChannels &&
-    channel.parentId &&
-    blacklistedChannels.includes(channel.parentId);
-  if (channelInBlacklist || channelParentInBlacklist) {
-    return false;
+  const { mode, channelIds } = guildData.spawnSettings;
+  const channelInList = channelIds && channelIds.includes(channel.id);
+  const channelParentInList =
+    channelIds && channel.parentId && channelIds.includes(channel.parentId);
+  if (mode === "allowlist") {
+    if (!channelInList && !channelParentInList) {
+      return false;
+    }
+  } else if (mode === "denylist") {
+    if (channelInList || channelParentInList) {
+      return false;
+    }
   }
   const permissionsIn = guild.members.me.permissionsIn(channel);
   return PERMISSIONS_NEEDED.every((permission) =>
@@ -74,12 +87,12 @@ const canSendInChannel = (guild, channel, guildData) => {
   );
 };
 
-const calculateSpawnCooldown = (multiplier = 1) => {
+/* const calculateSpawnCooldown = (multiplier = 1) => {
   const timeout = Math.floor(
     (Math.random() * 2 - 1) * SPAWN_TIME_VARIANCE + SPAWN_TIME
   );
   return Math.round(timeout * multiplier);
-};
+}; */
 
 const buildPokemonSpawnSend = (goodSpawn) => {
   // get random rarity
@@ -105,7 +118,7 @@ const buildPokemonSpawnSend = (goodSpawn) => {
       level,
       goodSpawn,
     },
-    30 * 60
+    15 * 60
   );
   const buttonConfigs = [
     {
@@ -303,198 +316,110 @@ const onButtonPress = async (interaction, data, state) => {
   return { err: null };
 };
 
-const getGuildData = async (guildId) => {
-  let guildData = {
-    guildId,
-    spawnDisabled: false,
-    spawnDisabledChannels: [],
-  };
-  try {
-    const query = new QueryBuilder(collectionNames.GUILDS).setFilter({
-      guildId,
-    });
+/**
+ * @param {DiscordGuild} guild
+ */
+const spawn = async (guild) => {
+  // check if spawn was disabled for guild
+  // get guild
+  const { data: guildData, err: guildDataErr } = await getGuildData(guild.id);
+  if (guildDataErr) {
+    return { err: guildDataErr };
+  }
 
-    const guildRes = await query.findOne();
-    if (guildRes) {
-      guildData = guildRes;
+  let spawnProbability = 0;
+  const memberCount = guild.members.cache.size;
+  if (memberCount < 5) {
+    spawnProbability = 0.33;
+  } else if (memberCount < 20) {
+    spawnProbability = 0.7;
+  } else if (memberCount < 200) {
+    spawnProbability = 1;
+  } else {
+    spawnProbability = 0.8;
+  }
+  let goodSpawn = true;
+  if (
+    Math.random() > spawnProbability &&
+    !WHITELISTED_SERVERS.includes(guild.id)
+  ) {
+    goodSpawn = false;
+  }
+
+  const possibleChannels = [];
+  guild.channels.cache.forEach((channel) => {
+    // if the channel is a text channel
+    if (channel.type !== 0) return;
+
+    // if the bot can't send messages in the channel
+    if (!canSendInChannel(guild, channel, guildData)) {
+      return;
     }
-  } catch (err) {
-    logger.warn(err);
-    // pass
+
+    possibleChannels.push(channel);
+  });
+  if (possibleChannels.length === 0) {
+    return { err: `${guild.name} No channels to spawn in.` };
   }
-  if (!guildData.spawnDisabledChannels) {
-    guildData.spawnDisabledChannels = [];
+
+  // get random channel
+  const channel = drawIterable(possibleChannels, 1)[0];
+
+  // send in channel
+  const { send, err } = buildPokemonSpawnSend(goodSpawn);
+  if (err) {
+    return { err };
   }
-  return guildData;
+  try {
+    await channel.send(send);
+  } catch (error) {
+    return { err: error };
+  }
+
+  return {};
 };
 
-const guildIdToSpawner = {};
-
-class GuildSpawner {
-  /* client;
-  guild;
-  chachedChannels = [];
-  guildId; */
-
-  constructor(client, guild) {
+class SpawnManager {
+  /**
+   * @param {Client} client
+   */
+  constructor(client) {
     this.client = client;
-    this.guild = guild;
-    this.guildId = guild.id;
-    this.chachedChannels = [];
+    this.shouldSpawn = true;
   }
 
-  cacheGuild() {
-    this.guild = this.client.guilds.cache.get(this.guild.id);
-  }
-
-  cacheChannels() {
-    // for every channel
-    this.guild.channels.cache.forEach((channel) => {
-      // if the channel is a text channel
-      if (channel.type !== 0) return;
-
-      // if the bot can't send messages in the channel
-      if (!canSendInChannel(this.guild, channel, this.guildData)) {
-        return;
-      }
-
-      this.chachedChannels.push(channel);
-    });
-  }
-
-  refreshChannels() {
-    this.chachedChannels = [];
-    this.cacheGuild();
-    this.cacheChannels();
-    if (this.chachedChannels.length === 0) {
-      return { err: `${this.guild.name} No channels to spawn in.` };
-    }
-    return {};
-  }
-
-  async spawn(guild) {
-    // check if spawn was disabled for guild
-    // get guild
-    this.guildData = await getGuildData(guild.id);
-
-    if (this.guildData.spawnDisabled) {
-      return {};
+  triggerSingleSpawn() {
+    if (!this.shouldSpawn) {
+      return;
     }
 
-    // TEMP: refresh channels every time
-    // eslint-disable-next-line no-constant-condition
-    if (true) {
-      // this.chachedChannels.length == 0) {
-      const res = this.refreshChannels();
-      if (res.err) {
-        return res;
-      }
-    }
-    guild = this.guild;
-
-    // spawn probability based on number of members
-    let spawnProbability = 0;
-    const memberCount = guild.members.cache.size;
-    if (memberCount < 5) {
-      spawnProbability = 0.33;
-    } else if (memberCount < 20) {
-      spawnProbability = 0.7;
-    } else if (memberCount < 200) {
-      spawnProbability = 1;
-    } else {
-      spawnProbability = 0.8;
-    }
-    let goodSpawn = true;
-    if (
-      Math.random() > spawnProbability &&
-      !WHITELISTED_SERVERS.includes(guild.id)
-    ) {
-      goodSpawn = false;
-    }
-
-    // get random cached channel
-    let channel =
-      this.chachedChannels[
-        Math.floor(Math.random() * this.chachedChannels.length)
-      ];
-    // check if able to send in channel
-    if (!canSendInChannel(guild, channel, this.guildData)) {
-      // re-cache channels
-      const res = this.refreshChannels();
-      if (res.err) {
-        return res;
-      }
-    }
-
-    // get random cached channel
-    channel =
-      this.chachedChannels[
-        Math.floor(Math.random() * this.chachedChannels.length)
-      ];
-    // send in channel
-    const { send, err } = buildPokemonSpawnSend(goodSpawn);
-    if (err) {
-      return { err };
-    }
-    try {
-      await channel.send(send);
-    } catch (error) {
-      return { err: error };
-    }
-
-    return {};
-  }
-
-  async startSpawning() {
-    try {
-      await new Promise((resolve) => {
-        setTimeout(resolve, calculateSpawnCooldown(0.5));
+    // calculate spawn time -- 2 hours / num guilds (includes blacklisted servers but whatever)
+    const numGuilds = this.client.guilds.cache.size;
+    const timeout = Math.floor(SPAWN_TIME / numGuilds);
+    setTimeout(() => {
+      // get random guild
+      const guild = this.client.guilds.cache
+        .filter((g) => !BLACKLISTED_SERVERS.includes(g.id))
+        .random();
+      spawn(guild).catch((err) => {
+        logger.warn(err);
       });
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const res = await this.spawn(this.guild);
-        if (res.err) {
-          logger.warn(res.err);
-        }
-        const timeout = calculateSpawnCooldown();
-        await new Promise((resolve) => {
-          setTimeout(resolve, timeout);
-        });
-      }
-    } catch (error) {
-      logger.warn(error);
-      try {
-        // TEMP: remove guild from spawner list
-        delete guildIdToSpawner[this.guildId];
-      } catch (delErr) {
-        logger.warn(delErr);
-      }
-    }
+      this.triggerSingleSpawn();
+    }, timeout);
+  }
+
+  stopSpawning() {
+    this.shouldSpawn = false;
   }
 }
 
-const addGuild = (client, guild, silence = false) => {
-  if (BLACKLISTED_SERVERS.includes(guild.id)) {
-    return;
-  }
-  if (guildIdToSpawner[guild.id]) {
-    return;
-  }
-  const spawner = new GuildSpawner(client, guild);
-  guildIdToSpawner[guild.id] = spawner;
-  spawner.startSpawning();
-  if (!silence) logger.info(`Spawning in ${guild.name}.`);
-};
-
 const startSpawning = (client) => {
-  for (const guild of client.guilds.cache.values()) {
-    addGuild(client, guild, true);
-  }
-  logger.info(`Spawning in ${Object.keys(guildIdToSpawner).length} guilds.`);
+  const spawnManager = new SpawnManager(client);
+  spawnManager.triggerSingleSpawn();
+  logger.info(`Spawning started.`);
 };
 
 module.exports = {
   startSpawning,
-  addGuild,
   onButtonPress,
 };

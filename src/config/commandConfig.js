@@ -52,7 +52,7 @@ const commandCategoryConfigRaw = {
       "mew",
       "celebi",
       "deoxys",
-      "togglespawn",
+      // "togglespawn",
     ],
   },
   shop: {
@@ -94,6 +94,12 @@ const commandCategoryConfigRaw = {
       "leaderboard",
       "invite",
     ],
+  },
+  server: {
+    name: "Server",
+    description: "Server management commands",
+    folder: "server",
+    commands: ["spawn", "spawnmanage", "spawnaddchannel", "spawnremovechannel"],
   },
   help: {
     name: "Help",
@@ -1023,22 +1029,59 @@ const commandConfigRaw = {
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
   },
-  togglespawn: {
-    name: "Toggle Spawn",
-    aliases: ["togglespawn"],
-    description: "Toggle whether Pokemon spawn in your server",
+  spawn: {
+    name: "Spawn",
+    aliases: ["spawn"],
+    description: "Entry point for spawn management",
+    subcommands: ["spawnmanage", "spawnaddchannel", "spawnremovechannel"],
+    args: {},
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+  },
+  spawnmanage: {
+    name: "Spawn Manage",
+    aliases: ["spawnmanage", "sm"],
+    description: "Manage Pokemon spawns in your server",
     longDescription:
-      "Toggle whether Pokemon spawn in your server. If channel is provided, only toggles spawns in the channel. This command requires the Manage Roles permission.",
-    execute: "toggleSpawn.js",
+      "Manage Pokemon spawns in your server. You can add or remove channels to spawn Pokemon in.",
+    execute: "spawnManage.js",
+    args: {},
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    parent: "spawn",
+  },
+  spawnaddchannel: {
+    name: "Spawn Add Channel",
+    aliases: ["spawnaddchannel", "sac"],
+    description: "Add a channel to the spawn manager",
+    longDescription: "Add a channel to the spawn manager.",
+    execute: "spawnAddChannel.js",
     args: {
       channel: {
         type: "channel",
-        description: "channel to toggle spawns in",
-        optional: true,
+        description: "channel to add to spawn manager",
+        optional: false,
         variable: false,
       },
     },
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    parent: "spawn",
+  },
+  spawnremovechannel: {
+    name: "Spawn Remove Channel",
+    aliases: ["spawnremovechannel", "src"],
+    description: "Remove a channel from the spawn manager",
+    longDescription:
+      "Remove a channel from the spawn manager. The channel must already be in the spawn manager.",
+    execute: "spawnRemoveChannel.js",
+    args: {
+      channel: {
+        type: "channel",
+        description: "channel to remove from spawn manager",
+        optional: false,
+        variable: false,
+      },
+    },
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    parent: "spawn",
   },
   give: {
     name: "Give",
