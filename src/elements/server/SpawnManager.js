@@ -1,7 +1,6 @@
 const { ButtonStyle } = require("discord.js");
 const {
   useState,
-  useAwaitedMemo,
   useCallbackBinding,
   createElement,
   createModal,
@@ -9,12 +8,12 @@ const {
   useAwaitedEffect,
   useCallback,
 } = require("../../deact/deact");
-const { buildPokemonSearchModal } = require("../../modals/pokemonModals");
 const Button = require("../../deact/elements/Button");
 const {
   getGuildData,
   addSpawnChannel,
   removeSpawnChannel,
+  switchChannelSpawnMode,
 } = require("../../services/guild");
 const { buildSpawnManagerEmbed } = require("../../embeds/serverEmbeds");
 const { buildGenericTextInputModal } = require("../../modals/genericModals");
@@ -125,6 +124,21 @@ module.exports = async (
     { defer: false }
   );
 
+  const switchChannelSpawnModeBinding = useCallbackBinding(
+    async (interaction) => {
+      await switchChannelSpawnMode(guild).then((res) => {
+        if (res.err) {
+          setErrorString(res.err);
+        } else {
+          setGuildData(res.data);
+          setErrorString(undefined);
+        }
+      });
+    },
+    ref,
+    { defer: false }
+  );
+
   return {
     elements: [
       {
@@ -148,6 +162,12 @@ module.exports = async (
               emoji: "➖",
               style: ButtonStyle.Danger,
               callbackBindingKey: removeChannelCallbackBinding,
+            }),
+            createElement(Button, {
+              label: "Switch Channel Spawn Mode",
+              emoji: "🔄",
+              style: ButtonStyle.Secondary,
+              callbackBindingKey: switchChannelSpawnModeBinding,
             }),
           ],
         ]

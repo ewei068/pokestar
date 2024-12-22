@@ -158,9 +158,27 @@ const removeSpawnChannel = async (guild, channelId) => {
   return updateGuildData(guildData);
 };
 
+/**
+ * @param {DiscordGuild} guild
+ * @returns {Promise<{data?: WithId<Guild>, err?: string}>}
+ */
+const switchChannelSpawnMode = async (guild) => {
+  // get guild data
+  const guildRes = await getGuildData(guild.id);
+  if (guildRes.err) {
+    return guildRes;
+  }
+  const guildData = guildRes.data;
+
+  guildData.spawnSettings.mode =
+    guildData.spawnSettings.mode === "allowlist" ? "denylist" : "allowlist";
+
+  return updateGuildData(guildData);
+};
 module.exports = {
   getGuildData,
   updateGuildData,
   addSpawnChannel,
   removeSpawnChannel,
+  switchChannelSpawnMode,
 };
