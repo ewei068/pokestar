@@ -1,6 +1,10 @@
 const { collectionNames } = require("../config/databaseConfig");
 const { guildFields } = require("../config/guildConfig");
-const { QueryBuilder, updateDocument } = require("../database/mongoHandler");
+const {
+  QueryBuilder,
+  updateDocument,
+  findAndUpdateDocument,
+} = require("../database/mongoHandler");
 const { logger } = require("../log");
 const { setDefaultFields } = require("../utils/utils");
 
@@ -71,6 +75,92 @@ const getGuildData = async (guildId) => {
   return { data: guildData };
 };
 
+/**
+ * @param {Guild} guild
+ * @returns {Promise<{data?: WithId<Guild>, err?: string}>}
+ */
+const updateGuildData = async (guild) => {
+  const res = await findAndUpdateDocument(
+    collectionNames.GUILDS,
+    {
+      guildId: guild.guildId,
+    },
+    {
+      $set: guild,
+    }
+  );
+
+  if (!res.value) {
+    logger.error(`Failed to update guild ${guild.guildId}.`);
+    return { data: null, err: "Error updating guild." };
+  }
+  return { data: res.value };
+};
+
+/**
+ * @param {DiscordGuild} guild
+ * @param {string} channelId
+ * @returns {Promise<{data?: WithId<Guild>, err?: string}>}
+ */
+const addSpawnChannel = async (guild, channelId) => {
+  // if channel not in guild, return
+  const channel = guild.channels.cache.get(channelId);
+  if (!channel) {
+    return {
+      err: "Channel not found in server. Remember to enter a channel ID. Go to Discord Settings -> Advanced -> Enable Developer Mode. Then, right-click a channel and click 'Copy ID'.",
+    };
+  }
+
+  // get guild data
+  const guildRes = await getGuildData(guild.id);
+  if (guildRes.err) {
+    return guildRes;
+  }
+  const guildData = guildRes.data;
+
+  // if channel already in spawn channels, return
+  if (guildData.spawnSettings.channelIds.includes(channelId)) {
+    return {
+      err: "Channel already added.",
+    };
+  }
+
+  // update guild data
+  guildData.spawnSettings.channelIds.push(channelId);
+
+  return updateGuildData(guildData);
+};
+
+/**
+ * @param {DiscordGuild} guild
+ * @param {string} channelId
+ * @returns {Promise<{data?: WithId<Guild>, err?: string}>}
+ */
+const removeSpawnChannel = async (guild, channelId) => {
+  // get guild data
+  const guildRes = await getGuildData(guild.id);
+  if (guildRes.err) {
+    return guildRes;
+  }
+  const guildData = guildRes.data;
+
+  // if channel not in spawn channels, return
+  if (!guildData.spawnSettings.channelIds.includes(channelId)) {
+    return {
+      err: "Channel not found in spawn channels.",
+    };
+  }
+
+  // update guild data
+  guildData.spawnSettings.channelIds =
+    guildData.spawnSettings.channelIds.filter((id) => id !== channelId);
+
+  return updateGuildData(guildData);
+};
+
 module.exports = {
   getGuildData,
+  updateGuildData,
+  addSpawnChannel,
+  removeSpawnChannel,
 };
