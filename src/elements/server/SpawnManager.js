@@ -6,11 +6,20 @@ const {
   createElement,
   createModal,
   useModalSubmitCallbackBinding,
+  useAwaitedEffect,
+  useCallback,
 } = require("../../deact/deact");
 const { buildPokemonSearchModal } = require("../../modals/pokemonModals");
 const Button = require("../../deact/elements/Button");
-const { getGuildData } = require("../../services/guild");
+const {
+  getGuildData,
+  addSpawnChannel,
+  removeSpawnChannel,
+} = require("../../services/guild");
 const { buildSpawnManagerEmbed } = require("../../embeds/serverEmbeds");
+const { buildGenericTextInputModal } = require("../../modals/genericModals");
+
+const TEXT_INPUT_ID = "channelSubmitInput";
 
 /**
  * @type {DeactElementFunction<{
@@ -24,43 +33,94 @@ module.exports = async (
   { guild, initialChannelToAdd, initialChannelToRemove }
 ) => {
   const [errorString, setErrorString] = useState(undefined, ref);
+  const [guildData, setGuildData] = useState(undefined, ref);
 
-  const guildRes = await useAwaitedMemo(
-    () => getGuildData(guild.id),
+  await useAwaitedEffect(
+    async () => {
+      await getGuildData(guild.id).then((res) => {
+        if (res.err) {
+          setErrorString(res.err);
+        } else {
+          setGuildData(res.data);
+        }
+      });
+    },
     [guild.id],
     ref
   );
-  if (guildRes.err) {
-    return { err: guildRes.err };
-  }
-  const guildData = guildRes.data;
 
-  const searchSubmittedActionBinding = useModalSubmitCallbackBinding(
-    (interaction) => {
-      const pokemonSearchInput =
-        interaction.fields.getTextInputValue("pokemonSearchInput");
-      setFilter({
-        ...filter,
-        name: pokemonSearchInput,
+  // TODO: initial channel add/remove
+  const addChannelToList = useCallback(
+    async (channelId) => {
+      await addSpawnChannel(guild, channelId).then((res) => {
+        if (res.err) {
+          setErrorString(res.err);
+        } else {
+          setGuildData(res.data);
+          setErrorString(undefined);
+        }
       });
-      setPage(1);
     },
+    [guild],
     ref
   );
-  const openSearchModalBinding = useCallbackBinding(
-    (interaction) => {
-      const currentName = filter.name;
-      return createModal(
-        buildPokemonSearchModal,
-        {
-          value: currentName,
-          required: false,
-        },
-        searchSubmittedActionBinding,
-        interaction,
-        ref
-      );
+  const removeChannelFromList = useCallback(
+    async (channelId) => {
+      await removeSpawnChannel(guild, channelId).then((res) => {
+        if (res.err) {
+          setErrorString(res.err);
+        } else {
+          setGuildData(res.data);
+          setErrorString(undefined);
+        }
+      });
     },
+    [guild],
+    ref
+  );
+
+  const modalSubmittedCallbackBinding = useModalSubmitCallbackBinding(
+    async (interaction, data) => {
+      const channelInput = interaction.fields.getTextInputValue(TEXT_INPUT_ID);
+      const { action } = data;
+      if (action === "add") {
+        await addChannelToList(channelInput);
+      } else if (action === "remove") {
+        await removeChannelFromList(channelInput);
+      } else {
+        setErrorString("Invalid channel action! Report this bug to me lol.");
+      }
+    },
+    ref,
+    { defer: false }
+  );
+  const openChannelActionModal = (interaction, action) =>
+    createModal(
+      buildGenericTextInputModal,
+      {
+        textInputId: TEXT_INPUT_ID,
+        title:
+          action === "add"
+            ? "Add Channel ID From List"
+            : "Remove Channel ID From List",
+        label: "Channel ID (see error instructions if failed)",
+        placeholder: "Channel ID",
+        required: true,
+      },
+      modalSubmittedCallbackBinding,
+      interaction,
+      ref,
+      {
+        action,
+      }
+    );
+  const addChannelCallbackBinding = useCallbackBinding(
+    (interaction) => openChannelActionModal(interaction, "add"),
+    ref,
+    { defer: false }
+  );
+  const removeChannelCallbackBinding = useCallbackBinding(
+    (interaction) => openChannelActionModal(interaction, "remove"),
     ref,
     { defer: false }
   );
@@ -68,12 +128,29 @@ module.exports = async (
   return {
     elements: [
       {
-        content:
-          errorString ||
-          "Manage spawning in your server by changing the spawn mode and adding or removing channels.",
-        embeds: [buildSpawnManagerEmbed(guildData)],
+        content: errorString
+          ? `**ERROR:** ${errorString}`
+          : "Manage spawning in your server by changing the spawn mode and adding or removing channels.",
+        embeds: guildData ? [buildSpawnManagerEmbed(guildData)] : [],
       },
     ],
-    components: [],
+    components: guildData
+      ? [
+          [
+            createElement(Button, {
+              label: "Add Channel ID",
+              emoji: "➕",
+              style: ButtonStyle.Success,
+              callbackBindingKey: addChannelCallbackBinding,
+            }),
+            createElement(Button, {
+              label: "Remove Channel ID",
+              emoji: "➖",
+              style: ButtonStyle.Danger,
+              callbackBindingKey: removeChannelCallbackBinding,
+            }),
+          ],
+        ]
+      : [],
   };
 };

@@ -50,9 +50,11 @@ const createRoot = async (
     getUserFromInteraction(interaction)
   );
   if (customFilterErr) {
-    return {
+    const errorElement = {
       err: customFilterErr,
     };
+    await interactionInstance.reply(errorElement);
+    return errorElement;
   }
   const instance = new DeactInstance(
     render,

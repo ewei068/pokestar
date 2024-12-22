@@ -2,7 +2,6 @@ const { collectionNames } = require("../config/databaseConfig");
 const { guildFields } = require("../config/guildConfig");
 const {
   QueryBuilder,
-  updateDocument,
   findAndUpdateDocument,
 } = require("../database/mongoHandler");
 const { logger } = require("../log");
@@ -94,6 +93,7 @@ const updateGuildData = async (guild) => {
     logger.error(`Failed to update guild ${guild.guildId}.`);
     return { data: null, err: "Error updating guild." };
   }
+  // @ts-ignore
   return { data: res.value };
 };
 

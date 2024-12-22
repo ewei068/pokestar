@@ -45,6 +45,27 @@ const updateDocuments = async (collectionName, filter, update) => {
 };
 
 /**
+ *
+ * @param {string} collectionName
+ * @param {any} filter
+ * @param {any} update
+ * @param {import("mongodb").FindOneAndUpdateOptions=} options
+ */
+const findAndUpdateDocument = async (
+  collectionName,
+  filter,
+  update,
+  options = {
+    upsert: true,
+    returnDocument: "after",
+  }
+) => {
+  const collection = await getCollection(collectionName);
+  const res = await collection.findOneAndUpdate(filter, update, options);
+  return res;
+};
+
+/**
  * @param collectionName
  * @param filter
  * @param limit
@@ -214,4 +235,5 @@ module.exports = {
   countDocuments,
   deleteDocuments,
   QueryBuilder,
+  findAndUpdateDocument,
 };
