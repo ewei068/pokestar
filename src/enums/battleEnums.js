@@ -7,6 +7,7 @@ const effectIdEnum = Object.freeze({
   TEST_EFFECT: "testEffect",
   ATK_UP: "atkUp",
   SHIELD: "shield",
+  DEBUFF_IMMUNITY: "debuffImmunity",
 });
 
 /**
@@ -73,7 +74,7 @@ const battleEventEnum = Object.freeze({
  *  [battleEventEnum.AFTER_DAMAGE_TAKEN]: any,
  *  [battleEventEnum.BEFORE_CR_GAINED]: any,
  *  [battleEventEnum.AFTER_CR_GAINED]: any,
- *  [battleEventEnum.BEFORE_EFFECT_ADD]: any,
+ *  [battleEventEnum.BEFORE_EFFECT_ADD]: { target: BattlePokemon, source: BattlePokemon, effectId: EffectIdEnum, duration: number, initialArgs: any, canAdd: boolean },
  *  [battleEventEnum.AFTER_EFFECT_ADD]: any,
  *  [battleEventEnum.BEFORE_EFFECT_REMOVE]: any,
  *  [battleEventEnum.AFTER_EFFECT_REMOVE]: any,

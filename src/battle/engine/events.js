@@ -63,6 +63,12 @@ class BattleEventHandler {
           listener.conditionCallback(fullArgs)
         ) {
           listener.execute(fullArgs);
+          // updates args with new values
+          // TODO: do immutable event handling... someday
+          // Sorry for the hack folks this is too much for me to fix ATM
+          for (const key in args || {}) {
+            args[key] = fullArgs[key];
+          }
         }
       } else {
         listener.execute(listener.initialArgs, args);

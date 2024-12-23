@@ -611,8 +611,8 @@ class BattlePokemon {
           }
           break;
         case statusConditions.SLEEP:
-          // sleep wakeup chance: 0 turns: 0%, 1 turn: 66%, 2 turns: 100%
-          const wakeupChance = this.status.turns * 0.66;
+          // sleep wakeup chance: 0 turns: 0%, 1 turn: 33%, 2 turns: 66%, 3 turns: 100%
+          const wakeupChance = this.status.turns * 0.33;
           const wakeupRoll = Math.random();
           if (wakeupRoll < wakeupChance) {
             this.removeStatus();
@@ -1013,6 +1013,20 @@ class BattlePokemon {
     if (freezeCheck) {
       if (this.removeStatus()) {
         damage = Math.floor(damage * 1.5);
+        this.battle.addToLog(
+          `${this.name} Took extra damage because it was frozen!`
+        );
+      }
+    }
+
+    // if sleep and hit with a move, wake up and deal 1.5x damage
+    const sleepCheck =
+      this.status.statusId === statusConditions.SLEEP &&
+      damageInfo.type === "move";
+    if (sleepCheck) {
+      if (this.removeStatus()) {
+        damage = Math.floor(damage * 1.5);
+        this.battle.addToLog(`${this.name} Took extra damage while sleeping!`);
       }
     }
 

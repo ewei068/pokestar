@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
 const { effectTypes } = require("../../config/battleConfig");
-const { effectIdEnum } = require("../../enums/battleEnums");
+const { effectIdEnum, battleEventEnum } = require("../../enums/battleEnums");
+const { getIsTargetPokemonCallback } = require("../engine/eventConditions");
+const { getEffect } = require("./effectRegistry");
 
 /**
  * @template T
@@ -92,6 +94,40 @@ const effectsToRegister = Object.freeze({
     },
     effectRemove({ battle, target }) {
       battle.addToLog(`${target.name}'s shield was removed!`);
+    },
+  }),
+  [effectIdEnum.DEBUFF_IMMUNITY]: new Effect({
+    id: effectIdEnum.DEBUFF_IMMUNITY,
+    name: "Debuff Immunity",
+    description: "The target is immune to debuffs.",
+    type: effectTypes.BUFF,
+    dispellable: true,
+    /**
+     * @param {EffectAddBasicArgs & {initialArgs: any}} args
+     */
+    effectAdd({ battle, target }) {
+      battle.addToLog(`${target.name} is immune to debuffs!`);
+      return {
+        listenerId: battle.registerListenerFunction({
+          eventName: battleEventEnum.BEFORE_EFFECT_ADD,
+          callback: (eventArgs) => {
+            const effect = getEffect(eventArgs.effectId);
+            if (effect.type !== effectTypes.DEBUFF) {
+              return;
+            }
+
+            eventArgs.canAdd = false;
+            battle.addToLog(
+              `${target.name} is immune to debuffs and cannot be affected by ${effect.name}!`
+            );
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    effectRemove({ battle, target, properties }) {
+      battle.addToLog(`${target.name} is no longer immune to debuffs!`);
+      battle.unregisterListener(properties.listenerId);
     },
   }),
 });
