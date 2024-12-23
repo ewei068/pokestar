@@ -112,7 +112,7 @@ const effectsToRegister = Object.freeze({
           eventName: battleEventEnum.BEFORE_EFFECT_ADD,
           callback: (eventArgs) => {
             const effect = getEffect(eventArgs.effectId);
-            if (effect.type !== effectTypes.DEBUFF) {
+            if (effect.type !== effectTypes.DEBUFF || effect.dispellable) {
               return;
             }
 

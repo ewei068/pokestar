@@ -2503,7 +2503,7 @@ const moveConfig = Object.freeze({
     name: "Slam",
     type: pokemonTypes.NORMAL,
     power: 100,
-    accuracy: 80,
+    accuracy: 90,
     cooldown: 2,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
@@ -2558,7 +2558,7 @@ const moveConfig = Object.freeze({
   m34: {
     name: "Body Slam",
     type: pokemonTypes.NORMAL,
-    power: 90,
+    power: 95,
     accuracy: 85,
     cooldown: 2,
     targetType: targetTypes.ENEMY,
@@ -3743,7 +3743,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.SELF,
     targetPattern: targetPatterns.SINGLE,
@@ -3785,7 +3785,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.FAIRY,
     power: null,
     accuracy: 85,
-    cooldown: 3,
+    cooldown: 2,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
@@ -3813,7 +3813,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.POISON,
     power: 65,
     accuracy: 100,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.CROSS,
@@ -3841,7 +3841,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.GROUND,
     power: null,
     accuracy: 100,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SQUARE,
@@ -3855,7 +3855,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.ELECTRIC,
     power: 140,
     accuracy: 50,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.SINGLE,
@@ -3869,7 +3869,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.GHOST,
     power: null,
     accuracy: null,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
@@ -3898,7 +3898,7 @@ const moveConfig = Object.freeze({
     power: null,
     accuracy: null,
     cooldown: 0,
-    targetType: targetTypes.ENEMY,
+    targetType: targetTypes.ANY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.BASIC,
@@ -3911,7 +3911,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.DRAGON,
     power: 130,
     accuracy: 100,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.RANDOM,
@@ -3925,7 +3925,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.GRASS,
     power: 90,
     accuracy: 100,
-    cooldown: 3,
+    cooldown: 2,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.SINGLE,
@@ -3939,7 +3939,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
-    cooldown: 4,
+    cooldown: 2,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.SELF,
     targetPattern: targetPatterns.SINGLE,
@@ -3959,12 +3959,12 @@ const moveConfig = Object.freeze({
     tier: moveTiers.POWER,
     damageType: damageTypes.OTHER,
     description:
-      "The user gazes at the target rather charmingly, making it less wary. This sharply lowers the target's attack stat for 2 turns.",
+      "The user gazes at the target rather charmingly, making it less wary. This sharply lowers the target's attack stat for 3 turns.",
   },
   m205: {
     name: "Rollout",
     type: pokemonTypes.ROCK,
-    power: 40,
+    power: 50,
     accuracy: 90,
     cooldown: 0,
     targetType: targetTypes.ENEMY,
@@ -3973,14 +3973,14 @@ const moveConfig = Object.freeze({
     tier: moveTiers.BASIC,
     damageType: damageTypes.PHYSICAL,
     description:
-      "The user continually rolls into the target. If it hits, the next turn's rollout has base 60 power.",
+      "The user continually rolls into the target. If it hits, the next turn's rollout has base 100 power.",
   },
   m208: {
     name: "Milk Drink",
     type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
-    cooldown: 3,
+    cooldown: 2,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
@@ -3994,7 +3994,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.POISON,
     power: null,
     accuracy: null,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.SELF,
     targetPattern: targetPatterns.SINGLE,
@@ -4006,7 +4006,7 @@ const moveConfig = Object.freeze({
   m210: {
     name: "Fury Cutter",
     type: pokemonTypes.BUG,
-    power: 40,
+    power: 50,
     accuracy: 90,
     cooldown: 0,
     targetType: targetTypes.ENEMY,
@@ -4015,7 +4015,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.BASIC,
     damageType: damageTypes.PHYSICAL,
     description:
-      "The target is slashed with scythes or claws. If it hits, the next turn's fury cutter has base 60 power.",
+      "The target is slashed with scythes or claws. If it hits, the next turn's fury cutter has base 100 power.",
   },
   m212: {
     name: "Mean Look",
@@ -4029,7 +4029,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.ULTIMATE,
     damageType: damageTypes.OTHER,
     description:
-      "The user pins targets with a dark, arresting look. Enemies lose 50% combat readiness and can't gain combat readiness for 2 turns.",
+      "The user pins targets with a dark, arresting look. Enemies lose 50% combat readiness and can't gain boosted combat readiness for 2 turns.",
   },
   "m212-1": {
     name: "Slow Down!",
@@ -4064,7 +4064,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.ALL,
@@ -4078,7 +4078,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.NORMAL,
     power: 102,
     accuracy: 100,
-    cooldown: 3,
+    cooldown: 2,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.SINGLE,
@@ -4092,7 +4092,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.ALL,
@@ -4106,7 +4106,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.FIRE,
     power: 100,
     accuracy: 90,
-    cooldown: 6,
+    cooldown: 5,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SQUARE,
@@ -4120,7 +4120,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.FIGHTING,
     power: 140,
     accuracy: 50,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.SINGLE,
@@ -4132,9 +4132,9 @@ const moveConfig = Object.freeze({
   m224: {
     name: "Megahorn",
     type: pokemonTypes.BUG,
-    power: 120,
+    power: 130,
     accuracy: 85,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.SINGLE,
@@ -4175,8 +4175,8 @@ const moveConfig = Object.freeze({
     name: "Rapid Spin",
     type: pokemonTypes.NORMAL,
     power: 50,
-    accuracy: 100,
-    cooldown: 4,
+    accuracy: 90,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.ROW,
@@ -4188,9 +4188,9 @@ const moveConfig = Object.freeze({
   m231: {
     name: "Iron Tail",
     type: pokemonTypes.STEEL,
-    power: 100,
+    power: 90,
     accuracy: 75,
-    cooldown: 6,
+    cooldown: 5,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.ROW,
@@ -4211,7 +4211,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.POWER,
     damageType: damageTypes.OTHER,
     description:
-      "The user restores its own HP by 33% and gain 50% combat readiness. In sun, boost the users Special Attack and Special Defense for 2 turns. In other weather, this restores 25% HP.",
+      "The user restores its own HP by 33% and gain 50% combat readiness. In sun, boost the users Special Attack and Special Defense for 3 turns. In other weather, this restores 25% HP.",
   },
   m236: {
     name: "Moonlight",
@@ -4232,19 +4232,19 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.FIGHTING,
     power: 80,
     accuracy: 80,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.X,
     tier: moveTiers.POWER,
     damageType: damageTypes.PHYSICAL,
     description:
-      "The user delivers a double chop with its forearms crossed. Deals half damage to adjacent targets.",
+      "The user delivers a double chop with its forearms crossed. Deals half damage to non-primary targets.",
   },
   m239: {
     name: "Twister",
     type: pokemonTypes.DRAGON,
-    power: 40,
+    power: 45,
     accuracy: 100,
     cooldown: 0,
     targetType: targetTypes.ENEMY,
@@ -4266,7 +4266,8 @@ const moveConfig = Object.freeze({
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.POWER,
     damageType: damageTypes.OTHER,
-    description: "The user summons a heavy rain, powering up Water-type moves.",
+    description:
+      "The user summons a heavy rain, powering up Water-type moves. Then gains 50% combat readiness.",
   },
   m241: {
     name: "Sunny Day",
@@ -4279,28 +4280,29 @@ const moveConfig = Object.freeze({
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.POWER,
     damageType: damageTypes.OTHER,
-    description: "The user intensifies the sun, powering up Fire-type moves.",
+    description:
+      "The user intensifies the sun, powering up Fire-type moves. Then gains 50% combat readiness.",
   },
   m242: {
     name: "Crunch",
     type: pokemonTypes.DARK,
-    power: 100,
+    power: 80,
     accuracy: 100,
-    cooldown: 3,
+    cooldown: 2,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.POWER,
     damageType: damageTypes.PHYSICAL,
     description:
-      "The user crunches up the target with sharp fangs. This may also lower the target's defense for 2 turns with a 85% chance.",
+      "The user crunches up the target with sharp fangs. This may also lower the target's defense for 3 turns with a 85% chance.",
   },
   m243: {
     name: "Mirror Coat",
     type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.SELF,
     targetPattern: targetPatterns.SINGLE,
@@ -4312,7 +4314,7 @@ const moveConfig = Object.freeze({
   m245: {
     name: "Extreme Speed",
     type: pokemonTypes.NORMAL,
-    power: 95,
+    power: 80,
     accuracy: 100,
     cooldown: 3,
     targetType: targetTypes.ENEMY,
@@ -4321,12 +4323,12 @@ const moveConfig = Object.freeze({
     tier: moveTiers.POWER,
     damageType: damageTypes.PHYSICAL,
     description:
-      "The user charges the target at blinding speed, raising the user's combat readiness by 60%.",
+      "The user charges the target at blinding speed, raising the user's combat readiness by 80%.",
   },
   m246: {
     name: "Ancient Power",
     type: pokemonTypes.ROCK,
-    power: 40,
+    power: 50,
     accuracy: 100,
     cooldown: 0,
     targetType: targetTypes.ENEMY,
@@ -4340,23 +4342,23 @@ const moveConfig = Object.freeze({
   m247: {
     name: "Shadow Ball",
     type: pokemonTypes.GHOST,
-    power: 100,
+    power: 80,
     accuracy: 100,
-    cooldown: 3,
+    cooldown: 2,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.POWER,
     damageType: damageTypes.SPECIAL,
     description:
-      "The user hurls a shadowy blob at the target. This may also lower the target's Sp. Def stat for 2 turns with a 85% chance.",
+      "The user hurls a shadowy blob at the target. This may also lower the target's Sp. Def stat for 3 turns with a 85% chance.",
   },
   m248: {
     name: "Future Sight",
     type: pokemonTypes.PSYCHIC,
     power: 100,
     accuracy: 100,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SQUARE,
@@ -4398,7 +4400,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.FIRE,
     power: 80,
     accuracy: 100,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.ALL,
@@ -4418,7 +4420,8 @@ const moveConfig = Object.freeze({
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.POWER,
     damageType: damageTypes.OTHER,
-    description: "The user summons a vicious hailstorm.",
+    description:
+      "The user summons a vicious hailstorm. The user also gains 50% combat readiness.",
   },
   m262: {
     name: "Memento",
@@ -4432,7 +4435,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.ULTIMATE,
     damageType: damageTypes.OTHER,
     description:
-      "The user faints, but sharply lowers the enemy teams' Attack and Special Attack for 2 turns.",
+      "The user faints, but sharply lowers the enemy teams' Attack and Special Attack for 3 turns.",
   },
   m266: {
     name: "Follow Me",
@@ -4445,7 +4448,8 @@ const moveConfig = Object.freeze({
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.POWER,
     damageType: damageTypes.OTHER,
-    description: "The user redirects all enemy attacks to itself for 1 turn.",
+    description:
+      "The user redirects all enemy attacks to itself and gains increased defenses for 1 turn.",
   },
   m268: {
     name: "Charge",
@@ -4459,7 +4463,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.BASIC,
     damageType: damageTypes.OTHER,
     description:
-      "The user boosts its Special Defense and Electric moves for 1 turn.",
+      "The user boosts its Special Defense and Electric moves for 2 turns.",
   },
   m269: {
     name: "Taunt",
@@ -4473,14 +4477,14 @@ const moveConfig = Object.freeze({
     tier: moveTiers.POWER,
     damageType: damageTypes.OTHER,
     description:
-      "The user taunts the target into only using moves with base power for 2 turns.",
+      "The user taunts the target into only using moves with base power for 3 turns.",
   },
   "m269-1": {
     name: "Reverse Taunt",
     type: pokemonTypes.DARK,
     power: null,
     accuracy: 100,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
@@ -4501,7 +4505,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.BASIC,
     damageType: damageTypes.OTHER,
     description:
-      "The user assists an ally by boosting their attacking stats for 1 turn.",
+      "The user assists an ally by boosting their attacking stats for 1 turn, and their combat readiness by 25%.",
   },
   m273: {
     name: "Wish",
@@ -4522,7 +4526,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.FIGHTING,
     power: 130,
     accuracy: 100,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.SINGLE,
@@ -4548,9 +4552,9 @@ const moveConfig = Object.freeze({
   m282: {
     name: "Knock Off",
     type: pokemonTypes.DARK,
-    power: 75,
+    power: 65,
     accuracy: 100,
-    cooldown: 3,
+    cooldown: 2,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.SINGLE,
@@ -4564,7 +4568,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.SINGLE,
@@ -4576,9 +4580,9 @@ const moveConfig = Object.freeze({
   m284: {
     name: "Eruption",
     type: pokemonTypes.FIRE,
-    power: 130,
-    accuracy: 100,
-    cooldown: 5,
+    power: 150,
+    accuracy: 90,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.ROW,
@@ -4604,7 +4608,7 @@ const moveConfig = Object.freeze({
   m295: {
     name: "Luster Purge",
     type: pokemonTypes.PSYCHIC,
-    power: 80,
+    power: 75,
     accuracy: 80,
     cooldown: 5,
     targetType: targetTypes.ENEMY,
@@ -4618,7 +4622,7 @@ const moveConfig = Object.freeze({
   m296: {
     name: "Mist Ball",
     type: pokemonTypes.PSYCHIC,
-    power: 55,
+    power: 60,
     accuracy: 80,
     cooldown: 5,
     targetType: targetTypes.ENEMY,
@@ -4636,7 +4640,7 @@ const moveConfig = Object.freeze({
     accuracy: 90,
     cooldown: 3,
     targetType: targetTypes.ENEMY,
-    targetPosition: targetPositions.FRONT,
+    targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.POWER,
     damageType: damageTypes.PHYSICAL,
@@ -4655,14 +4659,14 @@ const moveConfig = Object.freeze({
     tier: moveTiers.ULTIMATE,
     damageType: damageTypes.OTHER,
     description:
-      "The user slacks off, restoring 50% of its max HP and increasing its defense for 2 turns.",
+      "The user slacks off, restoring 50% of its max HP and increasing its defense for 3 turns.",
   },
   m304: {
     name: "Hyper Voice",
     type: pokemonTypes.NORMAL,
-    power: 85,
+    power: 90,
     accuracy: 100,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.CROSS,
@@ -4683,14 +4687,14 @@ const moveConfig = Object.freeze({
     tier: moveTiers.POWER,
     damageType: damageTypes.PHYSICAL,
     description:
-      "The user bites the target with toxic fangs. This may also leave the target badly poisoned with a 50% chance.",
+      "The user bites the target with toxic fangs. This may also leave the target badly poisoned with a 75% chance.",
   },
   m309: {
     name: "Meteor Mash",
     type: pokemonTypes.STEEL,
     power: 90,
     accuracy: 90,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
@@ -4702,7 +4706,7 @@ const moveConfig = Object.freeze({
   m311: {
     name: "Weather Ball",
     type: pokemonTypes.NORMAL,
-    power: 50,
+    power: 55,
     accuracy: 100,
     cooldown: 0,
     targetType: targetTypes.ENEMY,
@@ -4718,14 +4722,14 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.GRASS,
     power: null,
     accuracy: null,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.ALL,
     tier: moveTiers.ULTIMATE,
     damageType: damageTypes.OTHER,
     description:
-      "The user releases a soothing scent that heals all allies by 25% HP and status conditions and debuffs.",
+      "The user releases a soothing scent that heals all allies by 25% HP, removing status conditions and debuffs.",
   },
   m317: {
     name: "Rock Tomb",
@@ -4739,12 +4743,12 @@ const moveConfig = Object.freeze({
     tier: moveTiers.POWER,
     damageType: damageTypes.PHYSICAL,
     description:
-      "Boulders are hurled at the target. This also lowers the target's Speed stat for 2 turns.",
+      "Boulders are hurled at the target. This also lowers the target's Speed stat for 3 turns.",
   },
   "m317-1": {
     name: "Holy Tomb",
     type: pokemonTypes.ROCK,
-    power: 90,
+    power: 100,
     accuracy: 70,
     cooldown: 3,
     targetType: targetTypes.ENEMY,
@@ -4760,7 +4764,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.SELF,
     targetPattern: targetPatterns.SINGLE,
@@ -4776,7 +4780,7 @@ const moveConfig = Object.freeze({
     accuracy: null,
     cooldown: 2,
     targetType: targetTypes.ENEMY,
-    targetPosition: targetPositions.FRONT,
+    targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.POWER,
     damageType: damageTypes.PHYSICAL,
@@ -4788,7 +4792,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.WATER,
     power: 50,
     accuracy: 70,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.ALL,
@@ -4801,7 +4805,7 @@ const moveConfig = Object.freeze({
     name: "Bullet Seed",
     type: pokemonTypes.GRASS,
     power: 30,
-    accuracy: 100,
+    accuracy: 90,
     cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
@@ -4816,7 +4820,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.DARK,
     power: 15,
     accuracy: 80,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.ALL,
@@ -4847,35 +4851,35 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.STEEL,
     power: null,
     accuracy: null,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.SELF,
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.POWER,
     damageType: damageTypes.OTHER,
     description:
-      "The user hardens its body's surface like iron, sharply raising its Defense stat for 3 turns and gaining 25% defense as shield.",
+      "The user hardens its body's surface like iron, sharply raising its Defense stat for 3 turns and gaining 15% defense as shield.",
   },
   "m334-1": {
     name: "Titanium Defense",
     type: pokemonTypes.STEEL,
     power: null,
     accuracy: null,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.SELF,
     targetPattern: targetPatterns.SQUARE,
     tier: moveTiers.POWER,
     damageType: damageTypes.OTHER,
     description:
-      "The user hardens its teammates' bodies like titanium, sharply raising its Defense stat for 2 turns and raising surrounding allies Defense stat for 2 turns. Gives itself 25% defense as shield and allies 10% user def as shield.",
+      "The user hardens its teammates' bodies like titanium, sharply raising its Defense stat for 2 turns and raising surrounding allies Defense stat for 2 turns. Gives itself 20% defense as shield and allies 5% user def as shield.",
   },
   "m334-2": {
     name: "Genetic Defense",
     type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.SELF,
     targetPattern: targetPatterns.SINGLE,
@@ -4889,7 +4893,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.NORMAL,
     power: null,
     accuracy: null,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.ALL,
@@ -4901,7 +4905,7 @@ const moveConfig = Object.freeze({
   m340: {
     name: "Bounce",
     type: pokemonTypes.FLYING,
-    power: 105,
+    power: 110,
     accuracy: 85,
     cooldown: 3,
     targetType: targetTypes.ENEMY,
@@ -4920,7 +4924,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.ELECTRIC,
     power: 80,
     accuracy: 80,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.COLUMN,
@@ -4934,7 +4938,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.SELF,
     targetPattern: targetPatterns.SINGLE,
@@ -4946,9 +4950,9 @@ const moveConfig = Object.freeze({
   m348: {
     name: "Leaf Blade",
     type: pokemonTypes.GRASS,
-    power: 80,
+    power: 70,
     accuracy: 100,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.ROW,
@@ -4962,7 +4966,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.DRAGON,
     power: null,
     accuracy: null,
-    cooldown: 5,
+    cooldown: 3,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.SELF,
     targetPattern: targetPatterns.SINGLE,
@@ -4976,7 +4980,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.WATER,
     power: 60,
     accuracy: 100,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.COLUMN,
@@ -4990,7 +4994,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.PSYCHIC,
     power: 20,
     accuracy: 90,
-    cooldown: 6,
+    cooldown: 5,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.ALL,
@@ -5004,7 +5008,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.PSYCHIC,
     power: 100,
     accuracy: 90,
-    cooldown: 6,
+    cooldown: 5,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.COLUMN,
@@ -5018,14 +5022,14 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.NON_SELF,
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.ULTIMATE,
     damageType: damageTypes.OTHER,
     description:
-      "The user protects an ally, granting them a shield equal to to 25% of the user's defenses for 2 turns.",
+      "The user protects an ally, granting them a shield equal to to 25% of the user's defenses for 3 turns.",
   },
   "m354-3": {
     name: "Psycho Boost - Speed",
@@ -5060,7 +5064,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.FIGHTING,
     power: 80,
     accuracy: 90,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.COLUMN,
@@ -5100,7 +5104,7 @@ const moveConfig = Object.freeze({
   m369: {
     name: "U-Turn",
     type: pokemonTypes.BUG,
-    power: 70,
+    power: 80,
     accuracy: 100,
     cooldown: 2,
     targetType: targetTypes.ENEMY,
@@ -5114,9 +5118,9 @@ const moveConfig = Object.freeze({
   m370: {
     name: "Close Combat",
     type: pokemonTypes.FIGHTING,
-    power: 150,
+    power: 120,
     accuracy: 100,
-    cooldown: 4,
+    cooldown: 2,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.SINGLE,
@@ -5128,9 +5132,9 @@ const moveConfig = Object.freeze({
   "m370-1": {
     name: "Gattling Combat",
     type: pokemonTypes.FIGHTING,
-    power: 90,
+    power: 85,
     accuracy: 80,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.ROW,
@@ -5144,7 +5148,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.NORMAL,
     power: 80,
     accuracy: 100,
-    cooldown: 3,
+    cooldown: 2,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.SINGLE,
@@ -5158,7 +5162,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.WATER,
     power: null,
     accuracy: null,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SQUARE,
@@ -5172,7 +5176,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.FIRE,
     power: 110,
     accuracy: 100,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.CROSS,
@@ -5184,9 +5188,9 @@ const moveConfig = Object.freeze({
   "m394-1": {
     name: "Dark Blitz",
     type: pokemonTypes.FIRE,
-    power: 90,
+    power: 85,
     accuracy: 100,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.X,
@@ -5198,7 +5202,7 @@ const moveConfig = Object.freeze({
   m396: {
     name: "Aura Sphere",
     type: pokemonTypes.FIGHTING,
-    power: 100,
+    power: 115,
     accuracy: null,
     cooldown: 3,
     targetType: targetTypes.ENEMY,
@@ -5212,9 +5216,9 @@ const moveConfig = Object.freeze({
   m398: {
     name: "Poison Jab",
     type: pokemonTypes.POISON,
-    power: 100,
+    power: 85,
     accuracy: 100,
-    cooldown: 3,
+    cooldown: 2,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
@@ -5228,7 +5232,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.DARK,
     power: 65,
     accuracy: 100,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.ROW,
@@ -5240,9 +5244,9 @@ const moveConfig = Object.freeze({
   m402: {
     name: "Seed Bomb",
     type: pokemonTypes.GRASS,
-    power: 80,
+    power: 70,
     accuracy: 80,
-    cooldown: 3,
+    cooldown: 2,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.CROSS,
@@ -5256,7 +5260,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.FLYING,
     power: 65,
     accuracy: 90,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.COLUMN,
@@ -5268,9 +5272,9 @@ const moveConfig = Object.freeze({
   m404: {
     name: "X-Scissor",
     type: pokemonTypes.BUG,
-    power: 45,
+    power: 50,
     accuracy: 100,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.X,
@@ -5284,7 +5288,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.BUG,
     power: 70,
     accuracy: 100,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.COLUMN,
@@ -5298,7 +5302,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.DRAGON,
     power: 70,
     accuracy: 100,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.COLUMN,
@@ -5312,7 +5316,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.DRAGON,
     power: 120,
     accuracy: 75,
-    cooldown: 3,
+    cooldown: 2,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.RANDOM,
@@ -5347,14 +5351,14 @@ const moveConfig = Object.freeze({
     tier: moveTiers.POWER,
     damageType: damageTypes.SPECIAL,
     description:
-      "The user draws power from nature and fires it at the target. This has a 85% chance to lower the target's Sp. Defense for 2 turn.",
+      "The user draws power from nature and fires it at the target. This has a 85% chance to lower the target's Sp. Defense for 4 turn.",
   },
   m413: {
     name: "Brave Bird",
     type: pokemonTypes.FLYING,
     power: 110,
     accuracy: 80,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.COLUMN,
@@ -5366,23 +5370,23 @@ const moveConfig = Object.freeze({
   m414: {
     name: "Earth Power",
     type: pokemonTypes.GROUND,
-    power: 70,
+    power: 60,
     accuracy: 100,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.CROSS,
     tier: moveTiers.POWER,
     damageType: damageTypes.SPECIAL,
     description:
-      "The user makes the ground under the target erupt with power. This also has a 20% chance to lower targets' Sp. Defense for 2 turns.",
+      "The user makes the ground under the target erupt with power. This also has a 30% chance to lower targets' Sp. Defense for 3 turns.",
   },
   m416: {
     name: "Giga Impact",
     type: pokemonTypes.NORMAL,
     power: 160,
     accuracy: 90,
-    cooldown: 6,
+    cooldown: 5,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.COLUMN,
@@ -5394,16 +5398,16 @@ const moveConfig = Object.freeze({
   "m416-1": {
     name: "Galaxy Impact",
     type: pokemonTypes.NORMAL,
-    power: 150,
+    power: 130,
     accuracy: 90,
-    cooldown: 6,
+    cooldown: 5,
     targetType: targetTypes.ENEMY,
-    targetPosition: targetPositions.FRONT,
+    targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SQUARE,
     tier: moveTiers.ULTIMATE,
     damageType: damageTypes.PHYSICAL,
     description:
-      "The launches an attack at the target using every bit of its willpower. The user's speed is greatly lowered for 1 turn.",
+      "The launches an attack at the target using every bit of its willpower, dealing damage to the primary target and 50% damage to other targets. The user's speed is greatly lowered for 1 turn.",
   },
   m417: {
     name: "Nasty Plot",
@@ -5417,7 +5421,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.POWER,
     damageType: damageTypes.OTHER,
     description:
-      "The user stimulates its brain by thinking bad thoughts. This sharply raises the user's Sp. Attack stat for 3 turns, and gives it 60% combat readiness.",
+      "The user stimulates its brain by thinking bad thoughts. This sharply raises the user's Sp. Attack stat for 5 turns, and gives it 60% combat readiness.",
   },
   "m417-1": {
     name: "Uncontrollable Joy",
@@ -5431,7 +5435,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.ULTIMATE,
     damageType: damageTypes.OTHER,
     description:
-      "The user stimulates the target's brain by thinking happy thoughts. This sharply raises the target's Sp. Attack and Evasion for 2 turns, and gives it 60% combat readiness.",
+      "The user stimulates the an ally's brain by thinking happy thoughts. This sharply raises the target's Sp. Attack and Evasion for 2 turns, and gives it 60% combat readiness.",
   },
   m418: {
     name: "Bullet Punch",
@@ -5464,7 +5468,7 @@ const moveConfig = Object.freeze({
   m424: {
     name: "Fire Fang",
     type: pokemonTypes.FIRE,
-    power: 80,
+    power: 75,
     accuracy: 95,
     cooldown: 2,
     targetType: targetTypes.ENEMY,
@@ -5473,7 +5477,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.POWER,
     damageType: damageTypes.PHYSICAL,
     description:
-      "The user bites the target with flame-cloaked fangs, dealing damage and has a 10% chance to flinch and 10% chance to leave the target with a burn.",
+      "The user bites the target with flame-cloaked fangs, dealing damage and has a 25% chance to flinch and 25% chance to leave the target with a burn.",
   },
   m425: {
     name: "Shadow Sneak",
@@ -5482,7 +5486,7 @@ const moveConfig = Object.freeze({
     accuracy: 100,
     cooldown: 0,
     targetType: targetTypes.ENEMY,
-    targetPosition: targetPositions.FRONT,
+    targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.BASIC,
     damageType: damageTypes.PHYSICAL,
@@ -5492,9 +5496,9 @@ const moveConfig = Object.freeze({
   m428: {
     name: "Zen Headbutt",
     type: pokemonTypes.PSYCHIC,
-    power: 120,
+    power: 110,
     accuracy: 90,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.SINGLE,
@@ -5508,21 +5512,21 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.STEEL,
     power: 65,
     accuracy: 100,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.COLUMN,
     tier: moveTiers.POWER,
     damageType: damageTypes.SPECIAL,
     description:
-      "The user gathers all its light energy and releases it at once, dealing damage and has a 20% chance to lower targets Sp. Defense for two turns.",
+      "The user gathers all its light energy and releases it at once, dealing damage and has a 40% chance to lower targets Sp. Defense for two turns.",
   },
   m432: {
     name: "Defog",
     type: pokemonTypes.FLYING,
     power: null,
     accuracy: null,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.SELF,
     targetPattern: targetPatterns.SINGLE,
@@ -5537,7 +5541,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.PSYCHIC,
     power: null,
     accuracy: null,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.SELF,
     targetPattern: targetPatterns.SINGLE,
@@ -5549,9 +5553,9 @@ const moveConfig = Object.freeze({
   m435: {
     name: "Discharge",
     type: pokemonTypes.ELECTRIC,
-    power: 65,
+    power: 60,
     accuracy: 100,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.ROW,
@@ -5565,7 +5569,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.ELECTRIC,
     power: 70,
     accuracy: 100,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.ROW,
@@ -5579,7 +5583,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.GRASS,
     power: 100,
     accuracy: 90,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SQUARE,
@@ -5591,23 +5595,23 @@ const moveConfig = Object.freeze({
   m441: {
     name: "Gunk Shot",
     type: pokemonTypes.POISON,
-    power: 100,
+    power: 95,
     accuracy: 80,
-    cooldown: 3,
+    cooldown: 2,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.POWER,
     damageType: damageTypes.PHYSICAL,
     description:
-      "The user fires a filthy shot at the target to inflict damage and has a 30% chance to poison targets. If already poisoned, deals 1.5x damage.",
+      "The user fires a filthy shot at the target to inflict damage and has a 50% chance to poison targets. If already poisoned, deals 1.5x damage.",
   },
   m444: {
     name: "Stone Edge",
     type: pokemonTypes.ROCK,
     power: 80,
     accuracy: 80,
-    cooldown: 4,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
     targetPattern: targetPatterns.COLUMN,
@@ -5621,19 +5625,19 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.ROCK,
     power: null,
     accuracy: null,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.ALL,
     tier: moveTiers.POWER,
     damageType: damageTypes.OTHER,
     description:
-      "The user lays a trap of levitating stones around the target for 3 turns. The trap hurts opposing Pokemon that have their combat readiness boosted or receive buffs.",
+      "The user lays a trap of levitating stones around the target for 5 turns. The trap hurts opposing Pokemon that have their combat readiness boosted or receive buffs.",
   },
   m450: {
     name: "Bug Bite",
     type: pokemonTypes.BUG,
-    power: 80,
+    power: 90,
     accuracy: 100,
     cooldown: 2,
     targetType: targetTypes.ENEMY,
@@ -5647,7 +5651,7 @@ const moveConfig = Object.freeze({
   m453: {
     name: "Aqua Jet",
     type: pokemonTypes.WATER,
-    power: 40,
+    power: 45,
     accuracy: 100,
     cooldown: 0,
     targetType: targetTypes.ENEMY,
@@ -5663,7 +5667,7 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.ROCK,
     power: null,
     accuracy: null,
-    cooldown: 5,
+    cooldown: 4,
     targetType: targetTypes.ALLY,
     targetPosition: targetPositions.SELF,
     targetPattern: targetPatterns.SINGLE,
@@ -8305,9 +8309,9 @@ const moveExecutes = {
       `Spikes were scattered around ${primaryTarget.name}'s surroundings!`
     );
     for (const target of allTargets) {
-      // if not miss, apply spikes 3 turns
+      // if not miss, apply spikes 5 turns
       if (!missedTargets.includes(target)) {
-        target.applyEffect("spikes", 3, source);
+        target.applyEffect("spikes", 5, source);
       }
     }
   },
@@ -8421,8 +8425,8 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (!miss) {
-        // greater atk down for 2 turns
-        target.applyEffect("greaterAtkDown", 2, source);
+        // greater atk down for 3 turns
+        target.applyEffect("greaterAtkDown", 3, source);
       }
     }
   },
@@ -8815,9 +8819,9 @@ const moveExecutes = {
         } else if (battle.weather.weatherId === weatherConditions.SUN) {
           fraction = 0.33;
 
-          // gain 2 turns spa, spd up
-          target.applyEffect("spaUp", 2, source);
-          target.applyEffect("spdUp", 2, source);
+          // gain 3 turns spa, spd up
+          target.applyEffect("spaUp", 3, source);
+          target.applyEffect("spdUp", 3, source);
         } else {
           fraction = 0.25;
         }
@@ -8888,10 +8892,14 @@ const moveExecutes = {
   m240(battle, source) {
     // rain weather
     battle.createWeather(weatherConditions.RAIN, source);
+    // gain 50 combat readiness
+    source.boostCombatReadiness(source, 50);
   },
   m241(battle, source) {
     // sun weather
     battle.createWeather(weatherConditions.SUN, source);
+    // gain 50 combat readiness
+    source.boostCombatReadiness(source, 50);
   },
   m242(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m242";
@@ -8906,7 +8914,7 @@ const moveExecutes = {
 
       // if not miss, 85% chance to reduce def
       if (!miss && Math.random() < 0.85) {
-        target.applyEffect("defDown", 2, source);
+        target.applyEffect("defDown", 3, source);
       }
     }
   },
@@ -8930,8 +8938,8 @@ const moveExecutes = {
       });
     }
 
-    // raise own cr by 60%
-    source.boostCombatReadiness(source, 60);
+    // raise own cr by 80%
+    source.boostCombatReadiness(source, 80);
   },
   m246(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m246";
@@ -8996,7 +9004,7 @@ const moveExecutes = {
 
       // if not miss, 85% chance to reduce sp def
       if (!miss && Math.random() < 0.85) {
-        target.applyEffect("spdDown", 2, source);
+        target.applyEffect("spdDown", 3, source);
       }
     }
   },
@@ -9085,6 +9093,8 @@ const moveExecutes = {
 
     // hail weather
     battle.createWeather(weatherConditions.HAIL, source);
+    // gain 50 combat readiness
+    source.boostCombatReadiness(source, 50);
   },
   m266(_battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m266";
@@ -9092,6 +9102,9 @@ const moveExecutes = {
     for (const target of allTargets) {
       // apply redirect for 1 turn
       target.applyEffect("redirect", 1, source);
+      // apple def and spd up for 1 turn
+      target.applyEffect("defUp", 1, source);
+      target.applyEffect("spdUp", 1, source);
     }
   },
   m262(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -9100,22 +9113,22 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (!miss) {
-        // give 2 turns greater atk, spa down
-        target.applyEffect("greaterAtkDown", 2, source);
-        target.applyEffect("greaterSpaDown", 2, source);
+        // give 3 turns greater atk, spa down
+        target.applyEffect("greaterAtkDown", 3, source);
+        target.applyEffect("greaterSpaDown", 3, source);
       }
     }
     // cause self to faint
     source.takeFaint(source);
   },
   m268(_battle, source, _primaryTarget, allTargets, _missedTargets) {
-    const moveId = "m266";
+    const moveId = "m268";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
-      // apply charge for 1 turn
-      target.applyEffect("charge", 1, source);
-      // apply spd up for 1 turn
-      target.applyEffect("spdUp", 1, source);
+      // apply charge for 2 turn
+      target.applyEffect("charge", 2, source);
+      // apply spd up for 2 turn
+      target.applyEffect("spdUp", 2, source);
     }
   },
   m269(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -9127,8 +9140,8 @@ const moveExecutes = {
         continue;
       }
 
-      // add taunt for 2 turns
-      target.applyEffect("taunt", 2, source);
+      // add taunt for 3 turns
+      target.applyEffect("taunt", 3, source);
     }
   },
   "m269-1": function (
@@ -9157,6 +9170,8 @@ const moveExecutes = {
       // apply atk up and spa up 1 turn
       target.applyEffect("atkUp", 1, source);
       target.applyEffect("spaUp", 1, source);
+      // boost 25 cr
+      target.boostCombatReadiness(source, 25);
     }
   },
   m273(battle, source, _primaryTarget, allTargets, _missedTargets) {
@@ -9392,8 +9407,8 @@ const moveExecutes = {
         moveId,
       });
 
-      // apply def up 2 turns
-      source.applyEffect("defUp", 2, source);
+      // apply def up 3 turns
+      source.applyEffect("defUp", 3, source);
     }
   },
   m304(_battle, source, _primaryTarget, allTargets, missedTargets) {
@@ -9419,8 +9434,8 @@ const moveExecutes = {
         moveId,
       });
 
-      // if not miss, badly poison 50% chance
-      if (!miss && Math.random() < 0.5) {
+      // if not miss, badly poison 75% chance
+      if (!miss && Math.random() < 0.75) {
         target.applyStatus(statusConditions.BADLY_POISON, source);
       }
     }
@@ -9516,9 +9531,9 @@ const moveExecutes = {
         moveId,
       });
 
-      // if not miss, spe down for 2 turns
+      // if not miss, spe down for 3 turns
       if (!miss) {
-        target.applyEffect("speDown", 2, source);
+        target.applyEffect("speDown", 3, source);
       }
     }
   },
@@ -9657,9 +9672,9 @@ const moveExecutes = {
     for (const target of allTargets) {
       // sharply raise def
       target.applyEffect("greaterDefUp", 3, source);
-      // get 25% def as shield
+      // get 15% def as shield
       target.applyEffect("shield", 3, source, {
-        shield: Math.floor(target.getDef() * 0.25),
+        shield: Math.floor(target.getDef() * 0.15),
       });
     }
   },
@@ -9680,15 +9695,15 @@ const moveExecutes = {
       // if primary target, greater def up, else def up
       if (target === primaryTarget) {
         target.applyEffect("greaterDefUp", 2, source);
-        // get 25% def as shield
+        // get 20% def as shield
         target.applyEffect("shield", 2, source, {
-          shield: Math.floor(source.getDef() * 0.25),
+          shield: Math.floor(source.getDef() * 0.2),
         });
       } else {
         target.applyEffect("defUp", 2, source);
-        // get 10% def as shield
+        // get 5% def as shield
         target.applyEffect("shield", 2, source, {
-          shield: Math.floor(source.getDef() * 0.1),
+          shield: Math.floor(source.getDef() * 0.05),
         });
       }
     }
@@ -10352,7 +10367,7 @@ const moveExecutes = {
 
       // if not miss, 85% chance to reduce sp def
       if (!miss && Math.random() < 0.85) {
-        target.applyEffect("spdDown", 2, source);
+        target.applyEffect("spdDown", 4, source);
       }
     }
   },
@@ -10387,9 +10402,9 @@ const moveExecutes = {
         moveId,
       });
 
-      // if not miss, 20% spd down 2 turns
-      if (!miss && Math.random() < 0.2) {
-        target.applyEffect("spdDown", 2, source);
+      // if not miss, 30% spd down 3 turns
+      if (!miss && Math.random() < 0.3) {
+        target.applyEffect("spdDown", 3, source);
       }
     }
   },
@@ -10442,7 +10457,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       // sharply raise spatk
-      target.applyEffect("greaterSpaUp", 3, source);
+      target.applyEffect("greaterSpaUp", 5, source);
 
       // boost cr 60%
       source.boostCombatReadiness(source, 60);
@@ -10507,12 +10522,12 @@ const moveExecutes = {
         moveId,
       });
 
-      // if not miss, 10% chance to burn
-      if (!miss && Math.random() < 0.1) {
+      // if not miss, 25% chance to burn
+      if (!miss && Math.random() < 0.25) {
         target.applyStatus(statusConditions.BURN, source);
       }
-      // if not miss, 10% chance to flinch for 1 turn
-      if (!miss && Math.random() < 0.1) {
+      // if not miss, 25% chance to flinch for 1 turn
+      if (!miss && Math.random() < 0.25) {
         target.applyEffect("flinched", 1, source);
       }
     }
@@ -10560,8 +10575,8 @@ const moveExecutes = {
         moveId,
       });
 
-      // if not miss, 20% to spd down
-      if (!miss && Math.random() < 0.2) {
+      // if not miss, 40% to spd down
+      if (!miss && Math.random() < 0.4) {
         target.applyEffect("spdDown", 2, source);
       }
     }
@@ -10746,8 +10761,8 @@ const moveExecutes = {
         moveId,
       });
 
-      // if not miss, 30% chance to poison
-      if (!miss && Math.random() < 0.3) {
+      // if not miss, 50% chance to poison
+      if (!miss && Math.random() < 0.5) {
         primaryTarget.applyStatus(statusConditions.POISON, source);
       }
     }
@@ -10773,7 +10788,7 @@ const moveExecutes = {
     );
     for (const target of allTargets) {
       // give target stealthRock
-      target.applyEffect("stealthRock", 3, source);
+      target.applyEffect("stealthRock", 5, source);
     }
   },
   m450(_battle, source, _primaryTarget, allTargets, missedTargets) {
