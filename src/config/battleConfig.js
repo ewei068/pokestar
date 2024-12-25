@@ -7,9 +7,6 @@ const { types: pokemonTypes } = require("./pokemonConfig");
 const { getMove, getMoveIds } = require("../battle/data/moveRegistry");
 const { getEffect } = require("../battle/data/effectRegistry");
 const { battleEventEnum, effectIdEnum } = require("../enums/battleEnums");
-const {
-  getIsActivePokemonCallback,
-} = require("../battle/engine/eventConditions");
 
 /** @typedef {Enum<damageTypes>} DamageTypeEnum */
 const damageTypes = Object.freeze({
@@ -2231,7 +2228,7 @@ const effectConfig = Object.freeze({
   },
   grudge: {
     name: "Grudge",
-    description: "If the target faints, silence all enemies for 1 turn.",
+    description: "If the target faints, silence all enemies for 2 turns.",
     type: effectTypes.BUFF,
     dispellable: false,
     effectAdd(battle, _source, target) {

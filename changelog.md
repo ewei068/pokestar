@@ -19,14 +19,20 @@
 - Improved Spawning
   - Overhauled spawning engine so it hopefully crashes less
   - Greatly improved managing which channels Pokemon spawn in
+- Big combat rebalance
+  - Balance pass over most moves and abilities
+    - Lowered many cooldowns
+    - Buffed most basic moves
+    - Made many stat-affecting effects last longer
+    - Made many status moves and abilites more powerful
+  - Reworked sleep: wake up when taking direct damage but take more damage
+  - Targetting back rows deals less damage
+  - Super effective attacks deal more damage
+  - Add X target pattern shape
 
 TODO:
 
 - User profile sharing
-- Balancing
-  - Move & ability rework
-  - Not front row penalty
-  - Move first penalty?
 - Stretch: Achievements
 - Stretch: New event
 - Stretch: Analytics
