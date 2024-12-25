@@ -689,7 +689,7 @@ class BattlePokemon {
       multiplier: mult,
     };
     this.battle.eventHandler.emit(
-      battleEventEnum.CALCULATE_TYPE_MULTIPLIER,
+      battleEventEnum.CALCULATE_TYPE_MULTIPLIER, // This maybe shouldn't be an event. Code run by the NPC should not have possible side-effects
       eventArgs
     );
 

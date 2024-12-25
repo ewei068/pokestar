@@ -12112,7 +12112,7 @@ const abilityConfig = Object.freeze({
   5: {
     name: "Sturdy",
     description:
-      "The first time the user takes fatal damage, the user instead survives with 1 HP.",
+      "The first time the user takes fatal damage, the user instead survives with 1 HP and gains invulnerability to direct damage for 1 turn.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -12138,6 +12138,8 @@ const abilityConfig = Object.freeze({
             targetPokemon.battle.addToLog(
               `${targetPokemon.name} hung on with Sturdy!`
             );
+            // gain move invuln
+            target.applyEffect("moveInvulnerable", 1, target, {});
             // remove event listener
             targetPokemon.battle.eventHandler.unregisterListener(
               abilityData.listenerId
@@ -12210,7 +12212,7 @@ const abilityConfig = Object.freeze({
   9: {
     name: "Static",
     description:
-      "When the user takes damage and survives from a physical move, 30% chance to paralyze the attacker.",
+      "When the user takes damage and survives from a physical move, 50% chance to paralyze the attacker.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -12230,11 +12232,11 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // if physical, 30% chance to paralyze
+          // if physical, 50% chance to paralyze
           const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
-            Math.random() < 0.3
+            Math.random() < 0.5
           ) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Static affects ${sourcePokemon.name}!`
@@ -12389,15 +12391,15 @@ const abilityConfig = Object.freeze({
   },
   14: {
     name: "Compound Eyes",
-    description: "Increases accuracy of moves by 30%.",
+    description: "Increases accuracy of moves by 50%.",
     abilityAdd(battle, _source, target) {
       battle.addToLog(
         `${target.name}'s Compound Eyes ability increases its accuracy!`
       );
-      target.acc += 30;
+      target.acc += 50;
     },
     abilityRemove(_battle, _source, target) {
-      target.acc -= 30;
+      target.acc -= 50;
     },
   },
   15: {
@@ -12447,7 +12449,7 @@ const abilityConfig = Object.freeze({
   18: {
     name: "Flash Fire",
     description:
-      "When the user takes damage from a fire move, negate the damage grant Atk. Up and Spa. Up. for 1 turn.",
+      "When the user takes damage from a fire move, negate the damage grant Atk. Up and Spa. Up. for 2 turns.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -12472,8 +12474,8 @@ const abilityConfig = Object.freeze({
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Flash Fire was activated by the Fire attack!`
             );
-            targetPokemon.applyEffect("atkUp", 1, targetPokemon);
-            targetPokemon.applyEffect("spaUp", 1, targetPokemon);
+            targetPokemon.applyEffect("atkUp", 2, targetPokemon);
+            targetPokemon.applyEffect("spaUp", 2, targetPokemon);
             args.damage = 0;
             args.maxDamage = Math.min(args.maxDamage, args.damage);
           }
@@ -12592,7 +12594,7 @@ const abilityConfig = Object.freeze({
   22: {
     name: "Intimidate",
     description:
-      "At the start of battle, lowers the attack of the enemy Pokemon with the highest attack and the enemy Pokemon with the highest speed for 1 turn.",
+      "At the start of battle, lowers the attack of the enemy Pokemon with the highest attack and the enemy Pokemon with the highest speed for 2 turns.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -12621,7 +12623,7 @@ const abilityConfig = Object.freeze({
           battle.addToLog(
             `${sourcePokemon.name}'s Intimidate affects ${highestAtkPokemon.name}!`
           );
-          highestAtkPokemon.applyEffect("atkDown", 1, sourcePokemon);
+          highestAtkPokemon.applyEffect("atkDown", 2, sourcePokemon);
 
           // get pokemon with highest spe
           let highestSpePokemon = enemyPokemons[0];
@@ -12638,7 +12640,7 @@ const abilityConfig = Object.freeze({
           battle.addToLog(
             `${sourcePokemon.name}'s Intimidate affects ${highestSpePokemon.name}!`
           );
-          highestSpePokemon.applyEffect("atkDown", 1, sourcePokemon);
+          highestSpePokemon.applyEffect("atkDown", 2, sourcePokemon);
         },
       };
       const listenerId = battle.eventHandler.registerListener(
@@ -12707,7 +12709,7 @@ const abilityConfig = Object.freeze({
   25: {
     name: "Wonder Guard",
     description:
-      "The user has 75% less HP. The user is immune to non-supereffective moves.",
+      "The user has 75% less HP. The user takes no damage from non-supereffective moves.",
     abilityAdd(battle, source, target) {
       const listener = {
         initialArgs: {
@@ -12807,7 +12809,7 @@ const abilityConfig = Object.freeze({
   27: {
     name: "Effect Spore",
     description:
-      "When the user is damaged by a physical move, the Pokemon that hit the user has a 30% chance of being inflicted with Poison, Paralysis, or Sleep.",
+      "When the user is damaged by a physical move, the Pokemon that hit the user has a 50% chance of being inflicted with Poison, Paralysis, or Sleep.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -12827,11 +12829,11 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // if physical, 30% chance to status
+          // if physical, 50% chance to status
           const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
-            Math.random() < 0.3
+            Math.random() < 0.5
           ) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Effect Spore affects ${sourcePokemon.name}!`
@@ -12916,7 +12918,7 @@ const abilityConfig = Object.freeze({
   },
   29: {
     name: "Clear Body",
-    description: "The user cannot receive debuffs.",
+    description: "The user cannot receive dispellable debuffs.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -12931,9 +12933,13 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          const { effectId } = args;
+          const { effectId } = /** @type { {effectId: EffectIdEnum} } */ (args);
           const effectData = getEffect(effectId);
-          if (!effectData || effectData.type !== effectTypes.DEBUFF) {
+          if (
+            !effectData ||
+            effectData.type !== effectTypes.DEBUFF ||
+            effectData.dispellable
+          ) {
             return;
           }
 
@@ -13019,7 +13025,7 @@ const abilityConfig = Object.freeze({
   31: {
     name: "Lightning Rod",
     description:
-      "When the user is targeted by an Electric-type move, the move is redirected to the user. This also boosts user's special attack for 1 turn if dealt damage.",
+      "When the user is targeted by an Electric-type move, the move is redirected to the user. This also boosts user's special attack for 2 turns if dealt damage.",
     abilityAdd(battle, _source, target) {
       // redirect listener
       const listener1 = {
@@ -13075,7 +13081,7 @@ const abilityConfig = Object.freeze({
           targetPokemon.battle.addToLog(
             `${targetPokemon.name}'s Lightning Rod was activated by the Electric attack!`
           );
-          targetPokemon.applyEffect("spaUp", 1, targetPokemon);
+          targetPokemon.applyEffect("spaUp", 2, targetPokemon);
         },
       };
       const listenerId1 = battle.eventHandler.registerListener(
@@ -13128,7 +13134,7 @@ const abilityConfig = Object.freeze({
   35: {
     name: "Illuminate",
     description:
-      "At the start of battle, reduce the evasion of the enemy front row for 2 turns.",
+      "At the start of battle, reduce the evasion of the enemy front row for 4 turns.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -13152,7 +13158,7 @@ const abilityConfig = Object.freeze({
             battle.addToLog(
               `${sourcePokemon.name}'s Illuminate affects ${pokemon.name}!`
             );
-            pokemon.applyEffect("evaDown", 1, sourcePokemon);
+            pokemon.applyEffect("evaDown", 4, sourcePokemon);
           }
         },
       };
@@ -13189,7 +13195,7 @@ const abilityConfig = Object.freeze({
   38: {
     name: "Poison Point",
     description:
-      "When the user is damaged by a physical move, the move user has a 30% chance to be poisoned.",
+      "When the user is damaged by a physical move, the move user has a 50% chance to be poisoned.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -13209,11 +13215,11 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // if physical, 30% chance to poison
+          // if physical, 50% chance to poison
           const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
-            Math.random() < 0.3
+            Math.random() < 0.5
           ) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Poison Point affects ${sourcePokemon.name}!`
@@ -13550,7 +13556,7 @@ const abilityConfig = Object.freeze({
   50: {
     name: "Run Away",
     description:
-      "The first time this Pokemon's HP is reduced below 25%, increase its combat readiness to 100%.",
+      "The first time this Pokemon's HP is reduced below 33%, increase its combat readiness to 100%.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -13572,8 +13578,8 @@ const abilityConfig = Object.freeze({
           }
           const abilityData = ability.data;
 
-          // if hp < 25%, increase combat readiness to 100%
-          if (targetPokemon.hp < targetPokemon.maxHp / 4) {
+          // if hp < 33%, increase combat readiness to 100%
+          if (targetPokemon.hp < targetPokemon.maxHp / 3) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Run Away increases its combat readiness!`
             );
@@ -13654,7 +13660,7 @@ const abilityConfig = Object.freeze({
   53: {
     name: "Pickup",
     description:
-      "After an other ally loses a dispellable buff, have a 20% chance to gain that buff for 1 turn.",
+      "After an other ally loses a dispellable buff, have a 30% chance to gain that buff for 1 turn.",
     abilityAdd(battle, source, target) {
       const listener = {
         initialArgs: {
@@ -13678,8 +13684,8 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // 20% chance to gain buff
-          if (Math.random() < 0.2) {
+          // 30% chance to gain buff
+          if (Math.random() < 0.3) {
             targetPokemon.battle.addToLog(
               `${initialArgs.pokemon.name}'s Pickup gains ${effectData.name}!`
             );
@@ -13807,7 +13813,7 @@ const abilityConfig = Object.freeze({
   56: {
     name: "Cute Charm",
     description:
-      "Before the user is hit by a physical move, there is a 30% chance to lower the attacker's attack for 1 turn.",
+      "Before the user is hit by a physical move, there is a 50% chance to lower the attacker's attack for 1 turn.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -13824,11 +13830,11 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // if move is physical, 30% chance to lower attacker's attack for 1 turn
+          // if move is physical, 50% chance to lower attacker's attack for 1 turn
           const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
-            Math.random() < 0.3
+            Math.random() < 0.5
           ) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Cute Charm affects ${sourcePokemon.name}!`
@@ -13859,7 +13865,7 @@ const abilityConfig = Object.freeze({
   62: {
     name: "Guts",
     description:
-      "After being afflicted with a status condition, permanently boost the user's attack by 50%.",
+      "After being afflicted with a status condition, permanently boost the user's attack by 100%.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -13871,7 +13877,7 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          targetPokemon.atk += Math.floor(targetPokemon.batk * 0.5);
+          targetPokemon.atk += targetPokemon.batk;
           targetPokemon.battle.addToLog(
             `${targetPokemon.name}'s Guts increases its attack!`
           );
@@ -13897,7 +13903,7 @@ const abilityConfig = Object.freeze({
   },
   65: {
     name: "Overgrow",
-    description: "Increases damage of grass moves by 50% when HP is below 1/3.",
+    description: "Increases damage of grass moves by 50% when HP is below 1/2.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -13913,11 +13919,11 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // if move type === grass and hp < 1/3, increase damage by 50%
+          // if move type === grass and hp < 1/2, increase damage by 50%
           const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.type === pokemonTypes.GRASS &&
-            userPokemon.hp < userPokemon.maxHp / 3
+            userPokemon.hp < userPokemon.maxHp / 2
           ) {
             userPokemon.battle.addToLog(
               `${userPokemon.name}'s Overgrow increases damage!`
@@ -13945,7 +13951,7 @@ const abilityConfig = Object.freeze({
   },
   66: {
     name: "Blaze",
-    description: "Increases damage of fire moves by 50% when HP is below 1/3.",
+    description: "Increases damage of fire moves by 50% when HP is below 1/2.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -13961,11 +13967,11 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // if move type === fire and hp < 1/3, increase damage by 50%
+          // if move type === fire and hp < 1/2, increase damage by 50%
           const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.type === pokemonTypes.FIRE &&
-            userPokemon.hp < userPokemon.maxHp / 3
+            userPokemon.hp < userPokemon.maxHp / 2
           ) {
             userPokemon.battle.addToLog(
               `${userPokemon.name}'s Blaze increases damage!`
@@ -13993,7 +13999,7 @@ const abilityConfig = Object.freeze({
   },
   67: {
     name: "Torrent",
-    description: "Increases damage of water moves by 50% when HP is below 1/3.",
+    description: "Increases damage of water moves by 50% when HP is below 1/2.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -14009,11 +14015,11 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // if move type === water and hp < 1/3, increase damage by 50%
+          // if move type === water and hp < 1/2, increase damage by 50%
           const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.type === pokemonTypes.WATER &&
-            userPokemon.hp < userPokemon.maxHp / 3
+            userPokemon.hp < userPokemon.maxHp / 2
           ) {
             userPokemon.battle.addToLog(
               `${userPokemon.name}'s Torrent increases damage!`
@@ -14041,7 +14047,7 @@ const abilityConfig = Object.freeze({
   },
   68: {
     name: "Swarm",
-    description: "Increases damage of bug moves by 50% when HP is below 1/3.",
+    description: "Increases damage of bug moves by 50% when HP is below 1/2.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -14057,11 +14063,11 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // if move type === bug and hp < 1/3, increase damage by 50%
+          // if move type === bug and hp < 1/2, increase damage by 50%
           const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.type === pokemonTypes.BUG &&
-            userPokemon.hp < userPokemon.maxHp / 3
+            userPokemon.hp < userPokemon.maxHp / 2
           ) {
             userPokemon.battle.addToLog(
               `${userPokemon.name}'s Swarm increases damage!`
@@ -14222,7 +14228,7 @@ const abilityConfig = Object.freeze({
   },
   89: {
     name: "Iron Fist",
-    description: "Increases damage of punching moves by 20%.",
+    description: "Increases damage of punching moves by 30%.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -14238,13 +14244,13 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // if move type === punch, increase damage by 20%
+          // if move type === punch, increase damage by 30%
           const moveData = getMove(args.damageInfo.moveId);
           if (moveData.name.toLowerCase().includes("punch")) {
             userPokemon.battle.addToLog(
               `${userPokemon.name}'s Iron Fist increases the damage!`
             );
-            args.damage = Math.round(args.damage * 1.2);
+            args.damage = Math.round(args.damage * 1.3);
           }
         },
       };
@@ -14552,7 +14558,7 @@ const abilityConfig = Object.freeze({
   114: {
     name: "Storm Drain",
     description:
-      "When the user is targeted by a Water-type move, the move is redirected to the user. This also boosts user's special attack for 1 turn and ignores damage.",
+      "When the user is targeted by a Water-type move, the move is redirected to the user. This also boosts user's special attack for 2 turns and ignores damage.",
     abilityAdd(battle, _source, target) {
       // redirect listener
       const listener1 = {
@@ -14610,7 +14616,7 @@ const abilityConfig = Object.freeze({
           );
           args.damage = 0;
           args.maxDamage = 0;
-          targetPokemon.applyEffect("spaUp", 1, targetPokemon);
+          targetPokemon.applyEffect("spaUp", 2, targetPokemon);
         },
       };
       const listenerId1 = battle.eventHandler.registerListener(
@@ -14639,7 +14645,7 @@ const abilityConfig = Object.freeze({
   115: {
     name: "Ice Body",
     description:
-      "After the user's turn, if it's hailing, heal 25% of its max HP.",
+      "After the user's turn, if it's hailing, heal 33% of its max HP.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -14660,11 +14666,11 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // heal 25% of max hp
+          // heal 33% of max hp
           battle.addToLog(
             `${activePokemon.name}'s Ice Body restores its health!`
           );
-          const healAmount = Math.floor(activePokemon.maxHp * 0.25);
+          const healAmount = Math.floor(activePokemon.maxHp * 0.33);
           activePokemon.giveHeal(healAmount, activePokemon, {
             type: "iceBody",
           });
@@ -14765,7 +14771,7 @@ const abilityConfig = Object.freeze({
   130: {
     name: "Cursed Body",
     description:
-      "When the user is damaged by a move, the move has a 30% chance to increase its cooldown by 2.",
+      "When the user is damaged by a move, the move, increase its cooldown by 2.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -14786,13 +14792,10 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // 30% chance to increase cooldown by 2
-          if (Math.random() < 0.3) {
-            targetPokemon.battle.addToLog(
-              `${sourcePokemon.name} was cursed by ${targetPokemon.name}'s Cursed Body!`
-            );
-            sourcePokemon.moveIds[args.damageInfo.moveId].cooldown += 2;
-          }
+          targetPokemon.battle.addToLog(
+            `${sourcePokemon.name} was cursed by ${targetPokemon.name}'s Cursed Body!`
+          );
+          sourcePokemon.moveIds[args.damageInfo.moveId].cooldown += 2;
         },
       };
       const listenerId = battle.eventHandler.registerListener(
@@ -14908,7 +14911,7 @@ const abilityConfig = Object.freeze({
   143: {
     name: "Poison Touch",
     description:
-      "When the user is damaged by a physical move, the move user has a 30% chance to be poisoned.",
+      "When the user is damaged by a physical move, the move user has a 50% chance to be poisoned.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -14928,11 +14931,11 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // if physical, 30% chance to poison
+          // if physical, 50% chance to poison
           const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
-            Math.random() < 0.3
+            Math.random() < 0.5
           ) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Poison Touch affects ${sourcePokemon.name}!`
@@ -15005,7 +15008,7 @@ const abilityConfig = Object.freeze({
   153: {
     name: "Moxie",
     description:
-      "When the user defeats a Pokemon, gain increased attack for 2 turns and 10% combat readiness. If already has increased attack, greatly increase attack instead.",
+      "When the user defeats a Pokemon, gain increased attack for 2 turns and 20% combat readiness. If already has increased attack, greatly increase attack instead.",
     abilityAdd(battle, source, _target) {
       const listener = {
         initialArgs: {
@@ -15033,8 +15036,8 @@ const abilityConfig = Object.freeze({
             sourcePokemon.applyEffect("atkUp", 2, sourcePokemon);
           }
 
-          // gain 10% combat readiness
-          sourcePokemon.boostCombatReadiness(sourcePokemon, 10);
+          // gain 20% combat readiness
+          sourcePokemon.boostCombatReadiness(sourcePokemon, 20);
         },
       };
       const listenerId = battle.eventHandler.registerListener(
@@ -15113,6 +15116,7 @@ const abilityConfig = Object.freeze({
       battle.eventHandler.unregisterListener(abilityData.listenerId);
     },
   },
+  // idea: gain cr or speed on first turn of round, but can only use non-damaging moves
   158: {
     name: "Prankster",
     description: "After using a non-damaging move, gain 30% combat readiness.",
@@ -15165,7 +15169,7 @@ const abilityConfig = Object.freeze({
   172: {
     name: "Competitive",
     description:
-      "After receiving a debuff, sharply increase special attack for 2 turns.",
+      "After receiving a debuff, sharply increase special attack for 3 turns.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -15191,7 +15195,7 @@ const abilityConfig = Object.freeze({
           targetPokemon.battle.addToLog(
             `${targetPokemon.name}'s Competitive increases its special attack!`
           );
-          targetPokemon.applyEffect("greaterSpaUp", 2, targetPokemon);
+          targetPokemon.applyEffect("greaterSpaUp", 3, targetPokemon);
         },
       };
       const listenerId = battle.eventHandler.registerListener(
@@ -15214,7 +15218,7 @@ const abilityConfig = Object.freeze({
   198: {
     name: "Stakeout",
     description:
-      "Allies deal 30% more damage to enemies with greater than 70% combat readiness.",
+      "Allies deal 30% more damage to enemies with greater than 60% combat readiness.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -15227,7 +15231,7 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          if (targetPokemon.combatReadiness < 75) {
+          if (targetPokemon.combatReadiness < 60) {
             return;
           }
 
@@ -16338,7 +16342,7 @@ const abilityConfig = Object.freeze({
   20015: {
     name: "Cosmic Strength",
     description:
-      "When the user receives an attack debuff, sharply raise the other attacking stat for 1 turn.",
+      "When the user receives an attack debuff, sharply raise the other attacking stat for 2 turns.",
     abilityAdd(battle, _source, target) {
       const debuffListener = {
         initialArgs: {
@@ -16360,13 +16364,13 @@ const abilityConfig = Object.freeze({
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Cosmic Strength increases its special attack!`
             );
-            targetPokemon.applyEffect("greaterSpaUp", 1, targetPokemon);
+            targetPokemon.applyEffect("greaterSpaUp", 2, targetPokemon);
           } else if (effectId === "spaDown" || effectId === "greaterSpaDown") {
             // increase attack
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Cosmic Strength increases its attack!`
             );
-            targetPokemon.applyEffect("greaterAtkUp", 1, targetPokemon);
+            targetPokemon.applyEffect("greaterAtkUp", 2, targetPokemon);
           }
         },
       };
@@ -16390,7 +16394,7 @@ const abilityConfig = Object.freeze({
   },
   20016: {
     name: "Cosmic Protection",
-    description: "Reduce the damage taken by all allies by 12.5%.",
+    description: "Reduce the damage taken by all allies by 10%.",
     abilityAdd(battle, _source, target) {
       const damageListener = {
         initialArgs: {
@@ -16403,7 +16407,7 @@ const abilityConfig = Object.freeze({
           }
 
           const { damage } = args;
-          args.damage = Math.floor(damage * 0.875);
+          args.damage = Math.floor(damage * 0.9);
           args.maxDamage = Math.min(args.maxDamage, args.damage);
         },
       };
