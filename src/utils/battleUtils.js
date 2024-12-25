@@ -473,7 +473,7 @@ const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
 };
 
 /**
- * @param {RaidDifficultyEnum} difficulty
+ * @param {NpcDifficultyEnum} difficulty
  * @param {any} raidDifficultyData
  * @returns {{difficultyHeader: string, difficultyString: string}}
  */
@@ -598,6 +598,16 @@ const getPatternTargetIndices = (
         if (
           Math.abs(targetRow - currentRow) + Math.abs(targetCol - currentCol) <=
           1
+        ) {
+          targetIndices.push(index);
+        }
+        break;
+      case targetPatterns.X:
+        // if row and column both off by exactly 1 or is self, add to targets
+        if (
+          (Math.abs(targetRow - currentRow) === 1 &&
+            Math.abs(targetCol - currentCol) === 1) ||
+          index === targetIndex
         ) {
           targetIndices.push(index);
         }

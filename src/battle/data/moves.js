@@ -113,7 +113,7 @@ const movesToRegister = Object.freeze({
     id: moveIdEnum.VINE_WHIP,
     name: "Vine Whip",
     type: pokemonTypes.GRASS,
-    power: 55,
+    power: 60,
     accuracy: 100,
     cooldown: 0,
     targetType: targetTypes.ENEMY,

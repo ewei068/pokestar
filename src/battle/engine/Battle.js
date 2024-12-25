@@ -758,6 +758,13 @@ class Battle {
   }
 
   /**
+   * @param {BattlePokemon} pokemon
+   */
+  getPartyForPokemon(pokemon) {
+    return this.parties[pokemon.teamName];
+  }
+
+  /**
    * TODO: move to pokemon
    * @param {BattlePokemon} pokemon
    * @param {MoveIdEnum} moveId

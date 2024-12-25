@@ -450,6 +450,7 @@ class BattlePokemon {
    * @param {PokemonTypeEnum=} param0.moveTypeOverride
    * @param {number=} param0.offTargetDamageMultiplier
    * @param {number=} param0.missedTargetDamageMultiplier
+   * @param {number=} param0.backTargetDamageMultiplier
    * @returns {number}
    */
   calculateMoveDamage({
@@ -467,7 +468,7 @@ class BattlePokemon {
     typeEffectivenessOverride = null,
     moveTypeOverride = null,
     offTargetDamageMultiplier = 0.8,
-    // eslint-disable-next-line no-unused-vars
+    backTargetDamageMultiplier = 0.8,
     missedTargetDamageMultiplier = 0.7,
   }) {
     const power = powerOverride || move.power;
@@ -486,7 +487,9 @@ class BattlePokemon {
         ? target.getDef()
         : target.getSpd());
     const stab = this.type1 === move.type || this.type2 === move.type ? 1.5 : 1;
-    const missMult = missedTargets.includes(target) ? 0.7 : 1;
+    const missMult = missedTargets.includes(target)
+      ? missedTargetDamageMultiplier
+      : 1;
     const moveType = moveTypeOverride || move.type;
     const typeEffectiveness =
       typeEffectivenessOverride !== null
@@ -495,9 +498,9 @@ class BattlePokemon {
     // balance type
     let typeMultiplier = 1;
     if (typeEffectiveness >= 4) {
-      typeMultiplier = 2;
+      typeMultiplier = 2.5;
     } else if (typeEffectiveness >= 2) {
-      typeMultiplier = 1.5;
+      typeMultiplier = 1.75;
     } else if (typeEffectiveness >= 1) {
       typeMultiplier = 1;
     } else if (typeEffectiveness >= 0.5) {
@@ -531,6 +534,28 @@ class BattlePokemon {
     const maybeOffTargetMult =
       target === primaryTarget ? 1 : offTargetDamageMultiplier;
 
+    let isBackTarget = false;
+    // iterate through all rows in front of target. If there is a targetable pokemon, set isBackTarget to true
+    const targetParty = this.battle.getPartyForPokemon(target);
+    const partyPokemons = targetParty.pokemons;
+    const targetRowNum = Math.floor((target.position - 1) / targetParty.cols);
+    for (let i = 0; i < targetRowNum; i += 1) {
+      const row = partyPokemons.slice(
+        i * targetParty.cols,
+        (i + 1) * targetParty.cols
+      );
+      for (const pokemon of row) {
+        if (this.battle.isPokemonTargetable(pokemon, move.id)) {
+          isBackTarget = true;
+          break;
+        }
+      }
+    }
+    const maybeBackTargetMult =
+      isBackTarget && move.targetPosition !== targetPositions.BACK
+        ? backTargetDamageMultiplier
+        : 1;
+
     /* console.log("power", power)
       console.log("level", level)
       console.log("attack", attack)
@@ -547,7 +572,8 @@ class BattlePokemon {
         burn *
         weatherMult *
         missMult *
-        maybeOffTargetMult
+        maybeOffTargetMult *
+        maybeBackTargetMult
     );
 
     return Math.max(damage, 1);
@@ -585,8 +611,8 @@ class BattlePokemon {
           }
           break;
         case statusConditions.SLEEP:
-          // sleep wakeup chance: 0 turns: 0%, 1 turn: 66%, 2 turns: 100%
-          const wakeupChance = this.status.turns * 0.66;
+          // sleep wakeup chance: 0 turns: 0%, 1 turn: 33%, 2 turns: 66%, 3 turns: 100%
+          const wakeupChance = this.status.turns * 0.33;
           const wakeupRoll = Math.random();
           if (wakeupRoll < wakeupChance) {
             this.removeStatus();
@@ -663,7 +689,7 @@ class BattlePokemon {
       multiplier: mult,
     };
     this.battle.eventHandler.emit(
-      battleEventEnum.CALCULATE_TYPE_MULTIPLIER,
+      battleEventEnum.CALCULATE_TYPE_MULTIPLIER, // This maybe shouldn't be an event. Code run by the NPC should not have possible side-effects
       eventArgs
     );
 
@@ -987,6 +1013,20 @@ class BattlePokemon {
     if (freezeCheck) {
       if (this.removeStatus()) {
         damage = Math.floor(damage * 1.5);
+        this.battle.addToLog(
+          `${this.name} Took extra damage because it was frozen!`
+        );
+      }
+    }
+
+    // if sleep and hit with a move, wake up and deal 1.5x damage
+    const sleepCheck =
+      this.status.statusId === statusConditions.SLEEP &&
+      damageInfo.type === "move";
+    if (sleepCheck) {
+      if (this.removeStatus()) {
+        damage = Math.floor(damage * 1.5);
+        this.battle.addToLog(`${this.name} Took extra damage while sleeping!`);
       }
     }
 
