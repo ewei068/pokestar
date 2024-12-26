@@ -189,11 +189,19 @@ const commandConfigRaw = {
   trainerinfo: {
     name: "Trainer Info",
     aliases: ["trainerinfo", "trainer", "ti", "profile", "user"],
-    description: "Get information about your trainer",
+    description: "Get information about your or another trainer trainer",
     longDescription:
       "Displays your trainer card with information such as number of Pokemon, Pokedollars, and level progress.",
     execute: "trainerInfo.js",
-    args: {},
+    args: {
+      user: {
+        type: "user",
+        description:
+          "@mention user to view their profile (if their profile is public)",
+        optional: true,
+        variable: false,
+      },
+    },
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 0,
   },
