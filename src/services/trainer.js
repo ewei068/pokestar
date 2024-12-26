@@ -205,34 +205,29 @@ const getTrainer = async (discordUser, refresh = true) => {
 const refreshTrainer = async (trainer) => await getTrainer(trainer.user);
 
 /**
- *
- * @param {DiscordUser} user
+ * Given a trainer, retrieve extra info for that trainer
+ * @param {WithId<Trainer>} trainer
  * @returns {Promise<{data?: Trainer & {pokemon: object, numPokemon: number}, err?: string}>}
  */
-const getTrainerInfo = async (user) => {
-  const trainer = await getTrainer(user);
-  if (trainer.err) {
-    return { data: null, err: trainer.err };
-  }
-
+const getExtraTrainerInfo = async (trainer) => {
   // get extra info
   try {
     const numPokemonQuery = new QueryBuilder(
       collectionNames.USER_POKEMON
-    ).setFilter({ userId: trainer.data.userId });
+    ).setFilter({ userId: trainer.userId });
 
     const numPokemonRes = await numPokemonQuery.countDocuments();
 
     const aggQuery = new QueryBuilder(
       collectionNames.POKEMON_AND_USERS
-    ).setFilter({ userId: trainer.data.userId });
+    ).setFilter({ userId: trainer.userId });
 
     let pokemonRes = await aggQuery.findOne();
     if (pokemonRes === null) {
       // set default values, TODO: fix this probably https://www.mongodb.com/community/forums/t/how-can-i-do-a-left-outer-join-in-mongodb/189735/2
       pokemonRes = {
         pokemon: {
-          _id: trainer.data.userId,
+          _id: trainer.userId,
           totalWorth: 0,
           totalShiny: 0,
           totalPower: 0,
@@ -247,7 +242,7 @@ const getTrainerInfo = async (user) => {
 
     return {
       data: {
-        ...trainer.data,
+        ...trainer,
         ...extraInfo,
       },
       err: null,
@@ -256,6 +251,20 @@ const getTrainerInfo = async (user) => {
     logger.error(error);
     return { data: null, err: "Error finding trainer." };
   }
+};
+
+/**
+ *
+ * @param {DiscordUser} user
+ * @returns {Promise<{data?: Trainer & {pokemon: object, numPokemon: number}, err?: string}>}
+ */
+const getTrainerWithExtraInfo = async (user) => {
+  const trainer = await getTrainer(user);
+  if (trainer.err) {
+    return { data: null, err: trainer.err };
+  }
+
+  return await getExtraTrainerInfo(trainer.data);
 };
 
 /**
@@ -574,7 +583,8 @@ module.exports = {
   getTrainer,
   getTrainerFromId,
   refreshTrainer,
-  getTrainerInfo,
+  getExtraTrainerInfo,
+  getTrainerWithExtraInfo,
   getUserSettings,
   setUserSetting,
   addExpAndMoneyTrainer,
