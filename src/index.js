@@ -184,12 +184,8 @@ client.once(Events.ClientReady, (c) => {
     }
   }, 1000 * 60 * 10);
 
-  // connect to discordbotlist.com
-  if (
-    (process.env.STAGE === stageNames.BETA ||
-      process.env.STAGE === stageNames.PROD) &&
-    process.env.DBL_TOKEN
-  ) {
+  // connect to discord bot directories
+  if (process.env.STAGE === stageNames.PROD && process.env.DBL_TOKEN) {
     const dbl = createDjsClient(process.env.DBL_TOKEN, client);
     dbl.on("posted", (stats) => {
       logger.info(
