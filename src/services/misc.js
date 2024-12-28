@@ -31,9 +31,24 @@ const sendUpsells = async ({
   const { upsellData } = trainer;
   const currentTime = Date.now();
 
-  // tutorial upsell
+  // tutorial completion upsell
   const { lastSeen = 0, timesSeen = 0 } =
     upsellData[upsellEnum.TUTORIAL_UPSELL] || {};
+  if (
+    !hasCompletedCurrentTutorialStage &&
+    (await hasTrainerMetCurrentTutorialStageRequirements(trainer))
+  ) {
+    // skip if haven't yet seen first tutorial upsell
+    if (timesSeen !== 0) {
+      await attemptToReply(
+        interaction,
+        `You have completed a tutorial stage! Use \`/tutorial\` to claim your rewards.`
+      );
+      return;
+    }
+  }
+
+  // tutorial upsell
   let shouldShowTutorialUpsell = false;
   let shouldComputeTutorialUpsell = false;
   if (timesSeen === 0) {
@@ -45,7 +60,7 @@ const sendUpsells = async ({
   ) {
     shouldComputeTutorialUpsell = true;
   } else if (
-    timesSeen < 3 &&
+    timesSeen < 4 &&
     currentTime - lastSeen >= TUTORIAL_UPSELL_TIME_2
   ) {
     shouldComputeTutorialUpsell = true;
@@ -87,23 +102,11 @@ const sendUpsells = async ({
     // update upsell data
     trainer.upsellData[upsellEnum.TUTORIAL_UPSELL] = {
       lastSeen: currentTime, // update last seen so we don't constantly recompute tutorial completions
-      timesSeen: shouldComputeTutorialUpsell ? timesSeen + 1 : timesSeen,
+      timesSeen: shouldShowTutorialUpsell ? timesSeen + 1 : timesSeen,
     };
 
     // update trainer
     await updateTrainer(trainer);
-    return;
-  }
-
-  // tutorial completion upsell
-  if (
-    !hasCompletedCurrentTutorialStage &&
-    (await hasTrainerMetCurrentTutorialStageRequirements(trainer))
-  ) {
-    await attemptToReply(
-      interaction,
-      `You have completed a tutorial stage! Use \`/tutorial\` to claim your rewards.`
-    );
   }
 };
 
