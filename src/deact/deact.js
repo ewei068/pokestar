@@ -94,6 +94,23 @@ const createElement = (
   isDeactCreateElement: true,
 });
 
+/**
+ * TODO: hacky? should I be keeping track of interaction rather than message ref?
+ * @param {DeactInstance} rootInstance
+ */
+const forceUpdate = async (rootInstance) => {
+  const renderedElement = await rootInstance.renderCurrentElement();
+  if (
+    !renderedElement.messageRef ||
+    !renderedElement.element ||
+    renderedElement.err
+  ) {
+    return;
+  }
+
+  await renderedElement.messageRef.edit(renderedElement.element);
+};
+
 // TODO: figure out how to remove ref parameter
 
 /**
@@ -408,6 +425,7 @@ module.exports = {
   userTypeEnum,
   createRoot,
   createElement,
+  forceUpdate,
   createModal,
   triggerBoundCallback,
   makeComponentIdWithStateId,

@@ -30,6 +30,7 @@
   - Super effective attacks deal more damage
   - Add X target pattern shape
 - You can now view other users' profiles with `/trainerinfo`! You can make your profile private in `/settings`.
+- Fixed a few bugs
 
 TODO:
 
