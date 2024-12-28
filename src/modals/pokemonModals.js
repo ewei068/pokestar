@@ -19,6 +19,7 @@ const buildPokemonSearchModal = ({
 }) =>
   buildGenericTextInputModal({
     id,
+    textInputId: "pokemonSearchInput",
     title,
     label: "Pokemon Name",
     placeholder,

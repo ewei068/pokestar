@@ -1168,7 +1168,7 @@ class BattlePokemon {
       });
     } else {
       const legacyAbility = /** @type {any} */ (abilityData);
-      legacyAbility.abilityAdd(this.battle, this, this);
+      this.ability.data = legacyAbility.abilityAdd(this.battle, this, this);
     }
     this.ability.applied = true;
   }
