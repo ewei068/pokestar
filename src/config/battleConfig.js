@@ -5166,7 +5166,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.ULTIMATE,
     damageType: damageTypes.OTHER,
     description:
-      "The user envelops allies in a veil made of water, restoring 25% of the user's max HP for 3 turns and boosting defense for 2 turns.",
+      "The user envelops allies in a veil made of water, restoring 18% of the user's max HP for 3 turns and boosting defense for 2 turns.",
   },
   m394: {
     name: "Flare Blitz",
@@ -10113,7 +10113,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // add regeneration and def up
       target.applyEffect("regeneration", 3, source, {
-        healAmount: Math.floor(source.maxHp * 0.25),
+        healAmount: Math.floor(source.maxHp * 0.18),
       });
       target.applyEffect("defUp", 2, source);
     }

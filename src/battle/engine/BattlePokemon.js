@@ -467,9 +467,9 @@ class BattlePokemon {
     powerOverride = null,
     typeEffectivenessOverride = null,
     moveTypeOverride = null,
-    offTargetDamageMultiplier = 0.8,
-    backTargetDamageMultiplier = 0.8,
-    missedTargetDamageMultiplier = 0.7,
+    offTargetDamageMultiplier = 0.85,
+    backTargetDamageMultiplier = 0.85,
+    missedTargetDamageMultiplier = 0.6,
   }) {
     const power = powerOverride || move.power;
     const { level } = this;
@@ -498,15 +498,15 @@ class BattlePokemon {
     // balance type
     let typeMultiplier = 1;
     if (typeEffectiveness >= 4) {
-      typeMultiplier = 2.5;
+      typeMultiplier = 3;
     } else if (typeEffectiveness >= 2) {
       typeMultiplier = 1.75;
     } else if (typeEffectiveness >= 1) {
       typeMultiplier = 1;
     } else if (typeEffectiveness >= 0.5) {
-      typeMultiplier = 0.75;
+      typeMultiplier = 0.7;
     } else if (typeEffectiveness >= 0.25) {
-      typeMultiplier = 0.5;
+      typeMultiplier = 0.45;
     } else {
       typeMultiplier = 0.35;
     }
