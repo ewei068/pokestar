@@ -5,6 +5,7 @@ const {
   useAwaitedMemo,
   useAwaitedEffect,
   useCallback,
+  forceUpdate,
 } = require("../../deact/deact");
 const ReturnButton = require("../foundation/ReturnButton");
 const useSingleItemScroll = require("../../hooks/useSingleItemScroll");
@@ -24,6 +25,8 @@ const {
   flattenRewards,
 } = require("../../utils/trainerUtils");
 const { getTrainer } = require("../../services/trainer");
+const { getOrCreateState, getState } = require("../../services/state");
+const { generateTutorialStateId } = require("../../utils/questUtils");
 
 /**
  * @param {DeactElement} ref
@@ -124,6 +127,20 @@ module.exports = async (
     [user, setTrainer],
     ref
   );
+  // keep updated on every render
+  const tutorialState = getOrCreateState(generateTutorialStateId(user.id), {
+    ttl: 120,
+  });
+  tutorialState.currentStage = currentStage;
+  tutorialState.rootStateId = ref.rootInstance.stateId;
+  tutorialState.refreshTutorialState = async () => {
+    if (!getState(ref.rootInstance.stateId)) {
+      return;
+    }
+    await refreshTrainer();
+    await forceUpdate(ref.rootInstance);
+  };
+  tutorialState.messageRef = ref.rootInstance.messageRef;
 
   await useAwaitedEffect(refreshTrainer, [refreshTrainer, currentStage], ref);
 

@@ -24,7 +24,10 @@ const { removeInteractionInstance } = require("../deact/interactions");
 const {
   hasUserMetCurrentTutorialStageRequirements,
 } = require("../services/quest");
-const { sendUpsells } = require("../services/misc");
+const {
+  sendUpsells,
+  getPreInteractionUpsellData,
+} = require("../services/misc");
 
 const { prefix } = stageConfig[process.env.STAGE];
 
@@ -253,8 +256,12 @@ const runMessageCommand = async (message, client) => {
   // execute command
   try {
     // TODO: global trainer context per-interaction? seems like it would be a good idea TBH. Only issue is keeping it up-to-date
-    const hasCompletedCurrentTutorialStage =
-      await hasUserMetCurrentTutorialStageRequirements(message.author);
+    const preInteractionUpsellData = await getPreInteractionUpsellData({
+      user: message.author,
+    }).catch((e) => {
+      logger.error(e);
+      return {};
+    });
     // eslint-disable-next-line no-param-reassign
     message.content = message.content.split(" ").slice(1).join(" ");
     const res = await messageCommands[command](message, client);
@@ -277,7 +284,9 @@ const runMessageCommand = async (message, client) => {
     await sendUpsells({
       interaction: message,
       user: message.author,
-      hasCompletedCurrentTutorialStage,
+      preInteractionUpsellData,
+    }).catch((e) => {
+      logger.error(e);
     });
   } catch (error) {
     logger.error(error);
@@ -327,8 +336,12 @@ const runSlashCommand = async (interaction, client) => {
 
   // execute command
   try {
-    const hasCompletedCurrentTutorialStage =
-      await hasUserMetCurrentTutorialStageRequirements(interaction.user);
+    const preInteractionUpsellData = await getPreInteractionUpsellData({
+      user: interaction.user,
+    }).catch((e) => {
+      logger.error(e);
+      return {};
+    });
     const commandData = commandLookup[`${command}`];
 
     const res = await slashCommands[command](interaction, client);
@@ -352,7 +365,9 @@ const runSlashCommand = async (interaction, client) => {
     await sendUpsells({
       interaction,
       user: interaction.user,
-      hasCompletedCurrentTutorialStage,
+      preInteractionUpsellData,
+    }).catch((e) => {
+      logger.error(e);
     });
   } catch (error) {
     logger.error(error);

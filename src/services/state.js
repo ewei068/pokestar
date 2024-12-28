@@ -69,6 +69,15 @@ const getState = (stateId, refresh = true) => {
   return null;
 };
 
+const getOrCreateState = (stateId, { refresh = true, ttl = 60 } = {}) => {
+  let state = getState(stateId, refresh);
+  if (!state) {
+    state = {};
+    setState(state, ttl, stateId);
+  }
+  return state;
+};
+
 const deleteState = (stateId) => {
   // check if state exists
   if (stateId in states) {
@@ -91,6 +100,7 @@ const setTtl = (stateId, ttl) => {
 module.exports = {
   setState,
   getState,
+  getOrCreateState,
   updateState,
   deleteState,
   getStateCount,
