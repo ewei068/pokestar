@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * state.js the base state logic for holding information for the current state of the user's interactions with the bot.
  */
@@ -29,9 +27,9 @@ const handleTimeout = (stateId) => {
   }
 };
 
-const setState = (state, ttl = 60) => {
+const setState = (state, ttl = 60, stateIdOverride = undefined) => {
   // generate random state UUID
-  const stateId = shortid.generate();
+  const stateId = stateIdOverride || shortid.generate();
   // add state to states object
   states[stateId] = state;
 

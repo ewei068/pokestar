@@ -396,7 +396,6 @@ function useEffect(callback, deps, ref) {
     }
     cleanupRef.current = cleanup;
   }
-  return cleanupRef.current;
 }
 
 /**
@@ -406,8 +405,16 @@ function useEffect(callback, deps, ref) {
  * @returns {Promise<(() => void) | void>}
  */
 async function useAwaitedEffect(callback, deps, ref) {
-  const promise = await useEffect(callback, deps, ref);
-  return await promise;
+  // TODO: can't seem to use useEffect because we have to await the cleanup callback
+  const cleanupRef = useRef(null, ref);
+  const haveDepsChanged = useCompareAndSetDeps(deps, ref);
+  if (haveDepsChanged || !ref.finishedMounting) {
+    const cleanup = await callback();
+    if (cleanupRef.current) {
+      await cleanupRef.current();
+    }
+    cleanupRef.current = cleanup;
+  }
 }
 
 /**

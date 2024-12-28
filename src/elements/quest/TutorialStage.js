@@ -3,6 +3,8 @@ const {
   useCallbackBinding,
   createElement,
   useAwaitedMemo,
+  useAwaitedEffect,
+  useCallback,
 } = require("../../deact/deact");
 const ReturnButton = require("../foundation/ReturnButton");
 const useSingleItemScroll = require("../../hooks/useSingleItemScroll");
@@ -21,6 +23,7 @@ const {
   getRewardsString,
   flattenRewards,
 } = require("../../utils/trainerUtils");
+const { getTrainer } = require("../../services/trainer");
 
 /**
  * @param {DeactElement} ref
@@ -109,6 +112,20 @@ module.exports = async (
     callbackBindingKey: proceedActionBinding,
     style: ButtonStyle.Primary,
   };
+
+  const refreshTrainer = useCallback(
+    async () => {
+      await getTrainer(user).then((getTrainerRes) => {
+        if (!getTrainerRes.err && getTrainerRes.data) {
+          setTrainer?.(getTrainerRes.data);
+        }
+      });
+    },
+    [user, setTrainer],
+    ref
+  );
+
+  await useAwaitedEffect(refreshTrainer, [refreshTrainer, currentStage], ref);
 
   const hasMetRequirements = await useAwaitedMemo(
     async () => {
