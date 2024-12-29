@@ -262,15 +262,15 @@ const newTutorialConfigRaw = {
     name: "Training Pokemon",
     emoji: "🏋️",
     description:
-      "One way to give your Pokemon more EXP is by training! Copy a Pokemon's ID, then **Use `/train` to train a Pokemon to level 8.**\n\nTip: On desktop, you can use the Up Arrow key to use your last command.",
-    requirementString: "Have 1x Pokemon at level 8 or higher",
-    proceedString: "Use `/train` to train a Pokemon to level 8.",
+      "One way to give your Pokemon more EXP is by training! Copy a Pokemon's ID, then **Use `/train` to train a Pokemon to level 12.**\n\nTip: On desktop, you can use the Up Arrow key to use your last command.",
+    requirementString: "Have 1x Pokemon at level 12 or higher",
+    proceedString: "Use `/train` to train a Pokemon to level 12.",
     checkRequirements: async (trainer) => {
       const { data: pokemons } = await listPokemons(trainer, {
         pageSize: 1,
         page: 1,
         filter: {
-          level: { $gte: 8 },
+          level: { $gte: 12 },
         },
       });
       return (pokemons?.length ?? 0) > 0;

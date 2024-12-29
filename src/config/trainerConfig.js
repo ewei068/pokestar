@@ -1566,8 +1566,8 @@ const levelConfig = {
 const getTrainerLevelExp = (level) => 50 * (level ** 2 - level);
 
 const expMultiplier = (level) =>
-  // 3 * x ^ (1/2)
-  3 * level ** (1 / 2);
+  // 2.5 * x ^ (1/2) + 15
+  2.5 * level ** (1 / 2) + 15;
 
 const NUM_DAILY_REWARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 5;
 const NUM_DAILY_SHARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 5;
