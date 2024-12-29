@@ -11,7 +11,25 @@ const pokemonActionButton = async (interaction, data) => {
   if (err) {
     return { err };
   }
-  await interaction.update(send);
+  await interaction
+    .update(send)
+    .then(() => {
+      if (action === "train") {
+        return interaction.followUp({
+          content:
+            "To train this pokemon, copy the following command. For Mobile users, Long Press -> Copy Text.",
+          ephemeral: true,
+        });
+      }
+    })
+    .then(() => {
+      if (action === "train") {
+        return interaction.followUp({
+          content: `/train pokemonid: ${data.id}`,
+          ephemeral: true,
+        });
+      }
+    });
 };
 
 module.exports = pokemonActionButton;
