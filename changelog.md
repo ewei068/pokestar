@@ -7,7 +7,9 @@
   - Team colors
   - Target indicators
   - Improved mobile display
-- Fix help command
+  - Add more battle tab emojis
+  - Display current active Pokemon
+- Fix `/help` command
 - Add bulk buy to shop
 - Added user settings
   - Profile privacy
@@ -30,7 +32,17 @@
   - Super effective attacks deal more damage
   - Add X target pattern shape
 - You can now view other users' profiles with `/trainerinfo`! You can make your profile private in `/settings`.
-- Fixed a few bugs
+- Improve pokemon info
+  - Add some emojis
+  - Add a training button
+- Rebalance Pokemon EXP gain
+  - Gain much more EXP in early game (low trainer level)
+  - Gain slightly more EXP at high trainer level
+  - Gain slightly more EXP when beating low-level PVE NPCs
+- Added experimental smart positioning to `/party auto`
+- `/evolve` will display evolution requirements if not met
+- Improve `/pokemart` with emojis and better button descriptions
+- Fixed a bunch of bugs
 
 TODO:
 
