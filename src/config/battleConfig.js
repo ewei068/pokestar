@@ -1086,7 +1086,7 @@ const effectConfig = Object.freeze({
     dispellable: true,
     effectAdd(battle, _source, target) {
       battle.addToLog(
-        `${target.name} is restricted and cannot gain combat readiness!`
+        `${target.name} is restricted and cannot gain combat readiness via boosts!`
       );
       target.restricted = true;
     },
