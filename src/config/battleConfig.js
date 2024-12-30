@@ -6477,7 +6477,7 @@ const moveExecutes = {
     const pokemons = source.getPatternTargets(
       party,
       targetPatterns.ALL_EXCEPT_SELF,
-      1
+      source.position
     );
     if (pokemons.length > 0) {
       const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
@@ -7461,7 +7461,7 @@ const moveExecutes = {
     const pokemons = source.getPatternTargets(
       party,
       targetPatterns.ALL_EXCEPT_SELF,
-      1
+      source.position
     );
     if (pokemons.length > 0) {
       const pokemon = pokemons.reduce((a, b) =>
@@ -10043,7 +10043,7 @@ const moveExecutes = {
     const pokemons = source.getPatternTargets(
       party,
       targetPatterns.ALL_EXCEPT_SELF,
-      1
+      source.position
     );
     if (pokemons.length > 0) {
       const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
@@ -11049,7 +11049,7 @@ const moveExecutes = {
     const pokemons = source.getPatternTargets(
       party,
       targetPatterns.ALL_EXCEPT_SELF,
-      1
+      source.position
     );
     if (pokemons.length > 0) {
       const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
