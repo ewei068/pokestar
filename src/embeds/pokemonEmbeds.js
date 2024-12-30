@@ -527,7 +527,7 @@ const buildEquipmentEmbed = (pokemon, oldPokemon) => {
  * @param {EquipmentTypeEnum} equipmentType
  * @param {Equipment} equipment
  * @param {boolean=} upgrade
- * @param {boolean=} slotReroll
+ * @param {(boolean | string)=} slotReroll
  * @returns {EmbedBuilder}
  */
 const buildEquipmentUpgradeEmbed = (
