@@ -381,7 +381,7 @@ const buildShopSend = async ({
     const isLocation =
       shopItemConfig[option].category === shopCategories.LOCATIONS;
     const locationId = itemIdToLocationId[option];
-    const isUpgrade = (trainer.locations?.[locationId] ?? 0) > 0;
+    const isUpgrade = isLocation && (trainer.locations?.[locationId] ?? 0) > 0;
 
     const buttonData = {
       stateId,
