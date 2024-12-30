@@ -15,6 +15,7 @@ const {
   buildDungeonDifficultyString,
   buildCompactPartyString,
   buildRaidDifficultyString,
+  buildActivePokemonFieldStrings,
 } = require("../utils/battleUtils");
 const {
   buildPokemonStatString,
@@ -195,7 +196,6 @@ const buildBattleEmbed = (
   const embed = new EmbedBuilder();
   embed.setTitle(`Battle State`);
   embed.setColor(0xffffff);
-  embed.setDescription(battle.log[battle.log.length - 1] || "No log yet.");
   // build weather field
   const negatedString = battle.isWeatherNegated() ? " (negated)" : "";
   if (battle.weather.weatherId) {
@@ -231,6 +231,17 @@ const buildBattleEmbed = (
       default:
         break;
     }
+  }
+
+  if (battle.activePokemon) {
+    const { pokemonHeader, pokemonString } = buildActivePokemonFieldStrings(
+      battle.activePokemon
+    );
+    embed.addFields({
+      name: pokemonHeader,
+      value: pokemonString,
+      inline: false,
+    });
   }
 
   const fields = [
