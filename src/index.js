@@ -6,6 +6,7 @@ const { createDjsClient } = require("discordbotlist");
 const express = require("express");
 const cors = require("cors");
 const { default: axios } = require("axios");
+const microstats = require("microstats");
 const {
   runMessageCommand,
   runSlashCommand,
@@ -182,7 +183,63 @@ client.once(Events.ClientReady, (c) => {
     } catch (error) {
       logger.error("Error cleaning up raids", error);
     }
-  }, 1000 * 60 * 10);
+  }, 1000 * 60 * 15);
+
+  const currentStats = {};
+  microstats.on("memory", (memory) => {
+    currentStats.memUsedPct = `${memory.usedpct}%`;
+    currentStats.memTotal = `${(memory.total / 1024 / 1024).toFixed(2)} MB`;
+    currentStats.memFree = `${(memory.free / 1024 / 1024).toFixed(2)} MB`;
+  });
+  microstats.on("disk", (disk) => {
+    if (disk.mount === "/") {
+      currentStats.diskUsedPct = `${disk.usedpct}%`;
+      currentStats.diskTotal = `${(disk.total / 1024 / 1024).toFixed(2)} GB`;
+      currentStats.diskFree = `${(disk.free / 1024 / 1024).toFixed(2)} GB`;
+    }
+  });
+  microstats.on("cpu", (cpu) => {
+    currentStats.cpuLoadPct = `${cpu.loadpct}%`;
+    currentStats.cpuUserPct = `${cpu.userpct}%`;
+    currentStats.cpuSysPct = `${cpu.syspct}%`;
+    currentStats.cpuIdlePct = `${cpu.idlepct}%`;
+  });
+  microstats.start({
+    frequency: "1m",
+  });
+
+  // poll resource metrics
+  poll(async () => {
+    try {
+      const resourceMetrics = {};
+      const memoryUsage = process.memoryUsage();
+      for (const [key, value] of Object.entries(memoryUsage)) {
+        const valueInMB = value / 1024 / 1024;
+        resourceMetrics[key] = `${valueInMB.toFixed(2)} MB`;
+      }
+
+      const cpuUsage = process.cpuUsage();
+      for (const [key, value] of Object.entries(cpuUsage)) {
+        resourceMetrics[key] = `${value} µs`;
+      }
+
+      // log metrics in a single line
+      let metricsString = "";
+      for (const [key, value] of Object.entries(resourceMetrics)) {
+        metricsString += `${key}: ${value} | `;
+      }
+      logger.info(`PROCESS metrics: ${metricsString}`);
+
+      // log microstats
+      let microstatsString = "";
+      for (const [key, value] of Object.entries(currentStats)) {
+        microstatsString += `${key}: ${value} | `;
+      }
+      logger.info(`MICROSTATS: ${microstatsString}`);
+    } catch {
+      logger.warn("Error logging metrics");
+    }
+  }, 1000 * 60 * 15);
 
   // connect to discord bot directories
   if (process.env.STAGE === stageNames.PROD && process.env.DBL_TOKEN) {
