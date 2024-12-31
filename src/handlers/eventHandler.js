@@ -14,7 +14,10 @@ const { attemptToReply } = require("../utils/utils");
 const {
   hasUserMetCurrentTutorialStageRequirements,
 } = require("../services/quest");
-const { sendUpsells } = require("../services/misc");
+const {
+  sendUpsells,
+  getPreInteractionUpsellData,
+} = require("../services/misc");
 
 const eventHandlers = {};
 const eventsDirectory = path.join(__dirname, "../events");
@@ -46,8 +49,12 @@ const handleEvent = async (interaction, client) => {
 
   // execute event
   try {
-    const hasCompletedCurrentTutorialStage =
-      await hasUserMetCurrentTutorialStageRequirements(interaction.user);
+    const preInteractionUpsellData = await getPreInteractionUpsellData({
+      user: interaction.user,
+    }).catch((e) => {
+      logger.error(e);
+      return {};
+    });
     let res;
     if (data.dSID) {
       res = await triggerBoundCallback(interaction, data);
@@ -86,7 +93,9 @@ const handleEvent = async (interaction, client) => {
     await sendUpsells({
       interaction,
       user: interaction.user,
-      hasCompletedCurrentTutorialStage,
+      preInteractionUpsellData,
+    }).catch((e) => {
+      logger.error(e);
     });
   } catch (error) {
     logger.error(`Error executing event ${eventName}`);

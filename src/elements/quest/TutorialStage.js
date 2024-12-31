@@ -3,6 +3,9 @@ const {
   useCallbackBinding,
   createElement,
   useAwaitedMemo,
+  useAwaitedEffect,
+  useCallback,
+  forceUpdate,
 } = require("../../deact/deact");
 const ReturnButton = require("../foundation/ReturnButton");
 const useSingleItemScroll = require("../../hooks/useSingleItemScroll");
@@ -21,6 +24,9 @@ const {
   getRewardsString,
   flattenRewards,
 } = require("../../utils/trainerUtils");
+const { getTrainer } = require("../../services/trainer");
+const { getOrCreateState, getState } = require("../../services/state");
+const { generateTutorialStateId } = require("../../utils/questUtils");
 
 /**
  * @param {DeactElement} ref
@@ -109,6 +115,34 @@ module.exports = async (
     callbackBindingKey: proceedActionBinding,
     style: ButtonStyle.Primary,
   };
+
+  const refreshTrainer = useCallback(
+    async () => {
+      await getTrainer(user).then((getTrainerRes) => {
+        if (!getTrainerRes.err && getTrainerRes.data) {
+          setTrainer?.(getTrainerRes.data);
+        }
+      });
+    },
+    [user, setTrainer],
+    ref
+  );
+  // keep updated on every render
+  const tutorialState = getOrCreateState(generateTutorialStateId(user.id), {
+    ttl: 120,
+  });
+  tutorialState.currentStage = currentStage;
+  tutorialState.rootStateId = ref.rootInstance.stateId;
+  tutorialState.refreshTutorialState = async () => {
+    if (!getState(ref.rootInstance.stateId)) {
+      return;
+    }
+    await refreshTrainer();
+    await forceUpdate(ref.rootInstance);
+  };
+  tutorialState.messageRef = ref.rootInstance.messageRef;
+
+  await useAwaitedEffect(refreshTrainer, [refreshTrainer, currentStage], ref);
 
   const hasMetRequirements = await useAwaitedMemo(
     async () => {

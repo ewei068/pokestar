@@ -33,6 +33,7 @@ const {
   buildBoostString,
   getMoveIds,
   buildCompactEquipmentString,
+  buildSpeciesEvolutionString,
 } = require("../utils/pokemonUtils");
 const { buildMoveString } = require("../utils/battleUtils");
 const {
@@ -526,7 +527,7 @@ const buildEquipmentEmbed = (pokemon, oldPokemon) => {
  * @param {EquipmentTypeEnum} equipmentType
  * @param {Equipment} equipment
  * @param {boolean=} upgrade
- * @param {boolean=} slotReroll
+ * @param {(boolean | string)=} slotReroll
  * @returns {EmbedBuilder}
  */
 const buildEquipmentUpgradeEmbed = (
@@ -786,20 +787,7 @@ const buildSpeciesDexEmbed = (id, speciesData, tab, ownershipData) => {
     embed.setImage(speciesData.sprite);
   } else if (tab === "growth") {
     // display: growth rate, base stats, total, evolutions
-    let evolutionString = "";
-    if (speciesData.evolution) {
-      for (let i = 0; i < speciesData.evolution.length; i += 1) {
-        const evolution = speciesData.evolution[i];
-        evolutionString += `Lv. ${evolution.level}: #${evolution.id} ${
-          pokemonConfig[evolution.id].name
-        }`;
-        if (i < speciesData.evolution.length - 1) {
-          evolutionString += "\n";
-        }
-      }
-    } else {
-      evolutionString = "No evolutions!";
-    }
+    const evolutionString = buildSpeciesEvolutionString(speciesData);
 
     embed.setDescription(`Growth information for #${id} ${speciesData.name}:`);
     embed.addFields(

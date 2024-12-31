@@ -318,12 +318,10 @@ const buildMoveString = (moveData, cooldown = 0) => {
   };
 };
 
-/**
- * @param {BattlePokemon} pokemon
- * @returns {{pokemonHeader: string, pokemonString: string}}
- */
-const buildBattlePokemonString = (pokemon) => {
-  let pokemonHeader = "";
+const buildBattlePokemonHeader = (pokemon) => {
+  let pokemonHeader = `${pokemon.shiny ? "✨ " : ""}${
+    pokemonConfig[pokemon.speciesId].emoji
+  } `;
   if (pokemon.isFainted) {
     pokemonHeader += "[FNT] ";
   } else {
@@ -351,21 +349,23 @@ const buildBattlePokemonString = (pokemon) => {
     }
   }
 
-  pokemonHeader += `[${pokemon.position}] [Lv. ${pokemon.level}] ${pokemon.name}`;
-  let pokemonString = "";
-  // build hp percent string
+  pokemonHeader += `${pokemon.name}`;
+  return pokemonHeader;
+};
+
+const buildBattlePokemonInfoString = (pokemon) =>
+  `Position: ${pokemon.position} • Lv. ${pokemon.level}`;
+
+const buildBattlePokemonHpString = (pokemon, barWidth = 10) => {
   const hpPercent = Math.min(
     Math.round(Math.floor((pokemon.hp * 100) / pokemon.maxHp)),
     100
   );
-  pokemonString += `**HP** ${getPBar(hpPercent, 10)} ${hpPercent}\n`;
-  // build cr string
-  const crPercent = Math.min(
-    Math.round(Math.floor((pokemon.combatReadiness * 100) / 100)),
-    100
-  );
-  pokemonString += `**CR** ${getPBar(crPercent, 10)} ${crPercent}\n`;
-  // build effects string
+  return `**HP** ${getPBar(hpPercent, barWidth)} ${hpPercent}`;
+};
+
+const buildBattlePokemonEffectsString = (pokemon) => {
+  let pokemonString = "";
   if (Object.keys(pokemon.effectIds).length > 0) {
     pokemonString += `**Effects:** ${Object.keys(pokemon.effectIds)
       .map((effectId) => {
@@ -386,6 +386,42 @@ const buildBattlePokemonString = (pokemon) => {
   } else {
     pokemonString += `**Effects:** None`;
   }
+  return pokemonString;
+};
+
+/**
+ * @param {BattlePokemon} pokemon
+ */
+const buildActivePokemonFieldStrings = (pokemon) => {
+  const pokemonHeader = buildBattlePokemonHeader(pokemon);
+  let pokemonString = "";
+  pokemonString += `${buildBattlePokemonInfoString(pokemon)}\n`;
+  pokemonString += `${buildBattlePokemonHpString(pokemon, 15)}\n`;
+  pokemonString += `${buildBattlePokemonEffectsString(pokemon)}`;
+  return {
+    pokemonHeader,
+    pokemonString,
+  };
+};
+
+/**
+ * @param {BattlePokemon} pokemon
+ * @returns {{pokemonHeader: string, pokemonString: string}}
+ */
+const buildBattlePokemonString = (pokemon) => {
+  const pokemonHeader = buildBattlePokemonHeader(pokemon);
+  let pokemonString = "";
+  pokemonString += `${buildBattlePokemonInfoString(pokemon)}\n`;
+  // build hp percent string
+  pokemonString += `${buildBattlePokemonHpString(pokemon, 10)}\n`;
+  // build cr string
+  const crPercent = Math.min(
+    Math.round(Math.floor((pokemon.combatReadiness * 100) / 100)),
+    100
+  );
+  pokemonString += `**CR** ${getPBar(crPercent, 10)} ${crPercent}\n`;
+  // build effects string
+  pokemonString += buildBattlePokemonEffectsString(pokemon);
 
   return {
     pokemonHeader,
@@ -627,6 +663,7 @@ module.exports = {
   buildPartyString,
   buildCompactPartyString,
   buildMoveString,
+  buildActivePokemonFieldStrings,
   buildBattlePokemonString,
   buildNpcDifficultyString,
   buildDungeonDifficultyString,

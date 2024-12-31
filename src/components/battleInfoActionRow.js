@@ -39,6 +39,7 @@ const buildBattleInfoActionRow = (battle, stateId, selectionIndex = 0) => {
   buttonConfigs.push({
     label: "Moves",
     disabled: false,
+    emoji: "⚔️",
     data: {
       ...infoRowData,
       selectionIndex: i,
@@ -48,6 +49,7 @@ const buildBattleInfoActionRow = (battle, stateId, selectionIndex = 0) => {
   buttonConfigs.push({
     label: "Hide",
     disabled: false,
+    emoji: "⬇️",
     data: {
       ...infoRowData,
       selectionIndex: i + 1,
@@ -58,6 +60,7 @@ const buildBattleInfoActionRow = (battle, stateId, selectionIndex = 0) => {
   buttonConfigs.push({
     label: "Refresh",
     disabled: false,
+    emoji: "🔄",
     data: {
       ...infoRowData,
       selectionIndex: i + 2,

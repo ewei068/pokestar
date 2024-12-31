@@ -465,7 +465,7 @@ class Battle {
       Math.floor(
         Object.values(this.allPokemon).reduce((acc, pokemon) => {
           if (pokemon.isFainted) {
-            return acc + (this.minLevel || pokemon.level);
+            return acc + Math.max(12, this.minLevel || pokemon.level);
           }
           return acc;
         }, 0) * this.pokemonExpMultiplier

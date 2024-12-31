@@ -63,9 +63,8 @@ const newTutorialConfigRaw = {
   buyPokeballs: {
     name: "Buying Pokeballs",
     emoji: emojis.POKEBALL,
-    description:
-      "One of the best ways to get more Pokeballs is to buy them from the Pokemart every day. Use `/pokemart` to buy Pokeballs, or use `/buy itemid: 0 quantity: 5` to buy the maximum amount.",
-    requirementString: "Buy 5x Pokeballs",
+    description: `One of the best ways to get more Pokeballs is to buy them from the Pokemart every day. Use \`/pokemart\` to buy ${emojis.POKEBALL} Pokeballs, or use \`/buy itemid: 0 quantity: 5\` to buy the maximum amount.`,
+    requirementString: `Buy 5x ${emojis.POKEBALL} Pokeballs`,
     proceedString:
       "Use `/pokemart` or `/buy itemid: 0 quantity: 5` to buy 5 Pokeballs!",
     checkRequirements: async (trainer) =>
@@ -160,7 +159,7 @@ const newTutorialConfigRaw = {
     name: "Learning to Battle: Taking Turns",
     emoji: "➡️",
     description:
-      "Before you battle, you must learn how they work! Battles in Pokestar are unique; all 6 Pokemon fight at a time!\n\n**Taking turns is based off combat readiness.** Pokemon with higher speed gain combat readiness faster. The current active Pokemon is highlighted in asterisks.\n\nYou may view the combat readiness of a team by clicking the **NPC** or **Player** tabs. There is also an indicator of which Pokemon moves next.",
+      "Before you battle, you must learn how they work! Battles in Pokestar are unique; **all 6 Pokemon fight at a time!**\n\n**Taking turns is based off combat readiness.** Pokemon with higher speed gain combat readiness faster. The current active Pokemon is highlighted in asterisks.\n\nYou may view the combat readiness of a team by clicking the **🔴 NPC** or **🔵 Player** tabs. There is also an indicator of which Pokemon moves next.",
     requirementString: "Complete the previous stage",
     proceedString:
       "Read the description to learn about battles, and complete the previous stage.",
@@ -176,7 +175,7 @@ const newTutorialConfigRaw = {
     name: "Learning to Battle: Using Moves",
     emoji: "🔥",
     description:
-      "When its your turn, you can use a move! **Use the dropdown menu to select a move.**\n\nWhen selecting a move, a description will appear. This includes important move information such as its type, power, effect, and cooldown.",
+      "When its your turn, you can use a move! **Use the dropdown menu to select a move.**\n\nWhen selecting a move, a description will appear. This includes important move information such as its **type, power, effect, and cooldown.**",
     requirementString: "Complete the previous stage",
     proceedString:
       "Read the description to learn about battles, and complete the previous stage.",
@@ -193,7 +192,7 @@ const newTutorialConfigRaw = {
     emoji: "🎯",
     description:
       "When using a move, you must select a target! **Click on the Pokemon you want to target from the dropdown menu.** Most moves may only target certain Pokemon, which is indicated in the **Target:** section of the move description." +
-      "\n\n**Some moves may affect an area of Pokemon.** When a target is selected, that area is indicated by a wider border. **When satisfied, click the confirm button to use the move.** This can be disabled in your `/settings`." +
+      "\n\n**Some moves may affect an area of Pokemon.** When a target is selected, that area is indicated by a wider border. **When satisfied, click the ⚔️ Confirm button to use the move.** This can be disabled in your `/settings`." +
       "\n\nFor more detailed battle mechanics, check out the [documentation on Github](https://github.com/ewei068/pokestar?tab=readme-ov-file#-battle-mechanics).",
     requirementString: "Complete the previous stage",
     proceedString:
@@ -210,7 +209,7 @@ const newTutorialConfigRaw = {
     name: "Battle an NPC!",
     emoji: "⚔️",
     description:
-      "Now that you know how to battle, **use `/pve` to battle an NPC!** I'd recommend starting with the Bug Catcher on Very Easy difficulty.",
+      "Now that you know how to battle, **use `/pve` to battle an NPC!** I'd recommend starting with the <:bugcatcher:1117871382399815812> Bug Catcher on Very Easy difficulty.",
     requirementString: "Win any NPC Battle",
     proceedString: "Use `/pve` to battle an NPC!",
     checkRequirements: async (trainer) =>
@@ -263,15 +262,15 @@ const newTutorialConfigRaw = {
     name: "Training Pokemon",
     emoji: "🏋️",
     description:
-      "One way to give your Pokemon more EXP is by training! Copy a Pokemon's ID, then **Use `/train` to train a Pokemon to level 8.**",
-    requirementString: "Have 1x Pokemon at level 8 or higher",
-    proceedString: "Use `/train` to train a Pokemon to level 8.",
+      "One way to give your Pokemon more EXP is by training! Copy a Pokemon's ID, then **Use `/train` to train a Pokemon to level 12.**\n\nTip: On desktop, you can use the Up Arrow key to use your last command.",
+    requirementString: "Have 1x Pokemon at level 12 or higher",
+    proceedString: "Use `/train` to train a Pokemon to level 12.",
     checkRequirements: async (trainer) => {
       const { data: pokemons } = await listPokemons(trainer, {
         pageSize: 1,
         page: 1,
         filter: {
-          level: { $gte: 8 },
+          level: { $gte: 12 },
         },
       });
       return (pokemons?.length ?? 0) > 0;
@@ -338,8 +337,8 @@ const newTutorialConfigRaw = {
     name: "Purchasing Locations",
     emoji: "🌍",
     description:
-      "You may purchase and upgrade locations from the `/pokemart` for permanent boosts! **Use `/pokemart` to purchase the Home location and upgrade it to level 3.** The Home locations improves the EXP gained from `/train`!\n\nYou can use `/locations` to view your locations.",
-    requirementString: "Have a level 3 Home location",
+      "You may purchase and upgrade locations from the `/pokemart` for permanent boosts! **Use `/pokemart` to purchase the 🏠 Home location and upgrade it to level 3.** The Home locations improves the EXP gained from `/train`!\n\nYou can use `/locations` to view your locations.",
+    requirementString: "Have a level 3 🏠 Home location",
     proceedString:
       "Use `/pokemart` to purchase the Home location and upgrade it to level 3!",
     checkRequirements: async (trainer) =>
@@ -358,7 +357,7 @@ const newTutorialConfigRaw = {
     name: "Beginner Pokemon Leveling",
     emoji: "📈",
     description:
-      "Now that you can `/train` your Pokemon faster, **train 6 Pokemon to level 15.**",
+      "Now that you can `/train` your Pokemon faster, **train 6 Pokemon to level 15.**\n\nTip: On desktop, you can use the Up Arrow key to use your last command.",
     requirementString: "Train 6x Pokemon to level 15",
     proceedString: "Use `/train` to train 6 Pokemon to level 15!",
     checkRequirements: async (trainer) => {

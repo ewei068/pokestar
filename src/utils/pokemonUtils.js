@@ -391,6 +391,24 @@ const buildBoostString = (oldPokemon, newPokemon) => {
   return boostString;
 };
 
+const buildSpeciesEvolutionString = (speciesData) => {
+  let evolutionString = "";
+  if (speciesData.evolution) {
+    for (let i = 0; i < speciesData.evolution.length; i += 1) {
+      const evolution = speciesData.evolution[i];
+      evolutionString += `Lv. ${evolution.level}: #${evolution.id} ${
+        pokemonConfig[evolution.id].name
+      }`;
+      if (i < speciesData.evolution.length - 1) {
+        evolutionString += "\n";
+      }
+    }
+  } else {
+    evolutionString = "No evolutions!";
+  }
+  return evolutionString;
+};
+
 /**
  * @param {WithId<Trainer>} trainer
  * @returns {string[]}
@@ -433,6 +451,7 @@ module.exports = {
   buildEquipmentString,
   buildCompactEquipmentString,
   buildBoostString,
+  buildSpeciesEvolutionString,
   getPartyPokemonIds,
   getMoveIds,
 };

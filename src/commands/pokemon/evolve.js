@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * evolve.js looks up a pokemon, returning an embed with the pokemon's valid evolution options.
  */
@@ -15,13 +13,13 @@ const {
 } = require("../../components/idConfigSelectRow");
 const { buildPokemonEmbed } = require("../../embeds/pokemonEmbeds");
 const { eventNames } = require("../../config/eventConfig");
+const { buildSpeciesEvolutionString } = require("../../utils/pokemonUtils");
 
 /**
  * Looks up a Pokemon, returning an embed with the Pokemon's valid
  * evolution options.
- * @param {Object} user User who initiated the command.
- * @param {String} pokemonId ID of the Pokemon to evolve.
- * @returns Embed with Pokemon's valid evolution options.
+ * @param {object} user User who initiated the command.
+ * @param {string} pokemonId ID of the Pokemon to evolve.
  */
 const evolve = async (user, pokemonId) => {
   // get trainer
@@ -55,7 +53,14 @@ const evolve = async (user, pokemonId) => {
 
   // if empty, pokemon cannot evolve
   if (evolutionSpeciesIds.length === 0) {
-    return { send: null, err: `${pokemon.data.name} cannot evolve yet!` };
+    return {
+      send: null,
+      err: `${
+        pokemon.data.name
+      } cannot evolve yet! It evolves with the following requirements:\n${buildSpeciesEvolutionString(
+        speciesData
+      )}`,
+    };
   }
 
   // build pokemon embed

@@ -9,6 +9,8 @@ const emojis = {
   GREATBALL: "<:greatball:1100296107759779840>",
   ULTRABALL: "<:ultraball:1100296166555521035>",
   MASTERBALL: "<:masterball:1100296005041262612>",
+
+  POWER_WEIGHT: "<:powerweight:1112557998234148874>",
 };
 
 module.exports = {

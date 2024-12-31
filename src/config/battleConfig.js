@@ -1086,7 +1086,7 @@ const effectConfig = Object.freeze({
     dispellable: true,
     effectAdd(battle, _source, target) {
       battle.addToLog(
-        `${target.name} is restricted and cannot gain combat readiness!`
+        `${target.name} is restricted and cannot gain combat readiness via boosts!`
       );
       target.restricted = true;
     },
@@ -6477,7 +6477,7 @@ const moveExecutes = {
     const pokemons = source.getPatternTargets(
       party,
       targetPatterns.ALL_EXCEPT_SELF,
-      1
+      source.position
     );
     if (pokemons.length > 0) {
       const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
@@ -7461,7 +7461,7 @@ const moveExecutes = {
     const pokemons = source.getPatternTargets(
       party,
       targetPatterns.ALL_EXCEPT_SELF,
-      1
+      source.position
     );
     if (pokemons.length > 0) {
       const pokemon = pokemons.reduce((a, b) =>
@@ -10043,7 +10043,7 @@ const moveExecutes = {
     const pokemons = source.getPatternTargets(
       party,
       targetPatterns.ALL_EXCEPT_SELF,
-      1
+      source.position
     );
     if (pokemons.length > 0) {
       const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
@@ -11049,7 +11049,7 @@ const moveExecutes = {
     const pokemons = source.getPatternTargets(
       party,
       targetPatterns.ALL_EXCEPT_SELF,
-      1
+      source.position
     );
     if (pokemons.length > 0) {
       const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];

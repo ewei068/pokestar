@@ -153,6 +153,7 @@ class BattlePokemon {
     this.hittable = true;
     this.incapacitated = false;
     this.restricted = false;
+    this.shiny = pokemonData.shiny;
   }
 
   /**

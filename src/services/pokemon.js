@@ -76,6 +76,7 @@ const { partyAddRow } = require("../components/partyAddRow");
 const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
 const { buildEquipmentSelectRow } = require("../components/equipmentSelectRow");
 const { stageNames } = require("../config/stageConfig");
+const { emojis } = require("../enums/emojis");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
@@ -992,7 +993,6 @@ const buildPokemonAllInfoSend = async ({
  * @param {string?=} param0.pokemonId
  * @param {string?=} param0.tab
  * @param {string?=} param0.action
- * @returns
  */
 const buildPokemonInfoSend = async ({
   user = null,
@@ -1045,16 +1045,19 @@ const buildPokemonInfoSend = async ({
       label: "Info",
       disabled: tab === "info",
       data: { id: pokemonId, tab: "info" },
+      emoji: "ℹ️",
     },
     {
-      label: "Battle",
+      label: "Battle Info",
       disabled: tab === "battle",
       data: { id: pokemonId, tab: "battle" },
+      emoji: "⚔️",
     },
     {
       label: "Equipment",
       disabled: tab === "equipment",
       data: { id: pokemonId, tab: "equipment" },
+      emoji: emojis.POWER_WEIGHT,
     },
   ];
   const tabActionRow = buildButtonActionRow(
@@ -1069,11 +1072,19 @@ const buildPokemonInfoSend = async ({
       label: pokemon.data.locked ? "Unlock" : "Lock",
       disabled: false,
       data: { id: pokemonId, action: "lock" },
+      emoji: pokemon.data.locked ? "🔓" : "🔒",
     },
     {
       label: "Add to Party",
       disabled: false,
       data: { id: pokemonId, action: "add" },
+      emoji: "➕",
+    },
+    {
+      label: "Train",
+      disabled: false,
+      data: { id: pokemonId, action: "train" },
+      emoji: "🏋️",
     },
   ];
   const actionActionRow = buildButtonActionRow(
