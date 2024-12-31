@@ -1,26 +1,26 @@
 # Pokéstar Changelog
 
+TODO:
+
+- Stretch: New event
+- Stretch: Analytics
+
 ## 1.1.0
 
-- Improve battle UX
-  - Up next and move description indicators
-  - Team colors
-  - Target indicators
+- Revamped the `/tutorial`
+  - Longer tutorial with more informative stages
+  - Much better rewards!
+- Massive improvements to battle UX
+  - Add up next and move description indicators
+  - Teams now have colors
+  - Add target indicators for moves and confirm button
   - Improved mobile display
   - Add more battle tab emojis
   - Display current active Pokemon
-- Fix `/help` command
-- Add bulk buy to shop
-- Added user settings
-  - Profile privacy
-  - Default device type
-  - Show target indicators
-- Revamp the `/tutorial`
-  - Longer tutorial with more informative stages
-  - Much better rewards!
 - Improved Spawning
   - Overhauled spawning engine so it hopefully crashes less
   - Greatly improved managing which channels Pokemon spawn in
+  - Re-enabling spawning for now!
 - Big combat rebalance
   - Balance pass over most moves and abilities
     - Lowered many cooldowns
@@ -31,24 +31,24 @@
   - Targetting back rows deals less damage
   - Super effective attacks deal more damage
   - Add X target pattern shape
+- Added user settings
+  - Profile privacy
+  - Default device type
+  - Show target indicators
 - You can now view other users' profiles with `/trainerinfo`! You can make your profile private in `/settings`.
-- Improve pokemon info
-  - Add some emojis
-  - Add a training button
 - Rebalance Pokemon EXP gain
   - Gain much more EXP in early game (low trainer level)
   - Gain slightly more EXP at high trainer level
   - Gain slightly more EXP when beating low-level PVE NPCs
+- Improve pokemon info
+  - Add some emojis
+  - Add a training button
+- Fixed the `/help` command
+- Added bulk buy to shop
 - Added experimental smart positioning to `/party auto`
 - `/evolve` will display evolution requirements if not met
 - Improve `/pokemart` with emojis and better button descriptions
 - Fixed a bunch of bugs
-
-TODO:
-
-- Stretch: Achievements
-- Stretch: New event
-- Stretch: Analytics
 
 ### 1.0.3 - Big Refactor
 
