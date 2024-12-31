@@ -171,7 +171,28 @@ client.once(Events.ClientReady, (c) => {
     } catch (error) {
       logger.error("Error cleaning up raids", error);
     }
-  }, 1000 * 60 * 10);
+  }, 1000 * 60 * 15);
+
+  // poll resource metrics
+  poll(async () => {
+    try {
+      const resourceMetrics = {};
+      const memoryUsage = process.memoryUsage();
+      for (const [key, value] of Object.entries(memoryUsage)) {
+        const valueInMB = value / 1024 / 1024;
+        resourceMetrics[key] = `${valueInMB.toFixed(2)} MB`;
+      }
+
+      // log metrics in a single line
+      let metricsString = "";
+      for (const [key, value] of Object.entries(resourceMetrics)) {
+        metricsString += `${key}: ${value} | `;
+      }
+      logger.info(`Resource metrics: ${metricsString}`);
+    } catch {
+      logger.warn("Error logging metrics");
+    }
+  }, 1000 * 15);
 
   // connect to discordbotlist.com
   if (
