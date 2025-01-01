@@ -50,8 +50,10 @@ const getGuildData = async (guildId) => {
           $set: guildData,
         });
       const res = await query.upsertOne();
-      if (res.modifiedCount === 0) {
-        logger.error(`Failed to update guild ${guildData.guildId}.`);
+      if (res.modifiedCount === 0 && res.upsertedCount === 0) {
+        logger.error(
+          `Failed to update guild in getGuildData ${guildData.guildId}.`
+        );
         return { data: null, err: "Error updating guild." };
       }
     } catch (error) {
