@@ -2,24 +2,35 @@ const { stageNames, stageConfig } = require("./stageConfig");
 
 const { prefix } = stageConfig[process.env.STAGE];
 
-/** @typedef {Keys<commandCategoryConfig>} CommandCategoryEnum */
+/** @typedef {Keys<commandCategoryConfigRaw>} CommandCategoryEnum */
 
-// TODO: re-order commands and categories
-// TODO: add long descriptions
 /**
- * @satisfies {Record<string, {
+ * @typedef {{
  *  name: string,
  *  description: string,
  *  folder: string,
  *  commands: CommandEnum[]
- * }>}
+ * }} CommandCategoryData
+ */
+
+// TODO: re-order commands and categories
+// TODO: add long descriptions
+/**
+ * @satisfies {Record<string, CommandCategoryData>}
  */
 const commandCategoryConfigRaw = {
   trainer: {
     name: "Trainer",
     description: "Commands involving your trainer",
     folder: "trainer",
-    commands: ["trainerinfo", "daily", "backpack", "levelrewards", "locations"],
+    commands: [
+      "trainerinfo",
+      "daily",
+      "backpack",
+      "settings",
+      "levelrewards",
+      "locations",
+    ],
   },
   pokemon: {
     name: "Pokemon",
@@ -41,7 +52,7 @@ const commandCategoryConfigRaw = {
       "mew",
       "celebi",
       "deoxys",
-      "togglespawn",
+      // "togglespawn",
     ],
   },
   shop: {
@@ -84,6 +95,12 @@ const commandCategoryConfigRaw = {
       "invite",
     ],
   },
+  server: {
+    name: "Server",
+    description: "Server management commands",
+    folder: "server",
+    commands: ["spawn", "spawnmanage", "spawnaddchannel", "spawnremovechannel"],
+  },
   help: {
     name: "Help",
     description: "Help commands",
@@ -97,6 +114,7 @@ const commandCategoryConfigRaw = {
     commands: ["ping", "echo", "give", "test"],
   },
 };
+/** @type {Record<CommandCategoryEnum, CommandCategoryData>} */
 const commandCategoryConfig = Object.freeze(commandCategoryConfigRaw);
 
 /** @typedef {Keys<commandConfigRaw>} CommandEnum */
@@ -171,11 +189,19 @@ const commandConfigRaw = {
   trainerinfo: {
     name: "Trainer Info",
     aliases: ["trainerinfo", "trainer", "ti", "profile", "user"],
-    description: "Get information about your trainer",
+    description: "Get information about your or another trainer trainer",
     longDescription:
       "Displays your trainer card with information such as number of Pokemon, Pokedollars, and level progress.",
     execute: "trainerInfo.js",
-    args: {},
+    args: {
+      user: {
+        type: "user",
+        description:
+          "@mention user to view their profile (if their profile is public)",
+        optional: true,
+        variable: false,
+      },
+    },
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 0,
   },
@@ -211,6 +237,17 @@ const commandConfigRaw = {
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 50,
+  },
+  settings: {
+    name: "User Settings",
+    aliases: ["settings", "options", "config", "usersettings"],
+    description: "Modify your user settings and options",
+    longDescription:
+      "Modify your user settings and options such as privacy and default device.",
+    execute: "userSettings.js",
+    args: {},
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    exp: 0,
   },
   vote: {
     name: "Vote",
@@ -1000,22 +1037,59 @@ const commandConfigRaw = {
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
   },
-  togglespawn: {
-    name: "Toggle Spawn",
-    aliases: ["togglespawn"],
-    description: "Toggle whether Pokemon spawn in your server",
+  spawn: {
+    name: "Spawn",
+    aliases: ["spawn"],
+    description: "Entry point for spawn management",
+    subcommands: ["spawnmanage", "spawnaddchannel", "spawnremovechannel"],
+    args: {},
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+  },
+  spawnmanage: {
+    name: "Spawn Manage",
+    aliases: ["spawnmanage", "sm"],
+    description: "Manage Pokemon spawns in your server",
     longDescription:
-      "Toggle whether Pokemon spawn in your server. If channel is provided, only toggles spawns in the channel. This command requires the Manage Roles permission.",
-    execute: "toggleSpawn.js",
+      "Manage Pokemon spawns in your server. You can add or remove channels to spawn Pokemon in.",
+    execute: "spawnManage.js",
+    args: {},
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    parent: "spawn",
+  },
+  spawnaddchannel: {
+    name: "Spawn Add Channel",
+    aliases: ["spawnaddchannel", "sac"],
+    description: "Add a channel to the spawn manager",
+    longDescription: "Add a channel to the spawn manager.",
+    execute: "spawnAddChannel.js",
     args: {
       channel: {
         type: "channel",
-        description: "channel to toggle spawns in",
-        optional: true,
+        description: "channel to add to spawn manager",
+        optional: false,
         variable: false,
       },
     },
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    parent: "spawn",
+  },
+  spawnremovechannel: {
+    name: "Spawn Remove Channel",
+    aliases: ["spawnremovechannel", "src"],
+    description: "Remove a channel from the spawn manager",
+    longDescription:
+      "Remove a channel from the spawn manager. The channel must already be in the spawn manager.",
+    execute: "spawnRemoveChannel.js",
+    args: {
+      channel: {
+        type: "channel",
+        description: "channel to remove from spawn manager",
+        optional: false,
+        variable: false,
+      },
+    },
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    parent: "spawn",
   },
   give: {
     name: "Give",

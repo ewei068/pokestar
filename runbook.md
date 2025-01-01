@@ -35,6 +35,7 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 ### Environment
 
 - `brew install tmux`
+  - IN PROD: `npm install -g pm2`
 - Export `DISCORD_TOKEN`, `STAGE`, `MONGODB_URL`, `CLIENT_ID`, `DBL_TOKEN`, `DBL_SECRET`, `BOTLIST_SECRET`, `BOTLIST_TOKEN`, `DISCORDLIST_TOKEN`, `TOPGG_TOKEN`, `TOPGG_SECRET` to `.env` file **DON'T ADD THIS TO VERSION CONTROL** Refer to `.env.in`
 - Upload commands: `node scripts/bot/deployCommands.js`
 
@@ -67,8 +68,9 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 
 ### Run Bot
 
-- `tmux`
+- `tmux` (DON'T RUN IN PROD)
 - `node src/index.js`
+  - IN PROD: `pm2 start src/index.js`
 
 ## Update Steps
 
@@ -81,5 +83,6 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 - Run migration: `node scripts/database/setupDatabase.js`
 - If necessary: run other migrations in `scripts/database/migrations`
 - Run bot `node src/index.js`
+  - IN PROD: `pm2 start src/index.js`
 - Test that bot works in sandboxed environment
 - If DB errors, restore DB `mongorestore --drop backups/{BACKUP_NAME}/`

@@ -1,5 +1,4 @@
-const { ModalBuilder } = require("discord.js");
-const { buildTextInputRow } = require("./components/textInputRow");
+const { buildGenericTextInputModal } = require("./genericModals");
 
 /**
  * Builds a simple Pokemon search modal
@@ -17,22 +16,16 @@ const buildPokemonSearchModal = ({
   placeholder = "Enter a Pokemon's name",
   value,
   required = true,
-}) => {
-  const modalBuilder = new ModalBuilder().setCustomId(id).setTitle(title);
-
-  const textInputRow = buildTextInputRow({
-    id: "pokemonSearchInput",
+}) =>
+  buildGenericTextInputModal({
+    id,
+    textInputId: "pokemonSearchInput",
+    title,
     label: "Pokemon Name",
     placeholder,
     value,
     required,
   });
-
-  // @ts-ignore
-  modalBuilder.addComponents(textInputRow);
-
-  return modalBuilder;
-};
 
 module.exports = {
   buildPokemonSearchModal,

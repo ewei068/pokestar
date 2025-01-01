@@ -68,8 +68,7 @@ const buildTrainerEmbed = (trainerInfo) => {
     { name: "Level Progress", value: `${progressBar}`, inline: false }
   );
 
-  const footerString =
-    "/gacha to get Pokemon\n/backpack to view your items\n/list to view your Pokemon";
+  const footerString = "Use /settings to make your profile private";
   embed.setFooter({ text: footerString });
 
   return embed;

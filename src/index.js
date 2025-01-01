@@ -17,7 +17,7 @@ const { checkRateLimit } = require("./services/rateLimit");
 const { addVote } = require("./services/trainer");
 const { stageNames } = require("./config/stageConfig");
 const { poll } = require("./utils/utils");
-const { startSpawning, addGuild } = require("./services/spawn");
+const { startSpawning } = require("./services/spawn");
 const { getStateCount } = require("./services/state");
 const { cleanupRaids } = require("./services/raid");
 const {
@@ -27,6 +27,17 @@ const {
 console.log(`STAGE: ${process.env.STAGE}`);
 const FFLAG_ENABLE_SPAWN = process.env.FFLAG_ENABLE_SPAWN === "1";
 console.log(`FFLAG_ENABLE_SPAWN: ${FFLAG_ENABLE_SPAWN}`);
+
+process.on("uncaughtException", (err) => {
+  logger.error("UNCAUGHT EXCEPTION:", err);
+  // Optionally handle the error here, e.g., log it to a file, etc.
+  // Don't exit the process unless necessary
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  logger.error("UNHANDLED PROMISE REJECTION:", promise, "reason:", reason);
+  // Optionally handle the rejection here
+});
 
 initializeBattleData();
 
@@ -128,7 +139,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 client.on(Events.GuildCreate, (guild) => {
   logger.info(`Joined guild: ${guild.name} (${guild.id})`);
   if (FFLAG_ENABLE_SPAWN) {
-    addGuild(client, guild);
+    // addGuild(client, guild);
   }
 });
 
@@ -144,11 +155,11 @@ client.once(Events.ClientReady, (c) => {
   logger.info(`Ready! Logged in as ${c.user.tag}`);
   client.user.setActivity(`/tutorial /help`);
   // log connected guilds
-  let guildString = "";
+  /* let guildString = "";
   client.guilds.cache.forEach((guild) => {
     guildString += `${guild.name} (${guild.id})\n`;
   });
-  logger.info(`Connected to guilds: \n${guildString}`);
+  logger.info(`Connected to guilds: \n${guildString}`); */
 
   // start spawners
   if (FFLAG_ENABLE_SPAWN) {
@@ -230,12 +241,8 @@ client.once(Events.ClientReady, (c) => {
     }
   }, 1000 * 60 * 15);
 
-  // connect to discordbotlist.com
-  if (
-    (process.env.STAGE === stageNames.BETA ||
-      process.env.STAGE === stageNames.PROD) &&
-    process.env.DBL_TOKEN
-  ) {
+  // connect to discord bot directories
+  if (process.env.STAGE === stageNames.PROD && process.env.DBL_TOKEN) {
     const dbl = createDjsClient(process.env.DBL_TOKEN, client);
     dbl.on("posted", (stats) => {
       logger.info(

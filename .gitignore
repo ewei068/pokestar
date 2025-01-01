@@ -106,6 +106,8 @@ dist
 package-lock.json
 extra_data
 src/test.js
+src/test.ts
 src/backups
 ssh.txt
 .DS_Store
+notes.md

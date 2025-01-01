@@ -20,7 +20,7 @@ const {
   levelConfig,
 } = require("../config/trainerConfig");
 const { logger } = require("../log");
-const { formatMoney, getFullUTCTimeInterval } = require("../utils/utils");
+const { formatMoney, setDefaultFields } = require("../utils/utils");
 const {
   backpackItems,
   backpackCategories,
@@ -44,7 +44,10 @@ const { getVoteMultiplier } = require("../config/socialConfig");
 
 /**
  *
- * @param {DiscordUser} user
+ * @param {{
+ *  id: string,
+ *  username?: string,
+ * }} user
  * @returns {Promise<WithId<Trainer>>}
  */
 const initTrainer = async (user) => {
@@ -77,6 +80,7 @@ const initTrainer = async (user) => {
 };
 
 /**
+ * Gets a trainer from a user ID, without initiating it or refreshing time-interval fields
  * @param {string} userId
  * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
  */
@@ -98,8 +102,12 @@ const getTrainerFromId = async (userId) => {
 };
 
 /**
- *
- * @param {DiscordUser} discordUser
+ * @param {{
+ *  id: string,
+ *  username?: string,
+ *  discriminator?: string,
+ *  avatar?: string,
+ * }} discordUser
  * @param {boolean?} refresh
  * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
  */
@@ -153,36 +161,16 @@ const getTrainer = async (discordUser, refresh = true) => {
     }
   }
 
-  // check if all fields are present
-  for (const field in trainerFields) {
-    if (trainer[field] === undefined) {
-      trainer[field] = trainerFields[field].default;
-      modified = true;
-    }
-  }
-
   // attempt to reset time-interval fields
   const lastCorrectedTime = new Date(trainer.lastCorrected);
   const newCorrectedTime = new Date();
-  for (const field in trainerFields) {
-    const { refreshInterval } = trainerFields[field];
-    if (!refreshInterval) {
-      continue;
-    }
-
-    const currentTimeInterval = getFullUTCTimeInterval(
-      refreshInterval,
+  modified =
+    setDefaultFields(
+      trainer,
+      trainerFields,
+      lastCorrectedTime,
       newCorrectedTime
-    );
-    const lastTimeInterval = getFullUTCTimeInterval(
-      refreshInterval,
-      lastCorrectedTime
-    );
-    if (currentTimeInterval > lastTimeInterval) {
-      trainer[field] = trainerFields[field].default;
-      modified = true;
-    }
-  }
+    ) || modified;
 
   if (modified) {
     trainer.lastCorrected = newCorrectedTime.getTime();
@@ -212,34 +200,34 @@ const getTrainer = async (discordUser, refresh = true) => {
 };
 
 /**
- *
- * @param {DiscordUser} user
+ * @param {Trainer} trainer
+ */
+const refreshTrainer = async (trainer) => await getTrainer(trainer.user);
+
+/**
+ * Given a trainer, retrieve extra info for that trainer
+ * @param {WithId<Trainer>} trainer
  * @returns {Promise<{data?: Trainer & {pokemon: object, numPokemon: number}, err?: string}>}
  */
-const getTrainerInfo = async (user) => {
-  const trainer = await getTrainer(user);
-  if (trainer.err) {
-    return { data: null, err: trainer.err };
-  }
-
+const getExtraTrainerInfo = async (trainer) => {
   // get extra info
   try {
     const numPokemonQuery = new QueryBuilder(
       collectionNames.USER_POKEMON
-    ).setFilter({ userId: trainer.data.userId });
+    ).setFilter({ userId: trainer.userId });
 
     const numPokemonRes = await numPokemonQuery.countDocuments();
 
     const aggQuery = new QueryBuilder(
       collectionNames.POKEMON_AND_USERS
-    ).setFilter({ userId: trainer.data.userId });
+    ).setFilter({ userId: trainer.userId });
 
     let pokemonRes = await aggQuery.findOne();
     if (pokemonRes === null) {
       // set default values, TODO: fix this probably https://www.mongodb.com/community/forums/t/how-can-i-do-a-left-outer-join-in-mongodb/189735/2
       pokemonRes = {
         pokemon: {
-          _id: trainer.data.userId,
+          _id: trainer.userId,
           totalWorth: 0,
           totalShiny: 0,
           totalPower: 0,
@@ -254,7 +242,7 @@ const getTrainerInfo = async (user) => {
 
     return {
       data: {
-        ...trainer.data,
+        ...trainer,
         ...extraInfo,
       },
       err: null,
@@ -263,6 +251,66 @@ const getTrainerInfo = async (user) => {
     logger.error(error);
     return { data: null, err: "Error finding trainer." };
   }
+};
+
+/**
+ *
+ * @param {DiscordUser} user
+ * @returns {Promise<{data?: Trainer & {pokemon: object, numPokemon: number}, err?: string}>}
+ */
+const getTrainerWithExtraInfo = async (user) => {
+  const trainer = await getTrainer(user);
+  if (trainer.err) {
+    return { data: null, err: trainer.err };
+  }
+
+  return await getExtraTrainerInfo(trainer.data);
+};
+
+/**
+ * TODO: caching?
+ * @param {DiscordUser} user
+ * @returns {Promise<{data?: UserSettings, err?: string}>}
+ */
+const getUserSettings = async (user) => {
+  const trainer = await getTrainer(user);
+  if (trainer.err) {
+    return { data: null, err: trainer.err };
+  }
+
+  return { data: trainer.data.settings, err: null };
+};
+
+/**
+ * @template {UserSettingsEnum} T
+ * @param {DiscordUser} user
+ * @param {T} setting
+ * @param {UserSettingsOptions<T>} newValue
+ * @returns {Promise<{data?: null, err?: string}>}
+ */
+const setUserSetting = async (user, setting, newValue) => {
+  const { data: settings, err } = await getUserSettings(user);
+  if (err) {
+    return { data: null, err };
+  }
+
+  // @ts-ignore
+  settings[setting] = newValue;
+
+  try {
+    await updateDocument(
+      collectionNames.USERS,
+      { userId: user.id },
+      { $set: { settings } }
+    );
+
+    // TODO: error check? I don't think error reporting is critical here
+  } catch (error) {
+    logger.error(error);
+    return { data: null, err: "Error updating settings." };
+  }
+
+  return { data: null, err: null };
 };
 
 /**
@@ -534,7 +582,11 @@ const updateTrainer = async (trainer) => {
 module.exports = {
   getTrainer,
   getTrainerFromId,
-  getTrainerInfo,
+  refreshTrainer,
+  getExtraTrainerInfo,
+  getTrainerWithExtraInfo,
+  getUserSettings,
+  setUserSetting,
   addExpAndMoneyTrainer,
   addExpAndMoney,
   getLevelRewards,

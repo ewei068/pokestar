@@ -15,6 +15,7 @@ const {
   buildDungeonDifficultyString,
   buildCompactPartyString,
   buildRaidDifficultyString,
+  buildActivePokemonFieldStrings,
 } = require("../utils/battleUtils");
 const {
   buildPokemonStatString,
@@ -45,10 +46,16 @@ const {
  * Handles building the party embedded instructions for building a party.
  * @param {Trainer} trainer the trainer to build the party for.
  * @param {WithId<Pokemon>[]} pokemons the pokemon the trainer has.
- * @param {boolean=} detailed whether it's a detailed party formation.
+ * @param {object} options
+ * @param {boolean=} options.detailed whether it's a detailed party formation.
+ * @param {boolean=} options.isMobile whether it's a mobile device.
  * @returns {EmbedBuilder} an embeded.
  */
-const buildPartyEmbed = (trainer, pokemons, detailed = false) => {
+const buildPartyEmbed = (
+  trainer,
+  pokemons,
+  { detailed = false, isMobile = false } = {}
+) => {
   const { party } = trainer;
 
   const power = pokemons.reduce(
@@ -66,7 +73,7 @@ const buildPartyEmbed = (trainer, pokemons, detailed = false) => {
     { name: "Power", value: `${power}`, inline: true },
     {
       name: "Pokemon",
-      value: buildPartyString(pokemons, party.rows, party.cols),
+      value: buildPartyString(pokemons, party.rows, party.cols, { isMobile }),
       inline: false,
     }
   );
@@ -142,12 +149,20 @@ const buildPartiesEmbed = (trainer, pokemonMap) => {
 
   return embed;
 };
+
 /**
  * Builds the battle the players/players and npcs will use.
  * @param {Battle} battle the battle itself.
+ * @param {object} options
+ * @param {Record<string, number[]>=} options.targetIndices map of team name to target indices.
+ * @param {boolean=} options.isMobile
+ * @param {MoveIdEnum=} options.selectedMoveId the move id selected.
  * @returns {EmbedBuilder} an embeded.
  */
-const buildBattleEmbed = (battle) => {
+const buildBattleEmbed = (
+  battle,
+  { targetIndices = null, isMobile = false, selectedMoveId } = {}
+) => {
   // assume two teams
   const team1 = Object.values(battle.teams)[0];
   const team2 = Object.values(battle.teams)[1];
@@ -161,6 +176,8 @@ const buildBattleEmbed = (battle) => {
     battle.activePokemon.teamName === team2.name
       ? battle.activePokemon.position
       : null;
+  const team1TargetIndicies = targetIndices?.[team1.name];
+  const team2TargetIndicies = targetIndices?.[team2.name];
 
   // TODO: deal with NPCs
   const team1UserString = team1.userIds
@@ -179,7 +196,6 @@ const buildBattleEmbed = (battle) => {
   const embed = new EmbedBuilder();
   embed.setTitle(`Battle State`);
   embed.setColor(0xffffff);
-  embed.setDescription(battle.log[battle.log.length - 1] || "No log yet.");
   // build weather field
   const negatedString = battle.isWeatherNegated() ? " (negated)" : "";
   if (battle.weather.weatherId) {
@@ -188,56 +204,115 @@ const buildBattleEmbed = (battle) => {
         embed.addFields({
           name: "Weather",
           value: `Harsh Sun${negatedString} (${battle.weather.duration})`,
-          inline: true,
+          inline: false,
         });
         break;
       case weatherConditions.RAIN:
         embed.addFields({
           name: "Weather",
           value: `Rain${negatedString} (${battle.weather.duration})`,
-          inline: true,
+          inline: false,
         });
         break;
       case weatherConditions.SANDSTORM:
         embed.addFields({
           name: "Weather",
           value: `Sandstorm${negatedString} (${battle.weather.duration})`,
-          inline: true,
+          inline: false,
         });
         break;
       case weatherConditions.HAIL:
         embed.addFields({
           name: "Weather",
           value: `Hail${negatedString} (${battle.weather.duration})`,
-          inline: true,
+          inline: false,
         });
         break;
       default:
         break;
     }
   }
-  embed.addFields(
+
+  if (battle.activePokemon) {
+    const { pokemonHeader, pokemonString } = buildActivePokemonFieldStrings(
+      battle.activePokemon
+    );
+    embed.addFields({
+      name: pokemonHeader,
+      value: pokemonString,
+      inline: false,
+    });
+  }
+
+  const fields = [
     {
-      name: `${team1.name} | ${team1UserString}`,
+      name: `${team1.emoji} ${team1.name} | ${team1UserString}`,
       value: buildPartyString(
         team1Party.pokemons,
         team1Party.rows,
         team1Party.cols,
-        { reverse: true, showHp: true, emphPosition: team1EmphPosition }
+        {
+          reverse: true,
+          showHp: true,
+          emphPosition: team1EmphPosition,
+          targetIndices: team1TargetIndicies,
+          isMobile,
+        }
       ),
-      inline: false,
+      inline: !isMobile,
     },
     {
-      name: `${team2.name} | ${team2UserString}`,
+      name: `${team2.emoji} ${team2.name} | ${team2UserString}`,
       value: buildPartyString(
         team2Party.pokemons,
         team2Party.rows,
         team2Party.cols,
-        { showHp: true, emphPosition: team2EmphPosition }
+        {
+          showHp: true,
+          emphPosition: team2EmphPosition,
+          targetIndices: team2TargetIndicies,
+          isMobile,
+        }
       ),
-      inline: false,
+      inline: !isMobile,
+    },
+  ];
+
+  const upNextPokemon = battle.getNextNPokemon(3);
+  if (upNextPokemon.length > 0) {
+    const upNextStringTop = upNextPokemon
+      .map((pokemon) => pokemonConfig[pokemon.speciesId].emoji)
+      .join("\u2001");
+    const upNextBottomString = upNextPokemon
+      .map((pokemon) => {
+        const team = battle.teams[pokemon.teamName];
+        return `${team?.emoji}`;
+      })
+      .join("\u2001");
+    // if mobile, append. else, add to index 1
+    const upNextField = {
+      name: "Up Next (Estimate)",
+      value: `${upNextStringTop}\n${upNextBottomString}`,
+      inline: !isMobile,
+    };
+    if (isMobile) {
+      fields.push(upNextField);
+    } else {
+      fields.splice(1, 0, upNextField);
     }
-  );
+  }
+
+  const move = selectedMoveId ? getMove(selectedMoveId) : null;
+  if (move) {
+    const { moveHeader, moveString } = buildMoveString(move);
+    fields.push({
+      name: moveHeader,
+      value: moveString,
+      inline: !isMobile,
+    });
+  }
+
+  embed.addFields(isMobile ? fields : setTwoInline(fields));
 
   return embed;
 };

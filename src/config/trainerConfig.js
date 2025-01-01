@@ -12,14 +12,109 @@
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { bannerTypes } = require("./gachaConfig");
 const { stageNames } = require("./stageConfig");
-/* eslint-disable-next-line no-unused-vars */
-const types = require("../../types");
-const { refreshIntervalEnum } = require("../enums/miscEnums");
+const { timeEnum } = require("../enums/miscEnums");
 
 const MAX_TRAINER_LEVEL = 100;
 const MAX_POKEMON = 500;
 const MAX_RELEASE = 10;
 
+/**
+ * @typedef {{
+ *  type: "string" | "number" | "boolean" | "object" | "array",
+ *  default?: any,
+ *  refreshInterval?: number
+ *  config?: DefaultFieldConfig
+ * }} TrainerFieldData
+ */
+
+/**
+ * @typedef {{
+ *  name: string,
+ *  options: Array<{value: any, display: string}>,
+ *  trainerField: TrainerFieldData,
+ * }} UserSettingsData
+ */
+/** @typedef {Keys<userSettingsConfigRaw>} UserSettingsEnum */
+
+/** @satisfies {Record<string, UserSettingsData>} */
+const userSettingsConfigRaw = {
+  publicProfile: {
+    name: "Profile Privacy",
+    options: /** @type {const} */ ([
+      {
+        value: true,
+        display: "Public",
+      },
+      {
+        value: false,
+        display: "Private",
+      },
+    ]),
+    trainerField: {
+      type: "boolean",
+      default: true,
+    },
+  },
+  deviceType: {
+    name: "Device Type",
+    options: /** @type {const} */ ([
+      {
+        value: "desktop",
+        display: "Desktop",
+      },
+      {
+        value: "mobile",
+        display: "Mobile",
+      },
+    ]),
+    trainerField: {
+      type: "string",
+      default: "desktop",
+    },
+  },
+  showTargetIndicator: {
+    name: "Show Target Indicator",
+    options: /** @type {const} */ ([
+      {
+        value: true,
+        display: "Yes",
+      },
+      {
+        value: false,
+        display: "No",
+      },
+    ]),
+    trainerField: {
+      type: "boolean",
+      default: true,
+    },
+  },
+};
+/** @type {Record<UserSettingsEnum, UserSettingsData>} */
+const userSettingsConfig = Object.freeze(userSettingsConfigRaw);
+/**
+ * Given a settings enum, get an enum of its options
+ * @template {UserSettingsEnum} T
+ * @typedef {(typeof userSettingsConfigRaw[T]["options"][number]["value"])} UserSettingsOptions
+ */
+
+/**
+ * @typedef {Record<string, TrainerFieldData>} DefaultFieldConfig
+ */
+
+/**
+ * @type {DefaultFieldConfig}
+ */
+const userSettingsTrainerFieldsConfig = Object.entries(
+  userSettingsConfig
+).reduce((acc, [key, value]) => {
+  acc[key] = value.trainerField;
+  return acc;
+}, {});
+
+/**
+ * @type {DefaultFieldConfig}
+ */
 const trainerFields = {
   userId: {
     type: "string",
@@ -46,7 +141,7 @@ const trainerFields = {
   claimedDaily: {
     type: "boolean",
     default: false,
-    refreshInterval: refreshIntervalEnum.DAILY,
+    refreshInterval: timeEnum.DAY,
   },
   backpack: {
     type: "object",
@@ -66,7 +161,7 @@ const trainerFields = {
   purchasedShopItemsToday: {
     type: "object",
     default: {},
-    refreshInterval: refreshIntervalEnum.DAILY,
+    refreshInterval: timeEnum.DAY,
   },
   locations: {
     type: "object",
@@ -281,7 +376,7 @@ const trainerFields = {
   defeatedNPCsToday: {
     type: "object",
     default: {},
-    refreshInterval: refreshIntervalEnum.DAILY,
+    refreshInterval: timeEnum.DAY,
   },
   defeatedNPCs: {
     type: "object",
@@ -309,12 +404,28 @@ const trainerFields = {
   usedTimeTravel: {
     type: "boolean",
     default: false,
-    refreshInterval: refreshIntervalEnum.DAILY,
+    refreshInterval: timeEnum.DAY,
   },
   lastTowerStage: {
     type: "number",
     default: 0,
-    refreshInterval: refreshIntervalEnum.BIWEEKLY,
+    refreshInterval: timeEnum.FORTNITE,
+  },
+  settings: {
+    type: "object",
+    default: {},
+    config: userSettingsTrainerFieldsConfig,
+  },
+  upsellData: {
+    type: "object",
+    default: {},
+  },
+  tutorialData: {
+    type: "object",
+    default: {
+      completedTutorialStages: {},
+      currentTutorialStage: "welcome", // keep in sync with first stage in tutorialConfig
+    },
   },
 };
 
@@ -1455,8 +1566,8 @@ const levelConfig = {
 const getTrainerLevelExp = (level) => 50 * (level ** 2 - level);
 
 const expMultiplier = (level) =>
-  // 3 * x ^ (1/2)
-  3 * level ** (1 / 2);
+  // 2.5 * x ^ (1/2) + 15
+  2.5 * level ** (1 / 2) + 15;
 
 const NUM_DAILY_REWARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 5;
 const NUM_DAILY_SHARDS = process.env.STAGE === stageNames.ALPHA ? 100 : 5;
@@ -1471,4 +1582,5 @@ module.exports = {
   expMultiplier,
   NUM_DAILY_REWARDS,
   NUM_DAILY_SHARDS,
+  userSettingsConfig,
 };

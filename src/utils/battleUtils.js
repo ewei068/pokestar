@@ -4,12 +4,22 @@
  *
  * battleUtils.js the lowest level of code for battles used by the battle.js
  */
-const { statusConditions } = require("../config/battleConfig");
+const { statusConditions, targetPatterns } = require("../config/battleConfig");
 const { difficultyConfig } = require("../config/npcConfig");
 const { pokemonConfig, typeConfig } = require("../config/pokemonConfig");
 const { getRewardsString, flattenRewards } = require("./trainerUtils");
 const { getPBar, formatMoney } = require("./utils");
 const { getEffect } = require("../battle/data/effectRegistry");
+
+const plus = "┼";
+const plusEmph = "*";
+const plusTarget = "╬";
+const hLine = "─";
+const hLineEmph = "*";
+const hLineTarget = "═";
+const vLine = "│";
+const vLineEmph = "*";
+const vLineTarget = "║";
 
 /**
  *
@@ -20,14 +30,23 @@ const { getEffect } = require("../battle/data/effectRegistry");
  * @param {boolean?=} options.reverse
  * @param {boolean?=} options.showHp
  * @param {number?=} options.emphPosition
+ * @param {number[]?=} options.targetIndices
+ * @param {boolean?=} options.isMobile
  * @returns {string}
  */
 const buildPartyString = (
   pokemons,
   rows,
   cols,
-  { reverse = false, showHp = false, emphPosition = null } = {}
+  {
+    reverse = false,
+    showHp = false,
+    emphPosition = null,
+    targetIndices = null,
+    isMobile = false, // TODO
+  } = {}
 ) => {
+  const targetIndexSet = new Set(targetIndices || []);
   let globalIndex = 0;
   let partyString = "";
   // set rows to be a range to iterate over
@@ -39,16 +58,45 @@ const buildPartyString = (
     let rowString = "`";
     globalIndex = i * cols;
     for (let j = 0; j < cols; j += 1) {
-      const lplus =
+      let lplus =
         emphPosition &&
         (emphPosition - 1 === globalIndex ||
           (emphPosition === globalIndex && j !== 0))
-          ? "╬"
-          : "+";
-      const rplus =
-        emphPosition && emphPosition - 1 === globalIndex ? "╬" : "+";
-      const border =
-        emphPosition && emphPosition - 1 === globalIndex ? "=" : "-";
+          ? plusEmph
+          : plus;
+      let rplus =
+        emphPosition && emphPosition - 1 === globalIndex ? plusEmph : plus;
+      let border =
+        emphPosition && emphPosition - 1 === globalIndex ? hLineEmph : hLine;
+      // check for selected index, OVERRIDES existing border
+      const leftIndex = globalIndex - 1;
+      const topIndex = reverse ? globalIndex + cols : globalIndex - cols;
+      if (targetIndexSet.has(leftIndex) && j !== 0) {
+        // position surrounded with targets, *. if the position is also a target, add space instead
+        const topLeftIndex = topIndex - 1;
+        if (
+          targetIndexSet.has(globalIndex) &&
+          targetIndexSet.has(topIndex) &&
+          targetIndexSet.has(topLeftIndex)
+        ) {
+          lplus = " ";
+        } else {
+          lplus = plusTarget;
+        }
+      } else if (targetIndexSet.has(globalIndex)) {
+        // position is target, add indicator to left border
+        lplus = plusTarget;
+      }
+
+      if (targetIndexSet.has(globalIndex)) {
+        // position directly above has target, add space as border. else, add indicator
+        if (targetIndexSet.has(topIndex)) {
+          border = " ";
+        } else {
+          border = hLineTarget;
+        }
+        rplus = plusTarget;
+      }
       let pokemon = pokemons[globalIndex];
       let headerString = "";
       if (showHp && pokemon) {
@@ -72,14 +120,18 @@ const buildPartyString = (
 
       // add to row string based on length of hp string
       const headerLength = headerString.length;
+      rowString += lplus;
+      if (!isMobile) {
+        rowString += border;
+      }
       if (headerLength === 0) {
-        rowString += `${lplus}${border}${border}${border}${border}${border}`;
+        rowString += `${border}${border}${border}${border}`;
       } else if (headerLength === 2) {
-        rowString += `${lplus}${border}${border}${headerString}${border}`;
+        rowString += `${border}${headerString}${border}`;
       } else if (headerLength === 3) {
-        rowString += `${lplus}${border}${headerString}${border}`;
+        rowString += `${headerString}${border}`;
       } else if (headerLength === 4) {
-        rowString += `${lplus}${border}${headerString}`;
+        rowString += `${headerString}`;
       }
 
       if (j === cols - 1) {
@@ -91,24 +143,42 @@ const buildPartyString = (
     partyString += `${rowString}\n`;
 
     // build pokemon line
-    rowString = "`";
+    rowString = "";
     for (let j = 0; j < cols; j += 1) {
-      const lborder =
+      let lborder =
         emphPosition &&
         (emphPosition - 1 === globalIndex ||
           (emphPosition === globalIndex && j !== 0))
-          ? "║"
-          : "|";
-      const rborder =
-        emphPosition && emphPosition - 1 === globalIndex ? "║" : "|";
+          ? vLineEmph
+          : vLine;
+
+      const leftIndex = globalIndex - 1;
+      if (targetIndexSet.has(leftIndex) && j !== 0) {
+        // position directly to the left has target, *. if the position is also a target, add space instead
+        if (targetIndexSet.has(globalIndex)) {
+          lborder = " ";
+        } else {
+          lborder = vLineTarget;
+        }
+      } else if (targetIndexSet.has(globalIndex)) {
+        // position is target, add indicator to left border
+        lborder = vLineTarget;
+      }
+
+      let rborder =
+        emphPosition && emphPosition - 1 === globalIndex ? vLineEmph : vLine;
+      if (targetIndexSet.has(globalIndex)) {
+        rborder = vLineTarget;
+      }
       const pokemon = pokemons[globalIndex];
       const emoji = pokemon ? pokemonConfig[pokemon.speciesId].emoji : "⬛";
       // if j is divisible by 3 and not 0, remove a space from the left
-      const leftSpace = j % 3 === 0 && j !== 0 ? "" : " ";
-      rowString += `${lborder} \`${emoji}\`${leftSpace}`;
+      // const leftSpace = j % 3 === 0 && j !== 0 ? "" : " ";
+      const leftSpace = isMobile ? "\u2002\u2005" : "\u2005\u2006";
+      rowString += `\`${lborder} \`${emoji}${leftSpace}`;
       globalIndex += 1;
       if (j === cols - 1) {
-        rowString += `${rborder}\``;
+        rowString += `\`${rborder}\``;
       }
     }
     globalIndex -= cols;
@@ -117,21 +187,54 @@ const buildPartyString = (
     // build bottom line with position
     rowString = "`";
     for (let j = 0; j < cols; j += 1) {
-      const lplus =
+      let lplus =
         emphPosition &&
         (emphPosition - 1 === globalIndex ||
           (emphPosition === globalIndex && j !== 0))
-          ? "╬"
-          : "+";
-      const rplus =
-        emphPosition && emphPosition - 1 === globalIndex ? "╬" : "+";
-      const border =
-        emphPosition && emphPosition - 1 === globalIndex ? "=" : "-";
+          ? plusEmph
+          : plus;
+      let rplus =
+        emphPosition && emphPosition - 1 === globalIndex ? plusEmph : plus;
+      let border =
+        emphPosition && emphPosition - 1 === globalIndex ? hLineEmph : hLine;
+      // check for selected index, OVERRIDES existing border
+      const leftIndex = globalIndex - 1;
+      const buttomIndex = reverse ? globalIndex - cols : globalIndex + cols;
+      if (targetIndexSet.has(leftIndex) && j !== 0) {
+        // position surrounded with targets, *. if the position is also a target, add space instead
+        const bottomLeftIndex = buttomIndex - 1;
+        if (
+          targetIndexSet.has(globalIndex) &&
+          targetIndexSet.has(buttomIndex) &&
+          targetIndexSet.has(bottomLeftIndex)
+        ) {
+          lplus = " ";
+        } else {
+          lplus = plusTarget;
+        }
+      } else if (targetIndexSet.has(globalIndex)) {
+        // position is target, add indicator to left border
+        lplus = plusTarget;
+      }
+
+      if (targetIndexSet.has(globalIndex)) {
+        // position directly below has target, add space as border. else, add indicator
+        if (targetIndexSet.has(buttomIndex)) {
+          border = " ";
+        } else {
+          border = hLineTarget;
+        }
+        rplus = plusTarget;
+      }
       const position = globalIndex + 1;
+      rowString += lplus;
+      if (!isMobile) {
+        rowString += border;
+      }
       if (position < 10) {
-        rowString += `${lplus}${border}${border}${position}${border}${border}`;
+        rowString += `${border}${position}${border}${border}`;
       } else {
-        rowString += `${lplus}${border}${border}${position}${border}`;
+        rowString += `${border}${position}${border}`;
       }
       if (j === cols - 1) {
         rowString += `${rplus}\``;
@@ -215,12 +318,10 @@ const buildMoveString = (moveData, cooldown = 0) => {
   };
 };
 
-/**
- * @param {BattlePokemon} pokemon
- * @returns {{pokemonHeader: string, pokemonString: string}}
- */
-const buildBattlePokemonString = (pokemon) => {
-  let pokemonHeader = "";
+const buildBattlePokemonHeader = (pokemon) => {
+  let pokemonHeader = `${pokemon.shiny ? "✨ " : ""}${
+    pokemonConfig[pokemon.speciesId].emoji
+  } `;
   if (pokemon.isFainted) {
     pokemonHeader += "[FNT] ";
   } else {
@@ -248,21 +349,23 @@ const buildBattlePokemonString = (pokemon) => {
     }
   }
 
-  pokemonHeader += `[${pokemon.position}] [Lv. ${pokemon.level}] ${pokemon.name}`;
-  let pokemonString = "";
-  // build hp percent string
+  pokemonHeader += `${pokemon.name}`;
+  return pokemonHeader;
+};
+
+const buildBattlePokemonInfoString = (pokemon) =>
+  `Position: ${pokemon.position} • Lv. ${pokemon.level}`;
+
+const buildBattlePokemonHpString = (pokemon, barWidth = 10) => {
   const hpPercent = Math.min(
     Math.round(Math.floor((pokemon.hp * 100) / pokemon.maxHp)),
     100
   );
-  pokemonString += `**HP** ${getPBar(hpPercent, 10)} ${hpPercent}\n`;
-  // build cr string
-  const crPercent = Math.min(
-    Math.round(Math.floor((pokemon.combatReadiness * 100) / 100)),
-    100
-  );
-  pokemonString += `**CR** ${getPBar(crPercent, 10)} ${crPercent}\n`;
-  // build effects string
+  return `**HP** ${getPBar(hpPercent, barWidth)} ${hpPercent}`;
+};
+
+const buildBattlePokemonEffectsString = (pokemon) => {
+  let pokemonString = "";
   if (Object.keys(pokemon.effectIds).length > 0) {
     pokemonString += `**Effects:** ${Object.keys(pokemon.effectIds)
       .map((effectId) => {
@@ -283,6 +386,42 @@ const buildBattlePokemonString = (pokemon) => {
   } else {
     pokemonString += `**Effects:** None`;
   }
+  return pokemonString;
+};
+
+/**
+ * @param {BattlePokemon} pokemon
+ */
+const buildActivePokemonFieldStrings = (pokemon) => {
+  const pokemonHeader = buildBattlePokemonHeader(pokemon);
+  let pokemonString = "";
+  pokemonString += `${buildBattlePokemonInfoString(pokemon)}\n`;
+  pokemonString += `${buildBattlePokemonHpString(pokemon, 15)}\n`;
+  pokemonString += `${buildBattlePokemonEffectsString(pokemon)}`;
+  return {
+    pokemonHeader,
+    pokemonString,
+  };
+};
+
+/**
+ * @param {BattlePokemon} pokemon
+ * @returns {{pokemonHeader: string, pokemonString: string}}
+ */
+const buildBattlePokemonString = (pokemon) => {
+  const pokemonHeader = buildBattlePokemonHeader(pokemon);
+  let pokemonString = "";
+  pokemonString += `${buildBattlePokemonInfoString(pokemon)}\n`;
+  // build hp percent string
+  pokemonString += `${buildBattlePokemonHpString(pokemon, 10)}\n`;
+  // build cr string
+  const crPercent = Math.min(
+    Math.round(Math.floor((pokemon.combatReadiness * 100) / 100)),
+    100
+  );
+  pokemonString += `**CR** ${getPBar(crPercent, 10)} ${crPercent}\n`;
+  // build effects string
+  pokemonString += buildBattlePokemonEffectsString(pokemon);
 
   return {
     pokemonHeader,
@@ -370,7 +509,7 @@ const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
 };
 
 /**
- * @param {RaidDifficultyEnum} difficulty
+ * @param {NpcDifficultyEnum} difficulty
  * @param {any} raidDifficultyData
  * @returns {{difficultyHeader: string, difficultyString: string}}
  */
@@ -409,13 +548,129 @@ const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
  */
 const getIdFromTowerStage = (towerStage) => `battleTowerStage${towerStage}`;
 
+const clearCurrentTargetting = (state) => {
+  // eslint-disable-next-line no-param-reassign
+  state.currentMoveId = null;
+  // eslint-disable-next-line no-param-reassign
+  state.currentTargetId = null;
+};
+
+/**
+ * @param {any} state
+ * @returns {{currentMoveId: MoveIdEnum, currentTargetId: string}}
+ */
+const getCurrentTargetting = (state) => {
+  const { currentMoveId, currentTargetId } = state;
+  return { currentMoveId, currentTargetId };
+};
+
+/**
+ * @param {any} state
+ * @param {MoveIdEnum} moveId
+ * @param {string} targetId
+ */
+const setCurrentTargetting = (state, moveId, targetId) => {
+  // eslint-disable-next-line no-param-reassign
+  state.currentMoveId = moveId;
+  // eslint-disable-next-line no-param-reassign
+  state.currentTargetId = targetId;
+};
+
+/**
+ * @param {BattleParty} targetParty
+ * @param {TargetPatternEnum} targetPattern
+ * @param {number} targetPosition
+ * @returns {number[]} indices of targets
+ */
+const getPatternTargetIndices = (
+  targetParty,
+  targetPattern,
+  targetPosition
+) => {
+  const targetIndex = targetPosition - 1;
+  const targetRow = Math.floor(targetIndex / targetParty.cols);
+  const targetCol = targetIndex % targetParty.cols;
+  const targetIndices = [];
+
+  const { rows: targetNumRows, cols: targetNumCols } = targetParty;
+
+  for (let index = 0; index < targetNumRows * targetNumCols; index += 1) {
+    const currentRow = Math.floor(index / targetNumCols);
+    const currentCol = index % targetNumCols;
+    switch (targetPattern) {
+      case targetPatterns.ALL:
+        targetIndices.push(index);
+        break;
+      case targetPatterns.ALL_EXCEPT_SELF:
+        if (index !== targetIndex) {
+          targetIndices.push(index);
+        }
+        break;
+      case targetPatterns.COLUMN:
+        if (currentCol === targetCol) {
+          targetIndices.push(index);
+        }
+        break;
+      case targetPatterns.ROW:
+        if (currentRow === targetRow) {
+          targetIndices.push(index);
+        }
+        break;
+      case targetPatterns.RANDOM:
+        // special case; return nothing
+        break;
+      case targetPatterns.SQUARE:
+        // if row index or column index within 1 of target, add to targets
+        if (
+          Math.abs(targetRow - currentRow) <= 1 &&
+          Math.abs(targetCol - currentCol) <= 1
+        ) {
+          targetIndices.push(index);
+        }
+
+        break;
+      case targetPatterns.CROSS:
+        // target manhattan distance <= 1, add to targets
+        if (
+          Math.abs(targetRow - currentRow) + Math.abs(targetCol - currentCol) <=
+          1
+        ) {
+          targetIndices.push(index);
+        }
+        break;
+      case targetPatterns.X:
+        // if row and column both off by exactly 1 or is self, add to targets
+        if (
+          (Math.abs(targetRow - currentRow) === 1 &&
+            Math.abs(targetCol - currentCol) === 1) ||
+          index === targetIndex
+        ) {
+          targetIndices.push(index);
+        }
+        break;
+      default:
+        // default is single
+
+        if (index === targetIndex) {
+          targetIndices.push(index);
+        }
+    }
+  }
+  return targetIndices;
+};
+
 module.exports = {
   buildPartyString,
   buildCompactPartyString,
   buildMoveString,
+  buildActivePokemonFieldStrings,
   buildBattlePokemonString,
   buildNpcDifficultyString,
   buildDungeonDifficultyString,
   getIdFromTowerStage,
   buildRaidDifficultyString,
+  clearCurrentTargetting,
+  getCurrentTargetting,
+  setCurrentTargetting,
+  getPatternTargetIndices,
 };

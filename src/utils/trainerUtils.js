@@ -181,6 +181,14 @@ const getFullUsername = (user) => {
   return `${user.username}${discriminator}`;
 };
 
+/**
+ * @param {DiscordUser} _user
+ * @param {UserSettings} userSettings
+ * @returns {"mobile" | "desktop"}
+ */
+const getUserSelectedDevice = (_user, userSettings) =>
+  userSettings?.deviceType || "desktop";
+
 module.exports = {
   getPokeballsString,
   getBackpackItemsString,
@@ -193,4 +201,5 @@ module.exports = {
   addItems,
   removeItems,
   getFullUsername,
+  getUserSelectedDevice,
 };

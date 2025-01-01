@@ -28,32 +28,39 @@ const buildBattleInfoActionRow = (battle, stateId, selectionIndex = 0) => {
     return {
       label: teamName,
       disabled: false,
+      emoji: battle.teams[teamName]?.emoji,
       data: {
         ...infoRowData,
         selectionIndex: i - 1,
       },
     };
   });
+  // @ts-ignore
   buttonConfigs.push({
     label: "Moves",
     disabled: false,
+    emoji: "⚔️",
     data: {
       ...infoRowData,
       selectionIndex: i,
     },
   });
+  // @ts-ignore
   buttonConfigs.push({
     label: "Hide",
     disabled: false,
+    emoji: "⬇️",
     data: {
       ...infoRowData,
       selectionIndex: i + 1,
     },
   });
 
+  // @ts-ignore
   buttonConfigs.push({
     label: "Refresh",
     disabled: false,
+    emoji: "🔄",
     data: {
       ...infoRowData,
       selectionIndex: i + 2,

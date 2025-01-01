@@ -11,7 +11,7 @@
         A Pokémon Discord bot <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>Invite Pokéstar to your server.</a></b>
     </p>
     <p style="text-align: center;">
-        <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>👾 Discord</a> • <a href= https://discord.gg/ygVPUXeJXZ>💻 Server</a> • <a href=https://github.com/ewei068/pokestar#tutorial>📝 Tutorial</a> • <a href=https://github.com/ewei068/pokestar#all-commands>💬 Commands</a>
+        <b><a href=https://discord.com/api/oauth2/authorize?client_id=1093411444877439066&permissions=517610982464&scope=bot%20applications.commands>👾 Discord</a> • <a href= https://discord.gg/ygVPUXeJXZ>💻 Server</a> • <a href=https://github.com/ewei068/pokestar#tutorial>📝 Tutorial</a> • <a href=https://github.com/ewei068/pokestar#all-commands>💬 Commands</a></b>
     </p>
 </div>
 
@@ -31,7 +31,7 @@ Pokéstar focuses on a few key features that sets it apart from other Pokemon Di
 
 **Battling**
 
-The main focus of Pokéstar is the unique 6v6 battling system. Battles involve *all 6 Pokemon* on each side battling at once, a new system designed specially for this bot. 
+The main focus of Pokéstar is the unique 6v6 battling system. Battles involve _all 6 Pokemon_ on each side battling at once, a new system designed specially for this bot.
 
 <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/battle.gif" height="500">
 
@@ -55,10 +55,10 @@ Pokéstar tries to be a fluid and responsive experience. Components and UI are a
 
 **[IMPORTANT] Bot Usage**
 
-* This bot supports both slash commands and legacy message commands with the `psb!` prefix, but it's recommended to use slash commands.
-* User's are rate limited to 1 interaction every 0.75 seconds. This normally isn't an issue, but could result in interactions occasionally being dropped.
-* For security purposes, some (not all) button interactions are limited to only the initial user, and may expire after periods of inactivity.
-* **If you're ever lost or would like more information about commands or a command, use `/help` or `/help <command>` for more information!**
+- This bot supports both slash commands and legacy message commands with the `psb!` prefix, but it's recommended to use slash commands.
+- User's are rate limited to 1 interaction every 0.75 seconds. This normally isn't an issue, but could result in interactions occasionally being dropped.
+- For security purposes, some (not all) button interactions are limited to only the initial user, and may expire after periods of inactivity.
+- **If you're ever lost or would like more information about commands or a command, use `/help` or `/help <command>` for more information!**
 
 **---**
 
@@ -68,7 +68,7 @@ You can use almost any command to start you journey! I would recommend **using `
 
 As you can see, you don't have much yet. All trainers start off with some starter money and that's about it. You also start with a few Pokeballs! **Use `/backpack` to see your items.**
 
-<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/backpack.png" height="200">
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/backpack.png" height="200">
 
 You will use these Pokeballs to get your first few Pokemon!
 
@@ -82,10 +82,10 @@ The only way to get new Pokemon currently is with the Gacha system. The gacha co
 
 New Pokemon come at level 5 and have a few randomized attributes, such as IVs and nature. Note that these Pokemon also have a rarity! Rare Pokemon are harder to get, but tend to be better. **You can increase the chances of getting a rare Pokemon by using a better Pokeball;** however, these Pokeballs are harder to come by. The exact gacha rates are as follows (Common/Rare/Epic/Legendary):
 
-* Pokeball: 70/25/4/1
-* Greatball: 30/55/12/3
-* Ultraball: 0/45/50/5
-* Masterball: 0/0/90/10
+- Pokeball: 70/25/4/1
+- Greatball: 30/55/12/3
+- Ultraball: 0/45/50/5
+- Masterball: 0/0/90/10
 
 The gacha also features other mechanics such as rate-up Pokemon, banners, and a pity system. To learn more, select the "Info" tab when using the gacha.
 
@@ -101,7 +101,7 @@ This brings up a detailed information display of this Pokemon. If the Pokemon ha
 
 To view all your Pokemon, **use `/list`.**
 
-<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/list.png" height="250">
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/list.png" height="250">
 
 If you have more than 10 Pokemon, you will be able to use the buttons on the bottom to scroll through all your Pokemon. You can also use `/list <page>` to go to a specific page immediately. **The list command also supports more complex filtering and sorting options; use `/help list` to learn more.**
 
@@ -167,19 +167,19 @@ Once you purchase a location, **you can train a Pokemon there with `/train <id> 
 
 **Different locations provide different benefits, increasing EXP gained and providing EVs** based on the location's level. NOTE: if a location isn't specified while training, the location will default to "Home", which provides boosted EXP. The exact boosts are listed below (lv.1/lv.2/lv.3):
 
-* Home: (4 EXP / 7 EXP/ 10 EXP)
-* Restaurant: (3 EXP, 4 HP / 4.5 EXP, 8 HP / 6 EXP, 12 HP)
-* Gym: (3 EXP, 4 Atk / 4.5 EXP, 8 Atk / 6 EXP, 12 Atk)
-* Dojo: (3 EXP, 4 Def / 4.5 EXP, 8 Def / 6 EXP, 12 Def)
-* Temple: (3 EXP, 4 SpA / 4.5 EXP, 8 SpA / 6 EXP, 12 SpA)
-* School: (3 EXP, 4 SpD / 4.5 EXP, 8 SpD / 6 EXP, 12 SpD)
-* Track: (3 EXP, 4 Spe / 4.5 EXP, 8 Spe / 6 EXP, 12 Spe)
+- Home: (4 EXP / 7 EXP/ 10 EXP)
+- Restaurant: (3 EXP, 4 HP / 4.5 EXP, 8 HP / 6 EXP, 12 HP)
+- Gym: (3 EXP, 4 Atk / 4.5 EXP, 8 Atk / 6 EXP, 12 Atk)
+- Dojo: (3 EXP, 4 Def / 4.5 EXP, 8 Def / 6 EXP, 12 Def)
+- Temple: (3 EXP, 4 SpA / 4.5 EXP, 8 SpA / 6 EXP, 12 SpA)
+- School: (3 EXP, 4 SpD / 4.5 EXP, 8 SpD / 6 EXP, 12 SpD)
+- Track: (3 EXP, 4 Spe / 4.5 EXP, 8 Spe / 6 EXP, 12 Spe)
 
 **Evolution**
 
 Once you get enough EXP, use **/evolve <id>** to evolve your Pokemon.
 
-<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/evolve.png" height="400">
+<img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/evolve.png" height="400">
 
 This will bring up a selection menu where you can preview and confirm your Pokemon's evolution. Right now, all Pokemon evolve via levels.
 
@@ -247,14 +247,14 @@ In rare cases, your Pokemon may be incapacitated and can't move, or your Pokemon
 
 **Battle Information**
 
-The top row of a battle has various information buttons. 
+The top row of a battle has various information buttons.
 
 <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/battle-info.gif" height="300">
 
-* The team buttons display team Pokemon, their HP and combat readiness, and their acquired effects. 
-* The "Moves" button displays move information. 
-* The "Hide" hides the information panel if it's getting in your way.
-* The "Refresh" button reloads battle information in case of glitching (see the "important note" above).
+- The team buttons display team Pokemon, their HP and combat readiness, and their acquired effects.
+- The "Moves" button displays move information.
+- The "Hide" hides the information panel if it's getting in your way.
+- The "Refresh" button reloads battle information in case of glitching (see the "important note" above).
 
 **Move Sets**
 
@@ -276,24 +276,24 @@ The **Party Type** of a move target specifies which team the Pokemon is allowed 
 
 The **Position** of a move target specifies where in the party a move is allowed to target. Most moves have the position of "Front", which means they can only target Pokemon in the front row until all Pokemon in that row have fainted. The exact configuration of every target position is listed below:
 
-* Self: May only target the user
-* Non-self: Target anyone but the user
-* Any: Target any user in the selected party
-* Front: Can only target the non-fainted frontmost row
-* Back: Can only target the non-fainted backmost row
+- Self: May only target the user
+- Non-self: Target anyone but the user
+- Any: Target any user in the selected party
+- Front: Can only target the non-fainted frontmost row
+- Back: Can only target the non-fainted backmost row
 
 **AoE**
 
 AoE is an important unqiue feature of this battling system. Many moves hit multiple Pokemon, but hit based on a positioning system! The effects of the different AoE patterns are listed below:
 
-* Single: Only hits the target
-* All: Hits all Pokemon **in the target party**
-* All except self: Hits all Pokemon in target party except user
-* Row: Hits all Pokemon in the target row
-* Column: Hits all Pokemon in the target column
-* Random: Hits a random Pokemon in the target party
-* Square: Hits all Pokemon within 1 space of the target, including diagonals
-* Cross: Hits all Pokemon directly Up/Down/Left/Right of the target, and the target
+- Single: Only hits the target
+- All: Hits all Pokemon **in the target party**
+- All except self: Hits all Pokemon in target party except user
+- Row: Hits all Pokemon in the target row
+- Column: Hits all Pokemon in the target column
+- Random: Hits a random Pokemon in the target party
+- Square: Hits all Pokemon within 1 space of the target, including diagonals
+- Cross: Hits all Pokemon directly Up/Down/Left/Right of the target, and the target
 
 Note that some moves may have effects on other Pokemon not targeted. These target configurations are just a general guidelines, and any additionaly effects will be listed in the move description.
 
@@ -311,11 +311,11 @@ Just like the main game, moves will deal more or less damage based on type advan
 
 To reduce the polarization of random accuracy effects, missing has been tuned down in this system. If a move misses, it will only deal 70% damage and not apply any effects to target Pokemon (usually). Another change introduced is that **type advantages have a slight effect on hit chance**, making type advantages matter in this aspect. The following is the type advantage => hit chance modifier:
 
-* 4x: hit chance * 1.4
-* 2x: hit chance * 1.15
-* 0.5x: hit chance * 0.8
-* 0.25x: hit chance * 0.6
-* 0x: guarateed miss
+- 4x: hit chance \* 1.4
+- 2x: hit chance \* 1.15
+- 0.5x: hit chance \* 0.8
+- 0.25x: hit chance \* 0.6
+- 0x: guarateed miss
 
 **Effects**
 
@@ -427,9 +427,9 @@ If `option` is ALL, removes all Pokemon from your party.
 
 User data is stored whenever Pokemon-related commands are used in order to keep track of user-related data such as Pokemon and inventory. The following Discord User data is stored and used:
 
-* User ID: Used to uniquely identify a user and retrieve/store their Pokemon data.
-* Username and discriminator: Used to customize messages (ex: username#discriminator's Pokemon) and in the leaderboard.
-* Avatar ID: Used to display avatar in trainer info, can only be accessed by the original user.
+- User ID: Used to uniquely identify a user and retrieve/store their Pokemon data.
+- Username and discriminator: Used to customize messages (ex: username#discriminator's Pokemon) and in the leaderboard.
+- Avatar ID: Used to display avatar in trainer info, can only be accessed by the original user.
 
 Whenever any of these fields change, the old data is removed. Pokemon data for each user is also stored, but can only be accessed by the original user. The data is stored on Google Cloud.
 
@@ -441,9 +441,9 @@ Thank you for playing Pokestar!
 
 ## Credits
 
-* Emojis & Sprites: 
-    * https://veekun.com/dex/downloads
-    * https://github.com/msikma/pokesprite/tree/master
-    * PokeAPI
-    * Bulbapedia
-* Pokemon Data: PokeAPI
+- Emojis & Sprites:
+  - https://veekun.com/dex/downloads
+  - https://github.com/msikma/pokesprite/tree/master
+  - PokeAPI
+  - Bulbapedia
+- Pokemon Data: PokeAPI

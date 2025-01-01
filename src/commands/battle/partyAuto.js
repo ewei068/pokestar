@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * partyAuto.js is used to automatically make a party.
  */
@@ -10,12 +8,12 @@ const { getTrainer } = require("../../services/trainer");
 const { updateParty, getPartyPokemons } = require("../../services/party");
 const { listPokemons } = require("../../services/pokemon");
 const { buildPartyEmbed } = require("../../embeds/battleEmbeds");
+const { getUserSelectedDevice } = require("../../utils/trainerUtils");
 
 /**
  * creates an automatic party for the given user, uses dependencies to get other relevant data.
  * @param {*} user the user given to get the relevant data from.
  * @param {*} option the option type for making the automatic party.
- * @returns Error or message to send.
  */
 const partyAuto = async (user, option) => {
   // get trainer
@@ -54,13 +52,28 @@ const partyAuto = async (user, option) => {
     };
   }
 
+  // sort pokemon by defensive stats
+  bestPokemons.data.sort((a, b) => {
+    const [hpA, , defA, , spdA] = a.stats;
+    const [hpB, , defB, , spdB] = b.stats;
+    return hpB + defB + spdB - b.level - (hpA + defA + spdA - a.level);
+  });
+
   // add best pokemons to party in random positions
-  for (const pokemon of bestPokemons.data) {
+  for (const [index, pokemon] of bestPokemons.data.entries()) {
     // if position is already taken, get new position
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      // get random position
-      const position = Math.floor(Math.random() * length);
+      let position;
+      if (index < 2) {
+        // get random position in first row
+        position = Math.floor(Math.random() * party.cols);
+      } else {
+        // get random position not in first row
+        position =
+          Math.floor(Math.random() * (party.cols * (party.rows - 1))) +
+          party.cols;
+      }
       // if position is empty, add pokemon
       if (!party.pokemonIds[position]) {
         party.pokemonIds[position] = pokemon._id.toString();
@@ -82,7 +95,9 @@ const partyAuto = async (user, option) => {
   }
 
   // build pokemon embed
-  const embed = buildPartyEmbed(trainer.data, partyPokemons.data);
+  const embed = buildPartyEmbed(trainer.data, partyPokemons.data, {
+    isMobile: getUserSelectedDevice(user, trainer.data.settings) === "mobile",
+  });
 
   const send = {
     content: `Your party has been autofilled with your strongest Pokemon!`,

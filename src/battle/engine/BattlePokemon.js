@@ -27,6 +27,7 @@ const { drawDiscrete } = require("../../utils/gachaUtils");
 const { getMove } = require("../data/moveRegistry");
 const { getEffect } = require("../data/effectRegistry");
 const { getAbility } = require("../data/abilityRegistry");
+const { getPatternTargetIndices } = require("../../utils/battleUtils");
 
 class BattlePokemon {
   /* battle;
@@ -152,6 +153,7 @@ class BattlePokemon {
     this.hittable = true;
     this.incapacitated = false;
     this.restricted = false;
+    this.shiny = pokemonData.shiny;
   }
 
   /**
@@ -449,6 +451,7 @@ class BattlePokemon {
    * @param {PokemonTypeEnum=} param0.moveTypeOverride
    * @param {number=} param0.offTargetDamageMultiplier
    * @param {number=} param0.missedTargetDamageMultiplier
+   * @param {number=} param0.backTargetDamageMultiplier
    * @returns {number}
    */
   calculateMoveDamage({
@@ -465,9 +468,9 @@ class BattlePokemon {
     powerOverride = null,
     typeEffectivenessOverride = null,
     moveTypeOverride = null,
-    offTargetDamageMultiplier = 0.8,
-    // eslint-disable-next-line no-unused-vars
-    missedTargetDamageMultiplier = 0.7,
+    offTargetDamageMultiplier = 0.85,
+    backTargetDamageMultiplier = 0.85,
+    missedTargetDamageMultiplier = 0.6,
   }) {
     const power = powerOverride || move.power;
     const { level } = this;
@@ -485,7 +488,9 @@ class BattlePokemon {
         ? target.getDef()
         : target.getSpd());
     const stab = this.type1 === move.type || this.type2 === move.type ? 1.5 : 1;
-    const missMult = missedTargets.includes(target) ? 0.7 : 1;
+    const missMult = missedTargets.includes(target)
+      ? missedTargetDamageMultiplier
+      : 1;
     const moveType = moveTypeOverride || move.type;
     const typeEffectiveness =
       typeEffectivenessOverride !== null
@@ -494,15 +499,15 @@ class BattlePokemon {
     // balance type
     let typeMultiplier = 1;
     if (typeEffectiveness >= 4) {
-      typeMultiplier = 2;
+      typeMultiplier = 3;
     } else if (typeEffectiveness >= 2) {
-      typeMultiplier = 1.5;
+      typeMultiplier = 1.75;
     } else if (typeEffectiveness >= 1) {
       typeMultiplier = 1;
     } else if (typeEffectiveness >= 0.5) {
-      typeMultiplier = 0.75;
+      typeMultiplier = 0.7;
     } else if (typeEffectiveness >= 0.25) {
-      typeMultiplier = 0.5;
+      typeMultiplier = 0.45;
     } else {
       typeMultiplier = 0.35;
     }
@@ -530,6 +535,28 @@ class BattlePokemon {
     const maybeOffTargetMult =
       target === primaryTarget ? 1 : offTargetDamageMultiplier;
 
+    let isBackTarget = false;
+    // iterate through all rows in front of target. If there is a targetable pokemon, set isBackTarget to true
+    const targetParty = this.battle.getPartyForPokemon(target);
+    const partyPokemons = targetParty.pokemons;
+    const targetRowNum = Math.floor((target.position - 1) / targetParty.cols);
+    for (let i = 0; i < targetRowNum; i += 1) {
+      const row = partyPokemons.slice(
+        i * targetParty.cols,
+        (i + 1) * targetParty.cols
+      );
+      for (const pokemon of row) {
+        if (this.battle.isPokemonTargetable(pokemon, move.id)) {
+          isBackTarget = true;
+          break;
+        }
+      }
+    }
+    const maybeBackTargetMult =
+      isBackTarget && move.targetPosition !== targetPositions.BACK
+        ? backTargetDamageMultiplier
+        : 1;
+
     /* console.log("power", power)
       console.log("level", level)
       console.log("attack", attack)
@@ -546,7 +573,8 @@ class BattlePokemon {
         burn *
         weatherMult *
         missMult *
-        maybeOffTargetMult
+        maybeOffTargetMult *
+        maybeBackTargetMult
     );
 
     return Math.max(damage, 1);
@@ -584,8 +612,8 @@ class BattlePokemon {
           }
           break;
         case statusConditions.SLEEP:
-          // sleep wakeup chance: 0 turns: 0%, 1 turn: 66%, 2 turns: 100%
-          const wakeupChance = this.status.turns * 0.66;
+          // sleep wakeup chance: 0 turns: 0%, 1 turn: 33%, 2 turns: 66%, 3 turns: 100%
+          const wakeupChance = this.status.turns * 0.33;
           const wakeupRoll = Math.random();
           if (wakeupRoll < wakeupChance) {
             this.removeStatus();
@@ -662,7 +690,7 @@ class BattlePokemon {
       multiplier: mult,
     };
     this.battle.eventHandler.emit(
-      battleEventEnum.CALCULATE_TYPE_MULTIPLIER,
+      battleEventEnum.CALCULATE_TYPE_MULTIPLIER, // This maybe shouldn't be an event. Code run by the NPC should not have possible side-effects
       eventArgs
     );
 
@@ -677,113 +705,60 @@ class BattlePokemon {
    * @returns {BattlePokemon[]} targets
    */
   getPatternTargets(targetParty, targetPattern, targetPosition, moveId = null) {
-    const targetRow = Math.floor((targetPosition - 1) / targetParty.cols);
-    const targetCol = (targetPosition - 1) % targetParty.cols;
     const targets = [];
 
-    switch (targetPattern) {
-      case targetPatterns.ALL:
-        // return all pokemon in party
-        for (const pokemon of targetParty.pokemons) {
-          if (this.battle.isPokemonHittable(pokemon, moveId)) {
-            targets.push(pokemon);
-          }
+    // special case: random
+    if (targetPattern === targetPatterns.RANDOM) {
+      // return random pokemon in party
+      const validPokemons = [];
+      for (const pokemon of targetParty.pokemons) {
+        if (this.battle.isPokemonHittable(pokemon, moveId)) {
+          validPokemons.push(pokemon);
         }
-        break;
-      case targetPatterns.ALL_EXCEPT_SELF:
-        // return all pokemon in party except self
-        for (const pokemon of targetParty.pokemons) {
-          if (
-            this.battle.isPokemonHittable(pokemon, moveId) &&
-            pokemon !== this
-          ) {
-            targets.push(pokemon);
-          }
+      }
+      targets.push(
+        validPokemons[Math.floor(Math.random() * validPokemons.length)]
+      );
+    } else {
+      const targetIndices = getPatternTargetIndices(
+        targetParty,
+        targetPattern,
+        targetPosition
+      );
+      for (const index of targetIndices) {
+        const target = targetParty.pokemons[index];
+        if (target && this.battle.isPokemonHittable(target, moveId)) {
+          targets.push(target);
         }
-        break;
-      case targetPatterns.COLUMN:
-        // return all pokemon in column
-        for (const pokemon of targetParty.pokemons) {
-          if (
-            this.battle.isPokemonHittable(pokemon, moveId) &&
-            (pokemon.position - 1) % targetParty.cols === targetCol
-          ) {
-            targets.push(pokemon);
-          }
-        }
-        break;
-      case targetPatterns.ROW:
-        // return all pokemon in row
-        for (const pokemon of targetParty.pokemons) {
-          if (
-            this.battle.isPokemonHittable(pokemon, moveId) &&
-            Math.floor((pokemon.position - 1) / targetParty.cols) === targetRow
-          ) {
-            targets.push(pokemon);
-          }
-        }
-        break;
-      case targetPatterns.RANDOM:
-        // return random pokemon in party
-        const validPokemons = [];
-        for (const pokemon of targetParty.pokemons) {
-          if (this.battle.isPokemonHittable(pokemon, moveId)) {
-            validPokemons.push(pokemon);
-          }
-        }
-        targets.push(
-          validPokemons[Math.floor(Math.random() * validPokemons.length)]
-        );
-        break;
-      case targetPatterns.SQUARE:
-        // if row index or column index within 1 of target, add to targets
-        for (const pokemon of targetParty.pokemons) {
-          if (this.battle.isPokemonHittable(pokemon, moveId)) {
-            const pokemonRow = Math.floor(
-              (pokemon.position - 1) / targetParty.cols
-            );
-            const pokemonCol = (pokemon.position - 1) % targetParty.cols;
-            if (
-              Math.abs(targetRow - pokemonRow) <= 1 &&
-              Math.abs(targetCol - pokemonCol) <= 1
-            ) {
-              targets.push(pokemon);
-            }
-          }
-        }
-        break;
-      case targetPatterns.CROSS:
-        // target manhattan distance <= 1, add to targets
-        for (const pokemon of targetParty.pokemons) {
-          if (this.battle.isPokemonHittable(pokemon, moveId)) {
-            const pokemonRow = Math.floor(
-              (pokemon.position - 1) / targetParty.cols
-            );
-            const pokemonCol = (pokemon.position - 1) % targetParty.cols;
-            if (
-              Math.abs(targetRow - pokemonRow) +
-                Math.abs(targetCol - pokemonCol) <=
-              1
-            ) {
-              targets.push(pokemon);
-            }
-          }
-        }
-        break;
-      default:
-        // default is single
-
-        // get target pokemon
-        const targetPokemon =
-          targetParty.pokemons[targetRow * targetParty.cols + targetCol];
-        if (this.battle.isPokemonHittable(targetPokemon, moveId)) {
-          targets.push(targetPokemon);
-        }
-
-        break;
+      }
     }
 
     return targets;
+  }
+
+  /**
+   * Not to be used for exact targetting, only util for now
+   * TODO: use move itself?
+   * @param {MoveIdEnum} moveId
+   * @param {string} targetPokemonId
+   * @returns {Record<string, number[]>} map of team name to target indices
+   */
+  getTargetIndices(moveId, targetPokemonId) {
+    const moveData = getMove(moveId);
+    const target = this.battle.allPokemon[targetPokemonId];
+    if (!target) {
+      return {};
+    }
+
+    const targetParty = this.battle.parties[target.teamName];
+
+    return {
+      [target.teamName]: getPatternTargetIndices(
+        targetParty,
+        moveData.targetPattern,
+        target.position
+      ),
+    };
   }
 
   /**
@@ -1039,6 +1014,20 @@ class BattlePokemon {
     if (freezeCheck) {
       if (this.removeStatus()) {
         damage = Math.floor(damage * 1.5);
+        this.battle.addToLog(
+          `${this.name} Took extra damage because it was frozen!`
+        );
+      }
+    }
+
+    // if sleep and hit with a move, wake up and deal 1.5x damage
+    const sleepCheck =
+      this.status.statusId === statusConditions.SLEEP &&
+      damageInfo.type === "move";
+    if (sleepCheck) {
+      if (this.removeStatus()) {
+        damage = Math.floor(damage * 1.5);
+        this.battle.addToLog(`${this.name} Took extra damage while sleeping!`);
       }
     }
 
@@ -1180,7 +1169,7 @@ class BattlePokemon {
       });
     } else {
       const legacyAbility = /** @type {any} */ (abilityData);
-      legacyAbility.abilityAdd(this.battle, this, this);
+      this.ability.data = legacyAbility.abilityAdd(this.battle, this, this);
     }
     this.ability.applied = true;
   }

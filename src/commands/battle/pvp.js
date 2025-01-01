@@ -4,7 +4,7 @@
  *
  * pvp.js is the encapsulating program for the PVP system.
  */
-const { getTrainerInfo } = require("../../services/trainer");
+const { getTrainerWithExtraInfo } = require("../../services/trainer");
 const { validateParty } = require("../../services/party");
 const { Battle } = require("../../battle/engine/Battle");
 const { setState } = require("../../services/state");
@@ -32,7 +32,7 @@ const pvp = async (user, opponentUserId, level) => {
   }
 
   // get trainer
-  const trainer = await getTrainerInfo(user);
+  const trainer = await getTrainerWithExtraInfo(user);
   if (trainer.err) {
     return { send: null, err: trainer.err };
   }

@@ -14,6 +14,8 @@ const { getMove } = require("../data/moveRegistry");
 const { BattleEventHandler } = require("./events");
 const { BattlePokemon } = require("./BattlePokemon");
 
+const MAX_CR = 100;
+
 class Battle {
   /* TODO: fix
   moneyMultiplier;
@@ -154,6 +156,7 @@ class Battle {
       name: teamName,
       isNpc,
       userIds: [],
+      emoji: Object.keys(this.teams).length === 0 ? "🔴" : "🔵",
     };
   }
 
@@ -214,7 +217,6 @@ class Battle {
 
   increaseCombatReadiness() {
     // get min ticks for a pokemon to be ready
-    const MAX_CR = 100;
     let minTicks = Number.MAX_SAFE_INTEGER;
     let minTicksPokemon = null;
     for (const partyName in this.parties) {
@@ -256,6 +258,45 @@ class Battle {
         }
       }
     }
+  }
+
+  getNextNPokemon(n = 1) {
+    // TODO: maybe functionify or something lol
+    // get min ticks for a pokemon to be ready
+    const allEligiblePokemon = [];
+    for (const partyName in this.parties) {
+      const party = this.parties[partyName];
+      for (const pokemon of party.pokemons) {
+        if (pokemon && !pokemon.isFainted) {
+          allEligiblePokemon.push(pokemon);
+        }
+      }
+    }
+    const pokemonOrder = [];
+    while (pokemonOrder.length < n && allEligiblePokemon.length > 0) {
+      let minTicks = Number.MAX_SAFE_INTEGER;
+      let minTicksPokemon = null;
+      for (const pokemon of allEligiblePokemon) {
+        const currentCombatReadiness =
+          this.activePokemon === pokemon ? 0 : pokemon.combatReadiness;
+        const requiredCr = MAX_CR - currentCombatReadiness;
+        const ticks = requiredCr / pokemon.effectiveSpeed();
+        if (ticks < minTicks) {
+          minTicks = ticks;
+          minTicksPokemon = pokemon;
+        }
+      }
+      if (minTicksPokemon) {
+        pokemonOrder.push(minTicksPokemon);
+        allEligiblePokemon.splice(
+          allEligiblePokemon.indexOf(minTicksPokemon),
+          1
+        );
+      } else {
+        break;
+      }
+    }
+    return pokemonOrder;
   }
 
   start() {
@@ -420,14 +461,15 @@ class Battle {
     this.moneyReward = Math.floor(this.baseMoney * this.moneyMultiplier);
     this.expReward = Math.floor(this.baseExp * this.expMultiplier);
     // calculate pokemon exp by summing defeated pokemon's levels
-    this.pokemonExpReward = Math.floor(
-      Object.values(this.allPokemon).reduce((acc, pokemon) => {
-        if (pokemon.isFainted) {
-          return acc + (this.minLevel || pokemon.level);
-        }
-        return acc;
-      }, 0) * this.pokemonExpMultiplier
-    );
+    this.pokemonExpReward =
+      Math.floor(
+        Object.values(this.allPokemon).reduce((acc, pokemon) => {
+          if (pokemon.isFainted) {
+            return acc + Math.max(12, this.minLevel || pokemon.level);
+          }
+          return acc;
+        }, 0) * this.pokemonExpMultiplier
+      ) || 1;
 
     this.addToLog(
       `Winners recieved ${formatMoney(this.moneyReward)}, ${
@@ -599,7 +641,7 @@ class Battle {
    */
   isNpc(userId) {
     const user = this.users[userId];
-    return user.npc !== undefined;
+    return user?.npc !== undefined;
   }
 
   /**
@@ -717,6 +759,14 @@ class Battle {
 
   /**
    * @param {BattlePokemon} pokemon
+   */
+  getPartyForPokemon(pokemon) {
+    return this.parties[pokemon.teamName];
+  }
+
+  /**
+   * TODO: move to pokemon
+   * @param {BattlePokemon} pokemon
    * @param {MoveIdEnum} moveId
    * @returns {boolean}
    */
@@ -753,6 +803,7 @@ class Battle {
   }
 
   /**
+   * TODO: move to pokemon
    * @param {BattlePokemon} pokemon
    * @param {MoveIdEnum} moveId
    * @returns {boolean}

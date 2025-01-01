@@ -2,6 +2,7 @@
 
 /**
  * @typedef {import("discord.js").User} DiscordUser
+ * @typedef {import("discord.js").Guild} DiscordGuild
  */
 
 /**
@@ -49,9 +50,6 @@
 
 /**
  * @typedef {PartialRecord<BackpackCategoryEnum, PartialRecord<BackpackItemEnum, number>>} Backpack
- */
-
-/**
  * @typedef {PartialRecord<BackpackItemEnum, number>} FlattenedBackpack
  */
 
@@ -60,13 +58,17 @@
  *  money?: number,
  *  backpack?: Backpack
  * }} Rewards
- */
-
-/**
  * @typedef {{
  *  money?: number,
  *  backpack?: FlattenedBackpack
  * }} FlattenedRewards
+ */
+
+/**
+ * @typedef {{[K in UserSettingsEnum]: UserSettingsOptions<K>}} UserSettings
+ * TODO: fix this type
+ * @typedef {{ completedTutorialStages: PartialRecord<string, boolean>, currentTutorialStage: TutorialStageEnum }} UserTutorialData
+ * @typedef {{ timesSeen: number, lastSeen: number }} UserUpsellData
  */
 
 /**
@@ -84,6 +86,7 @@
  * @property {Backpack} backpack
  * @property {PartialRecord<LocationEnum, number>} locations
  * @property {UserTradeInfo} trade
+ * @property {UserSettings} settings
  *
  * Rewards and time-gated stuff
  * @property {number} lastCorrected
@@ -93,6 +96,7 @@
  * @property {PartialRecord<NpcEnum | RaidEnum | DungeonEnum | number, NpcDifficultyEnum[]>} defeatedNPCsToday
  * @property {PartialRecord<NpcEnum | RaidEnum | DungeonEnum | number, NpcDifficultyEnum[]>} defeatedNPCs
  * @property {number} lastTowerStage
+ * @property {UserTutorialData} tutorialData
  *
  * Party info
  * @property {PartyInfo} party
@@ -105,14 +109,21 @@
  * Mythic Pokemon
  * @property {boolean} hasCelebi
  * @property {boolean} usedTimeTravel
+ *
+ * Misc
+ * @property {PartialRecord<UpsellEnum, UserUpsellData>} upsellData
  */
 
 /**
- * @typedef {object} Guild
+ * @typedef {{ mode: "allowlist" | "denylist", channelIds: string[] }} SpawnSettings
+ */
+
+/**
+ * @typedef {object} GuildData
  * @property {string} guildId
  * @property {number} lastCommand
- * @property {boolean} spawnDisabled
- * @property {Array<string>} spawnDisabledChannels
+ * @property {SpawnSettings} spawnSettings
+ * @property {number} lastCorrected
  */
 
 /**

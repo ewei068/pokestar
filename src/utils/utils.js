@@ -4,9 +4,12 @@
  * @author Elvis Wei
  *
  * utils.js functions used by most Utils and other files, most relating to converting information from the mongo database.
+ *
+ * TODO: REALLY NEED TO BREAK UP THIS FILE LOLOLOL
  */
 const { Message } = require("discord.js");
 const { ObjectId } = require("mongodb");
+const { ansiTokens } = require("../enums/miscEnums");
 
 /**
  * @param {Record<any, any>} obj
@@ -322,6 +325,122 @@ const errorlessAsync = async (fn) => {
   }
 };
 
+const zip = (...arr) =>
+  Array(Math.max(...arr.map((a) => a.length)))
+    .fill()
+    .map((_, i) => arr.map((a) => a[i]));
+
+/**
+ * ERRORLESS
+ * @param {any} interaction
+ * @param {any} message
+ */
+const attemptToReply = async (interaction, message) => {
+  try {
+    await interaction.reply(message);
+  } catch {
+    try {
+      await interaction.followUp(message);
+    } catch {
+      // do nothing
+    }
+    // do nothing
+  }
+};
+
+/**
+ *
+ * @param {any} root
+ * @param {DefaultFieldConfig} fieldConfig
+ * @param {Date} lastCorrectedTime
+ * @param {Date} newCorrectedTime
+ * @returns {boolean} if field was modified
+ */
+const setDefaultFields = (
+  root,
+  fieldConfig,
+  lastCorrectedTime,
+  newCorrectedTime
+) => {
+  let modified = false;
+  // check if all fields are present
+  for (const field in fieldConfig) {
+    const fieldData = fieldConfig[field];
+    if (root[field] === undefined) {
+      // eslint-disable-next-line no-param-reassign
+      root[field] = fieldData.default;
+      modified = true;
+    }
+
+    // if the field has its own config, attempt to set it
+    if (fieldData.type === "object" && fieldData.config) {
+      modified =
+        setDefaultFields(
+          root[field] ?? {},
+          fieldData.config,
+          lastCorrectedTime,
+          newCorrectedTime
+        ) || modified;
+    }
+  }
+
+  // attempt to reset time-interval fields
+  for (const field in fieldConfig) {
+    const { refreshInterval } = fieldConfig[field];
+    if (!refreshInterval) {
+      continue;
+    }
+
+    const currentTimeInterval = getFullUTCTimeInterval(
+      refreshInterval,
+      newCorrectedTime
+    );
+    const lastTimeInterval = getFullUTCTimeInterval(
+      refreshInterval,
+      lastCorrectedTime
+    );
+    if (currentTimeInterval > lastTimeInterval) {
+      // eslint-disable-next-line no-param-reassign
+      root[field] = fieldConfig[field].default;
+      modified = true;
+    }
+  }
+  return modified;
+};
+
+const ansiTokenMap = Object.freeze({
+  [ansiTokens.RESET]: "\u001b[0m",
+  [ansiTokens.BOLD]: "\u001b[1m",
+  [ansiTokens.UNDERLINE]: "\u001b[4m",
+  [ansiTokens.INVERSE]: "\u001b[7m",
+  [ansiTokens.TEXT_GRAY]: "\u001b[30m",
+  [ansiTokens.TEXT_RED]: "\u001b[31m",
+  [ansiTokens.TEXT_GREEN]: "\u001b[32m",
+  [ansiTokens.TEXT_YELLOW]: "\u001b[33m",
+  [ansiTokens.TEXT_BLUE]: "\u001b[34m",
+  [ansiTokens.TEXT_MAGENTA]: "\u001b[35m",
+  [ansiTokens.TEXT_CYAN]: "\u001b[36m",
+  [ansiTokens.TEXT_WHITE]: "\u001b[37m",
+  [ansiTokens.BACKGROUND_DARK_BLUE]: "\u001b[40m",
+  [ansiTokens.BACKGROUND_ORANGE]: "\u001b[41m",
+  [ansiTokens.BACKGROUND_MARBLE_BLUE]: "\u001b[42m",
+});
+
+/**
+ * @param {string} str
+ * @returns {string}
+ */
+const buildAnsiString = (str) => {
+  let ansiString = "```ansi\n";
+  // find and replace for all tokens
+  for (const token in ansiTokenMap) {
+    str = str.replaceAll(token, ansiTokenMap[token]);
+  }
+  ansiString += str;
+  ansiString += "\n```";
+  return ansiString;
+};
+
 module.exports = {
   getOrSetDefault,
   getPBar,
@@ -345,4 +464,8 @@ module.exports = {
   poll,
   formatMoney,
   errorlessAsync,
+  zip,
+  attemptToReply,
+  setDefaultFields,
+  buildAnsiString,
 };

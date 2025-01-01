@@ -39,6 +39,21 @@ const {
   getItems,
 } = require("../utils/trainerUtils");
 
+// map item id to location id
+const itemIdToLocationId = {
+  [shopItems.HOME]: locations.HOME,
+  [shopItems.RESTAURANT]: locations.RESTAURANT,
+  [shopItems.GYM]: locations.GYM,
+  [shopItems.DOJO]: locations.DOJO,
+  [shopItems.TEMPLE]: locations.TEMPLE,
+  [shopItems.SCHOOL]: locations.SCHOOL,
+  [shopItems.TRACK]: locations.TRACK,
+  [shopItems.BERRY_BUSH]: locations.BERRY_BUSH,
+  [shopItems.BERRY_FARM]: locations.BERRY_FARM,
+  [shopItems.COMPUTER_LAB]: locations.COMPUTER_LAB,
+  [shopItems.ILEX_SHRINE]: locations.ILEX_SHRINE,
+};
+
 /**
  *
  * @param {WithId<Trainer>} trainer
@@ -92,21 +107,6 @@ const canBuyItem = (trainer, itemId, quantity) => {
         err: "You can only purchase one location at a time.",
       };
     }
-
-    // map item id to location id
-    const itemIdToLocationId = {
-      [shopItems.HOME]: locations.HOME,
-      [shopItems.RESTAURANT]: locations.RESTAURANT,
-      [shopItems.GYM]: locations.GYM,
-      [shopItems.DOJO]: locations.DOJO,
-      [shopItems.TEMPLE]: locations.TEMPLE,
-      [shopItems.SCHOOL]: locations.SCHOOL,
-      [shopItems.TRACK]: locations.TRACK,
-      [shopItems.BERRY_BUSH]: locations.BERRY_BUSH,
-      [shopItems.BERRY_FARM]: locations.BERRY_FARM,
-      [shopItems.COMPUTER_LAB]: locations.COMPUTER_LAB,
-      [shopItems.ILEX_SHRINE]: locations.ILEX_SHRINE,
-    };
 
     const locationId = itemIdToLocationId[itemId];
     const locationData = locationConfig[locationId];
@@ -225,21 +225,6 @@ const buyItem = async (trainer, itemId, quantity) => {
       };
     }
 
-    // map item id to location id
-    const itemIdToLocationId = {
-      [shopItems.HOME]: locations.HOME,
-      [shopItems.RESTAURANT]: locations.RESTAURANT,
-      [shopItems.GYM]: locations.GYM,
-      [shopItems.DOJO]: locations.DOJO,
-      [shopItems.TEMPLE]: locations.TEMPLE,
-      [shopItems.SCHOOL]: locations.SCHOOL,
-      [shopItems.TRACK]: locations.TRACK,
-      [shopItems.BERRY_BUSH]: locations.BERRY_BUSH,
-      [shopItems.BERRY_FARM]: locations.BERRY_FARM,
-      [shopItems.COMPUTER_LAB]: locations.COMPUTER_LAB,
-      [shopItems.ILEX_SHRINE]: locations.ILEX_SHRINE,
-    };
-
     const locationId = itemIdToLocationId[itemId];
     const locationData = locationConfig[locationId];
 
@@ -339,11 +324,11 @@ const buildShopSend = async ({
   const state = getState(stateId);
 
   // get trainer
-  let trainer = await getTrainer(user);
-  if (trainer.err) {
-    return { send: null, err: trainer.err };
+  const trainerRes = await getTrainer(user);
+  if (trainerRes.err) {
+    return { send: null, err: trainerRes.err };
   }
-  trainer = trainer.data;
+  const trainer = trainerRes.data;
 
   const send = {
     embeds: [],
@@ -393,18 +378,41 @@ const buildShopSend = async ({
     const embed = buildShopItemEmbed(trainer, option);
     send.embeds.push(embed);
 
+    const isLocation =
+      shopItemConfig[option].category === shopCategories.LOCATIONS;
+    const locationId = itemIdToLocationId[option];
+    const isUpgrade = isLocation && (trainer.locations?.[locationId] ?? 0) > 0;
+
     const buttonData = {
       stateId,
       itemId: option,
+      quantity: 1,
     };
     // create buy button
     const buttonConfigs = [
       {
-        label: "Buy",
+        label: isUpgrade ? "Upgrade" : "Buy",
         disabled: canBuyItem(trainer, option, 1).err !== null,
         data: buttonData,
+        emoji: shopItemConfig[option].emoji,
       },
     ];
+    // get max quantity trainer can buy, up to 10
+    let maxQuantity = 0;
+    for (let i = 1; i <= 10; i += 1) {
+      if (canBuyItem(trainer, option, i).err !== null) {
+        break;
+      }
+      maxQuantity = i;
+    }
+    if (maxQuantity > 2) {
+      buttonConfigs.push({
+        label: `Buy ${maxQuantity}`,
+        disabled: false,
+        data: { ...buttonData, quantity: maxQuantity },
+        emoji: shopItemConfig[option].emoji,
+      });
+    }
     const buyButton = buildButtonActionRow(buttonConfigs, eventNames.SHOP_BUY);
     send.components.push(buyButton);
     // get back button

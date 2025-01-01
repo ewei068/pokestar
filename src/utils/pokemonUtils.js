@@ -244,10 +244,12 @@ const getAbilityOrder = (speciesAbilities) => {
 };
 
 /**
- * @param {any} pokemons
+ * @param {Record<PokemonIdEnum, any>} pokemons
+ * @returns {PokemonIdEnum[]}
  */
 const getPokemonOrder = (pokemons = pokemonConfig) =>
   // sort: split by dash and sort accordingly
+  // @ts-ignore
   Object.keys(pokemons).sort((a, b) => {
     const aSplit = a.split("-");
     const bSplit = b.split("-");
@@ -389,6 +391,24 @@ const buildBoostString = (oldPokemon, newPokemon) => {
   return boostString;
 };
 
+const buildSpeciesEvolutionString = (speciesData) => {
+  let evolutionString = "";
+  if (speciesData.evolution) {
+    for (let i = 0; i < speciesData.evolution.length; i += 1) {
+      const evolution = speciesData.evolution[i];
+      evolutionString += `Lv. ${evolution.level}: #${evolution.id} ${
+        pokemonConfig[evolution.id].name
+      }`;
+      if (i < speciesData.evolution.length - 1) {
+        evolutionString += "\n";
+      }
+    }
+  } else {
+    evolutionString = "No evolutions!";
+  }
+  return evolutionString;
+};
+
 /**
  * @param {WithId<Trainer>} trainer
  * @returns {string[]}
@@ -431,6 +451,7 @@ module.exports = {
   buildEquipmentString,
   buildCompactEquipmentString,
   buildBoostString,
+  buildSpeciesEvolutionString,
   getPartyPokemonIds,
   getMoveIds,
 };

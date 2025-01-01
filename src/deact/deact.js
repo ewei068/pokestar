@@ -3,6 +3,10 @@ const {
   MessageComponentInteraction,
   /* eslint-disable-next-line no-unused-vars */
   ModalSubmitInteraction,
+  // eslint-disable-next-line no-unused-vars
+  StringSelectMenuInteraction,
+  /* eslint-disable-next-line no-unused-vars */
+  Message,
 } = require("discord.js");
 const { DeactInstance } = require("./DeactInstance");
 const { getInteractionInstance } = require("./interactions");
@@ -10,6 +14,7 @@ const { getInteractionInstance } = require("./interactions");
 const { DeactElement } = require("./DeactElement");
 const { getState } = require("../services/state");
 const { userTypeEnum } = require("./enums");
+const { getUserFromInteraction } = require("../utils/utils");
 
 /**
  * @template T
@@ -19,6 +24,7 @@ const { userTypeEnum } = require("./enums");
  * @param {object} param3
  * @param {boolean=} param3.defer
  * @param {any=} param3.userIdForFilter TODO: better name?
+ * @param {((interaction: import("discord.js").MessageInteraction | Message, user: DiscordUser) => Promise<{err?: string}>)=} param3.customFilter
  * @param {number=} param3.ttl
  * @returns {Promise<any>}
  */
@@ -26,13 +32,29 @@ const createRoot = async (
   render,
   props,
   interaction,
-  { defer = true, ttl, userIdForFilter = userTypeEnum.DEFAULT }
+  {
+    defer = true,
+    ttl,
+    userIdForFilter = userTypeEnum.DEFAULT,
+    customFilter = async () => ({}),
+  }
 ) => {
   const interactionInstance = getInteractionInstance(interaction);
   if (!interactionInstance) {
     return {
       err: "Error getting interaction instance",
     };
+  }
+  const { err: customFilterErr } = await customFilter(
+    interaction,
+    getUserFromInteraction(interaction)
+  );
+  if (customFilterErr) {
+    const errorElement = {
+      err: customFilterErr,
+    };
+    await interactionInstance.reply(errorElement);
+    return errorElement;
   }
   const instance = new DeactInstance(
     render,
@@ -41,6 +63,7 @@ const createRoot = async (
     {
       ttl,
       userIdForFilter,
+      customFilter,
     }
   );
   if (defer) {
@@ -70,6 +93,23 @@ const createElement = (
   key,
   isDeactCreateElement: true,
 });
+
+/**
+ * TODO: hacky? should I be keeping track of interaction rather than message ref?
+ * @param {DeactInstance} rootInstance
+ */
+const forceUpdate = async (rootInstance) => {
+  const renderedElement = await rootInstance.renderCurrentElement();
+  if (
+    !renderedElement.messageRef ||
+    !renderedElement.element ||
+    renderedElement.err
+  ) {
+    return;
+  }
+
+  await renderedElement.messageRef.edit(renderedElement.element);
+};
 
 // TODO: figure out how to remove ref parameter
 
@@ -121,6 +161,14 @@ async function triggerBoundCallback(interaction, interactionData) {
   }
   if (!isValidUser) {
     return { err: "You may not currently take this action." };
+  }
+
+  const { err: customFilterErr } = await rootInstance.customFilter(
+    interaction,
+    interaction.user
+  );
+  if (customFilterErr) {
+    return { err: customFilterErr };
   }
 
   if (defer) {
@@ -232,7 +280,7 @@ const useCallbackBindingRaw = (callback, ref, options) => {
  */
 
 /**
- * @param {(interaction: MessageComponentInteraction, data: any) => any} callback
+ * @param {(interaction: MessageComponentInteraction & StringSelectMenuInteraction, data: any) => any} callback
  * @param {DeactElement} ref
  * @param {CallbackBindingOptions} options
  * @returns {string} binding key of the callback
@@ -350,10 +398,41 @@ function useEffect(callback, deps, ref) {
   }
 }
 
+/**
+ * @param {(() => Promise<(() => void)>) | (() => Promise<void>)} callback
+ * @param {any[]} deps
+ * @param {DeactElement} ref
+ * @returns {Promise<(() => void) | void>}
+ */
+async function useAwaitedEffect(callback, deps, ref) {
+  // TODO: can't seem to use useEffect because we have to await the cleanup callback
+  const cleanupRef = useRef(null, ref);
+  const haveDepsChanged = useCompareAndSetDeps(deps, ref);
+  if (haveDepsChanged || !ref.finishedMounting) {
+    const cleanup = await callback();
+    if (cleanupRef.current) {
+      await cleanupRef.current();
+    }
+    cleanupRef.current = cleanup;
+  }
+}
+
+/**
+ * @template {(...any) => any} T
+ * @param {T} callback
+ * @param {any[]} deps
+ * @param {DeactElement} ref
+ * @returns {T}
+ */
+function useCallback(callback, deps, ref) {
+  return useMemo(() => callback, deps, ref);
+}
+
 module.exports = {
   userTypeEnum,
   createRoot,
   createElement,
+  forceUpdate,
   createModal,
   triggerBoundCallback,
   makeComponentIdWithStateId,
@@ -365,4 +444,6 @@ module.exports = {
   useMemo,
   useAwaitedMemo,
   useEffect,
+  useAwaitedEffect,
+  useCallback,
 };

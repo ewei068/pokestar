@@ -354,12 +354,14 @@ module.exports = async (
       [
         createElement(Button, {
           emoji: "⚙️",
+          label: "Filter / Sort",
           callbackBindingKey: settingsActionBinding,
           style: filtersShown ? ButtonStyle.Primary : ButtonStyle.Secondary,
           data: {},
         }),
         createElement(Button, {
           emoji: "❌",
+          label: "Clear Filters",
           callbackBindingKey: clearFiltersActionBinding,
           style: ButtonStyle.Secondary,
           data: {},
