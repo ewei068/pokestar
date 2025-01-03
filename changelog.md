@@ -1,9 +1,22 @@
 # Pokéstar Changelog
 
+## 1.2.0
+
 TODO:
 
-- Stretch: New event
-- Stretch: Analytics
+- Increase spawn duration
+- Gen 3 wrap-up event
+  - Special Groudon and Kyogre Variants
+    - Special epic variants of Gen 3 Pokemon
+  - Add Jirachi
+  - New event
+  - Add some more Pokemon
+  - Add raid tokens or something
+- New player UX analysis
+
+**Stretch**
+
+- Stretch: Quests (Achievements)
 
 ## 1.1.0
 
