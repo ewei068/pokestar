@@ -18,7 +18,7 @@ TODO:
 
 - Stretch: Quests (Achievements)
 
-## 1.1.0
+## 1.1.0 (1/1)
 
 - Revamped the `/tutorial`
   - Longer tutorial with more informative stages
@@ -74,7 +74,6 @@ TODO:
 - Nerf withdraw/harden
 - Rebalance raids
 - Change shiftry ability?
-- Fix Help
 
 ### 1.0.1 (9/9) - Raid Update
 
