@@ -12,6 +12,7 @@ TODO:
   - New event
   - Add some more Pokemon
   - Add raid tokens or something
+  - New raids?
 - New player UX analysis
 
 **Stretch**
