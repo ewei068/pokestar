@@ -11,8 +11,10 @@ TODO:
   - Add Jirachi
   - New event
   - Add some more Pokemon
-  - Add raid tokens or something
   - New raids?
+- Rebalance raids
+  - Add raid tokens or something
+    - Maybe revamp shop for this
 - New player UX analysis
 
 **Stretch**
