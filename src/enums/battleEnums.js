@@ -8,6 +8,7 @@ const effectIdEnum = Object.freeze({
   ATK_UP: "atkUp",
   SHIELD: "shield",
   DEBUFF_IMMUNITY: "debuffImmunity",
+  AQUA_BLESSING: "aquaBlessing",
 });
 
 /**
@@ -30,6 +31,7 @@ const moveIdEnum = Object.freeze({
 const abilityIdEnum = Object.freeze({
   TEST_ABILITY: "testAbility",
   REGENERATOR: "144",
+  AQUA_POWER: "2-1",
 });
 
 /** @typedef {Enum<battleEventEnum>} BattleEventEnum */

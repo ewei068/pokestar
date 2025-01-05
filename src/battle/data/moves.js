@@ -160,8 +160,10 @@ const movesToRegister = Object.freeze({
           pokemon === source ||
           !pokemon ||
           pokemon.isFainted ||
-          (pokemon.type1 !== pokemonTypes.WATER &&
-            pokemon.type2 !== pokemonTypes.WATER)
+          !(
+            pokemon.hasType(pokemonTypes.WATER) ||
+            pokemon.hasType(pokemonTypes.DARK)
+          )
         ) {
           continue;
         }

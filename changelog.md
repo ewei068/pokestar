@@ -16,6 +16,7 @@ TODO:
   - Add raid tokens or something
     - Maybe revamp shop for this
 - New player UX analysis
+- Make party add/remove easier
 
 **Stretch**
 

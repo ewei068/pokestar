@@ -1,5 +1,11 @@
 /* eslint-disable no-param-reassign */
-const { abilityIdEnum, battleEventEnum } = require("../../enums/battleEnums");
+const { weatherConditions } = require("../../config/battleConfig");
+const { types: pokemonTypes } = require("../../config/pokemonConfig");
+const {
+  abilityIdEnum,
+  battleEventEnum,
+  effectIdEnum,
+} = require("../../enums/battleEnums");
 const { logger } = require("../../log");
 const { getIsActivePokemonCallback } = require("../engine/eventConditions");
 
@@ -43,6 +49,53 @@ class Ability {
 }
 
 const abilitiesToRegister = Object.freeze({
+  [abilityIdEnum.AQUA_POWER]: new Ability({
+    id: abilityIdEnum.AQUA_POWER,
+    name: "Aqua Power",
+    description:
+      "At the start of battle, if there's only one other Water or Dark type ally, increase its highest base stat (excluding HP or Speed) by 2x for 3 turns, and start rain.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: battle.registerListenerFunction({
+          eventName: battleEventEnum.BATTLE_BEGIN,
+          callback: () => {
+            const allyPokemons = target.getPartyPokemon();
+            const otherWaterDarkAllies = allyPokemons.filter(
+              (pokemon) =>
+                pokemon !== target &&
+                pokemon &&
+                !pokemon.isFainted &&
+                (pokemon.hasType(pokemonTypes.WATER) ||
+                  pokemon.hasType(pokemonTypes.DARK))
+            );
+            if (otherWaterDarkAllies.length !== 1) {
+              return;
+            }
+            const [allyPokemon] = otherWaterDarkAllies;
+            battle.addToLog(`${target.name} blesses ${allyPokemon.name}!`);
+            const baseStats = allyPokemon.getAllBaseStats();
+            const highestStatIndex =
+              baseStats
+                .slice(1, 5)
+                .reduce(
+                  (maxIndex, stat, index, arr) =>
+                    stat > arr[maxIndex] ? index : maxIndex,
+                  0
+                ) + 1; // +1 to account for HP
+            allyPokemon.applyEffect(effectIdEnum.AQUA_BLESSING, 3, target, {
+              // @ts-ignore
+              stat: highestStatIndex,
+            });
+
+            battle.createWeather(weatherConditions.RAIN, target);
+          },
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
   [abilityIdEnum.REGENERATOR]: new Ability({
     id: abilityIdEnum.REGENERATOR,
     name: "Regenerator",

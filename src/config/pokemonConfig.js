@@ -1,4 +1,4 @@
-const { moveIdEnum } = require("../enums/battleEnums");
+const { moveIdEnum, abilityIdEnum } = require("../enums/battleEnums");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
 
 /** @typedef {Enum<types>} PokemonTypeEnum */
@@ -7145,7 +7145,7 @@ const pokemonConfigRaw = {
     shinySprite:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/aqua-kyogre-shiny-resized.gif",
     abilities: {
-      2: 1,
+      [abilityIdEnum.AQUA_POWER]: 1,
     },
     moveIds: ["m246", "m347", "m399", moveIdEnum.AQUA_IMPACT],
     battleEligible: true,

@@ -157,6 +157,14 @@ class BattlePokemon {
   }
 
   /**
+   * @param {PokemonTypeEnum} type
+   * @returns {boolean}
+   */
+  hasType(type) {
+    return this.type1 === type || this.type2 === type;
+  }
+
+  /**
    * @param {Pokemon} pokemonData
    */
   addMoves(pokemonData) {
@@ -1386,6 +1394,7 @@ class BattlePokemon {
 
     if (!effect.isLegacyEffect) {
       this.effectIds[effectId].args =
+        // @ts-ignore
         effect.effectAdd({
           battle: this.battle,
           source,
@@ -1931,6 +1940,9 @@ class BattlePokemon {
     return spe;
   }
 
+  /**
+   * @returns {StatArray}
+   */
   getAllStats() {
     return [
       this.hp,
@@ -1940,6 +1952,13 @@ class BattlePokemon {
       this.getSpd(),
       this.getSpe(),
     ];
+  }
+
+  /**
+   * @returns {StatArray}
+   */
+  getAllBaseStats() {
+    return [this.maxHp, this.batk, this.bdef, this.bspa, this.bspd, this.bspe];
   }
 }
 
