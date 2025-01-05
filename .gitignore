@@ -111,3 +111,4 @@ src/backups
 ssh.txt
 .DS_Store
 notes.md
+venv/
