@@ -23,17 +23,21 @@ def resize_images_in_directory(directory, new_size):
                 for frame in ImageSequence.Iterator(image):
                     # Resize the frame
                     frame_resized = frame.resize(new_size, Image.LANCZOS)
+                    frame_resized = frame_resized.convert("RGBA")
+
                     frames.append(frame_resized)
                     # Get the duration of the frame
                     durations.append(frame.info["duration"])
 
-                output_path = os.path.join(directory, f"{image_name}-resized.png")
+                output_path = os.path.join(directory, f"{image_name}-resized.gif")
                 frames[0].save(
                     output_path,
                     save_all=True,
                     append_images=frames[1:],
                     loop=0,
                     duration=durations,
+                    transparency=0,
+                    disposal=2,
                 )
             else:
                 # Handle non-animated images
