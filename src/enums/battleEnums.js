@@ -19,8 +19,10 @@ const effectIdEnum = Object.freeze({
 const moveIdEnum = Object.freeze({
   TEST_MOVE: "999",
   TEST_MOVE2: "998",
+  FIRE_PUNCH: "m7",
   VINE_WHIP: "m22",
   AQUA_IMPACT: "m618-1",
+  MAGMA_IMPACT: "m619-1",
 });
 
 /**
@@ -32,6 +34,7 @@ const abilityIdEnum = Object.freeze({
   TEST_ABILITY: "testAbility",
   REGENERATOR: "144",
   AQUA_POWER: "2-1",
+  MAGMA_POWER: "70-1",
 });
 
 /** @typedef {Enum<battleEventEnum>} BattleEventEnum */

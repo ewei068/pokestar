@@ -133,7 +133,7 @@ const effectsToRegister = Object.freeze({
   [effectIdEnum.AQUA_BLESSING]: new Effect({
     id: effectIdEnum.AQUA_BLESSING,
     name: "Aqua Blessing",
-    description: "The target's stat is increased by 1.5x.",
+    description: "The target's stat is increased by 2x.",
     type: effectTypes.BUFF,
     dispellable: true,
     /**
@@ -145,7 +145,7 @@ const effectsToRegister = Object.freeze({
       const statToIncrease = statToBattleStat[stat];
 
       battle.addToLog(`${target.name}'s ${statToIncrease} rose!`);
-      target[statToIncrease] += Math.floor(baseStatValue * 0.5);
+      target[statToIncrease] += baseStatValue;
       return {};
     },
     effectRemove({ battle, target, initialArgs }) {
@@ -154,7 +154,7 @@ const effectsToRegister = Object.freeze({
       const statToIncrease = statToBattleStat[stat];
 
       battle.addToLog(`${target.name}'s ${statToIncrease} boost wore off!`);
-      target[statToIncrease] -= Math.floor(baseStatValue * 0.5);
+      target[statToIncrease] -= baseStatValue;
     },
   }),
 });

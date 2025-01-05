@@ -17,6 +17,8 @@ TODO:
     - Maybe revamp shop for this
 - New player UX analysis
 - Make party add/remove easier
+- Fix help again
+- Attempt to fix memory leak
 
 **Stretch**
 

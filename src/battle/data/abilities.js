@@ -96,6 +96,41 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [abilityIdEnum.MAGMA_POWER]: new Ability({
+    id: abilityIdEnum.MAGMA_POWER,
+    name: "Magma Power",
+    description:
+      "At the start of battle, if there's only one other Ground or Fire type ally, increase its combat readiness by 35%, and start harsh sunlight.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: battle.registerListenerFunction({
+          eventName: battleEventEnum.BATTLE_BEGIN,
+          callback: () => {
+            const allyPokemons = target.getPartyPokemon();
+            const otherFireGroundAllies = allyPokemons.filter(
+              (pokemon) =>
+                pokemon !== target &&
+                pokemon &&
+                !pokemon.isFainted &&
+                (pokemon.hasType(pokemonTypes.FIRE) ||
+                  pokemon.hasType(pokemonTypes.GROUND))
+            );
+            if (otherFireGroundAllies.length !== 1) {
+              return;
+            }
+            const [allyPokemon] = otherFireGroundAllies;
+            battle.addToLog(`${target.name} blesses ${allyPokemon.name}!`);
+            allyPokemon.boostCombatReadiness(target, 35);
+
+            battle.createWeather(weatherConditions.SUN, target);
+          },
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
   [abilityIdEnum.REGENERATOR]: new Ability({
     id: abilityIdEnum.REGENERATOR,
     name: "Regenerator",
