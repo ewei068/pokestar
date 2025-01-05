@@ -1,4 +1,5 @@
 const { moveIdEnum } = require("../enums/battleEnums");
+const { pokemonIdEnum } = require("../enums/pokemonEnums");
 
 /** @typedef {Enum<types>} PokemonTypeEnum */
 const types = Object.freeze({
@@ -7131,6 +7132,26 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.ARCHIES_KYOGRE]: {
+    name: "Archie's Kyogre",
+    emoji: "<:aquakyogre:1325287152979939348>",
+    description:
+      "A Kyogre under the control of Archie, the leader of Team Aqua. It summons heavy rain to flood the world.",
+    type: [types.WATER, types.DARK],
+    baseStats: [110, 80, 100, 145, 140, 85],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/aqua-kyogre-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/aqua-kyogre-shiny-resized.gif",
+    abilities: {
+      2: 1,
+    },
+    moveIds: ["m246", "m347", "m399", moveIdEnum.AQUA_IMPACT],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
   },
   383: {
     name: "Groudon",

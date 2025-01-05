@@ -1863,8 +1863,16 @@ class BattlePokemon {
     return { row, col };
   }
 
+  getParty() {
+    return this.battle.parties[this.teamName];
+  }
+
+  getPartyPokemon() {
+    return this.getParty().pokemons;
+  }
+
   getPartyRowColumn() {
-    const party = this.battle.parties[this.teamName];
+    const party = this.getParty();
     return { party, ...this.getRowAndColumn() };
   }
 
@@ -1921,6 +1929,17 @@ class BattlePokemon {
     }
 
     return spe;
+  }
+
+  getAllStats() {
+    return [
+      this.hp,
+      this.atk,
+      this.getDef(),
+      this.spa,
+      this.getSpd(),
+      this.getSpe(),
+    ];
   }
 }
 

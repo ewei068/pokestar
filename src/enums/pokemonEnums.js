@@ -307,6 +307,7 @@ const pokemonIdEnum = Object.freeze({
   SPIRIT_PRIEST_MEWTWO: "20150",
   PALMERS_RAYQUAZA: "20384",
   WILLOWS_MELMETAL: "20809",
+  ARCHIES_KYOGRE: "382-1",
 });
 
 module.exports = { pokemonIdEnum };

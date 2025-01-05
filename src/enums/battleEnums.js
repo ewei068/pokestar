@@ -19,6 +19,7 @@ const moveIdEnum = Object.freeze({
   TEST_MOVE: "999",
   TEST_MOVE2: "998",
   VINE_WHIP: "m22",
+  AQUA_IMPACT: "m618-1",
 });
 
 /**

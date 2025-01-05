@@ -20,6 +20,7 @@ TODO:
 **Stretch**
 
 - Stretch: Quests (Achievements)
+- Stretch: Ability slots
 
 ## 1.1.0 (1/1)
 

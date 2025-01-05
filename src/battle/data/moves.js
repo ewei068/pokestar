@@ -65,8 +65,11 @@ class Move {
     allTargets,
     missedTargets = [],
     offTargetDamageMultiplier = 0.8,
+    calculateDamageFunction = undefined,
   }) {
-    const damageToDeal = source.calculateMoveDamage({
+    const damageToDeal = (
+      calculateDamageFunction || source.calculateMoveDamage
+    )({
       move: getMove(this.id),
       target,
       primaryTarget,
@@ -87,6 +90,7 @@ class Move {
    * @param {Array<BattlePokemon>} param0.allTargets
    * @param {Array<BattlePokemon>=} param0.missedTargets
    * @param {number=} param0.offTargetDamageMultiplier
+   * @param {CalculateMoveDamageImpl=} param0.calculateDamageFunction
    */
   genericDealAllDamage({
     source,
@@ -94,6 +98,7 @@ class Move {
     allTargets,
     missedTargets = [],
     offTargetDamageMultiplier = 0.8,
+    calculateDamageFunction = undefined,
   }) {
     for (const target of allTargets) {
       this.genericDealSingleDamage({
@@ -103,6 +108,7 @@ class Move {
         allTargets,
         missedTargets,
         offTargetDamageMultiplier,
+        calculateDamageFunction,
       });
     }
   }
@@ -129,6 +135,59 @@ const movesToRegister = Object.freeze({
         primaryTarget,
         allTargets,
         missedTargets,
+      });
+    },
+  }),
+  [moveIdEnum.AQUA_IMPACT]: new Move({
+    id: moveIdEnum.AQUA_IMPACT,
+    name: "Aqua Impact",
+    type: pokemonTypes.WATER,
+    power: 50,
+    accuracy: 90,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.ALL,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The targets are struck with a high-pressure flood of water. If hit, does true damage equal to 5% of the highest stat (excluding HP) among other Water or Dark type Pokemon on your team.",
+    execute({ source, primaryTarget, allTargets, missedTargets }) {
+      const sourceTeamPokemons = source.getPartyPokemon();
+      let highestStat = 0;
+      for (const pokemon of sourceTeamPokemons) {
+        if (
+          pokemon === source ||
+          !pokemon ||
+          pokemon.isFainted ||
+          (pokemon.type1 !== pokemonTypes.WATER &&
+            pokemon.type2 !== pokemonTypes.WATER)
+        ) {
+          continue;
+        }
+        const pokemonHighestNonHpStat = pokemon
+          .getAllStats()
+          .slice(1, undefined)
+          .reduce((highest, stat) => (stat > highest ? stat : highest), 0);
+        if (pokemonHighestNonHpStat > highestStat) {
+          highestStat = pokemonHighestNonHpStat;
+        }
+      }
+
+      this.genericDealAllDamage({
+        source,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+        calculateDamageFunction: (args) => {
+          const { target } = args;
+          const baseDamage = source.calculateMoveDamage(args);
+          if (!missedTargets.includes(target)) {
+            const trueDamage = Math.floor(highestStat * 0.05);
+            return baseDamage + trueDamage;
+          }
+          return baseDamage;
+        },
       });
     },
   }),
