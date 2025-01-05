@@ -12,7 +12,10 @@
       "source.fixAll.eslint": "always"
     },
     "eslint.validate": ["javascript"],
-    "typescript.tsdk": "node_modules/typescript/lib"
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.black-formatter"
+    }
   },
   "extensions": {
     "recommendations": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
