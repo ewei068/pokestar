@@ -6380,6 +6380,27 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
+    noGacha: true,
+  },
+  [pokemonIdEnum.AQUAS_SHARPEDO]: {
+    name: "Aqua's Sharpedo",
+    emoji: "<:aquasharpedo:1325287154125111420>",
+    description:
+      "A Sharpedo controlled by Team Aqua. It is said to be able to cause tsunamis where it swims.",
+    type: [types.WATER, types.DARK],
+    baseStats: [80, 100, 50, 145, 60, 115],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/aqua-sharpedo-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/aqua-sharpedo-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.JET_SPEED]: 1,
+    },
+    moveIds: ["m246", "m57", "m399", "m212"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+    noGacha: true,
   },
   320: {
     name: "Wailmer",
@@ -7215,7 +7236,7 @@ const pokemonConfigRaw = {
     abilities: {
       [abilityIdEnum.AQUA_POWER]: 1,
     },
-    moveIds: ["m246", "m347", "m399", moveIdEnum.AQUA_IMPACT],
+    moveIds: ["m239", "m347", "m399", moveIdEnum.AQUA_IMPACT],
     battleEligible: true,
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,

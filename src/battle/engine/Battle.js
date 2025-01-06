@@ -507,6 +507,8 @@ class Battle {
       return false;
     }
 
+    // TODO: extend/clear weather events? should this be done?
+
     // apply weather
     this.weather = {
       weatherId,
@@ -529,6 +531,8 @@ class Battle {
       default:
         break;
     }
+
+    this.emitEvent(battleEventEnum.AFTER_WEATHER_SET, {}); // no args because weather can be retrieved from this.weather
 
     return true;
   }

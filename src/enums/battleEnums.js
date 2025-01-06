@@ -38,6 +38,7 @@ const abilityIdEnum = Object.freeze({
   ANGER_POINT: "83",
   REGENERATOR: "144",
   BURNING_DRAFT: "20018",
+  JET_SPEED: "20019",
 });
 
 /** @typedef {Enum<battleEventEnum>} BattleEventEnum */
@@ -66,6 +67,7 @@ const battleEventEnum = Object.freeze({
   CALCULATE_TYPE_MULTIPLIER: "calculateTypeMultiplier",
   CALCULATE_MISS: "calculateMiss",
   GET_ELIGIBLE_TARGETS: "getEligibleTargets",
+  AFTER_WEATHER_SET: "afterWeatherSet",
 });
 
 /**
@@ -95,6 +97,7 @@ const battleEventEnum = Object.freeze({
  *  [battleEventEnum.CALCULATE_TYPE_MULTIPLIER]: any,
  *  [battleEventEnum.CALCULATE_MISS]: any,
  *  [battleEventEnum.GET_ELIGIBLE_TARGETS]: any,
+ *  [battleEventEnum.AFTER_WEATHER_SET]: any,
  * }[K]} BattleEventArgsWithoutEventName
  */
 

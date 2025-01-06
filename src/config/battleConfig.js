@@ -3094,7 +3094,7 @@ const moveConfig = Object.freeze({
   m88: {
     name: "Rock Throw",
     type: pokemonTypes.ROCK,
-    power: 70,
+    power: 65,
     accuracy: 70,
     cooldown: 0,
     targetType: targetTypes.ENEMY,

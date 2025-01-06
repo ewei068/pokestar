@@ -196,7 +196,7 @@ const abilitiesToRegister = Object.freeze({
           eventName: battleEventEnum.TURN_END,
           callback: () => {
             const allyPokemons = target.getPartyPokemon();
-            target.battle.addToLog(
+            battle.addToLog(
               `${target.name}'s Burning Draft increases its allies' combat readiness!`
             );
             allyPokemons.forEach((ally) => {
@@ -207,6 +207,32 @@ const abilitiesToRegister = Object.freeze({
             });
           },
           conditionCallback: getIsActivePokemonCallback(battle, target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.JET_SPEED]: new Ability({
+    id: abilityIdEnum.JET_SPEED,
+    name: "Jet Speed",
+    description:
+      "When the weather is set to rain, increase the user's combat readiness by 20% and raise its Special Attack for 2 turns.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: battle.registerListenerFunction({
+          eventName: battleEventEnum.AFTER_WEATHER_SET,
+          callback: () => {
+            const { weather } = battle;
+            if (weather.weatherId !== weatherConditions.RAIN) {
+              return;
+            }
+
+            battle.addToLog(`${target.name} is pumped by the Rain!`);
+            target.boostCombatReadiness(target, 20);
+            target.applyEffect("spaUp", 2, target, {});
+          },
         }),
       };
     },
