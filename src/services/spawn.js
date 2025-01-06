@@ -118,7 +118,7 @@ const buildPokemonSpawnSend = (goodSpawn) => {
       level,
       goodSpawn,
     },
-    15 * 60
+    30 * 60
   );
   const buttonConfigs = [
     {
