@@ -1,5 +1,11 @@
 # Pokéstar Changelog
 
+### 1.1.1
+
+- Increase spawned Pokemon duration 15 min -> 30 min
+- Fix some performance issues
+- Fix `/help` bug
+
 TODO:
 
 - Stretch: New event
