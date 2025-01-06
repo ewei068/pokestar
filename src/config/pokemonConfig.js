@@ -6429,6 +6429,54 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
   },
+  [pokemonIdEnum.NUMEL]: {
+    name: "Numel",
+    emoji: "<:322:1132496591115276389>",
+    description:
+      "Numel is extremely dull witted - it doesn't notice being hit. However, it can't stand hunger for even a second. This Pokémon's body is a seething cauldron of boiling magma.",
+    type: [types.FIRE, types.GROUND],
+    baseStats: [60, 60, 40, 65, 45, 35],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/322.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/322.png",
+    evolution: [
+      {
+        level: 33,
+        id: "323",
+      },
+    ],
+    abilities: {
+      12: 0.45,
+      86: 0.45,
+      20: 0.1,
+    },
+    moveIds: ["m33", "m52", "m281", "m414"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.CAMERUPT]: {
+    name: "Camerupt",
+    emoji: "<:323:1132496592709111869>",
+    description:
+      "Camerupt has a volcano inside its body. Magma of 18,000 degrees Fahrenheit courses through its body. Occasionally, the humps on this Pokémon's back erupt, spewing the superheated magma.",
+    type: [types.FIRE, types.GROUND],
+    baseStats: [70, 100, 70, 105, 75, 40],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/323.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/323.png",
+    abilities: {
+      40: 0.45,
+      116: 0.45,
+      83: 0.1,
+    },
+    moveIds: ["m52", "m281", "m414", "m284"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   324: {
     name: "Torkoal",
     emoji: "<:324:1132496594567188584>",

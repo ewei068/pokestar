@@ -7,7 +7,10 @@ const {
   effectIdEnum,
 } = require("../../enums/battleEnums");
 const { logger } = require("../../log");
-const { getIsActivePokemonCallback } = require("../engine/eventConditions");
+const {
+  getIsActivePokemonCallback,
+  getIsTargetPokemonCallback,
+} = require("../engine/eventConditions");
 
 /**
  * @template T
@@ -124,6 +127,31 @@ const abilitiesToRegister = Object.freeze({
 
             battle.createWeather(weatherConditions.SUN, target);
           },
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.ANGER_POINT]: new Ability({
+    id: abilityIdEnum.ANGER_POINT,
+    name: "Anger Point",
+    description:
+      "When the user takes more than 33% of its health of damage at once, sharply raise its Atk and Spa for 3 turns.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: battle.registerListenerFunction({
+          eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
+          callback: ({ damage }) => {
+            if (damage < target.maxHp * 0.33) {
+              return;
+            }
+            battle.addToLog(`${target.name}'s Anger Point activates!`);
+            target.applyEffect("greaterAtkUp", 3, target, {});
+            target.applyEffect("greaterSpaUp", 3, target, {});
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
         }),
       };
     },

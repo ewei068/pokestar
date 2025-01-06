@@ -32,9 +32,10 @@ const moveIdEnum = Object.freeze({
  */
 const abilityIdEnum = Object.freeze({
   TEST_ABILITY: "testAbility",
-  REGENERATOR: "144",
   AQUA_POWER: "2-1",
   MAGMA_POWER: "70-1",
+  ANGER_POINT: "83",
+  REGENERATOR: "144",
 });
 
 /** @typedef {Enum<battleEventEnum>} BattleEventEnum */
@@ -77,7 +78,7 @@ const battleEventEnum = Object.freeze({
  *  [battleEventEnum.BEFORE_DAMAGE_DEALT]: any,
  *  [battleEventEnum.AFTER_DAMAGE_DEALT]: any,
  *  [battleEventEnum.BEFORE_DAMAGE_TAKEN]: any,
- *  [battleEventEnum.AFTER_DAMAGE_TAKEN]: any,
+ *  [battleEventEnum.AFTER_DAMAGE_TAKEN]: { target: BattlePokemon, source: BattlePokemon, damage: number, damageInfo: any },
  *  [battleEventEnum.BEFORE_CR_GAINED]: any,
  *  [battleEventEnum.AFTER_CR_GAINED]: any,
  *  [battleEventEnum.BEFORE_EFFECT_ADD]: { target: BattlePokemon, source: BattlePokemon, effectId: EffectIdEnum, duration: number, initialArgs: any, canAdd: boolean },
