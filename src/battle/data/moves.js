@@ -9,6 +9,7 @@ const {
 } = require("../../config/battleConfig");
 const { getMove } = require("./moveRegistry");
 const { moveIdEnum } = require("../../enums/battleEnums");
+const { drawIterable } = require("../../utils/gachaUtils");
 
 class Move {
   /**
@@ -305,6 +306,54 @@ const movesToRegister = Object.freeze({
           return baseDamage;
         },
       });
+    },
+  }),
+  [moveIdEnum.FLAME_BALL]: new Move({
+    id: moveIdEnum.FLAME_BALL,
+    name: "Flame Ball",
+    type: pokemonTypes.FIRE,
+    power: 60,
+    accuracy: 90,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user strikes the targets with an exploding fiery ball, heating up its allies. For each hit, boosts the combat readiness of a random Fire or Ground type ally by 15%.",
+    execute({ battle, source, primaryTarget, allTargets, missedTargets }) {
+      this.genericDealAllDamage({
+        source,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+      });
+
+      const sourceTeamPokemons = source.getPartyPokemon();
+      const fireGroundAllies = sourceTeamPokemons.filter(
+        (pokemon) =>
+          pokemon !== source &&
+          pokemon &&
+          !pokemon.isFainted &&
+          (pokemon.hasType(pokemonTypes.FIRE) ||
+            pokemon.hasType(pokemonTypes.GROUND))
+      );
+      if (fireGroundAllies.length === 0) {
+        return;
+      }
+      const [randomAlly] = drawIterable(fireGroundAllies, 1);
+      const hitCount = allTargets.reduce(
+        (count, target) =>
+          !missedTargets.includes(target) ? count + 1 : count,
+        0
+      );
+      if (hitCount > 0) {
+        battle.addToLog(
+          `${randomAlly.name} is burning up from the Flame Ball!`
+        );
+        randomAlly.boostCombatReadiness(source, hitCount * 15);
+      }
     },
   }),
 });

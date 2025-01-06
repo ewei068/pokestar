@@ -234,6 +234,7 @@ const pokemonIdEnum = Object.freeze({
   WAILORD: "321",
   NUMEL: "322",
   CAMERUPT: "323",
+  MAGMAS_CAMERUPT: "323-1",
   TORKOAL: "324",
   TRAPINCH: "328",
   VIBRAVA: "329",

@@ -23,6 +23,7 @@ const moveIdEnum = Object.freeze({
   VINE_WHIP: "m22",
   AQUA_IMPACT: "m618-1",
   MAGMA_IMPACT: "m619-1",
+  FLAME_BALL: "m780-1",
 });
 
 /**
@@ -36,6 +37,7 @@ const abilityIdEnum = Object.freeze({
   MAGMA_POWER: "70-1",
   ANGER_POINT: "83",
   REGENERATOR: "144",
+  BURNING_DRAFT: "20018",
 });
 
 /** @typedef {Enum<battleEventEnum>} BattleEventEnum */

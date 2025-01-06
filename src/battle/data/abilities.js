@@ -185,6 +185,35 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [abilityIdEnum.BURNING_DRAFT]: new Ability({
+    id: abilityIdEnum.BURNING_DRAFT,
+    name: "Burning Draft",
+    description:
+      "When the user's turn ends, increase the combat readiness of all allies by 10%.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: battle.registerListenerFunction({
+          eventName: battleEventEnum.TURN_END,
+          callback: () => {
+            const allyPokemons = target.getPartyPokemon();
+            target.battle.addToLog(
+              `${target.name}'s Burning Draft increases its allies' combat readiness!`
+            );
+            allyPokemons.forEach((ally) => {
+              if (!ally) {
+                return;
+              }
+              ally.boostCombatReadiness(target, 10);
+            });
+          },
+          conditionCallback: getIsActivePokemonCallback(battle, target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
 });
 
 module.exports = {

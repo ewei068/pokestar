@@ -19,6 +19,7 @@ TODO:
 - Make party add/remove easier
 - Fix help again
 - Attempt to fix memory leak
+- Add Pokemon Emojis wherever possible
 
 **Stretch**
 

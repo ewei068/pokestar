@@ -6477,6 +6477,26 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.MAGMAS_CAMERUPT]: {
+    name: "Magma's Camerupt",
+    emoji: "<:magmacamerupt:1325287155198722160>",
+    description:
+      "A Camerupt controlled by Team Magma. It is said to be able to cause volcanic eruptions with a single stomp.",
+    type: [types.FIRE, types.GROUND],
+    baseStats: [70, 135, 90, 90, 95, 70],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/magma-camerupt-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/magma-camerupt-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.BURNING_DRAFT]: 1,
+    },
+    moveIds: ["m98", "m523", moveIdEnum.FLAME_BALL, "m157"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+    noGacha: true,
+  },
   324: {
     name: "Torkoal",
     emoji: "<:324:1132496594567188584>",
