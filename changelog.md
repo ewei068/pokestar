@@ -5,6 +5,7 @@
 - Increase spawned Pokemon duration 15 min -> 30 min
 - Fix some performance issues
 - Fix `/help` bug
+- Add vote, events to tutorial?
 
 TODO:
 
