@@ -4,7 +4,7 @@ const { emojis } = require("../enums/emojis");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { checkNumPokemon, listPokemons } = require("../services/pokemon");
 const { backpackCategories, backpackItems } = require("./backpackConfig");
-const { SUPPORT_SERVER_INVITE } = require("./helpConfig");
+const { SUPPORT_SERVER_INVITE, gameEventConfig } = require("./helpConfig");
 const { locations } = require("./locationConfig");
 const { difficulties } = require("./npcConfig");
 const { shopItems } = require("./shopConfig");
@@ -111,6 +111,23 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/backpack.png",
+  },
+  voting: {
+    name: "(Optional) Voting",
+    emoji: "🗳️",
+    description:
+      "Voting for Pokestar helps the bot grow! **Vote for Pokestar on top.gg [here](https://top.gg/bot/1093411444877439066/vote)**. Then, use `/vote` to claim your rewards.\n\n" +
+      `Voting gives you many rewards, and voting consistently gives you a streak. With a max streak, **you can get up to 15x ${emojis.POKEBALL} Pokeballs every 12 hours!**`,
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "(Optional) Vote for Pokestar on top.gg, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.backpack,
+    rewards: {
+      money: 1000,
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/vote.png",
   },
   catchSixPokemon: {
     name: "Catch More Pokemon",
@@ -407,6 +424,21 @@ const newTutorialConfigRaw = {
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif",
   },
+  events: {
+    name: "Events",
+    emoji: "🎉",
+    description:
+      "Pokestar has events which provide **limited-time rewards, benefits, and custom Pokemon!** Use `/events` to view ongoing events.",
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "Use `/events` to view ongoing events, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.winEasyDifficulty,
+    rewards: {
+      money: 1000,
+    },
+    image: gameEventConfig[0]?.image,
+  },
   userSettings: {
     name: "Settings",
     emoji: "⚙️",
@@ -416,7 +448,7 @@ const newTutorialConfigRaw = {
     proceedString:
       "Use `/settings` to view and change your settings, and complete the previous stage.",
     checkRequirements: async (trainer) =>
-      trainer.tutorialData.completedTutorialStages.winEasyDifficulty,
+      trainer.tutorialData.completedTutorialStages.events,
     rewards: {
       money: 1000,
     },
