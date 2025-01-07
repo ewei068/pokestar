@@ -6,6 +6,7 @@
 - Fix some performance issues
 - Fix `/help` bug
 - Add vote, events to tutorial?
+- Fix a weird voting bug
 
 TODO:
 
