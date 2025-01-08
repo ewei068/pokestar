@@ -4,7 +4,6 @@
 
 TODO:
 
-- Increase spawn duration
 - Gen 3 wrap-up event
   - Special Groudon and Kyogre Variants
     - Special epic variants of Gen 3 Pokemon
@@ -17,8 +16,6 @@ TODO:
     - Maybe revamp shop for this
 - New player UX analysis
 - Make party add/remove easier
-- Fix help again
-- Attempt to fix memory leak
 - Add Pokemon Emojis wherever possible
 
 **Stretch**
