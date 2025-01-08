@@ -47,8 +47,11 @@ const removeInteractionInstance = (interaction) => {
   deleteInteraction(interaction.id);
 };
 
+const getInteractionCount = () => Object.keys(interactions).length;
+
 module.exports = {
   setInteractionInstance,
   getInteractionInstance,
   removeInteractionInstance,
+  getInteractionCount,
 };
