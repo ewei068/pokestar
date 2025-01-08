@@ -46,7 +46,7 @@ module.exports = async (ref, { initialPage = 1, initialCommand = null }) => {
             ) {
               return {
                 initialCategoryFound: category,
-                initialCommandFound: providedCommand,
+                initialCommandFound: commandData.aliases[0],
                 err: null,
               };
             }

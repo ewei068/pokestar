@@ -21,6 +21,14 @@ TODO:
 
 - Stretch: Quests (Achievements)
 
+### 1.1.1 (1/8)
+
+- Increase spawned Pokemon duration 15 min -> 30 min
+- Fix some performance issues
+- Fix `/help` bug
+- Add vote, events to tutorial
+- Fix a weird voting bug
+
 ## 1.1.0 (1/1)
 
 - Revamped the `/tutorial`

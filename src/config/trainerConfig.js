@@ -384,10 +384,20 @@ const trainerFields = {
   },
   voting: {
     type: "object",
-    default: {
-      lastVoted: new Date(0).getTime(),
-      streak: 0,
-      rewards: 0,
+    default: {},
+    config: {
+      lastVoted: {
+        type: "number",
+        default: new Date(0).getTime(),
+      },
+      streak: {
+        type: "number",
+        default: 0,
+      },
+      rewards: {
+        type: "number",
+        default: 0,
+      },
     },
   },
   trade: {
