@@ -5125,6 +5125,7 @@ const pokemonConfigRaw = {
         "248-1",
         "289-1",
         "319-1",
+        pokemonIdEnum.LITTENYAN,
       ],
     },
   },
@@ -7401,6 +7402,7 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.SLOW,
+    noGacha: true,
   },
   "828-1": {
     name: "Scammer Thievul",

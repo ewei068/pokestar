@@ -8,6 +8,7 @@ const { getFullUTCDate } = require("../utils/utils");
 const { rarities, rarityBins } = require("./pokemonConfig");
 const { drawIterable } = require("../utils/gachaUtils");
 const { stageNames } = require("./stageConfig");
+const { pokemonIdEnum } = require("../enums/pokemonEnums");
 
 /** @typedef {Enum<npcs>} NpcEnum */
 const npcs = Object.freeze({
@@ -1028,6 +1029,7 @@ const dungeons = Object.freeze({
   SOUL_CAVE: "soulCave",
   SPIRIT_ALTAR: "spiritAltar",
   NEW_ISLAND: "newIsland",
+  SOOTOPOLIS_CITY: "sootopolisCity",
   // ONIGASHIMA: "onigashima",
   // BLOODY_SUNDAY: "bloodySunday",
 });
@@ -2049,6 +2051,253 @@ const dungeonConfig = Object.freeze({
         },
         rewardString:
           "**Congratulations! If this is your first time defeating New Island, use `/mew` to obtain your Mew!**",
+      },
+    },
+  },
+  [dungeons.SOOTOPOLIS_CITY]: {
+    name: "Sootopolis City: Double Crisis!",
+    sprite:
+      "https://pa1.aminoapps.com/5778/fcbf7bc4d36716837e2fb264d879b1fb7883796f_hq.gif",
+    emoji: "🌋",
+    description:
+      "Archie and Maxie have awakened the ancient titans, clashing in Sootopolis city! However, they are not the only ones who have come to stop them...",
+    bosses: [
+      pokemonIdEnum.ARCHIES_KYOGRE,
+      pokemonIdEnum.MAXIES_GROUDON,
+      pokemonIdEnum.PALMERS_RAYQUAZA,
+    ],
+    difficulties: {
+      [difficulties.HARD]: {
+        phases: [
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 100,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 100,
+                position: 2,
+              },
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 100,
+                position: 4,
+              },
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 100,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.AQUAS_SHARPEDO,
+                level: 120,
+                position: 8,
+              },
+              {
+                speciesId: pokemonIdEnum.ARCHIES_KYOGRE,
+                level: 125,
+                position: 13,
+              },
+            ],
+          },
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 100,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 100,
+                position: 2,
+              },
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 100,
+                position: 4,
+              },
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 100,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.MAGMAS_CAMERUPT,
+                level: 120,
+                position: 8,
+              },
+              {
+                speciesId: pokemonIdEnum.MAXIES_GROUDON,
+                level: 125,
+                position: 13,
+              },
+            ],
+          },
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.DEOXYS,
+                level: 120,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.DEOXYS_DEFENSE,
+                level: 120,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.DEOXYS_SPEED,
+                level: 120,
+                position: 7,
+              },
+              {
+                speciesId: pokemonIdEnum.DEOXYS_ATTACK,
+                level: 120,
+                position: 9,
+              },
+              {
+                speciesId: pokemonIdEnum.PALMERS_RAYQUAZA,
+                level: 130,
+                position: 13,
+              },
+            ],
+          },
+        ],
+        rewards: {
+          backpack: {
+            [backpackCategories.MATERIALS]: {
+              [backpackItems.KNOWLEDGE_SHARD]: 10,
+              [backpackItems.EMOTION_SHARD]: 10,
+              [backpackItems.WILLPOWER_SHARD]: 10,
+            },
+          },
+        },
+      },
+      [difficulties.VERY_HARD]: {
+        phases: [
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 140,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 140,
+                position: 2,
+              },
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 140,
+                position: 4,
+              },
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 140,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.AQUAS_SHARPEDO,
+                level: 145,
+                position: 8,
+              },
+              {
+                speciesId: pokemonIdEnum.ARCHIES_KYOGRE,
+                level: 150,
+                position: 13,
+              },
+            ],
+          },
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 140,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 140,
+                position: 2,
+              },
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 140,
+                position: 4,
+              },
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 140,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.MAGMAS_CAMERUPT,
+                level: 145,
+                position: 8,
+              },
+              {
+                speciesId: pokemonIdEnum.MAXIES_GROUDON,
+                level: 150,
+                position: 13,
+              },
+            ],
+          },
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.DEOXYS,
+                level: 150,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.DEOXYS_DEFENSE,
+                level: 150,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.DEOXYS_SPEED,
+                level: 150,
+                position: 7,
+              },
+              {
+                speciesId: pokemonIdEnum.DEOXYS_ATTACK,
+                level: 150,
+                position: 9,
+              },
+              {
+                speciesId: pokemonIdEnum.PALMERS_RAYQUAZA,
+                level: 169,
+                position: 13,
+              },
+            ],
+          },
+        ],
+        rewards: {
+          backpack: {
+            [backpackCategories.MATERIALS]: {
+              [backpackItems.KNOWLEDGE_SHARD]: 10,
+              [backpackItems.EMOTION_SHARD]: 10,
+              [backpackItems.WILLPOWER_SHARD]: 10,
+            },
+          },
+        },
       },
     },
   },
