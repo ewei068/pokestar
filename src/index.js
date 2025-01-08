@@ -23,6 +23,7 @@ const { cleanupRaids } = require("./services/raid");
 const {
   initialize: initializeBattleData,
 } = require("./battle/data/initialize");
+const { getInteractionCount } = require("./deact/interactions");
 
 console.log(`STAGE: ${process.env.STAGE}`);
 const FFLAG_ENABLE_SPAWN = process.env.FFLAG_ENABLE_SPAWN === "1";
@@ -170,7 +171,10 @@ client.once(Events.ClientReady, (c) => {
   poll(async () => {
     try {
       const stateSize = getStateCount();
-      logger.info(`STATE SIZE: ${stateSize}`);
+      const interactionCount = getInteractionCount();
+      logger.info(
+        `STATE SIZE: ${stateSize} | INTERACTION COUNT: ${interactionCount}`
+      );
     } catch {
       logger.warn("Error polling state size");
     }
