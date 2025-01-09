@@ -128,6 +128,22 @@ Pokestar is officially out of Beta, and our support server has hit 100 members! 
 * Shiny Hat Pikachu: https://www.deviantart.com/lukethefoxen/art/Pikachu-with-Ash-s-Hat-923733788
 `;
 
+const AQUA_VS_MAGMA_DESCRIPTION = `🌊🔥**Aqua vs Magma**🔥🌊
+
+Team Aqua and Team Magma are clashing for control of the climate in Pokestar!
+
+<:aquakyogre:1325287152979939348> <:magmagroudon:1325287156268404878> **Event Pokemon:** New limited Pokemon with the "Aqua vs Magma" theme have arrived! Use \`/gacha\` to try your luck!
+
+🌋 **Limited Dungeon:** Stop the Double Crisis in the new limited Sootopolis City dungeon for tons of rewards! Use \`/dungeons\` to challenge it!
+
+<:acetrainergen4:1326704756172787723> **Limited NPC:** Defeat Butler to free Jirachi from Meta Groudon's control in a limited-time PvE stage for daily Great Balls and additional Raid Passes! Use \`/pve butler\` to challenge him!
+
+<:385:1132497393431105588> **Jirachi and Raids:** Jirachi has arrived, alongside improvements to raids. For a limited time, the Gen 3 raids and Champion Steven will give improved rewards! Challenge these raids to catch Jirachi!
+
+🖌️ **Art Credits**
+* Event banner backgroud art: https://8pxl.tumblr.com/post/619650615905288192/turbulant
+`;
+
 /**
  * @typedef {{
  *  name: string,
@@ -141,12 +157,18 @@ Pokestar is officially out of Beta, and our support server has hit 100 members! 
  */
 const gameEventConfig = [
   {
+    name: "Aqua vs Magma",
+    description: AQUA_VS_MAGMA_DESCRIPTION,
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-aqua-magma-banner.png",
+  },
+  /* {
     name: "100 Members + Official Launch",
     description: HUNDRED_MEMBERS_DESCRIPTION,
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-launch-banner.png",
   },
-  /* {
+  {
         "name": "One Piece",
         "description": ONE_PIECE_DESCRIPTION,
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-op-banner.png"
