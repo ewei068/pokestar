@@ -157,6 +157,14 @@ class BattlePokemon {
   }
 
   /**
+   * @param {PokemonTypeEnum} type
+   * @returns {boolean}
+   */
+  hasType(type) {
+    return this.type1 === type || this.type2 === type;
+  }
+
+  /**
    * @param {Pokemon} pokemonData
    */
   addMoves(pokemonData) {
@@ -1386,6 +1394,7 @@ class BattlePokemon {
 
     if (!effect.isLegacyEffect) {
       this.effectIds[effectId].args =
+        // @ts-ignore
         effect.effectAdd({
           battle: this.battle,
           source,
@@ -1863,8 +1872,16 @@ class BattlePokemon {
     return { row, col };
   }
 
+  getParty() {
+    return this.battle.parties[this.teamName];
+  }
+
+  getPartyPokemon() {
+    return this.getParty().pokemons;
+  }
+
   getPartyRowColumn() {
-    const party = this.battle.parties[this.teamName];
+    const party = this.getParty();
     return { party, ...this.getRowAndColumn() };
   }
 
@@ -1921,6 +1938,27 @@ class BattlePokemon {
     }
 
     return spe;
+  }
+
+  /**
+   * @returns {StatArray}
+   */
+  getAllStats() {
+    return [
+      this.hp,
+      this.atk,
+      this.getDef(),
+      this.spa,
+      this.getSpd(),
+      this.getSpe(),
+    ];
+  }
+
+  /**
+   * @returns {StatArray}
+   */
+  getAllBaseStats() {
+    return [this.maxHp, this.batk, this.bdef, this.bspa, this.bspd, this.bspe];
   }
 }
 

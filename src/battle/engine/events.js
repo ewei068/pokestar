@@ -43,7 +43,7 @@ class BattleEventHandler {
   }
 
   emit(eventName, args) {
-    const listenerIds = this.eventNames[eventName];
+    const listenerIds = [...(this.eventNames[eventName] ?? [])]; // copy, incase listeners are modified in loop
     if (!listenerIds) {
       return;
     }

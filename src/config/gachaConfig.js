@@ -8,6 +8,7 @@ const {
 } = require("./pokemonConfig");
 const { drawIterable } = require("../utils/gachaUtils");
 const { getFullUTCDate } = require("../utils/utils");
+const { pokemonIdEnum } = require("../enums/pokemonEnums");
 
 const dailyRewardChances = Object.freeze({
   [backpackItems.POKEBALL]: 0.7,
@@ -89,6 +90,30 @@ const bannerTypeConfig = Object.freeze({
  */
 const bannerConfigRaw = [
   {
+    bannerType: bannerTypes.SPECIAL,
+    name: "[EVENT] Team Aqua Banner",
+    description:
+      "Team Aqua is here to conquer the seas! Pull for the limited Aqua Leader Archie's Kyogre and Team Aqua's Sharpedo!",
+    rateUp: () => ({
+      [rarities.LEGENDARY]: [pokemonIdEnum.ARCHIES_KYOGRE],
+      [rarities.EPIC]: [pokemonIdEnum.AQUAS_SHARPEDO],
+    }),
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-aqua-magma-banner.png",
+  },
+  {
+    bannerType: bannerTypes.SPECIAL,
+    name: "[EVENT] Team Magma Banner",
+    description:
+      "Team Magma is here to conquer the land! Pull for the limited Magma Leader Maxie's Groudon and Team Magma's Camerupt!",
+    rateUp: () => ({
+      [rarities.LEGENDARY]: [pokemonIdEnum.MAXIES_GROUDON],
+      [rarities.EPIC]: [pokemonIdEnum.MAGMAS_CAMERUPT],
+    }),
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-aqua-magma-banner.png",
+  },
+  /* {
     bannerType: bannerTypes.SPECIAL,
     name: "[EVENT] Launch Celebration Re-Run",
     description:
@@ -403,6 +428,7 @@ const bannerConfigRaw = [
     bannerType: bannerTypes.STANDARD,
     name: "Standard",
     description: "Standard banner with all currently available gacha Pokemon.",
+    // @ts-ignore
     rateUp: () => {},
   },
 ];

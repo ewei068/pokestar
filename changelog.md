@@ -1,6 +1,32 @@
 # Pokéstar Changelog
 
-### 1.1.1
+## 1.2.0
+
+TODO:
+
+- Gen 3 wrap-up update
+  - Add Jirachi
+  - Add some more Pokemon
+  - New raids
+- Gen 3 wrap-up event
+  - Special Groudon and Kyogre Variants
+  - Special Aqua Sharpedo and Magma Camerupt
+  - New limited dungeon
+  - New limited NPC
+  - Temp increase rewards from new Gen 3 raid
+- Rebalance raids
+  - Add raid tokens or something
+    - Maybe revamp shop for this
+- New player UX analysis
+- Make party add/remove easier
+- Add Pokemon Emojis wherever possible
+
+**Stretch**
+
+- Stretch: Quests (Achievements)
+- Stretch: Ability slots
+
+### 1.1.1 (1/8)
 
 - Increase spawned Pokemon duration 15 min -> 30 min
 - Fix some performance issues
@@ -8,12 +34,7 @@
 - Add vote, events to tutorial
 - Fix a weird voting bug
 
-TODO:
-
-- Stretch: New event
-- Stretch: Analytics
-
-## 1.1.0
+## 1.1.0 (1/1)
 
 - Revamped the `/tutorial`
   - Longer tutorial with more informative stages
@@ -69,7 +90,6 @@ TODO:
 - Nerf withdraw/harden
 - Rebalance raids
 - Change shiftry ability?
-- Fix Help
 
 ### 1.0.1 (9/9) - Raid Update
 
