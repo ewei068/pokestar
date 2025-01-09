@@ -8,6 +8,7 @@ const effectIdEnum = Object.freeze({
   ATK_UP: "atkUp",
   SHIELD: "shield",
   DEBUFF_IMMUNITY: "debuffImmunity",
+  AQUA_BLESSING: "aquaBlessing",
 });
 
 /**
@@ -18,7 +19,11 @@ const effectIdEnum = Object.freeze({
 const moveIdEnum = Object.freeze({
   TEST_MOVE: "999",
   TEST_MOVE2: "998",
+  FIRE_PUNCH: "m7",
   VINE_WHIP: "m22",
+  AQUA_IMPACT: "m618-1",
+  MAGMA_IMPACT: "m619-1",
+  FLAME_BALL: "m780-1",
 });
 
 /**
@@ -28,7 +33,12 @@ const moveIdEnum = Object.freeze({
  */
 const abilityIdEnum = Object.freeze({
   TEST_ABILITY: "testAbility",
+  AQUA_POWER: "2-1",
+  MAGMA_POWER: "70-1",
+  ANGER_POINT: "83",
   REGENERATOR: "144",
+  BURNING_DRAFT: "20018",
+  JET_SPEED: "20019",
 });
 
 /** @typedef {Enum<battleEventEnum>} BattleEventEnum */
@@ -57,6 +67,7 @@ const battleEventEnum = Object.freeze({
   CALCULATE_TYPE_MULTIPLIER: "calculateTypeMultiplier",
   CALCULATE_MISS: "calculateMiss",
   GET_ELIGIBLE_TARGETS: "getEligibleTargets",
+  AFTER_WEATHER_SET: "afterWeatherSet",
 });
 
 /**
@@ -71,7 +82,7 @@ const battleEventEnum = Object.freeze({
  *  [battleEventEnum.BEFORE_DAMAGE_DEALT]: any,
  *  [battleEventEnum.AFTER_DAMAGE_DEALT]: any,
  *  [battleEventEnum.BEFORE_DAMAGE_TAKEN]: any,
- *  [battleEventEnum.AFTER_DAMAGE_TAKEN]: any,
+ *  [battleEventEnum.AFTER_DAMAGE_TAKEN]: { target: BattlePokemon, source: BattlePokemon, damage: number, damageInfo: any },
  *  [battleEventEnum.BEFORE_CR_GAINED]: any,
  *  [battleEventEnum.AFTER_CR_GAINED]: any,
  *  [battleEventEnum.BEFORE_EFFECT_ADD]: { target: BattlePokemon, source: BattlePokemon, effectId: EffectIdEnum, duration: number, initialArgs: any, canAdd: boolean },
@@ -86,6 +97,7 @@ const battleEventEnum = Object.freeze({
  *  [battleEventEnum.CALCULATE_TYPE_MULTIPLIER]: any,
  *  [battleEventEnum.CALCULATE_MISS]: any,
  *  [battleEventEnum.GET_ELIGIBLE_TARGETS]: any,
+ *  [battleEventEnum.AFTER_WEATHER_SET]: any,
  * }[K]} BattleEventArgsWithoutEventName
  */
 

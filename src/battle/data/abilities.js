@@ -1,7 +1,16 @@
 /* eslint-disable no-param-reassign */
-const { abilityIdEnum, battleEventEnum } = require("../../enums/battleEnums");
+const { weatherConditions } = require("../../config/battleConfig");
+const { types: pokemonTypes } = require("../../config/pokemonConfig");
+const {
+  abilityIdEnum,
+  battleEventEnum,
+  effectIdEnum,
+} = require("../../enums/battleEnums");
 const { logger } = require("../../log");
-const { getIsActivePokemonCallback } = require("../engine/eventConditions");
+const {
+  getIsActivePokemonCallback,
+  getIsTargetPokemonCallback,
+} = require("../engine/eventConditions");
 
 /**
  * @template T
@@ -43,6 +52,113 @@ class Ability {
 }
 
 const abilitiesToRegister = Object.freeze({
+  [abilityIdEnum.AQUA_POWER]: new Ability({
+    id: abilityIdEnum.AQUA_POWER,
+    name: "Aqua Power",
+    description:
+      "At the start of battle, if there's only one other Water or Dark type ally, increase its highest base stat (excluding HP or Speed) by 2x for 3 turns, and start rain.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: battle.registerListenerFunction({
+          eventName: battleEventEnum.BATTLE_BEGIN,
+          callback: () => {
+            const allyPokemons = target.getPartyPokemon();
+            const otherWaterDarkAllies = allyPokemons.filter(
+              (pokemon) =>
+                pokemon !== target &&
+                pokemon &&
+                !pokemon.isFainted &&
+                (pokemon.hasType(pokemonTypes.WATER) ||
+                  pokemon.hasType(pokemonTypes.DARK))
+            );
+            if (otherWaterDarkAllies.length !== 1) {
+              return;
+            }
+            const [allyPokemon] = otherWaterDarkAllies;
+            battle.addToLog(`${target.name} blesses ${allyPokemon.name}!`);
+            const baseStats = allyPokemon.getAllBaseStats();
+            const highestStatIndex =
+              baseStats
+                .slice(1, 5)
+                .reduce(
+                  (maxIndex, stat, index, arr) =>
+                    stat > arr[maxIndex] ? index : maxIndex,
+                  0
+                ) + 1; // +1 to account for HP
+            allyPokemon.applyEffect(effectIdEnum.AQUA_BLESSING, 3, target, {
+              // @ts-ignore
+              stat: highestStatIndex,
+            });
+
+            battle.createWeather(weatherConditions.RAIN, target);
+          },
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.MAGMA_POWER]: new Ability({
+    id: abilityIdEnum.MAGMA_POWER,
+    name: "Magma Power",
+    description:
+      "At the start of battle, if there's only one other Ground or Fire type ally, increase its combat readiness by 35%, and start harsh sunlight.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: battle.registerListenerFunction({
+          eventName: battleEventEnum.BATTLE_BEGIN,
+          callback: () => {
+            const allyPokemons = target.getPartyPokemon();
+            const otherFireGroundAllies = allyPokemons.filter(
+              (pokemon) =>
+                pokemon !== target &&
+                pokemon &&
+                !pokemon.isFainted &&
+                (pokemon.hasType(pokemonTypes.FIRE) ||
+                  pokemon.hasType(pokemonTypes.GROUND))
+            );
+            if (otherFireGroundAllies.length !== 1) {
+              return;
+            }
+            const [allyPokemon] = otherFireGroundAllies;
+            battle.addToLog(`${target.name} blesses ${allyPokemon.name}!`);
+            allyPokemon.boostCombatReadiness(target, 35);
+
+            battle.createWeather(weatherConditions.SUN, target);
+          },
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.ANGER_POINT]: new Ability({
+    id: abilityIdEnum.ANGER_POINT,
+    name: "Anger Point",
+    description:
+      "When the user takes more than 33% of its health of damage at once, sharply raise its Atk and Spa for 3 turns.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: battle.registerListenerFunction({
+          eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
+          callback: ({ damage }) => {
+            if (damage < target.maxHp * 0.33) {
+              return;
+            }
+            battle.addToLog(`${target.name}'s Anger Point activates!`);
+            target.applyEffect("greaterAtkUp", 3, target, {});
+            target.applyEffect("greaterSpaUp", 3, target, {});
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
   [abilityIdEnum.REGENERATOR]: new Ability({
     id: abilityIdEnum.REGENERATOR,
     name: "Regenerator",
@@ -62,6 +178,61 @@ const abilitiesToRegister = Object.freeze({
             });
           },
           conditionCallback: getIsActivePokemonCallback(battle, target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.BURNING_DRAFT]: new Ability({
+    id: abilityIdEnum.BURNING_DRAFT,
+    name: "Burning Draft",
+    description:
+      "When the user's turn ends, increase the combat readiness of all allies by 10%.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: battle.registerListenerFunction({
+          eventName: battleEventEnum.TURN_END,
+          callback: () => {
+            const allyPokemons = target.getPartyPokemon();
+            battle.addToLog(
+              `${target.name}'s Burning Draft increases its allies' combat readiness!`
+            );
+            allyPokemons.forEach((ally) => {
+              if (!ally) {
+                return;
+              }
+              ally.boostCombatReadiness(target, 10);
+            });
+          },
+          conditionCallback: getIsActivePokemonCallback(battle, target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.JET_SPEED]: new Ability({
+    id: abilityIdEnum.JET_SPEED,
+    name: "Jet Speed",
+    description:
+      "When the weather is set to rain, increase the user's combat readiness by 20% and raise its Special Attack for 2 turns.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: battle.registerListenerFunction({
+          eventName: battleEventEnum.AFTER_WEATHER_SET,
+          callback: () => {
+            const { weather } = battle;
+            if (weather.weatherId !== weatherConditions.RAIN) {
+              return;
+            }
+
+            battle.addToLog(`${target.name} is pumped by the Rain!`);
+            target.boostCombatReadiness(target, 20);
+            target.applyEffect("spaUp", 2, target, {});
+          },
         }),
       };
     },

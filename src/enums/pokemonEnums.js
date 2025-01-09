@@ -230,8 +230,12 @@ const pokemonIdEnum = Object.freeze({
   MANECTRIC: "310",
   CARVANHA: "318",
   SHARPEDO: "319",
+  AQUAS_SHARPEDO: "319-2",
   WAILMER: "320",
   WAILORD: "321",
+  NUMEL: "322",
+  CAMERUPT: "323",
+  MAGMAS_CAMERUPT: "323-1",
   TORKOAL: "324",
   TRAPINCH: "328",
   VIBRAVA: "329",
@@ -305,8 +309,11 @@ const pokemonIdEnum = Object.freeze({
   TEMPLE_GUARDIAN_ARTICUNO: "20144",
   SPIRIT_PRIEST_DRAGONITE: "20149",
   SPIRIT_PRIEST_MEWTWO: "20150",
+  META_GROUDON: "20383",
   PALMERS_RAYQUAZA: "20384",
   WILLOWS_MELMETAL: "20809",
+  ARCHIES_KYOGRE: "382-1",
+  MAXIES_GROUDON: "383-1",
 });
 
 module.exports = { pokemonIdEnum };

@@ -8,6 +8,7 @@ const { getFullUTCDate } = require("../utils/utils");
 const { rarities, rarityBins } = require("./pokemonConfig");
 const { drawIterable } = require("../utils/gachaUtils");
 const { stageNames } = require("./stageConfig");
+const { pokemonIdEnum } = require("../enums/pokemonEnums");
 
 /** @typedef {Enum<npcs>} NpcEnum */
 const npcs = Object.freeze({
@@ -27,6 +28,7 @@ const npcs = Object.freeze({
   ACE_TRAINER: "aceTrainer",
   PALMER: "palmer",
   PROFESSOR_WILLOW: "professorWillow",
+  BUTLER: "butler",
   // STRAW_HATS: "strawHats",
   // TEAM_ROCKET: "teamRocket",
   // GOLD_RUSH: "goldRush",
@@ -442,7 +444,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 1 * 2,
+              [backpackItems.POKEBALL]: 1,
             },
           },
         },
@@ -456,7 +458,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 1 * 3,
+              [backpackItems.POKEBALL]: 1,
             },
           },
         },
@@ -478,7 +480,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 2 * 2,
+              [backpackItems.POKEBALL]: 2,
             },
           },
         },
@@ -538,7 +540,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 1,
+              [backpackItems.POKEBALL]: 1 * 2,
             },
           },
         },
@@ -552,7 +554,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 2,
+              [backpackItems.POKEBALL]: 2 * 2,
             },
           },
         },
@@ -601,6 +603,58 @@ const npcConfig = Object.freeze({
             [backpackCategories.CONSUMABLES]: {
               [backpackItems.RAID_PASS]:
                 process.env.STAGE === stageNames.ALPHA ? 25 : 1,
+            },
+          },
+        },
+      },
+    },
+  },
+  [npcs.BUTLER]: {
+    name: "Butler",
+    sprite:
+      "https://archives.bulbagarden.net/media/upload/b/b9/Spr_DP_Ace_Trainer_M_1.png",
+    emoji: "<:acetrainergen4:1326704756172787723>",
+    catchphrase:
+      "With the power of Meta Groudon and Jirachi, I will have my revenge on Team Magma!",
+    difficulties: {
+      [difficulties.HARD]: {
+        minLevel: 65,
+        maxLevel: 74,
+        numPokemon: 6,
+        pokemonIds: [
+          pokemonIdEnum.GARDEVOIR,
+          pokemonIdEnum.MIGHTYENA,
+          pokemonIdEnum.DUSCLOPS,
+          pokemonIdEnum.BUTTERFREE,
+          pokemonIdEnum.ALTARIA,
+        ],
+        aceId: pokemonIdEnum.SALAMENCE,
+        dailyRewards: {
+          backpack: {
+            [backpackCategories.POKEBALLS]: {
+              [backpackItems.GREATBALL]: 1,
+            },
+          },
+        },
+      },
+      [difficulties.VERY_HARD]: {
+        minLevel: 125,
+        maxLevel: 144,
+        numPokemon: 6,
+        pokemonIds: [
+          pokemonIdEnum.GARDEVOIR,
+          pokemonIdEnum.MIGHTYENA,
+          pokemonIdEnum.DUSCLOPS,
+          pokemonIdEnum.BUTTERFREE,
+          pokemonIdEnum.ALTARIA,
+          pokemonIdEnum.SALAMENCE,
+          // TODO: Jirachi
+        ],
+        aceId: pokemonIdEnum.META_GROUDON,
+        dailyRewards: {
+          backpack: {
+            [backpackCategories.CONSUMABLES]: {
+              [backpackItems.RAID_PASS]: 1,
             },
           },
         },
@@ -1028,6 +1082,7 @@ const dungeons = Object.freeze({
   SOUL_CAVE: "soulCave",
   SPIRIT_ALTAR: "spiritAltar",
   NEW_ISLAND: "newIsland",
+  SOOTOPOLIS_CITY: "sootopolisCity",
   // ONIGASHIMA: "onigashima",
   // BLOODY_SUNDAY: "bloodySunday",
 });
@@ -2049,6 +2104,253 @@ const dungeonConfig = Object.freeze({
         },
         rewardString:
           "**Congratulations! If this is your first time defeating New Island, use `/mew` to obtain your Mew!**",
+      },
+    },
+  },
+  [dungeons.SOOTOPOLIS_CITY]: {
+    name: "Sootopolis City: Double Crisis!",
+    sprite:
+      "https://pa1.aminoapps.com/5778/fcbf7bc4d36716837e2fb264d879b1fb7883796f_hq.gif",
+    emoji: "🌋",
+    description:
+      "Archie and Maxie have awakened the ancient titans, clashing in Sootopolis city! However, they are not the only ones who have come to stop them...",
+    bosses: [
+      pokemonIdEnum.ARCHIES_KYOGRE,
+      pokemonIdEnum.MAXIES_GROUDON,
+      pokemonIdEnum.PALMERS_RAYQUAZA,
+    ],
+    difficulties: {
+      [difficulties.HARD]: {
+        phases: [
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 100,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 100,
+                position: 2,
+              },
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 100,
+                position: 4,
+              },
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 100,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.AQUAS_SHARPEDO,
+                level: 120,
+                position: 8,
+              },
+              {
+                speciesId: pokemonIdEnum.ARCHIES_KYOGRE,
+                level: 125,
+                position: 13,
+              },
+            ],
+          },
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 100,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 100,
+                position: 2,
+              },
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 100,
+                position: 4,
+              },
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 100,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.MAGMAS_CAMERUPT,
+                level: 120,
+                position: 8,
+              },
+              {
+                speciesId: pokemonIdEnum.MAXIES_GROUDON,
+                level: 125,
+                position: 13,
+              },
+            ],
+          },
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.DEOXYS,
+                level: 120,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.DEOXYS_DEFENSE,
+                level: 120,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.DEOXYS_SPEED,
+                level: 120,
+                position: 7,
+              },
+              {
+                speciesId: pokemonIdEnum.DEOXYS_ATTACK,
+                level: 120,
+                position: 9,
+              },
+              {
+                speciesId: pokemonIdEnum.PALMERS_RAYQUAZA,
+                level: 130,
+                position: 13,
+              },
+            ],
+          },
+        ],
+        rewards: {
+          backpack: {
+            [backpackCategories.MATERIALS]: {
+              [backpackItems.KNOWLEDGE_SHARD]: 10,
+              [backpackItems.EMOTION_SHARD]: 10,
+              [backpackItems.WILLPOWER_SHARD]: 10,
+            },
+          },
+        },
+      },
+      [difficulties.VERY_HARD]: {
+        phases: [
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 140,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 140,
+                position: 2,
+              },
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 140,
+                position: 4,
+              },
+              {
+                speciesId: pokemonIdEnum.MUK,
+                level: 140,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.AQUAS_SHARPEDO,
+                level: 145,
+                position: 8,
+              },
+              {
+                speciesId: pokemonIdEnum.ARCHIES_KYOGRE,
+                level: 150,
+                position: 13,
+              },
+            ],
+          },
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 140,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 140,
+                position: 2,
+              },
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 140,
+                position: 4,
+              },
+              {
+                speciesId: pokemonIdEnum.MIGHTYENA,
+                level: 140,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.MAGMAS_CAMERUPT,
+                level: 145,
+                position: 8,
+              },
+              {
+                speciesId: pokemonIdEnum.MAXIES_GROUDON,
+                level: 150,
+                position: 13,
+              },
+            ],
+          },
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.DEOXYS,
+                level: 150,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.DEOXYS_DEFENSE,
+                level: 150,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.DEOXYS_SPEED,
+                level: 150,
+                position: 7,
+              },
+              {
+                speciesId: pokemonIdEnum.DEOXYS_ATTACK,
+                level: 150,
+                position: 9,
+              },
+              {
+                speciesId: pokemonIdEnum.PALMERS_RAYQUAZA,
+                level: 169,
+                position: 13,
+              },
+            ],
+          },
+        ],
+        rewards: {
+          backpack: {
+            [backpackCategories.MATERIALS]: {
+              [backpackItems.KNOWLEDGE_SHARD]: 10,
+              [backpackItems.EMOTION_SHARD]: 10,
+              [backpackItems.WILLPOWER_SHARD]: 10,
+            },
+          },
+        },
       },
     },
   },

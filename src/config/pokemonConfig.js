@@ -1,4 +1,5 @@
-const { moveIdEnum } = require("../enums/battleEnums");
+const { moveIdEnum, abilityIdEnum } = require("../enums/battleEnums");
+const { pokemonIdEnum } = require("../enums/pokemonEnums");
 
 /** @typedef {Enum<types>} PokemonTypeEnum */
 const types = Object.freeze({
@@ -5124,6 +5125,7 @@ const pokemonConfigRaw = {
         "248-1",
         "289-1",
         "319-1",
+        pokemonIdEnum.LITTENYAN,
       ],
     },
   },
@@ -6379,6 +6381,27 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
+    noGacha: true,
+  },
+  [pokemonIdEnum.AQUAS_SHARPEDO]: {
+    name: "Aqua's Sharpedo",
+    emoji: "<:aquasharpedo:1325287154125111420>",
+    description:
+      "A Sharpedo controlled by Team Aqua. It is said to be able to cause tsunamis where it swims.",
+    type: [types.WATER, types.DARK],
+    baseStats: [80, 100, 50, 145, 60, 115],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/aqua-sharpedo-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/aqua-sharpedo-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.JET_SPEED]: 1,
+    },
+    moveIds: ["m246", "m57", "m399", "m212"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+    noGacha: true,
   },
   320: {
     name: "Wailmer",
@@ -6427,6 +6450,74 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.NUMEL]: {
+    name: "Numel",
+    emoji: "<:322:1132496591115276389>",
+    description:
+      "Numel is extremely dull witted - it doesn't notice being hit. However, it can't stand hunger for even a second. This Pokémon's body is a seething cauldron of boiling magma.",
+    type: [types.FIRE, types.GROUND],
+    baseStats: [60, 60, 40, 65, 45, 35],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/322.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/322.png",
+    evolution: [
+      {
+        level: 33,
+        id: "323",
+      },
+    ],
+    abilities: {
+      12: 0.45,
+      86: 0.45,
+      20: 0.1,
+    },
+    moveIds: ["m33", "m52", "m281", "m414"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.CAMERUPT]: {
+    name: "Camerupt",
+    emoji: "<:323:1132496592709111869>",
+    description:
+      "Camerupt has a volcano inside its body. Magma of 18,000 degrees Fahrenheit courses through its body. Occasionally, the humps on this Pokémon's back erupt, spewing the superheated magma.",
+    type: [types.FIRE, types.GROUND],
+    baseStats: [70, 100, 70, 105, 75, 40],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/323.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/323.png",
+    abilities: {
+      40: 0.45,
+      116: 0.45,
+      83: 0.1,
+    },
+    moveIds: ["m52", "m281", "m414", "m284"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.MAGMAS_CAMERUPT]: {
+    name: "Magma's Camerupt",
+    emoji: "<:magmacamerupt:1325287155198722160>",
+    description:
+      "A Camerupt controlled by Team Magma. It is said to be able to cause volcanic eruptions with a single stomp.",
+    type: [types.FIRE, types.GROUND],
+    baseStats: [70, 135, 90, 90, 95, 70],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/magma-camerupt-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/magma-camerupt-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.BURNING_DRAFT]: 1,
+    },
+    moveIds: ["m98", "m523", moveIdEnum.FLAME_BALL, "m157"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+    noGacha: true,
   },
   324: {
     name: "Torkoal",
@@ -7132,6 +7223,26 @@ const pokemonConfigRaw = {
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
   },
+  [pokemonIdEnum.ARCHIES_KYOGRE]: {
+    name: "Archie's Kyogre",
+    emoji: "<:aquakyogre:1325287152979939348>",
+    description:
+      "A Kyogre under the control of Archie, the leader of Team Aqua. It summons heavy rain to flood the world.",
+    type: [types.WATER, types.DARK],
+    baseStats: [110, 80, 100, 145, 140, 85],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/aqua-kyogre-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/aqua-kyogre-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.AQUA_POWER]: 1,
+    },
+    moveIds: ["m239", "m347", "m399", moveIdEnum.AQUA_IMPACT],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+  },
   383: {
     name: "Groudon",
     emoji: "<:383:1132497390079852674>",
@@ -7150,6 +7261,26 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.MAXIES_GROUDON]: {
+    name: "Maxie's Groudon",
+    emoji: "<:magmagroudon:1325287156268404878>",
+    description:
+      "A Groudon under the control of Maxie, the leader of Team Magma. It uses its power to expand the land.",
+    type: [types.GROUND, types.FIRE],
+    baseStats: [99, 166, 130, 90, 90, 85],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/magma-groudon-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/magma-groudon-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.MAGMA_POWER]: 1,
+    },
+    moveIds: ["m479", "m14", "m523", moveIdEnum.MAGMA_IMPACT],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
   },
   384: {
     name: "Rayquaza",
@@ -7271,6 +7402,7 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.SLOW,
+    noGacha: true,
   },
   "828-1": {
     name: "Scammer Thievul",
@@ -7507,6 +7639,26 @@ const pokemonConfigRaw = {
       20014: 1,
     },
     moveIds: ["m94", "m245", "m542-1", "m814", "m177-1", "m248"],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    unobtainable: true,
+  },
+  [pokemonIdEnum.META_GROUDON]: {
+    name: "Meta Groudon",
+    emoji: "<:magmagroudon:1325287156268404878>",
+    description:
+      "Groudon brought back to life from an ancient fossil. A failed experiment rendered it an abomination, consuming humans and Pokemon alike.",
+    type: [types.GROUND, types.STEEL],
+    baseStats: [100, 200, 200, 200, 100, 70],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/magma-groudon-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/magma-groudon-shiny-resized.gif",
+    abilities: {
+      70: 1,
+    },
+    moveIds: ["m53", "m202", "m76", "m231", "m619"],
     battleEligible: true,
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,

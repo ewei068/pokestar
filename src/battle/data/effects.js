@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const { effectTypes } = require("../../config/battleConfig");
+const { effectTypes, statToBattleStat } = require("../../config/battleConfig");
 const { effectIdEnum, battleEventEnum } = require("../../enums/battleEnums");
 const { getIsTargetPokemonCallback } = require("../engine/eventConditions");
 const { getEffect } = require("./effectRegistry");
@@ -128,6 +128,33 @@ const effectsToRegister = Object.freeze({
     effectRemove({ battle, target, properties }) {
       battle.addToLog(`${target.name} is no longer immune to debuffs!`);
       battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [effectIdEnum.AQUA_BLESSING]: new Effect({
+    id: effectIdEnum.AQUA_BLESSING,
+    name: "Aqua Blessing",
+    description: "The target's stat is increased by 2x.",
+    type: effectTypes.BUFF,
+    dispellable: true,
+    /**
+     * @param {EffectAddBasicArgs & {initialArgs: {stat: StatEnum}}} args
+     */
+    effectAdd({ battle, target, initialArgs }) {
+      const { stat } = initialArgs;
+      const baseStatValue = target.getAllBaseStats()[stat];
+      const statToIncrease = statToBattleStat[stat];
+
+      battle.addToLog(`${target.name}'s ${statToIncrease} rose!`);
+      target[statToIncrease] += baseStatValue;
+      return {};
+    },
+    effectRemove({ battle, target, initialArgs }) {
+      const { stat } = initialArgs;
+      const baseStatValue = target.getAllBaseStats()[stat];
+      const statToIncrease = statToBattleStat[stat];
+
+      battle.addToLog(`${target.name}'s ${statToIncrease} boost wore off!`);
+      target[statToIncrease] -= baseStatValue;
     },
   }),
 });

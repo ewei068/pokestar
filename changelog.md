@@ -4,22 +4,27 @@
 
 TODO:
 
-- Increase spawn duration
+- Gen 3 wrap-up update
+  - Add Jirachi
+  - Add some more Pokemon
+  - New raids
 - Gen 3 wrap-up event
   - Special Groudon and Kyogre Variants
-    - Special epic variants of Gen 3 Pokemon
-  - Add Jirachi
-  - New event
-  - Add some more Pokemon
-  - New raids?
+  - Special Aqua Sharpedo and Magma Camerupt
+  - New limited dungeon
+  - New limited NPC
+  - Temp increase rewards from new Gen 3 raid
 - Rebalance raids
   - Add raid tokens or something
     - Maybe revamp shop for this
 - New player UX analysis
+- Make party add/remove easier
+- Add Pokemon Emojis wherever possible
 
 **Stretch**
 
 - Stretch: Quests (Achievements)
+- Stretch: Ability slots
 
 ### 1.1.1 (1/8)
 
