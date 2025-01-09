@@ -28,6 +28,7 @@ const npcs = Object.freeze({
   ACE_TRAINER: "aceTrainer",
   PALMER: "palmer",
   PROFESSOR_WILLOW: "professorWillow",
+  BUTLER: "butler",
   // STRAW_HATS: "strawHats",
   // TEAM_ROCKET: "teamRocket",
   // GOLD_RUSH: "goldRush",
@@ -602,6 +603,58 @@ const npcConfig = Object.freeze({
             [backpackCategories.CONSUMABLES]: {
               [backpackItems.RAID_PASS]:
                 process.env.STAGE === stageNames.ALPHA ? 25 : 1,
+            },
+          },
+        },
+      },
+    },
+  },
+  [npcs.BUTLER]: {
+    name: "Butler",
+    sprite:
+      "https://archives.bulbagarden.net/media/upload/b/b9/Spr_DP_Ace_Trainer_M_1.png",
+    emoji: "<:acetrainergen4:1326704756172787723>",
+    catchphrase:
+      "With the power of Meta Groudon and Jirachi, I will have my revenge on Team Magma!",
+    difficulties: {
+      [difficulties.HARD]: {
+        minLevel: 65,
+        maxLevel: 74,
+        numPokemon: 6,
+        pokemonIds: [
+          pokemonIdEnum.GARDEVOIR,
+          pokemonIdEnum.MIGHTYENA,
+          pokemonIdEnum.DUSCLOPS,
+          pokemonIdEnum.BUTTERFREE,
+          pokemonIdEnum.ALTARIA,
+        ],
+        aceId: pokemonIdEnum.SALAMENCE,
+        dailyRewards: {
+          backpack: {
+            [backpackCategories.POKEBALLS]: {
+              [backpackItems.GREATBALL]: 1,
+            },
+          },
+        },
+      },
+      [difficulties.VERY_HARD]: {
+        minLevel: 125,
+        maxLevel: 144,
+        numPokemon: 6,
+        pokemonIds: [
+          pokemonIdEnum.GARDEVOIR,
+          pokemonIdEnum.MIGHTYENA,
+          pokemonIdEnum.DUSCLOPS,
+          pokemonIdEnum.BUTTERFREE,
+          pokemonIdEnum.ALTARIA,
+          pokemonIdEnum.SALAMENCE,
+          // TODO: Jirachi
+        ],
+        aceId: pokemonIdEnum.META_GROUDON,
+        dailyRewards: {
+          backpack: {
+            [backpackCategories.CONSUMABLES]: {
+              [backpackItems.RAID_PASS]: 1,
             },
           },
         },

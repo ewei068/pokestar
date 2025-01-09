@@ -7644,6 +7644,26 @@ const pokemonConfigRaw = {
     growthRate: growthRates.SLOW,
     unobtainable: true,
   },
+  [pokemonIdEnum.META_GROUDON]: {
+    name: "Meta Groudon",
+    emoji: "<:magmagroudon:1325287156268404878>",
+    description:
+      "Groudon brought back to life from an ancient fossil. A failed experiment rendered it an abomination, consuming humans and Pokemon alike.",
+    type: [types.GROUND, types.STEEL],
+    baseStats: [100, 200, 200, 200, 100, 70],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/magma-groudon-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/magma-groudon-shiny-resized.gif",
+    abilities: {
+      70: 1,
+    },
+    moveIds: ["m53", "m202", "m76", "m231", "m619"],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    unobtainable: true,
+  },
   20384: {
     name: "Palmer's Rayquaza",
     emoji: "<:384:1132497391535272016>",
