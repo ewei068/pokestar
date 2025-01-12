@@ -1,16 +1,21 @@
 /* eslint-disable no-param-reassign */
-const { weatherConditions } = require("../../config/battleConfig");
+const {
+  weatherConditions,
+  damageTypes,
+  targetPatterns,
+} = require("../../config/battleConfig");
 const { types: pokemonTypes } = require("../../config/pokemonConfig");
 const {
   abilityIdEnum,
   battleEventEnum,
   effectIdEnum,
+  moveIdEnum,
 } = require("../../enums/battleEnums");
-const { logger } = require("../../log");
 const {
   getIsActivePokemonCallback,
   getIsTargetPokemonCallback,
 } = require("../engine/eventConditions");
+const { getMove } = require("./moveRegistry");
 
 /**
  * @template T
@@ -41,13 +46,44 @@ class Ability {
   getAbilityInstance(pokemon) {
     const abilityInstance = pokemon.ability;
     if (abilityInstance?.abilityId !== this.id) {
-      logger.error(
-        `Ability ${this.id} not found on Pokemon ${pokemon.id} ${pokemon.name}. Real Ability ID: ${abilityInstance?.abilityId}`
-      );
       return;
     }
 
     return /** @type {any} */ (abilityInstance);
+  }
+
+  /**
+   * TODO: figure out how to use event listener type as source of truth?
+   * TODO: ability instance isn't properly typed probably due to circular dep or sm
+   * @template {BattleEventEnum} K
+   * @param {object} param0
+   * @param {K} param0.eventName
+   * @param {(args: Parameters<BattleEventListenerCallback<K>>[0] & { abilityInstance: { abilityId: AbilityIdEnum, data: T, applied: boolean } }) => void} param0.callback
+   * @param {Battle} param0.battle
+   * @param {BattlePokemon} param0.target
+   * @param {BattleEventListenerConditionCallback<K>=} param0.conditionCallback function that returns true if the event should be executed. If undefined, always execute for event.
+   * @returns {string} listenerId
+   */
+  registerListenerFunction({
+    battle,
+    target,
+    eventName,
+    callback,
+    conditionCallback,
+  }) {
+    return battle.registerListenerFunction({
+      eventName,
+      callback: (args) => {
+        const abilityInstance = this.getAbilityInstance(target);
+        if (!abilityInstance || abilityInstance.abilityId !== this.id) {
+          return;
+        }
+
+        args.abilityInstance = abilityInstance;
+        callback(args);
+      },
+      conditionCallback,
+    });
   }
 }
 
@@ -59,7 +95,9 @@ const abilitiesToRegister = Object.freeze({
       "At the start of battle, if there's only one other Water or Dark type ally, increase its highest base stat (excluding HP or Speed) by 2x for 3 turns, and start rain.",
     abilityAdd({ battle, target }) {
       return {
-        listenerId: battle.registerListenerFunction({
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
           eventName: battleEventEnum.BATTLE_BEGIN,
           callback: () => {
             const allyPokemons = target.getPartyPokemon();
@@ -106,7 +144,9 @@ const abilitiesToRegister = Object.freeze({
       "At the start of battle, if there's only one other Ground or Fire type ally, increase its combat readiness by 35%, and start harsh sunlight.",
     abilityAdd({ battle, target }) {
       return {
-        listenerId: battle.registerListenerFunction({
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
           eventName: battleEventEnum.BATTLE_BEGIN,
           callback: () => {
             const allyPokemons = target.getPartyPokemon();
@@ -141,7 +181,9 @@ const abilitiesToRegister = Object.freeze({
       "When the user takes more than 33% of its health of damage at once, sharply raise its Atk and Spa for 3 turns.",
     abilityAdd({ battle, target }) {
       return {
-        listenerId: battle.registerListenerFunction({
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
           eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
           callback: ({ damage }) => {
             if (damage < target.maxHp * 0.33) {
@@ -165,7 +207,9 @@ const abilitiesToRegister = Object.freeze({
     description: "After the user's turn, heal 15% of its max HP.",
     abilityAdd({ battle, target }) {
       return {
-        listenerId: battle.registerListenerFunction({
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
           eventName: battleEventEnum.TURN_END,
           callback: ({ activePokemon }) => {
             // heal 15% of max hp
@@ -221,7 +265,9 @@ const abilitiesToRegister = Object.freeze({
       "When the weather is set to rain, increase the user's combat readiness by 20% and raise its Special Attack for 2 turns.",
     abilityAdd({ battle, target }) {
       return {
-        listenerId: battle.registerListenerFunction({
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
           eventName: battleEventEnum.AFTER_WEATHER_SET,
           callback: () => {
             const { weather } = battle;
@@ -238,6 +284,107 @@ const abilitiesToRegister = Object.freeze({
     },
     abilityRemove({ battle, properties }) {
       battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.ALPHA_CORE]: new Ability({
+    id: abilityIdEnum.ALPHA_CORE,
+    name: "Alpha Core",
+    description:
+      "The user is immune to instant-faint effects and takes reduced damage. When taking non-physical damage, gain 1 charge. At 4 charges, consume all charges to increase Spa/Spd by 25%, start Rain, and use Aqua Impact on a random enemy.",
+    abilityAdd({ battle, target }) {
+      return {
+        afterDamageListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
+          callback: ({ damageInfo, abilityInstance }) => {
+            // TODO: make condition callback?
+            const moveId = damageInfo?.moveId;
+            if (
+              moveId &&
+              getMove(moveId)?.damageType === damageTypes.PHYSICAL
+            ) {
+              return;
+            }
+
+            abilityInstance.data.charges += 1;
+            if (abilityInstance.data.charges < 4) {
+              battle.addToLog(
+                `${target.name} is charging its Alpha Core! Current charges: ${abilityInstance.data.charges}/4`
+              );
+              return;
+            }
+
+            battle.addToLog(
+              `${target.name}'s Alpha Core reached maximum charges! Consuming charges to unleash its power! (+25% SpA/SpD, sets Rain, and uses Aqua Impact)`
+            );
+            abilityInstance.data.charges = 0;
+            target.spa += Math.floor(target.spa * 0.25);
+            target.spd += Math.floor(target.spd * 0.25);
+            battle.createWeather(weatherConditions.RAIN, target);
+
+            const enemyParty = target.getEnemyParty();
+            const randomEnemy = target.getPatternTargets(
+              enemyParty,
+              targetPatterns.RANDOM,
+              1,
+              moveIdEnum.AQUA_IMPACT
+            )[0]; // this target isn't the real enemy; but required for the move execution TODO: maybe improve this lol
+            if (randomEnemy) {
+              target.executeMoveAgainstTarget({
+                moveId: moveIdEnum.AQUA_IMPACT,
+                primaryTarget: randomEnemy,
+              });
+            }
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+        beforeDamageListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: (args) => {
+            const abilityData = args.abilityInstance.data;
+            const { turn } = abilityData;
+            abilityData.turn = battle.turn;
+            if (turn !== battle.turn) {
+              abilityData.damageTakenTurn = 0;
+            }
+            const damageTakenTurn = abilityData.damageTakenTurn || 0;
+
+            const { damage } = args;
+            const { maxHp } = target;
+            if (damage > maxHp * 0.055) {
+              args.damage = Math.floor(maxHp * 0.055);
+              args.maxDamage = Math.min(args.maxDamage, args.damage);
+            }
+
+            // if took more than 5% of max hp this turn, reduce damage down to 1% of max hp
+            if (damageTakenTurn > 0.05 * maxHp && damage > maxHp * 0.01) {
+              args.damage = Math.floor(maxHp * 0.01);
+              args.maxDamage = Math.min(args.maxDamage, args.damage);
+            }
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+        beforeCauseFaintListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_CAUSE_FAINT,
+          callback: (args) => {
+            args.canFaint = false;
+            battle.addToLog(
+              `${target.name}'s Alpha Core prevents it from fainting!`
+            );
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+        charges: 0,
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.afterDamageListenerId);
+      battle.unregisterListener(properties.beforeDamageListenerId);
     },
   }),
 });
