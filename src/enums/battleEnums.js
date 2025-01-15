@@ -39,6 +39,8 @@ const abilityIdEnum = Object.freeze({
   REGENERATOR: "144",
   BURNING_DRAFT: "20018",
   JET_SPEED: "20019",
+  ALPHA_CORE: "20020",
+  OMEGA_CORE: "20021",
 });
 
 /** @typedef {Enum<battleEventEnum>} BattleEventEnum */
@@ -81,7 +83,7 @@ const battleEventEnum = Object.freeze({
  *  [battleEventEnum.AFTER_MOVE]: any,
  *  [battleEventEnum.BEFORE_DAMAGE_DEALT]: any,
  *  [battleEventEnum.AFTER_DAMAGE_DEALT]: any,
- *  [battleEventEnum.BEFORE_DAMAGE_TAKEN]: any,
+ *  [battleEventEnum.BEFORE_DAMAGE_TAKEN]: { target: BattlePokemon, source: BattlePokemon, damage: number, maxDamage: number, damageInfo: any },
  *  [battleEventEnum.AFTER_DAMAGE_TAKEN]: { target: BattlePokemon, source: BattlePokemon, damage: number, damageInfo: any },
  *  [battleEventEnum.BEFORE_CR_GAINED]: any,
  *  [battleEventEnum.AFTER_CR_GAINED]: any,
