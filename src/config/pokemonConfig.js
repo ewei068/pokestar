@@ -7684,6 +7684,26 @@ const pokemonConfigRaw = {
     growthRate: growthRates.SLOW,
     unobtainable: true,
   },
+  [pokemonIdEnum.RAID_BOSS_GROUDON]: {
+    name: "Raid Boss Groudon",
+    emoji: "<:magmagroudon:1325287156268404878>",
+    description:
+      "A Groudon free from the control of Team Magma, more powerful than ever. Many trainers must band together to take down this mighty foe before it dooms the world to drought.",
+    type: [types.GROUND, types.FIRE],
+    baseStats: [6000, 160, 160, 120, 100, 120],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/magma-groudon-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/magma-groudon-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.OMEGA_CORE]: 1,
+    },
+    moveIds: ["m7", "m182", "m444", "m446", "m89", moveIdEnum.MAGMA_IMPACT],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    unobtainable: true,
+  },
   20384: {
     name: "Palmer's Rayquaza",
     emoji: "<:384:1132497391535272016>",

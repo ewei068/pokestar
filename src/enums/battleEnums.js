@@ -40,6 +40,7 @@ const abilityIdEnum = Object.freeze({
   BURNING_DRAFT: "20018",
   JET_SPEED: "20019",
   ALPHA_CORE: "20020",
+  OMEGA_CORE: "20021",
 });
 
 /** @typedef {Enum<battleEventEnum>} BattleEventEnum */

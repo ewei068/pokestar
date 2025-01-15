@@ -351,6 +351,7 @@ const abilitiesToRegister = Object.freeze({
               abilityData.damageTakenTurn = 0;
             }
             const damageTakenTurn = abilityData.damageTakenTurn || 0;
+            abilityData.damageTakenTurn += args.damage;
 
             const { damage } = args;
             const { maxHp } = target;
@@ -380,11 +381,116 @@ const abilitiesToRegister = Object.freeze({
           conditionCallback: getIsTargetPokemonCallback(target),
         }),
         charges: 0,
+        turn: 0,
+        damageTakenTurn: 0,
       };
     },
     abilityRemove({ battle, properties }) {
       battle.unregisterListener(properties.afterDamageListenerId);
       battle.unregisterListener(properties.beforeDamageListenerId);
+      battle.unregisterListener(properties.beforeCauseFaintListenerId);
+    },
+  }),
+  [abilityIdEnum.OMEGA_CORE]: new Ability({
+    id: abilityIdEnum.OMEGA_CORE,
+    name: "Omega Core",
+    description:
+      "The user is immune to instant-faint effects and takes reduced damage. When taking non-physical damage, gain 1 charge. At 4 charges, consume all charges to increase Atk/Def by 25%, start Harsh Sunlight, and use Magma Impact on a random enemy.",
+    abilityAdd({ battle, target }) {
+      return {
+        afterDamageListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
+          callback: ({ damageInfo, abilityInstance }) => {
+            // TODO: make condition callback?
+            const moveId = damageInfo?.moveId;
+            if (moveId && getMove(moveId)?.damageType === damageTypes.SPECIAL) {
+              return;
+            }
+
+            abilityInstance.data.charges += 1;
+            if (abilityInstance.data.charges < 4) {
+              battle.addToLog(
+                `${target.name} is charging its Omega Core! Current charges: ${abilityInstance.data.charges}/4`
+              );
+              return;
+            }
+
+            battle.addToLog(
+              `${target.name}'s Omega Core reached maximum charges! Consuming charges to unleash its power! (+25% Atk/Def, sets Sun, and uses Magma Impact)`
+            );
+            abilityInstance.data.charges = 0;
+            target.spa += Math.floor(target.atk * 0.25);
+            target.spd += Math.floor(target.def * 0.25);
+            battle.createWeather(weatherConditions.SUN, target);
+
+            const enemyParty = target.getEnemyParty();
+            const randomEnemy = target.getPatternTargets(
+              enemyParty,
+              targetPatterns.RANDOM,
+              1,
+              moveIdEnum.MAGMA_IMPACT
+            )[0]; // this target isn't the real enemy; but required for the move execution TODO: maybe improve this lol
+            if (randomEnemy) {
+              target.executeMoveAgainstTarget({
+                moveId: moveIdEnum.MAGMA_IMPACT,
+                primaryTarget: randomEnemy,
+              });
+            }
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+        beforeDamageListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: (args) => {
+            const abilityData = args.abilityInstance.data;
+            const { turn } = abilityData;
+            abilityData.turn = battle.turn;
+            if (turn !== battle.turn) {
+              abilityData.damageTakenTurn = 0;
+            }
+            const damageTakenTurn = abilityData.damageTakenTurn || 0;
+            abilityData.damageTakenTurn += args.damage;
+
+            const { damage } = args;
+            const { maxHp } = target;
+            if (damage > maxHp * 0.055) {
+              args.damage = Math.floor(maxHp * 0.055);
+              args.maxDamage = Math.min(args.maxDamage, args.damage);
+            }
+
+            // if took more than 5% of max hp this turn, reduce damage down to 1% of max hp
+            if (damageTakenTurn > 0.05 * maxHp && damage > maxHp * 0.01) {
+              args.damage = Math.floor(maxHp * 0.01);
+              args.maxDamage = Math.min(args.maxDamage, args.damage);
+            }
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+        beforeCauseFaintListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_CAUSE_FAINT,
+          callback: (args) => {
+            args.canFaint = false;
+            battle.addToLog(
+              `${target.name}'s Omega Core prevents it from fainting!`
+            );
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+        charges: 0,
+        turn: 0,
+        damageTakenTurn: 0,
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.afterDamageListenerId);
+      battle.unregisterListener(properties.beforeDamageListenerId);
+      battle.unregisterListener(properties.beforeCauseFaintListenerId);
     },
   }),
 });
