@@ -290,6 +290,23 @@ const targetPatterns = Object.freeze({
   X: "X-shape",
 });
 
+const statToBattleStat = /** @type {const} */ ([
+  "hp",
+  "atk",
+  "def",
+  "spa",
+  "spd",
+  "spe",
+]);
+const statToBaseStat = /** @type {const} */ ([
+  "maxHp",
+  "batk",
+  "bdef",
+  "bspa",
+  "bspd",
+  "bspe",
+]);
+
 /** @typedef {Enum<effectTypes>} EffectTypeEnum */
 const effectTypes = Object.freeze({
   BUFF: "Buff",
@@ -3077,7 +3094,7 @@ const moveConfig = Object.freeze({
   m88: {
     name: "Rock Throw",
     type: pokemonTypes.ROCK,
-    power: 70,
+    power: 65,
     accuracy: 70,
     cooldown: 0,
     targetType: targetTypes.ENEMY,
@@ -16507,4 +16524,6 @@ module.exports = {
   calculateDamage,
   abilityConfig,
   damageTypes,
+  statToBaseStat,
+  statToBattleStat,
 };

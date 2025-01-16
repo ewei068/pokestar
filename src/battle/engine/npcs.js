@@ -103,7 +103,7 @@ class NPC {
     for (const moveId in validMoveIdsToTargets) {
       for (const target of validMoveIdsToTargets[moveId]) {
         const source = activePokemon;
-        const targetsHit = source.getTargets(moveId, target.id);
+        const targetsHit = source.getTargets(moveId, target);
         const heuristic = this.calculateHeuristic(moveId, source, targetsHit);
         if (heuristic > bestHeuristic) {
           bestMoveId = moveId;
