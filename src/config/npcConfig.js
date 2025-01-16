@@ -2643,9 +2643,12 @@ const dungeonConfig = Object.freeze({
 const raids = Object.freeze({
   ARMORED_MEWTWO: "armoredMewtwoRaid",
   SHADOW_LUGIA: "shadowLugiaRaid",
+  TEAM_AQUAS_KYOGRE: "teamAquasKyogreRaid",
+  TEAM_MAGMAS_GROUDON: "teamMagmasGroudonRaid",
 });
 
-const SHINY_CHANCE = 0.0033; // process.env.STAGE === stageNames.ALPHA ? 0.8 : 0.0033;
+const RAID_SHINY_CHANCE = 0.0033; // process.env.STAGE === stageNames.ALPHA ? 0.8 : 0.0033;
+const BASE_RAID_MONEY = 500;
 
 const raidConfig = Object.freeze({
   [raids.ARMORED_MEWTWO]: {
@@ -2693,8 +2696,8 @@ const raidConfig = Object.freeze({
             position: 13,
           },
         ],
-        shinyChance: SHINY_CHANCE,
-        moneyPerPercent: 500,
+        shinyChance: RAID_SHINY_CHANCE,
+        moneyPerPercent: BASE_RAID_MONEY,
         ttl: 1000 * 60 * 60 * 2,
       },
     },
@@ -2744,8 +2747,121 @@ const raidConfig = Object.freeze({
             position: 13,
           },
         ],
-        shinyChance: SHINY_CHANCE,
-        moneyPerPercent: 500,
+        shinyChance: RAID_SHINY_CHANCE,
+        moneyPerPercent: BASE_RAID_MONEY,
+        ttl: 1000 * 60 * 60 * 2,
+      },
+    },
+  },
+  [raids.TEAM_AQUAS_KYOGRE]: {
+    name: "Team Aqua's Kyogre",
+    sprite:
+      "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/0eb0f155-e353-4cbc-882d-ea2e9025c5b5/ddpquze-b5fde401-6114-4449-a367-2afbe9e44e3d.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzBlYjBmMTU1LWUzNTMtNGNiYy04ODJkLWVhMmU5MDI1YzViNVwvZGRwcXV6ZS1iNWZkZTQwMS02MTE0LTQ0NDktYTM2Ny0yYWZiZTllNDRlM2QuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.UK1oWJ2GLAK3RckFzCEMnUHqavpOsdCext5VmqrIKlY",
+    emoji: "<:aquakyogre:1325287152979939348>",
+    description:
+      "Team Aqua has lost control of Kyogre, who is flooding the world. Team up with other trainers to stop it!",
+    boss: pokemonIdEnum.RAID_BOSS_KYOGRE,
+    shinyRewards: [
+      pokemonIdEnum.LATIOS,
+      pokemonIdEnum.LATIAS,
+      pokemonIdEnum.KYOGRE,
+      pokemonIdEnum.RAYQUAZA,
+    ],
+    difficulties: {
+      [difficulties.VERY_HARD]: {
+        rows: 3,
+        cols: 5,
+        pokemons: [
+          {
+            speciesId: pokemonIdEnum.RAICHU,
+            level: 100,
+            position: 2,
+          },
+          {
+            speciesId: pokemonIdEnum.RAICHU,
+            level: 100,
+            position: 4,
+          },
+          {
+            speciesId: pokemonIdEnum.AQUAS_SHARPEDO,
+            level: 120,
+            position: 6,
+          },
+          {
+            speciesId: pokemonIdEnum.AQUAS_SHARPEDO,
+            level: 120,
+            position: 8,
+          },
+          {
+            speciesId: pokemonIdEnum.AQUAS_SHARPEDO,
+            level: 120,
+            position: 10,
+          },
+          {
+            speciesId: pokemonIdEnum.RAID_BOSS_KYOGRE,
+            level: 160,
+            position: 13,
+          },
+        ],
+        shinyChance: RAID_SHINY_CHANCE * 2,
+        moneyPerPercent: BASE_RAID_MONEY * 1.25 * 2,
+        ttl: 1000 * 60 * 60 * 2,
+      },
+    },
+  },
+  [raids.TEAM_MAGMAS_GROUDON]: {
+    name: "Team Magma's Groudon",
+    sprite:
+      "https://preview.redd.it/6p9bnciaj3461.png?auto=webp&s=c249420a2c8dfae4e1dd649d74688531cc7d9a88",
+    emoji: "<:magmagroudon:1325287156268404878>",
+    description:
+      "Team Magma has lost control of Groudon, who is covering the world in drought. Team up with other trainers to stop it!",
+    boss: pokemonIdEnum.RAID_BOSS_GROUDON,
+    shinyRewards: [
+      pokemonIdEnum.REGICE,
+      pokemonIdEnum.REGIROCK,
+      pokemonIdEnum.REGISTEEL,
+      pokemonIdEnum.GROUDON,
+      pokemonIdEnum.RAYQUAZA,
+    ],
+    difficulties: {
+      [difficulties.VERY_HARD]: {
+        rows: 3,
+        cols: 5,
+        pokemons: [
+          {
+            speciesId: pokemonIdEnum.VENUSAUR,
+            level: 100,
+            position: 2,
+          },
+          {
+            speciesId: pokemonIdEnum.VENUSAUR,
+            level: 100,
+            position: 4,
+          },
+          {
+            speciesId: pokemonIdEnum.MAGMAS_CAMERUPT,
+            level: 120,
+            position: 6,
+          },
+          {
+            speciesId: pokemonIdEnum.MAGMAS_CAMERUPT,
+            level: 120,
+            position: 8,
+          },
+          {
+            speciesId: pokemonIdEnum.MAGMAS_CAMERUPT,
+            level: 120,
+            position: 10,
+          },
+          {
+            speciesId: pokemonIdEnum.RAID_BOSS_GROUDON,
+            level: 160,
+            position: 13,
+          },
+        ],
+        shinyChance: RAID_SHINY_CHANCE * 2,
+        moneyPerPercent: BASE_RAID_MONEY * 1.25 * 2,
         ttl: 1000 * 60 * 60 * 2,
       },
     },
