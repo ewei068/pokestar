@@ -7644,6 +7644,26 @@ const pokemonConfigRaw = {
     growthRate: growthRates.SLOW,
     unobtainable: true,
   },
+  [pokemonIdEnum.RAID_BOSS_KYOGRE]: {
+    name: "Raid Boss Kyogre",
+    emoji: "<:aquakyogre:1325287152979939348>",
+    description:
+      "A Kyogre free from the control of Team Aqua, more powerful than ever. Many trainers must band together to take down this mighty foe before it envelops the world in water.",
+    type: [types.WATER, types.DARK],
+    baseStats: [6000, 120, 100, 160, 160, 120],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/aqua-kyogre-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/aqua-kyogre-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.ALPHA_CORE]: 1,
+    },
+    moveIds: ["m58", "m182", "m399", "m417", "m87", moveIdEnum.AQUA_IMPACT],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    unobtainable: true,
+  },
   [pokemonIdEnum.META_GROUDON]: {
     name: "Meta Groudon",
     emoji: "<:magmagroudon:1325287156268404878>",
@@ -7659,6 +7679,26 @@ const pokemonConfigRaw = {
       70: 1,
     },
     moveIds: ["m53", "m202", "m76", "m231", "m619"],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    unobtainable: true,
+  },
+  [pokemonIdEnum.RAID_BOSS_GROUDON]: {
+    name: "Raid Boss Groudon",
+    emoji: "<:magmagroudon:1325287156268404878>",
+    description:
+      "A Groudon free from the control of Team Magma, more powerful than ever. Many trainers must band together to take down this mighty foe before it dooms the world to drought.",
+    type: [types.GROUND, types.FIRE],
+    baseStats: [6000, 160, 160, 120, 100, 120],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/magma-groudon-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/magma-groudon-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.OMEGA_CORE]: 1,
+    },
+    moveIds: ["m7", "m182", "m444", "m446", "m89", moveIdEnum.MAGMA_IMPACT],
     battleEligible: true,
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,

@@ -181,6 +181,9 @@ class BattlePokemon {
    * @param {Pokemon} pokemonData
    */
   setAbility(pokemonData) {
+    /**
+     * @type {{ abilityId: string | number, data?: any, applied?: boolean }}
+     */
     this.ability = {
       abilityId: pokemonData.abilityId,
     };
@@ -338,69 +341,97 @@ class BattlePokemon {
 
     // get move data and execute move
     if (canUseMove) {
-      // see if move log should be silenced
-      const isSilenced =
-        moveData.silenceIf && moveData.silenceIf(this.battle, this);
-      // if pokemon alive, get all targets
-      const allTargets = this.getTargets(moveId, targetPokemonId);
-      if (!isSilenced) {
-        const targetString =
-          moveData.targetPattern === targetPatterns.ALL ||
-          moveData.targetPattern === targetPatterns.ALL_EXCEPT_SELF ||
-          moveData.targetPattern === targetPatterns.RANDOM ||
-          moveData.targetPosition === targetPositions.SELF
-            ? "!"
-            : ` against ${primaryTarget.name}!`;
-        this.battle.addToLog(
-          `${this.name} used ${moveData.name}${targetString}`
-        );
-      }
-      // calculate miss
-      const missedTargets = this.getMisses(moveId, allTargets);
-      // if misses, log miss
-      if (missedTargets.length > 0 && !isSilenced) {
-        this.battle.addToLog(
-          `Missed ${missedTargets.map((target) => target.name).join(", ")}!`
-        );
-      }
-
       // set cooldown
       this.moveIds[moveId].cooldown = moveData.cooldown;
 
-      // trigger before execute move events
-      const executeEventArgs = {
-        source: this,
-        primaryTarget,
-        targets: allTargets,
-        missedTargets,
-        moveId,
-      };
-      this.battle.eventHandler.emit(
-        battleEventEnum.BEFORE_MOVE_EXECUTE,
-        executeEventArgs
-      );
-
       // execute move
-      this.executeMove({
+      const { allTargets, missedTargets, err } = this.executeMoveAgainstTarget({
         moveId,
         primaryTarget,
-        allTargets,
-        missedTargets,
       });
 
-      // after move event
-      const eventArgs = {
-        source: this,
-        primaryTarget,
-        targets: allTargets,
-        missedTargets,
-        moveId,
-      };
-      this.battle.eventHandler.emit(battleEventEnum.AFTER_MOVE, eventArgs);
+      if (!err) {
+        // after move event
+        const eventArgs = {
+          source: this,
+          primaryTarget,
+          targets: allTargets,
+          missedTargets,
+          moveId,
+        };
+        this.battle.eventHandler.emit(battleEventEnum.AFTER_MOVE, eventArgs);
+      }
     }
 
     // end turn
     this.battle.nextTurn();
+  }
+
+  /**
+   * @param {object} param0
+   * @param {MoveIdEnum} param0.moveId
+   * @param {BattlePokemon} param0.primaryTarget
+   * @returns {{
+   *  allTargets?: BattlePokemon[],
+   *  missedTargets?: BattlePokemon[],
+   *  err?: string
+   * }}
+   */
+  executeMoveAgainstTarget({ moveId, primaryTarget }) {
+    const moveData = getMove(moveId);
+    if (!moveData) {
+      logger.error(`Move ${moveId} not found.`);
+      return {};
+    }
+
+    const allTargets = this.getTargets(moveId, primaryTarget);
+    // see if move log should be silenced
+    const isSilenced =
+      moveData.silenceIf && moveData.silenceIf(this.battle, this);
+    if (!isSilenced) {
+      const targetString =
+        moveData.targetPattern === targetPatterns.ALL ||
+        moveData.targetPattern === targetPatterns.ALL_EXCEPT_SELF ||
+        moveData.targetPattern === targetPatterns.RANDOM ||
+        moveData.targetPosition === targetPositions.SELF
+          ? "!"
+          : ` against ${primaryTarget.name}!`;
+      this.battle.addToLog(`${this.name} used ${moveData.name}${targetString}`);
+    }
+    // calculate miss
+    const missedTargets = this.getMisses(moveId, allTargets);
+    // if misses, log miss
+    if (missedTargets.length > 0 && !isSilenced) {
+      this.battle.addToLog(
+        `Missed ${missedTargets.map((target) => target.name).join(", ")}!`
+      );
+    }
+
+    // trigger before execute move events
+    const executeEventArgs = {
+      source: this,
+      primaryTarget,
+      targets: allTargets,
+      missedTargets,
+      moveId,
+    };
+    this.battle.eventHandler.emit(
+      battleEventEnum.BEFORE_MOVE_EXECUTE,
+      executeEventArgs
+    );
+
+    // execute move
+    this.executeMove({
+      moveId,
+      primaryTarget,
+      allTargets,
+      missedTargets,
+    });
+
+    return {
+      allTargets,
+      missedTargets,
+    };
   }
 
   /**
@@ -541,7 +572,9 @@ class BattlePokemon {
     }
 
     const maybeOffTargetMult =
-      target === primaryTarget ? 1 : offTargetDamageMultiplier;
+      target === primaryTarget || move.targetPattern === targetPatterns.RANDOM
+        ? 1
+        : offTargetDamageMultiplier;
 
     let isBackTarget = false;
     // iterate through all rows in front of target. If there is a targetable pokemon, set isBackTarget to true
@@ -561,7 +594,9 @@ class BattlePokemon {
       }
     }
     const maybeBackTargetMult =
-      isBackTarget && move.targetPosition !== targetPositions.BACK
+      isBackTarget &&
+      move.targetPosition !== targetPositions.BACK &&
+      move.targetPattern !== targetPatterns.RANDOM
         ? backTargetDamageMultiplier
         : 1;
 
@@ -771,16 +806,14 @@ class BattlePokemon {
 
   /**
    * @param {MoveIdEnum} moveId
-   * @param {string} targetPokemonId
+   * @param {BattlePokemon?} target
    * @returns {BattlePokemon[]}
    */
-  getTargets(moveId, targetPokemonId) {
-    const moveData = getMove(moveId);
-    // make sure target exists and is alive
-    const target = this.battle.allPokemon[targetPokemonId];
+  getTargets(moveId, target) {
     if (!target) {
       return [];
     }
+    const moveData = getMove(moveId);
 
     // get party of target
     const targetParty = this.battle.parties[target.teamName];
@@ -1199,6 +1232,7 @@ class BattlePokemon {
     }
 
     if (!abilityData.isLegacyAbility) {
+      // @ts-ignore
       abilityData.abilityRemove({
         battle: this.battle,
         source: this,
