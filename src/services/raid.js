@@ -211,11 +211,11 @@ const onRaidStart = async ({ stateId = null, user = null } = {}) => {
 const onRaidWin = async (raid) => {
   // ensure raid is valid
   const { raidId } = raid;
-  const raidData = raidConfig[raidId];
+  const raidData = /** @type {RaidConfigData?} */ (raidConfig[raidId]);
   if (!raidData) {
     return;
   }
-  const { difficulty } = raid;
+  const { difficulty } = /** @type {{difficulty: NpcDifficultyEnum}} */ (raid);
   const difficultyData = raidData.difficulties[difficulty];
   if (!difficultyData) {
     return;
@@ -236,15 +236,24 @@ const onRaidWin = async (raid) => {
       }
       const percentDamage = damage / raid.boss.stats[0];
 
+      const backpack = {};
+      for (const [backpackCategory, items] of Object.entries(
+        difficultyData.backpackPerPercent
+      )) {
+        backpack[backpackCategory] = {};
+        for (const [itemId, count] of Object.entries(items)) {
+          backpack[backpackCategory][itemId] = Math.max(
+            Math.floor(count * percentDamage * 100),
+            1
+          );
+        }
+      }
       const rewardsForTrainer = {
-        money: Math.floor(difficultyData.moneyPerPercent * percentDamage * 100),
-        backpack: {
-          [backpackCategories.MATERIALS]: {
-            [backpackItems.STAR_PIECE]: Math.floor(
-              difficultyData.starPiecePerPercent * percentDamage * 100
-            ),
-          },
-        },
+        money: Math.max(
+          Math.floor(difficultyData.moneyPerPercent * percentDamage * 100),
+          1
+        ),
+        backpack,
       };
       addRewards(trainer.data, rewardsForTrainer);
       rewards[userId] = rewardsForTrainer;

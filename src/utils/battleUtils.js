@@ -7,9 +7,14 @@
 const { statusConditions, targetPatterns } = require("../config/battleConfig");
 const { difficultyConfig } = require("../config/npcConfig");
 const { pokemonConfig, typeConfig } = require("../config/pokemonConfig");
-const { getRewardsString, flattenRewards } = require("./trainerUtils");
+const {
+  getRewardsString,
+  flattenRewards,
+  flattenCategories,
+} = require("./trainerUtils");
 const { getPBar, formatMoney } = require("./utils");
 const { getEffect } = require("../battle/data/effectRegistry");
+const { backpackItemConfig } = require("../config/backpackConfig");
 
 const plus = "┼";
 const plusEmph = "*";
@@ -534,7 +539,17 @@ const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
 
   difficultyString += `**Shiny Chance:** ${shinyChance}% • **Money/%:** ${formatMoney(
     raidDifficultyData.moneyPerPercent
-  )} • **Time:** ${raidDifficultyData.ttl / (1000 * 60 * 60)} hours`;
+  )} • **Time:** ${raidDifficultyData.ttl / (1000 * 60 * 60)} hours\n`;
+
+  if (raidDifficultyData.backpackPerPercent) {
+    difficultyString += "**Items/%: ** ";
+    for (const [item, itemPerPercent] of Object.entries(
+      flattenCategories(raidDifficultyData.backpackPerPercent)
+    )) {
+      const itemData = backpackItemConfig[item];
+      difficultyString += `${itemData.emoji} x${itemPerPercent} `;
+    }
+  }
 
   return {
     difficultyHeader,
