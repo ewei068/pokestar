@@ -515,7 +515,7 @@ const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
 
 /**
  * @param {NpcDifficultyEnum} difficulty
- * @param {any} raidDifficultyData
+ * @param {RaidConfigData["difficulties"][NpcDifficultyEnum]} raidDifficultyData
  * @returns {{difficultyHeader: string, difficultyString: string}}
  */
 const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
