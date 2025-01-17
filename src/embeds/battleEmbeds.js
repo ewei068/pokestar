@@ -40,7 +40,9 @@ const {
   getFullUsername,
   getRewardsString,
   flattenRewards,
+  flattenCategories,
 } = require("../utils/trainerUtils");
+const { backpackItemConfig } = require("../config/backpackConfig");
 
 /**
  * Handles building the party embedded instructions for building a party.
@@ -693,13 +695,19 @@ const buildRaidWinEmbed = (raid, rewards) => {
     const participantRewards = rewards[participantId];
     if (!participantRewards) continue;
     const { money, backpack, shiny } = participantRewards;
+    const backpackRewards = flattenCategories(backpack);
 
     const rewardsForTrainer = [];
     if (money) {
       rewardsForTrainer.push(formatMoney(money));
     }
-    if (backpack) {
-      // TODO
+    if (Object.keys(backpackRewards)) {
+      let backpackString = "";
+      for (const itemId in backpackRewards) {
+        const itemData = backpackItemConfig[itemId];
+        backpackString += `${itemData.emoji} x${backpackRewards[itemId]} `;
+      }
+      rewardsForTrainer.push(backpackString);
     }
     if (shiny) {
       const shinyData = pokemonConfig[shiny];

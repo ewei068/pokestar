@@ -6,6 +6,7 @@ const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const {
   backpackItems,
   backpackItemConfig,
+  backpackCategories,
 } = require("../config/backpackConfig");
 const { collectionNames } = require("../config/databaseConfig");
 const { eventNames } = require("../config/eventConfig");
@@ -237,7 +238,13 @@ const onRaidWin = async (raid) => {
 
       const rewardsForTrainer = {
         money: Math.floor(difficultyData.moneyPerPercent * percentDamage * 100),
-        backpack: {}, // TODO
+        backpack: {
+          [backpackCategories.MATERIALS]: {
+            [backpackItems.STAR_PIECE]: Math.floor(
+              difficultyData.starPiecePerPercent * percentDamage * 100
+            ),
+          },
+        },
       };
       addRewards(trainer.data, rewardsForTrainer);
       rewards[userId] = rewardsForTrainer;

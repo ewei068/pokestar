@@ -2649,6 +2649,7 @@ const raids = Object.freeze({
 
 const RAID_SHINY_CHANCE = 0.0033; // process.env.STAGE === stageNames.ALPHA ? 0.8 : 0.0033;
 const BASE_RAID_MONEY = 500;
+const BASE_STAR_PIECE = 1;
 
 const raidConfig = Object.freeze({
   [raids.ARMORED_MEWTWO]: {
@@ -2698,6 +2699,7 @@ const raidConfig = Object.freeze({
         ],
         shinyChance: RAID_SHINY_CHANCE,
         moneyPerPercent: BASE_RAID_MONEY,
+        starPiecePerPercent: BASE_STAR_PIECE,
         ttl: 1000 * 60 * 60 * 2,
       },
     },
@@ -2749,6 +2751,7 @@ const raidConfig = Object.freeze({
         ],
         shinyChance: RAID_SHINY_CHANCE,
         moneyPerPercent: BASE_RAID_MONEY,
+        starPiecePerPercent: BASE_STAR_PIECE,
         ttl: 1000 * 60 * 60 * 2,
       },
     },
@@ -2805,6 +2808,7 @@ const raidConfig = Object.freeze({
         ],
         shinyChance: RAID_SHINY_CHANCE * 2,
         moneyPerPercent: BASE_RAID_MONEY * 1.25 * 2,
+        starPiecePerPercent: BASE_STAR_PIECE * 1.25 * 2,
         ttl: 1000 * 60 * 60 * 2,
       },
     },
@@ -2862,6 +2866,7 @@ const raidConfig = Object.freeze({
         ],
         shinyChance: RAID_SHINY_CHANCE * 2,
         moneyPerPercent: BASE_RAID_MONEY * 1.25 * 2,
+        starPiecePerPercent: BASE_STAR_PIECE * 1.25 * 2,
         ttl: 1000 * 60 * 60 * 2,
       },
     },
