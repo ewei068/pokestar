@@ -3164,20 +3164,6 @@ const moveConfig = Object.freeze({
     description:
       "The target is hit by a weak telekinetic force. This has a 25% chance to confuse the target for 1 turn.",
   },
-  m94: {
-    name: "Psychic",
-    type: pokemonTypes.PSYCHIC,
-    power: 65,
-    accuracy: 90,
-    cooldown: 3,
-    targetType: targetTypes.ENEMY,
-    targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.ROW,
-    tier: moveTiers.POWER,
-    damageType: damageTypes.SPECIAL,
-    description:
-      "The target is hit by a strong telekinetic force. This has a 60% chance to lower the targets' Special Defense for 2 turns.",
-  },
   m97: {
     name: "Agility",
     type: pokemonTypes.PSYCHIC,

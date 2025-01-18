@@ -174,6 +174,17 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [abilityIdEnum.SERENE_GRACE]: new Ability({
+    id: abilityIdEnum.SERENE_GRACE,
+    name: "Serene Grace",
+    description:
+      "Most moves have twice the chance to apply effects and status.",
+    // effect is hard-coded in moves.js > genericApplySingleStatus and genericApplySingleEffect
+    abilityAdd() {
+      return {};
+    },
+    abilityRemove() {},
+  }),
   [abilityIdEnum.ANGER_POINT]: new Ability({
     id: abilityIdEnum.ANGER_POINT,
     name: "Anger Point",

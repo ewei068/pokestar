@@ -21,6 +21,7 @@ const moveIdEnum = Object.freeze({
   TEST_MOVE2: "998",
   FIRE_PUNCH: "m7",
   VINE_WHIP: "m22",
+  PSYCHIC: "m94",
   AQUA_IMPACT: "m618-1",
   MAGMA_IMPACT: "m619-1",
   FLAME_BALL: "m780-1",
@@ -34,6 +35,7 @@ const moveIdEnum = Object.freeze({
 const abilityIdEnum = Object.freeze({
   TEST_ABILITY: "testAbility",
   AQUA_POWER: "2-1",
+  SERENE_GRACE: "32",
   MAGMA_POWER: "70-1",
   ANGER_POINT: "83",
   REGENERATOR: "144",

@@ -1245,6 +1245,10 @@ class BattlePokemon {
     }
   }
 
+  hasAbility(abilityId) {
+    return this.ability?.abilityId === abilityId;
+  }
+
   /**
    * @param {number} heal
    * @param {BattlePokemon} target

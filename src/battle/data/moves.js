@@ -166,6 +166,71 @@ class Move {
       });
     }
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  genericApplySingleEffect({
+    source,
+    target,
+    // eslint-disable-next-line no-unused-vars
+    primaryTarget,
+    // eslint-disable-next-line no-unused-vars
+    allTargets,
+    missedTargets = [],
+    effectId,
+    duration,
+    initialArgs = {},
+    probablity = 1,
+  }) {
+    let shouldApplyEffect = false;
+    if (!missedTargets.includes(target)) {
+      if (Math.random() < probablity) {
+        shouldApplyEffect = true;
+      }
+    }
+
+    if (shouldApplyEffect) {
+      return target.applyEffect(effectId, source, duration, initialArgs);
+    }
+    return false;
+  }
+
+  /**
+   * @template {EffectIdEnum} K
+   * @param {object} param0
+   * @param {BattlePokemon} param0.source
+   * @param {BattlePokemon} param0.primaryTarget
+   * @param {Array<BattlePokemon>} param0.allTargets
+   * @param {Array<BattlePokemon>=} param0.missedTargets
+   * @param {K} param0.effectId
+   * @param {number} param0.duration
+   * @param {EffectInitialArgsTypeFromId<K>=} param0.initialArgs
+   * @param {number=} param0.probablity
+   */
+  genericApplyAllEffects({
+    source,
+    primaryTarget,
+    allTargets,
+    missedTargets = [],
+    effectId,
+    duration,
+    // @ts-ignore
+    initialArgs = {},
+    probablity = 1,
+  }) {
+    for (const target of allTargets) {
+      this.genericApplySingleEffect({
+        source,
+        target,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+        effectId,
+        duration,
+        initialArgs,
+        probablity,
+      });
+    }
+  }
 }
 
 const movesToRegister = Object.freeze({
@@ -219,6 +284,38 @@ const movesToRegister = Object.freeze({
         primaryTarget,
         allTargets,
         missedTargets,
+      });
+    },
+  }),
+  [moveIdEnum.PSYCHIC]: new Move({
+    id: moveIdEnum.PSYCHIC,
+    name: "Psychic",
+    type: pokemonTypes.PSYCHIC,
+    power: 65,
+    accuracy: 90,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.ROW,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The target is hit by a strong telekinetic force. This has a 60% chance to lower the targets' Special Defense for 2 turns.",
+    execute({ source, primaryTarget, allTargets, missedTargets }) {
+      this.genericDealAllDamage({
+        source,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+      });
+      this.genericApplyAllEffects({
+        source,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+        effectId: "spdDown",
+        duration: 2,
+        probablity: 0.6,
       });
     },
   }),
