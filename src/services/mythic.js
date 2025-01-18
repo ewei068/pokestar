@@ -2,8 +2,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * mythic.js Creates all mythic pokemon information, moves etc.
  */
@@ -405,7 +403,7 @@ const getCelebi = async (trainer) => {
     // set locked to true
     celebi.locked = true;
     // set nature to 0
-    celebi.natureId = 0;
+    celebi.natureId = "0";
     // recalculate stats
     calculatePokemonStats(celebi, celebiData);
     modified = true;

@@ -9,6 +9,7 @@ const effectIdEnum = Object.freeze({
   SHIELD: "shield",
   DEBUFF_IMMUNITY: "debuffImmunity",
   AQUA_BLESSING: "aquaBlessing",
+  DOOM_DESIRE: "doomDesire",
 });
 
 /**
@@ -21,7 +22,10 @@ const moveIdEnum = Object.freeze({
   TEST_MOVE2: "998",
   FIRE_PUNCH: "m7",
   VINE_WHIP: "m22",
+  CONFUSION: "m93",
   PSYCHIC: "m94",
+  DOOM_DESIRE: "m353",
+  IRON_HEAD: "m442",
   AQUA_IMPACT: "m618-1",
   MAGMA_IMPACT: "m619-1",
   FLAME_BALL: "m780-1",

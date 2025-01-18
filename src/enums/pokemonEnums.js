@@ -269,6 +269,7 @@ const pokemonIdEnum = Object.freeze({
   KYOGRE: "382",
   GROUDON: "383",
   RAYQUAZA: "384",
+  JIRACHI: "385",
   DEOXYS: "386",
   GARYS_BLASTOISE: "9-1",
   AAABAAAJSS: "18-1",

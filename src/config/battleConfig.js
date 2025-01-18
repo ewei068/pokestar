@@ -3150,20 +3150,7 @@ const moveConfig = Object.freeze({
     description:
       "A move that leaves the targets badly poisoned. Its poison damage worsens every turn. If the user is Poison type and the target isn't Steel type, ignore miss on the primary target.",
   },
-  m93: {
-    name: "Confusion",
-    type: pokemonTypes.PSYCHIC,
-    power: 50,
-    accuracy: 100,
-    cooldown: 0,
-    targetType: targetTypes.ENEMY,
-    targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.SINGLE,
-    tier: moveTiers.BASIC,
-    damageType: damageTypes.SPECIAL,
-    description:
-      "The target is hit by a weak telekinetic force. This has a 25% chance to confuse the target for 1 turn.",
-  },
+
   m97: {
     name: "Agility",
     type: pokemonTypes.PSYCHIC,
@@ -7382,40 +7369,6 @@ const moveExecutes = {
         target.type2 !== pokemonTypes.STEEL;
       if (!miss || specialCondition) {
         target.applyStatus(statusConditions.BADLY_POISON, source);
-      }
-    }
-  },
-  m93(_battle, source, _primaryTarget, allTargets, missedTargets) {
-    const moveId = "m93";
-    const moveData = getMove(moveId);
-    for (const target of allTargets) {
-      const miss = missedTargets.includes(target);
-      const damageToDeal = calculateDamage(moveData, source, target, miss);
-      source.dealDamage(damageToDeal, target, {
-        type: "move",
-        moveId,
-      });
-
-      // if not miss, 25% to confuse
-      if (!miss && Math.random() < 0.25) {
-        target.applyEffect("confused", 1, source);
-      }
-    }
-  },
-  m94(_battle, source, _primaryTarget, allTargets, missedTargets) {
-    const moveId = "m94";
-    const moveData = getMove(moveId);
-    for (const target of allTargets) {
-      const miss = missedTargets.includes(target);
-      const damageToDeal = calculateDamage(moveData, source, target, miss);
-      source.dealDamage(damageToDeal, target, {
-        type: "move",
-        moveId,
-      });
-
-      // if not miss, 60% chance to spd down 2 turn
-      if (!miss && Math.random() < 0.6) {
-        target.applyEffect("spdDown", 2, source);
       }
     }
   },
