@@ -684,6 +684,70 @@ const onFormSelect = async (user, speciesId) => {
   return { err: null };
 };
 
+/**
+ * @param {WithId<Trainer>} trainer
+ * @returns {Promise<{err?: string, data?: WithId<Pokemon>}>}
+ */
+const getJirachi = async (trainer) => {
+  const speciesId = "385";
+
+  const jirachiRes = await getMythic(trainer, speciesId);
+  if (jirachiRes.err) {
+    return { err: jirachiRes.err };
+  }
+
+  let jirachi = jirachiRes.data;
+  let modified = false;
+  if (!jirachi) {
+    let metRequirements = true;
+    // check star piece
+    if (getItems(trainer, backpackItems.STAR_PIECE) < 200) {
+      metRequirements = false;
+    }
+    // check for non-original-trainer pokemon
+    const pokemonsRes = await listPokemons(trainer, {
+      pageSize: 3,
+      filter: { originalOwner: { $ne: trainer.userId } },
+    });
+    if (pokemonsRes.err) {
+      return { err: pokemonsRes.err };
+    }
+    if (pokemonsRes.data.length < 3) {
+      metRequirements = false;
+    }
+    if (!metRequirements) {
+      return {
+        err: `Jirachi wants you to work with others before granting your wishes! You must obtain 200x ${
+          backpackItemConfig[backpackItems.STAR_PIECE].emoji
+        } Star Pieces from raids, and have at least 3 traded Pokemon!`,
+      };
+    }
+
+    // @ts-ignore
+    jirachi = generateMythic(trainer, speciesId);
+    modified = true;
+  }
+
+  if (!trainer.hasCelebi) {
+    trainer.hasCelebi = true;
+    const trainerRes = await updateTrainer(trainer);
+    if (trainerRes.err) {
+      return { err: trainerRes.err };
+    }
+  }
+
+  // update jirachi if modified
+  if (modified) {
+    const { err, id } = await upsertMythic(trainer, jirachi);
+    if (err) {
+      return { err };
+    }
+    jirachi._id = id || jirachi._id;
+  }
+
+  return { data: jirachi };
+};
+
 module.exports = {
   getMew,
   updateMew,
@@ -694,4 +758,5 @@ module.exports = {
   getDeoxys,
   buildDeoxysSend,
   onFormSelect,
+  getJirachi,
 };
