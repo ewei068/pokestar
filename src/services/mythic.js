@@ -81,6 +81,52 @@ const getMythic = async (trainer, speciesId) => {
   return { data: pokemon.data };
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {PokemonIdEnum} speciesId
+ */
+const generateMythic = (trainer, speciesId) => {
+  const speciesData = pokemonConfig[speciesId];
+  const mythic = generateRandomPokemon(trainer.userId, speciesId, 1);
+  // set ivs to 31
+  mythic.ivs = [31, 31, 31, 31, 31, 31];
+  // set shiny to false
+  mythic.shiny = false;
+  // set locked to true
+  mythic.locked = true;
+  // recalculate stats
+  calculatePokemonStats(mythic, speciesData);
+
+  return mythic;
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {Pokemon} mythic
+ * @returns {Promise<{err?: string, id?: any}>}
+ */
+const upsertMythic = async (trainer, mythic) => {
+  const mythicData = pokemonConfig[mythic.speciesId];
+  try {
+    const query = new QueryBuilder(collectionNames.USER_POKEMON)
+      .setFilter({ userId: mythic.userId, speciesId: mythic.speciesId })
+      .setUpsert({ $set: mythic });
+    const res = await query.upsertOne();
+
+    if (res.upsertedCount !== 1) {
+      logger.warn(
+        `Error updating ${mythicData.name} for ${trainer.user.username}`
+      );
+    } else {
+      logger.info(`Updated ${mythicData.name} for ${trainer.user.username}`);
+    }
+    return { id: res.upsertedId };
+  } catch (err) {
+    logger.error(err);
+    return { err: `Error updating ${mythicData.name}` };
+  }
+};
+
 const validateMewMoves = (mew, mewData) => {
   const { mythicConfig } = mewData;
 
@@ -136,15 +182,7 @@ const getMew = async (trainer) => {
       };
     }
 
-    mew = generateRandomPokemon(trainer.userId, speciesId, 1);
-    // set ivs to 31
-    mew.ivs = [31, 31, 31, 31, 31, 31];
-    // set shiny to false
-    mew.shiny = false;
-    // set locked to true
-    mew.locked = true;
-    // recalculate stats
-    calculatePokemonStats(mew, mewData);
+    mew = generateMythic(trainer, speciesId);
     modified = true;
   }
 
@@ -156,24 +194,11 @@ const getMew = async (trainer) => {
 
   // update mew if modified
   if (modified) {
-    try {
-      const query = new QueryBuilder(collectionNames.USER_POKEMON)
-        .setFilter({ userId: mew.userId, speciesId })
-        .setUpsert({ $set: mew });
-      const res = await query.upsertOne();
-
-      if (res.upsertedCount !== 1) {
-        logger.warn(`Error updating Mew for ${trainer.user.username}`);
-        // return { err: "Error updating Mew" };
-      }
-      if (res.upsertedId) {
-        mew._id = res.upsertedId;
-      }
-      logger.info(`Updated Mew for ${trainer.user.username}`);
-    } catch (err) {
-      logger.error(err);
-      return { err: "Error updating Mew" };
+    const { err, id } = await upsertMythic(trainer, mew);
+    if (err) {
+      return { err };
     }
+    mew._id = id || mew._id;
   }
 
   return { data: mew };
@@ -370,7 +395,6 @@ const buildMewSend = async ({ user = null, tab = "basic" } = {}) => {
 
 const getCelebi = async (trainer) => {
   const speciesId = "251";
-  const celebiData = pokemonConfig[speciesId];
 
   const celebiRes = await getMythic(trainer, speciesId);
   if (celebiRes.err) {
@@ -395,17 +419,7 @@ const getCelebi = async (trainer) => {
       };
     }
 
-    celebi = generateRandomPokemon(trainer.userId, speciesId, 1);
-    // set ivs to 31
-    celebi.ivs = [31, 31, 31, 31, 31, 31];
-    // set shiny to false
-    celebi.shiny = false;
-    // set locked to true
-    celebi.locked = true;
-    // set nature to 0
-    celebi.natureId = "0";
-    // recalculate stats
-    calculatePokemonStats(celebi, celebiData);
+    celebi = generateMythic(trainer, speciesId);
     modified = true;
   }
 
@@ -419,23 +433,11 @@ const getCelebi = async (trainer) => {
 
   // update celebi if modified
   if (modified) {
-    try {
-      const query = new QueryBuilder(collectionNames.USER_POKEMON)
-        .setFilter({ userId: celebi.userId, speciesId })
-        .setUpsert({ $set: celebi });
-      const res = await query.upsertOne();
-
-      if (res.upsertedCount !== 1) {
-        logger.warn(`Error updating Celebi for ${trainer.user.username}`);
-      }
-      if (res.upsertedId) {
-        celebi._id = res.upsertedId;
-      }
-      logger.info(`Updated Celebi for ${trainer.user.username}`);
-    } catch (err) {
-      logger.error(err);
-      return { err: "Error updating Celebi" };
+    const { err, id } = await upsertMythic(trainer, celebi);
+    if (err) {
+      return { err };
     }
+    celebi._id = id || celebi._id;
   }
 
   return { data: celebi };
@@ -572,7 +574,6 @@ const getDeoxys = async (trainer) => {
 
   let modified = false;
   const speciesId = (deoxys && deoxys.speciesId) || DEOXYS_SPECIES_IDS[0];
-  const deoxysData = pokemonConfig[speciesId];
   if (!deoxys) {
     // check if trainer has beat battle tower 20
     if (!trainer.defeatedNPCs[getIdFromTowerStage(20)]) {
@@ -581,39 +582,17 @@ const getDeoxys = async (trainer) => {
       };
     }
 
-    deoxys = generateRandomPokemon(trainer.userId, speciesId, 1);
-    // set ivs to 31
-    deoxys.ivs = [31, 31, 31, 31, 31, 31];
-    // set shiny to false
-    deoxys.shiny = false;
-    // set locked to true
-    deoxys.locked = true;
-    // set nature to 0
-    deoxys.natureId = 0;
-    // recalculate stats
-    calculatePokemonStats(deoxys, deoxysData);
+    deoxys = generateMythic(trainer, speciesId);
     modified = true;
   }
 
   // update deoxys if modified
   if (modified) {
-    try {
-      const query = new QueryBuilder(collectionNames.USER_POKEMON)
-        .setFilter({ userId: deoxys.userId, speciesId })
-        .setUpsert({ $set: deoxys });
-      const res = await query.upsertOne();
-
-      if (res.upsertedCount !== 1) {
-        logger.warn(`Error updating Deoxys for ${trainer.user.username}`);
-      }
-      if (res.upsertedId) {
-        deoxys._id = res.upsertedId;
-      }
-      logger.info(`Updated Deoxys for ${trainer.user.username}`);
-    } catch (err) {
-      logger.error(err);
-      return { err: "Error updating Deoxys" };
+    const { err, id } = await upsertMythic(trainer, deoxys);
+    if (err) {
+      return { err };
     }
+    deoxys._id = id || deoxys._id;
   }
 
   return { data: deoxys };

@@ -392,7 +392,7 @@ const movesToRegister = Object.freeze({
     id: moveIdEnum.IRON_HEAD,
     name: "Iron Head",
     type: pokemonTypes.STEEL,
-    power: 80,
+    power: 90,
     accuracy: 100,
     cooldown: 3,
     targetType: targetTypes.ENEMY,
