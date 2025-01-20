@@ -7321,6 +7321,31 @@ const pokemonConfigRaw = {
     growthRate: growthRates.SLOW,
     noGacha: true,
   },
+  [pokemonIdEnum.JIRACHI]: {
+    name: "Jirachi",
+    emoji: "<:385:1132497393431105588>",
+    description:
+      "Jirachi will awaken from its sleep of a thousand years if you sing to it in a voice of purity. It is said to make true any wish that people desire.",
+    type: [types.STEEL, types.PSYCHIC],
+    baseStats: [100, 100, 100, 100, 100, 100],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/385.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/385.png",
+    abilities: {
+      [abilityIdEnum.SERENE_GRACE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.PSYCHIC,
+      moveIdEnum.IRON_HEAD,
+      moveIdEnum.DOOM_DESIRE,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+  },
   386: {
     name: "Deoxys",
     emoji: "<:386:1132497394739712010>",

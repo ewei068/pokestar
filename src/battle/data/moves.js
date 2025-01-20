@@ -8,7 +8,11 @@ const {
   statusConditions,
 } = require("../../config/battleConfig");
 const { getMove } = require("./moveRegistry");
-const { moveIdEnum } = require("../../enums/battleEnums");
+const {
+  moveIdEnum,
+  abilityIdEnum,
+  effectIdEnum,
+} = require("../../enums/battleEnums");
 const { drawIterable } = require("../../utils/gachaUtils");
 
 class Move {
@@ -128,7 +132,21 @@ class Move {
     options,
     probablity = 1,
   }) {
-    if (!missedTargets.includes(target) && Math.random() < probablity) {
+    let shouldApplyStatus = false;
+    if (!missedTargets.includes(target)) {
+      const roll = Math.random();
+      if (roll < probablity) {
+        shouldApplyStatus = true;
+      } else if (
+        source.hasAbility(abilityIdEnum.SERENE_GRACE) &&
+        roll < 2 * probablity
+      ) {
+        source.battle.addToLog(`${source.name}'s Serene Grace activates!`);
+        shouldApplyStatus = true;
+      }
+    }
+
+    if (shouldApplyStatus) {
       return target.applyStatus(statusId, source, options);
     }
     return false;
@@ -162,6 +180,78 @@ class Move {
         missedTargets,
         statusId,
         options,
+        probablity,
+      });
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  genericApplySingleEffect({
+    source,
+    target,
+    // eslint-disable-next-line no-unused-vars
+    primaryTarget,
+    // eslint-disable-next-line no-unused-vars
+    allTargets,
+    missedTargets = [],
+    effectId,
+    duration,
+    initialArgs = {},
+    probablity = 1,
+  }) {
+    let shouldApplyEffect = false;
+    if (!missedTargets.includes(target)) {
+      const roll = Math.random();
+      if (roll < probablity) {
+        shouldApplyEffect = true;
+      } else if (
+        source.hasAbility(abilityIdEnum.SERENE_GRACE) &&
+        roll < 2 * probablity
+      ) {
+        source.battle.addToLog(`${source.name}'s Serene Grace activates!`);
+        shouldApplyEffect = true;
+      }
+    }
+
+    if (shouldApplyEffect) {
+      return target.applyEffect(effectId, duration, source, initialArgs);
+    }
+    return false;
+  }
+
+  /**
+   * @template {EffectIdEnum} K
+   * @param {object} param0
+   * @param {BattlePokemon} param0.source
+   * @param {BattlePokemon} param0.primaryTarget
+   * @param {Array<BattlePokemon>} param0.allTargets
+   * @param {Array<BattlePokemon>=} param0.missedTargets
+   * @param {K} param0.effectId
+   * @param {number} param0.duration
+   * @param {EffectInitialArgsTypeFromId<K>=} param0.initialArgs
+   * @param {number=} param0.probablity
+   */
+  genericApplyAllEffects({
+    source,
+    primaryTarget,
+    allTargets,
+    missedTargets = [],
+    effectId,
+    duration,
+    // @ts-ignore
+    initialArgs = {},
+    probablity = 1,
+  }) {
+    for (const target of allTargets) {
+      this.genericApplySingleEffect({
+        source,
+        target,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+        effectId,
+        duration,
+        initialArgs,
         probablity,
       });
     }
@@ -219,6 +309,106 @@ const movesToRegister = Object.freeze({
         primaryTarget,
         allTargets,
         missedTargets,
+      });
+    },
+  }),
+  [moveIdEnum.CONFUSION]: new Move({
+    id: moveIdEnum.CONFUSION,
+    name: "Confusion",
+    type: pokemonTypes.PSYCHIC,
+    power: 50,
+    accuracy: 100,
+    cooldown: 0,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The target is hit by a weak telekinetic force. This has a 25% chance to confuse the target for 1 turn.",
+    execute(args) {
+      this.genericDealAllDamage(args);
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "confused",
+        duration: 1,
+        probablity: 0.25,
+      });
+    },
+  }),
+  [moveIdEnum.PSYCHIC]: new Move({
+    id: moveIdEnum.PSYCHIC,
+    name: "Psychic",
+    type: pokemonTypes.PSYCHIC,
+    power: 65,
+    accuracy: 90,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.ROW,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The target is hit by a strong telekinetic force. This has a 60% chance to lower the targets' Special Defense for 2 turns.",
+    execute(args) {
+      this.genericDealAllDamage(args);
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "spdDown",
+        duration: 2,
+        probablity: 0.6,
+      });
+    },
+  }),
+  [moveIdEnum.DOOM_DESIRE]: new Move({
+    id: moveIdEnum.DOOM_DESIRE,
+    name: "Doom Desire",
+    type: pokemonTypes.STEEL,
+    power: 120,
+    accuracy: 100,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "Two turns after this move is used, the user's strikes the target with a concentrated bundle of light (undispellable). This move also has a 10% chance to apply Perish Song.",
+    execute(args) {
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: effectIdEnum.DOOM_DESIRE,
+        duration: 2,
+      });
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "perishSong",
+        duration: 3,
+        probablity: 0.1,
+      });
+    },
+  }),
+  [moveIdEnum.IRON_HEAD]: new Move({
+    id: moveIdEnum.IRON_HEAD,
+    name: "Iron Head",
+    type: pokemonTypes.STEEL,
+    power: 90,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The target is struck with a hard head made of iron. This has a 50% chance to flinch.",
+    execute(args) {
+      this.genericDealAllDamage(args);
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "flinched",
+        duration: 1,
+        probablity: 0.5,
       });
     },
   }),

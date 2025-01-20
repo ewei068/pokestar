@@ -16,6 +16,7 @@ const backpackItems = Object.freeze({
   WILLPOWER_SHARD: "6",
   MINT: "7",
   RAID_PASS: "8",
+  STAR_PIECE: "9",
 });
 
 const backpackCategoryConfig = Object.freeze({
@@ -28,7 +29,7 @@ const backpackCategoryConfig = Object.freeze({
   [backpackCategories.MATERIALS]: {
     name: "Materials",
     emoji: "<:materials:1112557472759160852>",
-    description: "Used to upgrade Pokemon and equipment!",
+    description: "Used to upgrade Pokemon, craft items, and as currency!",
   },
   [backpackCategories.CONSUMABLES]: {
     name: "Consumables",
@@ -88,6 +89,12 @@ const backpackItemConfig = Object.freeze({
     name: "Mint",
     emoji: "<:mint:1119381176398913576>",
     description: "Used to change a Pokemon's nature!",
+    category: backpackCategories.MATERIALS,
+  },
+  [backpackItems.STAR_PIECE]: {
+    name: "Star Piece",
+    emoji: "<:starpiece:1329630164526829709>",
+    description: "Obtained from raids; used to make wishes!",
     category: backpackCategories.MATERIALS,
   },
   [backpackItems.RAID_PASS]: {

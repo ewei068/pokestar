@@ -1377,7 +1377,10 @@ const canRelease = async (trainer, pokemonIds) => {
 
   // see if any pokemon are mythical
   for (const pokemon of toRelease.data) {
-    if (pokemon.rarity === rarities.MYTHICAL) {
+    if (
+      pokemon.rarity === rarities.MYTHICAL &&
+      process.env.STAGE !== stageNames.ALPHA
+    ) {
       return {
         err: `You can't release or trade ${pokemon.name} (${pokemon._id}) because it's mythical!`,
       };
