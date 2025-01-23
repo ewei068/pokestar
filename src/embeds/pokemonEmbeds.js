@@ -306,7 +306,7 @@ const buildPokemonListEmbed = (trainer, pokemons, page) => {
 /**
  * @param {Trainer} trainer
  * @param {Pokemon} pokemon
- * @param {string=} tab
+ * @param {("info" | "battle" | "equipment" | "all")=} tab
  * @param {Pokemon=} oldPokemon
  * @param {string=} originalOwnerId
  * @returns {EmbedBuilder}

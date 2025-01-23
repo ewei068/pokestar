@@ -7,6 +7,7 @@ const { getJirachi } = require("../../services/mythic");
  * @param {DeactElement} ref
  * @param {object} param1
  * @param {DiscordUser} param1.user
+ * @returns {Promise<ComposedElements>}
  */
 const Jirachi = async (ref, { user }) => {
   const { trainer, err: trainerErr } = await useTrainer(user, ref);
@@ -24,8 +25,8 @@ const Jirachi = async (ref, { user }) => {
   }
 
   return {
-    content: "",
-    embeds: [buildPokemonEmbed(trainer, jirachi)],
+    contents: [jirachi._id.toString()],
+    embeds: [buildPokemonEmbed(trainer, jirachi, "info")],
   };
 };
 
