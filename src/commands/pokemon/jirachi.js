@@ -4,29 +4,25 @@
  *
  * jirachi.js jirachi.
  */
-const { buildDeoxysSend } = require("../../services/mythic");
+const { createRoot } = require("../../deact/deact");
+const Jirachi = require("../../elements/pokemon/Jirachi");
+const { getUserFromInteraction } = require("../../utils/utils");
 
-const deoxys = async (user) => await buildDeoxysSend(user);
+const jirachi = async (interaction) =>
+  await createRoot(
+    Jirachi,
+    {
+      user: getUserFromInteraction(interaction),
+    },
+    interaction,
+    { ttl: 180 }
+  );
 
-const deoxysMessageCommand = async (message) => {
-  const { send, err } = await deoxys(message.author);
-  if (err) {
-    await message.channel.send(`${err}`);
-    return { err };
-  }
-  await message.channel.send(send);
-};
+const jirachiMessageCommand = async (message) => await jirachi(message);
 
-const deoxysSlashCommand = async (interaction) => {
-  const { send, err } = await deoxys(interaction.user);
-  if (err) {
-    await interaction.reply(`${err}`);
-    return { err };
-  }
-  await interaction.reply(send);
-};
+const jirachiSlashCommand = async (interaction) => await jirachi(interaction);
 
 module.exports = {
-  message: deoxysMessageCommand,
-  slash: deoxysSlashCommand,
+  message: jirachiMessageCommand,
+  slash: jirachiSlashCommand,
 };

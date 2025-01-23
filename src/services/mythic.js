@@ -42,6 +42,7 @@ const {
 } = require("./pokemon");
 const { getTrainer, updateTrainer } = require("./trainer");
 const { getMoves } = require("../battle/data/moveRegistry");
+const { pokemonIdEnum } = require("../enums/pokemonEnums");
 
 /**
  * @param {Trainer} trainer
@@ -689,7 +690,7 @@ const onFormSelect = async (user, speciesId) => {
  * @returns {Promise<{err?: string, data?: WithId<Pokemon>}>}
  */
 const getJirachi = async (trainer) => {
-  const speciesId = "385";
+  const speciesId = pokemonIdEnum.JIRACHI;
 
   const jirachiRes = await getMythic(trainer, speciesId);
   if (jirachiRes.err) {
@@ -708,6 +709,7 @@ const getJirachi = async (trainer) => {
     const pokemonsRes = await listPokemons(trainer, {
       pageSize: 3,
       filter: { originalOwner: { $ne: trainer.userId } },
+      allowNone: true,
     });
     if (pokemonsRes.err) {
       return { err: pokemonsRes.err };
@@ -728,8 +730,8 @@ const getJirachi = async (trainer) => {
     modified = true;
   }
 
-  if (!trainer.hasCelebi) {
-    trainer.hasCelebi = true;
+  if (!trainer.hasJirachi) {
+    trainer.hasJirachi = true;
     const trainerRes = await updateTrainer(trainer);
     if (trainerRes.err) {
       return { err: trainerRes.err };
