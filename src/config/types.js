@@ -11,6 +11,7 @@
 /** @typedef {import("./npcConfig").NpcEnum} NpcEnum */
 /** @typedef {import("./npcConfig").DungeonEnum} DungeonEnum */
 /** @typedef {import("./npcConfig").RaidEnum} RaidEnum */
+/** @typedef {import("./npcConfig").RaidConfigData} RaidConfigData */
 /** @typedef {import("./npcConfig").NpcDifficultyEnum} NpcDifficultyEnum  */
 /** @typedef {import("./backpackConfig").BackpackItemEnum} BackpackItemEnum */
 /** @typedef {import("./backpackConfig").BackpackCategoryEnum} BackpackCategoryEnum */

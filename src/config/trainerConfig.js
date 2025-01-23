@@ -407,7 +407,12 @@ const trainerFields = {
       pokemonIds: [],
     },
   },
+  // TODO: move mythics to its own nested object?
   hasCelebi: {
+    type: "boolean",
+    default: false,
+  },
+  hasJirachi: {
     type: "boolean",
     default: false,
   },
@@ -415,6 +420,11 @@ const trainerFields = {
     type: "boolean",
     default: false,
     refreshInterval: timeEnum.DAY,
+  },
+  usedWish: {
+    type: "boolean",
+    default: false,
+    refreshInterval: timeEnum.WEEK,
   },
   lastTowerStage: {
     type: "number",
