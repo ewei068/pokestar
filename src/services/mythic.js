@@ -750,6 +750,32 @@ const getJirachi = async (trainer) => {
   return { data: jirachi };
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {object} param1
+ * @param {string} param1.wishId
+ * @param {Pokemon?=} param1.pokemon
+ * @returns {{err?: string}}
+ */
+const canTrainerUseWish = (trainer, { wishId, pokemon }) => {
+  const wishData =
+    pokemonConfig[pokemonIdEnum.JIRACHI].mythicConfig.wishes[wishId];
+  if (!wishData) {
+    return { err: "Invalid wish" };
+  }
+  if (trainer.usedWish) {
+    return { err: "You have already used your wish this week!" };
+  }
+  const { starPieceCost } = wishData;
+  if (getItems(trainer, backpackItems.STAR_PIECE) < starPieceCost) {
+    return { err: "Not enough Star Pieces" };
+  }
+
+  // TODO: check pokemon
+
+  return { err: null };
+};
+
 module.exports = {
   getMew,
   updateMew,
@@ -761,4 +787,5 @@ module.exports = {
   buildDeoxysSend,
   onFormSelect,
   getJirachi,
+  canTrainerUseWish,
 };
