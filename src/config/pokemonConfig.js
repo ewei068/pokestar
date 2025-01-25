@@ -1,5 +1,6 @@
 const { moveIdEnum, abilityIdEnum } = require("../enums/battleEnums");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
+const { formatMoney } = require("../utils/utils");
 
 /** @typedef {Enum<types>} PokemonTypeEnum */
 const types = Object.freeze({
@@ -7345,6 +7346,36 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     noGacha: true,
+    mythicConfig: {
+      wishes: {
+        power: {
+          name: "Power",
+          description:
+            "Sets a random IV stat of a selected Pokemon to 31. Will select a stat that does not already have 31 IVs.",
+          starPieceCost: 100,
+        },
+        rebirth: {
+          name: "Rebirth",
+          description:
+            "Rerolls a selected Pokemon's ability, guaranteeing a new ability. Will not work if the Pokemon has only one ability.",
+          starPieceCost: 150,
+        },
+        allies: {
+          name: "Allies",
+          description:
+            "Grants 50 random Pokeballs, with odds equal to `/daily` and the Pokemart.",
+          starPieceCost: 200,
+        },
+        wealth: {
+          name: "Wealth",
+          description: `Grants ${formatMoney(
+            100000
+          )}, 400 of each Equipment Shard, and 5 mints.`,
+          starPieceCost: 200,
+        },
+      },
+      shinyChanceMultiplier: 2,
+    },
   },
   386: {
     name: "Deoxys",

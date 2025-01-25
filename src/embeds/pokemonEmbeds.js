@@ -57,6 +57,7 @@ const {
   equipmentConfig,
   SWAP_COST,
 } = require("../config/equipmentConfig");
+const { pokemonIdEnum } = require("../enums/pokemonEnums");
 
 /**
  *
@@ -921,6 +922,46 @@ const buildCelebiAbilityEmbed = (trainer) => {
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ */
+const buildJirachiAbilityEmbed = (trainer) => {
+  const { mythicConfig } = pokemonConfig[pokemonIdEnum.JIRACHI];
+  const embed = new EmbedBuilder();
+  embed.setTitle(`Jirachi's Abilities`);
+  embed.setColor("#FFFFFF");
+  embed.setDescription(
+    "Jirachi has one passive ability and a special Wish ability!"
+  );
+
+  embed.addFields({
+    name: "Passive: Serene Luck",
+    value: `Jirachi calls upon the stars to grant you improved luck! **You are ${mythicConfig.shinyChanceMultiplier}x more likely to find Shiny Pokemon** from \`/gacha\` and raids.`,
+    inline: false,
+  });
+
+  // TODO: wish cooldown
+
+  let wishString =
+    "Wish upon a star **once a week** for one of the following powerful effects:\n";
+  for (const wish of Object.values(mythicConfig.wishes)) {
+    wishString += `* **[${
+      backpackItemConfig[backpackItems.STAR_PIECE].emoji
+    } x${wish.starPieceCost}] Wish for ${wish.name}:** ${wish.description}\n`;
+  }
+  embed.addFields({
+    name: "Active: Wishmaker",
+    value: wishString,
+    inline: false,
+  });
+
+  embed.setImage(
+    "https://i.pinimg.com/originals/e3/70/fe/e370fea53723b0e260c60d1de31e3a39.jpg"
+  );
+
+  return embed;
+};
+
 module.exports = {
   buildBannerEmbed,
   buildPokemonSpawnEmbed,
@@ -936,4 +977,5 @@ module.exports = {
   buildSpeciesDexEmbed,
   buildGachaInfoString,
   buildCelebiAbilityEmbed,
+  buildJirachiAbilityEmbed,
 };

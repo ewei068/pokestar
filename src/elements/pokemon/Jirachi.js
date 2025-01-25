@@ -1,4 +1,7 @@
-const { buildPokemonEmbed } = require("../../embeds/pokemonEmbeds");
+const {
+  buildPokemonEmbed,
+  buildJirachiAbilityEmbed,
+} = require("../../embeds/pokemonEmbeds");
 const { useAwaitedMemo } = require("../../deact/deact");
 const useTrainer = require("../../hooks/useTrainer");
 const { getJirachi } = require("../../services/mythic");
@@ -26,7 +29,10 @@ const Jirachi = async (ref, { user }) => {
 
   return {
     contents: [jirachi._id.toString()],
-    embeds: [buildPokemonEmbed(trainer, jirachi, "info")],
+    embeds: [
+      buildPokemonEmbed(trainer, jirachi, "info"),
+      buildJirachiAbilityEmbed(trainer),
+    ],
   };
 };
 
