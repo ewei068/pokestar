@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 /* eslint-disable no-param-reassign */
 /**
  * @file
@@ -10,10 +11,11 @@ const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const {
   backpackItemConfig,
   backpackItems,
+  backpackCategories,
 } = require("../config/backpackConfig");
 const { collectionNames } = require("../config/databaseConfig");
 const { eventNames } = require("../config/eventConfig");
-const { getCelebiPool } = require("../config/gachaConfig");
+const { getCelebiPool, dailyRewardChances } = require("../config/gachaConfig");
 const { locations } = require("../config/locationConfig");
 const { dungeons } = require("../config/npcConfig");
 const {
@@ -31,7 +33,13 @@ const {
 const { logger } = require("../log");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
 const { drawDiscrete, drawIterable } = require("../utils/gachaUtils");
-const { getItems, removeItems } = require("../utils/trainerUtils");
+const {
+  getItems,
+  removeItems,
+  addRewards,
+  getFlattenedRewardsString,
+  getRewardsString,
+} = require("../utils/trainerUtils");
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
 const {
   listPokemons,
@@ -776,6 +784,81 @@ const canTrainerUseWish = (trainer, { wishId, pokemon }) => {
   return { err: null };
 };
 
+/**
+ * @param {DiscordUser} user
+ * @param {object} param1
+ * @param {string} param1.wishId
+ * @param {Pokemon?=} param1.pokemon
+ * @returns {Promise<{result?: string, err?: string}>}
+ */
+const useWish = async (user, { wishId, pokemon }) => {
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { err: trainerErr };
+  }
+  const { err: canUseWishErr } = canTrainerUseWish(trainer, {
+    wishId,
+    pokemon,
+  });
+  if (canUseWishErr) {
+    return { err: canUseWishErr };
+  }
+
+  // use wish
+  const wishData =
+    pokemonConfig[pokemonIdEnum.JIRACHI].mythicConfig.wishes[wishId];
+  const { starPieceCost } = wishData;
+  // remove star pieces and set usedWish to true
+  removeItems(trainer, backpackItems.STAR_PIECE, starPieceCost);
+  trainer.usedWish = true;
+  // make wish happen
+  let result = "";
+  let rewards = {};
+  switch (wishId) {
+    case "allies":
+      // give 50 random Pokeballs
+      const pokeballResults = drawDiscrete(dailyRewardChances, 50);
+      const backpackRewards = pokeballResults.reduce(
+        (acc, curr) => {
+          acc[backpackCategories.POKEBALLS][curr] =
+            (acc[backpackCategories.POKEBALLS][curr] || 0) + 1;
+          return acc;
+        },
+        {
+          [backpackCategories.POKEBALLS]: {},
+        }
+      );
+      rewards = { backpack: backpackRewards };
+      addRewards(trainer, rewards);
+      result = getRewardsString(rewards);
+      break;
+    case "wealth":
+      rewards = {
+        money: 100000,
+        backpack: {
+          [backpackCategories.MATERIALS]: {
+            [backpackItems.EMOTION_SHARD]: 400,
+            [backpackItems.KNOWLEDGE_SHARD]: 400,
+            [backpackItems.WILLPOWER_SHARD]: 400,
+            [backpackItems.MINT]: 5,
+          },
+        },
+      };
+      addRewards(trainer, rewards);
+      result = getRewardsString(rewards);
+      break;
+    default:
+      return { err: "Invalid wish" };
+  }
+
+  const { err: updateTrainerErr } = await updateTrainer(trainer);
+  if (updateTrainerErr) {
+    return { err: updateTrainerErr };
+  }
+
+  return { result, err: null };
+};
+
 module.exports = {
   getMew,
   updateMew,
@@ -788,4 +871,5 @@ module.exports = {
   onFormSelect,
   getJirachi,
   canTrainerUseWish,
+  useWish,
 };

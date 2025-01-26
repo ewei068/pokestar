@@ -8,7 +8,7 @@ const { statusConditions, targetPatterns } = require("../config/battleConfig");
 const { difficultyConfig } = require("../config/npcConfig");
 const { pokemonConfig, typeConfig } = require("../config/pokemonConfig");
 const {
-  getRewardsString,
+  getFlattenedRewardsString,
   flattenRewards,
   flattenCategories,
 } = require("./trainerUtils");
@@ -463,7 +463,7 @@ const buildNpcDifficultyString = (difficulty, npcDifficultyData) => {
   difficultyString += "\n";
   difficultyString += `**Multipliers:** Money: ${rewardMultipliers.moneyMultiplier} | EXP: ${rewardMultipliers.expMultiplier} | Pkmn. EXP: ${rewardMultipliers.pokemonExpMultiplier}`;
   if (npcDifficultyData.dailyRewards) {
-    difficultyString += `\n**Daily Rewards:** ${getRewardsString(
+    difficultyString += `\n**Daily Rewards:** ${getFlattenedRewardsString(
       flattenRewards(npcDifficultyData.dailyRewards),
       false
     )}`;
@@ -502,7 +502,7 @@ const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
   );
   difficultyString += `**Phases:** ${dungeonDifficultyData.phases.length}\n`;
   difficultyString += `**Pokemon:** ${pokemonEmojis.join(" ")}\n`;
-  difficultyString += `**Rewards:** ${getRewardsString(
+  difficultyString += `**Rewards:** ${getFlattenedRewardsString(
     flattenRewards(rewards),
     false
   )}`;

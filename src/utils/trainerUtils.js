@@ -43,7 +43,7 @@ const getBackpackItemsString = (trainer) => {
  * @param {boolean=} received
  * @returns {string}
  */
-const getRewardsString = (rewards, received = true) => {
+const getFlattenedRewardsString = (rewards, received = true) => {
   let rewardsString = received ? "**You received:**" : "";
   if (rewards.money) {
     rewardsString += `\n${formatMoney(rewards.money)}`;
@@ -88,6 +88,16 @@ const flattenRewards = (rewards) => {
   }
   // @ts-ignore
   return flattenedRewards;
+};
+
+/**
+ * @param {Rewards} rewards
+ * @param {boolean=} received
+ * @returns {string}
+ */
+const getRewardsString = (rewards, received = true) => {
+  const flattenedRewards = flattenRewards(rewards);
+  return getFlattenedRewardsString(flattenedRewards, received);
 };
 
 /**
@@ -192,6 +202,7 @@ const getUserSelectedDevice = (_user, userSettings) =>
 module.exports = {
   getPokeballsString,
   getBackpackItemsString,
+  getFlattenedRewardsString,
   getRewardsString,
   flattenCategories,
   flattenRewards,

@@ -38,7 +38,7 @@ const {
 const { pokemonConfig } = require("../config/pokemonConfig");
 const {
   getFullUsername,
-  getRewardsString,
+  getFlattenedRewardsString,
   flattenRewards,
   flattenCategories,
 } = require("../utils/trainerUtils");
@@ -537,7 +537,7 @@ const buildBattleTowerEmbed = (towerStage) => {
   const bossData = pokemonConfig[npcDifficultyData.aceId];
   const bossString = `**Boss**: ${bossData.emoji} #${npcDifficultyData.aceId} **${bossData.name}** \`/pokedex ${npcDifficultyData.aceId}\``;
   difficultyString += `${bossString}\n`;
-  difficultyString += `**Rewards:** ${getRewardsString(
+  difficultyString += `**Rewards:** ${getFlattenedRewardsString(
     flattenRewards(battleTowerData.rewards),
     false
   )}`;
