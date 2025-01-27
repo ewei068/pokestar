@@ -266,6 +266,21 @@ const fortnightToUTCTime = (fortnight) => fortnight * 86400000 * 14;
 } */
 
 /**
+ * @param {number} interval
+ * @param {Date=} date
+ * @returns {Date}
+ */
+const getNextTimeIntervalDate = (interval, date = null) => {
+  if (!date) {
+    date = new Date();
+  }
+  const currentUtcTimeInterval = getFullUTCTimeInterval(interval, date);
+  const nextUtcTimeInterval = currentUtcTimeInterval + 1;
+  const nextTimeIntervalTime = nextUtcTimeInterval * interval;
+  return new Date(nextTimeIntervalTime);
+};
+
+/**
  * @param {Date?=} date
  * @returns {{hours: number, minutes: number, seconds: number}}
  */
@@ -459,6 +474,7 @@ module.exports = {
   getFullUTCWeek,
   getFullUTCFortnight,
   getFullUTCTimeInterval,
+  getNextTimeIntervalDate,
   fortnightToUTCTime,
   getTimeToNextDay,
   poll,

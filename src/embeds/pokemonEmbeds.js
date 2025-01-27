@@ -22,6 +22,7 @@ const {
   setTwoInline,
   getOrSetDefault,
   formatMoney,
+  getNextTimeIntervalDate,
 } = require("../utils/utils");
 const {
   getPokemonExpNeeded,
@@ -58,6 +59,7 @@ const {
   SWAP_COST,
 } = require("../config/equipmentConfig");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
+const { timeEnum } = require("../enums/miscEnums");
 
 /**
  *
@@ -940,10 +942,11 @@ const buildJirachiAbilityEmbed = (trainer) => {
     inline: false,
   });
 
-  // TODO: wish cooldown
-
-  let wishString =
-    "Wish upon a star **once a week** for one of the following powerful effects:\n";
+  const nextWeek = getNextTimeIntervalDate(timeEnum.WEEK);
+  const remainingTimeString = trainer.usedWish
+    ? `(next Wish: <t:${Math.floor(nextWeek.getTime() / 1000)}:R>) `
+    : "";
+  let wishString = `Wish upon a star **once a week** ${remainingTimeString}for one of the following powerful effects:\n`;
   for (const wish of Object.values(mythicConfig.wishes)) {
     wishString += `* **[${
       backpackItemConfig[backpackItems.STAR_PIECE].emoji
