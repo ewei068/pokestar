@@ -8,6 +8,8 @@ const {
   createElement,
   useState,
   useCallback,
+  createModal,
+  useModalSubmitCallbackBinding,
 } = require("../../deact/deact");
 const useTrainer = require("../../hooks/useTrainer");
 const {
@@ -23,6 +25,9 @@ const {
   backpackItems,
 } = require("../../config/backpackConfig");
 const YesNoButtons = require("../foundation/YesNoButtons");
+const { buildPokemonIdSearchModal } = require("../../modals/pokemonModals");
+const { getPokemon } = require("../../services/pokemon");
+const { formatItemQuantity } = require("../../utils/itemUtils");
 
 const starPieceEmoji = backpackItemConfig[backpackItems.STAR_PIECE].emoji;
 const { mythicConfig } = pokemonConfig[pokemonIdEnum.JIRACHI];
@@ -31,25 +36,29 @@ const { mythicConfig } = pokemonConfig[pokemonIdEnum.JIRACHI];
  * @param {DeactElement} ref
  * @param {object} param1
  * @param {DiscordUser} param1.user
- * @param {Function} param1.setTrainer
+ * @param {() => Promise<any>} param1.refreshTrainer
  * @param {string} param1.wishId
  * @param {Function} param1.goBack
  * @returns {Promise<ComposedElements>}
  */
-const ConfirmWish = async (ref, { user, setTrainer, wishId, goBack }) => {
+const ConfirmWish = async (ref, { user, refreshTrainer, wishId, goBack }) => {
   const [content, setContent] = useState("", ref);
   const [shouldShowResults, setShouldShowResults] = useState(false, ref);
 
   // confirm buttons
   const currentWishData = mythicConfig.wishes[wishId];
-  const confirmContent =
-    `Are you sure you want to make **Wish for ${currentWishData.name}** for ${currentWishData.starPieceCost}x ${starPieceEmoji} Star Pieces?` +
-    `\n\n${currentWishData.description}`;
+  const confirmContent = `Are you sure you want to make **Wish for ${
+    currentWishData.name
+  }** for ${formatItemQuantity(
+    backpackItems.STAR_PIECE,
+    currentWishData.starPieceCost
+  )}?\n\n${currentWishData.description}`;
   const confirmButtonPressedKey = useCallbackBinding(async () => {
     const { result: useWishResult, err } = await useWish(user, {
       wishId,
     });
     if (err) {
+      await refreshTrainer();
       goBack(err);
       return;
     }
@@ -87,7 +96,12 @@ const Jirachi = async (ref, { user }) => {
   const [content, setContent] = useState("", ref);
   const [shouldShowConfirm, setShouldShowConfirm] = useState(false, ref);
   const [selectedWishId, setSelectedWishId] = useState("", ref);
-  const { trainer, err: trainerErr, setTrainer } = await useTrainer(user, ref);
+  const [selectedPokemon, setSelectedPokemon] = useState(null, ref);
+  const {
+    trainer,
+    err: trainerErr,
+    refreshTrainer,
+  } = await useTrainer(user, ref);
   if (trainerErr) {
     return { err: trainerErr };
   }
@@ -101,13 +115,40 @@ const Jirachi = async (ref, { user }) => {
     return { err: jirachiErr };
   }
 
+  // pokemon ID input
+  const idSubmittedActionBinding = useModalSubmitCallbackBinding(
+    async (interaction) => {
+      const pokemonIdInput =
+        interaction.fields.getTextInputValue("pokemonIdInput");
+      const { data: pokemon, err } = await getPokemon(trainer, pokemonIdInput);
+      if (err) {
+        setContent("Pokemon not found. Make sure you enter its full exact ID!");
+        setSelectedWishId("");
+        return;
+      }
+
+      setSelectedPokemon(pokemon);
+      setShouldShowConfirm(true);
+    },
+    ref
+  );
+
   // wish buttons
   const wishButtonPressedKey = useCallbackBinding(
-    async (_interaction, data) => {
+    async (interaction, data) => {
       const { wishId } = data;
-      // TODO: for certain wish, confirm on target pokemon
+      if (wishId === "power" || wishId === "rebirth") {
+        await createModal(
+          buildPokemonIdSearchModal,
+          {},
+          idSubmittedActionBinding,
+          interaction,
+          ref
+        );
+      } else {
+        setShouldShowConfirm(true);
+      }
       setSelectedWishId(wishId);
-      setShouldShowConfirm(true);
     },
     ref,
     { defer: false }
@@ -126,6 +167,7 @@ const Jirachi = async (ref, { user }) => {
   );
   const goBack = useCallback(
     (err = "") => {
+      setSelectedPokemon(null);
       setShouldShowConfirm(false);
       setSelectedWishId("");
       setContent(err);
@@ -139,7 +181,7 @@ const Jirachi = async (ref, { user }) => {
       elements: [
         createElement(ConfirmWish, {
           user,
-          setTrainer,
+          refreshTrainer,
           wishId: selectedWishId,
           goBack,
         }),

@@ -60,6 +60,7 @@ const {
 } = require("../config/equipmentConfig");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { timeEnum } = require("../enums/miscEnums");
+const { formatItemQuantityFromBackpack } = require("../utils/itemUtils");
 
 /**
  *
@@ -952,6 +953,10 @@ const buildJirachiAbilityEmbed = (trainer) => {
       backpackItemConfig[backpackItems.STAR_PIECE].emoji
     } x${wish.starPieceCost}] Wish for ${wish.name}:** ${wish.description}\n`;
   }
+  wishString += `\nYou currently have ${formatItemQuantityFromBackpack(
+    backpackItems.STAR_PIECE,
+    trainer.backpack
+  )}.`;
   embed.addFields({
     name: "Active: Wishmaker",
     value: wishString,
