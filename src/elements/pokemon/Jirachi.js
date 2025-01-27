@@ -4,7 +4,6 @@ const {
 } = require("../../embeds/pokemonEmbeds");
 const {
   useAwaitedMemo,
-  useMemo,
   useCallbackBinding,
   createElement,
   useState,
