@@ -262,8 +262,10 @@ const onRaidWin = async (raid) => {
       await updateTrainer(trainer.data);
 
       // if damage >= 10%, shinyChance chance of shiny
-      const receivedShiny =
-        percentDamage >= 0.1 && Math.random() < difficultyData.shinyChance;
+      const shinyChance = trainer.data.hasJirachi
+        ? difficultyData.shinyChance * 2
+        : difficultyData.shinyChance;
+      const receivedShiny = percentDamage >= 0.1 && Math.random() < shinyChance;
       if (!receivedShiny) {
         continue;
       }

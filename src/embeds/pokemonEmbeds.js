@@ -956,7 +956,7 @@ const buildJirachiAbilityEmbed = (trainer) => {
 
   embed.addFields({
     name: "Passive: Serene Luck",
-    value: `Jirachi calls upon the stars to grant you improved luck! **You are ${mythicConfig.shinyChanceMultiplier}x more likely to find Shiny Pokemon** from \`/gacha\` and raids.`,
+    value: `Jirachi calls upon the stars to grant you improved luck! **You are ${mythicConfig.shinyChanceMultiplier}x more likely to find Shiny Pokemon** from most methods (spawning excluded).`,
     inline: false,
   });
 
