@@ -63,6 +63,7 @@ const ConfirmWish = async (
   const confirmButtonPressedKey = useCallbackBinding(async () => {
     const { result: useWishResult, err } = await useWish(user, {
       wishId,
+      pokemon: selectedPokemon,
     });
     if (err) {
       await refreshTrainer();
@@ -79,9 +80,10 @@ const ConfirmWish = async (
 
   return {
     contents: [content || confirmContent],
-    embeds: selectedPokemon
-      ? [buildPokemonEmbed(user, selectedPokemon, "info")]
-      : [],
+    embeds:
+      selectedPokemon && !shouldShowResults
+        ? [buildPokemonEmbed(user, selectedPokemon, "info")]
+        : [],
     components: shouldShowResults
       ? []
       : [
@@ -131,7 +133,9 @@ const Jirachi = async (ref, { user }) => {
         interaction.fields.getTextInputValue("pokemonIdInput");
       const { data: pokemon, err } = await getPokemon(trainer, pokemonIdInput);
       if (err) {
-        setContent("Pokemon not found. Make sure you enter its full exact ID!");
+        setContent(
+          "**ERROR:** Pokemon not found. Make sure you enter its full exact ID!"
+        );
         setSelectedWishId("");
         return;
       }
@@ -179,7 +183,7 @@ const Jirachi = async (ref, { user }) => {
       setSelectedPokemon(null);
       setShouldShowConfirm(false);
       setSelectedWishId("");
-      setContent(err);
+      setContent(`**ERROR:** ${err}`);
     },
     [setShouldShowConfirm, setSelectedWishId, setContent],
     ref

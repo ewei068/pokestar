@@ -10,7 +10,7 @@
 const { getPokemon, getEvolvedPokemon } = require("../../services/pokemon");
 const { getState } = require("../../services/state");
 const { getTrainer } = require("../../services/trainer");
-const { DEPRECATED_buildPokemonEmbed } = require("../../embeds/pokemonEmbeds");
+const { DEPRECATEDbuildPokemonEmbed } = require("../../embeds/pokemonEmbeds");
 const { buildButtonActionRow } = require("../../components/buttonActionRow");
 const { eventNames } = require("../../config/eventConfig");
 
@@ -45,7 +45,7 @@ const pokemonEvolveSelect = async (interaction, data) => {
   const speciesId = interaction.values[0];
   state.speciesId = speciesId;
   const evolvedPokemon = getEvolvedPokemon(pokemon.data, speciesId);
-  const embed = DEPRECATED_buildPokemonEmbed(trainer.data, evolvedPokemon);
+  const embed = DEPRECATEDbuildPokemonEmbed(trainer.data, evolvedPokemon);
 
   // get confirm button
   const rowData = {

@@ -26,7 +26,7 @@ const {
 const { stageNames } = require("../config/stageConfig");
 const { QueryBuilder } = require("../database/mongoHandler");
 const {
-  DEPRECATED_buildPokemonEmbed,
+  DEPRECATEDbuildPokemonEmbed,
   buildCelebiAbilityEmbed,
   buildNewPokemonEmbed,
 } = require("../embeds/pokemonEmbeds");
@@ -37,7 +37,6 @@ const {
   getItems,
   removeItems,
   addRewards,
-  getFlattenedRewardsString,
   getRewardsString,
 } = require("../utils/trainerUtils");
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
@@ -47,10 +46,13 @@ const {
   calculatePokemonStats,
   calculateAndUpdatePokemonStats,
   checkNumPokemon,
+  updatePokemon,
 } = require("./pokemon");
 const { getTrainer, updateTrainer } = require("./trainer");
 const { getMoves } = require("../battle/data/moveRegistry");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
+const { statToBattleStat } = require("../config/battleConfig");
+const { getAbilityName } = require("../utils/pokemonUtils");
 
 /**
  * @param {Trainer} trainer
@@ -329,7 +331,7 @@ const buildMewSend = async ({ user = null, tab = "basic" } = {}) => {
   };
 
   // build pokemon embed
-  const embed = DEPRECATED_buildPokemonEmbed(trainer, mew, "all");
+  const embed = DEPRECATEDbuildPokemonEmbed(trainer, mew, "all");
   send.embeds.push(embed);
 
   // build tab buttons
@@ -489,7 +491,7 @@ const buildCelebiSend = async (user) => {
   };
 
   // build pokemon embed
-  const embed = DEPRECATED_buildPokemonEmbed(trainer, celebi, "info");
+  const embed = DEPRECATEDbuildPokemonEmbed(trainer, celebi, "info");
   send.embeds.push(embed);
   const abilityEmbed = buildCelebiAbilityEmbed(trainer);
   send.embeds.push(abilityEmbed);
@@ -628,7 +630,7 @@ const buildDeoxysSend = async (user) => {
   };
 
   // build pokemon embed
-  const embed = DEPRECATED_buildPokemonEmbed(trainer, deoxys, "all");
+  const embed = DEPRECATEDbuildPokemonEmbed(trainer, deoxys, "all");
   send.embeds.push(embed);
 
   // build tab buttons
@@ -779,7 +781,17 @@ const canTrainerUseWish = (trainer, { wishId, pokemon }) => {
     return { err: "Not enough Star Pieces" };
   }
 
-  // TODO: check pokemon
+  if (pokemon && wishId === "power") {
+    // check that an IV exists that is below 31
+    if (pokemon.ivs.every((iv) => iv === 31)) {
+      return { err: "All IVs are already at their maximum value!" };
+    }
+  } else if (pokemon && wishId === "rebirth") {
+    // check that the pokemon may learn at least 2 abilites
+    if (Object.keys(pokemonConfig[pokemon.speciesId].abilities).length < 2) {
+      return { err: "This Pokemon may only have one ability!" };
+    }
+  }
 
   return { err: null };
 };
@@ -788,7 +800,7 @@ const canTrainerUseWish = (trainer, { wishId, pokemon }) => {
  * @param {DiscordUser} user
  * @param {object} param1
  * @param {string} param1.wishId
- * @param {Pokemon?=} param1.pokemon
+ * @param {WithId<Pokemon>?=} param1.pokemon
  * @returns {Promise<{result?: string, err?: string}>}
  */
 const useWish = async (user, { wishId, pokemon }) => {
@@ -815,6 +827,48 @@ const useWish = async (user, { wishId, pokemon }) => {
   let result = "";
   let rewards = {};
   switch (wishId) {
+    case "power":
+      // set a random non-31 IV to 31
+      const non31IvIndices = pokemon.ivs.reduce((acc, iv, index) => {
+        if (iv !== 31) {
+          return [...acc, index];
+        }
+        return acc;
+      }, []);
+      const randomIndex = drawIterable(non31IvIndices, 1)[0];
+      pokemon.ivs[randomIndex] = 31;
+
+      // recalculate stats and update pokemon
+      const updateStatsRes = await calculateAndUpdatePokemonStats(
+        pokemon,
+        pokemonConfig[pokemon.speciesId],
+        true
+      );
+      if (updateStatsRes.err) {
+        return { err: updateStatsRes.err };
+      }
+      result = `**${pokemon.name}'s ${statToBattleStat[
+        randomIndex
+      ].toUpperCase()}** IV was set to 31!`;
+      break;
+    case "rebirth":
+      // reroll the Pokemon's ability ID, don't keep current ability
+      const speciesData = pokemonConfig[pokemon.speciesId];
+      const abilityProbabilities = {
+        ...speciesData.abilities,
+      };
+      // remove current ability from probabilities
+      delete abilityProbabilities[pokemon.abilityId];
+      const newAbilityId = drawDiscrete(abilityProbabilities, 1)[0];
+      pokemon.abilityId = newAbilityId;
+      const updateRes = await updatePokemon(pokemon);
+      if (updateRes.err) {
+        return { err: updateRes.err };
+      }
+      result = `**${pokemon.name}'s** ability was changed to **${getAbilityName(
+        newAbilityId
+      )}**!`;
+      break;
     case "allies":
       // give 50 random Pokeballs
       const pokeballResults = drawDiscrete(dailyRewardChances, 50);

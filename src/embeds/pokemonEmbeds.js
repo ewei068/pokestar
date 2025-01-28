@@ -488,7 +488,7 @@ const buildPokemonEmbed = (
  * @returns {EmbedBuilder}
  */
 // eslint-disable-next-line camelcase
-const DEPRECATED_buildPokemonEmbed = (
+const DEPRECATEDbuildPokemonEmbed = (
   trainer,
   pokemon,
   tab,
@@ -994,7 +994,7 @@ module.exports = {
   buildNewPokemonListEmbed,
   buildPokemonListEmbed,
   // eslint-disable-next-line camelcase
-  DEPRECATED_buildPokemonEmbed,
+  DEPRECATEDbuildPokemonEmbed,
   buildPokemonEmbed,
   buildEquipmentEmbed,
   buildEquipmentUpgradeEmbed,
