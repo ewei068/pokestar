@@ -1245,6 +1245,10 @@ class BattlePokemon {
     }
   }
 
+  hasAbility(abilityId) {
+    return this.ability?.abilityId === abilityId;
+  }
+
   /**
    * @param {number} heal
    * @param {BattlePokemon} target
@@ -1506,7 +1510,8 @@ class BattlePokemon {
    */
   removeEffect(effectId) {
     // if effect doesn't exist, do nothing
-    if (!this.effectIds[effectId]) {
+    const effectInstance = this.getEffectInstance(effectId);
+    if (!effectInstance) {
       return false;
     }
     const effect = getEffect(effectId);
@@ -1519,28 +1524,30 @@ class BattlePokemon {
       // @ts-ignore
       effect.effectRemove({
         battle: this.battle,
+        source: effectInstance.source,
+        duration: effectInstance.duration,
         target: this,
-        properties: this.effectIds[effectId].args,
-        initialArgs: this.effectIds[effectId].initialArgs,
+        properties: effectInstance.args,
+        initialArgs: effectInstance.initialArgs,
       });
     } else {
       const legacyEffect = /** @type {any} */ (effect);
       legacyEffect.effectRemove(
         this.battle,
         this,
-        this.effectIds[effectId].args,
-        this.effectIds[effectId].initialArgs
+        effectInstance.args,
+        effectInstance.initialArgs
       );
     }
 
     if (this.effectIds[effectId] !== undefined) {
       const afterRemoveArgs = {
         target: this,
-        source: this.effectIds[effectId].source,
+        source: effectInstance.source,
         effectId,
-        duration: this.effectIds[effectId].duration,
-        initialArgs: this.effectIds[effectId].initialArgs,
-        args: this.effectIds[effectId].args,
+        duration: effectInstance.duration,
+        initialArgs: effectInstance.initialArgs,
+        args: effectInstance.args,
       };
       this.battle.eventHandler.emit(
         battleEventEnum.AFTER_EFFECT_REMOVE,

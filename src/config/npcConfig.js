@@ -2649,8 +2649,35 @@ const raids = Object.freeze({
 
 const RAID_SHINY_CHANCE = 0.0033; // process.env.STAGE === stageNames.ALPHA ? 0.8 : 0.0033;
 const BASE_RAID_MONEY = 500;
+const BASE_STAR_PIECE = 1;
 
-const raidConfig = Object.freeze({
+/**
+ * @typedef {object} RaidConfigData
+ * @property {string} name
+ * @property {string} sprite
+ * @property {string} emoji
+ * @property {string} description
+ * @property {string} boss
+ * @property {string[]} shinyRewards
+ * @property {PartialRecord<NpcDifficultyEnum, {
+ *  rows: number;
+ *  cols: number;
+ *  pokemons: {
+ *   speciesId: string;
+ *   level: number;
+ *   position: number;
+ *  }[];
+ *  shinyChance: number;
+ *  moneyPerPercent: number;
+ *  backpackPerPercent?: PartialRecord<BackpackCategoryEnum, PartialRecord<BackpackItemEnum, number>>;
+ *  ttl: number;
+ * }>} difficulties
+ */
+
+/**
+ * @type {Record<RaidEnum, RaidConfigData>}
+ */
+const raidConfigRaw = {
   [raids.ARMORED_MEWTWO]: {
     name: "Armored Mewtwo",
     sprite:
@@ -2698,6 +2725,11 @@ const raidConfig = Object.freeze({
         ],
         shinyChance: RAID_SHINY_CHANCE,
         moneyPerPercent: BASE_RAID_MONEY,
+        backpackPerPercent: {
+          [backpackCategories.MATERIALS]: {
+            [backpackItems.STAR_PIECE]: BASE_STAR_PIECE,
+          },
+        },
         ttl: 1000 * 60 * 60 * 2,
       },
     },
@@ -2749,6 +2781,11 @@ const raidConfig = Object.freeze({
         ],
         shinyChance: RAID_SHINY_CHANCE,
         moneyPerPercent: BASE_RAID_MONEY,
+        backpackPerPercent: {
+          [backpackCategories.MATERIALS]: {
+            [backpackItems.STAR_PIECE]: BASE_STAR_PIECE,
+          },
+        },
         ttl: 1000 * 60 * 60 * 2,
       },
     },
@@ -2805,6 +2842,11 @@ const raidConfig = Object.freeze({
         ],
         shinyChance: RAID_SHINY_CHANCE * 2,
         moneyPerPercent: BASE_RAID_MONEY * 1.25 * 2,
+        backpackPerPercent: {
+          [backpackCategories.MATERIALS]: {
+            [backpackItems.STAR_PIECE]: BASE_STAR_PIECE,
+          },
+        },
         ttl: 1000 * 60 * 60 * 2,
       },
     },
@@ -2862,11 +2904,17 @@ const raidConfig = Object.freeze({
         ],
         shinyChance: RAID_SHINY_CHANCE * 2,
         moneyPerPercent: BASE_RAID_MONEY * 1.25 * 2,
+        backpackPerPercent: {
+          [backpackCategories.MATERIALS]: {
+            [backpackItems.STAR_PIECE]: BASE_STAR_PIECE * 1.25 * 2,
+          },
+        },
         ttl: 1000 * 60 * 60 * 2,
       },
     },
   },
-});
+};
+const raidConfig = Object.freeze(raidConfigRaw);
 
 const difficultyConfig = Object.freeze({
   [difficulties.VERY_EASY]: {

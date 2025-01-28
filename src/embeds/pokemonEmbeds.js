@@ -22,6 +22,7 @@ const {
   setTwoInline,
   getOrSetDefault,
   formatMoney,
+  getNextTimeIntervalDate,
 } = require("../utils/utils");
 const {
   getPokemonExpNeeded,
@@ -57,6 +58,9 @@ const {
   equipmentConfig,
   SWAP_COST,
 } = require("../config/equipmentConfig");
+const { pokemonIdEnum } = require("../enums/pokemonEnums");
+const { timeEnum } = require("../enums/miscEnums");
+const { formatItemQuantityFromBackpack } = require("../utils/itemUtils");
 
 /**
  *
@@ -304,15 +308,15 @@ const buildPokemonListEmbed = (trainer, pokemons, page) => {
 };
 
 /**
- * @param {Trainer} trainer
- * @param {Pokemon} pokemon
- * @param {string=} tab
+ * @param {CompactUser | DiscordUser} user
+ * @param {WithId<Pokemon>} pokemon
+ * @param {("info" | "battle" | "equipment" | "all")=} tab
  * @param {Pokemon=} oldPokemon
  * @param {string=} originalOwnerId
  * @returns {EmbedBuilder}
  */
 const buildPokemonEmbed = (
-  trainer,
+  user,
   pokemon,
   tab = "all",
   oldPokemon = null,
@@ -362,7 +366,7 @@ const buildPokemonEmbed = (
 
   // TODO: display original owner?
   const embed = new EmbedBuilder();
-  embed.setTitle(`${trainer.user.username}'s ${pokemon.name}`);
+  embed.setTitle(`${user.username}'s ${pokemon.name}`);
   embed.setDescription(
     `${pokemon.shiny ? "✨" : ""}**[Lv. ${pokemon.level}]** ${
       speciesData.name
@@ -474,6 +478,23 @@ const buildPokemonEmbed = (
 
   return embed;
 };
+
+/**
+ * @param {Trainer} trainer
+ * @param {WithId<Pokemon>} pokemon
+ * @param {("info" | "battle" | "equipment" | "all")=} tab
+ * @param {Pokemon=} oldPokemon
+ * @param {string=} originalOwnerId
+ * @returns {EmbedBuilder}
+ */
+// eslint-disable-next-line camelcase
+const DEPRECATEDbuildPokemonEmbed = (
+  trainer,
+  pokemon,
+  tab,
+  oldPokemon,
+  originalOwnerId
+) => buildPokemonEmbed(trainer.user, pokemon, tab, oldPokemon, originalOwnerId);
 
 /**
  * @param {Pokemon} pokemon
@@ -921,12 +942,59 @@ const buildCelebiAbilityEmbed = (trainer) => {
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ */
+const buildJirachiAbilityEmbed = (trainer) => {
+  const { mythicConfig } = pokemonConfig[pokemonIdEnum.JIRACHI];
+  const embed = new EmbedBuilder();
+  embed.setTitle(`Jirachi's Abilities`);
+  embed.setColor("#FFFFFF");
+  embed.setDescription(
+    "Jirachi has one passive ability and a special Wish ability!"
+  );
+
+  embed.addFields({
+    name: "Passive: Serene Luck",
+    value: `Jirachi calls upon the stars to grant you improved luck! **You are ${mythicConfig.shinyChanceMultiplier}x more likely to find Shiny Pokemon** from most methods (spawning excluded).`,
+    inline: false,
+  });
+
+  const nextWeek = getNextTimeIntervalDate(timeEnum.WEEK);
+  const remainingTimeString = trainer.usedWish
+    ? `(next Wish: <t:${Math.floor(nextWeek.getTime() / 1000)}:R>) `
+    : "";
+  let wishString = `Wish upon a star **once a week** ${remainingTimeString}for one of the following powerful effects:\n`;
+  for (const wish of Object.values(mythicConfig.wishes)) {
+    wishString += `* **[${
+      backpackItemConfig[backpackItems.STAR_PIECE].emoji
+    } x${wish.starPieceCost}] Wish for ${wish.name}:** ${wish.description}\n`;
+  }
+  wishString += `\nYou currently have ${formatItemQuantityFromBackpack(
+    backpackItems.STAR_PIECE,
+    trainer.backpack
+  )}.`;
+  embed.addFields({
+    name: "Active: Wishmaker",
+    value: wishString,
+    inline: false,
+  });
+
+  embed.setImage(
+    "https://i.pinimg.com/originals/e3/70/fe/e370fea53723b0e260c60d1de31e3a39.jpg"
+  );
+
+  return embed;
+};
+
 module.exports = {
   buildBannerEmbed,
   buildPokemonSpawnEmbed,
   buildNewPokemonEmbed,
   buildNewPokemonListEmbed,
   buildPokemonListEmbed,
+  // eslint-disable-next-line camelcase
+  DEPRECATEDbuildPokemonEmbed,
   buildPokemonEmbed,
   buildEquipmentEmbed,
   buildEquipmentUpgradeEmbed,
@@ -936,4 +1004,5 @@ module.exports = {
   buildSpeciesDexEmbed,
   buildGachaInfoString,
   buildCelebiAbilityEmbed,
+  buildJirachiAbilityEmbed,
 };

@@ -1,5 +1,6 @@
 const { moveIdEnum, abilityIdEnum } = require("../enums/battleEnums");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
+const { formatMoney } = require("../utils/utils");
 
 /** @typedef {Enum<types>} PokemonTypeEnum */
 const types = Object.freeze({
@@ -7320,6 +7321,61 @@ const pokemonConfigRaw = {
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
     noGacha: true,
+  },
+  [pokemonIdEnum.JIRACHI]: {
+    name: "Jirachi",
+    emoji: "<:385:1132497393431105588>",
+    description:
+      "Jirachi will awaken from its sleep of a thousand years if you sing to it in a voice of purity. It is said to make true any wish that people desire.",
+    type: [types.STEEL, types.PSYCHIC],
+    baseStats: [100, 100, 100, 100, 100, 100],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/385.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/385.png",
+    abilities: {
+      [abilityIdEnum.SERENE_GRACE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.PSYCHIC,
+      moveIdEnum.IRON_HEAD,
+      moveIdEnum.DOOM_DESIRE,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    mythicConfig: {
+      wishes: {
+        power: {
+          name: "Power",
+          description:
+            "Sets a random IV stat of a selected Pokemon to 31. Will select a stat that does not already have 31 IVs.",
+          starPieceCost: 100,
+        },
+        rebirth: {
+          name: "Rebirth",
+          description:
+            "Rerolls a selected Pokemon's ability, guaranteeing a new ability. Will not work if the Pokemon has only one ability.",
+          starPieceCost: 150,
+        },
+        allies: {
+          name: "Allies",
+          description:
+            "Grants 50 random Pokeballs, with odds equal to `/daily` and the Pokemart.",
+          starPieceCost: 200,
+        },
+        wealth: {
+          name: "Wealth",
+          description: `Grants ${formatMoney(
+            100000
+          )}, 400 of each Equipment Shard, and 5 mints.`,
+          starPieceCost: 200,
+        },
+      },
+      shinyChanceMultiplier: 2,
+    },
   },
   386: {
     name: "Deoxys",
