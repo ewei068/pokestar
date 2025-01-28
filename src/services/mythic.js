@@ -26,7 +26,7 @@ const {
 const { stageNames } = require("../config/stageConfig");
 const { QueryBuilder } = require("../database/mongoHandler");
 const {
-  buildPokemonEmbed,
+  DEPRECATED_buildPokemonEmbed,
   buildCelebiAbilityEmbed,
   buildNewPokemonEmbed,
 } = require("../embeds/pokemonEmbeds");
@@ -329,7 +329,7 @@ const buildMewSend = async ({ user = null, tab = "basic" } = {}) => {
   };
 
   // build pokemon embed
-  const embed = buildPokemonEmbed(trainer, mew, "all");
+  const embed = DEPRECATED_buildPokemonEmbed(trainer, mew, "all");
   send.embeds.push(embed);
 
   // build tab buttons
@@ -489,7 +489,7 @@ const buildCelebiSend = async (user) => {
   };
 
   // build pokemon embed
-  const embed = buildPokemonEmbed(trainer, celebi, "info");
+  const embed = DEPRECATED_buildPokemonEmbed(trainer, celebi, "info");
   send.embeds.push(embed);
   const abilityEmbed = buildCelebiAbilityEmbed(trainer);
   send.embeds.push(abilityEmbed);
@@ -628,7 +628,7 @@ const buildDeoxysSend = async (user) => {
   };
 
   // build pokemon embed
-  const embed = buildPokemonEmbed(trainer, deoxys, "all");
+  const embed = DEPRECATED_buildPokemonEmbed(trainer, deoxys, "all");
   send.embeds.push(embed);
 
   // build tab buttons

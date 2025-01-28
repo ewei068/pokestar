@@ -308,15 +308,15 @@ const buildPokemonListEmbed = (trainer, pokemons, page) => {
 };
 
 /**
- * @param {Trainer} trainer
- * @param {Pokemon} pokemon
+ * @param {CompactUser | DiscordUser} user
+ * @param {WithId<Pokemon>} pokemon
  * @param {("info" | "battle" | "equipment" | "all")=} tab
  * @param {Pokemon=} oldPokemon
  * @param {string=} originalOwnerId
  * @returns {EmbedBuilder}
  */
 const buildPokemonEmbed = (
-  trainer,
+  user,
   pokemon,
   tab = "all",
   oldPokemon = null,
@@ -366,7 +366,7 @@ const buildPokemonEmbed = (
 
   // TODO: display original owner?
   const embed = new EmbedBuilder();
-  embed.setTitle(`${trainer.user.username}'s ${pokemon.name}`);
+  embed.setTitle(`${user.username}'s ${pokemon.name}`);
   embed.setDescription(
     `${pokemon.shiny ? "✨" : ""}**[Lv. ${pokemon.level}]** ${
       speciesData.name
@@ -478,6 +478,23 @@ const buildPokemonEmbed = (
 
   return embed;
 };
+
+/**
+ * @param {Trainer} trainer
+ * @param {WithId<Pokemon>} pokemon
+ * @param {("info" | "battle" | "equipment" | "all")=} tab
+ * @param {Pokemon=} oldPokemon
+ * @param {string=} originalOwnerId
+ * @returns {EmbedBuilder}
+ */
+// eslint-disable-next-line camelcase
+const DEPRECATED_buildPokemonEmbed = (
+  trainer,
+  pokemon,
+  tab,
+  oldPokemon,
+  originalOwnerId
+) => buildPokemonEmbed(trainer.user, pokemon, tab, oldPokemon, originalOwnerId);
 
 /**
  * @param {Pokemon} pokemon
@@ -976,6 +993,8 @@ module.exports = {
   buildNewPokemonEmbed,
   buildNewPokemonListEmbed,
   buildPokemonListEmbed,
+  // eslint-disable-next-line camelcase
+  DEPRECATED_buildPokemonEmbed,
   buildPokemonEmbed,
   buildEquipmentEmbed,
   buildEquipmentUpgradeEmbed,

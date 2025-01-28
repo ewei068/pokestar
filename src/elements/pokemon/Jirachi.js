@@ -1,6 +1,6 @@
 const {
-  buildPokemonEmbed,
   buildJirachiAbilityEmbed,
+  buildPokemonEmbed,
 } = require("../../embeds/pokemonEmbeds");
 const {
   useAwaitedMemo,
@@ -39,17 +39,24 @@ const { mythicConfig } = pokemonConfig[pokemonIdEnum.JIRACHI];
  * @param {() => Promise<any>} param1.refreshTrainer
  * @param {string} param1.wishId
  * @param {Function} param1.goBack
+ * @param {WithId<Pokemon>?=} param1.selectedPokemon
  * @returns {Promise<ComposedElements>}
  */
-const ConfirmWish = async (ref, { user, refreshTrainer, wishId, goBack }) => {
+const ConfirmWish = async (
+  ref,
+  { user, refreshTrainer, wishId, goBack, selectedPokemon }
+) => {
   const [content, setContent] = useState("", ref);
   const [shouldShowResults, setShouldShowResults] = useState(false, ref);
 
   // confirm buttons
   const currentWishData = mythicConfig.wishes[wishId];
+  const selectedPokemonString = selectedPokemon
+    ? `on **${selectedPokemon.name}** `
+    : "";
   const confirmContent = `Are you sure you want to make **Wish for ${
     currentWishData.name
-  }** for ${formatItemQuantity(
+  }** ${selectedPokemonString}for ${formatItemQuantity(
     backpackItems.STAR_PIECE,
     currentWishData.starPieceCost
   )}?\n\n${currentWishData.description}`;
@@ -72,7 +79,9 @@ const ConfirmWish = async (ref, { user, refreshTrainer, wishId, goBack }) => {
 
   return {
     contents: [content || confirmContent],
-    embeds: [],
+    embeds: selectedPokemon
+      ? [buildPokemonEmbed(user, selectedPokemon, "info")]
+      : [],
     components: shouldShowResults
       ? []
       : [
@@ -184,16 +193,16 @@ const Jirachi = async (ref, { user }) => {
           refreshTrainer,
           wishId: selectedWishId,
           goBack,
+          selectedPokemon,
         }),
       ],
     };
   }
   return {
     contents: [content || jirachi._id.toString()],
-    embeds: (content
-      ? []
-      : [buildPokemonEmbed(trainer, jirachi, "info")]
-    ).concat([buildJirachiAbilityEmbed(trainer)]),
+    embeds: (content ? [] : [buildPokemonEmbed(user, jirachi, "info")]).concat([
+      buildJirachiAbilityEmbed(trainer),
+    ]),
     components: [wishButtons],
   };
 };

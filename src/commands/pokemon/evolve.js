@@ -11,7 +11,7 @@ const { setState } = require("../../services/state");
 const {
   buildIdConfigSelectRow: buildSpeciesSelectRow,
 } = require("../../components/idConfigSelectRow");
-const { buildPokemonEmbed } = require("../../embeds/pokemonEmbeds");
+const { DEPRECATED_buildPokemonEmbed } = require("../../embeds/pokemonEmbeds");
 const { eventNames } = require("../../config/eventConfig");
 const { buildSpeciesEvolutionString } = require("../../utils/pokemonUtils");
 
@@ -64,7 +64,7 @@ const evolve = async (user, pokemonId) => {
   }
 
   // build pokemon embed
-  const embed = buildPokemonEmbed(trainer.data, pokemon.data);
+  const embed = DEPRECATED_buildPokemonEmbed(trainer.data, pokemon.data);
 
   // build selection list of pokemon to evolve to
   const stateId = setState(

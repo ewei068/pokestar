@@ -41,7 +41,7 @@ const { locations, locationConfig } = require("../config/locationConfig");
 const {
   buildSpeciesDexEmbed,
   buildPokemonListEmbed,
-  buildPokemonEmbed,
+  DEPRECATED_buildPokemonEmbed,
   buildEquipmentEmbed,
   buildEquipmentUpgradeEmbed,
   buildDexListEmbed,
@@ -981,7 +981,7 @@ const buildPokemonAllInfoSend = async ({
   }
 
   // build pokemon embed
-  const embed = buildPokemonEmbed(trainer.data, pokemon.data, "all");
+  const embed = DEPRECATED_buildPokemonEmbed(trainer.data, pokemon.data, "all");
   send.embeds.push(embed);
 
   return { send, err: null };
@@ -1030,7 +1030,7 @@ const buildPokemonInfoSend = async ({
   }
 
   // build pokemon embed
-  const embed = buildPokemonEmbed(
+  const embed = DEPRECATED_buildPokemonEmbed(
     trainer.data,
     pokemon.data,
     tab,
@@ -1949,7 +1949,7 @@ const buildNatureSend = async ({ stateId = null, user = null } = {}) => {
   };
 
   // embed
-  const embed = buildPokemonEmbed(trainer, pokemon, "info");
+  const embed = DEPRECATED_buildPokemonEmbed(trainer, pokemon, "info");
   send.embeds.push(embed);
 
   // nature select row
