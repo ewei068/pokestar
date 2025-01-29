@@ -595,11 +595,112 @@ const newTutorialConfigRaw = {
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif",
   },
+  battleTower: {
+    name: "Battle Tower",
+    emoji: "🏢",
+    description:
+      "The Battle Tower is a challenging mid-to-end-game location that provides many rewards. **Use `/battletower` to view and defeat at least one level of the Battle Tower.**\n\nThe Battle Tower's rewards **reset every other week!** Make sure to come back for tons of Pokeballs and items!",
+    requirementString: "Defeat 1x Battle Tower Level",
+    proceedString:
+      "Use `/battletower` to view and defeat a Battle Tower level!",
+    checkRequirements: async (trainer) => (trainer.lastTowerStage ?? 0) > 0,
+    rewards: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: 25,
+        },
+      },
+    },
+    // TODO: image
+  },
+  eliteLeveling: {
+    name: "Elite Pokemon Leveling",
+    emoji: "📈",
+    description:
+      "Now that you have taken on the Battle Tower, **train 6 Pokemon to level 75.**",
+    requirementString: "Train 6x Pokemon to level 75",
+    proceedString: "Use `/train` to train 6 Pokemon to level 75!",
+    checkRequirements: async (trainer) => {
+      const { data: pokemons } = await listPokemons(trainer, {
+        pageSize: 6,
+        page: 1,
+        filter: {
+          level: { $gte: 75 },
+        },
+      });
+      return (pokemons?.length ?? 0) >= 6;
+    },
+    rewards: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.GREATBALL]: 10,
+        },
+      },
+    },
+  },
+  pvp: {
+    name: "(Optional) PvP Battles",
+    emoji: "⚔️",
+    description:
+      "You're getting pretty strong now; maybe it's time to take on another trainer! PvP battles are battles against other players; **you can use `/pvp` to battle another player.**",
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "(Optional) Use `/pvp` to battle another player, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.eliteLeveling,
+    rewards: {
+      money: 1000,
+    },
+    // TODO: image
+  },
+  winVeryHardDifficulty: {
+    name: "Win Very Hard Difficulty",
+    emoji: "🏆",
+    description:
+      "Now that you have trained your Pokemon to be very strong, **use `/pve` to win a battle on Very Hard difficulty.**",
+    requirementString: "Win any battle on Very Hard difficulty",
+    proceedString: "Use `/pve` to win a battle on Very Hard difficulty!",
+    checkRequirements: async (trainer) => {
+      for (const defeatedDifficulties of Object.values(trainer.defeatedNPCs)) {
+        if (defeatedDifficulties.includes(difficulties.VERY_HARD)) {
+          return true;
+        }
+      }
+      return false;
+    },
+    rewards: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.ULTRABALL]: 10,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif",
+  },
+  leaderboards: {
+    name: "Leaderboards",
+    emoji: "📊",
+    description:
+      "You're starting to become an elite trainer! **Use `/leaderboards` to view the leaderboards.** Are you on top?",
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "Use `/leaderboards` to view the leaderboards, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.winVeryHardDifficulty,
+    rewards: {
+      money: 1000,
+    },
+    // TODO: image
+  },
   maximumLeveling: {
     name: "Maximum Pokemon Leveling",
     emoji: "📈",
     description:
-      "Now that you have won battles, **train 6 Pokemon to level 100.** The maximum level for Pokemon from training is 100.\n\nRemember, **more difficult trainers provide more EXP!**",
+      "Now that you have won many battles, **train 6 Pokemon to level 100.** The maximum level for Pokemon from training is 100.\n\nRemember, **more difficult trainers provide more EXP!**",
     requirementString: "Train 6x Pokemon to level 100",
     proceedString: "Use `/train` to train 6 Pokemon to level 100!",
     checkRequirements: async (trainer) => {
