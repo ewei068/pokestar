@@ -612,7 +612,8 @@ const newTutorialConfigRaw = {
         },
       },
     },
-    // TODO: image
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/battletower.png",
   },
   eliteLeveling: {
     name: "Elite Pokemon Leveling",
@@ -640,21 +641,6 @@ const newTutorialConfigRaw = {
       },
     },
   },
-  pvp: {
-    name: "(Optional) PvP Battles",
-    emoji: "⚔️",
-    description:
-      "You're getting pretty strong now; maybe it's time to take on another trainer! PvP battles are battles against other players; **you can use `/pvp` to battle another player.**",
-    requirementString: "Complete the previous stage",
-    proceedString:
-      "(Optional) Use `/pvp` to battle another player, and complete the previous stage.",
-    checkRequirements: async (trainer) =>
-      trainer.tutorialData.completedTutorialStages.eliteLeveling,
-    rewards: {
-      money: 1000,
-    },
-    // TODO: image
-  },
   winVeryHardDifficulty: {
     name: "Win Very Hard Difficulty",
     emoji: "🏆",
@@ -681,6 +667,22 @@ const newTutorialConfigRaw = {
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif",
   },
+  pvp: {
+    name: "(Optional) PvP Battles",
+    emoji: "⚔️",
+    description:
+      "You're getting pretty strong now; maybe it's time to take on another trainer! PvP battles are battles against other players; **you can use `/pvp` to battle another player.**",
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "(Optional) Use `/pvp` to battle another player, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.eliteLeveling,
+    rewards: {
+      money: 1000,
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pvp.png",
+  },
   leaderboards: {
     name: "Leaderboards",
     emoji: "📊",
@@ -694,7 +696,8 @@ const newTutorialConfigRaw = {
     rewards: {
       money: 1000,
     },
-    // TODO: image
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/leaderboard.png",
   },
   maximumLeveling: {
     name: "Maximum Pokemon Leveling",
