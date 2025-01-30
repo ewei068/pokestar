@@ -2,6 +2,7 @@
  * @typedef {import("./engine/Battle").Battle} Battle
  * @typedef {import("./engine/BattlePokemon").BattlePokemon} BattlePokemon
  * @typedef {import("./engine/npcs").BattleNPC} BattleNPC
+ * @typedef {(...args: Parameters<BattlePokemon['calculateMoveDamage']>) => ReturnType<BattlePokemon['calculateMoveDamage']>} CalculateMoveDamageImpl
  */
 
 /**
@@ -115,6 +116,8 @@
  * @param {object} param0
  * @param {Battle} param0.battle
  * @param {BattlePokemon} param0.target
+ * @param {BattlePokemon} param0.source
+ * @param {number} param0.duration
  * @param {T} param0.initialArgs
  * @param {U} param0.properties
  */

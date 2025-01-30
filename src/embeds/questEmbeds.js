@@ -3,7 +3,10 @@ const {
   newTutorialConfig,
   newTutorialStages,
 } = require("../config/questConfig");
-const { getRewardsString, flattenRewards } = require("../utils/trainerUtils");
+const {
+  getFlattenedRewardsString,
+  flattenRewards,
+} = require("../utils/trainerUtils");
 
 /**
  * @param {object} param0
@@ -65,7 +68,10 @@ const buildTutorialStageEmbed = ({ stage, userTutorialData, page = 1 }) => {
     },
     {
       name: "Rewards",
-      value: getRewardsString(flattenRewards(stageData.rewards), false),
+      value: getFlattenedRewardsString(
+        flattenRewards(stageData.rewards),
+        false
+      ),
       inline: false,
     },
   ]);

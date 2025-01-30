@@ -4,7 +4,7 @@ const {
   StringSelectMenuBuilder,
 } = require("discord.js");
 
-const isDeactCreateElement = (element) => element.isDeactCreateElement;
+const isDeactCreateElement = (element) => element?.isDeactCreateElement;
 
 const isActionRowBuilder = (element) => element instanceof ActionRowBuilder;
 const isButtonBuilder = (element) => element instanceof ButtonBuilder;

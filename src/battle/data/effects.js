@@ -1,8 +1,13 @@
 /* eslint-disable no-param-reassign */
-const { effectTypes } = require("../../config/battleConfig");
-const { effectIdEnum, battleEventEnum } = require("../../enums/battleEnums");
+const { effectTypes, statToBattleStat } = require("../../config/battleConfig");
+const {
+  effectIdEnum,
+  battleEventEnum,
+  moveIdEnum,
+} = require("../../enums/battleEnums");
 const { getIsTargetPokemonCallback } = require("../engine/eventConditions");
 const { getEffect } = require("./effectRegistry");
+const { getMove } = require("./moveRegistry");
 
 /**
  * @template T
@@ -128,6 +133,66 @@ const effectsToRegister = Object.freeze({
     effectRemove({ battle, target, properties }) {
       battle.addToLog(`${target.name} is no longer immune to debuffs!`);
       battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [effectIdEnum.AQUA_BLESSING]: new Effect({
+    id: effectIdEnum.AQUA_BLESSING,
+    name: "Aqua Blessing",
+    description: "The target's stat is increased by 2x.",
+    type: effectTypes.BUFF,
+    dispellable: true,
+    /**
+     * @param {EffectAddBasicArgs & {initialArgs: {stat: StatEnum}}} args
+     */
+    effectAdd({ battle, target, initialArgs }) {
+      const { stat } = initialArgs;
+      const baseStatValue = target.getAllBaseStats()[stat];
+      const statToIncrease = statToBattleStat[stat];
+
+      battle.addToLog(`${target.name}'s ${statToIncrease} rose!`);
+      target[statToIncrease] += baseStatValue;
+      return {};
+    },
+    effectRemove({ battle, target, initialArgs }) {
+      const { stat } = initialArgs;
+      const baseStatValue = target.getAllBaseStats()[stat];
+      const statToIncrease = statToBattleStat[stat];
+
+      battle.addToLog(`${target.name}'s ${statToIncrease} boost wore off!`);
+      target[statToIncrease] -= baseStatValue;
+    },
+  }),
+  [effectIdEnum.DOOM_DESIRE]: new Effect({
+    id: effectIdEnum.DOOM_DESIRE,
+    name: "Doom Desire",
+    description: "The target will take damage when the effect is removed.",
+    type: effectTypes.DEBUFF,
+    dispellable: false,
+    /**
+     * @param {EffectAddBasicArgs & {initialArgs: any}} args
+     */
+    effectAdd({ battle, target, source }) {
+      battle.addToLog(
+        `${source.name} is foreseeing an attack against ${target.name}!`
+      );
+      return {};
+    },
+    effectRemove({ battle, target, source }) {
+      battle.addToLog(
+        `${target.name} was hit by ${source.name}'s Doom Desire!`
+      );
+      const damageToDeal = source.calculateMoveDamage({
+        move: getMove(moveIdEnum.DOOM_DESIRE),
+        target,
+        primaryTarget: target,
+        allTargets: [target],
+        offTargetDamageMultiplier: 1,
+        backTargetDamageMultiplier: 1,
+      });
+      source.dealDamage(damageToDeal, target, {
+        type: "move",
+        moveId: moveIdEnum.DOOM_DESIRE,
+      });
     },
   }),
 });

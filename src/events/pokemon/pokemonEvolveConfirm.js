@@ -9,7 +9,7 @@
 const { getState, deleteState } = require("../../services/state");
 const { getTrainer } = require("../../services/trainer");
 const { getPokemon, evolvePokemon } = require("../../services/pokemon");
-const { buildPokemonEmbed } = require("../../embeds/pokemonEmbeds");
+const { DEPRECATEDbuildPokemonEmbed } = require("../../embeds/pokemonEmbeds");
 
 const pokemonEvolveConfirm = async (interaction, data) => {
   // get state
@@ -52,7 +52,7 @@ const pokemonEvolveConfirm = async (interaction, data) => {
   const { pokemon: evolvedPokemon, species: newName } = evolveResult.data;
 
   // update embed to selected evolution
-  const embed = buildPokemonEmbed(trainer.data, evolvedPokemon);
+  const embed = DEPRECATEDbuildPokemonEmbed(trainer.data, evolvedPokemon);
 
   deleteState(data.stateId);
 

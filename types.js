@@ -108,7 +108,9 @@
  *
  * Mythic Pokemon
  * @property {boolean} hasCelebi
+ * @property {boolean} hasJirachi
  * @property {boolean} usedTimeTravel
+ * @property {boolean} usedWish
  *
  * Misc
  * @property {PartialRecord<UpsellEnum, UserUpsellData>} upsellData

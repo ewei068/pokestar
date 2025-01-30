@@ -21,7 +21,7 @@ const {
 const { getInteractionInstance } = require("../../deact/interactions");
 const Button = require("../../deact/elements/Button");
 const {
-  getRewardsString,
+  getFlattenedRewardsString,
   flattenRewards,
 } = require("../../utils/trainerUtils");
 const { getTrainer } = require("../../services/trainer");
@@ -68,7 +68,9 @@ module.exports = async (
       goToNext();
       await interactionInstance.reply({
         element: {
-          content: getRewardsString(flattenRewards(tutorialStageData.rewards)),
+          content: getFlattenedRewardsString(
+            flattenRewards(tutorialStageData.rewards)
+          ),
         },
       });
     },

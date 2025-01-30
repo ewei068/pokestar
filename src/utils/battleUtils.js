@@ -7,9 +7,14 @@
 const { statusConditions, targetPatterns } = require("../config/battleConfig");
 const { difficultyConfig } = require("../config/npcConfig");
 const { pokemonConfig, typeConfig } = require("../config/pokemonConfig");
-const { getRewardsString, flattenRewards } = require("./trainerUtils");
+const {
+  getFlattenedRewardsString,
+  flattenRewards,
+  flattenCategories,
+} = require("./trainerUtils");
 const { getPBar, formatMoney } = require("./utils");
 const { getEffect } = require("../battle/data/effectRegistry");
+const { backpackItemConfig } = require("../config/backpackConfig");
 
 const plus = "┼";
 const plusEmph = "*";
@@ -458,7 +463,7 @@ const buildNpcDifficultyString = (difficulty, npcDifficultyData) => {
   difficultyString += "\n";
   difficultyString += `**Multipliers:** Money: ${rewardMultipliers.moneyMultiplier} | EXP: ${rewardMultipliers.expMultiplier} | Pkmn. EXP: ${rewardMultipliers.pokemonExpMultiplier}`;
   if (npcDifficultyData.dailyRewards) {
-    difficultyString += `\n**Daily Rewards:** ${getRewardsString(
+    difficultyString += `\n**Daily Rewards:** ${getFlattenedRewardsString(
       flattenRewards(npcDifficultyData.dailyRewards),
       false
     )}`;
@@ -497,7 +502,7 @@ const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
   );
   difficultyString += `**Phases:** ${dungeonDifficultyData.phases.length}\n`;
   difficultyString += `**Pokemon:** ${pokemonEmojis.join(" ")}\n`;
-  difficultyString += `**Rewards:** ${getRewardsString(
+  difficultyString += `**Rewards:** ${getFlattenedRewardsString(
     flattenRewards(rewards),
     false
   )}`;
@@ -510,7 +515,7 @@ const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
 
 /**
  * @param {NpcDifficultyEnum} difficulty
- * @param {any} raidDifficultyData
+ * @param {RaidConfigData["difficulties"][NpcDifficultyEnum]} raidDifficultyData
  * @returns {{difficultyHeader: string, difficultyString: string}}
  */
 const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
@@ -534,7 +539,17 @@ const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
 
   difficultyString += `**Shiny Chance:** ${shinyChance}% • **Money/%:** ${formatMoney(
     raidDifficultyData.moneyPerPercent
-  )} • **Time:** ${raidDifficultyData.ttl / (1000 * 60 * 60)} hours`;
+  )} • **Time:** ${raidDifficultyData.ttl / (1000 * 60 * 60)} hours\n`;
+
+  if (raidDifficultyData.backpackPerPercent) {
+    difficultyString += "**Items/%: ** ";
+    for (const [item, itemPerPercent] of Object.entries(
+      flattenCategories(raidDifficultyData.backpackPerPercent)
+    )) {
+      const itemData = backpackItemConfig[item];
+      difficultyString += `${itemData.emoji} x${itemPerPercent} `;
+    }
+  }
 
   return {
     difficultyHeader,

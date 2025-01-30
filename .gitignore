@@ -112,4 +112,5 @@ ssh.txt
 .DS_Store
 notes.md
 venv/
+Heap.*
 tutorialStats.csv

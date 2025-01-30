@@ -180,6 +180,7 @@ module.exports = async (
   // get list of pokemon
   const pokemonsRes = await useAwaitedMemo(
     () =>
+      // @ts-ignore
       listPokemons(trainer, computeListOptions(page, filter, sort)).then(
         (res) => {
           if (res.data && !res.err) {

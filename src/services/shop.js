@@ -33,7 +33,7 @@ const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { buildBackButtonRow } = require("../components/backButtonRow");
 const {
-  getRewardsString,
+  getFlattenedRewardsString,
   getPokeballsString,
   addItems,
   getItems,
@@ -210,7 +210,7 @@ const buyItem = async (trainer, itemId, quantity) => {
       cost
     )}.\n`;
     // build itemized rewards string
-    returnString += getRewardsString({
+    returnString += getFlattenedRewardsString({
       backpack: reducedResults,
     });
     returnString += "\n\n**You now own:**";

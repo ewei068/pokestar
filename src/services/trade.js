@@ -21,7 +21,7 @@ const { getTrainer, updateTrainer } = require("./trainer");
  * @returns {Promise<{data?: boolean, err: string?}>}
  */
 const canTrade = async (trainer) => {
-  const levelReq = process.env.STAGE === stageNames.ALPHA ? 5 : 50;
+  const levelReq = process.env.STAGE === stageNames.ALPHA ? 2 : 50;
   if (trainer.level < levelReq) {
     return {
       data: false,

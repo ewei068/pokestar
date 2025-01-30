@@ -129,6 +129,7 @@ class DeactElement {
 
     // compose embeds
     if (this.res.embeds !== undefined) {
+      rv.embeds = rv.embeds ?? [];
       for (const embed of this.res.embeds) {
         const elementRes = await this.getElementResWithArrayKey(
           embed,

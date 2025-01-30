@@ -38,9 +38,11 @@ const {
 const { pokemonConfig } = require("../config/pokemonConfig");
 const {
   getFullUsername,
-  getRewardsString,
+  getFlattenedRewardsString,
   flattenRewards,
+  flattenCategories,
 } = require("../utils/trainerUtils");
+const { backpackItemConfig } = require("../config/backpackConfig");
 
 /**
  * Handles building the party embedded instructions for building a party.
@@ -535,7 +537,7 @@ const buildBattleTowerEmbed = (towerStage) => {
   const bossData = pokemonConfig[npcDifficultyData.aceId];
   const bossString = `**Boss**: ${bossData.emoji} #${npcDifficultyData.aceId} **${bossData.name}** \`/pokedex ${npcDifficultyData.aceId}\``;
   difficultyString += `${bossString}\n`;
-  difficultyString += `**Rewards:** ${getRewardsString(
+  difficultyString += `**Rewards:** ${getFlattenedRewardsString(
     flattenRewards(battleTowerData.rewards),
     false
   )}`;
@@ -693,13 +695,19 @@ const buildRaidWinEmbed = (raid, rewards) => {
     const participantRewards = rewards[participantId];
     if (!participantRewards) continue;
     const { money, backpack, shiny } = participantRewards;
+    const backpackRewards = flattenCategories(backpack);
 
     const rewardsForTrainer = [];
     if (money) {
       rewardsForTrainer.push(formatMoney(money));
     }
-    if (backpack) {
-      // TODO
+    if (Object.keys(backpackRewards)) {
+      let backpackString = "";
+      for (const itemId in backpackRewards) {
+        const itemData = backpackItemConfig[itemId];
+        backpackString += `${itemData.emoji} x${backpackRewards[itemId]} `;
+      }
+      rewardsForTrainer.push(backpackString);
     }
     if (shiny) {
       const shinyData = pokemonConfig[shiny];

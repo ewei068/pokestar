@@ -13,15 +13,24 @@
  */
 const drawDiscrete = (probabilityDistribution, times) => {
   const results = [];
+  const totalProbability = Object.values(probabilityDistribution).reduce(
+    (acc, curr) => acc + curr,
+    0
+  );
   for (let i = 0; i < times; i += 1) {
-    const rand = Math.random();
+    const rand = Math.random() * totalProbability;
     let sum = 0;
-    for (const item in probabilityDistribution) {
+    let item;
+    for (item in probabilityDistribution) {
       sum += probabilityDistribution[item];
       if (rand < sum) {
         results.push(item);
         break;
       }
+    }
+    // if rand is greater than sum due to some floating point bs, push the last item
+    if (rand >= sum) {
+      results.push(item);
     }
   }
   // @ts-ignore

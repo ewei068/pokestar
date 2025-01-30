@@ -56,6 +56,7 @@ const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { addItems } = require("../utils/trainerUtils");
 const { equipmentConfig } = require("../config/equipmentConfig");
+const { pokemonIdEnum } = require("../enums/pokemonEnums");
 
 const DAILY_MONEY = process.env.STAGE === stageNames.ALPHA ? 100000 : 300;
 
@@ -158,6 +159,8 @@ const generateRandomEquipments = (equipmentLevel = 1) => {
   return equipments;
 };
 
+const BASE_SHINY_CHANCE = process.env.STAGE === stageNames.ALPHA ? 2 : 1024;
+
 /**
  * @param {string} userId
  * @param {string} pokemonId
@@ -165,6 +168,7 @@ const generateRandomEquipments = (equipmentLevel = 1) => {
  * @param {object} options
  * @param {number?=} options.equipmentLevel
  * @param {boolean?=} options.isShiny
+ * @param {number=} options.shinyChance
  * @param {boolean?=} options.betterIvs
  * @returns {Pokemon}
  */
@@ -172,7 +176,12 @@ const generateRandomPokemon = (
   userId,
   pokemonId,
   level = 5,
-  { equipmentLevel = 1, isShiny = null, betterIvs = false } = {}
+  {
+    equipmentLevel = 1,
+    shinyChance = BASE_SHINY_CHANCE,
+    isShiny = null,
+    betterIvs = false,
+  } = {}
 ) => {
   const speciesData = pokemonConfig[pokemonId];
 
@@ -196,9 +205,8 @@ const generateRandomPokemon = (
     }
   }
 
-  const shinyChance = process.env.STAGE === stageNames.ALPHA ? 1 : 1024;
   isShiny =
-    isShiny === null ? drawUniform(0, shinyChance, 1)[0] === 0 : isShiny;
+    isShiny === null ? drawUniform(0, shinyChance - 1, 1)[0] === 0 : isShiny;
   const shouldLock =
     process.env.STAGE !== stageNames.ALPHA &&
     (isShiny || speciesData.rarity === rarities.LEGENDARY);
@@ -247,12 +255,20 @@ const giveNewPokemons = async (
   options = undefined
 ) => {
   const pokemons = [];
+  const newOptions = options || {};
+  newOptions.shinyChance = newOptions.shinyChance || BASE_SHINY_CHANCE;
+  if (trainer.hasJirachi) {
+    newOptions.shinyChance = Math.floor(
+      newOptions.shinyChance /
+        pokemonConfig[pokemonIdEnum.JIRACHI].mythicConfig.shinyChanceMultiplier
+    );
+  }
   for (const pokemonId of pokemonIds) {
     const pokemon = generateRandomPokemon(
       trainer.userId,
       pokemonId,
       level,
-      options
+      newOptions
     );
     pokemons.push(pokemon);
   }

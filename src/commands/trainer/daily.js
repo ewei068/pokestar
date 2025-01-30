@@ -10,7 +10,7 @@ const { User } = require("discord.js");
 const { drawDaily } = require("../../services/gacha");
 const { getTrainer } = require("../../services/trainer");
 const {
-  getRewardsString,
+  getFlattenedRewardsString,
   getBackpackItemsString,
 } = require("../../utils/trainerUtils");
 const { formatMoney } = require("../../utils/utils");
@@ -36,7 +36,7 @@ const daily = async (user) => {
   const { money } = rewards.data;
 
   // build itemized rewards string
-  let rewardsString = getRewardsString(rewards.data);
+  let rewardsString = getFlattenedRewardsString(rewards.data);
   rewardsString += "\n\n**You now own:**";
   if (money) {
     rewardsString += `\n${formatMoney(trainer.data.money)}`;
