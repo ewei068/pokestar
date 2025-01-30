@@ -20,8 +20,6 @@ TODO:
 - New player UX analysis
 - Make party add/remove easier
 - Add Pokemon Emojis wherever possible
-- Fix spawn type bug
-- Fix search with apostrophe
 
 **Stretch**
 
