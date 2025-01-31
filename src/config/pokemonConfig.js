@@ -4306,6 +4306,27 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.AIPOM]: {
+    name: "Aipom",
+    emoji: "<:190:1116756128198561874>",
+    description:
+      "Aipom's tail ends in a hand-like appendage that can be cleverly manipulated. However, because the Pokémon uses its tail so much, its real hands have become rather clumsy.",
+    type: [types.NORMAL],
+    baseStats: [55, 70, 55, 40, 55, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/190.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/190.png",
+    abilities: {
+      50: 0.45,
+      53: 0.45,
+      92: 0.1,
+    },
+    moveIds: ["m10", "m216", "m252", "m369"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   191: {
     name: "Sunkern",
     emoji: "<:191:1116756130018906232>",
@@ -4441,6 +4462,27 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.MURKROW]: {
+    name: "Murkrow",
+    emoji: "<:198:1116756193457745970>",
+    description:
+      "It is said that when chased, it lures its attacker onto dark mountain trails where the foe will get lost.",
+    type: [types.DARK, types.FLYING],
+    baseStats: [60, 85, 42, 85, 42, 91],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/198.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/198.png",
+    abilities: {
+      15: 0.45,
+      105: 0.45,
+      158: 0.1,
+    },
+    moveIds: ["m64", "m355", "m492", moveIdEnum.QUASH],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
   },
   199: {
     name: "Slowking",
@@ -4612,6 +4654,27 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.SNEASEL]: {
+    name: "Sneasel",
+    emoji: "<:215:1119803489837658182>",
+    description:
+      "Sneasel scales trees by punching its hooked claws into the bark. This Pokémon seeks out unguarded nests and steals eggs for food while the parents are away.",
+    type: [types.DARK, types.ICE],
+    baseStats: [55, 95, 55, 35, 75, 115],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/215.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/215.png",
+    abilities: {
+      39: 0.45,
+      51: 0.45,
+      124: 0.1,
+    },
+    moveIds: ["m420", "m252", "m282", moveIdEnum.ICICLE_CRASH],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
   },
   227: {
     name: "Skarmory",
@@ -6318,6 +6381,27 @@ const pokemonConfigRaw = {
     moveIds: ["m98", "m46", "m86", "m87"],
     battleEligible: true,
     rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.ROSELIA]: {
+    name: "Roselia",
+    emoji: "<:315:1132496536497033227>",
+    description:
+      "Roselia shoots sharp thorns as projectiles at any opponent that tries to steal the flowers on its arms. The aroma of this Pokémon brings serenity to living things.",
+    type: [types.GRASS, types.POISON],
+    baseStats: [50, 60, 45, 100, 80, 65],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/315.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/315.png",
+    abilities: {
+      30: 0.45,
+      38: 0.45,
+      102: 0.1,
+    },
+    moveIds: ["m40", "m191", "m202", "m235"],
+    battleEligible: true,
+    rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMFAST,
   },
   318: {
