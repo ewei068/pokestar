@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * partyAdd.js is used to add pokemon to the user's party.
  */
@@ -11,10 +9,9 @@ const { getIdFromNameOrId } = require("../../services/pokemon");
 
 /**
  * Adds the given pokemon via ID to the position in the given user's party.
- * @param user user required for getting specific user's data.
- * @param pokemonId the Id of the pokemon the user wants to add to their party
- * @param position the position the user wants to add the pokemon to
- * @returns Error or message to send.
+ * @param {DiscordUser} user user required for getting specific user's data.
+ * @param {string} pokemonId the Id of the pokemon the user wants to add to their party
+ * @param {number?=} position the position the user wants to add the pokemon to
  */
 // partyAdd sends off the relevent user, pokemonId and position to buildPartyAddSend from the party.js dependency and waits for it to return.
 const partyAdd = async (user, pokemonId, position) =>

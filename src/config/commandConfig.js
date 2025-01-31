@@ -854,9 +854,9 @@ const commandConfigRaw = {
   partyadd: {
     name: "Party Add",
     aliases: ["partyadd", "pa"],
-    description: "Add a Pokemon to your party",
+    description: "Add a Pokemon to your party, using position if specified",
     longDescription:
-      "Add a Pokemon to your party at a specified position. If the Pokemon is in the party already, swaps with another Pokemon. If the position is full, removes the Pokemon at that position first.",
+      "Add a Pokemon to your party, using position if specified. If the Pokemon is in the party already, swaps with another Pokemon. If the position is full, removes the Pokemon at that position first.",
     execute: "partyAdd.js",
     args: {
       name_or_id: {
@@ -868,7 +868,7 @@ const commandConfigRaw = {
       position: {
         type: "int",
         description: "position (1-12) to add Pokemon to",
-        optional: false,
+        optional: true,
         variable: false,
       },
     },
@@ -880,7 +880,8 @@ const commandConfigRaw = {
   partyremove: {
     name: "Party Remove",
     aliases: ["partyremove", "pr"],
-    description: "Remove a Pokemon from your party",
+    description:
+      "Remove a Pokemon from your party by ID or position. Using 'ALL' removes all Pokemon.",
     longDescription: `Remove Pokemon(s) from your party depending on \`option\`:
         If \`option\` is a number, attempts to remove a Pokemon at that position.
         If \`option\` is a Pokemon ID, attempts to remove Pokemon with that ID.

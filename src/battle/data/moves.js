@@ -256,6 +256,70 @@ class Move {
       });
     }
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  genericChangeSingleCombatReadiness({
+    source,
+    target,
+    // eslint-disable-next-line no-unused-vars
+    primaryTarget,
+    // eslint-disable-next-line no-unused-vars
+    allTargets,
+    missedTargets = [],
+    amount,
+    action,
+    probablity = 1,
+    triggerEvents = true,
+  }) {
+    const shouldChangeCombatReadiness =
+      !missedTargets.includes(target) && Math.random() < probablity;
+
+    if (shouldChangeCombatReadiness) {
+      if (action === "boost") {
+        return target.boostCombatReadiness(source, amount, triggerEvents);
+      }
+      if (action === "reduce") {
+        return target.reduceCombatReadiness(source, amount);
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * @param {object} param0
+   * @param {BattlePokemon} param0.source
+   * @param {BattlePokemon} param0.primaryTarget
+   * @param {Array<BattlePokemon>} param0.allTargets
+   * @param {Array<BattlePokemon>=} param0.missedTargets
+   * @param {number} param0.amount
+   * @param {"boost" | "reduce"} param0.action
+   * @param {number=} param0.probablity
+   * @param {boolean=} param0.triggerEvents
+   */
+  genericChangeAllCombatReadiness({
+    source,
+    primaryTarget,
+    allTargets,
+    missedTargets = [],
+    amount,
+    action,
+    probablity = 1,
+    triggerEvents = true,
+  }) {
+    for (const target of allTargets) {
+      this.genericChangeSingleCombatReadiness({
+        source,
+        target,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+        amount,
+        action,
+        probablity,
+        triggerEvents,
+      });
+    }
+  }
 }
 
 const movesToRegister = Object.freeze({
@@ -409,6 +473,57 @@ const movesToRegister = Object.freeze({
         effectId: "flinched",
         duration: 1,
         probablity: 0.5,
+      });
+    },
+  }),
+  [moveIdEnum.QUASH]: new Move({
+    id: moveIdEnum.QUASH,
+    name: "Quash",
+    type: pokemonTypes.DARK,
+    power: null,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user supresses the target, reducing its combat readiness to 0 and sharply decreasing its Speed for 1 turn.",
+    execute(args) {
+      this.genericChangeAllCombatReadiness({
+        ...args,
+        amount: 100,
+        action: "reduce",
+      });
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "greaterSpeDown",
+        duration: 1,
+      });
+    },
+  }),
+  [moveIdEnum.ICICLE_CRASH]: new Move({
+    id: moveIdEnum.ICICLE_CRASH,
+    name: "Icicle Crash",
+    type: pokemonTypes.ICE,
+    power: 85,
+    accuracy: 90,
+    cooldown: 2,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user launches a sharp icicle at the target. This has a 30% chance to flinch.",
+    execute(args) {
+      this.genericDealAllDamage(args);
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "flinched",
+        duration: 1,
+        probablity: 0.3,
       });
     },
   }),
