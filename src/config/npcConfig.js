@@ -2844,7 +2844,7 @@ const raidConfigRaw = {
         moneyPerPercent: BASE_RAID_MONEY * 1.25 * 2,
         backpackPerPercent: {
           [backpackCategories.MATERIALS]: {
-            [backpackItems.STAR_PIECE]: BASE_STAR_PIECE,
+            [backpackItems.STAR_PIECE]: BASE_STAR_PIECE * 1.25 * 2,
           },
         },
         ttl: 1000 * 60 * 60 * 2,
