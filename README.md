@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images//events/pokestar-op-banner.png">
+  <img src="https://raw.githubusercontent.com/ewei068/pokestar/main/media/images//events/pokestar-aqua-magma-banner.png">
 </p>
 
 ## Why Pokéstar?

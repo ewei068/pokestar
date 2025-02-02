@@ -5,7 +5,7 @@
 - Stretch: Quests (Achievements)
 - Stretch: Ability slots
 
-## 1.2.0 Gen 3 Wrap-Up (Aqua vs. Magma)
+## 1.2.0 Gen 3 Wrap-Up (Aqua vs. Magma) (2/1)
 
 - **Gen 3 wrap-up update**
   - Added new Aqua vs. Magma themed raids for Gen 3. Raids now drop Star Pieces!
