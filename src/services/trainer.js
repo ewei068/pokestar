@@ -26,7 +26,7 @@ const {
   backpackCategories,
 } = require("../config/backpackConfig");
 const {
-  getRewardsString,
+  getFlattenedRewardsString,
   getPokeballsString,
   addRewards,
   getBackpackItemsString,
@@ -431,7 +431,7 @@ const getLevelRewards = async (user) => {
   let rewardsString = `You claimed rewards for levels: ${currentClaimedLevels.join(
     ", "
   )}. **Thank you for playing Pokestar!**\n\n`;
-  rewardsString += getRewardsString(allRewards);
+  rewardsString += getFlattenedRewardsString(allRewards);
   rewardsString += "\n\n**You now own:**";
   if (allRewards.money) {
     rewardsString += `\n${formatMoney(trainer.money)}`;
@@ -545,7 +545,7 @@ const getVoteRewards = async (user) => {
 
   // build itemized rewards string
   let rewardsString = `You claimed **${rewards}** vote rewards! **Thank you for voting!** Remember to vote again in 12 hours!\n\n`;
-  rewardsString += getRewardsString(receivedRewards);
+  rewardsString += getFlattenedRewardsString(receivedRewards);
   rewardsString += "\n\n**You now own:**";
   if (receivedRewards.money) {
     rewardsString += `\n${formatMoney(trainer.money)}`;

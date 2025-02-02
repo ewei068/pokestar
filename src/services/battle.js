@@ -50,7 +50,7 @@ const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const { validateParty } = require("./party");
 const {
   addRewards,
-  getRewardsString,
+  getFlattenedRewardsString,
   getUserSelectedDevice,
 } = require("../utils/trainerUtils");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
@@ -262,7 +262,10 @@ const getStartTurnSend = async (battle, stateId) => {
             content += `\n**${rewardRecipients
               .map((r) => r.username)
               .join(", ")} received rewards for their victory:**`;
-            content += getRewardsString(rewardRecipients[0].rewards, false);
+            content += getFlattenedRewardsString(
+              rewardRecipients[0].rewards,
+              false
+            );
           }
         }
       } else if (battle.loseCallback) {

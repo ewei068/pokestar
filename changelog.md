@@ -1,6 +1,31 @@
 # Pokéstar Changelog
 
-### 1.1.1
+**Stretch**
+
+- Stretch: Quests (Achievements)
+- Stretch: Ability slots
+
+## 1.2.0 Gen 3 Wrap-Up (Aqua vs. Magma)
+
+- **Gen 3 wrap-up update**
+  - Added new Aqua vs. Magma themed raids for Gen 3. Raids now drop Star Pieces!
+  - Added Jirachi, a new Mythic Pokemon that can grant wishes!
+    - Grants passive increase to shiny chance!
+    - Use Star Pieces from raids to grant powerful wishes!
+      - These wishes can change a Pokemon's IVs or abilites!
+  - Added some more Pokemon
+- **Gen 3 wrap-up event: Aqua vs. Magma**
+  - New limited-time Aqua vs. Magma banner and Pokemon:
+    - Special Groudon and Kyogre Variants!
+    - Special Aqua Sharpedo and Magma Camerupt!
+  - New limited dungeon: Sootopolis City
+  - New limited NPC: Butler
+  - Temporary increase rewards from new Gen 3 raids!
+- Improved tutorial by adding new stages!
+- Made adding Pokemon to party easier: will now auto-fill position if no position is included
+- Improved UX by adding more Pokemon emoji and shiny indicators
+
+### 1.1.1 (1/8)
 
 - Increase spawned Pokemon duration 15 min -> 30 min
 - Fix some performance issues
@@ -8,12 +33,7 @@
 - Add vote, events to tutorial
 - Fix a weird voting bug
 
-TODO:
-
-- Stretch: New event
-- Stretch: Analytics
-
-## 1.1.0
+## 1.1.0 (1/1)
 
 - Revamped the `/tutorial`
   - Longer tutorial with more informative stages
@@ -69,7 +89,6 @@ TODO:
 - Nerf withdraw/harden
 - Rebalance raids
 - Change shiftry ability?
-- Fix Help
 
 ### 1.0.1 (9/9) - Raid Update
 

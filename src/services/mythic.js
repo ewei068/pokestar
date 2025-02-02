@@ -1,9 +1,8 @@
+/* eslint-disable no-case-declarations */
 /* eslint-disable no-param-reassign */
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * mythic.js Creates all mythic pokemon information, moves etc.
  */
@@ -12,10 +11,11 @@ const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const {
   backpackItemConfig,
   backpackItems,
+  backpackCategories,
 } = require("../config/backpackConfig");
 const { collectionNames } = require("../config/databaseConfig");
 const { eventNames } = require("../config/eventConfig");
-const { getCelebiPool } = require("../config/gachaConfig");
+const { getCelebiPool, dailyRewardChances } = require("../config/gachaConfig");
 const { locations } = require("../config/locationConfig");
 const { dungeons } = require("../config/npcConfig");
 const {
@@ -26,14 +26,19 @@ const {
 const { stageNames } = require("../config/stageConfig");
 const { QueryBuilder } = require("../database/mongoHandler");
 const {
-  buildPokemonEmbed,
+  DEPRECATEDbuildPokemonEmbed,
   buildCelebiAbilityEmbed,
   buildNewPokemonEmbed,
 } = require("../embeds/pokemonEmbeds");
 const { logger } = require("../log");
 const { getIdFromTowerStage } = require("../utils/battleUtils");
 const { drawDiscrete, drawIterable } = require("../utils/gachaUtils");
-const { getItems, removeItems } = require("../utils/trainerUtils");
+const {
+  getItems,
+  removeItems,
+  addRewards,
+  getRewardsString,
+} = require("../utils/trainerUtils");
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
 const {
   listPokemons,
@@ -41,9 +46,13 @@ const {
   calculatePokemonStats,
   calculateAndUpdatePokemonStats,
   checkNumPokemon,
+  updatePokemon,
 } = require("./pokemon");
 const { getTrainer, updateTrainer } = require("./trainer");
 const { getMoves } = require("../battle/data/moveRegistry");
+const { pokemonIdEnum } = require("../enums/pokemonEnums");
+const { statToBattleStat } = require("../config/battleConfig");
+const { getAbilityName } = require("../utils/pokemonUtils");
 
 /**
  * @param {Trainer} trainer
@@ -81,6 +90,52 @@ const getMythic = async (trainer, speciesId) => {
   }
 
   return { data: pokemon.data };
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {PokemonIdEnum} speciesId
+ */
+const generateMythic = (trainer, speciesId) => {
+  const speciesData = pokemonConfig[speciesId];
+  const mythic = generateRandomPokemon(trainer.userId, speciesId, 1);
+  // set ivs to 31
+  mythic.ivs = [31, 31, 31, 31, 31, 31];
+  // set shiny to false
+  mythic.shiny = false;
+  // set locked to true
+  mythic.locked = true;
+  // recalculate stats
+  calculatePokemonStats(mythic, speciesData);
+
+  return mythic;
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {Pokemon} mythic
+ * @returns {Promise<{err?: string, id?: any}>}
+ */
+const upsertMythic = async (trainer, mythic) => {
+  const mythicData = pokemonConfig[mythic.speciesId];
+  try {
+    const query = new QueryBuilder(collectionNames.USER_POKEMON)
+      .setFilter({ userId: mythic.userId, speciesId: mythic.speciesId })
+      .setUpsert({ $set: mythic });
+    const res = await query.upsertOne();
+
+    if (res.upsertedCount !== 1) {
+      logger.warn(
+        `Error updating ${mythicData.name} for ${trainer.user.username}`
+      );
+    } else {
+      logger.info(`Updated ${mythicData.name} for ${trainer.user.username}`);
+    }
+    return { id: res.upsertedId };
+  } catch (err) {
+    logger.error(err);
+    return { err: `Error updating ${mythicData.name}` };
+  }
 };
 
 const validateMewMoves = (mew, mewData) => {
@@ -138,15 +193,7 @@ const getMew = async (trainer) => {
       };
     }
 
-    mew = generateRandomPokemon(trainer.userId, speciesId, 1);
-    // set ivs to 31
-    mew.ivs = [31, 31, 31, 31, 31, 31];
-    // set shiny to false
-    mew.shiny = false;
-    // set locked to true
-    mew.locked = true;
-    // recalculate stats
-    calculatePokemonStats(mew, mewData);
+    mew = generateMythic(trainer, speciesId);
     modified = true;
   }
 
@@ -158,24 +205,11 @@ const getMew = async (trainer) => {
 
   // update mew if modified
   if (modified) {
-    try {
-      const query = new QueryBuilder(collectionNames.USER_POKEMON)
-        .setFilter({ userId: mew.userId, speciesId })
-        .setUpsert({ $set: mew });
-      const res = await query.upsertOne();
-
-      if (res.upsertedCount !== 1) {
-        logger.warn(`Error updating Mew for ${trainer.user.username}`);
-        // return { err: "Error updating Mew" };
-      }
-      if (res.upsertedId) {
-        mew._id = res.upsertedId;
-      }
-      logger.info(`Updated Mew for ${trainer.user.username}`);
-    } catch (err) {
-      logger.error(err);
-      return { err: "Error updating Mew" };
+    const { err, id } = await upsertMythic(trainer, mew);
+    if (err) {
+      return { err };
     }
+    mew._id = id || mew._id;
   }
 
   return { data: mew };
@@ -297,7 +331,7 @@ const buildMewSend = async ({ user = null, tab = "basic" } = {}) => {
   };
 
   // build pokemon embed
-  const embed = buildPokemonEmbed(trainer, mew, "all");
+  const embed = DEPRECATEDbuildPokemonEmbed(trainer, mew, "all");
   send.embeds.push(embed);
 
   // build tab buttons
@@ -372,7 +406,6 @@ const buildMewSend = async ({ user = null, tab = "basic" } = {}) => {
 
 const getCelebi = async (trainer) => {
   const speciesId = "251";
-  const celebiData = pokemonConfig[speciesId];
 
   const celebiRes = await getMythic(trainer, speciesId);
   if (celebiRes.err) {
@@ -397,17 +430,7 @@ const getCelebi = async (trainer) => {
       };
     }
 
-    celebi = generateRandomPokemon(trainer.userId, speciesId, 1);
-    // set ivs to 31
-    celebi.ivs = [31, 31, 31, 31, 31, 31];
-    // set shiny to false
-    celebi.shiny = false;
-    // set locked to true
-    celebi.locked = true;
-    // set nature to 0
-    celebi.natureId = 0;
-    // recalculate stats
-    calculatePokemonStats(celebi, celebiData);
+    celebi = generateMythic(trainer, speciesId);
     modified = true;
   }
 
@@ -421,23 +444,11 @@ const getCelebi = async (trainer) => {
 
   // update celebi if modified
   if (modified) {
-    try {
-      const query = new QueryBuilder(collectionNames.USER_POKEMON)
-        .setFilter({ userId: celebi.userId, speciesId })
-        .setUpsert({ $set: celebi });
-      const res = await query.upsertOne();
-
-      if (res.upsertedCount !== 1) {
-        logger.warn(`Error updating Celebi for ${trainer.user.username}`);
-      }
-      if (res.upsertedId) {
-        celebi._id = res.upsertedId;
-      }
-      logger.info(`Updated Celebi for ${trainer.user.username}`);
-    } catch (err) {
-      logger.error(err);
-      return { err: "Error updating Celebi" };
+    const { err, id } = await upsertMythic(trainer, celebi);
+    if (err) {
+      return { err };
     }
+    celebi._id = id || celebi._id;
   }
 
   return { data: celebi };
@@ -480,7 +491,7 @@ const buildCelebiSend = async (user) => {
   };
 
   // build pokemon embed
-  const embed = buildPokemonEmbed(trainer, celebi, "info");
+  const embed = DEPRECATEDbuildPokemonEmbed(trainer, celebi, "info");
   send.embeds.push(embed);
   const abilityEmbed = buildCelebiAbilityEmbed(trainer);
   send.embeds.push(abilityEmbed);
@@ -574,7 +585,6 @@ const getDeoxys = async (trainer) => {
 
   let modified = false;
   const speciesId = (deoxys && deoxys.speciesId) || DEOXYS_SPECIES_IDS[0];
-  const deoxysData = pokemonConfig[speciesId];
   if (!deoxys) {
     // check if trainer has beat battle tower 20
     if (!trainer.defeatedNPCs[getIdFromTowerStage(20)]) {
@@ -583,39 +593,17 @@ const getDeoxys = async (trainer) => {
       };
     }
 
-    deoxys = generateRandomPokemon(trainer.userId, speciesId, 1);
-    // set ivs to 31
-    deoxys.ivs = [31, 31, 31, 31, 31, 31];
-    // set shiny to false
-    deoxys.shiny = false;
-    // set locked to true
-    deoxys.locked = true;
-    // set nature to 0
-    deoxys.natureId = 0;
-    // recalculate stats
-    calculatePokemonStats(deoxys, deoxysData);
+    deoxys = generateMythic(trainer, speciesId);
     modified = true;
   }
 
   // update deoxys if modified
   if (modified) {
-    try {
-      const query = new QueryBuilder(collectionNames.USER_POKEMON)
-        .setFilter({ userId: deoxys.userId, speciesId })
-        .setUpsert({ $set: deoxys });
-      const res = await query.upsertOne();
-
-      if (res.upsertedCount !== 1) {
-        logger.warn(`Error updating Deoxys for ${trainer.user.username}`);
-      }
-      if (res.upsertedId) {
-        deoxys._id = res.upsertedId;
-      }
-      logger.info(`Updated Deoxys for ${trainer.user.username}`);
-    } catch (err) {
-      logger.error(err);
-      return { err: "Error updating Deoxys" };
+    const { err, id } = await upsertMythic(trainer, deoxys);
+    if (err) {
+      return { err };
     }
+    deoxys._id = id || deoxys._id;
   }
 
   return { data: deoxys };
@@ -642,7 +630,7 @@ const buildDeoxysSend = async (user) => {
   };
 
   // build pokemon embed
-  const embed = buildPokemonEmbed(trainer, deoxys, "all");
+  const embed = DEPRECATEDbuildPokemonEmbed(trainer, deoxys, "all");
   send.embeds.push(embed);
 
   // build tab buttons
@@ -707,6 +695,224 @@ const onFormSelect = async (user, speciesId) => {
   return { err: null };
 };
 
+/**
+ * @param {WithId<Trainer>} trainer
+ * @returns {Promise<{err?: string, data?: WithId<Pokemon>}>}
+ */
+const getJirachi = async (trainer) => {
+  const speciesId = pokemonIdEnum.JIRACHI;
+
+  const jirachiRes = await getMythic(trainer, speciesId);
+  if (jirachiRes.err) {
+    return { err: jirachiRes.err };
+  }
+
+  let jirachi = jirachiRes.data;
+  let modified = false;
+  if (!jirachi) {
+    let metRequirements = true;
+    // check star piece
+    if (getItems(trainer, backpackItems.STAR_PIECE) < 200) {
+      metRequirements = false;
+    }
+    // check for non-original-trainer pokemon
+    const pokemonsRes = await listPokemons(trainer, {
+      pageSize: 3,
+      filter: { originalOwner: { $ne: trainer.userId } },
+      allowNone: true,
+    });
+    if (pokemonsRes.err) {
+      return { err: pokemonsRes.err };
+    }
+    if (pokemonsRes.data.length < 3) {
+      metRequirements = false;
+    }
+    if (!metRequirements) {
+      return {
+        err: `Jirachi wants you to work with others before granting your wishes! You must obtain 200x ${
+          backpackItemConfig[backpackItems.STAR_PIECE].emoji
+        } Star Pieces from raids, and have at least 3 traded Pokemon!`,
+      };
+    }
+
+    // @ts-ignore
+    jirachi = generateMythic(trainer, speciesId);
+    modified = true;
+  }
+
+  if (!trainer.hasJirachi) {
+    trainer.hasJirachi = true;
+    const trainerRes = await updateTrainer(trainer);
+    if (trainerRes.err) {
+      return { err: trainerRes.err };
+    }
+  }
+
+  // update jirachi if modified
+  if (modified) {
+    const { err, id } = await upsertMythic(trainer, jirachi);
+    if (err) {
+      return { err };
+    }
+    jirachi._id = id || jirachi._id;
+  }
+
+  return { data: jirachi };
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {object} param1
+ * @param {string} param1.wishId
+ * @param {Pokemon?=} param1.pokemon
+ * @returns {{err?: string}}
+ */
+const canTrainerUseWish = (trainer, { wishId, pokemon }) => {
+  const wishData =
+    pokemonConfig[pokemonIdEnum.JIRACHI].mythicConfig.wishes[wishId];
+  if (!wishData) {
+    return { err: "Invalid wish" };
+  }
+  if (trainer.usedWish) {
+    return { err: "You have already used your wish this week!" };
+  }
+  const { starPieceCost } = wishData;
+  if (getItems(trainer, backpackItems.STAR_PIECE) < starPieceCost) {
+    return { err: "Not enough Star Pieces" };
+  }
+
+  if (pokemon && wishId === "power") {
+    // check that an IV exists that is below 31
+    if (pokemon.ivs.every((iv) => iv === 31)) {
+      return { err: "All IVs are already at their maximum value!" };
+    }
+  } else if (pokemon && wishId === "rebirth") {
+    // check that the pokemon may learn at least 2 abilites
+    if (Object.keys(pokemonConfig[pokemon.speciesId].abilities).length < 2) {
+      return { err: "This Pokemon may only have one ability!" };
+    }
+  }
+
+  return { err: null };
+};
+
+/**
+ * @param {DiscordUser} user
+ * @param {object} param1
+ * @param {string} param1.wishId
+ * @param {WithId<Pokemon>?=} param1.pokemon
+ * @returns {Promise<{result?: string, err?: string}>}
+ */
+const useWish = async (user, { wishId, pokemon }) => {
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { err: trainerErr };
+  }
+  const { err: canUseWishErr } = canTrainerUseWish(trainer, {
+    wishId,
+    pokemon,
+  });
+  if (canUseWishErr) {
+    return { err: canUseWishErr };
+  }
+
+  // use wish
+  const wishData =
+    pokemonConfig[pokemonIdEnum.JIRACHI].mythicConfig.wishes[wishId];
+  const { starPieceCost } = wishData;
+  // remove star pieces and set usedWish to true
+  removeItems(trainer, backpackItems.STAR_PIECE, starPieceCost);
+  trainer.usedWish = true;
+  // make wish happen
+  let result = "";
+  let rewards = {};
+  switch (wishId) {
+    case "power":
+      // set a random non-31 IV to 31
+      const non31IvIndices = pokemon.ivs.reduce((acc, iv, index) => {
+        if (iv !== 31) {
+          return [...acc, index];
+        }
+        return acc;
+      }, []);
+      const randomIndex = drawIterable(non31IvIndices, 1)[0];
+      pokemon.ivs[randomIndex] = 31;
+
+      // recalculate stats and update pokemon
+      const updateStatsRes = await calculateAndUpdatePokemonStats(
+        pokemon,
+        pokemonConfig[pokemon.speciesId],
+        true
+      );
+      if (updateStatsRes.err) {
+        return { err: updateStatsRes.err };
+      }
+      result = `**${pokemon.name}'s ${statToBattleStat[
+        randomIndex
+      ].toUpperCase()}** IV was set to 31!`;
+      break;
+    case "rebirth":
+      // reroll the Pokemon's ability ID, don't keep current ability
+      const speciesData = pokemonConfig[pokemon.speciesId];
+      const abilityProbabilities = {
+        ...speciesData.abilities,
+      };
+      // remove current ability from probabilities
+      delete abilityProbabilities[pokemon.abilityId];
+      const newAbilityId = drawDiscrete(abilityProbabilities, 1)[0];
+      pokemon.abilityId = newAbilityId;
+      const updateRes = await updatePokemon(pokemon);
+      if (updateRes.err) {
+        return { err: updateRes.err };
+      }
+      result = `**${pokemon.name}'s** ability was changed to **${getAbilityName(
+        newAbilityId
+      )}**!`;
+      break;
+    case "allies":
+      // give 50 random Pokeballs
+      const pokeballResults = drawDiscrete(dailyRewardChances, 50);
+      const backpackRewards = pokeballResults.reduce(
+        (acc, curr) => {
+          acc[backpackCategories.POKEBALLS][curr] =
+            (acc[backpackCategories.POKEBALLS][curr] || 0) + 1;
+          return acc;
+        },
+        {
+          [backpackCategories.POKEBALLS]: {},
+        }
+      );
+      rewards = { backpack: backpackRewards };
+      addRewards(trainer, rewards);
+      result = getRewardsString(rewards);
+      break;
+    case "wealth":
+      rewards = {
+        money: 100000,
+        backpack: {
+          [backpackCategories.MATERIALS]: {
+            [backpackItems.EMOTION_SHARD]: 400,
+            [backpackItems.KNOWLEDGE_SHARD]: 400,
+            [backpackItems.WILLPOWER_SHARD]: 400,
+            [backpackItems.MINT]: 5,
+          },
+        },
+      };
+      addRewards(trainer, rewards);
+      result = getRewardsString(rewards);
+      break;
+    default:
+      return { err: "Invalid wish" };
+  }
+
+  const { err: updateTrainerErr } = await updateTrainer(trainer);
+  if (updateTrainerErr) {
+    return { err: updateTrainerErr };
+  }
+
+  return { result, err: null };
+};
+
 module.exports = {
   getMew,
   updateMew,
@@ -717,4 +923,7 @@ module.exports = {
   getDeoxys,
   buildDeoxysSend,
   onFormSelect,
+  getJirachi,
+  canTrainerUseWish,
+  useWish,
 };

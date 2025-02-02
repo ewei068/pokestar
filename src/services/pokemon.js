@@ -41,7 +41,7 @@ const { locations, locationConfig } = require("../config/locationConfig");
 const {
   buildSpeciesDexEmbed,
   buildPokemonListEmbed,
-  buildPokemonEmbed,
+  DEPRECATEDbuildPokemonEmbed,
   buildEquipmentEmbed,
   buildEquipmentUpgradeEmbed,
   buildDexListEmbed,
@@ -981,7 +981,7 @@ const buildPokemonAllInfoSend = async ({
   }
 
   // build pokemon embed
-  const embed = buildPokemonEmbed(trainer.data, pokemon.data, "all");
+  const embed = DEPRECATEDbuildPokemonEmbed(trainer.data, pokemon.data, "all");
   send.embeds.push(embed);
 
   return { send, err: null };
@@ -1030,7 +1030,7 @@ const buildPokemonInfoSend = async ({
   }
 
   // build pokemon embed
-  const embed = buildPokemonEmbed(
+  const embed = DEPRECATEDbuildPokemonEmbed(
     trainer.data,
     pokemon.data,
     tab,
@@ -1377,7 +1377,10 @@ const canRelease = async (trainer, pokemonIds) => {
 
   // see if any pokemon are mythical
   for (const pokemon of toRelease.data) {
-    if (pokemon.rarity === rarities.MYTHICAL) {
+    if (
+      pokemon.rarity === rarities.MYTHICAL &&
+      process.env.STAGE !== stageNames.ALPHA
+    ) {
       return {
         err: `You can't release or trade ${pokemon.name} (${pokemon._id}) because it's mythical!`,
       };
@@ -1946,7 +1949,7 @@ const buildNatureSend = async ({ stateId = null, user = null } = {}) => {
   };
 
   // embed
-  const embed = buildPokemonEmbed(trainer, pokemon, "info");
+  const embed = DEPRECATEDbuildPokemonEmbed(trainer, pokemon, "info");
   send.embeds.push(embed);
 
   // nature select row

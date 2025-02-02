@@ -128,6 +128,24 @@ Pokestar is officially out of Beta, and our support server has hit 100 members! 
 * Shiny Hat Pikachu: https://www.deviantart.com/lukethefoxen/art/Pikachu-with-Ash-s-Hat-923733788
 `;
 
+const AQUA_VS_MAGMA_DESCRIPTION = `🌊🔥**Aqua vs Magma**🔥🌊
+
+Team Aqua and Team Magma are clashing for control of the climate in Pokestar!
+
+<:aquakyogre:1325287152979939348> <:magmagroudon:1325287156268404878> **Event Pokemon:** New limited Pokemon with the "Aqua vs Magma" theme have arrived! Use \`/gacha\` to try your luck!
+
+🌋 **Limited Dungeon:** Stop the Double Crisis in the new limited Sootopolis City dungeon for tons of rewards! Use \`/dungeons\` to challenge it!
+
+<:acetrainergen4:1326704756172787723> **Limited NPC:** Defeat Butler to free Jirachi from Meta Groudon's control in a limited-time PvE stage for daily Great Balls and additional Raid Passes! Use \`/pve butler\` to challenge him!
+
+<:385:1132497393431105588> **Jirachi and Raids:** Jirachi has arrived, alongside improvements to raids. For a limited time, the Gen 3 raids and Champion Steven will give improved rewards! Challenge these raids to catch Jirachi!
+
+🖌️ **Art Credits**
+* Event banner backgroud art: https://8pxl.tumblr.com/post/619650615905288192/turbulant
+* [Aqua Kyogre Raid](https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/0eb0f155-e353-4cbc-882d-ea2e9025c5b5/ddpquze-b5fde401-6114-4449-a367-2afbe9e44e3d.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzBlYjBmMTU1LWUzNTMtNGNiYy04ODJkLWVhMmU5MDI1YzViNVwvZGRwcXV6ZS1iNWZkZTQwMS02MTE0LTQ0NDktYTM2Ny0yYWZiZTllNDRlM2QuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.UK1oWJ2GLAK3RckFzCEMnUHqavpOsdCext5VmqrIKlY)
+* [Magma Groudon Raid](https://preview.redd.it/6p9bnciaj3461.png?auto=webp&s=c249420a2c8dfae4e1dd649d74688531cc7d9a88)
+`;
+
 /**
  * @typedef {{
  *  name: string,
@@ -141,12 +159,18 @@ Pokestar is officially out of Beta, and our support server has hit 100 members! 
  */
 const gameEventConfig = [
   {
+    name: "Aqua vs Magma",
+    description: AQUA_VS_MAGMA_DESCRIPTION,
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-aqua-magma-banner.png",
+  },
+  /* {
     name: "100 Members + Official Launch",
     description: HUNDRED_MEMBERS_DESCRIPTION,
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-launch-banner.png",
   },
-  /* {
+  {
         "name": "One Piece",
         "description": ONE_PIECE_DESCRIPTION,
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-op-banner.png"

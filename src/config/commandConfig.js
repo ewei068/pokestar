@@ -1,3 +1,4 @@
+const { logger } = require("../log");
 const { stageNames, stageConfig } = require("./stageConfig");
 
 const { prefix } = stageConfig[process.env.STAGE];
@@ -52,6 +53,7 @@ const commandCategoryConfigRaw = {
       "mew",
       "celebi",
       "deoxys",
+      "jirachi",
       // "togglespawn",
     ],
   },
@@ -111,7 +113,7 @@ const commandCategoryConfigRaw = {
     name: "Heartbeat",
     description: "Basic heartbeat commands; intended for testing",
     folder: "heartbeat",
-    commands: ["ping", "echo", "give", "test"],
+    commands: ["ping", "echo", "give", "giveitem", "test"],
   },
 };
 /** @type {Record<CommandCategoryEnum, CommandCategoryData>} */
@@ -781,6 +783,7 @@ const commandConfigRaw = {
           "steven",
           "palmer",
           "professorWillow",
+          "butler",
         ],
       },
       difficulty: {
@@ -851,9 +854,9 @@ const commandConfigRaw = {
   partyadd: {
     name: "Party Add",
     aliases: ["partyadd", "pa"],
-    description: "Add a Pokemon to your party",
+    description: "Add a Pokemon to your party, using position if specified",
     longDescription:
-      "Add a Pokemon to your party at a specified position. If the Pokemon is in the party already, swaps with another Pokemon. If the position is full, removes the Pokemon at that position first.",
+      "Add a Pokemon to your party, using position if specified. If the Pokemon is in the party already, swaps with another Pokemon. If the position is full, removes the Pokemon at that position first.",
     execute: "partyAdd.js",
     args: {
       name_or_id: {
@@ -865,7 +868,7 @@ const commandConfigRaw = {
       position: {
         type: "int",
         description: "position (1-12) to add Pokemon to",
-        optional: false,
+        optional: true,
         variable: false,
       },
     },
@@ -877,7 +880,8 @@ const commandConfigRaw = {
   partyremove: {
     name: "Party Remove",
     aliases: ["partyremove", "pr"],
-    description: "Remove a Pokemon from your party",
+    description:
+      "Remove a Pokemon from your party by ID or position. Using 'ALL' removes all Pokemon.",
     longDescription: `Remove Pokemon(s) from your party depending on \`option\`:
         If \`option\` is a number, attempts to remove a Pokemon at that position.
         If \`option\` is a Pokemon ID, attempts to remove Pokemon with that ID.
@@ -956,7 +960,7 @@ const commandConfigRaw = {
     name: "Mythic",
     aliases: ["mythic"],
     description: "Entry point for Mythical Pokemon",
-    subcommands: ["mew", "celebi", "deoxys"],
+    subcommands: ["mew", "celebi", "deoxys", "jirachi"],
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
   },
@@ -992,6 +996,19 @@ const commandConfigRaw = {
     longDescription:
       "View your Deoxys and change its form! Deoxys is a special Pokemon that can change form!",
     execute: "deoxys.js",
+    args: {},
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    exp: 5,
+    money: 10,
+    parent: "mythic",
+  },
+  jirachi: {
+    name: "Jirachi",
+    aliases: ["jirachi"],
+    description: "View your Jirachi and make a wish!",
+    longDescription:
+      "View your Jirachi and make a wish! Jirachi is a special Pokemon that can grant wishes and increases your shiny Pokemon odds!",
+    execute: "jirachi.js",
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 5,
@@ -1121,6 +1138,30 @@ const commandConfigRaw = {
     exp: 0,
     money: 0,
   },
+  giveitem: {
+    name: "Give Item",
+    aliases: ["giveitem"],
+    description: "Give a Item to self",
+    longDescription: "Give a Item to self.",
+    execute: "giveItem.js",
+    args: {
+      itemid: {
+        type: "string",
+        description: "ID for Item to give to self",
+        optional: false,
+        variable: false,
+      },
+      quantity: {
+        type: "int",
+        description: "quantity to give Item",
+        optional: true,
+        variable: false,
+      },
+    },
+    stages: [stageNames.ALPHA],
+    exp: 0,
+    money: 0,
+  },
   test: {
     name: "Test",
     aliases: ["test"],
@@ -1137,6 +1178,13 @@ const commandConfigRaw = {
     stages: [stageNames.ALPHA],
   },
 };
+
+// if detect a capital letter in any command ID, warn
+for (const commandId of Object.keys(commandConfigRaw)) {
+  if (commandId !== commandId.toLowerCase()) {
+    logger.warn(`Command ID ${commandId} contains a capital letter!`);
+  }
+}
 
 /** @type {Record<CommandEnum, CommandConfigData>} */
 const commandConfig = Object.freeze(commandConfigRaw);

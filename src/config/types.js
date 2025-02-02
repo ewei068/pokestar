@@ -2,6 +2,7 @@
 /** @typedef {import("./pokemonConfig").GrowthRateEnum} GrowthRateEnum */
 /** @typedef {import("./pokemonConfig").NatureEnum} NatureEnum  */
 /** @typedef {import("./pokemonConfig").RarityEnum} RarityEnum  */
+/** @typedef {import("./pokemonConfig").StatEnum} StatEnum */
 /** @typedef {import("./equipmentConfig").EquipmentModifierSlotEnum} EquipmentModifierSlotEnum */
 /** @typedef {import("./equipmentConfig").EquipmentModifierTypeEnum} EquipmentModifierTypeEnum */
 /** @typedef {import("./equipmentConfig").EquipmentTypeEnum} EquipmentTypeEnum */
@@ -10,6 +11,7 @@
 /** @typedef {import("./npcConfig").NpcEnum} NpcEnum */
 /** @typedef {import("./npcConfig").DungeonEnum} DungeonEnum */
 /** @typedef {import("./npcConfig").RaidEnum} RaidEnum */
+/** @typedef {import("./npcConfig").RaidConfigData} RaidConfigData */
 /** @typedef {import("./npcConfig").NpcDifficultyEnum} NpcDifficultyEnum  */
 /** @typedef {import("./backpackConfig").BackpackItemEnum} BackpackItemEnum */
 /** @typedef {import("./backpackConfig").BackpackCategoryEnum} BackpackCategoryEnum */

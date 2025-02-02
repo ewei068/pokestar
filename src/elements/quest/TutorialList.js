@@ -1,16 +1,12 @@
-const {
-  useAwaitedMemo,
-  useState,
-  createElement,
-} = require("../../deact/deact");
+const { createElement } = require("../../deact/deact");
 const usePaginationAndSelection = require("../../hooks/usePaginationAndSelection");
 const {
   newTutorialStages,
   newTutorialConfig,
 } = require("../../config/questConfig");
 const { buildTutorialListEmbed } = require("../../embeds/questEmbeds");
-const { getTrainer } = require("../../services/trainer");
 const TutorialStage = require("./TutorialStage");
+const useTrainer = require("../../hooks/useTrainer");
 
 const PAGE_SIZE = 10;
 
@@ -24,11 +20,7 @@ const PAGE_SIZE = 10;
  */
 module.exports = async (ref, { user, initialStagePage }) => {
   // TODO: got to current tutorial stage
-  const { data: initialTrainer, err } = await useAwaitedMemo(
-    async () => getTrainer(user),
-    [],
-    ref
-  );
+  const { trainer, setTrainer, err } = await useTrainer(user, ref);
   if (err) {
     return { err };
   }
@@ -47,7 +39,7 @@ module.exports = async (ref, { user, initialStagePage }) => {
       initialItem: /** @type {TutorialStageEnum} */ (
         initialStagePage && newTutorialStages[initialStagePage - 1]
           ? newTutorialStages[initialStagePage - 1]
-          : initialTrainer.tutorialData.currentTutorialStage
+          : trainer.tutorialData.currentTutorialStage
       ),
       selectionPlaceholder: "Select a tutorial stage",
       itemConfig: newTutorialConfig,
@@ -57,8 +49,6 @@ module.exports = async (ref, { user, initialStagePage }) => {
     },
     ref
   );
-
-  const [trainer, setTrainer] = useState(initialTrainer, ref);
 
   if (currentStage) {
     return {
