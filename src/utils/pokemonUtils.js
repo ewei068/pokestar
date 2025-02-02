@@ -4,7 +4,6 @@
  *
  * pokemonUtils.js the lowest level of pokemon code used by pokemonUtils.js
  */
-const { spec } = require("node:test/reporters");
 const {
   rarityConfig,
   pokemonConfig,
