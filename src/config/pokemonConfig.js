@@ -2889,6 +2889,46 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.ELECTABUZZ]: {
+    name: "Electabuzz",
+    emoji: "<:125:1100290832097099808>",
+    description:
+      "Normally found near power plants, they can wander away and cause major blackouts in cities.",
+    type: [types.ELECTRIC],
+    baseStats: [65, 83, 57, 95, 85, 105],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/125.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/125.png",
+    abilities: {
+      9: 0.8,
+      72: 0.2,
+    },
+    moveIds: ["m84", moveIdEnum.ICE_PUNCH, "m85", "m238"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.MAGMAR]: {
+    name: "Magmar",
+    emoji: "<:126:1100290832914989108>",
+    description:
+      "Its body always burns with an orange glow that enables it to hide perfectly among flames.",
+    type: [types.FIRE],
+    baseStats: [65, 95, 57, 100, 85, 93],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/126.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/126.png",
+    abilities: {
+      [abilityIdEnum.FLAME_BODY]: 0.8,
+      72: 0.2,
+    },
+    moveIds: ["m52", "m53", "m238", "m269"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
   127: {
     name: "Pinsir",
     emoji: "<:127:1100290834290720798>",
@@ -3116,6 +3156,33 @@ const pokemonConfigRaw = {
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.MEDIUMSLOW,
     noGacha: true,
+  },
+  [pokemonIdEnum.PORYGON]: {
+    name: "Porygon",
+    emoji: "<:137:1100291605384142940>",
+    description:
+      "A POKéMON that consists entirely of programming code. Capable of moving freely in cyberspace.",
+    type: [types.NORMAL],
+    baseStats: [65, 60, 70, 85, 75, 40],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/137.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/137.png",
+    evolution: [
+      {
+        level: 25,
+        id: pokemonIdEnum.PORYGON2,
+      },
+    ],
+    abilities: {
+      36: 0.45,
+      [abilityIdEnum.DOWNLOAD]: 0.45,
+      148: 0.1,
+    },
+    moveIds: ["m100", "m58", "m85", "m182"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
   },
   138: {
     name: "Omanyte",
@@ -4070,6 +4137,54 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.TOGEPI]: {
+    name: "Togepi",
+    emoji: "<:175:1116755996228976770>",
+    description:
+      "As its energy, Togepi uses the positive emotions of compassion and pleasure exuded by people and Pokémon.",
+    type: [types.FAIRY],
+    baseStats: [35, 20, 65, 40, 65, 20],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/175.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/175.png",
+    evolution: [
+      {
+        level: 20,
+        id: pokemonIdEnum.TOGETIC,
+      },
+    ],
+    abilities: {
+      55: 0.45,
+      [abilityIdEnum.SERENE_GRACE]: 0.45,
+      105: 0.1,
+    },
+    moveIds: ["m270", "m876", "m86", "m266"],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.TOGETIC]: {
+    name: "Togetic",
+    emoji: "<:176:1116755997755703356>",
+    description:
+      "It is said to be a Pokémon that brings good fortune. When the Pokémon spots someone who is pure of heart, it is said to appear and share its happiness with that person.",
+    type: [types.FAIRY, types.FLYING],
+    baseStats: [55, 40, 85, 80, 105, 40],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/176.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/176.png",
+    abilities: {
+      55: 0.45,
+      [abilityIdEnum.SERENE_GRACE]: 0.45,
+      105: 0.1,
+    },
+    moveIds: ["m270", "m86", "m266", "m355"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
   179: {
     name: "Mareep",
     emoji: "<:179:1116756067767029843>",
@@ -4306,6 +4421,27 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.AIPOM]: {
+    name: "Aipom",
+    emoji: "<:190:1116756128198561874>",
+    description:
+      "Aipom's tail ends in a hand-like appendage that can be cleverly manipulated. However, because the Pokémon uses its tail so much, its real hands have become rather clumsy.",
+    type: [types.NORMAL],
+    baseStats: [55, 70, 55, 40, 55, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/190.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/190.png",
+    abilities: {
+      50: 0.45,
+      53: 0.45,
+      92: 0.1,
+    },
+    moveIds: ["m10", "m216", "m252", "m369"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   191: {
     name: "Sunkern",
     emoji: "<:191:1116756130018906232>",
@@ -4350,6 +4486,27 @@ const pokemonConfigRaw = {
       48: 0.1,
     },
     moveIds: ["m71", "m241", "m414", "m76"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.YANMA]: {
+    name: "Yanma",
+    emoji: "<:193:1116756133969936384>",
+    description:
+      "If it flaps its wings really fast, it can generate shock waves that will shatter windows in the area.",
+    type: [types.BUG, types.FLYING],
+    baseStats: [65, 65, 45, 75, 45, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/193.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/193.png",
+    abilities: {
+      3: 0.45,
+      14: 0.45,
+      119: 0.1,
+    },
+    moveIds: ["m17", "m182", "m403", "m450"],
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMFAST,
@@ -4442,6 +4599,27 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
   },
+  [pokemonIdEnum.MURKROW]: {
+    name: "Murkrow",
+    emoji: "<:198:1116756193457745970>",
+    description:
+      "It is said that when chased, it lures its attacker onto dark mountain trails where the foe will get lost.",
+    type: [types.DARK, types.FLYING],
+    baseStats: [60, 85, 42, 85, 42, 91],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/198.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/198.png",
+    abilities: {
+      15: 0.45,
+      105: 0.45,
+      158: 0.1,
+    },
+    moveIds: ["m64", "m355", "m492", moveIdEnum.QUASH],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   199: {
     name: "Slowking",
     emoji: "<:199:1116756194565050408>",
@@ -4529,6 +4707,27 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.GLIGAR]: {
+    name: "Gligar",
+    emoji: "<:207:1119803393783910533>",
+    description:
+      "It usually clings to cliffs. When it spots its prey, it spreads its wings and glides down to attack.",
+    type: [types.GROUND, types.FLYING],
+    baseStats: [65, 75, 105, 35, 65, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/207.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/207.png",
+    abilities: {
+      52: 0.45,
+      8: 0.45,
+      17: 0.1,
+    },
+    moveIds: ["m40", "m182", "m191", "m282"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
   208: {
     name: "Steelix",
     emoji: "<:208:1119803395272871946>",
@@ -4611,6 +4810,75 @@ const pokemonConfigRaw = {
     moveIds: ["m175", "m14", "m224", "m370"],
     battleEligible: true,
     rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.SNEASEL]: {
+    name: "Sneasel",
+    emoji: "<:215:1119803489837658182>",
+    description:
+      "Sneasel scales trees by punching its hooked claws into the bark. This Pokémon seeks out unguarded nests and steals eggs for food while the parents are away.",
+    type: [types.DARK, types.ICE],
+    baseStats: [55, 95, 55, 35, 75, 115],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/215.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/215.png",
+    abilities: {
+      39: 0.45,
+      51: 0.45,
+      124: 0.1,
+    },
+    moveIds: ["m420", "m252", "m282", moveIdEnum.ICICLE_CRASH],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.SWINUB]: {
+    name: "Swinub",
+    emoji: "<:220:1119803558909460510>",
+    description:
+      "Swinub roots for food by rubbing its snout against the ground. Its favorite food is a mushroom that grows under the cover of dead grass. This Pokémon occasionally roots out hot springs.",
+    type: [types.ICE, types.GROUND],
+    baseStats: [50, 50, 40, 30, 30, 50],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/220.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/220.png",
+    evolution: [
+      {
+        level: 33,
+        id: pokemonIdEnum.PILOSWINE,
+      },
+    ],
+    abilities: {
+      12: 0.45,
+      81: 0.45,
+      47: 0.1,
+    },
+    moveIds: ["m189", "m420", "m446", moveIdEnum.ICICLE_CRASH],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.PILOSWINE]: {
+    name: "Piloswine",
+    emoji: "<:221:1119803559983190066>",
+    description:
+      "Piloswine is covered by a thick coat of long hair that enables it to endure the freezing cold. This Pokémon uses its tusks to dig up food that has been buried under ice.",
+    type: [types.ICE, types.GROUND],
+    baseStats: [100, 100, 80, 60, 60, 50],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/221.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/221.png",
+    abilities: {
+      12: 0.45,
+      81: 0.45,
+      47: 0.1,
+    },
+    moveIds: ["m420", "m446", "m523", moveIdEnum.ICICLE_CRASH],
+    battleEligible: true,
+    rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMSLOW,
   },
   227: {
@@ -4728,6 +4996,27 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
   },
+  [pokemonIdEnum.PORYGON2]: {
+    name: "Porygon2",
+    emoji: "<:233:1119803684344303646>",
+    description:
+      "Porygon2 was created by humans using the power of science. It can convert its body into digital data, which enables it to enter cyberspace. This Pokémon is copy-protected so it cannot be duplicated by copying.",
+    type: [types.NORMAL],
+    baseStats: [85, 80, 90, 105, 95, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/233.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/233.png",
+    abilities: {
+      36: 0.45,
+      [abilityIdEnum.DOWNLOAD]: 0.45,
+      148: 0.1,
+    },
+    moveIds: ["m100", "m58", "m182", "m433"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
   234: {
     name: "Stantler",
     emoji: "<:234:1119803685808132257>",
@@ -4824,6 +5113,58 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
     noGacha: true,
+  },
+  [pokemonIdEnum.ELEKID]: {
+    name: "Elekid",
+    emoji: "<:239:1119803751566417982>",
+    description:
+      "Elekid stores electricity in its body. If it touches metal and accidentally discharges all its built-up electricity, this Pokémon begins swinging its arms in circles to recharge itself.",
+    type: [types.ELECTRIC],
+    baseStats: [45, 63, 37, 65, 55, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/239.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/239.png",
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.ELECTABUZZ,
+      },
+    ],
+    abilities: {
+      9: 0.8,
+      72: 0.2,
+    },
+    moveIds: ["m84", "m98", moveIdEnum.ICE_PUNCH, "m85"],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.MAGBY]: {
+    name: "Magby",
+    emoji: "<:240:1119803753445458031>",
+    description:
+      "Magby's state of health is determined by observing the fire it breathes. If the Pokémon is spouting yellow flames from its mouth, it is in good health. When it is fatigued, black smoke will be mixed in with the flames.",
+    type: [types.FIRE],
+    baseStats: [45, 75, 37, 70, 55, 83],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/240.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/240.png",
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.MAGMAR,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.FLAME_BODY]: 0.8,
+      72: 0.2,
+    },
+    moveIds: ["m43", "m52", "m53", "m238"],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMSLOW,
   },
   241: {
     name: "Miltank",
@@ -6320,6 +6661,27 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.ROSELIA]: {
+    name: "Roselia",
+    emoji: "<:315:1132496536497033227>",
+    description:
+      "Roselia shoots sharp thorns as projectiles at any opponent that tries to steal the flowers on its arms. The aroma of this Pokémon brings serenity to living things.",
+    type: [types.GRASS, types.POISON],
+    baseStats: [50, 60, 45, 100, 80, 65],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/315.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/315.png",
+    abilities: {
+      30: 0.45,
+      38: 0.45,
+      102: 0.1,
+    },
+    moveIds: ["m40", "m191", "m202", "m235"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   318: {
     name: "Carvanha",
     emoji: "<:318:1132496585511682168>",
@@ -6887,6 +7249,54 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.SNORUNT]: {
+    name: "Snorunt",
+    emoji: "<:361:1132496962969677864>",
+    description:
+      "Snorunt live in regions with heavy snowfall. In seasons without snow, such as spring and summer, this Pokémon steals away to live in mountains.",
+    type: [types.ICE],
+    baseStats: [50, 50, 50, 50, 50, 50],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/361.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/361.png",
+    evolution: [
+      {
+        level: 42,
+        id: pokemonIdEnum.GLALIE,
+      },
+    ],
+    abilities: {
+      39: 0.45,
+      115: 0.45,
+      141: 0.1,
+    },
+    moveIds: ["m420", "m36", "m58", "m191"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.GLALIE]: {
+    name: "Glalie",
+    emoji: "<:362:1132496964358000803>",
+    description:
+      "Glalie has the ability to freely control ice. For example, it can instantly freeze its foe solid. After immobilizing its foe in ice, this Pokémon enjoys eating it in leisurely fashion.",
+    type: [types.ICE],
+    baseStats: [80, 80, 80, 80, 80, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/362.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/362.png",
+    abilities: {
+      39: 0.45,
+      115: 0.45,
+      141: 0.1,
+    },
+    moveIds: ["m420", "m191", "m269", "m153"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
   },
   363: {
     name: "Spheal",

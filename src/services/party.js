@@ -13,6 +13,7 @@ const { pokemonConfig } = require("../config/pokemonConfig");
 const { getTrainer } = require("./trainer");
 const { buildPartyEmbed } = require("../embeds/battleEmbeds");
 const { getUserSelectedDevice } = require("../utils/trainerUtils");
+const { drawIterable } = require("../utils/gachaUtils");
 
 /**
  *
@@ -160,15 +161,25 @@ const validateParty = async (trainer) => {
 const buildPartyAddSend = async ({
   user = null,
   pokemonId = null,
-  position = 1,
+  position = null,
 } = {}) => {
-  const index = position - 1;
   // get trainer
   const trainer = await getTrainer(user);
   if (trainer.err) {
     return { send: null, err: trainer.err };
   }
   const partyPokemon = trainer.data.party.pokemonIds;
+
+  // if position null or undefined, get random unfilled position
+  const unfilledPositions = partyPokemon.reduce((acc, curr, index) => {
+    if (!curr) {
+      acc.push(index + 1);
+    }
+    return acc;
+  }, []);
+  const randomUnfilledPosition = drawIterable(unfilledPositions, 1)[0];
+  const positionToInsert = position ?? randomUnfilledPosition;
+  const index = positionToInsert - 1;
 
   // check if position is valid
   if (index < 0 || index >= trainer.data.party.pokemonIds.length) {
@@ -214,7 +225,7 @@ const buildPartyAddSend = async ({
     ) {
       return {
         send: null,
-        err: `Your party is full! Remove a Pokemon with \`/partyremove\``,
+        err: `Your party is full! Remove a Pokemon with \`/party remove\``,
       };
     }
 
