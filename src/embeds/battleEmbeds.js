@@ -20,6 +20,7 @@ const {
 const {
   buildPokemonStatString,
   getAbilityName,
+  buildPokemonEmojiString,
 } = require("../utils/pokemonUtils");
 const {
   setTwoInline,
@@ -85,11 +86,10 @@ const buildPartyEmbed = (
       .filter((p) => p !== null)
       .map((pokemon) => {
         const statString = buildPokemonStatString(pokemon, 10, true);
-        const pokemonData = pokemonConfig[pokemon.speciesId];
         return {
-          name: `${pokemonData.emoji} [${pokemons.indexOf(pokemon) + 1}] [Lv. ${
-            pokemon.level
-          }] ${pokemon.name}`,
+          name: `${buildPokemonEmojiString(pokemon)} [${
+            pokemons.indexOf(pokemon) + 1
+          }] [Lv. ${pokemon.level}] ${pokemon.name}`,
           value: `${pokemon._id}\n${statString}\nAbility: ${getAbilityName(
             pokemon.abilityId
           )}`,

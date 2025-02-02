@@ -4,6 +4,7 @@
  *
  * pokemonUtils.js the lowest level of pokemon code used by pokemonUtils.js
  */
+const { spec } = require("node:test/reporters");
 const {
   rarityConfig,
   pokemonConfig,
@@ -435,6 +436,37 @@ const getMoveIds = (pokemon) => {
   return pokemonConfig[pokemon.speciesId].moveIds;
 };
 
+/**
+ * @param {{
+ *  speciesId: PokemonIdEnum,
+ *  shiny?: boolean
+ * }} pokemon
+ * @param {object} options
+ * @param {boolean=} options.includeShiny
+ */
+const buildPokemonEmojiString = (pokemon, { includeShiny = true } = {}) => {
+  const { speciesId, shiny } = pokemon;
+  const speciesData = pokemonConfig[speciesId];
+  const { emoji } = speciesData;
+  return `${shiny && includeShiny ? "✨ " : ""}${emoji}`;
+};
+
+/**
+ * @param {{
+ *  speciesId: PokemonIdEnum,
+ *  name?: string
+ *  shiny?: boolean
+ * }} pokemon
+ * @param {object} options
+ * @param {boolean=} options.includeShiny
+ */
+const buildPokemonNameString = (pokemon, options = {}) => {
+  const speciesData = pokemonConfig[pokemon.speciesId];
+  return `${buildPokemonEmojiString(pokemon, options)} ${
+    pokemon.name || speciesData.name
+  }`;
+};
+
 module.exports = {
   getPokemonExpNeeded,
   calculateWorth,
@@ -452,6 +484,8 @@ module.exports = {
   buildCompactEquipmentString,
   buildBoostString,
   buildSpeciesEvolutionString,
+  buildPokemonEmojiString,
+  buildPokemonNameString,
   getPartyPokemonIds,
   getMoveIds,
 };

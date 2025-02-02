@@ -10,12 +10,13 @@ const { getPokemon, trainPokemon } = require("../../services/pokemon");
 const { getTrainer } = require("../../services/trainer");
 const { locations } = require("../../config/locationConfig");
 const { statConfig } = require("../../config/pokemonConfig");
+const { buildPokemonNameString } = require("../../utils/pokemonUtils");
 
 /**
  * Trains a Pokemon at a given locations, boosting its EXP and EVs.
- * @param {Object} user User who initiated the command.
- * @param {String} pokemonId ID of the Pokemon to train.
- * @param {String} location Location to train at.
+ * @param {object} user User who initiated the command.
+ * @param {string} pokemonId ID of the Pokemon to train.
+ * @param {string} location Location to train at.
  * @returns Message indicating the Pokemon's gained EXP and EVs.
  */
 const train = async (user, pokemonId, location) => {
@@ -54,7 +55,9 @@ const train = async (user, pokemonId, location) => {
   const { exp, evs } = res.data;
 
   // build message
-  let message = `Trained ${pokemon.data.name} and gained ${exp} exp.`;
+  let message = `Trained ${buildPokemonNameString(
+    pokemon.data
+  )} and gained ${exp} exp.`;
   if (
     evs[0] !== 0 ||
     evs[1] !== 0 ||

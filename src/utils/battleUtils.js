@@ -15,6 +15,7 @@ const {
 const { getPBar, formatMoney } = require("./utils");
 const { getEffect } = require("../battle/data/effectRegistry");
 const { backpackItemConfig } = require("../config/backpackConfig");
+const { buildPokemonEmojiString } = require("./pokemonUtils");
 
 const plus = "┼";
 const plusEmph = "*";
@@ -324,9 +325,7 @@ const buildMoveString = (moveData, cooldown = 0) => {
 };
 
 const buildBattlePokemonHeader = (pokemon) => {
-  let pokemonHeader = `${pokemon.shiny ? "✨ " : ""}${
-    pokemonConfig[pokemon.speciesId].emoji
-  } `;
+  let pokemonHeader = `${buildPokemonEmojiString(pokemon)} `;
   if (pokemon.isFainted) {
     pokemonHeader += "[FNT] ";
   } else {

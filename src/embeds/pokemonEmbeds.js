@@ -35,6 +35,8 @@ const {
   getMoveIds,
   buildCompactEquipmentString,
   buildSpeciesEvolutionString,
+  buildPokemonNameString,
+  buildPokemonEmojiString,
 } = require("../utils/pokemonUtils");
 const { buildMoveString } = require("../utils/battleUtils");
 const {
@@ -162,7 +164,12 @@ const buildGachaInfoString = () => {
 const buildPokemonSpawnEmbed = (speciesId, level, shiny = false) => {
   const speciesData = pokemonConfig[speciesId];
   const embed = new EmbedBuilder();
-  embed.setTitle(`${speciesData.emoji} ${speciesData.name}`);
+  embed.setTitle(
+    buildPokemonNameString({
+      speciesId,
+      shiny,
+    })
+  );
   embed.setDescription(
     `A wild **Level ${level} ${speciesData.name}** has appeared!`
   );
@@ -206,9 +213,7 @@ const buildNewPokemonEmbed = (
   const ivString = `HP: ${pokemon.ivs[0]} | Atk: ${pokemon.ivs[1]} | Def: ${pokemon.ivs[2]} | SpA: ${pokemon.ivs[3]} | SpD: ${pokemon.ivs[4]} | Spe: ${pokemon.ivs[5]}`;
 
   const embed = new EmbedBuilder();
-  embed.setTitle(
-    `${pokemon.shiny ? "✨" : ""}${speciesData.name} (#${pokemon.speciesId})`
-  );
+  embed.setTitle(`${buildPokemonNameString(pokemon)} (#${pokemon.speciesId})`);
   const shinyString = pokemon.shiny ? "SHINY " : "";
   if (speciesData.rarity === rarities.LEGENDARY) {
     embed.setDescription(
@@ -366,7 +371,9 @@ const buildPokemonEmbed = (
 
   // TODO: display original owner?
   const embed = new EmbedBuilder();
-  embed.setTitle(`${user.username}'s ${pokemon.name}`);
+  embed.setTitle(
+    `${buildPokemonEmojiString(pokemon)} ${user.username}'s ${pokemon.name}`
+  );
   embed.setDescription(
     `${pokemon.shiny ? "✨" : ""}**[Lv. ${pokemon.level}]** ${
       speciesData.name
