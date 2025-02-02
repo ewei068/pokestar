@@ -3,6 +3,7 @@ const {
   weatherConditions,
   damageTypes,
   targetPatterns,
+  statusConditions,
 } = require("../../config/battleConfig");
 const { types: pokemonTypes } = require("../../config/pokemonConfig");
 const {
@@ -137,6 +138,42 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [abilityIdEnum.FLAME_BODY]: new Ability({
+    id: abilityIdEnum.FLAME_BODY,
+    name: "Flame Body",
+    description:
+      "When the user is hit by a physical move, 50% chance to Burn the attacker.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
+          callback: ({ source, damageInfo }) => {
+            // TODO: make condition callback?
+            const moveId = damageInfo?.moveId;
+            if (
+              !moveId ||
+              getMove(moveId)?.damageType !== damageTypes.PHYSICAL
+            ) {
+              return;
+            }
+
+            if (Math.random() < 0.5) {
+              battle.addToLog(
+                `${target.name}'s Flame Body affects ${source.name}!`
+              );
+              source.applyStatus(statusConditions.BURN, target);
+            }
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
   [abilityIdEnum.MAGMA_POWER]: new Ability({
     id: abilityIdEnum.MAGMA_POWER,
     name: "Magma Power",
@@ -205,6 +242,46 @@ const abilitiesToRegister = Object.freeze({
             target.applyEffect("greaterSpaUp", 3, target, {});
           },
           conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.DOWNLOAD]: new Ability({
+    id: abilityIdEnum.DOWNLOAD,
+    name: "Download",
+    description:
+      "At the start of battle, raises the user's Atk or SpA for 4 turns based on the opponent's lower total defensive stat (Def or SpD).",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BATTLE_BEGIN,
+          callback: () => {
+            const enemyParty = target.getEnemyParty();
+            const enemyTotalDefStats = enemyParty.pokemons.reduce(
+              (acc, enemy) => {
+                const defStat = enemy?.getDef?.() ?? 0;
+                const spdStat = enemy?.getSpd?.() ?? 0;
+                return {
+                  def: acc.def + defStat,
+                  spd: acc.spd + spdStat,
+                };
+              },
+              { def: 0, spd: 0 }
+            );
+
+            const { def, spd } = enemyTotalDefStats;
+            battle.addToLog(`${target.name}'s Download activates!`);
+            if (def < spd) {
+              target.applyEffect("atkUp", 4, target, {});
+            } else {
+              target.applyEffect("spaUp", 4, target, {});
+            }
+          },
         }),
       };
     },

@@ -353,6 +353,29 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.ICE_PUNCH]: new Move({
+    id: moveIdEnum.ICE_PUNCH,
+    name: "Ice Punch",
+    type: pokemonTypes.ICE,
+    power: 75,
+    accuracy: 100,
+    cooldown: 2,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The target is punched with an icy fist. It may also leave the target frozen with a 50% chance.",
+    execute(args) {
+      this.genericDealAllDamage(args);
+      this.genericApplyAllStatus({
+        ...args,
+        statusId: statusConditions.FROZEN,
+        probablity: 0.5,
+      });
+    },
+  }),
   [moveIdEnum.VINE_WHIP]: new Move({
     id: moveIdEnum.VINE_WHIP,
     name: "Vine Whip",
