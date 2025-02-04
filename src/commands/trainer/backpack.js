@@ -7,7 +7,9 @@
  * backpack.js Creates a system to display the user's backpack for them.
  */
 const { getTrainer } = require("../../services/trainer");
-const { buildBackpackEmbed } = require("../../embeds/trainerEmbeds");
+const {
+  DEPRECATEDbuildBackpackEmbed: buildBackpackEmbed,
+} = require("../../embeds/trainerEmbeds");
 
 /**
  * Displays the user's backpack items.

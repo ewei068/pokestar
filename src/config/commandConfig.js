@@ -212,7 +212,15 @@ const commandConfigRaw = {
     aliases: ["backpack", "bp"],
     description: "Get info about your backpack items",
     execute: "backpack.js",
-    args: {},
+    args: {
+      category: {
+        type: "string",
+        description: "category of items to view",
+        optional: true,
+        variable: false,
+        enum: ["pokeballs", "materials", "consumables"],
+      },
+    },
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 5,
     money: 10,
