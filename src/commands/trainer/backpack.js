@@ -1,48 +1,37 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * backpack.js Creates a system to display the user's backpack for them.
  */
-const { getTrainer } = require("../../services/trainer");
-const {
-  DEPRECATEDbuildBackpackEmbed: buildBackpackEmbed,
-} = require("../../embeds/trainerEmbeds");
+const { createRoot } = require("../../deact/deact");
+const BackpackEntryPoint = require("../../elements/trainer/BackpackEntryPoint");
+const { getUserFromInteraction } = require("../../utils/utils");
 
 /**
  * Displays the user's backpack items.
- * @param {Object} user User who initiated the command.
- * @returns Embed with user's backpack items.
+ * @param {any} interaction
+ * @param {string=} category
  */
-const backpack = async (user) => {
-  // get trainer
-  const trainer = await getTrainer(user);
-  if (trainer.err) {
-    return { embed: null, err: trainer.err };
-  }
-  // build backpack embed
-  const embed = buildBackpackEmbed(trainer.data);
-  return { embed, err: null };
-};
+const backpack = async (interaction, category) =>
+  await createRoot(
+    BackpackEntryPoint,
+    {
+      user: getUserFromInteraction(interaction),
+      backpackCategoryInput: category,
+    },
+    interaction,
+    { defer: false, ttl: 180 }
+  );
 
 const backpackMessageCommand = async (message) => {
-  const { embed, err } = await backpack(message.author);
-  if (err) {
-    await message.channel.send(`${err}`);
-    return { err };
-  }
-  await message.channel.send({ embeds: [embed] });
+  const category = message.content.split(" ")[1];
+  return await backpack(message, category);
 };
 
 const backpackSlashCommand = async (interaction) => {
-  const { embed, err } = await backpack(interaction.user);
-  if (err) {
-    await interaction.reply(`${err}`);
-    return { err };
-  }
-  await interaction.reply({ embeds: [embed] });
+  const category = interaction.options.getString("category");
+  return await backpack(interaction, category);
 };
 
 module.exports = {

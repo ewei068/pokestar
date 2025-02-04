@@ -41,7 +41,7 @@ const BackpackList = async (
     embeds: [
       buildBackpackEmbed(itemIds, backpackItems, { money, shouldShowMoney }),
     ],
-    buttons: [scrollButtonsElement],
+    components: [scrollButtonsElement],
   };
 };
 

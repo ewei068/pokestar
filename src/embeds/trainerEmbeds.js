@@ -138,7 +138,8 @@ const buildBackpackEmbed = (
     const categoryString = categoryItems
       .map((itemId) => {
         const itemConfig = backpackItemConfig[itemId];
-        return `${itemConfig.emoji} \`${itemConfig.name}\` x${flattenedBackpack[itemId]}`;
+        const whitespaceName = getWhitespace([itemConfig.name], 20)[0];
+        return `${itemConfig.emoji} \`${itemConfig.name}${whitespaceName}${flattenedBackpack[itemId]}\``;
       })
       .join("\n");
 
