@@ -61,7 +61,7 @@ const commandCategoryConfigRaw = {
     name: "Shop",
     description: "Browse the shop and buy items",
     folder: "shop",
-    commands: ["pokemart", "buy"],
+    commands: ["pokemart", "buy", "craft"],
   },
   battle: {
     name: "Battle",
@@ -637,6 +637,23 @@ const commandConfigRaw = {
     },
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 15,
+  },
+  craft: {
+    name: "Craft",
+    aliases: ["craft", "c"],
+    description: "Craft an item to add to your backpack",
+    longDescription:
+      "Craft an item to add to your backpack. You can craft items using money and materials you have in your backpack.",
+    execute: "craft.js",
+    args: {
+      search: {
+        type: "string",
+        description: "search term to filter items",
+        optional: true,
+        variable: true,
+      },
+    },
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
   },
   trade: {
     name: "Trade",

@@ -125,10 +125,10 @@ const backpackItemConfigRaw = {
  *  description: string,
  *  category: BackpackCategoryEnum[typeof backpackCategories.HELD_ITEMS],
  *  cost: Cost
- * }} BackpackHeldItemData
+ * }} CraftableItemData
  */
 
-/** @type {Record<HeldItemIdEnum, BackpackHeldItemData>} */
+/** @type {Record<HeldItemIdEnum, CraftableItemData>} */
 const backpackHeldItemConfig = {
   [heldItemIdEnum.LEFTOVERS]: {
     name: "Leftovers",
@@ -147,9 +147,13 @@ const backpackHeldItemConfig = {
   },
 };
 
+const craftableItemConfig = Object.freeze({
+  ...backpackHeldItemConfig,
+});
+
 const backpackItemConfig = Object.freeze({
   ...backpackItemConfigRaw,
-  ...backpackHeldItemConfig,
+  ...craftableItemConfig,
 });
 
 module.exports = {
@@ -157,5 +161,6 @@ module.exports = {
   backpackItems,
   backpackCategoryConfig,
   backpackItemConfig,
+  craftableItemConfig,
   backpackHeldItemConfig,
 };
