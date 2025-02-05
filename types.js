@@ -62,6 +62,10 @@
  *  money?: number,
  *  backpack?: FlattenedBackpack
  * }} FlattenedRewards
+ *
+ * These are the same type for now
+ * @typedef {Rewards} Cost
+ * @typedef {FlattenedRewards} FlattenedCost
  */
 
 /**
