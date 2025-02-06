@@ -8,6 +8,8 @@ const { EmbedBuilder } = require("discord.js");
 const { shopCategoryConfig, shopItemConfig } = require("../config/shopConfig");
 const { formatMoney } = require("../utils/utils");
 const { craftableItemConfig } = require("../config/backpackConfig");
+const { getItemDisplay } = require("../utils/itemUtils");
+const { flattenCategories, getCostString } = require("../utils/trainerUtils");
 
 /**
  * @param {Trainer} trainer
@@ -143,9 +145,40 @@ const buildCraftListEmbed = (itemIds, backpack) => {
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {CraftableItemEnum} itemId
+ * @returns {EmbedBuilder}
+ */
+const buildCraftItemEmbed = (trainer, itemId) => {
+  const item = craftableItemConfig[itemId];
+  const embed = new EmbedBuilder();
+  embed.setTitle(`Crafting - ${getItemDisplay(itemId)}`);
+  embed.setColor(0xffffff);
+  embed.setDescription(item.description);
+  embed.addFields(
+    {
+      name: "Currently Owned",
+      value: `${flattenCategories(trainer.backpack)[itemId] || 0}`,
+      inline: true,
+    },
+    {
+      name: "Crafting Cost (One)",
+      value: getCostString(item.cost, trainer),
+      inline: false,
+    }
+  );
+  embed.setImage(
+    "https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/79/Crafting_Table_JE2.png/revision/latest?cb=20220707070452"
+  );
+
+  return embed;
+};
+
 module.exports = {
   buildShopEmbed,
   buildShopCategoryEmbed,
   buildShopItemEmbed,
   buildCraftListEmbed,
+  buildCraftItemEmbed,
 };

@@ -473,14 +473,19 @@ const canCraftItem = (trainer, itemId, quantity = 1) => {
 };
 
 /**
- * @param {WithId<Trainer>} trainer
+ * @param {CompactUser} user
  * @param {CraftableItemEnum} itemId
  * @param {number=} quantity
  */
-const craftItem = async (trainer, itemId, quantity = 1) => {
+const craftItem = async (user, itemId, quantity = 1) => {
   const item = craftableItemConfig[itemId];
   if (!item) {
     return { data: null, err: "Item does not exist." };
+  }
+
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { data: null, err: trainerErr };
   }
 
   const { err: canCraftErr } = canCraftItem(trainer, itemId, quantity);

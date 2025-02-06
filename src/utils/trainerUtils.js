@@ -9,6 +9,7 @@ const {
   backpackCategories,
   backpackItemConfig,
 } = require("../config/backpackConfig");
+const { formatItemQuantity } = require("./itemUtils");
 const { getOrSetDefault, formatMoney } = require("./utils");
 
 /**
@@ -234,6 +235,38 @@ const removeCost = (trainer, cost, { quantity = 1 } = {}) => {
 };
 
 /**
+ * @param {Cost} cost
+ * @param {Trainer=} trainer
+ */
+const getCostString = (cost, trainer) => {
+  let costString = "";
+  if (cost.money) {
+    costString += `${formatMoney(cost.money)}`;
+    if (trainer) {
+      costString += ` (Owned: ${formatMoney(trainer.money)})`;
+    }
+    costString += "\n";
+  }
+  if (cost.backpack) {
+    for (const category of Object.values(cost.backpack)) {
+      for (const [itemId, quantity] of Object.entries(category)) {
+        costString += `${formatItemQuantity(
+          // @ts-ignore
+          itemId,
+          quantity
+        )}`;
+        if (trainer) {
+          // @ts-ignore
+          costString += ` (Owned: ${getItems(trainer, itemId)})`;
+        }
+        costString += "\n";
+      }
+    }
+  }
+  return costString;
+};
+
+/**
  * @param {DiscordUser} user
  * @returns {string}
  */
@@ -264,6 +297,7 @@ module.exports = {
   addRewards,
   removeMoney,
   removeCost,
+  getCostString,
   getItems,
   setItems,
   addItems,

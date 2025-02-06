@@ -4,6 +4,7 @@ const { craftableItemConfig } = require("../../config/backpackConfig");
 const useTrainer = require("../../hooks/useTrainer");
 const { buildCraftListEmbed } = require("../../embeds/shopEmbeds");
 const { flattenCategories } = require("../../utils/trainerUtils");
+const CraftItem = require("./CraftItem");
 
 const PAGE_SIZE = 10;
 const allCraftableItemIds = /** @type {CraftableItemEnum[]} */ (
@@ -20,7 +21,7 @@ const allCraftableItemIds = /** @type {CraftableItemEnum[]} */ (
  * @returns {Promise<any>}
  */
 const CraftList = async (ref, { user, initialPage = 1, searchString }) => {
-  const { trainer, err } = await useTrainer(user, ref);
+  const { trainer, err, refreshTrainer } = await useTrainer(user, ref);
   if (err) {
     return {
       err,
@@ -46,9 +47,9 @@ const CraftList = async (ref, { user, initialPage = 1, searchString }) => {
   }
 
   const {
-    page,
     items: itemIds,
     currentItem: itemId,
+    setItem: setItemId,
     scrollButtonsElement,
     selectMenuElement,
   } = usePaginationAndSelection(
@@ -58,12 +59,25 @@ const CraftList = async (ref, { user, initialPage = 1, searchString }) => {
       initialPage,
       selectionPlaceholder: "Select an Item to craft",
       itemConfig: craftableItemConfig,
+      showId: false,
       selectionCallbackOptions: { defer: false },
       paginationCallbackOptions: { defer: false },
     },
     ref
   );
 
+  if (itemId) {
+    return {
+      elements: [
+        createElement(CraftItem, {
+          trainer,
+          itemId,
+          refreshTrainer,
+          setItemId,
+        }),
+      ],
+    };
+  }
   return {
     elements: [
       {
