@@ -38,6 +38,27 @@ const getBackpackItemsString = (trainer) => {
 };
 
 /**
+ * @param {Cost} cost
+ * @returns {string}
+ */
+const getCompactCostString = (cost) => {
+  const stringParts = [];
+  if (cost.money) {
+    stringParts.push(formatMoney(cost.money));
+  }
+  if (cost.backpack) {
+    for (const categoryId in cost.backpack) {
+      for (const itemId in cost.backpack[categoryId]) {
+        stringParts.push(
+          `${backpackItemConfig[itemId].emoji} x${cost.backpack[categoryId][itemId]}`
+        );
+      }
+    }
+  }
+  return stringParts.join(" • ");
+};
+
+/**
  *
  * @param {FlattenedRewards} rewards
  * @param {boolean=} received
@@ -204,6 +225,7 @@ module.exports = {
   getBackpackItemsString,
   getFlattenedRewardsString,
   getRewardsString,
+  getCompactCostString,
   flattenCategories,
   flattenRewards,
   addRewards,

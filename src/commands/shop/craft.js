@@ -1,63 +1,41 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
- * pokemart.js Is file that creates an interactive pokemart for the user to buy items from.
+ * craft.js Is file that creates an interactive menu to craft items
  */
-const { setState, deleteState } = require("../../services/state");
-const { buildShopSend } = require("../../services/shop");
-const { User } = require("discord.js");
+const { createRoot } = require("../../deact/deact");
+const CraftList = require("../../elements/shop/CraftList");
+const { getUserFromInteraction } = require("../../utils/utils");
 
 /**
- * Parses the shop config, returning an interactive embed for the user to
- * browse the shop.
- * @param {User} user User who initiated the command.
- * @returns Embed with shop options.
+ * Displays the user's backpack items.
+ * @param {any} interaction
+ * @param {string=} searchString
  */
-const pokemart = async (user) => {
-  // build selection list of shop categories
-  const stateId = setState(
+const craft = async (interaction, searchString) =>
+  await createRoot(
+    CraftList,
     {
-      userId: user.id,
-      messageStack: [],
+      user: getUserFromInteraction(interaction),
+      searchString,
     },
-    150
+    interaction,
+    { defer: false, ttl: 240 }
   );
 
-  const { send, err } = await buildShopSend({
-    stateId,
-    user,
-    view: "shop",
-    option: null,
-  });
-  if (err) {
-    deleteState(stateId);
-  }
-
-  return { send, err };
+const craftMessageCommand = async (message) => {
+  const searchString =
+    message.content.split(" ").slice(1).join(" ") || undefined;
+  return await craft(message, searchString);
 };
 
-const pokemartMessageCommand = async (message) => {
-  const { send, err } = await pokemart(message.author);
-  if (err) {
-    await message.channel.send(`${err}`);
-    return { err };
-  }
-  await message.channel.send(send);
-};
-
-const pokemartSlashCommand = async (interaction) => {
-  const { send, err } = await pokemart(interaction.user);
-  if (err) {
-    await interaction.reply(`${err}`);
-    return { err };
-  }
-  await interaction.reply(send);
+const craftSlashCommand = async (interaction) => {
+  const searchString = interaction.options.getString("search");
+  return await craft(interaction, searchString);
 };
 
 module.exports = {
-  message: pokemartMessageCommand,
-  slash: pokemartSlashCommand,
+  message: craftMessageCommand,
+  slash: craftSlashCommand,
 };

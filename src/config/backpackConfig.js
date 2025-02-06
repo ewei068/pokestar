@@ -151,6 +151,8 @@ const craftableItemConfig = Object.freeze({
   ...backpackHeldItemConfig,
 });
 
+/** @typedef {Keys<craftableItemConfig>} CraftableItemEnum */
+
 const backpackItemConfig = Object.freeze({
   ...backpackItemConfigRaw,
   ...craftableItemConfig,
