@@ -2,8 +2,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * shop.js runs all base level shop items, logic and interactions.
  */
@@ -21,7 +19,7 @@ const { collectionNames } = require("../config/databaseConfig");
 const { logger } = require("../log");
 const { locations, locationConfig } = require("../config/locationConfig");
 
-const { getTrainer } = require("./trainer");
+const { getTrainer, updateTrainer } = require("./trainer");
 const { getState } = require("./state");
 const {
   buildShopEmbed,
@@ -37,7 +35,10 @@ const {
   getPokeballsString,
   addItems,
   getItems,
+  removeCost,
 } = require("../utils/trainerUtils");
+const { craftableItemConfig } = require("../config/backpackConfig");
+const { getItemDisplay } = require("../utils/itemUtils");
 
 // map item id to location id
 const itemIdToLocationId = {
@@ -436,8 +437,69 @@ const buildShopSend = async ({
   return { send, err: null };
 };
 
+/**
+ * @param {Trainer} trainer
+ * @param {CraftableItemEnum} itemId
+ * @param {number=} quantity
+ */
+const canCraftItem = (trainer, itemId, quantity = 1) => {
+  const item = craftableItemConfig[itemId];
+  if (!item) {
+    return { data: null, err: "Item does not exist." };
+  }
+
+  const { cost } = item;
+  const { backpack } = trainer;
+  if (cost.money) {
+    if (trainer.money < cost.money * quantity) {
+      return { data: null, err: "You do not have enough money." };
+    }
+  }
+  if (cost.backpack) {
+    for (const [categoryId, category] of Object.entries(cost.backpack)) {
+      for (const [costItemId, itemCost] of Object.entries(category)) {
+        if (backpack[categoryId]?.[costItemId] < itemCost * quantity) {
+          return {
+            data: null,
+            // @ts-ignore
+            err: `You do not have enough ${getItemDisplay(costItemId)}.`,
+          };
+        }
+      }
+    }
+  }
+
+  return { data: null, err: null };
+};
+
+/**
+ * @param {WithId<Trainer>} trainer
+ * @param {CraftableItemEnum} itemId
+ * @param {number=} quantity
+ */
+const craftItem = async (trainer, itemId, quantity = 1) => {
+  const item = craftableItemConfig[itemId];
+  if (!item) {
+    return { data: null, err: "Item does not exist." };
+  }
+
+  const { err: canCraftErr } = canCraftItem(trainer, itemId, quantity);
+  if (canCraftErr) {
+    return { data: null, err: canCraftErr };
+  }
+
+  removeCost(trainer, item.cost, {
+    quantity,
+  });
+  addItems(trainer, itemId, quantity);
+
+  return await updateTrainer(trainer);
+};
+
 module.exports = {
   canBuyItem,
   buyItem,
   buildShopSend,
+  canCraftItem,
+  craftItem,
 };

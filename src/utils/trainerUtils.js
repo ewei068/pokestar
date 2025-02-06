@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /**
  * @file
  * @author Elvis Wei
@@ -197,7 +198,39 @@ const addItems = (trainer, itemId, quantity = 1) => {
 const removeItems = (trainer, itemId, quantity = 1) => {
   const { category } = backpackItemConfig[itemId];
   const items = getOrSetDefault(trainer.backpack, category, {});
-  items[itemId] = getOrSetDefault(items, itemId, 0) - quantity;
+  items[itemId] = Math.max(getOrSetDefault(items, itemId, 0) - quantity, 0);
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {number} amount
+ */
+const removeMoney = (trainer, amount) => {
+  trainer.money = Math.max(trainer.money - amount, 0);
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {Cost} cost
+ * @param {object} param2
+ * @param {number=} param2.quantity
+ */
+const removeCost = (trainer, cost, { quantity = 1 } = {}) => {
+  if (cost.money) {
+    removeMoney(trainer, cost.money * quantity);
+  }
+  if (cost.backpack) {
+    for (const categoryId in cost.backpack) {
+      for (const itemId in cost.backpack[categoryId]) {
+        removeItems(
+          trainer,
+          // @ts-ignore
+          itemId,
+          cost.backpack[categoryId][itemId] * quantity
+        );
+      }
+    }
+  }
 };
 
 /**
@@ -229,6 +262,8 @@ module.exports = {
   flattenCategories,
   flattenRewards,
   addRewards,
+  removeMoney,
+  removeCost,
   getItems,
   setItems,
   addItems,
