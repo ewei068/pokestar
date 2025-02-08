@@ -7,18 +7,18 @@ const {
   createElement,
   createModal,
   useModalSubmitCallbackBinding,
+  useMemo,
 } = require("../../deact/deact");
 const { getTrainer } = require("../../services/trainer");
 const { getUserId } = require("../../utils/utils");
-const { listPokemons } = require("../../services/pokemon");
 const { buildPokemonListEmbed } = require("../../embeds/pokemonEmbeds");
-const ScrollButtons = require("../foundation/ScrollButtons");
 const { eventNames } = require("../../config/eventConfig");
 const { buildPokemonSelectRow } = require("../../components/pokemonSelectRow");
 const { buildPokemonSearchModal } = require("../../modals/pokemonModals");
 const Button = require("../../deact/elements/Button");
 const { rarities } = require("../../config/pokemonConfig");
 const { buildButtonActionRow } = require("../../components/buttonActionRow");
+const usePokemonList = require("../../hooks/usePokemonList");
 
 const sortByOptionOrder = [
   "ivTotal",
@@ -105,9 +105,8 @@ const parseSort = (sortBy, sortDescending) => {
   }
 };
 
-const computeListOptions = (page, filter, sort) => {
+const computeListOptions = (filter, sort) => {
   const listOptions = {
-    page,
     filter: {},
     sort: parseSort(sort.sortBy, sort.sortDescending),
   };
@@ -156,7 +155,6 @@ module.exports = async (
     initialSortDescending = false,
   }
 ) => {
-  const [page, setPage] = useState(initialPage, ref);
   const [filtersShown, setFiltersShown] = useState(false, ref);
   const initialFilter = {};
   if (initialFilterBy) {
@@ -178,27 +176,38 @@ module.exports = async (
   const trainer = trainerRes.data;
 
   // get list of pokemon
-  const pokemonsRes = await useAwaitedMemo(
-    () =>
-      // @ts-ignore
-      listPokemons(trainer, computeListOptions(page, filter, sort)).then(
-        (res) => {
-          if (res.data && !res.err) {
-            ref.rootInstance.updateLegacyState({
-              initialReleaseIds: res.data.map((pokemon) =>
-                pokemon._id.toString()
-              ),
-              userId: user.id,
-            });
-          }
-          return res;
-        }
-      ),
-    [trainer, filter, sort, page],
+  const listOptions = useMemo(
+    () => computeListOptions(filter, sort),
+    [filter, sort],
     ref
   );
-  const pokemonsErr = pokemonsRes.err;
-  const pokemons = pokemonsRes.data;
+  const {
+    page,
+    setPage,
+    pokemons,
+    err: pokemonsErr,
+    scrollButtonsElement,
+  } = await usePokemonList(
+    {
+      initialPage,
+      trainer,
+      // @ts-ignore
+      listOptions: listOptions || {},
+    },
+    ref
+  );
+  useMemo(
+    () => {
+      if (pokemons && !pokemonsErr) {
+        ref.rootInstance.updateLegacyState({
+          initialReleaseIds: pokemons.map((pokemon) => pokemon._id.toString()),
+          userId: user.id,
+        });
+      }
+    },
+    [pokemons, user.id, ref.rootInstance],
+    ref
+  );
 
   // row 1 -- general
   const settingsActionBinding = useCallbackBinding(() => {
@@ -327,14 +336,6 @@ module.exports = async (
     });
   }, ref);
 
-  // row 4 -- page
-  const prevActionBindng = useCallbackBinding(() => {
-    setPage(page - 1);
-  }, ref);
-  const nextActionBindng = useCallbackBinding(() => {
-    setPage(page + 1);
-  }, ref);
-
   // row 5 -- legacy select pokemon button
   const selectRowData = {
     stateId: ref.rootInstance.stateId,
@@ -415,12 +416,7 @@ module.exports = async (
             }),
           ]
         : [],
-      createElement(ScrollButtons, {
-        onPrevPressedKey: prevActionBindng,
-        onNextPressedKey: nextActionBindng,
-        isPrevDisabled: !!pokemonsErr || page === 1,
-        isNextDisabled: !!pokemonsErr || pokemonsRes.lastPage,
-      }),
+      scrollButtonsElement,
       pokemonsErr
         ? []
         : buildPokemonSelectRow(
