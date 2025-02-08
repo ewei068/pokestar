@@ -7,7 +7,9 @@
  * PokemonScroll.js Creates the current page for the pokemon that can be released as a scrollmenu.
  */
 const { getTrainer } = require("../../services/trainer");
-const { listPokemons } = require("../../services/pokemon");
+const {
+  listPokemonsFromTrainer: listPokemons,
+} = require("../../services/pokemon");
 const { buildPokemonListEmbed } = require("../../embeds/pokemonEmbeds");
 const { buildScrollActionRow } = require("../../components/scrollActionRow");
 const { buildPokemonSelectRow } = require("../../components/pokemonSelectRow");

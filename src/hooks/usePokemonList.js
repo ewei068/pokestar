@@ -4,7 +4,9 @@ const {
   useCallbackBinding,
   useAwaitedMemo,
 } = require("../deact/deact");
-const { listPokemons } = require("../services/pokemon");
+const {
+  listPokemonsFromTrainer: listPokemons,
+} = require("../services/pokemon");
 const ScrollButtons = require("../elements/foundation/ScrollButtons");
 
 /**

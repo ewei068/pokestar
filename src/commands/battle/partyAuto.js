@@ -6,7 +6,9 @@
  */
 const { getTrainer } = require("../../services/trainer");
 const { updateParty, getPartyPokemons } = require("../../services/party");
-const { listPokemons } = require("../../services/pokemon");
+const {
+  listPokemonsFromTrainer: listPokemons,
+} = require("../../services/pokemon");
 const { buildPartyEmbed } = require("../../embeds/battleEmbeds");
 const { getUserSelectedDevice } = require("../../utils/trainerUtils");
 

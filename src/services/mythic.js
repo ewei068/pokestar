@@ -41,7 +41,7 @@ const {
 } = require("../utils/trainerUtils");
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
 const {
-  listPokemons,
+  listPokemonsFromTrainer: listPokemons,
   getPokemon,
   calculatePokemonStats,
   calculateAndUpdatePokemonStats,

@@ -102,7 +102,7 @@ const updatePokemon = async (pokemon) => {
 };
 
 /**
- * @param {Trainer} trainer
+ * @param {string} userId
  * @param {{
  *  page?: number,
  *  pageSize?: number,
@@ -112,9 +112,9 @@ const updatePokemon = async (pokemon) => {
  * }} listOptions
  * @returns {Promise<{data: WithId<Pokemon>[]?, lastPage?: boolean, err: string?}>}
  */
-const listPokemons = async (trainer, listOptions) => {
+const listPokemons = async (userId, listOptions) => {
   // listOptions: { page, pageSize, filter, sort, allowNone }
-  const filter = { userId: trainer.userId, ...listOptions.filter };
+  const filter = { userId, ...listOptions.filter };
   const pageSize = listOptions.pageSize || PAGE_SIZE;
   const page = listOptions.page || 1;
   const sort = listOptions.sort || null;
@@ -145,6 +145,13 @@ const listPokemons = async (trainer, listOptions) => {
     return { data: null, err: "Error getting Pokemon." };
   }
 };
+
+/**
+ * @param {Trainer} trainer
+ * @param {(Parameters<typeof listPokemons>)[1]} listOptions
+ */
+const listPokemonsFromTrainer = async (trainer, listOptions) =>
+  await listPokemons(trainer.userId, listOptions);
 
 /**
  * @param {any} pokemon
@@ -383,7 +390,7 @@ const getIdFromNameOrId = async (user, nameOrId, interaction, defer = true) => {
       },
       page,
     };
-    const pokemons = await listPokemons(trainer.data, listOptions);
+    const pokemons = await listPokemonsFromTrainer(trainer.data, listOptions);
     if (pokemons.err) {
       return { data: null, err: pokemons.err };
     }
@@ -1361,7 +1368,7 @@ const buildPokedexSend = async ({
  */
 const canRelease = async (trainer, pokemonIds) => {
   // get pokemon to release
-  const toRelease = await listPokemons(trainer, {
+  const toRelease = await listPokemonsFromTrainer(trainer, {
     page: 1,
     filter: { _id: { $in: pokemonIds.map(idFrom) } },
     allowNone: true,
@@ -2029,6 +2036,7 @@ const checkNumPokemon = async (trainer, quantity = 0) => {
 module.exports = {
   updatePokemon,
   listPokemons,
+  listPokemonsFromTrainer,
   getPokemon,
   getEvolvedPokemon,
   evolvePokemon,

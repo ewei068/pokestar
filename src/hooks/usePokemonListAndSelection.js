@@ -9,7 +9,9 @@ const usePokemonList = require("./usePokemonList");
 const { pokemonConfig } = require("../config/pokemonConfig");
 const Fragment = require("../deact/elements/Fragement");
 // eslint-disable-next-line no-unused-vars
-const { listPokemons } = require("../services/pokemon");
+const {
+  listPokemonsFromTrainer: listPokemons,
+} = require("../services/pokemon");
 
 /**
  * @param {object} param0

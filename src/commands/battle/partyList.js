@@ -7,7 +7,9 @@
  * parties.js is used to display the user's party as requested by the user.
  */
 const { getTrainer } = require("../../services/trainer");
-const { listPokemons } = require("../../services/pokemon");
+const {
+  listPokemonsFromTrainer: listPokemons,
+} = require("../../services/pokemon");
 const { idFrom } = require("../../utils/utils");
 const { buildPartiesEmbed } = require("../../embeds/battleEmbeds");
 const { getPartyPokemonIds } = require("../../utils/pokemonUtils");
