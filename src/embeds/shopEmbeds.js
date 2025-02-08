@@ -168,9 +168,7 @@ const buildCraftItemEmbed = (trainer, itemId) => {
       inline: false,
     }
   );
-  embed.setImage(
-    "https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/79/Crafting_Table_JE2.png/revision/latest?cb=20220707070452"
-  );
+  embed.setImage("https://poqu-a-doodle.com/img/portfolio/tinkatonsmithy.jpg");
 
   return embed;
 };

@@ -48,6 +48,7 @@ const commandCategoryConfigRaw = {
       "equipmentlist",
       "equipmentswap",
       "nature",
+      "helditem",
       "release",
       "mythic",
       "mew",
@@ -581,6 +582,24 @@ const commandConfigRaw = {
           "powerBand",
           "powerAnklet",
         ],
+      },
+    },
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    exp: 5,
+  },
+  helditem: {
+    name: "Held Item",
+    aliases: ["helditem", "hi"],
+    description: "Give, swap, or remove a Pokemon's held item",
+    longDescription:
+      "Give, swap, or remove a Pokemon's held item from your backpack.",
+    execute: "heldItem.js",
+    args: {
+      name_or_id: {
+        type: "string",
+        description: "name or unique ID for Pokemon to manage held item for",
+        optional: false,
+        variable: false,
       },
     },
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
