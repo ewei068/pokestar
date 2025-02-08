@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * PokemonScroll.js Creates the current page for the pokemon that can be released as a scrollmenu.
  */
@@ -52,7 +50,11 @@ const pokemonScroll = async (interaction, data) => {
   }
   state.pokemonIds = pokemons.data.map((pokemon) => pokemon._id.toString());
 
-  const embed = buildPokemonListEmbed(trainer.data, pokemons.data, page);
+  const embed = buildPokemonListEmbed(
+    trainer.data.user.username,
+    pokemons.data,
+    page
+  );
   const scrollRowData = {
     stateId: data.stateId,
   };

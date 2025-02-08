@@ -400,7 +400,7 @@ const getIdFromNameOrId = async (user, nameOrId, interaction, defer = true) => {
     }
 
     const pokemonEmbed = buildPokemonListEmbed(
-      trainer.data,
+      trainer.data.user.username,
       pokemons.data,
       page
     );
@@ -1364,7 +1364,7 @@ const buildPokedexSend = async ({
  *
  * @param {WithId<Trainer>} trainer
  * @param {string[]} pokemonIds
- * @returns {Promise<{toRelease?: WithId<Pokemon>[], err: string?}>}
+ * @returns {Promise<{toRelease?: { data: WithId<Pokemon>[] } , err: string?}>}
  */
 const canRelease = async (trainer, pokemonIds) => {
   // get pokemon to release
@@ -1459,7 +1459,11 @@ const buildReleaseSend = async (user, pokemonIds) => {
   const totalWorth = calculateWorth(toRelease.data, null);
 
   // build list embed
-  const embed = buildPokemonListEmbed(trainer.data, toRelease.data, 1);
+  const embed = buildPokemonListEmbed(
+    trainer.data.user.username,
+    toRelease.data,
+    1
+  );
 
   // build confirmation prompt
   const stateId = setState({ userId: user.id, pokemonIds }, 150);

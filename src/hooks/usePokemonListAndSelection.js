@@ -9,15 +9,13 @@ const usePokemonList = require("./usePokemonList");
 const { pokemonConfig } = require("../config/pokemonConfig");
 const Fragment = require("../deact/elements/Fragement");
 // eslint-disable-next-line no-unused-vars
-const {
-  listPokemonsFromTrainer: listPokemons,
-} = require("../services/pokemon");
+const { listPokemons } = require("../services/pokemon");
 
 /**
  * @param {object} param0
  * @param {number=} param0.initialPage
  * @param {number=} param0.pageSize
- * @param {WithId<Trainer>} param0.trainer
+ * @param {string} param0.userId
  * @param {(Parameters<typeof listPokemons>)[1]=} param0.listOptions
  * @param {((string) => any)=} param0.onError
  * @param {string=} param0.selectionPlaceholder
@@ -37,7 +35,7 @@ const usePokemonListAndSelection = async (
   {
     initialPage = 1,
     pageSize = 10,
-    trainer,
+    userId,
     listOptions = {},
     onError = () => {},
     initialPokemon,
@@ -54,7 +52,7 @@ const usePokemonListAndSelection = async (
     {
       initialPage,
       pageSize,
-      trainer,
+      userId,
       listOptions,
       onError,
       callbackOptions: paginationCallbackOptions,

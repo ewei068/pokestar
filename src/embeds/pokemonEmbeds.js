@@ -284,12 +284,12 @@ const buildNewPokemonListEmbed = (
 };
 
 /**
- * @param {Trainer} trainer
+ * @param {string} username
  * @param {Pokemon[]} pokemons
  * @param {number} page
  * @returns {EmbedBuilder}
  */
-const buildPokemonListEmbed = (trainer, pokemons, page) => {
+const buildPokemonListEmbed = (username, pokemons, page) => {
   let pokemonString = "\n";
   for (let i = 0; i < pokemons.length; i += 1) {
     const pokemon = pokemons[i];
@@ -302,7 +302,7 @@ const buildPokemonListEmbed = (trainer, pokemons, page) => {
   }
 
   const embed = new EmbedBuilder();
-  embed.setTitle(`Trainer ${trainer.user.username}'s Pokemon`);
+  embed.setTitle(`Trainer ${username}'s Pokemon`);
   embed.setColor(0xffffff);
   embed.setDescription(pokemonString);
   embed.setFooter({

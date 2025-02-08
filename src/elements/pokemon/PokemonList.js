@@ -2,14 +2,12 @@
 const { User, ButtonStyle } = require("discord.js");
 const {
   useState,
-  useAwaitedMemo,
   useCallbackBinding,
   createElement,
   createModal,
   useModalSubmitCallbackBinding,
   useMemo,
 } = require("../../deact/deact");
-const { getTrainer } = require("../../services/trainer");
 const { getUserId } = require("../../utils/utils");
 const { buildPokemonListEmbed } = require("../../embeds/pokemonEmbeds");
 const { eventNames } = require("../../config/eventConfig");
@@ -169,12 +167,6 @@ module.exports = async (
     ref
   );
 
-  const trainerRes = await useAwaitedMemo(() => getTrainer(user), [user], ref);
-  if (trainerRes.err) {
-    return { err: trainerRes.err };
-  }
-  const trainer = trainerRes.data;
-
   // get list of pokemon
   const listOptions = useMemo(
     () => computeListOptions(filter, sort),
@@ -190,7 +182,7 @@ module.exports = async (
   } = await usePokemonList(
     {
       initialPage,
-      trainer,
+      userId: user.id,
       // @ts-ignore
       listOptions: listOptions || {},
     },
@@ -349,7 +341,7 @@ module.exports = async (
           "**[MOBILE USERS]** Select a pokemon to copy its ID (Hold message -> Copy Text).",
         embeds: pokemonsErr
           ? []
-          : [buildPokemonListEmbed(trainer, pokemons, page)],
+          : [buildPokemonListEmbed(user.username, pokemons, page)],
       },
     ],
     components: [

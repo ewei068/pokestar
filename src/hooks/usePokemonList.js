@@ -4,16 +4,14 @@ const {
   useCallbackBinding,
   useAwaitedMemo,
 } = require("../deact/deact");
-const {
-  listPokemonsFromTrainer: listPokemons,
-} = require("../services/pokemon");
+const { listPokemons } = require("../services/pokemon");
 const ScrollButtons = require("../elements/foundation/ScrollButtons");
 
 /**
  * @param {object} param0
  * @param {number=} param0.initialPage
  * @param {number=} param0.pageSize
- * @param {WithId<Trainer>} param0.trainer
+ * @param {string} param0.userId
  * @param {(Parameters<typeof listPokemons>)[1]=} param0.listOptions
  * @param {((string) => any)=} param0.onError
  * @param {CallbackBindingOptions=} param0.callbackOptions
@@ -30,7 +28,7 @@ const usePokemonList = async (
   {
     initialPage = 1,
     pageSize = 10,
-    trainer,
+    userId,
     listOptions = {},
     onError = () => {},
     callbackOptions = {},
@@ -58,12 +56,12 @@ const usePokemonList = async (
   const pokemonsRes = await useAwaitedMemo(
     () =>
       // @ts-ignore
-      listPokemons(trainer, {
+      listPokemons(userId, {
         ...listOptions,
         page,
         pageSize,
       }),
-    [trainer, listOptions, page, pageSize],
+    [userId, listOptions, page, pageSize],
     ref
   );
   const pokemonsErr = pokemonsRes.err;
