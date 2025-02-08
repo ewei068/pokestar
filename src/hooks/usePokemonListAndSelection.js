@@ -79,16 +79,18 @@ const usePokemonListAndSelection = async (
   );
   const pokemonsConfig = useMemo(
     () =>
-      pokemons.reduce(
-        (acc, p) => ({
-          ...acc,
-          [p._id.toString()]: {
-            ...pokemonConfig[p.speciesId],
-            name: p.name,
-          },
-        }),
-        {}
-      ),
+      shouldShowSelectMenu
+        ? pokemons.reduce(
+            (acc, p) => ({
+              ...acc,
+              [p._id.toString()]: {
+                ...pokemonConfig[p.speciesId],
+                name: p.name,
+              },
+            }),
+            {}
+          )
+        : {},
     [pokemons, shouldShowSelectMenu],
     ref
   );

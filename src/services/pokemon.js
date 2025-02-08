@@ -2042,6 +2042,7 @@ module.exports = {
   listPokemons,
   listPokemonsFromTrainer,
   getPokemon,
+  getPokemonFromUserId,
   getEvolvedPokemon,
   evolvePokemon,
   calculatePokemonStatsNoEquip,
