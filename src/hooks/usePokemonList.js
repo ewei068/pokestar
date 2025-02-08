@@ -10,6 +10,7 @@ const ScrollButtons = require("../elements/foundation/ScrollButtons");
 /**
  * @param {object} param0
  * @param {number=} param0.initialPage
+ * @param {number=} param0.pageSize
  * @param {WithId<Trainer>} param0.trainer
  * @param {(Parameters<typeof listPokemons>)[1]=} param0.listOptions
  * @param {((string) => any)=} param0.onError
@@ -26,6 +27,7 @@ const ScrollButtons = require("../elements/foundation/ScrollButtons");
 const usePokemonList = async (
   {
     initialPage = 1,
+    pageSize = 10,
     trainer,
     listOptions = {},
     onError = () => {},
@@ -57,8 +59,9 @@ const usePokemonList = async (
       listPokemons(trainer, {
         ...listOptions,
         page,
+        pageSize,
       }),
-    [trainer, listOptions, page],
+    [trainer, listOptions, page, pageSize],
     ref
   );
   const pokemonsErr = pokemonsRes.err;
