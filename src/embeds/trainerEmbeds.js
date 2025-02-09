@@ -120,12 +120,13 @@ const DEPRECATEDbuildBackpackEmbed = (trainer) => {
  * @param {object} param2
  * @param {number=} param2.money
  * @param {boolean=} param2.shouldShowMoney
+ * @param {boolean=} param2.shouldShowDescription
  * @returns {EmbedBuilder}
  */
 const buildBackpackEmbed = (
   itemIds,
   flattenedBackpack,
-  { money = 0, shouldShowMoney = true }
+  { money = 0, shouldShowMoney = true, shouldShowDescription = false }
 ) => {
   const allCategories = itemIds
     .map((itemId) => backpackItemConfig[itemId].category)
@@ -138,8 +139,13 @@ const buildBackpackEmbed = (
     const categoryString = categoryItems
       .map((itemId) => {
         const itemConfig = backpackItemConfig[itemId];
-        const whitespaceName = getWhitespace([itemConfig.name], 20)[0];
-        return `${itemConfig.emoji} \`${itemConfig.name}${whitespaceName}${flattenedBackpack[itemId]}\``;
+        const whitespaceName = getWhitespace(
+          [itemConfig.name],
+          shouldShowDescription ? 40 : 20
+        )[0];
+        return `**${itemConfig.emoji} \`${itemConfig.name}${whitespaceName}${
+          flattenedBackpack[itemId]
+        }\`**${shouldShowDescription ? `\n${itemConfig.description}\n` : ""}`;
       })
       .join("\n");
 
