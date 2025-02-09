@@ -10,6 +10,7 @@ const { buildBackpackEmbed } = require("../../embeds/trainerEmbeds");
  * @param {Backpack} param0.backpack
  * @param {number=} param0.money
  * @param {boolean=} param0.shouldShowMoney
+ * @param {boolean=} param0.shouldShowDescription
  * @param {number=} param0.initialPage
  * @param {number=} param0.pageSize
  * @param {((itemIds: BackpackItemEnum[]) => any)=} param0.onItemsChanged
@@ -21,6 +22,7 @@ const BackpackList = async (
     backpack,
     money,
     shouldShowMoney = true,
+    shouldShowDescription = false,
     initialPage = 1,
     pageSize = 15,
     onItemsChanged = () => {},
@@ -56,7 +58,11 @@ const BackpackList = async (
   return {
     contents: [""],
     embeds: [
-      buildBackpackEmbed(itemIds, backpackItems, { money, shouldShowMoney }),
+      buildBackpackEmbed(itemIds, backpackItems, {
+        money,
+        shouldShowMoney,
+        shouldShowDescription,
+      }),
     ],
     components: [scrollButtonsElement],
   };
