@@ -62,7 +62,10 @@ const {
 } = require("../config/equipmentConfig");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { timeEnum } = require("../enums/miscEnums");
-const { formatItemQuantityFromBackpack } = require("../utils/itemUtils");
+const {
+  formatItemQuantityFromBackpack,
+  getItemDisplay,
+} = require("../utils/itemUtils");
 
 /**
  *
@@ -383,6 +386,11 @@ const buildPokemonEmbed = (
 
   const footerHelp = [];
   if (tab === "info" || tab === "all") {
+    const heldItemString =
+      tab === "info" && pokemon.heldItemId
+        ? `\n**Held Item:** ${getItemDisplay(pokemon.heldItemId)}`
+        : "";
+
     embed.addFields(
       { name: "Type", value: typeString, inline: true },
       {
@@ -404,7 +412,11 @@ const buildPokemonEmbed = (
         inline: true,
       },
       sixthField,
-      { name: "Stats (Stat|IVs|EVs)", value: statString, inline: false },
+      {
+        name: "Stats (Stat|IVs|EVs)",
+        value: `${statString}${heldItemString}`, // TODO: can't find a better place to put this lol
+        inline: false,
+      },
       { name: "Level Progress", value: progressBar, inline: false }
     );
 
@@ -437,6 +449,15 @@ const buildPokemonEmbed = (
       value: abilityData ? abilityData.description : "Not yet implemented!",
       inline: false,
     });
+
+    // add held item field
+    if (pokemon.heldItemId) {
+      embed.addFields({
+        name: `Held Item: ${getItemDisplay(pokemon.heldItemId)}`,
+        value: backpackItemConfig[pokemon.heldItemId].description,
+        inline: false,
+      });
+    }
 
     footerHelp.push(
       "/partyadd <id> <position> to add this Pokemon to your party"
