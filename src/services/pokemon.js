@@ -2095,6 +2095,46 @@ const changeHeldItem = async (user, pokemonId, heldItemId) => {
   };
 };
 
+/**
+ * @param {CompactUser} user
+ * @param {string} pokemonId
+ * @returns {Promise<{data?: {trainer: WithId<Trainer>, pokemon: WithId<Pokemon>}, err?: string}>}
+ */
+const removeHeldItem = async (user, pokemonId) => {
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { err: trainerErr };
+  }
+  const { data: pokemon, err: pokemonErr } = await getPokemon(
+    trainer,
+    pokemonId
+  );
+  if (pokemonErr) {
+    return { err: pokemonErr };
+  }
+
+  if (pokemon.heldItemId) {
+    addItems(trainer, pokemon.heldItemId, 1);
+  }
+  pokemon.heldItemId = null;
+
+  const { data: newTrainer, err: trainerUpdateErr } = await updateTrainer(
+    trainer
+  );
+  if (trainerUpdateErr) {
+    return { err: trainerUpdateErr };
+  }
+  const { data: newPokemon, err: pokemonUpdateErr } =
+    await calculateAndUpdatePokemonStats(pokemon, { force: true });
+  if (pokemonUpdateErr) {
+    return { err: pokemonUpdateErr };
+  }
+
+  return {
+    data: { trainer: newTrainer, pokemon: newPokemon },
+  };
+};
+
 module.exports = {
   updatePokemon,
   listPokemons,
@@ -2130,4 +2170,5 @@ module.exports = {
   buildEquipmentSwapSend,
   buildNatureSend,
   changeHeldItem,
+  removeHeldItem,
 };

@@ -175,7 +175,7 @@
  * Important info (IDK)
  * @property {NatureEnum} natureId
  * @property {AbilityIdEnum | string | number} abilityId
- * @property {HeldItemIdEnum} heldItemId
+ * @property {HeldItemIdEnum?} heldItemId
  * @property {boolean} shiny
  * @property {MoveIdEnum[]} moveIds
  *

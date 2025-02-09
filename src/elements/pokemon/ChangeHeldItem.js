@@ -16,7 +16,7 @@ const { getItemDisplay } = require("../../utils/itemUtils");
 const { buildPokemonNameString } = require("../../utils/pokemonUtils");
 const BackpackListWithSelection = require("../trainer/BackpackListWithSelection");
 const ReturnButton = require("../foundation/ReturnButton");
-const { changeHeldItem } = require("../../services/pokemon");
+const { changeHeldItem, removeHeldItem } = require("../../services/pokemon");
 
 /**
  * @param {DeactElement} ref
@@ -94,6 +94,24 @@ const ChangeHeldItem = async (ref, { user, pokemon, setPokemon }) => {
     ],
     ref
   );
+  const removeItemButtonKey = useCallbackBinding(async () => {
+    const {
+      data: { pokemon: newPokemon, trainer: newTrainer },
+      err: changeItemErr,
+    } = await removeHeldItem(user, pokemon._id.toString());
+    if (changeItemErr) {
+      refreshTrainer();
+      setContent(changeItemErr);
+    } else {
+      setTrainer(newTrainer);
+      setPokemon(newPokemon);
+      setContent(
+        `**${buildPokemonNameString(
+          newPokemon
+        )} is no longer holding an item!**`
+      );
+    }
+  }, ref);
 
   if (showItemSelect) {
     return {
@@ -117,12 +135,21 @@ const ChangeHeldItem = async (ref, { user, pokemon, setPokemon }) => {
     contents: [content || defaultContent],
     embeds: [buildPokemonEmbed(user, pokemon, "info")],
     components: [
-      createElement(Button, {
-        label: currentHeldItem ? "Change Held Item" : "Give Held Item",
-        style: ButtonStyle.Primary,
-        callbackBindingKey: changeItemButtonKey,
-        emoji: currentHeldItem ? heldItemData.emoji : undefined,
-      }),
+      [
+        createElement(Button, {
+          label: currentHeldItem ? "Change Held Item" : "Give Held Item",
+          style: ButtonStyle.Primary,
+          callbackBindingKey: changeItemButtonKey,
+          emoji: currentHeldItem ? heldItemData.emoji : undefined,
+        }),
+        createElement(Button, {
+          label: "Remove Held Item",
+          style: ButtonStyle.Danger,
+          callbackBindingKey: removeItemButtonKey,
+          disabled: !currentHeldItem,
+          emoji: "✖️",
+        }),
+      ],
     ],
   };
 };
