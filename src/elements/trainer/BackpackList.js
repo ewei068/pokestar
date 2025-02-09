@@ -1,4 +1,4 @@
-const { useMemo } = require("../../deact/deact");
+const { useMemo, useEffect } = require("../../deact/deact");
 const { flattenCategories } = require("../../utils/trainerUtils");
 const usePagination = require("../../hooks/usePagination");
 const { buildBackpackEmbed } = require("../../embeds/trainerEmbeds");
@@ -11,10 +11,20 @@ const { buildBackpackEmbed } = require("../../embeds/trainerEmbeds");
  * @param {number=} param0.money
  * @param {boolean=} param0.shouldShowMoney
  * @param {number=} param0.initialPage
+ * @param {number=} param0.pageSize
+ * @param {((itemIds: BackpackItemEnum[]) => any)=} param0.onItemsChanged
  */
 const BackpackList = async (
   ref,
-  { backpackCategory, backpack, money, shouldShowMoney = true, initialPage = 1 }
+  {
+    backpackCategory,
+    backpack,
+    money,
+    shouldShowMoney = true,
+    initialPage = 1,
+    pageSize = 15,
+    onItemsChanged = () => {},
+  }
 ) => {
   const backpackItems =
     (backpackCategory !== undefined
@@ -29,10 +39,17 @@ const BackpackList = async (
   const { items: itemIds, scrollButtonsElement } = usePagination(
     {
       allItems,
-      pageSize: 15,
+      pageSize,
       initialPage,
       callbackOptions: { defer: false },
     },
+    ref
+  );
+  useEffect(
+    () => {
+      onItemsChanged(itemIds);
+    },
+    [itemIds, onItemsChanged],
     ref
   );
 

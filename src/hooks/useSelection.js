@@ -3,6 +3,7 @@ const {
   createElement,
   useCallbackBinding,
 } = require("../deact/deact");
+const Fragment = require("../deact/elements/Fragement");
 const IdConfigSelectMenu = require("../elements/foundation/IdConfigSelectMenu");
 
 /**
@@ -46,14 +47,16 @@ module.exports = (
     callbackOptions
   );
 
-  const selectMenuElement = createElement(IdConfigSelectMenu, {
-    ids: items,
-    placeholder: selectionPlaceholder,
-    config: itemConfig,
-    callbackBindingKey: onSelectKey,
-    showId,
-    defaultId: useCurrentItemDefault ? currentItem : undefined,
-  });
+  const selectMenuElement = items.length
+    ? createElement(IdConfigSelectMenu, {
+        ids: items,
+        placeholder: selectionPlaceholder,
+        config: itemConfig,
+        callbackBindingKey: onSelectKey,
+        showId,
+        defaultId: useCurrentItemDefault ? currentItem : undefined,
+      })
+    : createElement(Fragment, {});
 
   return {
     currentItem,
