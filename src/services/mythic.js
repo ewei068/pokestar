@@ -44,7 +44,7 @@ const {
   listPokemonsFromTrainer: listPokemons,
   getPokemon,
   calculatePokemonStats,
-  calculateAndUpdatePokemonStats,
+  DEPRECATEDcalculateAndUpdatePokemonStats: calculateAndUpdatePokemonStats,
   checkNumPokemon,
   updatePokemon,
 } = require("./pokemon");

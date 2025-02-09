@@ -1,4 +1,8 @@
-const { useState, useEffect, createElement } = require("../../deact/deact");
+const {
+  useState,
+  createElement,
+  useAwaitedEffect,
+} = require("../../deact/deact");
 const useSelection = require("../../hooks/useSelection");
 const { backpackItemConfig } = require("../../config/backpackConfig");
 const BackpackList = require("./BackpackList");
@@ -38,9 +42,11 @@ const BackpackListWithSelection = async (
     },
     ref
   );
-  useEffect(
-    () => {
-      onItemSelected(currentItem);
+  await useAwaitedEffect(
+    async () => {
+      if (currentItem) {
+        await onItemSelected(currentItem);
+      }
     },
     [currentItem, onItemSelected],
     ref
