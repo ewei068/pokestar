@@ -13,6 +13,7 @@ const {
   deleteDocuments,
   QueryBuilder,
   countDocuments,
+  findAndUpdateDocument,
 } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { getOrSetDefault, idFrom, formatMoney } = require("../utils/utils");
@@ -295,15 +296,16 @@ const calculateAndUpdatePokemonStats = async (
     oldIvTotal !== pokemon.ivTotal
   ) {
     try {
-      const res = await updateDocument(
+      const res = await findAndUpdateDocument(
         collectionNames.USER_POKEMON,
         { userId: pokemon.userId, _id: idFrom(pokemon._id) },
         { $set: pokemon }
       );
-      if (res.modifiedCount === 0) {
+      if (!res.value) {
         logger.warn(`Failed to update Pokemon ${pokemon._id}.`);
         return { data: null, err: "Error updating Pokemon." };
       }
+      pokemon = res.value;
     } catch (error) {
       logger.error(error);
       return { data: null, err: "Error updating Pokemon." };

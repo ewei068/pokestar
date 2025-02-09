@@ -1,3 +1,4 @@
+const { ButtonStyle } = require("discord.js");
 const {
   backpackItemConfig,
   backpackCategories,
@@ -7,11 +8,13 @@ const {
   useState,
   createElement,
 } = require("../../deact/deact");
+const Button = require("../../deact/elements/Button");
 const { buildPokemonEmbed } = require("../../embeds/pokemonEmbeds");
 const useTrainer = require("../../hooks/useTrainer");
 const { getItemDisplay } = require("../../utils/itemUtils");
 const { buildPokemonNameString } = require("../../utils/pokemonUtils");
 const BackpackListWithSelection = require("../trainer/BackpackListWithSelection");
+const ReturnButton = require("../foundation/ReturnButton");
 
 /**
  * @param {DeactElement} ref
@@ -28,15 +31,26 @@ const ChangeHeldItem = async (ref, { user, pokemon }) => {
   }
 
   const [showItemSelect, setShowItemSelect] = useState(false, ref);
-  const defaultContent = pokemon.heldItemId
+  const currentHeldItem = pokemon.heldItemId;
+  const heldItemData = currentHeldItem
+    ? backpackItemConfig[currentHeldItem]
+    : {};
+  const defaultContent = currentHeldItem
     ? `**${buildPokemonNameString(pokemon)} is holding ${getItemDisplay(
-        pokemon.heldItemId
-      )}:**\n${backpackItemConfig[pokemon.heldItemId].description}`
+        currentHeldItem
+      )}:**\n${heldItemData.description}`
     : `**${buildPokemonNameString(pokemon)} is not holding an item!**`;
 
   const changeItemButtonKey = useCallbackBinding(
     () => {
       setShowItemSelect(true);
+    },
+    ref,
+    { defer: false }
+  );
+  const returnButtonKey = useCallbackBinding(
+    () => {
+      setShowItemSelect(false);
     },
     ref,
     { defer: false }
@@ -52,11 +66,24 @@ const ChangeHeldItem = async (ref, { user, pokemon }) => {
           shouldShowDescription: true,
         }),
       ],
+      components: [
+        createElement(ReturnButton, {
+          callbackBindingKey: returnButtonKey,
+        }),
+      ],
     };
   }
   return {
     contents: [defaultContent],
     embeds: [buildPokemonEmbed(user, pokemon, "info")],
+    components: [
+      createElement(Button, {
+        label: currentHeldItem ? "Change Held Item" : "Give Held Item",
+        style: ButtonStyle.Primary,
+        callbackBindingKey: changeItemButtonKey,
+        emoji: currentHeldItem ? heldItemData.emoji : undefined,
+      }),
+    ],
   };
 };
 
