@@ -30,6 +30,21 @@ The Twitch Plays Pokemon mini-event has arrived! Including new PvE content and l
 * Bloody Sunday Art: https://imgur.com/70oeGPX
 `;
 
+const TPP_RERUN_DESCRIPTION = `🎮**Twitch Plays Pokemon (Re-run)**🎮
+
+To celebrate the Twitch Plays Pokemon Anniversary, the Twitch Plays Pokemon mini-event has returned! Including new PvE content and limited custom Pokemon!
+
+🧢 **Twitch Plays Red:** Fight the limited-time event trainer Twitch Plays Red! Defeat him every day to get 2 free <:greatball:1100296107759779840> Greatballs! Use \`/pve tppRed\` to challenge him!
+
+🖥️ **Bloody Sunday:** Re-live the historic Bloody Sunday with the new limited-time dungeon, giving 7 of each equipment shards! Use \`/dungeons\` to challenge it!
+
+<:lordhelix:1114224346873991268> **Event Pokemon:** Powerful custom event Pokemon from Twitch Plays Pokemon are now available for a limited time! Use \`/gacha\` to try your luck!
+
+🖌️ **Art Credits**:
+* Shiny Event Pokemon Sprites: [hamigakimomo](https://hamigakimomo.tumblr.com/post/77911455524/i-decided-to-make-custom-rb-sprites-for-the)
+* Bloody Sunday Art: https://imgur.com/70oeGPX
+`;
+
 const ROCKET_DESCRIPTION = `🚀**Team Rocket Takeover**🚀
 
 As we wrap up Gen 1, Team Rocket has taken over Pokestar! Defeat special stages, collect limited Pokemon, and catch the Mythical Mew!
@@ -158,6 +173,12 @@ Team Aqua and Team Magma are clashing for control of the climate in Pokestar!
  * @type {EventData[]}
  */
 const gameEventConfig = [
+  {
+    name: "Twitch Plays Pokemon (Re-run)",
+    description: TPP_DESCRIPTION,
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-tpp-banner.png",
+  },
   {
     name: "Aqua vs Magma",
     description: AQUA_VS_MAGMA_DESCRIPTION,
