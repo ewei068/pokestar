@@ -52,7 +52,7 @@ class DeactInstance {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       res = await element.render(this.rootProps);
-      if (res.err !== undefined || element.getIsDoneRendering()) {
+      if (res.err !== undefined || element.getIsDoneRenderingAndChildren()) {
         break;
       }
 

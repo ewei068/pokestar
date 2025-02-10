@@ -1,12 +1,15 @@
+const { heldItemIdEnum } = require("../enums/battleEnums");
+
 /** @typedef {Enum<backpackCategories>} BackpackCategoryEnum */
 const backpackCategories = Object.freeze({
   POKEBALLS: "0",
   MATERIALS: "1",
   CONSUMABLES: "2",
+  HELD_ITEMS: "3",
 });
 
 /** @typedef {Enum<backpackItems>} BackpackItemEnum */
-const backpackItems = Object.freeze({
+const backpackItemsRaw = Object.freeze({
   POKEBALL: "0",
   GREATBALL: "1",
   ULTRABALL: "2",
@@ -17,6 +20,10 @@ const backpackItems = Object.freeze({
   MINT: "7",
   RAID_PASS: "8",
   STAR_PIECE: "9",
+});
+const backpackItems = Object.freeze({
+  ...backpackItemsRaw,
+  ...heldItemIdEnum,
 });
 
 const backpackCategoryConfig = Object.freeze({
@@ -36,9 +43,15 @@ const backpackCategoryConfig = Object.freeze({
     emoji: "<:raidpass:1150161526297206824>",
     description: "One-time use items for various purposes!",
   },
+  [backpackCategories.HELD_ITEMS]: {
+    name: "Held Items",
+    emoji: "<:leftovers:1336571394531659837>",
+    description:
+      "Items that can be held by Pokemon for various effects in-battle!",
+  },
 });
 
-const backpackItemConfig = Object.freeze({
+const backpackItemConfigRaw = {
   [backpackItems.POKEBALL]: {
     name: "Pokeball",
     emoji: "<:pokeball:1100296136931156008>",
@@ -103,6 +116,46 @@ const backpackItemConfig = Object.freeze({
     description: "Used to start a raid!",
     category: backpackCategories.CONSUMABLES,
   },
+};
+
+/**
+ * @typedef {{
+ *  name: string,
+ *  emoji: string,
+ *  description: string,
+ *  category: BackpackCategoryEnum[typeof backpackCategories.HELD_ITEMS],
+ *  cost: Cost
+ * }} CraftableItemData
+ */
+
+/** @type {Record<HeldItemIdEnum, CraftableItemData>} */
+const backpackHeldItemConfig = {
+  [heldItemIdEnum.LEFTOVERS]: {
+    name: "Leftovers",
+    emoji: "<:leftovers:1336571394531659837>",
+    description: "Restores 10% of the user's HP at the end of its turn.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 50,
+          [backpackItems.EMOTION_SHARD]: 100,
+        },
+      },
+    },
+  },
+};
+
+const craftableItemConfig = Object.freeze({
+  ...backpackHeldItemConfig,
+});
+
+/** @typedef {Keys<craftableItemConfig>} CraftableItemEnum */
+
+const backpackItemConfig = Object.freeze({
+  ...backpackItemConfigRaw,
+  ...craftableItemConfig,
 });
 
 module.exports = {
@@ -110,4 +163,6 @@ module.exports = {
   backpackItems,
   backpackCategoryConfig,
   backpackItemConfig,
+  craftableItemConfig,
+  backpackHeldItemConfig,
 };
