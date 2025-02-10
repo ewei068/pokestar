@@ -17,22 +17,35 @@ const { buildPokemonNameString } = require("../../utils/pokemonUtils");
 const BackpackListWithSelection = require("../trainer/BackpackListWithSelection");
 const ReturnButton = require("../foundation/ReturnButton");
 const { changeHeldItem, removeHeldItem } = require("../../services/pokemon");
+const usePokemon = require("../../hooks/usePokemon");
 
 /**
  * @param {DeactElement} ref
  * @param {object} param1
  * @param {CompactUser} param1.user
- * @param {WithId<Pokemon>} param1.pokemon
- * @param {(pokemon: WithId<Pokemon>) => any} param1.setPokemon
+ * @param {string} param1.pokemonId
  */
-const ChangeHeldItem = async (ref, { user, pokemon, setPokemon }) => {
-  const { trainer, err, setTrainer, refreshTrainer } = await useTrainer(
-    user,
-    ref
-  );
-  if (err) {
+const ChangeHeldItem = async (ref, { user, pokemonId }) => {
+  const {
+    trainer,
+    err: trainerErr,
+    setTrainer,
+    refreshTrainer,
+  } = await useTrainer(user, ref);
+  if (trainerErr) {
     return {
-      err,
+      err: trainerErr,
+    };
+  }
+  const {
+    pokemon,
+    err: pokemonErr,
+    setPokemon,
+    refreshPokemon,
+  } = await usePokemon(pokemonId, user.id, ref);
+  if (pokemonErr) {
+    return {
+      err: pokemonErr,
     };
   }
 
@@ -71,6 +84,7 @@ const ChangeHeldItem = async (ref, { user, pokemon, setPokemon }) => {
       } = await changeHeldItem(user, pokemon._id.toString(), selectedItem);
       if (changeItemErr) {
         refreshTrainer();
+        refreshPokemon();
         setContent(changeItemErr);
       } else {
         setTrainer(newTrainer);
@@ -101,6 +115,7 @@ const ChangeHeldItem = async (ref, { user, pokemon, setPokemon }) => {
     } = await removeHeldItem(user, pokemon._id.toString());
     if (changeItemErr) {
       refreshTrainer();
+      refreshPokemon();
       setContent(changeItemErr);
     } else {
       setTrainer(newTrainer);

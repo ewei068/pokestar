@@ -1,3 +1,5 @@
+const { createRoot } = require("../../deact/deact");
+const ChangeHeldItem = require("../../elements/pokemon/ChangeHeldItem");
 const { buildPokemonInfoSend } = require("../../services/pokemon");
 
 const pokemonActionButton = async (interaction, data) => {
@@ -20,6 +22,9 @@ const pokemonActionButton = async (interaction, data) => {
             "To train this pokemon, copy the following command. For Mobile users, Long Press -> Copy Text.",
           ephemeral: true,
         });
+      }
+      if (action === "item") {
+        // TODO
       }
     })
     .then(() => {

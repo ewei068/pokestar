@@ -1101,6 +1101,14 @@ const buildPokemonInfoSend = async ({
       emoji: "➕",
     },
     {
+      label: "Held Item",
+      disabled: false,
+      data: { id: pokemonId, action: "item" },
+      emoji: pokemon.data.heldItemId
+        ? backpackItemConfig[pokemon.data.heldItemId].emoji
+        : undefined,
+    },
+    {
       label: "Train",
       disabled: false,
       data: { id: pokemonId, action: "train" },

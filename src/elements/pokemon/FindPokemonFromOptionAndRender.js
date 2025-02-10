@@ -20,6 +20,7 @@ const FindPokemonFromOptionAndRender = async (ref, props) => {
         createElement(element, {
           ...props,
           pokemon,
+          pokemonId: pokemon._id.toString(),
           setPokemon,
         }),
       ],
