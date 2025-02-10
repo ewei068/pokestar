@@ -3,12 +3,18 @@ const FindPokemonFromOption = require("./FindPokemonFromOption");
 
 /**
  * @template T
+ * @typedef {Omit<Omit<Omit<T, "pokemon">, "pokemonId">, "setPokemon">} PropsOmitted
+ */
+
+/**
+ * @template T
+ * @template {DeactElementFunction<T>} U
  * @param {DeactElement} ref
  * @param {{
  *  user: CompactUser,
  *  option: string,
- *  element: DeactElementFunction<T>
- * } & DeactElementProps<T>} props
+ *  element: U
+ * } & PropsOmitted<DeactElementProps<U>>} props
  */
 const FindPokemonFromOptionAndRender = async (ref, props) => {
   const { user, option, element } = props;

@@ -1,12 +1,14 @@
 const { createRoot } = require("../../deact/deact");
+const { getInteractionInstance } = require("../../deact/interactions");
 const ChangeHeldItem = require("../../elements/pokemon/ChangeHeldItem");
 const { buildPokemonInfoSend } = require("../../services/pokemon");
 
-const pokemonActionButton = async (interaction, data) => {
+const pokemonActionButton = async (incomingInteraction, data) => {
   const { action } = data;
+  const interaction = getInteractionInstance(incomingInteraction);
 
   const { send, err } = await buildPokemonInfoSend({
-    user: interaction.user,
+    user: incomingInteraction.user,
     pokemonId: data.id,
     action,
   });
@@ -14,24 +16,40 @@ const pokemonActionButton = async (interaction, data) => {
     return { err };
   }
   await interaction
-    .update(send)
-    .then(() => {
+    .update({
+      element: send,
+    })
+    .then((messageRef) => {
       if (action === "train") {
-        return interaction.followUp({
-          content:
-            "To train this pokemon, copy the following command. For Mobile users, Long Press -> Copy Text.",
-          ephemeral: true,
+        return interaction.reply({
+          element: {
+            content:
+              "To train this pokemon, copy the following command. For Mobile users, Long Press -> Copy Text.",
+            ephemeral: true,
+          },
+          messageRef,
         });
       }
       if (action === "item") {
-        // TODO
+        return createRoot(
+          ChangeHeldItem,
+          {
+            user: incomingInteraction.user,
+            pokemonId: data.id,
+          },
+          interaction,
+          { ttl: 240, defer: false }
+        );
       }
     })
-    .then(() => {
+    .then((messageRef) => {
       if (action === "train") {
-        return interaction.followUp({
-          content: `/train pokemonid: ${data.id}`,
-          ephemeral: true,
+        return interaction.reply({
+          element: {
+            content: `/train pokemonid: ${data.id}`,
+            ephemeral: true,
+          },
+          messageRef,
         });
       }
     });
