@@ -1,5 +1,10 @@
 # Pokéstar Changelog
 
+### 1.2.1 Twitch Plays Pokemon (Re-Run)
+
+- Bring back TPP limited time
+- Some buffs
+
 **Stretch**
 
 - Stretch: Quests (Achievements)
