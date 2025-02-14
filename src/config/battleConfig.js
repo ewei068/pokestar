@@ -6275,7 +6275,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.ULTIMATE,
     damageType: damageTypes.OTHER,
     description:
-      "The user uses all available HM moves against the target. If the HM move is on cooldown, reset the cooldown instead of using the move.",
+      "The user sharply raises its attacking stats for 1 turn. The user then uses all available HM moves against the target. If the HM move is on cooldown, reset the cooldown instead of using the move.",
   },
   m20003: {
     name: "Rocket Thievery",
@@ -11683,6 +11683,10 @@ const moveExecutes = {
   m20002(battle, source, _primaryTarget, allTargets, _missedTargets) {
     const moveId = "m20002";
     const moveData = getMove(moveId);
+    // sharply boost atk and spa
+    source.applyEffect("greaterAtkUp", 3, source);
+    source.applyEffect("greaterSpaUp", 3, source);
+
     for (const target of allTargets) {
       // use all HM moves
       const hmMoveIds = ["m57", "m70", "m127", "m249"];
@@ -15730,7 +15734,7 @@ const abilityConfig = Object.freeze({
   20007: {
     name: "Bloody Sunday",
     description:
-      "Whenever an ally Pokemon faints, increase the user's combat readiness to 100%.",
+      "Whenever an ally Pokemon faints, increase the user's combat readiness to 100% and heal 10% HP.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -15749,6 +15753,14 @@ const abilityConfig = Object.freeze({
               `${targetPokemon.name} has been sacrificed to ${initialArgs.pokemon.name}'s Bloody Sunday!`
             );
             initialArgs.pokemon.boostCombatReadiness(initialArgs.pokemon, 100);
+            initialArgs.pokemon.giveHeal(
+              Math.floor(initialArgs.pokemon.maxHp * 0.1),
+              initialArgs.pokemon,
+              {
+                type: "ability",
+                id: "20007",
+              }
+            );
           }
         },
       };
