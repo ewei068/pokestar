@@ -7,7 +7,10 @@
 const { collectionNames } = require("../config/databaseConfig");
 const { logger } = require("../log");
 const { updateDocument } = require("../database/mongoHandler");
-const { listPokemons, getPokemon } = require("./pokemon");
+const {
+  listPokemonsFromTrainer: listPokemons,
+  getPokemon,
+} = require("./pokemon");
 const { idFrom } = require("../utils/utils");
 const { pokemonConfig } = require("../config/pokemonConfig");
 const { getTrainer } = require("./trainer");

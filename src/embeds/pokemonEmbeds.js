@@ -62,7 +62,10 @@ const {
 } = require("../config/equipmentConfig");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { timeEnum } = require("../enums/miscEnums");
-const { formatItemQuantityFromBackpack } = require("../utils/itemUtils");
+const {
+  formatItemQuantityFromBackpack,
+  getItemDisplay,
+} = require("../utils/itemUtils");
 
 /**
  *
@@ -284,12 +287,12 @@ const buildNewPokemonListEmbed = (
 };
 
 /**
- * @param {Trainer} trainer
+ * @param {string} username
  * @param {Pokemon[]} pokemons
  * @param {number} page
  * @returns {EmbedBuilder}
  */
-const buildPokemonListEmbed = (trainer, pokemons, page) => {
+const buildPokemonListEmbed = (username, pokemons, page) => {
   let pokemonString = "\n";
   for (let i = 0; i < pokemons.length; i += 1) {
     const pokemon = pokemons[i];
@@ -302,7 +305,7 @@ const buildPokemonListEmbed = (trainer, pokemons, page) => {
   }
 
   const embed = new EmbedBuilder();
-  embed.setTitle(`Trainer ${trainer.user.username}'s Pokemon`);
+  embed.setTitle(`Trainer ${username}'s Pokemon`);
   embed.setColor(0xffffff);
   embed.setDescription(pokemonString);
   embed.setFooter({
@@ -383,6 +386,11 @@ const buildPokemonEmbed = (
 
   const footerHelp = [];
   if (tab === "info" || tab === "all") {
+    const heldItemString =
+      tab === "info" && pokemon.heldItemId
+        ? `\n**Held Item:** ${getItemDisplay(pokemon.heldItemId)}`
+        : "";
+
     embed.addFields(
       { name: "Type", value: typeString, inline: true },
       {
@@ -404,7 +412,11 @@ const buildPokemonEmbed = (
         inline: true,
       },
       sixthField,
-      { name: "Stats (Stat|IVs|EVs)", value: statString, inline: false },
+      {
+        name: "Stats (Stat|IVs|EVs)",
+        value: `${statString}${heldItemString}`, // TODO: can't find a better place to put this lol
+        inline: false,
+      },
       { name: "Level Progress", value: progressBar, inline: false }
     );
 
@@ -437,6 +449,15 @@ const buildPokemonEmbed = (
       value: abilityData ? abilityData.description : "Not yet implemented!",
       inline: false,
     });
+
+    // add held item field
+    if (pokemon.heldItemId) {
+      embed.addFields({
+        name: `Held Item: ${getItemDisplay(pokemon.heldItemId)}`,
+        value: backpackItemConfig[pokemon.heldItemId].description,
+        inline: false,
+      });
+    }
 
     footerHelp.push(
       "/partyadd <id> <position> to add this Pokemon to your party"

@@ -73,6 +73,7 @@ class InteractionInstance {
     if (this.replied || this.updated) {
       reply = this.followUpBasedOnInteractionType(elementToSend);
     } else if (this.deferred) {
+      // TODO: order, probably
       if (messageRef) {
         reply = messageRef.edit(elementToSend);
       } else {

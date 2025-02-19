@@ -107,7 +107,7 @@ const buildPokemonStatString = (pokemon, size = 20, compact = false) => {
     (pokemon.stats[5] * 100) / 800,
     size
   )}\n`;
-  statString += `Power: ${pokemon.combatPower}`;
+  statString += `**Power:** ${pokemon.combatPower}`;
 
   return statString;
 };

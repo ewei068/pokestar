@@ -15,6 +15,8 @@
 /** @typedef {import("./npcConfig").NpcDifficultyEnum} NpcDifficultyEnum  */
 /** @typedef {import("./backpackConfig").BackpackItemEnum} BackpackItemEnum */
 /** @typedef {import("./backpackConfig").BackpackCategoryEnum} BackpackCategoryEnum */
+/** @typedef {import("./backpackConfig").CraftableItemData} CraftableItemData */
+/** @typedef {import("./backpackConfig").CraftableItemEnum} CraftableItemEnum */
 /** @typedef {import("./shopConfig").ShopItemEnum} ShopItemEnum */
 /** @typedef {import("./shopConfig").ShopCategoryEnum} ShopCategoryEnum */
 /** @typedef {import("./commandConfig").CommandCategoryEnum} CommandCategoryEnum */

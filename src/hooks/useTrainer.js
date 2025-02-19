@@ -2,7 +2,7 @@ const { useAwaitedMemo, useState, useCallback } = require("../deact/deact");
 const { getTrainer } = require("../services/trainer");
 
 /**
- * @param {DiscordUser} user
+ * @param {CompactUser} user
  * @param {DeactElement} ref
  * @returns {Promise<{
  *  trainer: WithId<Trainer>,

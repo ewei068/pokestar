@@ -1,5 +1,26 @@
 # Pokéstar Changelog
 
+## 1.3.0
+
+- Gen 4
+  - Add a bunch new Pokemon
+  - Add PvE against Champion Cynthia
+  - Add Mythic Darkrai
+    - Requires 30? tutorial stage completions
+    - Gains {item} every 5 min, max 100 + level
+    - Use {item} to autobattle
+    - Add auto battling
+  - Gen 4 event
+    - Special banners
+    - Some boosts or sm IDK
+- Held Items
+  - Make backpack scrollable and add categories
+  - Craft held item with new `/craft` command
+  - Add held item to you Pokemon from `/info` or from new `/helditem` command (maybe add to equip too?)
+    - Can add/replace or remove item. Adding item sends to backpack view where an item may be selected
+  - In battle, held items will have certain effects, similar to abilities
+  - Also can have held items that boost exp, evs, and money gain maybe
+
 **Stretch**
 
 - Stretch: Quests (Achievements)

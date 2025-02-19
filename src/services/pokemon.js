@@ -2,8 +2,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * pokemon.js  builds all basic interactions involving pokemon and pokemon logic.
  */
@@ -13,6 +11,7 @@ const {
   deleteDocuments,
   QueryBuilder,
   countDocuments,
+  findAndUpdateDocument,
 } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { getOrSetDefault, idFrom, formatMoney } = require("../utils/utils");
@@ -66,7 +65,7 @@ const {
   SWAP_COST,
 } = require("../config/equipmentConfig");
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
-const { getItems, removeItems } = require("../utils/trainerUtils");
+const { getItems, removeItems, addItems } = require("../utils/trainerUtils");
 const {
   backpackItemConfig,
   backpackItems,
@@ -102,7 +101,7 @@ const updatePokemon = async (pokemon) => {
 };
 
 /**
- * @param {Trainer} trainer
+ * @param {string} userId
  * @param {{
  *  page?: number,
  *  pageSize?: number,
@@ -112,9 +111,9 @@ const updatePokemon = async (pokemon) => {
  * }} listOptions
  * @returns {Promise<{data: WithId<Pokemon>[]?, lastPage?: boolean, err: string?}>}
  */
-const listPokemons = async (trainer, listOptions) => {
+const listPokemons = async (userId, listOptions) => {
   // listOptions: { page, pageSize, filter, sort, allowNone }
-  const filter = { userId: trainer.userId, ...listOptions.filter };
+  const filter = { userId, ...listOptions.filter };
   const pageSize = listOptions.pageSize || PAGE_SIZE;
   const page = listOptions.page || 1;
   const sort = listOptions.sort || null;
@@ -145,6 +144,13 @@ const listPokemons = async (trainer, listOptions) => {
     return { data: null, err: "Error getting Pokemon." };
   }
 };
+
+/**
+ * @param {Trainer} trainer
+ * @param {(Parameters<typeof listPokemons>)[1]} listOptions
+ */
+const listPokemonsFromTrainer = async (trainer, listOptions) =>
+  await listPokemons(trainer.userId, listOptions);
 
 /**
  * @param {any} pokemon
@@ -260,7 +266,7 @@ const calculatePokemonStatsNoEquip = (pokemon, speciesData) => {
  * @param {boolean=} force
  * @returns {Promise<{data: WithId<Pokemon>?, err: string?}>}
  */
-const calculateAndUpdatePokemonStats = async (
+const DEPRECATEDcalculateAndUpdatePokemonStats = async (
   pokemon,
   speciesData,
   force = false
@@ -288,15 +294,16 @@ const calculateAndUpdatePokemonStats = async (
     oldIvTotal !== pokemon.ivTotal
   ) {
     try {
-      const res = await updateDocument(
+      const res = await findAndUpdateDocument(
         collectionNames.USER_POKEMON,
         { userId: pokemon.userId, _id: idFrom(pokemon._id) },
         { $set: pokemon }
       );
-      if (res.modifiedCount === 0) {
+      if (!res.value) {
         logger.warn(`Failed to update Pokemon ${pokemon._id}.`);
         return { data: null, err: "Error updating Pokemon." };
       }
+      pokemon = res.value;
     } catch (error) {
       logger.error(error);
       return { data: null, err: "Error updating Pokemon." };
@@ -304,6 +311,19 @@ const calculateAndUpdatePokemonStats = async (
   }
 
   return { data: pokemon, err: null };
+};
+
+/**
+ * @param {WithId<Pokemon>} pokemon
+ * @param {object} options
+ * @param {boolean=} options.force
+ */
+const calculateAndUpdatePokemonStats = async (
+  pokemon,
+  { force = false } = {}
+) => {
+  const speciesData = pokemonConfig[pokemon.speciesId];
+  return DEPRECATEDcalculateAndUpdatePokemonStats(pokemon, speciesData, force);
 };
 
 /**
@@ -334,7 +354,7 @@ const getPokemonFromUserId = async (userId, pokemonId) => {
         err: "Pokemon not found or Pokemon not owned by you.",
       };
     }
-    return await calculateAndUpdatePokemonStats(
+    return await DEPRECATEDcalculateAndUpdatePokemonStats(
       res,
       pokemonConfig[res.speciesId]
     );
@@ -383,7 +403,7 @@ const getIdFromNameOrId = async (user, nameOrId, interaction, defer = true) => {
       },
       page,
     };
-    const pokemons = await listPokemons(trainer.data, listOptions);
+    const pokemons = await listPokemonsFromTrainer(trainer.data, listOptions);
     if (pokemons.err) {
       return { data: null, err: pokemons.err };
     }
@@ -393,7 +413,7 @@ const getIdFromNameOrId = async (user, nameOrId, interaction, defer = true) => {
     }
 
     const pokemonEmbed = buildPokemonListEmbed(
-      trainer.data,
+      trainer.data.user.username,
       pokemons.data,
       page
     );
@@ -798,7 +818,7 @@ const upgradeEquipmentLevel = async (trainer, pokemon, equipmentType) => {
 
   // update equipment
   equipment.level += 1;
-  const { err } = await calculateAndUpdatePokemonStats(
+  const { err } = await DEPRECATEDcalculateAndUpdatePokemonStats(
     pokemon,
     pokemonConfig[pokemon.speciesId],
     true
@@ -885,7 +905,7 @@ const rerollStatSlot = async (trainer, pokemon, equipmentType, slotId) => {
   };
   const slot = equipment.slots[slotId];
 
-  const { err } = await calculateAndUpdatePokemonStats(
+  const { err } = await DEPRECATEDcalculateAndUpdatePokemonStats(
     pokemon,
     pokemonConfig[pokemon.speciesId],
     true
@@ -1079,6 +1099,14 @@ const buildPokemonInfoSend = async ({
       disabled: false,
       data: { id: pokemonId, action: "add" },
       emoji: "➕",
+    },
+    {
+      label: "Held Item",
+      disabled: false,
+      data: { id: pokemonId, action: "item" },
+      emoji: pokemon.data.heldItemId
+        ? backpackItemConfig[pokemon.data.heldItemId].emoji
+        : undefined,
     },
     {
       label: "Train",
@@ -1357,11 +1385,11 @@ const buildPokedexSend = async ({
  *
  * @param {WithId<Trainer>} trainer
  * @param {string[]} pokemonIds
- * @returns {Promise<{toRelease?: WithId<Pokemon>[], err: string?}>}
+ * @returns {Promise<{toRelease?: { data: WithId<Pokemon>[] } , err: string?}>}
  */
 const canRelease = async (trainer, pokemonIds) => {
   // get pokemon to release
-  const toRelease = await listPokemons(trainer, {
+  const toRelease = await listPokemonsFromTrainer(trainer, {
     page: 1,
     filter: { _id: { $in: pokemonIds.map(idFrom) } },
     allowNone: true,
@@ -1452,7 +1480,11 @@ const buildReleaseSend = async (user, pokemonIds) => {
   const totalWorth = calculateWorth(toRelease.data, null);
 
   // build list embed
-  const embed = buildPokemonListEmbed(trainer.data, toRelease.data, 1);
+  const embed = buildPokemonListEmbed(
+    trainer.data.user.username,
+    toRelease.data,
+    1
+  );
 
   // build confirmation prompt
   const stateId = setState({ userId: user.id, pokemonIds }, 150);
@@ -1866,7 +1898,7 @@ const buildEquipmentSwapSend = async ({
     }
 
     // save pokemon
-    const pokemonUpdate = await calculateAndUpdatePokemonStats(
+    const pokemonUpdate = await DEPRECATEDcalculateAndUpdatePokemonStats(
       pokemon,
       pokemonConfig[pokemon.speciesId],
       true
@@ -1874,7 +1906,7 @@ const buildEquipmentSwapSend = async ({
     if (pokemonUpdate.err) {
       return { err: pokemonUpdate.err };
     }
-    await calculateAndUpdatePokemonStats(
+    await DEPRECATEDcalculateAndUpdatePokemonStats(
       pokemon2,
       pokemonConfig[pokemon2.speciesId],
       true
@@ -2026,15 +2058,103 @@ const checkNumPokemon = async (trainer, quantity = 0) => {
   }
 };
 
+/**
+ * @param {CompactUser} user
+ * @param {string} pokemonId
+ * @param {HeldItemIdEnum} heldItemId
+ * @returns {Promise<{data?: {trainer: WithId<Trainer>, pokemon: WithId<Pokemon>}, err?: string}>}
+ */
+const changeHeldItem = async (user, pokemonId, heldItemId) => {
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { err: trainerErr };
+  }
+  const { data: pokemon, err: pokemonErr } = await getPokemon(
+    trainer,
+    pokemonId
+  );
+  if (pokemonErr) {
+    return { err: pokemonErr };
+  }
+  if (getItems(trainer, heldItemId) < 1) {
+    return { err: "You don't have this item!" };
+  }
+
+  if (pokemon.heldItemId) {
+    addItems(trainer, pokemon.heldItemId, 1);
+  }
+  removeItems(trainer, heldItemId, 1);
+  pokemon.heldItemId = heldItemId;
+
+  const { data: newTrainer, err: trainerUpdateErr } = await updateTrainer(
+    trainer
+  );
+  if (trainerUpdateErr) {
+    return { err: trainerUpdateErr };
+  }
+  const { data: newPokemon, err: pokemonUpdateErr } =
+    await calculateAndUpdatePokemonStats(pokemon, { force: true });
+  if (pokemonUpdateErr) {
+    return { err: pokemonUpdateErr };
+  }
+
+  return {
+    data: { trainer: newTrainer, pokemon: newPokemon },
+  };
+};
+
+/**
+ * @param {CompactUser} user
+ * @param {string} pokemonId
+ * @returns {Promise<{data?: {trainer: WithId<Trainer>, pokemon: WithId<Pokemon>}, err?: string}>}
+ */
+const removeHeldItem = async (user, pokemonId) => {
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { err: trainerErr };
+  }
+  const { data: pokemon, err: pokemonErr } = await getPokemon(
+    trainer,
+    pokemonId
+  );
+  if (pokemonErr) {
+    return { err: pokemonErr };
+  }
+
+  if (pokemon.heldItemId) {
+    addItems(trainer, pokemon.heldItemId, 1);
+  }
+  pokemon.heldItemId = null;
+
+  const { data: newTrainer, err: trainerUpdateErr } = await updateTrainer(
+    trainer
+  );
+  if (trainerUpdateErr) {
+    return { err: trainerUpdateErr };
+  }
+  const { data: newPokemon, err: pokemonUpdateErr } =
+    await calculateAndUpdatePokemonStats(pokemon, { force: true });
+  if (pokemonUpdateErr) {
+    return { err: pokemonUpdateErr };
+  }
+
+  return {
+    data: { trainer: newTrainer, pokemon: newPokemon },
+  };
+};
+
 module.exports = {
   updatePokemon,
   listPokemons,
+  listPokemonsFromTrainer,
   getPokemon,
+  getPokemonFromUserId,
   getEvolvedPokemon,
   evolvePokemon,
   calculatePokemonStatsNoEquip,
   calculatePokemonStats,
   calculateAndUpdatePokemonStats,
+  DEPRECATEDcalculateAndUpdatePokemonStats,
   getIdFromNameOrId,
   releasePokemons,
   canRelease,
@@ -2057,4 +2177,6 @@ module.exports = {
   buildEquipmentListSend,
   buildEquipmentSwapSend,
   buildNatureSend,
+  changeHeldItem,
+  removeHeldItem,
 };

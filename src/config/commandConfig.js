@@ -48,6 +48,7 @@ const commandCategoryConfigRaw = {
       "equipmentlist",
       "equipmentswap",
       "nature",
+      "helditem",
       "release",
       "mythic",
       "mew",
@@ -61,7 +62,7 @@ const commandCategoryConfigRaw = {
     name: "Shop",
     description: "Browse the shop and buy items",
     folder: "shop",
-    commands: ["pokemart", "buy"],
+    commands: ["pokemart", "buy", "craft"],
   },
   battle: {
     name: "Battle",
@@ -212,7 +213,15 @@ const commandConfigRaw = {
     aliases: ["backpack", "bp"],
     description: "Get info about your backpack items",
     execute: "backpack.js",
-    args: {},
+    args: {
+      category: {
+        type: "string",
+        description: "category of items to view",
+        optional: true,
+        variable: false,
+        enum: ["pokeballs", "materials", "consumables"],
+      },
+    },
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 5,
     money: 10,
@@ -578,6 +587,24 @@ const commandConfigRaw = {
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 5,
   },
+  helditem: {
+    name: "Held Item",
+    aliases: ["helditem", "hi"],
+    description: "Give, swap, or remove a Pokemon's held item",
+    longDescription:
+      "Give, swap, or remove a Pokemon's held item from your backpack.",
+    execute: "heldItem.js",
+    args: {
+      name_or_id: {
+        type: "string",
+        description: "name or unique ID for Pokemon to manage held item for",
+        optional: false,
+        variable: false,
+      },
+    },
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    exp: 5,
+  },
   nature: {
     name: "Nature",
     aliases: ["nature"],
@@ -629,6 +656,23 @@ const commandConfigRaw = {
     },
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 15,
+  },
+  craft: {
+    name: "Craft",
+    aliases: ["craft", "c"],
+    description: "Craft an item to add to your backpack",
+    longDescription:
+      "Craft an item to add to your backpack. You can craft items using money and materials you have in your backpack.",
+    execute: "craft.js",
+    args: {
+      search: {
+        type: "string",
+        description: "search term to filter items",
+        optional: true,
+        variable: true,
+      },
+    },
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
   },
   trade: {
     name: "Trade",

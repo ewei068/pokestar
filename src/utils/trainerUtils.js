@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /**
  * @file
  * @author Elvis Wei
@@ -8,6 +9,7 @@ const {
   backpackCategories,
   backpackItemConfig,
 } = require("../config/backpackConfig");
+const { formatItemQuantity } = require("./itemUtils");
 const { getOrSetDefault, formatMoney } = require("./utils");
 
 /**
@@ -35,6 +37,27 @@ const getBackpackItemsString = (trainer) => {
     }
   }
   return backpackItemsString;
+};
+
+/**
+ * @param {Cost} cost
+ * @returns {string}
+ */
+const getCompactCostString = (cost) => {
+  const stringParts = [];
+  if (cost.money) {
+    stringParts.push(formatMoney(cost.money));
+  }
+  if (cost.backpack) {
+    for (const categoryId in cost.backpack) {
+      for (const itemId in cost.backpack[categoryId]) {
+        stringParts.push(
+          `${backpackItemConfig[itemId].emoji} x${cost.backpack[categoryId][itemId]}`
+        );
+      }
+    }
+  }
+  return stringParts.join(" • ");
 };
 
 /**
@@ -176,7 +199,71 @@ const addItems = (trainer, itemId, quantity = 1) => {
 const removeItems = (trainer, itemId, quantity = 1) => {
   const { category } = backpackItemConfig[itemId];
   const items = getOrSetDefault(trainer.backpack, category, {});
-  items[itemId] = getOrSetDefault(items, itemId, 0) - quantity;
+  items[itemId] = Math.max(getOrSetDefault(items, itemId, 0) - quantity, 0);
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {number} amount
+ */
+const removeMoney = (trainer, amount) => {
+  trainer.money = Math.max(trainer.money - amount, 0);
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {Cost} cost
+ * @param {object} param2
+ * @param {number=} param2.quantity
+ */
+const removeCost = (trainer, cost, { quantity = 1 } = {}) => {
+  if (cost.money) {
+    removeMoney(trainer, cost.money * quantity);
+  }
+  if (cost.backpack) {
+    for (const categoryId in cost.backpack) {
+      for (const itemId in cost.backpack[categoryId]) {
+        removeItems(
+          trainer,
+          // @ts-ignore
+          itemId,
+          cost.backpack[categoryId][itemId] * quantity
+        );
+      }
+    }
+  }
+};
+
+/**
+ * @param {Cost} cost
+ * @param {Trainer=} trainer
+ */
+const getCostString = (cost, trainer) => {
+  let costString = "";
+  if (cost.money) {
+    costString += `${formatMoney(cost.money)}`;
+    if (trainer) {
+      costString += ` (Owned: ${formatMoney(trainer.money)})`;
+    }
+    costString += "\n";
+  }
+  if (cost.backpack) {
+    for (const category of Object.values(cost.backpack)) {
+      for (const [itemId, quantity] of Object.entries(category)) {
+        costString += `${formatItemQuantity(
+          // @ts-ignore
+          itemId,
+          quantity
+        )}`;
+        if (trainer) {
+          // @ts-ignore
+          costString += ` (Owned: ${getItems(trainer, itemId)})`;
+        }
+        costString += "\n";
+      }
+    }
+  }
+  return costString;
 };
 
 /**
@@ -204,9 +291,13 @@ module.exports = {
   getBackpackItemsString,
   getFlattenedRewardsString,
   getRewardsString,
+  getCompactCostString,
   flattenCategories,
   flattenRewards,
   addRewards,
+  removeMoney,
+  removeCost,
+  getCostString,
   getItems,
   setItems,
   addItems,

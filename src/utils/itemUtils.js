@@ -1,6 +1,13 @@
 const { backpackItemConfig } = require("../config/backpackConfig");
 
 /**
+ * @param {BackpackItemEnum} item
+ * @returns {string}
+ */
+const getItemDisplay = (item) =>
+  `${backpackItemConfig[item].emoji} ${backpackItemConfig[item].name}`;
+
+/**
  * @param {BackpackItemEnum} itemId
  * @param {number} quantity
  * @returns {string}
@@ -20,6 +27,7 @@ const formatItemQuantityFromBackpack = (itemId, backpack) => {
 };
 
 module.exports = {
+  getItemDisplay,
   formatItemQuantity,
   formatItemQuantityFromBackpack,
 };

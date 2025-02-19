@@ -12,9 +12,6 @@ const { triggerBoundCallback } = require("../deact/deact");
 const { removeInteractionInstance } = require("../deact/interactions");
 const { attemptToReply } = require("../utils/utils");
 const {
-  hasUserMetCurrentTutorialStageRequirements,
-} = require("../services/quest");
-const {
   sendUpsells,
   getPreInteractionUpsellData,
 } = require("../services/misc");

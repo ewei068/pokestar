@@ -44,6 +44,7 @@ const {
   flattenCategories,
 } = require("../utils/trainerUtils");
 const { backpackItemConfig } = require("../config/backpackConfig");
+const { getItemDisplay } = require("../utils/itemUtils");
 
 /**
  * Handles building the party embedded instructions for building a party.
@@ -86,13 +87,16 @@ const buildPartyEmbed = (
       .filter((p) => p !== null)
       .map((pokemon) => {
         const statString = buildPokemonStatString(pokemon, 10, true);
+        const heldItemString = pokemon.heldItemId
+          ? `\n**Held Item:** ${getItemDisplay(pokemon.heldItemId)}`
+          : "";
         return {
           name: `${buildPokemonEmojiString(pokemon)} [${
             pokemons.indexOf(pokemon) + 1
           }] [Lv. ${pokemon.level}] ${pokemon.name}`,
-          value: `${pokemon._id}\n${statString}\nAbility: ${getAbilityName(
+          value: `${pokemon._id}\n${statString}\n**Ability:** ${getAbilityName(
             pokemon.abilityId
-          )}`,
+          )}${heldItemString}`,
           inline: true,
         };
       });
