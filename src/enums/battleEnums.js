@@ -54,6 +54,11 @@ const abilityIdEnum = Object.freeze({
   OMEGA_CORE: "20021",
 });
 
+/** @typedef {Enum<heldItemIdEnum>} HeldItemIdEnum */
+const heldItemIdEnum = Object.freeze({
+  LEFTOVERS: "h211",
+});
+
 /** @typedef {Enum<battleEventEnum>} BattleEventEnum */
 const battleEventEnum = Object.freeze({
   BATTLE_BEGIN: "battleStart",
@@ -123,5 +128,6 @@ module.exports = {
   moveIdEnum,
   effectIdEnum,
   abilityIdEnum,
+  heldItemIdEnum,
   battleEventEnum,
 };

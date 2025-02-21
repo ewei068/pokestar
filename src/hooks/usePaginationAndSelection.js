@@ -1,25 +1,13 @@
-const {
-  useState,
-  useEffect,
-  createElement,
-  useCallbackBinding,
-} = require("../deact/deact");
+const { useEffect } = require("../deact/deact");
 const usePagination = require("./usePagination");
-const IdConfigSelectMenu = require("../elements/foundation/IdConfigSelectMenu");
+const useSelection = require("./useSelection");
 
 /**
  * @template {string | number} T
- * @param {object} param0
- * @param {T[]} param0.allItems
- * @param {number=} param0.pageSize
- * @param {number=} param0.initialPage
- * @param {T=} param0.initialItem
- * @param {string=} param0.selectionPlaceholder
- * @param {boolean=} param0.useCurrentItemDefault
- * @param {PartialRecord<T, any>} param0.itemConfig
- * @param {boolean=} param0.showId
- * @param {CallbackBindingOptions=} param0.paginationCallbackOptions
- * @param {CallbackBindingOptions=} param0.selectionCallbackOptions
+ * @param {Omit<Parameters<typeof usePagination<T>>[0] & Parameters<typeof useSelection<T>>[0] & {
+ *  paginationCallbackOptions?: CallbackBindingOptions,
+ *  selectionCallbackOptions?: CallbackBindingOptions,
+ * }, "items">} options
  * @param {DeactElement} ref
  * @returns {ReturnType<typeof usePagination<T>> & {
  *  currentItem: T?,
@@ -27,66 +15,36 @@ const IdConfigSelectMenu = require("../elements/foundation/IdConfigSelectMenu");
  *  selectMenuElement: CreateElementResult,
  * }}
  */
-module.exports = (
-  {
-    allItems,
-    pageSize = 10,
-    initialPage = 1,
-    initialItem,
-    selectionPlaceholder = "Select an item",
-    useCurrentItemDefault = false,
-    itemConfig,
-    showId = true,
-    paginationCallbackOptions = {},
-    selectionCallbackOptions = {},
-  },
-  ref
-) => {
-  const [currentItem, setItem] = useState(initialItem, ref);
+module.exports = (options, ref) => {
   const pagination = usePagination(
     {
-      allItems,
-      pageSize,
-      initialPage,
-      callbackOptions: paginationCallbackOptions,
+      ...options,
+      callbackOptions: options.paginationCallbackOptions,
     },
     ref
   );
-
-  const onSelectKey = useCallbackBinding(
-    (interaction) => {
-      // @ts-ignore ts is stupid
-      const id = interaction?.values?.[0];
-      setItem(id);
+  const selection = useSelection(
+    {
+      ...options,
+      items: pagination.items,
+      callbackOptions: options.selectionCallbackOptions,
     },
-    ref,
-    selectionCallbackOptions
+    ref
   );
 
   useEffect(
     () => {
-      const index = allItems.indexOf(currentItem);
+      const index = options.allItems.indexOf(selection.currentItem);
       if (index !== -1) {
-        pagination.setPage(Math.ceil((index + 1) / pageSize));
+        pagination.setPage(Math.ceil((index + 1) / options.pageSize));
       }
     },
-    [currentItem, pagination.setPage],
+    [selection.currentItem, pagination.setPage],
     ref
   );
 
-  const selectMenuElement = createElement(IdConfigSelectMenu, {
-    ids: pagination.items,
-    placeholder: selectionPlaceholder,
-    config: itemConfig,
-    callbackBindingKey: onSelectKey,
-    showId,
-    defaultId: useCurrentItemDefault ? currentItem : undefined,
-  });
-
   return {
     ...pagination,
-    currentItem,
-    setItem,
-    selectMenuElement,
+    ...selection,
   };
 };

@@ -137,7 +137,7 @@ module.exports = async (
   );
 
   const switchChannelSpawnModeBinding = useCallbackBinding(
-    async (interaction) => {
+    async () => {
       await switchChannelSpawnMode(guild).then((res) => {
         if (res.err) {
           setErrorString(res.err);
