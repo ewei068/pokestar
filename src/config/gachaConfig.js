@@ -91,6 +91,18 @@ const bannerTypeConfig = Object.freeze({
 const bannerConfigRaw = [
   {
     bannerType: bannerTypes.SPECIAL,
+    name: "[EVENT] Twitch Plays Pokemon Anniversary",
+    description:
+      "The Twitch Plays Pokemon banner is back for its anniversary! Pull to get the limited-time iconic Pokemon from the original Twitch Plays Pokemon Red! For more information, use `/events`.",
+    rateUp: () => ({
+      [rarities.LEGENDARY]: ["139-1", "145-1", "136-1"],
+      [rarities.EPIC]: ["18-1", "34-1", "49-1", "131-1"],
+    }),
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-tpp-banner.png",
+  },
+  {
+    bannerType: bannerTypes.SPECIAL,
     name: "[EVENT] Team Aqua Banner",
     description:
       "Team Aqua is here to conquer the seas! Pull for the limited Aqua Leader Archie's Kyogre and Team Aqua's Sharpedo!",

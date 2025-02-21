@@ -784,6 +784,7 @@ const commandConfigRaw = {
           "palmer",
           "professorWillow",
           "butler",
+          "tppRed",
         ],
       },
       difficulty: {

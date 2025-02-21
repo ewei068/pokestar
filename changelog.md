@@ -26,6 +26,14 @@
 - Stretch: Quests (Achievements)
 - Stretch: Ability slots
 
+### 1.2.1 Twitch Plays Pokemon (Re-Run)
+
+- Twitch Plays Pokemon Re-run: Celebrating Twitch Plays Pokemon Anniversary
+  - Catch limited time TPP-inspired Pokemon in `/gacha`
+  - Play limited time `/pve` and `/dungeons`
+  - Buffed AA-j and AIR
+- (Experimental) Buffed the average spawn delay 2hrs -> 1hr
+
 ## 1.2.0 Gen 3 Wrap-Up (Aqua vs. Magma) (2/1)
 
 - **Gen 3 wrap-up update**
