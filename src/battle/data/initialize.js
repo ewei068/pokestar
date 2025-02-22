@@ -15,6 +15,8 @@ const {
   registerLegacyAbilities,
 } = require("./abilityRegistry");
 const { abilitiesToRegister } = require("./abilities");
+const { registerHeldItems } = require("./heldItemRegistry");
+const { heldItemsToRegister } = require("./heldItems");
 
 const initialize = () => {
   registerEffects(effectsToRegister);
@@ -23,6 +25,7 @@ const initialize = () => {
   registerLegacyMoves(moveConfig, moveExecutes);
   registerAbilities(abilitiesToRegister);
   registerLegacyAbilities(abilityConfig);
+  registerHeldItems(heldItemsToRegister);
 };
 
 module.exports = {
