@@ -264,8 +264,8 @@ const abilitiesToRegister = Object.freeze({
             const enemyParty = target.getEnemyParty();
             const enemyTotalDefStats = enemyParty.pokemons.reduce(
               (acc, enemy) => {
-                const defStat = enemy?.getDef?.() ?? 0;
-                const spdStat = enemy?.getSpd?.() ?? 0;
+                const defStat = enemy?.getStat?.("def") ?? 0;
+                const spdStat = enemy?.getStat?.("spd") ?? 0;
                 return {
                   def: acc.def + defStat,
                   spd: acc.spd + spdStat,

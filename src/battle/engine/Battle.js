@@ -306,7 +306,7 @@ class Battle {
 
     // sort all pokemon by speed descending
     const sortedPokemon = Object.values(this.allPokemon);
-    sortedPokemon.sort((a, b) => b.getSpe() - a.getSpe());
+    sortedPokemon.sort((a, b) => b.getStat("spe") - a.getStat("spe"));
     this.allPokemon = {};
     for (const pokemon of sortedPokemon) {
       this.allPokemon[pokemon.id] = pokemon;

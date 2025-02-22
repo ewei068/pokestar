@@ -541,7 +541,9 @@ class BattlePokemon {
     const atkDamageType = atkDamageTypeOverride || move.damageType;
     const attackRaw =
       attackOverride ||
-      (atkDamageType === damageTypes.PHYSICAL ? this.getAtk() : this.getSpa());
+      (atkDamageType === damageTypes.PHYSICAL
+        ? this.getStat("atk")
+        : this.getStat("spa"));
     // modify attack amount -- any attack over 800 is only half as effective
     const attack = attackRaw > 800 ? 800 + (attackRaw - 800) / 2 : attackRaw;
 
@@ -549,8 +551,8 @@ class BattlePokemon {
     const defense =
       defenseOverride ||
       (defDamageType === damageTypes.PHYSICAL
-        ? target.getDef()
-        : target.getSpd());
+        ? target.getStat("def")
+        : target.getStat("spd"));
     const stab = this.type1 === move.type || this.type2 === move.type ? 1.5 : 1;
     const missMult = missedTargets.includes(target)
       ? missedTargetDamageMultiplier
@@ -2042,7 +2044,7 @@ class BattlePokemon {
   }
 
   effectiveSpeed() {
-    return calculateEffectiveSpeed(this.getSpe());
+    return calculateEffectiveSpeed(this.getStat("spe"));
   }
 
   getRowAndColumn() {
@@ -2072,60 +2074,52 @@ class BattlePokemon {
     return this.battle.parties[enemyTeamName];
   }
 
-  getAtk() {
-    return this.atk;
-  }
+  /**
+   * @param {StatIdNoHP} statId
+   */
+  getStat(statId) {
+    let stat = this[statId];
 
-  getDef() {
-    let { def } = this;
-
-    // if hail and ice, def * 1.5
-    if (
-      !this.battle.isWeatherNegated() &&
-      this.battle.weather.weatherId === weatherConditions.HAIL &&
-      (this.type1 === pokemonTypes.ICE || this.type2 === pokemonTypes.ICE)
-    ) {
-      def = Math.floor(def * 1.5);
-    }
-
-    return def;
-  }
-
-  getSpa() {
-    return this.spa;
-  }
-
-  getSpd() {
-    let { spd } = this;
-
-    // if sandstorm and rock, spd * 1.5
-    if (
-      !this.battle.isWeatherNegated() &&
-      this.battle.weather.weatherId === weatherConditions.SANDSTORM &&
-      (this.type1 === pokemonTypes.ROCK || this.type2 === pokemonTypes.ROCK)
-    ) {
-      spd = Math.floor(spd * 1.5);
-    }
-
-    return spd;
-  }
-
-  getSpe() {
-    let { spe } = this;
-
-    if (!this.battle.isWeatherNegated()) {
-      if (this.battle.weather.weatherId === weatherConditions.SUN) {
-        if (this.ability && this.ability.abilityId === "34") {
-          spe = Math.floor(spe * 1.5);
+    switch (statId) {
+      case "def":
+        // if hail and ice, def * 1.5
+        if (
+          !this.battle.isWeatherNegated() &&
+          this.battle.weather.weatherId === weatherConditions.HAIL &&
+          (this.type1 === pokemonTypes.ICE || this.type2 === pokemonTypes.ICE)
+        ) {
+          stat = Math.floor(stat * 1.5);
         }
-      } else if (this.battle.weather.weatherId === weatherConditions.RAIN) {
-        if (this.ability && this.ability.abilityId === "33") {
-          spe = Math.floor(spe * 1.5);
-        }
-      }
-    }
 
-    return spe;
+        return stat;
+      case "spd":
+        // if sandstorm and rock, spd * 1.5
+        if (
+          !this.battle.isWeatherNegated() &&
+          this.battle.weather.weatherId === weatherConditions.SANDSTORM &&
+          (this.type1 === pokemonTypes.ROCK || this.type2 === pokemonTypes.ROCK)
+        ) {
+          stat = Math.floor(stat * 1.5);
+        }
+
+        return stat;
+      case "spe":
+        if (!this.battle.isWeatherNegated()) {
+          if (this.battle.weather.weatherId === weatherConditions.SUN) {
+            if (this.ability && this.ability.abilityId === "34") {
+              stat = Math.floor(stat * 1.5);
+            }
+          } else if (this.battle.weather.weatherId === weatherConditions.RAIN) {
+            if (this.ability && this.ability.abilityId === "33") {
+              stat = Math.floor(stat * 1.5);
+            }
+          }
+        }
+
+        return stat;
+      default:
+        return stat;
+    }
   }
 
   /**
@@ -2134,11 +2128,11 @@ class BattlePokemon {
   getAllStats() {
     return [
       this.hp,
-      this.getAtk(),
-      this.getDef(),
-      this.getSpa(),
-      this.getSpd(),
-      this.getSpe(),
+      this.getStat("atk"),
+      this.getStat("def"),
+      this.getStat("spa"),
+      this.getStat("spd"),
+      this.getStat("spe"),
     ];
   }
 

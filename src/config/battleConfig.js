@@ -7064,7 +7064,7 @@ const moveExecutes = {
       // 5% of atk true damage
       const damageToDeal =
         calculateDamage(moveData, source, target, miss) +
-        Math.floor(source.getAtk() * 0.07);
+        Math.floor(source.getStat("atk") * 0.07);
       source.dealDamage(damageToDeal, target, {
         type: "move",
         moveId,
@@ -7488,7 +7488,7 @@ const moveExecutes = {
       target.applyEffect("defUp", 2, source);
       // gain 15% def as shield
       target.applyEffect("shield", 2, source, {
-        shield: Math.floor(target.getDef() * 0.15),
+        shield: Math.floor(target.getStat("def") * 0.15),
       });
     }
   },
@@ -7513,7 +7513,7 @@ const moveExecutes = {
       target.applyEffect("defUp", 2, source);
       // gain 15% def as shield
       target.applyEffect("shield", 2, source, {
-        shield: Math.floor(target.getDef() * 0.15),
+        shield: Math.floor(target.getStat("def") * 0.15),
       });
     }
   },
@@ -7525,7 +7525,7 @@ const moveExecutes = {
       target.applyEffect("rollout", 4, source);
       // gain 10% def as shield
       target.applyEffect("shield", 2, source, {
-        shield: Math.floor(target.getDef() * 0.1),
+        shield: Math.floor(target.getStat("def") * 0.1),
       });
     }
   },
@@ -7665,8 +7665,8 @@ const moveExecutes = {
 
       // if not miss, 20% + sourceatk/enemyatk chance to flinch
       const flinchChance =
-        source.getAtk() > target.getAtk()
-          ? 0.2 + (source.getAtk() / target.getAtk() - 1)
+        source.getStat("atk") > target.getStat("atk")
+          ? 0.2 + (source.getStat("atk") / target.getStat("atk") - 1)
           : 0.2;
       if (!miss && Math.random() < flinchChance) {
         target.applyEffect("flinched", 1, source);
@@ -7798,7 +7798,10 @@ const moveExecutes = {
     );
     for (const target of surroundingTargets) {
       // flinch chance = (30 + source speed/10)
-      const flinchChance = Math.min(0.3 + source.getSpe() / 10 / 100, 0.75);
+      const flinchChance = Math.min(
+        0.3 + source.getStat("spe") / 10 / 100,
+        0.75
+      );
       if (Math.random() < flinchChance) {
         target.applyEffect("flinched", 1, source);
       }
@@ -7845,7 +7848,7 @@ const moveExecutes = {
       // 5% of atk true damage
       const damageToDeal =
         calculateDamage(moveData, source, target, miss) +
-        (miss ? 0 : Math.floor(source.getAtk() * 0.05));
+        (miss ? 0 : Math.floor(source.getStat("atk") * 0.05));
       source.dealDamage(damageToDeal, target, {
         type: "move",
         moveId,
@@ -8746,7 +8749,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // check if user def is higher, if so apply effects before damage
-      const beforeDamage = source.getDef() > target.getDef();
+      const beforeDamage = source.getStat("def") > target.getStat("def");
       if (!miss && beforeDamage) {
         // apply def down 2 turns
         target.applyEffect("defDown", 2, source);
@@ -9374,7 +9377,7 @@ const moveExecutes = {
       let damageToDeal = calculateDamage(moveData, source, target, miss);
       // if not miss, deal 5% true damage user spa + hp
       if (!miss) {
-        damageToDeal += Math.floor((source.getSpa() + source.hp) * 0.05);
+        damageToDeal += Math.floor((source.getStat("spa") + source.hp) * 0.05);
       }
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -9525,7 +9528,9 @@ const moveExecutes = {
       target.applyEffect("spdUp", 3, source);
       // get 10% defenses as shield
       target.applyEffect("shield", 3, source, {
-        shield: Math.floor(target.getDef() * 0.1 + target.getSpd() * 0.1),
+        shield: Math.floor(
+          target.getStat("def") * 0.1 + target.getStat("spd") * 0.1
+        ),
       });
     }
   },
@@ -9633,7 +9638,7 @@ const moveExecutes = {
       target.applyEffect("greaterDefUp", 3, source);
       // get 15% def as shield
       target.applyEffect("shield", 3, source, {
-        shield: Math.floor(target.getDef() * 0.15),
+        shield: Math.floor(target.getStat("def") * 0.15),
       });
     }
   },
@@ -9656,13 +9661,13 @@ const moveExecutes = {
         target.applyEffect("greaterDefUp", 2, source);
         // get 20% def as shield
         target.applyEffect("shield", 2, source, {
-          shield: Math.floor(source.getDef() * 0.2),
+          shield: Math.floor(source.getStat("def") * 0.2),
         });
       } else {
         target.applyEffect("defUp", 2, source);
         // get 5% def as shield
         target.applyEffect("shield", 2, source, {
-          shield: Math.floor(source.getDef() * 0.05),
+          shield: Math.floor(source.getStat("def") * 0.05),
         });
       }
     }
@@ -9764,7 +9769,7 @@ const moveExecutes = {
       // 5% atk true damage
       const damageToDeal =
         calculateDamage(moveData, source, target, miss) +
-        Math.round(source.getAtk() * 0.05);
+        Math.round(source.getStat("atk") * 0.05);
       // deal half damage if target is not primary target
       source.dealDamage(
         Math.round(damageToDeal * (primaryTarget !== target ? 0.5 : 1)),
@@ -9864,7 +9869,7 @@ const moveExecutes = {
   ) {
     const moveId = "m354-1";
     const moveData = getMove(moveId);
-    const useAtk = source.getAtk() > source.getSpa();
+    const useAtk = source.getStat("atk") > source.getStat("spa");
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
@@ -9894,7 +9899,9 @@ const moveExecutes = {
     for (const target of allTargets) {
       // get 25% def, spd as shield
       target.applyEffect("shield", 3, source, {
-        shield: Math.floor(source.getDef() * 0.25 + source.getSpd() * 0.25),
+        shield: Math.floor(
+          source.getStat("def") * 0.25 + source.getStat("spd") * 0.25
+        ),
       });
     }
   },
@@ -10588,14 +10595,14 @@ const moveExecutes = {
 
     // get mean spe of all targets
     const meanSpe =
-      targets.reduce((acc, p) => acc + p.getSpe(), 0) / targets.length;
+      targets.reduce((acc, p) => acc + p.getStat("spe"), 0) / targets.length;
     // for all targets apply effect:
     // if spe > 1.25 * meanSpe, greater spe down
     // if spe > meanSpe, spe down
     // if spe < meanSpe, spe up
     // if spe < 0.75 * meanSpe, greater spe up
     for (const target of targets) {
-      const spe = target.getSpe();
+      const spe = target.getStat("spe");
       if (spe > 1.25 * meanSpe) {
         target.applyEffect("greaterSpeDown", 3, source);
       } else if (spe > meanSpe) {
@@ -10896,11 +10903,11 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       let speedPower = 0;
-      if (source.getSpe() < 200) {
+      if (source.getStat("spe") < 200) {
         speedPower = 45;
-      } else if (source.getSpe() < 400) {
+      } else if (source.getStat("spe") < 400) {
         speedPower = 30;
-      } else if (source.getSpe() < 600) {
+      } else if (source.getStat("spe") < 600) {
         speedPower = 20;
       } else {
         speedPower = 10;
@@ -10925,7 +10932,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       // use target's attack
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
-        attack: target.getAtk(),
+        attack: target.getStat("atk"),
       });
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -11085,7 +11092,7 @@ const moveExecutes = {
         target,
         missedTargets.includes(target),
         {
-          power: Math.floor(moveData.power + source.getSpe() * 0.2),
+          power: Math.floor(moveData.power + source.getStat("spe") * 0.2),
         }
       );
       damageDealt += source.dealDamage(damageToDeal, target, {
@@ -11118,7 +11125,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
-        power: Math.floor(moveData.power + source.getDef() * 0.1),
+        power: Math.floor(moveData.power + source.getStat("def") * 0.1),
       });
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -11449,7 +11456,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
         defStat:
-          target.getDef() > target.getSpd()
+          target.getStat("def") > target.getStat("spd")
             ? damageTypes.SPECIAL
             : damageTypes.PHYSICAL,
       });
@@ -11478,7 +11485,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
         defStat:
-          target.getDef() > target.getSpd()
+          target.getStat("def") > target.getStat("spd")
             ? damageTypes.SPECIAL
             : damageTypes.PHYSICAL,
       });
@@ -11505,7 +11512,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // heal hp equal to targets atk
-      const healAmount = target.getAtk();
+      const healAmount = target.getStat("atk");
       source.giveHeal(healAmount, source, {
         type: "move",
         moveId,
@@ -12572,11 +12579,11 @@ const abilityConfig = Object.freeze({
 
           // get pokemon with highest atk
           let highestAtkPokemon = enemyPokemons[0];
-          let maxAtk = enemyPokemons[0].getAtk();
+          let maxAtk = enemyPokemons[0].getStat("atk");
           for (const pokemon of enemyPokemons) {
-            if (pokemon.getAtk() > maxAtk) {
+            if (pokemon.getStat("atk") > maxAtk) {
               highestAtkPokemon = pokemon;
-              maxAtk = pokemon.getAtk();
+              maxAtk = pokemon.getStat("atk");
             }
           }
           battle.addToLog(
@@ -12586,11 +12593,11 @@ const abilityConfig = Object.freeze({
 
           // get pokemon with highest spe
           let highestSpePokemon = enemyPokemons[0];
-          let maxSpe = enemyPokemons[0].getSpe();
+          let maxSpe = enemyPokemons[0].getStat("spe");
           for (const pokemon of enemyPokemons) {
-            if (pokemon.getSpe() > maxSpe) {
+            if (pokemon.getStat("spe") > maxSpe) {
               highestSpePokemon = pokemon;
-              maxSpe = pokemon.getSpe();
+              maxSpe = pokemon.getStat("spe");
             }
           }
           if (highestAtkPokemon === highestSpePokemon) {
@@ -14799,7 +14806,9 @@ const abilityConfig = Object.freeze({
           }
 
           // increase damage by 8% of defense
-          const damageIncrease = Math.round(sourcePokemon.getDef() * 0.08);
+          const damageIncrease = Math.round(
+            sourcePokemon.getStat("def") * 0.08
+          );
           args.damage += damageIncrease;
           targetPokemon.battle.addToLog(
             `${sourcePokemon.name}'s Heavy Metal increases the damage!`
