@@ -60,6 +60,10 @@ const { pokemonIdEnum } = require("../enums/pokemonEnums");
 
 const DAILY_MONEY = process.env.STAGE === stageNames.ALPHA ? 100000 : 300;
 
+/**
+ * @param {Trainer} trainer
+ * @returns {Promise<{data?: FlattenedRewards, err?: string}>}
+ */
 const drawDaily = async (trainer) => {
   // check if new day; if in alpha, ignore
   if (!trainer.claimedDaily || process.env.STAGE === stageNames.ALPHA) {
