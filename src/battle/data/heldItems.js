@@ -1,13 +1,14 @@
 /* eslint-disable no-param-reassign */
 const { backpackHeldItemConfig } = require("../../config/backpackConfig");
 const { battleEventEnum, heldItemIdEnum } = require("../../enums/battleEnums");
+const { logger } = require("../../log");
 const {
   getIsActivePokemonCallback,
   getIsTargetPokemonCallback,
 } = require("../engine/eventConditions");
 
 /**
- * @typedef {"berry" | "placeholderTag"} HeldItemTag
+ * @typedef {"berry" | "usable"} HeldItemTag
  */
 
 /**
@@ -19,9 +20,10 @@ class HeldItem {
    * @param {HeldItemIdEnum} param0.id
    * @param {HeldItemAddCallback<T>} param0.itemAdd
    * @param {HeldItemRemoveCallback<T>} param0.itemRemove
+   * @param {HeldItemUseCallback<T>=} param0.itemUse
    * @param {HeldItemTag[]?=} param0.tags
    */
-  constructor({ id, itemAdd, itemRemove, tags = [] }) {
+  constructor({ id, itemAdd, itemRemove, itemUse, tags = [] }) {
     this.id = id;
     const itemData = backpackHeldItemConfig[id];
     this.name = itemData.name;
@@ -29,6 +31,11 @@ class HeldItem {
     this.itemAdd = itemAdd;
     this.itemRemove = itemRemove;
     this.isLegacyAbility = false;
+    this.itemUse =
+      itemUse ||
+      (() => {
+        logger.error(`${this?.name} does not have an itemUse function.`);
+      });
     this.tags = tags;
   }
 
@@ -92,28 +99,26 @@ const heldItemsToRegister = Object.freeze({
           eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
           callback: () => {
             if (target.hp / target.maxHp <= 0.5) {
-              // heal 50% of max hp
-              battle.addToLog(
-                `${target.name}'s Sitrus Berry restores its health!`
-              );
-              const healAmount = Math.floor(target.maxHp * 0.5);
-              target.giveHeal(healAmount, target, {
-                type: "heldItem",
-                id: this.id,
-              });
-
-              // remove held item
-              target.removeHeldItem();
+              target.useHeldItem(target);
             }
           },
           conditionCallback: getIsTargetPokemonCallback(target),
         }),
       };
     },
+    itemUse({ battle, target }) {
+      // heal 50% of max hp
+      battle.addToLog(`${target.name}'s Sitrus Berry restores its health!`);
+      const healAmount = Math.floor(target.maxHp * 0.5);
+      target.giveHeal(healAmount, target, {
+        type: "heldItem",
+        id: this.id,
+      });
+    },
     itemRemove({ battle, properties }) {
       battle.unregisterListener(properties.listenerId);
     },
-    tags: ["berry"],
+    tags: ["berry", "usable"],
   }),
   [heldItemIdEnum.LEFTOVERS]: new HeldItem({
     id: heldItemIdEnum.LEFTOVERS,

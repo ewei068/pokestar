@@ -1355,6 +1355,31 @@ class BattlePokemon {
     this.battle.addToLog(`${this.name} lost its held item!`);
   }
 
+  /**
+   * If usable, uses the held item on the target Pokemon, then removes it if it's used up
+   * @param {BattlePokemon} target
+   * @returns {boolean} Whether the held item was used
+   */
+  useHeldItem(target) {
+    // remove held item effects
+    const { heldItemId } = this.heldItem;
+    const heldItemData = getHeldItem(heldItemId);
+    if (!heldItemData || !heldItemData.tags.includes("usable") || !heldItemId) {
+      return false;
+    }
+
+    // TODO: disable item before use?
+    heldItemData.itemUse({
+      battle: this.battle,
+      source: this,
+      target,
+      properties: this.heldItem.data,
+    });
+    this.removeHeldItem();
+
+    return true;
+  }
+
   hasAbility(abilityId) {
     return this.ability?.abilityId === abilityId;
   }

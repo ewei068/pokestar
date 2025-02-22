@@ -190,6 +190,17 @@
  */
 
 /**
+ * @template T
+ * @callback HeldItemUseCallback
+ * @this {HeldItem<T>}
+ * @param {object} param0
+ * @param {Battle} param0.battle
+ * @param {BattlePokemon} param0.source
+ * @param {BattlePokemon} param0.target
+ * @param {T} param0.properties
+ */
+
+/**
  * @template {BattleEventEnum} K
  * @callback BattleEventListenerCallback
  * @param {BattleEventArgs<K>} args
