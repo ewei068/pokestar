@@ -58,6 +58,7 @@ const abilityIdEnum = Object.freeze({
 const heldItemIdEnum = Object.freeze({
   SITRUS_BERRY: "h135",
   LEFTOVERS: "h211",
+  LIFE_ORB: "h247",
 });
 
 /** @typedef {Enum<battleEventEnum>} BattleEventEnum */
@@ -93,12 +94,12 @@ const battleEventEnum = Object.freeze({
  * @template {BattleEventEnum} K
  * @typedef {{
  *  [battleEventEnum.BATTLE_BEGIN]: {},
- *  [battleEventEnum.TURN_END]: {activePokemon: BattlePokemon},
+ *  [battleEventEnum.TURN_END]: { activePokemon: BattlePokemon },
  *  [battleEventEnum.TURN_BEGIN]: {},
- *  [battleEventEnum.BEFORE_MOVE]: {canUseMove: boolean, source: BattlePokemon, primaryTarget: BattlePokemon, moveId: MoveIdEnum},
+ *  [battleEventEnum.BEFORE_MOVE]: { canUseMove: boolean, source: BattlePokemon, primaryTarget: BattlePokemon, moveId: MoveIdEnum} ,
  *  [battleEventEnum.BEFORE_MOVE_EXECUTE]: any,
- *  [battleEventEnum.AFTER_MOVE]: any,
- *  [battleEventEnum.BEFORE_DAMAGE_DEALT]: any,
+ *  [battleEventEnum.AFTER_MOVE]: { source: BattlePokemon, primaryTarget: BattlePokemon, allTargets: BattlePokemon[], missedTargets: BattlePokemon[], moveId: MoveIdEnum },
+ *  [battleEventEnum.BEFORE_DAMAGE_DEALT]: { target: BattlePokemon, source: BattlePokemon, damage: number, damageInfo: any },
  *  [battleEventEnum.AFTER_DAMAGE_DEALT]: any,
  *  [battleEventEnum.BEFORE_DAMAGE_TAKEN]: { target: BattlePokemon, source: BattlePokemon, damage: number, maxDamage: number, damageInfo: any },
  *  [battleEventEnum.AFTER_DAMAGE_TAKEN]: { target: BattlePokemon, source: BattlePokemon, damage: number, damageInfo: any },

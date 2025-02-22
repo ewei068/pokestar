@@ -204,6 +204,7 @@
  * @template {BattleEventEnum} K
  * @callback BattleEventListenerCallback
  * @param {BattleEventArgs<K>} args
+ * @returns {Partial<BattleEventArgs<K>> | void}
  */
 
 /**

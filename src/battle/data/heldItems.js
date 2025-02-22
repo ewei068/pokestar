@@ -5,7 +5,11 @@ const { logger } = require("../../log");
 const {
   getIsActivePokemonCallback,
   getIsTargetPokemonCallback,
+  getIsSourcePokemonCallback,
+  composeConditionCallbacks,
+  getIsMoveCallback,
 } = require("../engine/eventConditions");
+const { getMove } = require("./moveRegistry");
 
 /**
  * @typedef {"berry" | "usable"} HeldItemTag
@@ -59,7 +63,7 @@ class HeldItem {
    * @template {BattleEventEnum} K
    * @param {object} param0
    * @param {K} param0.eventName
-   * @param {(args: Parameters<BattleEventListenerCallback<K>>[0] & { heldItemInstance: { heldItemId: HeldItemIdEnum, data: T, applied: boolean } }) => void} param0.callback
+   * @param {(args: Parameters<BattleEventListenerCallback<K>>[0] & { heldItemInstance: { heldItemId: HeldItemIdEnum, data: T, applied: boolean } }) => ReturnType<BattleEventListenerCallback<K>>} param0.callback
    * @param {Battle} param0.battle
    * @param {BattlePokemon} param0.target
    * @param {BattleEventListenerConditionCallback<K>=} param0.conditionCallback function that returns true if the event should be executed. If undefined, always execute for event.
@@ -81,7 +85,7 @@ class HeldItem {
         }
 
         args.heldItemInstance = heldItemInstance;
-        callback(args);
+        return callback(args);
       },
       conditionCallback,
     });
@@ -145,6 +149,53 @@ const heldItemsToRegister = Object.freeze({
     },
     itemRemove({ battle, properties }) {
       battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [heldItemIdEnum.LIFE_ORB]: new HeldItem({
+    id: heldItemIdEnum.LIFE_ORB,
+    itemAdd({ battle, target }) {
+      return {
+        selfDamageListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_MOVE,
+          callback: ({ source, moveId }) => {
+            const moveData = getMove(moveId);
+            const power = moveData?.power || 0;
+            if (power > 0) {
+              // damage user by 10% of max hp
+              const damageAmount = Math.max(1, Math.floor(target.maxHp * 0.1));
+              battle.addToLog(`${source.name} is damaged by its Life Orb!`);
+              source.takeDamage(damageAmount, target, {
+                type: "heldItem",
+                id: this.id,
+              });
+            }
+          },
+          conditionCallback: getIsSourcePokemonCallback(target),
+        }),
+        damageBoostListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage, damageInfo }) => {
+            const moveData = getMove(damageInfo.moveId || damageInfo.id);
+            const power = moveData?.power || 0;
+            if (power > 0) {
+              return {
+                damage: Math.floor(damage * 1.3),
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsMoveCallback(),
+            getIsSourcePokemonCallback(target)
+          ),
+        }),
+      };
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.selfDamageListenerId);
     },
   }),
 });

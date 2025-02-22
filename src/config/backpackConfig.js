@@ -162,6 +162,22 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.LIFE_ORB]: {
+    name: "Life Orb",
+    emoji: "<:lifeorb:1342654745906774046>",
+    description:
+      "Increases the power of the user's moves by 30%, but damages the user by 10% of its max HP after each damaging move.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: 100,
+          [backpackItems.WILLPOWER_SHARD]: 100,
+        },
+      },
+    },
+  },
 };
 
 const craftableItemConfig = Object.freeze({
