@@ -13,6 +13,7 @@ const {
   typeAdvantages,
   weatherConditions,
   damageTypes,
+  battleStatToBaseStat,
 } = require("../../config/battleConfig");
 const { battleEventEnum } = require("../../enums/battleEnums");
 const { calculatePokemonStats } = require("../../services/pokemon");
@@ -103,31 +104,42 @@ class BattlePokemon {
     this.teamName = teamName;
     this.name = pokemonData.name;
     this.hp = pokemonData.remainingHp || pokemonData.stats[0];
-    [this.maxHp = 0] = this.pokemonData.stats;
+    [this.maxHp = 1] = this.pokemonData.stats;
     this.level = pokemonData.level;
+    this.allStatData = {
+      atk: {
+        addMult: 1,
+        multMult: 1,
+        flatBoost: 0,
+      },
+      def: {
+        addMult: 1,
+        multMult: 1,
+        flatBoost: 0,
+      },
+      spa: {
+        addMult: 1,
+        multMult: 1,
+        flatBoost: 0,
+      },
+      spd: {
+        addMult: 1,
+        multMult: 1,
+        flatBoost: 0,
+      },
+      spe: {
+        addMult: 1,
+        multMult: 1,
+        flatBoost: 0,
+      },
+    };
     [
-      this.atk = 0,
-      this.batk = 0,
-      this.def = 0,
-      this.bdef = 0,
-      this.spa = 0,
-      this.bspa = 0,
-      this.spd = 0,
-      this.bspd = 0,
-      this.spe = 0,
-      this.bspe = 0,
-    ] = [
-      pokemonData.stats[1],
-      pokemonData.stats[1],
-      pokemonData.stats[2],
-      pokemonData.stats[2],
-      pokemonData.stats[3],
-      pokemonData.stats[3],
-      pokemonData.stats[4],
-      pokemonData.stats[4],
-      pokemonData.stats[5],
-      pokemonData.stats[5],
-    ];
+      this.batk = 1,
+      this.bdef = 1,
+      this.bspa = 1,
+      this.bspd = 1,
+      this.bspe = 1,
+    ] = this.pokemonData.stats.slice(1);
     this.acc = 100;
     this.eva = 100;
     [this.type1 = null, this.type2 = null] = this.speciesData.type;
@@ -225,13 +237,6 @@ class BattlePokemon {
     // remove ability
     this.removeAbility();
 
-    // get old stat ratios (excpet hp)
-    const atkRatio = this.atk / this.batk;
-    const defRatio = this.def / this.bdef;
-    const spaRatio = this.spa / this.bspa;
-    const spdRatio = this.spd / this.bspd;
-    const speRatio = this.spe / this.bspe;
-
     // set new species values
     this.speciesId = speciesId;
     this.speciesData = pokemonConfig[this.speciesId];
@@ -248,13 +253,8 @@ class BattlePokemon {
     calculatePokemonStats(this.pokemonData, this.speciesData);
 
     // set stats (except hp)
-    [, this.atk, this.bdef, this.bspa, this.bspd, this.bspe] =
+    [, this.batk, this.bdef, this.bspa, this.bspd, this.bspe] =
       this.pokemonData.stats;
-    this.atk = Math.round(this.pokemonData.stats[1] * atkRatio);
-    this.def = Math.round(this.pokemonData.stats[2] * defRatio);
-    this.spa = Math.round(this.pokemonData.stats[3] * spaRatio);
-    this.spd = Math.round(this.pokemonData.stats[4] * spdRatio);
-    this.spe = Math.round(this.pokemonData.stats[5] * speRatio);
 
     // set moves and ability
     this.addMoves(this.pokemonData);
@@ -2076,9 +2076,42 @@ class BattlePokemon {
 
   /**
    * @param {StatIdNoHP} statId
+   * @param {number} mult
+   */
+  addStatMult(statId, mult) {
+    const statData = this.allStatData[statId];
+    statData.addMult += mult;
+  }
+
+  /**
+   * @param {StatIdNoHP} statId
+   * @param {number} mult
+   */
+  multiplyStatMult(statId, mult) {
+    const statData = this.allStatData[statId];
+    statData.multMult *= mult;
+  }
+
+  /**
+   * @param {StatIdNoHP} statId
+   * @param {number} boost
+   */
+  addFlatStatBoost(statId, boost) {
+    const statData = this.allStatData[statId];
+    statData.flatBoost += boost;
+  }
+
+  /**
+   * @param {StatIdNoHP} statId
    */
   getStat(statId) {
-    let stat = this[statId];
+    const statData = this.allStatData[statId];
+    let stat =
+      this[battleStatToBaseStat(statId)] *
+        statData.addMult *
+        statData.multMult +
+      statData.flatBoost;
+    stat = Math.max(1, Math.floor(stat));
 
     switch (statId) {
       case "def":

@@ -1,5 +1,8 @@
 /* eslint-disable no-param-reassign */
-const { effectTypes, statToBattleStat } = require("../../config/battleConfig");
+const {
+  effectTypes,
+  statIndexToBattleStat,
+} = require("../../config/battleConfig");
 const {
   effectIdEnum,
   battleEventEnum,
@@ -147,7 +150,7 @@ const effectsToRegister = Object.freeze({
     effectAdd({ battle, target, initialArgs }) {
       const { stat } = initialArgs;
       const baseStatValue = target.getAllBaseStats()[stat];
-      const statToIncrease = statToBattleStat[stat];
+      const statToIncrease = statIndexToBattleStat[stat];
 
       battle.addToLog(`${target.name}'s ${statToIncrease} rose!`);
       target[statToIncrease] += baseStatValue;
@@ -156,7 +159,7 @@ const effectsToRegister = Object.freeze({
     effectRemove({ battle, target, initialArgs }) {
       const { stat } = initialArgs;
       const baseStatValue = target.getAllBaseStats()[stat];
-      const statToIncrease = statToBattleStat[stat];
+      const statToIncrease = statIndexToBattleStat[stat];
 
       battle.addToLog(`${target.name}'s ${statToIncrease} boost wore off!`);
       target[statToIncrease] -= baseStatValue;

@@ -290,7 +290,7 @@ const targetPatterns = Object.freeze({
   X: "X-shape",
 });
 
-const statToBattleStat = /** @type {const} */ ([
+const statIndexToBattleStat = /** @type {const} */ ([
   "hp",
   "atk",
   "def",
@@ -298,7 +298,7 @@ const statToBattleStat = /** @type {const} */ ([
   "spd",
   "spe",
 ]);
-const statToBaseStat = /** @type {const} */ ([
+const statIndexToBaseStat = /** @type {const} */ ([
   "maxHp",
   "batk",
   "bdef",
@@ -306,6 +306,12 @@ const statToBaseStat = /** @type {const} */ ([
   "bspd",
   "bspe",
 ]);
+/**
+ * @param {StatId} stat
+ */
+const battleStatToBaseStat = function (stat) {
+  return statIndexToBaseStat[statIndexToBattleStat.indexOf(stat)];
+};
 
 /** @typedef {Enum<effectTypes>} EffectTypeEnum */
 const effectTypes = Object.freeze({
@@ -16486,6 +16492,7 @@ module.exports = {
   calculateDamage,
   abilityConfig,
   damageTypes,
-  statToBaseStat,
-  statToBattleStat,
+  statIndexToBaseStat,
+  statIndexToBattleStat,
+  battleStatToBaseStat,
 };
