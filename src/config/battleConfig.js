@@ -7064,7 +7064,7 @@ const moveExecutes = {
       // 5% of atk true damage
       const damageToDeal =
         calculateDamage(moveData, source, target, miss) +
-        Math.floor(source.atk * 0.07);
+        Math.floor(source.getAtk() * 0.07);
       source.dealDamage(damageToDeal, target, {
         type: "move",
         moveId,
@@ -7665,7 +7665,9 @@ const moveExecutes = {
 
       // if not miss, 20% + sourceatk/enemyatk chance to flinch
       const flinchChance =
-        source.atk > target.atk ? 0.2 + (source.atk / target.atk - 1) : 0.2;
+        source.getAtk() > target.getAtk()
+          ? 0.2 + (source.getAtk() / target.getAtk() - 1)
+          : 0.2;
       if (!miss && Math.random() < flinchChance) {
         target.applyEffect("flinched", 1, source);
       }
@@ -7843,7 +7845,7 @@ const moveExecutes = {
       // 5% of atk true damage
       const damageToDeal =
         calculateDamage(moveData, source, target, miss) +
-        (miss ? 0 : Math.floor(source.atk * 0.05));
+        (miss ? 0 : Math.floor(source.getAtk() * 0.05));
       source.dealDamage(damageToDeal, target, {
         type: "move",
         moveId,
@@ -9372,7 +9374,7 @@ const moveExecutes = {
       let damageToDeal = calculateDamage(moveData, source, target, miss);
       // if not miss, deal 5% true damage user spa + hp
       if (!miss) {
-        damageToDeal += Math.floor((source.spa + source.hp) * 0.05);
+        damageToDeal += Math.floor((source.getSpa() + source.hp) * 0.05);
       }
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -9762,7 +9764,7 @@ const moveExecutes = {
       // 5% atk true damage
       const damageToDeal =
         calculateDamage(moveData, source, target, miss) +
-        Math.round(source.atk * 0.05);
+        Math.round(source.getAtk() * 0.05);
       // deal half damage if target is not primary target
       source.dealDamage(
         Math.round(damageToDeal * (primaryTarget !== target ? 0.5 : 1)),
@@ -9862,7 +9864,7 @@ const moveExecutes = {
   ) {
     const moveId = "m354-1";
     const moveData = getMove(moveId);
-    const useAtk = source.atk > source.spa;
+    const useAtk = source.getAtk() > source.getSpa();
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
@@ -10923,7 +10925,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       // use target's attack
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
-        attack: target.atk,
+        attack: target.getAtk(),
       });
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -11503,7 +11505,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // heal hp equal to targets atk
-      const healAmount = target.atk;
+      const healAmount = target.getAtk();
       source.giveHeal(healAmount, source, {
         type: "move",
         moveId,
@@ -12570,11 +12572,11 @@ const abilityConfig = Object.freeze({
 
           // get pokemon with highest atk
           let highestAtkPokemon = enemyPokemons[0];
-          let maxAtk = enemyPokemons[0].atk;
+          let maxAtk = enemyPokemons[0].getAtk();
           for (const pokemon of enemyPokemons) {
-            if (pokemon.atk > maxAtk) {
+            if (pokemon.getAtk() > maxAtk) {
               highestAtkPokemon = pokemon;
-              maxAtk = pokemon.atk;
+              maxAtk = pokemon.getAtk();
             }
           }
           battle.addToLog(

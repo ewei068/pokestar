@@ -407,8 +407,8 @@ const abilitiesToRegister = Object.freeze({
               `${target.name}'s Alpha Core reached maximum charges! Consuming charges to unleash its power! (+25% SpA/SpD, sets Rain, and uses Aqua Impact)`
             );
             abilityInstance.data.charges = 0;
-            target.spa += Math.floor(target.spa * 0.25);
-            target.spd += Math.floor(target.spd * 0.25);
+            target.spa += Math.floor(target.bspa * 0.25);
+            target.spd += Math.floor(target.bspd * 0.25);
             battle.createWeather(weatherConditions.RAIN, target);
 
             const enemyParty = target.getEnemyParty();
@@ -509,8 +509,8 @@ const abilitiesToRegister = Object.freeze({
               `${target.name}'s Omega Core reached maximum charges! Consuming charges to unleash its power! (+25% Atk/Def, sets Sun, and uses Magma Impact)`
             );
             abilityInstance.data.charges = 0;
-            target.spa += Math.floor(target.atk * 0.25);
-            target.spd += Math.floor(target.def * 0.25);
+            target.atk += Math.floor(target.batk * 0.25);
+            target.def += Math.floor(target.bdef * 0.25);
             battle.createWeather(weatherConditions.SUN, target);
 
             const enemyParty = target.getEnemyParty();

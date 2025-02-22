@@ -541,7 +541,7 @@ class BattlePokemon {
     const atkDamageType = atkDamageTypeOverride || move.damageType;
     const attackRaw =
       attackOverride ||
-      (atkDamageType === damageTypes.PHYSICAL ? this.atk : this.spa);
+      (atkDamageType === damageTypes.PHYSICAL ? this.getAtk() : this.getSpa());
     // modify attack amount -- any attack over 800 is only half as effective
     const attack = attackRaw > 800 ? 800 + (attackRaw - 800) / 2 : attackRaw;
 
@@ -2072,6 +2072,10 @@ class BattlePokemon {
     return this.battle.parties[enemyTeamName];
   }
 
+  getAtk() {
+    return this.atk;
+  }
+
   getDef() {
     let { def } = this;
 
@@ -2085,6 +2089,10 @@ class BattlePokemon {
     }
 
     return def;
+  }
+
+  getSpa() {
+    return this.spa;
   }
 
   getSpd() {
@@ -2126,9 +2134,9 @@ class BattlePokemon {
   getAllStats() {
     return [
       this.hp,
-      this.atk,
+      this.getAtk(),
       this.getDef(),
-      this.spa,
+      this.getSpa(),
       this.getSpd(),
       this.getSpe(),
     ];
