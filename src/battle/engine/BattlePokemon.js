@@ -28,6 +28,7 @@ const { getMove } = require("../data/moveRegistry");
 const { getEffect } = require("../data/effectRegistry");
 const { getAbility } = require("../data/abilityRegistry");
 const { getPatternTargetIndices } = require("../../utils/battleUtils");
+const { getHeldItem } = require("../data/heldItemRegistry");
 
 class BattlePokemon {
   /* battle;
@@ -140,7 +141,8 @@ class BattlePokemon {
     this.moveIds = {};
     // map moveId => move data (cooldown, disabled)
     this.addMoves(pokemonData);
-    this.setAbility(pokemonData);
+    this.setAbility(pokemonData.abilityId);
+    this.setHeldItem(pokemonData.heldItemId);
     /** @type {{ statusId?: StatusConditionEnum, source?: BattlePokemon, turns: number }} */
     this.status = {
       statusId: null,
@@ -178,15 +180,38 @@ class BattlePokemon {
   }
 
   /**
-   * @param {Pokemon} pokemonData
+   * @param {string | number} abilityId
    */
-  setAbility(pokemonData) {
+  setAbility(abilityId) {
     /**
-     * @type {{ abilityId: string | number, data?: any, applied?: boolean }}
+     * @type {{ abilityId?: string | number, data: any, applied: boolean }}
      */
     this.ability = {
-      abilityId: pokemonData.abilityId,
+      abilityId,
+      data: {},
+      applied: false,
     };
+  }
+
+  /**
+   * @param {HeldItemIdEnum?} heldItemId
+   */
+  setHeldItem(heldItemId) {
+    if (heldItemId) {
+      /**
+       * @type {{ heldItemId?: HeldItemIdEnum, data: any, applied: boolean }}
+       */
+      this.heldItem = {
+        heldItemId,
+        data: {},
+        applied: false,
+      };
+    } else {
+      this.heldItem = {
+        data: {},
+        applied: false,
+      };
+    }
   }
 
   /**
@@ -233,7 +258,7 @@ class BattlePokemon {
 
     // set moves and ability
     this.addMoves(this.pokemonData);
-    this.setAbility(this.pokemonData);
+    this.setAbility(this.pokemonData.abilityId);
     this.applyAbility();
 
     this.battle.addToLog(`${oldName} transformed into ${this.name}!`);
@@ -1161,7 +1186,8 @@ class BattlePokemon {
 
     this.hp = 0;
     this.isFainted = true;
-    this.removeAbility();
+    this.disableAbility();
+    this.disableHeldItem();
     this.battle.addToLog(`${this.name} fainted!`);
 
     // trigger after faint effects
@@ -1189,14 +1215,20 @@ class BattlePokemon {
     this.isFainted = false;
     this.battle.addToLog(`${this.name} was revived!`);
 
-    // re-add ability
+    // re-add ability and held item
+    this.applyHeldItem();
     this.applyAbility();
   }
 
   applyAbility() {
     const { abilityId } = this.ability;
     const abilityData = getAbility(/** @type {AbilityIdEnum} */ (abilityId));
-    if (!abilityData || !abilityData.abilityAdd) {
+    if (
+      !abilityData ||
+      !abilityData.abilityAdd ||
+      this.ability.applied ||
+      this.isFainted
+    ) {
       // TODO: not all abilities are implemented
       // logger.error(`Ability ${abilityId} does not exist.`);
       return;
@@ -1215,7 +1247,32 @@ class BattlePokemon {
     this.ability.applied = true;
   }
 
-  removeAbility() {
+  applyHeldItem() {
+    const { heldItemId } = this.heldItem;
+    const heldItemData = getHeldItem(
+      /** @type {HeldItemIdEnum} */ (heldItemId)
+    );
+    if (
+      !heldItemData ||
+      !heldItemData.itemAdd ||
+      this.heldItem.applied ||
+      this.isFainted
+    ) {
+      return;
+    }
+
+    this.heldItem.data = heldItemData.itemAdd({
+      battle: this.battle,
+      source: this,
+      target: this,
+    });
+    this.heldItem.applied = true;
+  }
+
+  /**
+   * Prevents the ability from working by triggering abilityRemove
+   */
+  disableAbility() {
     // remove ability effects
     const { abilityId, applied } = this.ability;
     const abilityData = getAbility(/** @type {AbilityIdEnum} */ (abilityId));
@@ -1243,10 +1300,66 @@ class BattlePokemon {
       const legacyAbility = /** @type {any} */ (abilityData);
       legacyAbility.abilityRemove(this.battle, this, this);
     }
+    this.ability.applied = false;
+  }
+
+  /**
+   * Prevents the held item from working by triggering itemRemove
+   */
+  disableHeldItem() {
+    // remove held item effects
+    const { heldItemId, applied } = this.heldItem;
+    const heldItemData = getHeldItem(
+      /** @type {HeldItemIdEnum} */ (heldItemId)
+    );
+    if (!heldItemData || !heldItemData.itemRemove || !heldItemId) {
+      return;
+    }
+    if (!applied) {
+      logger.error(
+        `Held item ${heldItemId} is not applied to Pokemon ${this.id} ${this.name}.`
+      );
+      return;
+    }
+
+    heldItemData.itemRemove({
+      battle: this.battle,
+      source: this,
+      target: this,
+      properties: this.heldItem.data,
+    });
+    this.heldItem.applied = false;
+  }
+
+  /**
+   * Disables the pokemon's ability, then resets ability data and removes ability ID
+   */
+  removeAbility() {
+    this.disableAbility();
+    this.ability = {
+      applied: false,
+      data: {},
+    };
+  }
+
+  /**
+   * Disables the pokemon's held item, then resets held item data and removes held item ID
+   * @returns {void}
+   */
+  removeHeldItem() {
+    this.disableHeldItem();
+    this.heldItem = {
+      applied: false,
+      data: {},
+    };
   }
 
   hasAbility(abilityId) {
     return this.ability?.abilityId === abilityId;
+  }
+
+  hasHeldItem(heldItemId) {
+    return this.heldItem?.heldItemId === heldItemId;
   }
 
   /**

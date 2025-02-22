@@ -312,11 +312,13 @@ class Battle {
       this.allPokemon[pokemon.id] = pokemon;
     }
 
+    // add all held items
+    Object.entries(this.allPokemon).forEach(([, pokemon]) => {
+      pokemon.applyHeldItem();
+    });
+
     // add all abilities
     Object.entries(this.allPokemon).forEach(([, pokemon]) => {
-      if (pokemon.ability.applied) {
-        return;
-      }
       pokemon.applyAbility();
     });
 
