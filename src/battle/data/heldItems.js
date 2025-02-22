@@ -1,7 +1,10 @@
 /* eslint-disable no-param-reassign */
 const { backpackHeldItemConfig } = require("../../config/backpackConfig");
 const { battleEventEnum, heldItemIdEnum } = require("../../enums/battleEnums");
-const { getIsActivePokemonCallback } = require("../engine/eventConditions");
+const {
+  getIsActivePokemonCallback,
+  getIsTargetPokemonCallback,
+} = require("../engine/eventConditions");
 
 /**
  * @typedef {"berry" | "placeholderTag"} HeldItemTag
@@ -79,6 +82,39 @@ class HeldItem {
 }
 
 const heldItemsToRegister = Object.freeze({
+  [heldItemIdEnum.SITRUS_BERRY]: new HeldItem({
+    id: heldItemIdEnum.SITRUS_BERRY,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
+          callback: () => {
+            if (target.hp / target.maxHp <= 0.5) {
+              // heal 50% of max hp
+              battle.addToLog(
+                `${target.name}'s Sitrus Berry restores its health!`
+              );
+              const healAmount = Math.floor(target.maxHp * 0.5);
+              target.giveHeal(healAmount, target, {
+                type: "heldItem",
+                id: this.id,
+              });
+
+              // remove held item
+              target.removeHeldItem();
+            }
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+    tags: ["berry"],
+  }),
   [heldItemIdEnum.LEFTOVERS]: new HeldItem({
     id: heldItemIdEnum.LEFTOVERS,
     itemAdd({ battle, target }) {

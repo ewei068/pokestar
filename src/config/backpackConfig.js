@@ -130,13 +130,30 @@ const backpackItemConfigRaw = {
 
 /** @type {Record<HeldItemIdEnum, CraftableItemData>} */
 const backpackHeldItemConfig = {
+  [heldItemIdEnum.SITRUS_BERRY]: {
+    name: "Sitrus Berry",
+    emoji: "<:sitrusberry:1342652062734880863>",
+    description:
+      "Restores 50% of the user's HP when it falls below 50%, consumed after use.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 50,
+          [backpackItems.EMOTION_SHARD]: 20,
+          [backpackItems.WILLPOWER_SHARD]: 30,
+        },
+      },
+    },
+  },
   [heldItemIdEnum.LEFTOVERS]: {
     name: "Leftovers",
     emoji: "<:leftovers:1336571394531659837>",
     description: "Restores 10% of the user's HP at the end of its turn.",
     category: backpackCategories.HELD_ITEMS,
     cost: {
-      money: 10000,
+      money: 7500,
       backpack: {
         [backpackCategories.MATERIALS]: {
           [backpackItems.KNOWLEDGE_SHARD]: 50,

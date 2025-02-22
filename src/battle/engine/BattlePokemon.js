@@ -1352,6 +1352,7 @@ class BattlePokemon {
       applied: false,
       data: {},
     };
+    this.battle.addToLog(`${this.name} lost its held item!`);
   }
 
   hasAbility(abilityId) {

@@ -56,6 +56,7 @@ const abilityIdEnum = Object.freeze({
 
 /** @typedef {Enum<heldItemIdEnum>} HeldItemIdEnum */
 const heldItemIdEnum = Object.freeze({
+  SITRUS_BERRY: "h135",
   LEFTOVERS: "h211",
 });
 
