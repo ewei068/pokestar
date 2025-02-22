@@ -4,6 +4,7 @@ const {
   damageTypes,
   targetPatterns,
   statusConditions,
+  statIndexToBattleStat,
 } = require("../../config/battleConfig");
 const { types: pokemonTypes } = require("../../config/pokemonConfig");
 const {
@@ -93,7 +94,7 @@ const abilitiesToRegister = Object.freeze({
     id: abilityIdEnum.AQUA_POWER,
     name: "Aqua Power",
     description:
-      "At the start of battle, if there's only one other Water or Dark type ally, increase its highest base stat (excluding HP or Speed) by 2x for 3 turns, and start rain.",
+      "At the start of battle, if there's only one other Water or Dark type ally, increase its highest base stat (excluding HP or Speed) by 2x (+) for 3 turns, and start rain.",
     abilityAdd({ battle, target }) {
       return {
         listenerId: this.registerListenerFunction({
@@ -126,7 +127,7 @@ const abilitiesToRegister = Object.freeze({
                 ) + 1; // +1 to account for HP
             allyPokemon.applyEffect(effectIdEnum.AQUA_BLESSING, 3, target, {
               // @ts-ignore
-              stat: highestStatIndex,
+              statId: statIndexToBattleStat[highestStatIndex],
             });
 
             battle.createWeather(weatherConditions.RAIN, target);
@@ -407,8 +408,8 @@ const abilitiesToRegister = Object.freeze({
               `${target.name}'s Alpha Core reached maximum charges! Consuming charges to unleash its power! (+25% SpA/SpD, sets Rain, and uses Aqua Impact)`
             );
             abilityInstance.data.charges = 0;
-            target.spa += Math.floor(target.bspa * 0.25);
-            target.spd += Math.floor(target.bspd * 0.25);
+            target.addStatMult("spa", 0.25);
+            target.addStatMult("spd", 0.25);
             battle.createWeather(weatherConditions.RAIN, target);
 
             const enemyParty = target.getEnemyParty();
@@ -509,8 +510,8 @@ const abilitiesToRegister = Object.freeze({
               `${target.name}'s Omega Core reached maximum charges! Consuming charges to unleash its power! (+25% Atk/Def, sets Sun, and uses Magma Impact)`
             );
             abilityInstance.data.charges = 0;
-            target.atk += Math.floor(target.batk * 0.25);
-            target.def += Math.floor(target.bdef * 0.25);
+            target.addStatMult("atk", 0.25);
+            target.addStatMult("def", 0.25);
             battle.createWeather(weatherConditions.SUN, target);
 
             const enemyParty = target.getEnemyParty();

@@ -32,48 +32,6 @@ const { getPatternTargetIndices } = require("../../utils/battleUtils");
 const { getHeldItem } = require("../data/heldItemRegistry");
 
 class BattlePokemon {
-  /* battle;
-  pokemonData;
-  speciesId;
-  speciesData;
-  id;
-  userId;
-  originalUserId;
-  teamName;
-  name;
-  level;
-  hp;
-  maxHp;
-  atk;
-  batk;
-  def;
-  bdef;
-  spa;
-  bspa;
-  spd;
-  bspd;
-  spe;
-  bspe;
-  acc;
-  eva;
-  type1;
-  type2;
-  // effectId => { duration, args }
-  effectIds;
-  // moveId => { cooldown, disabled }
-  moveIds;
-  // { statusId. tuns active }
-  status;
-  // { abilityId, args }
-  ability;
-  combatReadiness;
-  position;
-  isFainted;
-  targetable;
-  hittable;
-  incapacitated;
-  restricted; */
-
   /**
    * @param {Battle} battle
    * @param {any} trainer
@@ -140,6 +98,13 @@ class BattlePokemon {
       this.bspd = 1,
       this.bspe = 1,
     ] = this.pokemonData.stats.slice(1);
+    // for debug and/or backwards compat fallback
+    this.atk = this.getStat("atk");
+    this.def = this.getStat("def");
+    this.spa = this.getStat("spa");
+    this.spd = this.getStat("spd");
+    this.spe = this.getStat("spe");
+
     this.acc = 100;
     this.eva = 100;
     [this.type1 = null, this.type2 = null] = this.speciesData.type;
@@ -260,6 +225,13 @@ class BattlePokemon {
     this.addMoves(this.pokemonData);
     this.setAbility(this.pokemonData.abilityId);
     this.applyAbility();
+
+    // for debug and/or backwards compat fallback
+    this.atk = this.getStat("atk");
+    this.def = this.getStat("def");
+    this.spa = this.getStat("spa");
+    this.spd = this.getStat("spd");
+    this.spe = this.getStat("spe");
 
     this.battle.addToLog(`${oldName} transformed into ${this.name}!`);
   }
@@ -1792,8 +1764,8 @@ class BattlePokemon {
           break;
         }
 
-        // reduce speed by 45%
-        this.spe -= Math.floor(this.bspd * 0.45);
+        // reduce speed by 40%
+        this.addStatMultiplier("spe", -0.4);
 
         this.status = {
           statusId,
@@ -1926,7 +1898,7 @@ class BattlePokemon {
         break;
       case statusConditions.PARALYSIS:
         // restore speed
-        this.spe += Math.floor(this.bspd * 0.45);
+        this.addStatMult("spe", 0.4);
 
         this.battle.addToLog(`${this.name} was cured of its paralysis!`);
         break;
@@ -2081,6 +2053,8 @@ class BattlePokemon {
   addStatMult(statId, mult) {
     const statData = this.allStatData[statId];
     statData.addMult += mult;
+    // debug
+    this[statId] = this.getStat(statId);
   }
 
   /**
@@ -2090,6 +2064,8 @@ class BattlePokemon {
   multiplyStatMult(statId, mult) {
     const statData = this.allStatData[statId];
     statData.multMult *= mult;
+    // debug
+    this[statId] = this.getStat(statId);
   }
 
   /**
@@ -2099,6 +2075,8 @@ class BattlePokemon {
   addFlatStatBoost(statId, boost) {
     const statData = this.allStatData[statId];
     statData.flatBoost += boost;
+    // debug
+    this[statId] = this.getStat(statId);
   }
 
   /**
@@ -2118,7 +2096,7 @@ class BattlePokemon {
         // if hail and ice, def * 1.5
         if (
           !this.battle.isWeatherNegated() &&
-          this.battle.weather.weatherId === weatherConditions.HAIL &&
+          this.battle.weather?.weatherId === weatherConditions.HAIL &&
           (this.type1 === pokemonTypes.ICE || this.type2 === pokemonTypes.ICE)
         ) {
           stat = Math.floor(stat * 1.5);
@@ -2129,7 +2107,7 @@ class BattlePokemon {
         // if sandstorm and rock, spd * 1.5
         if (
           !this.battle.isWeatherNegated() &&
-          this.battle.weather.weatherId === weatherConditions.SANDSTORM &&
+          this.battle.weather?.weatherId === weatherConditions.SANDSTORM &&
           (this.type1 === pokemonTypes.ROCK || this.type2 === pokemonTypes.ROCK)
         ) {
           stat = Math.floor(stat * 1.5);
@@ -2138,11 +2116,13 @@ class BattlePokemon {
         return stat;
       case "spe":
         if (!this.battle.isWeatherNegated()) {
-          if (this.battle.weather.weatherId === weatherConditions.SUN) {
+          if (this.battle.weather?.weatherId === weatherConditions.SUN) {
             if (this.ability && this.ability.abilityId === "34") {
               stat = Math.floor(stat * 1.5);
             }
-          } else if (this.battle.weather.weatherId === weatherConditions.RAIN) {
+          } else if (
+            this.battle.weather?.weatherId === weatherConditions.RAIN
+          ) {
             if (this.ability && this.ability.abilityId === "33") {
               stat = Math.floor(stat * 1.5);
             }

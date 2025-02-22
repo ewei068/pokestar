@@ -1,8 +1,5 @@
 /* eslint-disable no-param-reassign */
-const {
-  effectTypes,
-  statIndexToBattleStat,
-} = require("../../config/battleConfig");
+const { effectTypes } = require("../../config/battleConfig");
 const {
   effectIdEnum,
   battleEventEnum,
@@ -69,12 +66,12 @@ const effectsToRegister = Object.freeze({
         target.deleteEffectInstance(effectIdEnum.ATK_UP);
       } else {
         battle.addToLog(`${target.name}'s Attack rose!`);
-        target.atk += Math.floor(target.batk * 0.5);
+        target.addStatMult("atk", 0.5);
       }
     },
     effectRemove({ battle, target }) {
       battle.addToLog(`${target.name}'s Attack boost wore off!`);
-      target.atk -= Math.floor(target.batk * 0.5);
+      target.addStatMult("atk", -0.5);
     },
   }),
   [effectIdEnum.SHIELD]: new Effect({
@@ -141,28 +138,22 @@ const effectsToRegister = Object.freeze({
   [effectIdEnum.AQUA_BLESSING]: new Effect({
     id: effectIdEnum.AQUA_BLESSING,
     name: "Aqua Blessing",
-    description: "The target's stat is increased by 2x.",
+    description: "The target's stat is increased by 2x (+).",
     type: effectTypes.BUFF,
     dispellable: true,
     /**
-     * @param {EffectAddBasicArgs & {initialArgs: {stat: StatEnum}}} args
+     * @param {EffectAddBasicArgs & {initialArgs: {statId: StatIdNoHP}}} args
      */
     effectAdd({ battle, target, initialArgs }) {
-      const { stat } = initialArgs;
-      const baseStatValue = target.getAllBaseStats()[stat];
-      const statToIncrease = statIndexToBattleStat[stat];
-
-      battle.addToLog(`${target.name}'s ${statToIncrease} rose!`);
-      target[statToIncrease] += baseStatValue;
+      const { statId } = initialArgs;
+      battle.addToLog(`${target.name}'s ${statId} rose!`);
+      target.addStatMult(statId, 1);
       return {};
     },
     effectRemove({ battle, target, initialArgs }) {
-      const { stat } = initialArgs;
-      const baseStatValue = target.getAllBaseStats()[stat];
-      const statToIncrease = statIndexToBattleStat[stat];
-
-      battle.addToLog(`${target.name}'s ${statToIncrease} boost wore off!`);
-      target[statToIncrease] -= baseStatValue;
+      const { statId } = initialArgs;
+      battle.addToLog(`${target.name}'s ${statId} boost wore off!`);
+      target.addStatMult(statId, -1);
     },
   }),
   [effectIdEnum.DOOM_DESIRE]: new Effect({

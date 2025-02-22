@@ -335,14 +335,14 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterAtkUp.duration < currentDuration) {
           target.effectIds.greaterAtkUp.duration = currentDuration;
         }
-      } else {
-        battle.addToLog(`${target.name}'s Attack rose sharply!`);
-        target.atk += Math.floor(target.batk * 0.75);
+        target.addStatMult("atk", -0.5);
       }
+      battle.addToLog(`${target.name}'s Attack rose sharply!`);
+      target.addStatMult("atk", 0.8);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Attack boost wore off!`);
-      target.atk -= Math.floor(target.batk * 0.75);
+      target.addStatMult("atk", -0.8);
     },
   },
   atkDown: {
@@ -360,12 +360,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Attack fell!`);
-        target.atk -= Math.floor(target.batk * 0.33);
+        target.addStatMult("atk", -0.33);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Attack drop faded!`);
-      target.atk += Math.floor(target.batk * 0.33);
+      target.addStatMult("atk", 0.33);
     },
   },
   greaterAtkDown: {
@@ -381,14 +381,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterAtkDown.duration < currentDuration) {
           target.effectIds.greaterAtkDown.duration = currentDuration;
         }
-      } else {
-        battle.addToLog(`${target.name}'s Attack fell sharply!`);
-        target.atk -= Math.floor(target.batk * 0.5);
       }
+      battle.addToLog(`${target.name}'s Attack fell sharply!`);
+      target.addStatMult("atk", -0.5);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Attack drop faded!`);
-      target.atk += Math.floor(target.batk * 0.5);
+      target.addStatMult("atk", 0.5);
     },
   },
   defUp: {
@@ -406,12 +405,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Defense rose!`);
-        target.def += Math.floor(target.bdef * 0.5);
+        target.addStatMult("def", 0.5);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Defense boost faded!`);
-      target.def -= Math.floor(target.bdef * 0.5);
+      target.addStatMult("def", -0.5);
     },
   },
   greaterDefUp: {
@@ -428,13 +427,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterDefUp.duration < currentDuration) {
           target.effectIds.greaterDefUp.duration = currentDuration;
         }
-        target.def -= Math.floor(target.bdef * 0.5);
+        target.addStatMult("def", -0.5);
       }
-      target.def += Math.floor(target.bdef * 0.75);
+      target.addStatMult("def", 0.8);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Defense boost faded!`);
-      target.def -= Math.floor(target.bdef * 0.75);
+      target.addStatMult("def", -0.8);
     },
   },
   defDown: {
@@ -452,12 +451,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Defense fell!`);
-        target.def -= Math.floor(target.bdef * 0.33);
+        target.addStatMult("def", -0.33);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Defense drop faded!`);
-      target.def += Math.floor(target.bdef * 0.33);
+      target.addStatMult("def", 0.33);
     },
   },
   greaterDefDown: {
@@ -474,13 +473,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterDefDown.duration < currentDuration) {
           target.effectIds.greaterDefDown.duration = currentDuration;
         }
-        target.def += Math.floor(target.bdef * 0.33);
+        target.addStatMult("def", 0.33);
       }
-      target.def -= Math.floor(target.bdef * 0.5);
+      target.addStatMult("def", -0.5);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Defense drop faded!`);
-      target.def += Math.floor(target.bdef * 0.5);
+      target.addStatMult("def", 0.5);
     },
   },
   spaUp: {
@@ -498,12 +497,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Special Attack rose!`);
-        target.spa += Math.floor(target.bspa * 0.5);
+        target.addStatMult("spa", 0.5);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Attack boost faded!`);
-      target.spa -= Math.floor(target.bspa * 0.5);
+      target.addStatMult("spa", -0.5);
     },
   },
   greaterSpaUp: {
@@ -520,13 +519,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterSpaUp.duration < currentDuration) {
           target.effectIds.greaterSpaUp.duration = currentDuration;
         }
-        target.spa -= Math.floor(target.bspa * 0.5);
+        target.addStatMult("spa", -0.5);
       }
-      target.spa += Math.floor(target.bspa * 0.75);
+      target.addStatMult("spa", 0.8);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Attack boost faded!`);
-      target.spa -= Math.floor(target.bspa * 0.75);
+      target.addStatMult("spa", -0.8);
     },
   },
   spaDown: {
@@ -544,12 +543,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Special Attack fell!`);
-        target.spa -= Math.floor(target.bspa * 0.33);
+        target.addStatMult("spa", -0.33);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Attack drop faded!`);
-      target.spa += Math.floor(target.bspa * 0.33);
+      target.addStatMult("spa", 0.33);
     },
   },
   greaterSpaDown: {
@@ -566,13 +565,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterSpaDown.duration < currentDuration) {
           target.effectIds.greaterSpaDown.duration = currentDuration;
         }
-        target.spa += Math.floor(target.bspa * 0.33);
+        target.addStatMult("spa", 0.33);
       }
-      target.spa -= Math.floor(target.bspa * 0.5);
+      target.addStatMult("spa", -0.5);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Attack drop faded!`);
-      target.spa += Math.floor(target.bspa * 0.5);
+      target.addStatMult("spa", 0.5);
     },
   },
   spdUp: {
@@ -590,12 +589,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Special Defense rose!`);
-        target.spd += Math.floor(target.bspd * 0.5);
+        target.addStatMult("spd", 0.5);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Defense boost faded!`);
-      target.spd -= Math.floor(target.bspd * 0.5);
+      target.addStatMult("spd", -0.5);
     },
   },
   greaterSpdUp: {
@@ -612,13 +611,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterSpdUp.duration < currentDuration) {
           target.effectIds.greaterSpdUp.duration = currentDuration;
         }
-        target.spd -= Math.floor(target.bspd * 0.5);
+        target.addStatMult("spd", -0.5);
       }
-      target.spd += Math.floor(target.bspd * 0.75);
+      target.addStatMult("spd", 0.8);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Defense boost faded!`);
-      target.spd -= Math.floor(target.bspd * 0.75);
+      target.addStatMult("spd", -0.8);
     },
   },
   spdDown: {
@@ -636,12 +635,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Special Defense fell!`);
-        target.spd -= Math.floor(target.bspd * 0.33);
+        target.addStatMult("spd", -0.33);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Defense drop faded!`);
-      target.spd += Math.floor(target.bspd * 0.33);
+      target.addStatMult("spd", 0.33);
     },
   },
   greaterSpdDown: {
@@ -658,13 +657,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterSpdDown.duration < currentDuration) {
           target.effectIds.greaterSpdDown.duration = currentDuration;
         }
-        target.spd += Math.floor(target.bspd * 0.33);
+        target.addStatMult("spd", 0.33);
       }
-      target.spd -= Math.floor(target.bspd * 0.5);
+      target.addStatMult("spd", -0.5);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Defense drop faded!`);
-      target.spd += Math.floor(target.bspd * 0.5);
+      target.addStatMult("spd", 0.5);
     },
   },
   speUp: {
@@ -682,12 +681,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Speed rose!`);
-        target.spe += Math.floor(target.bspe * 0.4);
+        target.addStatMult("spe", 0.4);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Speed boost faded!`);
-      target.spe -= Math.floor(target.bspe * 0.4);
+      target.addStatMult("spe", -0.4);
     },
   },
   greaterSpeUp: {
@@ -704,13 +703,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterSpeUp.duration < currentDuration) {
           target.effectIds.greaterSpeUp.duration = currentDuration;
         }
-        target.spe -= Math.floor(target.bspe * 0.4);
+        target.addStatMult("spe", -0.4);
       }
-      target.spe += Math.floor(target.bspe * 0.6);
+      target.addStatMult("spe", 0.65);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Speed boost faded!`);
-      target.spe -= Math.floor(target.bspe * 0.6);
+      target.addStatMult("spe", -0.65);
     },
   },
   speDown: {
@@ -728,12 +727,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Speed fell!`);
-        target.spe -= Math.floor(target.bspe * 0.33);
+        target.addStatMult("spe", -0.25);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Speed drop faded!`);
-      target.spe += Math.floor(target.bspe * 0.33);
+      target.addStatMult("spe", 0.25);
     },
   },
   greaterSpeDown: {
@@ -750,13 +749,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterSpeDown.duration < currentDuration) {
           target.effectIds.greaterSpeDown.duration = currentDuration;
         }
-        target.spe += Math.floor(target.bspe * 0.33);
+        target.addStatMult("spe", 0.25);
       }
-      target.spe -= Math.floor(target.bspe * 0.5);
+      target.addStatMult("spe", -0.4);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Speed drop faded!`);
-      target.spe += Math.floor(target.bspe * 0.5);
+      target.addStatMult("spe", 0.4);
     },
   },
   accDown: {
@@ -8226,7 +8225,7 @@ const moveExecutes = {
       target.dealDamage(halfHp, target, {
         type: "bellyDrum",
       });
-      target.atk += target.batk;
+      target.multiplyStatMult("atk", 2);
       battle.addToLog(`${target.name} doubled its attack!`);
 
       // give 100 cr
@@ -11931,7 +11930,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // ignore miss
       // def is min user, target spd
-      const defense = Math.min(source.spd, target.spd);
+      const defense = Math.min(source.getStat("spd"), source.getStat("spd"));
       const damageToDeal = calculateDamage(moveData, source, target, false, {
         defense,
       });
@@ -11975,6 +11974,7 @@ const moveExecutes = {
  * @param {Battle} battle
  * @param {BattlePokemon} source
  * @param {BattlePokemon} target
+ * @param {any} properties
  */
 
 /** @typedef {Keys<typeof abilityConfig>} LegacyAbilityIdEnum */
@@ -13085,10 +13085,10 @@ const abilityConfig = Object.freeze({
       "Increases user's speed by 1/3 of its level. Increases speed by 50% (multiplicative with initial buff) in rain.",
     abilityAdd(battle, _source, target) {
       battle.addToLog(`${target.name}'s Swift Swim increases its speed!`);
-      target.spe += Math.floor(target.level * 0.333);
+      target.addFlatStatBoost("spe", Math.floor(target.level * 0.333));
     },
     abilityRemove(_battle, _source, target) {
-      target.spe -= Math.floor(target.level * 0.333);
+      target.addFlatStatBoost("spe", -Math.floor(target.level * 0.333));
     },
   },
   34: {
@@ -13097,10 +13097,10 @@ const abilityConfig = Object.freeze({
       "Increases user's speed by 1/3 of its level. Increases speed by 50% (multiplicative with initial buff) in harsh sunlight.",
     abilityAdd(battle, _source, target) {
       battle.addToLog(`${target.name}'s Chlorophyll increases its speed!`);
-      target.spe += Math.floor(target.level * 0.333);
+      target.addFlatStatBoost("spe", Math.floor(target.level * 0.333));
     },
     abilityRemove(_battle, _source, target) {
-      target.spe -= Math.floor(target.level * 0.333);
+      target.addFlatStatBoost("spe", -Math.floor(target.level * 0.333));
     },
   },
   35: {
@@ -13153,15 +13153,13 @@ const abilityConfig = Object.freeze({
   },
   37: {
     name: "Huge Power",
-    description: "Doubles user's attack.",
+    description: "Doubles user's attack (x).",
     abilityAdd(battle, _source, target) {
       battle.addToLog(`${target.name}'s Huge Power increases its attack!`);
-      target.atk += target.batk;
-      target.batk += target.batk;
+      target.multiplyStatMult("atk", 2);
     },
     abilityRemove(_battle, _source, target) {
-      target.batk = Math.floor(target.batk / 2);
-      target.atk -= target.batk;
+      target.multiplyStatMult("atk", 0.5);
     },
   },
   38: {
@@ -13849,7 +13847,7 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          targetPokemon.atk += targetPokemon.batk;
+          targetPokemon.multiplyStatMult("atk", 2);
           targetPokemon.battle.addToLog(
             `${targetPokemon.name}'s Guts increases its attack!`
           );
@@ -15252,8 +15250,8 @@ const abilityConfig = Object.freeze({
             `${pokemon.name}'s Mind Presence increases its combat readiness and attacking stats!`
           );
           pokemon.boostCombatReadiness(pokemon, 10, false);
-          pokemon.atk += Math.round(pokemon.atk * 0.02);
-          pokemon.spa += Math.round(pokemon.spa * 0.02);
+          pokemon.multiplyStatMult("atk", 1.02);
+          pokemon.multiplyStatMult("spa", 1.02);
         },
       };
       const damageListener = {
@@ -15546,9 +15544,9 @@ const abilityConfig = Object.freeze({
           pokemon.battle.addToLog(
             `${pokemon.name}'s Spirit Power increases its attacking stats and speed!`
           );
-          pokemon.atk += Math.floor(pokemon.atk * 0.2);
-          pokemon.spa += Math.floor(pokemon.spa * 0.2);
-          pokemon.spe += Math.floor(pokemon.spe * 0.2);
+          pokemon.multiplyStatMult("atk", 1.2);
+          pokemon.multiplyStatMult("spa", 1.2);
+          pokemon.multiplyStatMult("spe", 1.2);
         },
       };
       const damageListener = {
@@ -15680,7 +15678,7 @@ const abilityConfig = Object.freeze({
   20006: {
     name: "Anarchy",
     description:
-      "Every other turn, the user enters Anarchy mode. This increases the user's speed by 100%, but decreases accuracy by 50%. Starts the battle in Anarchy mode.",
+      "Every other turn, the user enters Anarchy mode. This increases the user's speed by 100% (+), but decreases accuracy by 50% (+). Starts the battle in Anarchy mode.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -15704,13 +15702,13 @@ const abilityConfig = Object.freeze({
           if (abilityData.inAnarchyMode) {
             abilityData.inAnarchyMode = false;
             battle.addToLog(`${initialArgs.pokemon.name} exits Anarchy mode!`);
-            initialArgs.pokemon.spe -= initialArgs.pokemon.bspe;
+            initialArgs.pokemon.addStatMult("spe", -1);
             initialArgs.pokemon.acc += 50;
           } else {
             // otherwise, make in anarchy mode
             abilityData.inAnarchyMode = true;
             battle.addToLog(`${initialArgs.pokemon.name} enters Anarchy mode!`);
-            initialArgs.pokemon.spe += initialArgs.pokemon.bspe;
+            initialArgs.pokemon.addStatMult("spe", 1);
             initialArgs.pokemon.acc -= 50;
           }
         },
@@ -15723,7 +15721,7 @@ const abilityConfig = Object.freeze({
       );
 
       // start in anarchy mode
-      target.spe += target.bspe;
+      target.addStatMult("spe", 1);
       target.acc -= 50;
       battle.addToLog(`${target.name} enters Anarchy mode!`);
 
@@ -15743,7 +15741,7 @@ const abilityConfig = Object.freeze({
       // if in anarchy mode, remove anarchy mode
       if (abilityData.inAnarchyMode) {
         abilityData.inAnarchyMode = false;
-        target.spe -= target.bspe;
+        target.addStatMult("spe", -1);
         target.acc += 50;
       }
     },
@@ -15856,15 +15854,24 @@ const abilityConfig = Object.freeze({
   },
   20009: {
     name: "Royalty",
-    description: "Boosts the user's Special Attack by 30% of its Attack.",
+    description:
+      "Boosts the user's Special Attack by 30% of its starting Attack.",
     abilityAdd(battle, _source, target) {
       const { batk } = target;
-      target.spa += Math.floor(batk * 0.3);
+      const flatStatBoost = Math.floor(batk * 0.3);
+      target.addFlatStatBoost("spa", flatStatBoost);
       battle.addToLog(`${target.name}'s Royalty boosts its Special Attack!`);
-      return {};
+      return {
+        statBoost: flatStatBoost,
+      };
     },
     abilityRemove(_battle, _source, target) {
-      target.spa -= Math.floor(target.batk * 0.3);
+      const abilityInstance = target.ability;
+      if (abilityInstance?.data?.statBoost !== undefined) {
+        target.addFlatStatBoost("spa", -abilityInstance.data.statBoost);
+      } else {
+        target.addFlatStatBoost("spa", -Math.floor(target.batk * 0.3));
+      }
     },
   },
   20010: {
@@ -16056,8 +16063,8 @@ const abilityConfig = Object.freeze({
           targetPokemon.battle.addToLog(
             `${targetPokemon.name}'s Armored Behemoth's Pressence increases its defenses!`
           );
-          targetPokemon.def += Math.floor(targetPokemon.bdef * 0.05);
-          targetPokemon.spd += Math.floor(targetPokemon.bspd * 0.05);
+          targetPokemon.addStatMult("def", 0.05);
+          targetPokemon.addStatMult("spd", 0.05);
 
           // 30% chance to counter with a random move
           if (Math.random() > 0.3 || !sourcePokemon) {
@@ -16225,8 +16232,8 @@ const abilityConfig = Object.freeze({
           targetPokemon.battle.addToLog(
             `${targetPokemon.name}'s Shadow Berserker's Rage increases its offenses!`
           );
-          targetPokemon.atk += Math.floor(targetPokemon.batk * 0.05);
-          targetPokemon.spa += Math.floor(targetPokemon.bspa * 0.05);
+          targetPokemon.addStatMult("atk", 0.05);
+          targetPokemon.addStatMult("spa", 0.05);
 
           // gain 30%
           targetPokemon.battle.addToLog(
@@ -16448,11 +16455,11 @@ const abilityConfig = Object.freeze({
             pokemon.teamName
           ].pokemons.filter((p) => p && !p.isFainted);
           for (const ally of allies) {
-            ally.atk += Math.max(Math.floor(ally.batk * 0.02), 1);
-            ally.def += Math.max(Math.floor(ally.bdef * 0.02), 1);
-            ally.spa += Math.max(Math.floor(ally.bspa * 0.02), 1);
-            ally.spd += Math.max(Math.floor(ally.bspd * 0.02), 1);
-            ally.spe += Math.max(Math.floor(ally.bspe * 0.02), 1);
+            ally.addStatMult("atk", 0.02);
+            ally.addStatMult("spa", 0.02);
+            ally.addStatMult("def", 0.02);
+            ally.addStatMult("spd", 0.02);
+            ally.addStatMult("spe", 0.02);
           }
         },
       };

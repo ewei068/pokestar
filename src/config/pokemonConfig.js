@@ -264,7 +264,7 @@ const natureConfig = Object.freeze({
   },
 });
 
-/** @typedef {Enum<stats>} StatEnum */
+/** @typedef {Enum<stats>} StatIndexEnum */
 const stats = Object.freeze({
   HP: 0,
   ATTACK: 1,
