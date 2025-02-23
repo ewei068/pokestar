@@ -56,6 +56,7 @@ const abilityIdEnum = Object.freeze({
 
 /** @typedef {Enum<heldItemIdEnum>} HeldItemIdEnum */
 const heldItemIdEnum = Object.freeze({
+  LUM_BERRY: "h134",
   SITRUS_BERRY: "h135",
   LEFTOVERS: "h211",
   LIFE_ORB: "h247",
@@ -112,7 +113,7 @@ const battleEventEnum = Object.freeze({
  *  [battleEventEnum.BEFORE_EFFECT_REMOVE]: any,
  *  [battleEventEnum.AFTER_EFFECT_REMOVE]: any,
  *  [battleEventEnum.BEFORE_STATUS_APPLY]: any,
- *  [battleEventEnum.AFTER_STATUS_APPLY]: any,
+ *  [battleEventEnum.AFTER_STATUS_APPLY]: { target: BattlePokemon, source: BattlePokemon, statusId: StatusIdEnum },
  *  [battleEventEnum.BEFORE_CAUSE_FAINT]: any,
  *  [battleEventEnum.BEFORE_FAINT]: any,
  *  [battleEventEnum.AFTER_FAINT]: any,

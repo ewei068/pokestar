@@ -130,6 +130,23 @@ const backpackItemConfigRaw = {
 
 /** @type {Record<HeldItemIdEnum, CraftableItemData>} */
 const backpackHeldItemConfig = {
+  [heldItemIdEnum.LUM_BERRY]: {
+    name: "Lum Berry",
+    emoji: "<:lumberry:1342652061484978248>",
+    description:
+      "Cures the user of any status condition and confusion, consumed after use.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 40,
+          [backpackItems.EMOTION_SHARD]: 20,
+          [backpackItems.WILLPOWER_SHARD]: 40,
+        },
+      },
+    },
+  },
   [heldItemIdEnum.SITRUS_BERRY]: {
     name: "Sitrus Berry",
     emoji: "<:sitrusberry:1342652062734880863>",
@@ -188,8 +205,8 @@ const backpackHeldItemConfig = {
       money: 10000,
       backpack: {
         [backpackCategories.MATERIALS]: {
-          [backpackItems.KNOWLEDGE_SHARD]: 70,
-          [backpackItems.EMOTION_SHARD]: 30,
+          [backpackItems.KNOWLEDGE_SHARD]: 30,
+          [backpackItems.EMOTION_SHARD]: 70,
           [backpackItems.WILLPOWER_SHARD]: 100,
         },
       },

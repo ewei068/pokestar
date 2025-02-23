@@ -103,6 +103,30 @@ const shouldApplyEviolite = (speciesId) => {
 };
 
 const heldItemsToRegister = Object.freeze({
+  [heldItemIdEnum.LUM_BERRY]: new HeldItem({
+    id: heldItemIdEnum.LUM_BERRY,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_STATUS_APPLY,
+          callback: () => {
+            target.useHeldItem(target);
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    itemUse({ battle, target }) {
+      battle.addToLog(`${target.name}'s Lum Berry cured its status condition!`);
+      target.removeStatus();
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+    tags: ["berry", "usable"],
+  }),
   [heldItemIdEnum.SITRUS_BERRY]: new HeldItem({
     id: heldItemIdEnum.SITRUS_BERRY,
     itemAdd({ battle, target }) {
