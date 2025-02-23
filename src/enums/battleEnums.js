@@ -59,6 +59,7 @@ const heldItemIdEnum = Object.freeze({
   SITRUS_BERRY: "h135",
   LEFTOVERS: "h211",
   LIFE_ORB: "h247",
+  EVIOLITE: "h581",
 });
 
 /** @typedef {Enum<battleEventEnum>} BattleEventEnum */
@@ -88,6 +89,7 @@ const battleEventEnum = Object.freeze({
   CALCULATE_MISS: "calculateMiss",
   GET_ELIGIBLE_TARGETS: "getEligibleTargets",
   AFTER_WEATHER_SET: "afterWeatherSet",
+  AFTER_TRANSFORM: "afterTransform",
 });
 
 /**
@@ -118,6 +120,7 @@ const battleEventEnum = Object.freeze({
  *  [battleEventEnum.CALCULATE_MISS]: any,
  *  [battleEventEnum.GET_ELIGIBLE_TARGETS]: any,
  *  [battleEventEnum.AFTER_WEATHER_SET]: any,
+ *  [battleEventEnum.AFTER_TRANSFORM]: { target: BattlePokemon, beforeSpeciesId: PokemonIdEnum, afterSpeciesId: PokemonIdEnum },
  * }[K]} BattleEventArgsWithoutEventName
  */
 

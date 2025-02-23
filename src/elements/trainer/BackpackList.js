@@ -28,10 +28,22 @@ const BackpackList = async (
     onItemsChanged = () => {},
   }
 ) => {
-  const backpackItems =
+  // removes keys that have no value
+  const filterBackpack = (backpackToFilter) => {
+    const filteredBackpack = {};
+    for (const key in backpackToFilter) {
+      if (backpackToFilter[key]) {
+        filteredBackpack[key] = backpackToFilter[key];
+      }
+    }
+    return filteredBackpack;
+  };
+
+  const backpackItems = filterBackpack(
     (backpackCategory !== undefined
       ? backpack[backpackCategory]
-      : flattenCategories(backpack)) || {};
+      : flattenCategories(backpack)) || {}
+  );
   const allItems = useMemo(
     () => /** @type {BackpackItemEnum[]} */ (Object.keys(backpackItems)),
     [backpack, backpackCategory],

@@ -1,7 +1,9 @@
 /* eslint-disable no-param-reassign */
 const { backpackHeldItemConfig } = require("../../config/backpackConfig");
+const { pokemonConfig } = require("../../config/pokemonConfig");
 const { battleEventEnum, heldItemIdEnum } = require("../../enums/battleEnums");
 const { logger } = require("../../log");
+const { getSpeciesIdHasTag } = require("../../utils/pokemonUtils");
 const {
   getIsActivePokemonCallback,
   getIsTargetPokemonCallback,
@@ -91,6 +93,14 @@ class HeldItem {
     });
   }
 }
+
+/**
+ * @param {PokemonIdEnum} speciesId
+ */
+const shouldApplyEviolite = (speciesId) => {
+  const speciesData = pokemonConfig[speciesId];
+  return speciesData?.evolution || getSpeciesIdHasTag(speciesId, "eviolite");
+};
 
 const heldItemsToRegister = Object.freeze({
   [heldItemIdEnum.SITRUS_BERRY]: new HeldItem({
@@ -196,6 +206,45 @@ const heldItemsToRegister = Object.freeze({
     },
     itemRemove({ battle, properties }) {
       battle.unregisterListener(properties.selfDamageListenerId);
+    },
+  }),
+  [heldItemIdEnum.EVIOLITE]: new HeldItem({
+    id: heldItemIdEnum.EVIOLITE,
+    itemAdd({ battle, target }) {
+      if (shouldApplyEviolite(target.speciesId)) {
+        target.multiplyStatMult("def", 1.5);
+        target.multiplyStatMult("spd", 1.5);
+      }
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_TRANSFORM,
+          callback: ({ beforeSpeciesId, afterSpeciesId }) => {
+            if (
+              shouldApplyEviolite(beforeSpeciesId) &&
+              !shouldApplyEviolite(afterSpeciesId)
+            ) {
+              target.multiplyStatMult("def", 1 / 1.5);
+              target.multiplyStatMult("spd", 1 / 1.5);
+            } else if (
+              !shouldApplyEviolite(beforeSpeciesId) &&
+              shouldApplyEviolite(afterSpeciesId)
+            ) {
+              target.multiplyStatMult("def", 1.5);
+              target.multiplyStatMult("spd", 1.5);
+            }
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    itemRemove({ battle, target, properties }) {
+      battle.unregisterListener(properties.listenerId);
+      if (shouldApplyEviolite(target.speciesId)) {
+        target.multiplyStatMult("def", 1 / 1.5);
+        target.multiplyStatMult("spd", 1 / 1.5);
+      }
     },
   }),
 });

@@ -178,6 +178,23 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.EVIOLITE]: {
+    name: "Eviolite",
+    emoji: "<:eviolite:1342652890451546172>",
+    description:
+      "Increases the user's Defense and Special Defense by 50% if it is an unevolved Pokemon.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 70,
+          [backpackItems.EMOTION_SHARD]: 30,
+          [backpackItems.WILLPOWER_SHARD]: 100,
+        },
+      },
+    },
+  },
 };
 
 const craftableItemConfig = Object.freeze({

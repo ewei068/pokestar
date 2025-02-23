@@ -35,6 +35,7 @@
  */
 
 /**
+ * @typedef {"eviolite" | "testTag"} PokemonTag
  * @typedef {{
  *  name: string,
  *  emoji: string,
@@ -57,5 +58,6 @@
  *  noGacha?: boolean,
  *  mythicConfig?: any,
  *  unobtainable?: boolean
+ *  tags?: PokemonTag[]
  * }} PokemonConfigData
  */

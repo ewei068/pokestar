@@ -198,6 +198,7 @@ class BattlePokemon {
    * @param {MoveIdEnum[]?=} param1.moveIds
    */
   transformInto(speciesId, { abilityId = null, moveIds = [] } = {}) {
+    const beforeSpeciesId = this.speciesId;
     const oldName = this.name;
     // remove ability
     this.removeAbility();
@@ -234,6 +235,12 @@ class BattlePokemon {
     this.spe = this.getStat("spe");
 
     this.battle.addToLog(`${oldName} transformed into ${this.name}!`);
+
+    this.battle.emitEvent(battleEventEnum.AFTER_TRANSFORM, {
+      target: this,
+      beforeSpeciesId,
+      afterSpeciesId: this.speciesId,
+    });
   }
 
   /**

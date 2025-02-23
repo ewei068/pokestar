@@ -978,6 +978,7 @@ const pokemonConfigRaw = {
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.MEDIUMSLOW,
     noGacha: true,
+    tags: ["eviolite"],
   },
   26: {
     name: "Raichu",
@@ -1646,6 +1647,7 @@ const pokemonConfigRaw = {
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.MEDIUMSLOW,
     noGacha: true,
+    tags: ["eviolite"],
   },
   53: {
     name: "Persian",
@@ -2867,6 +2869,7 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
     noGacha: true,
+    tags: ["eviolite"],
   },
   124: {
     name: "Jynx",
@@ -7869,6 +7872,7 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.SLOW,
     noGacha: true,
+    tags: ["eviolite"],
   },
   "828-1": {
     name: "Scammer Thievul",
