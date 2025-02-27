@@ -68,7 +68,7 @@ class Move {
     this.execute = execute;
     this.isLegacyMove = false;
     this.silenceIf = undefined; // TODO
-    this.chargeMoveEffect = chargeMoveEffectId;
+    this.chargeMoveEffectId = chargeMoveEffectId;
     this.tags = tags;
   }
 

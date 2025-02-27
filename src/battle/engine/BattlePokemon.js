@@ -388,28 +388,9 @@ class BattlePokemon {
       return {};
     }
 
+    // calculate miss and targets
     const allTargets = this.getTargets(moveId, primaryTarget);
-    // see if move log should be silenced
-    const isSilenced =
-      moveData.silenceIf && moveData.silenceIf(this.battle, this);
-    if (!isSilenced) {
-      const targetString =
-        moveData.targetPattern === targetPatterns.ALL ||
-        moveData.targetPattern === targetPatterns.ALL_EXCEPT_SELF ||
-        moveData.targetPattern === targetPatterns.RANDOM ||
-        moveData.targetPosition === targetPositions.SELF
-          ? "!"
-          : ` against ${primaryTarget.name}!`;
-      this.battle.addToLog(`${this.name} used ${moveData.name}${targetString}`);
-    }
-    // calculate miss
     const missedTargets = this.getMisses(moveId, allTargets);
-    // if misses, log miss
-    if (missedTargets.length > 0 && !isSilenced) {
-      this.battle.addToLog(
-        `Missed ${missedTargets.map((target) => target.name).join(", ")}!`
-      );
-    }
 
     // trigger before execute move events
     const executeEventArgs = {
@@ -423,6 +404,25 @@ class BattlePokemon {
       battleEventEnum.BEFORE_MOVE_EXECUTE,
       executeEventArgs
     );
+
+    // move logging
+    const isSilenced =
+      moveData.silenceIf && moveData.silenceIf(this.battle, this);
+    if (!isSilenced) {
+      const targetString =
+        moveData.targetPattern === targetPatterns.ALL ||
+        moveData.targetPattern === targetPatterns.ALL_EXCEPT_SELF ||
+        moveData.targetPattern === targetPatterns.RANDOM ||
+        moveData.targetPosition === targetPositions.SELF
+          ? "!"
+          : ` against ${primaryTarget.name}!`;
+      this.battle.addToLog(`${this.name} used ${moveData.name}${targetString}`);
+    }
+    if (missedTargets.length > 0 && !isSilenced) {
+      this.battle.addToLog(
+        `Missed ${missedTargets.map((target) => target.name).join(", ")}!`
+      );
+    }
 
     // execute move
     this.executeMove({

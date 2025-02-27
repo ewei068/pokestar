@@ -195,6 +195,22 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.POWER_HERB]: {
+    name: "Power Herb",
+    emoji: "<:powerherb:1343334633424551956>",
+    description: "Allows the user to use two-turn moves in one turn.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 15,
+          [backpackItems.EMOTION_SHARD]: 120,
+          [backpackItems.WILLPOWER_SHARD]: 15,
+        },
+      },
+    },
+  },
   [heldItemIdEnum.EVIOLITE]: {
     name: "Eviolite",
     emoji: "<:eviolite:1342652890451546172>",

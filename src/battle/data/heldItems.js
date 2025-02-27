@@ -3,6 +3,7 @@ const { backpackHeldItemConfig } = require("../../config/backpackConfig");
 const { pokemonConfig } = require("../../config/pokemonConfig");
 const { battleEventEnum, heldItemIdEnum } = require("../../enums/battleEnums");
 const { logger } = require("../../log");
+const { getMoveIdHasTag } = require("../../utils/battleUtils");
 const { getSpeciesIdHasTag } = require("../../utils/pokemonUtils");
 const {
   getIsActivePokemonCallback,
@@ -230,6 +231,32 @@ const heldItemsToRegister = Object.freeze({
     },
     itemRemove({ battle, properties }) {
       battle.unregisterListener(properties.selfDamageListenerId);
+    },
+  }),
+  [heldItemIdEnum.POWER_HERB]: new HeldItem({
+    id: heldItemIdEnum.POWER_HERB,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_MOVE_EXECUTE,
+          callback: ({ moveId, source }) => {
+            const { chargeMoveEffectId } = getMove(moveId);
+            if (!getMoveIdHasTag(moveId, "charge") || !chargeMoveEffectId) {
+              return;
+            }
+
+            source.applyEffect(chargeMoveEffectId, 1, source, {});
+            battle.addToLog(`${source.name} used its Power Herb!`);
+            source.removeHeldItem();
+          },
+          conditionCallback: getIsSourcePokemonCallback(target),
+        }),
+      };
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
     },
   }),
   [heldItemIdEnum.EVIOLITE]: new HeldItem({
