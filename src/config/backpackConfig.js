@@ -243,6 +243,23 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.HEAVY_DUTY_BOOTS]: {
+    name: "Heavy-Duty Boots",
+    emoji: "<:heavydutyboots:1342656422562758707>",
+    description:
+      "Prevents the user from taking damage from hazards like Stealth Rock.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 40,
+          [backpackItems.EMOTION_SHARD]: 70,
+          [backpackItems.WILLPOWER_SHARD]: 40,
+        },
+      },
+    },
+  },
 };
 
 const craftableItemConfig = Object.freeze({

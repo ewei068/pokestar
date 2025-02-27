@@ -17,10 +17,13 @@ const getIsTargetPokemonCallback = (pokemon) => (eventArgs) =>
 const getIsSourcePokemonCallback = (pokemon) => (eventArgs) =>
   eventArgs?.source === pokemon;
 
-const getIsMoveCallback = () => (eventArgs) => {
+/**
+ * @param {"move" | "effect"} instanceType
+ */
+const getIsInstanceOfType = (instanceType) => (eventArgs) => {
   // I shouldn't have made the infos different but it's too late now
   const eventInfo = eventArgs?.damageInfo || eventArgs?.healInfo || {};
-  return eventInfo?.type === "move";
+  return eventInfo?.type === instanceType;
 };
 
 const composeConditionCallbacks =
@@ -41,7 +44,7 @@ module.exports = {
   getIsActivePokemonCallback,
   getIsTargetPokemonCallback,
   getIsSourcePokemonCallback,
-  getIsMoveCallback,
+  getIsInstanceOfType,
   composeConditionCallbacks,
   anyConditionCallbacks,
 };

@@ -63,6 +63,7 @@ const heldItemIdEnum = Object.freeze({
   LIFE_ORB: "h247",
   POWER_HERB: "h248",
   EVIOLITE: "h581",
+  HEAVY_DUTY_BOOTS: "h1178",
 });
 
 /** @typedef {Enum<battleEventEnum>} BattleEventEnum */

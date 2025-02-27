@@ -3,14 +3,17 @@ const { backpackHeldItemConfig } = require("../../config/backpackConfig");
 const { pokemonConfig } = require("../../config/pokemonConfig");
 const { battleEventEnum, heldItemIdEnum } = require("../../enums/battleEnums");
 const { logger } = require("../../log");
-const { getMoveIdHasTag } = require("../../utils/battleUtils");
+const {
+  getMoveIdHasTag,
+  getEffectIdHasTag,
+} = require("../../utils/battleUtils");
 const { getSpeciesIdHasTag } = require("../../utils/pokemonUtils");
 const {
   getIsActivePokemonCallback,
   getIsTargetPokemonCallback,
   getIsSourcePokemonCallback,
   composeConditionCallbacks,
-  getIsMoveCallback,
+  getIsInstanceOfType,
 } = require("../engine/eventConditions");
 const { getMove } = require("./moveRegistry");
 
@@ -232,7 +235,7 @@ const heldItemsToRegister = Object.freeze({
             }
           },
           conditionCallback: composeConditionCallbacks(
-            getIsMoveCallback(),
+            getIsInstanceOfType("move"),
             getIsSourcePokemonCallback(target)
           ),
         }),
@@ -305,6 +308,34 @@ const heldItemsToRegister = Object.freeze({
         target.multiplyStatMult("def", 1 / 1.5);
         target.multiplyStatMult("spd", 1 / 1.5);
       }
+    },
+  }),
+  [heldItemIdEnum.HEAVY_DUTY_BOOTS]: new HeldItem({
+    id: heldItemIdEnum.HEAVY_DUTY_BOOTS,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: ({ damageInfo }) => {
+            const effectId = damageInfo?.id;
+            if (getEffectIdHasTag(effectId, "hazard")) {
+              return {
+                damage: 0,
+                maxDamage: 0,
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsInstanceOfType("effect"),
+            getIsTargetPokemonCallback(target)
+          ),
+        }),
+      };
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
     },
   }),
 });
