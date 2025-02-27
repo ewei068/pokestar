@@ -59,6 +59,7 @@ const heldItemIdEnum = Object.freeze({
   LUM_BERRY: "h134",
   SITRUS_BERRY: "h135",
   LEFTOVERS: "h211",
+  WIDE_LENS: "h242",
   LIFE_ORB: "h247",
   POWER_HERB: "h248",
   EVIOLITE: "h581",

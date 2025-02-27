@@ -186,6 +186,15 @@ const heldItemsToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [heldItemIdEnum.WIDE_LENS]: new HeldItem({
+    id: heldItemIdEnum.WIDE_LENS,
+    itemAdd({ target }) {
+      target.acc += 10;
+    },
+    itemRemove({ target }) {
+      target.acc -= 10;
+    },
+  }),
   [heldItemIdEnum.LIFE_ORB]: new HeldItem({
     id: heldItemIdEnum.LIFE_ORB,
     itemAdd({ battle, target }) {

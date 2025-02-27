@@ -179,6 +179,21 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.WIDE_LENS]: {
+    name: "Wide Lens",
+    emoji: "<:widelens:1342655292982169662>",
+    description: "Increases the user's accuracy by 10%.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 30,
+          [backpackItems.WILLPOWER_SHARD]: 70,
+        },
+      },
+    },
+  },
   [heldItemIdEnum.LIFE_ORB]: {
     name: "Life Orb",
     emoji: "<:lifeorb:1342654745906774046>",
