@@ -17,6 +17,7 @@ const { getEffect } = require("../battle/data/effectRegistry");
 const { backpackItemConfig } = require("../config/backpackConfig");
 const { buildPokemonEmojiString } = require("./pokemonUtils");
 const { getHeldItem } = require("../battle/data/heldItemRegistry");
+const { getMove } = require("../battle/data/moveRegistry");
 
 const plus = "┼";
 const plusEmph = "*";
@@ -683,6 +684,15 @@ const getHeldItemIdHasTag = (heldItemId, tag) => {
   return getHasTag(itemData, tag);
 };
 
+/**
+ * @param {MoveIdEnum} moveId
+ * @param {MoveTag} tag
+ */
+const getMoveIdHasTag = (moveId, tag) => {
+  const moveData = getMove(moveId);
+  return getHasTag(moveData, tag);
+};
+
 module.exports = {
   buildPartyString,
   buildCompactPartyString,
@@ -698,4 +708,5 @@ module.exports = {
   setCurrentTargetting,
   getPatternTargetIndices,
   getHeldItemIdHasTag,
+  getMoveIdHasTag,
 };

@@ -24,6 +24,7 @@
  * @typedef {typeof import("./data/effects").effectsToRegister} RegisteredEffects
  * @typedef {typeof import("./data/abilities").abilitiesToRegister} RegisteredAbilities
  * @typedef {import("./data/moves").Move} Move
+ * @typedef {import("./data/moves").MoveTag} MoveTag
  * @typedef {import("./data/heldItems").HeldItemTag} HeldItemTag
  * @typedef {typeof import("./data/heldItems").heldItemsToRegister} RegisteredHeldItems
  */

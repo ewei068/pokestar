@@ -2983,6 +2983,8 @@ const moveConfig = Object.freeze({
         battle.weather.weatherId !== weatherConditions.SUN
       );
     },
+    tags: ["charge"],
+    chargeMoveEffectId: "absorbLight",
   },
   m77: {
     name: "Poison Powder",
@@ -3140,6 +3142,8 @@ const moveConfig = Object.freeze({
     silenceIf(_battle, pokemon) {
       return pokemon.effectIds.burrowed === undefined;
     },
+    tags: ["charge"],
+    chargeMoveEffectId: "burrowed",
   },
   m92: {
     name: "Toxic",
@@ -3534,6 +3538,8 @@ const moveConfig = Object.freeze({
     silenceIf(_battle, pokemon) {
       return pokemon.effectIds.skyCharge === undefined;
     },
+    tags: ["charge"],
+    chargeMoveEffectId: "skyCharge",
   },
   m147: {
     name: "Spore",
@@ -4823,6 +4829,8 @@ const moveConfig = Object.freeze({
     silenceIf(_battle, pokemon) {
       return pokemon.effectIds.projectingSpirit === undefined;
     },
+    tags: ["charge"],
+    chargeMoveEffectId: "projectingSpirit",
   },
   m332: {
     name: "Aerial Ace",
@@ -4910,6 +4918,8 @@ const moveConfig = Object.freeze({
     silenceIf(_battle, pokemon) {
       return pokemon.effectIds.sprungUp === undefined;
     },
+    tags: ["charge"],
+    chargeMoveEffectId: "sprungUp",
   },
   m344: {
     name: "Volt Tackle",

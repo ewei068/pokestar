@@ -458,7 +458,7 @@ const buildAnsiString = (str) => {
 
 /**
  * @param {any} obj
- * @param {PokemonTag | HeldItemTag} tag
+ * @param {PokemonTag | HeldItemTag | MoveTag} tag
  */
 const getHasTag = (obj, tag) => obj?.tags?.includes?.(tag);
 
