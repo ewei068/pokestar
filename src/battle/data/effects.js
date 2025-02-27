@@ -9,6 +9,8 @@ const { getIsTargetPokemonCallback } = require("../engine/eventConditions");
 const { getEffect } = require("./effectRegistry");
 const { getMove } = require("./moveRegistry");
 
+/** @typedef {"hazard" | "test"} EffectTag */
+
 /**
  * @template T
  * @template U
@@ -23,6 +25,7 @@ class Effect {
    * @param {boolean} param0.dispellable
    * @param {EffectAddCallback<T, U>} param0.effectAdd
    * @param {EffectRemoveCallback<T, U>} param0.effectRemove
+   * @param {EffectTag[]=} param0.tags
    */
   constructor({
     id,
@@ -32,6 +35,7 @@ class Effect {
     dispellable,
     effectAdd,
     effectRemove,
+    tags = [],
   }) {
     this.id = id;
     this.name = name;
@@ -40,6 +44,7 @@ class Effect {
     this.dispellable = dispellable;
     this.effectAdd = effectAdd;
     this.effectRemove = effectRemove;
+    this.tags = [];
     this.isLegacyEffect = false;
   }
 }

@@ -1648,7 +1648,8 @@ const effectConfig = Object.freeze({
           battle.addToLog(`${targetPokemon.name} was hurt by Stealth Rock!`);
           const damage = Math.floor((targetPokemon.maxHp * mult) / 12);
           initialArgs.source.dealDamage(damage, affectedPokemon, {
-            type: "stealthRock",
+            type: "effect",
+            id: "stealthRock",
           });
         },
       };
@@ -1672,6 +1673,7 @@ const effectConfig = Object.freeze({
       const { buffListenerId } = args;
       battle.eventHandler.unregisterListener(buffListenerId);
     },
+    tags: ["hazard"],
   },
   spikes: {
     name: "Spikes",
@@ -1695,7 +1697,8 @@ const effectConfig = Object.freeze({
           battle.addToLog(`${targetPokemon.name} was hurt by Spikes!`);
           const damage = Math.floor(targetPokemon.maxHp / 12);
           initialArgs.source.dealDamage(damage, affectedPokemon, {
-            type: "spikes",
+            type: "effect",
+            id: "spikes",
           });
         },
       };
@@ -1715,7 +1718,8 @@ const effectConfig = Object.freeze({
           battle.addToLog(`${sourcePokemon.name} was hurt by Spikes!`);
           const damage = Math.floor(sourcePokemon.maxHp / 12);
           initialArgs.source.dealDamage(damage, affectedPokemon, {
-            type: "spikes",
+            type: "effect",
+            id: "spikes",
           });
         },
       };
@@ -1739,6 +1743,7 @@ const effectConfig = Object.freeze({
       const { beforeMoveListenerId } = args;
       battle.eventHandler.unregisterListener(beforeMoveListenerId);
     },
+    tags: ["hazard"],
   },
   disable: {
     name: "Disable",

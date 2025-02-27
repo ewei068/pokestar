@@ -693,6 +693,15 @@ const getMoveIdHasTag = (moveId, tag) => {
   return getHasTag(moveData, tag);
 };
 
+/**
+ * @param {EffectIdEnum} effectId
+ * @param {EffectTag} tag
+ */
+const getEffectIdHasTag = (effectId, tag) => {
+  const effectData = getEffect(effectId);
+  return getHasTag(effectData, tag);
+};
+
 module.exports = {
   buildPartyString,
   buildCompactPartyString,
@@ -709,4 +718,5 @@ module.exports = {
   getPatternTargetIndices,
   getHeldItemIdHasTag,
   getMoveIdHasTag,
+  getEffectIdHasTag,
 };

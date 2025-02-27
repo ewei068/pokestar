@@ -27,6 +27,7 @@
  * @typedef {import("./data/moves").MoveTag} MoveTag
  * @typedef {import("./data/heldItems").HeldItemTag} HeldItemTag
  * @typedef {typeof import("./data/heldItems").heldItemsToRegister} RegisteredHeldItems
+ * @typedef {import("./data/effects").EffectTag} EffectTag
  */
 
 /**
