@@ -229,6 +229,19 @@ const heldItemsToRegister = Object.freeze({
     },
     tags: ["berry", "usable"],
   }),
+  [heldItemIdEnum.CHOICE_BAND]: new HeldItem({
+    id: heldItemIdEnum.CHOICE_BAND,
+    itemAdd(args) {
+      return this.applyChoiceItemWithBuff(args, (target) => {
+        target.multiplyStatMult("atk", 1.5);
+      });
+    },
+    itemRemove(args) {
+      this.removeChoiceItemWithBuff(args, (target) => {
+        target.multiplyStatMult("atk", 1 / 1.5);
+      });
+    },
+  }),
   [heldItemIdEnum.LEFTOVERS]: new HeldItem({
     id: heldItemIdEnum.LEFTOVERS,
     itemAdd({ battle, target }) {
@@ -348,6 +361,19 @@ const heldItemsToRegister = Object.freeze({
     itemRemove(args) {
       this.removeChoiceItemWithBuff(args, (target) => {
         target.addFlatStatBoost("spe", -100);
+      });
+    },
+  }),
+  [heldItemIdEnum.CHOICE_SPECS]: new HeldItem({
+    id: heldItemIdEnum.CHOICE_SPECS,
+    itemAdd(args) {
+      return this.applyChoiceItemWithBuff(args, (target) => {
+        target.multiplyStatMult("spa", 1.5);
+      });
+    },
+    itemRemove(args) {
+      this.removeChoiceItemWithBuff(args, (target) => {
+        target.multiplyStatMult("spa", 1 / 1.5);
       });
     },
   }),

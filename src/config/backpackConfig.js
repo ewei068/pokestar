@@ -164,6 +164,22 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.CHOICE_BAND]: {
+    name: "Choice Band",
+    emoji: "<:choiceband:1336571391616614411>",
+    description:
+      "Increases the user's Attack by 50%. Whenver the user uses a non-basic move, disable its other non-basic moves until a basic move is used.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: 150,
+          [backpackItems.WILLPOWER_SHARD]: 50,
+        },
+      },
+    },
+  },
   [heldItemIdEnum.LEFTOVERS]: {
     name: "Leftovers",
     emoji: "<:leftovers:1336571394531659837>",
@@ -238,6 +254,22 @@ const backpackHeldItemConfig = {
         [backpackCategories.MATERIALS]: {
           [backpackItems.KNOWLEDGE_SHARD]: 50,
           [backpackItems.WILLPOWER_SHARD]: 150,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.CHOICE_SPECS]: {
+    name: "Choice Specs",
+    emoji: "<:choicespecs:1336571393458049107>",
+    description:
+      "Increases the user's Special Attack by 50%. Whenver the user uses a non-basic move, disable its other non-basic moves until a basic move is used.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 150,
+          [backpackItems.EMOTION_SHARD]: 50,
         },
       },
     },

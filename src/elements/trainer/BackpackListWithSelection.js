@@ -61,7 +61,7 @@ const BackpackListWithSelection = async (
         shouldShowMoney,
         shouldShowDescription,
         initialPage,
-        pageSize: 10,
+        pageSize: 5,
         onItemsChanged: setItems,
       }),
     ],

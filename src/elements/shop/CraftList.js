@@ -6,7 +6,7 @@ const { buildCraftListEmbed } = require("../../embeds/shopEmbeds");
 const { flattenCategories } = require("../../utils/trainerUtils");
 const CraftItem = require("./CraftItem");
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 8;
 const allCraftableItemIds = /** @type {CraftableItemEnum[]} */ (
   Object.keys(craftableItemConfig)
 );

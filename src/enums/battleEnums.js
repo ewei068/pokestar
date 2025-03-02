@@ -58,11 +58,13 @@ const abilityIdEnum = Object.freeze({
 const heldItemIdEnum = Object.freeze({
   LUM_BERRY: "h134",
   SITRUS_BERRY: "h135",
+  CHOICE_BAND: "h197",
   LEFTOVERS: "h211",
   WIDE_LENS: "h242",
   LIFE_ORB: "h247",
   POWER_HERB: "h248",
   CHOICE_SCARF: "h264",
+  CHOICE_SPECS: "h274",
   EVIOLITE: "h581",
   HEAVY_DUTY_BOOTS: "h1178",
 });
