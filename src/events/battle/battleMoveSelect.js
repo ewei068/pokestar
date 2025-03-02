@@ -54,7 +54,7 @@ const battleMoveSelect = async (interaction, data) => {
     return { err: "Move is on cooldown." };
   }
   // validate disabled
-  if (pokemon.moveIds[moveId].disabled) {
+  if (pokemon.moveIds[moveId].disabledCounter) {
     return { err: "Move is disabled." };
   }
 

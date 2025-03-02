@@ -2367,10 +2367,8 @@ const effectConfig = Object.freeze({
       if (!oldMoveId) return;
 
       delete target.moveIds[oldMoveId];
-      target.moveIds[mimicMoveId] = {
-        cooldown: 0,
-        disabled: false,
-      };
+      target.removeMoveCooldown(mimicMoveId, target);
+      target.enableMove(mimicMoveId, target);
       battle.addToLog(`${target.name} is mimicking ${moveData.name}!`);
     },
     effectRemove(_battle, target, _args, initialArgs) {
@@ -2379,10 +2377,8 @@ const effectConfig = Object.freeze({
       const { oldMoveId } = initialArgs;
 
       delete target.moveIds[mimicMoveId];
-      target.moveIds[oldMoveId] = {
-        cooldown: 0,
-        disabled: false,
-      };
+      target.removeMoveCooldown(oldMoveId, target);
+      target.enableMove(oldMoveId, target);
     },
   },
   gearFive: {

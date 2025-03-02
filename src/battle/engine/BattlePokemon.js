@@ -114,9 +114,9 @@ class BattlePokemon {
      */
     this.effectIds = {};
 
-    /** @type {PartialRecord<MoveIdEnum, { cooldown: number, disabled: boolean}>} */
+    /** @type {PartialRecord<MoveIdEnum, { cooldown: number, disabledCounter: number}>} */
     this.moveIds = {};
-    // map moveId => move data (cooldown, disabled)
+    // map moveId => move data (cooldown, disabledCounter)
     this.addMoves(pokemonData);
     this.setAbility(pokemonData.abilityId);
     this.setHeldItem(pokemonData.heldItemId);
@@ -150,7 +150,7 @@ class BattlePokemon {
     this.moveIds = getMoveIds(pokemonData).reduce((acc, moveId) => {
       acc[moveId] = {
         cooldown: 0,
-        disabled: false,
+        disabledCounter: 0,
       };
       return acc;
     }, {});
@@ -257,7 +257,7 @@ class BattlePokemon {
     if (
       !moveData ||
       this.moveIds[moveId].cooldown > 0 ||
-      this.moveIds[moveId].disabled
+      this.moveIds[moveId].disabledCounter
     ) {
       return;
     }
@@ -700,7 +700,10 @@ class BattlePokemon {
     // for all non-disabled moves not on cooldown, check to see if valid targets exist
     for (const _moveId in this.moveIds) {
       const moveId = /** @type {MoveIdEnum} */ (_moveId);
-      if (this.moveIds[moveId].disabled || this.moveIds[moveId].cooldown > 0) {
+      if (
+        this.moveIds[moveId].disabledCounter > 0 ||
+        this.moveIds[moveId].cooldown > 0
+      ) {
         continue;
       }
       const eligibleTargets = this.battle.getEligibleTargets(this, moveId);
@@ -1939,12 +1942,12 @@ class BattlePokemon {
     }
 
     // if move already disabled, do nothing
-    if (this.moveIds[moveId].disabled) {
+    if (this.moveIds[moveId].disabledCounter) {
       return;
     }
 
     // disable move
-    this.moveIds[moveId].disabled = true;
+    this.moveIds[moveId].disabledCounter += 1;
     // this.battle.addToLog(`${this.name}'s ${getMove(moveId).name} was disabled!`);
   }
 
@@ -1958,14 +1961,11 @@ class BattlePokemon {
     if (!this.moveIds[moveId]) {
       return;
     }
-
-    // if move not disabled, do nothing
-    if (!this.moveIds[moveId].disabled) {
-      return;
-    }
-
     // enable move
-    this.moveIds[moveId].disabled = false;
+    this.moveIds[moveId].disabledCounter = Math.max(
+      0,
+      this.moveIds[moveId].disabledCounter - 1
+    );
     // this.battle.addToLog(`${this.name}'s ${getMove(moveId).name} is no longer disabled!`);
   }
 
@@ -2020,6 +2020,15 @@ class BattlePokemon {
       );
     }
     return oldCooldown - newCooldown;
+  }
+
+  removeMoveCooldown(moveId, source, silenceLog = false) {
+    return this.reduceMoveCooldown(
+      moveId,
+      this.moveIds[moveId].cooldown,
+      source,
+      silenceLog
+    );
   }
 
   effectiveSpeed() {
