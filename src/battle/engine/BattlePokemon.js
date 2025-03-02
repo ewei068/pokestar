@@ -157,6 +157,13 @@ class BattlePokemon {
   }
 
   /**
+   * @returns {MoveIdEnum[]}
+   */
+  getMoveIds() {
+    return Object.keys(this.moveIds);
+  }
+
+  /**
    * @param {string | number} abilityId
    */
   setAbility(abilityId) {
@@ -1938,11 +1945,6 @@ class BattlePokemon {
   disableMove(moveId, source) {
     // check that move exists
     if (!this.moveIds[moveId]) {
-      return;
-    }
-
-    // if move already disabled, do nothing
-    if (this.moveIds[moveId].disabledCounter) {
       return;
     }
 

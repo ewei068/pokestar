@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 const { backpackHeldItemConfig } = require("../../config/backpackConfig");
+const { moveTiers } = require("../../config/battleConfig");
 const { pokemonConfig } = require("../../config/pokemonConfig");
 const { battleEventEnum, heldItemIdEnum } = require("../../enums/battleEnums");
 const { logger } = require("../../log");
@@ -69,7 +70,7 @@ class HeldItem {
    * @template {BattleEventEnum} K
    * @param {object} param0
    * @param {K} param0.eventName
-   * @param {(args: Parameters<BattleEventListenerCallback<K>>[0] & { heldItemInstance: { heldItemId: HeldItemIdEnum, data: T, applied: boolean } }) => ReturnType<BattleEventListenerCallback<K>>} param0.callback
+   * @param {(args: Parameters<BattleEventListenerCallback<K>>[0] & { heldItemInstance: { heldItemId: HeldItemIdEnum, data: any, applied: boolean } }) => ReturnType<BattleEventListenerCallback<K>>} param0.callback
    * @param {Battle} param0.battle
    * @param {BattlePokemon} param0.target
    * @param {BattleEventListenerConditionCallback<K>=} param0.conditionCallback function that returns true if the event should be executed. If undefined, always execute for event.
@@ -95,6 +96,72 @@ class HeldItem {
       },
       conditionCallback,
     });
+  }
+
+  /**
+   * @param {object} args
+   * @param {Battle} args.battle
+   * @param {BattlePokemon} args.target
+   * @param {(target: BattlePokemon) => void} applyBuffCallback
+   */
+  applyChoiceItemWithBuff(args, applyBuffCallback) {
+    const { battle, target } = args;
+    applyBuffCallback(target);
+    return {
+      currentMoveId: null,
+      disabledMoveIds: [],
+      listenerId: this.registerListenerFunction({
+        battle,
+        target,
+        eventName: battleEventEnum.AFTER_MOVE,
+        callback: ({ moveId, heldItemInstance }) => {
+          const { tier } = getMove(moveId) || {};
+          const heldItemData = heldItemInstance.data;
+          if (tier === moveTiers.BASIC) {
+            // re-enabled all disabled moves and reset the disabled moves
+            for (const disabledMoveId of heldItemData.disabledMoveIds) {
+              target.enableMove(disabledMoveId, target);
+            }
+            heldItemData.disabledMoveIds = [];
+            heldItemData.currentMoveId = moveId;
+          } else {
+            // disable non basic moves
+            for (const moveIdToDisable of target.getMoveIds()) {
+              if (
+                getMove(moveIdToDisable).tier === moveTiers.BASIC ||
+                heldItemData.disabledMoveIds.includes(moveIdToDisable) ||
+                moveIdToDisable === moveId
+              ) {
+                continue;
+              }
+
+              target.disableMove(moveIdToDisable, target);
+              heldItemData.disabledMoveIds.push(moveIdToDisable);
+              heldItemData.currentMoveId = moveId;
+            }
+          }
+        },
+        conditionCallback: getIsSourcePokemonCallback(target),
+      }),
+    };
+  }
+
+  /**
+   * @param {object} args
+   * @param {Battle} args.battle
+   * @param {BattlePokemon} args.target
+   * @param {{ listenerId: string, currentMoveId: MoveIdEnum, disabledMoveIds: MoveIdEnum[] }} args.properties
+   * @param  {(target: BattlePokemon) => void} removeBuffCallback
+   */
+  // eslint-disable-next-line class-methods-use-this
+  removeChoiceItemWithBuff(args, removeBuffCallback) {
+    const { battle, target, properties } = args;
+    removeBuffCallback(target);
+    battle.unregisterListener(properties.listenerId);
+    // re-enable all disabled moves
+    for (const moveId of properties.disabledMoveIds) {
+      target.enableMove(moveId, target);
+    }
   }
 }
 
@@ -269,6 +336,19 @@ const heldItemsToRegister = Object.freeze({
     },
     itemRemove({ battle, properties }) {
       battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [heldItemIdEnum.CHOICE_SCARF]: new HeldItem({
+    id: heldItemIdEnum.CHOICE_SCARF,
+    itemAdd(args) {
+      return this.applyChoiceItemWithBuff(args, (target) => {
+        target.addFlatStatBoost("spe", 100);
+      });
+    },
+    itemRemove(args) {
+      this.removeChoiceItemWithBuff(args, (target) => {
+        target.addFlatStatBoost("spe", -100);
+      });
     },
   }),
   [heldItemIdEnum.EVIOLITE]: new HeldItem({

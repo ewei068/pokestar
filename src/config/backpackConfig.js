@@ -226,6 +226,22 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.CHOICE_SCARF]: {
+    name: "Choice Scarf",
+    emoji: "<:choicescarf:1336571392480514069>",
+    description:
+      "Increases the user's Speed by 100. Whenver the user uses a non-basic move, disable its other non-basic moves until a basic move is used.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 50,
+          [backpackItems.WILLPOWER_SHARD]: 150,
+        },
+      },
+    },
+  },
   [heldItemIdEnum.EVIOLITE]: {
     name: "Eviolite",
     emoji: "<:eviolite:1342652890451546172>",
