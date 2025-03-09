@@ -242,6 +242,12 @@ const heldItemsToRegister = Object.freeze({
       });
     },
   }),
+  [heldItemIdEnum.AMULET_COIN]: new HeldItem({
+    id: heldItemIdEnum.AMULET_COIN,
+    // special item; logic coded into battle engine
+    itemAdd() {},
+    itemRemove() {},
+  }),
   [heldItemIdEnum.LEFTOVERS]: new HeldItem({
     id: heldItemIdEnum.LEFTOVERS,
     itemAdd({ battle, target }) {

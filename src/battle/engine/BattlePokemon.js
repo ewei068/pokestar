@@ -119,6 +119,7 @@ class BattlePokemon {
     // map moveId => move data (cooldown, disabledCounter)
     this.addMoves(pokemonData);
     this.setAbility(pokemonData.abilityId);
+    this.originalHeldItemId = pokemonData.heldItemId;
     this.setHeldItem(pokemonData.heldItemId);
     /** @type {{ statusId?: StatusConditionEnum, source?: BattlePokemon, turns: number }} */
     this.status = {

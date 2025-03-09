@@ -180,6 +180,23 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.AMULET_COIN]: {
+    name: "Amulet Coin",
+    emoji: "<:amuletcoin:1343335842307113000>",
+    description:
+      "Increases the money earned at the end of battle by 25%, stacking additively.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 33,
+          [backpackItems.EMOTION_SHARD]: 33,
+          [backpackItems.WILLPOWER_SHARD]: 33,
+        },
+      },
+    },
+  },
   [heldItemIdEnum.LEFTOVERS]: {
     name: "Leftovers",
     emoji: "<:leftovers:1336571394531659837>",

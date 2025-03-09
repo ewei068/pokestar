@@ -9,7 +9,7 @@ const {
   targetPositions,
   weatherConditions,
 } = require("../../config/battleConfig");
-const { battleEventEnum } = require("../../enums/battleEnums");
+const { battleEventEnum, heldItemIdEnum } = require("../../enums/battleEnums");
 const { getMove } = require("../data/moveRegistry");
 const { BattleEventHandler } = require("./events");
 const { BattlePokemon } = require("./BattlePokemon");
@@ -460,7 +460,19 @@ class Battle {
       return;
     }
 
-    this.moneyReward = Math.floor(this.baseMoney * this.moneyMultiplier);
+    // check every pokemon for amulet coin
+    const amuletCoinMoneyMultiplier = Object.values(this.allPokemon).reduce(
+      (acc, pokemon) => {
+        if (pokemon?.originalHeldItemId === heldItemIdEnum.AMULET_COIN) {
+          return acc + 0.25;
+        }
+        return acc;
+      },
+      1
+    );
+    this.moneyReward = Math.floor(
+      this.baseMoney * this.moneyMultiplier * amuletCoinMoneyMultiplier
+    );
     this.expReward = Math.floor(this.baseExp * this.expMultiplier);
     // calculate pokemon exp by summing defeated pokemon's levels
     this.pokemonExpReward =
