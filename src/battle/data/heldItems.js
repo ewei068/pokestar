@@ -229,6 +229,12 @@ const heldItemsToRegister = Object.freeze({
     },
     tags: ["berry", "usable"],
   }),
+  [heldItemIdEnum.EXP_SHARE]: new HeldItem({
+    id: heldItemIdEnum.EXP_SHARE,
+    // special item; logic coded into battle engine
+    itemAdd() {},
+    itemRemove() {},
+  }),
   [heldItemIdEnum.CHOICE_BAND]: new HeldItem({
     id: heldItemIdEnum.CHOICE_BAND,
     itemAdd(args) {
@@ -244,6 +250,12 @@ const heldItemsToRegister = Object.freeze({
   }),
   [heldItemIdEnum.AMULET_COIN]: new HeldItem({
     id: heldItemIdEnum.AMULET_COIN,
+    // special item; logic coded into battle engine
+    itemAdd() {},
+    itemRemove() {},
+  }),
+  [heldItemIdEnum.LUCKY_EGG]: new HeldItem({
+    id: heldItemIdEnum.LUCKY_EGG,
     // special item; logic coded into battle engine
     itemAdd() {},
     itemRemove() {},

@@ -460,7 +460,6 @@ class Battle {
       return;
     }
 
-    // check every pokemon for amulet coin
     const amuletCoinMoneyMultiplier = Object.values(this.allPokemon).reduce(
       (acc, pokemon) => {
         if (pokemon?.originalHeldItemId === heldItemIdEnum.AMULET_COIN) {
@@ -473,7 +472,18 @@ class Battle {
     this.moneyReward = Math.floor(
       this.baseMoney * this.moneyMultiplier * amuletCoinMoneyMultiplier
     );
-    this.expReward = Math.floor(this.baseExp * this.expMultiplier);
+    const expShareExpMultiplier = Object.values(this.allPokemon).reduce(
+      (acc, pokemon) => {
+        if (pokemon?.originalHeldItemId === heldItemIdEnum.EXP_SHARE) {
+          return acc + 0.15;
+        }
+        return acc;
+      },
+      1
+    );
+    this.expReward = Math.floor(
+      this.baseExp * this.expMultiplier * expShareExpMultiplier
+    );
     // calculate pokemon exp by summing defeated pokemon's levels
     this.pokemonExpReward =
       Math.floor(

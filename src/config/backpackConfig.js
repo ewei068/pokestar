@@ -164,6 +164,23 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.EXP_SHARE]: {
+    name: "Exp. Share",
+    emoji: "<:expshare:1343335843447701594>",
+    description:
+      "Increases the experience earned by all Pokemon in a battle by 15%, stacking additively.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 33,
+          [backpackItems.EMOTION_SHARD]: 33,
+          [backpackItems.WILLPOWER_SHARD]: 33,
+        },
+      },
+    },
+  },
   [heldItemIdEnum.CHOICE_BAND]: {
     name: "Choice Band",
     emoji: "<:choiceband:1336571391616614411>",
@@ -185,6 +202,23 @@ const backpackHeldItemConfig = {
     emoji: "<:amuletcoin:1343335842307113000>",
     description:
       "Increases the money earned at the end of battle by 25%, stacking additively.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 33,
+          [backpackItems.EMOTION_SHARD]: 33,
+          [backpackItems.WILLPOWER_SHARD]: 33,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.LUCKY_EGG]: {
+    name: "Lucky Egg",
+    emoji: "<:luckyegg:1343335844433498144>",
+    description:
+      "Increases the experience in Battle earned by the Pokemon holding this item by 100%.",
     category: backpackCategories.HELD_ITEMS,
     cost: {
       money: 5000,
