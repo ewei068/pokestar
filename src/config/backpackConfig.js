@@ -293,6 +293,22 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.FOCUS_SASH]: {
+    name: "Focus Sash",
+    emoji: "<:focussash:1342654744526716938>",
+    description:
+      "The first time taking fatal damage from full health, the user instead survives with 1 HP and gains invulnerability to direct damage for 1 turn.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 50,
+          [backpackItems.EMOTION_SHARD]: 100,
+        },
+      },
+    },
+  },
   [heldItemIdEnum.CHOICE_SCARF]: {
     name: "Choice Scarf",
     emoji: "<:choicescarf:1336571392480514069>",

@@ -12095,7 +12095,7 @@ const abilityConfig = Object.freeze({
   5: {
     name: "Sturdy",
     description:
-      "The first time the user takes fatal damage, the user instead survives with 1 HP and gains invulnerability to direct damage for 1 turn.",
+      "When taking fatal damage from full health, the user instead survives with 1 HP and gains invulnerability to direct damage for 1 turn.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -12107,15 +12107,12 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // attempt to get ability data
-          const { ability } = initialArgs.pokemon;
-          if (!ability || ability.abilityId !== "5" || !ability.data) {
-            return;
-          }
-          const abilityData = ability.data;
-
-          // if fatal damage, set hp to 1
-          if (args.damage > targetPokemon.hp) {
+          // if fatal damage from full hp, set hp to 1
+          const damage = Math.min(args.damage, args.maxDamage);
+          if (
+            damage > targetPokemon.hp &&
+            targetPokemon.hp >= targetPokemon.maxHp
+          ) {
             args.damage = targetPokemon.hp - 1;
             args.maxDamage = Math.min(args.maxDamage, args.damage);
             targetPokemon.battle.addToLog(
@@ -12123,10 +12120,6 @@ const abilityConfig = Object.freeze({
             );
             // gain move invuln
             target.applyEffect("moveInvulnerable", 1, target, {});
-            // remove event listener
-            targetPokemon.battle.eventHandler.unregisterListener(
-              abilityData.listenerId
-            );
           }
         },
       };

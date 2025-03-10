@@ -369,6 +369,35 @@ const heldItemsToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [heldItemIdEnum.FOCUS_SASH]: new HeldItem({
+    id: heldItemIdEnum.FOCUS_SASH,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: ({ damage, maxDamage }) => {
+            // if fatal damage from full hp, set hp to 1
+            const damageWillTake = Math.min(damage, maxDamage);
+            if (damageWillTake > target.hp && target.hp >= target.maxHp) {
+              target.battle.addToLog(`${target.name} hung on with Sturdy!`);
+              target.applyEffect("moveInvulnerable", 1, target, {});
+              target.removeHeldItem();
+              return {
+                damage: target.hp - 1,
+                maxDamage: Math.min(maxDamage, target.hp - 1),
+              };
+            }
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
   [heldItemIdEnum.CHOICE_SCARF]: new HeldItem({
     id: heldItemIdEnum.CHOICE_SCARF,
     itemAdd(args) {
