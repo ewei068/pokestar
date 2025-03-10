@@ -214,6 +214,23 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.FOCUS_BAND]: {
+    name: "Focus Band",
+    emoji: "<:focusband:1342654744526716938>",
+    description:
+      "The first time the user would take fatal damage, instead survive with 1 HP and gain a 1 HP shield for 1 turn.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 75,
+          [backpackItems.EMOTION_SHARD]: 100,
+          [backpackItems.WILLPOWER_SHARD]: 25,
+        },
+      },
+    },
+  },
   [heldItemIdEnum.LUCKY_EGG]: {
     name: "Lucky Egg",
     emoji: "<:luckyegg:1343335844433498144>",

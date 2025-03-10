@@ -2,7 +2,11 @@
 const { backpackHeldItemConfig } = require("../../config/backpackConfig");
 const { moveTiers } = require("../../config/battleConfig");
 const { pokemonConfig } = require("../../config/pokemonConfig");
-const { battleEventEnum, heldItemIdEnum } = require("../../enums/battleEnums");
+const {
+  battleEventEnum,
+  heldItemIdEnum,
+  effectIdEnum,
+} = require("../../enums/battleEnums");
 const { logger } = require("../../log");
 const {
   getMoveIdHasTag,
@@ -253,6 +257,36 @@ const heldItemsToRegister = Object.freeze({
     // special item; logic coded into battle engine
     itemAdd() {},
     itemRemove() {},
+  }),
+  [heldItemIdEnum.FOCUS_BAND]: new HeldItem({
+    id: heldItemIdEnum.FOCUS_BAND,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: ({ damage, maxDamage }) => {
+            const damageWillTake = Math.min(damage, maxDamage);
+            if (damageWillTake > target.hp) {
+              target.battle.addToLog(`${target.name} hung on with Focus Band!`);
+              target.applyEffect(effectIdEnum.SHIELD, 1, target, {
+                shield: 1,
+              });
+              target.removeHeldItem();
+              return {
+                damage: target.hp - 1,
+                maxDamage: Math.min(maxDamage, target.hp - 1),
+              };
+            }
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
   }),
   [heldItemIdEnum.LUCKY_EGG]: new HeldItem({
     id: heldItemIdEnum.LUCKY_EGG,

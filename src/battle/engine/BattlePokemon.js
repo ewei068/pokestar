@@ -1783,7 +1783,7 @@ class BattlePokemon {
         }
 
         // reduce speed by 40%
-        this.addStatMultiplier("spe", -0.4);
+        this.addStatMult("spe", -0.4);
 
         this.status = {
           statusId,

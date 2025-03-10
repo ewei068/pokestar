@@ -61,6 +61,7 @@ const heldItemIdEnum = Object.freeze({
   EXP_SHARE: "h193",
   CHOICE_BAND: "h197",
   AMULET_COIN: "h200",
+  FOCUS_BAND: "h207",
   LUCKY_EGG: "h208",
   LEFTOVERS: "h211",
   WIDE_LENS: "h242",
