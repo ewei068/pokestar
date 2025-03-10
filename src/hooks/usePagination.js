@@ -29,7 +29,10 @@ module.exports = (
   const [page, setPage] = useState(initialPage, ref);
   const pageClamped = Math.min(Math.max(page, minPage), maxPage);
 
-  const items = allItems.slice((page - 1) * pageSize, page * pageSize);
+  const items = allItems.slice(
+    (pageClamped - 1) * pageSize,
+    pageClamped * pageSize
+  );
 
   const prevActionBindng = useCallbackBinding(
     () => {

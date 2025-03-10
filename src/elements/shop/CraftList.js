@@ -5,8 +5,10 @@ const useTrainer = require("../../hooks/useTrainer");
 const { buildCraftListEmbed } = require("../../embeds/shopEmbeds");
 const { flattenCategories } = require("../../utils/trainerUtils");
 const CraftItem = require("./CraftItem");
+const useInfoToggle = require("../../hooks/useInfoToggle");
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 10;
+const PAGE_SIZE_WITH_INFO = 7;
 const allCraftableItemIds = /** @type {CraftableItemEnum[]} */ (
   Object.keys(craftableItemConfig)
 );
@@ -46,6 +48,9 @@ const CraftList = async (ref, { user, initialPage = 1, searchString }) => {
     };
   }
 
+  const { isToggled: showDescription, toggleButton: toggleInfoButton } =
+    useInfoToggle({}, ref);
+
   const {
     items: itemIds,
     currentItem: itemId,
@@ -55,7 +60,7 @@ const CraftList = async (ref, { user, initialPage = 1, searchString }) => {
   } = usePaginationAndSelection(
     {
       allItems: allIds,
-      pageSize: PAGE_SIZE,
+      pageSize: showDescription ? PAGE_SIZE_WITH_INFO : PAGE_SIZE,
       initialPage,
       selectionPlaceholder: "Select an Item to craft",
       itemConfig: craftableItemConfig,
@@ -83,11 +88,13 @@ const CraftList = async (ref, { user, initialPage = 1, searchString }) => {
       {
         content: "",
         embeds: [
-          buildCraftListEmbed(itemIds, flattenCategories(trainer.backpack)),
+          buildCraftListEmbed(itemIds, flattenCategories(trainer.backpack), {
+            showDescription,
+          }),
         ],
       },
     ],
-    components: [scrollButtonsElement, selectMenuElement],
+    components: [[scrollButtonsElement, toggleInfoButton], selectMenuElement],
   };
 };
 
