@@ -11,6 +11,8 @@ const emojis = {
   MASTERBALL: "<:masterball:1100296005041262612>",
 
   POWER_WEIGHT: "<:powerweight:1112557998234148874>",
+
+  LEFTOVERS: "<:leftovers:1336571394531659837>",
 };
 
 module.exports = {

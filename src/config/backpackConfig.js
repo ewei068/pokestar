@@ -1,4 +1,5 @@
 const { heldItemIdEnum } = require("../enums/battleEnums");
+const { emojis } = require("../enums/emojis");
 
 /** @typedef {Enum<backpackCategories>} BackpackCategoryEnum */
 const backpackCategories = Object.freeze({
@@ -45,7 +46,7 @@ const backpackCategoryConfig = Object.freeze({
   },
   [backpackCategories.HELD_ITEMS]: {
     name: "Held Items",
-    emoji: "<:leftovers:1336571394531659837>",
+    emoji: emojis.LEFTOVERS,
     description:
       "Items that can be held by Pokemon for various effects in-battle!",
   },
@@ -250,7 +251,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.LEFTOVERS]: {
     name: "Leftovers",
-    emoji: "<:leftovers:1336571394531659837>",
+    emoji: emojis.LEFTOVERS,
     description: "Restores 10% of the user's HP at the end of its turn.",
     category: backpackCategories.HELD_ITEMS,
     cost: {
