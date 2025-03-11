@@ -123,15 +123,23 @@ const buildShopItemEmbed = (trainer, itemId) => {
 /**
  * @param {CraftableItemEnum[]} itemIds
  * @param {FlattenedBackpack} backpack
+ * @param {object} options
+ * @param {boolean=} options.showDescription
  */
-const buildCraftListEmbed = (itemIds, backpack) => {
+const buildCraftListEmbed = (
+  itemIds,
+  backpack,
+  { showDescription = false } = {}
+) => {
   let craftString = "";
   for (const itemId of itemIds) {
     const item = craftableItemConfig[itemId];
     craftString += `${item.emoji} **${item.name}** (Owned: ${
       backpack[itemId] || 0
     })\n`;
-    craftString += `${item.description}\n\n`;
+    if (showDescription) {
+      craftString += `${item.description}\n\n`;
+    }
   }
 
   const embed = new EmbedBuilder();

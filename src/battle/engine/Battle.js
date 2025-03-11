@@ -9,7 +9,7 @@ const {
   targetPositions,
   weatherConditions,
 } = require("../../config/battleConfig");
-const { battleEventEnum } = require("../../enums/battleEnums");
+const { battleEventEnum, heldItemIdEnum } = require("../../enums/battleEnums");
 const { getMove } = require("../data/moveRegistry");
 const { BattleEventHandler } = require("./events");
 const { BattlePokemon } = require("./BattlePokemon");
@@ -306,17 +306,19 @@ class Battle {
 
     // sort all pokemon by speed descending
     const sortedPokemon = Object.values(this.allPokemon);
-    sortedPokemon.sort((a, b) => b.getSpe() - a.getSpe());
+    sortedPokemon.sort((a, b) => b.getStat("spe") - a.getStat("spe"));
     this.allPokemon = {};
     for (const pokemon of sortedPokemon) {
       this.allPokemon[pokemon.id] = pokemon;
     }
 
+    // add all held items
+    Object.entries(this.allPokemon).forEach(([, pokemon]) => {
+      pokemon.applyHeldItem();
+    });
+
     // add all abilities
     Object.entries(this.allPokemon).forEach(([, pokemon]) => {
-      if (pokemon.ability.applied) {
-        return;
-      }
       pokemon.applyAbility();
     });
 
@@ -458,8 +460,30 @@ class Battle {
       return;
     }
 
-    this.moneyReward = Math.floor(this.baseMoney * this.moneyMultiplier);
-    this.expReward = Math.floor(this.baseExp * this.expMultiplier);
+    const amuletCoinMoneyMultiplier = Object.values(this.allPokemon).reduce(
+      (acc, pokemon) => {
+        if (pokemon?.originalHeldItemId === heldItemIdEnum.AMULET_COIN) {
+          return acc + 0.25;
+        }
+        return acc;
+      },
+      1
+    );
+    this.moneyReward = Math.floor(
+      this.baseMoney * this.moneyMultiplier * amuletCoinMoneyMultiplier
+    );
+    const expShareExpMultiplier = Object.values(this.allPokemon).reduce(
+      (acc, pokemon) => {
+        if (pokemon?.originalHeldItemId === heldItemIdEnum.EXP_SHARE) {
+          return acc + 0.15;
+        }
+        return acc;
+      },
+      1
+    );
+    this.expReward = Math.floor(
+      this.baseExp * this.expMultiplier * expShareExpMultiplier
+    );
     // calculate pokemon exp by summing defeated pokemon's levels
     this.pokemonExpReward =
       Math.floor(

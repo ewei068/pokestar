@@ -149,7 +149,11 @@
  * }} EquipmentSet
  */
 
-/** @typedef {[number, number, number, number, number, number]} StatArray */
+/**
+ * @typedef {[number, number, number, number, number, number]} StatArray
+ * @typedef {"hp" | "atk" | "def" | "spa" | "spd" | "spe"} StatId
+ * @typedef {"atk" | "def" | "spa" | "spd" | "spe"} StatIdNoHP
+ */
 
 /**
  * @typedef {object} Pokemon

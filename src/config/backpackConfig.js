@@ -1,4 +1,5 @@
 const { heldItemIdEnum } = require("../enums/battleEnums");
+const { emojis } = require("../enums/emojis");
 
 /** @typedef {Enum<backpackCategories>} BackpackCategoryEnum */
 const backpackCategories = Object.freeze({
@@ -45,7 +46,7 @@ const backpackCategoryConfig = Object.freeze({
   },
   [backpackCategories.HELD_ITEMS]: {
     name: "Held Items",
-    emoji: "<:leftovers:1336571394531659837>",
+    emoji: emojis.LEFTOVERS,
     description:
       "Items that can be held by Pokemon for various effects in-battle!",
   },
@@ -130,17 +131,264 @@ const backpackItemConfigRaw = {
 
 /** @type {Record<HeldItemIdEnum, CraftableItemData>} */
 const backpackHeldItemConfig = {
+  [heldItemIdEnum.LUM_BERRY]: {
+    name: "Lum Berry",
+    emoji: "<:lumberry:1342652061484978248>",
+    description:
+      "Cures the user of any status condition and confusion, consumed after use.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 40,
+          [backpackItems.EMOTION_SHARD]: 20,
+          [backpackItems.WILLPOWER_SHARD]: 40,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.SITRUS_BERRY]: {
+    name: "Sitrus Berry",
+    emoji: "<:sitrusberry:1342652062734880863>",
+    description:
+      "Restores 50% of the user's HP when it falls below 50%, consumed after use.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 50,
+          [backpackItems.EMOTION_SHARD]: 20,
+          [backpackItems.WILLPOWER_SHARD]: 30,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.EXP_SHARE]: {
+    name: "Exp. Share",
+    emoji: "<:expshare:1343335843447701594>",
+    description:
+      "Increases the experience earned by all Pokemon in a battle by 15%, stacking additively.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 33,
+          [backpackItems.EMOTION_SHARD]: 33,
+          [backpackItems.WILLPOWER_SHARD]: 33,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.CHOICE_BAND]: {
+    name: "Choice Band",
+    emoji: "<:choiceband:1336571391616614411>",
+    description:
+      "Increases the user's Attack by 50%. Whenver the user uses a non-basic move, disable its other non-basic moves until a basic move is used.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: 150,
+          [backpackItems.WILLPOWER_SHARD]: 50,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.AMULET_COIN]: {
+    name: "Amulet Coin",
+    emoji: "<:amuletcoin:1343335842307113000>",
+    description:
+      "Increases the money earned at the end of battle by 25%, stacking additively.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 33,
+          [backpackItems.EMOTION_SHARD]: 33,
+          [backpackItems.WILLPOWER_SHARD]: 33,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.FOCUS_BAND]: {
+    name: "Focus Band",
+    emoji: "<:focusband:1342654744526716938>",
+    description:
+      "The first time the user would take fatal damage, instead survive with 1 HP and gain a 1 HP shield for 1 turn.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 75,
+          [backpackItems.EMOTION_SHARD]: 100,
+          [backpackItems.WILLPOWER_SHARD]: 25,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.LUCKY_EGG]: {
+    name: "Lucky Egg",
+    emoji: "<:luckyegg:1343335844433498144>",
+    description:
+      "Increases the experience in Battle earned by the Pokemon holding this item by 100%.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 33,
+          [backpackItems.EMOTION_SHARD]: 33,
+          [backpackItems.WILLPOWER_SHARD]: 33,
+        },
+      },
+    },
+  },
   [heldItemIdEnum.LEFTOVERS]: {
     name: "Leftovers",
-    emoji: "<:leftovers:1336571394531659837>",
+    emoji: emojis.LEFTOVERS,
     description: "Restores 10% of the user's HP at the end of its turn.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 50,
+          [backpackItems.EMOTION_SHARD]: 100,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.WIDE_LENS]: {
+    name: "Wide Lens",
+    emoji: "<:widelens:1342655292982169662>",
+    description: "Increases the user's accuracy by 10%.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 30,
+          [backpackItems.WILLPOWER_SHARD]: 70,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.LIFE_ORB]: {
+    name: "Life Orb",
+    emoji: "<:lifeorb:1342654745906774046>",
+    description:
+      "Increases the power of the user's moves by 30%, but damages the user by 10% of its max HP after each damaging move.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: 100,
+          [backpackItems.WILLPOWER_SHARD]: 100,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.POWER_HERB]: {
+    name: "Power Herb",
+    emoji: "<:powerherb:1343334633424551956>",
+    description: "Allows the user to use two-turn moves in one turn.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 15,
+          [backpackItems.EMOTION_SHARD]: 120,
+          [backpackItems.WILLPOWER_SHARD]: 15,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.FOCUS_SASH]: {
+    name: "Focus Sash",
+    emoji: "<:focussash:1342654744526716938>",
+    description:
+      "The first time taking fatal damage from full health, the user instead survives with 1 HP and gains invulnerability to direct damage for 1 turn.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 50,
+          [backpackItems.EMOTION_SHARD]: 100,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.CHOICE_SCARF]: {
+    name: "Choice Scarf",
+    emoji: "<:choicescarf:1336571392480514069>",
+    description:
+      "Increases the user's Speed by 100. Whenver the user uses a non-basic move, disable its other non-basic moves until a basic move is used.",
     category: backpackCategories.HELD_ITEMS,
     cost: {
       money: 10000,
       backpack: {
         [backpackCategories.MATERIALS]: {
           [backpackItems.KNOWLEDGE_SHARD]: 50,
-          [backpackItems.EMOTION_SHARD]: 100,
+          [backpackItems.WILLPOWER_SHARD]: 150,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.CHOICE_SPECS]: {
+    name: "Choice Specs",
+    emoji: "<:choicespecs:1336571393458049107>",
+    description:
+      "Increases the user's Special Attack by 50%. Whenver the user uses a non-basic move, disable its other non-basic moves until a basic move is used.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 150,
+          [backpackItems.EMOTION_SHARD]: 50,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.EVIOLITE]: {
+    name: "Eviolite",
+    emoji: "<:eviolite:1342652890451546172>",
+    description:
+      "Increases the user's Defense and Special Defense by 50% if it is an unevolved Pokemon.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 30,
+          [backpackItems.EMOTION_SHARD]: 70,
+          [backpackItems.WILLPOWER_SHARD]: 100,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.HEAVY_DUTY_BOOTS]: {
+    name: "Heavy-Duty Boots",
+    emoji: "<:heavydutyboots:1342656422562758707>",
+    description:
+      "Prevents the user from taking damage from hazards like Stealth Rock.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 40,
+          [backpackItems.EMOTION_SHARD]: 70,
+          [backpackItems.WILLPOWER_SHARD]: 40,
         },
       },
     },

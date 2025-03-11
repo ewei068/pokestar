@@ -239,9 +239,16 @@ const buildNewPokemonEmbed = (
       inline: true,
     },
     { name: "Ability", value: getAbilityName(pokemon.abilityId), inline: true },
-    { name: "Shiny", value: pokemon.shiny ? "True" : "False", inline: true },
-    { name: "IVs", value: ivString, inline: false }
+    { name: "Shiny", value: pokemon.shiny ? "True" : "False", inline: true }
   );
+  if (pokemon.heldItemId) {
+    embed.addFields({
+      name: "Held Item",
+      value: getItemDisplay(pokemon.heldItemId),
+      inline: true,
+    });
+  }
+  embed.addFields({ name: "IVs", value: ivString, inline: false });
   embed.setImage(pokemon.shiny ? speciesData.shinySprite : speciesData.sprite);
   const lbHelp =
     "/info <id> to inspect this Pokemon\n/train <id> to train this Pokemon\n/list to see all your Pokemon";
@@ -252,7 +259,7 @@ const buildNewPokemonEmbed = (
 };
 
 /**
- * @param {Pokemon[]} pokemons
+ * @param {WithId<Pokemon>[]} pokemons
  * @param {BackpackItemEnum} pokeballId
  * @param {number=} remaining
  * @returns {EmbedBuilder}
@@ -267,10 +274,15 @@ const buildNewPokemonListEmbed = (
     const pokemon = pokemons[i];
     const speciesData = pokemonConfig[pokemons[i].speciesId];
     const ivPercent = (pokemon.ivTotal * 100) / (31 * 6);
+    const heldItemEmoji = pokemon.heldItemId
+      ? `${backpackItemConfig[pokemon.heldItemId].emoji} `
+      : "";
 
     pokemonString += `${pokemon.shiny ? "✨" : ""}${speciesData.emoji} **[${
       speciesData.rarity
-    }] [IV ${Math.round(ivPercent)}%]** ${pokemon.name} (${pokemon._id})\n`;
+    }] [IV ${Math.round(ivPercent)}%]** ${pokemon.name} ${heldItemEmoji}(${
+      pokemon._id
+    })\n`;
   }
   const pokeballData = backpackItemConfig[pokeballId];
   const pokeballString = `${pokeballData.emoji} You have ${remaining} ${pokeballData.name}s remaining.`;
@@ -298,10 +310,15 @@ const buildPokemonListEmbed = (username, pokemons, page) => {
     const pokemon = pokemons[i];
     const speciesData = pokemonConfig[pokemons[i].speciesId];
     const ivPercent = (pokemon.ivTotal * 100) / (31 * 6);
+    const heldItemEmoji = pokemon.heldItemId
+      ? `${backpackItemConfig[pokemon.heldItemId].emoji} `
+      : "";
 
     pokemonString += `${pokemon.shiny ? "✨" : ""}${speciesData.emoji} **[Lv. ${
       pokemon.level
-    }] [IV ${Math.round(ivPercent)}%]** ${pokemon.name} (${pokemon._id})\n`;
+    }] [IV ${Math.round(ivPercent)}%]** ${pokemon.name} ${heldItemEmoji}(${
+      pokemon._id
+    })\n`;
   }
 
   const embed = new EmbedBuilder();

@@ -9,7 +9,7 @@ const {
   pokemonConfig,
   growthRateConfig,
 } = require("../config/pokemonConfig");
-const { getPBar, getWhitespace } = require("./utils");
+const { getPBar, getWhitespace, getHasTag } = require("./utils");
 const { getAbility } = require("../battle/data/abilityRegistry");
 const {
   equipmentConfig,
@@ -466,6 +466,15 @@ const buildPokemonNameString = (pokemon, options = {}) => {
   }`;
 };
 
+/**
+ * @param {PokemonIdEnum} speciesId
+ * @param {PokemonTag} tag
+ */
+const getSpeciesIdHasTag = (speciesId, tag) => {
+  const speciesData = pokemonConfig[speciesId];
+  return getHasTag(speciesData, tag);
+};
+
 module.exports = {
   getPokemonExpNeeded,
   calculateWorth,
@@ -487,4 +496,5 @@ module.exports = {
   buildPokemonNameString,
   getPartyPokemonIds,
   getMoveIds,
+  getSpeciesIdHasTag,
 };

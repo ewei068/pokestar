@@ -31,6 +31,7 @@ const {
   getPokeballsString,
   addRewards,
   getBackpackItemsString,
+  flattenRewards,
 } = require("../utils/trainerUtils");
 const { getVoteMultiplier } = require("../config/socialConfig");
 
@@ -551,7 +552,11 @@ const getVoteRewards = async (user) => {
   if (receivedRewards.money) {
     rewardsString += `\n${formatMoney(trainer.money)}`;
   }
-  rewardsString += getBackpackItemsString(trainer);
+  rewardsString += getBackpackItemsString(
+    trainer,
+    // @ts-ignore
+    Object.keys(receivedRewards.backpack)
+  );
   rewardsString +=
     "\nSpend your Pokedollars at the `/pokemart` | Use `/gacha` to use your Pokeballs";
 

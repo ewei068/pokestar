@@ -14,7 +14,6 @@ const BackpackList = require("./BackpackList");
  * @param {Backpack} param0.backpack
  * @param {number=} param0.money
  * @param {boolean=} param0.shouldShowMoney
- * @param {boolean=} param0.shouldShowDescription
  * @param {number=} param0.initialPage
  * @param {((itemId: BackpackItemEnum) => any)=} param0.onItemSelected
  */
@@ -25,7 +24,6 @@ const BackpackListWithSelection = async (
     backpack,
     money,
     shouldShowMoney = true,
-    shouldShowDescription = false,
     initialPage = 1,
     onItemSelected = () => {},
   }
@@ -59,7 +57,6 @@ const BackpackListWithSelection = async (
         backpack,
         money,
         shouldShowMoney,
-        shouldShowDescription,
         initialPage,
         pageSize: 10,
         onItemsChanged: setItems,

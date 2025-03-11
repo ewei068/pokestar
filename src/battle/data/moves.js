@@ -15,6 +15,8 @@ const {
 } = require("../../enums/battleEnums");
 const { drawIterable } = require("../../utils/gachaUtils");
 
+/** @typedef {"charge" | "test"} MoveTag */
+
 class Move {
   /**
    * @param {object} param0
@@ -31,6 +33,8 @@ class Move {
    * @param {DamageTypeEnum} param0.damageType
    * @param {string} param0.description
    * @param {MoveExecute} param0.execute
+   * @param {EffectIdEnum=} param0.chargeMoveEffectId
+   * @param {MoveTag[]=} param0.tags
    */
   constructor({
     id,
@@ -46,6 +50,8 @@ class Move {
     damageType,
     description,
     execute,
+    chargeMoveEffectId,
+    tags = [],
   }) {
     this.id = id;
     this.name = name;
@@ -62,6 +68,8 @@ class Move {
     this.execute = execute;
     this.isLegacyMove = false;
     this.silenceIf = undefined; // TODO
+    this.chargeMoveEffectId = chargeMoveEffectId;
+    this.tags = tags;
   }
 
   genericDealSingleDamage({

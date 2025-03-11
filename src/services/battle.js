@@ -60,6 +60,7 @@ const {
   TowerNPC,
   RaidNPC,
 } = require("../battle/engine/npcs");
+const { heldItemIdEnum } = require("../enums/battleEnums");
 
 /**
  * @param {Battle} battle
@@ -233,10 +234,14 @@ const getStartTurnSend = async (battle, stateId) => {
               }
 
               const oldLevel = dbPokemon.data.level;
+              const thisPokemonExpReward =
+                pokemon.originalHeldItemId === heldItemIdEnum.LUCKY_EGG
+                  ? pokemonExpReward * 2
+                  : pokemonExpReward;
               const trainResult = await addPokemonExpAndEVs(
                 trainer.data,
                 dbPokemon.data,
-                pokemonExpReward
+                thisPokemonExpReward
               );
               if (trainResult.err) {
                 continue;

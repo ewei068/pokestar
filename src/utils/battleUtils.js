@@ -12,10 +12,12 @@ const {
   flattenRewards,
   flattenCategories,
 } = require("./trainerUtils");
-const { getPBar, formatMoney } = require("./utils");
+const { getPBar, formatMoney, getHasTag } = require("./utils");
 const { getEffect } = require("../battle/data/effectRegistry");
 const { backpackItemConfig } = require("../config/backpackConfig");
 const { buildPokemonEmojiString } = require("./pokemonUtils");
+const { getHeldItem } = require("../battle/data/heldItemRegistry");
+const { getMove } = require("../battle/data/moveRegistry");
 
 const plus = "┼";
 const plusEmph = "*";
@@ -673,6 +675,33 @@ const getPatternTargetIndices = (
   return targetIndices;
 };
 
+/**
+ * @param {HeldItemIdEnum} heldItemId
+ * @param {HeldItemTag} tag
+ */
+const getHeldItemIdHasTag = (heldItemId, tag) => {
+  const itemData = getHeldItem(heldItemId);
+  return getHasTag(itemData, tag);
+};
+
+/**
+ * @param {MoveIdEnum} moveId
+ * @param {MoveTag} tag
+ */
+const getMoveIdHasTag = (moveId, tag) => {
+  const moveData = getMove(moveId);
+  return getHasTag(moveData, tag);
+};
+
+/**
+ * @param {EffectIdEnum} effectId
+ * @param {EffectTag} tag
+ */
+const getEffectIdHasTag = (effectId, tag) => {
+  const effectData = getEffect(effectId);
+  return getHasTag(effectData, tag);
+};
+
 module.exports = {
   buildPartyString,
   buildCompactPartyString,
@@ -687,4 +716,7 @@ module.exports = {
   getCurrentTargetting,
   setCurrentTargetting,
   getPatternTargetIndices,
+  getHeldItemIdHasTag,
+  getMoveIdHasTag,
+  getEffectIdHasTag,
 };

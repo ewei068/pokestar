@@ -13,6 +13,7 @@ const {
   typeAdvantages,
   weatherConditions,
   damageTypes,
+  battleStatToBaseStat,
 } = require("../../config/battleConfig");
 const { battleEventEnum } = require("../../enums/battleEnums");
 const { calculatePokemonStats } = require("../../services/pokemon");
@@ -28,50 +29,9 @@ const { getMove } = require("../data/moveRegistry");
 const { getEffect } = require("../data/effectRegistry");
 const { getAbility } = require("../data/abilityRegistry");
 const { getPatternTargetIndices } = require("../../utils/battleUtils");
+const { getHeldItem } = require("../data/heldItemRegistry");
 
 class BattlePokemon {
-  /* battle;
-  pokemonData;
-  speciesId;
-  speciesData;
-  id;
-  userId;
-  originalUserId;
-  teamName;
-  name;
-  level;
-  hp;
-  maxHp;
-  atk;
-  batk;
-  def;
-  bdef;
-  spa;
-  bspa;
-  spd;
-  bspd;
-  spe;
-  bspe;
-  acc;
-  eva;
-  type1;
-  type2;
-  // effectId => { duration, args }
-  effectIds;
-  // moveId => { cooldown, disabled }
-  moveIds;
-  // { statusId. tuns active }
-  status;
-  // { abilityId, args }
-  ability;
-  combatReadiness;
-  position;
-  isFainted;
-  targetable;
-  hittable;
-  incapacitated;
-  restricted; */
-
   /**
    * @param {Battle} battle
    * @param {any} trainer
@@ -102,31 +62,49 @@ class BattlePokemon {
     this.teamName = teamName;
     this.name = pokemonData.name;
     this.hp = pokemonData.remainingHp || pokemonData.stats[0];
-    [this.maxHp = 0] = this.pokemonData.stats;
+    [this.maxHp = 1] = this.pokemonData.stats;
     this.level = pokemonData.level;
+    this.allStatData = {
+      atk: {
+        addMult: 1,
+        multMult: 1,
+        flatBoost: 0,
+      },
+      def: {
+        addMult: 1,
+        multMult: 1,
+        flatBoost: 0,
+      },
+      spa: {
+        addMult: 1,
+        multMult: 1,
+        flatBoost: 0,
+      },
+      spd: {
+        addMult: 1,
+        multMult: 1,
+        flatBoost: 0,
+      },
+      spe: {
+        addMult: 1,
+        multMult: 1,
+        flatBoost: 0,
+      },
+    };
     [
-      this.atk = 0,
-      this.batk = 0,
-      this.def = 0,
-      this.bdef = 0,
-      this.spa = 0,
-      this.bspa = 0,
-      this.spd = 0,
-      this.bspd = 0,
-      this.spe = 0,
-      this.bspe = 0,
-    ] = [
-      pokemonData.stats[1],
-      pokemonData.stats[1],
-      pokemonData.stats[2],
-      pokemonData.stats[2],
-      pokemonData.stats[3],
-      pokemonData.stats[3],
-      pokemonData.stats[4],
-      pokemonData.stats[4],
-      pokemonData.stats[5],
-      pokemonData.stats[5],
-    ];
+      this.batk = 1,
+      this.bdef = 1,
+      this.bspa = 1,
+      this.bspd = 1,
+      this.bspe = 1,
+    ] = this.pokemonData.stats.slice(1);
+    // for debug and/or backwards compat fallback
+    this.atk = this.getStat("atk");
+    this.def = this.getStat("def");
+    this.spa = this.getStat("spa");
+    this.spd = this.getStat("spd");
+    this.spe = this.getStat("spe");
+
     this.acc = 100;
     this.eva = 100;
     [this.type1 = null, this.type2 = null] = this.speciesData.type;
@@ -136,11 +114,13 @@ class BattlePokemon {
      */
     this.effectIds = {};
 
-    /** @type {PartialRecord<MoveIdEnum, { cooldown: number, disabled: boolean}>} */
+    /** @type {PartialRecord<MoveIdEnum, { cooldown: number, disabledCounter: number}>} */
     this.moveIds = {};
-    // map moveId => move data (cooldown, disabled)
+    // map moveId => move data (cooldown, disabledCounter)
     this.addMoves(pokemonData);
-    this.setAbility(pokemonData);
+    this.setAbility(pokemonData.abilityId);
+    this.originalHeldItemId = pokemonData.heldItemId;
+    this.setHeldItem(pokemonData.heldItemId);
     /** @type {{ statusId?: StatusConditionEnum, source?: BattlePokemon, turns: number }} */
     this.status = {
       statusId: null,
@@ -171,22 +151,52 @@ class BattlePokemon {
     this.moveIds = getMoveIds(pokemonData).reduce((acc, moveId) => {
       acc[moveId] = {
         cooldown: 0,
-        disabled: false,
+        disabledCounter: 0,
       };
       return acc;
     }, {});
   }
 
   /**
-   * @param {Pokemon} pokemonData
+   * @returns {MoveIdEnum[]}
    */
-  setAbility(pokemonData) {
+  getMoveIds() {
+    return Object.keys(this.moveIds);
+  }
+
+  /**
+   * @param {string | number} abilityId
+   */
+  setAbility(abilityId) {
     /**
-     * @type {{ abilityId: string | number, data?: any, applied?: boolean }}
+     * @type {{ abilityId?: string | number, data: any, applied: boolean }}
      */
     this.ability = {
-      abilityId: pokemonData.abilityId,
+      abilityId,
+      data: {},
+      applied: false,
     };
+  }
+
+  /**
+   * @param {HeldItemIdEnum?} heldItemId
+   */
+  setHeldItem(heldItemId) {
+    if (heldItemId) {
+      /**
+       * @type {{ heldItemId?: HeldItemIdEnum, data: any, applied: boolean }}
+       */
+      this.heldItem = {
+        heldItemId,
+        data: {},
+        applied: false,
+      };
+    } else {
+      this.heldItem = {
+        data: {},
+        applied: false,
+      };
+    }
   }
 
   /**
@@ -196,16 +206,10 @@ class BattlePokemon {
    * @param {MoveIdEnum[]?=} param1.moveIds
    */
   transformInto(speciesId, { abilityId = null, moveIds = [] } = {}) {
+    const beforeSpeciesId = this.speciesId;
     const oldName = this.name;
     // remove ability
     this.removeAbility();
-
-    // get old stat ratios (excpet hp)
-    const atkRatio = this.atk / this.batk;
-    const defRatio = this.def / this.bdef;
-    const spaRatio = this.spa / this.bspa;
-    const spdRatio = this.spd / this.bspd;
-    const speRatio = this.spe / this.bspe;
 
     // set new species values
     this.speciesId = speciesId;
@@ -223,20 +227,28 @@ class BattlePokemon {
     calculatePokemonStats(this.pokemonData, this.speciesData);
 
     // set stats (except hp)
-    [, this.atk, this.bdef, this.bspa, this.bspd, this.bspe] =
+    [, this.batk, this.bdef, this.bspa, this.bspd, this.bspe] =
       this.pokemonData.stats;
-    this.atk = Math.round(this.pokemonData.stats[1] * atkRatio);
-    this.def = Math.round(this.pokemonData.stats[2] * defRatio);
-    this.spa = Math.round(this.pokemonData.stats[3] * spaRatio);
-    this.spd = Math.round(this.pokemonData.stats[4] * spdRatio);
-    this.spe = Math.round(this.pokemonData.stats[5] * speRatio);
 
     // set moves and ability
     this.addMoves(this.pokemonData);
-    this.setAbility(this.pokemonData);
+    this.setAbility(this.pokemonData.abilityId);
     this.applyAbility();
 
+    // for debug and/or backwards compat fallback
+    this.atk = this.getStat("atk");
+    this.def = this.getStat("def");
+    this.spa = this.getStat("spa");
+    this.spd = this.getStat("spd");
+    this.spe = this.getStat("spe");
+
     this.battle.addToLog(`${oldName} transformed into ${this.name}!`);
+
+    this.battle.emitEvent(battleEventEnum.AFTER_TRANSFORM, {
+      target: this,
+      beforeSpeciesId,
+      afterSpeciesId: this.speciesId,
+    });
   }
 
   /**
@@ -253,7 +265,7 @@ class BattlePokemon {
     if (
       !moveData ||
       this.moveIds[moveId].cooldown > 0 ||
-      this.moveIds[moveId].disabled
+      this.moveIds[moveId].disabledCounter
     ) {
       return;
     }
@@ -384,28 +396,9 @@ class BattlePokemon {
       return {};
     }
 
+    // calculate miss and targets
     const allTargets = this.getTargets(moveId, primaryTarget);
-    // see if move log should be silenced
-    const isSilenced =
-      moveData.silenceIf && moveData.silenceIf(this.battle, this);
-    if (!isSilenced) {
-      const targetString =
-        moveData.targetPattern === targetPatterns.ALL ||
-        moveData.targetPattern === targetPatterns.ALL_EXCEPT_SELF ||
-        moveData.targetPattern === targetPatterns.RANDOM ||
-        moveData.targetPosition === targetPositions.SELF
-          ? "!"
-          : ` against ${primaryTarget.name}!`;
-      this.battle.addToLog(`${this.name} used ${moveData.name}${targetString}`);
-    }
-    // calculate miss
     const missedTargets = this.getMisses(moveId, allTargets);
-    // if misses, log miss
-    if (missedTargets.length > 0 && !isSilenced) {
-      this.battle.addToLog(
-        `Missed ${missedTargets.map((target) => target.name).join(", ")}!`
-      );
-    }
 
     // trigger before execute move events
     const executeEventArgs = {
@@ -419,6 +412,25 @@ class BattlePokemon {
       battleEventEnum.BEFORE_MOVE_EXECUTE,
       executeEventArgs
     );
+
+    // move logging
+    const isSilenced =
+      moveData.silenceIf && moveData.silenceIf(this.battle, this);
+    if (!isSilenced) {
+      const targetString =
+        moveData.targetPattern === targetPatterns.ALL ||
+        moveData.targetPattern === targetPatterns.ALL_EXCEPT_SELF ||
+        moveData.targetPattern === targetPatterns.RANDOM ||
+        moveData.targetPosition === targetPositions.SELF
+          ? "!"
+          : ` against ${primaryTarget.name}!`;
+      this.battle.addToLog(`${this.name} used ${moveData.name}${targetString}`);
+    }
+    if (missedTargets.length > 0 && !isSilenced) {
+      this.battle.addToLog(
+        `Missed ${missedTargets.map((target) => target.name).join(", ")}!`
+      );
+    }
 
     // execute move
     this.executeMove({
@@ -516,7 +528,9 @@ class BattlePokemon {
     const atkDamageType = atkDamageTypeOverride || move.damageType;
     const attackRaw =
       attackOverride ||
-      (atkDamageType === damageTypes.PHYSICAL ? this.atk : this.spa);
+      (atkDamageType === damageTypes.PHYSICAL
+        ? this.getStat("atk")
+        : this.getStat("spa"));
     // modify attack amount -- any attack over 800 is only half as effective
     const attack = attackRaw > 800 ? 800 + (attackRaw - 800) / 2 : attackRaw;
 
@@ -524,8 +538,8 @@ class BattlePokemon {
     const defense =
       defenseOverride ||
       (defDamageType === damageTypes.PHYSICAL
-        ? target.getDef()
-        : target.getSpd());
+        ? target.getStat("def")
+        : target.getStat("spd"));
     const stab = this.type1 === move.type || this.type2 === move.type ? 1.5 : 1;
     const missMult = missedTargets.includes(target)
       ? missedTargetDamageMultiplier
@@ -694,7 +708,10 @@ class BattlePokemon {
     // for all non-disabled moves not on cooldown, check to see if valid targets exist
     for (const _moveId in this.moveIds) {
       const moveId = /** @type {MoveIdEnum} */ (_moveId);
-      if (this.moveIds[moveId].disabled || this.moveIds[moveId].cooldown > 0) {
+      if (
+        this.moveIds[moveId].disabledCounter > 0 ||
+        this.moveIds[moveId].cooldown > 0
+      ) {
         continue;
       }
       const eligibleTargets = this.battle.getEligibleTargets(this, moveId);
@@ -1161,7 +1178,8 @@ class BattlePokemon {
 
     this.hp = 0;
     this.isFainted = true;
-    this.removeAbility();
+    this.disableAbility();
+    this.disableHeldItem();
     this.battle.addToLog(`${this.name} fainted!`);
 
     // trigger after faint effects
@@ -1189,14 +1207,20 @@ class BattlePokemon {
     this.isFainted = false;
     this.battle.addToLog(`${this.name} was revived!`);
 
-    // re-add ability
+    // re-add ability and held item
+    this.applyHeldItem();
     this.applyAbility();
   }
 
   applyAbility() {
     const { abilityId } = this.ability;
     const abilityData = getAbility(/** @type {AbilityIdEnum} */ (abilityId));
-    if (!abilityData || !abilityData.abilityAdd) {
+    if (
+      !abilityData ||
+      !abilityData.abilityAdd ||
+      this.ability.applied ||
+      this.isFainted
+    ) {
       // TODO: not all abilities are implemented
       // logger.error(`Ability ${abilityId} does not exist.`);
       return;
@@ -1215,7 +1239,32 @@ class BattlePokemon {
     this.ability.applied = true;
   }
 
-  removeAbility() {
+  applyHeldItem() {
+    const { heldItemId } = this.heldItem;
+    const heldItemData = getHeldItem(
+      /** @type {HeldItemIdEnum} */ (heldItemId)
+    );
+    if (
+      !heldItemData ||
+      !heldItemData.itemAdd ||
+      this.heldItem.applied ||
+      this.isFainted
+    ) {
+      return;
+    }
+
+    this.heldItem.data = heldItemData.itemAdd({
+      battle: this.battle,
+      source: this,
+      target: this,
+    });
+    this.heldItem.applied = true;
+  }
+
+  /**
+   * Prevents the ability from working by triggering abilityRemove
+   */
+  disableAbility() {
     // remove ability effects
     const { abilityId, applied } = this.ability;
     const abilityData = getAbility(/** @type {AbilityIdEnum} */ (abilityId));
@@ -1243,10 +1292,92 @@ class BattlePokemon {
       const legacyAbility = /** @type {any} */ (abilityData);
       legacyAbility.abilityRemove(this.battle, this, this);
     }
+    this.ability.applied = false;
+  }
+
+  /**
+   * Prevents the held item from working by triggering itemRemove
+   */
+  disableHeldItem() {
+    // remove held item effects
+    const { heldItemId, applied } = this.heldItem;
+    const heldItemData = getHeldItem(
+      /** @type {HeldItemIdEnum} */ (heldItemId)
+    );
+    if (!heldItemData || !heldItemData.itemRemove || !heldItemId) {
+      return;
+    }
+    if (!applied) {
+      logger.error(
+        `Held item ${heldItemId} is not applied to Pokemon ${this.id} ${this.name}.`
+      );
+      return;
+    }
+
+    heldItemData.itemRemove({
+      battle: this.battle,
+      source: this,
+      target: this,
+      properties: this.heldItem.data,
+    });
+    this.heldItem.applied = false;
+  }
+
+  /**
+   * Disables the pokemon's ability, then resets ability data and removes ability ID
+   */
+  removeAbility() {
+    this.disableAbility();
+    this.ability = {
+      applied: false,
+      data: {},
+    };
+  }
+
+  /**
+   * Disables the pokemon's held item, then resets held item data and removes held item ID
+   * @returns {void}
+   */
+  removeHeldItem() {
+    this.disableHeldItem();
+    this.heldItem = {
+      applied: false,
+      data: {},
+    };
+    this.battle.addToLog(`${this.name} lost its held item!`);
+  }
+
+  /**
+   * If usable, uses the held item on the target Pokemon, then removes it if it's used up
+   * @param {BattlePokemon} target
+   * @returns {boolean} Whether the held item was used
+   */
+  useHeldItem(target) {
+    // remove held item effects
+    const { heldItemId } = this.heldItem;
+    const heldItemData = getHeldItem(heldItemId);
+    if (!heldItemData || !heldItemData.tags.includes("usable") || !heldItemId) {
+      return false;
+    }
+
+    // TODO: disable item before use?
+    heldItemData.itemUse({
+      battle: this.battle,
+      source: this,
+      target,
+      properties: this.heldItem.data,
+    });
+    this.removeHeldItem();
+
+    return true;
   }
 
   hasAbility(abilityId) {
     return this.ability?.abilityId === abilityId;
+  }
+
+  hasHeldItem(heldItemId) {
+    return this.heldItem?.heldItemId === heldItemId;
   }
 
   /**
@@ -1651,8 +1782,8 @@ class BattlePokemon {
           break;
         }
 
-        // reduce speed by 45%
-        this.spe -= Math.floor(this.bspd * 0.45);
+        // reduce speed by 40%
+        this.addStatMult("spe", -0.4);
 
         this.status = {
           statusId,
@@ -1785,7 +1916,7 @@ class BattlePokemon {
         break;
       case statusConditions.PARALYSIS:
         // restore speed
-        this.spe += Math.floor(this.bspd * 0.45);
+        this.addStatMult("spe", 0.4);
 
         this.battle.addToLog(`${this.name} was cured of its paralysis!`);
         break;
@@ -1818,13 +1949,8 @@ class BattlePokemon {
       return;
     }
 
-    // if move already disabled, do nothing
-    if (this.moveIds[moveId].disabled) {
-      return;
-    }
-
     // disable move
-    this.moveIds[moveId].disabled = true;
+    this.moveIds[moveId].disabledCounter += 1;
     // this.battle.addToLog(`${this.name}'s ${getMove(moveId).name} was disabled!`);
   }
 
@@ -1838,14 +1964,11 @@ class BattlePokemon {
     if (!this.moveIds[moveId]) {
       return;
     }
-
-    // if move not disabled, do nothing
-    if (!this.moveIds[moveId].disabled) {
-      return;
-    }
-
     // enable move
-    this.moveIds[moveId].disabled = false;
+    this.moveIds[moveId].disabledCounter = Math.max(
+      0,
+      this.moveIds[moveId].disabledCounter - 1
+    );
     // this.battle.addToLog(`${this.name}'s ${getMove(moveId).name} is no longer disabled!`);
   }
 
@@ -1902,8 +2025,17 @@ class BattlePokemon {
     return oldCooldown - newCooldown;
   }
 
+  removeMoveCooldown(moveId, source, silenceLog = false) {
+    return this.reduceMoveCooldown(
+      moveId,
+      this.moveIds[moveId].cooldown,
+      source,
+      silenceLog
+    );
+  }
+
   effectiveSpeed() {
-    return calculateEffectiveSpeed(this.getSpe());
+    return calculateEffectiveSpeed(this.getStat("spe"));
   }
 
   getRowAndColumn() {
@@ -1933,52 +2065,93 @@ class BattlePokemon {
     return this.battle.parties[enemyTeamName];
   }
 
-  getDef() {
-    let { def } = this;
-
-    // if hail and ice, def * 1.5
-    if (
-      !this.battle.isWeatherNegated() &&
-      this.battle.weather.weatherId === weatherConditions.HAIL &&
-      (this.type1 === pokemonTypes.ICE || this.type2 === pokemonTypes.ICE)
-    ) {
-      def = Math.floor(def * 1.5);
-    }
-
-    return def;
+  /**
+   * @param {StatIdNoHP} statId
+   * @param {number} mult
+   */
+  addStatMult(statId, mult) {
+    const statData = this.allStatData[statId];
+    statData.addMult += mult;
+    // debug
+    this[statId] = this.getStat(statId);
   }
 
-  getSpd() {
-    let { spd } = this;
-
-    // if sandstorm and rock, spd * 1.5
-    if (
-      !this.battle.isWeatherNegated() &&
-      this.battle.weather.weatherId === weatherConditions.SANDSTORM &&
-      (this.type1 === pokemonTypes.ROCK || this.type2 === pokemonTypes.ROCK)
-    ) {
-      spd = Math.floor(spd * 1.5);
-    }
-
-    return spd;
+  /**
+   * @param {StatIdNoHP} statId
+   * @param {number} mult
+   */
+  multiplyStatMult(statId, mult) {
+    const statData = this.allStatData[statId];
+    statData.multMult *= mult;
+    // debug
+    this[statId] = this.getStat(statId);
   }
 
-  getSpe() {
-    let { spe } = this;
+  /**
+   * @param {StatIdNoHP} statId
+   * @param {number} boost
+   */
+  addFlatStatBoost(statId, boost) {
+    const statData = this.allStatData[statId];
+    statData.flatBoost += boost;
+    // debug
+    this[statId] = this.getStat(statId);
+  }
 
-    if (!this.battle.isWeatherNegated()) {
-      if (this.battle.weather.weatherId === weatherConditions.SUN) {
-        if (this.ability && this.ability.abilityId === "34") {
-          spe = Math.floor(spe * 1.5);
+  /**
+   * @param {StatIdNoHP} statId
+   */
+  getStat(statId) {
+    const statData = this.allStatData[statId];
+    let stat =
+      this[battleStatToBaseStat(statId)] *
+        statData.addMult *
+        statData.multMult +
+      statData.flatBoost;
+    stat = Math.max(1, Math.floor(stat));
+
+    switch (statId) {
+      case "def":
+        // if hail and ice, def * 1.5
+        if (
+          !this.battle.isWeatherNegated() &&
+          this.battle.weather?.weatherId === weatherConditions.HAIL &&
+          (this.type1 === pokemonTypes.ICE || this.type2 === pokemonTypes.ICE)
+        ) {
+          stat = Math.floor(stat * 1.5);
         }
-      } else if (this.battle.weather.weatherId === weatherConditions.RAIN) {
-        if (this.ability && this.ability.abilityId === "33") {
-          spe = Math.floor(spe * 1.5);
+
+        return stat;
+      case "spd":
+        // if sandstorm and rock, spd * 1.5
+        if (
+          !this.battle.isWeatherNegated() &&
+          this.battle.weather?.weatherId === weatherConditions.SANDSTORM &&
+          (this.type1 === pokemonTypes.ROCK || this.type2 === pokemonTypes.ROCK)
+        ) {
+          stat = Math.floor(stat * 1.5);
         }
-      }
+
+        return stat;
+      case "spe":
+        if (!this.battle.isWeatherNegated()) {
+          if (this.battle.weather?.weatherId === weatherConditions.SUN) {
+            if (this.ability && this.ability.abilityId === "34") {
+              stat = Math.floor(stat * 1.5);
+            }
+          } else if (
+            this.battle.weather?.weatherId === weatherConditions.RAIN
+          ) {
+            if (this.ability && this.ability.abilityId === "33") {
+              stat = Math.floor(stat * 1.5);
+            }
+          }
+        }
+
+        return stat;
+      default:
+        return stat;
     }
-
-    return spe;
   }
 
   /**
@@ -1987,11 +2160,11 @@ class BattlePokemon {
   getAllStats() {
     return [
       this.hp,
-      this.atk,
-      this.getDef(),
-      this.spa,
-      this.getSpd(),
-      this.getSpe(),
+      this.getStat("atk"),
+      this.getStat("def"),
+      this.getStat("spa"),
+      this.getStat("spd"),
+      this.getStat("spe"),
     ];
   }
 

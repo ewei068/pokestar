@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const { effectTypes, statToBattleStat } = require("../../config/battleConfig");
+const { effectTypes } = require("../../config/battleConfig");
 const {
   effectIdEnum,
   battleEventEnum,
@@ -8,6 +8,8 @@ const {
 const { getIsTargetPokemonCallback } = require("../engine/eventConditions");
 const { getEffect } = require("./effectRegistry");
 const { getMove } = require("./moveRegistry");
+
+/** @typedef {"hazard" | "test"} EffectTag */
 
 /**
  * @template T
@@ -23,6 +25,7 @@ class Effect {
    * @param {boolean} param0.dispellable
    * @param {EffectAddCallback<T, U>} param0.effectAdd
    * @param {EffectRemoveCallback<T, U>} param0.effectRemove
+   * @param {EffectTag[]=} param0.tags
    */
   constructor({
     id,
@@ -32,6 +35,7 @@ class Effect {
     dispellable,
     effectAdd,
     effectRemove,
+    tags = [],
   }) {
     this.id = id;
     this.name = name;
@@ -40,6 +44,7 @@ class Effect {
     this.dispellable = dispellable;
     this.effectAdd = effectAdd;
     this.effectRemove = effectRemove;
+    this.tags = [];
     this.isLegacyEffect = false;
   }
 }
@@ -66,12 +71,12 @@ const effectsToRegister = Object.freeze({
         target.deleteEffectInstance(effectIdEnum.ATK_UP);
       } else {
         battle.addToLog(`${target.name}'s Attack rose!`);
-        target.atk += Math.floor(target.batk * 0.5);
+        target.addStatMult("atk", 0.5);
       }
     },
     effectRemove({ battle, target }) {
       battle.addToLog(`${target.name}'s Attack boost wore off!`);
-      target.atk -= Math.floor(target.batk * 0.5);
+      target.addStatMult("atk", -0.5);
     },
   }),
   [effectIdEnum.SHIELD]: new Effect({
@@ -138,28 +143,22 @@ const effectsToRegister = Object.freeze({
   [effectIdEnum.AQUA_BLESSING]: new Effect({
     id: effectIdEnum.AQUA_BLESSING,
     name: "Aqua Blessing",
-    description: "The target's stat is increased by 2x.",
+    description: "The target's stat is increased by 2x (+).",
     type: effectTypes.BUFF,
     dispellable: true,
     /**
-     * @param {EffectAddBasicArgs & {initialArgs: {stat: StatEnum}}} args
+     * @param {EffectAddBasicArgs & {initialArgs: {statId: StatIdNoHP}}} args
      */
     effectAdd({ battle, target, initialArgs }) {
-      const { stat } = initialArgs;
-      const baseStatValue = target.getAllBaseStats()[stat];
-      const statToIncrease = statToBattleStat[stat];
-
-      battle.addToLog(`${target.name}'s ${statToIncrease} rose!`);
-      target[statToIncrease] += baseStatValue;
+      const { statId } = initialArgs;
+      battle.addToLog(`${target.name}'s ${statId} rose!`);
+      target.addStatMult(statId, 1);
       return {};
     },
     effectRemove({ battle, target, initialArgs }) {
-      const { stat } = initialArgs;
-      const baseStatValue = target.getAllBaseStats()[stat];
-      const statToIncrease = statToBattleStat[stat];
-
-      battle.addToLog(`${target.name}'s ${statToIncrease} boost wore off!`);
-      target[statToIncrease] -= baseStatValue;
+      const { statId } = initialArgs;
+      battle.addToLog(`${target.name}'s ${statId} boost wore off!`);
+      target.addStatMult(statId, -1);
     },
   }),
   [effectIdEnum.DOOM_DESIRE]: new Effect({

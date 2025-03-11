@@ -20,9 +20,14 @@
  * @typedef {{battle: Battle, source: BattlePokemon, target: BattlePokemon}} EffectAddBasicArgs
  * @typedef {{battle: Battle, target: BattlePokemon}} EffectRemoveBasicArgs
  * @typedef {{battle: Battle, source: BattlePokemon, target: BattlePokemon}} AbilityAddBasicArgs
+ * @typedef {{battle: Battle, source: BattlePokemon, target: BattlePokemon}} HeldItemAddBasicArgs
  * @typedef {typeof import("./data/effects").effectsToRegister} RegisteredEffects
  * @typedef {typeof import("./data/abilities").abilitiesToRegister} RegisteredAbilities
  * @typedef {import("./data/moves").Move} Move
+ * @typedef {import("./data/moves").MoveTag} MoveTag
+ * @typedef {import("./data/heldItems").HeldItemTag} HeldItemTag
+ * @typedef {typeof import("./data/heldItems").heldItemsToRegister} RegisteredHeldItems
+ * @typedef {import("./data/effects").EffectTag} EffectTag
  */
 
 /**
@@ -95,6 +100,21 @@
  */
 
 /**
+ * @template {HeldItemIdEnum} T
+ * @typedef {import("./data/heldItems").HeldItem<T>} HeldItem
+ */
+
+/**
+ * @template T
+ * @typedef {T extends HeldItem<infer U> ? U : never} HeldItemPropertiesType
+ */
+
+/**
+ * @template {HeldItemIdEnum} K
+ * @typedef {K extends keyof RegisteredHeldItems ? HeldItemPropertiesType<RegisteredHeldItems[K]> : any} HeldItemPropertiesTypeFromId
+ */
+
+/**
  *
  * @template T
  * @template U
@@ -153,9 +173,40 @@
  */
 
 /**
+ * @template T
+ * @callback HeldItemAddCallback
+ * @this {HeldItem<any>}
+ * @param {HeldItemAddBasicArgs} param0
+ * @returns {T}
+ */
+
+/**
+ * @template T
+ * @callback HeldItemRemoveCallback
+ * @this {HeldItem<T>}
+ * @param {object} param0
+ * @param {Battle} param0.battle
+ * @param {BattlePokemon} param0.source
+ * @param {BattlePokemon} param0.target
+ * @param {T} param0.properties
+ */
+
+/**
+ * @template T
+ * @callback HeldItemUseCallback
+ * @this {HeldItem<T>}
+ * @param {object} param0
+ * @param {Battle} param0.battle
+ * @param {BattlePokemon} param0.source
+ * @param {BattlePokemon} param0.target
+ * @param {T} param0.properties
+ */
+
+/**
  * @template {BattleEventEnum} K
  * @callback BattleEventListenerCallback
  * @param {BattleEventArgs<K>} args
+ * @returns {Partial<BattleEventArgs<K>> | void}
  */
 
 /**

@@ -456,6 +456,12 @@ const buildAnsiString = (str) => {
   return ansiString;
 };
 
+/**
+ * @param {any} obj
+ * @param {PokemonTag | HeldItemTag | MoveTag | EffectTag} tag
+ */
+const getHasTag = (obj, tag) => obj?.tags?.includes?.(tag);
+
 module.exports = {
   getOrSetDefault,
   getPBar,
@@ -484,4 +490,5 @@ module.exports = {
   attemptToReply,
   setDefaultFields,
   buildAnsiString,
+  getHasTag,
 };

@@ -2,7 +2,7 @@
 /** @typedef {import("./pokemonConfig").GrowthRateEnum} GrowthRateEnum */
 /** @typedef {import("./pokemonConfig").NatureEnum} NatureEnum  */
 /** @typedef {import("./pokemonConfig").RarityEnum} RarityEnum  */
-/** @typedef {import("./pokemonConfig").StatEnum} StatEnum */
+/** @typedef {import("./pokemonConfig").StatIndexEnum} StatIndexEnum */
 /** @typedef {import("./equipmentConfig").EquipmentModifierSlotEnum} EquipmentModifierSlotEnum */
 /** @typedef {import("./equipmentConfig").EquipmentModifierTypeEnum} EquipmentModifierTypeEnum */
 /** @typedef {import("./equipmentConfig").EquipmentTypeEnum} EquipmentTypeEnum */
@@ -35,6 +35,7 @@
  */
 
 /**
+ * @typedef {"eviolite" | "testTag"} PokemonTag
  * @typedef {{
  *  name: string,
  *  emoji: string,
@@ -57,5 +58,6 @@
  *  noGacha?: boolean,
  *  mythicConfig?: any,
  *  unobtainable?: boolean
+ *  tags?: PokemonTag[]
  * }} PokemonConfigData
  */

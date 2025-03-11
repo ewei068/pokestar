@@ -27,12 +27,17 @@ const getPokeballsString = (trainer) => {
 };
 /**
  * @param {Trainer} trainer
+ * @param {BackpackItemEnum[]=} itemIds
  * @returns {string}
  */
-const getBackpackItemsString = (trainer) => {
+const getBackpackItemsString = (trainer, itemIds = undefined) => {
   let backpackItemsString = "";
   for (const category in trainer.backpack) {
     for (const item in trainer.backpack[category]) {
+      // @ts-ignore
+      if (itemIds && !itemIds.includes(item)) {
+        continue;
+      }
       backpackItemsString += `\n${backpackItemConfig[item].emoji} ${trainer.backpack[category][item]}x ${backpackItemConfig[item].name}`;
     }
   }
@@ -128,7 +133,7 @@ const getRewardsString = (rewards, received = true) => {
  * @param {Trainer} trainer
  * @param {Rewards} rewards
  * @param {any} accumulator
- * @returns {Rewards}
+ * @returns {FlattenedRewards}
  */
 const addRewards = (trainer, rewards, accumulator = {}) => {
   if (rewards.money) {

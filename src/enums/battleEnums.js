@@ -56,7 +56,22 @@ const abilityIdEnum = Object.freeze({
 
 /** @typedef {Enum<heldItemIdEnum>} HeldItemIdEnum */
 const heldItemIdEnum = Object.freeze({
+  LUM_BERRY: "h134",
+  SITRUS_BERRY: "h135",
+  EXP_SHARE: "h193",
+  CHOICE_BAND: "h197",
+  AMULET_COIN: "h200",
+  FOCUS_BAND: "h207",
+  LUCKY_EGG: "h208",
   LEFTOVERS: "h211",
+  WIDE_LENS: "h242",
+  LIFE_ORB: "h247",
+  POWER_HERB: "h248",
+  FOCUS_SASH: "h252",
+  CHOICE_SCARF: "h264",
+  CHOICE_SPECS: "h274",
+  EVIOLITE: "h581",
+  HEAVY_DUTY_BOOTS: "h1178",
 });
 
 /** @typedef {Enum<battleEventEnum>} BattleEventEnum */
@@ -86,18 +101,19 @@ const battleEventEnum = Object.freeze({
   CALCULATE_MISS: "calculateMiss",
   GET_ELIGIBLE_TARGETS: "getEligibleTargets",
   AFTER_WEATHER_SET: "afterWeatherSet",
+  AFTER_TRANSFORM: "afterTransform",
 });
 
 /**
  * @template {BattleEventEnum} K
  * @typedef {{
  *  [battleEventEnum.BATTLE_BEGIN]: {},
- *  [battleEventEnum.TURN_END]: {activePokemon: BattlePokemon},
+ *  [battleEventEnum.TURN_END]: { activePokemon: BattlePokemon },
  *  [battleEventEnum.TURN_BEGIN]: {},
- *  [battleEventEnum.BEFORE_MOVE]: {canUseMove: boolean, source: BattlePokemon, primaryTarget: BattlePokemon, moveId: MoveIdEnum},
- *  [battleEventEnum.BEFORE_MOVE_EXECUTE]: any,
- *  [battleEventEnum.AFTER_MOVE]: any,
- *  [battleEventEnum.BEFORE_DAMAGE_DEALT]: any,
+ *  [battleEventEnum.BEFORE_MOVE]: { canUseMove: boolean, source: BattlePokemon, primaryTarget: BattlePokemon, moveId: MoveIdEnum} ,
+ *  [battleEventEnum.BEFORE_MOVE_EXECUTE]: { source: BattlePokemon, primaryTarget: BattlePokemon, allTargets: BattlePokemon[], missedTargets: BattlePokemon[], moveId: MoveIdEnum },
+ *  [battleEventEnum.AFTER_MOVE]: { source: BattlePokemon, primaryTarget: BattlePokemon, allTargets: BattlePokemon[], missedTargets: BattlePokemon[], moveId: MoveIdEnum },
+ *  [battleEventEnum.BEFORE_DAMAGE_DEALT]: { target: BattlePokemon, source: BattlePokemon, damage: number, damageInfo: any },
  *  [battleEventEnum.AFTER_DAMAGE_DEALT]: any,
  *  [battleEventEnum.BEFORE_DAMAGE_TAKEN]: { target: BattlePokemon, source: BattlePokemon, damage: number, maxDamage: number, damageInfo: any },
  *  [battleEventEnum.AFTER_DAMAGE_TAKEN]: { target: BattlePokemon, source: BattlePokemon, damage: number, damageInfo: any },
@@ -108,7 +124,7 @@ const battleEventEnum = Object.freeze({
  *  [battleEventEnum.BEFORE_EFFECT_REMOVE]: any,
  *  [battleEventEnum.AFTER_EFFECT_REMOVE]: any,
  *  [battleEventEnum.BEFORE_STATUS_APPLY]: any,
- *  [battleEventEnum.AFTER_STATUS_APPLY]: any,
+ *  [battleEventEnum.AFTER_STATUS_APPLY]: { target: BattlePokemon, source: BattlePokemon, statusId: StatusConditionEnum },
  *  [battleEventEnum.BEFORE_CAUSE_FAINT]: any,
  *  [battleEventEnum.BEFORE_FAINT]: any,
  *  [battleEventEnum.AFTER_FAINT]: any,
@@ -116,6 +132,7 @@ const battleEventEnum = Object.freeze({
  *  [battleEventEnum.CALCULATE_MISS]: any,
  *  [battleEventEnum.GET_ELIGIBLE_TARGETS]: any,
  *  [battleEventEnum.AFTER_WEATHER_SET]: any,
+ *  [battleEventEnum.AFTER_TRANSFORM]: { target: BattlePokemon, beforeSpeciesId: PokemonIdEnum, afterSpeciesId: PokemonIdEnum },
  * }[K]} BattleEventArgsWithoutEventName
  */
 

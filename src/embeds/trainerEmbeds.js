@@ -141,7 +141,7 @@ const buildBackpackEmbed = (
         const itemConfig = backpackItemConfig[itemId];
         const whitespaceName = getWhitespace(
           [itemConfig.name],
-          shouldShowDescription ? 40 : 20
+          shouldShowDescription ? 25 : 20
         )[0];
         return `**${itemConfig.emoji} \`${itemConfig.name}${whitespaceName}${
           flattenedBackpack[itemId]

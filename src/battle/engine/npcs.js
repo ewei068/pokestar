@@ -80,7 +80,7 @@ class NPC {
     const { moveIds } = activePokemon;
     const validMoveIdsToTargets = {};
     Object.entries(moveIds).forEach(([moveId, move]) => {
-      if (move.disabled || move.cooldown > 0) {
+      if (move.disabledCounter || move.cooldown > 0) {
         return;
       }
 

@@ -17,6 +17,7 @@ const Button = require("../../deact/elements/Button");
 const { rarities } = require("../../config/pokemonConfig");
 const { buildButtonActionRow } = require("../../components/buttonActionRow");
 const usePokemonList = require("../../hooks/usePokemonList");
+const { emojis } = require("../../enums/emojis");
 
 const sortByOptionOrder = [
   "ivTotal",
@@ -67,6 +68,16 @@ const parseFilter = (filterBy, inputFilterValue) => {
     filter = {
       originalOwner: id,
     };
+  } else if (filterBy === "heldItemId") {
+    if (filterValue === true) {
+      filter = {
+        heldItemId: { $ne: null },
+      };
+    } else if (filterValue === false) {
+      filter = {
+        heldItemId: null,
+      };
+    }
   } else if (filterBy !== "none") {
     if (
       filterValue === null ||
@@ -384,6 +395,12 @@ module.exports = async (
                 ? ButtonStyle.Primary
                 : ButtonStyle.Secondary,
               data: { filterBy: "rarity" },
+            }),
+            createElement(Button, {
+              emoji: emojis.LEFTOVERS,
+              callbackBindingKey: filterButtonActionBinding,
+              style: getDefaultFilterColor(filter.heldItemId),
+              data: { filterBy: "heldItemId" },
             }),
             createElement(Button, {
               emoji: "🔒",

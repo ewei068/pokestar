@@ -33,8 +33,8 @@ const buildSelectBattleMoveRow = (battle, stateId, selectedMoveId = null) => {
         const moveData = getMove(moveId);
         const { cooldown } = battle.activePokemon.moveIds[moveId];
         const cdString = cooldown > 0 ? `[COOLDOWN ${cooldown}] ` : "";
-        const { disabled } = battle.activePokemon.moveIds[moveId];
-        const disabledString = disabled ? "[DISABLED] " : "";
+        const { disabledCounter } = battle.activePokemon.moveIds[moveId];
+        const disabledString = disabledCounter ? "[DISABLED] " : "";
         return {
           label: `${disabledString}${cdString} ${moveData.name}`,
           value: `${moveId}`,
