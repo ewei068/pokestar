@@ -6,7 +6,7 @@
  */
 
 /**
- * @template {string | number | symbol} T
+ * @template {string | number} T
  * @param {Record<T, number>} probabilityDistribution
  * @param {number} times
  * @returns {T[]}

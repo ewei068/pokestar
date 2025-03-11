@@ -98,7 +98,9 @@ const getMythic = async (trainer, speciesId) => {
  */
 const generateMythic = (trainer, speciesId) => {
   const speciesData = pokemonConfig[speciesId];
-  const mythic = generateRandomPokemon(trainer.userId, speciesId, 1);
+  const mythic = generateRandomPokemon(trainer.userId, speciesId, 1, {
+    heldItemChance: 0,
+  });
   // set ivs to 31
   mythic.ivs = [31, 31, 31, 31, 31, 31];
   // set shiny to false

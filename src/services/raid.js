@@ -170,6 +170,7 @@ const onRaidStart = async ({ stateId = null, user = null } = {}) => {
   )[0];
   const raidUserId = uuidv4(); // placeholder ID for raid enemy
   const boss = generateRandomPokemon(raidUserId, bossId, bossData.level, {
+    heldItemChance: 0,
     betterIvs: true,
   });
   [boss.remainingHp] = boss.stats;
