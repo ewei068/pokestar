@@ -2,23 +2,22 @@
 const { User, ButtonStyle } = require("discord.js");
 const {
   useState,
-  useAwaitedMemo,
   useCallbackBinding,
   createElement,
   createModal,
   useModalSubmitCallbackBinding,
+  useMemo,
 } = require("../../deact/deact");
-const { getTrainer } = require("../../services/trainer");
 const { getUserId } = require("../../utils/utils");
-const { listPokemons } = require("../../services/pokemon");
 const { buildPokemonListEmbed } = require("../../embeds/pokemonEmbeds");
-const ScrollButtons = require("../foundation/ScrollButtons");
 const { eventNames } = require("../../config/eventConfig");
 const { buildPokemonSelectRow } = require("../../components/pokemonSelectRow");
 const { buildPokemonSearchModal } = require("../../modals/pokemonModals");
 const Button = require("../../deact/elements/Button");
 const { rarities } = require("../../config/pokemonConfig");
 const { buildButtonActionRow } = require("../../components/buttonActionRow");
+const usePokemonList = require("../../hooks/usePokemonList");
+const { emojis } = require("../../enums/emojis");
 
 const sortByOptionOrder = [
   "ivTotal",
@@ -69,6 +68,16 @@ const parseFilter = (filterBy, inputFilterValue) => {
     filter = {
       originalOwner: id,
     };
+  } else if (filterBy === "heldItemId") {
+    if (filterValue === true) {
+      filter = {
+        heldItemId: { $ne: null },
+      };
+    } else if (filterValue === false) {
+      filter = {
+        heldItemId: null,
+      };
+    }
   } else if (filterBy !== "none") {
     if (
       filterValue === null ||
@@ -105,9 +114,8 @@ const parseSort = (sortBy, sortDescending) => {
   }
 };
 
-const computeListOptions = (page, filter, sort) => {
+const computeListOptions = (filter, sort) => {
   const listOptions = {
-    page,
     filter: {},
     sort: parseSort(sort.sortBy, sort.sortDescending),
   };
@@ -156,7 +164,6 @@ module.exports = async (
     initialSortDescending = false,
   }
 ) => {
-  const [page, setPage] = useState(initialPage, ref);
   const [filtersShown, setFiltersShown] = useState(false, ref);
   const initialFilter = {};
   if (initialFilterBy) {
@@ -171,34 +178,39 @@ module.exports = async (
     ref
   );
 
-  const trainerRes = await useAwaitedMemo(() => getTrainer(user), [user], ref);
-  if (trainerRes.err) {
-    return { err: trainerRes.err };
-  }
-  const trainer = trainerRes.data;
-
   // get list of pokemon
-  const pokemonsRes = await useAwaitedMemo(
-    () =>
-      // @ts-ignore
-      listPokemons(trainer, computeListOptions(page, filter, sort)).then(
-        (res) => {
-          if (res.data && !res.err) {
-            ref.rootInstance.updateLegacyState({
-              initialReleaseIds: res.data.map((pokemon) =>
-                pokemon._id.toString()
-              ),
-              userId: user.id,
-            });
-          }
-          return res;
-        }
-      ),
-    [trainer, filter, sort, page],
+  const listOptions = useMemo(
+    () => computeListOptions(filter, sort),
+    [filter, sort],
     ref
   );
-  const pokemonsErr = pokemonsRes.err;
-  const pokemons = pokemonsRes.data;
+  const {
+    page,
+    setPage,
+    pokemons,
+    err: pokemonsErr,
+    scrollButtonsElement,
+  } = await usePokemonList(
+    {
+      initialPage,
+      userId: user.id,
+      // @ts-ignore
+      listOptions: listOptions || {},
+    },
+    ref
+  );
+  useMemo(
+    () => {
+      if (pokemons && !pokemonsErr) {
+        ref.rootInstance.updateLegacyState({
+          initialReleaseIds: pokemons.map((pokemon) => pokemon._id.toString()),
+          userId: user.id,
+        });
+      }
+    },
+    [pokemons, user.id, ref.rootInstance],
+    ref
+  );
 
   // row 1 -- general
   const settingsActionBinding = useCallbackBinding(() => {
@@ -327,14 +339,6 @@ module.exports = async (
     });
   }, ref);
 
-  // row 4 -- page
-  const prevActionBindng = useCallbackBinding(() => {
-    setPage(page - 1);
-  }, ref);
-  const nextActionBindng = useCallbackBinding(() => {
-    setPage(page + 1);
-  }, ref);
-
   // row 5 -- legacy select pokemon button
   const selectRowData = {
     stateId: ref.rootInstance.stateId,
@@ -348,7 +352,7 @@ module.exports = async (
           "**[MOBILE USERS]** Select a pokemon to copy its ID (Hold message -> Copy Text).",
         embeds: pokemonsErr
           ? []
-          : [buildPokemonListEmbed(trainer, pokemons, page)],
+          : [buildPokemonListEmbed(user.username, pokemons, page)],
       },
     ],
     components: [
@@ -393,6 +397,12 @@ module.exports = async (
               data: { filterBy: "rarity" },
             }),
             createElement(Button, {
+              emoji: emojis.LEFTOVERS,
+              callbackBindingKey: filterButtonActionBinding,
+              style: getDefaultFilterColor(filter.heldItemId),
+              data: { filterBy: "heldItemId" },
+            }),
+            createElement(Button, {
               emoji: "🔒",
               callbackBindingKey: filterButtonActionBinding,
               style: getDefaultFilterColor(filter.locked),
@@ -415,12 +425,7 @@ module.exports = async (
             }),
           ]
         : [],
-      createElement(ScrollButtons, {
-        onPrevPressedKey: prevActionBindng,
-        onNextPressedKey: nextActionBindng,
-        isPrevDisabled: !!pokemonsErr || page === 1,
-        isNextDisabled: !!pokemonsErr || pokemonsRes.lastPage,
-      }),
+      scrollButtonsElement,
       pokemonsErr
         ? []
         : buildPokemonSelectRow(

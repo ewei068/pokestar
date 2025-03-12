@@ -1,11 +1,41 @@
 # Pokéstar Changelog
 
+## 1.4.0
+
+- Gen 4
+  - Add a bunch new Pokemon
+  - Add PvE against Champion Cynthia
+  - Add Mythic Darkrai
+    - Requires 30? tutorial stage completions
+    - Gains {item} every 5 min, max 100 + level
+    - Use {item} to autobattle
+    - Add auto battling
+  - Gen 4 event
+    - Special banners
+    - Some boosts or sm IDK
+
 **Stretch**
 
 - Stretch: Quests (Achievements)
 - Stretch: Ability slots
 
-### 1.2.1 Twitch Plays Pokemon (Re-Run)
+## 1.3.0 Held Items
+
+- Craft held items with new `/craft` command
+- Add held items to you Pokemon from `/info` or from new `/helditem` command
+  - New Pokemon have a small chance of holding a held item!
+- Various held items have been implemented with powerful battle effects:
+  - Consumable items such as Focus Sash and Power Herb provide 1-time powerful effects!
+  - Permanent items such as Choice items and Leftovers provide massive value over-time!
+  - Special items such as the Amulet Coin, Lucky Egg, and Exp Share boost the rewards from battles!
+- `/backpack` Improvements:
+  - The backpack is now scrollable is can be filtered by category
+  - Add an option to show item descriptions
+- Battle adjustments:
+  - Rework how disabling moves work
+  - Rework the Sturdy ability
+
+### 1.2.1 Twitch Plays Pokemon (Re-Run) (2/13)
 
 - Twitch Plays Pokemon Re-run: Celebrating Twitch Plays Pokemon Anniversary
   - Catch limited time TPP-inspired Pokemon in `/gacha`

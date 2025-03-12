@@ -57,9 +57,14 @@ const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { addItems } = require("../utils/trainerUtils");
 const { equipmentConfig } = require("../config/equipmentConfig");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
+const { heldItemIdEnum } = require("../enums/battleEnums");
 
 const DAILY_MONEY = process.env.STAGE === stageNames.ALPHA ? 100000 : 300;
 
+/**
+ * @param {Trainer} trainer
+ * @returns {Promise<{data?: FlattenedRewards, err?: string}>}
+ */
 const drawDaily = async (trainer) => {
   // check if new day; if in alpha, ignore
   if (!trainer.claimedDaily || process.env.STAGE === stageNames.ALPHA) {
@@ -170,6 +175,7 @@ const BASE_SHINY_CHANCE = process.env.STAGE === stageNames.ALPHA ? 2 : 1024;
  * @param {boolean?=} options.isShiny
  * @param {number=} options.shinyChance
  * @param {boolean?=} options.betterIvs
+ * @param {number=} options.heldItemChance
  * @returns {Pokemon}
  */
 const generateRandomPokemon = (
@@ -181,6 +187,7 @@ const generateRandomPokemon = (
     shinyChance = BASE_SHINY_CHANCE,
     isShiny = null,
     betterIvs = false,
+    heldItemChance = 0.02,
   } = {}
 ) => {
   const speciesData = pokemonConfig[pokemonId];
@@ -205,6 +212,11 @@ const generateRandomPokemon = (
     }
   }
 
+  const hasHeldItem = Math.random() < heldItemChance;
+  const heldItemId = hasHeldItem
+    ? drawIterable(Object.values(heldItemIdEnum), 1)[0]
+    : undefined;
+
   isShiny =
     isShiny === null ? drawUniform(0, shinyChance - 1, 1)[0] === 0 : isShiny;
   const shouldLock =
@@ -220,6 +232,7 @@ const generateRandomPokemon = (
     ivs,
     natureId: `${drawUniform(0, 24, 1)[0]}`,
     abilityId: `${drawDiscrete(speciesData.abilities, 1)[0]}`,
+    heldItemId,
     item: "",
     moveIds: [],
     shiny: isShiny,

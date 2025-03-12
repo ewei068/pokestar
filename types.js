@@ -62,6 +62,10 @@
  *  money?: number,
  *  backpack?: FlattenedBackpack
  * }} FlattenedRewards
+ *
+ * These are the same type for now
+ * @typedef {Rewards} Cost
+ * @typedef {FlattenedRewards} FlattenedCost
  */
 
 /**
@@ -145,7 +149,11 @@
  * }} EquipmentSet
  */
 
-/** @typedef {[number, number, number, number, number, number]} StatArray */
+/**
+ * @typedef {[number, number, number, number, number, number]} StatArray
+ * @typedef {"hp" | "atk" | "def" | "spa" | "spd" | "spe"} StatId
+ * @typedef {"atk" | "def" | "spa" | "spd" | "spe"} StatIdNoHP
+ */
 
 /**
  * @typedef {object} Pokemon
@@ -171,6 +179,7 @@
  * Important info (IDK)
  * @property {NatureEnum} natureId
  * @property {AbilityIdEnum | string | number} abilityId
+ * @property {HeldItemIdEnum?} heldItemId
  * @property {boolean} shiny
  * @property {MoveIdEnum[]} moveIds
  *

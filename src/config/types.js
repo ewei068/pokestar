@@ -2,7 +2,7 @@
 /** @typedef {import("./pokemonConfig").GrowthRateEnum} GrowthRateEnum */
 /** @typedef {import("./pokemonConfig").NatureEnum} NatureEnum  */
 /** @typedef {import("./pokemonConfig").RarityEnum} RarityEnum  */
-/** @typedef {import("./pokemonConfig").StatEnum} StatEnum */
+/** @typedef {import("./pokemonConfig").StatIndexEnum} StatIndexEnum */
 /** @typedef {import("./equipmentConfig").EquipmentModifierSlotEnum} EquipmentModifierSlotEnum */
 /** @typedef {import("./equipmentConfig").EquipmentModifierTypeEnum} EquipmentModifierTypeEnum */
 /** @typedef {import("./equipmentConfig").EquipmentTypeEnum} EquipmentTypeEnum */
@@ -15,6 +15,8 @@
 /** @typedef {import("./npcConfig").NpcDifficultyEnum} NpcDifficultyEnum  */
 /** @typedef {import("./backpackConfig").BackpackItemEnum} BackpackItemEnum */
 /** @typedef {import("./backpackConfig").BackpackCategoryEnum} BackpackCategoryEnum */
+/** @typedef {import("./backpackConfig").CraftableItemData} CraftableItemData */
+/** @typedef {import("./backpackConfig").CraftableItemEnum} CraftableItemEnum */
 /** @typedef {import("./shopConfig").ShopItemEnum} ShopItemEnum */
 /** @typedef {import("./shopConfig").ShopCategoryEnum} ShopCategoryEnum */
 /** @typedef {import("./commandConfig").CommandCategoryEnum} CommandCategoryEnum */
@@ -33,6 +35,7 @@
  */
 
 /**
+ * @typedef {"eviolite" | "testTag"} PokemonTag
  * @typedef {{
  *  name: string,
  *  emoji: string,
@@ -55,5 +58,6 @@
  *  noGacha?: boolean,
  *  mythicConfig?: any,
  *  unobtainable?: boolean
+ *  tags?: PokemonTag[]
  * }} PokemonConfigData
  */

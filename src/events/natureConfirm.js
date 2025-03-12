@@ -9,7 +9,7 @@
 const { getState } = require("../services/state");
 const {
   getPokemon,
-  calculateAndUpdatePokemonStats,
+  DEPRECATEDcalculateAndUpdatePokemonStats: calculateAndUpdatePokemonStats,
 } = require("../services/pokemon");
 const { natureConfig, pokemonConfig } = require("../config/pokemonConfig");
 const { getTrainer, updateTrainer } = require("../services/trainer");

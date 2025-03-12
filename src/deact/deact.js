@@ -323,7 +323,13 @@ function useState(initialValue, ref) {
   const value = ref.finishedMounting ? ref.oldState[index] : initialValue;
   ref.state.push(value);
   // shouldn't have to use useCallback because `ref` and `index` should never change and the setState function should never change
-  const setStateRef = useRef((newValue) => {
+  const setStateRef = useRef((newValueOrCallback) => {
+    let newValue;
+    if (typeof newValueOrCallback === "function") {
+      newValue = newValueOrCallback(ref.state[index]);
+    } else {
+      newValue = newValueOrCallback;
+    }
     if (newValue === ref.state[index]) {
       return;
     }

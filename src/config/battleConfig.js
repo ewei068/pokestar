@@ -290,7 +290,7 @@ const targetPatterns = Object.freeze({
   X: "X-shape",
 });
 
-const statToBattleStat = /** @type {const} */ ([
+const statIndexToBattleStat = /** @type {const} */ ([
   "hp",
   "atk",
   "def",
@@ -298,7 +298,7 @@ const statToBattleStat = /** @type {const} */ ([
   "spd",
   "spe",
 ]);
-const statToBaseStat = /** @type {const} */ ([
+const statIndexToBaseStat = /** @type {const} */ ([
   "maxHp",
   "batk",
   "bdef",
@@ -306,6 +306,12 @@ const statToBaseStat = /** @type {const} */ ([
   "bspd",
   "bspe",
 ]);
+/**
+ * @param {StatId} stat
+ */
+const battleStatToBaseStat = function (stat) {
+  return statIndexToBaseStat[statIndexToBattleStat.indexOf(stat)];
+};
 
 /** @typedef {Enum<effectTypes>} EffectTypeEnum */
 const effectTypes = Object.freeze({
@@ -329,14 +335,14 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterAtkUp.duration < currentDuration) {
           target.effectIds.greaterAtkUp.duration = currentDuration;
         }
-      } else {
-        battle.addToLog(`${target.name}'s Attack rose sharply!`);
-        target.atk += Math.floor(target.batk * 0.75);
+        target.addStatMult("atk", -0.5);
       }
+      battle.addToLog(`${target.name}'s Attack rose sharply!`);
+      target.addStatMult("atk", 0.8);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Attack boost wore off!`);
-      target.atk -= Math.floor(target.batk * 0.75);
+      target.addStatMult("atk", -0.8);
     },
   },
   atkDown: {
@@ -354,12 +360,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Attack fell!`);
-        target.atk -= Math.floor(target.batk * 0.33);
+        target.addStatMult("atk", -0.33);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Attack drop faded!`);
-      target.atk += Math.floor(target.batk * 0.33);
+      target.addStatMult("atk", 0.33);
     },
   },
   greaterAtkDown: {
@@ -375,14 +381,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterAtkDown.duration < currentDuration) {
           target.effectIds.greaterAtkDown.duration = currentDuration;
         }
-      } else {
-        battle.addToLog(`${target.name}'s Attack fell sharply!`);
-        target.atk -= Math.floor(target.batk * 0.5);
       }
+      battle.addToLog(`${target.name}'s Attack fell sharply!`);
+      target.addStatMult("atk", -0.5);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Attack drop faded!`);
-      target.atk += Math.floor(target.batk * 0.5);
+      target.addStatMult("atk", 0.5);
     },
   },
   defUp: {
@@ -400,12 +405,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Defense rose!`);
-        target.def += Math.floor(target.bdef * 0.5);
+        target.addStatMult("def", 0.5);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Defense boost faded!`);
-      target.def -= Math.floor(target.bdef * 0.5);
+      target.addStatMult("def", -0.5);
     },
   },
   greaterDefUp: {
@@ -422,13 +427,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterDefUp.duration < currentDuration) {
           target.effectIds.greaterDefUp.duration = currentDuration;
         }
-        target.def -= Math.floor(target.bdef * 0.5);
+        target.addStatMult("def", -0.5);
       }
-      target.def += Math.floor(target.bdef * 0.75);
+      target.addStatMult("def", 0.8);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Defense boost faded!`);
-      target.def -= Math.floor(target.bdef * 0.75);
+      target.addStatMult("def", -0.8);
     },
   },
   defDown: {
@@ -446,12 +451,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Defense fell!`);
-        target.def -= Math.floor(target.bdef * 0.33);
+        target.addStatMult("def", -0.33);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Defense drop faded!`);
-      target.def += Math.floor(target.bdef * 0.33);
+      target.addStatMult("def", 0.33);
     },
   },
   greaterDefDown: {
@@ -468,13 +473,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterDefDown.duration < currentDuration) {
           target.effectIds.greaterDefDown.duration = currentDuration;
         }
-        target.def += Math.floor(target.bdef * 0.33);
+        target.addStatMult("def", 0.33);
       }
-      target.def -= Math.floor(target.bdef * 0.5);
+      target.addStatMult("def", -0.5);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Defense drop faded!`);
-      target.def += Math.floor(target.bdef * 0.5);
+      target.addStatMult("def", 0.5);
     },
   },
   spaUp: {
@@ -492,12 +497,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Special Attack rose!`);
-        target.spa += Math.floor(target.bspa * 0.5);
+        target.addStatMult("spa", 0.5);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Attack boost faded!`);
-      target.spa -= Math.floor(target.bspa * 0.5);
+      target.addStatMult("spa", -0.5);
     },
   },
   greaterSpaUp: {
@@ -514,13 +519,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterSpaUp.duration < currentDuration) {
           target.effectIds.greaterSpaUp.duration = currentDuration;
         }
-        target.spa -= Math.floor(target.bspa * 0.5);
+        target.addStatMult("spa", -0.5);
       }
-      target.spa += Math.floor(target.bspa * 0.75);
+      target.addStatMult("spa", 0.8);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Attack boost faded!`);
-      target.spa -= Math.floor(target.bspa * 0.75);
+      target.addStatMult("spa", -0.8);
     },
   },
   spaDown: {
@@ -538,12 +543,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Special Attack fell!`);
-        target.spa -= Math.floor(target.bspa * 0.33);
+        target.addStatMult("spa", -0.33);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Attack drop faded!`);
-      target.spa += Math.floor(target.bspa * 0.33);
+      target.addStatMult("spa", 0.33);
     },
   },
   greaterSpaDown: {
@@ -560,13 +565,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterSpaDown.duration < currentDuration) {
           target.effectIds.greaterSpaDown.duration = currentDuration;
         }
-        target.spa += Math.floor(target.bspa * 0.33);
+        target.addStatMult("spa", 0.33);
       }
-      target.spa -= Math.floor(target.bspa * 0.5);
+      target.addStatMult("spa", -0.5);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Attack drop faded!`);
-      target.spa += Math.floor(target.bspa * 0.5);
+      target.addStatMult("spa", 0.5);
     },
   },
   spdUp: {
@@ -584,12 +589,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Special Defense rose!`);
-        target.spd += Math.floor(target.bspd * 0.5);
+        target.addStatMult("spd", 0.5);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Defense boost faded!`);
-      target.spd -= Math.floor(target.bspd * 0.5);
+      target.addStatMult("spd", -0.5);
     },
   },
   greaterSpdUp: {
@@ -606,13 +611,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterSpdUp.duration < currentDuration) {
           target.effectIds.greaterSpdUp.duration = currentDuration;
         }
-        target.spd -= Math.floor(target.bspd * 0.5);
+        target.addStatMult("spd", -0.5);
       }
-      target.spd += Math.floor(target.bspd * 0.75);
+      target.addStatMult("spd", 0.8);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Defense boost faded!`);
-      target.spd -= Math.floor(target.bspd * 0.75);
+      target.addStatMult("spd", -0.8);
     },
   },
   spdDown: {
@@ -630,12 +635,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Special Defense fell!`);
-        target.spd -= Math.floor(target.bspd * 0.33);
+        target.addStatMult("spd", -0.33);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Defense drop faded!`);
-      target.spd += Math.floor(target.bspd * 0.33);
+      target.addStatMult("spd", 0.33);
     },
   },
   greaterSpdDown: {
@@ -652,13 +657,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterSpdDown.duration < currentDuration) {
           target.effectIds.greaterSpdDown.duration = currentDuration;
         }
-        target.spd += Math.floor(target.bspd * 0.33);
+        target.addStatMult("spd", 0.33);
       }
-      target.spd -= Math.floor(target.bspd * 0.5);
+      target.addStatMult("spd", -0.5);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Special Defense drop faded!`);
-      target.spd += Math.floor(target.bspd * 0.5);
+      target.addStatMult("spd", 0.5);
     },
   },
   speUp: {
@@ -676,12 +681,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Speed rose!`);
-        target.spe += Math.floor(target.bspe * 0.4);
+        target.addStatMult("spe", 0.4);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Speed boost faded!`);
-      target.spe -= Math.floor(target.bspe * 0.4);
+      target.addStatMult("spe", -0.4);
     },
   },
   greaterSpeUp: {
@@ -698,13 +703,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterSpeUp.duration < currentDuration) {
           target.effectIds.greaterSpeUp.duration = currentDuration;
         }
-        target.spe -= Math.floor(target.bspe * 0.4);
+        target.addStatMult("spe", -0.4);
       }
-      target.spe += Math.floor(target.bspe * 0.6);
+      target.addStatMult("spe", 0.65);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Speed boost faded!`);
-      target.spe -= Math.floor(target.bspe * 0.6);
+      target.addStatMult("spe", -0.65);
     },
   },
   speDown: {
@@ -722,12 +727,12 @@ const effectConfig = Object.freeze({
         }
       } else {
         battle.addToLog(`${target.name}'s Speed fell!`);
-        target.spe -= Math.floor(target.bspe * 0.33);
+        target.addStatMult("spe", -0.25);
       }
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Speed drop faded!`);
-      target.spe += Math.floor(target.bspe * 0.33);
+      target.addStatMult("spe", 0.25);
     },
   },
   greaterSpeDown: {
@@ -744,13 +749,13 @@ const effectConfig = Object.freeze({
         if (target.effectIds.greaterSpeDown.duration < currentDuration) {
           target.effectIds.greaterSpeDown.duration = currentDuration;
         }
-        target.spe += Math.floor(target.bspe * 0.33);
+        target.addStatMult("spe", 0.25);
       }
-      target.spe -= Math.floor(target.bspe * 0.5);
+      target.addStatMult("spe", -0.4);
     },
     effectRemove(battle, target) {
       battle.addToLog(`${target.name}'s Speed drop faded!`);
-      target.spe += Math.floor(target.bspe * 0.5);
+      target.addStatMult("spe", 0.4);
     },
   },
   accDown: {
@@ -1643,7 +1648,8 @@ const effectConfig = Object.freeze({
           battle.addToLog(`${targetPokemon.name} was hurt by Stealth Rock!`);
           const damage = Math.floor((targetPokemon.maxHp * mult) / 12);
           initialArgs.source.dealDamage(damage, affectedPokemon, {
-            type: "stealthRock",
+            type: "effect",
+            id: "stealthRock",
           });
         },
       };
@@ -1667,6 +1673,7 @@ const effectConfig = Object.freeze({
       const { buffListenerId } = args;
       battle.eventHandler.unregisterListener(buffListenerId);
     },
+    tags: ["hazard"],
   },
   spikes: {
     name: "Spikes",
@@ -1690,7 +1697,8 @@ const effectConfig = Object.freeze({
           battle.addToLog(`${targetPokemon.name} was hurt by Spikes!`);
           const damage = Math.floor(targetPokemon.maxHp / 12);
           initialArgs.source.dealDamage(damage, affectedPokemon, {
-            type: "spikes",
+            type: "effect",
+            id: "spikes",
           });
         },
       };
@@ -1710,7 +1718,8 @@ const effectConfig = Object.freeze({
           battle.addToLog(`${sourcePokemon.name} was hurt by Spikes!`);
           const damage = Math.floor(sourcePokemon.maxHp / 12);
           initialArgs.source.dealDamage(damage, affectedPokemon, {
-            type: "spikes",
+            type: "effect",
+            id: "spikes",
           });
         },
       };
@@ -1734,6 +1743,7 @@ const effectConfig = Object.freeze({
       const { beforeMoveListenerId } = args;
       battle.eventHandler.unregisterListener(beforeMoveListenerId);
     },
+    tags: ["hazard"],
   },
   disable: {
     name: "Disable",
@@ -2357,10 +2367,8 @@ const effectConfig = Object.freeze({
       if (!oldMoveId) return;
 
       delete target.moveIds[oldMoveId];
-      target.moveIds[mimicMoveId] = {
-        cooldown: 0,
-        disabled: false,
-      };
+      target.removeMoveCooldown(mimicMoveId, target);
+      target.enableMove(mimicMoveId, target);
       battle.addToLog(`${target.name} is mimicking ${moveData.name}!`);
     },
     effectRemove(_battle, target, _args, initialArgs) {
@@ -2369,10 +2377,8 @@ const effectConfig = Object.freeze({
       const { oldMoveId } = initialArgs;
 
       delete target.moveIds[mimicMoveId];
-      target.moveIds[oldMoveId] = {
-        cooldown: 0,
-        disabled: false,
-      };
+      target.removeMoveCooldown(oldMoveId, target);
+      target.enableMove(oldMoveId, target);
     },
   },
   gearFive: {
@@ -2978,6 +2984,8 @@ const moveConfig = Object.freeze({
         battle.weather.weatherId !== weatherConditions.SUN
       );
     },
+    tags: ["charge"],
+    chargeMoveEffectId: "absorbLight",
   },
   m77: {
     name: "Poison Powder",
@@ -3135,6 +3143,8 @@ const moveConfig = Object.freeze({
     silenceIf(_battle, pokemon) {
       return pokemon.effectIds.burrowed === undefined;
     },
+    tags: ["charge"],
+    chargeMoveEffectId: "burrowed",
   },
   m92: {
     name: "Toxic",
@@ -3529,6 +3539,8 @@ const moveConfig = Object.freeze({
     silenceIf(_battle, pokemon) {
       return pokemon.effectIds.skyCharge === undefined;
     },
+    tags: ["charge"],
+    chargeMoveEffectId: "skyCharge",
   },
   m147: {
     name: "Spore",
@@ -4818,6 +4830,8 @@ const moveConfig = Object.freeze({
     silenceIf(_battle, pokemon) {
       return pokemon.effectIds.projectingSpirit === undefined;
     },
+    tags: ["charge"],
+    chargeMoveEffectId: "projectingSpirit",
   },
   m332: {
     name: "Aerial Ace",
@@ -4905,6 +4919,8 @@ const moveConfig = Object.freeze({
     silenceIf(_battle, pokemon) {
       return pokemon.effectIds.sprungUp === undefined;
     },
+    tags: ["charge"],
+    chargeMoveEffectId: "sprungUp",
   },
   m344: {
     name: "Volt Tackle",
@@ -7064,7 +7080,7 @@ const moveExecutes = {
       // 5% of atk true damage
       const damageToDeal =
         calculateDamage(moveData, source, target, miss) +
-        Math.floor(source.atk * 0.07);
+        Math.floor(source.getStat("atk") * 0.07);
       source.dealDamage(damageToDeal, target, {
         type: "move",
         moveId,
@@ -7488,7 +7504,7 @@ const moveExecutes = {
       target.applyEffect("defUp", 2, source);
       // gain 15% def as shield
       target.applyEffect("shield", 2, source, {
-        shield: Math.floor(target.getDef() * 0.15),
+        shield: Math.floor(target.getStat("def") * 0.15),
       });
     }
   },
@@ -7513,7 +7529,7 @@ const moveExecutes = {
       target.applyEffect("defUp", 2, source);
       // gain 15% def as shield
       target.applyEffect("shield", 2, source, {
-        shield: Math.floor(target.getDef() * 0.15),
+        shield: Math.floor(target.getStat("def") * 0.15),
       });
     }
   },
@@ -7525,7 +7541,7 @@ const moveExecutes = {
       target.applyEffect("rollout", 4, source);
       // gain 10% def as shield
       target.applyEffect("shield", 2, source, {
-        shield: Math.floor(target.getDef() * 0.1),
+        shield: Math.floor(target.getStat("def") * 0.1),
       });
     }
   },
@@ -7665,7 +7681,9 @@ const moveExecutes = {
 
       // if not miss, 20% + sourceatk/enemyatk chance to flinch
       const flinchChance =
-        source.atk > target.atk ? 0.2 + (source.atk / target.atk - 1) : 0.2;
+        source.getStat("atk") > target.getStat("atk")
+          ? 0.2 + (source.getStat("atk") / target.getStat("atk") - 1)
+          : 0.2;
       if (!miss && Math.random() < flinchChance) {
         target.applyEffect("flinched", 1, source);
       }
@@ -7796,7 +7814,10 @@ const moveExecutes = {
     );
     for (const target of surroundingTargets) {
       // flinch chance = (30 + source speed/10)
-      const flinchChance = Math.min(0.3 + source.getSpe() / 10 / 100, 0.75);
+      const flinchChance = Math.min(
+        0.3 + source.getStat("spe") / 10 / 100,
+        0.75
+      );
       if (Math.random() < flinchChance) {
         target.applyEffect("flinched", 1, source);
       }
@@ -7843,7 +7864,7 @@ const moveExecutes = {
       // 5% of atk true damage
       const damageToDeal =
         calculateDamage(moveData, source, target, miss) +
-        (miss ? 0 : Math.floor(source.atk * 0.05));
+        (miss ? 0 : Math.floor(source.getStat("atk") * 0.05));
       source.dealDamage(damageToDeal, target, {
         type: "move",
         moveId,
@@ -8215,7 +8236,7 @@ const moveExecutes = {
       target.dealDamage(halfHp, target, {
         type: "bellyDrum",
       });
-      target.atk += target.batk;
+      target.multiplyStatMult("atk", 2);
       battle.addToLog(`${target.name} doubled its attack!`);
 
       // give 100 cr
@@ -8744,7 +8765,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // check if user def is higher, if so apply effects before damage
-      const beforeDamage = source.getDef() > target.getDef();
+      const beforeDamage = source.getStat("def") > target.getStat("def");
       if (!miss && beforeDamage) {
         // apply def down 2 turns
         target.applyEffect("defDown", 2, source);
@@ -9372,7 +9393,7 @@ const moveExecutes = {
       let damageToDeal = calculateDamage(moveData, source, target, miss);
       // if not miss, deal 5% true damage user spa + hp
       if (!miss) {
-        damageToDeal += Math.floor((source.spa + source.hp) * 0.05);
+        damageToDeal += Math.floor((source.getStat("spa") + source.hp) * 0.05);
       }
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -9523,7 +9544,9 @@ const moveExecutes = {
       target.applyEffect("spdUp", 3, source);
       // get 10% defenses as shield
       target.applyEffect("shield", 3, source, {
-        shield: Math.floor(target.getDef() * 0.1 + target.getSpd() * 0.1),
+        shield: Math.floor(
+          target.getStat("def") * 0.1 + target.getStat("spd") * 0.1
+        ),
       });
     }
   },
@@ -9631,7 +9654,7 @@ const moveExecutes = {
       target.applyEffect("greaterDefUp", 3, source);
       // get 15% def as shield
       target.applyEffect("shield", 3, source, {
-        shield: Math.floor(target.getDef() * 0.15),
+        shield: Math.floor(target.getStat("def") * 0.15),
       });
     }
   },
@@ -9654,13 +9677,13 @@ const moveExecutes = {
         target.applyEffect("greaterDefUp", 2, source);
         // get 20% def as shield
         target.applyEffect("shield", 2, source, {
-          shield: Math.floor(source.getDef() * 0.2),
+          shield: Math.floor(source.getStat("def") * 0.2),
         });
       } else {
         target.applyEffect("defUp", 2, source);
         // get 5% def as shield
         target.applyEffect("shield", 2, source, {
-          shield: Math.floor(source.getDef() * 0.05),
+          shield: Math.floor(source.getStat("def") * 0.05),
         });
       }
     }
@@ -9762,7 +9785,7 @@ const moveExecutes = {
       // 5% atk true damage
       const damageToDeal =
         calculateDamage(moveData, source, target, miss) +
-        Math.round(source.atk * 0.05);
+        Math.round(source.getStat("atk") * 0.05);
       // deal half damage if target is not primary target
       source.dealDamage(
         Math.round(damageToDeal * (primaryTarget !== target ? 0.5 : 1)),
@@ -9862,7 +9885,7 @@ const moveExecutes = {
   ) {
     const moveId = "m354-1";
     const moveData = getMove(moveId);
-    const useAtk = source.atk > source.spa;
+    const useAtk = source.getStat("atk") > source.getStat("spa");
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
@@ -9892,7 +9915,9 @@ const moveExecutes = {
     for (const target of allTargets) {
       // get 25% def, spd as shield
       target.applyEffect("shield", 3, source, {
-        shield: Math.floor(source.getDef() * 0.25 + source.getSpd() * 0.25),
+        shield: Math.floor(
+          source.getStat("def") * 0.25 + source.getStat("spd") * 0.25
+        ),
       });
     }
   },
@@ -10586,14 +10611,14 @@ const moveExecutes = {
 
     // get mean spe of all targets
     const meanSpe =
-      targets.reduce((acc, p) => acc + p.getSpe(), 0) / targets.length;
+      targets.reduce((acc, p) => acc + p.getStat("spe"), 0) / targets.length;
     // for all targets apply effect:
     // if spe > 1.25 * meanSpe, greater spe down
     // if spe > meanSpe, spe down
     // if spe < meanSpe, spe up
     // if spe < 0.75 * meanSpe, greater spe up
     for (const target of targets) {
-      const spe = target.getSpe();
+      const spe = target.getStat("spe");
       if (spe > 1.25 * meanSpe) {
         target.applyEffect("greaterSpeDown", 3, source);
       } else if (spe > meanSpe) {
@@ -10894,11 +10919,11 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       let speedPower = 0;
-      if (source.getSpe() < 200) {
+      if (source.getStat("spe") < 200) {
         speedPower = 45;
-      } else if (source.getSpe() < 400) {
+      } else if (source.getStat("spe") < 400) {
         speedPower = 30;
-      } else if (source.getSpe() < 600) {
+      } else if (source.getStat("spe") < 600) {
         speedPower = 20;
       } else {
         speedPower = 10;
@@ -10923,7 +10948,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       // use target's attack
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
-        attack: target.atk,
+        attack: target.getStat("atk"),
       });
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -11083,7 +11108,7 @@ const moveExecutes = {
         target,
         missedTargets.includes(target),
         {
-          power: Math.floor(moveData.power + source.getSpe() * 0.2),
+          power: Math.floor(moveData.power + source.getStat("spe") * 0.2),
         }
       );
       damageDealt += source.dealDamage(damageToDeal, target, {
@@ -11116,7 +11141,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
-        power: Math.floor(moveData.power + source.getDef() * 0.1),
+        power: Math.floor(moveData.power + source.getStat("def") * 0.1),
       });
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -11447,7 +11472,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
         defStat:
-          target.getDef() > target.getSpd()
+          target.getStat("def") > target.getStat("spd")
             ? damageTypes.SPECIAL
             : damageTypes.PHYSICAL,
       });
@@ -11476,7 +11501,7 @@ const moveExecutes = {
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
         defStat:
-          target.getDef() > target.getSpd()
+          target.getStat("def") > target.getStat("spd")
             ? damageTypes.SPECIAL
             : damageTypes.PHYSICAL,
       });
@@ -11503,7 +11528,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // heal hp equal to targets atk
-      const healAmount = target.atk;
+      const healAmount = target.getStat("atk");
       source.giveHeal(healAmount, source, {
         type: "move",
         moveId,
@@ -11916,7 +11941,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // ignore miss
       // def is min user, target spd
-      const defense = Math.min(source.spd, target.spd);
+      const defense = Math.min(source.getStat("spd"), source.getStat("spd"));
       const damageToDeal = calculateDamage(moveData, source, target, false, {
         defense,
       });
@@ -11960,6 +11985,7 @@ const moveExecutes = {
  * @param {Battle} battle
  * @param {BattlePokemon} source
  * @param {BattlePokemon} target
+ * @param {any} properties
  */
 
 /** @typedef {Keys<typeof abilityConfig>} LegacyAbilityIdEnum */
@@ -12069,7 +12095,7 @@ const abilityConfig = Object.freeze({
   5: {
     name: "Sturdy",
     description:
-      "The first time the user takes fatal damage, the user instead survives with 1 HP and gains invulnerability to direct damage for 1 turn.",
+      "When taking fatal damage from full health, the user instead survives with 1 HP and gains invulnerability to direct damage for 1 turn.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -12081,15 +12107,12 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          // attempt to get ability data
-          const { ability } = initialArgs.pokemon;
-          if (!ability || ability.abilityId !== "5" || !ability.data) {
-            return;
-          }
-          const abilityData = ability.data;
-
-          // if fatal damage, set hp to 1
-          if (args.damage > targetPokemon.hp) {
+          // if fatal damage from full hp, set hp to 1
+          const damage = Math.min(args.damage, args.maxDamage);
+          if (
+            damage > targetPokemon.hp &&
+            targetPokemon.hp >= targetPokemon.maxHp
+          ) {
             args.damage = targetPokemon.hp - 1;
             args.maxDamage = Math.min(args.maxDamage, args.damage);
             targetPokemon.battle.addToLog(
@@ -12097,10 +12120,6 @@ const abilityConfig = Object.freeze({
             );
             // gain move invuln
             target.applyEffect("moveInvulnerable", 1, target, {});
-            // remove event listener
-            targetPokemon.battle.eventHandler.unregisterListener(
-              abilityData.listenerId
-            );
           }
         },
       };
@@ -12570,11 +12589,11 @@ const abilityConfig = Object.freeze({
 
           // get pokemon with highest atk
           let highestAtkPokemon = enemyPokemons[0];
-          let maxAtk = enemyPokemons[0].atk;
+          let maxAtk = enemyPokemons[0].getStat("atk");
           for (const pokemon of enemyPokemons) {
-            if (pokemon.atk > maxAtk) {
+            if (pokemon.getStat("atk") > maxAtk) {
               highestAtkPokemon = pokemon;
-              maxAtk = pokemon.atk;
+              maxAtk = pokemon.getStat("atk");
             }
           }
           battle.addToLog(
@@ -12584,11 +12603,11 @@ const abilityConfig = Object.freeze({
 
           // get pokemon with highest spe
           let highestSpePokemon = enemyPokemons[0];
-          let maxSpe = enemyPokemons[0].getSpe();
+          let maxSpe = enemyPokemons[0].getStat("spe");
           for (const pokemon of enemyPokemons) {
-            if (pokemon.getSpe() > maxSpe) {
+            if (pokemon.getStat("spe") > maxSpe) {
               highestSpePokemon = pokemon;
-              maxSpe = pokemon.getSpe();
+              maxSpe = pokemon.getStat("spe");
             }
           }
           if (highestAtkPokemon === highestSpePokemon) {
@@ -13070,10 +13089,10 @@ const abilityConfig = Object.freeze({
       "Increases user's speed by 1/3 of its level. Increases speed by 50% (multiplicative with initial buff) in rain.",
     abilityAdd(battle, _source, target) {
       battle.addToLog(`${target.name}'s Swift Swim increases its speed!`);
-      target.spe += Math.floor(target.level * 0.333);
+      target.addFlatStatBoost("spe", Math.floor(target.level * 0.333));
     },
     abilityRemove(_battle, _source, target) {
-      target.spe -= Math.floor(target.level * 0.333);
+      target.addFlatStatBoost("spe", -Math.floor(target.level * 0.333));
     },
   },
   34: {
@@ -13082,10 +13101,10 @@ const abilityConfig = Object.freeze({
       "Increases user's speed by 1/3 of its level. Increases speed by 50% (multiplicative with initial buff) in harsh sunlight.",
     abilityAdd(battle, _source, target) {
       battle.addToLog(`${target.name}'s Chlorophyll increases its speed!`);
-      target.spe += Math.floor(target.level * 0.333);
+      target.addFlatStatBoost("spe", Math.floor(target.level * 0.333));
     },
     abilityRemove(_battle, _source, target) {
-      target.spe -= Math.floor(target.level * 0.333);
+      target.addFlatStatBoost("spe", -Math.floor(target.level * 0.333));
     },
   },
   35: {
@@ -13138,15 +13157,13 @@ const abilityConfig = Object.freeze({
   },
   37: {
     name: "Huge Power",
-    description: "Doubles user's attack.",
+    description: "Doubles user's attack (x).",
     abilityAdd(battle, _source, target) {
       battle.addToLog(`${target.name}'s Huge Power increases its attack!`);
-      target.atk += target.batk;
-      target.batk += target.batk;
+      target.multiplyStatMult("atk", 2);
     },
     abilityRemove(_battle, _source, target) {
-      target.batk = Math.floor(target.batk / 2);
-      target.atk -= target.batk;
+      target.multiplyStatMult("atk", 0.5);
     },
   },
   38: {
@@ -13834,7 +13851,7 @@ const abilityConfig = Object.freeze({
             return;
           }
 
-          targetPokemon.atk += targetPokemon.batk;
+          targetPokemon.multiplyStatMult("atk", 2);
           targetPokemon.battle.addToLog(
             `${targetPokemon.name}'s Guts increases its attack!`
           );
@@ -14797,7 +14814,9 @@ const abilityConfig = Object.freeze({
           }
 
           // increase damage by 8% of defense
-          const damageIncrease = Math.round(sourcePokemon.getDef() * 0.08);
+          const damageIncrease = Math.round(
+            sourcePokemon.getStat("def") * 0.08
+          );
           args.damage += damageIncrease;
           targetPokemon.battle.addToLog(
             `${sourcePokemon.name}'s Heavy Metal increases the damage!`
@@ -15235,8 +15254,8 @@ const abilityConfig = Object.freeze({
             `${pokemon.name}'s Mind Presence increases its combat readiness and attacking stats!`
           );
           pokemon.boostCombatReadiness(pokemon, 10, false);
-          pokemon.atk += Math.round(pokemon.atk * 0.02);
-          pokemon.spa += Math.round(pokemon.spa * 0.02);
+          pokemon.multiplyStatMult("atk", 1.02);
+          pokemon.multiplyStatMult("spa", 1.02);
         },
       };
       const damageListener = {
@@ -15529,9 +15548,9 @@ const abilityConfig = Object.freeze({
           pokemon.battle.addToLog(
             `${pokemon.name}'s Spirit Power increases its attacking stats and speed!`
           );
-          pokemon.atk += Math.floor(pokemon.atk * 0.2);
-          pokemon.spa += Math.floor(pokemon.spa * 0.2);
-          pokemon.spe += Math.floor(pokemon.spe * 0.2);
+          pokemon.multiplyStatMult("atk", 1.2);
+          pokemon.multiplyStatMult("spa", 1.2);
+          pokemon.multiplyStatMult("spe", 1.2);
         },
       };
       const damageListener = {
@@ -15663,7 +15682,7 @@ const abilityConfig = Object.freeze({
   20006: {
     name: "Anarchy",
     description:
-      "Every other turn, the user enters Anarchy mode. This increases the user's speed by 100%, but decreases accuracy by 50%. Starts the battle in Anarchy mode.",
+      "Every other turn, the user enters Anarchy mode. This increases the user's speed by 100% (+), but decreases accuracy by 50% (+). Starts the battle in Anarchy mode.",
     abilityAdd(battle, _source, target) {
       const listener = {
         initialArgs: {
@@ -15687,13 +15706,13 @@ const abilityConfig = Object.freeze({
           if (abilityData.inAnarchyMode) {
             abilityData.inAnarchyMode = false;
             battle.addToLog(`${initialArgs.pokemon.name} exits Anarchy mode!`);
-            initialArgs.pokemon.spe -= initialArgs.pokemon.bspe;
+            initialArgs.pokemon.addStatMult("spe", -1);
             initialArgs.pokemon.acc += 50;
           } else {
             // otherwise, make in anarchy mode
             abilityData.inAnarchyMode = true;
             battle.addToLog(`${initialArgs.pokemon.name} enters Anarchy mode!`);
-            initialArgs.pokemon.spe += initialArgs.pokemon.bspe;
+            initialArgs.pokemon.addStatMult("spe", 1);
             initialArgs.pokemon.acc -= 50;
           }
         },
@@ -15706,7 +15725,7 @@ const abilityConfig = Object.freeze({
       );
 
       // start in anarchy mode
-      target.spe += target.bspe;
+      target.addStatMult("spe", 1);
       target.acc -= 50;
       battle.addToLog(`${target.name} enters Anarchy mode!`);
 
@@ -15726,7 +15745,7 @@ const abilityConfig = Object.freeze({
       // if in anarchy mode, remove anarchy mode
       if (abilityData.inAnarchyMode) {
         abilityData.inAnarchyMode = false;
-        target.spe -= target.bspe;
+        target.addStatMult("spe", -1);
         target.acc += 50;
       }
     },
@@ -15839,15 +15858,24 @@ const abilityConfig = Object.freeze({
   },
   20009: {
     name: "Royalty",
-    description: "Boosts the user's Special Attack by 30% of its Attack.",
+    description:
+      "Boosts the user's Special Attack by 30% of its starting Attack.",
     abilityAdd(battle, _source, target) {
       const { batk } = target;
-      target.spa += Math.floor(batk * 0.3);
+      const flatStatBoost = Math.floor(batk * 0.3);
+      target.addFlatStatBoost("spa", flatStatBoost);
       battle.addToLog(`${target.name}'s Royalty boosts its Special Attack!`);
-      return {};
+      return {
+        statBoost: flatStatBoost,
+      };
     },
     abilityRemove(_battle, _source, target) {
-      target.spa -= Math.floor(target.batk * 0.3);
+      const abilityInstance = target.ability;
+      if (abilityInstance?.data?.statBoost !== undefined) {
+        target.addFlatStatBoost("spa", -abilityInstance.data.statBoost);
+      } else {
+        target.addFlatStatBoost("spa", -Math.floor(target.batk * 0.3));
+      }
     },
   },
   20010: {
@@ -16039,8 +16067,8 @@ const abilityConfig = Object.freeze({
           targetPokemon.battle.addToLog(
             `${targetPokemon.name}'s Armored Behemoth's Pressence increases its defenses!`
           );
-          targetPokemon.def += Math.floor(targetPokemon.bdef * 0.05);
-          targetPokemon.spd += Math.floor(targetPokemon.bspd * 0.05);
+          targetPokemon.addStatMult("def", 0.05);
+          targetPokemon.addStatMult("spd", 0.05);
 
           // 30% chance to counter with a random move
           if (Math.random() > 0.3 || !sourcePokemon) {
@@ -16208,8 +16236,8 @@ const abilityConfig = Object.freeze({
           targetPokemon.battle.addToLog(
             `${targetPokemon.name}'s Shadow Berserker's Rage increases its offenses!`
           );
-          targetPokemon.atk += Math.floor(targetPokemon.batk * 0.05);
-          targetPokemon.spa += Math.floor(targetPokemon.bspa * 0.05);
+          targetPokemon.addStatMult("atk", 0.05);
+          targetPokemon.addStatMult("spa", 0.05);
 
           // gain 30%
           targetPokemon.battle.addToLog(
@@ -16431,11 +16459,11 @@ const abilityConfig = Object.freeze({
             pokemon.teamName
           ].pokemons.filter((p) => p && !p.isFainted);
           for (const ally of allies) {
-            ally.atk += Math.max(Math.floor(ally.batk * 0.02), 1);
-            ally.def += Math.max(Math.floor(ally.bdef * 0.02), 1);
-            ally.spa += Math.max(Math.floor(ally.bspa * 0.02), 1);
-            ally.spd += Math.max(Math.floor(ally.bspd * 0.02), 1);
-            ally.spe += Math.max(Math.floor(ally.bspe * 0.02), 1);
+            ally.addStatMult("atk", 0.02);
+            ally.addStatMult("spa", 0.02);
+            ally.addStatMult("def", 0.02);
+            ally.addStatMult("spd", 0.02);
+            ally.addStatMult("spe", 0.02);
           }
         },
       };
@@ -16475,6 +16503,7 @@ module.exports = {
   calculateDamage,
   abilityConfig,
   damageTypes,
-  statToBaseStat,
-  statToBattleStat,
+  statIndexToBaseStat,
+  statIndexToBattleStat,
+  battleStatToBaseStat,
 };

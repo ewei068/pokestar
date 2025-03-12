@@ -2,7 +2,10 @@
 // maybe refactor at some point but I don't think it's a big deal because this is an isolated functionality
 const { emojis } = require("../enums/emojis");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
-const { checkNumPokemon, listPokemons } = require("../services/pokemon");
+const {
+  checkNumPokemon,
+  listPokemonsFromTrainer: listPokemons,
+} = require("../services/pokemon");
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { SUPPORT_SERVER_INVITE, gameEventConfig } = require("./helpConfig");
 const { locations } = require("./locationConfig");

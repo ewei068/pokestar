@@ -12,7 +12,11 @@ const { stageNames } = require("../config/stageConfig");
 const { trainerFields } = require("../config/trainerConfig");
 const { buildTradeEmbed } = require("../embeds/socialEmbeds");
 const { idFrom, formatMoney } = require("../utils/utils");
-const { canRelease, listPokemons, updatePokemon } = require("./pokemon");
+const {
+  canRelease,
+  listPokemonsFromTrainer: listPokemons,
+  updatePokemon,
+} = require("./pokemon");
 const { getState } = require("./state");
 const { getTrainer, updateTrainer } = require("./trainer");
 

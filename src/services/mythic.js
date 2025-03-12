@@ -41,17 +41,17 @@ const {
 } = require("../utils/trainerUtils");
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
 const {
-  listPokemons,
+  listPokemonsFromTrainer: listPokemons,
   getPokemon,
   calculatePokemonStats,
-  calculateAndUpdatePokemonStats,
+  DEPRECATEDcalculateAndUpdatePokemonStats: calculateAndUpdatePokemonStats,
   checkNumPokemon,
   updatePokemon,
 } = require("./pokemon");
 const { getTrainer, updateTrainer } = require("./trainer");
 const { getMoves } = require("../battle/data/moveRegistry");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
-const { statToBattleStat } = require("../config/battleConfig");
+const { statIndexToBattleStat } = require("../config/battleConfig");
 const { getAbilityName } = require("../utils/pokemonUtils");
 
 /**
@@ -98,7 +98,9 @@ const getMythic = async (trainer, speciesId) => {
  */
 const generateMythic = (trainer, speciesId) => {
   const speciesData = pokemonConfig[speciesId];
-  const mythic = generateRandomPokemon(trainer.userId, speciesId, 1);
+  const mythic = generateRandomPokemon(trainer.userId, speciesId, 1, {
+    heldItemChance: 0,
+  });
   // set ivs to 31
   mythic.ivs = [31, 31, 31, 31, 31, 31];
   // set shiny to false
@@ -847,7 +849,7 @@ const useWish = async (user, { wishId, pokemon }) => {
       if (updateStatsRes.err) {
         return { err: updateStatsRes.err };
       }
-      result = `**${pokemon.name}'s ${statToBattleStat[
+      result = `**${pokemon.name}'s ${statIndexToBattleStat[
         randomIndex
       ].toUpperCase()}** IV was set to 31!`;
       break;

@@ -12,6 +12,7 @@ const { getTrainer } = require("../../services/trainer");
 const {
   getFlattenedRewardsString,
   getBackpackItemsString,
+  flattenRewards,
 } = require("../../utils/trainerUtils");
 const { formatMoney } = require("../../utils/utils");
 
@@ -41,7 +42,11 @@ const daily = async (user) => {
   if (money) {
     rewardsString += `\n${formatMoney(trainer.data.money)}`;
   }
-  rewardsString += getBackpackItemsString(trainer.data);
+  rewardsString += getBackpackItemsString(
+    trainer.data,
+    // @ts-ignore
+    Object.keys(rewards.data.backpack)
+  );
   rewardsString +=
     "\nSpend your Pokedollars at the `/pokemart` | Use `/gacha` to use your Pokeballs";
 

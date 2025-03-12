@@ -11,6 +11,7 @@ const {
   insertDocument,
   updateDocument,
   QueryBuilder,
+  findAndUpdateDocument,
 } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const {
@@ -30,6 +31,7 @@ const {
   getPokeballsString,
   addRewards,
   getBackpackItemsString,
+  flattenRewards,
 } = require("../utils/trainerUtils");
 const { getVoteMultiplier } = require("../config/socialConfig");
 
@@ -550,7 +552,11 @@ const getVoteRewards = async (user) => {
   if (receivedRewards.money) {
     rewardsString += `\n${formatMoney(trainer.money)}`;
   }
-  rewardsString += getBackpackItemsString(trainer);
+  rewardsString += getBackpackItemsString(
+    trainer,
+    // @ts-ignore
+    Object.keys(receivedRewards.backpack)
+  );
   rewardsString +=
     "\nSpend your Pokedollars at the `/pokemart` | Use `/gacha` to use your Pokeballs";
 
@@ -559,20 +565,21 @@ const getVoteRewards = async (user) => {
 
 /**
  * @param {WithId<Trainer>} trainer
- * @returns {Promise<{data?: null, err?: string}>}
+ * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
  */
 const updateTrainer = async (trainer) => {
   try {
-    const res = await updateDocument(
+    const res = await findAndUpdateDocument(
       collectionNames.USERS,
       { userId: trainer.userId },
       { $set: trainer }
     );
-    if (res.modifiedCount === 0) {
+    if (!res.value) {
       logger.error(`Failed to update trainer ${trainer.user.username}.`);
       return { data: null, err: "Error updating trainer." };
     }
-    return { data: null, err: null };
+    // @ts-ignore
+    return { data: res.value, err: null };
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error updating trainer." };

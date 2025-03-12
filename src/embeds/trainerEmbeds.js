@@ -78,7 +78,7 @@ const buildTrainerEmbed = (trainerInfo) => {
  * @param {Trainer} trainer
  * @returns {EmbedBuilder}
  */
-const buildBackpackEmbed = (trainer) => {
+const DEPRECATEDbuildBackpackEmbed = (trainer) => {
   // create string with backpack categories and their item quantities
   const fields = Object.entries(trainer.backpack).map(([category, items]) => {
     const categoryConfig = backpackCategoryConfig[category];
@@ -101,15 +101,6 @@ const buildBackpackEmbed = (trainer) => {
       inline: false,
     };
   });
-  /* for (const category in trainer.backpack) {
-        backpackString += `**=== ${backpackCategoryConfig[category].emoji} ${backpackCategoryConfig[category].name}** ===\n`;
-        for (const item in trainer.backpack[category]) {
-            if (trainer.backpack[category][item] == 0) {
-                continue;
-            }
-            backpackString += `${backpackItemConfig[item].name}: ${trainer.backpack[category][item]}\n`;
-        }
-    } */
 
   const embed = new EmbedBuilder();
   embed.setTitle(`Trainer ${trainer.user.username}'s Backpack`);
@@ -118,6 +109,60 @@ const buildBackpackEmbed = (trainer) => {
     `https://cdn.discordapp.com/avatars/${trainer.userId}/${trainer.user.avatar}.webp`
   );
   embed.setDescription(`You have ${formatMoney(trainer.money)} Pokédollars.`);
+  embed.addFields(...fields);
+
+  return embed;
+};
+
+/**
+ * @param {BackpackItemEnum[]} itemIds
+ * @param {FlattenedBackpack} flattenedBackpack
+ * @param {object} param2
+ * @param {number=} param2.money
+ * @param {boolean=} param2.shouldShowMoney
+ * @param {boolean=} param2.shouldShowDescription
+ * @returns {EmbedBuilder}
+ */
+const buildBackpackEmbed = (
+  itemIds,
+  flattenedBackpack,
+  { money = 0, shouldShowMoney = true, shouldShowDescription = false }
+) => {
+  const allCategories = itemIds
+    .map((itemId) => backpackItemConfig[itemId].category)
+    .filter((value, index, self) => self.indexOf(value) === index);
+  const fields = allCategories.map((category) => {
+    const categoryConfig = backpackCategoryConfig[category];
+    const categoryItems = itemIds.filter(
+      (itemId) => backpackItemConfig[itemId].category === category
+    );
+    const categoryString = categoryItems
+      .map((itemId) => {
+        const itemConfig = backpackItemConfig[itemId];
+        const whitespaceName = getWhitespace(
+          [itemConfig.name],
+          shouldShowDescription ? 25 : 20
+        )[0];
+        return `**${itemConfig.emoji} \`${itemConfig.name}${whitespaceName}${
+          flattenedBackpack[itemId]
+        }\`**${shouldShowDescription ? `\n${itemConfig.description}\n` : ""}`;
+      })
+      .join("\n");
+
+    return {
+      name: `=== ${categoryConfig.emoji} ${categoryConfig.name} ===`,
+      value: categoryString || "No items found!",
+      inline: false,
+    };
+  });
+
+  const embed = new EmbedBuilder();
+  embed.setTitle("Your Backpack");
+  embed.setColor(0xffffff);
+  // TODO: icon maybe
+  if (shouldShowMoney) {
+    embed.setDescription(`You have ${formatMoney(money)} Pokédollars.`);
+  }
   embed.addFields(...fields);
 
   return embed;
@@ -154,6 +199,7 @@ const buildLocationsEmbed = (trainer) => {
 
 module.exports = {
   buildTrainerEmbed,
+  DEPRECATEDbuildBackpackEmbed,
   buildBackpackEmbed,
   buildLocationsEmbed,
 };
