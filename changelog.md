@@ -19,7 +19,7 @@
 - Stretch: Quests (Achievements)
 - Stretch: Ability slots
 
-## 1.3.0 Held Items
+## 1.3.0 Held Items (3/11)
 
 - Craft held items with new `/craft` command
 - Add held items to you Pokemon from `/info` or from new `/helditem` command
