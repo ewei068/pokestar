@@ -461,6 +461,29 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.ICY_WIND]: new Move({
+    id: moveIdEnum.ICY_WIND,
+    name: "Icy Wind",
+    type: pokemonTypes.ICE,
+    power: 55,
+    accuracy: 95,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.ROW,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The target is hit by a strong icy wind. This lowers targets' Spped for 2 turns.",
+    execute(args) {
+      this.genericDealAllDamage(args);
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "speDown",
+        duration: 2,
+      });
+    },
+  }),
   [moveIdEnum.BRICK_BREAK]: new Move({
     id: moveIdEnum.BRICK_BREAK,
     name: "Brick Break",

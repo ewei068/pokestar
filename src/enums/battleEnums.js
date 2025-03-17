@@ -25,6 +25,7 @@ const moveIdEnum = Object.freeze({
   VINE_WHIP: "m22",
   CONFUSION: "m93",
   PSYCHIC: "m94",
+  ICY_WIND: "m196",
   BRICK_BREAK: "m280",
   DOOM_DESIRE: "m353",
   IRON_HEAD: "m442",

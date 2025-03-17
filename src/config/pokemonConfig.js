@@ -7997,6 +7997,78 @@ const pokemonConfigRaw = {
     growthRate: growthRates.SLOW,
     unobtainable: true,
   },
+  [pokemonIdEnum.PIPLUP]: {
+    name: "Piplup",
+    emoji: "<:393:1132497470715338752>",
+    description:
+      "Because it is very proud, it hates accepting food from people. Its thick down guards it from cold.",
+    type: [types.WATER],
+    baseStats: [53, 51, 53, 61, 56, 40],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/393.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/393.png",
+    evolution: [
+      {
+        level: 16,
+        id: pokemonIdEnum.PRINPLUP,
+      },
+    ],
+    abilities: {
+      67: 0.8,
+      172: 0.2,
+    },
+    moveIds: ["m55", "m64", moveIdEnum.ICY_WIND, "m503"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.PRINPLUP]: {
+    name: "Prinplup",
+    emoji: "<:394:1132497471994597406>",
+    description:
+      "It lives a solitary life. Its wings deliver wicked blows that can snap even the thickest of trees.",
+    type: [types.WATER],
+    baseStats: [64, 66, 68, 81, 76, 50],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/394.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/394.png",
+    evolution: [
+      {
+        level: 36,
+        id: pokemonIdEnum.EMPOLEON,
+      },
+    ],
+    abilities: {
+      67: 0.8,
+      172: 0.2,
+    },
+    moveIds: ["m55", moveIdEnum.ICY_WIND, "m355", "m503"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.EMPOLEON]: {
+    name: "Empoleon",
+    emoji: "<:395:1132497473873649796>",
+    description:
+      "The three horns that extend from its beak attest to its power. The leader has the biggest horns.",
+    type: [types.WATER, types.STEEL],
+    baseStats: [84, 86, 88, 111, 101, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/395.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/395.png",
+    abilities: {
+      67: 0.8,
+      172: 0.2,
+    },
+    moveIds: ["m55", moveIdEnum.ICY_WIND, "m355", "m56"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
   "725-1": {
     name: "Littenyan",
     emoji: "<:littenyan:1145193884817834005>",
