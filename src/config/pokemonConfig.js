@@ -7813,6 +7813,78 @@ const pokemonConfigRaw = {
       speciesIds: ["386", "10001", "10002", "10003"],
     },
   },
+  [pokemonIdEnum.TURTWIG]: {
+    name: "Turtwig",
+    emoji: "<:387:1132497397587640392>",
+    description:
+      "Turtwig is a small Pokémon that resembles a light green turtle with a small tree growing on its back. It is a Grass-type Pokémon.",
+    type: [types.GRASS],
+    baseStats: [55, 68, 64, 45, 55, 31],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/387.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/387.png",
+    evolution: [
+      {
+        level: 18,
+        id: pokemonIdEnum.GROTLE,
+      },
+    ],
+    abilities: {
+      65: 0.8,
+      75: 0.2,
+    },
+    moveIds: ["m33", "m71", "m36", "m402"],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.GROTLE]: {
+    name: "Grotle",
+    emoji: "<:388:1132497399483486329>",
+    description:
+      "The shell on its back is hardened soil. Some Pokémon come to peck the berries growing on the trees on its shell.",
+    type: [types.GRASS],
+    baseStats: [75, 89, 85, 55, 65, 36],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/388.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/388.png",
+    evolution: [
+      {
+        level: 32,
+        id: pokemonIdEnum.TORTERRA,
+      },
+    ],
+    abilities: {
+      65: 0.8,
+      75: 0.2,
+    },
+    moveIds: ["m71", "m36", "m402", "m523"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.TORTERRA]: {
+    name: "Torterra",
+    emoji: "<:389:1132497401433817139>",
+    description:
+      "Ancient people imagined that beneath the ground, a gigantic Torterra dwelled. Small Pokémon occasionally gather on its island-like back to build their nests.",
+    type: [types.GRASS, types.GROUND],
+    baseStats: [95, 109, 105, 75, 85, 56],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/389.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/389.png",
+    abilities: {
+      65: 0.8,
+      75: 0.2,
+    },
+    moveIds: ["m71", "m235", "m523", moveIdEnum.WOOD_HAMMER],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
   "392-1": {
     name: "Rubber Infernape",
     emoji: "<:luffy:1136890668342595654>",

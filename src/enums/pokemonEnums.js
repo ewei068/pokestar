@@ -289,6 +289,15 @@ const pokemonIdEnum = Object.freeze({
   RAYQUAZA: "384",
   JIRACHI: "385",
   DEOXYS: "386",
+  TURTWIG: "387",
+  GROTLE: "388", 
+  TORTERRA: "389",
+  CHIMCHAR: "390",
+  MONFERNO: "391",
+  INFERNAPE: "392",
+  PIPLUP: "393", 
+  PRINPLUP: "394",
+  EMPOLEON: "395",
   GARYS_BLASTOISE: "9-1",
   AAABAAAJSS: "18-1",
   JESSIES_ARBOK: "24-1",
@@ -312,6 +321,8 @@ const pokemonIdEnum = Object.freeze({
   SLAKING_D_GARP: "289-1",
   BILLIONAIRE_SABLEYE: "302-1",
   ARLONG: "319-1",
+  ARCHIES_KYOGRE: "382-1",
+  MAXIES_GROUDON: "383-1",
   RAYKAIDO: "384-1",
   RUBBER_INFERNAPE: "392-1",
   SUN_GOD_INFERNAPE: "392-2",
@@ -333,8 +344,6 @@ const pokemonIdEnum = Object.freeze({
   META_GROUDON: "20383",
   PALMERS_RAYQUAZA: "20384",
   WILLOWS_MELMETAL: "20809",
-  ARCHIES_KYOGRE: "382-1",
-  MAXIES_GROUDON: "383-1",
 });
 
 module.exports = { pokemonIdEnum };

@@ -105,6 +105,7 @@ class Move {
    * @param {Array<BattlePokemon>=} param0.missedTargets
    * @param {number=} param0.offTargetDamageMultiplier
    * @param {CalculateMoveDamageImpl=} param0.calculateDamageFunction
+   * @returns {Record<string, number>}
    */
   genericDealAllDamage({
     source,
@@ -114,8 +115,9 @@ class Move {
     offTargetDamageMultiplier = 0.8,
     calculateDamageFunction = undefined,
   }) {
+    const /** @type {Record<string, number>} */ damageInstances = {};
     for (const target of allTargets) {
-      this.genericDealSingleDamage({
+      const damageToTarget = this.genericDealSingleDamage({
         source,
         target,
         primaryTarget,
@@ -124,7 +126,9 @@ class Move {
         offTargetDamageMultiplier,
         calculateDamageFunction,
       });
+      damageInstances[target.id] = damageToTarget;
     }
+    return damageInstances;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -504,6 +508,32 @@ const movesToRegister = Object.freeze({
         effectId: "flinched",
         duration: 1,
         probablity: 0.5,
+      });
+    },
+  }),
+  [moveIdEnum.WOOD_HAMMER]: new Move({
+    id: moveIdEnum.WOOD_HAMMER,
+    name: "Wood Hammer",
+    type: pokemonTypes.GRASS,
+    power: 100,
+    accuracy: 100,
+    cooldown: 4,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The target is struck with a hard head made of iron. The user takes 33% recoil damage.",
+    execute(args) {
+      const damageInstances = this.genericDealAllDamage(args);
+      // TODO: functionify ?
+      const recoilDamage = Object.values(damageInstances).reduce(
+        (sum, damage) => sum + damage,
+        0
+      );
+      args.source.dealDamage(recoilDamage, args.source, {
+        type: "recoil",
       });
     },
   }),
