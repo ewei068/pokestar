@@ -15,7 +15,7 @@ const {
 } = require("../../enums/battleEnums");
 const { drawIterable } = require("../../utils/gachaUtils");
 
-/** @typedef {"charge" | "test"} MoveTag */
+/** @typedef {"charge" | "punch"} MoveTag */
 
 class Move {
   /**
@@ -364,6 +364,7 @@ const movesToRegister = Object.freeze({
         probablity: 0.5,
       });
     },
+    tags: ["punch"],
   }),
   [moveIdEnum.ICE_PUNCH]: new Move({
     id: moveIdEnum.ICE_PUNCH,
@@ -387,6 +388,7 @@ const movesToRegister = Object.freeze({
         probablity: 0.5,
       });
     },
+    tags: ["punch"],
   }),
   [moveIdEnum.VINE_WHIP]: new Move({
     id: moveIdEnum.VINE_WHIP,
@@ -457,6 +459,40 @@ const movesToRegister = Object.freeze({
         duration: 2,
         probablity: 0.6,
       });
+    },
+  }),
+  [moveIdEnum.BRICK_BREAK]: new Move({
+    id: moveIdEnum.BRICK_BREAK,
+    name: "Brick Break",
+    type: pokemonTypes.FIGHTING,
+    power: 75,
+    accuracy: 100,
+    cooldown: 2,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The target is struck with a hard head made of iron. This removes the target's defensive buffs before dealing damage.",
+    execute(args) {
+      const { allTargets, missedTargets } = args;
+      for (const target of allTargets) {
+        const miss = missedTargets.includes(target);
+        // if not miss, attempt to remove defUp, greaterDefUp, spdUp, greaterSpdUp
+        if (!miss) {
+          const /** @type {EffectIdEnum[]} */ buffsToRemove = [
+              "defUp",
+              "greaterDefUp",
+              "spdUp",
+              "greaterSpdUp",
+            ];
+          for (const buffId of buffsToRemove) {
+            target.dispellEffect(buffId);
+          }
+        }
+      }
+      this.genericDealAllDamage(args);
     },
   }),
   [moveIdEnum.DOOM_DESIRE]: new Move({

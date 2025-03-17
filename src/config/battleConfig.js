@@ -3764,6 +3764,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user throws a punch at blinding speed, increasing the user's combat readiness by 30%.",
+    tags: ["punch"],
   },
   "m183-1": {
     name: "Mach Pistol",
@@ -4127,6 +4128,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user punches the target with full, concentrated power. If hit, this also confuses surrounding targets for 2 turns.",
+    tags: ["punch"],
   },
   m224: {
     name: "Megahorn",
@@ -4701,6 +4703,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The target is hit with a hard punch fired like a meteor. This also raises the users attack for 2 turns before attacking. If the target doesn't faint, remove the buff.",
+    tags: ["punch"],
   },
   m311: {
     name: "Weather Ball",
@@ -4785,6 +4788,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user throws a punch from the shadows. This move never misses.",
+    tags: ["punch"],
   },
   m330: {
     name: "Muddy Water",
@@ -5075,6 +5079,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user swings and hits with its strong and heavy fist. This lowers the user's Speed for 1 turn.",
+    tags: ["punch"],
   },
   m361: {
     name: "Healing Wish",
@@ -5131,6 +5136,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user fights the target up close without guarding itself. This also lowers the user's Defense and Special Defense for 1 turn.",
+    tags: ["punch"],
   },
   "m370-1": {
     name: "Gattling Combat",
@@ -5341,6 +5347,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "An energy-draining punch. The user's HP is restored by half the damage taken by the target.",
+    tags: ["punch"],
   },
   m412: {
     name: "Energy Ball",
@@ -5453,6 +5460,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user strikes the target with tough punches as fast as bullets, dealing damage and increasing its own combat readiness by 30%.",
+    tags: ["punch"],
   },
   m420: {
     name: "Ice Shard",
@@ -6237,6 +6245,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user rotates, centering the hex nut in its chest, and then strikes with its arms twice in a row. This move hits twice; once in a row and once in a column, each with a 30% chance to flinch.",
+    tags: ["punch"],
   },
   m814: {
     name: "Dual Wingbeat",
@@ -14199,51 +14208,6 @@ const abilityConfig = Object.freeze({
       );
     },
     abilityRemove(_battle, _source, _target) {},
-  },
-  89: {
-    name: "Iron Fist",
-    description: "Increases damage of punching moves by 30%.",
-    abilityAdd(battle, _source, target) {
-      const listener = {
-        initialArgs: {
-          pokemon: target,
-        },
-        execute(initialArgs, args) {
-          if (args.damageInfo.type !== "move") {
-            return;
-          }
-
-          const userPokemon = args.source;
-          if (userPokemon !== initialArgs.pokemon) {
-            return;
-          }
-
-          // if move type === punch, increase damage by 30%
-          const moveData = getMove(args.damageInfo.moveId);
-          if (moveData.name.toLowerCase().includes("punch")) {
-            userPokemon.battle.addToLog(
-              `${userPokemon.name}'s Iron Fist increases the damage!`
-            );
-            args.damage = Math.round(args.damage * 1.3);
-          }
-        },
-      };
-      const listenerId = battle.eventHandler.registerListener(
-        battleEventEnum.BEFORE_DAMAGE_DEALT,
-        listener
-      );
-      return {
-        listenerId,
-      };
-    },
-    abilityRemove(battle, _source, target) {
-      const { ability } = target;
-      if (!ability || ability.abilityId !== "89" || !ability.data) {
-        return;
-      }
-      const abilityData = ability.data;
-      battle.eventHandler.unregisterListener(abilityData.listenerId);
-    },
   },
   94: {
     name: "Solar Power",

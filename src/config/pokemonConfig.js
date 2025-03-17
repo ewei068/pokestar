@@ -7836,7 +7836,7 @@ const pokemonConfigRaw = {
     },
     moveIds: ["m33", "m71", "m36", "m402"],
     battleEligible: true,
-    rarity: rarities.COMMON,
+    rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMSLOW,
   },
   [pokemonIdEnum.GROTLE]: {
@@ -7862,7 +7862,7 @@ const pokemonConfigRaw = {
     },
     moveIds: ["m71", "m36", "m402", "m523"],
     battleEligible: true,
-    rarity: rarities.RARE,
+    rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
   },
   [pokemonIdEnum.TORTERRA]: {
@@ -7881,6 +7881,78 @@ const pokemonConfigRaw = {
       75: 0.2,
     },
     moveIds: ["m71", "m235", "m523", moveIdEnum.WOOD_HAMMER],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.CHIMCHAR]: {
+    name: "Chimchar",
+    emoji: "<:390:1132497402746646719>",
+    description:
+      "It agilely scales sheer cliffs to live atop craggy mountains. Its fire is put out when it sleeps.",
+    type: [types.FIRE],
+    baseStats: [44, 58, 44, 58, 44, 61],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/390.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/390.png",
+    evolution: [
+      {
+        level: 14,
+        id: pokemonIdEnum.MONFERNO,
+      },
+    ],
+    abilities: {
+      66: 0.8,
+      [abilityIdEnum.IRON_FIST]: 0.2,
+    },
+    moveIds: ["m10", "m52", "m53", "m369"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.MONFERNO]: {
+    name: "Monferno",
+    emoji: "<:391:1132497467036930131>",
+    description:
+      "It uses ceilings and walls to launch aerial attacks. Its fiery tail is but one weapon.",
+    type: [types.FIRE, types.FIGHTING],
+    baseStats: [64, 78, 52, 78, 52, 81],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/391.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/391.png",
+    evolution: [
+      {
+        level: 36,
+        id: pokemonIdEnum.INFERNAPE,
+      },
+    ],
+    abilities: {
+      66: 0.8,
+      [abilityIdEnum.IRON_FIST]: 0.2,
+    },
+    moveIds: ["m183", "m53", moveIdEnum.BRICK_BREAK, "m369"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.INFERNAPE]: {
+    name: "Infernape",
+    emoji: "<:392:1132497469498982460>",
+    description:
+      "It uses unique fighting moves with fire on its hands and feet. It will take on any opponent.",
+    type: [types.FIRE, types.FIGHTING],
+    baseStats: [76, 104, 71, 104, 71, 108],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/392.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/392.png",
+    abilities: {
+      66: 0.8,
+      [abilityIdEnum.IRON_FIST]: 0.2,
+    },
+    moveIds: ["m183", "m53", "m369", "m370"],
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
