@@ -5,6 +5,7 @@
 - Gen 4
   - Add a bunch new Pokemon
   - Add PvE against Champion Cynthia
+  - Add form changing mechanic with DNA splicers or something
   - Add Mythic Darkrai
     - Requires 30? tutorial stage completions
     - Gains {item} every 5 min, max 100 + level
