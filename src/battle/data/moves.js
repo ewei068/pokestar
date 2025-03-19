@@ -593,6 +593,41 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.NIGHT_SLASH]: new Move({
+    id: moveIdEnum.NIGHT_SLASH,
+    name: "Night Slash",
+    type: pokemonTypes.DARK,
+    power: 70,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.BACK,
+    targetPattern: targetPatterns.ROW,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user slashes with a blade of darkness, inflicting additional true damage to the primary target equal to 5% of the user's attackß.",
+    execute({ source, primaryTarget, allTargets, missedTargets }) {
+      this.genericDealAllDamage({
+        source,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+        calculateDamageFunction: (args) => {
+          const { target } = args;
+          const baseDamage = source.calculateMoveDamage(args);
+
+          // Add true damage only to the primary target
+          if (!missedTargets.includes(target) && target === primaryTarget) {
+            const trueDamage = Math.floor(source.getStat("atk") * 0.05);
+            return baseDamage + trueDamage;
+          }
+
+          return baseDamage;
+        },
+      });
+    },
+  }),
   [moveIdEnum.IRON_HEAD]: new Move({
     id: moveIdEnum.IRON_HEAD,
     name: "Iron Head",
