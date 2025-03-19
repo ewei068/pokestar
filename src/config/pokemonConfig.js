@@ -8069,6 +8069,78 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
   },
+  [pokemonIdEnum.STARLY]: {
+    name: "Starly",
+    emoji: "<:396:1132497475182276711>",
+    description:
+      "They flock in great numbers. Though small, they flap their wings with great power.",
+    type: [types.NORMAL, types.FLYING],
+    baseStats: [40, 55, 30, 30, 30, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/396.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/396.png",
+    evolution: [
+      {
+        level: 14,
+        id: pokemonIdEnum.STARAVIA,
+      },
+    ],
+    abilities: {
+      22: 0.8,
+      120: 0.2,
+    },
+    moveIds: ["m64", "m98", "m216", "m332"],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.STARAVIA]: {
+    name: "Staravia",
+    emoji: "<:397:1132497476407001088>",
+    description:
+      "It flies around forests and fields in search of bug Pokémon. It stays within a huge flock.",
+    type: [types.NORMAL, types.FLYING],
+    baseStats: [55, 75, 50, 40, 40, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/397.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/397.png",
+    evolution: [
+      {
+        level: 34,
+        id: pokemonIdEnum.STARAPTOR,
+      },
+    ],
+    abilities: {
+      22: 0.8,
+      120: 0.2,
+    },
+    moveIds: ["m98", "m216", "m332", "m369"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.STARAPTOR]: {
+    name: "Staraptor",
+    emoji: "<:398:1132497478265077871>",
+    description:
+      "The muscles in its wings and legs are strong. It can easily fly while gripping a small Pokémon.",
+    type: [types.NORMAL, types.FLYING],
+    baseStats: [85, 120, 70, 50, 60, 100],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/398.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/398.png",
+    abilities: {
+      22: 0.8,
+      120: 0.2,
+    },
+    moveIds: ["m98", "m216", "m369", "m413"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
   "725-1": {
     name: "Littenyan",
     emoji: "<:littenyan:1145193884817834005>",
