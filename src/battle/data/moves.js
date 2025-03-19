@@ -518,6 +518,53 @@ const movesToRegister = Object.freeze({
       this.genericDealAllDamage(args);
     },
   }),
+  [moveIdEnum.FEATHER_DANCE]: new Move({
+    id: moveIdEnum.FEATHER_DANCE,
+    name: "Feather Dance",
+    type: pokemonTypes.FLYING,
+    power: null,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.ALL,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user covers the target and surrounding enemies with feathers. The primary target's Attack is sharply lowered for 3 turns, while other targets' Attack is lowered for 3 turns.",
+    execute(args) {
+      const { source, primaryTarget, allTargets, missedTargets } = args;
+
+      // Apply sharply lowered attack to the primary target
+      this.genericApplySingleEffect({
+        source,
+        target: primaryTarget,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+        effectId: "greaterAtkDown",
+        duration: 3,
+        initialArgs: {},
+      });
+
+      // Apply regular attack down to other targets
+      for (const target of allTargets) {
+        // Skip the primary target as it's already handled
+        if (target === primaryTarget) continue;
+
+        this.genericApplySingleEffect({
+          source,
+          target,
+          primaryTarget,
+          allTargets,
+          missedTargets,
+          effectId: "atkDown",
+          duration: 3,
+          initialArgs: {},
+        });
+      }
+    },
+  }),
   [moveIdEnum.DOOM_DESIRE]: new Move({
     id: moveIdEnum.DOOM_DESIRE,
     name: "Doom Desire",
