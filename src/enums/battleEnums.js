@@ -50,6 +50,7 @@ const abilityIdEnum = Object.freeze({
   FLAME_BODY: "49",
   MAGMA_POWER: "70-1",
   ANGER_POINT: "83",
+  SIMPLE: "86",
   DOWNLOAD: "88",
   IRON_FIST: "89",
   REGENERATOR: "144",

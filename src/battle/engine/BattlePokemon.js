@@ -15,7 +15,7 @@ const {
   damageTypes,
   battleStatToBaseStat,
 } = require("../../config/battleConfig");
-const { battleEventEnum } = require("../../enums/battleEnums");
+const { battleEventEnum, abilityIdEnum } = require("../../enums/battleEnums");
 const { calculatePokemonStats } = require("../../services/pokemon");
 const { logger } = require("../../log");
 const {
@@ -161,6 +161,7 @@ class BattlePokemon {
    * @returns {MoveIdEnum[]}
    */
   getMoveIds() {
+    // @ts-ignore
     return Object.keys(this.moveIds);
   }
 
@@ -1314,6 +1315,7 @@ class BattlePokemon {
       return;
     }
 
+    // @ts-ignore
     heldItemData.itemRemove({
       battle: this.battle,
       source: this,
@@ -1361,6 +1363,7 @@ class BattlePokemon {
     }
 
     // TODO: disable item before use?
+    // @ts-ignore
     heldItemData.itemUse({
       battle: this.battle,
       source: this,
@@ -2109,6 +2112,14 @@ class BattlePokemon {
         statData.multMult +
       statData.flatBoost;
     stat = Math.max(1, Math.floor(stat));
+
+    // Simple ability: doubles the effect of stat changes
+    if (this.hasAbility(abilityIdEnum.SIMPLE)) {
+      const baseStat = this[battleStatToBaseStat(statId)];
+      const difference = stat - baseStat;
+      stat = baseStat + difference * 2;
+      stat = Math.max(1, Math.floor(stat));
+    }
 
     switch (statId) {
       case "def":

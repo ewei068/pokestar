@@ -616,6 +616,16 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.beforeCauseFaintListenerId);
     },
   }),
+  [abilityIdEnum.SIMPLE]: new Ability({
+    id: abilityIdEnum.SIMPLE,
+    name: "Simple",
+    description: "Doubles the effect of stat changes on the Pokémon.",
+    abilityAdd() {
+      // The ability effect is implemented directly in BattlePokemon.getStat
+      return {};
+    },
+    abilityRemove() {},
+  }),
 });
 
 module.exports = {
