@@ -619,7 +619,7 @@ const abilitiesToRegister = Object.freeze({
   [abilityIdEnum.SIMPLE]: new Ability({
     id: abilityIdEnum.SIMPLE,
     name: "Simple",
-    description: "Doubles the effect of stat changes on the Pokémon.",
+    description: "Doubles the effect of most core stat changes on the Pokémon.",
     abilityAdd() {
       // The ability effect is implemented directly in BattlePokemon.getStat
       return {};

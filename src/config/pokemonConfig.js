@@ -8088,12 +8088,12 @@ const pokemonConfigRaw = {
     ],
     abilities: {
       22: 0.8,
-      120: 0.2,
+      51: 0.2,
     },
     moveIds: ["m64", "m98", "m216", "m332"],
     battleEligible: true,
     rarity: rarities.COMMON,
-    growthRate: growthRates.MEDIUMSLOW,
+    growthRate: growthRates.MEDIUMFAST,
   },
   [pokemonIdEnum.STARAVIA]: {
     name: "Staravia",
@@ -8119,7 +8119,7 @@ const pokemonConfigRaw = {
     moveIds: ["m98", "m216", "m332", "m369"],
     battleEligible: true,
     rarity: rarities.RARE,
-    growthRate: growthRates.MEDIUMSLOW,
+    growthRate: growthRates.MEDIUMFAST,
   },
   [pokemonIdEnum.STARAPTOR]: {
     name: "Staraptor",
@@ -8139,7 +8139,55 @@ const pokemonConfigRaw = {
     moveIds: ["m98", "m216", "m369", "m413"],
     battleEligible: true,
     rarity: rarities.EPIC,
-    growthRate: growthRates.MEDIUMSLOW,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.BIDOOF]: {
+    name: "Bidoof",
+    emoji: "<:399:1132497479712129054>",
+    description:
+      "With nerves of steel, nothing can perturb it. It is more agile and active than it appears.",
+    type: [types.NORMAL],
+    baseStats: [59, 45, 40, 35, 40, 31],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/399.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/399.png",
+    evolution: [
+      {
+        level: 15,
+        id: pokemonIdEnum.BIBAREL,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SIMPLE]: 0.45,
+      109: 0.45,
+      141: 0.1,
+    },
+    moveIds: ["m98", "m453", "m14", "m127"],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.BIBAREL]: {
+    name: "Bibarel",
+    emoji: "<:400:1132497518480068698>",
+    description:
+      "It makes its nest by damming streams with bark and mud. It is known as an industrious worker.",
+    type: [types.NORMAL, types.WATER],
+    baseStats: [79, 85, 60, 55, 60, 71],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/400.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/400.png",
+    abilities: {
+      [abilityIdEnum.SIMPLE]: 0.45,
+      109: 0.45,
+      141: 0.1,
+    },
+    moveIds: ["m453", "m14", "m127", "m416"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
   },
   "725-1": {
     name: "Littenyan",
