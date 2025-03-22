@@ -6,8 +6,12 @@ const {
   damageTypes,
   moveTiers,
   statusConditions,
+  effectTypes,
 } = require("../../config/battleConfig");
 const { getMove } = require("./moveRegistry");
+const { getHeldItem } = require("./heldItemRegistry");
+const { getEffect } = require("./effectRegistry");
+const { getHeldItemIdHasTag } = require("../../utils/battleUtils");
 const {
   moveIdEnum,
   abilityIdEnum,
@@ -861,6 +865,75 @@ const movesToRegister = Object.freeze({
         );
         randomAlly.boostCombatReadiness(source, hitCount * 15);
       }
+    },
+  }),
+  [moveIdEnum.BUG_BITE]: new Move({
+    id: moveIdEnum.BUG_BITE,
+    name: "Bug Bite",
+    type: pokemonTypes.BUG,
+    power: 70,
+    accuracy: 100,
+    cooldown: 2,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user bites the target. If the target is holding a berry, the user eats it and gains its effect. The user may also steal a random buff from the target.",
+    execute({ battle, source, primaryTarget, allTargets, missedTargets }) {
+      for (const target of allTargets) {
+        const miss = missedTargets.includes(target);
+        if (miss) continue;
+
+        // If not miss, check for berry and steal it
+        if (
+          target.heldItem &&
+          target.heldItem.heldItemId &&
+          getHeldItemIdHasTag(target.heldItem.heldItemId, "berry")
+        ) {
+          const targetHeldItem = getHeldItem(target.heldItem.heldItemId);
+          battle.addToLog(
+            `${source.name} ate ${target.name}'s ${targetHeldItem.name}!`
+          );
+          target.useHeldItem(source);
+        }
+
+        // Try to steal a buff
+        const possibleBuffs = Object.keys(target.effectIds).filter(
+          (effectId) => {
+            const effectData = getEffect(effectId);
+            return (
+              effectData.type === effectTypes.BUFF && effectData.dispellable
+            );
+          }
+        );
+
+        if (possibleBuffs.length > 0) {
+          // Get random buff
+          const buffIdToSteal =
+            possibleBuffs[Math.floor(Math.random() * possibleBuffs.length)];
+          const buffToSteal = target.effectIds[buffIdToSteal];
+
+          // Steal buff
+          const dispelled = target.dispellEffect(buffIdToSteal);
+          if (dispelled) {
+            // Apply buff to self
+            source.applyEffect(
+              buffIdToSteal,
+              buffToSteal.duration,
+              buffToSteal.source,
+              buffToSteal.initialArgs
+            );
+          }
+        }
+      }
+      this.genericDealAllDamage({
+        source,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+      });
     },
   }),
 });

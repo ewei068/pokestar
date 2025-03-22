@@ -5645,20 +5645,6 @@ const moveConfig = Object.freeze({
     description:
       "The user lays a trap of levitating stones around the target for 5 turns. The trap hurts opposing Pokemon that have their combat readiness boosted or receive buffs.",
   },
-  m450: {
-    name: "Bug Bite",
-    type: pokemonTypes.BUG,
-    power: 90,
-    accuracy: 100,
-    cooldown: 2,
-    targetType: targetTypes.ENEMY,
-    targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.SINGLE,
-    tier: moveTiers.POWER,
-    damageType: damageTypes.PHYSICAL,
-    description:
-      "The user bites the target with its sharp teeth, dealing damage and stealing one buff from the target.",
-  },
   m453: {
     name: "Aqua Jet",
     type: pokemonTypes.WATER,
@@ -9243,7 +9229,7 @@ const moveExecutes = {
       // calculate damage pokemonhp - sourcehp
       const damageToDeal = target.hp - source.hp;
       if (damageToDeal <= 0) {
-        battle.addToLog(`${target.name} is unaffected!`);
+        battle.addToLog("But it failed!");
         continue;
       }
 
@@ -10780,50 +10766,6 @@ const moveExecutes = {
     for (const target of allTargets) {
       // give target stealthRock
       target.applyEffect("stealthRock", 5, source);
-    }
-  },
-  m450(_battle, source, _primaryTarget, allTargets, missedTargets) {
-    const moveId = "m450";
-    const moveData = getMove(moveId);
-    for (const target of allTargets) {
-      const miss = missedTargets.includes(target);
-      const damageToDeal = calculateDamage(moveData, source, target, miss);
-      source.dealDamage(damageToDeal, target, {
-        type: "move",
-        moveId,
-      });
-
-      // if not miss, attempt to steal a buff
-      if (!miss) {
-        const possibleBuffs = Object.keys(target.effectIds).filter(
-          (effectId) => {
-            const effectData = getEffect(effectId);
-            return (
-              effectData.type === effectTypes.BUFF && effectData.dispellable
-            );
-          }
-        );
-        if (possibleBuffs.length === 0) {
-          return;
-        }
-
-        // get random buff
-        const buffIdToSteal =
-          possibleBuffs[Math.floor(Math.random() * possibleBuffs.length)];
-        const buffToSteal = target.effectIds[buffIdToSteal];
-        // steal buff
-        const dispelled = target.dispellEffect(buffIdToSteal);
-        if (!dispelled) {
-          return;
-        }
-        // apply buff to self
-        source.applyEffect(
-          buffIdToSteal,
-          buffToSteal.duration,
-          buffToSteal.source,
-          buffToSteal.initialArgs
-        );
-      }
     }
   },
   m453(_battle, source, _primaryTarget, allTargets, missedTargets) {

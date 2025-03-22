@@ -8189,6 +8189,52 @@ const pokemonConfigRaw = {
     rarity: rarities.RARE,
     growthRate: growthRates.FAST,
   },
+  [pokemonIdEnum.KRICKETOT]: {
+    name: "Kricketot",
+    emoji: "<:401:1351026500140531712>",
+    description:
+      "It shakes its head back to front, causing its antennae to hit each other and sound like a xylophone.",
+    type: [types.BUG],
+    baseStats: [37, 25, 41, 25, 41, 25],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/401.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/401.png",
+    evolution: [
+      {
+        level: 10,
+        id: pokemonIdEnum.KRICKETUNE,
+      },
+    ],
+    abilities: {
+      61: 0.8,
+      50: 0.2,
+    },
+    moveIds: ["m33", "m283", moveIdEnum.BUG_BITE],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.KRICKETUNE]: {
+    name: "Kricketune",
+    emoji: "<:402:1351026502359187548>",
+    description:
+      "It crosses its knifelike arms in front of its chest when it cries. It can compose melodies ad lib.",
+    type: [types.BUG],
+    baseStats: [77, 85, 51, 55, 51, 65],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/402.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/402.png",
+    abilities: {
+      68: 0.8,
+      101: 0.2,
+    },
+    moveIds: ["m33", moveIdEnum.NIGHT_SLASH, moveIdEnum.BUG_BITE, "m195"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+  },
   "725-1": {
     name: "Littenyan",
     emoji: "<:littenyan:1145193884817834005>",

@@ -31,6 +31,7 @@ const moveIdEnum = Object.freeze({
   DOOM_DESIRE: "m353",
   NIGHT_SLASH: "m400",
   IRON_HEAD: "m442",
+  BUG_BITE: "m450",
   WOOD_HAMMER: "m452",
   QUASH: "m511",
   ICICLE_CRASH: "m556",

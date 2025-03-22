@@ -303,6 +303,8 @@ const pokemonIdEnum = Object.freeze({
   STARAPTOR: "398",
   BIDOOF: "399",
   BIBAREL: "400",
+  KRICKETOT: "401",
+  KRICKETUNE: "402",
   GARYS_BLASTOISE: "9-1",
   AAABAAAJSS: "18-1",
   JESSIES_ARBOK: "24-1",

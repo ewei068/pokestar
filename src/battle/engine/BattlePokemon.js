@@ -1351,10 +1351,10 @@ class BattlePokemon {
 
   /**
    * If usable, uses the held item on the target Pokemon, then removes it if it's used up
-   * @param {BattlePokemon} target
+   * @param {BattlePokemon=} target
    * @returns {boolean} Whether the held item was used
    */
-  useHeldItem(target) {
+  useHeldItem(target = this) {
     // remove held item effects
     const { heldItemId } = this.heldItem;
     const heldItemData = getHeldItem(heldItemId);
