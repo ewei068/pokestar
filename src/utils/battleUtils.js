@@ -384,6 +384,7 @@ const buildBattlePokemonEffectsString = (pokemon) => {
         ) {
           shieldString = `${pokemon.effectIds[effectId].args.shield} HP `;
         }
+        // @ts-ignore
         return `${shieldString}${getEffect(effectId).name} (${
           pokemon.effectIds[effectId].duration
         })`;

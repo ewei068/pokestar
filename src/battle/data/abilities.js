@@ -13,9 +13,13 @@ const {
   effectIdEnum,
   moveIdEnum,
 } = require("../../enums/battleEnums");
+const { getMoveIdHasTag } = require("../../utils/battleUtils");
 const {
   getIsActivePokemonCallback,
   getIsTargetPokemonCallback,
+  getIsSourcePokemonCallback,
+  getIsInstanceOfType,
+  composeConditionCallbacks,
 } = require("../engine/eventConditions");
 const { getMove } = require("./moveRegistry");
 
@@ -283,6 +287,36 @@ const abilitiesToRegister = Object.freeze({
               target.applyEffect("spaUp", 4, target, {});
             }
           },
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.IRON_FIST]: new Ability({
+    id: abilityIdEnum.IRON_FIST,
+    name: "Iron Fist",
+    description: "Increases damage of punching moves by 30%.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage, damageInfo }) => {
+            const moveId = damageInfo?.moveId;
+            if (getMoveIdHasTag(moveId, "punch")) {
+              battle.addToLog(`${target.name}'s Iron Fist boosts its damage!`);
+              return {
+                damage: Math.floor(damage * 1.3),
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourcePokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
         }),
       };
     },
@@ -581,6 +615,16 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.beforeDamageListenerId);
       battle.unregisterListener(properties.beforeCauseFaintListenerId);
     },
+  }),
+  [abilityIdEnum.SIMPLE]: new Ability({
+    id: abilityIdEnum.SIMPLE,
+    name: "Simple",
+    description: "Doubles the effect of most core stat changes on the Pokémon.",
+    abilityAdd() {
+      // The ability effect is implemented directly in BattlePokemon.getStat
+      return {};
+    },
+    abilityRemove() {},
   }),
 });
 
