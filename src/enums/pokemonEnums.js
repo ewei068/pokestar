@@ -1,4 +1,4 @@
-/** @typedef {Enum<pokemonIdEnum>} PokemonIdEnum */
+/** @typedef {Enum<pokemonIdEnum>} AllPokemonIdEnum */
 
 const pokemonIdEnum = Object.freeze({
   BULBASAUR: "1",

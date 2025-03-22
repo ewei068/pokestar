@@ -15,7 +15,7 @@ const effectIdEnum = Object.freeze({
 /**
  * @typedef {import("../config/battleConfig").LegacyMoveIdEnum} LegacyMoveIdEnum
  * @typedef {Enum<moveIdEnum>} NewMoveIdEnum
- * @typedef {LegacyMoveIdEnum | NewMoveIdEnum} MoveIdEnum
+ * @typedef {LegacyMoveIdEnum | NewMoveIdEnum} AllMoveIdEnum
  */
 const moveIdEnum = Object.freeze({
   POUND: "m1",

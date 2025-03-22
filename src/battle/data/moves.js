@@ -24,7 +24,7 @@ const { drawIterable } = require("../../utils/gachaUtils");
 class Move {
   /**
    * @param {object} param0
-   * @param {MoveIdEnum} param0.id
+   * @param {AllMoveIdEnum} param0.id
    * @param {string} param0.name
    * @param {PokemonTypeEnum} param0.type
    * @param {number} param0.power
@@ -57,6 +57,8 @@ class Move {
     chargeMoveEffectId,
     tags = [],
   }) {
+    /** @type {MoveIdEnum} */
+    // @ts-ignore
     this.id = id;
     this.name = name;
     this.type = type;
@@ -900,13 +902,14 @@ const movesToRegister = Object.freeze({
         }
 
         // Try to steal a buff
-        const possibleBuffs = Object.keys(target.effectIds).filter(
-          (effectId) => {
+        const possibleBuffs = /** @type {EffectIdEnum[]} */ (
+          Object.keys(target.effectIds).filter((effectId) => {
+            // @ts-ignore
             const effectData = getEffect(effectId);
             return (
               effectData.type === effectTypes.BUFF && effectData.dispellable
             );
-          }
+          })
         );
 
         if (possibleBuffs.length > 0) {

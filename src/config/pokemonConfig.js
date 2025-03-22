@@ -344,7 +344,10 @@ const rarities = Object.freeze({
 });
 
 /**
- * @type {Record<PokemonIdEnum, PokemonConfigData>}
+ * @typedef {Keys<pokemonConfigRaw>} PokemonIdEnum
+ */
+/**
+ * @satisfies {PartialRecord<AllPokemonIdEnum, PokemonConfigData>}
  */
 const pokemonConfigRaw = {
   1: {
@@ -8234,6 +8237,81 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.SHINX]: {
+    name: "Shinx",
+    emoji: "<:403:1351026504418533376>",
+    description:
+      "All of its fur dazzles if danger is sensed. It flees while the foe is momentarily blinded.",
+    type: [types.ELECTRIC],
+    baseStats: [45, 65, 34, 40, 34, 45],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/403.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/403.png",
+    evolution: [
+      {
+        level: 15,
+        id: pokemonIdEnum.LUXIO,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.RIVALRY]: 0.45,
+      [abilityIdEnum.INTIMIDATE]: 0.45,
+      [abilityIdEnum.GUTS]: 0.1,
+    },
+    moveIds: ["m33", "m43", "m268", "m344"],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.LUXIO]: {
+    name: "Luxio",
+    emoji: "<:404:1351026506641580032>",
+    description:
+      "Its claws loose electricity with enough amperage to cause fainting. They live in small groups.",
+    type: [types.ELECTRIC],
+    baseStats: [60, 85, 49, 60, 49, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/404.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/404.png",
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.LUXRAY,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.RIVALRY]: 0.45,
+      [abilityIdEnum.INTIMIDATE]: 0.45,
+      [abilityIdEnum.GUTS]: 0.1,
+    },
+    moveIds: ["m33", "m43", "m268", "m344", "m242"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.LUXRAY]: {
+    name: "Luxray",
+    emoji: "<:405:1351026508713746432>",
+    description:
+      "It has eyes which can see through anything. It spots and captures prey hiding behind objects.",
+    type: [types.ELECTRIC],
+    baseStats: [80, 120, 79, 95, 79, 70],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/405.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/405.png",
+    abilities: {
+      [abilityIdEnum.RIVALRY]: 0.45,
+      [abilityIdEnum.INTIMIDATE]: 0.45,
+      [abilityIdEnum.GUTS]: 0.1,
+    },
+    moveIds: ["m33", "m43", "m268", "m344", "m242", "m528"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
   },
   "725-1": {
     name: "Littenyan",
