@@ -8240,7 +8240,7 @@ const pokemonConfigRaw = {
   },
   [pokemonIdEnum.SHINX]: {
     name: "Shinx",
-    emoji: "<:403:1351026504418533376>",
+    emoji: "<:403:1351026503688912957>",
     description:
       "All of its fur dazzles if danger is sensed. It flees while the foe is momentarily blinded.",
     type: [types.ELECTRIC],
@@ -8260,14 +8260,19 @@ const pokemonConfigRaw = {
       [abilityIdEnum.INTIMIDATE]: 0.45,
       [abilityIdEnum.GUTS]: 0.1,
     },
-    moveIds: ["m33", "m43", "m268", "m344"],
+    moveIds: [
+      moveIdEnum.TACKLE,
+      moveIdEnum.BITE,
+      moveIdEnum.TAKE_DOWN,
+      moveIdEnum.THUNDERBOLT,
+    ],
     battleEligible: true,
     rarity: rarities.COMMON,
     growthRate: growthRates.MEDIUMFAST,
   },
   [pokemonIdEnum.LUXIO]: {
     name: "Luxio",
-    emoji: "<:404:1351026506641580032>",
+    emoji: "<:404:1351026504854802533>",
     description:
       "Its claws loose electricity with enough amperage to cause fainting. They live in small groups.",
     type: [types.ELECTRIC],
@@ -8287,14 +8292,19 @@ const pokemonConfigRaw = {
       [abilityIdEnum.INTIMIDATE]: 0.45,
       [abilityIdEnum.GUTS]: 0.1,
     },
-    moveIds: ["m33", "m43", "m268", "m344", "m242"],
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.FACADE,
+      moveIdEnum.THUNDERBOLT,
+      moveIdEnum.SUPERPOWER,
+    ],
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMFAST,
   },
   [pokemonIdEnum.LUXRAY]: {
     name: "Luxray",
-    emoji: "<:405:1351026508713746432>",
+    emoji: "<:405:1351026506612342834>",
     description:
       "It has eyes which can see through anything. It spots and captures prey hiding behind objects.",
     type: [types.ELECTRIC],
@@ -8308,7 +8318,12 @@ const pokemonConfigRaw = {
       [abilityIdEnum.INTIMIDATE]: 0.45,
       [abilityIdEnum.GUTS]: 0.1,
     },
-    moveIds: ["m33", "m43", "m268", "m344", "m242", "m528"],
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.FACADE,
+      moveIdEnum.SUPERPOWER,
+      moveIdEnum.WILD_CHARGE,
+    ],
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,

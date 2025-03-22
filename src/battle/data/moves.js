@@ -939,6 +939,64 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.BITE]: new Move({
+    id: moveIdEnum.BITE,
+    name: "Bite",
+    type: pokemonTypes.DARK,
+    power: 50,
+    accuracy: 100,
+    cooldown: 0,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user bites the target with sharp fangs. This has a 30% chance to make the target flinch.",
+    execute(args) {
+      this.genericDealAllDamage(args);
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "flinched",
+        duration: 1,
+        probablity: 0.3,
+      });
+    },
+  }),
+  [moveIdEnum.FACADE]: new Move({
+    id: moveIdEnum.FACADE,
+    name: "Facade",
+    type: pokemonTypes.NORMAL,
+    power: 70,
+    accuracy: 100,
+    cooldown: 2,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "An attack that inflicts double damage if the user has a status condition.",
+    execute(args) {
+      const { source, battle } = args;
+      this.genericDealAllDamage({
+        ...args,
+        calculateDamageFunction: (damageArgs) => {
+          const baseDamage = source.calculateMoveDamage(damageArgs);
+
+          // If the user has a status condition, double the damage
+          if (source.status.statusId) {
+            battle.addToLog(
+              `${source.name} is furious! It's attacking with double power!`
+            );
+            return baseDamage * 2;
+          }
+
+          return baseDamage;
+        },
+      });
+    },
+  }),
 });
 
 module.exports = {
