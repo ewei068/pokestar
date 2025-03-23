@@ -1204,6 +1204,62 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.SWITCHEROO]: new Move({
+    id: moveIdEnum.SWITCHEROO,
+    name: "Switcheroo",
+    type: pokemonTypes.DARK,
+    power: null,
+    accuracy: null,
+    cooldown: 3,
+    targetType: targetTypes.ANY,
+    targetPosition: targetPositions.NON_SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user trades held items with the target faster than the eye can follow. This swaps the held items of the user and the target.",
+    execute({ battle, source, primaryTarget }) {
+      // Store the held item IDs
+      const sourceHeldItemId = source.heldItem?.heldItemId;
+      const targetHeldItemId = primaryTarget.heldItem?.heldItemId;
+      // remove items
+      source.removeHeldItem();
+      primaryTarget.removeHeldItem();
+      // Swap held items
+      source.setHeldItem(targetHeldItemId);
+      primaryTarget.setHeldItem(sourceHeldItemId);
+      // Apply new held items
+      source.applyHeldItem();
+      primaryTarget.applyHeldItem();
+
+      battle.addToLog(
+        `${source.name} switched items with ${primaryTarget.name}!`
+      );
+    },
+  }),
+  [moveIdEnum.NUZZLE]: new Move({
+    id: moveIdEnum.NUZZLE,
+    name: "Nuzzle",
+    type: pokemonTypes.ELECTRIC,
+    power: 20,
+    accuracy: 100,
+    cooldown: 0,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user nuzzles its electrified cheeks against the target. This has a 60% chance to paralyze the target.",
+    execute(args) {
+      this.genericDealAllDamage(args);
+      this.genericApplyAllStatus({
+        ...args,
+        statusId: statusConditions.PARALYSIS,
+        probablity: 0.6,
+      });
+    },
+  }),
 });
 
 module.exports = {

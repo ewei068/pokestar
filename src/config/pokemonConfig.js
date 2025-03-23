@@ -8550,6 +8550,88 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.PACHIRISU]: {
+    name: "Pachirisu",
+    emoji: "<:417:1351026663319928853>",
+    description:
+      "It makes fur balls that crackle with static electricity. It stores them with berries in tree holes.",
+    type: [types.ELECTRIC],
+    baseStats: [60, 45, 70, 45, 90, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/417.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/417.png",
+    abilities: {
+      [abilityIdEnum.RUN_AWAY]: 0.45,
+      [abilityIdEnum.PICKUP]: 0.45,
+      [abilityIdEnum.VOLT_ABSORB]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.NUZZLE,
+      moveIdEnum.PROTECT,
+      moveIdEnum.FOLLOW_ME,
+      moveIdEnum.SUPER_FANG,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.BUIZEL]: {
+    name: "Buizel",
+    emoji: "<:418:1351026665127542967>",
+    description:
+      "It has a flotation sac that is like an inflatable collar. It floats on water with its head out.",
+    type: [types.WATER],
+    baseStats: [55, 65, 35, 60, 30, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/418.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/418.png",
+    evolution: [
+      {
+        level: 26,
+        id: pokemonIdEnum.FLOATZEL,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SWIFT_SWIM]: 0.8,
+      [abilityIdEnum.WATER_VEIL]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.AQUA_JET,
+      moveIdEnum.QUICK_ATTACK,
+      moveIdEnum.SURF,
+      moveIdEnum.WATERFALL,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.FLOATZEL]: {
+    name: "Floatzel",
+    emoji: "<:419:1351026666943807528>",
+    description:
+      "It floats using its well-developed flotation sac. It assists in the rescues of drowning people.",
+    type: [types.WATER],
+    baseStats: [85, 105, 55, 85, 50, 115],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/419.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/419.png",
+    abilities: {
+      [abilityIdEnum.SWIFT_SWIM]: 0.8,
+      [abilityIdEnum.WATER_VEIL]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.AQUA_JET,
+      moveIdEnum.ICE_PUNCH,
+      moveIdEnum.SWITCHEROO,
+      moveIdEnum.HYDRO_PUMP,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   "725-1": {
     name: "Littenyan",
     emoji: "<:littenyan:1145193884817834005>",
