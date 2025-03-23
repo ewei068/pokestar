@@ -3485,12 +3485,12 @@ const moveConfig = Object.freeze({
   m136: {
     name: "High Jump Kick",
     type: pokemonTypes.FIGHTING,
-    power: 175,
+    power: 130,
     accuracy: 80,
-    cooldown: 3,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.SINGLE,
+    targetPattern: targetPatterns.CROSS,
     tier: moveTiers.ULTIMATE,
     damageType: damageTypes.PHYSICAL,
     description:
@@ -3951,15 +3951,15 @@ const moveConfig = Object.freeze({
     name: "Charm",
     type: pokemonTypes.FAIRY,
     power: null,
-    accuracy: 100,
-    cooldown: 2,
+    accuracy: 90,
+    cooldown: 0,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
-    tier: moveTiers.POWER,
+    tier: moveTiers.BASIC,
     damageType: damageTypes.OTHER,
     description:
-      "The user gazes at the target rather charmingly, making it less wary. This sharply lowers the target's attack stat for 3 turns.",
+      "The user gazes at the target rather charmingly, making it less wary. This sharply lowers the target's attack stat for 2 turns.",
   },
   m205: {
     name: "Rollout",
@@ -8390,8 +8390,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (!miss) {
-        // greater atk down for 3 turns
-        target.applyEffect("greaterAtkDown", 3, source);
+        target.applyEffect("greaterAtkDown", 2, source);
       }
     }
   },
@@ -12110,6 +12109,9 @@ const abilityConfig = Object.freeze({
         battleEventEnum.BEFORE_STATUS_APPLY,
         listener
       );
+      if (target.status?.statusId === statusConditions.PARALYSIS) {
+        target.removeStatus();
+      }
       return {
         listenerId,
       };

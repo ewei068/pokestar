@@ -3080,7 +3080,7 @@ const pokemonConfigRaw = {
       91: 0.45,
       107: 0.1,
     },
-    moveIds: ["m98", "m36", "m204", "m387"],
+    moveIds: ["m98", "m204", "m36", "m387"],
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMSLOW,
@@ -8717,6 +8717,63 @@ const pokemonConfigRaw = {
       moveIdEnum.DESTINY_BOND,
       moveIdEnum.WILL_O_WISP,
       moveIdEnum.TAILWIND,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.BUNEARY]: {
+    name: "Buneary",
+    emoji: "<:427:1351026851253850214>",
+    description:
+      "When it senses danger, it perks up its ears. On cold nights, it sleeps with its head tucked into its fur.",
+    type: [types.NORMAL],
+    baseStats: [55, 66, 44, 44, 56, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/427.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/427.png",
+    evolution: [
+      {
+        level: 24,
+        id: pokemonIdEnum.LOPUNNY,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.RUN_AWAY]: 0.45,
+      [abilityIdEnum.KLUTZ]: 0.45,
+      [abilityIdEnum.LIMBER]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.CHARM,
+      moveIdEnum.ENCORE,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.DRAIN_PUNCH,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.LOPUNNY]: {
+    name: "Lopunny",
+    emoji: "<:428:1351026852797485127>",
+    description: "BATMAN, THERE IS NO LAWS AGAINST THE POKEMON, BATMAN!!",
+    type: [types.NORMAL],
+    baseStats: [65, 76, 84, 54, 96, 105],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/428.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/428.png",
+    abilities: {
+      [abilityIdEnum.CUTE_CHARM]: 0.45,
+      [abilityIdEnum.KLUTZ]: 0.45,
+      [abilityIdEnum.LIMBER]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.CHARM,
+      moveIdEnum.ENCORE,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.HIGH_JUMP_KICK,
     ],
     battleEligible: true,
     rarity: rarities.EPIC,

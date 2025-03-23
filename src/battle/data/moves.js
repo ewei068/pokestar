@@ -1281,6 +1281,45 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.ENCORE]: new Move({
+    id: moveIdEnum.ENCORE,
+    name: "Encore",
+    type: pokemonTypes.NORMAL,
+    power: null,
+    accuracy: null,
+    cooldown: 4,
+    targetType: targetTypes.ANY,
+    targetPosition: targetPositions.NON_SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user forces the target to use a move for 1 turn. A random move that's on cooldown for the target is reset to 0 cooldown, and all other moves are disabled.",
+    execute({ battle, source, allTargets }) {
+      for (const target of allTargets) {
+        // Find moves that are on cooldown
+        const movesOnCooldown = Object.entries(target.moveIds)
+          .filter(([, moveInfo]) => moveInfo.cooldown > 0)
+          .map(([moveId]) => moveId);
+        if (movesOnCooldown.length === 0) {
+          battle.addToLog(
+            `But it failed! ${target.name} has no moves on cooldown!`
+          );
+          continue;
+        }
+
+        // Select a random move on cooldown
+        const [randomMoveId] = /** @type {MoveIdEnum[]} */ (
+          drawIterable(movesOnCooldown, 1)
+        );
+        target.reduceMoveCooldown(randomMoveId, 99, source);
+        // Apply the Encore effect, forcing the target to only use the selected move
+        target.applyEffect(effectIdEnum.ENCORE, 1, source, {
+          moveId: randomMoveId,
+        });
+      }
+    },
+  }),
 });
 
 module.exports = {

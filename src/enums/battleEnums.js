@@ -10,6 +10,7 @@ const effectIdEnum = Object.freeze({
   DEBUFF_IMMUNITY: "debuffImmunity",
   AQUA_BLESSING: "aquaBlessing",
   DOOM_DESIRE: "doomDesire",
+  ENCORE: "encore",
 });
 
 /**
