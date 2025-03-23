@@ -6683,6 +6683,12 @@ const pokemonConfigRaw = {
       38: 0.45,
       102: 0.1,
     },
+    evolution: [
+      {
+        level: 36,
+        id: pokemonIdEnum.ROSERADE,
+      },
+    ],
     moveIds: ["m40", "m191", "m202", "m235"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -8323,6 +8329,115 @@ const pokemonConfigRaw = {
       moveIdEnum.FACADE,
       moveIdEnum.SUPERPOWER,
       moveIdEnum.WILD_CHARGE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.BUDEW]: {
+    name: "Budew",
+    emoji: "<:406:1351026507904061471>",
+    description:
+      "Over the winter, it closes its bud and endures the cold. In spring, the bud opens and releases pollen.",
+    type: [types.GRASS, types.POISON],
+    baseStats: [40, 30, 35, 50, 70, 55],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/406.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/406.png",
+    evolution: [
+      {
+        level: 18,
+        id: pokemonIdEnum.ROSELIA,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.NATURAL_CURE]: 0.45,
+      [abilityIdEnum.POISON_POINT]: 0.45,
+      [abilityIdEnum.LEAF_GUARD]: 0.1,
+    },
+    moveIds: [moveIdEnum.ABSORB, moveIdEnum.GIGA_DRAIN, moveIdEnum.SYNTHESIS],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.ROSERADE]: {
+    name: "Roserade",
+    emoji: "<:407:1351026508851970050>",
+    description:
+      "With the movements of a dancer, it strikes with whips that are densely lined with poison thorns.",
+    type: [types.GRASS, types.POISON],
+    baseStats: [60, 70, 65, 125, 105, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/407.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/407.png",
+    abilities: {
+      [abilityIdEnum.NATURAL_CURE]: 0.45,
+      [abilityIdEnum.POISON_POINT]: 0.45,
+      [abilityIdEnum.TECHNICIAN]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POISON_STING,
+      moveIdEnum.SPIKES,
+      moveIdEnum.SYNTHESIS,
+      moveIdEnum.LEAF_STORM,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.CRANIDOS]: {
+    name: "Cranidos",
+    emoji: "<:408:1351026510210928761>",
+    description:
+      "A primeval Pokémon that used headbutts to crack open hard berries. Its skull is as hard as iron.",
+    type: [types.ROCK],
+    baseStats: [67, 125, 40, 30, 30, 58],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/408.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/408.png",
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.RAMPARDOS,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.MOLD_BREAKER]: 0.8,
+      [abilityIdEnum.SHEER_FORCE]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.HEADBUTT,
+      moveIdEnum.TAKE_DOWN,
+      moveIdEnum.STRENGTH,
+      moveIdEnum.STONE_EDGE,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.RAMPARDOS]: {
+    name: "Rampardos",
+    emoji: "<:409:1351026511691382835>",
+    description:
+      "Its powerful head butt has enough power to shatter even the most durable things upon impact.",
+    type: [types.ROCK],
+    baseStats: [97, 165, 60, 65, 50, 58],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/409.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/409.png",
+    abilities: {
+      [abilityIdEnum.MOLD_BREAKER]: 0.8,
+      [abilityIdEnum.SHEER_FORCE]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.HEADBUTT,
+      moveIdEnum.STRENGTH,
+      moveIdEnum.STONE_EDGE,
+      moveIdEnum.HEAD_SMASH,
     ],
     battleEligible: true,
     rarity: rarities.EPIC,

@@ -6739,8 +6739,6 @@ const moveExecutes = {
         moveId,
       });
     }
-    // recoil damage to self
-    battle.addToLog(`${source.name} is affected by recoil!`);
     const damageToDeal = Math.max(Math.floor(damageDealt / 4), 1);
     source.dealDamage(damageToDeal, source, {
       type: "recoil",
@@ -6762,8 +6760,6 @@ const moveExecutes = {
         moveId,
       });
     }
-    // recoil damage to self
-    battle.addToLog(`${source.name} is affected by recoil!`);
     const damageToDeal = Math.max(Math.floor(damageDealt / 3), 1);
     source.dealDamage(damageToDeal, source, {
       type: "recoil",
@@ -9754,7 +9750,6 @@ const moveExecutes = {
       }
     }
 
-    battle.addToLog(`${source.name} is affected by recoil!`);
     const damageToDeal = Math.max(Math.floor(damageDealt / 4), 1);
     source.dealDamage(damageToDeal, source, {
       type: "recoil",
@@ -10117,8 +10112,6 @@ const moveExecutes = {
       }
     }
 
-    // recoil damage to self
-    battle.addToLog(`${source.name} is affected by recoil!`);
     const damageToDeal = Math.max(Math.floor(damageDealt / 3), 1);
     source.dealDamage(damageToDeal, source, {
       type: "recoil",
@@ -10154,8 +10147,6 @@ const moveExecutes = {
       });
     }
 
-    // recoil damage to self
-    battle.addToLog(`${source.name} is affected by recoil!`);
     const damageToDeal = Math.max(Math.floor(damageDealt / 3), 1);
     source.dealDamage(damageToDeal, source, {
       type: "recoil",
@@ -10361,8 +10352,6 @@ const moveExecutes = {
       });
     }
 
-    // recoil damage to self
-    battle.addToLog(`${source.name} is affected by recoil!`);
     const damageToDeal = Math.max(Math.floor(damageDealt / 3), 1);
     source.dealDamage(damageToDeal, source, {
       type: "recoil",
@@ -11067,8 +11056,6 @@ const moveExecutes = {
         moveId,
       });
     }
-    // recoil damage to self
-    battle.addToLog(`${source.name} is affected by recoil!`);
     const damageToDeal = Math.max(Math.floor(damageDealt / 4), 1);
     source.dealDamage(damageToDeal, source, {
       type: "recoil",

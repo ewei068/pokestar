@@ -1016,6 +1016,10 @@ class BattlePokemon {
       return 0;
     }
 
+    if (damageInfo.type === "recoil") {
+      this.battle.addToLog(`${this.name} is affected by recoil!`);
+    }
+
     // if pvp, deal 15% less damage
     if (this.battle.isPvp) {
       damage = Math.max(1, Math.floor(damage * 0.85));

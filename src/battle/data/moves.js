@@ -104,6 +104,13 @@ class Move {
   }
 
   /**
+   * @typedef {{
+   *  damageInstances: Record<string, number>,
+   *  totalDamageDealt: number,
+   * }} GenericDealAllDamageResult
+   */
+
+  /**
    * @param {object} param0
    * @param {BattlePokemon} param0.source
    * @param {BattlePokemon} param0.primaryTarget
@@ -111,7 +118,7 @@ class Move {
    * @param {Array<BattlePokemon>=} param0.missedTargets
    * @param {number=} param0.offTargetDamageMultiplier
    * @param {CalculateMoveDamageImpl=} param0.calculateDamageFunction
-   * @returns {Record<string, number>}
+   * @returns {GenericDealAllDamageResult}
    */
   genericDealAllDamage({
     source,
@@ -134,7 +141,13 @@ class Move {
       });
       damageInstances[target.id] = damageToTarget;
     }
-    return damageInstances;
+    return {
+      damageInstances,
+      totalDamageDealt: Object.values(damageInstances).reduce(
+        (sum, damage) => sum + damage,
+        0
+      ),
+    };
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -673,13 +686,8 @@ const movesToRegister = Object.freeze({
     description:
       "The target is struck with a hard head made of iron. The user takes 33% recoil damage.",
     execute(args) {
-      const damageInstances = this.genericDealAllDamage(args);
-      // TODO: functionify ?
-      const recoilDamage = Object.values(damageInstances).reduce(
-        (sum, damage) => sum + damage,
-        0
-      );
-      args.source.dealDamage(recoilDamage, args.source, {
+      const { totalDamageDealt } = this.genericDealAllDamage(args);
+      args.source.dealDamage(Math.floor(totalDamageDealt * 0.33), args.source, {
         type: "recoil",
       });
     },
@@ -963,6 +971,30 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.HEADBUTT]: new Move({
+    id: moveIdEnum.HEADBUTT,
+    name: "Headbutt",
+    type: pokemonTypes.NORMAL,
+    power: 50,
+    accuracy: 100,
+    cooldown: 0,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user rams its head into the target. This has a 30% chance to make the target flinch.",
+    execute(args) {
+      this.genericDealAllDamage(args);
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "flinched",
+        duration: 1,
+        probablity: 0.3,
+      });
+    },
+  }),
   [moveIdEnum.FACADE]: new Move({
     id: moveIdEnum.FACADE,
     name: "Facade",
@@ -994,6 +1026,28 @@ const movesToRegister = Object.freeze({
 
           return baseDamage;
         },
+      });
+    },
+  }),
+  [moveIdEnum.HEAD_SMASH]: new Move({
+    id: moveIdEnum.HEAD_SMASH,
+    name: "Head Smash",
+    type: pokemonTypes.ROCK,
+    power: 200,
+    accuracy: 80,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user attacks with a hazardous, full-power headbutt. This deals massive damage but the user takes 50% of the damage dealt as recoil.",
+    execute(args) {
+      const { source } = args;
+      const { totalDamageDealt } = this.genericDealAllDamage(args);
+      source.dealDamage(Math.floor(totalDamageDealt * 0.5), source, {
+        type: "recoil",
       });
     },
   }),
