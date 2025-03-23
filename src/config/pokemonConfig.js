@@ -8499,6 +8499,57 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.COMBEE]: {
+    name: "Combee",
+    emoji: "<:415:1351026660564013127>",
+    description:
+      "A Pokemon formed by three others. The sweet aroma given off by its honey attracts Pokémon.",
+    type: [types.BUG, types.FLYING],
+    baseStats: [30, 30, 42, 30, 42, 70],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/415.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/415.png",
+    evolution: [
+      {
+        level: 21,
+        id: pokemonIdEnum.VESPIQUEN,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.HONEY_GATHER]: 0.8,
+      [abilityIdEnum.HUSTLE]: 0.2,
+    },
+    moveIds: [moveIdEnum.GUST, moveIdEnum.BUG_BITE],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.VESPIQUEN]: {
+    name: "Vespiquen",
+    emoji: "<:416:1351026662292193300>",
+    description:
+      "Its abdomen is a honeycomb for grubs. It raises its grubs on honey collected by Combee.",
+    type: [types.BUG, types.FLYING],
+    baseStats: [70, 80, 102, 80, 102, 40],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/416.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/416.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.UNNERVE]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.GUST,
+      moveIdEnum.DEFEND_ORDER,
+      moveIdEnum.HEAL_ORDER,
+      moveIdEnum.ATTACK_ORDER,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   "725-1": {
     name: "Littenyan",
     emoji: "<:littenyan:1145193884817834005>",

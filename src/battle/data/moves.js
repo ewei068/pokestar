@@ -1103,6 +1103,107 @@ const movesToRegister = Object.freeze({
       }
     },
   }),
+  [moveIdEnum.HEAL_ORDER]: new Move({
+    id: moveIdEnum.HEAL_ORDER,
+    name: "Heal Order",
+    type: pokemonTypes.BUG,
+    power: null,
+    accuracy: null,
+    cooldown: 2,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user commands its healing bees to mend wounds. Heals the user or a targeted ally for 50% of their maximum HP.",
+    execute({ source, allTargets }) {
+      // TODO: functionify?
+      for (const target of allTargets) {
+        const healAmount = Math.floor(target.maxHp * 0.5);
+        source.giveHeal(healAmount, target, {
+          type: "move",
+          moveId: this.id,
+        });
+      }
+    },
+  }),
+  [moveIdEnum.DEFEND_ORDER]: new Move({
+    id: moveIdEnum.DEFEND_ORDER,
+    name: "Defend Order",
+    type: pokemonTypes.BUG,
+    power: null,
+    accuracy: null,
+    cooldown: 2,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user commands its defensive bees to protect. Raises the target's Defense and Special Defense for 3 turns and creates a shield equal to 5% of their combined defenses.",
+    execute(args) {
+      const { allTargets } = args;
+      for (const target of allTargets) {
+        this.genericApplySingleEffect({
+          ...args,
+          effectId: "defUp",
+          duration: 3,
+          target,
+        });
+        this.genericApplySingleEffect({
+          ...args,
+          effectId: "spdUp",
+          duration: 3,
+          target,
+        });
+
+        // Calculate and apply shield based on combined defenses
+        const defStat = target.getStat("def");
+        const spdStat = target.getStat("spd");
+        const shieldAmount = Math.floor((defStat + spdStat) * 0.05);
+        this.genericApplySingleEffect({
+          ...args,
+          effectId: "shield",
+          duration: 3,
+          target,
+          initialArgs: { shield: shieldAmount },
+        });
+      }
+    },
+  }),
+  [moveIdEnum.ATTACK_ORDER]: new Move({
+    id: moveIdEnum.ATTACK_ORDER,
+    name: "Attack Order",
+    type: pokemonTypes.BUG,
+    power: 90,
+    accuracy: 100,
+    cooldown: 4,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user commands its offensive bees to attack. The attack's power increases by 10% for each non-fainted ally on the field.",
+    execute(args) {
+      const { source } = args;
+      // Count non-fainted allies (excluding self) to boost damage
+      const allyPokemons = source.getPartyPokemon();
+      const nonFaintedAllies = allyPokemons.filter(
+        (p) => p && !p.isFainted && p !== source
+      ).length;
+      const damageMultiplier = 1 + nonFaintedAllies * 0.1;
+
+      this.genericDealAllDamage({
+        ...args,
+        calculateDamageFunction: (damageArgs) => {
+          const baseDamage = source.calculateMoveDamage(damageArgs);
+          return Math.floor(baseDamage * damageMultiplier);
+        },
+      });
+    },
+  }),
 });
 
 module.exports = {
