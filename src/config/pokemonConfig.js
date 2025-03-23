@@ -8443,6 +8443,62 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.SHIELDON]: {
+    name: "Shieldon",
+    emoji: "<:410:1351026649004642356>",
+    description:
+      "A Pokémon that lived in dense forests. Its face is covered by a hard, protective mask.",
+    type: [types.ROCK, types.STEEL],
+    baseStats: [30, 42, 118, 42, 88, 30],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/410.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/410.png",
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.BASTIODON,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.STURDY]: 0.8,
+      [abilityIdEnum.SOUNDPROOF]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.TACKLE,
+      moveIdEnum.IRON_DEFENSE,
+      moveIdEnum.IRON_HEAD,
+      moveIdEnum.STONE_EDGE,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.BASTIODON]: {
+    name: "Bastiodon",
+    emoji: "<:411:1351026514866475088>",
+    description:
+      "When they lined up side by side, no foe could break through. They shielded their young in that way.",
+    type: [types.ROCK, types.STEEL],
+    baseStats: [60, 52, 168, 47, 138, 30],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/411.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/411.png",
+    abilities: {
+      [abilityIdEnum.STURDY]: 0.8,
+      [abilityIdEnum.SOUNDPROOF]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BLOCK,
+      moveIdEnum.IRON_DEFENSE,
+      moveIdEnum.WIDE_GUARD,
+      moveIdEnum.METAL_BURST,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   "725-1": {
     name: "Littenyan",
     emoji: "<:littenyan:1145193884817834005>",

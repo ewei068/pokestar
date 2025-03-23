@@ -1051,6 +1051,58 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.BLOCK]: new Move({
+    id: moveIdEnum.BLOCK,
+    name: "Block",
+    type: pokemonTypes.NORMAL,
+    power: null,
+    accuracy: null,
+    cooldown: 0,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user blocks the target's way, preventing escape. The target cannot gain boosted combat readiness for 2 turns.",
+    execute(args) {
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "restricted",
+        duration: 2,
+      });
+    },
+  }),
+  [moveIdEnum.METAL_BURST]: new Move({
+    id: moveIdEnum.METAL_BURST,
+    name: "Metal Burst",
+    type: pokemonTypes.STEEL,
+    power: null,
+    accuracy: 100,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.CROSS,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user retaliates with a powerful metal counterattack. This deals true damage equal to 75% of each target's attack, increased to 150% for the primary target.",
+    execute({ source, primaryTarget, allTargets, missedTargets }) {
+      for (const target of allTargets) {
+        if (missedTargets.includes(target)) {
+          continue;
+        }
+
+        const targetAttack = target.getStat("atk");
+        const multiplier = target === primaryTarget ? 1.5 : 0.75;
+        const damage = Math.floor(targetAttack * multiplier);
+        source.dealDamage(damage, target, {
+          type: "move",
+          moveId: this.id,
+        });
+      }
+    },
+  }),
 });
 
 module.exports = {
