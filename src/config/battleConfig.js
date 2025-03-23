@@ -2706,13 +2706,13 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
-    cooldown: 2,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.POWER,
     damageType: damageTypes.OTHER,
-    description: "Disables the target's ultimate move for 1 turn.",
+    description: "Disables the target's ultimate move for 2 turns.",
   },
   m51: {
     name: "Acid",
@@ -5797,7 +5797,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.BASIC,
     damageType: damageTypes.SPECIAL,
     description:
-      "The user places a curse on the target. If the target is debuffed or has a status condition, this move's base power is increased by 25.",
+      "The user places a curse on the target. If the target is debuffed or has a status condition, this move's base power is increased by 40.",
   },
   m521: {
     name: "Volt Switch",
@@ -6816,7 +6816,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (!miss) {
-        target.applyEffect("disable", 1, source);
+        target.applyEffect("disable", 2, source);
       }
     }
   },
@@ -10941,7 +10941,7 @@ const moveExecutes = {
       }
       const hasStatus = target.status.statusId !== null;
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
-        power: hasDebuff || hasStatus ? moveData.power + 25 : moveData.power,
+        power: hasDebuff || hasStatus ? moveData.power + 40 : moveData.power,
       });
       source.dealDamage(damageToDeal, target, {
         type: "move",

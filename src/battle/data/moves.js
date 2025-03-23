@@ -1260,6 +1260,27 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.WILL_O_WISP]: new Move({
+    id: moveIdEnum.WILL_O_WISP,
+    name: "Will-O-Wisp",
+    type: pokemonTypes.FIRE,
+    power: null,
+    accuracy: 90,
+    cooldown: 2,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user sends a sinister flame at the target. This inflicts a burn on the target.",
+    execute(args) {
+      this.genericApplyAllStatus({
+        ...args,
+        statusId: statusConditions.BURN,
+      });
+    },
+  }),
 });
 
 module.exports = {

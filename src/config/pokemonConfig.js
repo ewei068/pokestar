@@ -4443,6 +4443,12 @@ const pokemonConfigRaw = {
       53: 0.45,
       92: 0.1,
     },
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.AMBIPOM,
+      },
+    ],
     moveIds: ["m10", "m216", "m252", "m369"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -8627,6 +8633,90 @@ const pokemonConfigRaw = {
       moveIdEnum.ICE_PUNCH,
       moveIdEnum.SWITCHEROO,
       moveIdEnum.HYDRO_PUMP,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.AMBIPOM]: {
+    name: "Ambipom",
+    emoji: "<:424:1351026847709659178>",
+    description:
+      "Split into two, the tails are so adept at handling and doing things, Ambipom rarely uses its hands now.",
+    type: [types.NORMAL],
+    baseStats: [75, 100, 66, 60, 66, 115],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/424.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/424.png",
+    abilities: {
+      [abilityIdEnum.TECHNICIAN]: 0.45,
+      [abilityIdEnum.PICKUP]: 0.45,
+      [abilityIdEnum.SKILL_LINK]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.SCRATCH,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.U_TURN,
+      moveIdEnum.DOUBLE_EDGE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.DRIFLOON]: {
+    name: "Drifloon",
+    emoji: "<:425:1351026848901107773>",
+    description:
+      "A Pokémon formed by the spirits of people and Pokémon. It loves damp, humid seasons.",
+    type: [types.GHOST, types.FLYING],
+    baseStats: [90, 50, 34, 60, 44, 70],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/425.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/425.png",
+    evolution: [
+      {
+        level: 28,
+        id: pokemonIdEnum.DRIFBLIM,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.AFTERMATH]: 0.45,
+      [abilityIdEnum.UNBURDEN]: 0.45,
+      [abilityIdEnum.FLARE_BOOST]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.GUST,
+      moveIdEnum.HEX,
+      moveIdEnum.DESTINY_BOND,
+      moveIdEnum.WILL_O_WISP,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.DRIFBLIM]: {
+    name: "Drifblim",
+    emoji: "<:426:1351026850100678727>",
+    description:
+      "It carries people and Pokémon when it flies. But since it only drifts, it can end up anywhere.",
+    type: [types.GHOST, types.FLYING],
+    baseStats: [150, 80, 44, 90, 54, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/426.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/426.png",
+    abilities: {
+      [abilityIdEnum.AFTERMATH]: 0.45,
+      [abilityIdEnum.UNBURDEN]: 0.45,
+      [abilityIdEnum.FLARE_BOOST]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.HEX,
+      moveIdEnum.DESTINY_BOND,
+      moveIdEnum.WILL_O_WISP,
+      moveIdEnum.TAILWIND,
     ],
     battleEligible: true,
     rarity: rarities.EPIC,

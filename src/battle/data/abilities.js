@@ -626,6 +626,37 @@ const abilitiesToRegister = Object.freeze({
     },
     abilityRemove() {},
   }),
+  [abilityIdEnum.AFTERMATH]: new Ability({
+    id: abilityIdEnum.AFTERMATH,
+    name: "Aftermath",
+    description:
+      "Damages the attacker by 1/5 of the user's max HP when knocked out.",
+    abilityAdd({ battle, target }) {
+      return {
+        faintListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_FAINT,
+          callback: ({ source }) => {
+            if (!source || source.isFainted) {
+              return;
+            }
+
+            const damage = Math.floor(target.maxHp / 5);
+            battle.addToLog(`${target.name}'s Aftermath triggered!`);
+            source.takeDamage(damage, target, {
+              type: "ability",
+              id: abilityIdEnum.AFTERMATH,
+            });
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.faintListenerId);
+    },
+  }),
 });
 
 module.exports = {

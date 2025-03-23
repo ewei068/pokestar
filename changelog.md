@@ -16,6 +16,8 @@
   - Gen 4 event
     - Special banners
     - Some boosts or sm IDK
+  - Add some more held items
+  - Add Gen 4 rotating banner
 
 **Stretch**
 

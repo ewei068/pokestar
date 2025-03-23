@@ -1183,7 +1183,6 @@ class BattlePokemon {
 
     this.hp = 0;
     this.isFainted = true;
-    this.disableAbility();
     this.disableHeldItem();
     this.battle.addToLog(`${this.name} fainted!`);
 
@@ -1193,6 +1192,7 @@ class BattlePokemon {
       source,
     };
     this.battle.eventHandler.emit(battleEventEnum.AFTER_FAINT, afterFaintArgs);
+    this.disableAbility();
   }
 
   /**
