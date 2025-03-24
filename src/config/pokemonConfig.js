@@ -8869,6 +8869,64 @@ const pokemonConfigRaw = {
     rarity: rarities.RARE,
     growthRate: growthRates.FAST,
   },
+  [pokemonIdEnum.STUNKY]: {
+    name: "Stunky",
+    emoji: "<:434:1351026930526191707>",
+    description:
+      "It sprays a foul fluid from its rear. Its stench spreads over a mile radius, driving Pokémon away.",
+    type: [types.POISON, types.DARK],
+    baseStats: [63, 63, 47, 41, 41, 74],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/434.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/434.png",
+    evolution: [
+      {
+        level: 34,
+        id: pokemonIdEnum.SKUNTANK,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.STENCH]: 0.45,
+      [abilityIdEnum.AFTERMATH]: 0.45,
+      [abilityIdEnum.KEEN_EYE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.TOXIC,
+      moveIdEnum.SMOKESCREEN,
+      moveIdEnum.NIGHT_SLASH,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.SKUNTANK]: {
+    name: "Skuntank",
+    emoji: "<:435:1351026932027756676>",
+    description:
+      "It sprays a vile-smelling fluid from the tip of its tail to attack. Its range is over 160 feet.",
+    type: [types.POISON, types.DARK],
+    baseStats: [103, 93, 67, 71, 61, 84],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/435.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/435.png",
+    abilities: {
+      [abilityIdEnum.STENCH]: 0.45,
+      [abilityIdEnum.AFTERMATH]: 0.45,
+      [abilityIdEnum.KEEN_EYE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.TOXIC,
+      moveIdEnum.NIGHT_SLASH,
+      moveIdEnum.FIRE_BLAST,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   "725-1": {
     name: "Littenyan",
     emoji: "<:littenyan:1145193884817834005>",

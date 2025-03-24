@@ -94,6 +94,34 @@ class Ability {
 }
 
 const abilitiesToRegister = Object.freeze({
+  [abilityIdEnum.STENCH]: new Ability({
+    id: abilityIdEnum.STENCH,
+    name: "Stench",
+    description:
+      "When the Pokémon inflicts damage, it has a 10% chance to make the target flinch.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_DEALT,
+          callback: ({ target: damagedTarget, source }) => {
+            // 10% chance to make the target flinch
+            if (Math.random() < 0.1) {
+              battle.addToLog(
+                `${damagedTarget.name} is affected by ${source.name}'s Stench!`
+              );
+              damagedTarget.applyEffect("flinched", 1, source, {});
+            }
+          },
+          conditionCallback: getIsSourcePokemonCallback(target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
   [abilityIdEnum.AQUA_POWER]: new Ability({
     id: abilityIdEnum.AQUA_POWER,
     name: "Aqua Power",
