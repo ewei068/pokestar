@@ -8811,6 +8811,64 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.GLAMEOW]: {
+    name: "Glameow",
+    emoji: "<:431:1351026924763353198>",
+    description:
+      "It claws if displeased and purrs when affectionate. Its fickleness is very popular among some.",
+    type: [types.NORMAL],
+    baseStats: [49, 55, 42, 42, 37, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/431.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/431.png",
+    evolution: [
+      {
+        level: 38,
+        id: pokemonIdEnum.PURUGLY,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.LIMBER]: 0.45,
+      [abilityIdEnum.OWN_TEMPO]: 0.45,
+      [abilityIdEnum.KEEN_EYE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.SCRATCH,
+      moveIdEnum.CHARM,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.AERIAL_ACE,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.PURUGLY]: {
+    name: "Purugly",
+    emoji: "<:432:1351026926520897536>",
+    description:
+      "It is a brazen brute that barges its way into another Pokémon's nest and claims it as its own.",
+    type: [types.NORMAL],
+    baseStats: [71, 82, 64, 64, 59, 112],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/432.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/432.png",
+    abilities: {
+      [abilityIdEnum.THICK_FAT]: 0.45,
+      [abilityIdEnum.OWN_TEMPO]: 0.45,
+      [abilityIdEnum.DEFIANT]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.SCRATCH,
+      moveIdEnum.BODY_SLAM,
+      moveIdEnum.SWAGGER,
+      moveIdEnum.FAKE_OUT,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+  },
   "725-1": {
     name: "Littenyan",
     emoji: "<:littenyan:1145193884817834005>",

@@ -1356,6 +1356,33 @@ const movesToRegister = Object.freeze({
       }
     },
   }),
+  [moveIdEnum.SWAGGER]: new Move({
+    id: moveIdEnum.SWAGGER,
+    name: "Swagger",
+    type: pokemonTypes.NORMAL,
+    power: null,
+    accuracy: 85,
+    cooldown: 2,
+    targetType: targetTypes.ANY,
+    targetPosition: targetPositions.NON_SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user enrages the target, confusing and sharply raising the target's Attack for 3 turns.",
+    execute(args) {
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "confused",
+        duration: 3,
+      });
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "greaterAtkUp",
+        duration: 3,
+      });
+    },
+  }),
 });
 
 module.exports = {
