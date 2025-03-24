@@ -220,8 +220,8 @@ const abilitiesToRegister = Object.freeze({
     id: abilityIdEnum.SERENE_GRACE,
     name: "Serene Grace",
     description:
-      "Most moves have twice the chance to apply effects and status.",
-    // effect is hard-coded in moves.js > genericApplySingleStatus and genericApplySingleEffect
+      "Most moves have twice the chance to trigger secondary effects.",
+    // effect is hard-coded in moves.js > triggerSecondaryEffect
     abilityAdd() {
       return {};
     },

@@ -150,6 +150,51 @@ class Move {
     };
   }
 
+  /**
+   * @template {any} T
+   * @template {any} U
+   * @param {object} param0
+   * @param {BattlePokemon} param0.source
+   * @param {number=} param0.probability
+   * @param {() => T} param0.onShouldTrigger
+   * @param {() => U=} param0.onShouldNotTrigger
+   * @returns {{
+   *  triggered: boolean,
+   *  onShouldTriggerResult?: T,
+   *  onShouldNotTriggerResult?: U,
+   * }}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  triggerSecondaryEffect({
+    source,
+    onShouldTrigger,
+    onShouldNotTrigger = () => undefined,
+    probability = 1,
+  }) {
+    let shouldTrigger = false;
+    const roll = Math.random();
+    if (roll < probability) {
+      shouldTrigger = true;
+    } else if (
+      source.hasAbility(abilityIdEnum.SERENE_GRACE) &&
+      roll < 2 * probability
+    ) {
+      source.battle.addToLog(`${source.name}'s Serene Grace activates!`);
+      shouldTrigger = true;
+    }
+
+    if (shouldTrigger) {
+      return {
+        triggered: true,
+        onShouldTriggerResult: onShouldTrigger(),
+      };
+    }
+    return {
+      triggered: false,
+      onShouldNotTriggerResult: onShouldNotTrigger(),
+    };
+  }
+
   // eslint-disable-next-line class-methods-use-this
   genericApplySingleStatus({
     source,
@@ -161,24 +206,19 @@ class Move {
     missedTargets = [],
     statusId,
     options,
-    probablity = 1,
+    probability = 1,
   }) {
-    let shouldApplyStatus = false;
-    if (!missedTargets.includes(target)) {
-      const roll = Math.random();
-      if (roll < probablity) {
-        shouldApplyStatus = true;
-      } else if (
-        source.hasAbility(abilityIdEnum.SERENE_GRACE) &&
-        roll < 2 * probablity
-      ) {
-        source.battle.addToLog(`${source.name}'s Serene Grace activates!`);
-        shouldApplyStatus = true;
-      }
+    if (missedTargets.includes(target)) {
+      return false;
     }
 
-    if (shouldApplyStatus) {
-      return target.applyStatus(statusId, source, options);
+    const { triggered, onShouldTriggerResult } = this.triggerSecondaryEffect({
+      source,
+      probability,
+      onShouldTrigger: () => target.applyStatus(statusId, source, options),
+    });
+    if (triggered) {
+      return onShouldTriggerResult;
     }
     return false;
   }
@@ -191,7 +231,7 @@ class Move {
    * @param {Array<BattlePokemon>=} param0.missedTargets
    * @param {StatusConditionEnum} param0.statusId
    * @param {object=} param0.options
-   * @param {number=} param0.probablity
+   * @param {number=} param0.probability
    */
   genericApplyAllStatus({
     source,
@@ -200,7 +240,7 @@ class Move {
     missedTargets = [],
     statusId,
     options,
-    probablity = 1,
+    probability = 1,
   }) {
     for (const target of allTargets) {
       this.genericApplySingleStatus({
@@ -211,7 +251,7 @@ class Move {
         missedTargets,
         statusId,
         options,
-        probablity,
+        probability,
       });
     }
   }
@@ -228,24 +268,20 @@ class Move {
     effectId,
     duration,
     initialArgs = {},
-    probablity = 1,
+    probability = 1,
   }) {
-    let shouldApplyEffect = false;
-    if (!missedTargets.includes(target)) {
-      const roll = Math.random();
-      if (roll < probablity) {
-        shouldApplyEffect = true;
-      } else if (
-        source.hasAbility(abilityIdEnum.SERENE_GRACE) &&
-        roll < 2 * probablity
-      ) {
-        source.battle.addToLog(`${source.name}'s Serene Grace activates!`);
-        shouldApplyEffect = true;
-      }
+    if (missedTargets.includes(target)) {
+      return false;
     }
 
-    if (shouldApplyEffect) {
-      return target.applyEffect(effectId, duration, source, initialArgs);
+    const { triggered, onShouldTriggerResult } = this.triggerSecondaryEffect({
+      source,
+      probability,
+      onShouldTrigger: () =>
+        target.applyEffect(effectId, duration, source, initialArgs),
+    });
+    if (triggered) {
+      return onShouldTriggerResult;
     }
     return false;
   }
@@ -260,7 +296,7 @@ class Move {
    * @param {K} param0.effectId
    * @param {number} param0.duration
    * @param {EffectInitialArgsTypeFromId<K>=} param0.initialArgs
-   * @param {number=} param0.probablity
+   * @param {number=} param0.probability
    */
   genericApplyAllEffects({
     source,
@@ -271,7 +307,7 @@ class Move {
     duration,
     // @ts-ignore
     initialArgs = {},
-    probablity = 1,
+    probability = 1,
   }) {
     for (const target of allTargets) {
       this.genericApplySingleEffect({
@@ -283,7 +319,7 @@ class Move {
         effectId,
         duration,
         initialArgs,
-        probablity,
+        probability,
       });
     }
   }
@@ -299,11 +335,11 @@ class Move {
     missedTargets = [],
     amount,
     action,
-    probablity = 1,
+    probability = 1,
     triggerEvents = true,
   }) {
     const shouldChangeCombatReadiness =
-      !missedTargets.includes(target) && Math.random() < probablity;
+      !missedTargets.includes(target) && Math.random() < probability;
 
     if (shouldChangeCombatReadiness) {
       if (action === "boost") {
@@ -324,7 +360,7 @@ class Move {
    * @param {Array<BattlePokemon>=} param0.missedTargets
    * @param {number} param0.amount
    * @param {"boost" | "reduce"} param0.action
-   * @param {number=} param0.probablity
+   * @param {number=} param0.probability
    * @param {boolean=} param0.triggerEvents
    */
   genericChangeAllCombatReadiness({
@@ -334,7 +370,7 @@ class Move {
     missedTargets = [],
     amount,
     action,
-    probablity = 1,
+    probability = 1,
     triggerEvents = true,
   }) {
     for (const target of allTargets) {
@@ -346,7 +382,7 @@ class Move {
         missedTargets,
         amount,
         action,
-        probablity,
+        probability,
         triggerEvents,
       });
     }
@@ -380,7 +416,7 @@ const movesToRegister = Object.freeze({
         primaryTarget,
         allTargets,
         statusId: statusConditions.BURN,
-        probablity: 0.5,
+        probability: 0.5,
       });
     },
     tags: ["punch"],
@@ -404,7 +440,7 @@ const movesToRegister = Object.freeze({
       this.genericApplyAllStatus({
         ...args,
         statusId: statusConditions.FROZEN,
-        probablity: 0.5,
+        probability: 0.5,
       });
     },
     tags: ["punch"],
@@ -452,7 +488,7 @@ const movesToRegister = Object.freeze({
         ...args,
         effectId: "confused",
         duration: 1,
-        probablity: 0.25,
+        probability: 0.25,
       });
     },
   }),
@@ -476,7 +512,7 @@ const movesToRegister = Object.freeze({
         ...args,
         effectId: "spdDown",
         duration: 2,
-        probablity: 0.6,
+        probability: 0.6,
       });
     },
   }),
@@ -608,7 +644,7 @@ const movesToRegister = Object.freeze({
         ...args,
         effectId: "perishSong",
         duration: 3,
-        probablity: 0.1,
+        probability: 0.1,
       });
     },
   }),
@@ -667,7 +703,7 @@ const movesToRegister = Object.freeze({
         ...args,
         effectId: "flinched",
         duration: 1,
-        probablity: 0.5,
+        probability: 0.5,
       });
     },
   }),
@@ -739,7 +775,7 @@ const movesToRegister = Object.freeze({
         ...args,
         effectId: "flinched",
         duration: 1,
-        probablity: 0.3,
+        probability: 0.3,
       });
     },
   }),
@@ -967,7 +1003,7 @@ const movesToRegister = Object.freeze({
         ...args,
         effectId: "flinched",
         duration: 1,
-        probablity: 0.3,
+        probability: 0.3,
       });
     },
   }),
@@ -991,7 +1027,7 @@ const movesToRegister = Object.freeze({
         ...args,
         effectId: "flinched",
         duration: 1,
-        probablity: 0.3,
+        probability: 0.3,
       });
     },
   }),
@@ -1256,7 +1292,7 @@ const movesToRegister = Object.freeze({
       this.genericApplyAllStatus({
         ...args,
         statusId: statusConditions.PARALYSIS,
-        probablity: 0.6,
+        probability: 0.6,
       });
     },
   }),

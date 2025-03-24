@@ -4627,6 +4627,12 @@ const pokemonConfigRaw = {
       105: 0.45,
       158: 0.1,
     },
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.HONCHKROW,
+      },
+    ],
     moveIds: ["m64", "m355", "m492", moveIdEnum.QUASH],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -8774,6 +8780,32 @@ const pokemonConfigRaw = {
       moveIdEnum.ENCORE,
       moveIdEnum.FAKE_OUT,
       moveIdEnum.HIGH_JUMP_KICK,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.HONCHKROW]: {
+    name: "Honchkrow",
+    emoji: "<:430:1351026855834026015>",
+    description:
+      "If one utters a deep cry, many Murkrow gather quickly. For this, it is called 'The Summoner of Night.'",
+    type: [types.DARK, types.FLYING],
+    baseStats: [100, 125, 52, 105, 52, 71],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/430.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/430.png",
+    abilities: {
+      [abilityIdEnum.INSOMNIA]: 0.45,
+      [abilityIdEnum.SUPER_LUCK]: 0.45,
+      [abilityIdEnum.MOXIE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.PECK,
+      moveIdEnum.ROOST,
+      moveIdEnum.NIGHT_SLASH,
+      moveIdEnum.BRAVE_BIRD,
     ],
     battleEligible: true,
     rarity: rarities.EPIC,
