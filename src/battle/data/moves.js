@@ -1383,6 +1383,48 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.GYRO_BALL]: new Move({
+    id: moveIdEnum.GYRO_BALL,
+    name: "Gyro Ball",
+    type: pokemonTypes.STEEL,
+    power: null,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY, // Can target any opponent
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user tackles the target with a heavy, spinning steel ball. Power increases based on the target's Speed, and deals 1.5x damage if the user is slower than the target.",
+    execute({ source, primaryTarget, allTargets, missedTargets }) {
+      this.genericDealAllDamage({
+        source,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+        calculateDamageFunction: (args) => {
+          const { target } = args;
+          // Calculate power based on target's speed / 5
+          const targetSpeed = target.getStat("spe");
+          const basePower = Math.max(Math.floor(targetSpeed / 5), 1);
+
+          // Check if user is slower than target
+          const sourceSpeed = source.getStat("spe");
+          const speedMultiplier = sourceSpeed < targetSpeed ? 1.5 : 1;
+
+          // Calculate damage with the modified power
+          const baseDamage = source.calculateMoveDamage({
+            ...args,
+            powerOverride: basePower,
+          });
+
+          // Apply the speed multiplier if applicable
+          return Math.floor(baseDamage * speedMultiplier);
+        },
+      });
+    },
+  }),
 });
 
 module.exports = {

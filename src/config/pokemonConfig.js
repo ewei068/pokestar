@@ -8927,6 +8927,64 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.BRONZOR]: {
+    name: "Bronzor",
+    emoji: "<:436:1351026934229766144>",
+    description:
+      "Implements shaped like bronze mirrors have been found. It is thought the ancient people actually used them as mirrors.",
+    type: [types.STEEL, types.PSYCHIC],
+    baseStats: [57, 24, 86, 24, 86, 23],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/436.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/436.png",
+    evolution: [
+      {
+        level: 33,
+        id: pokemonIdEnum.BRONZONG,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 0.45,
+      [abilityIdEnum.HEATPROOF]: 0.45,
+      [abilityIdEnum.HEAVY_METAL]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.LIGHT_SCREEN,
+      moveIdEnum.SAFEGUARD,
+      moveIdEnum.GYRO_BALL,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.BRONZONG]: {
+    name: "Bronzong",
+    emoji: "<:437:1351026938378059787>",
+    description:
+      "One caused a news sensation when it was dug up at a construction site after a 2,000-year sleep.",
+    type: [types.STEEL, types.PSYCHIC],
+    baseStats: [67, 89, 116, 79, 116, 33],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/437.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/437.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 0.45,
+      [abilityIdEnum.HEATPROOF]: 0.45,
+      [abilityIdEnum.HEAVY_METAL]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.BLOCK,
+      moveIdEnum.LIGHT_SCREEN,
+      moveIdEnum.GYRO_BALL,
+      moveIdEnum.TRICK_ROOM,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   "725-1": {
     name: "Littenyan",
     emoji: "<:littenyan:1145193884817834005>",
