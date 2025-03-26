@@ -14,8 +14,20 @@ const getIsTargetPokemonCallback = (pokemon) => (eventArgs) =>
 /**
  * @param {BattlePokemon} pokemon
  */
+const getIsTargetSameTeamCallback = (pokemon) => (eventArgs) =>
+  eventArgs?.target?.teamName === pokemon.teamName;
+
+/**
+ * @param {BattlePokemon} pokemon
+ */
 const getIsSourcePokemonCallback = (pokemon) => (eventArgs) =>
   eventArgs?.source === pokemon;
+
+/**
+ * @param {BattlePokemon} pokemon
+ */
+const getIsSourceSameTeamCallback = (pokemon) => (eventArgs) =>
+  eventArgs?.source?.teamName === pokemon.teamName;
 
 /**
  * @param {"move" | "effect"} instanceType
@@ -43,7 +55,9 @@ const anyConditionCallbacks =
 module.exports = {
   getIsActivePokemonCallback,
   getIsTargetPokemonCallback,
+  getIsTargetSameTeamCallback,
   getIsSourcePokemonCallback,
+  getIsSourceSameTeamCallback,
   getIsInstanceOfType,
   composeConditionCallbacks,
   anyConditionCallbacks,

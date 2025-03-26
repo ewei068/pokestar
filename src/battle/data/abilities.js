@@ -20,6 +20,7 @@ const {
   getIsSourcePokemonCallback,
   getIsInstanceOfType,
   composeConditionCallbacks,
+  getIsTargetSameTeamCallback,
 } = require("../engine/eventConditions");
 const { getMove } = require("./moveRegistry");
 
@@ -86,7 +87,7 @@ class Ability {
         }
 
         args.abilityInstance = abilityInstance;
-        callback(args);
+        return callback(args);
       },
       conditionCallback,
     });
@@ -683,6 +684,31 @@ const abilitiesToRegister = Object.freeze({
     },
     abilityRemove({ battle, properties }) {
       battle.unregisterListener(properties.faintListenerId);
+    },
+  }),
+  [abilityIdEnum.FRIEND_GUARD]: new Ability({
+    id: abilityIdEnum.FRIEND_GUARD,
+    name: "Friend Guard",
+    description:
+      "Reduces damage taken by all allies including the user by 7.5%.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: ({ damage, maxDamage }) => {
+            const newDamage = Math.min(Math.floor(damage * 0.925), maxDamage);
+            return {
+              damage: newDamage,
+            };
+          },
+          conditionCallback: getIsTargetSameTeamCallback(target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
     },
   }),
 });

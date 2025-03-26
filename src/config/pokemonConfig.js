@@ -1743,7 +1743,7 @@ const pokemonConfigRaw = {
       6: 0.45,
       33: 0.1,
     },
-    moveIds: ["m55", "m876", "m34", "m127"],
+    moveIds: ["m55", "m1", "m34", "m127"],
     battleEligible: true,
     rarity: rarities.COMMON,
     growthRate: growthRates.MEDIUMFAST,
@@ -1774,7 +1774,7 @@ const pokemonConfigRaw = {
       6: 0.45,
       33: 0.1,
     },
-    moveIds: ["m876", "m34", "m127", "m187"],
+    moveIds: ["m1", "m34", "m127", "m187"],
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMFAST,
@@ -1795,7 +1795,7 @@ const pokemonConfigRaw = {
       6: 0.45,
       33: 0.1,
     },
-    moveIds: ["m876", "m127", "m187", "m223"],
+    moveIds: ["m1", "m127", "m187", "m223"],
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
@@ -2240,7 +2240,7 @@ const pokemonConfigRaw = {
       60: 0.45,
       143: 0.1,
     },
-    moveIds: ["m876", "m92", "m398", "m441"],
+    moveIds: ["m1", "m92", "m398", "m441"],
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMFAST,
@@ -2261,7 +2261,7 @@ const pokemonConfigRaw = {
       60: 0.45,
       143: 0.1,
     },
-    moveIds: ["m876", "m92", "m441", "m482"],
+    moveIds: ["m1", "m92", "m441", "m482"],
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
@@ -3590,7 +3590,7 @@ const pokemonConfigRaw = {
         "m506",
         "m526",
         "m574",
-        "m876",
+        "m1",
       ],
       powerMoveIds: [
         "m14",
@@ -4165,7 +4165,7 @@ const pokemonConfigRaw = {
       [abilityIdEnum.SERENE_GRACE]: 0.45,
       105: 0.1,
     },
-    moveIds: ["m270", "m876", "m86", "m266"],
+    moveIds: ["m270", "m1", "m86", "m266"],
     battleEligible: true,
     rarity: rarities.COMMON,
     growthRate: growthRates.MEDIUMSLOW,
@@ -8984,6 +8984,70 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.MIME_JR]: {
+    name: "Mime Jr.",
+    emoji: "<:439:1351027015305920582>",
+    description:
+      "It mimics the expressions and motions of those it sees to understand the feelings of others.",
+    type: [types.PSYCHIC, types.FAIRY],
+    baseStats: [20, 25, 45, 70, 90, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/439.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/439.png",
+    evolution: [
+      {
+        level: 32,
+        id: pokemonIdEnum.MR_MIME,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SOUNDPROOF]: 0.45,
+      [abilityIdEnum.FILTER]: 0.45,
+      [abilityIdEnum.TECHNICIAN]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.MIMIC,
+      moveIdEnum.LIGHT_SCREEN,
+      moveIdEnum.REFLECT,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.HAPPINY]: {
+    name: "Happiny",
+    emoji: "<:440:1351027016610353192>",
+    description:
+      "It carries a round, egg-shaped rock in its belly pouch and gives the rock to its friends.",
+    type: [types.NORMAL],
+    baseStats: [100, 5, 5, 15, 65, 30],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/440.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/440.png",
+    evolution: [
+      {
+        level: 25,
+        id: pokemonIdEnum.CHANSEY,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.NATURAL_CURE]: 0.45,
+      [abilityIdEnum.SERENE_GRACE]: 0.45,
+      [abilityIdEnum.FRIEND_GUARD]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POUND,
+      moveIdEnum.CHARM,
+      moveIdEnum.DISARMING_VOICE,
+      moveIdEnum.HEAL_BELL,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
   },
   "725-1": {
     name: "Littenyan",

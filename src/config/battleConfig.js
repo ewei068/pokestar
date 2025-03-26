@@ -6247,7 +6247,7 @@ const moveConfig = Object.freeze({
     description:
       "The user slams targets with its wings. The primary target is hit twice in a row.",
   },
-  m876: {
+  m1: {
     name: "Pound",
     type: pokemonTypes.NORMAL,
     power: 55,
@@ -11610,8 +11610,8 @@ const moveExecutes = {
       }
     }
   },
-  m876(_battle, source, _primaryTarget, allTargets, missedTargets) {
-    const moveId = "m876";
+  m1(_battle, source, _primaryTarget, allTargets, missedTargets) {
+    const moveId = "m1";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -16282,7 +16282,8 @@ const abilityConfig = Object.freeze({
   },
   20016: {
     name: "Cosmic Protection",
-    description: "Reduce the damage taken by all allies by 10%.",
+    description:
+      "Reduce the damage taken by all allies except the user by 10%.",
     abilityAdd(battle, _source, target) {
       const damageListener = {
         initialArgs: {
@@ -16290,7 +16291,10 @@ const abilityConfig = Object.freeze({
         },
         execute(initialArgs, args) {
           const targetPokemon = args.target;
-          if (targetPokemon.teamName !== initialArgs.pokemon.teamName) {
+          if (
+            targetPokemon.teamName !== initialArgs.pokemon.teamName ||
+            targetPokemon === initialArgs.pokemon
+          ) {
             return;
           }
 
@@ -16303,9 +16307,6 @@ const abilityConfig = Object.freeze({
       const damageListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
-      );
-      battle.addToLog(
-        `${target.name}'s Cosmic Protection is reducing the damage taken by all allies!`
       );
       return {
         damageListenerId,
