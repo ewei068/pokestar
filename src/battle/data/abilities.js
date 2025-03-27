@@ -711,6 +711,44 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [abilityIdEnum.ROUGH_SKIN]: new Ability({
+    id: abilityIdEnum.ROUGH_SKIN,
+    name: "Rough Skin",
+    description:
+      "Damages the attacker by 8% of their max HP when hit with a physical move.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
+          callback: ({ source, damageInfo }) => {
+            const moveData = getMove(damageInfo.moveId);
+            if (moveData?.damageType !== damageTypes.PHYSICAL) {
+              return;
+            }
+
+            // Damage the attacker for 8% of their max HP
+            const damage = Math.max(Math.floor(source.maxHp * 0.08), 1);
+            battle.addToLog(
+              `${source.name} was hurt by ${target.name}'s Rough Skin!`
+            );
+            source.takeDamage(damage, target, {
+              type: "ability",
+              id: abilityIdEnum.ROUGH_SKIN,
+            });
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsTargetPokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
 });
 
 module.exports = {

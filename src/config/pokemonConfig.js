@@ -9049,6 +9049,118 @@ const pokemonConfigRaw = {
     rarity: rarities.RARE,
     growthRate: growthRates.FAST,
   },
+  [pokemonIdEnum.SPIRITOMB]: {
+    name: "Spiritomb",
+    emoji: "<:442:1351027022180126731>",
+    description:
+      "A Pokémon that was formed by 108 spirits. It is bound to a fissure in an odd keystone.",
+    type: [types.GHOST, types.DARK],
+    baseStats: [50, 92, 108, 92, 108, 35],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/442.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/442.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.INFILTRATOR]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.SHADOW_SNEAK,
+      moveIdEnum.PURSUIT,
+      moveIdEnum.TAUNT,
+      moveIdEnum.MEMENTO,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.GIBLE]: {
+    name: "Gible",
+    emoji: "<:443:1351027023757181010>",
+    description:
+      "It nests in horizontal holes warmed by geothermal heat. Foes who get too close can expect to be pounced on and bitten.",
+    type: [types.DRAGON, types.GROUND],
+    baseStats: [58, 70, 45, 40, 45, 42],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/443.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/443.png",
+    evolution: [
+      {
+        level: 24,
+        id: pokemonIdEnum.GABITE,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SAND_VEIL]: 0.8,
+      [abilityIdEnum.ROUGH_SKIN]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.TACKLE,
+      moveIdEnum.BITE,
+      moveIdEnum.DIG,
+      moveIdEnum.DRAGON_CLAW,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.GABITE]: {
+    name: "Gabite",
+    emoji: "<:444:1351027024822534224>",
+    description:
+      "There is a long-held belief that medicine made from its scales will heal even incurable illnesses.",
+    type: [types.DRAGON, types.GROUND],
+    baseStats: [68, 90, 65, 50, 55, 82],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/444.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/444.png",
+    evolution: [
+      {
+        level: 48,
+        id: pokemonIdEnum.GARCHOMP,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SAND_VEIL]: 0.8,
+      [abilityIdEnum.ROUGH_SKIN]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.SWORDS_DANCE,
+      moveIdEnum.DIG,
+      moveIdEnum.DRAGON_CLAW,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.GARCHOMP]: {
+    name: "Garchomp",
+    emoji: "<:445:1351027080271368202>",
+    description:
+      "When it folds up its body and extends its wings, it looks like a jet plane. It flies at sonic speed.",
+    type: [types.DRAGON, types.GROUND],
+    baseStats: [108, 130, 95, 80, 85, 102],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/445.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/445.png",
+    abilities: {
+      [abilityIdEnum.SAND_VEIL]: 0.8,
+      [abilityIdEnum.ROUGH_SKIN]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.SWORDS_DANCE,
+      moveIdEnum.DRAGON_CLAW,
+      moveIdEnum.EARTHQUAKE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.SLOW,
+  },
   "725-1": {
     name: "Littenyan",
     emoji: "<:littenyan:1145193884817834005>",

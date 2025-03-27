@@ -84,7 +84,8 @@ class Move {
     primaryTarget,
     allTargets,
     missedTargets = [],
-    offTargetDamageMultiplier = 0.8,
+    offTargetDamageMultiplier,
+    backTargetDamageMultiplier,
     calculateDamageFunction = undefined,
   }) {
     const damageFunc =
@@ -96,6 +97,7 @@ class Move {
       allTargets,
       missedTargets,
       offTargetDamageMultiplier,
+      backTargetDamageMultiplier,
     });
     return source.dealDamage(damageToDeal, target, {
       type: "move",
@@ -117,6 +119,7 @@ class Move {
    * @param {Array<BattlePokemon>} param0.allTargets
    * @param {Array<BattlePokemon>=} param0.missedTargets
    * @param {number=} param0.offTargetDamageMultiplier
+   * @param {number=} param0.backTargetDamageMultiplier
    * @param {CalculateMoveDamageImpl=} param0.calculateDamageFunction
    * @returns {GenericDealAllDamageResult}
    */
@@ -125,7 +128,8 @@ class Move {
     primaryTarget,
     allTargets,
     missedTargets = [],
-    offTargetDamageMultiplier = 0.8,
+    offTargetDamageMultiplier,
+    backTargetDamageMultiplier,
     calculateDamageFunction = undefined,
   }) {
     const /** @type {Record<string, number>} */ damageInstances = {};
@@ -137,6 +141,7 @@ class Move {
         allTargets,
         missedTargets,
         offTargetDamageMultiplier,
+        backTargetDamageMultiplier,
         calculateDamageFunction,
       });
       damageInstances[target.id] = damageToTarget;
@@ -1423,6 +1428,59 @@ const movesToRegister = Object.freeze({
           return Math.floor(baseDamage * speedMultiplier);
         },
       });
+    },
+  }),
+  [moveIdEnum.PURSUIT]: new Move({
+    id: moveIdEnum.PURSUIT,
+    name: "Pursuit",
+    type: pokemonTypes.DARK,
+    power: 70,
+    accuracy: 100,
+    cooldown: 2,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user chases down a target, striking with doubled power if the target has higher Speed than the user. Has no back target damage penalty.",
+    execute(args) {
+      const { source } = args;
+      this.genericDealAllDamage({
+        ...args,
+        backTargetDamageMultiplier: 1,
+        calculateDamageFunction: (damageArgs) => {
+          const { target } = damageArgs;
+          const baseDamage = source.calculateMoveDamage(damageArgs);
+
+          // Check if target has higher speed than the user
+          const targetSpeed = target.getStat("spe");
+          const sourceSpeed = source.getStat("spe");
+          if (targetSpeed > sourceSpeed) {
+            return baseDamage * 2;
+          }
+
+          return baseDamage;
+        },
+      });
+    },
+  }),
+  [moveIdEnum.DRAGON_CLAW]: new Move({
+    id: moveIdEnum.DRAGON_CLAW,
+    name: "Dragon Claw",
+    type: pokemonTypes.DRAGON,
+    power: 80,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.X,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user slashes the target with sharp claws in an X pattern. It has no additional effects.",
+    execute(args) {
+      this.genericDealAllDamage(args);
     },
   }),
 });
