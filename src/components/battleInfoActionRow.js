@@ -67,6 +67,17 @@ const buildBattleInfoActionRow = (
     });
   }
 
+  // TODO: put the auto button in a different row??
+  buttonConfigs.push({
+    label: "Auto",
+    disabled: !battle.autoData.canAuto,
+    emoji: "🤖",
+    data: {
+      ...infoRowData,
+      tab: "auto",
+    },
+  });
+
   // @ts-ignore
   buttonConfigs.push({
     label: "Refresh",

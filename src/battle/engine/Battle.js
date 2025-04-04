@@ -145,6 +145,10 @@ class Battle {
     this.winCallback = winCallback;
     this.loseCallback = loseCallback;
     this.isPvp = isPvp;
+    this.autoData = {
+      isAutoMode: false,
+      canAuto: true,
+    };
   }
 
   /**

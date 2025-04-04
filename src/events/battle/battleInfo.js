@@ -3,12 +3,11 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * battleInfo.js Grabs the battle info from the current state and updates the embeds with the relevant information.
  */
 const { getState } = require("../../services/state");
+
 const {
   buildBattleInfoActionRow,
 } = require("../../components/battleInfoActionRow");
@@ -16,7 +15,7 @@ const {
   buildBattleMovesetEmbed,
   buildBattleTeamEmbed,
 } = require("../../embeds/battleEmbeds");
-const { getStartTurnSend } = require("../../services/battle");
+const { getStartTurnSend, startAuto } = require("../../services/battle");
 const { stageNames } = require("../../config/stageConfig");
 const { logger } = require("../../log");
 
@@ -90,6 +89,16 @@ const battleInfo = async (interaction, data) => {
     }
     // refresh battle display
     await interaction.update(await getStartTurnSend(battle, data.stateId));
+    return;
+  } else if (tab === "auto") {
+    // toggle auto mode
+    battle.autoData.isAutoMode = true;
+    startAuto({
+      battle,
+      stateId: data.stateId,
+      interaction,
+      user: interaction.user,
+    });
     return;
   } else {
     return { err: "Invalid selection." };
