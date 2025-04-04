@@ -44,7 +44,7 @@ class Effect {
     this.dispellable = dispellable;
     this.effectAdd = effectAdd;
     this.effectRemove = effectRemove;
-    this.tags = [];
+    this.tags = tags;
     this.isLegacyEffect = false;
   }
 }
@@ -192,6 +192,50 @@ const effectsToRegister = Object.freeze({
         type: "move",
         moveId: moveIdEnum.DOOM_DESIRE,
       });
+    },
+  }),
+  [effectIdEnum.ENCORE]: new Effect({
+    id: effectIdEnum.ENCORE,
+    name: "Encore",
+    description: "The target can only use a specific move.",
+    type: effectTypes.DEBUFF,
+    dispellable: true,
+    /**
+     * @param {EffectAddBasicArgs & {initialArgs: { moveId: MoveIdEnum }}} args
+     */
+    effectAdd({ battle, source, target, initialArgs }) {
+      if (!initialArgs || !initialArgs.moveId) {
+        battle.addToLog(`${target.name} couldn't be affected by Encore!`);
+        return null;
+      }
+      const moveData = getMove(initialArgs.moveId);
+      battle.addToLog(`${target.name} can only use ${moveData.name}!`);
+
+      // Disable all moves except the specified move
+      const disabledMoveIds = [];
+      for (const moveId in target.moveIds) {
+        if (moveId !== initialArgs.moveId) {
+          target.disableMove(/** @type {MoveIdEnum} */ (moveId), source);
+          disabledMoveIds.push(moveId);
+        }
+      }
+
+      return {
+        source,
+        moveId: initialArgs.moveId,
+        disabledMoveIds,
+      };
+    },
+    effectRemove({ battle, target, source, initialArgs, properties }) {
+      const moveData = getMove(initialArgs.moveId);
+      battle.addToLog(
+        `${target.name} is no longer limited to using only ${moveData.name}!`
+      );
+
+      // Re-enable all disabled moves
+      for (const moveId of properties.disabledMoveIds) {
+        target.enableMove(/** @type {MoveIdEnum} */ (moveId), source);
+      }
     },
   }),
 });

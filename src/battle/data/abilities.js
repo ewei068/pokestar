@@ -13,9 +13,14 @@ const {
   effectIdEnum,
   moveIdEnum,
 } = require("../../enums/battleEnums");
+const { getMoveIdHasTag } = require("../../utils/battleUtils");
 const {
   getIsActivePokemonCallback,
   getIsTargetPokemonCallback,
+  getIsSourcePokemonCallback,
+  getIsInstanceOfType,
+  composeConditionCallbacks,
+  getIsTargetSameTeamCallback,
 } = require("../engine/eventConditions");
 const { getMove } = require("./moveRegistry");
 
@@ -82,7 +87,7 @@ class Ability {
         }
 
         args.abilityInstance = abilityInstance;
-        callback(args);
+        return callback(args);
       },
       conditionCallback,
     });
@@ -90,6 +95,34 @@ class Ability {
 }
 
 const abilitiesToRegister = Object.freeze({
+  [abilityIdEnum.STENCH]: new Ability({
+    id: abilityIdEnum.STENCH,
+    name: "Stench",
+    description:
+      "When the Pokémon inflicts damage, it has a 10% chance to make the target flinch.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_DEALT,
+          callback: ({ target: damagedTarget, source }) => {
+            // 10% chance to make the target flinch
+            if (Math.random() < 0.1) {
+              battle.addToLog(
+                `${damagedTarget.name} is affected by ${source.name}'s Stench!`
+              );
+              damagedTarget.applyEffect("flinched", 1, source, {});
+            }
+          },
+          conditionCallback: getIsSourcePokemonCallback(target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
   [abilityIdEnum.AQUA_POWER]: new Ability({
     id: abilityIdEnum.AQUA_POWER,
     name: "Aqua Power",
@@ -216,8 +249,8 @@ const abilitiesToRegister = Object.freeze({
     id: abilityIdEnum.SERENE_GRACE,
     name: "Serene Grace",
     description:
-      "Most moves have twice the chance to apply effects and status.",
-    // effect is hard-coded in moves.js > genericApplySingleStatus and genericApplySingleEffect
+      "Most moves have twice the chance to trigger secondary effects.",
+    // effect is hard-coded in moves.js > triggerSecondaryEffect
     abilityAdd() {
       return {};
     },
@@ -283,6 +316,36 @@ const abilitiesToRegister = Object.freeze({
               target.applyEffect("spaUp", 4, target, {});
             }
           },
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.IRON_FIST]: new Ability({
+    id: abilityIdEnum.IRON_FIST,
+    name: "Iron Fist",
+    description: "Increases damage of punching moves by 30%.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage, damageInfo }) => {
+            const moveId = damageInfo?.moveId;
+            if (getMoveIdHasTag(moveId, "punch")) {
+              battle.addToLog(`${target.name}'s Iron Fist boosts its damage!`);
+              return {
+                damage: Math.floor(damage * 1.3),
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourcePokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
         }),
       };
     },
@@ -580,6 +643,110 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.afterDamageListenerId);
       battle.unregisterListener(properties.beforeDamageListenerId);
       battle.unregisterListener(properties.beforeCauseFaintListenerId);
+    },
+  }),
+  [abilityIdEnum.SIMPLE]: new Ability({
+    id: abilityIdEnum.SIMPLE,
+    name: "Simple",
+    description: "Doubles the effect of most core stat changes on the Pokémon.",
+    abilityAdd() {
+      // The ability effect is implemented directly in BattlePokemon.getStat
+      return {};
+    },
+    abilityRemove() {},
+  }),
+  [abilityIdEnum.AFTERMATH]: new Ability({
+    id: abilityIdEnum.AFTERMATH,
+    name: "Aftermath",
+    description:
+      "Damages the attacker by 1/5 of the user's max HP when knocked out.",
+    abilityAdd({ battle, target }) {
+      return {
+        faintListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_FAINT,
+          callback: ({ source }) => {
+            if (!source || source.isFainted) {
+              return;
+            }
+
+            const damage = Math.floor(target.maxHp / 5);
+            battle.addToLog(`${target.name}'s Aftermath triggered!`);
+            source.takeDamage(damage, target, {
+              type: "ability",
+              id: abilityIdEnum.AFTERMATH,
+            });
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.faintListenerId);
+    },
+  }),
+  [abilityIdEnum.FRIEND_GUARD]: new Ability({
+    id: abilityIdEnum.FRIEND_GUARD,
+    name: "Friend Guard",
+    description:
+      "Reduces damage taken by all allies including the user by 7.5%.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: ({ damage, maxDamage }) => {
+            const newDamage = Math.min(Math.floor(damage * 0.925), maxDamage);
+            return {
+              damage: newDamage,
+            };
+          },
+          conditionCallback: getIsTargetSameTeamCallback(target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.ROUGH_SKIN]: new Ability({
+    id: abilityIdEnum.ROUGH_SKIN,
+    name: "Rough Skin",
+    description:
+      "Damages the attacker by 8% of their max HP when hit with a physical move.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
+          callback: ({ source, damageInfo }) => {
+            const moveData = getMove(damageInfo.moveId);
+            if (moveData?.damageType !== damageTypes.PHYSICAL) {
+              return;
+            }
+
+            // Damage the attacker for 8% of their max HP
+            const damage = Math.max(Math.floor(source.maxHp * 0.08), 1);
+            battle.addToLog(
+              `${source.name} was hurt by ${target.name}'s Rough Skin!`
+            );
+            source.takeDamage(damage, target, {
+              type: "ability",
+              id: abilityIdEnum.ROUGH_SKIN,
+            });
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsTargetPokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
     },
   }),
 });

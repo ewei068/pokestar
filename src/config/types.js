@@ -7,6 +7,7 @@
 /** @typedef {import("./equipmentConfig").EquipmentModifierTypeEnum} EquipmentModifierTypeEnum */
 /** @typedef {import("./equipmentConfig").EquipmentTypeEnum} EquipmentTypeEnum */
 /** @typedef {import("./equipmentConfig").EquipmentModifierEnum} EquipmentModifierEnum */
+/** @typedef {import("./pokemonConfig").PokemonIdEnum} PokemonIdEnum */
 /** @typedef {import("./locationConfig").LocationEnum} LocationEnum */
 /** @typedef {import("./npcConfig").NpcEnum} NpcEnum */
 /** @typedef {import("./npcConfig").DungeonEnum} DungeonEnum */
