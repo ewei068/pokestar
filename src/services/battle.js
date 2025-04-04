@@ -65,6 +65,14 @@ const {
 const { heldItemIdEnum } = require("../enums/battleEnums");
 
 /**
+ * @param {DiscordUser} user
+ * @returns {Promise<{ err?: string }>}
+ */
+const getCanUserAutoBattle = async (user) =>
+  // TODO
+  ({});
+
+/**
  * @param {Battle} battle
  * @param {string} stateId
  */
@@ -360,7 +368,10 @@ const nextAutoTurn = async (
  * @param {DiscordUser} options.user
  */
 const startAuto = async ({ battle, stateId, interaction, user }) => {
-  // TODO: check if user can battle
+  const { err } = await getCanUserAutoBattle(user);
+  if (err) {
+    return { err };
+  }
   errorlessAsync(() =>
     nextAutoTurn(battle, stateId, {
       interaction,
@@ -522,6 +533,7 @@ const buildPveSend = async ({
       dailyRewards: npcDifficultyData.dailyRewards,
       npcId: state.npcId,
       difficulty: state.difficulty,
+      canAuto: !(await getCanUserAutoBattle(user)).err,
     });
     battle.addTeam("NPC", true);
     battle.addTrainer(
@@ -711,6 +723,7 @@ const buildDungeonSend = async ({
       rewardString: dungeonDifficultyData.rewardString,
       npcId: state.dungeonId,
       difficulty: state.difficulty,
+      canAuto: !(await getCanUserAutoBattle(user)).err,
     });
     battle.addTeam("Dungeon", true);
     battle.addTrainer(
@@ -834,6 +847,7 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
     npcId: getIdFromTowerStage(towerStage),
     difficulty: battleTowerData.difficulty,
     winCallback: towerWinCallback,
+    canAuto: !(await getCanUserAutoBattle(user)).err,
   });
   battle.addTeam("Battle Tower", true);
   battle.addTrainer(
@@ -942,6 +956,7 @@ const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
 };
 
 module.exports = {
+  getCanUserAutoBattle,
   getStartTurnSend,
   nextAutoTurn,
   startAuto,
