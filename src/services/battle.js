@@ -96,11 +96,7 @@ const getStartTurnSend = async (battle, stateId) => {
   battle.clearLog();
   const components = [];
   if (!battle.ended) {
-    const infoRow = buildBattleInfoActionRow(
-      battle,
-      stateId,
-      Object.keys(battle.teams).length + 1
-    );
+    const infoRow = buildBattleInfoActionRow(battle, stateId, {});
     components.push(infoRow);
 
     // check if active pokemon can move
