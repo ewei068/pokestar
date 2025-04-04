@@ -4,16 +4,10 @@
 /* eslint-disable max-classes-per-file */
 
 const { v4: uuidv4 } = require("uuid");
-const {
-  statusConditions,
-  moveTiers,
-  calculateDamage,
-} = require("../../config/battleConfig");
 const { npcConfig } = require("../../config/npcConfig");
 const { drawIterable, drawUniform } = require("../../utils/gachaUtils");
 const { generateRandomPokemon } = require("../../services/gacha");
-const { getMove } = require("../data/moveRegistry");
-
+const { npcTurnAction } = require("../../utils/battleUtils");
 /** @typedef {NPC} BattleNPC */
 
 class NPC {
@@ -56,127 +50,7 @@ class NPC {
       return;
     }
 
-    /* steps:
-        if cant move, skip turn
-        get all moves filtered by those with eligible targets and usable
-        for all considered moves, get the best move
-        best move/target: for all targets:
-            get how many targets would be hit by AoE
-            calculate heuristic
-                if move does damage, calculate damage that would be dealt
-                else, calculate heuristic = numTargets * source level * 1.5
-            normalize heuristic by move accuracy, or *1.2 if move has no accuracy
-            normalize heuristic by move tier
-        choose best move & target based off heuristic
-        use move */
-
-    // if cant move, skip turn
-    if (!activePokemon.canMove()) {
-      activePokemon.skipTurn();
-      return;
-    }
-
-    // get all moves filtered by those with eligible targets and usable
-    const { moveIds } = activePokemon;
-    const validMoveIdsToTargets = {};
-    Object.entries(moveIds).forEach(([moveId, move]) => {
-      if (move.disabledCounter || move.cooldown > 0) {
-        return;
-      }
-
-      const eligibleTargets = battle.getEligibleTargets(activePokemon, moveId);
-      if (eligibleTargets.length > 0) {
-        validMoveIdsToTargets[moveId] = eligibleTargets;
-      }
-    });
-
-    // if for some reason no moves exist, skip turn
-    if (Object.keys(validMoveIdsToTargets).length === 0) {
-      activePokemon.skipTurn();
-      return;
-    }
-
-    // for all considered moves, get the best move
-    let bestMoveId = null;
-    let bestTarget = null;
-    let bestHeuristic = -1;
-    for (const moveId in validMoveIdsToTargets) {
-      for (const target of validMoveIdsToTargets[moveId]) {
-        const source = activePokemon;
-        const targetsHit = source.getTargets(moveId, target);
-        const heuristic = this.calculateHeuristic(moveId, source, targetsHit);
-        if (heuristic > bestHeuristic) {
-          bestMoveId = moveId;
-          bestTarget = target;
-          bestHeuristic = heuristic;
-        }
-      }
-    }
-
-    // use move
-    activePokemon.useMove(bestMoveId, bestTarget.id);
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  calculateHeuristic(moveId, source, targetsHit) {
-    const moveData = getMove(moveId);
-
-    let heuristic = 0;
-    // special case: if asleep and sleep talk, use sleep talk
-    if (
-      source.status.statusId === statusConditions.SLEEP &&
-      moveId === "m214"
-    ) {
-      return 1000000;
-    }
-    // special case: if move is rocket thievery and enemy team has no fainted pokemon, return 0
-    if (moveId === "m20003") {
-      const enemyParty = source.getEnemyParty();
-      if (
-        enemyParty &&
-        enemyParty.pokemons &&
-        enemyParty.pokemons.filter((p) => p && p.isFainted).length === 0
-      ) {
-        return 0;
-      }
-    }
-    // special case: if move is gear fifth, use if under 25% hp
-    if (moveId === "m20010") {
-      if (source.hp / source.maxHp > 0.25) {
-        return 0;
-      }
-      return 1000000;
-    }
-
-    if (moveData.power !== null) {
-      // if move does damage, calculate damage that would be dealt
-      for (const target of targetsHit) {
-        const damage = calculateDamage(moveData, source, target, false);
-        heuristic += damage;
-      }
-    } else {
-      // else, calculate heuristic = numTargets * source level * 1.5
-      heuristic = targetsHit.length * source.level * 1.5;
-    }
-    // normalize heuristic by move accuracy, or *1.2 if move has no accuracy
-    const { accuracy } = moveData;
-    heuristic *= accuracy === null ? 1.2 : accuracy / 100;
-
-    // multiply heuristic by move tier. basic = 0.7, power = 1, ultimate = 1.5
-    const moveTier = moveData.tier;
-    let tierMultiplier;
-    if (moveTier === moveTiers.BASIC) {
-      tierMultiplier = 0.7;
-    } else if (moveTier === moveTiers.POWER) {
-      tierMultiplier = 1;
-    } else {
-      tierMultiplier = 1.5;
-    }
-    heuristic *= tierMultiplier;
-
-    // calculate nonce for small random variation
-    const nonce = Math.random();
-    return heuristic + nonce;
+    npcTurnAction(battle);
   }
 }
 
