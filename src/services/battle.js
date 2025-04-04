@@ -55,7 +55,7 @@ const {
   getFlattenedRewardsString,
   getUserSelectedDevice,
 } = require("../utils/trainerUtils");
-const { getIdFromTowerStage } = require("../utils/battleUtils");
+const { getIdFromTowerStage, npcTurnAction } = require("../utils/battleUtils");
 const {
   BasicNPC,
   DungeonNPC,
@@ -98,20 +98,22 @@ const getStartTurnSend = async (battle, stateId) => {
   battle.clearLog();
   const components = [];
   if (!battle.ended) {
-    const infoRow = buildBattleInfoActionRow(battle, stateId, {});
-    components.push(infoRow);
+    // TODO: stop button?
+    if (!battle.autoData.isAutoMode) {
+      const infoRow = buildBattleInfoActionRow(battle, stateId, {});
+      components.push(infoRow);
 
-    // check if active pokemon can move
-    // TODO: deal with NPC case
-    if (
-      battle.activePokemon.canMove() &&
-      !battle.isNpc(battle.activePokemon.userId)
-    ) {
-      const selectMoveComponent = buildSelectBattleMoveRow(battle, stateId);
-      components.push(selectMoveComponent);
-    } else {
-      const nextTurnComponent = buildNextTurnActionRow(stateId);
-      components.push(nextTurnComponent);
+      // check if active pokemon can move
+      if (
+        battle.activePokemon.canMove() &&
+        !battle.isNpc(battle.activePokemon.userId)
+      ) {
+        const selectMoveComponent = buildSelectBattleMoveRow(battle, stateId);
+        components.push(selectMoveComponent);
+      } else {
+        const nextTurnComponent = buildNextTurnActionRow(stateId);
+        components.push(nextTurnComponent);
+      }
     }
   } else {
     // if game ended, add rewards to trainers and pokemon
@@ -320,7 +322,7 @@ const nextAutoTurn = async (
   }
   let newMessageRef;
   try {
-    // TODO: turn result
+    npcTurnAction(battle);
     const componentToSend = await getStartTurnSend(battle, stateId);
     if (interaction) {
       newMessageRef = await interaction.update(componentToSend);

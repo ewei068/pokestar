@@ -13,6 +13,11 @@
     - Gains {item} every 5 min, max 100 + level
     - Use {item} to autobattle
     - Add auto battling
+      - TODO:
+        - Only auto in pve
+        - Check if user can auto
+        - Check and consume materials
+        - Stop battle?
   - Gen 4 event
     - Special banners
     - Some boosts or sm IDK
