@@ -11,48 +11,70 @@ const { buildButtonActionRow } = require("./buttonActionRow");
 
 /**
  * build a row showing the battle action info
- * @param {*} battle the relevant battle for the information
+ * @param {Battle} battle the relevant battle for the information
  * @param {*} stateId the Id of the state the current battle is in.
- * @param {*} selectionIndex always 0.
+ * @param {object} options
+ * @param {string=} options.currentTab the name of the current selection
+ * @param {number=} options.currentTeamIndex the index of the current team
  * @returns ActionRowBuilder
  */
-const buildBattleInfoActionRow = (battle, stateId, selectionIndex = 0) => {
+const buildBattleInfoActionRow = (
+  battle,
+  stateId,
+  { currentTab, currentTeamIndex = -1 }
+) => {
   const infoRowData = {
     stateId,
   };
 
-  // TODO: this is probably confusing so refactor at some point
-  let i = 0;
-  const buttonConfigs = Object.keys(battle.teams).map((teamName) => {
-    i += 1;
-    return {
-      label: teamName,
-      disabled: false,
-      emoji: battle.teams[teamName]?.emoji,
-      data: {
-        ...infoRowData,
-        selectionIndex: i - 1,
-      },
-    };
-  });
-  // @ts-ignore
+  const buttonConfigs = [];
+  const currentTeamName =
+    currentTeamIndex === -1
+      ? null
+      : Object.keys(battle.teams)[currentTeamIndex];
+  const currentTeam = battle.teams[currentTeamName];
   buttonConfigs.push({
-    label: "Moves",
+    label: currentTeamName ?? "Teams",
     disabled: false,
-    emoji: "⚔️",
+    emoji: currentTeam?.emoji ?? undefined,
     data: {
       ...infoRowData,
-      selectionIndex: i,
+      tab: "teams",
+      index: currentTeamIndex,
     },
   });
-  // @ts-ignore
+  if (currentTab !== "moves") {
+    // @ts-ignore
+    buttonConfigs.push({
+      label: "Moves",
+      disabled: false,
+      emoji: "⚔️",
+      data: {
+        ...infoRowData,
+        tab: "moves",
+      },
+    });
+  } else {
+    // @ts-ignore
+    buttonConfigs.push({
+      label: "Hide",
+      disabled: false,
+      emoji: "⬇️",
+      data: {
+        ...infoRowData,
+        tab: "hide",
+      },
+    });
+  }
+
+  // TODO: put the auto button in a different row??
   buttonConfigs.push({
-    label: "Hide",
-    disabled: false,
-    emoji: "⬇️",
+    label: "Auto",
+    disabled: !battle.autoData.canAuto,
+    emoji: "🤖",
     data: {
       ...infoRowData,
-      selectionIndex: i + 1,
+      tab: "auto",
     },
   });
 
@@ -63,12 +85,9 @@ const buildBattleInfoActionRow = (battle, stateId, selectionIndex = 0) => {
     emoji: "🔄",
     data: {
       ...infoRowData,
-      selectionIndex: i + 2,
+      tab: "refresh",
     },
   });
-
-  // disable selection index
-  buttonConfigs[selectionIndex].disabled = true;
 
   const infoRow = buildButtonActionRow(buttonConfigs, eventNames.BATTLE_INFO);
   return infoRow;

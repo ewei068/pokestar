@@ -62,6 +62,7 @@ class Battle {
    * @param {string?=} param0.npcId
    * @param {string?=} param0.difficulty
    * @param {boolean?=} param0.isPvp
+   * @param {boolean?=} param0.canAuto
    */
   constructor({
     moneyMultiplier = 1,
@@ -77,6 +78,7 @@ class Battle {
     npcId = null,
     difficulty = null,
     isPvp = false,
+    canAuto = false,
   } = {}) {
     // initial
     this.baseMoney = 100;
@@ -145,6 +147,10 @@ class Battle {
     this.winCallback = winCallback;
     this.loseCallback = loseCallback;
     this.isPvp = isPvp;
+    this.autoData = {
+      isAutoMode: false,
+      canAuto,
+    };
   }
 
   /**

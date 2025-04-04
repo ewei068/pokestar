@@ -3,12 +3,11 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * battleInfo.js Grabs the battle info from the current state and updates the embeds with the relevant information.
  */
 const { getState } = require("../../services/state");
+
 const {
   buildBattleInfoActionRow,
 } = require("../../components/battleInfoActionRow");
@@ -16,7 +15,7 @@ const {
   buildBattleMovesetEmbed,
   buildBattleTeamEmbed,
 } = require("../../embeds/battleEmbeds");
-const { getStartTurnSend } = require("../../services/battle");
+const { getStartTurnSend, startAuto } = require("../../services/battle");
 const { stageNames } = require("../../config/stageConfig");
 const { logger } = require("../../log");
 
@@ -54,32 +53,36 @@ const battleInfo = async (interaction, data) => {
     return { err: "It's not your turn." };
   }
 
-  const { selectionIndex } = data;
-  if (selectionIndex === undefined) {
+  const { tab, index } = data;
+  if (tab === undefined) {
     return { err: "No button selected." };
   }
 
   const numTeams = Object.keys(battle.teams).length;
 
   // if data has teamId component, display pokemon on that team
-  if (selectionIndex < numTeams) {
-    const teamName = Object.keys(battle.teams)[selectionIndex];
-    // if no team name, return
-    if (!teamName) {
-      return { err: "No team found." };
-    }
+  let nextTeamIndex = -1;
+  if (tab === "teams") {
+    nextTeamIndex = index + 1;
+    if (nextTeamIndex < numTeams) {
+      const teamName = Object.keys(battle.teams)[nextTeamIndex];
 
-    // get team pokemon embed
-    const teamPokemonEmbed = buildBattleTeamEmbed(battle, teamName);
-    interaction.message.embeds[1] = teamPokemonEmbed;
-  } else if (selectionIndex === numTeams) {
+      // get team pokemon embed
+      const teamPokemonEmbed = buildBattleTeamEmbed(battle, teamName);
+      interaction.message.embeds[1] = teamPokemonEmbed;
+    } else {
+      // hide info embed
+      nextTeamIndex = -1;
+      interaction.message.embeds = [interaction.message.embeds[0]];
+    }
+  } else if (tab === "moves") {
     // else, display move data
     const moveEmbed = buildBattleMovesetEmbed(pokemon);
     interaction.message.embeds[1] = moveEmbed;
-  } else if (selectionIndex === numTeams + 1) {
+  } else if (tab === "hide") {
     // hide info embed
     interaction.message.embeds = [interaction.message.embeds[0]];
-  } else if (selectionIndex === numTeams + 2) {
+  } else if (tab === "refresh") {
     // in alpha, show debug
     if (process.env.STAGE === stageNames.ALPHA) {
       logger.info(battle);
@@ -87,16 +90,25 @@ const battleInfo = async (interaction, data) => {
     // refresh battle display
     await interaction.update(await getStartTurnSend(battle, data.stateId));
     return;
+  } else if (tab === "auto") {
+    // toggle auto mode
+    battle.autoData.isAutoMode = true;
+    startAuto({
+      battle,
+      stateId: data.stateId,
+      interaction,
+      user: interaction.user,
+    });
+    return;
   } else {
     return { err: "Invalid selection." };
   }
 
   // rebuild component
-  const infoRow = buildBattleInfoActionRow(
-    battle,
-    data.stateId,
-    selectionIndex
-  );
+  const infoRow = buildBattleInfoActionRow(battle, data.stateId, {
+    currentTab: tab,
+    currentTeamIndex: nextTeamIndex,
+  });
   interaction.message.components[0] = infoRow;
 
   await interaction.update({

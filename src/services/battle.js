@@ -9,8 +9,10 @@
  *
  * battle.js Handles all battle interactions from the user at a base level down to creating the teams.
  */
+// eslint-disable-next-line no-unused-vars
+const { MessageComponentInteraction, Message } = require("discord.js");
 const { Battle } = require("../battle/engine/Battle");
-const { getOrSetDefault } = require("../utils/utils");
+const { getOrSetDefault, errorlessAsync } = require("../utils/utils");
 const {
   buildBattleEmbed,
   buildPveListEmbed,
@@ -53,7 +55,7 @@ const {
   getFlattenedRewardsString,
   getUserSelectedDevice,
 } = require("../utils/trainerUtils");
-const { getIdFromTowerStage } = require("../utils/battleUtils");
+const { getIdFromTowerStage, npcTurnAction } = require("../utils/battleUtils");
 const {
   BasicNPC,
   DungeonNPC,
@@ -61,6 +63,14 @@ const {
   RaidNPC,
 } = require("../battle/engine/npcs");
 const { heldItemIdEnum } = require("../enums/battleEnums");
+
+/**
+ * @param {DiscordUser} user
+ * @returns {Promise<{ err?: string }>}
+ */
+const getCanUserAutoBattle = async (user) =>
+  // TODO
+  ({});
 
 /**
  * @param {Battle} battle
@@ -96,24 +106,22 @@ const getStartTurnSend = async (battle, stateId) => {
   battle.clearLog();
   const components = [];
   if (!battle.ended) {
-    const infoRow = buildBattleInfoActionRow(
-      battle,
-      stateId,
-      Object.keys(battle.teams).length + 1
-    );
-    components.push(infoRow);
+    // TODO: stop button?
+    if (!battle.autoData.isAutoMode) {
+      const infoRow = buildBattleInfoActionRow(battle, stateId, {});
+      components.push(infoRow);
 
-    // check if active pokemon can move
-    // TODO: deal with NPC case
-    if (
-      battle.activePokemon.canMove() &&
-      !battle.isNpc(battle.activePokemon.userId)
-    ) {
-      const selectMoveComponent = buildSelectBattleMoveRow(battle, stateId);
-      components.push(selectMoveComponent);
-    } else {
-      const nextTurnComponent = buildNextTurnActionRow(stateId);
-      components.push(nextTurnComponent);
+      // check if active pokemon can move
+      if (
+        battle.activePokemon.canMove() &&
+        !battle.isNpc(battle.activePokemon.userId)
+      ) {
+        const selectMoveComponent = buildSelectBattleMoveRow(battle, stateId);
+        components.push(selectMoveComponent);
+      } else {
+        const nextTurnComponent = buildNextTurnActionRow(stateId);
+        components.push(nextTurnComponent);
+      }
     }
   } else {
     // if game ended, add rewards to trainers and pokemon
@@ -299,6 +307,78 @@ const getStartTurnSend = async (battle, stateId) => {
   };
 };
 
+/**
+ * @param {Battle} battle
+ * @param {string} stateId
+ * @param {object} options
+ * @param {MessageComponentInteraction=} options.interaction
+ * @param {Message=} options.messageRef
+ * @param {number=} options.retry
+ * @param {number=} options.totalTurns
+ */
+const nextAutoTurn = async (
+  battle,
+  stateId,
+  { messageRef, interaction, retry = 0, totalTurns = 0 }
+) => {
+  if (totalTurns > 300) {
+    logger.error("Auto turn timed out");
+    return;
+  }
+  if (battle.ended || !battle.autoData.isAutoMode) {
+    return;
+  }
+  let newMessageRef;
+  try {
+    npcTurnAction(battle);
+    const componentToSend = await getStartTurnSend(battle, stateId);
+    if (interaction) {
+      newMessageRef = await interaction.update(componentToSend);
+    } else if (messageRef) {
+      newMessageRef = await messageRef.edit(componentToSend);
+    } else {
+      logger.error("No interaction or message ref provided");
+      return;
+    }
+  } catch (err) {
+    logger.error(`Failed to send auto turn: ${err}`);
+    if (retry < 3) {
+      await nextAutoTurn(battle, stateId, {
+        messageRef,
+        interaction,
+        retry: retry + 1,
+        totalTurns,
+      });
+    }
+  }
+
+  return await setTimeout(async () => {
+    await nextAutoTurn(battle, stateId, {
+      messageRef: newMessageRef,
+      totalTurns: totalTurns + 1,
+    });
+  }, 1000);
+};
+
+/**
+ * @param {object} options
+ * @param {Battle} options.battle
+ * @param {string} options.stateId
+ * @param {MessageComponentInteraction} options.interaction
+ * @param {DiscordUser} options.user
+ */
+const startAuto = async ({ battle, stateId, interaction, user }) => {
+  const { err } = await getCanUserAutoBattle(user);
+  if (err) {
+    return { err };
+  }
+  errorlessAsync(() =>
+    nextAutoTurn(battle, stateId, {
+      interaction,
+    })
+  );
+};
+
 const buildPveSend = async ({
   stateId = null,
   user = null,
@@ -453,6 +533,7 @@ const buildPveSend = async ({
       dailyRewards: npcDifficultyData.dailyRewards,
       npcId: state.npcId,
       difficulty: state.difficulty,
+      canAuto: !(await getCanUserAutoBattle(user)).err,
     });
     battle.addTeam("NPC", true);
     battle.addTrainer(
@@ -642,6 +723,7 @@ const buildDungeonSend = async ({
       rewardString: dungeonDifficultyData.rewardString,
       npcId: state.dungeonId,
       difficulty: state.difficulty,
+      canAuto: !(await getCanUserAutoBattle(user)).err,
     });
     battle.addTeam("Dungeon", true);
     battle.addTrainer(
@@ -765,6 +847,7 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
     npcId: getIdFromTowerStage(towerStage),
     difficulty: battleTowerData.difficulty,
     winCallback: towerWinCallback,
+    canAuto: !(await getCanUserAutoBattle(user)).err,
   });
   battle.addTeam("Battle Tower", true);
   battle.addTrainer(
@@ -873,7 +956,10 @@ const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
 };
 
 module.exports = {
+  getCanUserAutoBattle,
   getStartTurnSend,
+  nextAutoTurn,
+  startAuto,
   buildPveSend,
   buildDungeonSend,
   onBattleTowerAccept,

@@ -6,7 +6,6 @@ const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const {
   backpackItems,
   backpackItemConfig,
-  backpackCategories,
 } = require("../config/backpackConfig");
 const { collectionNames } = require("../config/databaseConfig");
 const { eventNames } = require("../config/eventConfig");
@@ -26,7 +25,7 @@ const { logger } = require("../log");
 const { drawIterable } = require("../utils/gachaUtils");
 const { addRewards, getItems, removeItems } = require("../utils/trainerUtils");
 const { idFrom, errorlessAsync } = require("../utils/utils");
-const { RaidNPC, getStartTurnSend } = require("./battle");
+const { RaidNPC, getStartTurnSend, getCanUserAutoBattle } = require("./battle");
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
 const { validateParty } = require("./party");
 const { getState, setTtl, setState, deleteState } = require("./state");
@@ -437,6 +436,7 @@ const onRaidAccept = async ({ stateId = null, user = null } = {}) => {
     ...rewardMultipliers,
     npcId: raidId,
     difficulty,
+    canAuto: !(await getCanUserAutoBattle(user)).err,
     ...getBattleEndCallbacks(state.raidInstanceId, user, boss.remainingHp),
   });
   battle.addTeam("Raid", true);
