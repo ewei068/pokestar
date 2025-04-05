@@ -13,6 +13,10 @@ const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { bannerTypes } = require("./gachaConfig");
 const { stageNames } = require("./stageConfig");
 const { timeEnum } = require("../enums/miscEnums");
+const {
+  getFullUTCTimeInterval,
+  getNumIntervalsBetweenDates,
+} = require("../utils/utils");
 
 const MAX_TRAINER_LEVEL = 100;
 const MAX_POKEMON = 500;
@@ -20,18 +24,9 @@ const MAX_RELEASE = 10;
 
 /**
  * @typedef {{
- *  type: "string" | "number" | "boolean" | "object" | "array",
- *  default?: any,
- *  refreshInterval?: number
- *  config?: DefaultFieldConfig
- * }} TrainerFieldData
- */
-
-/**
- * @typedef {{
  *  name: string,
  *  options: Array<{value: any, display: string}>,
- *  trainerField: TrainerFieldData,
+ *  trainerField: FieldConfigEntry<Trainer>,
  * }} UserSettingsData
  */
 /** @typedef {Keys<userSettingsConfigRaw>} UserSettingsEnum */
@@ -99,11 +94,7 @@ const userSettingsConfig = Object.freeze(userSettingsConfigRaw);
  */
 
 /**
- * @typedef {Record<string, TrainerFieldData>} DefaultFieldConfig
- */
-
-/**
- * @type {DefaultFieldConfig}
+ * @type {DefaultFieldConfig<Trainer>}
  */
 const userSettingsTrainerFieldsConfig = Object.entries(
   userSettingsConfig
@@ -113,7 +104,7 @@ const userSettingsTrainerFieldsConfig = Object.entries(
 }, {});
 
 /**
- * @type {DefaultFieldConfig}
+ * @type {DefaultFieldConfig<Trainer>}
  */
 const trainerFields = {
   userId: {
@@ -434,6 +425,24 @@ const trainerFields = {
     type: "number",
     default: 100,
     refreshInterval: timeEnum.MINUTE * 5,
+    refreshCallback: ({
+      previousObject,
+      previousValue,
+      lastCorrectedDate,
+      refreshInterval,
+    }) => {
+      const toAdd = getNumIntervalsBetweenDates(
+        refreshInterval,
+        new Date(),
+        lastCorrectedDate
+      );
+      const max = 100 + previousObject.level;
+      if (previousValue > max) {
+        return previousValue; // Don't reduce dream cards if they're over limit
+      }
+
+      return Math.min(previousValue + toAdd, max);
+    },
   },
   lastTowerStage: {
     type: "number",

@@ -217,3 +217,28 @@
  * @property {Record<string, number>} participants Map participant user ID to damage dealt
  * @property {string[]} stateIds
  */
+
+/**
+ * @template T, U
+ * @callback FieldRefreshCallback
+ * @param {object} param0
+ * @param {T} param0.previousObject
+ * @param {U} param0.previousValue
+ * @param {Date} param0.lastCorrectedDate
+ * @param {number} param0.refreshInterval
+ * @returns {U}
+ */
+/**
+ * @template T
+ * @typedef {{
+ *  type: "string" | "number" | "boolean" | "object" | "array",
+ *  default?: any,
+ *  refreshInterval?: number
+ *  config?: DefaultFieldConfig<T>
+ *  refreshCallback?: FieldRefreshCallback<T, any>
+ * }} FieldConfigEntry
+ */
+/**
+ * @template T
+ * @typedef {Record<string, FieldConfigEntry<T>>} DefaultFieldConfig
+ */

@@ -364,20 +364,35 @@ const attemptToReply = async (interaction, message) => {
 };
 
 /**
+ * @param {number} interval
+ * @param {Date} date1
+ * @param {Date} date2
+ * @returns {number}
+ */
+const getNumIntervalsBetweenDates = (interval, date1, date2) => {
+  const interval1 = getFullUTCTimeInterval(interval, date1);
+  const interval2 = getFullUTCTimeInterval(interval, date2);
+  return interval2 - interval1;
+};
+
+/**
  *
  * @param {any} root
- * @param {DefaultFieldConfig} fieldConfig
- * @param {Date} lastCorrectedTime
- * @param {Date} newCorrectedTime
+ * @param {DefaultFieldConfig<any>} fieldConfig
+ * @param {Date} lastCorrectedDate
+ * @param {Date} newCorrectedDate
+ * @param {any} originalRoot
  * @returns {boolean} if field was modified
  */
 const setDefaultFields = (
   root,
   fieldConfig,
-  lastCorrectedTime,
-  newCorrectedTime
+  lastCorrectedDate,
+  newCorrectedDate,
+  originalRoot
 ) => {
   let modified = false;
+  const newOriginalRoot = originalRoot ?? root;
   // check if all fields are present
   for (const field in fieldConfig) {
     const fieldData = fieldConfig[field];
@@ -389,12 +404,17 @@ const setDefaultFields = (
 
     // if the field has its own config, attempt to set it
     if (fieldData.type === "object" && fieldData.config) {
+      if (root[field] === undefined || root[field] === null) {
+        // eslint-disable-next-line no-param-reassign
+        root[field] = {};
+      }
       modified =
         setDefaultFields(
-          root[field] ?? {},
+          root[field],
           fieldData.config,
-          lastCorrectedTime,
-          newCorrectedTime
+          lastCorrectedDate,
+          newCorrectedDate,
+          newOriginalRoot
         ) || modified;
     }
   }
@@ -406,18 +426,29 @@ const setDefaultFields = (
       continue;
     }
 
-    const currentTimeInterval = getFullUTCTimeInterval(
-      refreshInterval,
-      newCorrectedTime
-    );
-    const lastTimeInterval = getFullUTCTimeInterval(
-      refreshInterval,
-      lastCorrectedTime
-    );
-    if (currentTimeInterval > lastTimeInterval) {
-      // eslint-disable-next-line no-param-reassign
-      root[field] = fieldConfig[field].default;
-      modified = true;
+    if (
+      getNumIntervalsBetweenDates(
+        refreshInterval,
+        lastCorrectedDate,
+        newCorrectedDate
+      ) > 0
+    ) {
+      const realPreviousValue = root[field];
+      if (fieldConfig[field].refreshCallback) {
+        // eslint-disable-next-line no-param-reassign
+        root[field] = fieldConfig[field].refreshCallback({
+          previousObject: newOriginalRoot,
+          previousValue: root[field] ?? fieldConfig[field].default,
+          lastCorrectedDate,
+          refreshInterval,
+        });
+      } else {
+        // eslint-disable-next-line no-param-reassign
+        root[field] = fieldConfig[field].default;
+      }
+      if (realPreviousValue !== root[field]) {
+        modified = true;
+      }
     }
   }
   return modified;
@@ -491,4 +522,5 @@ module.exports = {
   setDefaultFields,
   buildAnsiString,
   getHasTag,
+  getNumIntervalsBetweenDates,
 };
