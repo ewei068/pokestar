@@ -430,6 +430,11 @@ const trainerFields = {
     default: false,
     refreshInterval: timeEnum.WEEK,
   },
+  dreamCards: {
+    type: "number",
+    default: 100,
+    refreshInterval: timeEnum.MINUTE * 5,
+  },
   lastTowerStage: {
     type: "number",
     default: 0,

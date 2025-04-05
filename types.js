@@ -116,6 +116,7 @@
  * @property {boolean} hasDarkrai
  * @property {boolean} usedTimeTravel
  * @property {boolean} usedWish
+ * @property {number} dreamCards
  *
  * Misc
  * @property {PartialRecord<UpsellEnum, UserUpsellData>} upsellData

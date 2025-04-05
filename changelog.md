@@ -9,7 +9,7 @@
     - Update getPokemonOrder
     - Add a base Pokemon field or sm
   - Add Mythic Darkrai
-    - Requires 30? tutorial stage completions
+    - Requires 25 tutorial stage completions
     - Gains {item} every 5 min, max 100 + level
     - Use {item} to autobattle
     - Add auto battling
@@ -17,6 +17,8 @@
         - Only auto in pve
         - Check if user can auto
         - Check and consume materials
+        - Display materials somewhere
+        - Add Darkrai to tutorial
         - Stop battle?
   - Gen 4 event
     - Special banners
