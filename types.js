@@ -225,6 +225,7 @@
  * @param {T} param0.previousObject
  * @param {U} param0.previousValue
  * @param {Date} param0.lastCorrectedDate
+ * @param {Date} param0.newCorrectedDate
  * @param {number} param0.refreshInterval
  * @returns {U}
  */

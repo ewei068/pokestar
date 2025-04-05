@@ -429,11 +429,12 @@ const trainerFields = {
       previousObject,
       previousValue,
       lastCorrectedDate,
+      newCorrectedDate,
       refreshInterval,
     }) => {
       const toAdd = getNumIntervalsBetweenDates(
         refreshInterval,
-        new Date(),
+        newCorrectedDate,
         lastCorrectedDate
       );
       const max = 100 + previousObject.level;

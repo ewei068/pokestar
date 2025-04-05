@@ -364,6 +364,7 @@ const attemptToReply = async (interaction, message) => {
 };
 
 /**
+ * Returns the number of intervals between two dates (date1 - date2)
  * @param {number} interval
  * @param {Date} date1
  * @param {Date} date2
@@ -372,7 +373,7 @@ const attemptToReply = async (interaction, message) => {
 const getNumIntervalsBetweenDates = (interval, date1, date2) => {
   const interval1 = getFullUTCTimeInterval(interval, date1);
   const interval2 = getFullUTCTimeInterval(interval, date2);
-  return interval2 - interval1;
+  return interval1 - interval2;
 };
 
 /**
@@ -429,8 +430,8 @@ const setDefaultFields = (
     if (
       getNumIntervalsBetweenDates(
         refreshInterval,
-        lastCorrectedDate,
-        newCorrectedDate
+        newCorrectedDate,
+        lastCorrectedDate
       ) > 0
     ) {
       const realPreviousValue = root[field];
