@@ -1,4 +1,7 @@
-const { buildPokemonEmbed } = require("../../embeds/pokemonEmbeds");
+const {
+  buildPokemonEmbed,
+  buildDarkraiAbilityEmbed,
+} = require("../../embeds/pokemonEmbeds");
 const { useAwaitedMemo } = require("../../deact/deact");
 const useTrainer = require("../../hooks/useTrainer");
 const { getDarkrai } = require("../../services/mythic");
@@ -26,7 +29,10 @@ const Darkrai = async (ref, { user }) => {
 
   return {
     contents: [darkrai._id.toString()],
-    embeds: [buildPokemonEmbed(user, darkrai, "info")],
+    embeds: [
+      buildPokemonEmbed(user, darkrai, "info"),
+      buildDarkraiAbilityEmbed(trainer),
+    ],
   };
 };
 
