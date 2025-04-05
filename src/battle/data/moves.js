@@ -1483,6 +1483,27 @@ const movesToRegister = Object.freeze({
       this.genericDealAllDamage(args);
     },
   }),
+  [moveIdEnum.DARK_VOID]: new Move({
+    id: moveIdEnum.DARK_VOID,
+    name: "Dark Void",
+    type: pokemonTypes.DARK,
+    power: null,
+    accuracy: 70,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user creates a void of darkness that puts all targets to sleep.",
+    execute(args) {
+      this.genericApplyAllStatus({
+        ...args,
+        statusId: statusConditions.SLEEP,
+      });
+    },
+  }),
 });
 
 module.exports = {
