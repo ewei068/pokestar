@@ -2,15 +2,15 @@
  * @file
  * @author Elvis Wei
  *
- * jirachi.js jirachi.
+ * darkrai.js darkrai.
  */
 const { createRoot } = require("../../deact/deact");
-const Jirachi = require("../../elements/pokemon/Jirachi");
+const Darkrai = require("../../elements/pokemon/Darkrai");
 const { getUserFromInteraction } = require("../../utils/utils");
 
-const jirachi = async (interaction) =>
+const darkrai = async (interaction) =>
   await createRoot(
-    Jirachi,
+    Darkrai,
     {
       user: getUserFromInteraction(interaction),
     },
@@ -18,11 +18,11 @@ const jirachi = async (interaction) =>
     { ttl: 180 }
   );
 
-const jirachiMessageCommand = async (message) => await jirachi(message);
+const darkraiMessageCommand = async (message) => await darkrai(message);
 
-const jirachiSlashCommand = async (interaction) => await jirachi(interaction);
+const darkraiSlashCommand = async (interaction) => await darkrai(interaction);
 
 module.exports = {
-  message: jirachiMessageCommand,
-  slash: jirachiSlashCommand,
+  message: darkraiMessageCommand,
+  slash: darkraiSlashCommand,
 };

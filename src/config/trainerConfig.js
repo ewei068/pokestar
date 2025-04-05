@@ -416,6 +416,10 @@ const trainerFields = {
     type: "boolean",
     default: false,
   },
+  hasDarkrai: {
+    type: "boolean",
+    default: false,
+  },
   usedTimeTravel: {
     type: "boolean",
     default: false,

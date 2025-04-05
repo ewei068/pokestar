@@ -113,6 +113,7 @@
  * Mythic Pokemon
  * @property {boolean} hasCelebi
  * @property {boolean} hasJirachi
+ * @property {boolean} hasDarkrai
  * @property {boolean} usedTimeTravel
  * @property {boolean} usedWish
  *
