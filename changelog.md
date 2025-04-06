@@ -13,9 +13,6 @@
     - Gains {item} every 5 min, max 100 + level
     - Use {item} to autobattle
     - Add auto battling
-      - TODO:
-        - Display materials somewhere
-        - Add Darkrai to tutorial
   - Gen 4 event
     - Special banners
     - Some boosts or sm IDK
