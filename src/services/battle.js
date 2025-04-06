@@ -63,14 +63,50 @@ const {
   RaidNPC,
 } = require("../battle/engine/npcs");
 const { heldItemIdEnum } = require("../enums/battleEnums");
+const { emojis } = require("../enums/emojis");
 
 /**
+ * @param {Trainer} trainer
+ * @returns {{ err?: string }}
+ */
+const getDoesTrainerHaveAutoBattle = (trainer) => {
+  if (!trainer.hasDarkrai) {
+    return {
+      err: "You don't have access to auto battle yet! Use `/mythic darkrai` to gain access to auto battle.",
+    };
+  }
+  return { err: null };
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {number} cost
+ * @returns {{ err?: string }}
+ */
+const getCanTrainerAutoBattle = (trainer, cost) => {
+  const doesTrainerHaveAutoBattle = getDoesTrainerHaveAutoBattle(trainer);
+  if (doesTrainerHaveAutoBattle.err) {
+    return doesTrainerHaveAutoBattle;
+  }
+  if (trainer.dreamCards < cost) {
+    return {
+      err: `You don't have enough ${emojis.DREAM_CARD} Dream Cards to auto battle! You have ${trainer.dreamCards} and need ${cost}. Dream Cards recharge once every 5 minutes.`,
+    };
+  }
+  return { err: null };
+};
+/**
  * @param {DiscordUser} user
+ * @param {number} cost
  * @returns {Promise<{ err?: string }>}
  */
-const getCanUserAutoBattle = async (user) =>
-  // TODO
-  ({});
+const getCanUserAutoBattle = async (user, cost) => {
+  const trainer = await getTrainer(user);
+  if (trainer.err) {
+    return { err: trainer.err };
+  }
+  return getCanTrainerAutoBattle(trainer.data, cost);
+};
 
 /**
  * @param {Battle} battle
@@ -368,9 +404,15 @@ const nextAutoTurn = async (
  * @param {DiscordUser} options.user
  */
 const startAuto = async ({ battle, stateId, interaction, user }) => {
-  const { err } = await getCanUserAutoBattle(user);
+  const { err } = await getCanUserAutoBattle(
+    user,
+    battle.autoData.autoBattleCost
+  );
   if (err) {
     return { err };
+  }
+  if (!battle.autoData.shouldShowAutoBattle) {
+    return { err: "This battle can't be auto'd!" };
   }
   errorlessAsync(() =>
     nextAutoTurn(battle, stateId, {
@@ -528,12 +570,16 @@ const buildPveSend = async ({
     const rewardMultipliers =
       npcDifficultyData.rewardMultipliers ||
       difficultyConfig[state.difficulty].rewardMultipliers;
+    const { autoBattleCost } = difficultyConfig[state.difficulty];
     const battle = new Battle({
       ...rewardMultipliers,
       dailyRewards: npcDifficultyData.dailyRewards,
       npcId: state.npcId,
       difficulty: state.difficulty,
-      canAuto: !(await getCanUserAutoBattle(user)).err,
+      canAuto: !getCanTrainerAutoBattle(trainerResult.data, autoBattleCost).err,
+      autoBattleCost,
+      shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(trainerResult.data)
+        .err,
     });
     battle.addTeam("NPC", true);
     battle.addTrainer(
@@ -717,13 +763,18 @@ const buildDungeonSend = async ({
     const rewardMultipliers =
       dungeonDifficultyData.rewardMultipliers ||
       difficultyConfig[state.difficulty].rewardMultipliers;
+    const autoBattleCost =
+      difficultyConfig[state.difficulty].autoBattleCost + 6;
     const battle = new Battle({
       ...rewardMultipliers,
       rewards: dungeonDifficultyData.rewards,
       rewardString: dungeonDifficultyData.rewardString,
       npcId: state.dungeonId,
       difficulty: state.difficulty,
-      canAuto: !(await getCanUserAutoBattle(user)).err,
+      canAuto: !getCanTrainerAutoBattle(trainerResult.data, autoBattleCost).err,
+      autoBattleCost,
+      shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(trainerResult.data)
+        .err,
     });
     battle.addTeam("Dungeon", true);
     battle.addTrainer(
@@ -842,12 +893,16 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
   const rewardMultipliers =
     npcDifficultyData.rewardMultipliers ||
     difficultyConfig[battleTowerData.difficulty].rewardMultipliers;
+  const autoBattleCost =
+    difficultyConfig[battleTowerData.difficulty].autoBattleCost + 2;
   const battle = new Battle({
     ...rewardMultipliers,
     npcId: getIdFromTowerStage(towerStage),
     difficulty: battleTowerData.difficulty,
     winCallback: towerWinCallback,
-    canAuto: !(await getCanUserAutoBattle(user)).err,
+    canAuto: !getCanTrainerAutoBattle(trainer.data, autoBattleCost).err,
+    autoBattleCost,
+    shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(trainer.data).err,
   });
   battle.addTeam("Battle Tower", true);
   battle.addTrainer(
@@ -956,6 +1011,8 @@ const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
 };
 
 module.exports = {
+  getDoesTrainerHaveAutoBattle,
+  getCanTrainerAutoBattle,
   getCanUserAutoBattle,
   getStartTurnSend,
   nextAutoTurn,
