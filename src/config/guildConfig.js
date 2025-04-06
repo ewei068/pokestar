@@ -1,5 +1,5 @@
 /**
- * @type {DefaultFieldConfig}
+ * @type {DefaultFieldConfig<GuildData>}
  */
 const guildFields = {
   guildId: {

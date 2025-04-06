@@ -735,13 +735,48 @@ const abilitiesToRegister = Object.freeze({
             );
             source.takeDamage(damage, target, {
               type: "ability",
-              id: abilityIdEnum.ROUGH_SKIN,
+              id: this.id,
             });
           },
           conditionCallback: composeConditionCallbacks(
             getIsTargetPokemonCallback(target),
             getIsInstanceOfType("move")
           ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.BAD_DREAMS]: new Ability({
+    id: abilityIdEnum.BAD_DREAMS,
+    name: "Bad Dreams",
+    description:
+      "At the end of each turn, any sleeping enemies take damage equal to 3% of their max HP.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.TURN_END,
+          callback: () => {
+            const enemyParty = target.getEnemyParty();
+            for (const enemy of enemyParty.pokemons) {
+              if (!enemy || enemy.isFainted) continue;
+
+              if (enemy.status.statusId === statusConditions.SLEEP) {
+                const damage = Math.max(Math.floor(enemy.maxHp * 0.03), 1);
+                battle.addToLog(
+                  `${enemy.name} is tormented by ${target.name}'s Bad Dreams!`
+                );
+                enemy.takeDamage(damage, target, {
+                  type: "ability",
+                  id: this.id,
+                });
+              }
+            }
+          },
         }),
       };
     },

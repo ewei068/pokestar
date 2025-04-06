@@ -13,6 +13,8 @@ const emojis = {
   POWER_WEIGHT: "<:powerweight:1112557998234148874>",
 
   LEFTOVERS: "<:leftovers:1336571394531659837>",
+
+  DREAM_CARD: "<:dreamcard:1358203943464993052>",
 };
 
 module.exports = {

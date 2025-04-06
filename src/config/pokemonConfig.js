@@ -9161,6 +9161,31 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.SLOW,
   },
+  [pokemonIdEnum.DARKRAI]: {
+    name: "Darkrai",
+    emoji: "<:491:1351027502801354822>",
+    description:
+      "It can lull people to sleep and make them dream. It is active during nights of the new moon.",
+    type: [types.DARK],
+    baseStats: [70, 90, 90, 135, 90, 125],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/491.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/491.png",
+    abilities: {
+      [abilityIdEnum.BAD_DREAMS]: 1,
+    },
+    moveIds: [
+      moveIdEnum.HEX,
+      moveIdEnum.DARK_PULSE,
+      moveIdEnum.NASTY_PLOT,
+      moveIdEnum.DARK_VOID,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+  },
   "725-1": {
     name: "Littenyan",
     emoji: "<:littenyan:1145193884817834005>",
