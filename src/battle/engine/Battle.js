@@ -63,6 +63,8 @@ class Battle {
    * @param {string?=} param0.difficulty
    * @param {boolean?=} param0.isPvp
    * @param {boolean?=} param0.canAuto
+   * @param {number?=} param0.autoBattleCost
+   * @param {boolean?=} param0.shouldShowAutoBattle
    */
   constructor({
     moneyMultiplier = 1,
@@ -79,6 +81,8 @@ class Battle {
     difficulty = null,
     isPvp = false,
     canAuto = false,
+    autoBattleCost = 999,
+    shouldShowAutoBattle = false,
   } = {}) {
     // initial
     this.baseMoney = 100;
@@ -150,6 +154,8 @@ class Battle {
     this.autoData = {
       isAutoMode: false,
       canAuto,
+      autoBattleCost,
+      shouldShowAutoBattle,
     };
   }
 

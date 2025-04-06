@@ -434,7 +434,7 @@ const setDefaultFields = (
         lastCorrectedDate
       ) > 0
     ) {
-      const realPreviousValue = root[field];
+      // const realPreviousValue = root[field];
       if (fieldConfig[field].refreshCallback) {
         // eslint-disable-next-line no-param-reassign
         root[field] = fieldConfig[field].refreshCallback({
@@ -448,9 +448,10 @@ const setDefaultFields = (
         // eslint-disable-next-line no-param-reassign
         root[field] = fieldConfig[field].default;
       }
-      if (realPreviousValue !== root[field]) {
-        modified = true;
-      }
+      // if (realPreviousValue !== root[field]) {
+      // TODO: optimize? right now there's an edge case where "last checked" isn't updated for "recharging" items, causing too many to recharge at once
+      modified = true;
+      // }
     }
   }
   return modified;

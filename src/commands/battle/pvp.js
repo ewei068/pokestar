@@ -51,6 +51,7 @@ const pvp = async (user, opponentUserId, level) => {
     equipmentLevel,
     isPvp: true,
     canAuto: false,
+    shouldShowAutoBattle: false,
   });
   battle.addTeam("Team1", false);
   battle.addTrainer(trainer.data, validate.data, "Team1");

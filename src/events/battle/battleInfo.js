@@ -18,7 +18,6 @@ const {
 const { getStartTurnSend, startAuto } = require("../../services/battle");
 const { stageNames } = require("../../config/stageConfig");
 const { logger } = require("../../log");
-
 /**
  * Grabs the battle info from the current state and updates the embeds with the relevant information.
  * @param {*} interaction the interaction from the trainer.
@@ -93,13 +92,12 @@ const battleInfo = async (interaction, data) => {
   } else if (tab === "auto") {
     // toggle auto mode
     battle.autoData.isAutoMode = true;
-    startAuto({
+    return await startAuto({
       battle,
       stateId: data.stateId,
       interaction,
       user: interaction.user,
     });
-    return;
   } else {
     return { err: "Invalid selection." };
   }

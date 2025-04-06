@@ -1,6 +1,8 @@
 const { backpackCategories } = require("../../config/backpackConfig");
 const { createElement } = require("../../deact/deact");
 const useTrainer = require("../../hooks/useTrainer");
+const { getDoesTrainerHaveAutoBattle } = require("../../services/battle");
+const { getMaxDreamCards } = require("../../utils/trainerUtils");
 const BackpackList = require("./BackpackList");
 
 const stringToBackpackCateogryEnum = {
@@ -30,6 +32,9 @@ const BackpackEntryPoint = async (ref, { user, backpackCategoryInput }) => {
         backpackCategory,
         backpack,
         money,
+        dreamCards: trainer.dreamCards,
+        maxDreamCards: getMaxDreamCards(trainer),
+        shouldShowDreamCards: !getDoesTrainerHaveAutoBattle(trainer).err,
       }),
     ],
   };

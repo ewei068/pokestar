@@ -1,14 +1,12 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * battleInfoActionRow.js creates the battle info action row for the players in the battle.
  */
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("./buttonActionRow");
-
+const { emojis } = require("../enums/emojis");
 /**
  * build a row showing the battle action info
  * @param {Battle} battle the relevant battle for the information
@@ -68,15 +66,17 @@ const buildBattleInfoActionRow = (
   }
 
   // TODO: put the auto button in a different row??
-  buttonConfigs.push({
-    label: "Auto",
-    disabled: !battle.autoData.canAuto,
-    emoji: "🤖",
-    data: {
-      ...infoRowData,
-      tab: "auto",
-    },
-  });
+  if (battle.autoData.shouldShowAutoBattle) {
+    buttonConfigs.push({
+      label: `x${battle.autoData.autoBattleCost} Auto`,
+      disabled: !battle.autoData.canAuto,
+      emoji: emojis.DREAM_CARD,
+      data: {
+        ...infoRowData,
+        tab: "auto",
+      },
+    });
+  }
 
   // @ts-ignore
   buttonConfigs.push({
