@@ -292,6 +292,9 @@ const getFullUsername = (user) => {
 const getUserSelectedDevice = (_user, userSettings) =>
   userSettings?.deviceType || "desktop";
 
+const formatDreamCards = (dreamCards, maxDreamCards) =>
+  `${emojis.DREAM_CARD} ${dreamCards}/${maxDreamCards} Dream Cards`;
+
 /**
  * @param {Trainer} trainer
  * @returns {number}
@@ -303,9 +306,7 @@ const getMaxDreamCards = (trainer) => 100 + trainer.level;
  * @returns {string}
  */
 const formatDreamCardsForTrainer = (trainer) =>
-  `${emojis.DREAM_CARD} ${trainer.dreamCards}/${getMaxDreamCards(
-    trainer
-  )} Dream Cards`;
+  formatDreamCards(trainer.dreamCards, getMaxDreamCards(trainer));
 
 module.exports = {
   getPokeballsString,
@@ -325,6 +326,7 @@ module.exports = {
   removeItems,
   getFullUsername,
   getUserSelectedDevice,
+  formatDreamCards,
   getMaxDreamCards,
   formatDreamCardsForTrainer,
 };
