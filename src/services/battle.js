@@ -404,16 +404,25 @@ const nextAutoTurn = async (
  * @param {DiscordUser} options.user
  */
 const startAuto = async ({ battle, stateId, interaction, user }) => {
-  const { err } = await getCanUserAutoBattle(
-    user,
+  const { data: trainer } = await getTrainer(user);
+  const canAutoRes = getCanTrainerAutoBattle(
+    trainer,
     battle.autoData.autoBattleCost
   );
-  if (err) {
-    return { err };
+  if (canAutoRes.err) {
+    return { err: canAutoRes.err };
   }
   if (!battle.autoData.shouldShowAutoBattle) {
     return { err: "This battle can't be auto'd!" };
   }
+
+  // remove dream cards
+  trainer.dreamCards -= battle.autoData.autoBattleCost;
+  const updateResult = await updateTrainer(trainer);
+  if (updateResult.err) {
+    return { err: updateResult.err };
+  }
+
   errorlessAsync(() =>
     nextAutoTurn(battle, stateId, {
       interaction,
