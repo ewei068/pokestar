@@ -441,6 +441,7 @@ const setDefaultFields = (
           previousObject: newOriginalRoot,
           previousValue: root[field] ?? fieldConfig[field].default,
           lastCorrectedDate,
+          newCorrectedDate,
           refreshInterval,
         });
       } else {

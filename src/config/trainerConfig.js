@@ -13,10 +13,7 @@ const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { bannerTypes } = require("./gachaConfig");
 const { stageNames } = require("./stageConfig");
 const { timeEnum } = require("../enums/miscEnums");
-const {
-  getFullUTCTimeInterval,
-  getNumIntervalsBetweenDates,
-} = require("../utils/utils");
+const { getNumIntervalsBetweenDates } = require("../utils/utils");
 
 const MAX_TRAINER_LEVEL = 100;
 const MAX_POKEMON = 500;
