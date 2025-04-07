@@ -1,6 +1,10 @@
 /* eslint-disable no-param-reassign */
 const { backpackHeldItemConfig } = require("../../config/backpackConfig");
-const { moveTiers, statusConditions } = require("../../config/battleConfig");
+const {
+  moveTiers,
+  statusConditions,
+  targetPatterns,
+} = require("../../config/battleConfig");
 const { pokemonConfig } = require("../../config/pokemonConfig");
 const {
   battleEventEnum,
@@ -585,6 +589,50 @@ const heldItemsToRegister = Object.freeze({
     itemRemove({ battle, properties }) {
       battle.unregisterListener(properties.listenerId);
     },
+  }),
+  [heldItemIdEnum.EJECT_BUTTON]: new HeldItem({
+    id: heldItemIdEnum.EJECT_BUTTON,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
+          callback: ({ target: damagedPokemon }) => {
+            damagedPokemon.useHeldItem(damagedPokemon);
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    itemUse({ battle, target }) {
+      battle.addToLog(`${target.name}'s Eject Button was triggered!`);
+      // Get allies in a cross pattern around the user
+      const allyParty = battle.parties[target.teamName];
+      const adjacentAllies = target.getPatternTargets(
+        allyParty,
+        targetPatterns.CROSS,
+        target.position
+      );
+      const allies = adjacentAllies.filter((pokemon) => pokemon !== target);
+
+      // Find ally with lowest combat readiness
+      if (allies.length > 0) {
+        let lowestCRAlly = allies[0];
+        for (const ally of allies) {
+          if (ally.combatReadiness < lowestCRAlly.combatReadiness) {
+            lowestCRAlly = ally;
+          }
+        }
+        lowestCRAlly.boostCombatReadiness(target, 100);
+      } else {
+        battle.addToLog(`But there were no adjacent allies!`);
+      }
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+    tags: ["usable"],
   }),
 });
 

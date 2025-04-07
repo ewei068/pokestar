@@ -423,6 +423,23 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.EJECT_BUTTON]: {
+    name: "Eject Button",
+    emoji: "<:ejectbutton:1358643223655874690>",
+    description:
+      "The first time the user takes damage, consume this item to boost the adjacent ally with the lowest combat readiness to max.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 75,
+          [backpackItems.EMOTION_SHARD]: 50,
+          [backpackItems.WILLPOWER_SHARD]: 25,
+        },
+      },
+    },
+  },
 };
 
 const craftableItemConfig = Object.freeze({
