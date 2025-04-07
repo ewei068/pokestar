@@ -372,6 +372,7 @@ class Battle {
 
   nextTurn() {
     // end turn logic
+    // should this fire after statuses and effects are ticked? probably not I think
     this.emitEvent(battleEventEnum.TURN_END, {
       activePokemon: this.activePokemon,
     });

@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const { backpackHeldItemConfig } = require("../../config/backpackConfig");
-const { moveTiers } = require("../../config/battleConfig");
+const { moveTiers, statusConditions } = require("../../config/battleConfig");
 const { pokemonConfig } = require("../../config/pokemonConfig");
 const {
   battleEventEnum,
@@ -532,6 +532,53 @@ const heldItemsToRegister = Object.freeze({
             getIsInstanceOfType("effect"),
             getIsTargetPokemonCallback(target)
           ),
+        }),
+      };
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [heldItemIdEnum.TOXIC_ORB]: new HeldItem({
+    id: heldItemIdEnum.TOXIC_ORB,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.TURN_END,
+          callback: ({ activePokemon }) => {
+            if (!activePokemon.status.statusId) {
+              battle.addToLog(`${activePokemon.name}'s Toxic Orb activates!`);
+              activePokemon.applyStatus(
+                statusConditions.BADLY_POISON,
+                activePokemon
+              );
+            }
+          },
+          conditionCallback: getIsActivePokemonCallback(battle, target),
+        }),
+      };
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [heldItemIdEnum.FLAME_ORB]: new HeldItem({
+    id: heldItemIdEnum.FLAME_ORB,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.TURN_END,
+          callback: ({ activePokemon }) => {
+            if (!activePokemon.status.statusId) {
+              battle.addToLog(`${activePokemon.name}'s Flame Orb activates!`);
+              activePokemon.applyStatus(statusConditions.BURN, activePokemon);
+            }
+          },
+          conditionCallback: getIsActivePokemonCallback(battle, target),
         }),
       };
     },

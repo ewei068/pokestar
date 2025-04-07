@@ -393,6 +393,36 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.TOXIC_ORB]: {
+    name: "Toxic Orb",
+    emoji: "<:toxicorb:1342654749169811506>",
+    description: "Badly poisons the user at the end of their turn.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: 75,
+          [backpackItems.WILLPOWER_SHARD]: 75,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.FLAME_ORB]: {
+    name: "Flame Orb",
+    emoji: "<:flameorb:1342654741846429778>",
+    description: "Burns the user at the end of their turn.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 75,
+          [backpackItems.EMOTION_SHARD]: 75,
+        },
+      },
+    },
+  },
 };
 
 const craftableItemConfig = Object.freeze({
