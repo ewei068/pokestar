@@ -682,6 +682,11 @@ class BattlePokemon {
       }
     }
 
+    const eventArgs = {
+      source: this,
+    };
+    this.battle.emitEvent(battleEventEnum.AFTER_SKIP_TURN, eventArgs);
+
     // end turn
     this.battle.nextTurn();
   }

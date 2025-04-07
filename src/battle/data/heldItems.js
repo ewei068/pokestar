@@ -114,7 +114,7 @@ class HeldItem {
     return {
       currentMoveId: null,
       disabledMoveIds: [],
-      listenerId: this.registerListenerFunction({
+      moveListenerId: this.registerListenerFunction({
         battle,
         target,
         eventName: battleEventEnum.AFTER_MOVE,
@@ -147,6 +147,19 @@ class HeldItem {
         },
         conditionCallback: getIsSourcePokemonCallback(target),
       }),
+      skipTurnListenerId: this.registerListenerFunction({
+        battle,
+        target,
+        eventName: battleEventEnum.AFTER_SKIP_TURN,
+        callback: ({ heldItemInstance }) => {
+          heldItemInstance.data.currentMoveId = null;
+          for (const moveId of heldItemInstance.data.disabledMoveIds) {
+            target.enableMove(moveId, target);
+          }
+          heldItemInstance.data.disabledMoveIds = [];
+        },
+        conditionCallback: getIsSourcePokemonCallback(target),
+      }),
     };
   }
 
@@ -154,14 +167,15 @@ class HeldItem {
    * @param {object} args
    * @param {Battle} args.battle
    * @param {BattlePokemon} args.target
-   * @param {{ listenerId: string, currentMoveId: MoveIdEnum, disabledMoveIds: MoveIdEnum[] }} args.properties
+   * @param {{ moveListenerId: string, skipTurnListenerId: string, currentMoveId: MoveIdEnum, disabledMoveIds: MoveIdEnum[] }} args.properties
    * @param  {(target: BattlePokemon) => void} removeBuffCallback
    */
   // eslint-disable-next-line class-methods-use-this
   removeChoiceItemWithBuff(args, removeBuffCallback) {
     const { battle, target, properties } = args;
     removeBuffCallback(target);
-    battle.unregisterListener(properties.listenerId);
+    battle.unregisterListener(properties.moveListenerId);
+    battle.unregisterListener(properties.skipTurnListenerId);
     // re-enable all disabled moves
     for (const moveId of properties.disabledMoveIds) {
       target.enableMove(moveId, target);
