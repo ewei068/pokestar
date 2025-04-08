@@ -32,17 +32,17 @@ const getGuildData = async (guildId) => {
   }
 
   // attempt to reset time-interval fields
-  const lastCorrectedTime = new Date(guildData.lastCorrected || 0);
-  const newCorrectedTime = new Date();
+  const lastCorrectedDate = new Date(guildData.lastCorrected || 0);
+  const newCorrectedDate = new Date();
   const modified = setDefaultFields(
     guildData,
     guildFields,
-    lastCorrectedTime,
-    newCorrectedTime
+    lastCorrectedDate,
+    newCorrectedDate
   );
 
   if (modified) {
-    guildData.lastCorrected = newCorrectedTime.getTime();
+    guildData.lastCorrected = newCorrectedDate.getTime();
     try {
       const query = new QueryBuilder(collectionNames.GUILDS)
         .setFilter({ guildId })

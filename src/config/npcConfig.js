@@ -2925,6 +2925,7 @@ const difficultyConfig = Object.freeze({
       expMultiplier: 0.5,
       pokemonExpMultiplier: 0.175,
     },
+    autoBattleCost: 6,
   },
   [difficulties.EASY]: {
     name: "Easy",
@@ -2933,6 +2934,7 @@ const difficultyConfig = Object.freeze({
       expMultiplier: 1,
       pokemonExpMultiplier: 0.175,
     },
+    autoBattleCost: 7,
   },
   [difficulties.MEDIUM]: {
     name: "Medium",
@@ -2941,6 +2943,7 @@ const difficultyConfig = Object.freeze({
       expMultiplier: 1.5,
       pokemonExpMultiplier: 0.185,
     },
+    autoBattleCost: 8,
   },
   [difficulties.HARD]: {
     name: "Hard",
@@ -2949,6 +2952,7 @@ const difficultyConfig = Object.freeze({
       expMultiplier: 2,
       pokemonExpMultiplier: 0.21,
     },
+    autoBattleCost: 9,
   },
   [difficulties.VERY_HARD]: {
     name: "Very Hard",
@@ -2957,6 +2961,7 @@ const difficultyConfig = Object.freeze({
       expMultiplier: 3.5,
       pokemonExpMultiplier: 0.25,
     },
+    autoBattleCost: 10,
   },
 });
 

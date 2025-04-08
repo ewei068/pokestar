@@ -15,7 +15,7 @@ const {
   damageTypes,
   battleStatToBaseStat,
 } = require("../../config/battleConfig");
-const { battleEventEnum } = require("../../enums/battleEnums");
+const { battleEventEnum, abilityIdEnum } = require("../../enums/battleEnums");
 const { calculatePokemonStats } = require("../../services/pokemon");
 const { logger } = require("../../log");
 const {
@@ -161,6 +161,7 @@ class BattlePokemon {
    * @returns {MoveIdEnum[]}
    */
   getMoveIds() {
+    // @ts-ignore
     return Object.keys(this.moveIds);
   }
 
@@ -681,6 +682,11 @@ class BattlePokemon {
       }
     }
 
+    const eventArgs = {
+      source: this,
+    };
+    this.battle.emitEvent(battleEventEnum.AFTER_SKIP_TURN, eventArgs);
+
     // end turn
     this.battle.nextTurn();
   }
@@ -1015,6 +1021,10 @@ class BattlePokemon {
       return 0;
     }
 
+    if (damageInfo.type === "recoil") {
+      this.battle.addToLog(`${this.name} is affected by recoil!`);
+    }
+
     // if pvp, deal 15% less damage
     if (this.battle.isPvp) {
       damage = Math.max(1, Math.floor(damage * 0.85));
@@ -1178,7 +1188,6 @@ class BattlePokemon {
 
     this.hp = 0;
     this.isFainted = true;
-    this.disableAbility();
     this.disableHeldItem();
     this.battle.addToLog(`${this.name} fainted!`);
 
@@ -1188,6 +1197,7 @@ class BattlePokemon {
       source,
     };
     this.battle.eventHandler.emit(battleEventEnum.AFTER_FAINT, afterFaintArgs);
+    this.disableAbility();
   }
 
   /**
@@ -1314,6 +1324,7 @@ class BattlePokemon {
       return;
     }
 
+    // @ts-ignore
     heldItemData.itemRemove({
       battle: this.battle,
       source: this,
@@ -1349,18 +1360,25 @@ class BattlePokemon {
 
   /**
    * If usable, uses the held item on the target Pokemon, then removes it if it's used up
-   * @param {BattlePokemon} target
+   * @param {BattlePokemon=} target
    * @returns {boolean} Whether the held item was used
    */
-  useHeldItem(target) {
+  useHeldItem(target = this) {
     // remove held item effects
     const { heldItemId } = this.heldItem;
     const heldItemData = getHeldItem(heldItemId);
-    if (!heldItemData || !heldItemData.tags.includes("usable") || !heldItemId) {
+    if (!heldItemData || !heldItemId) {
+      return false;
+    }
+    if (!heldItemData.tags.includes("usable")) {
+      logger.warn(
+        `Attempted to use held item ${heldItemId} on ${this.name}, but it is not usable!`
+      );
       return false;
     }
 
     // TODO: disable item before use?
+    // @ts-ignore
     heldItemData.itemUse({
       battle: this.battle,
       source: this,
@@ -2109,6 +2127,14 @@ class BattlePokemon {
         statData.multMult +
       statData.flatBoost;
     stat = Math.max(1, Math.floor(stat));
+
+    // Simple ability: doubles the effect of stat changes
+    if (this.hasAbility(abilityIdEnum.SIMPLE)) {
+      const baseStat = this[battleStatToBaseStat(statId)];
+      const difference = stat - baseStat;
+      stat = baseStat + difference * 2;
+      stat = Math.max(1, Math.floor(stat));
+    }
 
     switch (statId) {
       case "def":

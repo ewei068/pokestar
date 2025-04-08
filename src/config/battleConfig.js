@@ -2706,13 +2706,13 @@ const moveConfig = Object.freeze({
     type: pokemonTypes.NORMAL,
     power: null,
     accuracy: 100,
-    cooldown: 2,
+    cooldown: 3,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
     tier: moveTiers.POWER,
     damageType: damageTypes.OTHER,
-    description: "Disables the target's ultimate move for 1 turn.",
+    description: "Disables the target's ultimate move for 2 turns.",
   },
   m51: {
     name: "Acid",
@@ -3485,12 +3485,12 @@ const moveConfig = Object.freeze({
   m136: {
     name: "High Jump Kick",
     type: pokemonTypes.FIGHTING,
-    power: 175,
+    power: 130,
     accuracy: 80,
-    cooldown: 3,
+    cooldown: 4,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.SINGLE,
+    targetPattern: targetPatterns.CROSS,
     tier: moveTiers.ULTIMATE,
     damageType: damageTypes.PHYSICAL,
     description:
@@ -3764,6 +3764,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user throws a punch at blinding speed, increasing the user's combat readiness by 30%.",
+    tags: ["punch"],
   },
   "m183-1": {
     name: "Mach Pistol",
@@ -3950,15 +3951,15 @@ const moveConfig = Object.freeze({
     name: "Charm",
     type: pokemonTypes.FAIRY,
     power: null,
-    accuracy: 100,
-    cooldown: 2,
+    accuracy: 90,
+    cooldown: 0,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.ANY,
     targetPattern: targetPatterns.SINGLE,
-    tier: moveTiers.POWER,
+    tier: moveTiers.BASIC,
     damageType: damageTypes.OTHER,
     description:
-      "The user gazes at the target rather charmingly, making it less wary. This sharply lowers the target's attack stat for 3 turns.",
+      "The user gazes at the target rather charmingly, making it less wary. This sharply lowers the target's attack stat for 2 turns.",
   },
   m205: {
     name: "Rollout",
@@ -4127,6 +4128,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user punches the target with full, concentrated power. If hit, this also confuses surrounding targets for 2 turns.",
+    tags: ["punch"],
   },
   m224: {
     name: "Megahorn",
@@ -4701,6 +4703,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The target is hit with a hard punch fired like a meteor. This also raises the users attack for 2 turns before attacking. If the target doesn't faint, remove the buff.",
+    tags: ["punch"],
   },
   m311: {
     name: "Weather Ball",
@@ -4785,6 +4788,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user throws a punch from the shadows. This move never misses.",
+    tags: ["punch"],
   },
   m330: {
     name: "Muddy Water",
@@ -5075,6 +5079,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user swings and hits with its strong and heavy fist. This lowers the user's Speed for 1 turn.",
+    tags: ["punch"],
   },
   m361: {
     name: "Healing Wish",
@@ -5131,6 +5136,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user fights the target up close without guarding itself. This also lowers the user's Defense and Special Defense for 1 turn.",
+    tags: ["punch"],
   },
   "m370-1": {
     name: "Gattling Combat",
@@ -5341,6 +5347,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "An energy-draining punch. The user's HP is restored by half the damage taken by the target.",
+    tags: ["punch"],
   },
   m412: {
     name: "Energy Ball",
@@ -5453,6 +5460,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user strikes the target with tough punches as fast as bullets, dealing damage and increasing its own combat readiness by 30%.",
+    tags: ["punch"],
   },
   m420: {
     name: "Ice Shard",
@@ -5637,20 +5645,6 @@ const moveConfig = Object.freeze({
     description:
       "The user lays a trap of levitating stones around the target for 5 turns. The trap hurts opposing Pokemon that have their combat readiness boosted or receive buffs.",
   },
-  m450: {
-    name: "Bug Bite",
-    type: pokemonTypes.BUG,
-    power: 90,
-    accuracy: 100,
-    cooldown: 2,
-    targetType: targetTypes.ENEMY,
-    targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.SINGLE,
-    tier: moveTiers.POWER,
-    damageType: damageTypes.PHYSICAL,
-    description:
-      "The user bites the target with its sharp teeth, dealing damage and stealing one buff from the target.",
-  },
   m453: {
     name: "Aqua Jet",
     type: pokemonTypes.WATER,
@@ -5803,7 +5797,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.BASIC,
     damageType: damageTypes.SPECIAL,
     description:
-      "The user places a curse on the target. If the target is debuffed or has a status condition, this move's base power is increased by 25.",
+      "The user places a curse on the target. If the target is debuffed or has a status condition, this move's base power is increased by 40.",
   },
   m521: {
     name: "Volt Switch",
@@ -6237,6 +6231,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user rotates, centering the hex nut in its chest, and then strikes with its arms twice in a row. This move hits twice; once in a row and once in a column, each with a 30% chance to flinch.",
+    tags: ["punch"],
   },
   m814: {
     name: "Dual Wingbeat",
@@ -6252,7 +6247,7 @@ const moveConfig = Object.freeze({
     description:
       "The user slams targets with its wings. The primary target is hit twice in a row.",
   },
-  m876: {
+  m1: {
     name: "Pound",
     type: pokemonTypes.NORMAL,
     power: 55,
@@ -6744,8 +6739,6 @@ const moveExecutes = {
         moveId,
       });
     }
-    // recoil damage to self
-    battle.addToLog(`${source.name} is affected by recoil!`);
     const damageToDeal = Math.max(Math.floor(damageDealt / 4), 1);
     source.dealDamage(damageToDeal, source, {
       type: "recoil",
@@ -6767,8 +6760,6 @@ const moveExecutes = {
         moveId,
       });
     }
-    // recoil damage to self
-    battle.addToLog(`${source.name} is affected by recoil!`);
     const damageToDeal = Math.max(Math.floor(damageDealt / 3), 1);
     source.dealDamage(damageToDeal, source, {
       type: "recoil",
@@ -6825,7 +6816,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (!miss) {
-        target.applyEffect("disable", 1, source);
+        target.applyEffect("disable", 2, source);
       }
     }
   },
@@ -8399,8 +8390,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (!miss) {
-        // greater atk down for 3 turns
-        target.applyEffect("greaterAtkDown", 3, source);
+        target.applyEffect("greaterAtkDown", 2, source);
       }
     }
   },
@@ -9234,7 +9224,7 @@ const moveExecutes = {
       // calculate damage pokemonhp - sourcehp
       const damageToDeal = target.hp - source.hp;
       if (damageToDeal <= 0) {
-        battle.addToLog(`${target.name} is unaffected!`);
+        battle.addToLog("But it failed!");
         continue;
       }
 
@@ -9759,7 +9749,6 @@ const moveExecutes = {
       }
     }
 
-    battle.addToLog(`${source.name} is affected by recoil!`);
     const damageToDeal = Math.max(Math.floor(damageDealt / 4), 1);
     source.dealDamage(damageToDeal, source, {
       type: "recoil",
@@ -10122,8 +10111,6 @@ const moveExecutes = {
       }
     }
 
-    // recoil damage to self
-    battle.addToLog(`${source.name} is affected by recoil!`);
     const damageToDeal = Math.max(Math.floor(damageDealt / 3), 1);
     source.dealDamage(damageToDeal, source, {
       type: "recoil",
@@ -10159,8 +10146,6 @@ const moveExecutes = {
       });
     }
 
-    // recoil damage to self
-    battle.addToLog(`${source.name} is affected by recoil!`);
     const damageToDeal = Math.max(Math.floor(damageDealt / 3), 1);
     source.dealDamage(damageToDeal, source, {
       type: "recoil",
@@ -10366,8 +10351,6 @@ const moveExecutes = {
       });
     }
 
-    // recoil damage to self
-    battle.addToLog(`${source.name} is affected by recoil!`);
     const damageToDeal = Math.max(Math.floor(damageDealt / 3), 1);
     source.dealDamage(damageToDeal, source, {
       type: "recoil",
@@ -10773,50 +10756,6 @@ const moveExecutes = {
       target.applyEffect("stealthRock", 5, source);
     }
   },
-  m450(_battle, source, _primaryTarget, allTargets, missedTargets) {
-    const moveId = "m450";
-    const moveData = getMove(moveId);
-    for (const target of allTargets) {
-      const miss = missedTargets.includes(target);
-      const damageToDeal = calculateDamage(moveData, source, target, miss);
-      source.dealDamage(damageToDeal, target, {
-        type: "move",
-        moveId,
-      });
-
-      // if not miss, attempt to steal a buff
-      if (!miss) {
-        const possibleBuffs = Object.keys(target.effectIds).filter(
-          (effectId) => {
-            const effectData = getEffect(effectId);
-            return (
-              effectData.type === effectTypes.BUFF && effectData.dispellable
-            );
-          }
-        );
-        if (possibleBuffs.length === 0) {
-          return;
-        }
-
-        // get random buff
-        const buffIdToSteal =
-          possibleBuffs[Math.floor(Math.random() * possibleBuffs.length)];
-        const buffToSteal = target.effectIds[buffIdToSteal];
-        // steal buff
-        const dispelled = target.dispellEffect(buffIdToSteal);
-        if (!dispelled) {
-          return;
-        }
-        // apply buff to self
-        source.applyEffect(
-          buffIdToSteal,
-          buffToSteal.duration,
-          buffToSteal.source,
-          buffToSteal.initialArgs
-        );
-      }
-    }
-  },
   m453(_battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m453";
     const moveData = getMove(moveId);
@@ -11001,7 +10940,7 @@ const moveExecutes = {
       }
       const hasStatus = target.status.statusId !== null;
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
-        power: hasDebuff || hasStatus ? moveData.power + 25 : moveData.power,
+        power: hasDebuff || hasStatus ? moveData.power + 40 : moveData.power,
       });
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -11116,8 +11055,6 @@ const moveExecutes = {
         moveId,
       });
     }
-    // recoil damage to self
-    battle.addToLog(`${source.name} is affected by recoil!`);
     const damageToDeal = Math.max(Math.floor(damageDealt / 4), 1);
     source.dealDamage(damageToDeal, source, {
       type: "recoil",
@@ -11673,8 +11610,8 @@ const moveExecutes = {
       }
     }
   },
-  m876(_battle, source, _primaryTarget, allTargets, missedTargets) {
-    const moveId = "m876";
+  m1(_battle, source, _primaryTarget, allTargets, missedTargets) {
+    const moveId = "m1";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -12172,6 +12109,9 @@ const abilityConfig = Object.freeze({
         battleEventEnum.BEFORE_STATUS_APPLY,
         listener
       );
+      if (target.status?.statusId === statusConditions.PARALYSIS) {
+        target.removeStatus();
+      }
       return {
         listenerId,
       };
@@ -14199,51 +14139,6 @@ const abilityConfig = Object.freeze({
       );
     },
     abilityRemove(_battle, _source, _target) {},
-  },
-  89: {
-    name: "Iron Fist",
-    description: "Increases damage of punching moves by 30%.",
-    abilityAdd(battle, _source, target) {
-      const listener = {
-        initialArgs: {
-          pokemon: target,
-        },
-        execute(initialArgs, args) {
-          if (args.damageInfo.type !== "move") {
-            return;
-          }
-
-          const userPokemon = args.source;
-          if (userPokemon !== initialArgs.pokemon) {
-            return;
-          }
-
-          // if move type === punch, increase damage by 30%
-          const moveData = getMove(args.damageInfo.moveId);
-          if (moveData.name.toLowerCase().includes("punch")) {
-            userPokemon.battle.addToLog(
-              `${userPokemon.name}'s Iron Fist increases the damage!`
-            );
-            args.damage = Math.round(args.damage * 1.3);
-          }
-        },
-      };
-      const listenerId = battle.eventHandler.registerListener(
-        battleEventEnum.BEFORE_DAMAGE_DEALT,
-        listener
-      );
-      return {
-        listenerId,
-      };
-    },
-    abilityRemove(battle, _source, target) {
-      const { ability } = target;
-      if (!ability || ability.abilityId !== "89" || !ability.data) {
-        return;
-      }
-      const abilityData = ability.data;
-      battle.eventHandler.unregisterListener(abilityData.listenerId);
-    },
   },
   94: {
     name: "Solar Power",
@@ -16387,7 +16282,8 @@ const abilityConfig = Object.freeze({
   },
   20016: {
     name: "Cosmic Protection",
-    description: "Reduce the damage taken by all allies by 10%.",
+    description:
+      "Reduce the damage taken by all allies except the user by 10%.",
     abilityAdd(battle, _source, target) {
       const damageListener = {
         initialArgs: {
@@ -16395,7 +16291,10 @@ const abilityConfig = Object.freeze({
         },
         execute(initialArgs, args) {
           const targetPokemon = args.target;
-          if (targetPokemon.teamName !== initialArgs.pokemon.teamName) {
+          if (
+            targetPokemon.teamName !== initialArgs.pokemon.teamName ||
+            targetPokemon === initialArgs.pokemon
+          ) {
             return;
           }
 
@@ -16408,9 +16307,6 @@ const abilityConfig = Object.freeze({
       const damageListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
         damageListener
-      );
-      battle.addToLog(
-        `${target.name}'s Cosmic Protection is reducing the damage taken by all allies!`
       );
       return {
         damageListenerId,

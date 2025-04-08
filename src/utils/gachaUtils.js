@@ -6,6 +6,7 @@
  */
 
 /**
+ * Draws a random item from a probability distribution.
  * @template {string | number} T
  * @param {Record<T, number>} probabilityDistribution
  * @param {number} times
@@ -38,6 +39,7 @@ const drawDiscrete = (probabilityDistribution, times) => {
 };
 
 /**
+ * Draws a random item from an iterable such as an array.
  * @template T
  * @param {T[]} iterable
  * @param {number} times
@@ -75,6 +77,7 @@ const drawIterable = (
 };
 
 /**
+ * Draws a random number between min and max times.
  * @param {number} min
  * @param {number} max
  * @param {number} times
