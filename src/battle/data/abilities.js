@@ -784,6 +784,29 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [abilityIdEnum.SNOW_WARNING]: new Ability({
+    id: abilityIdEnum.SNOW_WARNING,
+    name: "Snow Warning",
+    description: "When the battle starts, creates a hailstorm.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BATTLE_BEGIN,
+          callback: () => {
+            battle.addToLog(
+              `${target.name}'s Snow Warning creates a hailstorm!`
+            );
+            battle.createWeather(weatherConditions.HAIL, target);
+          },
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
 });
 
 module.exports = {

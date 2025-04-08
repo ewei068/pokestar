@@ -9161,6 +9161,62 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.SLOW,
   },
+  [pokemonIdEnum.SNOVER]: {
+    name: "Snover",
+    emoji: "<:459:1351027254427389952>",
+    description:
+      "During cold seasons, it migrates to the mountain's lower reaches. It returns to the snow-covered summit in the spring.",
+    type: [types.GRASS, types.ICE],
+    baseStats: [60, 62, 50, 62, 60, 40],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/459.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/459.png",
+    evolution: [
+      {
+        level: 40,
+        id: pokemonIdEnum.ABOMASNOW,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SNOW_WARNING]: 0.8,
+      [abilityIdEnum.SOUNDPROOF]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ICE_SHARD,
+      moveIdEnum.ICY_WIND,
+      moveIdEnum.GIGA_DRAIN,
+      moveIdEnum.SWAGGER,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.ABOMASNOW]: {
+    name: "Abomasnow",
+    emoji: "<:460:1351027255798796308>",
+    description:
+      "It blankets wide areas in snow by whipping up blizzards. It is also known as 'The Ice Monster.'",
+    type: [types.GRASS, types.ICE],
+    baseStats: [90, 92, 75, 92, 85, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/460.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/460.png",
+    abilities: {
+      [abilityIdEnum.SNOW_WARNING]: 0.8,
+      [abilityIdEnum.SOUNDPROOF]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ICE_SHARD,
+      moveIdEnum.GIGA_DRAIN,
+      moveIdEnum.SWAGGER,
+      moveIdEnum.BLIZZARD,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   [pokemonIdEnum.DARKRAI]: {
     name: "Darkrai",
     emoji: "<:491:1351027502801354822>",
