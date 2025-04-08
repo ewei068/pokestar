@@ -687,6 +687,32 @@ const heldItemsToRegister = Object.freeze({
     },
     tags: ["berry", "usable"],
   }),
+  [heldItemIdEnum.SHELL_BELL]: new HeldItem({
+    id: heldItemIdEnum.SHELL_BELL,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_DEALT,
+          callback: ({ damage, damageInfo }) => {
+            if (damageInfo?.type === "move") {
+              const healAmount = Math.max(1, Math.floor(damage * 0.1));
+              battle.addToLog(`${target.name}'s Shell Bell restored its HP!`);
+              target.giveHeal(healAmount, target, {
+                type: "heldItem",
+                id: this.id,
+              });
+            }
+          },
+          conditionCallback: getIsSourcePokemonCallback(target),
+        }),
+      };
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
 });
 
 module.exports = {

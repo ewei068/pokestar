@@ -473,6 +473,21 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.SHELL_BELL]: {
+    name: "Shell Bell",
+    emoji: "<:shellbell:1358678116150542518>",
+    description: "When the user deals damage, heal 10% of the damage dealt.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 50,
+          [backpackItems.WILLPOWER_SHARD]: 150,
+        },
+      },
+    },
+  },
 };
 
 const craftableItemConfig = Object.freeze({

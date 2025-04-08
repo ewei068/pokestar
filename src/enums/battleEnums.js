@@ -1354,6 +1354,7 @@ const heldItemIdEnum = Object.freeze({
   FOCUS_BAND: "h207",
   LUCKY_EGG: "h208",
   LEFTOVERS: "h211",
+  SHELL_BELL: "h230",
   WIDE_LENS: "h242",
   LIFE_ORB: "h247",
   POWER_HERB: "h248",
