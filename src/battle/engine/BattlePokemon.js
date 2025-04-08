@@ -682,6 +682,11 @@ class BattlePokemon {
       }
     }
 
+    const eventArgs = {
+      source: this,
+    };
+    this.battle.emitEvent(battleEventEnum.AFTER_SKIP_TURN, eventArgs);
+
     // end turn
     this.battle.nextTurn();
   }
@@ -1362,7 +1367,13 @@ class BattlePokemon {
     // remove held item effects
     const { heldItemId } = this.heldItem;
     const heldItemData = getHeldItem(heldItemId);
-    if (!heldItemData || !heldItemData.tags.includes("usable") || !heldItemId) {
+    if (!heldItemData || !heldItemId) {
+      return false;
+    }
+    if (!heldItemData.tags.includes("usable")) {
+      logger.warn(
+        `Attempted to use held item ${heldItemId} on ${this.name}, but it is not usable!`
+      );
       return false;
     }
 
