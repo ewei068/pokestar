@@ -457,6 +457,22 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.CUSTAP_BERRY]: {
+    name: "Custap Berry",
+    emoji: "<:custapberry:1358678114938519662>",
+    description:
+      "When the user drops to 30% or less of its max HP, consume this item to boost the user's combat readiness to 100.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 50,
+          [backpackItems.EMOTION_SHARD]: 100,
+        },
+      },
+    },
+  },
 };
 
 const craftableItemConfig = Object.freeze({

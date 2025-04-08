@@ -1347,6 +1347,7 @@ const abilityIdEnum = Object.freeze({
 const heldItemIdEnum = Object.freeze({
   LUM_BERRY: "h134",
   SITRUS_BERRY: "h135",
+  CUSTAP_BERRY: "h187",
   EXP_SHARE: "h193",
   CHOICE_BAND: "h197",
   AMULET_COIN: "h200",

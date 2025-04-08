@@ -661,6 +661,32 @@ const heldItemsToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [heldItemIdEnum.CUSTAP_BERRY]: new HeldItem({
+    id: heldItemIdEnum.CUSTAP_BERRY,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
+          callback: () => {
+            if (target.hp / target.maxHp <= 0.3) {
+              target.useHeldItem(target);
+            }
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    itemUse({ battle, target }) {
+      battle.addToLog(`${target.name}'s Custap Berry activated!`);
+      target.boostCombatReadiness(target, 100);
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+    tags: ["berry", "usable"],
+  }),
 });
 
 module.exports = {
