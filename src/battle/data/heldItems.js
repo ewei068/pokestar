@@ -607,7 +607,6 @@ const heldItemsToRegister = Object.freeze({
     },
     itemUse({ battle, target }) {
       battle.addToLog(`${target.name}'s Eject Button was triggered!`);
-      // Get allies in a cross pattern around the user
       const allyParty = battle.parties[target.teamName];
       const adjacentAllies = target.getPatternTargets(
         allyParty,
@@ -616,7 +615,6 @@ const heldItemsToRegister = Object.freeze({
       );
       const allies = adjacentAllies.filter((pokemon) => pokemon !== target);
 
-      // Find ally with lowest combat readiness
       if (allies.length > 0) {
         let lowestCRAlly = allies[0];
         for (const ally of allies) {
@@ -633,6 +631,35 @@ const heldItemsToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
     tags: ["usable"],
+  }),
+  [heldItemIdEnum.ROCKY_HELMET]: new HeldItem({
+    id: heldItemIdEnum.ROCKY_HELMET,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
+          callback: ({ source }) => {
+            const damage = Math.max(1, Math.floor(source.maxHp * 0.05));
+            battle.addToLog(
+              `${source.name} was hurt by ${target.name}'s Rocky Helmet!`
+            );
+            target.dealDamage(damage, source, {
+              type: "heldItem",
+              id: this.id,
+            });
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsInstanceOfType("move"),
+            getIsTargetPokemonCallback(target)
+          ),
+        }),
+      };
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
   }),
 });
 

@@ -430,11 +430,28 @@ const backpackHeldItemConfig = {
       "The first time the user takes damage, consume this item to boost the adjacent ally with the lowest combat readiness to max.",
     category: backpackCategories.HELD_ITEMS,
     cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 125,
+          [backpackItems.EMOTION_SHARD]: 50,
+          [backpackItems.WILLPOWER_SHARD]: 25,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.ROCKY_HELMET]: {
+    name: "Rocky Helmet",
+    emoji: "<:rockyhelmet:1342654748070772746>",
+    description:
+      "When the user is hit by a damaging move, the move user takes 5% of its max HP as damage.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
       money: 7500,
       backpack: {
         [backpackCategories.MATERIALS]: {
-          [backpackItems.KNOWLEDGE_SHARD]: 75,
-          [backpackItems.EMOTION_SHARD]: 50,
+          [backpackItems.KNOWLEDGE_SHARD]: 100,
+          [backpackItems.EMOTION_SHARD]: 25,
           [backpackItems.WILLPOWER_SHARD]: 25,
         },
       },

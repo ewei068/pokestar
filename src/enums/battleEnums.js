@@ -1362,6 +1362,7 @@ const heldItemIdEnum = Object.freeze({
   CHOICE_SCARF: "h264",
   CHOICE_SPECS: "h274",
   EVIOLITE: "h581",
+  ROCKY_HELMET: "h583",
   EJECT_BUTTON: "h590",
   HEAVY_DUTY_BOOTS: "h1178",
 });
