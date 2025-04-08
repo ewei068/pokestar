@@ -1394,6 +1394,10 @@ class BattlePokemon {
     return this.ability?.abilityId === abilityId;
   }
 
+  hasActiveAbility(abilityId) {
+    return this.ability?.abilityId === abilityId && this.ability.applied;
+  }
+
   hasHeldItem(heldItemId) {
     return this.heldItem?.heldItemId === heldItemId;
   }
@@ -2129,7 +2133,7 @@ class BattlePokemon {
     stat = Math.max(1, Math.floor(stat));
 
     // Simple ability: doubles the effect of stat changes
-    if (this.hasAbility(abilityIdEnum.SIMPLE)) {
+    if (this.hasActiveAbility(abilityIdEnum.SIMPLE)) {
       const baseStat = this[battleStatToBaseStat(statId)];
       const difference = stat - baseStat;
       stat = baseStat + difference * 2;

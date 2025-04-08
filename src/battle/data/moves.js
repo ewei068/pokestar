@@ -181,7 +181,7 @@ class Move {
     if (roll < probability) {
       shouldTrigger = true;
     } else if (
-      source.hasAbility(abilityIdEnum.SERENE_GRACE) &&
+      source.hasActiveAbility(abilityIdEnum.SERENE_GRACE) &&
       roll < 2 * probability
     ) {
       source.battle.addToLog(`${source.name}'s Serene Grace activates!`);
