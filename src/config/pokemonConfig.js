@@ -4846,6 +4846,12 @@ const pokemonConfigRaw = {
       51: 0.45,
       124: 0.1,
     },
+    evolution: [
+      {
+        level: 45,
+        id: pokemonIdEnum.WEAVILE,
+      },
+    ],
     moveIds: ["m420", "m252", "m282", moveIdEnum.ICICLE_CRASH],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -9212,6 +9218,31 @@ const pokemonConfigRaw = {
       moveIdEnum.GIGA_DRAIN,
       moveIdEnum.SWAGGER,
       moveIdEnum.BLIZZARD,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.WEAVILE]: {
+    name: "Weavile",
+    emoji: "<:461:1351027256788779078>",
+    description:
+      "They live in cold regions, forming groups of four or five that hunt prey with impressive coordination.",
+    type: [types.DARK, types.ICE],
+    baseStats: [70, 120, 65, 45, 85, 125],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/461.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/461.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.PICKPOCKET]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ICE_SHARD,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.KNOCK_OFF,
+      moveIdEnum.TRIPLE_AXEL,
     ],
     battleEligible: true,
     rarity: rarities.EPIC,

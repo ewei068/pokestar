@@ -1504,6 +1504,66 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.TRIPLE_AXEL]: new Move({
+    id: moveIdEnum.TRIPLE_AXEL,
+    name: "Triple Axel",
+    type: pokemonTypes.ICE,
+    power: 20,
+    accuracy: 90,
+    cooldown: 4,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.X,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "A consecutive three-kick attack that becomes more powerful with each successful hit. Each hit has a 90% accuracy.",
+    execute(args) {
+      const {
+        source,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+        extraOptions = {},
+      } = args;
+      const maxHits = 3;
+      const { hitCounts = {}, currentHit = 1 } = extraOptions;
+      const newHitCounts = { ...hitCounts };
+
+      // Calculate damage with power boost based on previous hits
+      this.genericDealAllDamage({
+        ...args,
+        calculateDamageFunction: (damageArgs) => {
+          const { target } = damageArgs;
+          const previousHits = hitCounts[target.id] || 0;
+          const powerMultiplier = 1 + previousHits;
+          return source.calculateMoveDamage({
+            ...damageArgs,
+            powerOverride: this.power * powerMultiplier,
+          });
+        },
+      });
+
+      // Update hit counts for targets that weren't missed
+      for (const target of allTargets) {
+        if (!missedTargets.includes(target)) {
+          newHitCounts[target.id] = (hitCounts[target.id] || 0) + 1;
+        }
+      }
+
+      // If we haven't reached max hits, execute the move again
+      if (currentHit < maxHits) {
+        source.executeMoveAgainstTarget({
+          moveId: this.id,
+          primaryTarget,
+          extraOptions: {
+            hitCounts: newHitCounts,
+            currentHit: currentHit + 1,
+          },
+        });
+      }
+    },
+  }),
 });
 
 module.exports = {

@@ -4562,7 +4562,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.POWER,
     damageType: damageTypes.PHYSICAL,
     description:
-      "The user slaps down the target, removing all buffs. For each buff removed, deals 25% more damage, up to 75% more damage.",
+      "The user slaps down the target, removing all buffs and its item. For each buff or item removed, deals 25% more damage, up to 100% more damage.",
   },
   m283: {
     name: "Endeavor",
@@ -9199,10 +9199,13 @@ const moveExecutes = {
             buffsRemoved += 1;
           }
         }
+        if (target.removeHeldItem()) {
+          buffsRemoved += 1;
+        }
       }
 
-      // damage bonus = 0.25 * buffs up to 0.75
-      const damageBonus = Math.min(0.75, 0.25 * buffsRemoved);
+      // damage bonus = 0.25 * buffs up to 1
+      const damageBonus = Math.min(1, 0.25 * buffsRemoved);
       const damageToDeal = Math.floor(
         calculateDamage(moveData, source, target, miss) * (1 + damageBonus)
       );
