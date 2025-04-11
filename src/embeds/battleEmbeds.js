@@ -250,6 +250,7 @@ const buildBattleEmbed = (
     });
   }
 
+  const upNextPokemon = battle.getNextNPokemon(3);
   const fields = [
     {
       name: `${team1.emoji} ${team1.name} | ${team1UserString}`,
@@ -280,11 +281,10 @@ const buildBattleEmbed = (
           isMobile,
         }
       ),
-      inline: !isMobile,
+      inline: !isMobile && upNextPokemon.length > 0,
     },
   ];
 
-  const upNextPokemon = battle.getNextNPokemon(3);
   if (upNextPokemon.length > 0) {
     const upNextStringTop = upNextPokemon
       .map((pokemon) => pokemonConfig[pokemon.speciesId].emoji)
