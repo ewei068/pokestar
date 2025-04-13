@@ -872,6 +872,47 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [abilityIdEnum.POISON_HEAL]: new Ability({
+    id: abilityIdEnum.POISON_HEAL,
+    name: "Poison Heal",
+    description:
+      "When the user would take damage from poison or badly poison, instead heal for 10% of its max HP.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: ({ damageInfo }) => {
+            if (
+              damageInfo?.statusId === statusConditions.POISON ||
+              damageInfo?.statusId === statusConditions.BADLY_POISON
+            ) {
+              const healAmount = Math.max(Math.floor(target.maxHp * 0.1), 1);
+              battle.addToLog(
+                `${target.name}'s Poison Heal converts poison damage into healing!`
+              );
+              target.giveHeal(healAmount, target, {
+                type: "ability",
+                id: abilityIdEnum.POISON_HEAL,
+              });
+              return {
+                damage: 0,
+                maxDamage: 0,
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsTargetPokemonCallback(target),
+            getIsInstanceOfType("statusCondition")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
 });
 
 module.exports = {

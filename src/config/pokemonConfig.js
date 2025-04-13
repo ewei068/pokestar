@@ -4791,6 +4791,12 @@ const pokemonConfigRaw = {
       8: 0.45,
       17: 0.1,
     },
+    evolution: [
+      {
+        level: 45,
+        id: pokemonIdEnum.GLISCOR,
+      },
+    ],
     moveIds: ["m40", "m182", "m191", "m282"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -9523,6 +9529,32 @@ const pokemonConfigRaw = {
       moveIdEnum.PROTECT,
       moveIdEnum.SHADOW_BALL,
       moveIdEnum.BLIZZARD,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.GLISCOR]: {
+    name: "Gliscor",
+    emoji: "<:472:1351027334123094056>",
+    description:
+      "It dances through the air, freely manipulating the position of its body. It can catch the wind to fly anywhere.",
+    type: [types.GROUND, types.FLYING],
+    baseStats: [75, 95, 125, 45, 75, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/472.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/472.png",
+    abilities: {
+      [abilityIdEnum.HYPER_CUTTER]: 0.45,
+      [abilityIdEnum.SAND_VEIL]: 0.45,
+      [abilityIdEnum.POISON_HEAL]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POISON_STING,
+      moveIdEnum.PROTECT,
+      moveIdEnum.SPIKES,
+      moveIdEnum.TAILWIND,
     ],
     battleEligible: true,
     rarity: rarities.EPIC,
