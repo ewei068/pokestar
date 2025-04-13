@@ -1584,6 +1584,68 @@ const movesToRegister = Object.freeze({
       source.applyEffect("recharge", 1, source, {});
     },
   }),
+  [moveIdEnum.AIR_SLASH]: new Move({
+    id: moveIdEnum.AIR_SLASH,
+    name: "Air Slash",
+    type: pokemonTypes.FLYING,
+    power: 65,
+    accuracy: 90,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.COLUMN,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user attacks with a blade of air that slices even the sky. This has a 25% chance to flinch the target.",
+    execute(args) {
+      this.genericDealAllDamage(args);
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "flinched",
+        duration: 1,
+        probability: 0.25,
+      });
+    },
+  }),
+  [moveIdEnum.HEAT_WAVE]: new Move({
+    id: moveIdEnum.HEAT_WAVE,
+    name: "Heat Wave",
+    type: pokemonTypes.FIRE,
+    power: 80,
+    accuracy: 100,
+    cooldown: 4,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.ALL,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user attacks by exhaling hot breath on the opposing team. This only deals damage to the target row, but has a 30% of burning all targets",
+    execute(args) {
+      const { source, primaryTarget } = args;
+      // Get only target row
+      const targetParty = source.battle.parties[primaryTarget.teamName];
+      const damageTargets = source.getPatternTargets(
+        targetParty,
+        targetPatterns.ROW,
+        primaryTarget.position
+      );
+
+      // Deal damage only to targets in the primary target's row
+      this.genericDealAllDamage({
+        ...args,
+        allTargets: damageTargets,
+      });
+
+      // Apply burn chance to all targets
+      this.genericApplyAllStatus({
+        ...args,
+        statusId: statusConditions.BURN,
+        probability: 0.3,
+      });
+    },
+  }),
 });
 
 module.exports = {

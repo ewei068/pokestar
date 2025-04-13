@@ -4216,6 +4216,12 @@ const pokemonConfigRaw = {
       [abilityIdEnum.SERENE_GRACE]: 0.45,
       105: 0.1,
     },
+    evolution: [
+      {
+        level: 45,
+        id: pokemonIdEnum.TOGEKISS,
+      },
+    ],
     moveIds: ["m270", "m86", "m266", "m355"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -9401,6 +9407,32 @@ const pokemonConfigRaw = {
       moveIdEnum.CROSS_CHOP,
       moveIdEnum.TAUNT,
       moveIdEnum.FIRE_BLAST,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.TOGEKISS]: {
+    name: "Togekiss",
+    emoji: "<:468:1351027329920536576>",
+    description:
+      "It shares many blessings with people who respect one another's rights and avoid needless strife.",
+    type: [types.FAIRY, types.FLYING],
+    baseStats: [85, 50, 95, 120, 115, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/468.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/468.png",
+    abilities: {
+      [abilityIdEnum.HUSTLE]: 0.45,
+      [abilityIdEnum.SERENE_GRACE]: 0.45,
+      [abilityIdEnum.SUPER_LUCK]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.HELPING_HAND,
+      moveIdEnum.THUNDER_WAVE,
+      moveIdEnum.AIR_SLASH,
+      moveIdEnum.HEAT_WAVE,
     ],
     battleEligible: true,
     rarity: rarities.EPIC,
