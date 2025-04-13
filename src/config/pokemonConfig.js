@@ -4554,6 +4554,12 @@ const pokemonConfigRaw = {
       14: 0.45,
       119: 0.1,
     },
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.YANMEGA,
+      },
+    ],
     moveIds: ["m17", "m182", "m403", "m450"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -9437,6 +9443,32 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.YANMEGA]: {
+    name: "Yanmega",
+    emoji: "<:469:1351027330964783146>",
+    description:
+      "By churning its wings, it creates shock waves that inflict critical internal injuries to foes.",
+    type: [types.BUG, types.FLYING],
+    baseStats: [86, 76, 86, 116, 56, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/469.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/469.png",
+    abilities: {
+      [abilityIdEnum.SPEED_BOOST]: 0.45,
+      [abilityIdEnum.TINTED_LENS]: 0.45,
+      [abilityIdEnum.FRISK]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.PROTECT,
+      moveIdEnum.AIR_SLASH,
+      moveIdEnum.BUG_BUZZ,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
   },
   [pokemonIdEnum.DARKRAI]: {
     name: "Darkrai",
