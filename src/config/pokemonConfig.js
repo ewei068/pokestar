@@ -2616,6 +2616,12 @@ const pokemonConfigRaw = {
       12: 0.45,
       13: 0.1,
     },
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.LICKILICKY,
+      },
+    ],
     moveIds: ["m122", "m23", "m34", "m428"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -2731,6 +2737,12 @@ const pokemonConfigRaw = {
       69: 0.45,
       120: 0.1,
     },
+    evolution: [
+      {
+        level: 55,
+        id: pokemonIdEnum.RHYPERIOR,
+      },
+    ],
     moveIds: ["m479", "m14", "m444", "m529"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -9279,6 +9291,58 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.LICKILICKY]: {
+    name: "Lickilicky",
+    emoji: "<:463:1351027258953044010>",
+    description:
+      "It wraps things with its extensible tongue. Getting too close to it will leave you soaked with drool.",
+    type: [types.NORMAL],
+    baseStats: [110, 85, 95, 80, 95, 50],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/463.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/463.png",
+    abilities: {
+      [abilityIdEnum.OWN_TEMPO]: 0.45,
+      [abilityIdEnum.OBLIVIOUS]: 0.45,
+      [abilityIdEnum.CLOUD_NINE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.LICK,
+      moveIdEnum.BODY_SLAM,
+      moveIdEnum.SCREECH,
+      moveIdEnum.EXPLOSION,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.RHYPERIOR]: {
+    name: "Rhyperior",
+    emoji: "<:464:1351027260102017025>",
+    description:
+      "It puts rocks in holes in its palms and uses its muscles to shoot them. Geodude are shot at rare times.",
+    type: [types.GROUND, types.ROCK],
+    baseStats: [115, 140, 130, 55, 55, 40],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/464.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/464.png",
+    abilities: {
+      [abilityIdEnum.LIGHTNING_ROD]: 0.45,
+      [abilityIdEnum.SOLID_ROCK]: 0.45,
+      [abilityIdEnum.RECKLESS]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.SMACK_DOWN,
+      moveIdEnum.SWORDS_DANCE,
+      moveIdEnum.DRILL_RUN,
+      moveIdEnum.ROCK_WRECKER,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
   },
   [pokemonIdEnum.DARKRAI]: {
     name: "Darkrai",

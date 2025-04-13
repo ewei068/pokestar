@@ -1564,6 +1564,26 @@ const movesToRegister = Object.freeze({
       }
     },
   }),
+  [moveIdEnum.ROCK_WRECKER]: new Move({
+    id: moveIdEnum.ROCK_WRECKER,
+    name: "Rock Wrecker",
+    type: pokemonTypes.ROCK,
+    power: 160,
+    accuracy: 90,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.CROSS,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user hurls a huge boulder at the target. The user must recharge after using this move.",
+    execute(args) {
+      const { source } = args;
+      this.genericDealAllDamage(args);
+      source.applyEffect("recharge", 1, source, {});
+    },
+  }),
 });
 
 module.exports = {
