@@ -7,6 +7,7 @@ const {
   moveTiers,
   statusConditions,
   effectTypes,
+  weatherConditions,
 } = require("../../config/battleConfig");
 const { getMove } = require("./moveRegistry");
 const { getHeldItem } = require("./heldItemRegistry");
@@ -38,6 +39,7 @@ class Move {
    * @param {string} param0.description
    * @param {MoveExecute} param0.execute
    * @param {EffectIdEnum=} param0.chargeMoveEffectId
+   * @param {((Battle, BattlePokemon) => boolean)=} param0.silenceIf
    * @param {MoveTag[]=} param0.tags
    */
   constructor({
@@ -55,6 +57,7 @@ class Move {
     description,
     execute,
     chargeMoveEffectId,
+    silenceIf,
     tags = [],
   }) {
     /** @type {MoveIdEnum} */
@@ -73,7 +76,7 @@ class Move {
     this.description = description;
     this.execute = execute;
     this.isLegacyMove = false;
-    this.silenceIf = undefined; // TODO
+    this.silenceIf = silenceIf;
     this.chargeMoveEffectId = chargeMoveEffectId;
     this.tags = tags;
   }
@@ -1644,6 +1647,64 @@ const movesToRegister = Object.freeze({
         statusId: statusConditions.BURN,
         probability: 0.3,
       });
+    },
+  }),
+  [moveIdEnum.SOLAR_BLADE]: new Move({
+    id: moveIdEnum.SOLAR_BLADE,
+    name: "Solar Blade",
+    type: pokemonTypes.GRASS,
+    power: 160,
+    accuracy: 100,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.COLUMN,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "A two-turn attack. The user gathers light, then attacks with a blade of light on the next turn.",
+    silenceIf(battle, pokemon) {
+      return (
+        pokemon.effectIds.absorbLight === undefined &&
+        !battle.isWeatherNegated() &&
+        battle.weather.weatherId !== weatherConditions.SUN
+      );
+    },
+    tags: ["charge"],
+    chargeMoveEffectId: "absorbLight",
+    execute(args) {
+      const { source, battle } = args;
+      // If pokemon doesn't have "absorb light" buff, apply it
+      // TODO: genericify charge moves?
+      if (
+        source.effectIds.absorbLight === undefined &&
+        !battle.isWeatherNegated() &&
+        battle.weather.weatherId !== weatherConditions.SUN
+      ) {
+        source.applyEffect("absorbLight", 1, source, {});
+        // Remove cooldown so it can be used next turn
+        source.moveIds[this.id].cooldown = 0;
+      } else {
+        // If pokemon has "absorb light" buff, remove it and deal damage
+        source.removeEffect("absorbLight");
+
+        // Deal damage with weather multiplier
+        this.genericDealAllDamage({
+          ...args,
+          calculateDamageFunction: (damageArgs) => {
+            const mult =
+              battle.weather.weatherId !== weatherConditions.SUN &&
+              battle.weather.weatherId &&
+              !battle.isWeatherNegated()
+                ? 0.5
+                : 1;
+            return source.calculateMoveDamage({
+              ...damageArgs,
+              powerOverride: Math.floor(this.power * mult),
+            });
+          },
+        });
+      }
     },
   }),
 });

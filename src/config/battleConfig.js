@@ -6,7 +6,11 @@
 const { types: pokemonTypes } = require("./pokemonConfig");
 const { getMove, getMoveIds } = require("../battle/data/moveRegistry");
 const { getEffect } = require("../battle/data/effectRegistry");
-const { battleEventEnum, effectIdEnum } = require("../enums/battleEnums");
+const {
+  battleEventEnum,
+  effectIdEnum,
+  moveIdEnum,
+} = require("../enums/battleEnums");
 
 /** @typedef {Enum<damageTypes>} DamageTypeEnum */
 const damageTypes = Object.freeze({
@@ -2002,14 +2006,15 @@ const effectConfig = Object.freeze({
   },
   absorbLight: {
     name: "Absorbing Light",
-    description: "The target absorbs light, preparing a powerful Solar Beam.",
+    description:
+      "The target absorbs light, preparing a powerful Solar Beam or Blade.",
     type: effectTypes.BUFF,
     dispellable: false,
     effectAdd(battle, _source, target) {
       battle.addToLog(`${target.name} is absorbing light!`);
       // disable non-solar beam moves
       for (const moveId in target.moveIds) {
-        if (moveId !== "m76") {
+        if (moveId !== "m76" && moveId !== moveIdEnum.SOLAR_BLADE) {
           target.disableMove(moveId, target);
         }
       }
@@ -2017,7 +2022,7 @@ const effectConfig = Object.freeze({
     effectRemove(_battle, target) {
       // enable non-solar beam moves
       for (const moveId in target.moveIds) {
-        if (moveId !== "m76") {
+        if (moveId !== "m76" && moveId !== moveIdEnum.SOLAR_BLADE) {
           target.enableMove(moveId, target);
         }
       }

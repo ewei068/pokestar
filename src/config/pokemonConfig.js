@@ -3104,6 +3104,14 @@ const pokemonConfigRaw = {
         level: 25,
         id: "197",
       },
+      {
+        level: 25,
+        id: pokemonIdEnum.LEAFEON,
+      },
+      {
+        level: 25,
+        id: pokemonIdEnum.GLACEON,
+      },
     ],
     abilities: {
       50: 0.45,
@@ -9469,6 +9477,56 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.LEAFEON]: {
+    name: "Leafeon",
+    emoji: "<:470:1351027331963289691>",
+    description:
+      "When you see Leafeon asleep in a patch of sunshine, you'll know it is using photosynthesis to produce clean air.",
+    type: [types.GRASS],
+    baseStats: [65, 110, 130, 60, 65, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/470.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/470.png",
+    abilities: {
+      [abilityIdEnum.LEAF_GUARD]: 0.8,
+      [abilityIdEnum.CHLOROPHYLL]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.QUICK_ATTACK,
+      moveIdEnum.BATON_PASS,
+      moveIdEnum.SYNTHESIS,
+      moveIdEnum.SOLAR_BLADE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.GLACEON]: {
+    name: "Glaceon",
+    emoji: "<:471:1351027333095493632>",
+    description:
+      "It lowers its body heat to freeze its fur. The hairs then become like needles it can fire.",
+    type: [types.ICE],
+    baseStats: [65, 60, 110, 130, 95, 65],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/471.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/471.png",
+    abilities: {
+      [abilityIdEnum.SNOW_CLOAK]: 0.8,
+      [abilityIdEnum.ICE_BODY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.QUICK_ATTACK,
+      moveIdEnum.PROTECT,
+      moveIdEnum.SHADOW_BALL,
+      moveIdEnum.BLIZZARD,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
   },
   [pokemonIdEnum.DARKRAI]: {
     name: "Darkrai",
