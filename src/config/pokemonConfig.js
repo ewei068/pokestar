@@ -2192,6 +2192,12 @@ const pokemonConfigRaw = {
       5: 0.45,
       148: 0.1,
     },
+    evolution: [
+      {
+        level: 50,
+        id: pokemonIdEnum.MAGNEZONE,
+      },
+    ],
     moveIds: ["m84", "m85", "m430", "m521"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -9243,6 +9249,32 @@ const pokemonConfigRaw = {
       moveIdEnum.FAKE_OUT,
       moveIdEnum.KNOCK_OFF,
       moveIdEnum.TRIPLE_AXEL,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.MAGNEZONE]: {
+    name: "Magnezone",
+    emoji: "<:462:1351027257807867956>",
+    description:
+      "It evolved from exposure to a special magnetic field. Three units generate magnetism.",
+    type: [types.ELECTRIC, types.STEEL],
+    baseStats: [70, 70, 115, 130, 90, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/462.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/462.png",
+    abilities: {
+      [abilityIdEnum.MAGNET_PULL]: 0.45,
+      [abilityIdEnum.STURDY]: 0.45,
+      [abilityIdEnum.ANALYTIC]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.THUNDER_SHOCK,
+      moveIdEnum.THUNDER_WAVE,
+      moveIdEnum.FLASH_CANNON,
+      moveIdEnum.ZAP_CANNON,
     ],
     battleEligible: true,
     rarity: rarities.EPIC,

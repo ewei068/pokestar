@@ -20,6 +20,12 @@ const getIsTargetSameTeamCallback = (pokemon) => (eventArgs) =>
 /**
  * @param {BattlePokemon} pokemon
  */
+const getIsTargetOpponentCallback = (pokemon) => (eventArgs) =>
+  eventArgs?.target?.teamName !== pokemon.teamName;
+
+/**
+ * @param {BattlePokemon} pokemon
+ */
 const getIsSourcePokemonCallback = (pokemon) => (eventArgs) =>
   eventArgs?.source === pokemon;
 
@@ -56,6 +62,7 @@ module.exports = {
   getIsActivePokemonCallback,
   getIsTargetPokemonCallback,
   getIsTargetSameTeamCallback,
+  getIsTargetOpponentCallback,
   getIsSourcePokemonCallback,
   getIsSourceSameTeamCallback,
   getIsInstanceOfType,

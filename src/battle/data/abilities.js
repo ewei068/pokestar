@@ -21,6 +21,7 @@ const {
   getIsInstanceOfType,
   composeConditionCallbacks,
   getIsTargetSameTeamCallback,
+  getIsTargetOpponentCallback,
 } = require("../engine/eventConditions");
 const { getMove } = require("./moveRegistry");
 
@@ -800,6 +801,34 @@ const abilitiesToRegister = Object.freeze({
             );
             battle.createWeather(weatherConditions.HAIL, target);
           },
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.MAGNET_PULL]: new Ability({
+    id: abilityIdEnum.MAGNET_PULL,
+    name: "Magnet Pull",
+    description: "Enemy Steel-type Pokémon gain 80% less combat readiness.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_CR_GAINED,
+          callback: ({ amount, target: crTarget }) => {
+            if (crTarget.hasType(pokemonTypes.STEEL) && amount > 0) {
+              battle.addToLog(
+                `${crTarget.name} is being pulled by ${target.name}'s Magnet Pull!`
+              );
+              return {
+                amount: Math.floor(amount * 0.2),
+              };
+            }
+          },
+          conditionCallback: getIsTargetOpponentCallback(target),
         }),
       };
     },
