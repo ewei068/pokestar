@@ -836,6 +836,42 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [abilityIdEnum.MOTOR_DRIVE]: new Ability({
+    id: abilityIdEnum.MOTOR_DRIVE,
+    name: "Motor Drive",
+    description:
+      "When hit by an Electric-type move, the user negates the damage and gains increased Speed for 2 turns.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: ({ damageInfo }) => {
+            const moveId = damageInfo?.moveId;
+            const moveData = getMove(moveId);
+            if (moveData?.type === pokemonTypes.ELECTRIC) {
+              battle.addToLog(
+                `${target.name}'s Motor Drive activated! It's charged with electricity!`
+              );
+              target.applyEffect("speUp", 2, target, {});
+              return {
+                damage: 0,
+                maxDamage: 0,
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsTargetPokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
 });
 
 module.exports = {

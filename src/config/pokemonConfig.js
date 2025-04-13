@@ -2928,6 +2928,12 @@ const pokemonConfigRaw = {
       9: 0.8,
       72: 0.2,
     },
+    evolution: [
+      {
+        level: 50,
+        id: pokemonIdEnum.ELECTIVIRE,
+      },
+    ],
     moveIds: ["m84", moveIdEnum.ICE_PUNCH, "m85", "m238"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -2948,6 +2954,12 @@ const pokemonConfigRaw = {
       [abilityIdEnum.FLAME_BODY]: 0.8,
       72: 0.2,
     },
+    evolution: [
+      {
+        level: 50,
+        id: pokemonIdEnum.MAGMORTAR,
+      },
+    ],
     moveIds: ["m52", "m53", "m238", "m269"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -9339,6 +9351,56 @@ const pokemonConfigRaw = {
       moveIdEnum.SWORDS_DANCE,
       moveIdEnum.DRILL_RUN,
       moveIdEnum.ROCK_WRECKER,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.ELECTIVIRE]: {
+    name: "Electivire",
+    emoji: "<:466:1351027262602084486>",
+    description:
+      "It pushes the tips of its two tails against its foe, then lets loose with over 20,000 volts of power.",
+    type: [types.ELECTRIC],
+    baseStats: [75, 123, 67, 95, 85, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/466.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/466.png",
+    abilities: {
+      [abilityIdEnum.MOTOR_DRIVE]: 0.8,
+      [abilityIdEnum.VITAL_SPIRIT]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.THUNDER_SHOCK,
+      moveIdEnum.ICE_PUNCH,
+      moveIdEnum.CROSS_CHOP,
+      moveIdEnum.WILD_CHARGE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.MAGMORTAR]: {
+    name: "Magmortar",
+    emoji: "<:467:1351027328238489660>",
+    description:
+      "It blasts fireballs of over 3,600 degrees Fahrenheit from the ends of its arms. It lives in volcanic craters.",
+    type: [types.FIRE],
+    baseStats: [75, 95, 67, 125, 95, 83],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/467.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/467.png",
+    abilities: {
+      [abilityIdEnum.FLAME_BODY]: 0.8,
+      [abilityIdEnum.VITAL_SPIRIT]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.EMBER,
+      moveIdEnum.CROSS_CHOP,
+      moveIdEnum.TAUNT,
+      moveIdEnum.FIRE_BLAST,
     ],
     battleEligible: true,
     rarity: rarities.EPIC,
