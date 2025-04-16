@@ -2216,6 +2216,24 @@ class BattlePokemon {
   }
 
   /**
+   * @returns {StatIdNoHP} statId
+   */
+  getHighestNonHpStatId() {
+    let highestStat = 0;
+    let highestStatId = "atk";
+    for (const statId of ["atk", "def", "spa", "spd", "spe"]) {
+      // @ts-ignore
+      const stat = this.getStat(statId);
+      if (stat > highestStat) {
+        highestStat = stat;
+        highestStatId = statId;
+      }
+    }
+    // @ts-ignore
+    return highestStatId;
+  }
+
+  /**
    * @returns {StatArray}
    */
   getAllBaseStats() {

@@ -19,6 +19,7 @@ const {
   effectIdEnum,
 } = require("../../enums/battleEnums");
 const { drawIterable } = require("../../utils/gachaUtils");
+const { pokemonIdEnum } = require("../../enums/pokemonEnums");
 
 /** @typedef {"charge" | "punch"} MoveTag */
 
@@ -90,6 +91,7 @@ class Move {
     offTargetDamageMultiplier,
     backTargetDamageMultiplier,
     calculateDamageFunction = undefined,
+    attackOverride = null,
   }) {
     const damageFunc =
       calculateDamageFunction || ((args) => source.calculateMoveDamage(args));
@@ -101,6 +103,7 @@ class Move {
       missedTargets,
       offTargetDamageMultiplier,
       backTargetDamageMultiplier,
+      attackOverride,
     });
     return source.dealDamage(damageToDeal, target, {
       type: "move",
@@ -124,6 +127,7 @@ class Move {
    * @param {number=} param0.offTargetDamageMultiplier
    * @param {number=} param0.backTargetDamageMultiplier
    * @param {CalculateMoveDamageImpl=} param0.calculateDamageFunction
+   * @param {number=} param0.attackOverride
    * @returns {GenericDealAllDamageResult}
    */
   genericDealAllDamage({
@@ -134,6 +138,7 @@ class Move {
     offTargetDamageMultiplier,
     backTargetDamageMultiplier,
     calculateDamageFunction = undefined,
+    attackOverride = null,
   }) {
     const /** @type {Record<string, number>} */ damageInstances = {};
     for (const target of allTargets) {
@@ -146,6 +151,7 @@ class Move {
         offTargetDamageMultiplier,
         backTargetDamageMultiplier,
         calculateDamageFunction,
+        attackOverride,
       });
       damageInstances[target.id] = damageToTarget;
     }
@@ -1702,6 +1708,78 @@ const movesToRegister = Object.freeze({
               ...damageArgs,
               powerOverride: Math.floor(this.power * mult),
             });
+          },
+        });
+      }
+    },
+  }),
+  [moveIdEnum.MYSTICAL_POWER]: new Move({
+    id: moveIdEnum.MYSTICAL_POWER,
+    name: "Mystical Power",
+    type: pokemonTypes.PSYCHIC,
+    power: 70,
+    accuracy: 90,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.X,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user unleashes mystical energy, damaging enemies based on the highest of the user's non-HP stats. Provides allies with unique buffs if used by Uxie, Mesprit, or Azelf.",
+    execute(args) {
+      const { source } = args;
+      // apply special effect to all allies
+      const allies = source.getPartyPokemon().filter((p) => p && !p.isFainted);
+      for (const ally of allies) {
+        if (source.speciesId === pokemonIdEnum.UXIE) {
+          ally.applyEffect("defUp", 3, ally, {});
+          ally.applyEffect("spdUp", 3, ally, {});
+        } else if (source.speciesId === pokemonIdEnum.MESPRIT) {
+          ally.applyEffect("regeneration", 3, ally, {
+            healAmount: Math.floor(ally.maxHp * 0.2),
+          });
+        } else if (source.speciesId === pokemonIdEnum.AZELF) {
+          ally.applyEffect("atkUp", 3, ally, {});
+          ally.applyEffect("spaUp", 3, ally, {});
+        }
+      }
+      this.genericDealAllDamage({
+        ...args,
+        attackOverride: source.getStat(source.getHighestNonHpStatId()),
+      });
+    },
+  }),
+  [moveIdEnum.AMNESIA]: new Move({
+    id: moveIdEnum.AMNESIA,
+    name: "Amnesia",
+    type: pokemonTypes.PSYCHIC,
+    power: null,
+    accuracy: null,
+    cooldown: 4,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user empties their mind, sharply raising their Special Defense and providing a shield equal to 15% of their Special Defense.",
+    execute(args) {
+      const { allTargets } = args;
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "greaterSpdUp",
+        duration: 3,
+      });
+
+      for (const target of allTargets) {
+        this.genericApplySingleEffect({
+          ...args,
+          target,
+          effectId: "shield",
+          duration: 3,
+          initialArgs: {
+            shield: Math.floor(target.getStat("spd") * 0.15),
           },
         });
       }

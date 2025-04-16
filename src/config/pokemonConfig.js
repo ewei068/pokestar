@@ -9560,6 +9560,78 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
   },
+  [pokemonIdEnum.UXIE]: {
+    name: "Uxie",
+    emoji: "<:480:1351027418453901353>",
+    description:
+      "Known as 'The Being of Knowledge.' It is said that it can wipe out the memory of those who see its eyes.",
+    type: [types.PSYCHIC],
+    baseStats: [75, 75, 130, 75, 130, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/480.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/480.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.AMNESIA,
+      moveIdEnum.STEALTH_ROCK,
+      moveIdEnum.MYSTICAL_POWER,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.MESPRIT]: {
+    name: "Mesprit",
+    emoji: "<:481:1351027419686899774>",
+    description:
+      "Known as 'The Being of Emotion.' It taught humans the nobility of sorrow, pain, and joy.",
+    type: [types.PSYCHIC],
+    baseStats: [80, 105, 105, 105, 105, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/481.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/481.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.HEALING_WISH,
+      moveIdEnum.U_TURN,
+      moveIdEnum.MYSTICAL_POWER,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.AZELF]: {
+    name: "Azelf",
+    emoji: "<:482:1351027420806910054>",
+    description:
+      "Known as 'The Being of Willpower.' It sleeps at the bottom of a lake to keep the world in balance.",
+    type: [types.PSYCHIC],
+    baseStats: [75, 125, 70, 125, 70, 115],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/482.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/482.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.FLAMETHROWER,
+      moveIdEnum.NASTY_PLOT,
+      moveIdEnum.MYSTICAL_POWER,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
   [pokemonIdEnum.DARKRAI]: {
     name: "Darkrai",
     emoji: "<:491:1351027502801354822>",
