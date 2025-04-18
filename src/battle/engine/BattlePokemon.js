@@ -1960,6 +1960,7 @@ class BattlePokemon {
         this.battle.addToLog(`${this.name} was cured of its paralysis!`);
         break;
       case statusConditions.POISON:
+      case statusConditions.BADLY_POISON:
         this.battle.addToLog(`${this.name} was cured of its poison!`);
         break;
       case statusConditions.SLEEP:

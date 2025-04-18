@@ -9657,6 +9657,30 @@ const pokemonConfigRaw = {
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
   },
+  [pokemonIdEnum.CRESSELIA]: {
+    name: "Cresselia",
+    emoji: "<:488:1351027498275835954>",
+    description:
+      "Those who sleep holding Cresselia's feather are assured of joyful dreams. It is said to represent the crescent moon.",
+    type: [types.PSYCHIC],
+    baseStats: [120, 70, 120, 75, 130, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/488.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/488.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.HELPING_HAND,
+      moveIdEnum.LUNAR_DANCE,
+      moveIdEnum.LUNAR_BLESSING,
+      moveIdEnum.FUTURE_SIGHT,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
   [pokemonIdEnum.DARKRAI]: {
     name: "Darkrai",
     emoji: "<:491:1351027502801354822>",

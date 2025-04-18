@@ -20,6 +20,7 @@ const {
 } = require("../../enums/battleEnums");
 const { drawIterable } = require("../../utils/gachaUtils");
 const { pokemonIdEnum } = require("../../enums/pokemonEnums");
+const { logger } = require("../../log");
 
 /** @typedef {"charge" | "punch"} MoveTag */
 
@@ -400,6 +401,65 @@ class Move {
         triggerEvents,
       });
     }
+  }
+
+  /**
+   * Heals a single target for a specific amount or percentage of max HP
+   * @param {object} param0
+   * @param {BattlePokemon} param0.source
+   * @param {BattlePokemon} param0.target
+   * @param {number=} param0.healAmount - Direct amount to heal
+   * @param {number=} param0.healPercent - Percentage of max HP to heal (0-100)
+   * @returns {number} - Amount healed
+   */
+  genericHealSingleTarget({
+    source,
+    target,
+    healAmount = undefined,
+    healPercent = undefined,
+  }) {
+    if (healAmount === undefined && healPercent === undefined) {
+      logger.warn(
+        `genericHealSingleTarget called with no healAmount or healPercent for move ${this.id}`
+      );
+      return 0;
+    }
+
+    const amountToHeal =
+      healAmount !== undefined
+        ? healAmount
+        : Math.max(1, Math.floor((target.maxHp * healPercent) / 100));
+    return source.giveHeal(amountToHeal, target, {
+      type: "move",
+      moveId: this.id,
+    });
+  }
+
+  /**
+   * Heals all targets for a specific amount or percentage of max HP
+   * @param {object} param0
+   * @param {BattlePokemon} param0.source
+   * @param {Array<BattlePokemon>} param0.allTargets
+   * @param {number=} param0.healAmount - Direct amount to heal
+   * @param {number=} param0.healPercent - Percentage of max HP to heal (0-100)
+   * @returns {number} - Total amount healed
+   */
+  genericHealAllTargets({
+    source,
+    allTargets,
+    healAmount = undefined,
+    healPercent = undefined,
+  }) {
+    let totalHealed = 0;
+    for (const target of allTargets) {
+      totalHealed += this.genericHealSingleTarget({
+        source,
+        target,
+        healAmount,
+        healPercent,
+      });
+    }
+    return totalHealed;
   }
 }
 
@@ -1167,15 +1227,11 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user commands its healing bees to mend wounds. Heals the user or a targeted ally for 50% of their maximum HP.",
-    execute({ source, allTargets }) {
-      // TODO: functionify?
-      for (const target of allTargets) {
-        const healAmount = Math.floor(target.maxHp * 0.5);
-        source.giveHeal(healAmount, target, {
-          type: "move",
-          moveId: this.id,
-        });
-      }
+    execute(args) {
+      this.genericHealAllTargets({
+        ...args,
+        healPercent: 50,
+      });
     },
   }),
   [moveIdEnum.DEFEND_ORDER]: new Move({
@@ -1821,6 +1877,87 @@ const movesToRegister = Object.freeze({
           },
         });
       }
+    },
+  }),
+  [moveIdEnum.LUNAR_BLESSING]: new Move({
+    id: moveIdEnum.LUNAR_BLESSING,
+    name: "Lunar Blessing",
+    type: pokemonTypes.FAIRY,
+    power: null,
+    accuracy: null,
+    cooldown: 4,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.ALL,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user bathes allies in mystical moonlight, healing them for 25% of their maximum HP, removing all status conditions, and dispelling all debuffs.",
+    execute(args) {
+      const { allTargets } = args;
+      this.genericHealAllTargets({
+        ...args,
+        healPercent: 25,
+      });
+
+      // Remove status conditions and debuffs from all allies
+      for (const target of allTargets) {
+        target.removeStatus();
+        for (const effectId of /** @type {EffectIdEnum[]} */ (
+          Object.keys(target.effectIds)
+        )) {
+          const effect = getEffect(effectId);
+          if (effect.type === effectTypes.DEBUFF) {
+            target.dispellEffect(effectId);
+          }
+        }
+      }
+    },
+  }),
+  [moveIdEnum.LUNAR_DANCE]: new Move({
+    id: moveIdEnum.LUNAR_DANCE,
+    name: "Lunar Dance",
+    type: pokemonTypes.PSYCHIC,
+    power: null,
+    accuracy: null,
+    cooldown: 4,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user dances in the moonlight, sacrificing 50% of its maximum HP to heal allies (excluding itself) by the same amount and increase their Defense and Special Defense for 2 turns.",
+    execute(args) {
+      const { source } = args;
+
+      // Calculate the amount of HP to sacrifice (50% of max HP)
+      const sacrificeAmount = Math.floor(source.maxHp * 0.5);
+
+      // Sacrifice HP from the user
+      source.dealDamage(sacrificeAmount, source, {
+        type: "self",
+      });
+
+      // Create a new array of targets excluding the source
+      const healTargets = args.allTargets.filter((target) => target !== source);
+      if (healTargets.length > 0) {
+        this.genericHealAllTargets({
+          ...args,
+          allTargets: healTargets,
+          healAmount: sacrificeAmount,
+        });
+      }
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "defUp",
+        duration: 2,
+      });
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "spdUp",
+        duration: 2,
+      });
     },
   }),
 });
