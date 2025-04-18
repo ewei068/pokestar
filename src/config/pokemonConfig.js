@@ -2192,6 +2192,12 @@ const pokemonConfigRaw = {
       5: 0.45,
       148: 0.1,
     },
+    evolution: [
+      {
+        level: 50,
+        id: pokemonIdEnum.MAGNEZONE,
+      },
+    ],
     moveIds: ["m84", "m85", "m430", "m521"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -2610,6 +2616,12 @@ const pokemonConfigRaw = {
       12: 0.45,
       13: 0.1,
     },
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.LICKILICKY,
+      },
+    ],
     moveIds: ["m122", "m23", "m34", "m428"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -2725,6 +2737,12 @@ const pokemonConfigRaw = {
       69: 0.45,
       120: 0.1,
     },
+    evolution: [
+      {
+        level: 55,
+        id: pokemonIdEnum.RHYPERIOR,
+      },
+    ],
     moveIds: ["m479", "m14", "m444", "m529"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -2910,6 +2928,12 @@ const pokemonConfigRaw = {
       9: 0.8,
       72: 0.2,
     },
+    evolution: [
+      {
+        level: 50,
+        id: pokemonIdEnum.ELECTIVIRE,
+      },
+    ],
     moveIds: ["m84", moveIdEnum.ICE_PUNCH, "m85", "m238"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -2930,6 +2954,12 @@ const pokemonConfigRaw = {
       [abilityIdEnum.FLAME_BODY]: 0.8,
       72: 0.2,
     },
+    evolution: [
+      {
+        level: 50,
+        id: pokemonIdEnum.MAGMORTAR,
+      },
+    ],
     moveIds: ["m52", "m53", "m238", "m269"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -3073,6 +3103,14 @@ const pokemonConfigRaw = {
       {
         level: 25,
         id: "197",
+      },
+      {
+        level: 25,
+        id: pokemonIdEnum.LEAFEON,
+      },
+      {
+        level: 25,
+        id: pokemonIdEnum.GLACEON,
       },
     ],
     abilities: {
@@ -4186,6 +4224,12 @@ const pokemonConfigRaw = {
       [abilityIdEnum.SERENE_GRACE]: 0.45,
       105: 0.1,
     },
+    evolution: [
+      {
+        level: 45,
+        id: pokemonIdEnum.TOGEKISS,
+      },
+    ],
     moveIds: ["m270", "m86", "m266", "m355"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -4518,6 +4562,12 @@ const pokemonConfigRaw = {
       14: 0.45,
       119: 0.1,
     },
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.YANMEGA,
+      },
+    ],
     moveIds: ["m17", "m182", "m403", "m450"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -4741,6 +4791,12 @@ const pokemonConfigRaw = {
       8: 0.45,
       17: 0.1,
     },
+    evolution: [
+      {
+        level: 45,
+        id: pokemonIdEnum.GLISCOR,
+      },
+    ],
     moveIds: ["m40", "m182", "m191", "m282"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -4846,6 +4902,12 @@ const pokemonConfigRaw = {
       51: 0.45,
       124: 0.1,
     },
+    evolution: [
+      {
+        level: 45,
+        id: pokemonIdEnum.WEAVILE,
+      },
+    ],
     moveIds: ["m420", "m252", "m282", moveIdEnum.ICICLE_CRASH],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -9159,6 +9221,464 @@ const pokemonConfigRaw = {
     ],
     battleEligible: true,
     rarity: rarities.EPIC,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.SNOVER]: {
+    name: "Snover",
+    emoji: "<:459:1351027254427389952>",
+    description:
+      "During cold seasons, it migrates to the mountain's lower reaches. It returns to the snow-covered summit in the spring.",
+    type: [types.GRASS, types.ICE],
+    baseStats: [60, 62, 50, 62, 60, 40],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/459.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/459.png",
+    evolution: [
+      {
+        level: 40,
+        id: pokemonIdEnum.ABOMASNOW,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SNOW_WARNING]: 0.8,
+      [abilityIdEnum.SOUNDPROOF]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ICE_SHARD,
+      moveIdEnum.ICY_WIND,
+      moveIdEnum.GIGA_DRAIN,
+      moveIdEnum.SWAGGER,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.ABOMASNOW]: {
+    name: "Abomasnow",
+    emoji: "<:460:1351027255798796308>",
+    description:
+      "It blankets wide areas in snow by whipping up blizzards. It is also known as 'The Ice Monster.'",
+    type: [types.GRASS, types.ICE],
+    baseStats: [90, 92, 75, 92, 85, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/460.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/460.png",
+    abilities: {
+      [abilityIdEnum.SNOW_WARNING]: 0.8,
+      [abilityIdEnum.SOUNDPROOF]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ICE_SHARD,
+      moveIdEnum.GIGA_DRAIN,
+      moveIdEnum.SWAGGER,
+      moveIdEnum.BLIZZARD,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.WEAVILE]: {
+    name: "Weavile",
+    emoji: "<:461:1351027256788779078>",
+    description:
+      "They live in cold regions, forming groups of four or five that hunt prey with impressive coordination.",
+    type: [types.DARK, types.ICE],
+    baseStats: [70, 120, 65, 45, 85, 125],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/461.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/461.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.PICKPOCKET]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ICE_SHARD,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.KNOCK_OFF,
+      moveIdEnum.TRIPLE_AXEL,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.MAGNEZONE]: {
+    name: "Magnezone",
+    emoji: "<:462:1351027257807867956>",
+    description:
+      "It evolved from exposure to a special magnetic field. Three units generate magnetism.",
+    type: [types.ELECTRIC, types.STEEL],
+    baseStats: [70, 70, 115, 130, 90, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/462.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/462.png",
+    abilities: {
+      [abilityIdEnum.MAGNET_PULL]: 0.45,
+      [abilityIdEnum.STURDY]: 0.45,
+      [abilityIdEnum.ANALYTIC]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.THUNDER_SHOCK,
+      moveIdEnum.THUNDER_WAVE,
+      moveIdEnum.FLASH_CANNON,
+      moveIdEnum.ZAP_CANNON,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.LICKILICKY]: {
+    name: "Lickilicky",
+    emoji: "<:463:1351027258953044010>",
+    description:
+      "It wraps things with its extensible tongue. Getting too close to it will leave you soaked with drool.",
+    type: [types.NORMAL],
+    baseStats: [110, 85, 95, 80, 95, 50],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/463.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/463.png",
+    abilities: {
+      [abilityIdEnum.OWN_TEMPO]: 0.45,
+      [abilityIdEnum.OBLIVIOUS]: 0.45,
+      [abilityIdEnum.CLOUD_NINE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.LICK,
+      moveIdEnum.BODY_SLAM,
+      moveIdEnum.SCREECH,
+      moveIdEnum.EXPLOSION,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.RHYPERIOR]: {
+    name: "Rhyperior",
+    emoji: "<:464:1351027260102017025>",
+    description:
+      "It puts rocks in holes in its palms and uses its muscles to shoot them. Geodude are shot at rare times.",
+    type: [types.GROUND, types.ROCK],
+    baseStats: [115, 140, 130, 55, 55, 40],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/464.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/464.png",
+    abilities: {
+      [abilityIdEnum.LIGHTNING_ROD]: 0.45,
+      [abilityIdEnum.SOLID_ROCK]: 0.45,
+      [abilityIdEnum.RECKLESS]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.SMACK_DOWN,
+      moveIdEnum.SWORDS_DANCE,
+      moveIdEnum.DRILL_RUN,
+      moveIdEnum.ROCK_WRECKER,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.ELECTIVIRE]: {
+    name: "Electivire",
+    emoji: "<:466:1351027262602084486>",
+    description:
+      "It pushes the tips of its two tails against its foe, then lets loose with over 20,000 volts of power.",
+    type: [types.ELECTRIC],
+    baseStats: [75, 123, 67, 95, 85, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/466.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/466.png",
+    abilities: {
+      [abilityIdEnum.MOTOR_DRIVE]: 0.8,
+      [abilityIdEnum.VITAL_SPIRIT]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.THUNDER_SHOCK,
+      moveIdEnum.ICE_PUNCH,
+      moveIdEnum.CROSS_CHOP,
+      moveIdEnum.WILD_CHARGE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.MAGMORTAR]: {
+    name: "Magmortar",
+    emoji: "<:467:1351027328238489660>",
+    description:
+      "It blasts fireballs of over 3,600 degrees Fahrenheit from the ends of its arms. It lives in volcanic craters.",
+    type: [types.FIRE],
+    baseStats: [75, 95, 67, 125, 95, 83],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/467.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/467.png",
+    abilities: {
+      [abilityIdEnum.FLAME_BODY]: 0.8,
+      [abilityIdEnum.VITAL_SPIRIT]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.EMBER,
+      moveIdEnum.CROSS_CHOP,
+      moveIdEnum.TAUNT,
+      moveIdEnum.FIRE_BLAST,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.TOGEKISS]: {
+    name: "Togekiss",
+    emoji: "<:468:1351027329920536576>",
+    description:
+      "It shares many blessings with people who respect one another's rights and avoid needless strife.",
+    type: [types.FAIRY, types.FLYING],
+    baseStats: [85, 50, 95, 120, 115, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/468.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/468.png",
+    abilities: {
+      [abilityIdEnum.HUSTLE]: 0.45,
+      [abilityIdEnum.SERENE_GRACE]: 0.45,
+      [abilityIdEnum.SUPER_LUCK]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.HELPING_HAND,
+      moveIdEnum.THUNDER_WAVE,
+      moveIdEnum.AIR_SLASH,
+      moveIdEnum.HEAT_WAVE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.YANMEGA]: {
+    name: "Yanmega",
+    emoji: "<:469:1351027330964783146>",
+    description:
+      "By churning its wings, it creates shock waves that inflict critical internal injuries to foes.",
+    type: [types.BUG, types.FLYING],
+    baseStats: [86, 76, 86, 116, 56, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/469.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/469.png",
+    abilities: {
+      [abilityIdEnum.SPEED_BOOST]: 0.45,
+      [abilityIdEnum.TINTED_LENS]: 0.45,
+      [abilityIdEnum.FRISK]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.PROTECT,
+      moveIdEnum.AIR_SLASH,
+      moveIdEnum.BUG_BUZZ,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.LEAFEON]: {
+    name: "Leafeon",
+    emoji: "<:470:1351027331963289691>",
+    description:
+      "When you see Leafeon asleep in a patch of sunshine, you'll know it is using photosynthesis to produce clean air.",
+    type: [types.GRASS],
+    baseStats: [65, 110, 130, 60, 65, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/470.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/470.png",
+    abilities: {
+      [abilityIdEnum.LEAF_GUARD]: 0.8,
+      [abilityIdEnum.CHLOROPHYLL]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.QUICK_ATTACK,
+      moveIdEnum.BATON_PASS,
+      moveIdEnum.SYNTHESIS,
+      moveIdEnum.SOLAR_BLADE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.GLACEON]: {
+    name: "Glaceon",
+    emoji: "<:471:1351027333095493632>",
+    description:
+      "It lowers its body heat to freeze its fur. The hairs then become like needles it can fire.",
+    type: [types.ICE],
+    baseStats: [65, 60, 110, 130, 95, 65],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/471.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/471.png",
+    abilities: {
+      [abilityIdEnum.SNOW_CLOAK]: 0.8,
+      [abilityIdEnum.ICE_BODY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.QUICK_ATTACK,
+      moveIdEnum.PROTECT,
+      moveIdEnum.SHADOW_BALL,
+      moveIdEnum.BLIZZARD,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.GLISCOR]: {
+    name: "Gliscor",
+    emoji: "<:472:1351027334123094056>",
+    description:
+      "It dances through the air, freely manipulating the position of its body. It can catch the wind to fly anywhere.",
+    type: [types.GROUND, types.FLYING],
+    baseStats: [75, 95, 125, 45, 75, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/472.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/472.png",
+    abilities: {
+      [abilityIdEnum.HYPER_CUTTER]: 0.45,
+      [abilityIdEnum.SAND_VEIL]: 0.45,
+      [abilityIdEnum.POISON_HEAL]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POISON_STING,
+      moveIdEnum.PROTECT,
+      moveIdEnum.SPIKES,
+      moveIdEnum.TAILWIND,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.UXIE]: {
+    name: "Uxie",
+    emoji: "<:480:1351027418453901353>",
+    description:
+      "Known as 'The Being of Knowledge.' It is said that it can wipe out the memory of those who see its eyes.",
+    type: [types.PSYCHIC],
+    baseStats: [75, 75, 130, 75, 130, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/480.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/480.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.AMNESIA,
+      moveIdEnum.STEALTH_ROCK,
+      moveIdEnum.MYSTICAL_POWER,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.MESPRIT]: {
+    name: "Mesprit",
+    emoji: "<:481:1351027419686899774>",
+    description:
+      "Known as 'The Being of Emotion.' It taught humans the nobility of sorrow, pain, and joy.",
+    type: [types.PSYCHIC],
+    baseStats: [80, 105, 105, 105, 105, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/481.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/481.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.HEALING_WISH,
+      moveIdEnum.U_TURN,
+      moveIdEnum.MYSTICAL_POWER,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.AZELF]: {
+    name: "Azelf",
+    emoji: "<:482:1351027420806910054>",
+    description:
+      "Known as 'The Being of Willpower.' It sleeps at the bottom of a lake to keep the world in balance.",
+    type: [types.PSYCHIC],
+    baseStats: [75, 125, 70, 125, 70, 115],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/482.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/482.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.FLAMETHROWER,
+      moveIdEnum.NASTY_PLOT,
+      moveIdEnum.MYSTICAL_POWER,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.HEATRAN]: {
+    name: "Heatran",
+    emoji: "<:485:1351027494563614828>",
+    description:
+      "It dwells in volcanic caves. It digs in with its cross-shaped feet to crawl on ceilings and walls.",
+    type: [types.FIRE, types.STEEL],
+    baseStats: [91, 90, 106, 130, 106, 77],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/485.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/485.png",
+    abilities: {
+      [abilityIdEnum.FLASH_FIRE]: 0.8,
+      [abilityIdEnum.FLAME_BODY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.EARTH_POWER,
+      moveIdEnum.FLASH_CANNON,
+      moveIdEnum.MAGMA_STORM,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.CRESSELIA]: {
+    name: "Cresselia",
+    emoji: "<:488:1351027498275835954>",
+    description:
+      "Those who sleep holding Cresselia's feather are assured of joyful dreams. It is said to represent the crescent moon.",
+    type: [types.PSYCHIC],
+    baseStats: [120, 70, 120, 75, 130, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/488.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/488.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.HELPING_HAND,
+      moveIdEnum.LUNAR_DANCE,
+      moveIdEnum.LUNAR_BLESSING,
+      moveIdEnum.FUTURE_SIGHT,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
   },
   [pokemonIdEnum.DARKRAI]: {

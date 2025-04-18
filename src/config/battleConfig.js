@@ -6,7 +6,11 @@
 const { types: pokemonTypes } = require("./pokemonConfig");
 const { getMove, getMoveIds } = require("../battle/data/moveRegistry");
 const { getEffect } = require("../battle/data/effectRegistry");
-const { battleEventEnum, effectIdEnum } = require("../enums/battleEnums");
+const {
+  battleEventEnum,
+  effectIdEnum,
+  moveIdEnum,
+} = require("../enums/battleEnums");
 
 /** @typedef {Enum<damageTypes>} DamageTypeEnum */
 const damageTypes = Object.freeze({
@@ -2002,14 +2006,15 @@ const effectConfig = Object.freeze({
   },
   absorbLight: {
     name: "Absorbing Light",
-    description: "The target absorbs light, preparing a powerful Solar Beam.",
+    description:
+      "The target absorbs light, preparing a powerful Solar Beam or Blade.",
     type: effectTypes.BUFF,
     dispellable: false,
     effectAdd(battle, _source, target) {
       battle.addToLog(`${target.name} is absorbing light!`);
       // disable non-solar beam moves
       for (const moveId in target.moveIds) {
-        if (moveId !== "m76") {
+        if (moveId !== "m76" && moveId !== moveIdEnum.SOLAR_BLADE) {
           target.disableMove(moveId, target);
         }
       }
@@ -2017,7 +2022,7 @@ const effectConfig = Object.freeze({
     effectRemove(_battle, target) {
       // enable non-solar beam moves
       for (const moveId in target.moveIds) {
-        if (moveId !== "m76") {
+        if (moveId !== "m76" && moveId !== moveIdEnum.SOLAR_BLADE) {
           target.enableMove(moveId, target);
         }
       }
@@ -4396,20 +4401,6 @@ const moveConfig = Object.freeze({
     description:
       "The user strikes the target with a quick jolt of electricity, causing the target to flinch for 1 turn. Also boosts the user's combat readiness by 60%.",
   },
-  m257: {
-    name: "Heat Wave",
-    type: pokemonTypes.FIRE,
-    power: 80,
-    accuracy: 100,
-    cooldown: 4,
-    targetType: targetTypes.ENEMY,
-    targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.ALL,
-    tier: moveTiers.ULTIMATE,
-    damageType: damageTypes.SPECIAL,
-    description:
-      "The user attacks by exhaling hot breath on the opposing team. This only deals damage to the target row, but has a 30% of burning all targets",
-  },
   m258: {
     name: "Hail",
     type: pokemonTypes.ICE,
@@ -4562,7 +4553,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.POWER,
     damageType: damageTypes.PHYSICAL,
     description:
-      "The user slaps down the target, removing all buffs. For each buff removed, deals 25% more damage, up to 75% more damage.",
+      "The user slaps down the target, removing all buffs and its item. For each buff or item removed, deals 25% more damage, up to 100% more damage.",
   },
   m283: {
     name: "Endeavor",
@@ -5263,20 +5254,6 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user slams a barrage of hard-shelled seeds down on the target from above. Adjacent targets take 50% damage.",
-  },
-  m403: {
-    name: "Air Slash",
-    type: pokemonTypes.FLYING,
-    power: 65,
-    accuracy: 90,
-    cooldown: 3,
-    targetType: targetTypes.ENEMY,
-    targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.COLUMN,
-    tier: moveTiers.POWER,
-    damageType: damageTypes.SPECIAL,
-    description:
-      "The user attacks with a blade of air that slices even the sky. This has a 25% chance to flinch the target.",
   },
   m404: {
     name: "X-Scissor",
@@ -9022,35 +8999,6 @@ const moveExecutes = {
     // boost source cr by 60
     source.boostCombatReadiness(source, 60);
   },
-  m257(battle, source, primaryTarget, allTargets, missedTargets) {
-    const moveId = "m257";
-    const moveData = getMove(moveId);
-
-    // get only target row
-    const targetParty = battle.parties[primaryTarget.teamName];
-    const damageTargets = source.getPatternTargets(
-      targetParty,
-      targetPatterns.ROW,
-      primaryTarget.position
-    );
-
-    for (const target of allTargets) {
-      const miss = missedTargets.includes(target);
-      // only deal damage if target is primary target row
-      if (damageTargets.includes(target)) {
-        const damageToDeal = calculateDamage(moveData, source, target, miss);
-        source.dealDamage(damageToDeal, target, {
-          type: "move",
-          moveId,
-        });
-      }
-
-      // if not miss, 30% chance to burn
-      if (!miss && Math.random() < 0.3) {
-        target.applyStatus(statusConditions.BURN, source);
-      }
-    }
-  },
   m258(battle, source, _primaryTarget, _allTargets, _missedTargets) {
     const moveId = "m258";
     const moveData = getMove(moveId);
@@ -9199,10 +9147,13 @@ const moveExecutes = {
             buffsRemoved += 1;
           }
         }
+        if (target.removeHeldItem()) {
+          buffsRemoved += 1;
+        }
       }
 
-      // damage bonus = 0.25 * buffs up to 0.75
-      const damageBonus = Math.min(0.75, 0.25 * buffsRemoved);
+      // damage bonus = 0.25 * buffs up to 1
+      const damageBonus = Math.min(1, 0.25 * buffsRemoved);
       const damageToDeal = Math.floor(
         calculateDamage(moveData, source, target, miss) * (1 + damageBonus)
       );
@@ -10212,23 +10163,6 @@ const moveExecutes = {
           moveId,
         }
       );
-    }
-  },
-  m403(_battle, source, _primaryTarget, allTargets, missedTargets) {
-    const moveId = "m403";
-    const moveData = getMove(moveId);
-    for (const target of allTargets) {
-      const miss = missedTargets.includes(target);
-      const damageToDeal = calculateDamage(moveData, source, target, miss);
-      source.dealDamage(damageToDeal, target, {
-        type: "move",
-        moveId,
-      });
-
-      // if not miss, 25% to flinch 1 turn
-      if (!miss && Math.random() < 0.25) {
-        target.applyEffect("flinched", 1, source);
-      }
     }
   },
   m404(_battle, source, primaryTarget, allTargets, missedTargets) {

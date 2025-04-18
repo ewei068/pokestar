@@ -7,6 +7,7 @@ const {
   moveTiers,
   statusConditions,
   effectTypes,
+  weatherConditions,
 } = require("../../config/battleConfig");
 const { getMove } = require("./moveRegistry");
 const { getHeldItem } = require("./heldItemRegistry");
@@ -18,6 +19,8 @@ const {
   effectIdEnum,
 } = require("../../enums/battleEnums");
 const { drawIterable } = require("../../utils/gachaUtils");
+const { pokemonIdEnum } = require("../../enums/pokemonEnums");
+const { logger } = require("../../log");
 
 /** @typedef {"charge" | "punch"} MoveTag */
 
@@ -38,6 +41,7 @@ class Move {
    * @param {string} param0.description
    * @param {MoveExecute} param0.execute
    * @param {EffectIdEnum=} param0.chargeMoveEffectId
+   * @param {((Battle, BattlePokemon) => boolean)=} param0.silenceIf
    * @param {MoveTag[]=} param0.tags
    */
   constructor({
@@ -55,6 +59,7 @@ class Move {
     description,
     execute,
     chargeMoveEffectId,
+    silenceIf,
     tags = [],
   }) {
     /** @type {MoveIdEnum} */
@@ -73,7 +78,7 @@ class Move {
     this.description = description;
     this.execute = execute;
     this.isLegacyMove = false;
-    this.silenceIf = undefined; // TODO
+    this.silenceIf = silenceIf;
     this.chargeMoveEffectId = chargeMoveEffectId;
     this.tags = tags;
   }
@@ -87,6 +92,7 @@ class Move {
     offTargetDamageMultiplier,
     backTargetDamageMultiplier,
     calculateDamageFunction = undefined,
+    attackOverride = null,
   }) {
     const damageFunc =
       calculateDamageFunction || ((args) => source.calculateMoveDamage(args));
@@ -98,6 +104,7 @@ class Move {
       missedTargets,
       offTargetDamageMultiplier,
       backTargetDamageMultiplier,
+      attackOverride,
     });
     return source.dealDamage(damageToDeal, target, {
       type: "move",
@@ -121,6 +128,7 @@ class Move {
    * @param {number=} param0.offTargetDamageMultiplier
    * @param {number=} param0.backTargetDamageMultiplier
    * @param {CalculateMoveDamageImpl=} param0.calculateDamageFunction
+   * @param {number=} param0.attackOverride
    * @returns {GenericDealAllDamageResult}
    */
   genericDealAllDamage({
@@ -131,6 +139,7 @@ class Move {
     offTargetDamageMultiplier,
     backTargetDamageMultiplier,
     calculateDamageFunction = undefined,
+    attackOverride = null,
   }) {
     const /** @type {Record<string, number>} */ damageInstances = {};
     for (const target of allTargets) {
@@ -143,6 +152,7 @@ class Move {
         offTargetDamageMultiplier,
         backTargetDamageMultiplier,
         calculateDamageFunction,
+        attackOverride,
       });
       damageInstances[target.id] = damageToTarget;
     }
@@ -181,7 +191,7 @@ class Move {
     if (roll < probability) {
       shouldTrigger = true;
     } else if (
-      source.hasAbility(abilityIdEnum.SERENE_GRACE) &&
+      source.hasActiveAbility(abilityIdEnum.SERENE_GRACE) &&
       roll < 2 * probability
     ) {
       source.battle.addToLog(`${source.name}'s Serene Grace activates!`);
@@ -391,6 +401,65 @@ class Move {
         triggerEvents,
       });
     }
+  }
+
+  /**
+   * Heals a single target for a specific amount or percentage of max HP
+   * @param {object} param0
+   * @param {BattlePokemon} param0.source
+   * @param {BattlePokemon} param0.target
+   * @param {number=} param0.healAmount - Direct amount to heal
+   * @param {number=} param0.healPercent - Percentage of max HP to heal (0-100)
+   * @returns {number} - Amount healed
+   */
+  genericHealSingleTarget({
+    source,
+    target,
+    healAmount = undefined,
+    healPercent = undefined,
+  }) {
+    if (healAmount === undefined && healPercent === undefined) {
+      logger.warn(
+        `genericHealSingleTarget called with no healAmount or healPercent for move ${this.id}`
+      );
+      return 0;
+    }
+
+    const amountToHeal =
+      healAmount !== undefined
+        ? healAmount
+        : Math.max(1, Math.floor((target.maxHp * healPercent) / 100));
+    return source.giveHeal(amountToHeal, target, {
+      type: "move",
+      moveId: this.id,
+    });
+  }
+
+  /**
+   * Heals all targets for a specific amount or percentage of max HP
+   * @param {object} param0
+   * @param {BattlePokemon} param0.source
+   * @param {Array<BattlePokemon>} param0.allTargets
+   * @param {number=} param0.healAmount - Direct amount to heal
+   * @param {number=} param0.healPercent - Percentage of max HP to heal (0-100)
+   * @returns {number} - Total amount healed
+   */
+  genericHealAllTargets({
+    source,
+    allTargets,
+    healAmount = undefined,
+    healPercent = undefined,
+  }) {
+    let totalHealed = 0;
+    for (const target of allTargets) {
+      totalHealed += this.genericHealSingleTarget({
+        source,
+        target,
+        healAmount,
+        healPercent,
+      });
+    }
+    return totalHealed;
   }
 }
 
@@ -1158,15 +1227,11 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user commands its healing bees to mend wounds. Heals the user or a targeted ally for 50% of their maximum HP.",
-    execute({ source, allTargets }) {
-      // TODO: functionify?
-      for (const target of allTargets) {
-        const healAmount = Math.floor(target.maxHp * 0.5);
-        source.giveHeal(healAmount, target, {
-          type: "move",
-          moveId: this.id,
-        });
-      }
+    execute(args) {
+      this.genericHealAllTargets({
+        ...args,
+        healPercent: 50,
+      });
     },
   }),
   [moveIdEnum.DEFEND_ORDER]: new Move({
@@ -1501,6 +1566,397 @@ const movesToRegister = Object.freeze({
       this.genericApplyAllStatus({
         ...args,
         statusId: statusConditions.SLEEP,
+      });
+    },
+  }),
+  [moveIdEnum.TRIPLE_AXEL]: new Move({
+    id: moveIdEnum.TRIPLE_AXEL,
+    name: "Triple Axel",
+    type: pokemonTypes.ICE,
+    power: 20,
+    accuracy: 90,
+    cooldown: 4,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.X,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "A consecutive three-kick attack that becomes more powerful with each successful hit. Each hit has a 90% accuracy.",
+    execute(args) {
+      const {
+        source,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+        extraOptions = {},
+      } = args;
+      const maxHits = 3;
+      const { hitCounts = {}, currentHit = 1 } = extraOptions;
+      const newHitCounts = { ...hitCounts };
+
+      // Calculate damage with power boost based on previous hits
+      this.genericDealAllDamage({
+        ...args,
+        calculateDamageFunction: (damageArgs) => {
+          const { target } = damageArgs;
+          const previousHits = hitCounts[target.id] || 0;
+          const powerMultiplier = 1 + previousHits;
+          return source.calculateMoveDamage({
+            ...damageArgs,
+            powerOverride: this.power * powerMultiplier,
+          });
+        },
+      });
+
+      // Update hit counts for targets that weren't missed
+      for (const target of allTargets) {
+        if (!missedTargets.includes(target)) {
+          newHitCounts[target.id] = (hitCounts[target.id] || 0) + 1;
+        }
+      }
+
+      // If we haven't reached max hits, execute the move again
+      if (currentHit < maxHits) {
+        source.executeMoveAgainstTarget({
+          moveId: this.id,
+          primaryTarget,
+          extraOptions: {
+            hitCounts: newHitCounts,
+            currentHit: currentHit + 1,
+          },
+        });
+      }
+    },
+  }),
+  [moveIdEnum.ROCK_WRECKER]: new Move({
+    id: moveIdEnum.ROCK_WRECKER,
+    name: "Rock Wrecker",
+    type: pokemonTypes.ROCK,
+    power: 160,
+    accuracy: 90,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.CROSS,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user hurls a huge boulder at the target. The user must recharge after using this move.",
+    execute(args) {
+      const { source } = args;
+      this.genericDealAllDamage(args);
+      source.applyEffect("recharge", 1, source, {});
+    },
+  }),
+  [moveIdEnum.AIR_SLASH]: new Move({
+    id: moveIdEnum.AIR_SLASH,
+    name: "Air Slash",
+    type: pokemonTypes.FLYING,
+    power: 65,
+    accuracy: 90,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.COLUMN,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user attacks with a blade of air that slices even the sky. This has a 25% chance to flinch the target.",
+    execute(args) {
+      this.genericDealAllDamage(args);
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "flinched",
+        duration: 1,
+        probability: 0.25,
+      });
+    },
+  }),
+  [moveIdEnum.HEAT_WAVE]: new Move({
+    id: moveIdEnum.HEAT_WAVE,
+    name: "Heat Wave",
+    type: pokemonTypes.FIRE,
+    power: 80,
+    accuracy: 100,
+    cooldown: 4,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.ALL,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user attacks by exhaling hot breath on the opposing team. This only deals damage to the target row, but has a 30% of burning all targets",
+    execute(args) {
+      const { source, primaryTarget } = args;
+      // Get only target row
+      const targetParty = source.battle.parties[primaryTarget.teamName];
+      const damageTargets = source.getPatternTargets(
+        targetParty,
+        targetPatterns.ROW,
+        primaryTarget.position
+      );
+
+      // Deal damage only to targets in the primary target's row
+      this.genericDealAllDamage({
+        ...args,
+        allTargets: damageTargets,
+      });
+
+      // Apply burn chance to all targets
+      this.genericApplyAllStatus({
+        ...args,
+        statusId: statusConditions.BURN,
+        probability: 0.3,
+      });
+    },
+  }),
+  [moveIdEnum.SOLAR_BLADE]: new Move({
+    id: moveIdEnum.SOLAR_BLADE,
+    name: "Solar Blade",
+    type: pokemonTypes.GRASS,
+    power: 160,
+    accuracy: 100,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.COLUMN,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "A two-turn attack. The user gathers light, then attacks with a blade of light on the next turn.",
+    silenceIf(battle, pokemon) {
+      return (
+        pokemon.effectIds.absorbLight === undefined &&
+        !battle.isWeatherNegated() &&
+        battle.weather.weatherId !== weatherConditions.SUN
+      );
+    },
+    tags: ["charge"],
+    chargeMoveEffectId: "absorbLight",
+    execute(args) {
+      const { source, battle } = args;
+      // If pokemon doesn't have "absorb light" buff, apply it
+      // TODO: genericify charge moves?
+      if (
+        source.effectIds.absorbLight === undefined &&
+        !battle.isWeatherNegated() &&
+        battle.weather.weatherId !== weatherConditions.SUN
+      ) {
+        source.applyEffect("absorbLight", 1, source, {});
+        // Remove cooldown so it can be used next turn
+        source.moveIds[this.id].cooldown = 0;
+      } else {
+        // If pokemon has "absorb light" buff, remove it and deal damage
+        source.removeEffect("absorbLight");
+
+        // Deal damage with weather multiplier
+        this.genericDealAllDamage({
+          ...args,
+          calculateDamageFunction: (damageArgs) => {
+            const mult =
+              battle.weather.weatherId !== weatherConditions.SUN &&
+              battle.weather.weatherId &&
+              !battle.isWeatherNegated()
+                ? 0.5
+                : 1;
+            return source.calculateMoveDamage({
+              ...damageArgs,
+              powerOverride: Math.floor(this.power * mult),
+            });
+          },
+        });
+      }
+    },
+  }),
+  [moveIdEnum.MYSTICAL_POWER]: new Move({
+    id: moveIdEnum.MYSTICAL_POWER,
+    name: "Mystical Power",
+    type: pokemonTypes.PSYCHIC,
+    power: 70,
+    accuracy: 90,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.X,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user unleashes mystical energy, damaging enemies based on the highest of the user's non-HP stats. Provides allies with unique buffs if used by Uxie, Mesprit, or Azelf.",
+    execute(args) {
+      const { source } = args;
+      // apply special effect to all allies
+      const allies = source.getPartyPokemon().filter((p) => p && !p.isFainted);
+      for (const ally of allies) {
+        if (source.speciesId === pokemonIdEnum.UXIE) {
+          ally.applyEffect("defUp", 3, ally, {});
+          ally.applyEffect("spdUp", 3, ally, {});
+        } else if (source.speciesId === pokemonIdEnum.MESPRIT) {
+          ally.applyEffect("regeneration", 3, ally, {
+            healAmount: Math.floor(ally.maxHp * 0.2),
+          });
+        } else if (source.speciesId === pokemonIdEnum.AZELF) {
+          ally.applyEffect("atkUp", 3, ally, {});
+          ally.applyEffect("spaUp", 3, ally, {});
+        }
+      }
+      this.genericDealAllDamage({
+        ...args,
+        attackOverride: source.getStat(source.getHighestNonHpStatId()),
+      });
+    },
+  }),
+  [moveIdEnum.AMNESIA]: new Move({
+    id: moveIdEnum.AMNESIA,
+    name: "Amnesia",
+    type: pokemonTypes.PSYCHIC,
+    power: null,
+    accuracy: null,
+    cooldown: 4,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user empties their mind, sharply raising their Special Defense and providing a shield equal to 15% of their Special Defense.",
+    execute(args) {
+      const { allTargets } = args;
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "greaterSpdUp",
+        duration: 3,
+      });
+
+      for (const target of allTargets) {
+        this.genericApplySingleEffect({
+          ...args,
+          target,
+          effectId: "shield",
+          duration: 3,
+          initialArgs: {
+            shield: Math.floor(target.getStat("spd") * 0.15),
+          },
+        });
+      }
+    },
+  }),
+  [moveIdEnum.MAGMA_STORM]: new Move({
+    id: moveIdEnum.MAGMA_STORM,
+    name: "Magma Storm",
+    type: pokemonTypes.FIRE,
+    power: 80,
+    accuracy: 75,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "Traps the foe in a vortex of searing magma, dealing damage and restricting movement. The vortex causes ongoing 1/8th HP damage for 3 turns.",
+    execute(args) {
+      const { allTargets } = args;
+      this.genericDealAllDamage(args);
+
+      // Apply restricted and DoT effects to targets
+      for (const target of allTargets) {
+        this.genericApplySingleEffect({
+          ...args,
+          target,
+          effectId: "restricted",
+          duration: 3,
+        });
+        this.genericApplySingleEffect({
+          ...args,
+          target,
+          effectId: "dot",
+          duration: 3,
+          initialArgs: {
+            damage: Math.max(Math.floor(target.maxHp / 8), 1),
+          },
+        });
+      }
+    },
+  }),
+  [moveIdEnum.LUNAR_BLESSING]: new Move({
+    id: moveIdEnum.LUNAR_BLESSING,
+    name: "Lunar Blessing",
+    type: pokemonTypes.FAIRY,
+    power: null,
+    accuracy: null,
+    cooldown: 4,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.ALL,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user bathes allies in mystical moonlight, healing them for 25% of their maximum HP, removing all status conditions, and dispelling all debuffs.",
+    execute(args) {
+      const { allTargets } = args;
+      this.genericHealAllTargets({
+        ...args,
+        healPercent: 25,
+      });
+
+      // Remove status conditions and debuffs from all allies
+      for (const target of allTargets) {
+        target.removeStatus();
+        for (const effectId of /** @type {EffectIdEnum[]} */ (
+          Object.keys(target.effectIds)
+        )) {
+          const effect = getEffect(effectId);
+          if (effect.type === effectTypes.DEBUFF) {
+            target.dispellEffect(effectId);
+          }
+        }
+      }
+    },
+  }),
+  [moveIdEnum.LUNAR_DANCE]: new Move({
+    id: moveIdEnum.LUNAR_DANCE,
+    name: "Lunar Dance",
+    type: pokemonTypes.PSYCHIC,
+    power: null,
+    accuracy: null,
+    cooldown: 4,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user dances in the moonlight, sacrificing 50% of its maximum HP to heal allies (excluding itself) by the same amount and increase their Defense and Special Defense for 2 turns.",
+    execute(args) {
+      const { source } = args;
+
+      // Calculate the amount of HP to sacrifice (50% of max HP)
+      const sacrificeAmount = Math.floor(source.maxHp * 0.5);
+
+      // Sacrifice HP from the user
+      source.dealDamage(sacrificeAmount, source, {
+        type: "self",
+      });
+
+      // Create a new array of targets excluding the source
+      const healTargets = args.allTargets.filter((target) => target !== source);
+      if (healTargets.length > 0) {
+        this.genericHealAllTargets({
+          ...args,
+          allTargets: healTargets,
+          healAmount: sacrificeAmount,
+        });
+      }
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "defUp",
+        duration: 2,
+      });
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "spdUp",
+        duration: 2,
       });
     },
   }),

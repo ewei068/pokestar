@@ -21,6 +21,7 @@ const {
   getIsInstanceOfType,
   composeConditionCallbacks,
   getIsTargetSameTeamCallback,
+  getIsTargetOpponentCallback,
 } = require("../engine/eventConditions");
 const { getMove } = require("./moveRegistry");
 
@@ -777,6 +778,134 @@ const abilitiesToRegister = Object.freeze({
               }
             }
           },
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.SNOW_WARNING]: new Ability({
+    id: abilityIdEnum.SNOW_WARNING,
+    name: "Snow Warning",
+    description: "When the battle starts, creates a hailstorm.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BATTLE_BEGIN,
+          callback: () => {
+            battle.addToLog(
+              `${target.name}'s Snow Warning creates a hailstorm!`
+            );
+            battle.createWeather(weatherConditions.HAIL, target);
+          },
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.MAGNET_PULL]: new Ability({
+    id: abilityIdEnum.MAGNET_PULL,
+    name: "Magnet Pull",
+    description: "Enemy Steel-type Pokémon gain 80% less combat readiness.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_CR_GAINED,
+          callback: ({ amount, target: crTarget }) => {
+            if (crTarget.hasType(pokemonTypes.STEEL) && amount > 0) {
+              battle.addToLog(
+                `${crTarget.name} is being pulled by ${target.name}'s Magnet Pull!`
+              );
+              return {
+                amount: Math.floor(amount * 0.2),
+              };
+            }
+          },
+          conditionCallback: getIsTargetOpponentCallback(target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.MOTOR_DRIVE]: new Ability({
+    id: abilityIdEnum.MOTOR_DRIVE,
+    name: "Motor Drive",
+    description:
+      "When hit by an Electric-type move, the user negates the damage and gains increased Speed for 2 turns.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: ({ damageInfo }) => {
+            const moveId = damageInfo?.moveId;
+            const moveData = getMove(moveId);
+            if (moveData?.type === pokemonTypes.ELECTRIC) {
+              battle.addToLog(
+                `${target.name}'s Motor Drive activated! It's charged with electricity!`
+              );
+              target.applyEffect("speUp", 2, target, {});
+              return {
+                damage: 0,
+                maxDamage: 0,
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsTargetPokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.POISON_HEAL]: new Ability({
+    id: abilityIdEnum.POISON_HEAL,
+    name: "Poison Heal",
+    description:
+      "When the user would take damage from poison or badly poison, instead heal for 10% of its max HP.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: ({ damageInfo }) => {
+            if (
+              damageInfo?.statusId === statusConditions.POISON ||
+              damageInfo?.statusId === statusConditions.BADLY_POISON
+            ) {
+              const healAmount = Math.max(Math.floor(target.maxHp * 0.1), 1);
+              battle.addToLog(
+                `${target.name}'s Poison Heal converts poison damage into healing!`
+              );
+              target.giveHeal(healAmount, target, {
+                type: "ability",
+                id: abilityIdEnum.POISON_HEAL,
+              });
+              return {
+                damage: 0,
+                maxDamage: 0,
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsTargetPokemonCallback(target),
+            getIsInstanceOfType("statusCondition")
+          ),
         }),
       };
     },
