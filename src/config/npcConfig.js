@@ -1084,7 +1084,7 @@ const dungeons = Object.freeze({
   NEW_ISLAND: "newIsland",
   // SOOTOPOLIS_CITY: "sootopolisCity",
   // ONIGASHIMA: "onigashima",
-  BLOODY_SUNDAY: "bloodySunday",
+  // BLOODY_SUNDAY: "bloodySunday",
 });
 
 const dungeonConfig = Object.freeze({
@@ -2513,7 +2513,7 @@ const dungeonConfig = Object.freeze({
             },
         }
     }, */
-  [dungeons.BLOODY_SUNDAY]: {
+  /* [dungeons.BLOODY_SUNDAY]: {
     name: "Bloody Sunday",
     sprite:
       "https://external-preview.redd.it/mJjUWHxEKQ674NI4m7hUSJ108UlpTgTH2vWSmwMHfdA.jpg?auto=webp&s=6c0601add4b5a74185844ebaff16bebb3ada41a5",
@@ -2637,7 +2637,7 @@ const dungeonConfig = Object.freeze({
         },
       },
     },
-  },
+  }, */
 });
 
 /** @typedef {Enum<raids>} RaidEnum */

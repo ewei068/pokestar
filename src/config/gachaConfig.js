@@ -89,7 +89,7 @@ const bannerTypeConfig = Object.freeze({
  * @type {Array<BannerData>}
  */
 const bannerConfigRaw = [
-  {
+  /* {
     bannerType: bannerTypes.SPECIAL,
     name: "[EVENT] Twitch Plays Pokemon Anniversary",
     description:

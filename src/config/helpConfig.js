@@ -173,7 +173,7 @@ Team Aqua and Team Magma are clashing for control of the climate in Pokestar!
  * @type {EventData[]}
  */
 const gameEventConfig = [
-  {
+  /* {
     name: "Twitch Plays Pokemon (Re-run)",
     description: TPP_DESCRIPTION,
     image:
