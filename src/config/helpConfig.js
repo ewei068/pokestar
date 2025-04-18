@@ -179,13 +179,13 @@ const gameEventConfig = [
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-tpp-banner.png",
   },
-  {
+  /* {
     name: "Aqua vs Magma",
     description: AQUA_VS_MAGMA_DESCRIPTION,
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-aqua-magma-banner.png",
   },
-  /* {
+  {
     name: "100 Members + Official Launch",
     description: HUNDRED_MEMBERS_DESCRIPTION,
     image:

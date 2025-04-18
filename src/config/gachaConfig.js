@@ -101,7 +101,7 @@ const bannerConfigRaw = [
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-tpp-banner.png",
   },
-  {
+  /* {
     bannerType: bannerTypes.SPECIAL,
     name: "[EVENT] Team Aqua Banner",
     description:

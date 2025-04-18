@@ -28,7 +28,7 @@ const npcs = Object.freeze({
   ACE_TRAINER: "aceTrainer",
   PALMER: "palmer",
   PROFESSOR_WILLOW: "professorWillow",
-  BUTLER: "butler",
+  // BUTLER: "butler",
   // STRAW_HATS: "strawHats",
   // TEAM_ROCKET: "teamRocket",
   // GOLD_RUSH: "goldRush",
@@ -540,7 +540,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 1 * 2,
+              [backpackItems.POKEBALL]: 1,
             },
           },
         },
@@ -554,7 +554,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 2 * 2,
+              [backpackItems.POKEBALL]: 2,
             },
           },
         },
@@ -609,7 +609,7 @@ const npcConfig = Object.freeze({
       },
     },
   },
-  [npcs.BUTLER]: {
+  /* [npcs.BUTLER]: {
     name: "Butler",
     sprite:
       "https://archives.bulbagarden.net/media/upload/b/b9/Spr_DP_Ace_Trainer_M_1.png",
@@ -1082,7 +1082,7 @@ const dungeons = Object.freeze({
   SOUL_CAVE: "soulCave",
   SPIRIT_ALTAR: "spiritAltar",
   NEW_ISLAND: "newIsland",
-  SOOTOPOLIS_CITY: "sootopolisCity",
+  // SOOTOPOLIS_CITY: "sootopolisCity",
   // ONIGASHIMA: "onigashima",
   BLOODY_SUNDAY: "bloodySunday",
 });
@@ -2107,7 +2107,7 @@ const dungeonConfig = Object.freeze({
       },
     },
   },
-  [dungeons.SOOTOPOLIS_CITY]: {
+  /* [dungeons.SOOTOPOLIS_CITY]: {
     name: "Sootopolis City: Double Crisis!",
     sprite:
       "https://pa1.aminoapps.com/5778/fcbf7bc4d36716837e2fb264d879b1fb7883796f_hq.gif",
@@ -2841,11 +2841,11 @@ const raidConfigRaw = {
             position: 13,
           },
         ],
-        shinyChance: RAID_SHINY_CHANCE * 2,
-        moneyPerPercent: BASE_RAID_MONEY * 1.25 * 2,
+        shinyChance: RAID_SHINY_CHANCE,
+        moneyPerPercent: BASE_RAID_MONEY * 1.25,
         backpackPerPercent: {
           [backpackCategories.MATERIALS]: {
-            [backpackItems.STAR_PIECE]: BASE_STAR_PIECE * 1.25 * 2,
+            [backpackItems.STAR_PIECE]: BASE_STAR_PIECE * 1.25,
           },
         },
         ttl: 1000 * 60 * 60 * 2,
@@ -2903,11 +2903,11 @@ const raidConfigRaw = {
             position: 13,
           },
         ],
-        shinyChance: RAID_SHINY_CHANCE * 2,
-        moneyPerPercent: BASE_RAID_MONEY * 1.25 * 2,
+        shinyChance: RAID_SHINY_CHANCE,
+        moneyPerPercent: BASE_RAID_MONEY * 1.25,
         backpackPerPercent: {
           [backpackCategories.MATERIALS]: {
-            [backpackItems.STAR_PIECE]: BASE_STAR_PIECE * 1.25 * 2,
+            [backpackItems.STAR_PIECE]: BASE_STAR_PIECE * 1.25,
           },
         },
         ttl: 1000 * 60 * 60 * 2,

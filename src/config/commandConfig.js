@@ -828,8 +828,6 @@ const commandConfigRaw = {
           "steven",
           "palmer",
           "professorWillow",
-          "butler",
-          "tppRed",
         ],
       },
       difficulty: {
