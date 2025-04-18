@@ -1785,6 +1785,44 @@ const movesToRegister = Object.freeze({
       }
     },
   }),
+  [moveIdEnum.MAGMA_STORM]: new Move({
+    id: moveIdEnum.MAGMA_STORM,
+    name: "Magma Storm",
+    type: pokemonTypes.FIRE,
+    power: 80,
+    accuracy: 75,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "Traps the foe in a vortex of searing magma, dealing damage and restricting movement. The vortex causes ongoing 1/8th HP damage for 3 turns.",
+    execute(args) {
+      const { allTargets } = args;
+      this.genericDealAllDamage(args);
+
+      // Apply restricted and DoT effects to targets
+      for (const target of allTargets) {
+        this.genericApplySingleEffect({
+          ...args,
+          target,
+          effectId: "restricted",
+          duration: 3,
+        });
+        this.genericApplySingleEffect({
+          ...args,
+          target,
+          effectId: "dot",
+          duration: 3,
+          initialArgs: {
+            damage: Math.max(Math.floor(target.maxHp / 8), 1),
+          },
+        });
+      }
+    },
+  }),
 });
 
 module.exports = {

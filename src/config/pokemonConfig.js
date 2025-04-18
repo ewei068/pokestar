@@ -9632,6 +9632,31 @@ const pokemonConfigRaw = {
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
   },
+  [pokemonIdEnum.HEATRAN]: {
+    name: "Heatran",
+    emoji: "<:485:1351027494563614828>",
+    description:
+      "It dwells in volcanic caves. It digs in with its cross-shaped feet to crawl on ceilings and walls.",
+    type: [types.FIRE, types.STEEL],
+    baseStats: [91, 90, 106, 130, 106, 77],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/485.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/485.png",
+    abilities: {
+      [abilityIdEnum.FLASH_FIRE]: 0.8,
+      [abilityIdEnum.FLAME_BODY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.EARTH_POWER,
+      moveIdEnum.FLASH_CANNON,
+      moveIdEnum.MAGMA_STORM,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
   [pokemonIdEnum.DARKRAI]: {
     name: "Darkrai",
     emoji: "<:491:1351027502801354822>",
