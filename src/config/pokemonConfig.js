@@ -344,7 +344,10 @@ const rarities = Object.freeze({
 });
 
 /**
- * @type {Record<PokemonIdEnum, PokemonConfigData>}
+ * @typedef {Keys<pokemonConfigRaw>} PokemonIdEnum
+ */
+/**
+ * @satisfies {PartialRecord<AllPokemonIdEnum, PokemonConfigData>}
  */
 const pokemonConfigRaw = {
   1: {
@@ -1740,7 +1743,7 @@ const pokemonConfigRaw = {
       6: 0.45,
       33: 0.1,
     },
-    moveIds: ["m55", "m876", "m34", "m127"],
+    moveIds: ["m55", "m1", "m34", "m127"],
     battleEligible: true,
     rarity: rarities.COMMON,
     growthRate: growthRates.MEDIUMFAST,
@@ -1771,7 +1774,7 @@ const pokemonConfigRaw = {
       6: 0.45,
       33: 0.1,
     },
-    moveIds: ["m876", "m34", "m127", "m187"],
+    moveIds: ["m1", "m34", "m127", "m187"],
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMFAST,
@@ -1792,7 +1795,7 @@ const pokemonConfigRaw = {
       6: 0.45,
       33: 0.1,
     },
-    moveIds: ["m876", "m127", "m187", "m223"],
+    moveIds: ["m1", "m127", "m187", "m223"],
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
@@ -2189,6 +2192,12 @@ const pokemonConfigRaw = {
       5: 0.45,
       148: 0.1,
     },
+    evolution: [
+      {
+        level: 50,
+        id: pokemonIdEnum.MAGNEZONE,
+      },
+    ],
     moveIds: ["m84", "m85", "m430", "m521"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -2237,7 +2246,7 @@ const pokemonConfigRaw = {
       60: 0.45,
       143: 0.1,
     },
-    moveIds: ["m876", "m92", "m398", "m441"],
+    moveIds: ["m1", "m92", "m398", "m441"],
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMFAST,
@@ -2258,7 +2267,7 @@ const pokemonConfigRaw = {
       60: 0.45,
       143: 0.1,
     },
-    moveIds: ["m876", "m92", "m441", "m482"],
+    moveIds: ["m1", "m92", "m441", "m482"],
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
@@ -2607,6 +2616,12 @@ const pokemonConfigRaw = {
       12: 0.45,
       13: 0.1,
     },
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.LICKILICKY,
+      },
+    ],
     moveIds: ["m122", "m23", "m34", "m428"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -2722,6 +2737,12 @@ const pokemonConfigRaw = {
       69: 0.45,
       120: 0.1,
     },
+    evolution: [
+      {
+        level: 55,
+        id: pokemonIdEnum.RHYPERIOR,
+      },
+    ],
     moveIds: ["m479", "m14", "m444", "m529"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -2907,6 +2928,12 @@ const pokemonConfigRaw = {
       9: 0.8,
       72: 0.2,
     },
+    evolution: [
+      {
+        level: 50,
+        id: pokemonIdEnum.ELECTIVIRE,
+      },
+    ],
     moveIds: ["m84", moveIdEnum.ICE_PUNCH, "m85", "m238"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -2927,6 +2954,12 @@ const pokemonConfigRaw = {
       [abilityIdEnum.FLAME_BODY]: 0.8,
       72: 0.2,
     },
+    evolution: [
+      {
+        level: 50,
+        id: pokemonIdEnum.MAGMORTAR,
+      },
+    ],
     moveIds: ["m52", "m53", "m238", "m269"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -3071,13 +3104,21 @@ const pokemonConfigRaw = {
         level: 25,
         id: "197",
       },
+      {
+        level: 25,
+        id: pokemonIdEnum.LEAFEON,
+      },
+      {
+        level: 25,
+        id: pokemonIdEnum.GLACEON,
+      },
     ],
     abilities: {
       50: 0.45,
       91: 0.45,
       107: 0.1,
     },
-    moveIds: ["m98", "m36", "m204", "m387"],
+    moveIds: ["m98", "m204", "m36", "m387"],
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMSLOW,
@@ -3587,7 +3628,7 @@ const pokemonConfigRaw = {
         "m506",
         "m526",
         "m574",
-        "m876",
+        "m1",
       ],
       powerMoveIds: [
         "m14",
@@ -4162,7 +4203,7 @@ const pokemonConfigRaw = {
       [abilityIdEnum.SERENE_GRACE]: 0.45,
       105: 0.1,
     },
-    moveIds: ["m270", "m876", "m86", "m266"],
+    moveIds: ["m270", "m1", "m86", "m266"],
     battleEligible: true,
     rarity: rarities.COMMON,
     growthRate: growthRates.MEDIUMSLOW,
@@ -4183,6 +4224,12 @@ const pokemonConfigRaw = {
       [abilityIdEnum.SERENE_GRACE]: 0.45,
       105: 0.1,
     },
+    evolution: [
+      {
+        level: 45,
+        id: pokemonIdEnum.TOGEKISS,
+      },
+    ],
     moveIds: ["m270", "m86", "m266", "m355"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -4440,6 +4487,12 @@ const pokemonConfigRaw = {
       53: 0.45,
       92: 0.1,
     },
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.AMBIPOM,
+      },
+    ],
     moveIds: ["m10", "m216", "m252", "m369"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -4509,6 +4562,12 @@ const pokemonConfigRaw = {
       14: 0.45,
       119: 0.1,
     },
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.YANMEGA,
+      },
+    ],
     moveIds: ["m17", "m182", "m403", "m450"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -4618,6 +4677,12 @@ const pokemonConfigRaw = {
       105: 0.45,
       158: 0.1,
     },
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.HONCHKROW,
+      },
+    ],
     moveIds: ["m64", "m355", "m492", moveIdEnum.QUASH],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -4726,6 +4791,12 @@ const pokemonConfigRaw = {
       8: 0.45,
       17: 0.1,
     },
+    evolution: [
+      {
+        level: 45,
+        id: pokemonIdEnum.GLISCOR,
+      },
+    ],
     moveIds: ["m40", "m182", "m191", "m282"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -4831,6 +4902,12 @@ const pokemonConfigRaw = {
       51: 0.45,
       124: 0.1,
     },
+    evolution: [
+      {
+        level: 45,
+        id: pokemonIdEnum.WEAVILE,
+      },
+    ],
     moveIds: ["m420", "m252", "m282", moveIdEnum.ICICLE_CRASH],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -5452,6 +5529,8 @@ const pokemonConfigRaw = {
         "150-2",
         "249-1",
         "302-1",
+        pokemonIdEnum.ARCHIES_KYOGRE,
+        pokemonIdEnum.MAXIES_GROUDON,
         "384-1",
         "392-1",
         "828-1",
@@ -5470,6 +5549,8 @@ const pokemonConfigRaw = {
         "248-1",
         "289-1",
         "319-1",
+        pokemonIdEnum.AQUAS_SHARPEDO,
+        pokemonIdEnum.MAGMAS_CAMERUPT,
         pokemonIdEnum.LITTENYAN,
       ],
     },
@@ -6680,6 +6761,12 @@ const pokemonConfigRaw = {
       38: 0.45,
       102: 0.1,
     },
+    evolution: [
+      {
+        level: 36,
+        id: pokemonIdEnum.ROSERADE,
+      },
+    ],
     moveIds: ["m40", "m191", "m202", "m235"],
     battleEligible: true,
     rarity: rarities.RARE,
@@ -7813,6 +7900,150 @@ const pokemonConfigRaw = {
       speciesIds: ["386", "10001", "10002", "10003"],
     },
   },
+  [pokemonIdEnum.TURTWIG]: {
+    name: "Turtwig",
+    emoji: "<:387:1132497397587640392>",
+    description:
+      "Turtwig is a small Pokémon that resembles a light green turtle with a small tree growing on its back. It is a Grass-type Pokémon.",
+    type: [types.GRASS],
+    baseStats: [55, 68, 64, 45, 55, 31],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/387.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/387.png",
+    evolution: [
+      {
+        level: 18,
+        id: pokemonIdEnum.GROTLE,
+      },
+    ],
+    abilities: {
+      65: 0.8,
+      75: 0.2,
+    },
+    moveIds: ["m33", "m71", "m36", "m402"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.GROTLE]: {
+    name: "Grotle",
+    emoji: "<:388:1132497399483486329>",
+    description:
+      "The shell on its back is hardened soil. Some Pokémon come to peck the berries growing on the trees on its shell.",
+    type: [types.GRASS],
+    baseStats: [75, 89, 85, 55, 65, 36],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/388.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/388.png",
+    evolution: [
+      {
+        level: 32,
+        id: pokemonIdEnum.TORTERRA,
+      },
+    ],
+    abilities: {
+      65: 0.8,
+      75: 0.2,
+    },
+    moveIds: ["m71", "m36", "m402", "m523"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.TORTERRA]: {
+    name: "Torterra",
+    emoji: "<:389:1132497401433817139>",
+    description:
+      "Ancient people imagined that beneath the ground, a gigantic Torterra dwelled. Small Pokémon occasionally gather on its island-like back to build their nests.",
+    type: [types.GRASS, types.GROUND],
+    baseStats: [95, 109, 105, 75, 85, 56],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/389.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/389.png",
+    abilities: {
+      65: 0.8,
+      75: 0.2,
+    },
+    moveIds: ["m71", "m235", "m523", moveIdEnum.WOOD_HAMMER],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.CHIMCHAR]: {
+    name: "Chimchar",
+    emoji: "<:390:1132497402746646719>",
+    description:
+      "It agilely scales sheer cliffs to live atop craggy mountains. Its fire is put out when it sleeps.",
+    type: [types.FIRE],
+    baseStats: [44, 58, 44, 58, 44, 61],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/390.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/390.png",
+    evolution: [
+      {
+        level: 14,
+        id: pokemonIdEnum.MONFERNO,
+      },
+    ],
+    abilities: {
+      66: 0.8,
+      [abilityIdEnum.IRON_FIST]: 0.2,
+    },
+    moveIds: ["m10", "m52", "m53", "m369"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.MONFERNO]: {
+    name: "Monferno",
+    emoji: "<:391:1132497467036930131>",
+    description:
+      "It uses ceilings and walls to launch aerial attacks. Its fiery tail is but one weapon.",
+    type: [types.FIRE, types.FIGHTING],
+    baseStats: [64, 78, 52, 78, 52, 81],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/391.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/391.png",
+    evolution: [
+      {
+        level: 36,
+        id: pokemonIdEnum.INFERNAPE,
+      },
+    ],
+    abilities: {
+      66: 0.8,
+      [abilityIdEnum.IRON_FIST]: 0.2,
+    },
+    moveIds: ["m183", "m53", moveIdEnum.BRICK_BREAK, "m369"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.INFERNAPE]: {
+    name: "Infernape",
+    emoji: "<:392:1132497469498982460>",
+    description:
+      "It uses unique fighting moves with fire on its hands and feet. It will take on any opponent.",
+    type: [types.FIRE, types.FIGHTING],
+    baseStats: [76, 104, 71, 104, 71, 108],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/392.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/392.png",
+    abilities: {
+      66: 0.8,
+      [abilityIdEnum.IRON_FIST]: 0.2,
+    },
+    moveIds: ["m183", "m53", "m369", "m370"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
   "392-1": {
     name: "Rubber Infernape",
     emoji: "<:luffy:1136890668342595654>",
@@ -7852,6 +8083,1632 @@ const pokemonConfigRaw = {
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+  },
+  [pokemonIdEnum.PIPLUP]: {
+    name: "Piplup",
+    emoji: "<:393:1132497470715338752>",
+    description:
+      "Because it is very proud, it hates accepting food from people. Its thick down guards it from cold.",
+    type: [types.WATER],
+    baseStats: [53, 51, 53, 61, 56, 40],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/393.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/393.png",
+    evolution: [
+      {
+        level: 16,
+        id: pokemonIdEnum.PRINPLUP,
+      },
+    ],
+    abilities: {
+      67: 0.8,
+      172: 0.2,
+    },
+    moveIds: ["m55", "m64", moveIdEnum.ICY_WIND, "m503"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.PRINPLUP]: {
+    name: "Prinplup",
+    emoji: "<:394:1132497471994597406>",
+    description:
+      "It lives a solitary life. Its wings deliver wicked blows that can snap even the thickest of trees.",
+    type: [types.WATER],
+    baseStats: [64, 66, 68, 81, 76, 50],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/394.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/394.png",
+    evolution: [
+      {
+        level: 36,
+        id: pokemonIdEnum.EMPOLEON,
+      },
+    ],
+    abilities: {
+      67: 0.8,
+      172: 0.2,
+    },
+    moveIds: ["m55", moveIdEnum.ICY_WIND, "m355", "m503"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.EMPOLEON]: {
+    name: "Empoleon",
+    emoji: "<:395:1132497473873649796>",
+    description:
+      "The three horns that extend from its beak attest to its power. The leader has the biggest horns.",
+    type: [types.WATER, types.STEEL],
+    baseStats: [84, 86, 88, 111, 101, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/395.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/395.png",
+    abilities: {
+      67: 0.8,
+      172: 0.2,
+    },
+    moveIds: ["m55", moveIdEnum.ICY_WIND, "m355", "m56"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.STARLY]: {
+    name: "Starly",
+    emoji: "<:396:1132497475182276711>",
+    description:
+      "They flock in great numbers. Though small, they flap their wings with great power.",
+    type: [types.NORMAL, types.FLYING],
+    baseStats: [40, 55, 30, 30, 30, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/396.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/396.png",
+    evolution: [
+      {
+        level: 14,
+        id: pokemonIdEnum.STARAVIA,
+      },
+    ],
+    abilities: {
+      22: 0.8,
+      51: 0.2,
+    },
+    moveIds: ["m64", "m98", "m216", "m332"],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.STARAVIA]: {
+    name: "Staravia",
+    emoji: "<:397:1132497476407001088>",
+    description:
+      "It flies around forests and fields in search of bug Pokémon. It stays within a huge flock.",
+    type: [types.NORMAL, types.FLYING],
+    baseStats: [55, 75, 50, 40, 40, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/397.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/397.png",
+    evolution: [
+      {
+        level: 34,
+        id: pokemonIdEnum.STARAPTOR,
+      },
+    ],
+    abilities: {
+      22: 0.8,
+      120: 0.2,
+    },
+    moveIds: ["m98", "m216", "m332", "m369"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.STARAPTOR]: {
+    name: "Staraptor",
+    emoji: "<:398:1132497478265077871>",
+    description:
+      "The muscles in its wings and legs are strong. It can easily fly while gripping a small Pokémon.",
+    type: [types.NORMAL, types.FLYING],
+    baseStats: [85, 120, 70, 50, 60, 100],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/398.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/398.png",
+    abilities: {
+      22: 0.8,
+      120: 0.2,
+    },
+    moveIds: ["m98", "m216", "m369", "m413"],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.BIDOOF]: {
+    name: "Bidoof",
+    emoji: "<:399:1132497479712129054>",
+    description:
+      "With nerves of steel, nothing can perturb it. It is more agile and active than it appears.",
+    type: [types.NORMAL],
+    baseStats: [59, 45, 40, 35, 40, 31],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/399.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/399.png",
+    evolution: [
+      {
+        level: 15,
+        id: pokemonIdEnum.BIBAREL,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SIMPLE]: 0.45,
+      109: 0.45,
+      141: 0.1,
+    },
+    moveIds: ["m98", "m453", "m14", "m127"],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.BIBAREL]: {
+    name: "Bibarel",
+    emoji: "<:400:1132497518480068698>",
+    description:
+      "It makes its nest by damming streams with bark and mud. It is known as an industrious worker.",
+    type: [types.NORMAL, types.WATER],
+    baseStats: [79, 85, 60, 55, 60, 71],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/400.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/400.png",
+    abilities: {
+      [abilityIdEnum.SIMPLE]: 0.45,
+      109: 0.45,
+      141: 0.1,
+    },
+    moveIds: ["m453", "m14", "m127", "m416"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.KRICKETOT]: {
+    name: "Kricketot",
+    emoji: "<:401:1351026500140531712>",
+    description:
+      "It shakes its head back to front, causing its antennae to hit each other and sound like a xylophone.",
+    type: [types.BUG],
+    baseStats: [37, 25, 41, 25, 41, 25],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/401.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/401.png",
+    evolution: [
+      {
+        level: 10,
+        id: pokemonIdEnum.KRICKETUNE,
+      },
+    ],
+    abilities: {
+      61: 0.8,
+      50: 0.2,
+    },
+    moveIds: ["m33", "m283", moveIdEnum.BUG_BITE],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.KRICKETUNE]: {
+    name: "Kricketune",
+    emoji: "<:402:1351026502359187548>",
+    description:
+      "It crosses its knifelike arms in front of its chest when it cries. It can compose melodies ad lib.",
+    type: [types.BUG],
+    baseStats: [77, 85, 51, 55, 51, 65],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/402.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/402.png",
+    abilities: {
+      68: 0.8,
+      101: 0.2,
+    },
+    moveIds: ["m33", moveIdEnum.NIGHT_SLASH, moveIdEnum.BUG_BITE, "m195"],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.SHINX]: {
+    name: "Shinx",
+    emoji: "<:403:1351026503688912957>",
+    description:
+      "All of its fur dazzles if danger is sensed. It flees while the foe is momentarily blinded.",
+    type: [types.ELECTRIC],
+    baseStats: [45, 65, 34, 40, 34, 45],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/403.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/403.png",
+    evolution: [
+      {
+        level: 15,
+        id: pokemonIdEnum.LUXIO,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.RIVALRY]: 0.45,
+      [abilityIdEnum.INTIMIDATE]: 0.45,
+      [abilityIdEnum.GUTS]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.TACKLE,
+      moveIdEnum.BITE,
+      moveIdEnum.TAKE_DOWN,
+      moveIdEnum.THUNDERBOLT,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.LUXIO]: {
+    name: "Luxio",
+    emoji: "<:404:1351026504854802533>",
+    description:
+      "Its claws loose electricity with enough amperage to cause fainting. They live in small groups.",
+    type: [types.ELECTRIC],
+    baseStats: [60, 85, 49, 60, 49, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/404.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/404.png",
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.LUXRAY,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.RIVALRY]: 0.45,
+      [abilityIdEnum.INTIMIDATE]: 0.45,
+      [abilityIdEnum.GUTS]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.FACADE,
+      moveIdEnum.THUNDERBOLT,
+      moveIdEnum.SUPERPOWER,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.LUXRAY]: {
+    name: "Luxray",
+    emoji: "<:405:1351026506612342834>",
+    description:
+      "It has eyes which can see through anything. It spots and captures prey hiding behind objects.",
+    type: [types.ELECTRIC],
+    baseStats: [80, 120, 79, 95, 79, 70],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/405.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/405.png",
+    abilities: {
+      [abilityIdEnum.RIVALRY]: 0.45,
+      [abilityIdEnum.INTIMIDATE]: 0.45,
+      [abilityIdEnum.GUTS]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.FACADE,
+      moveIdEnum.SUPERPOWER,
+      moveIdEnum.WILD_CHARGE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.BUDEW]: {
+    name: "Budew",
+    emoji: "<:406:1351026507904061471>",
+    description:
+      "Over the winter, it closes its bud and endures the cold. In spring, the bud opens and releases pollen.",
+    type: [types.GRASS, types.POISON],
+    baseStats: [40, 30, 35, 50, 70, 55],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/406.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/406.png",
+    evolution: [
+      {
+        level: 18,
+        id: pokemonIdEnum.ROSELIA,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.NATURAL_CURE]: 0.45,
+      [abilityIdEnum.POISON_POINT]: 0.45,
+      [abilityIdEnum.LEAF_GUARD]: 0.1,
+    },
+    moveIds: [moveIdEnum.ABSORB, moveIdEnum.GIGA_DRAIN, moveIdEnum.SYNTHESIS],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.ROSERADE]: {
+    name: "Roserade",
+    emoji: "<:407:1351026508851970050>",
+    description:
+      "With the movements of a dancer, it strikes with whips that are densely lined with poison thorns.",
+    type: [types.GRASS, types.POISON],
+    baseStats: [60, 70, 65, 125, 105, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/407.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/407.png",
+    abilities: {
+      [abilityIdEnum.NATURAL_CURE]: 0.45,
+      [abilityIdEnum.POISON_POINT]: 0.45,
+      [abilityIdEnum.TECHNICIAN]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POISON_STING,
+      moveIdEnum.SPIKES,
+      moveIdEnum.SYNTHESIS,
+      moveIdEnum.LEAF_STORM,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.CRANIDOS]: {
+    name: "Cranidos",
+    emoji: "<:408:1351026510210928761>",
+    description:
+      "A primeval Pokémon that used headbutts to crack open hard berries. Its skull is as hard as iron.",
+    type: [types.ROCK],
+    baseStats: [67, 125, 40, 30, 30, 58],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/408.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/408.png",
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.RAMPARDOS,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.MOLD_BREAKER]: 0.8,
+      [abilityIdEnum.SHEER_FORCE]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.HEADBUTT,
+      moveIdEnum.TAKE_DOWN,
+      moveIdEnum.STRENGTH,
+      moveIdEnum.STONE_EDGE,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.RAMPARDOS]: {
+    name: "Rampardos",
+    emoji: "<:409:1351026511691382835>",
+    description:
+      "Its powerful head butt has enough power to shatter even the most durable things upon impact.",
+    type: [types.ROCK],
+    baseStats: [97, 165, 60, 65, 50, 58],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/409.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/409.png",
+    abilities: {
+      [abilityIdEnum.MOLD_BREAKER]: 0.8,
+      [abilityIdEnum.SHEER_FORCE]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.HEADBUTT,
+      moveIdEnum.STRENGTH,
+      moveIdEnum.STONE_EDGE,
+      moveIdEnum.HEAD_SMASH,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.SHIELDON]: {
+    name: "Shieldon",
+    emoji: "<:410:1351026649004642356>",
+    description:
+      "A Pokémon that lived in dense forests. Its face is covered by a hard, protective mask.",
+    type: [types.ROCK, types.STEEL],
+    baseStats: [30, 42, 118, 42, 88, 30],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/410.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/410.png",
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.BASTIODON,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.STURDY]: 0.8,
+      [abilityIdEnum.SOUNDPROOF]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.TACKLE,
+      moveIdEnum.IRON_DEFENSE,
+      moveIdEnum.IRON_HEAD,
+      moveIdEnum.STONE_EDGE,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.BASTIODON]: {
+    name: "Bastiodon",
+    emoji: "<:411:1351026514866475088>",
+    description:
+      "When they lined up side by side, no foe could break through. They shielded their young in that way.",
+    type: [types.ROCK, types.STEEL],
+    baseStats: [60, 52, 168, 47, 138, 30],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/411.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/411.png",
+    abilities: {
+      [abilityIdEnum.STURDY]: 0.8,
+      [abilityIdEnum.SOUNDPROOF]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BLOCK,
+      moveIdEnum.IRON_DEFENSE,
+      moveIdEnum.WIDE_GUARD,
+      moveIdEnum.METAL_BURST,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.COMBEE]: {
+    name: "Combee",
+    emoji: "<:415:1351026660564013127>",
+    description:
+      "A Pokemon formed by three others. The sweet aroma given off by its honey attracts Pokémon.",
+    type: [types.BUG, types.FLYING],
+    baseStats: [30, 30, 42, 30, 42, 70],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/415.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/415.png",
+    evolution: [
+      {
+        level: 21,
+        id: pokemonIdEnum.VESPIQUEN,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.HONEY_GATHER]: 0.8,
+      [abilityIdEnum.HUSTLE]: 0.2,
+    },
+    moveIds: [moveIdEnum.GUST, moveIdEnum.BUG_BITE],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.VESPIQUEN]: {
+    name: "Vespiquen",
+    emoji: "<:416:1351026662292193300>",
+    description:
+      "Its abdomen is a honeycomb for grubs. It raises its grubs on honey collected by Combee.",
+    type: [types.BUG, types.FLYING],
+    baseStats: [70, 80, 102, 80, 102, 40],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/416.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/416.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.UNNERVE]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.GUST,
+      moveIdEnum.DEFEND_ORDER,
+      moveIdEnum.HEAL_ORDER,
+      moveIdEnum.ATTACK_ORDER,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.PACHIRISU]: {
+    name: "Pachirisu",
+    emoji: "<:417:1351026663319928853>",
+    description:
+      "It makes fur balls that crackle with static electricity. It stores them with berries in tree holes.",
+    type: [types.ELECTRIC],
+    baseStats: [60, 45, 70, 45, 90, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/417.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/417.png",
+    abilities: {
+      [abilityIdEnum.RUN_AWAY]: 0.45,
+      [abilityIdEnum.PICKUP]: 0.45,
+      [abilityIdEnum.VOLT_ABSORB]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.NUZZLE,
+      moveIdEnum.PROTECT,
+      moveIdEnum.FOLLOW_ME,
+      moveIdEnum.SUPER_FANG,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.BUIZEL]: {
+    name: "Buizel",
+    emoji: "<:418:1351026665127542967>",
+    description:
+      "It has a flotation sac that is like an inflatable collar. It floats on water with its head out.",
+    type: [types.WATER],
+    baseStats: [55, 65, 35, 60, 30, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/418.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/418.png",
+    evolution: [
+      {
+        level: 26,
+        id: pokemonIdEnum.FLOATZEL,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SWIFT_SWIM]: 0.8,
+      [abilityIdEnum.WATER_VEIL]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.AQUA_JET,
+      moveIdEnum.QUICK_ATTACK,
+      moveIdEnum.SURF,
+      moveIdEnum.WATERFALL,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.FLOATZEL]: {
+    name: "Floatzel",
+    emoji: "<:419:1351026666943807528>",
+    description:
+      "It floats using its well-developed flotation sac. It assists in the rescues of drowning people.",
+    type: [types.WATER],
+    baseStats: [85, 105, 55, 85, 50, 115],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/419.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/419.png",
+    abilities: {
+      [abilityIdEnum.SWIFT_SWIM]: 0.8,
+      [abilityIdEnum.WATER_VEIL]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.AQUA_JET,
+      moveIdEnum.ICE_PUNCH,
+      moveIdEnum.SWITCHEROO,
+      moveIdEnum.HYDRO_PUMP,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.AMBIPOM]: {
+    name: "Ambipom",
+    emoji: "<:424:1351026847709659178>",
+    description:
+      "Split into two, the tails are so adept at handling and doing things, Ambipom rarely uses its hands now.",
+    type: [types.NORMAL],
+    baseStats: [75, 100, 66, 60, 66, 115],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/424.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/424.png",
+    abilities: {
+      [abilityIdEnum.TECHNICIAN]: 0.45,
+      [abilityIdEnum.PICKUP]: 0.45,
+      [abilityIdEnum.SKILL_LINK]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.SCRATCH,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.U_TURN,
+      moveIdEnum.DOUBLE_EDGE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.DRIFLOON]: {
+    name: "Drifloon",
+    emoji: "<:425:1351026848901107773>",
+    description:
+      "A Pokémon formed by the spirits of people and Pokémon. It loves damp, humid seasons.",
+    type: [types.GHOST, types.FLYING],
+    baseStats: [90, 50, 34, 60, 44, 70],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/425.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/425.png",
+    evolution: [
+      {
+        level: 28,
+        id: pokemonIdEnum.DRIFBLIM,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.AFTERMATH]: 0.45,
+      [abilityIdEnum.UNBURDEN]: 0.45,
+      [abilityIdEnum.FLARE_BOOST]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.GUST,
+      moveIdEnum.HEX,
+      moveIdEnum.DESTINY_BOND,
+      moveIdEnum.WILL_O_WISP,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.DRIFBLIM]: {
+    name: "Drifblim",
+    emoji: "<:426:1351026850100678727>",
+    description:
+      "It carries people and Pokémon when it flies. But since it only drifts, it can end up anywhere.",
+    type: [types.GHOST, types.FLYING],
+    baseStats: [150, 80, 44, 90, 54, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/426.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/426.png",
+    abilities: {
+      [abilityIdEnum.AFTERMATH]: 0.45,
+      [abilityIdEnum.UNBURDEN]: 0.45,
+      [abilityIdEnum.FLARE_BOOST]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.HEX,
+      moveIdEnum.DESTINY_BOND,
+      moveIdEnum.WILL_O_WISP,
+      moveIdEnum.TAILWIND,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.BUNEARY]: {
+    name: "Buneary",
+    emoji: "<:427:1351026851253850214>",
+    description:
+      "When it senses danger, it perks up its ears. On cold nights, it sleeps with its head tucked into its fur.",
+    type: [types.NORMAL],
+    baseStats: [55, 66, 44, 44, 56, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/427.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/427.png",
+    evolution: [
+      {
+        level: 24,
+        id: pokemonIdEnum.LOPUNNY,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.RUN_AWAY]: 0.45,
+      [abilityIdEnum.KLUTZ]: 0.45,
+      [abilityIdEnum.LIMBER]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.CHARM,
+      moveIdEnum.ENCORE,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.DRAIN_PUNCH,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.LOPUNNY]: {
+    name: "Lopunny",
+    emoji: "<:428:1351026852797485127>",
+    description: "BATMAN, THERE IS NO LAWS AGAINST THE POKEMON, BATMAN!!",
+    type: [types.NORMAL],
+    baseStats: [65, 76, 84, 54, 96, 105],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/428.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/428.png",
+    abilities: {
+      [abilityIdEnum.CUTE_CHARM]: 0.45,
+      [abilityIdEnum.KLUTZ]: 0.45,
+      [abilityIdEnum.LIMBER]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.CHARM,
+      moveIdEnum.ENCORE,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.HIGH_JUMP_KICK,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.HONCHKROW]: {
+    name: "Honchkrow",
+    emoji: "<:430:1351026855834026015>",
+    description:
+      "If one utters a deep cry, many Murkrow gather quickly. For this, it is called 'The Summoner of Night.'",
+    type: [types.DARK, types.FLYING],
+    baseStats: [100, 125, 52, 105, 52, 71],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/430.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/430.png",
+    abilities: {
+      [abilityIdEnum.INSOMNIA]: 0.45,
+      [abilityIdEnum.SUPER_LUCK]: 0.45,
+      [abilityIdEnum.MOXIE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.PECK,
+      moveIdEnum.ROOST,
+      moveIdEnum.NIGHT_SLASH,
+      moveIdEnum.BRAVE_BIRD,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.GLAMEOW]: {
+    name: "Glameow",
+    emoji: "<:431:1351026924763353198>",
+    description:
+      "It claws if displeased and purrs when affectionate. Its fickleness is very popular among some.",
+    type: [types.NORMAL],
+    baseStats: [49, 55, 42, 42, 37, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/431.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/431.png",
+    evolution: [
+      {
+        level: 38,
+        id: pokemonIdEnum.PURUGLY,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.LIMBER]: 0.45,
+      [abilityIdEnum.OWN_TEMPO]: 0.45,
+      [abilityIdEnum.KEEN_EYE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.SCRATCH,
+      moveIdEnum.CHARM,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.AERIAL_ACE,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.PURUGLY]: {
+    name: "Purugly",
+    emoji: "<:432:1351026926520897536>",
+    description:
+      "It is a brazen brute that barges its way into another Pokémon's nest and claims it as its own.",
+    type: [types.NORMAL],
+    baseStats: [71, 82, 64, 64, 59, 112],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/432.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/432.png",
+    abilities: {
+      [abilityIdEnum.THICK_FAT]: 0.45,
+      [abilityIdEnum.OWN_TEMPO]: 0.45,
+      [abilityIdEnum.DEFIANT]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.SCRATCH,
+      moveIdEnum.BODY_SLAM,
+      moveIdEnum.SWAGGER,
+      moveIdEnum.FAKE_OUT,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.STUNKY]: {
+    name: "Stunky",
+    emoji: "<:434:1351026930526191707>",
+    description:
+      "It sprays a foul fluid from its rear. Its stench spreads over a mile radius, driving Pokémon away.",
+    type: [types.POISON, types.DARK],
+    baseStats: [63, 63, 47, 41, 41, 74],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/434.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/434.png",
+    evolution: [
+      {
+        level: 34,
+        id: pokemonIdEnum.SKUNTANK,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.STENCH]: 0.45,
+      [abilityIdEnum.AFTERMATH]: 0.45,
+      [abilityIdEnum.KEEN_EYE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.TOXIC,
+      moveIdEnum.SMOKESCREEN,
+      moveIdEnum.NIGHT_SLASH,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.SKUNTANK]: {
+    name: "Skuntank",
+    emoji: "<:435:1351026932027756676>",
+    description:
+      "It sprays a vile-smelling fluid from the tip of its tail to attack. Its range is over 160 feet.",
+    type: [types.POISON, types.DARK],
+    baseStats: [103, 93, 67, 71, 61, 84],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/435.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/435.png",
+    abilities: {
+      [abilityIdEnum.STENCH]: 0.45,
+      [abilityIdEnum.AFTERMATH]: 0.45,
+      [abilityIdEnum.KEEN_EYE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.TOXIC,
+      moveIdEnum.NIGHT_SLASH,
+      moveIdEnum.FIRE_BLAST,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.BRONZOR]: {
+    name: "Bronzor",
+    emoji: "<:436:1351026934229766144>",
+    description:
+      "Implements shaped like bronze mirrors have been found. It is thought the ancient people actually used them as mirrors.",
+    type: [types.STEEL, types.PSYCHIC],
+    baseStats: [57, 24, 86, 24, 86, 23],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/436.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/436.png",
+    evolution: [
+      {
+        level: 33,
+        id: pokemonIdEnum.BRONZONG,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 0.45,
+      [abilityIdEnum.HEATPROOF]: 0.45,
+      [abilityIdEnum.HEAVY_METAL]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.LIGHT_SCREEN,
+      moveIdEnum.SAFEGUARD,
+      moveIdEnum.GYRO_BALL,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.BRONZONG]: {
+    name: "Bronzong",
+    emoji: "<:437:1351026938378059787>",
+    description:
+      "One caused a news sensation when it was dug up at a construction site after a 2,000-year sleep.",
+    type: [types.STEEL, types.PSYCHIC],
+    baseStats: [67, 89, 116, 79, 116, 33],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/437.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/437.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 0.45,
+      [abilityIdEnum.HEATPROOF]: 0.45,
+      [abilityIdEnum.HEAVY_METAL]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.BLOCK,
+      moveIdEnum.LIGHT_SCREEN,
+      moveIdEnum.GYRO_BALL,
+      moveIdEnum.TRICK_ROOM,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.MIME_JR]: {
+    name: "Mime Jr.",
+    emoji: "<:439:1351027015305920582>",
+    description:
+      "It mimics the expressions and motions of those it sees to understand the feelings of others.",
+    type: [types.PSYCHIC, types.FAIRY],
+    baseStats: [20, 25, 45, 70, 90, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/439.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/439.png",
+    evolution: [
+      {
+        level: 32,
+        id: pokemonIdEnum.MR_MIME,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SOUNDPROOF]: 0.45,
+      [abilityIdEnum.FILTER]: 0.45,
+      [abilityIdEnum.TECHNICIAN]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.MIMIC,
+      moveIdEnum.LIGHT_SCREEN,
+      moveIdEnum.REFLECT,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.HAPPINY]: {
+    name: "Happiny",
+    emoji: "<:440:1351027016610353192>",
+    description:
+      "It carries a round, egg-shaped rock in its belly pouch and gives the rock to its friends.",
+    type: [types.NORMAL],
+    baseStats: [100, 5, 5, 15, 65, 30],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/440.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/440.png",
+    evolution: [
+      {
+        level: 25,
+        id: pokemonIdEnum.CHANSEY,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.NATURAL_CURE]: 0.45,
+      [abilityIdEnum.SERENE_GRACE]: 0.45,
+      [abilityIdEnum.FRIEND_GUARD]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POUND,
+      moveIdEnum.CHARM,
+      moveIdEnum.DISARMING_VOICE,
+      moveIdEnum.HEAL_BELL,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.SPIRITOMB]: {
+    name: "Spiritomb",
+    emoji: "<:442:1351027022180126731>",
+    description:
+      "A Pokémon that was formed by 108 spirits. It is bound to a fissure in an odd keystone.",
+    type: [types.GHOST, types.DARK],
+    baseStats: [50, 92, 108, 92, 108, 35],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/442.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/442.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.INFILTRATOR]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.SHADOW_SNEAK,
+      moveIdEnum.PURSUIT,
+      moveIdEnum.TAUNT,
+      moveIdEnum.MEMENTO,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.GIBLE]: {
+    name: "Gible",
+    emoji: "<:443:1351027023757181010>",
+    description:
+      "It nests in horizontal holes warmed by geothermal heat. Foes who get too close can expect to be pounced on and bitten.",
+    type: [types.DRAGON, types.GROUND],
+    baseStats: [58, 70, 45, 40, 45, 42],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/443.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/443.png",
+    evolution: [
+      {
+        level: 24,
+        id: pokemonIdEnum.GABITE,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SAND_VEIL]: 0.8,
+      [abilityIdEnum.ROUGH_SKIN]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.TACKLE,
+      moveIdEnum.BITE,
+      moveIdEnum.DIG,
+      moveIdEnum.DRAGON_CLAW,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.GABITE]: {
+    name: "Gabite",
+    emoji: "<:444:1351027024822534224>",
+    description:
+      "There is a long-held belief that medicine made from its scales will heal even incurable illnesses.",
+    type: [types.DRAGON, types.GROUND],
+    baseStats: [68, 90, 65, 50, 55, 82],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/444.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/444.png",
+    evolution: [
+      {
+        level: 48,
+        id: pokemonIdEnum.GARCHOMP,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SAND_VEIL]: 0.8,
+      [abilityIdEnum.ROUGH_SKIN]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.SWORDS_DANCE,
+      moveIdEnum.DIG,
+      moveIdEnum.DRAGON_CLAW,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.GARCHOMP]: {
+    name: "Garchomp",
+    emoji: "<:445:1351027080271368202>",
+    description:
+      "When it folds up its body and extends its wings, it looks like a jet plane. It flies at sonic speed.",
+    type: [types.DRAGON, types.GROUND],
+    baseStats: [108, 130, 95, 80, 85, 102],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/445.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/445.png",
+    abilities: {
+      [abilityIdEnum.SAND_VEIL]: 0.8,
+      [abilityIdEnum.ROUGH_SKIN]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.SWORDS_DANCE,
+      moveIdEnum.DRAGON_CLAW,
+      moveIdEnum.EARTHQUAKE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.SNOVER]: {
+    name: "Snover",
+    emoji: "<:459:1351027254427389952>",
+    description:
+      "During cold seasons, it migrates to the mountain's lower reaches. It returns to the snow-covered summit in the spring.",
+    type: [types.GRASS, types.ICE],
+    baseStats: [60, 62, 50, 62, 60, 40],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/459.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/459.png",
+    evolution: [
+      {
+        level: 40,
+        id: pokemonIdEnum.ABOMASNOW,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SNOW_WARNING]: 0.8,
+      [abilityIdEnum.SOUNDPROOF]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ICE_SHARD,
+      moveIdEnum.ICY_WIND,
+      moveIdEnum.GIGA_DRAIN,
+      moveIdEnum.SWAGGER,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.ABOMASNOW]: {
+    name: "Abomasnow",
+    emoji: "<:460:1351027255798796308>",
+    description:
+      "It blankets wide areas in snow by whipping up blizzards. It is also known as 'The Ice Monster.'",
+    type: [types.GRASS, types.ICE],
+    baseStats: [90, 92, 75, 92, 85, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/460.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/460.png",
+    abilities: {
+      [abilityIdEnum.SNOW_WARNING]: 0.8,
+      [abilityIdEnum.SOUNDPROOF]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ICE_SHARD,
+      moveIdEnum.GIGA_DRAIN,
+      moveIdEnum.SWAGGER,
+      moveIdEnum.BLIZZARD,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.WEAVILE]: {
+    name: "Weavile",
+    emoji: "<:461:1351027256788779078>",
+    description:
+      "They live in cold regions, forming groups of four or five that hunt prey with impressive coordination.",
+    type: [types.DARK, types.ICE],
+    baseStats: [70, 120, 65, 45, 85, 125],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/461.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/461.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.PICKPOCKET]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ICE_SHARD,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.KNOCK_OFF,
+      moveIdEnum.TRIPLE_AXEL,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.MAGNEZONE]: {
+    name: "Magnezone",
+    emoji: "<:462:1351027257807867956>",
+    description:
+      "It evolved from exposure to a special magnetic field. Three units generate magnetism.",
+    type: [types.ELECTRIC, types.STEEL],
+    baseStats: [70, 70, 115, 130, 90, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/462.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/462.png",
+    abilities: {
+      [abilityIdEnum.MAGNET_PULL]: 0.45,
+      [abilityIdEnum.STURDY]: 0.45,
+      [abilityIdEnum.ANALYTIC]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.THUNDER_SHOCK,
+      moveIdEnum.THUNDER_WAVE,
+      moveIdEnum.FLASH_CANNON,
+      moveIdEnum.ZAP_CANNON,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.LICKILICKY]: {
+    name: "Lickilicky",
+    emoji: "<:463:1351027258953044010>",
+    description:
+      "It wraps things with its extensible tongue. Getting too close to it will leave you soaked with drool.",
+    type: [types.NORMAL],
+    baseStats: [110, 85, 95, 80, 95, 50],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/463.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/463.png",
+    abilities: {
+      [abilityIdEnum.OWN_TEMPO]: 0.45,
+      [abilityIdEnum.OBLIVIOUS]: 0.45,
+      [abilityIdEnum.CLOUD_NINE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.LICK,
+      moveIdEnum.BODY_SLAM,
+      moveIdEnum.SCREECH,
+      moveIdEnum.EXPLOSION,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.RHYPERIOR]: {
+    name: "Rhyperior",
+    emoji: "<:464:1351027260102017025>",
+    description:
+      "It puts rocks in holes in its palms and uses its muscles to shoot them. Geodude are shot at rare times.",
+    type: [types.GROUND, types.ROCK],
+    baseStats: [115, 140, 130, 55, 55, 40],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/464.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/464.png",
+    abilities: {
+      [abilityIdEnum.LIGHTNING_ROD]: 0.45,
+      [abilityIdEnum.SOLID_ROCK]: 0.45,
+      [abilityIdEnum.RECKLESS]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.SMACK_DOWN,
+      moveIdEnum.SWORDS_DANCE,
+      moveIdEnum.DRILL_RUN,
+      moveIdEnum.ROCK_WRECKER,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.ELECTIVIRE]: {
+    name: "Electivire",
+    emoji: "<:466:1351027262602084486>",
+    description:
+      "It pushes the tips of its two tails against its foe, then lets loose with over 20,000 volts of power.",
+    type: [types.ELECTRIC],
+    baseStats: [75, 123, 67, 95, 85, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/466.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/466.png",
+    abilities: {
+      [abilityIdEnum.MOTOR_DRIVE]: 0.8,
+      [abilityIdEnum.VITAL_SPIRIT]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.THUNDER_SHOCK,
+      moveIdEnum.ICE_PUNCH,
+      moveIdEnum.CROSS_CHOP,
+      moveIdEnum.WILD_CHARGE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.MAGMORTAR]: {
+    name: "Magmortar",
+    emoji: "<:467:1351027328238489660>",
+    description:
+      "It blasts fireballs of over 3,600 degrees Fahrenheit from the ends of its arms. It lives in volcanic craters.",
+    type: [types.FIRE],
+    baseStats: [75, 95, 67, 125, 95, 83],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/467.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/467.png",
+    abilities: {
+      [abilityIdEnum.FLAME_BODY]: 0.8,
+      [abilityIdEnum.VITAL_SPIRIT]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.EMBER,
+      moveIdEnum.CROSS_CHOP,
+      moveIdEnum.TAUNT,
+      moveIdEnum.FIRE_BLAST,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.TOGEKISS]: {
+    name: "Togekiss",
+    emoji: "<:468:1351027329920536576>",
+    description:
+      "It shares many blessings with people who respect one another's rights and avoid needless strife.",
+    type: [types.FAIRY, types.FLYING],
+    baseStats: [85, 50, 95, 120, 115, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/468.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/468.png",
+    abilities: {
+      [abilityIdEnum.HUSTLE]: 0.45,
+      [abilityIdEnum.SERENE_GRACE]: 0.45,
+      [abilityIdEnum.SUPER_LUCK]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.HELPING_HAND,
+      moveIdEnum.THUNDER_WAVE,
+      moveIdEnum.AIR_SLASH,
+      moveIdEnum.HEAT_WAVE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.YANMEGA]: {
+    name: "Yanmega",
+    emoji: "<:469:1351027330964783146>",
+    description:
+      "By churning its wings, it creates shock waves that inflict critical internal injuries to foes.",
+    type: [types.BUG, types.FLYING],
+    baseStats: [86, 76, 86, 116, 56, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/469.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/469.png",
+    abilities: {
+      [abilityIdEnum.SPEED_BOOST]: 0.45,
+      [abilityIdEnum.TINTED_LENS]: 0.45,
+      [abilityIdEnum.FRISK]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.PROTECT,
+      moveIdEnum.AIR_SLASH,
+      moveIdEnum.BUG_BUZZ,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.LEAFEON]: {
+    name: "Leafeon",
+    emoji: "<:470:1351027331963289691>",
+    description:
+      "When you see Leafeon asleep in a patch of sunshine, you'll know it is using photosynthesis to produce clean air.",
+    type: [types.GRASS],
+    baseStats: [65, 110, 130, 60, 65, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/470.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/470.png",
+    abilities: {
+      [abilityIdEnum.LEAF_GUARD]: 0.8,
+      [abilityIdEnum.CHLOROPHYLL]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.QUICK_ATTACK,
+      moveIdEnum.BATON_PASS,
+      moveIdEnum.SYNTHESIS,
+      moveIdEnum.SOLAR_BLADE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.GLACEON]: {
+    name: "Glaceon",
+    emoji: "<:471:1351027333095493632>",
+    description:
+      "It lowers its body heat to freeze its fur. The hairs then become like needles it can fire.",
+    type: [types.ICE],
+    baseStats: [65, 60, 110, 130, 95, 65],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/471.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/471.png",
+    abilities: {
+      [abilityIdEnum.SNOW_CLOAK]: 0.8,
+      [abilityIdEnum.ICE_BODY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.QUICK_ATTACK,
+      moveIdEnum.PROTECT,
+      moveIdEnum.SHADOW_BALL,
+      moveIdEnum.BLIZZARD,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.GLISCOR]: {
+    name: "Gliscor",
+    emoji: "<:472:1351027334123094056>",
+    description:
+      "It dances through the air, freely manipulating the position of its body. It can catch the wind to fly anywhere.",
+    type: [types.GROUND, types.FLYING],
+    baseStats: [75, 95, 125, 45, 75, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/472.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/472.png",
+    abilities: {
+      [abilityIdEnum.HYPER_CUTTER]: 0.45,
+      [abilityIdEnum.SAND_VEIL]: 0.45,
+      [abilityIdEnum.POISON_HEAL]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POISON_STING,
+      moveIdEnum.PROTECT,
+      moveIdEnum.SPIKES,
+      moveIdEnum.TAILWIND,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.UXIE]: {
+    name: "Uxie",
+    emoji: "<:480:1351027418453901353>",
+    description:
+      "Known as 'The Being of Knowledge.' It is said that it can wipe out the memory of those who see its eyes.",
+    type: [types.PSYCHIC],
+    baseStats: [75, 75, 130, 75, 130, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/480.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/480.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.AMNESIA,
+      moveIdEnum.STEALTH_ROCK,
+      moveIdEnum.MYSTICAL_POWER,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.MESPRIT]: {
+    name: "Mesprit",
+    emoji: "<:481:1351027419686899774>",
+    description:
+      "Known as 'The Being of Emotion.' It taught humans the nobility of sorrow, pain, and joy.",
+    type: [types.PSYCHIC],
+    baseStats: [80, 105, 105, 105, 105, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/481.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/481.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.HEALING_WISH,
+      moveIdEnum.U_TURN,
+      moveIdEnum.MYSTICAL_POWER,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.AZELF]: {
+    name: "Azelf",
+    emoji: "<:482:1351027420806910054>",
+    description:
+      "Known as 'The Being of Willpower.' It sleeps at the bottom of a lake to keep the world in balance.",
+    type: [types.PSYCHIC],
+    baseStats: [75, 125, 70, 125, 70, 115],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/482.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/482.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.CONFUSION,
+      moveIdEnum.FLAMETHROWER,
+      moveIdEnum.NASTY_PLOT,
+      moveIdEnum.MYSTICAL_POWER,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.HEATRAN]: {
+    name: "Heatran",
+    emoji: "<:485:1351027494563614828>",
+    description:
+      "It dwells in volcanic caves. It digs in with its cross-shaped feet to crawl on ceilings and walls.",
+    type: [types.FIRE, types.STEEL],
+    baseStats: [91, 90, 106, 130, 106, 77],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/485.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/485.png",
+    abilities: {
+      [abilityIdEnum.FLASH_FIRE]: 0.8,
+      [abilityIdEnum.FLAME_BODY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.EARTH_POWER,
+      moveIdEnum.FLASH_CANNON,
+      moveIdEnum.MAGMA_STORM,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.CRESSELIA]: {
+    name: "Cresselia",
+    emoji: "<:488:1351027498275835954>",
+    description:
+      "Those who sleep holding Cresselia's feather are assured of joyful dreams. It is said to represent the crescent moon.",
+    type: [types.PSYCHIC],
+    baseStats: [120, 70, 120, 75, 130, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/488.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/488.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.HELPING_HAND,
+      moveIdEnum.LUNAR_DANCE,
+      moveIdEnum.LUNAR_BLESSING,
+      moveIdEnum.FUTURE_SIGHT,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.DARKRAI]: {
+    name: "Darkrai",
+    emoji: "<:491:1351027502801354822>",
+    description:
+      "It can lull people to sleep and make them dream. It is active during nights of the new moon.",
+    type: [types.DARK],
+    baseStats: [70, 90, 90, 135, 90, 125],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/491.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/491.png",
+    abilities: {
+      [abilityIdEnum.BAD_DREAMS]: 1,
+    },
+    moveIds: [
+      moveIdEnum.HEX,
+      moveIdEnum.DARK_PULSE,
+      moveIdEnum.NASTY_PLOT,
+      moveIdEnum.DARK_VOID,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
   },
   "725-1": {
     name: "Littenyan",
@@ -8270,7 +10127,7 @@ const rarityConfig = {
   },
 };
 
-const generations = [152, 252];
+const generations = [152, 252, 387];
 
 const getGeneration = (id) => {
   const baseNumber = parseInt(id.split("-")[0], 10);

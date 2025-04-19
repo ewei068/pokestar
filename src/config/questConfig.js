@@ -6,6 +6,7 @@ const {
   checkNumPokemon,
   listPokemonsFromTrainer: listPokemons,
 } = require("../services/pokemon");
+const { getMaxDreamCards } = require("../utils/trainerUtils");
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { SUPPORT_SERVER_INVITE, gameEventConfig } = require("./helpConfig");
 const { locations } = require("./locationConfig");
@@ -462,7 +463,7 @@ const newTutorialConfigRaw = {
     description:
       "Now that you can win battles, use `/pve` to **train 6 Pokemon to level 30.**",
     requirementString: "Train 6x Pokemon to level 30",
-    proceedString: "Use `/train` to train 6 Pokemon to level 30!",
+    proceedString: "Use `/pve` and `/train` to train 6 Pokemon to level 30!",
     checkRequirements: async (trainer) => {
       const { data: pokemons } = await listPokemons(trainer, {
         pageSize: 6,
@@ -546,13 +547,48 @@ const newTutorialConfigRaw = {
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/gacha.gif",
   },
+  catchDarkrai: {
+    name: "Catching Darkrai",
+    emoji: "<:491:1351027502801354822>",
+    description:
+      "Darkrai is a Mythical Pokemon that can be caught after **completing 25 tutorial stages.** Use **`/mythic darkrai`** to catch Darkrai!",
+    requirementString: "Complete 25x tutorial stages and catch Darkrai",
+    proceedString: "Use `/mythic darkrai` to catch Darkrai!",
+    checkRequirements: async (trainer) => trainer.hasDarkrai,
+    rewards: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.MASTERBALL]: 3,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/491.png",
+  },
+  autoBattle: {
+    name: "Auto Battle",
+    emoji: emojis.DREAM_CARD,
+    description: `Darkrai allows you to **auto-battle** in most PvE content! Auto-battling consumes ${emojis.DREAM_CARD} Dream Cards, which recharges once every 5 minutes.\n\nUse \`/pve\` to start a battle, then **press the Auto button** to start an auto-battle.`,
+    requirementString:
+      "Complete one auto-battle (have fewer Dream Cards than maximum)",
+    proceedString:
+      "Use `/pve` to start a battle, then **press the Auto button** to start an auto-battle. **You must have Darkrai to auto-battle** (check previous tutorial stage).",
+    checkRequirements: async (trainer) =>
+      trainer.hasDarkrai && trainer.dreamCards < getMaxDreamCards(trainer),
+    rewards: {
+      money: 10000,
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/auto-battle.png",
+  },
   advancedLeveling: {
     name: "Advanced Pokemon Leveling",
     emoji: "📈",
     description:
       "Now that you have caught more Pokemon, **train 6 Pokemon to level 50.**\n\n**More difficult trainers provide more EXP!**",
     requirementString: "Train 6x Pokemon to level 50",
-    proceedString: "Use `/train` to train 6 Pokemon to level 50!",
+    proceedString: "Use `/pve` and `/train` to train 6 Pokemon to level 50!",
     checkRequirements: async (trainer) => {
       const { data: pokemons } = await listPokemons(trainer, {
         pageSize: 6,
@@ -624,7 +660,7 @@ const newTutorialConfigRaw = {
     description:
       "Now that you have taken on the Battle Tower, **train 6 Pokemon to level 75.**",
     requirementString: "Train 6x Pokemon to level 75",
-    proceedString: "Use `/train` to train 6 Pokemon to level 75!",
+    proceedString: "Use `/pve` and `/train` to train 6 Pokemon to level 75!",
     checkRequirements: async (trainer) => {
       const { data: pokemons } = await listPokemons(trainer, {
         pageSize: 6,
@@ -708,7 +744,7 @@ const newTutorialConfigRaw = {
     description:
       "Now that you have won many battles, **train 6 Pokemon to level 100.** The maximum level for Pokemon from training is 100.\n\nRemember, **more difficult trainers provide more EXP!**",
     requirementString: "Train 6x Pokemon to level 100",
-    proceedString: "Use `/train` to train 6 Pokemon to level 100!",
+    proceedString: "Use `/pve` and `/train` to train 6 Pokemon to level 100!",
     checkRequirements: async (trainer) => {
       const { data: pokemons } = await listPokemons(trainer, {
         pageSize: 6,

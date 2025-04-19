@@ -9,6 +9,7 @@ const {
   backpackCategories,
   backpackItemConfig,
 } = require("../config/backpackConfig");
+const { emojis } = require("../enums/emojis");
 const { formatItemQuantity } = require("./itemUtils");
 const { getOrSetDefault, formatMoney } = require("./utils");
 
@@ -291,6 +292,22 @@ const getFullUsername = (user) => {
 const getUserSelectedDevice = (_user, userSettings) =>
   userSettings?.deviceType || "desktop";
 
+const formatDreamCards = (dreamCards, maxDreamCards) =>
+  `${emojis.DREAM_CARD} ${dreamCards}/${maxDreamCards} Dream Cards`;
+
+/**
+ * @param {Trainer} trainer
+ * @returns {number}
+ */
+const getMaxDreamCards = (trainer) => 100 + trainer.level + 50;
+
+/**
+ * @param {Trainer} trainer
+ * @returns {string}
+ */
+const formatDreamCardsForTrainer = (trainer) =>
+  formatDreamCards(trainer.dreamCards, getMaxDreamCards(trainer));
+
 module.exports = {
   getPokeballsString,
   getBackpackItemsString,
@@ -309,4 +326,7 @@ module.exports = {
   removeItems,
   getFullUsername,
   getUserSelectedDevice,
+  formatDreamCards,
+  getMaxDreamCards,
+  formatDreamCardsForTrainer,
 };

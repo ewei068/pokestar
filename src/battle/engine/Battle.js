@@ -62,6 +62,9 @@ class Battle {
    * @param {string?=} param0.npcId
    * @param {string?=} param0.difficulty
    * @param {boolean?=} param0.isPvp
+   * @param {boolean?=} param0.canAuto
+   * @param {number?=} param0.autoBattleCost
+   * @param {boolean?=} param0.shouldShowAutoBattle
    */
   constructor({
     moneyMultiplier = 1,
@@ -77,6 +80,9 @@ class Battle {
     npcId = null,
     difficulty = null,
     isPvp = false,
+    canAuto = false,
+    autoBattleCost = 999,
+    shouldShowAutoBattle = false,
   } = {}) {
     // initial
     this.baseMoney = 100;
@@ -145,6 +151,12 @@ class Battle {
     this.winCallback = winCallback;
     this.loseCallback = loseCallback;
     this.isPvp = isPvp;
+    this.autoData = {
+      isAutoMode: false,
+      canAuto,
+      autoBattleCost,
+      shouldShowAutoBattle,
+    };
   }
 
   /**
@@ -360,6 +372,7 @@ class Battle {
 
   nextTurn() {
     // end turn logic
+    // should this fire after statuses and effects are ticked? probably not I think
     this.emitEvent(battleEventEnum.TURN_END, {
       activePokemon: this.activePokemon,
     });

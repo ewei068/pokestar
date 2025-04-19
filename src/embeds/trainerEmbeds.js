@@ -15,6 +15,7 @@ const {
 } = require("../config/backpackConfig");
 const { getPBar, getWhitespace, formatMoney } = require("../utils/utils");
 const { locationConfig } = require("../config/locationConfig");
+const { formatDreamCards } = require("../utils/trainerUtils");
 
 /*
 "trainer": {
@@ -121,12 +122,22 @@ const DEPRECATEDbuildBackpackEmbed = (trainer) => {
  * @param {number=} param2.money
  * @param {boolean=} param2.shouldShowMoney
  * @param {boolean=} param2.shouldShowDescription
+ * @param {number=} param2.dreamCards
+ * @param {boolean=} param2.shouldShowDreamCards
+ * @param {number=} param2.maxDreamCards
  * @returns {EmbedBuilder}
  */
 const buildBackpackEmbed = (
   itemIds,
   flattenedBackpack,
-  { money = 0, shouldShowMoney = true, shouldShowDescription = false }
+  {
+    money = 0,
+    shouldShowMoney = true,
+    shouldShowDescription = false,
+    dreamCards,
+    maxDreamCards,
+    shouldShowDreamCards = false,
+  }
 ) => {
   const allCategories = itemIds
     .map((itemId) => backpackItemConfig[itemId].category)
@@ -159,9 +170,16 @@ const buildBackpackEmbed = (
   const embed = new EmbedBuilder();
   embed.setTitle("Your Backpack");
   embed.setColor(0xffffff);
+  let description = "";
   // TODO: icon maybe
   if (shouldShowMoney) {
-    embed.setDescription(`You have ${formatMoney(money)} Pokédollars.`);
+    description += `You have ${formatMoney(money)} Pokédollars.\n`;
+  }
+  if (shouldShowDreamCards) {
+    description += `You have ${formatDreamCards(dreamCards, maxDreamCards)}.\n`;
+  }
+  if (description !== "") {
+    embed.setDescription(description);
   }
   embed.addFields(...fields);
 

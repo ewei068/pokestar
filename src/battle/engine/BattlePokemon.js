@@ -15,7 +15,7 @@ const {
   damageTypes,
   battleStatToBaseStat,
 } = require("../../config/battleConfig");
-const { battleEventEnum } = require("../../enums/battleEnums");
+const { battleEventEnum, abilityIdEnum } = require("../../enums/battleEnums");
 const { calculatePokemonStats } = require("../../services/pokemon");
 const { logger } = require("../../log");
 const {
@@ -161,6 +161,7 @@ class BattlePokemon {
    * @returns {MoveIdEnum[]}
    */
   getMoveIds() {
+    // @ts-ignore
     return Object.keys(this.moveIds);
   }
 
@@ -383,13 +384,14 @@ class BattlePokemon {
    * @param {object} param0
    * @param {MoveIdEnum} param0.moveId
    * @param {BattlePokemon} param0.primaryTarget
+   * @param {object=} param0.extraOptions
    * @returns {{
    *  allTargets?: BattlePokemon[],
    *  missedTargets?: BattlePokemon[],
    *  err?: string
    * }}
    */
-  executeMoveAgainstTarget({ moveId, primaryTarget }) {
+  executeMoveAgainstTarget({ moveId, primaryTarget, extraOptions = {} }) {
     const moveData = getMove(moveId);
     if (!moveData) {
       logger.error(`Move ${moveId} not found.`);
@@ -400,6 +402,7 @@ class BattlePokemon {
     const allTargets = this.getTargets(moveId, primaryTarget);
     const missedTargets = this.getMisses(moveId, allTargets);
 
+    // TODO: Move to executeMove?
     // trigger before execute move events
     const executeEventArgs = {
       source: this,
@@ -438,6 +441,7 @@ class BattlePokemon {
       primaryTarget,
       allTargets,
       missedTargets,
+      extraOptions,
     });
 
     return {
@@ -452,8 +456,15 @@ class BattlePokemon {
    * @param {object} param0.primaryTarget
    * @param {Array<object>} param0.allTargets
    * @param {Array<object>=} param0.missedTargets
+   * @param {object=} param0.extraOptions
    */
-  executeMove({ moveId, primaryTarget, allTargets, missedTargets = [] }) {
+  executeMove({
+    moveId,
+    primaryTarget,
+    allTargets,
+    missedTargets = [],
+    extraOptions = {},
+  }) {
     const move = getMove(moveId);
     if (!move) {
       logger.error(`Move ${moveId} not found.`);
@@ -470,6 +481,7 @@ class BattlePokemon {
         primaryTarget,
         allTargets,
         missedTargets,
+        extraOptions,
       });
     } else {
       const legacyMove = /** @type {any} */ (move);
@@ -680,6 +692,11 @@ class BattlePokemon {
           break;
       }
     }
+
+    const eventArgs = {
+      source: this,
+    };
+    this.battle.emitEvent(battleEventEnum.AFTER_SKIP_TURN, eventArgs);
 
     // end turn
     this.battle.nextTurn();
@@ -1015,6 +1032,10 @@ class BattlePokemon {
       return 0;
     }
 
+    if (damageInfo.type === "recoil") {
+      this.battle.addToLog(`${this.name} is affected by recoil!`);
+    }
+
     // if pvp, deal 15% less damage
     if (this.battle.isPvp) {
       damage = Math.max(1, Math.floor(damage * 0.85));
@@ -1178,7 +1199,6 @@ class BattlePokemon {
 
     this.hp = 0;
     this.isFainted = true;
-    this.disableAbility();
     this.disableHeldItem();
     this.battle.addToLog(`${this.name} fainted!`);
 
@@ -1188,6 +1208,7 @@ class BattlePokemon {
       source,
     };
     this.battle.eventHandler.emit(battleEventEnum.AFTER_FAINT, afterFaintArgs);
+    this.disableAbility();
   }
 
   /**
@@ -1305,15 +1326,16 @@ class BattlePokemon {
       /** @type {HeldItemIdEnum} */ (heldItemId)
     );
     if (!heldItemData || !heldItemData.itemRemove || !heldItemId) {
-      return;
+      return false;
     }
     if (!applied) {
       logger.error(
         `Held item ${heldItemId} is not applied to Pokemon ${this.id} ${this.name}.`
       );
-      return;
+      return false;
     }
 
+    // @ts-ignore
     heldItemData.itemRemove({
       battle: this.battle,
       source: this,
@@ -1321,6 +1343,7 @@ class BattlePokemon {
       properties: this.heldItem.data,
     });
     this.heldItem.applied = false;
+    return true;
   }
 
   /**
@@ -1336,31 +1359,43 @@ class BattlePokemon {
 
   /**
    * Disables the pokemon's held item, then resets held item data and removes held item ID
-   * @returns {void}
+   * @returns {boolean} Whether the held item was removed
    */
   removeHeldItem() {
-    this.disableHeldItem();
+    const heldItemRemoved = this.disableHeldItem();
     this.heldItem = {
       applied: false,
       data: {},
     };
+    if (!heldItemRemoved) {
+      return false;
+    }
+
     this.battle.addToLog(`${this.name} lost its held item!`);
+    return true;
   }
 
   /**
    * If usable, uses the held item on the target Pokemon, then removes it if it's used up
-   * @param {BattlePokemon} target
+   * @param {BattlePokemon=} target
    * @returns {boolean} Whether the held item was used
    */
-  useHeldItem(target) {
+  useHeldItem(target = this) {
     // remove held item effects
     const { heldItemId } = this.heldItem;
     const heldItemData = getHeldItem(heldItemId);
-    if (!heldItemData || !heldItemData.tags.includes("usable") || !heldItemId) {
+    if (!heldItemData || !heldItemId) {
+      return false;
+    }
+    if (!heldItemData.tags.includes("usable")) {
+      logger.warn(
+        `Attempted to use held item ${heldItemId} on ${this.name}, but it is not usable!`
+      );
       return false;
     }
 
     // TODO: disable item before use?
+    // @ts-ignore
     heldItemData.itemUse({
       battle: this.battle,
       source: this,
@@ -1374,6 +1409,10 @@ class BattlePokemon {
 
   hasAbility(abilityId) {
     return this.ability?.abilityId === abilityId;
+  }
+
+  hasActiveAbility(abilityId) {
+    return this.ability?.abilityId === abilityId && this.ability.applied;
   }
 
   hasHeldItem(heldItemId) {
@@ -1921,6 +1960,7 @@ class BattlePokemon {
         this.battle.addToLog(`${this.name} was cured of its paralysis!`);
         break;
       case statusConditions.POISON:
+      case statusConditions.BADLY_POISON:
         this.battle.addToLog(`${this.name} was cured of its poison!`);
         break;
       case statusConditions.SLEEP:
@@ -2110,6 +2150,14 @@ class BattlePokemon {
       statData.flatBoost;
     stat = Math.max(1, Math.floor(stat));
 
+    // Simple ability: doubles the effect of stat changes
+    if (this.hasActiveAbility(abilityIdEnum.SIMPLE)) {
+      const baseStat = this[battleStatToBaseStat(statId)];
+      const difference = stat - baseStat;
+      stat = baseStat + difference * 2;
+      stat = Math.max(1, Math.floor(stat));
+    }
+
     switch (statId) {
       case "def":
         // if hail and ice, def * 1.5
@@ -2166,6 +2214,24 @@ class BattlePokemon {
       this.getStat("spd"),
       this.getStat("spe"),
     ];
+  }
+
+  /**
+   * @returns {StatIdNoHP} statId
+   */
+  getHighestNonHpStatId() {
+    let highestStat = 0;
+    let highestStatId = "atk";
+    for (const statId of ["atk", "def", "spa", "spd", "spe"]) {
+      // @ts-ignore
+      const stat = this.getStat(statId);
+      if (stat > highestStat) {
+        highestStat = stat;
+        highestStatId = statId;
+      }
+    }
+    // @ts-ignore
+    return highestStatId;
   }
 
   /**

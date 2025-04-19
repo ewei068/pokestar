@@ -161,6 +161,20 @@ Team Aqua and Team Magma are clashing for control of the climate in Pokestar!
 * [Magma Groudon Raid](https://preview.redd.it/6p9bnciaj3461.png?auto=webp&s=c249420a2c8dfae4e1dd649d74688531cc7d9a88)
 `;
 
+const GEN_4_DESCRIPTION = `🌟**Generation IV**🌟
+
+Generation 4 Pokemon have arrived! Generation 4 Pokemon will be releasing over the course of 2 updates, bringing many new Pokemon, mechanics, and held items!
+
+<:387:1132497397587640392> **New Pokemon:** Many new Pokemon have been added, and are available in the Gacha! You may also start seeing these Pokemon in NPC and Dungeon battles!
+
+<:488:1351027498275835954> **Legendary Banners:** Gen 4 Legendary Pokemon will have special rate-up banners! Note that these Pokemon are NOT limited and are available in all banners.
+
+<:491:1351027502801354822> **Auto-Battling:** You can now auto-battle after catching Darkrai! Use \`/mythic darkrai\` after completing 25 \`/tutorial\` stages to catch Darkrai! Most PvE content can be auto-battled using Dream Cards that recharge over time. For the duration of the event, you get **50 more max Dream Cards**!
+
+🖌️ **Art Credits**
+* Darkrai Art: https://www.dearplayers.com/_next/image?url=https%3A%2F%2Fassets.dearplayers.com%2Fgplay-data%2Fevents%2Fdarkrai-joins-the-fray-6680176898-1280x720sr.jpg&w=1920&q=75
+`;
+
 /**
  * @typedef {{
  *  name: string,
@@ -174,18 +188,22 @@ Team Aqua and Team Magma are clashing for control of the climate in Pokestar!
  */
 const gameEventConfig = [
   {
+    name: "Generation IV",
+    description: GEN_4_DESCRIPTION,
+  },
+  /* {
     name: "Twitch Plays Pokemon (Re-run)",
     description: TPP_DESCRIPTION,
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-tpp-banner.png",
   },
-  {
+  /* {
     name: "Aqua vs Magma",
     description: AQUA_VS_MAGMA_DESCRIPTION,
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-aqua-magma-banner.png",
   },
-  /* {
+  {
     name: "100 Members + Official Launch",
     description: HUNDRED_MEMBERS_DESCRIPTION,
     image:

@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * trainer.js Creates trainers and handles all logic relating to trainers and interactions involving them.
  */
@@ -31,7 +29,6 @@ const {
   getPokeballsString,
   addRewards,
   getBackpackItemsString,
-  flattenRewards,
 } = require("../utils/trainerUtils");
 const { getVoteMultiplier } = require("../config/socialConfig");
 
@@ -164,18 +161,18 @@ const getTrainer = async (discordUser, refresh = true) => {
   }
 
   // attempt to reset time-interval fields
-  const lastCorrectedTime = new Date(trainer.lastCorrected);
-  const newCorrectedTime = new Date();
+  const lastCorrectedDate = new Date(trainer.lastCorrected);
+  const newCorrectedDate = new Date();
   modified =
     setDefaultFields(
       trainer,
       trainerFields,
-      lastCorrectedTime,
-      newCorrectedTime
+      lastCorrectedDate,
+      newCorrectedDate
     ) || modified;
 
   if (modified) {
-    trainer.lastCorrected = newCorrectedTime.getTime();
+    trainer.lastCorrected = newCorrectedDate.getTime();
     try {
       const res = await updateDocument(
         collectionNames.USERS,

@@ -393,6 +393,101 @@ const backpackHeldItemConfig = {
       },
     },
   },
+  [heldItemIdEnum.TOXIC_ORB]: {
+    name: "Toxic Orb",
+    emoji: "<:toxicorb:1342654749169811506>",
+    description: "Badly poisons the user at the end of their turn.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: 75,
+          [backpackItems.WILLPOWER_SHARD]: 75,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.FLAME_ORB]: {
+    name: "Flame Orb",
+    emoji: "<:flameorb:1342654741846429778>",
+    description: "Burns the user at the end of their turn.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 75,
+          [backpackItems.EMOTION_SHARD]: 75,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.EJECT_BUTTON]: {
+    name: "Eject Button",
+    emoji: "<:ejectbutton:1358643223655874690>",
+    description:
+      "The first time the user takes damage, consume this item to boost the adjacent ally with the lowest combat readiness to max.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 125,
+          [backpackItems.EMOTION_SHARD]: 50,
+          [backpackItems.WILLPOWER_SHARD]: 25,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.ROCKY_HELMET]: {
+    name: "Rocky Helmet",
+    emoji: "<:rockyhelmet:1342654748070772746>",
+    description:
+      "When the user is hit by a damaging move, the move user takes 5% of its max HP as damage.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 100,
+          [backpackItems.EMOTION_SHARD]: 25,
+          [backpackItems.WILLPOWER_SHARD]: 25,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.CUSTAP_BERRY]: {
+    name: "Custap Berry",
+    emoji: "<:custapberry:1358678114938519662>",
+    description:
+      "When the user drops to 30% or less of its max HP, consume this item to boost the user's combat readiness to 100.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 7500,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 50,
+          [backpackItems.EMOTION_SHARD]: 100,
+        },
+      },
+    },
+  },
+  [heldItemIdEnum.SHELL_BELL]: {
+    name: "Shell Bell",
+    emoji: "<:shellbell:1358678116150542518>",
+    description: "When the user deals damage, heal 10% of the damage dealt.",
+    category: backpackCategories.HELD_ITEMS,
+    cost: {
+      money: 10000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.KNOWLEDGE_SHARD]: 50,
+          [backpackItems.WILLPOWER_SHARD]: 150,
+        },
+      },
+    },
+  },
 };
 
 const craftableItemConfig = Object.freeze({

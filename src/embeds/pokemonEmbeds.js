@@ -49,7 +49,11 @@ const {
   pokeballConfig,
   getCelebiPool,
 } = require("../config/gachaConfig");
-const { getPokeballsString, getItems } = require("../utils/trainerUtils");
+const {
+  getPokeballsString,
+  getItems,
+  formatDreamCardsForTrainer,
+} = require("../utils/trainerUtils");
 const {
   MAX_EQUIPMENT_LEVEL,
   levelUpCost,
@@ -66,6 +70,7 @@ const {
   formatItemQuantityFromBackpack,
   getItemDisplay,
 } = require("../utils/itemUtils");
+const { emojis } = require("../enums/emojis");
 
 /**
  *
@@ -97,9 +102,12 @@ const buildBannerEmbed = (trainer, bannerData) => {
       continue;
     }
     rateUpString += `\`${rateUpWhitespace[i]} ${rarity} \``;
-    for (const speciesId of rateUp[rarity]) {
+    for (const speciesId of rateUp[rarity].slice(0, 15)) {
       const speciesData = pokemonConfig[speciesId];
       rateUpString += ` ${speciesData.emoji}`;
+    }
+    if (rateUp[rarity].length > 15) {
+      rateUpString += ` ...and ${rateUp[rarity].length - 15} more!`;
     }
     rateUpString += "\n";
   }
@@ -1032,6 +1040,28 @@ const buildJirachiAbilityEmbed = (trainer) => {
   return embed;
 };
 
+/**
+ * @param {Trainer} trainer
+ */
+const buildDarkraiAbilityEmbed = (trainer) => {
+  const embed = new EmbedBuilder();
+  embed.setTitle(`Darkrai's Ability`);
+  embed.setColor("#FFFFFF");
+
+  const descriptionString =
+    "**Sleepwalking**\n\n" +
+    `Darkrai puts your Pokemon to sleep and can control them for you **(auto-battling)!** In eligible PvE battles, you may expend ${emojis.DREAM_CARD} Dream Cards to automatically battle. Once this is done, you may not control them again until the end of battle.\n\n` +
+    `Dream Cards recharge once every 5 minutes. They recharge up to a maximum limit, determined by: 100 + your trainer level.\n\n` +
+    `**You Have: ${formatDreamCardsForTrainer(trainer)}**`;
+  embed.setDescription(descriptionString);
+
+  embed.setImage(
+    "https://www.dearplayers.com/_next/image?url=https%3A%2F%2Fassets.dearplayers.com%2Fgplay-data%2Fevents%2Fdarkrai-joins-the-fray-6680176898-1280x720sr.jpg&w=1920&q=75"
+  );
+
+  return embed;
+};
+
 module.exports = {
   buildBannerEmbed,
   buildPokemonSpawnEmbed,
@@ -1050,4 +1080,5 @@ module.exports = {
   buildGachaInfoString,
   buildCelebiAbilityEmbed,
   buildJirachiAbilityEmbed,
+  buildDarkraiAbilityEmbed,
 };

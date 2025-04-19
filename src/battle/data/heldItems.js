@@ -1,6 +1,10 @@
 /* eslint-disable no-param-reassign */
 const { backpackHeldItemConfig } = require("../../config/backpackConfig");
-const { moveTiers } = require("../../config/battleConfig");
+const {
+  moveTiers,
+  statusConditions,
+  targetPatterns,
+} = require("../../config/battleConfig");
 const { pokemonConfig } = require("../../config/pokemonConfig");
 const {
   battleEventEnum,
@@ -114,7 +118,7 @@ class HeldItem {
     return {
       currentMoveId: null,
       disabledMoveIds: [],
-      listenerId: this.registerListenerFunction({
+      moveListenerId: this.registerListenerFunction({
         battle,
         target,
         eventName: battleEventEnum.AFTER_MOVE,
@@ -147,6 +151,19 @@ class HeldItem {
         },
         conditionCallback: getIsSourcePokemonCallback(target),
       }),
+      skipTurnListenerId: this.registerListenerFunction({
+        battle,
+        target,
+        eventName: battleEventEnum.AFTER_SKIP_TURN,
+        callback: ({ heldItemInstance }) => {
+          heldItemInstance.data.currentMoveId = null;
+          for (const moveId of heldItemInstance.data.disabledMoveIds) {
+            target.enableMove(moveId, target);
+          }
+          heldItemInstance.data.disabledMoveIds = [];
+        },
+        conditionCallback: getIsSourcePokemonCallback(target),
+      }),
     };
   }
 
@@ -154,14 +171,15 @@ class HeldItem {
    * @param {object} args
    * @param {Battle} args.battle
    * @param {BattlePokemon} args.target
-   * @param {{ listenerId: string, currentMoveId: MoveIdEnum, disabledMoveIds: MoveIdEnum[] }} args.properties
+   * @param {{ moveListenerId: string, skipTurnListenerId: string, currentMoveId: MoveIdEnum, disabledMoveIds: MoveIdEnum[] }} args.properties
    * @param  {(target: BattlePokemon) => void} removeBuffCallback
    */
   // eslint-disable-next-line class-methods-use-this
   removeChoiceItemWithBuff(args, removeBuffCallback) {
     const { battle, target, properties } = args;
     removeBuffCallback(target);
-    battle.unregisterListener(properties.listenerId);
+    battle.unregisterListener(properties.moveListenerId);
+    battle.unregisterListener(properties.skipTurnListenerId);
     // re-enable all disabled moves
     for (const moveId of properties.disabledMoveIds) {
       target.enableMove(moveId, target);
@@ -518,6 +536,176 @@ const heldItemsToRegister = Object.freeze({
             getIsInstanceOfType("effect"),
             getIsTargetPokemonCallback(target)
           ),
+        }),
+      };
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [heldItemIdEnum.TOXIC_ORB]: new HeldItem({
+    id: heldItemIdEnum.TOXIC_ORB,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.TURN_END,
+          callback: ({ activePokemon }) => {
+            if (!activePokemon.status.statusId) {
+              battle.addToLog(`${activePokemon.name}'s Toxic Orb activates!`);
+              activePokemon.applyStatus(
+                statusConditions.BADLY_POISON,
+                activePokemon
+              );
+            }
+          },
+          conditionCallback: getIsActivePokemonCallback(battle, target),
+        }),
+      };
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [heldItemIdEnum.FLAME_ORB]: new HeldItem({
+    id: heldItemIdEnum.FLAME_ORB,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.TURN_END,
+          callback: ({ activePokemon }) => {
+            if (!activePokemon.status.statusId) {
+              battle.addToLog(`${activePokemon.name}'s Flame Orb activates!`);
+              activePokemon.applyStatus(statusConditions.BURN, activePokemon);
+            }
+          },
+          conditionCallback: getIsActivePokemonCallback(battle, target),
+        }),
+      };
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [heldItemIdEnum.EJECT_BUTTON]: new HeldItem({
+    id: heldItemIdEnum.EJECT_BUTTON,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
+          callback: ({ target: damagedPokemon }) => {
+            damagedPokemon.useHeldItem(damagedPokemon);
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    itemUse({ battle, target }) {
+      battle.addToLog(`${target.name}'s Eject Button was triggered!`);
+      const allyParty = battle.parties[target.teamName];
+      const adjacentAllies = target.getPatternTargets(
+        allyParty,
+        targetPatterns.CROSS,
+        target.position
+      );
+      const allies = adjacentAllies.filter((pokemon) => pokemon !== target);
+
+      if (allies.length > 0) {
+        let lowestCRAlly = allies[0];
+        for (const ally of allies) {
+          if (ally.combatReadiness < lowestCRAlly.combatReadiness) {
+            lowestCRAlly = ally;
+          }
+        }
+        lowestCRAlly.boostCombatReadiness(target, 100);
+      } else {
+        battle.addToLog(`But there were no adjacent allies!`);
+      }
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+    tags: ["usable"],
+  }),
+  [heldItemIdEnum.ROCKY_HELMET]: new HeldItem({
+    id: heldItemIdEnum.ROCKY_HELMET,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
+          callback: ({ source }) => {
+            const damage = Math.max(1, Math.floor(source.maxHp * 0.05));
+            battle.addToLog(
+              `${source.name} was hurt by ${target.name}'s Rocky Helmet!`
+            );
+            target.dealDamage(damage, source, {
+              type: "heldItem",
+              id: this.id,
+            });
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsInstanceOfType("move"),
+            getIsTargetPokemonCallback(target)
+          ),
+        }),
+      };
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [heldItemIdEnum.CUSTAP_BERRY]: new HeldItem({
+    id: heldItemIdEnum.CUSTAP_BERRY,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_TAKEN,
+          callback: () => {
+            if (target.hp / target.maxHp <= 0.3) {
+              target.useHeldItem(target);
+            }
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    itemUse({ battle, target }) {
+      battle.addToLog(`${target.name}'s Custap Berry activated!`);
+      target.boostCombatReadiness(target, 100);
+    },
+    itemRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+    tags: ["berry", "usable"],
+  }),
+  [heldItemIdEnum.SHELL_BELL]: new HeldItem({
+    id: heldItemIdEnum.SHELL_BELL,
+    itemAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_DEALT,
+          callback: ({ damage, damageInfo }) => {
+            if (damageInfo?.type === "move") {
+              const healAmount = Math.max(1, Math.floor(damage * 0.1));
+              battle.addToLog(`${target.name}'s Shell Bell restored its HP!`);
+              target.giveHeal(healAmount, target, {
+                type: "heldItem",
+                id: this.id,
+              });
+            }
+          },
+          conditionCallback: getIsSourcePokemonCallback(target),
         }),
       };
     },

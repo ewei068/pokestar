@@ -151,6 +151,7 @@
  * @param {BattlePokemon} param0.primaryTarget
  * @param {Array<BattlePokemon>} param0.allTargets
  * @param {Array<BattlePokemon>} param0.missedTargets
+ * @param {object=} param0.extraOptions
  */
 
 /**

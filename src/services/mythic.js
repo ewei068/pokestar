@@ -763,6 +763,52 @@ const getJirachi = async (trainer) => {
 };
 
 /**
+ * @param {WithId<Trainer>} trainer
+ * @returns {Promise<{err?: string, data?: WithId<Pokemon>}>}
+ */
+const getDarkrai = async (trainer) => {
+  const speciesId = pokemonIdEnum.DARKRAI;
+
+  const darkraiRes = await getMythic(trainer, speciesId);
+  if (darkraiRes.err) {
+    return { err: darkraiRes.err };
+  }
+
+  let darkrai = darkraiRes.data;
+  let modified = false;
+  if (!darkrai) {
+    // requirement: has completed >= 25 tutorial stages
+    if (Object.keys(trainer.tutorialData.completedTutorialStages).length < 25) {
+      return {
+        err: "You must complete at least 25 tutorial stages to get Darkrai! Use `/tutorial` to view your progress.",
+      };
+    }
+
+    // @ts-ignore
+    darkrai = generateMythic(trainer, speciesId);
+    modified = true;
+  }
+
+  if (!trainer.hasDarkrai) {
+    trainer.hasDarkrai = true;
+    const trainerRes = await updateTrainer(trainer);
+    if (trainerRes.err) {
+      return { err: trainerRes.err };
+    }
+  }
+
+  if (modified) {
+    const { err, id } = await upsertMythic(trainer, darkrai);
+    if (err) {
+      return { err };
+    }
+    darkrai._id = id || darkrai._id;
+  }
+
+  return { data: darkrai };
+};
+
+/**
  * @param {Trainer} trainer
  * @param {object} param1
  * @param {string} param1.wishId
@@ -928,4 +974,5 @@ module.exports = {
   getJirachi,
   canTrainerUseWish,
   useWish,
+  getDarkrai,
 };
