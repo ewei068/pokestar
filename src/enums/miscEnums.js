@@ -1,6 +1,8 @@
 // TODO: try to move these to their respective files
 
 const timeEnum = Object.freeze({
+  MINUTE: 60 * 1000,
+  HOUR: 60 * 60 * 1000,
   DAY: 24 * 60 * 60 * 1000,
   WEEK: 7 * 24 * 60 * 60 * 1000,
   FORTNITE: 14 * 24 * 60 * 60 * 1000, // this is mispelled on purpose

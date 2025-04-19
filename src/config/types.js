@@ -7,6 +7,7 @@
 /** @typedef {import("./equipmentConfig").EquipmentModifierTypeEnum} EquipmentModifierTypeEnum */
 /** @typedef {import("./equipmentConfig").EquipmentTypeEnum} EquipmentTypeEnum */
 /** @typedef {import("./equipmentConfig").EquipmentModifierEnum} EquipmentModifierEnum */
+/** @typedef {import("./pokemonConfig").PokemonIdEnum} PokemonIdEnum */
 /** @typedef {import("./locationConfig").LocationEnum} LocationEnum */
 /** @typedef {import("./npcConfig").NpcEnum} NpcEnum */
 /** @typedef {import("./npcConfig").DungeonEnum} DungeonEnum */
@@ -23,8 +24,6 @@
 /** @typedef {import("./commandConfig").CommandEnum} CommandEnum */
 /** @typedef {import("./helpConfig").EventData} EventData */
 /** @typedef {import("./gachaConfig").BannerData} BannerData */
-/** @typedef {import("./trainerConfig").TrainerFieldData} TrainerFieldData */
-/** @typedef {import("./trainerConfig").DefaultFieldConfig} DefaultFieldConfig */
 /** @typedef {import("./trainerConfig").UserSettingsEnum} UserSettingsEnum */
 /** @typedef {import("./trainerConfig").UserSettingsData} UserSettingsData */
 /** @typedef {import("./questConfig").TutorialStageEnum} TutorialStageEnum */

@@ -9,8 +9,10 @@
  *
  * battle.js Handles all battle interactions from the user at a base level down to creating the teams.
  */
+// eslint-disable-next-line no-unused-vars
+const { MessageComponentInteraction, Message } = require("discord.js");
 const { Battle } = require("../battle/engine/Battle");
-const { getOrSetDefault } = require("../utils/utils");
+const { getOrSetDefault, errorlessAsync } = require("../utils/utils");
 const {
   buildBattleEmbed,
   buildPveListEmbed,
@@ -52,8 +54,9 @@ const {
   addRewards,
   getFlattenedRewardsString,
   getUserSelectedDevice,
+  formatDreamCardsForTrainer,
 } = require("../utils/trainerUtils");
-const { getIdFromTowerStage } = require("../utils/battleUtils");
+const { getIdFromTowerStage, npcTurnAction } = require("../utils/battleUtils");
 const {
   BasicNPC,
   DungeonNPC,
@@ -61,6 +64,50 @@ const {
   RaidNPC,
 } = require("../battle/engine/npcs");
 const { heldItemIdEnum } = require("../enums/battleEnums");
+const { emojis } = require("../enums/emojis");
+
+/**
+ * @param {Trainer} trainer
+ * @returns {{ err?: string }}
+ */
+const getDoesTrainerHaveAutoBattle = (trainer) => {
+  if (!trainer.hasDarkrai) {
+    return {
+      err: "You don't have access to auto battle yet! Use `/mythic darkrai` to gain access to auto battle.",
+    };
+  }
+  return { err: null };
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {number} cost
+ * @returns {{ err?: string }}
+ */
+const getCanTrainerAutoBattle = (trainer, cost) => {
+  const doesTrainerHaveAutoBattle = getDoesTrainerHaveAutoBattle(trainer);
+  if (doesTrainerHaveAutoBattle.err) {
+    return doesTrainerHaveAutoBattle;
+  }
+  if (trainer.dreamCards < cost) {
+    return {
+      err: `You don't have enough ${emojis.DREAM_CARD} Dream Cards to auto battle! You have ${trainer.dreamCards} and need ${cost}. Dream Cards recharge once every 5 minutes.`,
+    };
+  }
+  return { err: null };
+};
+/**
+ * @param {DiscordUser} user
+ * @param {number} cost
+ * @returns {Promise<{ err?: string }>}
+ */
+const getCanUserAutoBattle = async (user, cost) => {
+  const trainer = await getTrainer(user);
+  if (trainer.err) {
+    return { err: trainer.err };
+  }
+  return getCanTrainerAutoBattle(trainer.data, cost);
+};
 
 /**
  * @param {Battle} battle
@@ -96,24 +143,22 @@ const getStartTurnSend = async (battle, stateId) => {
   battle.clearLog();
   const components = [];
   if (!battle.ended) {
-    const infoRow = buildBattleInfoActionRow(
-      battle,
-      stateId,
-      Object.keys(battle.teams).length + 1
-    );
-    components.push(infoRow);
+    // TODO: stop button?
+    if (!battle.autoData.isAutoMode) {
+      const infoRow = buildBattleInfoActionRow(battle, stateId, {});
+      components.push(infoRow);
 
-    // check if active pokemon can move
-    // TODO: deal with NPC case
-    if (
-      battle.activePokemon.canMove() &&
-      !battle.isNpc(battle.activePokemon.userId)
-    ) {
-      const selectMoveComponent = buildSelectBattleMoveRow(battle, stateId);
-      components.push(selectMoveComponent);
-    } else {
-      const nextTurnComponent = buildNextTurnActionRow(stateId);
-      components.push(nextTurnComponent);
+      // check if active pokemon can move
+      if (
+        battle.activePokemon.canMove() &&
+        !battle.isNpc(battle.activePokemon.userId)
+      ) {
+        const selectMoveComponent = buildSelectBattleMoveRow(battle, stateId);
+        components.push(selectMoveComponent);
+      } else {
+        const nextTurnComponent = buildNextTurnActionRow(stateId);
+        components.push(nextTurnComponent);
+      }
     }
   } else {
     // if game ended, add rewards to trainers and pokemon
@@ -299,6 +344,93 @@ const getStartTurnSend = async (battle, stateId) => {
   };
 };
 
+/**
+ * @param {Battle} battle
+ * @param {string} stateId
+ * @param {object} options
+ * @param {MessageComponentInteraction=} options.interaction
+ * @param {Message=} options.messageRef
+ * @param {number=} options.retry
+ * @param {number=} options.totalTurns
+ */
+const nextAutoTurn = async (
+  battle,
+  stateId,
+  { messageRef, interaction, retry = 0, totalTurns = 0 }
+) => {
+  if (totalTurns > 300) {
+    logger.error("Auto turn timed out");
+    return;
+  }
+  if (battle.ended || !battle.autoData.isAutoMode) {
+    return;
+  }
+  let newMessageRef;
+  try {
+    npcTurnAction(battle);
+    const componentToSend = await getStartTurnSend(battle, stateId);
+    if (interaction) {
+      newMessageRef = await interaction.update(componentToSend);
+    } else if (messageRef) {
+      newMessageRef = await messageRef.edit(componentToSend);
+    } else {
+      logger.error("No interaction or message ref provided");
+      return;
+    }
+  } catch (err) {
+    logger.error(`Failed to send auto turn: ${err}`);
+    if (retry < 3) {
+      await nextAutoTurn(battle, stateId, {
+        messageRef,
+        interaction,
+        retry: retry + 1,
+        totalTurns,
+      });
+    }
+  }
+
+  return await setTimeout(async () => {
+    await nextAutoTurn(battle, stateId, {
+      messageRef: newMessageRef,
+      totalTurns: totalTurns + 1,
+    });
+  }, 1000);
+};
+
+/**
+ * @param {object} options
+ * @param {Battle} options.battle
+ * @param {string} options.stateId
+ * @param {MessageComponentInteraction} options.interaction
+ * @param {DiscordUser} options.user
+ */
+const startAuto = async ({ battle, stateId, interaction, user }) => {
+  const { data: trainer } = await getTrainer(user);
+  const canAutoRes = getCanTrainerAutoBattle(
+    trainer,
+    battle.autoData.autoBattleCost
+  );
+  if (canAutoRes.err) {
+    return { err: canAutoRes.err };
+  }
+  if (!battle.autoData.shouldShowAutoBattle) {
+    return { err: "This battle can't be auto'd!" };
+  }
+
+  // remove dream cards
+  trainer.dreamCards -= battle.autoData.autoBattleCost;
+  const updateResult = await updateTrainer(trainer);
+  if (updateResult.err) {
+    return { err: updateResult.err };
+  }
+
+  errorlessAsync(() =>
+    nextAutoTurn(battle, stateId, {
+      interaction,
+    })
+  );
+};
+
 const buildPveSend = async ({
   stateId = null,
   user = null,
@@ -310,12 +442,11 @@ const buildPveSend = async ({
   const state = getState(stateId);
 
   // get trainer
-  let trainer = await getTrainer(user);
-  if (trainer.err) {
-    return { send: null, err: trainer.err };
+  const trainerResult = await getTrainer(user);
+  if (trainerResult.err) {
+    return { send: null, err: trainerResult.err };
   }
-  // @ts-ignore
-  trainer = trainer.data;
+  const trainer = trainerResult.data;
 
   const send = {
     embeds: [],
@@ -333,7 +464,11 @@ const buildPveSend = async ({
 
     // build list embed
     // @ts-ignore
-    const embed = buildPveListEmbed(npcIdsForPage, page);
+    const embed = buildPveListEmbed(npcIdsForPage, page, {
+      dreamCardString: getDoesTrainerHaveAutoBattle(trainer).err
+        ? null
+        : formatDreamCardsForTrainer(trainer),
+    });
     send.embeds.push(embed);
 
     // build scroll buttons
@@ -369,7 +504,11 @@ const buildPveSend = async ({
     }
 
     // build npc embed
-    const embed = buildPveNpcEmbed(option);
+    const embed = buildPveNpcEmbed(option, {
+      dreamCardString: getDoesTrainerHaveAutoBattle(trainer).err
+        ? null
+        : formatDreamCardsForTrainer(trainer),
+    });
     send.embeds.push(embed);
 
     // build difficulty row
@@ -431,13 +570,13 @@ const buildPveSend = async ({
     }
 
     // get trainer
-    const trainerResult = await getTrainer(user);
-    if (trainerResult.err) {
-      return { embed: null, err: trainerResult.err };
+    const newTrainerResult = await getTrainer(user);
+    if (newTrainerResult.err) {
+      return { embed: null, err: newTrainerResult.err };
     }
 
     // validate party
-    const validate = await validateParty(trainerResult.data);
+    const validate = await validateParty(newTrainerResult.data);
     if (validate.err) {
       return { err: validate.err };
     }
@@ -448,11 +587,17 @@ const buildPveSend = async ({
     const rewardMultipliers =
       npcDifficultyData.rewardMultipliers ||
       difficultyConfig[state.difficulty].rewardMultipliers;
+    const { autoBattleCost } = difficultyConfig[state.difficulty];
     const battle = new Battle({
       ...rewardMultipliers,
       dailyRewards: npcDifficultyData.dailyRewards,
       npcId: state.npcId,
       difficulty: state.difficulty,
+      canAuto: !getCanTrainerAutoBattle(newTrainerResult.data, autoBattleCost)
+        .err,
+      autoBattleCost,
+      shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(newTrainerResult.data)
+        .err,
     });
     battle.addTeam("NPC", true);
     battle.addTrainer(
@@ -463,7 +608,7 @@ const buildPveSend = async ({
       npc.party.cols
     );
     battle.addTeam("Player", false);
-    battle.addTrainer(trainerResult.data, validate.data, "Player");
+    battle.addTrainer(newTrainerResult.data, validate.data, "Player");
 
     // start battle and add to state
     battle.start();
@@ -523,12 +668,11 @@ const buildDungeonSend = async ({
   const state = getState(stateId);
 
   // get trainer
-  let trainer = await getTrainer(user);
-  if (trainer.err) {
-    return { send: null, err: trainer.err };
+  const trainerResult = await getTrainer(user);
+  if (trainerResult.err) {
+    return { send: null, err: trainerResult.err };
   }
-  // @ts-ignore
-  trainer = trainer.data;
+  const trainer = trainerResult.data;
 
   const send = {
     embeds: [],
@@ -536,7 +680,11 @@ const buildDungeonSend = async ({
   };
   if (view === "list") {
     // build list embed
-    const embed = buildDungeonListEmbed();
+    const embed = buildDungeonListEmbed({
+      dreamCardString: getDoesTrainerHaveAutoBattle(trainer).err
+        ? null
+        : formatDreamCardsForTrainer(trainer),
+    });
     send.embeds.push(embed);
 
     // build dungeon select menu
@@ -560,7 +708,11 @@ const buildDungeonSend = async ({
     }
 
     // build npc embed
-    const embed = buildDungeonEmbed(option);
+    const embed = buildDungeonEmbed(option, {
+      dreamCardString: getDoesTrainerHaveAutoBattle(trainer).err
+        ? null
+        : formatDreamCardsForTrainer(trainer),
+    });
     send.embeds.push(embed);
 
     // build difficulty row
@@ -619,13 +771,13 @@ const buildDungeonSend = async ({
     }
 
     // get trainer
-    const trainerResult = await getTrainer(user);
-    if (trainerResult.err) {
-      return { embed: null, err: trainerResult.err };
+    const newTrainerResult = await getTrainer(user);
+    if (newTrainerResult.err) {
+      return { embed: null, err: newTrainerResult.err };
     }
 
     // validate party
-    const validate = await validateParty(trainerResult.data);
+    const validate = await validateParty(newTrainerResult.data);
     if (validate.err) {
       return { err: validate.err };
     }
@@ -636,12 +788,19 @@ const buildDungeonSend = async ({
     const rewardMultipliers =
       dungeonDifficultyData.rewardMultipliers ||
       difficultyConfig[state.difficulty].rewardMultipliers;
+    const autoBattleCost =
+      difficultyConfig[state.difficulty].autoBattleCost + 6;
     const battle = new Battle({
       ...rewardMultipliers,
       rewards: dungeonDifficultyData.rewards,
       rewardString: dungeonDifficultyData.rewardString,
       npcId: state.dungeonId,
       difficulty: state.difficulty,
+      canAuto: !getCanTrainerAutoBattle(newTrainerResult.data, autoBattleCost)
+        .err,
+      autoBattleCost,
+      shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(newTrainerResult.data)
+        .err,
     });
     battle.addTeam("Dungeon", true);
     battle.addTrainer(
@@ -652,7 +811,7 @@ const buildDungeonSend = async ({
       npc.party.cols
     );
     battle.addTeam("Player", false);
-    battle.addTrainer(trainerResult.data, validate.data, "Player");
+    battle.addTrainer(newTrainerResult.data, validate.data, "Player");
 
     // start battle and add to state
     battle.start();
@@ -760,11 +919,16 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
   const rewardMultipliers =
     npcDifficultyData.rewardMultipliers ||
     difficultyConfig[battleTowerData.difficulty].rewardMultipliers;
+  const autoBattleCost =
+    difficultyConfig[battleTowerData.difficulty].autoBattleCost + 2;
   const battle = new Battle({
     ...rewardMultipliers,
     npcId: getIdFromTowerStage(towerStage),
     difficulty: battleTowerData.difficulty,
     winCallback: towerWinCallback,
+    canAuto: !getCanTrainerAutoBattle(trainer.data, autoBattleCost).err,
+    autoBattleCost,
+    shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(trainer.data).err,
   });
   battle.addTeam("Battle Tower", true);
   battle.addTrainer(
@@ -823,12 +987,11 @@ const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
   const maxPages = Object.keys(battleTowerConfig).length;
 
   // get trainer
-  let trainer = await getTrainer(user);
-  if (trainer.err) {
-    return { send: null, err: trainer.err };
+  const trainerResult = await getTrainer(user);
+  if (trainerResult.err) {
+    return { send: null, err: trainerResult.err };
   }
-  // @ts-ignore
-  trainer = trainer.data;
+  const trainer = trainerResult.data;
 
   const send = {
     content: "",
@@ -836,7 +999,11 @@ const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
     components: [],
   };
 
-  const embed = buildBattleTowerEmbed(towerStage);
+  const embed = buildBattleTowerEmbed(towerStage, {
+    dreamCardString: getDoesTrainerHaveAutoBattle(trainer).err
+      ? null
+      : formatDreamCardsForTrainer(trainer),
+  });
   send.embeds.push(embed);
 
   // build scroll buttons
@@ -873,7 +1040,12 @@ const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
 };
 
 module.exports = {
+  getDoesTrainerHaveAutoBattle,
+  getCanTrainerAutoBattle,
+  getCanUserAutoBattle,
   getStartTurnSend,
+  nextAutoTurn,
+  startAuto,
   buildPveSend,
   buildDungeonSend,
   onBattleTowerAccept,

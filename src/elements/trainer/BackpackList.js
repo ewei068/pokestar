@@ -15,6 +15,9 @@ const useInfoToggle = require("../../hooks/useInfoToggle");
  * @param {number=} param0.pageSize
  * @param {number=} param0.pageSizeWithInfo
  * @param {((itemIds: BackpackItemEnum[]) => any)=} param0.onItemsChanged
+ * @param {number=} param0.dreamCards
+ * @param {boolean=} param0.shouldShowDreamCards
+ * @param {number=} param0.maxDreamCards
  */
 const BackpackList = async (
   ref,
@@ -23,6 +26,9 @@ const BackpackList = async (
     backpack,
     money,
     shouldShowMoney = true,
+    dreamCards,
+    maxDreamCards,
+    shouldShowDreamCards = false,
     initialPage = 1,
     pageSize = 15,
     pageSizeWithInfo = 4,
@@ -78,6 +84,9 @@ const BackpackList = async (
         money,
         shouldShowMoney,
         shouldShowDescription,
+        dreamCards,
+        maxDreamCards,
+        shouldShowDreamCards,
       }),
     ],
     components: [[scrollButtonsElement, toggleInfoButton]],

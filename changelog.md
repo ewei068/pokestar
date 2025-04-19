@@ -5,14 +5,20 @@
 - Gen 4
   - Add a bunch new Pokemon
   - Add PvE against Champion Cynthia
+  - Add form changing mechanic with DNA splicers or something
+    - Update getPokemonOrder
+    - Add a base Pokemon field or sm
   - Add Mythic Darkrai
-    - Requires 30? tutorial stage completions
+    - Requires 25 tutorial stage completions
     - Gains {item} every 5 min, max 100 + level
     - Use {item} to autobattle
     - Add auto battling
   - Gen 4 event
     - Special banners
     - Some boosts or sm IDK
+    - Close old events
+  - Add some more held items
+  - Add Gen 4 rotating banner
 
 **Stretch**
 

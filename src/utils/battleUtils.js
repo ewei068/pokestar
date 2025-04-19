@@ -4,7 +4,11 @@
  *
  * battleUtils.js the lowest level of code for battles used by the battle.js
  */
-const { statusConditions, targetPatterns } = require("../config/battleConfig");
+const {
+  statusConditions,
+  targetPatterns,
+  moveTiers,
+} = require("../config/battleConfig");
 const { difficultyConfig } = require("../config/npcConfig");
 const { pokemonConfig, typeConfig } = require("../config/pokemonConfig");
 const {
@@ -182,7 +186,7 @@ const buildPartyString = (
       const emoji = pokemon ? pokemonConfig[pokemon.speciesId].emoji : "⬛";
       // if j is divisible by 3 and not 0, remove a space from the left
       // const leftSpace = j % 3 === 0 && j !== 0 ? "" : " ";
-      const leftSpace = isMobile ? "\u2002\u2005" : "\u2005\u2006";
+      const leftSpace = isMobile ? "\u2002\u2005" : "\u2009\u200a";
       rowString += `\`${lborder} \`${emoji}${leftSpace}`;
       globalIndex += 1;
       if (j === cols - 1) {
@@ -384,6 +388,7 @@ const buildBattlePokemonEffectsString = (pokemon) => {
         ) {
           shieldString = `${pokemon.effectIds[effectId].args.shield} HP `;
         }
+        // @ts-ignore
         return `${shieldString}${getEffect(effectId).name} (${
           pokemon.effectIds[effectId].duration
         })`;
@@ -702,6 +707,152 @@ const getEffectIdHasTag = (effectId, tag) => {
   return getHasTag(effectData, tag);
 };
 
+/**
+ * @param {MoveIdEnum} moveId
+ * @param {BattlePokemon} source
+ * @param {BattlePokemon} primaryTarget
+ * @param {BattlePokemon[]} targetsHit
+ * @returns {number}
+ */
+const calculateTurnHeuristic = (moveId, source, primaryTarget, targetsHit) => {
+  const moveData = getMove(moveId);
+
+  let heuristic = 0;
+  // special case: if asleep and sleep talk, use sleep talk
+  if (source.status.statusId === statusConditions.SLEEP && moveId === "m214") {
+    return 1000000;
+  }
+  // special case: if move is rocket thievery and enemy team has no fainted pokemon, return 0
+  if (moveId === "m20003") {
+    const enemyParty = source.getEnemyParty();
+    if (
+      enemyParty &&
+      enemyParty.pokemons &&
+      enemyParty.pokemons.filter((p) => p && p.isFainted).length === 0
+    ) {
+      return 0;
+    }
+  }
+  // special case: if move is gear fifth, use if under 25% hp
+  if (moveId === "m20010") {
+    if (source.hp / source.maxHp > 0.25) {
+      return 0;
+    }
+    return 1000000;
+  }
+
+  if (moveData.power !== null) {
+    // if move does damage, calculate damage that would be dealt
+    for (const target of targetsHit) {
+      const damage = source.calculateMoveDamage({
+        move: moveData,
+        primaryTarget,
+        allTargets: targetsHit,
+        target,
+      });
+      heuristic += damage;
+    }
+  } else {
+    // else, calculate heuristic = numTargets * source level * 1.5
+    heuristic = targetsHit.length * source.level * 1.5;
+  }
+  // normalize heuristic by move accuracy, or *1.2 if move has no accuracy
+  const { accuracy } = moveData;
+  heuristic *= accuracy === null ? 1.2 : accuracy / 100;
+
+  // multiply heuristic by move tier. basic = 0.7, power = 1, ultimate = 1.5
+  const moveTier = moveData.tier;
+  let tierMultiplier;
+  if (moveTier === moveTiers.BASIC) {
+    tierMultiplier = 0.7;
+  } else if (moveTier === moveTiers.POWER) {
+    tierMultiplier = 1;
+  } else {
+    tierMultiplier = 1.5;
+  }
+  heuristic *= tierMultiplier;
+
+  // calculate nonce for small random variation
+  const nonce = Math.random();
+  return heuristic + nonce;
+};
+
+/**
+ * @param {Battle} battle
+ */
+const npcTurnAction = (battle) => {
+  const { activePokemon } = battle;
+  /* steps:
+        if cant move, skip turn
+        get all moves filtered by those with eligible targets and usable
+        for all considered moves, get the best move
+        best move/target: for all targets:
+            get how many targets would be hit by AoE
+            calculate heuristic
+                if move does damage, calculate damage that would be dealt
+                else, calculate heuristic = numTargets * source level * 1.5
+            normalize heuristic by move accuracy, or *1.2 if move has no accuracy
+            normalize heuristic by move tier
+        choose best move & target based off heuristic
+        use move */
+
+  // if cant move, skip turn
+  if (!activePokemon.canMove()) {
+    activePokemon.skipTurn();
+    return;
+  }
+
+  // get all moves filtered by those with eligible targets and usable
+  const { moveIds } = activePokemon;
+  /** @type {PartialRecord<MoveIdEnum, BattlePokemon[]>} */ const validMoveIdsToTargets =
+    {};
+  Object.entries(moveIds).forEach(([moveId, move]) => {
+    if (move.disabledCounter || move.cooldown > 0) {
+      return;
+    }
+
+    // @ts-ignore
+    const eligibleTargets = battle.getEligibleTargets(activePokemon, moveId);
+    if (eligibleTargets.length > 0) {
+      validMoveIdsToTargets[moveId] = eligibleTargets;
+    }
+  });
+
+  // if for some reason no moves exist, skip turn
+  if (Object.keys(validMoveIdsToTargets).length === 0) {
+    activePokemon.skipTurn();
+    return;
+  }
+
+  // for all considered moves, get the best move
+  let bestMoveId = null;
+  let bestTarget = null;
+  let bestHeuristic = -1;
+  for (const moveId in validMoveIdsToTargets) {
+    for (const target of validMoveIdsToTargets[moveId]) {
+      const source = activePokemon;
+      // @ts-ignore
+      const targetsHit = source.getTargets(moveId, target);
+      const heuristic = calculateTurnHeuristic(
+        // @ts-ignore
+        moveId,
+        source,
+        target,
+        targetsHit
+      );
+      if (heuristic > bestHeuristic) {
+        bestMoveId = moveId;
+        bestTarget = target;
+        bestHeuristic = heuristic;
+      }
+    }
+  }
+
+  // use move
+  // @ts-ignore
+  activePokemon.useMove(bestMoveId, bestTarget.id);
+};
+
 module.exports = {
   buildPartyString,
   buildCompactPartyString,
@@ -719,4 +870,5 @@ module.exports = {
   getHeldItemIdHasTag,
   getMoveIdHasTag,
   getEffectIdHasTag,
+  npcTurnAction,
 };

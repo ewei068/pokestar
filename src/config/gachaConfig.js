@@ -91,6 +91,110 @@ const bannerTypeConfig = Object.freeze({
 const bannerConfigRaw = [
   {
     bannerType: bannerTypes.SPECIAL,
+    name: "[GEN 4] Lake Trio Banner",
+    description:
+      "Gen 4 has arrived! Pull for the legendary Uxie, Azelf, and Mesprit as well as other Gen 4 Pokemon! NOTE: These Pokemon are NOT limited and are available in all banners.",
+    rateUp: () => ({
+      [rarities.LEGENDARY]: [
+        pokemonIdEnum.UXIE,
+        pokemonIdEnum.MESPRIT,
+        pokemonIdEnum.AZELF,
+      ],
+      [rarities.EPIC]: [
+        pokemonIdEnum.TORTERRA,
+        pokemonIdEnum.INFERNAPE,
+        pokemonIdEnum.EMPOLEON,
+        pokemonIdEnum.STARAPTOR,
+        pokemonIdEnum.LUXRAY,
+        pokemonIdEnum.ROSERADE,
+        pokemonIdEnum.RAMPARDOS,
+        pokemonIdEnum.BASTIODON,
+        pokemonIdEnum.VESPIQUEN,
+        pokemonIdEnum.FLOATZEL,
+        pokemonIdEnum.AMBIPOM,
+        pokemonIdEnum.DRIFBLIM,
+        pokemonIdEnum.LOPUNNY,
+        pokemonIdEnum.HONCHKROW,
+        pokemonIdEnum.SKUNTANK,
+        pokemonIdEnum.BRONZONG,
+        pokemonIdEnum.SPIRITOMB,
+        pokemonIdEnum.GARCHOMP,
+        pokemonIdEnum.ABOMASNOW,
+        pokemonIdEnum.WEAVILE,
+        pokemonIdEnum.MAGNEZONE,
+        pokemonIdEnum.LICKILICKY,
+        pokemonIdEnum.RHYPERIOR,
+        pokemonIdEnum.ELECTIVIRE,
+        pokemonIdEnum.MAGMORTAR,
+        pokemonIdEnum.TOGEKISS,
+        pokemonIdEnum.YANMEGA,
+        pokemonIdEnum.LEAFEON,
+        pokemonIdEnum.GLACEON,
+        pokemonIdEnum.GLISCOR,
+      ],
+      [rarities.RARE]: [
+        pokemonIdEnum.TURTWIG,
+        pokemonIdEnum.CHIMCHAR,
+        pokemonIdEnum.PIPLUP,
+        pokemonIdEnum.BIBAREL,
+        pokemonIdEnum.KRICKETUNE,
+        pokemonIdEnum.PACHIRISU,
+        pokemonIdEnum.PURUGLY,
+      ],
+    }),
+  },
+  {
+    bannerType: bannerTypes.SPECIAL,
+    name: "[GEN 4] VGC Legends Banner",
+    description:
+      "Gen 4 has arrived! Pull for the legendary Heatran and Cresselia as well as other Gen 4 Pokemon! NOTE: These Pokemon are NOT limited and are available in all banners.",
+    rateUp: () => ({
+      [rarities.LEGENDARY]: [pokemonIdEnum.HEATRAN, pokemonIdEnum.CRESSELIA],
+      [rarities.EPIC]: [
+        pokemonIdEnum.TORTERRA,
+        pokemonIdEnum.INFERNAPE,
+        pokemonIdEnum.EMPOLEON,
+        pokemonIdEnum.STARAPTOR,
+        pokemonIdEnum.LUXRAY,
+        pokemonIdEnum.ROSERADE,
+        pokemonIdEnum.RAMPARDOS,
+        pokemonIdEnum.BASTIODON,
+        pokemonIdEnum.VESPIQUEN,
+        pokemonIdEnum.FLOATZEL,
+        pokemonIdEnum.AMBIPOM,
+        pokemonIdEnum.DRIFBLIM,
+        pokemonIdEnum.LOPUNNY,
+        pokemonIdEnum.HONCHKROW,
+        pokemonIdEnum.SKUNTANK,
+        pokemonIdEnum.BRONZONG,
+        pokemonIdEnum.SPIRITOMB,
+        pokemonIdEnum.GARCHOMP,
+        pokemonIdEnum.ABOMASNOW,
+        pokemonIdEnum.WEAVILE,
+        pokemonIdEnum.MAGNEZONE,
+        pokemonIdEnum.LICKILICKY,
+        pokemonIdEnum.RHYPERIOR,
+        pokemonIdEnum.ELECTIVIRE,
+        pokemonIdEnum.MAGMORTAR,
+        pokemonIdEnum.TOGEKISS,
+        pokemonIdEnum.YANMEGA,
+        pokemonIdEnum.LEAFEON,
+        pokemonIdEnum.GLACEON,
+        pokemonIdEnum.GLISCOR,
+      ],
+      [rarities.RARE]: [
+        pokemonIdEnum.TURTWIG,
+        pokemonIdEnum.CHIMCHAR,
+        pokemonIdEnum.PIPLUP,
+        pokemonIdEnum.BIBAREL,
+        pokemonIdEnum.KRICKETUNE,
+        pokemonIdEnum.PACHIRISU,
+        pokemonIdEnum.PURUGLY,
+      ],
+    }),
+  },
+  /* {
+    bannerType: bannerTypes.SPECIAL,
     name: "[EVENT] Twitch Plays Pokemon Anniversary",
     description:
       "The Twitch Plays Pokemon banner is back for its anniversary! Pull to get the limited-time iconic Pokemon from the original Twitch Plays Pokemon Red! For more information, use `/events`.",
@@ -101,7 +205,7 @@ const bannerConfigRaw = [
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-tpp-banner.png",
   },
-  {
+  /* {
     bannerType: bannerTypes.SPECIAL,
     name: "[EVENT] Team Aqua Banner",
     description:
@@ -430,6 +534,33 @@ const bannerConfigRaw = [
           rng,
         }),
         [rarities.EPIC]: drawIterable(gen3Epics, 3, {
+          replacement: false,
+          rng,
+        }),
+      };
+    },
+  },
+  {
+    bannerType: bannerTypes.ROTATING,
+    name: "[GEN 4] Rotating",
+    description:
+      "Banner which rotates rate-up Generation IV Pokemon randomly every day.",
+    rateUp: () => {
+      // seedrandom using date
+      const date = getFullUTCDate();
+      const rng = seedrandom(date);
+      const gen4Legendaries = rarityBins[rarities.LEGENDARY].filter(
+        (p) => getGeneration(p) === 4
+      );
+      const gen4Epics = rarityBins[rarities.EPIC].filter(
+        (p) => getGeneration(p) === 4
+      );
+      return {
+        [rarities.LEGENDARY]: drawIterable(gen4Legendaries, 1, {
+          replacement: false,
+          rng,
+        }),
+        [rarities.EPIC]: drawIterable(gen4Epics, 3, {
           replacement: false,
           rng,
         }),

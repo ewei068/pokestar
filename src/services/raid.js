@@ -6,7 +6,6 @@ const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
 const {
   backpackItems,
   backpackItemConfig,
-  backpackCategories,
 } = require("../config/backpackConfig");
 const { collectionNames } = require("../config/databaseConfig");
 const { eventNames } = require("../config/eventConfig");
@@ -26,7 +25,12 @@ const { logger } = require("../log");
 const { drawIterable } = require("../utils/gachaUtils");
 const { addRewards, getItems, removeItems } = require("../utils/trainerUtils");
 const { idFrom, errorlessAsync } = require("../utils/utils");
-const { RaidNPC, getStartTurnSend } = require("./battle");
+const {
+  RaidNPC,
+  getStartTurnSend,
+  getCanTrainerAutoBattle,
+  getDoesTrainerHaveAutoBattle,
+} = require("./battle");
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
 const { validateParty } = require("./party");
 const { getState, setTtl, setState, deleteState } = require("./state");
@@ -433,10 +437,14 @@ const onRaidAccept = async ({ stateId = null, user = null } = {}) => {
   const rewardMultipliers =
     raidDifficultyData.rewardMultipliers ||
     difficultyConfig[difficulty].rewardMultipliers;
+  const autoBattleCost = 20;
   const battle = new Battle({
     ...rewardMultipliers,
     npcId: raidId,
     difficulty,
+    canAuto: !getCanTrainerAutoBattle(trainer.data, autoBattleCost).err,
+    autoBattleCost,
+    shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(trainer.data).err,
     ...getBattleEndCallbacks(state.raidInstanceId, user, boss.remainingHp),
   });
   battle.addTeam("Raid", true);

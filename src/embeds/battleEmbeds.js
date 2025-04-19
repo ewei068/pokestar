@@ -250,6 +250,7 @@ const buildBattleEmbed = (
     });
   }
 
+  const upNextPokemon = battle.getNextNPokemon(3);
   const fields = [
     {
       name: `${team1.emoji} ${team1.name} | ${team1UserString}`,
@@ -280,11 +281,10 @@ const buildBattleEmbed = (
           isMobile,
         }
       ),
-      inline: !isMobile,
+      inline: !isMobile && upNextPokemon.length > 0,
     },
   ];
 
-  const upNextPokemon = battle.getNextNPokemon(3);
   if (upNextPokemon.length > 0) {
     const upNextStringTop = upNextPokemon
       .map((pokemon) => pokemonConfig[pokemon.speciesId].emoji)
@@ -395,12 +395,15 @@ const buildBattleTeamEmbed = (battle, teamName) => {
 
 /**
  * TODO: maybe make embed functionality reusable idk
+ * TODO: dream card string may be lazy idk. but I don't want every embed to have to pass all dream card data
  * Builds the list of pve options as an embeded.
  * @param {NpcEnum[]} npcIds the npc's available for battle.
  * @param {number} page the page number.
+ * @param {object} options
+ * @param {string=} options.dreamCardString the dream card string to display.
  * @returns {EmbedBuilder} an embeded
  */
-const buildPveListEmbed = (npcIds, page) => {
+const buildPveListEmbed = (npcIds, page, { dreamCardString } = {}) => {
   let npcString = "";
   npcIds.forEach((npcId) => {
     const npcData = npcConfig[npcId];
@@ -420,6 +423,13 @@ const buildPveListEmbed = (npcIds, page) => {
   embed.setTitle(`NPCs`);
   embed.setColor(0xffffff);
   embed.setDescription(npcString);
+  if (dreamCardString) {
+    embed.addFields({
+      name: "Dream Cards",
+      value: dreamCardString,
+      inline: false,
+    });
+  }
   embed.setFooter({ text: `Page ${page} | Use the buttons to select an NPC` });
 
   return embed;
@@ -428,9 +438,11 @@ const buildPveListEmbed = (npcIds, page) => {
 /**
  * Builds a specific npc for pve.
  * @param {NpcEnum} npcId the id of the npc we're building.
+ * @param {object} options
+ * @param {string=} options.dreamCardString the dream card string to display.
  * @returns {EmbedBuilder} an embeded
  */
-const buildPveNpcEmbed = (npcId) => {
+const buildPveNpcEmbed = (npcId, { dreamCardString } = {}) => {
   const npc = npcConfig[npcId];
   const fields = Object.entries(npc.difficulties).map(
     ([difficulty, difficultyData]) => {
@@ -451,6 +463,13 @@ const buildPveNpcEmbed = (npcId) => {
   embed.setColor(0xffffff);
   embed.setDescription(npc.catchphrase);
   embed.addFields(fields);
+  if (dreamCardString) {
+    embed.addFields({
+      name: "Dream Cards",
+      value: dreamCardString,
+      inline: false,
+    });
+  }
   embed.setImage(npc.sprite);
   embed.setFooter({ text: "Use the buttons to select a difficulty" });
 
@@ -459,9 +478,11 @@ const buildPveNpcEmbed = (npcId) => {
 
 /**
  * Builds the list of Dungeons as an embeded.
+ * @param {object} options
+ * @param {string=} options.dreamCardString the dream card string to display.
  * @returns {EmbedBuilder} an embeded list of the dungeons.
  */
-const buildDungeonListEmbed = () => {
+const buildDungeonListEmbed = ({ dreamCardString } = {}) => {
   let dungeonString = "";
   Object.entries(dungeonConfig).forEach(([, dungeonData]) => {
     dungeonString += `**${dungeonData.emoji} ${dungeonData.name}** • ${dungeonData.description}\n\n`;
@@ -472,15 +493,23 @@ const buildDungeonListEmbed = () => {
   embed.setColor(0xffffff);
   embed.setDescription(dungeonString);
   embed.setFooter({ text: `Defeat dungeons to power up your /equipment!` });
-
+  if (dreamCardString) {
+    embed.addFields({
+      name: "Dream Cards",
+      value: dreamCardString,
+      inline: false,
+    });
+  }
   return embed;
 };
 /**
  * Builds a specific dungeon for the embeded dungeon list.
  * @param {DungeonEnum} dungeonId the Id of the specific dungeon we're building.
+ * @param {object} options
+ * @param {string=} options.dreamCardString the dream card string to display.
  * @returns {EmbedBuilder} an embeded dungeon.
  */
-const buildDungeonEmbed = (dungeonId) => {
+const buildDungeonEmbed = (dungeonId, { dreamCardString } = {}) => {
   const dungeonData = dungeonConfig[dungeonId];
   let bossString = "";
   for (const bossId of dungeonData.bosses) {
@@ -507,15 +536,23 @@ const buildDungeonEmbed = (dungeonId) => {
   embed.addFields(fields);
   embed.setImage(dungeonData.sprite);
   embed.setFooter({ text: "Use the buttons to select a difficulty" });
-
+  if (dreamCardString) {
+    embed.addFields({
+      name: "Dream Cards",
+      value: dreamCardString,
+      inline: false,
+    });
+  }
   return embed;
 };
 
 /**
  * @param {number} towerStage
+ * @param {object} options
+ * @param {string=} options.dreamCardString the dream card string to display.
  * @returns {EmbedBuilder}
  */
-const buildBattleTowerEmbed = (towerStage) => {
+const buildBattleTowerEmbed = (towerStage, { dreamCardString } = {}) => {
   const battleTowerData = battleTowerConfig[towerStage];
   const npcData = npcConfig[battleTowerData.npcId];
   const npcDifficultyData = npcData.difficulties[battleTowerData.difficulty];
@@ -558,7 +595,13 @@ const buildBattleTowerEmbed = (towerStage) => {
     )}\n\n${difficultyHeader}\n${difficultyString}`
   );
   embed.setImage(npcData.sprite);
-
+  if (dreamCardString) {
+    embed.addFields({
+      name: "Dream Cards",
+      value: dreamCardString,
+      inline: false,
+    });
+  }
   return embed;
 };
 
