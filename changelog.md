@@ -1,29 +1,38 @@
 # Pokéstar Changelog
 
-## 1.4.0
+## TODO:
 
-- Gen 4
+- Gen 4 p2
   - Add a bunch new Pokemon
   - Add PvE against Champion Cynthia
   - Add form changing mechanic with DNA splicers or something
     - Update getPokemonOrder
     - Add a base Pokemon field or sm
-  - Add Mythic Darkrai
-    - Requires 25 tutorial stage completions
-    - Gains {item} every 5 min, max 100 + level
-    - Use {item} to autobattle
-    - Add auto battling
   - Gen 4 event
     - Special banners
     - Some boosts or sm IDK
-    - Close old events
   - Add some more held items
-  - Add Gen 4 rotating banner
 
 **Stretch**
 
 - Stretch: Quests (Achievements)
 - Stretch: Ability slots
+
+## 1.4.0 Gen 4 Part 1
+
+- Gen 4 Part 1: The first batch for Gen 4 Pokemon have arrived!
+  - Add a bunch new Pokemon and some evolutions to old Pokemon
+  - Add Auto-battling and Darkrai
+    - Catch `/mythic darkrai` Requires 25 tutorial stage completions
+    - Darkrai allows you to auto-battle! Most PvE content can be auto battled
+    - Spend Dream Cards to auto battle
+    - Replenish 1 Dream Card every 5 min, up to max 100 + level
+  - Gen 4 event
+    - Added special event banners to catch the new Gen 4 Pokemon
+    - Temporarily have 50 more max Dream Cards during the event
+  - Added a Gen 4 rotating banner
+- Add some more held items
+- Ended the Aqua vs Magma and TPP Rerun events
 
 ## 1.3.0 Held Items (3/11)
 
