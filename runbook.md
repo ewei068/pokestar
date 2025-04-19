@@ -83,6 +83,6 @@ echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.profile
 - Run migration: `node scripts/database/setupDatabase.js`
 - If necessary: run other migrations in `scripts/database/migrations`
 - Run bot `node src/index.js`
-  - IN PROD: `pm2 start src/index.js --max-memory-restart=140M`
+  - IN PROD: `pm2 kill && pm2 start src/index.js --max-memory-restart=140M`
 - Test that bot works in sandboxed environment
 - If DB errors, restore DB `mongorestore --drop backups/{BACKUP_NAME}/`
