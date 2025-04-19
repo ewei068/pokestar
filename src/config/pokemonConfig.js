@@ -10127,7 +10127,7 @@ const rarityConfig = {
   },
 };
 
-const generations = [152, 252];
+const generations = [152, 252, 387];
 
 const getGeneration = (id) => {
   const baseNumber = parseInt(id.split("-")[0], 10);
