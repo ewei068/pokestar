@@ -1569,7 +1569,7 @@ const dungeonConfig = Object.freeze({
                 position: 2,
               },
               {
-                speciesId: "131",
+                speciesId: pokemonIdEnum.DRIFBLIM,
                 level: 55,
                 position: 3,
               },
@@ -1579,7 +1579,7 @@ const dungeonConfig = Object.freeze({
                 position: 9,
               },
               {
-                speciesId: "51",
+                speciesId: pokemonIdEnum.WEAVILE,
                 level: 60,
                 position: 12,
               },
@@ -1668,7 +1668,7 @@ const dungeonConfig = Object.freeze({
                 position: 2,
               },
               {
-                speciesId: "131",
+                speciesId: pokemonIdEnum.DRIFBLIM,
                 level: 85,
                 position: 3,
               },
@@ -1678,7 +1678,7 @@ const dungeonConfig = Object.freeze({
                 position: 9,
               },
               {
-                speciesId: "51",
+                speciesId: pokemonIdEnum.WEAVILE,
                 level: 90,
                 position: 12,
               },
@@ -1767,7 +1767,7 @@ const dungeonConfig = Object.freeze({
                 position: 2,
               },
               {
-                speciesId: "131",
+                speciesId: pokemonIdEnum.DRIFBLIM,
                 level: 110,
                 position: 3,
               },
@@ -1777,7 +1777,7 @@ const dungeonConfig = Object.freeze({
                 position: 9,
               },
               {
-                speciesId: "51",
+                speciesId: pokemonIdEnum.WEAVILE,
                 level: 110,
                 position: 12,
               },
@@ -1878,7 +1878,7 @@ const dungeonConfig = Object.freeze({
                 position: 2,
               },
               {
-                speciesId: "99",
+                speciesId: pokemonIdEnum.RAMPARDOS,
                 level: 55,
                 position: 3,
               },
@@ -1888,7 +1888,7 @@ const dungeonConfig = Object.freeze({
                 position: 10,
               },
               {
-                speciesId: "136",
+                speciesId: pokemonIdEnum.RAMPARDOS,
                 level: 60,
                 position: 11,
               },
@@ -1904,7 +1904,7 @@ const dungeonConfig = Object.freeze({
                 position: 2,
               },
               {
-                speciesId: "94",
+                speciesId: pokemonIdEnum.MAGNEZONE,
                 level: 55,
                 position: 3,
               },
@@ -1914,7 +1914,7 @@ const dungeonConfig = Object.freeze({
                 position: 9,
               },
               {
-                speciesId: "65",
+                speciesId: pokemonIdEnum.GLACEON,
                 level: 60,
                 position: 12,
               },
@@ -1977,7 +1977,7 @@ const dungeonConfig = Object.freeze({
                 position: 2,
               },
               {
-                speciesId: "99",
+                speciesId: pokemonIdEnum.RAMPARDOS,
                 level: 85,
                 position: 3,
               },
@@ -1987,7 +1987,7 @@ const dungeonConfig = Object.freeze({
                 position: 10,
               },
               {
-                speciesId: "136",
+                speciesId: pokemonIdEnum.RAMPARDOS,
                 level: 90,
                 position: 11,
               },
@@ -2003,7 +2003,7 @@ const dungeonConfig = Object.freeze({
                 position: 2,
               },
               {
-                speciesId: "94",
+                speciesId: pokemonIdEnum.MAGNEZONE,
                 level: 85,
                 position: 3,
               },
@@ -2013,7 +2013,7 @@ const dungeonConfig = Object.freeze({
                 position: 9,
               },
               {
-                speciesId: "65",
+                speciesId: pokemonIdEnum.GLACEON,
                 level: 90,
                 position: 12,
               },
@@ -2076,7 +2076,7 @@ const dungeonConfig = Object.freeze({
                 position: 2,
               },
               {
-                speciesId: "99",
+                speciesId: pokemonIdEnum.RAMPARDOS,
                 level: 115,
                 position: 3,
               },
@@ -2086,7 +2086,7 @@ const dungeonConfig = Object.freeze({
                 position: 10,
               },
               {
-                speciesId: "136",
+                speciesId: pokemonIdEnum.RAMPARDOS,
                 level: 120,
                 position: 11,
               },
@@ -2102,7 +2102,7 @@ const dungeonConfig = Object.freeze({
                 position: 2,
               },
               {
-                speciesId: "94",
+                speciesId: pokemonIdEnum.MAGNEZONE,
                 level: 115,
                 position: 3,
               },
@@ -2112,7 +2112,7 @@ const dungeonConfig = Object.freeze({
                 position: 9,
               },
               {
-                speciesId: "65",
+                speciesId: pokemonIdEnum.GLACEON,
                 level: 120,
                 position: 12,
               },
