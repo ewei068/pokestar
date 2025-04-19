@@ -299,7 +299,7 @@ const formatDreamCards = (dreamCards, maxDreamCards) =>
  * @param {Trainer} trainer
  * @returns {number}
  */
-const getMaxDreamCards = (trainer) => 100 + trainer.level;
+const getMaxDreamCards = (trainer) => 100 + trainer.level + 50;
 
 /**
  * @param {Trainer} trainer

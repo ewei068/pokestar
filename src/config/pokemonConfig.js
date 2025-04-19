@@ -5529,6 +5529,8 @@ const pokemonConfigRaw = {
         "150-2",
         "249-1",
         "302-1",
+        pokemonIdEnum.ARCHIES_KYOGRE,
+        pokemonIdEnum.MAXIES_GROUDON,
         "384-1",
         "392-1",
         "828-1",
@@ -5547,6 +5549,8 @@ const pokemonConfigRaw = {
         "248-1",
         "289-1",
         "319-1",
+        pokemonIdEnum.AQUAS_SHARPEDO,
+        pokemonIdEnum.MAGMAS_CAMERUPT,
         pokemonIdEnum.LITTENYAN,
       ],
     },
@@ -10123,7 +10127,7 @@ const rarityConfig = {
   },
 };
 
-const generations = [152, 252];
+const generations = [152, 252, 387];
 
 const getGeneration = (id) => {
   const baseNumber = parseInt(id.split("-")[0], 10);

@@ -102,9 +102,12 @@ const buildBannerEmbed = (trainer, bannerData) => {
       continue;
     }
     rateUpString += `\`${rateUpWhitespace[i]} ${rarity} \``;
-    for (const speciesId of rateUp[rarity]) {
+    for (const speciesId of rateUp[rarity].slice(0, 15)) {
       const speciesData = pokemonConfig[speciesId];
       rateUpString += ` ${speciesData.emoji}`;
+    }
+    if (rateUp[rarity].length > 15) {
+      rateUpString += ` ...and ${rateUp[rarity].length - 15} more!`;
     }
     rateUpString += "\n";
   }
