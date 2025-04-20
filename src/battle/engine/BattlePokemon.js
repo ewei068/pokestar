@@ -2012,6 +2012,32 @@ class BattlePokemon {
     // this.battle.addToLog(`${this.name}'s ${getMove(moveId).name} is no longer disabled!`);
   }
 
+  /**
+   * @param {MoveIdEnum} moveId
+   * @returns {boolean}
+   */
+  removeMove(moveId) {
+    if (!this.moveIds[moveId]) {
+      return false;
+    }
+
+    delete this.moveIds[moveId];
+    return true;
+  }
+
+  /**
+   * @param {MoveIdEnum} moveId
+   * @returns {boolean}
+   */
+  addMove(moveId) {
+    if (this.moveIds[moveId]) {
+      return false;
+    }
+
+    this.moveIds[moveId] = { cooldown: 0, disabledCounter: 0 };
+    return true;
+  }
+
   tickEffectDurations() {
     for (const effectId in this.effectIds) {
       this.effectIds[effectId].duration -= 1;
