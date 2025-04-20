@@ -6,9 +6,12 @@ const { countDocuments } = require("../../src/database/mongoHandler");
 
 const data = {};
 
+const DEFAULT_DAYS = 30;
+const days = process.argv[2] || DEFAULT_DAYS;
+
 const getTutorialStats = async () => {
   const lastMonthTime = new Date(
-    new Date().getTime() - 1000 * 60 * 60 * 24 * 30
+    new Date().getTime() - 1000 * 60 * 60 * 24 * days
   ).getTime();
   const totalUsersThisMonth = await countDocuments(collectionNames.USERS, {
     lastCorrected: {
