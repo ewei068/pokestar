@@ -11,13 +11,16 @@
   - Gen 4 event
     - Special banners
     - Some boosts or sm IDK
+- Fix held item you cannot take this action
+- Setting: auto-lock event Pokemon
 
 **Stretch**
 
 - Stretch: Quests (Achievements)
 - Stretch: Ability slots
+- Stretch: Improve party management
 
-**1.4.0.1**
+**1.4.0.1 (4/19)**
 
 - Fix Mimic breaking the game
 - Improve auto battle error logging
