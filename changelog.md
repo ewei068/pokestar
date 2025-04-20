@@ -17,6 +17,11 @@
 - Stretch: Quests (Achievements)
 - Stretch: Ability slots
 
+**1.4.0.1**
+
+- Fix Mimic breaking the game
+- Improve auto battle error logging
+
 ## 1.4.0 Gen 4 Part 1 (4/19)
 
 - Gen 4 Part 1: The first batch for Gen 4 Pokemon have arrived!

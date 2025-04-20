@@ -379,22 +379,28 @@ const nextAutoTurn = async (
     }
   } catch (err) {
     logger.error(`Failed to send auto turn: ${err}`);
+    logger.error(battle.log?.join?.("\n"));
     if (retry < 3) {
-      await nextAutoTurn(battle, stateId, {
+      return await nextAutoTurn(battle, stateId, {
         messageRef,
         interaction,
         retry: retry + 1,
         totalTurns,
       });
     }
+    logger.error("Failed to send auto turn after 3 retries");
+    return;
   }
 
-  return await setTimeout(async () => {
-    await nextAutoTurn(battle, stateId, {
-      messageRef: newMessageRef,
-      totalTurns: totalTurns + 1,
-    });
-  }, 1000);
+  return await setTimeout(
+    async () =>
+      await nextAutoTurn(battle, stateId, {
+        // @ts-ignore
+        messageRef: newMessageRef,
+        totalTurns: totalTurns + 1,
+      }),
+    1000
+  );
 };
 
 /**
