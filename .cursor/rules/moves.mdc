@@ -1,0 +1,90 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Pokestar Move System
+
+This rule covers key patterns and best practices for working with moves in [moves.js](mdc:src/battle/data/moves.js) in the Pokestar battle system.
+
+## Unique Aspects
+
+Moves in Pokestar differ from traditional Pokémon games:
+
+- **Move Tiers**: Moves are categorized as Basic, Power, or Ultimate, each with different cooldown and power expectations
+- **Cooldowns**: Moves can't be used again until their cooldown expires
+- **Area of Effect (AoE)**: Moves target specific patterns of Pokémon on the battlefield
+- **Targeting Rules**: Moves specify which positions can be targeted and who can be affected
+
+## Move Structure
+
+```javascript
+[moveIdEnum.MOVE_NAME]: new Move({
+  id: moveIdEnum.MOVE_NAME,
+  name: "Move Name",
+  type: pokemonTypes.TYPE,
+  power: 80,  // Base power
+  accuracy: 100,  // Hit chance percentage
+  cooldown: 3,  // Turns before usable again
+  targetType: targetTypes.OPPONENT,  // Who can be targeted
+  targetPosition: targetPositions.ANY,  // Which positions
+  targetPattern: targetPatterns.SINGLE,  // Area of effect
+  tier: moveTiers.POWER,  // Basic, Power, or Ultimate
+  damageType: damageTypes.PHYSICAL,  // Physical or Special
+  description: "Description of the move",
+  execute(args) {
+    // Implementation goes here
+  },
+}),
+```
+
+## Best Practices
+
+### 1. Use Generic Methods
+
+Always use the Move class's generic methods for common operations:
+
+```javascript
+// For damage
+this.genericDealAllDamage(args);
+
+// For status
+this.genericApplyAllStatus({
+  ...args,
+  statusId: statusConditions.BURNED,
+  probability: 0.3
+});
+
+// For effects
+this.genericApplyAllEffects({
+  ...args,
+  effectId: effectIdEnum.ATK_UP,
+  duration: 3,
+  probability: 0.5
+});
+
+// For combat readiness changes
+this.genericChangeAllCombatReadiness({
+  ...args,
+  amount: 25,
+  action: "boost"
+});
+```
+
+### 2. Pass Full Args Object
+
+Always pass the full `args` object to generic methods rather than destructuring, in case the methods the rule uses changes:
+
+```javascript
+// DO THIS:
+execute(args) {
+  this.genericDealAllDamage(args);
+}
+
+// NOT THIS:
+execute({ source, primaryTarget, allTargets, missedTargets }) {
+  this.genericDealAllDamage({ 
+    source, primaryTarget, allTargets, missedTargets 
+  });
+}
+```
