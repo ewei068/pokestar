@@ -55,6 +55,6 @@ This is a condensed reference for Cursor AI. For full documentation, see the [RE
 2. Create instance in appropriate data file
 3. Implement required methods
 4. Use existing methods for moves, abilities, held items, or effects when available
-5. Do NOT modify [battleConfig.js](mdc:src/config/battleConfig.js) unless directly told to; it may be useful to refer to, but this file is largely deprecated
+5. DO NOT modify [battleConfig.js](mdc:src/config/battleConfig.js) unless directly told to; it may be useful to refer to, but this file is largely deprecated
 
 

@@ -1,0 +1,139 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Rule Name: battle-components.mdc
+Description: 
+# Pokestar Battle Components
+
+This rule covers key patterns for working with abilities, effects, and held items in the Pokestar battle system. If looking for move rules, refer to [moves.mdc](mdc:.cursor/rules/moves.mdc).
+
+## Shared Component Pattern
+
+Abilities, effects, and held items follow a similar lifecycle pattern:
+
+1. **Registration**: Components are registered through registry systems
+2. **Addition**: Applied to a Pokémon with an `add` function that returns properties
+3. **Runtime**: Properties are stored and may be modified during the component's lifetime
+4. **Removal**: Removed using a `remove` function that receives the stored properties
+
+## Properties Pattern
+
+The most important pattern for all battle components is the properties pattern:
+
+```javascript
+// Add function returns properties
+someAdd({ battle, target }) {
+  return {
+    // Store any state needed for later removal
+    listenerId: this.registerListenerFunction(...),
+    counter: 0,
+    timestamp: Date.now()
+  };
+},
+
+// Remove function receives those properties
+someRemove({ battle, target, properties }) {
+  // Clean up using stored properties
+  battle.unregisterListener(properties.listenerId);
+}
+```
+
+## Event Listener Registration
+
+All components should use their class's `registerListenerFunction` method if available:
+
+```javascript
+this.registerListenerFunction({
+  battle,
+  target,
+  eventName: battleEventEnum.SOME_EVENT,
+  callback: (args) => {
+    // Logic here - args includes the component instance
+    // Use args.abilityInstance, args.effectInstance, or args.heldItemInstance
+  },
+  conditionCallback: getIsTargetPokemonCallback(target),
+});
+```
+
+## Component-Specific Patterns
+
+### 1. Effects
+
+Effects have duration and a type (BUFF/DEBUFF/NEUTRAl). Effects may also have initial arguments that are passed in to the add/remove functions.
+
+```javascript
+[effectIdEnum.EFFECT_NAME]: new Effect({
+  id: effectIdEnum.EFFECT_NAME,
+  name: "Effect Name",
+  description: "Description of the effect",
+  type: effectTypes.BUFF,  // BUFF or DEBUFF or NEUTRAL
+  dispellable: true,  // Can it be removed by dispell effects?
+  effectAdd({ battle, target, source, initialArgs }) {
+    battle.addToLog(`${target.name} is affected by Effect Name!`);
+    // initialArgs contains arguments passed when applying the effect
+    return {
+      // Properties to store
+    };
+  },
+  effectRemove({ battle, target, source, properties, initialArgs }) {
+    battle.addToLog(`${target.name}'s Effect Name wore off!`);
+    // Clean up
+  },
+}),
+```
+
+### 2. Held Items
+
+Held items may have an optional `itemUse` method for consumable items:
+
+```javascript
+[heldItemIdEnum.ITEM_NAME]: new HeldItem({
+  id: heldItemIdEnum.ITEM_NAME,
+  itemAdd({ battle, target }) {
+    return {
+      listenerId: this.registerListenerFunction({...}),
+    };
+  },
+  itemRemove({ battle, properties }) {
+    battle.unregisterListener(properties.listenerId);
+  },
+  itemUse({ battle, target }) {
+    // Logic for when the item is consumed
+    // Only required for items with the "usable" tag
+  },
+  tags: ["berry", "usable"],  // Optional tags for item categorization
+}),
+```
+
+### 3. Abilities
+
+Abilities are well-behaved and don't have unique patterns of its own.
+
+## Condition Callbacks
+
+Use condition callbacks to filter when event listeners trigger:
+
+```javascript
+conditionCallback: composeConditionCallbacks(
+  // Multiple conditions can be combined
+  getIsTargetPokemonCallback(target),  // Only if this Pokemon is the target
+  // Check damage type, move type, etc.
+  getIsInstanceOfType("move") // Only for move damage
+),
+```
+
+## Common Gotchas
+
+1. **Always Clean Up Listeners**: Failing to unregister listeners can cause memory leaks and incorrect behavior.
+
+2. **Event Argument Modification**: Return modified values from callbacks to change event behavior:
+   ```javascript
+   callback: (args) => {
+     return { damage: Math.floor(args.damage * 0.5) };
+   }
+   ```
+
+3. **State Management**: Properties can be mutated during runtime - be careful with shared references.
+

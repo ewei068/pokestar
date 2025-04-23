@@ -103,6 +103,8 @@ Some subsystems have their own specific rules with more detail:
 
 4. **Discord.js Version**: The project uses Discord.js v14 API conventions
 
+5. **Linting and Types**: Do attempt to fix linting and type errors, but don't spend to much effort doing so. Linting and type-checking is imperfect in this project; if an error takes too much effort to fix, simply make a note of it and do not fix it.
+
 ## File Naming and Organization
 
 - Consistent kebab-case for files within a directory
