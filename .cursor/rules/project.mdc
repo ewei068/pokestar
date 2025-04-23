@@ -5,8 +5,6 @@ alwaysApply: false
 ---
 You are working on the Pokestar project. Pokestar is a Discord Bot that allows users to catch, train, and battle with Pokemon. Pokestar is run using Discord.js on the node runtime, and uses MongoDB for storage. It uses JSDoc for optional typing with a Typescript type engine. 
 
-These are the important directories and components of Pokestar:
-
 Project Structure (not all directories included):
 - `src/`
   - `battle/`
@@ -29,44 +27,95 @@ Project Structure (not all directories included):
   - `components/` - DEPRECATED components for users to interact with
   - `events/` - DEPRECATED handling of the deprecated `components/` interactions
 
-**Battle Overview**
+## Cross-System Interactions
 
-The `src/battle/` directory holds the data and engine that runs Battles in Pokestar. The `data/` directory stores the data of all moves, effects, abilities, and held items. The `engine/` directory handles the Battle simulation logic and has classes used for Battle simulation. There is also the [battleEnums.js](mdc:src/enums/battleEnums.js) file which stores the enums for moves, effects, abilities, and held items.
+### Command Flow
+1. `commands/` files define Discord slash commands
+2. Command handlers in `handlers/` process commands
+3. Handlers call `services/` for business logic
+4. Results returned as `embeds/` or `elements/` for display
 
-Note there is also the legacy deprecated [battleConfig.js](mdc:src/config/battleConfig.js) which contains various moves, abilities, and effects. DO NOT modify [battleConfig.js](mdc:src/config/battleConfig.js) unless explicitly asked to in a prompt, but this can be referenced to write new code.
+### State Management
+- [state.js](mdc:src/services/state.js) manages temporary state between interactions
+- State is passed via component IDs (as UUID) in Discord interactions
+- All interaction handlers should retrieve and update state
 
-**State**
+## Key Patterns to Follow
 
-To keep track of state between a user's interactions, the bot uses the [state.js](mdc:src/services/state.js) service. This service is a simple key-value store; new interactions simply create new state and pass around a state ID within the ID of a Discord component. State is also removed after its TTL expires, but its TTL refreshes when accessed.
+1. **Service Layer Pattern**: 
+   - Business logic belongs in `services/` 
+   - Services communicate with database, not commands or handlers
+   - Example: User commands → handlers → Pokémon service → database
 
-**Deact Overview**
+2. **Deact UI Pattern**:
+   ```javascript
+   // Create UI elements with deact
+   return createElement(
+     'pokemon-display',
+     { pokemon, trainerId },
+     // No children supported yet
+   );
+   ```
 
-The `src/deact/` directory holds the Deact module, a React-inspired framework to construct UI and handle interactions which the bot sends as messages to users. Deact seeks to provide some syntactic similarity to React such as re-useable and composable "elements" with props \(the term "Component" isn't used because components refer to Discord's interactable Components such as Buttons\), "hooks" for reusable logic, and a predictable lifecycle. It records the state of its interactions with the [state.js](mdc:src/services/state.js) service. Deact does not yet support child elements.
+3. **State Management**:
+   ```javascript
+   // Store state
+   const stateId = await state.set(data, { ttl: 600 });
+   
+   // Retrieve state in handlers
+   const data = await state.get(stateId);
+   ```
 
-The `src/elements` directory holds the custom elements used by the bot that are created with Deact. Not all of the bot's UI and interactions are supported here. There are some elements that are provided through `src/services` which are interacted with `src/components` and `src/events`. These are considered legacy UI and this form of making UI is deprecated.
+4. **Database Access**:
+   ```javascript
+   // Preferred: QueryBuilder (when suitable)
+   const query = new QueryBuilder(collectionNames.USERS)
+     .where({ userId })
+     .limit(1);
+   const user = await query.findOne();
+   
+   // Alternative: Direct access 
+   const user = await mongoHandler.findOne(collectionNames.USERS, { userId });
+   ```
+5. **Configurations**:
+  This bot relies heavily on configuration files in `src/config/`. You may refer to these configurations, but do not modify them unless explicitly told to.
 
-**Configurations and Enums**
+## Subsystem-Specific Rules
 
-Much of the rules and the data of the bot is housed in the `src/config/` and `src/enums/` directory. Important configurations to note are:
-- [pokemonConfig.js](mdc:src/config/pokemonConfig.js): The confiugration for all Pokemon and Pokemon-related information in the bot. Avoid editing this file unless directly prompted to
-- [commandConfig.js](mdc:src/config/commandConfig.js): The confiugration for all commands and subcommands of the bot
-- [databaseConfig.js](mdc:src/config/databaseConfig.js): The database setup of the bot. This defines all the Bot's collections and views.
+Some subsystems have their own specific rules with more detail:
 
-**Services**
+- Battle System: `battle-system.mdc`
+- Database: `database.mdc` (if created)
+- Deact UI: `deact.mdc` (if created)
 
-The `src/services/` directory handles most of the Bot's business logic and also is primarily responsible for interfacing with the Bot's MongoDB database. The important services to note are:
-- [pokemon.js](mdc:src/services/pokemon.js): The service that primarly interacts with the "userPokemon" collection. This file handles the business logic for a user's Pokemon such as reading/listing Pokemon data, training Pokemon, and upgrading equipment.
-- [trainer.js](mdc:src/services/trainer.js): The service that primarily interacts with the "users" collection. This file handles the business logic for a trainer such as reading the Trainer data, managing the backpack and money, and adding experience.
+## Common Gotchas
 
-**Database**
+1. **Async/Await**: Almost all service calls and database operations are asynchronous. Always use `await`.
 
-Pokestar uses MongoDB as its database. The [mongoHandler.js](mdc:src/database/mongoHandler.js) is used to interface with the database. There is also a `QueryBuilder` pattern which is farily incomplete; try to use the `QueryBuilder` when possible but it's OK to use other functions in [mongoHandler.js](mdc:src/database/mongoHandler.js), even if they're deprecated, if `QueryBuilder` can't support a query.
+2. **Discord Limitations**: 
+   - Component IDs have length limits (100 chars)
+   - Message content has size limits
+   - Interactions must be acknowledged within 3 seconds
 
-The main important collections are:
-- "users" AKA `collectionNames.USERS`: Holds the data for each trainer (Discord User).
-- "userPokemon" AKA `collectionNames.USER_POKEMON`: Holds the data for all Pokemon as well as the user ID who owns the Pokemon.
+3. **Database Performance**: 
+   - Use indexes for frequently queried fields
+   - Avoid unbounded queries without limits
 
-You can refer to [types.js](mdc:types.js) for the fields a Trainer or Pokemon may have.
+4. **Discord.js Version**: The project uses Discord.js v14 API conventions
+
+## File Naming and Organization
+
+- Consistent kebab-case for files within a directory
+- Each file should focus on a single responsibility
+- Group related functionality in directories
+- Main command files should match Discord command names
+
+## Tips
+
+- Refer to README files in a directory or parent directories for more comprehensive documentation
+  - Do not refer to the [README.md](mdc:README.md) at the project's root
+- Many directories have a `types.js` file with types that you can refer to
+- Update the JSDoc comments for functions or files that are confusing or inaccurate
 
 
 
