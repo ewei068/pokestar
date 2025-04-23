@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 # Pokestar Move System
 
-This rule covers key patterns and best practices for working with moves in [moves.js](mdc:src/battle/data/moves.js) in the Pokestar battle system.
+This rule covers key patterns and best practices for working with moves in [moves.js](mdc:src/battle/data/moves.js) in the Pokestar battle system. If asked to implement or modify a move, DO NOT modify other moves unless explicitly asked to.
 
 ## Unique Aspects
 

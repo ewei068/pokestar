@@ -1960,6 +1960,61 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.TRI_ATTACK]: new Move({
+    id: moveIdEnum.TRI_ATTACK,
+    name: "Tri Attack",
+    type: pokemonTypes.NORMAL,
+    power: 66,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.RANDOM,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user strikes with three different elemental attacks in succession. The first hit has a 33% chance to burn, the second has a 33% chance to paralyze, and the third has a 33% chance to freeze.",
+    execute(args) {
+      const { source, primaryTarget, extraOptions = {} } = args;
+      const maxHits = 3;
+      const { currentHit = 1 } = extraOptions;
+
+      // Deal damage for the current hit
+      this.genericDealAllDamage(args);
+
+      // Apply the appropriate status effect based on the current hit
+      if (currentHit === 1) {
+        this.genericApplyAllStatus({
+          ...args,
+          statusId: statusConditions.BURN,
+          probability: 0.33,
+        });
+      } else if (currentHit === 2) {
+        this.genericApplyAllStatus({
+          ...args,
+          statusId: statusConditions.PARALYSIS,
+          probability: 0.33,
+        });
+      } else if (currentHit === 3) {
+        this.genericApplyAllStatus({
+          ...args,
+          statusId: statusConditions.FREEZE,
+          probability: 0.33,
+        });
+      }
+
+      // If we haven't reached max hits, execute the move again
+      if (currentHit < maxHits) {
+        source.executeMoveAgainstTarget({
+          moveId: this.id,
+          primaryTarget,
+          extraOptions: {
+            currentHit: currentHit + 1,
+          },
+        });
+      }
+    },
+  }),
   [moveIdEnum.PSYCHO_CUT]: new Move({
     id: moveIdEnum.PSYCHO_CUT,
     name: "Psycho Cut",
