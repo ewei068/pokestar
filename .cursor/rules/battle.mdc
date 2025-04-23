@@ -18,9 +18,31 @@ This is a condensed reference for Cursor AI. For full documentation, see the [RE
 - `src/battle/data/`: Moves, abilities, effects, and held items
 
 ## Key Patterns
-1. Event-driven architecture with listeners that can modify event args
-2. Properties pattern: Add functions return properties used by Remove functions
-3. Generic helper methods for common operations
+
+1. **Properties Pattern**: When implementing `abilityAdd`, `effectAdd`, or `itemAdd`:
+   ```javascript
+   return { 
+     listenerId: this.registerListenerFunction(...),
+     // Any other state to preserve
+   };
+   ```
+   This returned object becomes `properties` in the corresponding remove function.
+
+2. **Event Listener Registration**: Always use the class's `registerListenerFunction` method if available which adds helpful additional arguments and instance checks:
+   ```javascript
+   this.registerListenerFunction({
+     battle,
+     target,
+     eventName: battleEventEnum.SOME_EVENT,
+     callback: (args) => { /* effect logic */ },
+     conditionCallback: getIsSourcePokemonCallback(target),
+   });
+   ```
+
+3. **Generic Methods**: For clarity and future-proofing, prefer to use generic methods if they exist:
+   ```javascript
+   this.genericDealAllDamage(args);
+   ```
 
 ## Essential Components
 1. Moves [moves.js](mdc:src/battle/data/moves.js): Define type, power, targeting, cooldown, and execute behavior

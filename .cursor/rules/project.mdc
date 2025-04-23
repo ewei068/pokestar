@@ -1,6 +1,6 @@
 ---
 description: 
-globs: 
+globs: src/**
 alwaysApply: false
 ---
 You are working on the Pokestar project. Pokestar is a Discord Bot that allows users to catch, train, and battle with Pokemon. Pokestar is run using Discord.js on the node runtime, and uses MongoDB for storage. It uses JSDoc for optional typing with a Typescript type engine. 
