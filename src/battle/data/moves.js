@@ -1960,6 +1960,28 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.PSYCHO_CUT]: new Move({
+    id: moveIdEnum.PSYCHO_CUT,
+    name: "Psycho Cut",
+    type: pokemonTypes.PSYCHIC,
+    power: 70,
+    accuracy: 100,
+    cooldown: 4,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.ROW,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user tears at the target with blades formed by psychic power. This has no damage reduction when hitting back row or non-primary targets.",
+    execute(args) {
+      this.genericDealAllDamage({
+        ...args,
+        offTargetDamageMultiplier: 1,
+        backTargetDamageMultiplier: 1,
+      });
+    },
+  }),
 });
 
 module.exports = {
