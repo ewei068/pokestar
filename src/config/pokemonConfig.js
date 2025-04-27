@@ -10101,29 +10101,34 @@ const rarityConfig = {
     pokemon: [],
     color: 0x00ff00,
     money: 25,
+    formChangeCost: 500,
     statMultiplier: [1.15, 1.1, 1.15, 1.1, 1.15, 1.1],
   },
   [rarities.RARE]: {
     pokemon: [],
     color: 0x0000ff,
     money: 50,
+    formChangeCost: 1000,
     statMultiplier: [1.15, 1.1, 1.15, 1.1, 1.15, 1.1],
   },
   [rarities.EPIC]: {
     pokemon: [],
     color: 0xff00ff,
     money: 75,
+    formChangeCost: 2500,
     statMultiplier: [1.075, 1.05, 1.075, 1.05, 1.075, 1.05],
   },
   [rarities.LEGENDARY]: {
     pokemon: [],
     color: 0xffff00,
     money: 200,
+    formChangeCost: 10000,
   },
   [rarities.MYTHICAL]: {
     pokemon: [],
     color: 0xff0000,
     money: 10000,
+    formChangeCost: 10000,
   },
 };
 

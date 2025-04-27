@@ -410,6 +410,44 @@ const buildSpeciesEvolutionString = (speciesData) => {
 };
 
 /**
+ * Checks if a Pokémon can change forms and returns available form options
+ * @param {PokemonIdEnum} speciesId
+ * @returns {PokemonIdEnum[]} Array of valid form IDs or null if no forms available
+ */
+const getAvailableForms = (speciesId) => {
+  const speciesData = pokemonConfig[speciesId];
+  let formIds = [];
+
+  // Direct forms from formSpeciesIds
+  if (speciesData.formSpeciesIds) {
+    formIds.push(...speciesData.formSpeciesIds);
+  }
+
+  // Forms from base species
+  if (speciesData.baseSpeciesId) {
+    const baseSpeciesData = pokemonConfig[speciesData.baseSpeciesId];
+    if (baseSpeciesData.formSpeciesIds?.includes?.(speciesId)) {
+      formIds.push(speciesData.baseSpeciesId);
+      formIds.push(...baseSpeciesData.formSpeciesIds);
+    }
+  }
+
+  formIds = formIds.filter((id) => id !== speciesId);
+  return formIds;
+};
+
+/**
+ * Calculate cost of form change based on Pokemon rarity
+ * @param {PokemonIdEnum} speciesId
+ * @returns {number} Cost in Pokedollars
+ */
+const getFormChangeCost = (speciesId) => {
+  const speciesData = pokemonConfig[speciesId];
+  const baseCost = rarityConfig[speciesData.rarity].formChangeCost;
+  return baseCost;
+};
+
+/**
  * @param {WithId<Trainer>} trainer
  * @returns {string[]}
  */
@@ -492,6 +530,8 @@ module.exports = {
   buildCompactEquipmentString,
   buildBoostString,
   buildSpeciesEvolutionString,
+  getAvailableForms,
+  getFormChangeCost,
   buildPokemonEmojiString,
   buildPokemonNameString,
   getPartyPokemonIds,
