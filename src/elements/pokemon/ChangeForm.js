@@ -69,7 +69,6 @@ const ChangeForm = async (ref, { user, pokemonId }) => {
   } = useSelection(
     {
       items: availableForms,
-      initialItem: pokemon.speciesId,
       selectionPlaceholder: "Select a form to change to",
       showId: true,
       useCurrentItemDefault: true,
@@ -86,7 +85,7 @@ const ChangeForm = async (ref, { user, pokemonId }) => {
   // Transform pokemon temporarily to show preview
   let previewPokemon = pokemon;
   if (selectedFormId) {
-    previewPokemon = transformPokemon(pokemon, selectedFormId);
+    previewPokemon = transformPokemon({ ...pokemon }, selectedFormId);
   }
 
   const canChange = selectedFormId
