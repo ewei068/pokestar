@@ -561,14 +561,6 @@ const transformPokemon = (pokemon, targetSpeciesId) => {
 };
 
 /**
- * @param {WithId<Pokemon>} pokemon
- * @param {PokemonIdEnum} formSpeciesId
- * @returns {WithId<Pokemon>}
- */
-const getFormChangedPokemon = (pokemon, formSpeciesId) =>
-  transformPokemon(pokemon, formSpeciesId);
-
-/**
  * @param {Trainer} trainer
  * @param {WithId<Pokemon>} pokemon
  * @param {number} exp
@@ -2200,7 +2192,7 @@ const changeForm = async (user, pokemonId, formSpeciesId) => {
   }
 
   // Change form
-  const transformedPokemon = getFormChangedPokemon(pokemon, formSpeciesId);
+  const transformedPokemon = transformPokemon(pokemon, formSpeciesId);
 
   // Update Pokémon in database
   try {
