@@ -2289,4 +2289,5 @@ module.exports = {
   removeHeldItem,
   canChangeForm,
   changeForm,
+  transformPokemon,
 };
