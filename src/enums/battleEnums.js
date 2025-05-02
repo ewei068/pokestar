@@ -1420,7 +1420,7 @@ const battleEventEnum = Object.freeze({
  *  [battleEventEnum.AFTER_EFFECT_ADD]: any,
  *  [battleEventEnum.BEFORE_EFFECT_REMOVE]: any,
  *  [battleEventEnum.AFTER_EFFECT_REMOVE]: any,
- *  [battleEventEnum.BEFORE_STATUS_APPLY]: any,
+ *  [battleEventEnum.BEFORE_STATUS_APPLY]: { target: BattlePokemon, source: BattlePokemon, statusId: StatusConditionEnum, canApply: boolean },
  *  [battleEventEnum.AFTER_STATUS_APPLY]: { target: BattlePokemon, source: BattlePokemon, statusId: StatusConditionEnum },
  *  [battleEventEnum.BEFORE_CAUSE_FAINT]: any,
  *  [battleEventEnum.BEFORE_FAINT]: any,

@@ -105,13 +105,6 @@ Some subsystems have their own specific rules with more detail:
 
 5. **Linting and Types**: Do attempt to fix linting and type errors, but don't spend to much effort doing so. Linting and type-checking is imperfect in this project; if an error takes too much effort to fix, simply make a note of it and do not fix it.
 
-## File Naming and Organization
-
-- Consistent kebab-case for files within a directory
-- Each file should focus on a single responsibility
-- Group related functionality in directories
-- Main command files should match Discord command names
-
 ## Tips
 
 - Refer to README files in a directory or parent directories for more comprehensive documentation
@@ -119,6 +112,11 @@ Some subsystems have their own specific rules with more detail:
 - Many directories have a `types.js` file with types that you can refer to
 - Update the JSDoc comments for functions or files that are confusing or inaccurate
 
+## Conventions
+
+- Do not modify the order of imports or exports
+- Prefer to write self-documenting code over comments
+- Don't remove or add code that's not instructed or related to instructions by the prompt
 
 
 

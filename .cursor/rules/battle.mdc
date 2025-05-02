@@ -12,6 +12,8 @@ This is a condensed reference for Cursor AI. For full documentation, see the [RE
 - Combat Readiness (CR) system: faster Pokemon act more frequently
 - 3-tier move system: Basic, Power, Ultimate moves with cooldowns
 - Custom effects for moves, abilities, and items
+- There are no critical hits
+- Missed moves still deal damage but tend to not apply secondary effects
 
 ## Core Architecture
 - `src/battle/engine/`: Battle, BattlePokemon classes and event system

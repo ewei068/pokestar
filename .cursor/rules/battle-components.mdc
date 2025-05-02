@@ -7,7 +7,7 @@ Rule Name: battle-components.mdc
 Description: 
 # Pokestar Battle Components
 
-This rule covers key patterns for working with abilities, effects, and held items in the Pokestar battle system. If looking for move rules, refer to [moves.mdc](mdc:.cursor/rules/moves.mdc).
+This rule covers key patterns for working with abilities, effects, and held items in the Pokestar battle system. If asked to implement or modify an ability, effect, or held item, DO NOT modify other abilities, effects, or held items unless explicitly asked to. If looking for move rules, refer to [moves.mdc](mdc:.cursor/rules/moves.mdc).
 
 ## Shared Component Pattern
 
