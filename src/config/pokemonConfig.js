@@ -9905,6 +9905,7 @@ const pokemonConfigRaw = {
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10001.png",
     shinySprite:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10001.png",
+    baseSpeciesId: pokemonIdEnum.DEOXYS,
     abilities: {
       20015: 1,
     },
@@ -9925,6 +9926,7 @@ const pokemonConfigRaw = {
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10002.png",
     shinySprite:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10002.png",
+    baseSpeciesId: pokemonIdEnum.DEOXYS,
     abilities: {
       20016: 1,
     },
@@ -9945,6 +9947,7 @@ const pokemonConfigRaw = {
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10003.png",
     shinySprite:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10003.png",
+    baseSpeciesId: pokemonIdEnum.DEOXYS,
     abilities: {
       20017: 1,
     },

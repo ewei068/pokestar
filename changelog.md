@@ -8,6 +8,7 @@
   - Add form changing mechanic with DNA splicers or something
     - Update getPokemonOrder
     - Add a base Pokemon field or sm
+    - Update pokedex to order Pokemon forms together
   - Gen 4 event
     - Special banners
     - Some boosts or sm IDK
