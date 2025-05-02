@@ -36,7 +36,7 @@ const getIsSourceSameTeamCallback = (pokemon) => (eventArgs) =>
   eventArgs?.source?.teamName === pokemon.teamName;
 
 /**
- * @param {"move" | "effect" | "statusCondition"} instanceType
+ * @param {"move" | "effect" | "statusCondition" | "weather"} instanceType
  */
 const getIsInstanceOfType = (instanceType) => (eventArgs) => {
   // I shouldn't have made the infos different but it's too late now

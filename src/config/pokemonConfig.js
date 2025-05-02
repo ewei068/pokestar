@@ -8577,6 +8577,149 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.BURMY]: {
+    name: "Burmy",
+    emoji: "<:412:1351026650770313226>",
+    description:
+      "To shelter itself from cold, wintry winds, it covers itself with a cloak made of twigs and leaves.",
+    type: [types.BUG],
+    baseStats: [40, 29, 45, 29, 45, 36],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/412.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/412.png",
+    evolution: [
+      {
+        level: 20,
+        id: pokemonIdEnum.WORMADAM_PLANT,
+      },
+      {
+        level: 20,
+        id: pokemonIdEnum.MOTHIM,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SHED_SKIN]: 0.8,
+      [abilityIdEnum.OVERCOAT]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.TACKLE,
+      moveIdEnum.STRING_SHOT,
+      moveIdEnum.PROTECT,
+      moveIdEnum.BUG_BITE,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.WORMADAM_PLANT]: {
+    name: "Wormadam Plant",
+    emoji: "<:413:1351026652628520990>",
+    description:
+      "When Burmy evolved, its cloak became a part of this Pokémon's body. The cloak is made of leaves.",
+    type: [types.BUG, types.GRASS],
+    baseStats: [60, 59, 85, 79, 105, 36],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/413.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/413.png",
+    formSpeciesIds: [
+      pokemonIdEnum.WORMADAM_SANDY,
+      pokemonIdEnum.WORMADAM_TRASH,
+    ],
+    abilities: {
+      [abilityIdEnum.ANTICIPATION]: 0.8,
+      [abilityIdEnum.OVERCOAT]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BUG_BITE,
+      moveIdEnum.GIGA_DRAIN,
+      moveIdEnum.QUIVER_DANCE,
+      moveIdEnum.LEAF_STORM,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.WORMADAM_SANDY]: {
+    name: "Wormadam Sandy",
+    emoji: "<:413sandy:1367375026709598308>",
+    description:
+      "When Burmy evolved, its cloak became a part of this Pokémon's body. The cloak is made of sand.",
+    type: [types.BUG, types.GROUND],
+    baseStats: [60, 79, 105, 59, 85, 36],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10004.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/413-sandy.png",
+    baseSpeciesId: pokemonIdEnum.WORMADAM_PLANT,
+    abilities: {
+      [abilityIdEnum.ANTICIPATION]: 0.8,
+      [abilityIdEnum.OVERCOAT]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BUG_BITE,
+      moveIdEnum.PROTECT,
+      moveIdEnum.STEALTH_ROCK,
+      moveIdEnum.EARTHQUAKE,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+    noGacha: true,
+  },
+  [pokemonIdEnum.WORMADAM_TRASH]: {
+    name: "Wormadam Trash",
+    emoji: "<:413trash:1367375027850317834>",
+    description:
+      "When Burmy evolved, its cloak became a part of this Pokémon's body. The cloak is made of trash.",
+    type: [types.BUG, types.STEEL],
+    baseStats: [60, 69, 95, 69, 95, 36],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10005.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/413-trash.png",
+    baseSpeciesId: pokemonIdEnum.WORMADAM_PLANT,
+    abilities: {
+      [abilityIdEnum.ANTICIPATION]: 0.8,
+      [abilityIdEnum.OVERCOAT]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BUG_BITE,
+      moveIdEnum.PSYCHIC,
+      moveIdEnum.PROTECT,
+      moveIdEnum.METAL_BURST,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+    noGacha: true,
+  },
+  [pokemonIdEnum.MOTHIM]: {
+    name: "Mothim",
+    emoji: "<:414:1351026659247132702>",
+    description:
+      "It loves the honey of flowers and steals honey collected by Combee.",
+    type: [types.BUG, types.FLYING],
+    baseStats: [70, 94, 50, 94, 50, 66],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/414.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/414.png",
+    abilities: {
+      [abilityIdEnum.SWARM]: 0.8,
+      [abilityIdEnum.TINTED_LENS]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BUG_BITE,
+      moveIdEnum.AIR_SLASH,
+      moveIdEnum.QUIVER_DANCE,
+      moveIdEnum.BUG_BUZZ,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+  },
   [pokemonIdEnum.COMBEE]: {
     name: "Combee",
     emoji: "<:415:1351026660564013127>",

@@ -913,6 +913,52 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [abilityIdEnum.OVERCOAT]: new Ability({
+    id: abilityIdEnum.OVERCOAT,
+    name: "Overcoat",
+    description:
+      "Protects the Pokémon from weather damage and status conditions.",
+    abilityAdd({ battle, target }) {
+      return {
+        beforeWeatherDamageListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: () => {
+            battle.addToLog(
+              `${target.name}'s Overcoat protects it from weather damage!`
+            );
+            return {
+              damage: 0,
+              maxDamage: 0,
+            };
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsTargetPokemonCallback(target),
+            getIsInstanceOfType("weather")
+          ),
+        }),
+        beforeStatusAppliedListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_STATUS_APPLY,
+          callback: () => {
+            battle.addToLog(
+              `${target.name}'s Overcoat protects it from status conditions!`
+            );
+            return {
+              canApply: false,
+            };
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.beforeWeatherDamageListenerId);
+      battle.unregisterListener(properties.beforeStatusAppliedListenerId);
+    },
+  }),
 });
 
 module.exports = {
