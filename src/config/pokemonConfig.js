@@ -2823,6 +2823,31 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
   },
+  [pokemonIdEnum.POKESTARMIE]: {
+    name: "PokeStarmie",
+    emoji: "<:pokestarmie:1368808978938855474>",
+    description:
+      "Its central core glows with the seven colors of the rainbow. Some people value the core as a gem.",
+    type: [types.WATER, types.PSYCHIC],
+    baseStats: [65, 75, 95, 135, 95, 135],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/pokestarmie-loop-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/pokestarmie-loop-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.STAR_BOOST]: 1,
+    },
+    moveIds: [
+      moveIdEnum.MIMIC,
+      moveIdEnum.PSYCHIC,
+      moveIdEnum.STAR_CELEBRATE,
+      moveIdEnum.HYDRO_PUMP,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.MEDIUMSLOW,
+    noGacha: true,
+  },
   122: {
     name: "Mr. Mime",
     emoji: "<:122:1100290827466575914>",
