@@ -2827,7 +2827,7 @@ const pokemonConfigRaw = {
     name: "PokeStarmie",
     emoji: "<:pokestarmie:1368808978938855474>",
     description:
-      "Its central core glows with the seven colors of the rainbow. Some people value the core as a gem.",
+      "The mascot of Pokestar, it is said to only appear once a year to bless its loyal fans.",
     type: [types.WATER, types.PSYCHIC],
     baseStats: [65, 75, 95, 135, 95, 135],
     sprite:
