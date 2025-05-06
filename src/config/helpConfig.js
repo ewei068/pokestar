@@ -175,6 +175,22 @@ Generation 4 Pokemon have arrived! Generation 4 Pokemon will be releasing over t
 * Darkrai Art: https://www.dearplayers.com/_next/image?url=https%3A%2F%2Fassets.dearplayers.com%2Fgplay-data%2Fevents%2Fdarkrai-joins-the-fray-6680176898-1280x720sr.jpg&w=1920&q=75
 `;
 
+const ANNIVERSARY_DESCRIPTION = `🎉**Pokestar Anniversary Celebration**🎉
+
+Pokestar launched this time 2 years ago, and it's time to celebrate! Thank you to everyone who has been playing so far!
+
+<:pokestarmie:1368808978938855474> **Pokestar Anniversary Pokemon:** The mascot of Pokestar, PokeStarmie, is available for a limited time! Use \`/gacha\` to try your luck!
+
+<:ashpikachu:1109522092283658250> **Event Re-run:** The launch celebration event Pokemon are back for a limited time! Use \`/gacha\` to try your luck!
+
+<:greatball:1100296107759779840> **NPC Battles:** Red and Blue now give increased rewards for a limited time! Use \`/pve\` to challenge them!
+
+✨ **Shiny Boost:** For the duration of the event, the shiny chance on most Pokemon is doubled to celebrate 2 years of Pokestar!
+
+🖌️ **Art Credits**:
+* Shiny Hat Pikachu: https://www.deviantart.com/lukethefoxen/art/Pikachu-with-Ash-s-Hat-923733788
+`;
+
 /**
  * @typedef {{
  *  name: string,
@@ -187,6 +203,11 @@ Generation 4 Pokemon have arrived! Generation 4 Pokemon will be releasing over t
  * @type {EventData[]}
  */
 const gameEventConfig = [
+  {
+    name: "Pokestar Anniversary",
+    description: ANNIVERSARY_DESCRIPTION,
+    // TODO: image
+  },
   {
     name: "Generation IV",
     description: GEN_4_DESCRIPTION,
