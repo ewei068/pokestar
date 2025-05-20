@@ -97,7 +97,8 @@ const bannerConfigRaw = [
     rateUp: () => ({
       [rarities.LEGENDARY]: [pokemonIdEnum.POKESTARMIE],
     }),
-    // TODO: image
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-main-banner.png",
   },
   {
     bannerType: bannerTypes.SPECIAL,
@@ -110,7 +111,8 @@ const bannerConfigRaw = [
         pokemonIdEnum.ASHS_PIKACHU,
       ],
     }),
-    // TODO: image
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-main-banner.png",
   },
   {
     bannerType: bannerTypes.SPECIAL,

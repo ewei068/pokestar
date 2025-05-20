@@ -206,7 +206,8 @@ const gameEventConfig = [
   {
     name: "Pokestar Anniversary",
     description: ANNIVERSARY_DESCRIPTION,
-    // TODO: image
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-main-banner.png",
   },
   {
     name: "Generation IV",
