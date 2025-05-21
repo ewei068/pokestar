@@ -91,6 +91,31 @@ const bannerTypeConfig = Object.freeze({
 const bannerConfigRaw = [
   {
     bannerType: bannerTypes.SPECIAL,
+    name: "[EVENT] Pokestar Anniversary",
+    description:
+      "To celebrate Pokestar's anniversary, the mascot of Pokestar, PokeStarmie, is available for a limited time! For more information, use `/events`.",
+    rateUp: () => ({
+      [rarities.LEGENDARY]: [pokemonIdEnum.POKESTARMIE],
+    }),
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-main-banner.png",
+  },
+  {
+    bannerType: bannerTypes.SPECIAL,
+    name: "[EVENT] Pokestar Launch Re-Run",
+    description:
+      "The launch celebration is being re-run to celebrate Pokestar's anniversary! Pull for the limited Gary's Blastoise and Ash's Pikachu! For more information, use `/events`.",
+    rateUp: () => ({
+      [rarities.LEGENDARY]: [
+        pokemonIdEnum.GARYS_BLASTOISE,
+        pokemonIdEnum.ASHS_PIKACHU,
+      ],
+    }),
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-main-banner.png",
+  },
+  {
+    bannerType: bannerTypes.SPECIAL,
     name: "[GEN 4] Lake Trio Banner",
     description:
       "Gen 4 has arrived! Pull for the legendary Uxie, Azelf, and Mesprit as well as other Gen 4 Pokemon! NOTE: These Pokemon are NOT limited and are available in all banners.",

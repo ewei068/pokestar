@@ -959,6 +959,42 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.beforeStatusAppliedListenerId);
     },
   }),
+  [abilityIdEnum.STAR_BOOST]: new Ability({
+    id: abilityIdEnum.STAR_BOOST,
+    name: "Star Boost",
+    description:
+      "At the end of the user's turn, boost the combat readiness of a random other ally by 10% for every year Pokestar has been around.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.TURN_END,
+          callback: () => {
+            const allyPokemons = target
+              .getPartyPokemon()
+              .filter(
+                (pokemon) => pokemon && pokemon !== target && !pokemon.isFainted
+              );
+            if (!allyPokemons.length) {
+              return;
+            }
+
+            const randomAlly =
+              allyPokemons[Math.floor(Math.random() * allyPokemons.length)];
+            battle.addToLog(
+              `${target.name}'s Star Boost increases ${randomAlly.name}'s combat readiness!`
+            );
+            randomAlly.boostCombatReadiness(target, 20);
+          },
+          conditionCallback: getIsActivePokemonCallback(battle, target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
 });
 
 module.exports = {

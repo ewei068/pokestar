@@ -2037,6 +2037,47 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.STAR_CELEBRATE]: new Move({
+    id: moveIdEnum.STAR_CELEBRATE,
+    name: "Star Celebrate",
+    type: pokemonTypes.NORMAL,
+    power: null,
+    accuracy: null,
+    cooldown: 2,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.ALL,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user celebrates the anniversary of Pokestar, increasing allies' combat readiness by 10% and permanently increasing their non-HP stats by 2%, multiplied by the number of years Pokestar has been around.",
+    execute(args) {
+      const { allTargets, battle } = args;
+      // Boost combat readiness by 20%
+      this.genericChangeAllCombatReadiness({
+        ...args,
+        amount: 20,
+        action: "boost",
+      });
+
+      // Permanently increase all non-HP stats by 2%
+      for (const target of allTargets) {
+        const statIds = /** @type {StatIdNoHP[]} */ ([
+          "atk",
+          "def",
+          "spa",
+          "spd",
+          "spe",
+        ]);
+
+        for (const statId of statIds) {
+          target.multiplyStatMult(statId, 1.02);
+        }
+
+        battle.addToLog(`${target.name}'s stats were permanently increased!`);
+      }
+    },
+  }),
 });
 
 module.exports = {
