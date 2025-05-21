@@ -20,6 +20,13 @@
 - Stretch: Ability slots
 - Stretch: Improve party management
 
+### 1.4.1 Anniversary Event
+
+- New limited event to celebrate Pokestar's Anniversary! Check `/events` for more details:
+  - Added a new limited anniversary Pokemon in the `/gacha`
+  - Re-running the Pokestar Launch banner for a limited time
+  - Various other limited benefits including hugely boosted shiny rate!
+
 **1.4.0.1 (4/19)**
 
 - Fix Mimic breaking the game

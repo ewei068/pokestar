@@ -580,7 +580,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 1,
+              [backpackItems.POKEBALL]: 1 * 2,
             },
           },
         },
@@ -594,7 +594,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 1,
+              [backpackItems.POKEBALL]: 1 * 2,
             },
           },
         },
@@ -608,7 +608,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 1,
+              [backpackItems.POKEBALL]: 1 * 2,
             },
           },
         },
@@ -630,7 +630,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 2,
+              [backpackItems.POKEBALL]: 2 * 2,
             },
           },
         },

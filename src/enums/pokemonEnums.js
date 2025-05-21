@@ -130,6 +130,7 @@ const pokemonIdEnum = Object.freeze({
   SEAKING: "119",
   STARYU: "120",
   STARMIE: "121",
+  POKESTARMIE: "121-1",
   MR_MIME: "122",
   SCYTHER: "123",
   SCORO: "123-1",
