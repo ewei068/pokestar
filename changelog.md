@@ -13,7 +13,10 @@
     - Special banners
     - Some boosts or sm IDK
 - Fix held item you cannot take this action
+- Fix leaderboard
+- Reduce trade level req
 - Setting: auto-lock event Pokemon
+- Setting: Insta-auto
 
 **Stretch**
 
