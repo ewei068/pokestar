@@ -7372,11 +7372,22 @@ const pokemonConfigRaw = {
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/356.png",
     shinySprite:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/356.png",
+    evolution: [
+      {
+        level: 40,
+        id: pokemonIdEnum.DUSKNOIR,
+      },
+    ],
     abilities: {
       46: 0.8,
       119: 0.2,
     },
-    moveIds: ["m425", "m194", "m325", "m262"],
+    moveIds: [
+      moveIdEnum.HELPING_HAND,
+      moveIdEnum.WILL_O_WISP,
+      moveIdEnum.DESTINY_BOND,
+      moveIdEnum.TRICK_ROOM,
+    ],
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMSLOW,
@@ -7396,6 +7407,10 @@ const pokemonConfigRaw = {
       {
         level: 42,
         id: pokemonIdEnum.GLALIE,
+      },
+      {
+        level: 42,
+        id: pokemonIdEnum.FROSLASS,
       },
     ],
     abilities: {
@@ -10087,6 +10102,56 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.DUSKNOIR]: {
+    name: "Dusknoir",
+    emoji: "<:477:1351027414158803086>",
+    description:
+      "The antenna on its head captures radio waves from the world of spirits that command it to take people there.",
+    type: [types.GHOST],
+    baseStats: [45, 100, 135, 65, 135, 45],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/477.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/477.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.FRISK]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.SHADOW_SNEAK,
+      moveIdEnum.WILL_O_WISP,
+      moveIdEnum.SHADOW_PUNCH,
+      moveIdEnum.TRICK_ROOM,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.FROSLASS]: {
+    name: "Froslass",
+    emoji: "<:478:1351027415761289236>",
+    description:
+      "It freezes prey by blowing its -58 degrees F breath. It is said to then secretly display its prey.",
+    type: [types.ICE, types.GHOST],
+    baseStats: [70, 80, 70, 80, 70, 110],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/478.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/478.png",
+    abilities: {
+      [abilityIdEnum.SNOW_CLOAK]: 0.8,
+      [abilityIdEnum.CURSED_BODY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.HEX,
+      moveIdEnum.SPIKES,
+      moveIdEnum.SHADOW_BALL,
+      moveIdEnum.BLIZZARD,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
   },
   [pokemonIdEnum.UXIE]: {
     name: "Uxie",
