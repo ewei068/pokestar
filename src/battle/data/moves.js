@@ -1960,6 +1960,151 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.TRI_ATTACK]: new Move({
+    id: moveIdEnum.TRI_ATTACK,
+    name: "Tri Attack",
+    type: pokemonTypes.NORMAL,
+    power: 66,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.RANDOM,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user strikes with three different elemental attacks in succession. The first hit has a 33% chance to burn, the second has a 33% chance to paralyze, and the third has a 33% chance to freeze.",
+    execute(args) {
+      const { source, primaryTarget, extraOptions = {} } = args;
+      const maxHits = 3;
+      const { currentHit = 1 } = extraOptions;
+
+      // Deal damage for the current hit
+      this.genericDealAllDamage(args);
+
+      // Apply the appropriate status effect based on the current hit
+      if (currentHit === 1) {
+        this.genericApplyAllStatus({
+          ...args,
+          statusId: statusConditions.BURN,
+          probability: 0.33,
+        });
+      } else if (currentHit === 2) {
+        this.genericApplyAllStatus({
+          ...args,
+          statusId: statusConditions.PARALYSIS,
+          probability: 0.33,
+        });
+      } else if (currentHit === 3) {
+        this.genericApplyAllStatus({
+          ...args,
+          statusId: statusConditions.FREEZE,
+          probability: 0.33,
+        });
+      }
+
+      // If we haven't reached max hits, execute the move again
+      if (currentHit < maxHits) {
+        source.executeMoveAgainstTarget({
+          moveId: this.id,
+          primaryTarget,
+          extraOptions: {
+            currentHit: currentHit + 1,
+          },
+        });
+      }
+    },
+  }),
+  [moveIdEnum.PSYCHO_CUT]: new Move({
+    id: moveIdEnum.PSYCHO_CUT,
+    name: "Psycho Cut",
+    type: pokemonTypes.PSYCHIC,
+    power: 70,
+    accuracy: 100,
+    cooldown: 4,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.ROW,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user tears at the target with blades formed by psychic power. This has no damage reduction when hitting back row or non-primary targets.",
+    execute(args) {
+      this.genericDealAllDamage({
+        ...args,
+        offTargetDamageMultiplier: 1,
+        backTargetDamageMultiplier: 1,
+      });
+    },
+  }),
+  [moveIdEnum.STAR_CELEBRATE]: new Move({
+    id: moveIdEnum.STAR_CELEBRATE,
+    name: "Star Celebrate",
+    type: pokemonTypes.NORMAL,
+    power: null,
+    accuracy: null,
+    cooldown: 2,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.ALL,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user celebrates the anniversary of Pokestar, increasing allies' combat readiness by 10% and permanently increasing their non-HP stats by 2%, multiplied by the number of years Pokestar has been around.",
+    execute(args) {
+      const { allTargets, battle } = args;
+      // Boost combat readiness by 20%
+      this.genericChangeAllCombatReadiness({
+        ...args,
+        amount: 20,
+        action: "boost",
+      });
+
+      // Permanently increase all non-HP stats by 2%
+      for (const target of allTargets) {
+        const statIds = /** @type {StatIdNoHP[]} */ ([
+          "atk",
+          "def",
+          "spa",
+          "spd",
+          "spe",
+        ]);
+
+        for (const statId of statIds) {
+          target.multiplyStatMult(statId, 1.02);
+        }
+
+        battle.addToLog(`${target.name}'s stats were permanently increased!`);
+      }
+    },
+  }),
+  [moveIdEnum.COACHING]: new Move({
+    id: moveIdEnum.COACHING,
+    name: "Coaching",
+    type: pokemonTypes.FIGHTING,
+    power: null,
+    accuracy: null,
+    cooldown: 0,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.NON_SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user coaches an ally, boosting its Attack and Defense for 2 turns.",
+    execute(args) {
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "atkUp",
+        duration: 2,
+      });
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "defUp",
+        duration: 2,
+      });
+    },
+  }),
 });
 
 module.exports = {

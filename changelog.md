@@ -8,17 +8,28 @@
   - Add form changing mechanic with DNA splicers or something
     - Update getPokemonOrder
     - Add a base Pokemon field or sm
+    - Update pokedex to order Pokemon forms together
   - Gen 4 event
     - Special banners
     - Some boosts or sm IDK
 - Fix held item you cannot take this action
+- Fix leaderboard
+- Reduce trade level req
 - Setting: auto-lock event Pokemon
+- Setting: Insta-auto
 
 **Stretch**
 
 - Stretch: Quests (Achievements)
 - Stretch: Ability slots
 - Stretch: Improve party management
+
+### 1.4.1 Anniversary Event
+
+- New limited event to celebrate Pokestar's Anniversary! Check `/events` for more details:
+  - Added a new limited anniversary Pokemon in the `/gacha`
+  - Re-running the Pokestar Launch banner for a limited time
+  - Various other limited benefits including hugely boosted shiny rate!
 
 **1.4.0.1 (4/19)**
 

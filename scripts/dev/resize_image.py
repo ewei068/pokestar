@@ -34,7 +34,7 @@ def resize_images_in_directory(directory, new_size):
                     output_path,
                     save_all=True,
                     append_images=frames[1:],
-                    loop=0,
+                    loop=1 if "loop" in image_name else 0,
                     duration=durations,
                     transparency=0,
                     disposal=2,

@@ -913,6 +913,141 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [abilityIdEnum.OVERCOAT]: new Ability({
+    id: abilityIdEnum.OVERCOAT,
+    name: "Overcoat",
+    description:
+      "Protects the Pokémon from weather damage and status conditions.",
+    abilityAdd({ battle, target }) {
+      return {
+        beforeWeatherDamageListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: () => {
+            battle.addToLog(
+              `${target.name}'s Overcoat protects it from weather damage!`
+            );
+            return {
+              damage: 0,
+              maxDamage: 0,
+            };
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsTargetPokemonCallback(target),
+            getIsInstanceOfType("weather")
+          ),
+        }),
+        beforeStatusAppliedListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_STATUS_APPLY,
+          callback: () => {
+            battle.addToLog(
+              `${target.name}'s Overcoat protects it from status conditions!`
+            );
+            return {
+              canApply: false,
+            };
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.beforeWeatherDamageListenerId);
+      battle.unregisterListener(properties.beforeStatusAppliedListenerId);
+    },
+  }),
+  [abilityIdEnum.STAR_BOOST]: new Ability({
+    id: abilityIdEnum.STAR_BOOST,
+    name: "Star Boost",
+    description:
+      "At the end of the user's turn, boost the combat readiness of a random other ally by 10% for every year Pokestar has been around.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.TURN_END,
+          callback: () => {
+            const allyPokemons = target
+              .getPartyPokemon()
+              .filter(
+                (pokemon) => pokemon && pokemon !== target && !pokemon.isFainted
+              );
+            if (!allyPokemons.length) {
+              return;
+            }
+
+            const randomAlly =
+              allyPokemons[Math.floor(Math.random() * allyPokemons.length)];
+            battle.addToLog(
+              `${target.name}'s Star Boost increases ${randomAlly.name}'s combat readiness!`
+            );
+            randomAlly.boostCombatReadiness(target, 20);
+          },
+          conditionCallback: getIsActivePokemonCallback(battle, target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.DRY_SKIN]: new Ability({
+    id: abilityIdEnum.DRY_SKIN,
+    name: "Dry Skin",
+    description:
+      "At the end of the user's turn, if there's rain, heal 1/4th HP, but if there's sun, take 1/8th HP damage.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.TURN_END,
+          callback: ({ activePokemon }) => {
+            const { weather } = battle;
+            if (
+              weather.weatherId === weatherConditions.RAIN &&
+              !battle.isWeatherNegated()
+            ) {
+              const healAmount = Math.max(
+                Math.floor(activePokemon.maxHp * 0.25),
+                1
+              );
+              battle.addToLog(
+                `${activePokemon.name}'s Dry Skin absorbs moisture from the rain!`
+              );
+              activePokemon.giveHeal(healAmount, activePokemon, {
+                type: "ability",
+                id: abilityIdEnum.DRY_SKIN,
+              });
+            } else if (
+              weather.weatherId === weatherConditions.SUN &&
+              !battle.isWeatherNegated()
+            ) {
+              const damageAmount = Math.max(
+                Math.floor(activePokemon.maxHp * 0.125),
+                1
+              );
+              battle.addToLog(
+                `${activePokemon.name}'s Dry Skin makes it suffer in the sun!`
+              );
+              activePokemon.takeDamage(damageAmount, activePokemon, {
+                type: "ability",
+                id: abilityIdEnum.DRY_SKIN,
+              });
+            }
+          },
+          conditionCallback: getIsActivePokemonCallback(battle, target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
 });
 
 module.exports = {

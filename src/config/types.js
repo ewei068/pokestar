@@ -45,8 +45,10 @@
  *  shinySprite: string,
  *  evolution?: Array<{
  *    level: number,
- *    id: any // TODO
+ *    id: any // TODO,
  *  }>,
+ *  baseSpeciesId?: string,
+ *  formSpeciesIds?: string[],
  *  abilities: {
  *    [key: number | string]: number // TODO?
  *  },

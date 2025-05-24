@@ -2823,6 +2823,31 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
   },
+  [pokemonIdEnum.POKESTARMIE]: {
+    name: "PokeStarmie",
+    emoji: "<:pokestarmie:1368808978938855474>",
+    description:
+      "The mascot of Pokestar, it is said to only appear once a year to bless its loyal fans.",
+    type: [types.WATER, types.PSYCHIC],
+    baseStats: [65, 75, 95, 135, 95, 135],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/pokestarmie-loop-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/sprites/pokestarmie-loop-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.STAR_BOOST]: 1,
+    },
+    moveIds: [
+      moveIdEnum.MIMIC,
+      moveIdEnum.PSYCHIC,
+      moveIdEnum.STAR_CELEBRATE,
+      moveIdEnum.HYDRO_PUMP,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.MEDIUMSLOW,
+    noGacha: true,
+  },
   122: {
     name: "Mr. Mime",
     emoji: "<:122:1100290827466575914>",
@@ -8577,6 +8602,149 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.BURMY]: {
+    name: "Burmy",
+    emoji: "<:412:1351026650770313226>",
+    description:
+      "To shelter itself from cold, wintry winds, it covers itself with a cloak made of twigs and leaves.",
+    type: [types.BUG],
+    baseStats: [40, 29, 45, 29, 45, 36],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/412.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/412.png",
+    evolution: [
+      {
+        level: 20,
+        id: pokemonIdEnum.WORMADAM_PLANT,
+      },
+      {
+        level: 20,
+        id: pokemonIdEnum.MOTHIM,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SHED_SKIN]: 0.8,
+      [abilityIdEnum.OVERCOAT]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.TACKLE,
+      moveIdEnum.STRING_SHOT,
+      moveIdEnum.PROTECT,
+      moveIdEnum.BUG_BITE,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.WORMADAM_PLANT]: {
+    name: "Wormadam Plant",
+    emoji: "<:413:1351026652628520990>",
+    description:
+      "When Burmy evolved, its cloak became a part of this Pokémon's body. The cloak is made of leaves.",
+    type: [types.BUG, types.GRASS],
+    baseStats: [60, 59, 85, 79, 105, 36],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/413.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/413.png",
+    formSpeciesIds: [
+      pokemonIdEnum.WORMADAM_SANDY,
+      pokemonIdEnum.WORMADAM_TRASH,
+    ],
+    abilities: {
+      [abilityIdEnum.ANTICIPATION]: 0.8,
+      [abilityIdEnum.OVERCOAT]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BUG_BITE,
+      moveIdEnum.GIGA_DRAIN,
+      moveIdEnum.QUIVER_DANCE,
+      moveIdEnum.LEAF_STORM,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+  },
+  [pokemonIdEnum.WORMADAM_SANDY]: {
+    name: "Wormadam Sandy",
+    emoji: "<:413sandy:1367375026709598308>",
+    description:
+      "When Burmy evolved, its cloak became a part of this Pokémon's body. The cloak is made of sand.",
+    type: [types.BUG, types.GROUND],
+    baseStats: [60, 79, 105, 59, 85, 36],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10004.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/413-sandy.png",
+    baseSpeciesId: pokemonIdEnum.WORMADAM_PLANT,
+    abilities: {
+      [abilityIdEnum.ANTICIPATION]: 0.8,
+      [abilityIdEnum.OVERCOAT]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BUG_BITE,
+      moveIdEnum.PROTECT,
+      moveIdEnum.STEALTH_ROCK,
+      moveIdEnum.EARTHQUAKE,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+    noGacha: true,
+  },
+  [pokemonIdEnum.WORMADAM_TRASH]: {
+    name: "Wormadam Trash",
+    emoji: "<:413trash:1367375027850317834>",
+    description:
+      "When Burmy evolved, its cloak became a part of this Pokémon's body. The cloak is made of trash.",
+    type: [types.BUG, types.STEEL],
+    baseStats: [60, 69, 95, 69, 95, 36],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10005.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/413-trash.png",
+    baseSpeciesId: pokemonIdEnum.WORMADAM_PLANT,
+    abilities: {
+      [abilityIdEnum.ANTICIPATION]: 0.8,
+      [abilityIdEnum.OVERCOAT]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BUG_BITE,
+      moveIdEnum.PSYCHIC,
+      moveIdEnum.PROTECT,
+      moveIdEnum.METAL_BURST,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+    noGacha: true,
+  },
+  [pokemonIdEnum.MOTHIM]: {
+    name: "Mothim",
+    emoji: "<:414:1351026659247132702>",
+    description:
+      "It loves the honey of flowers and steals honey collected by Combee.",
+    type: [types.BUG, types.FLYING],
+    baseStats: [70, 94, 50, 94, 50, 66],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/414.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/414.png",
+    abilities: {
+      [abilityIdEnum.SWARM]: 0.8,
+      [abilityIdEnum.TINTED_LENS]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BUG_BITE,
+      moveIdEnum.AIR_SLASH,
+      moveIdEnum.QUIVER_DANCE,
+      moveIdEnum.BUG_BUZZ,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+  },
   [pokemonIdEnum.COMBEE]: {
     name: "Combee",
     emoji: "<:415:1351026660564013127>",
@@ -8705,6 +8873,64 @@ const pokemonConfigRaw = {
       moveIdEnum.ICE_PUNCH,
       moveIdEnum.SWITCHEROO,
       moveIdEnum.HYDRO_PUMP,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.SHELLOS]: {
+    name: "Shellos",
+    emoji: "<:422:1351026845843460209>",
+    description:
+      "Its shape and coloration vary depending on its habitat. Camouflage helps it evade enemies.",
+    type: [types.WATER],
+    baseStats: [76, 48, 48, 57, 62, 34],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/422.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/422.png",
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.GASTRODON,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.STICKY_HOLD]: 0.45,
+      [abilityIdEnum.STORM_DRAIN]: 0.45,
+      [abilityIdEnum.SAND_FORCE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.RECOVER,
+      moveIdEnum.MUDDY_WATER,
+      moveIdEnum.EARTH_POWER,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.GASTRODON]: {
+    name: "Gastrodon",
+    emoji: "<:423:1351026846891905186>",
+    description:
+      "It has a pliable body without any bones. It's hard for predators to tear it apart because it's very resilient.",
+    type: [types.WATER, types.GROUND],
+    baseStats: [111, 83, 68, 92, 82, 39],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/423.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/423.png",
+    abilities: {
+      [abilityIdEnum.STICKY_HOLD]: 0.45,
+      [abilityIdEnum.STORM_DRAIN]: 0.45,
+      [abilityIdEnum.SAND_FORCE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.RECOVER,
+      moveIdEnum.MUDDY_WATER,
+      moveIdEnum.EARTHQUAKE,
     ],
     battleEligible: true,
     rarity: rarities.EPIC,
@@ -9226,6 +9452,210 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.MUNCHLAX]: {
+    name: "Munchlax",
+    emoji: "<:446:1351027086944636939>",
+    description:
+      "It stores food in its fur. It hides food under its fur, but forgets it's there and causes a stinky smell.",
+    type: [types.NORMAL],
+    baseStats: [135, 85, 40, 40, 85, 5],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/446.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/446.png",
+    evolution: [
+      {
+        level: 45,
+        id: pokemonIdEnum.SNORLAX,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.PICKUP]: 0.45,
+      [abilityIdEnum.THICK_FAT]: 0.45,
+      [abilityIdEnum.GLUTTONY]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.TACKLE,
+      moveIdEnum.ROLLOUT,
+      moveIdEnum.BODY_SLAM,
+      moveIdEnum.DEFENSE_CURL,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.RIOLU]: {
+    name: "Riolu",
+    emoji: "<:447:1351027087896744047>",
+    description:
+      "It has the peculiar power of being able to see emotions such as joy and rage in the form of waves.",
+    type: [types.FIGHTING],
+    baseStats: [40, 70, 40, 35, 40, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/447.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/447.png",
+    evolution: [
+      {
+        level: 35,
+        id: pokemonIdEnum.LUCARIO,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.STEADFAST]: 0.45,
+      [abilityIdEnum.INNER_FOCUS]: 0.45,
+      [abilityIdEnum.PRANKSTER]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.HELPING_HAND,
+      moveIdEnum.COACHING,
+      moveIdEnum.COUNTER,
+      moveIdEnum.CROSS_CHOP,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.LUCARIO]: {
+    name: "Lucario",
+    emoji: "<:448:1351027088919892081>",
+    description:
+      "It has the ability to sense the auras of all things. It understands human speech.",
+    type: [types.FIGHTING, types.STEEL],
+    baseStats: [70, 110, 70, 115, 70, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/448.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/448.png",
+    abilities: {
+      [abilityIdEnum.STEADFAST]: 0.45,
+      [abilityIdEnum.INNER_FOCUS]: 0.45,
+      [abilityIdEnum.JUSTIFIED]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.BULLET_PUNCH,
+      moveIdEnum.AURA_SPHERE,
+      moveIdEnum.EXTREME_SPEED,
+      moveIdEnum.CLOSE_COMBAT,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.HIPPOPOTAS]: {
+    name: "Hippopotas",
+    emoji: "<:449:1351027089934913626>",
+    description:
+      "It lives in arid places. Instead of perspiration, it expels sand from its body to cool itself.",
+    type: [types.GROUND],
+    baseStats: [68, 72, 78, 38, 42, 32],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/449.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/449.png",
+    evolution: [
+      {
+        level: 34,
+        id: pokemonIdEnum.HIPPOWDON,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SAND_STREAM]: 0.8,
+      [abilityIdEnum.SAND_FORCE]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.ROAR,
+      moveIdEnum.YAWN,
+      moveIdEnum.BULLDOZE,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.HIPPOWDON]: {
+    name: "Hippowdon",
+    emoji: "<:450:1351027091616829460>",
+    description:
+      "It blasts internally stored sand from ports on its body to create a towering sandstorm.",
+    type: [types.GROUND],
+    baseStats: [108, 112, 118, 68, 72, 47],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/450.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/450.png",
+    abilities: {
+      [abilityIdEnum.SAND_STREAM]: 0.8,
+      [abilityIdEnum.SAND_FORCE]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.YAWN,
+      moveIdEnum.BULLDOZE,
+      moveIdEnum.SLACK_OFF,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.CROAGUNK]: {
+    name: "Croagunk",
+    emoji: "<:453:1351027173229592708>",
+    description:
+      "Inflating its poison sacs, it fills the area with an odd sound and hits flinching opponents with a poison jab.",
+    type: [types.POISON, types.FIGHTING],
+    baseStats: [48, 61, 40, 61, 40, 50],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/453.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/453.png",
+    evolution: [
+      {
+        level: 37,
+        id: pokemonIdEnum.TOXICROAK,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.ANTICIPATION]: 0.45,
+      [abilityIdEnum.DRY_SKIN]: 0.45,
+      [abilityIdEnum.POISON_TOUCH]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POISON_STING,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.POISON_JAB,
+      moveIdEnum.DRAIN_PUNCH,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.TOXICROAK]: {
+    name: "Toxicroak",
+    emoji: "<:454:1351027174915706880>",
+    description:
+      "It has a poison sac at its throat. When it croaks, the stored poison is churned for greater potency.",
+    type: [types.POISON, types.FIGHTING],
+    baseStats: [83, 106, 65, 86, 65, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/454.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/454.png",
+    abilities: {
+      [abilityIdEnum.ANTICIPATION]: 0.45,
+      [abilityIdEnum.DRY_SKIN]: 0.45,
+      [abilityIdEnum.POISON_TOUCH]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POISON_STING,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.POISON_JAB,
+      moveIdEnum.DYNAMIC_PUNCH,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
   },
   [pokemonIdEnum.SNOVER]: {
     name: "Snover",
@@ -9762,6 +10192,7 @@ const pokemonConfigRaw = {
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10001.png",
     shinySprite:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10001.png",
+    baseSpeciesId: pokemonIdEnum.DEOXYS,
     abilities: {
       20015: 1,
     },
@@ -9782,6 +10213,7 @@ const pokemonConfigRaw = {
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10002.png",
     shinySprite:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10002.png",
+    baseSpeciesId: pokemonIdEnum.DEOXYS,
     abilities: {
       20016: 1,
     },
@@ -9802,6 +10234,7 @@ const pokemonConfigRaw = {
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10003.png",
     shinySprite:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10003.png",
+    baseSpeciesId: pokemonIdEnum.DEOXYS,
     abilities: {
       20017: 1,
     },
@@ -10101,29 +10534,34 @@ const rarityConfig = {
     pokemon: [],
     color: 0x00ff00,
     money: 25,
+    formChangeCost: 500,
     statMultiplier: [1.15, 1.1, 1.15, 1.1, 1.15, 1.1],
   },
   [rarities.RARE]: {
     pokemon: [],
     color: 0x0000ff,
     money: 50,
+    formChangeCost: 1000,
     statMultiplier: [1.15, 1.1, 1.15, 1.1, 1.15, 1.1],
   },
   [rarities.EPIC]: {
     pokemon: [],
     color: 0xff00ff,
     money: 75,
+    formChangeCost: 2500,
     statMultiplier: [1.075, 1.05, 1.075, 1.05, 1.075, 1.05],
   },
   [rarities.LEGENDARY]: {
     pokemon: [],
     color: 0xffff00,
     money: 200,
+    formChangeCost: 10000,
   },
   [rarities.MYTHICAL]: {
     pokemon: [],
     color: 0xff0000,
     money: 10000,
+    formChangeCost: 10000,
   },
 };
 
