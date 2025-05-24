@@ -3218,7 +3218,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.BASIC,
     damageType: damageTypes.OTHER,
     description:
-      "The user teleports away, boosting the ally with the most combat readiness to 100.",
+      "The user teleports away, boosting the ally with the most combat readiness by 60 combat readiness.",
   },
   m101: {
     name: "Night Shade",
@@ -7394,7 +7394,7 @@ const moveExecutes = {
     source.boostCombatReadiness(source, 30);
   },
   m100(battle, source) {
-    // boost highest cr non-self party pokemon cr to 100
+    // boost highest cr non-self party pokemon cr by 60
     const party = battle.parties[source.teamName];
     const pokemons = source.getPatternTargets(
       party,
@@ -7405,7 +7405,7 @@ const moveExecutes = {
       const pokemon = pokemons.reduce((a, b) =>
         a.combatReadiness > b.combatReadiness ? a : b
       );
-      pokemon.boostCombatReadiness(source, 100);
+      pokemon.boostCombatReadiness(source, 60);
     }
   },
   m101(_battle, source, _primaryTarget, allTargets) {

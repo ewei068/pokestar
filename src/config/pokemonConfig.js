@@ -4976,6 +4976,12 @@ const pokemonConfigRaw = {
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/221.png",
     shinySprite:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/221.png",
+    evolution: [
+      {
+        level: 55,
+        id: pokemonIdEnum.MAMOSWINE,
+      },
+    ],
     abilities: {
       12: 0.45,
       81: 0.45,
@@ -5112,6 +5118,12 @@ const pokemonConfigRaw = {
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/233.png",
     shinySprite:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/233.png",
+    evolution: [
+      {
+        level: 48,
+        id: pokemonIdEnum.PORYGON_Z,
+      },
+    ],
     abilities: {
       36: 0.45,
       [abilityIdEnum.DOWNLOAD]: 0.45,
@@ -9989,6 +10001,58 @@ const pokemonConfigRaw = {
       moveIdEnum.PROTECT,
       moveIdEnum.SPIKES,
       moveIdEnum.TAILWIND,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.MAMOSWINE]: {
+    name: "Mamoswine",
+    emoji: "<:473:1351027335155024042>",
+    description:
+      "Its impressive tusks are made of ice. The population thinned when it turned warm after the ice age.",
+    type: [types.ICE, types.GROUND],
+    baseStats: [110, 130, 80, 70, 60, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/473.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/473.png",
+    abilities: {
+      [abilityIdEnum.OBLIVIOUS]: 0.45,
+      [abilityIdEnum.SNOW_CLOAK]: 0.45,
+      [abilityIdEnum.THICK_FAT]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.ICE_SHARD,
+      moveIdEnum.STEALTH_ROCK,
+      moveIdEnum.ICICLE_CRASH,
+      moveIdEnum.EARTHQUAKE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.PORYGON_Z]: {
+    name: "Porygon-Z",
+    emoji: "<:474:1351027336203730944>",
+    description:
+      "Additional software was installed to make it a better Pokémon. It began acting oddly, however.",
+    type: [types.NORMAL],
+    baseStats: [85, 80, 70, 135, 75, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/474.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/474.png",
+    abilities: {
+      [abilityIdEnum.ADAPTABILITY]: 0.45,
+      [abilityIdEnum.DOWNLOAD]: 0.45,
+      [abilityIdEnum.ANALYTIC]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.TELEPORT,
+      moveIdEnum.DARK_PULSE,
+      moveIdEnum.ICE_BEAM,
+      moveIdEnum.TRI_ATTACK,
     ],
     battleEligible: true,
     rarity: rarities.EPIC,

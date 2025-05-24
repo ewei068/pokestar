@@ -1048,6 +1048,42 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [abilityIdEnum.ADAPTABILITY]: new Ability({
+    id: abilityIdEnum.ADAPTABILITY,
+    name: "Adaptability",
+    description:
+      "Powers up the damage of moves of the same type as the Pokémon by 30%.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage, damageInfo }) => {
+            const moveId = damageInfo?.moveId;
+            const moveData = getMove(moveId);
+
+            // Check if the move type matches one of the Pokémon's types (STAB condition)
+            if (target.hasType(moveData?.type)) {
+              battle.addToLog(
+                `${target.name}'s Adaptability powers up its STAB move!`
+              );
+              return {
+                damage: Math.floor(damage * 1.3),
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourcePokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
 });
 
 module.exports = {
