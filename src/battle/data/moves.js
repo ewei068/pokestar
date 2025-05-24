@@ -2078,6 +2078,33 @@ const movesToRegister = Object.freeze({
       }
     },
   }),
+  [moveIdEnum.COACHING]: new Move({
+    id: moveIdEnum.COACHING,
+    name: "Coaching",
+    type: pokemonTypes.FIGHTING,
+    power: null,
+    accuracy: null,
+    cooldown: 0,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.NON_SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user coaches an ally, boosting its Attack and Defense for 2 turns.",
+    execute(args) {
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "atkUp",
+        duration: 2,
+      });
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "defUp",
+        duration: 2,
+      });
+    },
+  }),
 });
 
 module.exports = {

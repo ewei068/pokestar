@@ -9485,6 +9485,64 @@ const pokemonConfigRaw = {
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMSLOW,
   },
+  [pokemonIdEnum.RIOLU]: {
+    name: "Riolu",
+    emoji: "<:447:1351027087896744047>",
+    description:
+      "It has the peculiar power of being able to see emotions such as joy and rage in the form of waves.",
+    type: [types.FIGHTING],
+    baseStats: [40, 70, 40, 35, 40, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/447.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/447.png",
+    evolution: [
+      {
+        level: 35,
+        id: pokemonIdEnum.LUCARIO,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.STEADFAST]: 0.45,
+      [abilityIdEnum.INNER_FOCUS]: 0.45,
+      [abilityIdEnum.PRANKSTER]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.HELPING_HAND,
+      moveIdEnum.COACHING,
+      moveIdEnum.COUNTER,
+      moveIdEnum.CROSS_CHOP,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.LUCARIO]: {
+    name: "Lucario",
+    emoji: "<:448:1351027088919892081>",
+    description:
+      "It has the ability to sense the auras of all things. It understands human speech.",
+    type: [types.FIGHTING, types.STEEL],
+    baseStats: [70, 110, 70, 115, 70, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/448.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/448.png",
+    abilities: {
+      [abilityIdEnum.STEADFAST]: 0.45,
+      [abilityIdEnum.INNER_FOCUS]: 0.45,
+      [abilityIdEnum.JUSTIFIED]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.BULLET_PUNCH,
+      moveIdEnum.AURA_SPHERE,
+      moveIdEnum.EXTREME_SPEED,
+      moveIdEnum.CLOSE_COMBAT,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
   [pokemonIdEnum.SNOVER]: {
     name: "Snover",
     emoji: "<:459:1351027254427389952>",
