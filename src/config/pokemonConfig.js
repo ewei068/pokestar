@@ -8878,6 +8878,64 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.SHELLOS]: {
+    name: "Shellos",
+    emoji: "<:422:1351026845843460209>",
+    description:
+      "Its shape and coloration vary depending on its habitat. Camouflage helps it evade enemies.",
+    type: [types.WATER],
+    baseStats: [76, 48, 48, 57, 62, 34],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/422.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/422.png",
+    evolution: [
+      {
+        level: 30,
+        id: pokemonIdEnum.GASTRODON,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.STICKY_HOLD]: 0.45,
+      [abilityIdEnum.STORM_DRAIN]: 0.45,
+      [abilityIdEnum.SAND_FORCE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.RECOVER,
+      moveIdEnum.MUDDY_WATER,
+      moveIdEnum.EARTH_POWER,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.GASTRODON]: {
+    name: "Gastrodon",
+    emoji: "<:423:1351026846891905186>",
+    description:
+      "It has a pliable body without any bones. It's hard for predators to tear it apart because it's very resilient.",
+    type: [types.WATER, types.GROUND],
+    baseStats: [111, 83, 68, 92, 82, 39],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/423.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/423.png",
+    abilities: {
+      [abilityIdEnum.STICKY_HOLD]: 0.45,
+      [abilityIdEnum.STORM_DRAIN]: 0.45,
+      [abilityIdEnum.SAND_FORCE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.RECOVER,
+      moveIdEnum.MUDDY_WATER,
+      moveIdEnum.EARTHQUAKE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   [pokemonIdEnum.AMBIPOM]: {
     name: "Ambipom",
     emoji: "<:424:1351026847709659178>",
@@ -9394,6 +9452,38 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.SLOW,
+  },
+  [pokemonIdEnum.MUNCHLAX]: {
+    name: "Munchlax",
+    emoji: "<:446:1351027086944636939>",
+    description:
+      "It stores food in its fur. It hides food under its fur, but forgets it's there and causes a stinky smell.",
+    type: [types.NORMAL],
+    baseStats: [135, 85, 40, 40, 85, 5],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/446.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/446.png",
+    evolution: [
+      {
+        level: 45,
+        id: pokemonIdEnum.SNORLAX,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.PICKUP]: 0.45,
+      [abilityIdEnum.THICK_FAT]: 0.45,
+      [abilityIdEnum.GLUTTONY]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.TACKLE,
+      moveIdEnum.ROLLOUT,
+      moveIdEnum.BODY_SLAM,
+      moveIdEnum.DEFENSE_CURL,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
   },
   [pokemonIdEnum.SNOVER]: {
     name: "Snover",
