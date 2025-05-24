@@ -10153,6 +10153,162 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.ROTOM]: {
+    name: "Rotom",
+    emoji: "<:479:1351027417409650698>",
+    description:
+      "Its body is composed of plasma. It infiltrates electronic devices and creates mischief with its electrical powers.",
+    type: [types.ELECTRIC, types.GHOST],
+    baseStats: [50, 50, 77, 95, 77, 91],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/479.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/479.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.CHARGE,
+      moveIdEnum.SHADOW_BALL,
+      moveIdEnum.DISCHARGE,
+      moveIdEnum.THUNDER,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+    formSpeciesIds: [
+      pokemonIdEnum.ROTOM_HEAT,
+      pokemonIdEnum.ROTOM_WASH,
+      pokemonIdEnum.ROTOM_FROST,
+      pokemonIdEnum.ROTOM_FAN,
+      pokemonIdEnum.ROTOM_MOW,
+    ],
+  },
+  [pokemonIdEnum.ROTOM_HEAT]: {
+    name: "Rotom-Heat",
+    emoji: "<:479heat:1367375032354865193>",
+    description:
+      "The source of its power is the plasma that makes up its body. When it enters an oven, its plasma heats up and its power increases.",
+    type: [types.ELECTRIC, types.FIRE],
+    baseStats: [50, 65, 107, 105, 107, 86],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10008.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/479-heat.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.HEX,
+      moveIdEnum.WILL_O_WISP,
+      moveIdEnum.DISCHARGE,
+      moveIdEnum.OVERHEAT,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+    baseSpeciesId: pokemonIdEnum.ROTOM,
+  },
+  [pokemonIdEnum.ROTOM_WASH]: {
+    name: "Rotom-Wash",
+    emoji: "<:479wash:1367375035022573598>",
+    description:
+      "The source of its power is the plasma that makes up its body. When it enters a washing machine, its plasma takes control of the water.",
+    type: [types.ELECTRIC, types.WATER],
+    baseStats: [50, 65, 107, 105, 107, 86],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10009.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/479-wash.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.HEX,
+      moveIdEnum.THUNDER_WAVE,
+      moveIdEnum.DISCHARGE,
+      moveIdEnum.HYDRO_PUMP,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+    baseSpeciesId: pokemonIdEnum.ROTOM,
+  },
+  [pokemonIdEnum.ROTOM_FROST]: {
+    name: "Rotom-Frost",
+    emoji: "<:479frost:1367375030916481054>",
+    description:
+      "The source of its power is the plasma that makes up its body. When it enters a refrigerator, its plasma freezes and its power increases.",
+    type: [types.ELECTRIC, types.ICE],
+    baseStats: [50, 65, 107, 105, 107, 86],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10010.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/479-frost.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.HEX,
+      moveIdEnum.THUNDER_WAVE,
+      moveIdEnum.DISCHARGE,
+      moveIdEnum.BLIZZARD,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+    baseSpeciesId: pokemonIdEnum.ROTOM,
+  },
+  [pokemonIdEnum.ROTOM_FAN]: {
+    name: "Rotom-Fan",
+    emoji: "<:479fan:1367375028881981494>",
+    description:
+      "The source of its power is the plasma that makes up its body. When it enters a fan, its plasma creates a powerful wind.",
+    type: [types.ELECTRIC, types.FLYING],
+    baseStats: [50, 65, 107, 105, 107, 86],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10011.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/479-fan.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.THUNDER_SHOCK,
+      moveIdEnum.AIR_SLASH,
+      moveIdEnum.DISCHARGE,
+      moveIdEnum.THUNDER,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+    baseSpeciesId: pokemonIdEnum.ROTOM,
+  },
+  [pokemonIdEnum.ROTOM_MOW]: {
+    name: "Rotom-Mow",
+    emoji: "<:479mow:1367375033604898909>",
+    description:
+      "The source of its power is the plasma that makes up its body. When it enters a lawnmower, its plasma takes control of the blades.",
+    type: [types.ELECTRIC, types.GRASS],
+    baseStats: [50, 65, 107, 105, 107, 86],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10012.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/479-mow.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.THUNDER_SHOCK,
+      moveIdEnum.TRICK,
+      moveIdEnum.DISCHARGE,
+      moveIdEnum.LEAF_STORM,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+    baseSpeciesId: pokemonIdEnum.ROTOM,
+  },
   [pokemonIdEnum.UXIE]: {
     name: "Uxie",
     emoji: "<:480:1351027418453901353>",

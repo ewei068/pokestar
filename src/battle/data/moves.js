@@ -1650,6 +1650,59 @@ const movesToRegister = Object.freeze({
       source.applyEffect("recharge", 1, source, {});
     },
   }),
+  [moveIdEnum.TRICK]: new Move({
+    id: moveIdEnum.TRICK,
+    name: "Trick",
+    type: pokemonTypes.PSYCHIC,
+    power: null,
+    accuracy: null,
+    cooldown: 3,
+    targetType: targetTypes.ANY,
+    targetPosition: targetPositions.NON_SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user tricks the target into trading held items. This swaps the held items of the user and the target.",
+    execute({ battle, source, primaryTarget }) {
+      // Store the held item IDs
+      const sourceHeldItemId = source.heldItem?.heldItemId;
+      const targetHeldItemId = primaryTarget.heldItem?.heldItemId;
+      // remove items
+      source.removeHeldItem();
+      primaryTarget.removeHeldItem();
+      // Swap held items
+      source.setHeldItem(targetHeldItemId);
+      primaryTarget.setHeldItem(sourceHeldItemId);
+      // Apply new held items
+      source.applyHeldItem();
+      primaryTarget.applyHeldItem();
+
+      battle.addToLog(
+        `${source.name} switched items with ${primaryTarget.name}!`
+      );
+    },
+  }),
+  [moveIdEnum.OVERHEAT]: new Move({
+    id: moveIdEnum.OVERHEAT,
+    name: "Overheat",
+    type: pokemonTypes.FIRE,
+    power: 110,
+    accuracy: 90,
+    cooldown: 4,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user attacks the opposing team with intense flames. After using this move, the user's Special Attack stat is sharply lowered for 2 turns.",
+    execute(args) {
+      const { source } = args;
+      this.genericDealAllDamage(args);
+      source.applyEffect("greaterSpaDown", 2, source, {});
+    },
+  }),
   [moveIdEnum.AIR_SLASH]: new Move({
     id: moveIdEnum.AIR_SLASH,
     name: "Air Slash",
