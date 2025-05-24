@@ -995,6 +995,59 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [abilityIdEnum.DRY_SKIN]: new Ability({
+    id: abilityIdEnum.DRY_SKIN,
+    name: "Dry Skin",
+    description:
+      "At the end of the user's turn, if there's rain, heal 1/4th HP, but if there's sun, take 1/8th HP damage.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.TURN_END,
+          callback: ({ activePokemon }) => {
+            const { weather } = battle;
+            if (
+              weather.weatherId === weatherConditions.RAIN &&
+              !battle.isWeatherNegated()
+            ) {
+              const healAmount = Math.max(
+                Math.floor(activePokemon.maxHp * 0.25),
+                1
+              );
+              battle.addToLog(
+                `${activePokemon.name}'s Dry Skin absorbs moisture from the rain!`
+              );
+              activePokemon.giveHeal(healAmount, activePokemon, {
+                type: "ability",
+                id: abilityIdEnum.DRY_SKIN,
+              });
+            } else if (
+              weather.weatherId === weatherConditions.SUN &&
+              !battle.isWeatherNegated()
+            ) {
+              const damageAmount = Math.max(
+                Math.floor(activePokemon.maxHp * 0.125),
+                1
+              );
+              battle.addToLog(
+                `${activePokemon.name}'s Dry Skin makes it suffer in the sun!`
+              );
+              activePokemon.takeDamage(damageAmount, activePokemon, {
+                type: "ability",
+                id: abilityIdEnum.DRY_SKIN,
+              });
+            }
+          },
+          conditionCallback: getIsActivePokemonCallback(battle, target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
 });
 
 module.exports = {

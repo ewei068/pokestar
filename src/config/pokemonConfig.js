@@ -9543,6 +9543,120 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
   },
+  [pokemonIdEnum.HIPPOPOTAS]: {
+    name: "Hippopotas",
+    emoji: "<:449:1351027089934913626>",
+    description:
+      "It lives in arid places. Instead of perspiration, it expels sand from its body to cool itself.",
+    type: [types.GROUND],
+    baseStats: [68, 72, 78, 38, 42, 32],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/449.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/449.png",
+    evolution: [
+      {
+        level: 34,
+        id: pokemonIdEnum.HIPPOWDON,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SAND_STREAM]: 0.8,
+      [abilityIdEnum.SAND_FORCE]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.ROAR,
+      moveIdEnum.YAWN,
+      moveIdEnum.BULLDOZE,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.HIPPOWDON]: {
+    name: "Hippowdon",
+    emoji: "<:450:1351027091616829460>",
+    description:
+      "It blasts internally stored sand from ports on its body to create a towering sandstorm.",
+    type: [types.GROUND],
+    baseStats: [108, 112, 118, 68, 72, 47],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/450.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/450.png",
+    abilities: {
+      [abilityIdEnum.SAND_STREAM]: 0.8,
+      [abilityIdEnum.SAND_FORCE]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.YAWN,
+      moveIdEnum.BULLDOZE,
+      moveIdEnum.SLACK_OFF,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.CROAGUNK]: {
+    name: "Croagunk",
+    emoji: "<:453:1351027173229592708>",
+    description:
+      "Inflating its poison sacs, it fills the area with an odd sound and hits flinching opponents with a poison jab.",
+    type: [types.POISON, types.FIGHTING],
+    baseStats: [48, 61, 40, 61, 40, 50],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/453.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/453.png",
+    evolution: [
+      {
+        level: 37,
+        id: pokemonIdEnum.TOXICROAK,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.ANTICIPATION]: 0.45,
+      [abilityIdEnum.DRY_SKIN]: 0.45,
+      [abilityIdEnum.POISON_TOUCH]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POISON_STING,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.POISON_JAB,
+      moveIdEnum.DRAIN_PUNCH,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.TOXICROAK]: {
+    name: "Toxicroak",
+    emoji: "<:454:1351027174915706880>",
+    description:
+      "It has a poison sac at its throat. When it croaks, the stored poison is churned for greater potency.",
+    type: [types.POISON, types.FIGHTING],
+    baseStats: [83, 106, 65, 86, 65, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/454.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/454.png",
+    abilities: {
+      [abilityIdEnum.ANTICIPATION]: 0.45,
+      [abilityIdEnum.DRY_SKIN]: 0.45,
+      [abilityIdEnum.POISON_TOUCH]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POISON_STING,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.POISON_JAB,
+      moveIdEnum.DYNAMIC_PUNCH,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   [pokemonIdEnum.SNOVER]: {
     name: "Snover",
     emoji: "<:459:1351027254427389952>",
