@@ -22,7 +22,7 @@ const { drawIterable } = require("../../utils/gachaUtils");
 const { pokemonIdEnum } = require("../../enums/pokemonEnums");
 const { logger } = require("../../log");
 
-/** @typedef {"charge" | "punch"} MoveTag */
+/** @typedef {"charge" | "punch" | "slice"} MoveTag */
 
 class Move {
   /**
@@ -756,6 +756,7 @@ const movesToRegister = Object.freeze({
         },
       });
     },
+    tags: ["slice"],
   }),
   [moveIdEnum.IRON_HEAD]: new Move({
     id: moveIdEnum.IRON_HEAD,
@@ -1672,6 +1673,7 @@ const movesToRegister = Object.freeze({
         probability: 0.25,
       });
     },
+    tags: ["slice"],
   }),
   [moveIdEnum.HEAT_WAVE]: new Move({
     id: moveIdEnum.HEAT_WAVE,
@@ -1732,7 +1734,7 @@ const movesToRegister = Object.freeze({
         battle.weather.weatherId !== weatherConditions.SUN
       );
     },
-    tags: ["charge"],
+    tags: ["charge", "slice"],
     chargeMoveEffectId: "absorbLight",
     execute(args) {
       const { source, battle } = args;
@@ -2104,6 +2106,54 @@ const movesToRegister = Object.freeze({
         duration: 2,
       });
     },
+  }),
+  [moveIdEnum.SACRED_SWORD]: new Move({
+    id: moveIdEnum.SACRED_SWORD,
+    name: "Sacred Sword",
+    type: pokemonTypes.FIGHTING,
+    power: 90,
+    accuracy: null,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.COLUMN,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user slashes with a sword honed to exceptional sharpness. This attack ignores the target's defensive boosts and has perfect accuracy.",
+    execute(args) {
+      const { source } = args;
+      this.genericDealAllDamage({
+        ...args,
+        calculateDamageFunction: (damageArgs) => {
+          const { target } = damageArgs;
+          // Override defense with base defense to ignore boosts
+          return source.calculateMoveDamage({
+            ...damageArgs,
+            defenseOverride: target.bdef,
+          });
+        },
+      });
+    },
+  }),
+  [moveIdEnum.SLASH]: new Move({
+    id: moveIdEnum.SLASH,
+    name: "Slash",
+    type: pokemonTypes.NORMAL,
+    power: 35,
+    accuracy: 100,
+    cooldown: 0,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.ROW,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user slashes at the target with sharp claws or blades, striking all enemies in the row.",
+    execute(args) {
+      this.genericDealAllDamage(args);
+    },
+    tags: ["slice"],
   }),
 });
 

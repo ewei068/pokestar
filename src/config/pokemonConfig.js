@@ -6311,6 +6311,10 @@ const pokemonConfigRaw = {
         level: 30,
         id: "282",
       },
+      {
+        level: 30,
+        id: pokemonIdEnum.GALLADE,
+      },
     ],
     abilities: {
       28: 0.45,
@@ -10053,6 +10057,32 @@ const pokemonConfigRaw = {
       moveIdEnum.DARK_PULSE,
       moveIdEnum.ICE_BEAM,
       moveIdEnum.TRI_ATTACK,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.GALLADE]: {
+    name: "Gallade",
+    emoji: "<:475:1351027411306942495>",
+    description:
+      "A master of courtesy and swordsmanship, it fights using extending swords on its elbows when protecting someone or something.",
+    type: [types.PSYCHIC, types.FIGHTING],
+    baseStats: [68, 125, 65, 65, 115, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/475.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/475.png",
+    abilities: {
+      [abilityIdEnum.STEADFAST]: 0.45,
+      [abilityIdEnum.SHARPNESS]: 0.45,
+      [abilityIdEnum.JUSTIFIED]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.SLASH,
+      moveIdEnum.PSYCHO_CUT,
+      moveIdEnum.LEAF_BLADE,
+      moveIdEnum.SACRED_SWORD,
     ],
     battleEligible: true,
     rarity: rarities.EPIC,

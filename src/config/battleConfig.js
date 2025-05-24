@@ -4019,6 +4019,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The target is slashed with scythes or claws. If it hits, the next turn's fury cutter has base 100 power.",
+    tags: ["slice"],
   },
   m212: {
     name: "Mean Look",
@@ -4823,7 +4824,7 @@ const moveConfig = Object.freeze({
     silenceIf(_battle, pokemon) {
       return pokemon.effectIds.projectingSpirit === undefined;
     },
-    tags: ["charge"],
+    tags: ["charge", "slice"],
     chargeMoveEffectId: "projectingSpirit",
   },
   m332: {
@@ -4839,6 +4840,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user confounds the target with speed, then slashes. This attack never misses.",
+    tags: ["slice"],
   },
   m334: {
     name: "Iron Defense",
@@ -4956,6 +4958,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user handles a sharp leaf like a sword and attacks by cutting its target. Deals extra true damage based on attack, and only deals 50% damage to other targets.",
+    tags: ["slice"],
   },
   m349: {
     name: "Dragon Dance",
@@ -5266,6 +5269,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user slashes at the target by crossing its scythes or claws as if they were a pair of scissors. The primary target is hit a second time with an attack that deals 2x damage.",
+    tags: ["slice"],
   },
   m405: {
     name: "Bug Buzz",
@@ -5885,6 +5889,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user cuts its target with sharp shells. This move has additional power proportional to the user's defense, and may also lower the target's Defense stat for 2 turns with a 50% chance.",
+    tags: ["slice"],
   },
   m540: {
     name: "Psystrike",
@@ -6360,6 +6365,7 @@ const moveConfig = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user lets its swords draw from its own power, then slices three times at the target. Successful hits deal an additional 10% of the target's max HP true damage. If the primary target is defeated, targets random enemies without missing.",
+    tags: ["slice"],
   },
   m20010: {
     name: "Gear Fifth",

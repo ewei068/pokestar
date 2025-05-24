@@ -1084,6 +1084,38 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [abilityIdEnum.SHARPNESS]: new Ability({
+    id: abilityIdEnum.SHARPNESS,
+    name: "Sharpness",
+    description: "Powers up the damage of slicing moves by 50%.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage, damageInfo }) => {
+            const moveId = damageInfo?.moveId;
+            if (getMoveIdHasTag(moveId, "slice")) {
+              battle.addToLog(
+                `${target.name}'s Sharpness powers up its slicing move!`
+              );
+              return {
+                damage: Math.floor(damage * 1.5),
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourcePokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
 });
 
 module.exports = {

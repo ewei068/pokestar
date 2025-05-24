@@ -53,7 +53,7 @@ This is a condensed reference for Cursor AI. For full documentation, see the [RE
 4. Held Items [heldItems.js](mdc:src/battle/data/heldItems.js): Passive or usable effects implemented through event listeners
 
 ## When Extending
-1. Add enum entry in [battleEnums.js](mdc:src/enums/battleEnums.js) if not already there
+1. Add enum entry in [battleEnums.js](mdc:src/enums/battleEnums.js) ONLY IF the entry doesn't already exist
 2. Create instance in appropriate data file
 3. Implement required methods
 4. Use existing methods for moves, abilities, held items, or effects when available
