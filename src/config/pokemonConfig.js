@@ -10208,6 +10208,7 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
     baseSpeciesId: pokemonIdEnum.ROTOM,
+    noGacha: true,
   },
   [pokemonIdEnum.ROTOM_WASH]: {
     name: "Rotom-Wash",
@@ -10233,6 +10234,7 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
     baseSpeciesId: pokemonIdEnum.ROTOM,
+    noGacha: true,
   },
   [pokemonIdEnum.ROTOM_FROST]: {
     name: "Rotom-Frost",
@@ -10258,6 +10260,7 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
     baseSpeciesId: pokemonIdEnum.ROTOM,
+    noGacha: true,
   },
   [pokemonIdEnum.ROTOM_FAN]: {
     name: "Rotom-Fan",
@@ -10283,6 +10286,7 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
     baseSpeciesId: pokemonIdEnum.ROTOM,
+    noGacha: true,
   },
   [pokemonIdEnum.ROTOM_MOW]: {
     name: "Rotom-Mow",
@@ -10308,6 +10312,7 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
     baseSpeciesId: pokemonIdEnum.ROTOM,
+    noGacha: true,
   },
   [pokemonIdEnum.UXIE]: {
     name: "Uxie",
@@ -10530,6 +10535,7 @@ const pokemonConfigRaw = {
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
     baseSpeciesId: pokemonIdEnum.GIRATINA_ALTERED,
+    noGacha: true,
   },
   [pokemonIdEnum.CRESSELIA]: {
     name: "Cresselia",
