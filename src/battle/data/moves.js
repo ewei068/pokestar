@@ -22,7 +22,7 @@ const { drawIterable } = require("../../utils/gachaUtils");
 const { pokemonIdEnum } = require("../../enums/pokemonEnums");
 const { logger } = require("../../log");
 
-/** @typedef {"charge" | "punch"} MoveTag */
+/** @typedef {"charge" | "punch" | "slice"} MoveTag */
 
 class Move {
   /**
@@ -210,6 +210,19 @@ class Move {
     };
   }
 
+  /**
+   * @param {Parameters<typeof this.triggerSecondaryEffect>[0] & {
+   *  target: BattlePokemon,
+   *  missedTargets?: BattlePokemon[],
+   * }} args
+   */
+  triggerSecondaryEffectOnTarget(args) {
+    const { target, missedTargets = [] } = args;
+    if (!missedTargets.includes(target)) {
+      return this.triggerSecondaryEffect(args);
+    }
+  }
+
   // eslint-disable-next-line class-methods-use-this
   genericApplySingleStatus({
     source,
@@ -223,15 +236,14 @@ class Move {
     options,
     probability = 1,
   }) {
-    if (missedTargets.includes(target)) {
-      return false;
-    }
-
-    const { triggered, onShouldTriggerResult } = this.triggerSecondaryEffect({
-      source,
-      probability,
-      onShouldTrigger: () => target.applyStatus(statusId, source, options),
-    });
+    const { triggered, onShouldTriggerResult } =
+      this.triggerSecondaryEffectOnTarget({
+        source,
+        target,
+        missedTargets,
+        probability,
+        onShouldTrigger: () => target.applyStatus(statusId, source, options),
+      }) || {};
     if (triggered) {
       return onShouldTriggerResult;
     }
@@ -285,16 +297,15 @@ class Move {
     initialArgs = {},
     probability = 1,
   }) {
-    if (missedTargets.includes(target)) {
-      return false;
-    }
-
-    const { triggered, onShouldTriggerResult } = this.triggerSecondaryEffect({
-      source,
-      probability,
-      onShouldTrigger: () =>
-        target.applyEffect(effectId, duration, source, initialArgs),
-    });
+    const { triggered, onShouldTriggerResult } =
+      this.triggerSecondaryEffectOnTarget({
+        source,
+        target,
+        missedTargets,
+        probability,
+        onShouldTrigger: () =>
+          target.applyEffect(effectId, duration, source, initialArgs),
+      }) || {};
     if (triggered) {
       return onShouldTriggerResult;
     }
@@ -756,6 +767,7 @@ const movesToRegister = Object.freeze({
         },
       });
     },
+    tags: ["slice"],
   }),
   [moveIdEnum.IRON_HEAD]: new Move({
     id: moveIdEnum.IRON_HEAD,
@@ -850,6 +862,42 @@ const movesToRegister = Object.freeze({
         effectId: "flinched",
         duration: 1,
         probability: 0.3,
+      });
+    },
+  }),
+  [moveIdEnum.CRUSH_GRIP]: new Move({
+    id: moveIdEnum.CRUSH_GRIP,
+    name: "Crush Grip",
+    type: pokemonTypes.NORMAL,
+    power: 120,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user crushes the target with great force. If hit, this move increases its damage by 25% of the target's current HP.",
+    execute({ source, primaryTarget, allTargets, missedTargets }) {
+      this.genericDealAllDamage({
+        source,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+        calculateDamageFunction: (args) => {
+          const { target } = args;
+          const baseDamage = source.calculateMoveDamage(args);
+
+          // Only add bonus damage if the target wasn't missed
+          if (!missedTargets.includes(target)) {
+            // Calculate bonus damage as 25% of current HP
+            const bonusDamage = Math.floor(target.hp * 0.25);
+            return baseDamage + bonusDamage;
+          }
+
+          return baseDamage;
+        },
       });
     },
   }),
@@ -1649,6 +1697,59 @@ const movesToRegister = Object.freeze({
       source.applyEffect("recharge", 1, source, {});
     },
   }),
+  [moveIdEnum.TRICK]: new Move({
+    id: moveIdEnum.TRICK,
+    name: "Trick",
+    type: pokemonTypes.PSYCHIC,
+    power: null,
+    accuracy: null,
+    cooldown: 3,
+    targetType: targetTypes.ANY,
+    targetPosition: targetPositions.NON_SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user tricks the target into trading held items. This swaps the held items of the user and the target.",
+    execute({ battle, source, primaryTarget }) {
+      // Store the held item IDs
+      const sourceHeldItemId = source.heldItem?.heldItemId;
+      const targetHeldItemId = primaryTarget.heldItem?.heldItemId;
+      // remove items
+      source.removeHeldItem();
+      primaryTarget.removeHeldItem();
+      // Swap held items
+      source.setHeldItem(targetHeldItemId);
+      primaryTarget.setHeldItem(sourceHeldItemId);
+      // Apply new held items
+      source.applyHeldItem();
+      primaryTarget.applyHeldItem();
+
+      battle.addToLog(
+        `${source.name} switched items with ${primaryTarget.name}!`
+      );
+    },
+  }),
+  [moveIdEnum.OVERHEAT]: new Move({
+    id: moveIdEnum.OVERHEAT,
+    name: "Overheat",
+    type: pokemonTypes.FIRE,
+    power: 110,
+    accuracy: 90,
+    cooldown: 4,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user attacks the opposing team with intense flames. After using this move, the user's Special Attack stat is sharply lowered for 2 turns.",
+    execute(args) {
+      const { source } = args;
+      this.genericDealAllDamage(args);
+      source.applyEffect("greaterSpaDown", 2, source, {});
+    },
+  }),
   [moveIdEnum.AIR_SLASH]: new Move({
     id: moveIdEnum.AIR_SLASH,
     name: "Air Slash",
@@ -1672,6 +1773,7 @@ const movesToRegister = Object.freeze({
         probability: 0.25,
       });
     },
+    tags: ["slice"],
   }),
   [moveIdEnum.HEAT_WAVE]: new Move({
     id: moveIdEnum.HEAT_WAVE,
@@ -1694,7 +1796,8 @@ const movesToRegister = Object.freeze({
       const damageTargets = source.getPatternTargets(
         targetParty,
         targetPatterns.ROW,
-        primaryTarget.position
+        primaryTarget.position,
+        { moveId: this.id }
       );
 
       // Deal damage only to targets in the primary target's row
@@ -1732,7 +1835,7 @@ const movesToRegister = Object.freeze({
         battle.weather.weatherId !== weatherConditions.SUN
       );
     },
-    tags: ["charge"],
+    tags: ["charge", "slice"],
     chargeMoveEffectId: "absorbLight",
     execute(args) {
       const { source, battle } = args;
@@ -1960,6 +2063,83 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.TRI_ATTACK]: new Move({
+    id: moveIdEnum.TRI_ATTACK,
+    name: "Tri Attack",
+    type: pokemonTypes.NORMAL,
+    power: 66,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.RANDOM,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user strikes with three different elemental attacks in succession. The first hit has a 33% chance to burn, the second has a 33% chance to paralyze, and the third has a 33% chance to freeze.",
+    execute(args) {
+      const { source, primaryTarget, extraOptions = {} } = args;
+      const maxHits = 3;
+      const { currentHit = 1 } = extraOptions;
+
+      // Deal damage for the current hit
+      this.genericDealAllDamage(args);
+
+      // Apply the appropriate status effect based on the current hit
+      if (currentHit === 1) {
+        this.genericApplyAllStatus({
+          ...args,
+          statusId: statusConditions.BURN,
+          probability: 0.33,
+        });
+      } else if (currentHit === 2) {
+        this.genericApplyAllStatus({
+          ...args,
+          statusId: statusConditions.PARALYSIS,
+          probability: 0.33,
+        });
+      } else if (currentHit === 3) {
+        this.genericApplyAllStatus({
+          ...args,
+          statusId: statusConditions.FREEZE,
+          probability: 0.33,
+        });
+      }
+
+      // If we haven't reached max hits, execute the move again
+      if (currentHit < maxHits) {
+        source.executeMoveAgainstTarget({
+          moveId: this.id,
+          primaryTarget,
+          extraOptions: {
+            currentHit: currentHit + 1,
+          },
+        });
+      }
+    },
+  }),
+  [moveIdEnum.PSYCHO_CUT]: new Move({
+    id: moveIdEnum.PSYCHO_CUT,
+    name: "Psycho Cut",
+    type: pokemonTypes.PSYCHIC,
+    power: 70,
+    accuracy: 100,
+    cooldown: 4,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.ROW,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user tears at the target with blades formed by psychic power. This has no damage reduction when hitting back row or non-primary targets.",
+    execute(args) {
+      this.genericDealAllDamage({
+        ...args,
+        offTargetDamageMultiplier: 1,
+        backTargetDamageMultiplier: 1,
+      });
+    },
+  }),
   [moveIdEnum.STAR_CELEBRATE]: new Move({
     id: moveIdEnum.STAR_CELEBRATE,
     name: "Star Celebrate",
@@ -1999,6 +2179,290 @@ const movesToRegister = Object.freeze({
 
         battle.addToLog(`${target.name}'s stats were permanently increased!`);
       }
+    },
+  }),
+  [moveIdEnum.COACHING]: new Move({
+    id: moveIdEnum.COACHING,
+    name: "Coaching",
+    type: pokemonTypes.FIGHTING,
+    power: null,
+    accuracy: null,
+    cooldown: 0,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.NON_SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user coaches an ally, boosting its Attack and Defense for 2 turns.",
+    execute(args) {
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "atkUp",
+        duration: 2,
+      });
+      this.genericApplyAllEffects({
+        ...args,
+        effectId: "defUp",
+        duration: 2,
+      });
+    },
+  }),
+  [moveIdEnum.SACRED_SWORD]: new Move({
+    id: moveIdEnum.SACRED_SWORD,
+    name: "Sacred Sword",
+    type: pokemonTypes.FIGHTING,
+    power: 90,
+    accuracy: null,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.COLUMN,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user slashes with a sword honed to exceptional sharpness. This attack ignores the target's defensive boosts and has perfect accuracy.",
+    execute(args) {
+      const { source } = args;
+      this.genericDealAllDamage({
+        ...args,
+        calculateDamageFunction: (damageArgs) => {
+          const { target } = damageArgs;
+          // Override defense with base defense to ignore boosts
+          return source.calculateMoveDamage({
+            ...damageArgs,
+            defenseOverride: target.bdef,
+          });
+        },
+      });
+    },
+  }),
+  [moveIdEnum.SLASH]: new Move({
+    id: moveIdEnum.SLASH,
+    name: "Slash",
+    type: pokemonTypes.NORMAL,
+    power: 35,
+    accuracy: 100,
+    cooldown: 0,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.ROW,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user slashes at the target with sharp claws or blades, striking all enemies in the row.",
+    execute(args) {
+      this.genericDealAllDamage(args);
+    },
+    tags: ["slice"],
+  }),
+  [moveIdEnum.ROAR_OF_TIME]: new Move({
+    id: moveIdEnum.ROAR_OF_TIME,
+    name: "Roar of Time",
+    type: pokemonTypes.DRAGON,
+    power: 140,
+    accuracy: 90,
+    cooldown: 6,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.ROW,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user roars to distort time, dealing massive damage. Fully reduces the highest move cooldown for each adjacent ally, and the user must recharge for 1 turn.",
+    execute(args) {
+      const { source } = args;
+      this.genericDealAllDamage(args);
+
+      // Get adjacent allies (SQUARE pattern excluding self)
+      const sourceParty = source.battle.parties[source.teamName];
+      const adjacentAllies = source
+        .getPatternTargets(
+          sourceParty,
+          targetPatterns.SQUARE,
+          source.position,
+          {
+            ignoreHittable: true,
+          }
+        )
+        .filter((pokemon) => pokemon !== source);
+
+      // Reduce highest cooldown for each adjacent ally
+      for (const ally of adjacentAllies) {
+        // Find move(s) with the highest cooldown
+        let highestCooldown = 0;
+        let highestCooldownMoves = [];
+
+        for (const [moveId, moveInfo] of Object.entries(ally.moveIds)) {
+          if (moveInfo.cooldown > highestCooldown) {
+            highestCooldown = moveInfo.cooldown;
+            highestCooldownMoves = [moveId];
+          } else if (
+            moveInfo.cooldown === highestCooldown &&
+            highestCooldown > 0
+          ) {
+            highestCooldownMoves.push(moveId);
+          }
+        }
+
+        // If there are moves on cooldown, reset a random one
+        if (highestCooldownMoves.length > 0) {
+          const [randomMoveId] = drawIterable(highestCooldownMoves, 1);
+          const resetAmount = ally.moveIds[randomMoveId].cooldown;
+          ally.reduceMoveCooldown(randomMoveId, resetAmount, source);
+        }
+      }
+
+      // Apply recharge effect to the user
+      source.applyEffect("recharge", 1, source, {});
+    },
+  }),
+  [moveIdEnum.SPACIAL_REND]: new Move({
+    id: moveIdEnum.SPACIAL_REND,
+    name: "Spacial Rend",
+    type: pokemonTypes.DRAGON,
+    power: 80,
+    accuracy: null,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.X,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user tears the spatial fabric, dealing damage to enemies. Adjacent allies receive a spatial blessing that enhances their move patterns for 1 turn.",
+    execute(args) {
+      const { source } = args;
+      this.genericDealAllDamage(args);
+
+      const sourceParty = source.battle.parties[source.teamName];
+      const adjacentAllies = source
+        .getPatternTargets(
+          sourceParty,
+          targetPatterns.SQUARE,
+          source.position,
+          {
+            ignoreHittable: true,
+          }
+        )
+        .filter((pokemon) => !pokemon.isFainted);
+      for (const ally of adjacentAllies) {
+        ally.applyEffect(effectIdEnum.SPATIAL_BLESSING, 1, source, {});
+      }
+    },
+  }),
+  [moveIdEnum.SHADOW_FORCE]: new Move({
+    id: moveIdEnum.SHADOW_FORCE,
+    name: "Shadow Force",
+    type: pokemonTypes.GHOST,
+    power: 111,
+    accuracy: 90,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user disappears and strikes the targets on the next turn, removing their buffs if hit. The user may receive a boost from the shadows depending on its form.",
+    silenceIf(_battle, pokemon) {
+      return pokemon.effectIds[effectIdEnum.VANISHED] === undefined;
+    },
+    tags: ["charge"],
+    chargeMoveEffectId: effectIdEnum.VANISHED,
+    execute(args) {
+      const { source, battle } = args;
+      // If pokemon doesn't have "vanished" buff, apply it
+      if (source.effectIds[effectIdEnum.VANISHED] === undefined) {
+        source.applyEffect(effectIdEnum.VANISHED, 1, source, {});
+        source.moveIds[this.id].cooldown = 0;
+
+        // Special effects for Giratina forms
+        if (source.speciesId === pokemonIdEnum.GIRATINA_ALTERED) {
+          battle.addToLog(`${source.name} restores its power in the shadows!`);
+          this.genericHealSingleTarget({
+            source,
+            target: source,
+            healPercent: 40,
+          });
+        } else if (source.speciesId === pokemonIdEnum.GIRATINA_ORIGIN) {
+          battle.addToLog(`${source.name} powers-up in the shadows!`);
+          source.applyEffect("greaterAtkUp", 2, source, {});
+        }
+      } else {
+        source.removeEffect(effectIdEnum.VANISHED);
+        // remove all buffs from targets
+        for (const target of args.allTargets) {
+          this.triggerSecondaryEffectOnTarget({
+            ...args,
+            target,
+            onShouldTrigger: () => {
+              for (const effectId of Object.keys(target.effectIds)) {
+                // @ts-ignore
+                target.dispellEffect(effectId);
+              }
+            },
+          });
+        }
+        this.genericDealAllDamage(args);
+      }
+    },
+  }),
+  [moveIdEnum.OMINOUS_WIND]: new Move({
+    id: moveIdEnum.OMINOUS_WIND,
+    name: "Ominous Wind",
+    type: pokemonTypes.GHOST,
+    power: 45,
+    accuracy: 100,
+    cooldown: 0,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user blasts the target with a gust of repulsive wind. This may also raise the user's highest non-HP stat with a 50% chance.",
+    execute(args) {
+      const { source } = args;
+      this.genericDealAllDamage(args);
+      this.triggerSecondaryEffect({
+        ...args,
+        probability: 0.5,
+        onShouldTrigger: () => {
+          // get highest non-hp base stat
+          const statValues = [
+            source.batk,
+            source.bdef,
+            source.bspa,
+            source.bspd,
+            source.bspe,
+          ];
+          // argmax
+          const highestStatIndex = statValues.reduce(
+            (iMax, x, i, arr) => (x > arr[iMax] ? i : iMax),
+            0
+          );
+          switch (highestStatIndex + 1) {
+            case 1:
+              source.applyEffect("atkUp", 1, source, {});
+              break;
+            case 2:
+              source.applyEffect("defUp", 1, source, {});
+              break;
+            case 3:
+              source.applyEffect("spaUp", 1, source, {});
+              break;
+            case 4:
+              source.applyEffect("spdUp", 1, source, {});
+              break;
+            case 5:
+              source.applyEffect("speUp", 1, source, {});
+              break;
+            default:
+              break;
+          }
+        },
+      });
     },
   }),
 });

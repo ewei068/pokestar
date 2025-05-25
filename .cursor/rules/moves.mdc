@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 # Pokestar Move System
 
-This rule covers key patterns and best practices for working with moves in [moves.js](mdc:src/battle/data/moves.js) in the Pokestar battle system.
+This rule covers key patterns and best practices for working with moves in [moves.js](mdc:src/battle/data/moves.js) in the Pokestar battle system. If asked to implement or modify a move, DO NOT modify other moves unless explicitly asked to.
 
 ## Unique Aspects
 
@@ -71,20 +71,20 @@ this.genericChangeAllCombatReadiness({
 });
 ```
 
-### 2. Pass Full Args Object
+### 2. CRITICAL RULE: Pass Full Args Object
 
 Always pass the full `args` object to generic methods rather than destructuring, in case the methods the rule uses changes:
 
 ```javascript
-// DO THIS:
+// CORRECT, DO THIS:
 execute(args) {
-  this.genericDealAllDamage(args);
+  this.genericDealAllDamage(...args, extraParams);
 }
 
-// NOT THIS:
+// INCORRECT, NOT THIS:
 execute({ source, primaryTarget, allTargets, missedTargets }) {
   this.genericDealAllDamage({ 
-    source, primaryTarget, allTargets, missedTargets 
+    source, primaryTarget, allTargets, missedTargets, extraParams
   });
 }
 ```

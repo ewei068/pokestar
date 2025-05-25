@@ -5,6 +5,7 @@ const {
   targetPatterns,
   statusConditions,
   statIndexToBattleStat,
+  effectTypes,
 } = require("../../config/battleConfig");
 const { types: pokemonTypes } = require("../../config/pokemonConfig");
 const {
@@ -22,8 +23,11 @@ const {
   composeConditionCallbacks,
   getIsTargetSameTeamCallback,
   getIsTargetOpponentCallback,
+  getIsSourceSameTeamCallback,
+  getIsNotSourcePokemonCallback,
 } = require("../engine/eventConditions");
 const { getMove } = require("./moveRegistry");
+const { getEffect } = require("./effectRegistry");
 
 /**
  * @template T
@@ -481,7 +485,7 @@ const abilitiesToRegister = Object.freeze({
               enemyParty,
               targetPatterns.RANDOM,
               1,
-              moveIdEnum.AQUA_IMPACT
+              { moveId: moveIdEnum.AQUA_IMPACT }
             )[0]; // this target isn't the real enemy; but required for the move execution TODO: maybe improve this lol
             if (randomEnemy) {
               target.executeMoveAgainstTarget({
@@ -583,7 +587,7 @@ const abilitiesToRegister = Object.freeze({
               enemyParty,
               targetPatterns.RANDOM,
               1,
-              moveIdEnum.MAGMA_IMPACT
+              { moveId: moveIdEnum.MAGMA_IMPACT }
             )[0]; // this target isn't the real enemy; but required for the move execution TODO: maybe improve this lol
             if (randomEnemy) {
               target.executeMoveAgainstTarget({
@@ -913,6 +917,52 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.listenerId);
     },
   }),
+  [abilityIdEnum.OVERCOAT]: new Ability({
+    id: abilityIdEnum.OVERCOAT,
+    name: "Overcoat",
+    description:
+      "Protects the Pokémon from weather damage and status conditions.",
+    abilityAdd({ battle, target }) {
+      return {
+        beforeWeatherDamageListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: () => {
+            battle.addToLog(
+              `${target.name}'s Overcoat protects it from weather damage!`
+            );
+            return {
+              damage: 0,
+              maxDamage: 0,
+            };
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsTargetPokemonCallback(target),
+            getIsInstanceOfType("weather")
+          ),
+        }),
+        beforeStatusAppliedListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_STATUS_APPLY,
+          callback: () => {
+            battle.addToLog(
+              `${target.name}'s Overcoat protects it from status conditions!`
+            );
+            return {
+              canApply: false,
+            };
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.beforeWeatherDamageListenerId);
+      battle.unregisterListener(properties.beforeStatusAppliedListenerId);
+    },
+  }),
   [abilityIdEnum.STAR_BOOST]: new Ability({
     id: abilityIdEnum.STAR_BOOST,
     name: "Star Boost",
@@ -947,6 +997,198 @@ const abilitiesToRegister = Object.freeze({
     },
     abilityRemove({ battle, properties }) {
       battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.DRY_SKIN]: new Ability({
+    id: abilityIdEnum.DRY_SKIN,
+    name: "Dry Skin",
+    description:
+      "At the end of the user's turn, if there's rain, heal 1/4th HP, but if there's sun, take 1/8th HP damage.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.TURN_END,
+          callback: ({ activePokemon }) => {
+            const { weather } = battle;
+            if (
+              weather.weatherId === weatherConditions.RAIN &&
+              !battle.isWeatherNegated()
+            ) {
+              const healAmount = Math.max(
+                Math.floor(activePokemon.maxHp * 0.25),
+                1
+              );
+              battle.addToLog(
+                `${activePokemon.name}'s Dry Skin absorbs moisture from the rain!`
+              );
+              activePokemon.giveHeal(healAmount, activePokemon, {
+                type: "ability",
+                id: abilityIdEnum.DRY_SKIN,
+              });
+            } else if (
+              weather.weatherId === weatherConditions.SUN &&
+              !battle.isWeatherNegated()
+            ) {
+              const damageAmount = Math.max(
+                Math.floor(activePokemon.maxHp * 0.125),
+                1
+              );
+              battle.addToLog(
+                `${activePokemon.name}'s Dry Skin makes it suffer in the sun!`
+              );
+              activePokemon.takeDamage(damageAmount, activePokemon, {
+                type: "ability",
+                id: abilityIdEnum.DRY_SKIN,
+              });
+            }
+          },
+          conditionCallback: getIsActivePokemonCallback(battle, target),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.ADAPTABILITY]: new Ability({
+    id: abilityIdEnum.ADAPTABILITY,
+    name: "Adaptability",
+    description:
+      "Powers up the damage of moves of the same type as the Pokémon by 30%.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage, damageInfo }) => {
+            const moveId = damageInfo?.moveId;
+            const moveData = getMove(moveId);
+
+            // Check if the move type matches one of the Pokémon's types (STAB condition)
+            if (target.hasType(moveData?.type)) {
+              battle.addToLog(
+                `${target.name}'s Adaptability powers up its STAB move!`
+              );
+              return {
+                damage: Math.floor(damage * 1.3),
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourcePokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.SHARPNESS]: new Ability({
+    id: abilityIdEnum.SHARPNESS,
+    name: "Sharpness",
+    description: "Powers up the damage of slicing moves by 50%.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage, damageInfo }) => {
+            const moveId = damageInfo?.moveId;
+            if (getMoveIdHasTag(moveId, "slice")) {
+              battle.addToLog(
+                `${target.name}'s Sharpness powers up its slicing move!`
+              );
+              return {
+                damage: Math.floor(damage * 1.5),
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourcePokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.TELEPATHY]: new Ability({
+    id: abilityIdEnum.TELEPATHY,
+    name: "Telepathy",
+    description:
+      "The user cannot be damaged or inflicted with dispellable debuffs from allies (excluding self).",
+    abilityAdd({ battle, target }) {
+      const baseCallback = composeConditionCallbacks(
+        getIsTargetPokemonCallback(target),
+        getIsSourceSameTeamCallback(target),
+        getIsNotSourcePokemonCallback(target)
+      );
+      return {
+        beforeDamageListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: () => {
+            battle.addToLog(
+              `${target.name}'s Telepathy prevents ally-infllicted damage!`
+            );
+            return {
+              damage: 0,
+              maxDamage: 0,
+            };
+          },
+          conditionCallback: baseCallback,
+        }),
+
+        beforeEffectAddListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_EFFECT_ADD,
+          callback: ({ source, effectId }) => {
+            const effect = getEffect(effectId);
+            if (effect?.type === effectTypes.DEBUFF && effect?.dispellable) {
+              battle.addToLog(
+                `${target.name}'s Telepathy prevented ${effect.name} from ${source.name}!`
+              );
+              return {
+                canAdd: false,
+              };
+            }
+          },
+          conditionCallback: baseCallback,
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.beforeDamageListenerId);
+      battle.unregisterListener(properties.beforeEffectAddListenerId);
+    },
+  }),
+  [abilityIdEnum.SLOW_START]: new Ability({
+    id: abilityIdEnum.SLOW_START,
+    name: "Slow Start",
+    description:
+      "When the user enters battle, its Attack and Speed are lowered for 2 turns.",
+    abilityAdd({ battle, target }) {
+      battle.addToLog(
+        `${target.name} can't get it going because of its Slow Start!`
+      );
+      target.applyEffect("atkDown", 2, target, {});
+      target.applyEffect("speDown", 2, target, {});
+
+      return {};
+    },
+    abilityRemove({ target }) {
+      target.dispellEffect("atkDown");
+      target.dispellEffect("speDown");
     },
   }),
 });

@@ -29,6 +29,9 @@ const getIsTargetOpponentCallback = (pokemon) => (eventArgs) =>
 const getIsSourcePokemonCallback = (pokemon) => (eventArgs) =>
   eventArgs?.source === pokemon;
 
+const getIsNotSourcePokemonCallback = (pokemon) => (eventArgs) =>
+  eventArgs?.source !== pokemon;
+
 /**
  * @param {BattlePokemon} pokemon
  */
@@ -36,7 +39,7 @@ const getIsSourceSameTeamCallback = (pokemon) => (eventArgs) =>
   eventArgs?.source?.teamName === pokemon.teamName;
 
 /**
- * @param {"move" | "effect" | "statusCondition"} instanceType
+ * @param {"move" | "effect" | "statusCondition" | "weather"} instanceType
  */
 const getIsInstanceOfType = (instanceType) => (eventArgs) => {
   // I shouldn't have made the infos different but it's too late now
@@ -64,6 +67,7 @@ module.exports = {
   getIsTargetSameTeamCallback,
   getIsTargetOpponentCallback,
   getIsSourcePokemonCallback,
+  getIsNotSourcePokemonCallback,
   getIsSourceSameTeamCallback,
   getIsInstanceOfType,
   composeConditionCallbacks,
