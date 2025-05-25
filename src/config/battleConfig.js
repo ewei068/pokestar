@@ -1352,11 +1352,14 @@ const effectConfig = Object.freeze({
           const { damage } = args;
           const allyParty =
             moneyBagsPokemon.battle.parties[moneyBagsPokemon.teamName];
-          const moneyBagsAllies = moneyBagsPokemon.getPatternTargets(
-            allyParty,
-            targetPatterns.ALL_EXCEPT_SELF,
-            moneyBagsPokemon.position
-          );
+          const moneyBagsAllies = moneyBagsPokemon
+            .getPatternTargets(
+              allyParty,
+              targetPatterns.ALL_EXCEPT_SELF,
+              moneyBagsPokemon.position,
+              { ignoreHittable: true }
+            )
+            .filter((pokemon) => !pokemon.isFainted);
 
           moneyBagsPokemon.battle.addToLog(
             `Coins drop from ${moneyBagsPokemon.name}'s wallet!`
@@ -6459,7 +6462,8 @@ const moveExecutes = {
     const pokemons = source.getPatternTargets(
       party,
       targetPatterns.ALL_EXCEPT_SELF,
-      source.position
+      source.position,
+      { ignoreHittable: true }
     );
     if (pokemons.length > 0) {
       const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
@@ -6490,7 +6494,9 @@ const moveExecutes = {
 
       // reduce random party pokemon cooldowns by 1
       const party = battle.parties[source.teamName];
-      const pokemons = source.getPatternTargets(party, targetPatterns.ALL, 1);
+      const pokemons = source.getPatternTargets(party, targetPatterns.ALL, 1, {
+        ignoreHittable: true,
+      });
       if (pokemons.length > 0) {
         const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
         battle.addToLog(`${pokemon.name}'s cooldowns were reduced by 1!`);
@@ -7402,11 +7408,14 @@ const moveExecutes = {
   m100(battle, source) {
     // boost highest cr non-self party pokemon cr by 60
     const party = battle.parties[source.teamName];
-    const pokemons = source.getPatternTargets(
-      party,
-      targetPatterns.ALL_EXCEPT_SELF,
-      source.position
-    );
+    const pokemons = source
+      .getPatternTargets(
+        party,
+        targetPatterns.ALL_EXCEPT_SELF,
+        source.position,
+        { ignoreHittable: true }
+      )
+      .filter((pokemon) => !pokemon.isFainted);
     if (pokemons.length > 0) {
       const pokemon = pokemons.reduce((a, b) =>
         a.combatReadiness > b.combatReadiness ? a : b
@@ -8537,7 +8546,7 @@ const moveExecutes = {
       targetParty,
       randomMoveData.targetPattern,
       randomTarget.position,
-      randomMoveId
+      { moveId: randomMoveId }
     );
     // use move against target
     battle.addToLog(`${randomMoveData.name} hit ${randomTarget.name}!`);
@@ -8645,7 +8654,7 @@ const moveExecutes = {
           enemyParty,
           targetPatterns.SQUARE,
           target.position,
-          moveId
+          { moveId }
         );
         for (const enemyTarget of enemyTargets) {
           enemyTarget.applyEffect("confused", 2, source);
@@ -9237,7 +9246,7 @@ const moveExecutes = {
         enemyParty,
         targetPatterns.ALL,
         primaryTarget.position,
-        moveId
+        { moveId }
       );
     }
 
@@ -9965,11 +9974,14 @@ const moveExecutes = {
 
     // boost random non-self party pokemon cr to 100
     const party = battle.parties[source.teamName];
-    const pokemons = source.getPatternTargets(
-      party,
-      targetPatterns.ALL_EXCEPT_SELF,
-      source.position
-    );
+    const pokemons = source
+      .getPatternTargets(
+        party,
+        targetPatterns.ALL_EXCEPT_SELF,
+        source.position,
+        { ignoreHittable: true }
+      )
+      .filter((pokemon) => !pokemon.isFainted);
     if (pokemons.length > 0) {
       const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
       pokemon.boostCombatReadiness(source, 100);
@@ -10904,11 +10916,14 @@ const moveExecutes = {
 
     // boost random non-self party pokemon cr to 100
     const party = battle.parties[source.teamName];
-    const pokemons = source.getPatternTargets(
-      party,
-      targetPatterns.ALL_EXCEPT_SELF,
-      source.position
-    );
+    const pokemons = source
+      .getPatternTargets(
+        party,
+        targetPatterns.ALL_EXCEPT_SELF,
+        source.position,
+        { ignoreHittable: true }
+      )
+      .filter((pokemon) => !pokemon.isFainted);
     if (pokemons.length > 0) {
       const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
       pokemon.boostCombatReadiness(source, 100);
@@ -11487,7 +11502,7 @@ const moveExecutes = {
       enemyParty,
       targetPatterns.ROW,
       primaryTarget.position,
-      moveId
+      { moveId }
     );
     for (const target of rowTargets) {
       const miss = missedTargets.includes(target);
@@ -11507,7 +11522,7 @@ const moveExecutes = {
       enemyParty,
       targetPatterns.COLUMN,
       primaryTarget.position,
-      moveId
+      { moveId }
     );
     for (const target of columnTargets) {
       const miss = missedTargets.includes(target);
@@ -11608,7 +11623,7 @@ const moveExecutes = {
             targetParty,
             moveData.targetPattern,
             target.position,
-            moveId
+            { moveId }
           );
           source.executeMove({
             moveId,
@@ -15938,7 +15953,7 @@ const abilityConfig = Object.freeze({
             targetParty,
             randomMoveData.targetPattern,
             target.position,
-            randomMoveId
+            { moveId: randomMoveId }
           );
           // use move against target
           battle.addToLog(`${randomMoveData.name} hit ${target.name}!`);

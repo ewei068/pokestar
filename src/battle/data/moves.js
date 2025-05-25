@@ -1749,7 +1749,8 @@ const movesToRegister = Object.freeze({
       const damageTargets = source.getPatternTargets(
         targetParty,
         targetPatterns.ROW,
-        primaryTarget.position
+        primaryTarget.position,
+        { moveId: this.id }
       );
 
       // Deal damage only to targets in the primary target's row
@@ -2207,6 +2208,67 @@ const movesToRegister = Object.freeze({
       this.genericDealAllDamage(args);
     },
     tags: ["slice"],
+  }),
+  [moveIdEnum.ROAR_OF_TIME]: new Move({
+    id: moveIdEnum.ROAR_OF_TIME,
+    name: "Roar of Time",
+    type: pokemonTypes.DRAGON,
+    power: 140,
+    accuracy: 90,
+    cooldown: 6,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.ROW,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user roars to distort time, dealing massive damage. Fully reduces the highest move cooldown for each adjacent ally, and the user must recharge for 1 turn.",
+    execute(args) {
+      const { source } = args;
+      this.genericDealAllDamage(args);
+
+      // Get adjacent allies (SQUARE pattern excluding self)
+      const sourceParty = source.battle.parties[source.teamName];
+      const adjacentAllies = source
+        .getPatternTargets(
+          sourceParty,
+          targetPatterns.SQUARE,
+          source.position,
+          {
+            ignoreHittable: true,
+          }
+        )
+        .filter((pokemon) => pokemon !== source);
+
+      // Reduce highest cooldown for each adjacent ally
+      for (const ally of adjacentAllies) {
+        // Find move(s) with the highest cooldown
+        let highestCooldown = 0;
+        let highestCooldownMoves = [];
+
+        for (const [moveId, moveInfo] of Object.entries(ally.moveIds)) {
+          if (moveInfo.cooldown > highestCooldown) {
+            highestCooldown = moveInfo.cooldown;
+            highestCooldownMoves = [moveId];
+          } else if (
+            moveInfo.cooldown === highestCooldown &&
+            highestCooldown > 0
+          ) {
+            highestCooldownMoves.push(moveId);
+          }
+        }
+
+        // If there are moves on cooldown, reset a random one
+        if (highestCooldownMoves.length > 0) {
+          const [randomMoveId] = drawIterable(highestCooldownMoves, 1);
+          const resetAmount = ally.moveIds[randomMoveId].cooldown;
+          ally.reduceMoveCooldown(randomMoveId, resetAmount, source);
+        }
+      }
+
+      // Apply recharge effect to the user
+      source.applyEffect("recharge", 1, source, {});
+    },
   }),
 });
 

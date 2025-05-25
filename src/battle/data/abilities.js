@@ -5,6 +5,7 @@ const {
   targetPatterns,
   statusConditions,
   statIndexToBattleStat,
+  effectTypes,
 } = require("../../config/battleConfig");
 const { types: pokemonTypes } = require("../../config/pokemonConfig");
 const {
@@ -22,8 +23,11 @@ const {
   composeConditionCallbacks,
   getIsTargetSameTeamCallback,
   getIsTargetOpponentCallback,
+  getIsSourceSameTeamCallback,
+  getIsNotSourcePokemonCallback,
 } = require("../engine/eventConditions");
 const { getMove } = require("./moveRegistry");
+const { getEffect } = require("./effectRegistry");
 
 /**
  * @template T
@@ -481,7 +485,7 @@ const abilitiesToRegister = Object.freeze({
               enemyParty,
               targetPatterns.RANDOM,
               1,
-              moveIdEnum.AQUA_IMPACT
+              { moveId: moveIdEnum.AQUA_IMPACT }
             )[0]; // this target isn't the real enemy; but required for the move execution TODO: maybe improve this lol
             if (randomEnemy) {
               target.executeMoveAgainstTarget({
@@ -583,7 +587,7 @@ const abilitiesToRegister = Object.freeze({
               enemyParty,
               targetPatterns.RANDOM,
               1,
-              moveIdEnum.MAGMA_IMPACT
+              { moveId: moveIdEnum.MAGMA_IMPACT }
             )[0]; // this target isn't the real enemy; but required for the move execution TODO: maybe improve this lol
             if (randomEnemy) {
               target.executeMoveAgainstTarget({
@@ -1114,6 +1118,58 @@ const abilitiesToRegister = Object.freeze({
     },
     abilityRemove({ battle, properties }) {
       battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.TELEPATHY]: new Ability({
+    id: abilityIdEnum.TELEPATHY,
+    name: "Telepathy",
+    description:
+      "The user cannot be damaged or inflicted with dispellable debuffs from allies (excluding self).",
+    abilityAdd({ battle, target }) {
+      const baseCallback = composeConditionCallbacks(
+        getIsTargetPokemonCallback(target),
+        getIsSourceSameTeamCallback(target),
+        getIsNotSourcePokemonCallback(target)
+      );
+      return {
+        beforeDamageListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
+          callback: () => {
+            battle.addToLog(
+              `${target.name}'s Telepathy prevents ally-infllicted damage!`
+            );
+            return {
+              damage: 0,
+              maxDamage: 0,
+            };
+          },
+          conditionCallback: baseCallback,
+        }),
+
+        beforeEffectAddListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_EFFECT_ADD,
+          callback: ({ source, effectId }) => {
+            const effect = getEffect(effectId);
+            if (effect?.type === effectTypes.DEBUFF && effect?.dispellable) {
+              battle.addToLog(
+                `${target.name}'s Telepathy prevented ${effect.name} from ${source.name}!`
+              );
+              return {
+                canAdd: false,
+              };
+            }
+          },
+          conditionCallback: baseCallback,
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.beforeDamageListenerId);
+      battle.unregisterListener(properties.beforeEffectAddListenerId);
     },
   }),
 });

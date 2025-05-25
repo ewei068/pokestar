@@ -10381,6 +10381,31 @@ const pokemonConfigRaw = {
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
   },
+  [pokemonIdEnum.DIALGA]: {
+    name: "Dialga",
+    emoji: "<:483:1351027491304898600>",
+    description:
+      "A Pokémon spoken of in legend. It is said that time began moving when Dialga was born.",
+    type: [types.STEEL, types.DRAGON],
+    baseStats: [100, 120, 120, 150, 100, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/483.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/483.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.TELEPATHY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.FLASH_CANNON,
+      moveIdEnum.STEALTH_ROCK,
+      moveIdEnum.ROAR_OF_TIME,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
   [pokemonIdEnum.HEATRAN]: {
     name: "Heatran",
     emoji: "<:485:1351027494563614828>",

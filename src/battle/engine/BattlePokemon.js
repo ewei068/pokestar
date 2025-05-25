@@ -778,10 +778,17 @@ class BattlePokemon {
    * @param {BattleParty} targetParty
    * @param {TargetPatternEnum} targetPattern
    * @param {number} targetPosition
-   * @param {MoveIdEnum} moveId
+   * @param {object} options
+   * @param {MoveIdEnum=} options.moveId
+   * @param {boolean=} options.ignoreHittable
    * @returns {BattlePokemon[]} targets
    */
-  getPatternTargets(targetParty, targetPattern, targetPosition, moveId = null) {
+  getPatternTargets(
+    targetParty,
+    targetPattern,
+    targetPosition,
+    { moveId = null, ignoreHittable = false } = {}
+  ) {
     const targets = [];
 
     // special case: random
@@ -789,7 +796,7 @@ class BattlePokemon {
       // return random pokemon in party
       const validPokemons = [];
       for (const pokemon of targetParty.pokemons) {
-        if (this.battle.isPokemonHittable(pokemon, moveId)) {
+        if (ignoreHittable || this.battle.isPokemonHittable(pokemon, moveId)) {
           validPokemons.push(pokemon);
         }
       }
@@ -804,7 +811,10 @@ class BattlePokemon {
       );
       for (const index of targetIndices) {
         const target = targetParty.pokemons[index];
-        if (target && this.battle.isPokemonHittable(target, moveId)) {
+        if (
+          target &&
+          (ignoreHittable || this.battle.isPokemonHittable(target, moveId))
+        ) {
           targets.push(target);
         }
       }
@@ -859,7 +869,7 @@ class BattlePokemon {
         targetParty,
         moveData.targetPattern,
         target.position,
-        moveId
+        { moveId }
       ),
     ];
   }

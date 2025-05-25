@@ -29,6 +29,9 @@ const getIsTargetOpponentCallback = (pokemon) => (eventArgs) =>
 const getIsSourcePokemonCallback = (pokemon) => (eventArgs) =>
   eventArgs?.source === pokemon;
 
+const getIsNotSourcePokemonCallback = (pokemon) => (eventArgs) =>
+  eventArgs?.source !== pokemon;
+
 /**
  * @param {BattlePokemon} pokemon
  */
@@ -64,6 +67,7 @@ module.exports = {
   getIsTargetSameTeamCallback,
   getIsTargetOpponentCallback,
   getIsSourcePokemonCallback,
+  getIsNotSourcePokemonCallback,
   getIsSourceSameTeamCallback,
   getIsInstanceOfType,
   composeConditionCallbacks,
