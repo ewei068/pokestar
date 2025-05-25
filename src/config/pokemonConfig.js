@@ -10406,6 +10406,31 @@ const pokemonConfigRaw = {
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
   },
+  [pokemonIdEnum.PALKIA]: {
+    name: "Palkia",
+    emoji: "<:484:1351027493041209355>",
+    description:
+      "It has the ability to distort space. It is described as a deity in Sinnoh-region mythology.",
+    type: [types.WATER, types.DRAGON],
+    baseStats: [90, 120, 100, 150, 120, 100],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/484.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/484.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.TELEPATHY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.WATER_PULSE,
+      moveIdEnum.DRAGON_TAIL,
+      moveIdEnum.SPACIAL_REND,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
   [pokemonIdEnum.HEATRAN]: {
     name: "Heatran",
     emoji: "<:485:1351027494563614828>",

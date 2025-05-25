@@ -238,6 +238,25 @@ const effectsToRegister = Object.freeze({
       }
     },
   }),
+  [effectIdEnum.SPATIAL_BLESSING]: new Effect({
+    id: effectIdEnum.SPATIAL_BLESSING,
+    name: "Spatial Blessing",
+    description: "The target's move patterns are enhanced.",
+    type: effectTypes.BUFF,
+    dispellable: true,
+    /**
+     * @param {EffectAddBasicArgs & {initialArgs: any}} args
+     */
+    effectAdd({ battle, target }) {
+      battle.addToLog(`${target.name} received a spatial blessing!`);
+      // Implementation is hard-coded in BattlePokemon.getMovePattern
+      return {};
+    },
+    effectRemove({ battle, target }) {
+      battle.addToLog(`${target.name}'s spatial blessing wore off!`);
+      // Implementation is hard-coded in BattlePokemon.getMovePattern
+    },
+  }),
 });
 
 module.exports = {

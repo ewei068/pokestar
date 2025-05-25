@@ -4989,7 +4989,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.POWER,
     damageType: damageTypes.SPECIAL,
     description:
-      "The user attacks the target with a pulsing blast of water. This has a 25% chance to confuse targets for 2 turns.",
+      "The user attacks the target with a pulsing blast of water. This has a 40% chance to confuse targets for 2 turns.",
   },
   m354: {
     name: "Psycho Boost",
@@ -9772,8 +9772,8 @@ const moveExecutes = {
         moveId,
       });
 
-      // if not miss, confuse with 25% chance
-      if (!miss && Math.random() < 0.25) {
+      // if not miss, confuse with 40% chance
+      if (!miss && Math.random() < 0.4) {
         target.applyEffect("confused", 2, source);
       }
     }

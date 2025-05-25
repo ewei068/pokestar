@@ -2270,6 +2270,40 @@ const movesToRegister = Object.freeze({
       source.applyEffect("recharge", 1, source, {});
     },
   }),
+  [moveIdEnum.SPACIAL_REND]: new Move({
+    id: moveIdEnum.SPACIAL_REND,
+    name: "Spacial Rend",
+    type: pokemonTypes.DRAGON,
+    power: 80,
+    accuracy: null,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.X,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user tears the spatial fabric, dealing damage to enemies. Adjacent allies receive a spatial blessing that enhances their move patterns for 1 turn.",
+    execute(args) {
+      const { source } = args;
+      this.genericDealAllDamage(args);
+
+      const sourceParty = source.battle.parties[source.teamName];
+      const adjacentAllies = source
+        .getPatternTargets(
+          sourceParty,
+          targetPatterns.SQUARE,
+          source.position,
+          {
+            ignoreHittable: true,
+          }
+        )
+        .filter((pokemon) => !pokemon.isFainted);
+      for (const ally of adjacentAllies) {
+        ally.applyEffect(effectIdEnum.SPATIAL_BLESSING, 1, source, {});
+      }
+    },
+  }),
 });
 
 module.exports = {
