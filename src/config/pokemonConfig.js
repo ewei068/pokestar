@@ -10456,6 +10456,30 @@ const pokemonConfigRaw = {
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
   },
+  [pokemonIdEnum.REGIGIGAS]: {
+    name: "Regigigas",
+    emoji: "<:486:1351027495612321883>",
+    description:
+      "There is an enduring legend that states this Pokémon towed continents with ropes. It is said to have made Pokémon that look like it out of clay, ice, and magma.",
+    type: [types.NORMAL],
+    baseStats: [110, 160, 110, 80, 110, 100],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/486.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/486.png",
+    abilities: {
+      [abilityIdEnum.SLOW_START]: 1,
+    },
+    moveIds: [
+      moveIdEnum.POUND,
+      moveIdEnum.HAMMER_ARM,
+      moveIdEnum.WIDE_GUARD,
+      moveIdEnum.CRUSH_GRIP,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+  },
   [pokemonIdEnum.GIRATINA_ALTERED]: {
     name: "Giratina",
     emoji: "<:487:1351027496769814528>",

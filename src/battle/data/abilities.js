@@ -1172,6 +1172,25 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.beforeEffectAddListenerId);
     },
   }),
+  [abilityIdEnum.SLOW_START]: new Ability({
+    id: abilityIdEnum.SLOW_START,
+    name: "Slow Start",
+    description:
+      "When the user enters battle, its Attack and Speed are lowered for 2 turns.",
+    abilityAdd({ battle, target }) {
+      battle.addToLog(
+        `${target.name} can't get it going because of its Slow Start!`
+      );
+      target.applyEffect("atkDown", 2, target, {});
+      target.applyEffect("speDown", 2, target, {});
+
+      return {};
+    },
+    abilityRemove({ target }) {
+      target.dispellEffect("atkDown");
+      target.dispellEffect("speDown");
+    },
+  }),
 });
 
 module.exports = {

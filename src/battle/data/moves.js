@@ -213,7 +213,7 @@ class Move {
   /**
    * @param {Parameters<typeof this.triggerSecondaryEffect>[0] & {
    *  target: BattlePokemon,
-   *  missedTargets: BattlePokemon[]=,
+   *  missedTargets?: BattlePokemon[],
    * }} args
    */
   triggerSecondaryEffectOnTarget(args) {
@@ -862,6 +862,42 @@ const movesToRegister = Object.freeze({
         effectId: "flinched",
         duration: 1,
         probability: 0.3,
+      });
+    },
+  }),
+  [moveIdEnum.CRUSH_GRIP]: new Move({
+    id: moveIdEnum.CRUSH_GRIP,
+    name: "Crush Grip",
+    type: pokemonTypes.NORMAL,
+    power: 120,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user crushes the target with great force. If hit, this move increases its damage by 25% of the target's current HP.",
+    execute({ source, primaryTarget, allTargets, missedTargets }) {
+      this.genericDealAllDamage({
+        source,
+        primaryTarget,
+        allTargets,
+        missedTargets,
+        calculateDamageFunction: (args) => {
+          const { target } = args;
+          const baseDamage = source.calculateMoveDamage(args);
+
+          // Only add bonus damage if the target wasn't missed
+          if (!missedTargets.includes(target)) {
+            // Calculate bonus damage as 25% of current HP
+            const bonusDamage = Math.floor(target.hp * 0.25);
+            return baseDamage + bonusDamage;
+          }
+
+          return baseDamage;
+        },
       });
     },
   }),
