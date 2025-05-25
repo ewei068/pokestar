@@ -845,6 +845,7 @@ const commandConfigRaw = {
           "red",
           "gold",
           "steven",
+          "cynthia",
           "palmer",
           "professorWillow",
         ],

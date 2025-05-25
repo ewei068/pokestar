@@ -19,7 +19,8 @@ const npcs = Object.freeze({
   RED: "red",
   GOLD: "gold",
   STEVEN: "steven",
-  TWITCH_PLAYS_RED: "tppRed",
+  CYNTHIA: "cynthia",
+  // TWITCH_PLAYS_RED: "tppRed",
   FISHERMAN: "fisherman",
   HIKER: "hiker",
   AROMA_LADY: "aromaLady",
@@ -113,6 +114,9 @@ const npcConfig = Object.freeze({
           "269",
           "292",
           pokemonIdEnum.KRICKETUNE,
+          pokemonIdEnum.WORMADAM_PLANT,
+          pokemonIdEnum.WORMADAM_SANDY,
+          pokemonIdEnum.WORMADAM_TRASH,
         ],
         aceId: "15",
       },
@@ -428,21 +432,30 @@ const npcConfig = Object.freeze({
         minLevel: 8,
         maxLevel: 10,
         numPokemon: 4,
-        pokemonIds: ["66", "236", "255", "296"],
+        pokemonIds: ["66", "236", "255", "296", pokemonIdEnum.CROAGUNK],
         aceId: "66",
       },
       [difficulties.EASY]: {
         minLevel: 18,
         maxLevel: 22,
         numPokemon: 5,
-        pokemonIds: ["66", "236", "255", "296"],
+        pokemonIds: ["66", "236", "255", "296", pokemonIdEnum.CROAGUNK],
         aceId: "66",
       },
       [difficulties.MEDIUM]: {
         minLevel: 33,
         maxLevel: 40,
         numPokemon: 5,
-        pokemonIds: ["67", "106", "107", "237", "256", "286", "297"],
+        pokemonIds: [
+          "67",
+          "106",
+          "107",
+          "237",
+          "256",
+          "286",
+          "297",
+          pokemonIdEnum.TOXICROAK,
+        ],
         aceId: "67",
       },
       [difficulties.HARD]: {
@@ -459,6 +472,7 @@ const npcConfig = Object.freeze({
           "257",
           "286",
           "297",
+          pokemonIdEnum.TOXICROAK,
         ],
         aceId: "68",
       },
@@ -701,6 +715,59 @@ const npcConfig = Object.freeze({
         numPokemon: 6,
         pokemonIds: ["227", "306", "344", "346", "348"],
         aceId: "376",
+        dailyRewards: {
+          backpack: {
+            [backpackCategories.POKEBALLS]: {
+              [backpackItems.POKEBALL]: 2,
+            },
+          },
+        },
+      },
+    },
+  },
+  [npcs.CYNTHIA]: {
+    name: "Cynthia",
+    sprite:
+      "https://archives.bulbagarden.net/media/upload/d/d2/Spr_Pt_Cynthia.png",
+    emoji: "<:cynthia:1376227295408164955>",
+    catchphrase: "As the Pokémon League Champion, I accept your challenge!",
+    difficulties: {
+      [difficulties.HARD]: {
+        minLevel: 55,
+        maxLevel: 60,
+        numPokemon: 6,
+        pokemonIds: [
+          pokemonIdEnum.SPIRITOMB,
+          pokemonIdEnum.ROSERADE,
+          pokemonIdEnum.GASTRODON,
+          pokemonIdEnum.TOGEKISS,
+          pokemonIdEnum.LUCARIO,
+          pokemonIdEnum.MILOTIC,
+          pokemonIdEnum.GLACEON,
+          pokemonIdEnum.PORYGON_Z,
+        ],
+        aceId: pokemonIdEnum.GARCHOMP,
+        dailyRewards: {
+          backpack: {
+            [backpackCategories.POKEBALLS]: {
+              [backpackItems.POKEBALL]: 1,
+            },
+          },
+        },
+      },
+      [difficulties.VERY_HARD]: {
+        minLevel: 92,
+        maxLevel: 99,
+        numPokemon: 6,
+        pokemonIds: [
+          pokemonIdEnum.SPIRITOMB,
+          pokemonIdEnum.ROSERADE,
+          pokemonIdEnum.TOGEKISS,
+          pokemonIdEnum.LUCARIO,
+          pokemonIdEnum.MILOTIC,
+          pokemonIdEnum.GIRATINA_ALTERED,
+        ],
+        aceId: pokemonIdEnum.GARCHOMP,
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
