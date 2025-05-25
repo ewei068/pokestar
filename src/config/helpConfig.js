@@ -165,11 +165,13 @@ const GEN_4_DESCRIPTION = `🌟**Generation IV**🌟
 
 Generation 4 Pokemon have arrived! Generation 4 Pokemon will be releasing over the course of 2 updates, bringing many new Pokemon, mechanics, and held items!
 
-<:387:1132497397587640392> **New Pokemon:** Many new Pokemon have been added, and are available in the Gacha! You may also start seeing these Pokemon in NPC and Dungeon battles!
+<:487:1351027496769814528> **New Pokemon:** Many new Pokemon have been added, and are available in the Gacha! You may also start seeing these Pokemon in NPC and Dungeon battles, such as the new Cynthia NPC!
 
 <:488:1351027498275835954> **Legendary Banners:** Gen 4 Legendary Pokemon will have special rate-up banners! Note that these Pokemon are NOT limited and are available in all banners.
 
 <:491:1351027502801354822> **Auto-Battling:** You can now auto-battle after catching Darkrai! Use \`/mythic darkrai\` after completing 25 \`/tutorial\` stages to catch Darkrai! Most PvE content can be auto-battled using Dream Cards that recharge over time. For the duration of the event, you get **50 more max Dream Cards**!
+
+<:479wash:1367375035022573598> **Form Changes:** Certain new Pokemon can now change forms! Use \`/form\` to change the form of your Pokemon!
 
 🖌️ **Art Credits**
 * Darkrai Art: https://www.dearplayers.com/_next/image?url=https%3A%2F%2Fassets.dearplayers.com%2Fgplay-data%2Fevents%2Fdarkrai-joins-the-fray-6680176898-1280x720sr.jpg&w=1920&q=75
