@@ -12,6 +12,7 @@ const effectIdEnum = Object.freeze({
   DOOM_DESIRE: "doomDesire",
   ENCORE: "encore",
   SPATIAL_BLESSING: "spatialBlessing",
+  VANISHED: "vanished",
 });
 
 /**

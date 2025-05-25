@@ -9,6 +9,7 @@
     - Update getPokemonOrder
     - Add a base Pokemon field or sm
     - Update pokedex to order Pokemon forms together
+    - Form change in info
   - Gen 4 event
     - Special banners
     - Some boosts or sm IDK
@@ -23,6 +24,7 @@
 - Stretch: Quests (Achievements)
 - Stretch: Ability slots
 - Stretch: Improve party management
+- Pokedex Fuzzy Search
 
 ### 1.4.1 Anniversary Event
 

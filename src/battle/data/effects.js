@@ -257,6 +257,40 @@ const effectsToRegister = Object.freeze({
       // Implementation is hard-coded in BattlePokemon.getMovePattern
     },
   }),
+  [effectIdEnum.VANISHED]: new Effect({
+    id: effectIdEnum.VANISHED,
+    name: "Vanished",
+    description: "The target has vanished into the shadows.",
+    type: effectTypes.BUFF,
+    dispellable: false,
+    /**
+     * @param {EffectAddBasicArgs & {initialArgs: any}} args
+     */
+    effectAdd({ battle, target }) {
+      battle.addToLog(`${target.name} vanished instantly!`);
+      for (const moveId in target.moveIds) {
+        if (moveId !== moveIdEnum.SHADOW_FORCE) {
+          // @ts-ignore
+          target.disableMove(moveId, target);
+        }
+      }
+      // make untargetable and unhittable
+      target.targetable = false;
+      target.hittable = false;
+    },
+    effectRemove({ battle, target }) {
+      battle.addToLog(`${target.name} reappeared!`);
+      for (const moveId in target.moveIds) {
+        if (moveId !== moveIdEnum.SHADOW_FORCE) {
+          // @ts-ignore
+          target.enableMove(moveId, target);
+        }
+      }
+      // make targetable and hittable
+      target.targetable = true;
+      target.hittable = true;
+    },
+  }),
 });
 
 module.exports = {

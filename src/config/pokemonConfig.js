@@ -10456,6 +10456,57 @@ const pokemonConfigRaw = {
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
   },
+  [pokemonIdEnum.GIRATINA_ALTERED]: {
+    name: "Giratina",
+    emoji: "<:487:1351027496769814528>",
+    description:
+      "It was banished for its violence. It silently gazed upon the old world from the Distortion World.",
+    type: [types.GHOST, types.DRAGON],
+    baseStats: [150, 100, 120, 100, 120, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/487.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/487.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.TELEPATHY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.OMINOUS_WIND,
+      moveIdEnum.WILL_O_WISP,
+      moveIdEnum.DEFOG,
+      moveIdEnum.SHADOW_FORCE,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    formSpeciesIds: [pokemonIdEnum.GIRATINA_ORIGIN],
+  },
+  [pokemonIdEnum.GIRATINA_ORIGIN]: {
+    name: "Giratina-Origin",
+    emoji: "<:487origin:1367375036347973652>",
+    description:
+      "This is Giratina's true form, which it regains when holding a Griseous Orb. Its power is unleashed in the Distortion World.",
+    type: [types.GHOST, types.DRAGON],
+    baseStats: [150, 120, 100, 120, 100, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10007.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/487-origin.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.OMINOUS_WIND,
+      moveIdEnum.DRAGON_CLAW,
+      moveIdEnum.STONE_EDGE,
+      moveIdEnum.SHADOW_FORCE,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    baseSpeciesId: pokemonIdEnum.GIRATINA_ALTERED,
+  },
   [pokemonIdEnum.CRESSELIA]: {
     name: "Cresselia",
     emoji: "<:488:1351027498275835954>",

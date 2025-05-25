@@ -210,6 +210,19 @@ class Move {
     };
   }
 
+  /**
+   * @param {Parameters<typeof this.triggerSecondaryEffect>[0] & {
+   *  target: BattlePokemon,
+   *  missedTargets: BattlePokemon[]=,
+   * }} args
+   */
+  triggerSecondaryEffectOnTarget(args) {
+    const { target, missedTargets = [] } = args;
+    if (!missedTargets.includes(target)) {
+      return this.triggerSecondaryEffect(args);
+    }
+  }
+
   // eslint-disable-next-line class-methods-use-this
   genericApplySingleStatus({
     source,
@@ -223,15 +236,14 @@ class Move {
     options,
     probability = 1,
   }) {
-    if (missedTargets.includes(target)) {
-      return false;
-    }
-
-    const { triggered, onShouldTriggerResult } = this.triggerSecondaryEffect({
-      source,
-      probability,
-      onShouldTrigger: () => target.applyStatus(statusId, source, options),
-    });
+    const { triggered, onShouldTriggerResult } =
+      this.triggerSecondaryEffectOnTarget({
+        source,
+        target,
+        missedTargets,
+        probability,
+        onShouldTrigger: () => target.applyStatus(statusId, source, options),
+      }) || {};
     if (triggered) {
       return onShouldTriggerResult;
     }
@@ -285,16 +297,15 @@ class Move {
     initialArgs = {},
     probability = 1,
   }) {
-    if (missedTargets.includes(target)) {
-      return false;
-    }
-
-    const { triggered, onShouldTriggerResult } = this.triggerSecondaryEffect({
-      source,
-      probability,
-      onShouldTrigger: () =>
-        target.applyEffect(effectId, duration, source, initialArgs),
-    });
+    const { triggered, onShouldTriggerResult } =
+      this.triggerSecondaryEffectOnTarget({
+        source,
+        target,
+        missedTargets,
+        probability,
+        onShouldTrigger: () =>
+          target.applyEffect(effectId, duration, source, initialArgs),
+      }) || {};
     if (triggered) {
       return onShouldTriggerResult;
     }
@@ -2302,6 +2313,120 @@ const movesToRegister = Object.freeze({
       for (const ally of adjacentAllies) {
         ally.applyEffect(effectIdEnum.SPATIAL_BLESSING, 1, source, {});
       }
+    },
+  }),
+  [moveIdEnum.SHADOW_FORCE]: new Move({
+    id: moveIdEnum.SHADOW_FORCE,
+    name: "Shadow Force",
+    type: pokemonTypes.GHOST,
+    power: 111,
+    accuracy: 90,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user disappears and strikes the targets on the next turn, removing their buffs if hit. The user may receive a boost from the shadows depending on its form.",
+    silenceIf(_battle, pokemon) {
+      return pokemon.effectIds[effectIdEnum.VANISHED] === undefined;
+    },
+    tags: ["charge"],
+    chargeMoveEffectId: effectIdEnum.VANISHED,
+    execute(args) {
+      const { source, battle } = args;
+      // If pokemon doesn't have "vanished" buff, apply it
+      if (source.effectIds[effectIdEnum.VANISHED] === undefined) {
+        source.applyEffect(effectIdEnum.VANISHED, 1, source, {});
+        source.moveIds[this.id].cooldown = 0;
+
+        // Special effects for Giratina forms
+        if (source.speciesId === pokemonIdEnum.GIRATINA_ALTERED) {
+          battle.addToLog(`${source.name} restores its power in the shadows!`);
+          this.genericHealSingleTarget({
+            source,
+            target: source,
+            healPercent: 40,
+          });
+        } else if (source.speciesId === pokemonIdEnum.GIRATINA_ORIGIN) {
+          battle.addToLog(`${source.name} powers-up in the shadows!`);
+          source.applyEffect("greaterAtkUp", 2, source, {});
+        }
+      } else {
+        source.removeEffect(effectIdEnum.VANISHED);
+        // remove all buffs from targets
+        for (const target of args.allTargets) {
+          this.triggerSecondaryEffectOnTarget({
+            ...args,
+            target,
+            onShouldTrigger: () => {
+              for (const effectId of Object.keys(target.effectIds)) {
+                // @ts-ignore
+                target.dispellEffect(effectId);
+              }
+            },
+          });
+        }
+        this.genericDealAllDamage(args);
+      }
+    },
+  }),
+  [moveIdEnum.OMINOUS_WIND]: new Move({
+    id: moveIdEnum.OMINOUS_WIND,
+    name: "Ominous Wind",
+    type: pokemonTypes.GHOST,
+    power: 45,
+    accuracy: 100,
+    cooldown: 0,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user blasts the target with a gust of repulsive wind. This may also raise the user's highest non-HP stat with a 50% chance.",
+    execute(args) {
+      const { source } = args;
+      this.genericDealAllDamage(args);
+      this.triggerSecondaryEffect({
+        ...args,
+        probability: 0.5,
+        onShouldTrigger: () => {
+          // get highest non-hp base stat
+          const statValues = [
+            source.batk,
+            source.bdef,
+            source.bspa,
+            source.bspd,
+            source.bspe,
+          ];
+          // argmax
+          const highestStatIndex = statValues.reduce(
+            (iMax, x, i, arr) => (x > arr[iMax] ? i : iMax),
+            0
+          );
+          switch (highestStatIndex + 1) {
+            case 1:
+              source.applyEffect("atkUp", 1, source, {});
+              break;
+            case 2:
+              source.applyEffect("defUp", 1, source, {});
+              break;
+            case 3:
+              source.applyEffect("spaUp", 1, source, {});
+              break;
+            case 4:
+              source.applyEffect("spdUp", 1, source, {});
+              break;
+            case 5:
+              source.applyEffect("speUp", 1, source, {});
+              break;
+            default:
+              break;
+          }
+        },
+      });
     },
   }),
 });
