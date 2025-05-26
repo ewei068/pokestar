@@ -44,6 +44,7 @@ const commandCategoryConfigRaw = {
       "pokedex",
       "train",
       "evolve",
+      "form",
       "equipment",
       "equipmentlist",
       "equipmentswap",
@@ -464,6 +465,24 @@ const commandConfigRaw = {
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 0,
   },
+  form: {
+    name: "Form",
+    aliases: ["form"],
+    description: "Change a Pokemon's form",
+    longDescription:
+      "Change a Pokemon's form. You must have enough money to change the form. Once done, a list of possible forms will be displayed. You can then choose which form you want.",
+    execute: "form.js",
+    args: {
+      name_or_id: {
+        type: "string",
+        description: "unique ID or name for Pokemon to change form",
+        optional: false,
+        variable: false,
+      },
+    },
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    exp: 0,
+  },
   equipment: {
     name: "Equipment",
     aliases: ["equipment", "equip", "eq"],
@@ -826,6 +845,7 @@ const commandConfigRaw = {
           "red",
           "gold",
           "steven",
+          "cynthia",
           "palmer",
           "professorWillow",
         ],

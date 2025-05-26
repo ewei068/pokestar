@@ -2,23 +2,26 @@
 
 ## TODO
 
-- Gen 4
-  - Add a bunch new Pokemon
-  - Add PvE against Champion Cynthia
-  - Add form changing mechanic with DNA splicers or something
-    - Update getPokemonOrder
-    - Add a base Pokemon field or sm
-  - Gen 4 event
-    - Special banners
-    - Some boosts or sm IDK
-- Fix held item you cannot take this action
-- Setting: auto-lock event Pokemon
-
 **Stretch**
 
 - Stretch: Quests (Achievements)
 - Stretch: Ability slots
 - Stretch: Improve party management
+
+### 1.4.2 Gen 4 Part 2
+
+- Gen 4 Part 2
+  - Added a bunch new Gen 4 Pokemon
+    - Added a new limited banner where these Pokemon appear more frequently
+  - Added new PvE opponent: Champion Cynthia
+  - Added new form changing mechanic; some new Pokemon can change form with the new `/form` command!
+- Trading changes:
+  - Reduceed trade level req from 50 -> 40
+  - Increaseed max money in a trade from 20,000 -> 25,000
+- Auto-battling is now instantaneous by default, but can be changed in `/settings`
+- Reworked the `/leaderboard` and fixed bugs
+- Added `/pokedex` name fuzzy search
+- Fixed not being able to change held items from a Pokemon's `/info` screen
 
 ### 1.4.1 Anniversary Event
 

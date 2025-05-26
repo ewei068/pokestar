@@ -35,6 +35,8 @@ const {
   getAbilityOrder,
   getPokemonOrder,
   getPartyPokemonIds,
+  getAvailableForms,
+  getFormChangeCost,
 } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
 const {
@@ -496,33 +498,34 @@ const releasePokemons = async (trainer, pokemonIds) => {
 };
 
 /**
- * @param {WithId<Pokemon>} pokemon
- * @param {PokemonIdEnum} evolutionSpeciesId
- * @returns {WithId<Pokemon>}
+ * Generic function to transform a Pokémon (evolution or form change)
+ * @param {WithId<Pokemon>} pokemon The Pokémon to transform
+ * @param {PokemonIdEnum} targetSpeciesId The new species ID
+ * @returns {WithId<Pokemon>} The transformed Pokémon
  */
-const getEvolvedPokemon = (pokemon, evolutionSpeciesId) => {
+const transformPokemon = (pokemon, targetSpeciesId) => {
   // get species data
-  const speciesData = pokemonConfig[pokemon.speciesId];
-  const evolutionSpeciesData = pokemonConfig[evolutionSpeciesId];
+  const originalSpeciesData = pokemonConfig[pokemon.speciesId];
+  const targetSpeciesData = pokemonConfig[targetSpeciesId];
 
-  // get evolution pokemon
-  pokemon = calculatePokemonStats(pokemon, evolutionSpeciesData);
-  pokemon.speciesId = evolutionSpeciesId;
-  if (pokemon.name === speciesData.name) {
-    pokemon.name = evolutionSpeciesData.name;
+  // transform pokemon
+  pokemon = calculatePokemonStats(pokemon, targetSpeciesData);
+  pokemon.speciesId = targetSpeciesId;
+  if (pokemon.name === originalSpeciesData.name) {
+    pokemon.name = targetSpeciesData.name;
   }
-  pokemon.rarity = evolutionSpeciesData.rarity;
+  pokemon.rarity = targetSpeciesData.rarity;
 
   // calculate ability
-  // if evolution has one ability, give that ability
+  // if target has one ability, give that ability
   // else, use ability slots
   // 2 abilities => slot 1, 3
   // 3 abilities => slot 1, 2, 3
   // first convert abilities (map id => probability) into lists
-  const abilities = getAbilityOrder(speciesData.abilities);
-  const evolutionAbilities = getAbilityOrder(evolutionSpeciesData.abilities);
-  if (evolutionAbilities.length === 1) {
-    [pokemon.abilityId] = evolutionAbilities;
+  const abilities = getAbilityOrder(originalSpeciesData.abilities);
+  const targetAbilities = getAbilityOrder(targetSpeciesData.abilities);
+  if (targetAbilities.length === 1) {
+    [pokemon.abilityId] = targetAbilities;
   } else {
     // get current ability slot
     let slot = 1;
@@ -538,52 +541,23 @@ const getEvolvedPokemon = (pokemon, evolutionSpeciesId) => {
     }
 
     // use slot to get new ability
-    if (evolutionAbilities.length === 2) {
+    if (targetAbilities.length === 2) {
       if (slot === 1 || slot === 2) {
         // eslint-disable-next-line prefer-destructuring
-        pokemon.abilityId = evolutionAbilities[0];
+        pokemon.abilityId = targetAbilities[0];
       } else {
         // eslint-disable-next-line prefer-destructuring
-        pokemon.abilityId = evolutionAbilities[1];
+        pokemon.abilityId = targetAbilities[1];
       }
-    } else if (evolutionAbilities.length === 3) {
-      pokemon.abilityId = evolutionAbilities[slot - 1];
+    } else if (targetAbilities.length === 3) {
+      pokemon.abilityId = targetAbilities[slot - 1];
     }
   }
 
   // update battle eligibility
-  pokemon.battleEligible = evolutionSpeciesData.battleEligible;
+  pokemon.battleEligible = targetSpeciesData.battleEligible;
 
   return pokemon;
-};
-
-/**
- * @param {WithId<Pokemon>} pokemon
- * @param {PokemonIdEnum} evolutionSpeciesId
- * @returns {Promise<{data: {pokemon: WithId<Pokemon>, species: string}?, err: string?}>}
- */
-const evolvePokemon = async (pokemon, evolutionSpeciesId) => {
-  // get evolved pokemon
-  pokemon = getEvolvedPokemon(pokemon, evolutionSpeciesId);
-  const evolutionSpeciesData = pokemonConfig[evolutionSpeciesId];
-
-  // update pokemon
-  try {
-    const res = await updateDocument(
-      collectionNames.USER_POKEMON,
-      { userId: pokemon.userId, _id: idFrom(pokemon._id) },
-      { $set: pokemon }
-    );
-    if (res.modifiedCount === 0) {
-      logger.warn(`Failed to evolve Pokemon ${pokemon._id}.`);
-      return { data: null, err: "Error evolving Pokemon." };
-    }
-    logger.info(`Evolved Pokemon ${pokemon._id}.`);
-    return { data: { pokemon, species: evolutionSpeciesData.name }, err: null };
-  } catch (error) {
-    logger.error(error);
-    return { data: null, err: "Error evolving Pokemon." };
-  }
 };
 
 /**
@@ -1115,6 +1089,14 @@ const buildPokemonInfoSend = async ({
       emoji: "🏋️",
     },
   ];
+  if (getAvailableForms(pokemon.data.speciesId).length > 1) {
+    actionButtonConfigs.push({
+      label: "Form",
+      disabled: false,
+      data: { id: pokemonId, action: "form" },
+      emoji: "🔄",
+    });
+  }
   const actionActionRow = buildButtonActionRow(
     actionButtonConfigs,
     eventNames.POKEMON_ACTION_BUTTON
@@ -2143,13 +2125,147 @@ const removeHeldItem = async (user, pokemonId) => {
   };
 };
 
+/**
+ * Checks if a Pokémon can change forms and validates requirements
+ * @param {WithId<Pokemon>} pokemon Pokémon to change
+ * @param {PokemonIdEnum} formSpeciesId Target form ID
+ * @param {WithId<Trainer>} trainer Trainer object
+ * @returns {{canChange: boolean, err: string}} Result with error message if applicable
+ */
+const canChangeForm = (pokemon, formSpeciesId, trainer) => {
+  if (!getAvailableForms(pokemon.speciesId).includes(formSpeciesId)) {
+    return {
+      canChange: false,
+      err: `${pokemon.name} cannot change into this form.`,
+    };
+  }
+
+  // Check if already in target form
+  if (pokemon.speciesId === formSpeciesId) {
+    return {
+      canChange: false,
+      err: `${pokemon.name} is already in this form.`,
+    };
+  }
+
+  // Check if user has enough money
+  const cost = getFormChangeCost(pokemon.speciesId);
+  if (trainer.money < cost) {
+    return {
+      canChange: false,
+      err: `You need ${formatMoney(cost)} to change ${pokemon.name}'s form.`,
+    };
+  }
+
+  return { canChange: true, err: null };
+};
+
+/**
+ * Changes a Pokémon's form
+ * @param {any} user User initiating the form change
+ * @param {string} pokemonId ID of the Pokémon to change form
+ * @param {PokemonIdEnum} formSpeciesId Target form ID
+ * @returns {Promise<{data: WithId<Pokemon>, err: string?}>}
+ */
+const changeForm = async (user, pokemonId, formSpeciesId) => {
+  // Get trainer
+  const trainerResult = await getTrainer(user);
+  if (trainerResult.err) {
+    return { data: null, err: trainerResult.err };
+  }
+  const trainer = trainerResult.data;
+
+  // Get Pokémon
+  const pokemonResult = await getPokemon(trainer, pokemonId);
+  if (pokemonResult.err) {
+    return { data: null, err: pokemonResult.err };
+  }
+  const pokemon = pokemonResult.data;
+
+  const { canChange, err: canChangeErr } = canChangeForm(
+    pokemon,
+    formSpeciesId,
+    trainer
+  );
+  if (!canChange) {
+    return { data: null, err: canChangeErr };
+  }
+
+  // Deduct cost
+  const cost = getFormChangeCost(pokemon.speciesId);
+  trainer.money -= cost;
+  const updateTrainerResult = await updateTrainer(trainer);
+  if (updateTrainerResult.err) {
+    return { data: null, err: updateTrainerResult.err };
+  }
+
+  // Change form
+  const transformedPokemon = transformPokemon(pokemon, formSpeciesId);
+
+  // Update Pokémon in database
+  try {
+    const res = await updateDocument(
+      collectionNames.USER_POKEMON,
+      { userId: pokemon.userId, _id: idFrom(pokemon._id) },
+      { $set: transformedPokemon }
+    );
+    if (res.modifiedCount === 0) {
+      logger.warn(`Failed to change form for Pokemon ${pokemon._id}.`);
+      // Refund money if update fails
+      trainer.money += cost;
+      await updateTrainer(trainer);
+      return { data: null, err: "Error changing Pokémon form." };
+    }
+    logger.info(`Changed form for Pokemon ${pokemon._id}.`);
+    return {
+      data: transformedPokemon,
+      err: null,
+    };
+  } catch (error) {
+    logger.error(error);
+    // Refund money if update fails
+    trainer.money += cost;
+    await updateTrainer(trainer);
+    return { data: null, err: "Error changing Pokémon form." };
+  }
+};
+
+/**
+ * @param {WithId<Pokemon>} pokemon
+ * @param {PokemonIdEnum} evolutionSpeciesId
+ * @returns {Promise<{data: {pokemon: WithId<Pokemon>, species: string}?, err: string?}>}
+ */
+const evolvePokemon = async (pokemon, evolutionSpeciesId) => {
+  // get evolved pokemon
+  pokemon = transformPokemon(pokemon, evolutionSpeciesId);
+  const evolutionSpeciesData = pokemonConfig[evolutionSpeciesId];
+
+  // update pokemon
+  try {
+    const res = await updateDocument(
+      collectionNames.USER_POKEMON,
+      { userId: pokemon.userId, _id: idFrom(pokemon._id) },
+      { $set: pokemon }
+    );
+    if (res.modifiedCount === 0) {
+      logger.warn(`Failed to evolve Pokemon ${pokemon._id}.`);
+      return { data: null, err: "Error evolving Pokemon." };
+    }
+    logger.info(`Evolved Pokemon ${pokemon._id}.`);
+    return { data: { pokemon, species: evolutionSpeciesData.name }, err: null };
+  } catch (error) {
+    logger.error(error);
+    return { data: null, err: "Error evolving Pokemon." };
+  }
+};
+
 module.exports = {
   updatePokemon,
   listPokemons,
   listPokemonsFromTrainer,
   getPokemon,
   getPokemonFromUserId,
-  getEvolvedPokemon,
+  getEvolvedPokemon: transformPokemon,
   evolvePokemon,
   calculatePokemonStatsNoEquip,
   calculatePokemonStats,
@@ -2179,4 +2295,7 @@ module.exports = {
   buildNatureSend,
   changeHeldItem,
   removeHeldItem,
+  canChangeForm,
+  changeForm,
+  transformPokemon,
 };

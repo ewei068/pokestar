@@ -15,7 +15,11 @@ const {
   damageTypes,
   battleStatToBaseStat,
 } = require("../../config/battleConfig");
-const { battleEventEnum, abilityIdEnum } = require("../../enums/battleEnums");
+const {
+  battleEventEnum,
+  abilityIdEnum,
+  effectIdEnum,
+} = require("../../enums/battleEnums");
 const { calculatePokemonStats } = require("../../services/pokemon");
 const { logger } = require("../../log");
 const {
@@ -399,7 +403,7 @@ class BattlePokemon {
     }
 
     // calculate miss and targets
-    const allTargets = this.getTargets(moveId, primaryTarget);
+    const allTargets = this.getMoveExecuteTargets(moveId, primaryTarget);
     const missedTargets = this.getMisses(moveId, allTargets);
 
     // TODO: Move to executeMove?
@@ -778,10 +782,17 @@ class BattlePokemon {
    * @param {BattleParty} targetParty
    * @param {TargetPatternEnum} targetPattern
    * @param {number} targetPosition
-   * @param {MoveIdEnum} moveId
+   * @param {object} options
+   * @param {MoveIdEnum=} options.moveId
+   * @param {boolean=} options.ignoreHittable
    * @returns {BattlePokemon[]} targets
    */
-  getPatternTargets(targetParty, targetPattern, targetPosition, moveId = null) {
+  getPatternTargets(
+    targetParty,
+    targetPattern,
+    targetPosition,
+    { moveId = null, ignoreHittable = false } = {}
+  ) {
     const targets = [];
 
     // special case: random
@@ -789,7 +800,7 @@ class BattlePokemon {
       // return random pokemon in party
       const validPokemons = [];
       for (const pokemon of targetParty.pokemons) {
-        if (this.battle.isPokemonHittable(pokemon, moveId)) {
+        if (ignoreHittable || this.battle.isPokemonHittable(pokemon, moveId)) {
           validPokemons.push(pokemon);
         }
       }
@@ -804,13 +815,47 @@ class BattlePokemon {
       );
       for (const index of targetIndices) {
         const target = targetParty.pokemons[index];
-        if (target && this.battle.isPokemonHittable(target, moveId)) {
+        if (
+          target &&
+          (ignoreHittable || this.battle.isPokemonHittable(target, moveId))
+        ) {
           targets.push(target);
         }
       }
     }
 
     return targets;
+  }
+
+  /**
+   * @param {MoveIdEnum} moveId
+   * @returns {TargetPatternEnum}
+   */
+  getMovePattern(moveId) {
+    let pattern = getMove(moveId)?.targetPattern || targetPatterns.SINGLE;
+
+    // spatial blessing special case
+    if (this.effectIds[effectIdEnum.SPATIAL_BLESSING]) {
+      switch (pattern) {
+        case targetPatterns.SINGLE:
+          pattern = targetPatterns.CROSS;
+          break;
+        case targetPatterns.CROSS:
+        case targetPatterns.X:
+        case targetPatterns.ROW:
+        case targetPatterns.COLUMN:
+          pattern = targetPatterns.SQUARE;
+          break;
+        case targetPatterns.SQUARE:
+        case targetPatterns.ALL_EXCEPT_SELF:
+          pattern = targetPatterns.ALL;
+          break;
+        default:
+          break;
+      }
+    }
+
+    return pattern;
   }
 
   /**
@@ -821,7 +866,6 @@ class BattlePokemon {
    * @returns {Record<string, number[]>} map of team name to target indices
    */
   getTargetIndices(moveId, targetPokemonId) {
-    const moveData = getMove(moveId);
     const target = this.battle.allPokemon[targetPokemonId];
     if (!target) {
       return {};
@@ -832,7 +876,7 @@ class BattlePokemon {
     return {
       [target.teamName]: getPatternTargetIndices(
         targetParty,
-        moveData.targetPattern,
+        this.getMovePattern(moveId),
         target.position
       ),
     };
@@ -843,25 +887,21 @@ class BattlePokemon {
    * @param {BattlePokemon?} target
    * @returns {BattlePokemon[]}
    */
-  getTargets(moveId, target) {
+  getMoveExecuteTargets(moveId, target) {
     if (!target) {
       return [];
     }
-    const moveData = getMove(moveId);
 
     // get party of target
     const targetParty = this.battle.parties[target.teamName];
 
-    const allTargets = [];
-    return [
-      ...allTargets,
-      ...this.getPatternTargets(
-        targetParty,
-        moveData.targetPattern,
-        target.position,
-        moveId
-      ),
-    ];
+    // TODO: use getTargetIndices?
+    return this.getPatternTargets(
+      targetParty,
+      this.getMovePattern(moveId),
+      target.position,
+      { moveId }
+    );
   }
 
   /**

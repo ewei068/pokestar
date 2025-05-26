@@ -832,7 +832,7 @@ const npcTurnAction = (battle) => {
     for (const target of validMoveIdsToTargets[moveId]) {
       const source = activePokemon;
       // @ts-ignore
-      const targetsHit = source.getTargets(moveId, target);
+      const targetsHit = source.getMoveExecuteTargets(moveId, target);
       const heuristic = calculateTurnHeuristic(
         // @ts-ignore
         moveId,

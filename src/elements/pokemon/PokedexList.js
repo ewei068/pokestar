@@ -34,8 +34,22 @@ module.exports = async (
             pokemonConfig[foundSpeciesId].name.toLowerCase() ===
             initialSpeciesIdOrName.toLowerCase()
         );
+        const fuzzyMatch = allIds.find(
+          (foundSpeciesId) =>
+            pokemonConfig[foundSpeciesId].name
+              .toLowerCase()
+              .includes(initialSpeciesIdOrName.toLowerCase()) ||
+            pokemonConfig[foundSpeciesId].name
+              .toLowerCase()
+              .replace(/[^a-z0-9]/g, "")
+              .includes(
+                initialSpeciesIdOrName.toLowerCase().replace(/[^a-z0-9]/g, "")
+              )
+        );
         if (selectedSpeciesId) {
           initialSpeciesId = selectedSpeciesId;
+        } else if (fuzzyMatch) {
+          initialSpeciesId = fuzzyMatch;
         } else {
           return {
             initialSpeciesIdFound: null,

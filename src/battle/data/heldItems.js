@@ -611,9 +611,12 @@ const heldItemsToRegister = Object.freeze({
       const adjacentAllies = target.getPatternTargets(
         allyParty,
         targetPatterns.CROSS,
-        target.position
+        target.position,
+        { ignoreHittable: true }
       );
-      const allies = adjacentAllies.filter((pokemon) => pokemon !== target);
+      const allies = adjacentAllies.filter(
+        (pokemon) => pokemon !== target && !pokemon.isFainted
+      );
 
       if (allies.length > 0) {
         let lowestCRAlly = allies[0];
