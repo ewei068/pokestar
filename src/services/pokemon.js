@@ -1089,6 +1089,14 @@ const buildPokemonInfoSend = async ({
       emoji: "🏋️",
     },
   ];
+  if (getAvailableForms(pokemon.data.speciesId).length > 1) {
+    actionButtonConfigs.push({
+      label: "Form",
+      disabled: false,
+      data: { id: pokemonId, action: "form" },
+      emoji: "🔄",
+    });
+  }
   const actionActionRow = buildButtonActionRow(
     actionButtonConfigs,
     eventNames.POKEMON_ACTION_BUTTON
