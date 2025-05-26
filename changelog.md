@@ -18,7 +18,6 @@
   - Increase max money in a trade from 20,000 -> 25,000
 - Fix held item you cannot take this action
 - Fix leaderboard
-- Setting: auto-lock event Pokemon
 - Setting: Insta-auto
 
 **Stretch**

@@ -347,6 +347,33 @@ const getStartTurnSend = async (battle, stateId) => {
 /**
  * @param {Battle} battle
  * @param {string} stateId
+ * @param {MessageComponentInteraction} interaction
+ */
+const instantAutoBattle = async (battle, stateId, interaction) => {
+  await interaction.deferUpdate();
+  for (let i = 0; i < 300; i += 1) {
+    for (let retry = 0; retry < 3; retry += 1) {
+      try {
+        if (battle.ended || !battle.autoData.isAutoMode) {
+          const componentToSend = await getStartTurnSend(battle, stateId);
+          return await interaction.editReply(componentToSend);
+        }
+        npcTurnAction(battle);
+        continue;
+      } catch (err) {
+        logger.error(`Failed to instant auto turn: ${err}`);
+        logger.error(battle.log?.join?.("\n"));
+      }
+      logger.error("Failed to instant auto turn after 3 retries");
+      return;
+    }
+  }
+  logger.error("Failed to instant auto complete after 300 turns");
+};
+
+/**
+ * @param {Battle} battle
+ * @param {string} stateId
  * @param {object} options
  * @param {MessageComponentInteraction=} options.interaction
  * @param {Message=} options.messageRef
@@ -430,11 +457,14 @@ const startAuto = async ({ battle, stateId, interaction, user }) => {
     return { err: updateResult.err };
   }
 
-  errorlessAsync(() =>
-    nextAutoTurn(battle, stateId, {
+  errorlessAsync(() => {
+    if (trainer.settings.instantAutoBattle) {
+      return instantAutoBattle(battle, stateId, interaction);
+    }
+    return nextAutoTurn(battle, stateId, {
       interaction,
-    })
-  );
+    });
+  });
 };
 
 const buildPveSend = async ({

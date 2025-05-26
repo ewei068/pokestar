@@ -81,6 +81,23 @@ const userSettingsConfigRaw = {
       default: true,
     },
   },
+  instantAutoBattle: {
+    name: "Instant Auto Battle",
+    options: /** @type {const} */ ([
+      {
+        value: true,
+        display: "On",
+      },
+      {
+        value: false,
+        display: "Off",
+      },
+    ]),
+    trainerField: {
+      type: "boolean",
+      default: true,
+    },
+  },
 };
 /** @type {Record<UserSettingsEnum, UserSettingsData>} */
 const userSettingsConfig = Object.freeze(userSettingsConfigRaw);
