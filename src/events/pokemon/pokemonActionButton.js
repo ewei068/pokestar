@@ -37,7 +37,7 @@ const pokemonActionButton = async (incomingInteraction, data) => {
             user: incomingInteraction.user,
             pokemonId: data.id,
           },
-          interaction,
+          incomingInteraction,
           { ttl: 240, defer: false }
         );
       }

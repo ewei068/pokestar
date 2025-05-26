@@ -135,7 +135,6 @@ const ChangeHeldItem = async (ref, { user, pokemonId }) => {
           backpackCategory: backpackCategories.HELD_ITEMS,
           backpack: trainer.backpack,
           shouldShowMoney: false,
-          shouldShowDescription: true,
           onItemSelected,
         }),
       ],
