@@ -8,7 +8,7 @@
 - Stretch: Ability slots
 - Stretch: Improve party management
 
-### 1.4.2 Gen 4 Part 2
+### 1.4.2 Gen 4 Part 2 (5/26)
 
 - Gen 4 Part 2
   - Added a bunch new Gen 4 Pokemon
@@ -23,7 +23,7 @@
 - Added `/pokedex` name fuzzy search
 - Fixed not being able to change held items from a Pokemon's `/info` screen
 
-### 1.4.1 Anniversary Event
+### 1.4.1 Anniversary Event (5/20)
 
 - New limited event to celebrate Pokestar's Anniversary! Check `/events` for more details:
   - Added a new limited anniversary Pokemon in the `/gacha`
