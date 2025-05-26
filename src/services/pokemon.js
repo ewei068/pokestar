@@ -1089,7 +1089,7 @@ const buildPokemonInfoSend = async ({
       emoji: "🏋️",
     },
   ];
-  if (getAvailableForms(pokemon.data.speciesId).length > 1) {
+  if (getAvailableForms(pokemon.data.speciesId).length > 0) {
     actionButtonConfigs.push({
       label: "Form",
       disabled: false,
