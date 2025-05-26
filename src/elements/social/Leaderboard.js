@@ -30,17 +30,29 @@ const Leaderboard = async (ref, { initialCategory, initialScope, guild }) => {
   const [category, setCategory] = useState(initialCategory, ref);
   const [scope, setScope] = useState(initialScope, ref);
 
-  const handleScopeChangeKey = useCallbackBinding((_interaction, data) => {
-    setScope(data.scope);
-  }, ref);
-
-  const handleCategoryChangeKey = useCallbackBinding((interaction) => {
-    const selectedCategory = interaction.values[0];
-    if (!leaderboardConfig[selectedCategory]) {
-      return { err: "Invalid category selected" };
+  const handleScopeChangeKey = useCallbackBinding(
+    (_interaction, data) => {
+      setScope(data.scope);
+    },
+    ref,
+    {
+      defer: true,
     }
-    setCategory(selectedCategory);
-  }, ref);
+  );
+
+  const handleCategoryChangeKey = useCallbackBinding(
+    (interaction) => {
+      const selectedCategory = interaction.values[0];
+      if (!leaderboardConfig[selectedCategory]) {
+        return { err: "Invalid category selected" };
+      }
+      setCategory(selectedCategory);
+    },
+    ref,
+    {
+      defer: true,
+    }
+  );
 
   const categoryData = leaderboardConfig[category];
   const leaderboardResult = await useAwaitedMemo(
