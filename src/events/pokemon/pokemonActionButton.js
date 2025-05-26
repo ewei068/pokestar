@@ -1,5 +1,6 @@
 const { createRoot } = require("../../deact/deact");
 const { getInteractionInstance } = require("../../deact/interactions");
+const ChangeForm = require("../../elements/pokemon/ChangeForm");
 const ChangeHeldItem = require("../../elements/pokemon/ChangeHeldItem");
 const { buildPokemonInfoSend } = require("../../services/pokemon");
 
@@ -37,7 +38,15 @@ const pokemonActionButton = async (incomingInteraction, data) => {
             user: incomingInteraction.user,
             pokemonId: data.id,
           },
-          interaction,
+          incomingInteraction,
+          { ttl: 240, defer: false }
+        );
+      }
+      if (action === "form") {
+        return createRoot(
+          ChangeForm,
+          { user: incomingInteraction.user, pokemonId: data.id },
+          incomingInteraction,
           { ttl: 240, defer: false }
         );
       }
