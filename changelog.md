@@ -13,18 +13,19 @@
   - Gen 4 event
     - Special banners
     - Some boosts or sm IDK
-- Fix held item you cannot take this action
+- Trading changes:
+  - Reduce trade level req from 50 -> 40
+  - Increase max money in a trade from 20,000 -> 25,000
+- Battle instant-auto and new setting
 - Fix leaderboard
-- Reduce trade level req
-- Setting: auto-lock event Pokemon
-- Setting: Insta-auto
+- Pokedex Fuzzy Search
+- Fix held item you cannot take this action
 
 **Stretch**
 
 - Stretch: Quests (Achievements)
 - Stretch: Ability slots
 - Stretch: Improve party management
-- Pokedex Fuzzy Search
 
 ### 1.4.1 Anniversary Event
 

@@ -68,12 +68,12 @@ const leaderboardConfig = {
 };
 
 const MAX_TRADE_POKEMON = 10;
-const MAX_TRADE_MONEY = 20000;
+const MAX_TRADE_MONEY = 25000;
 const TRADE_ACCEPT_WINDOW = 5;
 const TRADE_COMPLETE_WINDOW = 10;
 
 const TRADE_HELP_STRING = `**How to trade:**
-To trade, you must be level 50.
+To trade, you must be level 40.
 
 **Trade Offer**
 Your trade offer is what you want to give up in your trade. Use \`/tradeadd\` and \`/traderemove\` to add and remove Pokemon and money from your trade offer.
