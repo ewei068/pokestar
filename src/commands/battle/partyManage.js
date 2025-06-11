@@ -5,7 +5,6 @@ const { getUserFromInteraction } = require("../../utils/utils");
 /**
  * Creates an interactive party management UI
  * @param {any} interaction
- * @returns
  */
 const partyManage = async (interaction) =>
   await createRoot(
@@ -13,6 +12,7 @@ const partyManage = async (interaction) =>
     { user: getUserFromInteraction(interaction) },
     interaction,
     {
+      defer: false,
       ttl: 180,
     }
   );
