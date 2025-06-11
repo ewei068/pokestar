@@ -83,6 +83,7 @@ const commandCategoryConfigRaw = {
       "partyauto",
       "partylist",
       "partyload",
+      "partymanage",
     ],
   },
   social: {
