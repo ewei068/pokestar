@@ -20,6 +20,7 @@ const FindPokemonFromOption = require("../pokemon/FindPokemonFromOption");
 const {
   buildPokemonNameOrIdSearchModal,
 } = require("../../modals/pokemonModals");
+const PartyButtons = require("./PartyButtons");
 
 // Action states for the party manager
 const ACTIONS = {
@@ -152,7 +153,7 @@ const PartyManageEntryPoint = async (ref, props) => {
   // Render the PartyManage component with all the data and callbacks
   const /** @type {any[]} */ elements = [
       {
-        embeds: [buildPartyEmbed(trainer, pokemons, { detailed: true })],
+        embeds: [buildPartyEmbed(trainer, pokemons, { detailed: false })],
       },
     ];
   const components = [];
@@ -162,6 +163,14 @@ const PartyManageEntryPoint = async (ref, props) => {
         user,
         onPokemonFound,
         option: searchOption,
+      })
+    );
+  }
+  if (currentAction === ACTIONS.ADD) {
+    elements.push(
+      createElement(PartyButtons, {
+        party: trainer.party,
+        partyPokemons: pokemons,
       })
     );
   }
