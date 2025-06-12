@@ -90,9 +90,10 @@ const getPartyPokemons = async (trainer) => {
 
 /**
  * @param {Trainer} trainer
- * @returns {Promise<{data: WithId<Pokemon>[], err: string?}>}
+ * @param {Pokemon[]} partyPokemons
+ * @returns {Promise<{data: null, err: string?}>}
  */
-const validatePartyForBattle = async (trainer) => {
+const validatePartyBase = async (trainer, partyPokemons) => {
   const { party } = trainer;
 
   // check if party has valid length
@@ -117,8 +118,61 @@ const validatePartyForBattle = async (trainer) => {
     };
   }
 
-  // check that the party has between 1 and 6 pokemon
+  // check that the party has less than 6 pokemon
   const filteredPokemonIds = pokemonIds.filter((id) => id !== null);
+  if (filteredPokemonIds.length > 6) {
+    return {
+      data: null,
+      err: "Invalid party. Please reset your party with `/partyremove ALL`.",
+    };
+  }
+  // check that all party pokemon are valid
+  for (const pokemon of partyPokemons) {
+    if (pokemon === null) {
+      continue;
+    }
+    if (pokemon.userId.toString() !== trainer.userId.toString()) {
+      return {
+        data: null,
+        err: "Please reset your party with `/partyremove ALL`.",
+      };
+    }
+  }
+
+  return { data: null, err: null };
+};
+
+/**
+ * @param {Trainer} trainer
+ * @returns {Promise<{data: null, err: string?}>}
+ */
+const validateParty = async (trainer) => {
+  const partyPokemons = await getPartyPokemons(trainer);
+  if (partyPokemons.err) {
+    return { data: null, err: partyPokemons.err };
+  }
+  return validatePartyBase(trainer, partyPokemons.data);
+};
+
+/**
+ * @param {Trainer} trainer
+ * @returns {Promise<{data: WithId<Pokemon>[], err: string?}>}
+ */
+const validatePartyForBattle = async (trainer) => {
+  const { data: partyPokemons, err: partyErr } = await getPartyPokemons(
+    trainer
+  );
+  if (partyErr) {
+    return { data: null, err: partyErr };
+  }
+
+  const { err: validateErr } = await validatePartyBase(trainer, partyPokemons);
+  if (validateErr) {
+    return { data: null, err: validateErr };
+  }
+
+  // check that the party has more than 0 pokemon
+  const filteredPokemonIds = partyPokemons.filter((id) => id !== null);
   if (filteredPokemonIds.length < 1) {
     return {
       data: null,
@@ -132,22 +186,10 @@ const validatePartyForBattle = async (trainer) => {
     };
   }
 
-  // attempt to retrieve party pokemon
-  const partyPokemons = await getPartyPokemons(trainer);
-  if (partyPokemons.err) {
-    return { data: null, err: partyPokemons.err };
-  }
-
   // check that all party pokemon are valid
-  for (const pokemon of partyPokemons.data) {
+  for (const pokemon of partyPokemons) {
     if (pokemon === null) {
       continue;
-    }
-    if (pokemon.userId.toString() !== trainer.userId.toString()) {
-      return {
-        data: null,
-        err: "Please reset your party with `/partyremove ALL`.",
-      };
     }
     // check if species is battle eligible
     if (!pokemonConfig[pokemon.speciesId].battleEligible) {
@@ -158,7 +200,7 @@ const validatePartyForBattle = async (trainer) => {
     }
   }
 
-  return partyPokemons;
+  return { data: partyPokemons, err: null };
 };
 
 const buildPartyAddSend = async ({
@@ -265,5 +307,6 @@ module.exports = {
   updateParty,
   getPartyPokemons,
   validatePartyForBattle,
+  validateParty,
   buildPartyAddSend,
 };
