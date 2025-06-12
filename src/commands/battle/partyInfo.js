@@ -39,7 +39,7 @@ const partyInfo = async (user) => {
   if (partyPokemonsFiltered.length === 0) {
     return {
       send: null,
-      err: `You have no Pokemon in your party! Add a Pokemon with \`/partyadd\``,
+      err: `You have no Pokemon in your party! Add a Pokemon with \`/party manage\``,
     };
   }
 

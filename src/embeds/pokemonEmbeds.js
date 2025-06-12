@@ -483,10 +483,6 @@ const buildPokemonEmbed = (
         inline: false,
       });
     }
-
-    footerHelp.push(
-      "/partyadd <id> <position> to add this Pokemon to your party"
-    );
   }
 
   // equipment

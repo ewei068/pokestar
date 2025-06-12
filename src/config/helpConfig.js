@@ -334,7 +334,7 @@ const tutorialConfig = [
   {
     name: "Party",
     description:
-      "Your party is the Pokemon you use in battle. **Use `/partyadd <pokemonId> <position>` and `/partyremove <pokemonId|position>` to manage your party.** In Pokestar, party position matters! Put tanky Pokemon in the front, and spread your Pokemon out to avoid AoE damage.\n\n**Alternatively, use `/partyauto` to automatically fill your party with your strongest Pokemon.**",
+      "Your party is the Pokemon you use in battle. **Use `/party manage` to manage your party.** In Pokestar, party position matters! Put tanky Pokemon in the front, and spread your Pokemon out to avoid AoE damage.\n\n**Alternatively, use `/partyauto` to automatically fill your party with your strongest Pokemon.**",
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/partyadd.png",
   },

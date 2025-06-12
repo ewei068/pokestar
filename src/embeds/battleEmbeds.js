@@ -105,7 +105,7 @@ const buildPartyEmbed = (
     embed.addFields(pokemonFields);
   }
 
-  const footerString = "Modify your party with /partyadd and /partyremove";
+  const footerString = "Modify your party with `/party manage`";
   embed.setFooter({ text: footerString });
 
   return embed;

@@ -76,7 +76,7 @@ const getPartyPokemons = async (trainer) => {
       if (index === -1) {
         return {
           data: null,
-          err: "Error finding party pokemon. Use `/partyremove ALL` to fix party.",
+          err: "Error finding party pokemon. Use `/party remove ALL` to fix party.",
         };
       }
       partyPokemons.push(pokemons.data[index]);
@@ -172,7 +172,7 @@ const validatePartyBase = async (trainer, partyPokemons) => {
   if (validateErr) {
     return {
       data: null,
-      err: "Please reset your party with `/partyremove ALL`.",
+      err: "Please reset your party with `/party remove ALL`.",
     };
   }
 
@@ -184,7 +184,7 @@ const validatePartyBase = async (trainer, partyPokemons) => {
     if (pokemon.userId.toString() !== trainer.userId.toString()) {
       return {
         data: null,
-        err: "Please reset your party with `/partyremove ALL`.",
+        err: "Please reset your party with `/party remove ALL`.",
       };
     }
   }
@@ -226,13 +226,13 @@ const validatePartyForBattle = async (trainer) => {
   if (filteredPokemonIds.length < 1) {
     return {
       data: null,
-      err: "No Pokemon in party. Add Pokemon with `/partyadd`.",
+      err: "No Pokemon in party. Add Pokemon with `/party manage`.",
     };
   }
   if (filteredPokemonIds.length > 6) {
     return {
       data: null,
-      err: "Invalid party. Please reset your party with `/partyremove ALL`.",
+      err: "Invalid party. Please reset your party with `/party remove ALL`.",
     };
   }
 
@@ -245,7 +245,7 @@ const validatePartyForBattle = async (trainer) => {
     if (!pokemonConfig[pokemon.speciesId].battleEligible) {
       return {
         data: null,
-        err: "Please reset your party with `/partyremove ALL`.",
+        err: "Please reset your party with `/party remove ALL`.",
       };
     }
   }
