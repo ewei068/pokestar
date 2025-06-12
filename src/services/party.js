@@ -89,18 +89,15 @@ const getPartyPokemons = async (trainer) => {
 };
 
 /**
- * @param {Trainer} trainer
- * @param {Pokemon[]} partyPokemons
- * @returns {Promise<{data: null, err: string?}>}
+ * @param {PartyInfo} party
+ * @returns {{data: null, err: string?}}
  */
-const validatePartyBase = async (trainer, partyPokemons) => {
-  const { party } = trainer;
-
+const validatePartyLayout = (party) => {
   // check if party has valid length
   if (party.pokemonIds.length !== party.rows * party.cols) {
     return {
       data: null,
-      err: "Please reset your party with `/partyremove ALL`.",
+      err: "Party has invalid layout.",
     };
   }
 
@@ -114,7 +111,7 @@ const validatePartyBase = async (trainer, partyPokemons) => {
   if (pokemonIds.length !== new Set(pokemonIds).size) {
     return {
       data: null,
-      err: "Please reset your party with `/partyremove ALL`.",
+      err: "Party has duplicate Pokemon.",
     };
   }
 
@@ -123,9 +120,64 @@ const validatePartyBase = async (trainer, partyPokemons) => {
   if (filteredPokemonIds.length > 6) {
     return {
       data: null,
-      err: "Invalid party. Please reset your party with `/partyremove ALL`.",
+      err: "Party has more than 6 Pokemon.",
     };
   }
+
+  return { data: null, err: null };
+};
+
+/**
+ * @param {PartyInfo} party
+ * @param {string} pokemonId
+ * @param {number} index
+ * @returns {{data: null, err: string?}}
+ */
+const canAddOrMovePokemonToParty = (party, pokemonId, index) => {
+  console.log(party, pokemonId, index);
+  if (index < 0 || index >= party.pokemonIds.length) {
+    return {
+      data: null,
+      err: `Invalid position! Must be between 1 and ${party.pokemonIds.length}.`,
+    };
+  }
+  if (party.pokemonIds[index] === pokemonId) {
+    return {
+      data: null,
+      err: "Pokemon is already in that position!",
+    };
+  }
+
+  return validatePartyLayout({
+    ...party,
+    pokemonIds: party.pokemonIds.map((id, mappedIndex) => {
+      if (id === pokemonId) {
+        return null;
+      }
+      if (mappedIndex === index) {
+        return pokemonId;
+      }
+      return id;
+    }),
+  });
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {Pokemon[]} partyPokemons
+ * @returns {Promise<{data: null, err: string?}>}
+ */
+const validatePartyBase = async (trainer, partyPokemons) => {
+  const { party } = trainer;
+
+  const { err: validateErr } = await validatePartyLayout(party);
+  if (validateErr) {
+    return {
+      data: null,
+      err: "Please reset your party with `/partyremove ALL`.",
+    };
+  }
+
   // check that all party pokemon are valid
   for (const pokemon of partyPokemons) {
     if (pokemon === null) {
@@ -309,4 +361,5 @@ module.exports = {
   validatePartyForBattle,
   validateParty,
   buildPartyAddSend,
+  canAddOrMovePokemonToParty,
 };

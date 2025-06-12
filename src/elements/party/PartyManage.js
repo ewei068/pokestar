@@ -13,7 +13,10 @@ const {
   useCallback,
 } = require("../../deact/deact");
 const useTrainer = require("../../hooks/useTrainer");
-const { getPartyPokemons } = require("../../services/party");
+const {
+  getPartyPokemons,
+  canAddOrMovePokemonToParty,
+} = require("../../services/party");
 const { buildPartyEmbed } = require("../../embeds/battleEmbeds");
 const Button = require("../../deact/elements/Button");
 const FindPokemonFromOption = require("../pokemon/FindPokemonFromOption");
@@ -88,7 +91,11 @@ const PartyManageEntryPoint = async (ref, props) => {
 
   // State management
   const [currentAction, setCurrentAction] = useState(ACTIONS.DEFAULT, ref);
-  const [selectedPokemon, setSelectedPokemon] = useState(null, ref);
+  // @ts-ignore
+  const /** @type {[WithId<Pokemon>?, any]} */ [
+      selectedPokemon,
+      setSelectedPokemon,
+    ] = useState(null, ref);
   const [searchOption, setSearchOption] = useState(null, ref);
 
   // Get trainer data
@@ -156,7 +163,6 @@ const PartyManageEntryPoint = async (ref, props) => {
     await resetState();
   }, ref);
 
-  // Handler for when a Pokemon is found
   const onPokemonFound = (pokemon) => {
     setSelectedPokemon(pokemon);
     setCurrentAction(ACTIONS.ADD);
@@ -178,14 +184,33 @@ const PartyManageEntryPoint = async (ref, props) => {
       })
     );
   }
+
+  const shouldEnablePartyButton = useCallback(
+    (index) => {
+      if (currentAction === ACTIONS.ADD) {
+        return (
+          canAddOrMovePokemonToParty(
+            trainer.party,
+            selectedPokemon?._id?.toString?.(),
+            index
+          ).err === null
+        );
+      }
+      return false;
+    },
+    [currentAction, trainer.party, selectedPokemon],
+    ref
+  );
   if (currentAction === ACTIONS.ADD) {
     elements.push(
       createElement(PartyButtons, {
         party: trainer.party,
         partyPokemons: pokemons,
+        shouldEnableButton: shouldEnablePartyButton,
       })
     );
   }
+
   if (currentAction === ACTIONS.DEFAULT) {
     elements.push(
       createElement(PartyManageButtons, {
