@@ -15,7 +15,6 @@ const {
 const useTrainer = require("../../hooks/useTrainer");
 const { getPartyPokemons } = require("../../services/party");
 const { buildPartyEmbed } = require("../../embeds/battleEmbeds");
-const { logger } = require("../../log");
 const Button = require("../../deact/elements/Button");
 const FindPokemonFromOption = require("../pokemon/FindPokemonFromOption");
 const {
@@ -35,12 +34,10 @@ const ACTIONS = {
  * Renders the party management UI
  * @param {DeactElement} ref
  * @param {object} props - Element props
- * @param {WithId<Trainer>} props.trainer - Trainer data
- * @param {WithId<Pokemon>[]} props.pokemons - Party Pokemon
  * @param {(action: string, interaction: any) => void} props.onActionSelected - Action selection handler
  * @returns {Promise<ComposedElements>}
  */
-const PartyManage = async (ref, { trainer, pokemons, onActionSelected }) => {
+const PartyManageButtons = async (ref, { onActionSelected }) => {
   // Create button callbacks
   const addButtonKey = useCallbackBinding(async (interaction) => {
     await onActionSelected(ACTIONS.ADD, interaction);
@@ -51,8 +48,6 @@ const PartyManage = async (ref, { trainer, pokemons, onActionSelected }) => {
   const removeButtonKey = useCallbackBinding(async (interaction) => {
     await onActionSelected(ACTIONS.REMOVE, interaction);
   }, ref);
-
-  const partyEmbed = buildPartyEmbed(trainer, pokemons, { detailed: true });
 
   const actionButtons = [
     createElement(Button, {
@@ -75,9 +70,7 @@ const PartyManage = async (ref, { trainer, pokemons, onActionSelected }) => {
     }),
   ];
 
-  // Default view
   return {
-    embeds: [partyEmbed],
     components: [actionButtons],
   };
 };
@@ -94,7 +87,7 @@ const PartyManageEntryPoint = async (ref, props) => {
 
   // State management
   const [currentAction, setCurrentAction] = useState(ACTIONS.DEFAULT, ref);
-  const [selectedPokemonId, setSelectedPokemonId] = useState(null, ref);
+  const [selectedPokemon, setSelectedPokemon] = useState(null, ref);
   const [searchOption, setSearchOption] = useState(null, ref);
 
   // Get trainer data
@@ -145,21 +138,23 @@ const PartyManageEntryPoint = async (ref, props) => {
 
   // Back button handler
   const backButtonKey = useCallbackBinding(async () => {
-    logger.debug("Back button clicked");
     setCurrentAction(ACTIONS.DEFAULT);
-    setSelectedPokemonId(null);
+    setSelectedPokemon(null);
     setSearchOption(null);
   }, ref);
 
   // Handler for when a Pokemon is found
   const onPokemonFound = (pokemon) => {
-    logger.debug(`Pokemon found: ${pokemon.name} (${pokemon._id})`);
-    setSelectedPokemonId(pokemon._id);
+    setSelectedPokemon(pokemon);
     setCurrentAction(ACTIONS.ADD);
   };
 
   // Render the PartyManage component with all the data and callbacks
-  const elements = [];
+  const /** @type {any[]} */ elements = [
+      {
+        embeds: [buildPartyEmbed(trainer, pokemons, { detailed: true })],
+      },
+    ];
   const components = [];
   if (currentAction === ACTIONS.SEARCH) {
     elements.push(
@@ -172,9 +167,7 @@ const PartyManageEntryPoint = async (ref, props) => {
   }
   if (currentAction === ACTIONS.DEFAULT) {
     elements.push(
-      createElement(PartyManage, {
-        trainer,
-        pokemons,
+      createElement(PartyManageButtons, {
         onActionSelected: handleActionSelected,
       })
     );
