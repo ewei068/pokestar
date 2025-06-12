@@ -54,7 +54,33 @@ const buildPokemonIdSearchModal = ({
     required,
   });
 
+/**
+ * @param {object} param0
+ * @param {string} param0.id
+ * @param {string=} param0.title
+ * @param {string=} param0.placeholder
+ * @param {string=} param0.value
+ * @param {boolean=} param0.required
+ */
+const buildPokemonNameOrIdSearchModal = ({
+  id,
+  title = "Select Pokemon",
+  placeholder = "Enter a Pokemon's name or ID",
+  value,
+  required = true,
+}) =>
+  buildGenericTextInputModal({
+    id,
+    textInputId: "pokemonSearchInput",
+    title,
+    label: "Pokemon Name or ID",
+    placeholder,
+    value,
+    required,
+  });
+
 module.exports = {
   buildPokemonSearchModal,
   buildPokemonIdSearchModal,
+  buildPokemonNameOrIdSearchModal,
 };

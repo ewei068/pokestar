@@ -7,26 +7,103 @@ const {
   useAwaitedMemo,
   useCallbackBinding,
   createElement,
+  useState,
+  createModal,
+  useModalSubmitCallbackBinding,
+  useCallback,
 } = require("../../deact/deact");
 const useTrainer = require("../../hooks/useTrainer");
 const { getPartyPokemons } = require("../../services/party");
 const { buildPartyEmbed } = require("../../embeds/battleEmbeds");
 const { logger } = require("../../log");
 const Button = require("../../deact/elements/Button");
+const FindPokemonFromOption = require("../pokemon/FindPokemonFromOption");
+const {
+  buildPokemonNameOrIdSearchModal,
+} = require("../../modals/pokemonModals");
+
+// Action states for the party manager
+const ACTIONS = {
+  DEFAULT: "default",
+  ADD: "add",
+  MOVE: "move",
+  REMOVE: "remove",
+  SEARCH: "search",
+};
 
 /**
- * Renders a party management interface
+ * Renders the party management UI
+ * @param {DeactElement} ref
+ * @param {object} props - Element props
+ * @param {WithId<Trainer>} props.trainer - Trainer data
+ * @param {WithId<Pokemon>[]} props.pokemons - Party Pokemon
+ * @param {(action: string, interaction: any) => void} props.onActionSelected - Action selection handler
+ * @returns {Promise<ComposedElements>}
+ */
+const PartyManage = async (ref, { trainer, pokemons, onActionSelected }) => {
+  // Create button callbacks
+  const addButtonKey = useCallbackBinding(async (interaction) => {
+    await onActionSelected(ACTIONS.ADD, interaction);
+  }, ref);
+  const moveButtonKey = useCallbackBinding(async (interaction) => {
+    await onActionSelected(ACTIONS.MOVE, interaction);
+  }, ref);
+  const removeButtonKey = useCallbackBinding(async (interaction) => {
+    await onActionSelected(ACTIONS.REMOVE, interaction);
+  }, ref);
+
+  const partyEmbed = buildPartyEmbed(trainer, pokemons, { detailed: true });
+
+  const actionButtons = [
+    createElement(Button, {
+      label: "Add",
+      emoji: "🔍",
+      style: ButtonStyle.Success,
+      callbackBindingKey: addButtonKey,
+    }),
+    createElement(Button, {
+      label: "Move/Swap",
+      emoji: "🔄",
+      style: ButtonStyle.Primary,
+      callbackBindingKey: moveButtonKey,
+    }),
+    createElement(Button, {
+      label: "Remove",
+      emoji: "✖",
+      style: ButtonStyle.Danger,
+      callbackBindingKey: removeButtonKey,
+    }),
+  ];
+
+  // Default view
+  return {
+    embeds: [partyEmbed],
+    components: [actionButtons],
+  };
+};
+
+/**
+ * Entry point for party management, handles data fetching and state
  * @param {DeactElement} ref
  * @param {object} props - Element props
  * @param {DiscordUser} props.user - User
  * @returns {Promise<ComposedElements>}
  */
-const PartyManage = async (ref, props) => {
+const PartyManageEntryPoint = async (ref, props) => {
   const { user } = props;
+
+  // State management
+  const [currentAction, setCurrentAction] = useState(ACTIONS.DEFAULT, ref);
+  const [selectedPokemonId, setSelectedPokemonId] = useState(null, ref);
+  const [searchOption, setSearchOption] = useState(null, ref);
+
+  // Get trainer data
   const { trainer, err: trainerErr } = await useTrainer(user, ref);
   if (trainerErr) {
     return { err: trainerErr };
   }
+
+  // Get party Pokemon
   const { data: pokemons, err: pokemonErr } = await useAwaitedMemo(
     async () => getPartyPokemons(trainer),
     [trainer],
@@ -36,44 +113,83 @@ const PartyManage = async (ref, props) => {
     return { err: pokemonErr };
   }
 
-  // Create button callbacks
-  const addButtonPressedKey = useCallbackBinding(async () => {
-    console.log("Add Pokémon button clicked");
-  }, ref);
-  const moveButtonPressedKey = useCallbackBinding(async () => {
-    console.log("Move/Swap button clicked");
-  }, ref);
-  const removeButtonPressedKey = useCallbackBinding(async () => {
-    console.log("Remove Pokémon button clicked");
+  // Pokemon ID search modal submission handler
+  const searchSubmittedActionBinding = useModalSubmitCallbackBinding(
+    async (interaction) => {
+      const pokemonSearchInput =
+        interaction.fields.getTextInputValue("pokemonSearchInput");
+      setSearchOption(pokemonSearchInput);
+      setCurrentAction(ACTIONS.SEARCH);
+    },
+    ref
+  );
+
+  // Handle action selection (Add/Move/Remove)
+  const handleActionSelected = useCallback(
+    async (action, interaction) => {
+      if (action === ACTIONS.ADD) {
+        await createModal(
+          buildPokemonNameOrIdSearchModal,
+          {},
+          searchSubmittedActionBinding,
+          interaction,
+          ref
+        );
+      } else {
+        setCurrentAction(action);
+      }
+    },
+    [searchSubmittedActionBinding],
+    ref
+  );
+
+  // Back button handler
+  const backButtonKey = useCallbackBinding(async () => {
+    logger.debug("Back button clicked");
+    setCurrentAction(ACTIONS.DEFAULT);
+    setSelectedPokemonId(null);
+    setSearchOption(null);
   }, ref);
 
-  const partyEmbed = buildPartyEmbed(trainer, pokemons, { detailed: true });
+  // Handler for when a Pokemon is found
+  const onPokemonFound = (pokemon) => {
+    logger.debug(`Pokemon found: ${pokemon.name} (${pokemon._id})`);
+    setSelectedPokemonId(pokemon._id);
+    setCurrentAction(ACTIONS.ADD);
+  };
 
+  // Render the PartyManage component with all the data and callbacks
+  const elements = [];
+  const components = [];
+  if (currentAction === ACTIONS.SEARCH) {
+    elements.push(
+      createElement(FindPokemonFromOption, {
+        user,
+        onPokemonFound,
+        option: searchOption,
+      })
+    );
+  }
+  if (currentAction === ACTIONS.DEFAULT) {
+    elements.push(
+      createElement(PartyManage, {
+        trainer,
+        pokemons,
+        onActionSelected: handleActionSelected,
+      })
+    );
+  } else {
+    components.push(
+      createElement(Button, {
+        label: "Back",
+        style: ButtonStyle.Secondary,
+        callbackBindingKey: backButtonKey,
+      })
+    );
+  }
   return {
-    embeds: [partyEmbed],
-    components: [
-      [
-        createElement(Button, {
-          emoji: "🔍",
-          label: "Add",
-          style: ButtonStyle.Success,
-          callbackBindingKey: addButtonPressedKey,
-        }),
-        createElement(Button, {
-          emoji: "🔄",
-          label: "Move/Swap",
-          style: ButtonStyle.Primary,
-          callbackBindingKey: moveButtonPressedKey,
-        }),
-        createElement(Button, {
-          emoji: "✖",
-          label: "Remove",
-          style: ButtonStyle.Danger,
-          callbackBindingKey: removeButtonPressedKey,
-        }),
-      ],
-    ],
+    elements,
+    components,
   };
 };
-
-module.exports = PartyManage;
+module.exports = PartyManageEntryPoint;
