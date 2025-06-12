@@ -90,7 +90,7 @@ const getPartyPokemons = async (trainer) => {
 
 /**
  * @param {PartyInfo} party
- * @returns {{data: null, err: string?}}
+ * @returns {{data: PartyInfo?, err: string?}}
  */
 const validatePartyLayout = (party) => {
   // check if party has valid length
@@ -124,17 +124,15 @@ const validatePartyLayout = (party) => {
     };
   }
 
-  return { data: null, err: null };
+  return { data: party, err: null };
 };
 
 /**
  * @param {PartyInfo} party
  * @param {string} pokemonId
  * @param {number} index
- * @returns {{data: null, err: string?}}
  */
 const canAddOrMovePokemonToParty = (party, pokemonId, index) => {
-  console.log(party, pokemonId, index);
   if (index < 0 || index >= party.pokemonIds.length) {
     return {
       data: null,
@@ -355,6 +353,40 @@ const buildPartyAddSend = async ({
   return { send, err: null };
 };
 
+/**
+ * @param {CompactUser} user
+ * @param {string} pokemonId
+ * @param {number} position
+ * @returns {Promise<{data: null, err: string?}>}
+ */
+const addOrMovePokemonToParty = async (user, pokemonId, position) => {
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { data: null, err: trainerErr };
+  }
+  const { data: party, err: validateErr } = canAddOrMovePokemonToParty(
+    trainer.party,
+    pokemonId,
+    position
+  );
+  if (validateErr) {
+    return { data: null, err: validateErr };
+  }
+
+  trainer.party = party;
+  const { err: validatePartyErr } = await validateParty(trainer);
+  if (validatePartyErr) {
+    return { data: null, err: validatePartyErr };
+  }
+
+  const update = await updateParty(trainer, trainer.party);
+  if (update.err) {
+    return { data: null, err: update.err };
+  }
+
+  return { data: null, err: null };
+};
+
 module.exports = {
   updateParty,
   getPartyPokemons,
@@ -362,4 +394,5 @@ module.exports = {
   validateParty,
   buildPartyAddSend,
   canAddOrMovePokemonToParty,
+  addOrMovePokemonToParty,
 };

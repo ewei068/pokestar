@@ -13,13 +13,13 @@ const { buildPokemonEmojiString } = require("../../utils/pokemonUtils");
  * @param {object} props - Element props
  * @param {PartyInfo} props.party - Party configuration with rows and columns
  * @param {WithId<Pokemon>[]} props.partyPokemons - Array of Pokémon in party
- * @param {Function=} props.onSlotSelected - Callback when a party slot is selected
+ * @param {Function} props.onIndexSelected - Callback when a party slot is selected
  * @param {Function=} [props.shouldEnableButton] - Function to determine if a button should be enabled
  * @returns {Promise<ComposedElements>}
  */
 const PartyButtons = async (
   ref,
-  { party, partyPokemons, onSlotSelected, shouldEnableButton = () => true }
+  { party, partyPokemons, onIndexSelected, shouldEnableButton = () => true }
 ) => {
   const { rows, cols } = party;
 
@@ -28,7 +28,7 @@ const PartyButtons = async (
 
   // Create callback for this button
   const callbackKey = useCallbackBinding(async (interaction, data) => {
-    await onSlotSelected(data.index);
+    await onIndexSelected(data.index);
   }, ref);
 
   // Loop through each row

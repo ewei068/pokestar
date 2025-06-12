@@ -16,6 +16,7 @@ const useTrainer = require("../../hooks/useTrainer");
 const {
   getPartyPokemons,
   canAddOrMovePokemonToParty,
+  addOrMovePokemonToParty,
 } = require("../../services/party");
 const { buildPartyEmbed } = require("../../embeds/battleEmbeds");
 const Button = require("../../deact/elements/Button");
@@ -89,7 +90,6 @@ const PartyManageButtons = async (ref, { onActionSelected }) => {
 const PartyManageEntryPoint = async (ref, props) => {
   const { user } = props;
 
-  // State management
   const [currentAction, setCurrentAction] = useState(ACTIONS.DEFAULT, ref);
   // @ts-ignore
   const /** @type {[WithId<Pokemon>?, any]} */ [
@@ -98,7 +98,6 @@ const PartyManageEntryPoint = async (ref, props) => {
     ] = useState(null, ref);
   const [searchOption, setSearchOption] = useState(null, ref);
 
-  // Get trainer data
   const {
     trainer,
     refreshTrainer,
@@ -107,8 +106,6 @@ const PartyManageEntryPoint = async (ref, props) => {
   if (trainerErr) {
     return { err: trainerErr };
   }
-
-  // Get party Pokemon
   const { data: pokemons, err: pokemonErr } = await useAwaitedMemo(
     async () => getPartyPokemons(trainer),
     [trainer],
@@ -201,12 +198,28 @@ const PartyManageEntryPoint = async (ref, props) => {
     [currentAction, trainer.party, selectedPokemon],
     ref
   );
+  const onPartyButtonClick = useCallback(
+    async (index) => {
+      const { err: partyErr } = await addOrMovePokemonToParty(
+        user,
+        selectedPokemon?._id?.toString?.(),
+        index
+      );
+      if (partyErr) {
+        return { err: partyErr };
+      }
+      await resetState();
+    },
+    [user, selectedPokemon, resetState],
+    ref
+  );
   if (currentAction === ACTIONS.ADD) {
     elements.push(
       createElement(PartyButtons, {
         party: trainer.party,
         partyPokemons: pokemons,
         shouldEnableButton: shouldEnablePartyButton,
+        onIndexSelected: onPartyButtonClick,
       })
     );
   }
