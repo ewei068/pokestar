@@ -92,7 +92,11 @@ const PartyManageEntryPoint = async (ref, props) => {
   const [searchOption, setSearchOption] = useState(null, ref);
 
   // Get trainer data
-  const { trainer, err: trainerErr } = await useTrainer(user, ref);
+  const {
+    trainer,
+    refreshTrainer,
+    err: trainerErr,
+  } = await useTrainer(user, ref);
   if (trainerErr) {
     return { err: trainerErr };
   }
@@ -138,10 +142,18 @@ const PartyManageEntryPoint = async (ref, props) => {
   );
 
   // Back button handler
+  const resetState = useCallback(
+    async () => {
+      await refreshTrainer();
+      setCurrentAction(ACTIONS.DEFAULT);
+      setSelectedPokemon(null);
+      setSearchOption(null);
+    },
+    [refreshTrainer],
+    ref
+  );
   const backButtonKey = useCallbackBinding(async () => {
-    setCurrentAction(ACTIONS.DEFAULT);
-    setSelectedPokemon(null);
-    setSearchOption(null);
+    await resetState();
   }, ref);
 
   // Handler for when a Pokemon is found

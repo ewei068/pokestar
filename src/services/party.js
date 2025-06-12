@@ -92,7 +92,7 @@ const getPartyPokemons = async (trainer) => {
  * @param {Trainer} trainer
  * @returns {Promise<{data: WithId<Pokemon>[], err: string?}>}
  */
-const validateParty = async (trainer) => {
+const validatePartyForBattle = async (trainer) => {
   const { party } = trainer;
 
   // check if party has valid length
@@ -264,6 +264,6 @@ const buildPartyAddSend = async ({
 module.exports = {
   updateParty,
   getPartyPokemons,
-  validateParty,
+  validatePartyForBattle,
   buildPartyAddSend,
 };

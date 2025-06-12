@@ -49,7 +49,7 @@ const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { getState } = require("./state");
 const { eventNames } = require("../config/eventConfig");
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
-const { validateParty } = require("./party");
+const { validatePartyForBattle } = require("./party");
 const {
   addRewards,
   getFlattenedRewardsString,
@@ -612,7 +612,7 @@ const buildPveSend = async ({
     }
 
     // validate party
-    const validate = await validateParty(newTrainerResult.data);
+    const validate = await validatePartyForBattle(newTrainerResult.data);
     if (validate.err) {
       return { err: validate.err };
     }
@@ -813,7 +813,7 @@ const buildDungeonSend = async ({
     }
 
     // validate party
-    const validate = await validateParty(newTrainerResult.data);
+    const validate = await validatePartyForBattle(newTrainerResult.data);
     if (validate.err) {
       return { err: validate.err };
     }
@@ -944,7 +944,7 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
     return { embed: null, err: `You must complete the previous stage first!` };
   }
   // validate party
-  const validate = await validateParty(trainer.data);
+  const validate = await validatePartyForBattle(trainer.data);
   if (validate.err) {
     return { err: validate.err };
   }
