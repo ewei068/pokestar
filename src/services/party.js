@@ -357,10 +357,10 @@ const buildPartyAddSend = async ({
 /**
  * @param {CompactUser} user
  * @param {string} pokemonId
- * @param {number} position
+ * @param {number} index
  * @returns {Promise<{data: null, err: string?}>}
  */
-const addOrMovePokemonToParty = async (user, pokemonId, position) => {
+const addOrMovePokemonToParty = async (user, pokemonId, index) => {
   const { data: trainer, err: trainerErr } = await getTrainer(user);
   if (trainerErr) {
     return { data: null, err: trainerErr };
@@ -368,7 +368,7 @@ const addOrMovePokemonToParty = async (user, pokemonId, position) => {
   const { data: party, err: validateErr } = canAddOrMovePokemonToParty(
     trainer.party,
     pokemonId,
-    position
+    index
   );
   if (validateErr) {
     return { data: null, err: validateErr };
@@ -388,6 +388,45 @@ const addOrMovePokemonToParty = async (user, pokemonId, position) => {
   return { data: null, err: null };
 };
 
+/**
+ * @param {CompactUser} user
+ * @param {number} index
+ * @returns {Promise<{data: null, err: string?}>}
+ */
+const removePokemonFromParty = async (user, index) => {
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { data: null, err: trainerErr };
+  }
+
+  if (index < 0 || index >= trainer.party.pokemonIds.length) {
+    return {
+      data: null,
+      err: `Invalid position! Must be between 1 and ${trainer.party.pokemonIds.length}.`,
+    };
+  }
+
+  if (trainer.party.pokemonIds[index] === null) {
+    return {
+      data: null,
+      err: "No Pokemon in that position!",
+    };
+  }
+
+  trainer.party.pokemonIds[index] = null;
+  const { err: validateErr } = await validateParty(trainer);
+  if (validateErr) {
+    return { data: null, err: validateErr };
+  }
+
+  const update = await updateParty(trainer, trainer.party);
+  if (update.err) {
+    return { data: null, err: update.err };
+  }
+
+  return { data: null, err: null };
+};
+
 module.exports = {
   updateParty,
   getPartyPokemons,
@@ -396,4 +435,5 @@ module.exports = {
   buildPartyAddSend,
   canAddOrMovePokemonToParty,
   addOrMovePokemonToParty,
+  removePokemonFromParty,
 };

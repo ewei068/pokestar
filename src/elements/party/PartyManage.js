@@ -17,6 +17,7 @@ const {
   getPartyPokemons,
   canAddOrMovePokemonToParty,
   addOrMovePokemonToParty,
+  removePokemonFromParty,
 } = require("../../services/party");
 const {
   buildPartyEmbed,
@@ -219,6 +220,13 @@ const PartyManageEntryPoint = async (ref, props) => {
         }
         return await resetState();
       }
+      if (currentAction === ACTIONS.REMOVE) {
+        const { err: partyErr } = await removePokemonFromParty(user, index);
+        if (partyErr) {
+          return { err: partyErr };
+        }
+        return await resetState();
+      }
       if (currentAction === ACTIONS.MOVE) {
         const newSelectedPokemon = pokemons[index];
         if (!newSelectedPokemon) {
@@ -227,6 +235,7 @@ const PartyManageEntryPoint = async (ref, props) => {
         setSelectedPokemon(newSelectedPokemon);
         setCurrentAction(ACTIONS.MOVE_TO);
       }
+      return { err: "Invalid action" };
     },
     [user, selectedPokemon, resetState, currentAction],
     ref
@@ -234,7 +243,8 @@ const PartyManageEntryPoint = async (ref, props) => {
   if (
     currentAction === ACTIONS.ADD ||
     currentAction === ACTIONS.MOVE ||
-    currentAction === ACTIONS.MOVE_TO
+    currentAction === ACTIONS.MOVE_TO ||
+    currentAction === ACTIONS.REMOVE
   ) {
     elements.push(
       createElement(PartyButtons, {
