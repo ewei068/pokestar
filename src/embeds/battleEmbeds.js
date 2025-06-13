@@ -49,13 +49,28 @@ const { getItemDisplay } = require("../utils/itemUtils");
 /**
  * Builds the header string for a pokemon in the party.
  * @param {Pokemon} pokemon the pokemon to build the header for.
- * @param {number} position the position of the pokemon in the party.
+ * @param {number=} position the position of the pokemon in the party.
  * @returns {string} the header string.
  */
 const buildPokemonPartyHeaderString = (pokemon, position) =>
-  `${position}  ${buildPokemonEmojiString(pokemon)}  •  Lv. ${
+  `${position ?? "\\-"} ${buildPokemonEmojiString(pokemon)}  •  Lv. ${
     pokemon.level
   }  •  ${Math.round((pokemon.ivTotal * 100) / (31 * 6))}%  •  ${pokemon.name}`;
+
+/**
+ * Builds the compact info string for a pokemon.
+ * @param {WithId<Pokemon>} pokemon the pokemon to build the compact info for.
+ * @returns {string} the compact info string.
+ */
+const buildPokemonCompactInfoString = (pokemon) => {
+  const statString = buildPokemonStatString(pokemon, 10, true);
+  const heldItemString = pokemon.heldItemId
+    ? `\n**Held Item:** ${getItemDisplay(pokemon.heldItemId)}`
+    : "";
+  return `${statString}\n**Ability:** ${getAbilityName(
+    pokemon.abilityId
+  )}${heldItemString}\n_${pokemon._id}_`;
+};
 
 /**
  * Handles building the party embedded instructions for building a party.
@@ -113,22 +128,14 @@ const buildPartyEmbed = (
   if (verbosity === 2) {
     const pokemonFields = pokemons
       .filter((p) => p !== null)
-      .map((pokemon) => {
-        const statString = buildPokemonStatString(pokemon, 10, true);
-        const heldItemString = pokemon.heldItemId
-          ? `\n**Held Item:** ${getItemDisplay(pokemon.heldItemId)}`
-          : "";
-        return {
-          name: buildPokemonPartyHeaderString(
-            pokemon,
-            pokemons.indexOf(pokemon)
-          ),
-          value: `${statString}\n**Ability:** ${getAbilityName(
-            pokemon.abilityId
-          )}${heldItemString}\n_${pokemon._id}_`,
-          inline: true,
-        };
-      });
+      .map((pokemon) => ({
+        name: buildPokemonPartyHeaderString(
+          pokemon,
+          pokemons.indexOf(pokemon) + 1
+        ),
+        value: buildPokemonCompactInfoString(pokemon),
+        inline: true,
+      }));
     // every 2 fields, add a blank field
     setTwoInline(pokemonFields);
     embed.addFields(pokemonFields);
@@ -139,6 +146,30 @@ const buildPartyEmbed = (
 
   return embed;
 };
+
+/**
+ * Builds the embed for adding or moving a pokemon to the party.
+ * @param {WithId<Pokemon>} pokemon the pokemon to add or move.
+ * @param {number=} currentPosition the current position of the pokemon in the party.
+ * @returns {EmbedBuilder} an embeded.
+ */
+const buildAddOrMoveToPartyEmbed = (pokemon, currentPosition) => {
+  const embed = new EmbedBuilder();
+  embed.setTitle(
+    `${buildPokemonEmojiString(pokemon)} Add or Move ${
+      pokemon.name
+    } to which position?`
+  );
+  embed.setColor(0xffffff);
+  embed.setDescription(
+    `**${buildPokemonPartyHeaderString(
+      pokemon,
+      currentPosition
+    )}**\n${buildPokemonCompactInfoString(pokemon)}`
+  );
+  return embed;
+};
+
 /**
  * Shows the built parties of the user.
  * @param {Trainer} trainer the trainer who's parties we're showing.
@@ -810,6 +841,7 @@ const buildRaidWinEmbed = (raid, rewards) => {
 
 module.exports = {
   buildPartyEmbed,
+  buildAddOrMoveToPartyEmbed,
   buildPartiesEmbed,
   buildBattleEmbed,
   buildBattleMovesetEmbed,

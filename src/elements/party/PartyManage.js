@@ -18,7 +18,10 @@ const {
   canAddOrMovePokemonToParty,
   addOrMovePokemonToParty,
 } = require("../../services/party");
-const { buildPartyEmbed } = require("../../embeds/battleEmbeds");
+const {
+  buildPartyEmbed,
+  buildAddOrMoveToPartyEmbed,
+} = require("../../embeds/battleEmbeds");
 const Button = require("../../deact/elements/Button");
 const FindPokemonFromOption = require("../pokemon/FindPokemonFromOption");
 const {
@@ -224,6 +227,19 @@ const PartyManageEntryPoint = async (ref, props) => {
     );
   }
 
+  const embeds = [];
+  const currentPosition = pokemons.findIndex(
+    (pokemon) => pokemon?._id?.toString() === selectedPokemon?._id?.toString()
+  );
+  if (currentAction === ACTIONS.ADD) {
+    embeds.push(
+      buildAddOrMoveToPartyEmbed(
+        selectedPokemon,
+        currentPosition >= 0 ? currentPosition + 1 : undefined
+      )
+    );
+  }
+
   if (currentAction === ACTIONS.DEFAULT) {
     elements.push(
       createElement(PartyManageButtons, {
@@ -241,6 +257,7 @@ const PartyManageEntryPoint = async (ref, props) => {
   }
   return {
     elements,
+    embeds,
     components,
   };
 };
