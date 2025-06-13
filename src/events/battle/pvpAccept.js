@@ -7,7 +7,7 @@
  * pvpAccept.js Builds the battle with the given users after the second user accepts the battle.
  */
 const { getStartTurnSend } = require("../../services/battle");
-const { validateParty } = require("../../services/party");
+const { validatePartyForBattle } = require("../../services/party");
 const { getState } = require("../../services/state");
 const { getTrainer } = require("../../services/trainer");
 
@@ -44,7 +44,7 @@ const pvpAccept = async (interaction, data) => {
   }
 
   // validate party
-  const validate = await validateParty(trainer.data);
+  const validate = await validatePartyForBattle(trainer.data);
   if (validate.err) {
     return { err: validate.err };
   }

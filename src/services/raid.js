@@ -32,7 +32,7 @@ const {
   getDoesTrainerHaveAutoBattle,
 } = require("./battle");
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
-const { validateParty } = require("./party");
+const { validatePartyForBattle } = require("./party");
 const { getState, setTtl, setState, deleteState } = require("./state");
 const { getTrainer, updateTrainer, getTrainerFromId } = require("./trainer");
 
@@ -426,7 +426,7 @@ const onRaidAccept = async ({ stateId = null, user = null } = {}) => {
   }
 
   // validate party
-  const validate = await validateParty(trainer.data);
+  const validate = await validatePartyForBattle(trainer.data);
   if (validate.err) {
     return { err: validate.err };
   }
