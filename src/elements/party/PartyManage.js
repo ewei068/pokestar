@@ -34,6 +34,7 @@ const ACTIONS = {
   DEFAULT: "default",
   ADD: "add",
   MOVE: "move",
+  MOVE_TO: "move_to",
   REMOVE: "remove",
   SEARCH: "search",
 };
@@ -187,7 +188,7 @@ const PartyManageEntryPoint = async (ref, props) => {
 
   const shouldEnablePartyButton = useCallback(
     (index) => {
-      if (currentAction === ACTIONS.ADD) {
+      if (currentAction === ACTIONS.ADD || currentAction === ACTIONS.MOVE_TO) {
         return (
           canAddOrMovePokemonToParty(
             trainer.party,
@@ -196,6 +197,9 @@ const PartyManageEntryPoint = async (ref, props) => {
           ).err === null
         );
       }
+      if (currentAction === ACTIONS.MOVE || currentAction === ACTIONS.REMOVE) {
+        return !!trainer.party.pokemonIds[index];
+      }
       return false;
     },
     [currentAction, trainer.party, selectedPokemon],
@@ -203,20 +207,34 @@ const PartyManageEntryPoint = async (ref, props) => {
   );
   const onPartyButtonClick = useCallback(
     async (index) => {
-      const { err: partyErr } = await addOrMovePokemonToParty(
-        user,
-        selectedPokemon?._id?.toString?.(),
-        index
-      );
-      if (partyErr) {
-        return { err: partyErr };
+      if (currentAction === ACTIONS.ADD || currentAction === ACTIONS.MOVE_TO) {
+        const { err: partyErr } = await addOrMovePokemonToParty(
+          user,
+          selectedPokemon?._id?.toString?.(),
+          index
+        );
+        if (partyErr) {
+          return { err: partyErr };
+        }
+        return await resetState();
       }
-      await resetState();
+      if (currentAction === ACTIONS.MOVE) {
+        const newSelectedPokemon = pokemons[index];
+        if (!newSelectedPokemon) {
+          return { err: "Pokemon not found" };
+        }
+        setSelectedPokemon(newSelectedPokemon);
+        setCurrentAction(ACTIONS.MOVE_TO);
+      }
     },
-    [user, selectedPokemon, resetState],
+    [user, selectedPokemon, resetState, currentAction],
     ref
   );
-  if (currentAction === ACTIONS.ADD) {
+  if (
+    currentAction === ACTIONS.ADD ||
+    currentAction === ACTIONS.MOVE ||
+    currentAction === ACTIONS.MOVE_TO
+  ) {
     elements.push(
       createElement(PartyButtons, {
         party: trainer.party,
@@ -231,7 +249,7 @@ const PartyManageEntryPoint = async (ref, props) => {
   const currentPosition = pokemons.findIndex(
     (pokemon) => pokemon?._id?.toString() === selectedPokemon?._id?.toString()
   );
-  if (currentAction === ACTIONS.ADD) {
+  if (currentAction === ACTIONS.ADD || currentAction === ACTIONS.MOVE_TO) {
     embeds.push(
       buildAddOrMoveToPartyEmbed(
         selectedPokemon,
