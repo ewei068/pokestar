@@ -45,7 +45,7 @@ const partyInfo = async (user) => {
 
   // build embed
   const partyEmbed = buildPartyEmbed(trainer.data, partyPokemons.data, {
-    detailed: true,
+    verbosity: 2,
     isMobile: getUserSelectedDevice(user, trainer.data.settings) === "mobile",
   });
 

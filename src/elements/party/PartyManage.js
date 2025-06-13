@@ -168,7 +168,7 @@ const PartyManageEntryPoint = async (ref, props) => {
   // Render the PartyManage component with all the data and callbacks
   const /** @type {any[]} */ elements = [
       {
-        embeds: [buildPartyEmbed(trainer, pokemons, { detailed: false })],
+        embeds: [buildPartyEmbed(trainer, pokemons, { verbosity: 1 })],
       },
     ];
   const components = [];

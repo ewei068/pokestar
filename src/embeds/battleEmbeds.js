@@ -47,18 +47,29 @@ const { backpackItemConfig } = require("../config/backpackConfig");
 const { getItemDisplay } = require("../utils/itemUtils");
 
 /**
+ * Builds the header string for a pokemon in the party.
+ * @param {Pokemon} pokemon the pokemon to build the header for.
+ * @param {number} position the position of the pokemon in the party.
+ * @returns {string} the header string.
+ */
+const buildPokemonPartyHeaderString = (pokemon, position) =>
+  `${position}  ${buildPokemonEmojiString(pokemon)}  •  Lv. ${
+    pokemon.level
+  }  •  ${Math.round((pokemon.ivTotal * 100) / (31 * 6))}%  •  ${pokemon.name}`;
+
+/**
  * Handles building the party embedded instructions for building a party.
  * @param {Trainer} trainer the trainer to build the party for.
  * @param {WithId<Pokemon>[]} pokemons the pokemon the trainer has.
  * @param {object} options
- * @param {boolean=} options.detailed whether it's a detailed party formation.
+ * @param {0 | 1 | 2=} options.verbosity whether it's a detailed party formation.
  * @param {boolean=} options.isMobile whether it's a mobile device.
  * @returns {EmbedBuilder} an embeded.
  */
 const buildPartyEmbed = (
   trainer,
   pokemons,
-  { detailed = false, isMobile = false } = {}
+  { verbosity = 0, isMobile = false } = {}
 ) => {
   const { party } = trainer;
 
@@ -82,7 +93,24 @@ const buildPartyEmbed = (
     }
   );
 
-  if (detailed) {
+  if (verbosity === 1) {
+    const pokemonFields = pokemons
+      .filter((p) => p !== null)
+      .map((pokemon) => ({
+        name: buildPokemonPartyHeaderString(pokemon, pokemons.indexOf(pokemon)),
+        value: `${pokemon.combatPower} Power  •  ${getAbilityName(
+          pokemon.abilityId
+        )}  •  ${
+          pokemon.heldItemId
+            ? backpackItemConfig[pokemon.heldItemId].emoji
+            : "🚫"
+        }\n_${pokemon._id}_`,
+        inline: true,
+      }));
+    embed.addFields(pokemonFields);
+  }
+
+  if (verbosity === 2) {
     const pokemonFields = pokemons
       .filter((p) => p !== null)
       .map((pokemon) => {
@@ -91,12 +119,13 @@ const buildPartyEmbed = (
           ? `\n**Held Item:** ${getItemDisplay(pokemon.heldItemId)}`
           : "";
         return {
-          name: `${buildPokemonEmojiString(pokemon)} [${
-            pokemons.indexOf(pokemon) + 1
-          }] [Lv. ${pokemon.level}] ${pokemon.name}`,
-          value: `${pokemon._id}\n${statString}\n**Ability:** ${getAbilityName(
+          name: buildPokemonPartyHeaderString(
+            pokemon,
+            pokemons.indexOf(pokemon)
+          ),
+          value: `${statString}\n**Ability:** ${getAbilityName(
             pokemon.abilityId
-          )}${heldItemString}`,
+          )}${heldItemString}\n_${pokemon._id}_`,
           inline: true,
         };
       });
