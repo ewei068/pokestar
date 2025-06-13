@@ -146,14 +146,15 @@ const canAddOrMovePokemonToParty = (party, pokemonId, index) => {
     };
   }
 
+  const pokemonInIndex = party.pokemonIds[index];
   return validatePartyLayout({
     ...party,
     pokemonIds: party.pokemonIds.map((id, mappedIndex) => {
       if (id === pokemonId) {
-        return null;
+        return pokemonInIndex || null; // swap or remove pokemon from old index
       }
       if (mappedIndex === index) {
-        return pokemonId;
+        return pokemonId; // add pokemon to new index
       }
       return id;
     }),

@@ -170,6 +170,13 @@ const buildAddOrMoveToPartyEmbed = (pokemon, currentPosition) => {
   return embed;
 };
 
+const buildMoveOrRemoveFromPartyEmbed = () => {
+  const embed = new EmbedBuilder();
+  embed.setTitle("Select Pokemon to Move or Remove");
+  embed.setColor(0xffffff);
+  return embed;
+};
+
 /**
  * Shows the built parties of the user.
  * @param {Trainer} trainer the trainer who's parties we're showing.
@@ -842,6 +849,7 @@ const buildRaidWinEmbed = (raid, rewards) => {
 module.exports = {
   buildPartyEmbed,
   buildAddOrMoveToPartyEmbed,
+  buildMoveOrRemoveFromPartyEmbed,
   buildPartiesEmbed,
   buildBattleEmbed,
   buildBattleMovesetEmbed,

@@ -21,6 +21,7 @@ const {
 const {
   buildPartyEmbed,
   buildAddOrMoveToPartyEmbed,
+  buildMoveOrRemoveFromPartyEmbed,
 } = require("../../embeds/battleEmbeds");
 const Button = require("../../deact/elements/Button");
 const FindPokemonFromOption = require("../pokemon/FindPokemonFromOption");
@@ -256,6 +257,11 @@ const PartyManageEntryPoint = async (ref, props) => {
         currentPosition >= 0 ? currentPosition + 1 : undefined
       )
     );
+  } else if (
+    currentAction === ACTIONS.MOVE ||
+    currentAction === ACTIONS.REMOVE
+  ) {
+    embeds.push(buildMoveOrRemoveFromPartyEmbed());
   }
 
   if (currentAction === ACTIONS.DEFAULT) {
