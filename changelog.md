@@ -6,7 +6,12 @@
 
 - Stretch: Quests (Achievements)
 - Stretch: Ability slots
-- Stretch: Improve party management
+
+### 1.4.3
+
+- Added new `/party manage` command! Much more easily add, move, and remove Pokemon from your party!
+  - Adding pokemon from `/info` brings up the party manage UI
+  - Added party manage to the `/tutorial`
 
 ### 1.4.2 Gen 4 Part 2 (5/26)
 

@@ -158,10 +158,10 @@ const newTutorialConfigRaw = {
     name: "Building Your Party",
     emoji: emojis.PIKACHU,
     description:
-      "Build your party by adding 6 Pokemon to your party! **Use `/party auto` to add your 6 strongest Pokemon to your party**. You can also use `/party add` and `/party remove` to make finer adjustments to your party.",
+      "Build your party by adding 6 Pokemon to your party! **Use `/party auto` to add your 6 strongest Pokemon to your party**. You can also use `/party manage` to make finer adjustments to your party.",
     requirementString: "Add 6x Pokemon to Party",
     proceedString:
-      "Use `/party auto` or `/party add` to add a Pokemon to your party!",
+      "Use `/party auto` or `/party manage` to add a Pokemon to your party!",
     checkRequirements: async (trainer) => {
       const partyPokemon = trainer.party.pokemonIds.filter((id) => id);
       return partyPokemon.length >= 6;
@@ -174,7 +174,7 @@ const newTutorialConfigRaw = {
       },
     },
     image:
-      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/partyadd.png",
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/partymanage.gif",
   },
   learnBattleTurns: {
     name: "Learning to Battle: Taking Turns",
