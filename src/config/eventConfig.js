@@ -22,7 +22,6 @@ const eventNames = Object.freeze({
   SHOP_SELECT: "shopSelect",
   SHOP_BUY: "shopBuy",
   HELP_SELECT: "helpSelect",
-  PARTY_ADD: "partyAdd",
   PVP_ACCEPT: "pvpAccept",
   PVE_SCROLL: "pveScroll",
   PVE_SELECT: "pveSelect",
@@ -177,13 +176,6 @@ const eventConfig = {
   [eventNames.BACK]: {
     name: "Back",
     execute: "back.js",
-  },
-  [eventNames.PARTY_ADD]: {
-    name: "Party Add",
-    execute: "partyAdd.js",
-    directory: "battle",
-    exp: 5,
-    money: 10,
   },
   [eventNames.PVP_ACCEPT]: {
     name: "PVP Accept",

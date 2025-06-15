@@ -73,7 +73,6 @@ const {
   backpackItems,
 } = require("../config/backpackConfig");
 const { drawIterable, drawUniform } = require("../utils/gachaUtils");
-const { partyAddRow } = require("../components/partyAddRow");
 const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
 const { buildEquipmentSelectRow } = require("../components/equipmentSelectRow");
 const { stageNames } = require("../config/stageConfig");
@@ -1103,15 +1102,7 @@ const buildPokemonInfoSend = async ({
   );
   send.components.push(actionActionRow);
 
-  if (action === "add") {
-    const partySelectRow = partyAddRow(
-      pokemonId,
-      trainer.data.party.pokemonIds.length
-    );
-    send.components.push(partySelectRow);
-  }
-
-  return { send, err: null };
+  return { send, pokemon: pokemon.data, err: null };
 };
 
 const getPokemonOwnershipStats = async (speciesId) => {

@@ -32,14 +32,15 @@ const {
 const PartyButtons = require("./PartyButtons");
 
 // Action states for the party manager
-const ACTIONS = {
+/** @typedef {Enum<ACTIONS>} PartyManageAction */
+const ACTIONS = Object.freeze({
   DEFAULT: "default",
   ADD: "add",
   MOVE: "move",
   MOVE_TO: "move_to",
   REMOVE: "remove",
   SEARCH: "search",
-};
+});
 
 /**
  * Renders the party management UI
@@ -91,18 +92,24 @@ const PartyManageButtons = async (ref, { onActionSelected }) => {
  * @param {DeactElement} ref
  * @param {object} props - Element props
  * @param {DiscordUser} props.user - User
+ * @param {WithId<Pokemon>=} props.initialPokemon
+ * @param {PartyManageAction=} props.initialAction
  * @returns {Promise<ComposedElements>}
  */
-const PartyManageEntryPoint = async (ref, props) => {
-  const { user } = props;
-
-  const [currentAction, setCurrentAction] = useState(ACTIONS.DEFAULT, ref);
+const PartyManageEntryPoint = async (
+  ref,
+  { user, initialPokemon, initialAction }
+) => {
   // @ts-ignore
   const /** @type {[WithId<Pokemon>?, any]} */ [
       selectedPokemon,
       setSelectedPokemon,
-    ] = useState(null, ref);
+    ] = useState(initialPokemon, ref);
   const [searchOption, setSearchOption] = useState(null, ref);
+  const [currentAction, setCurrentAction] = useState(
+    initialPokemon ? initialAction || ACTIONS.DEFAULT : ACTIONS.DEFAULT,
+    ref
+  );
 
   const {
     trainer,
