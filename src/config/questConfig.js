@@ -64,25 +64,6 @@ const newTutorialConfigRaw = {
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/gacha.gif",
   },
-  buyPokeballs: {
-    name: "Buying Pokeballs",
-    emoji: emojis.POKEBALL,
-    description: `One of the best ways to get more Pokeballs is to buy them from the Pokemart every day. Use \`/pokemart\` to buy ${emojis.POKEBALL} Pokeballs, or use \`/buy itemid: 0 quantity: 5\` to buy the maximum amount.`,
-    requirementString: `Buy 5x ${emojis.POKEBALL} Pokeballs`,
-    proceedString:
-      "Use `/pokemart` or `/buy itemid: 0 quantity: 5` to buy 5 Pokeballs!",
-    checkRequirements: async (trainer) =>
-      trainer.purchasedShopItemsToday[shopItems.RANDOM_POKEBALL] >= 5,
-    rewards: {
-      backpack: {
-        [backpackCategories.POKEBALLS]: {
-          [backpackItems.GREATBALL]: 5,
-        },
-      },
-    },
-    image:
-      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pokemart.gif",
-  },
   dailyRewards: {
     name: "Daily Rewards",
     emoji: "📅",
@@ -115,23 +96,6 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/backpack.png",
-  },
-  voting: {
-    name: "(Optional) Voting",
-    emoji: "🗳️",
-    description:
-      "Voting for Pokestar helps the bot grow! **Vote for Pokestar on top.gg [here](https://top.gg/bot/1093411444877439066/vote)**. Then, use `/vote` to claim your rewards.\n\n" +
-      `Voting gives you many rewards, and voting consistently gives you a streak. With a max streak, **you can get up to 15x ${emojis.POKEBALL} Pokeballs every 12 hours!**`,
-    requirementString: "Complete the previous stage",
-    proceedString:
-      "(Optional) Vote for Pokestar on top.gg, and complete the previous stage.",
-    checkRequirements: async (trainer) =>
-      trainer.tutorialData.completedTutorialStages.backpack,
-    rewards: {
-      money: 1000,
-    },
-    image:
-      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/vote.png",
   },
   catchSixPokemon: {
     name: "Catch More Pokemon",
@@ -246,6 +210,25 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif",
+  },
+  buyPokeballs: {
+    name: "Buying Pokeballs",
+    emoji: emojis.POKEBALL,
+    description: `One of the best ways to get more Pokeballs is to buy them from the Pokemart every day. Use \`/pokemart\` to buy ${emojis.POKEBALL} Pokeballs, or use \`/buy itemid: 0 quantity: 5\` to buy the maximum amount.`,
+    requirementString: `Buy 5x ${emojis.POKEBALL} Pokeballs`,
+    proceedString:
+      "Use `/pokemart` or `/buy itemid: 0 quantity: 5` to buy 5 Pokeballs!",
+    checkRequirements: async (trainer) =>
+      trainer.purchasedShopItemsToday[shopItems.RANDOM_POKEBALL] >= 5,
+    rewards: {
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.GREATBALL]: 5,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pokemart.gif",
   },
   listPokemon: {
     name: "Viewing Pokemon: List",
@@ -443,6 +426,23 @@ const newTutorialConfigRaw = {
     },
     image: gameEventConfig[0]?.image,
   },
+  voting: {
+    name: "(Optional) Voting",
+    emoji: "🗳️",
+    description:
+      "Voting for Pokestar helps the bot grow! **Vote for Pokestar on top.gg [here](https://top.gg/bot/1093411444877439066/vote)**. Then, use `/vote` to claim your rewards.\n\n" +
+      `Voting gives you many rewards, and voting consistently gives you a streak. With a max streak, **you can get up to 15x ${emojis.POKEBALL} Pokeballs every 12 hours!**`,
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "(Optional) Vote for Pokestar on top.gg, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.events,
+    rewards: {
+      money: 1000,
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/vote.png",
+  },
   userSettings: {
     name: "Settings",
     emoji: "⚙️",
@@ -529,7 +529,7 @@ const newTutorialConfigRaw = {
     name: "Catching More Pokemon",
     emoji: emojis.ULTRABALL,
     description:
-      "You should keep using the `/gatcha` to catch strong Pokemon. **Catch 50 Pokemon.**",
+      "You should keep using the `/gacha` to catch strong Pokemon. **Catch 50 Pokemon.**",
     requirementString: "Catch 50x Pokemon",
     proceedString: "Use `/gacha` to catch 50 Pokemon!",
     checkRequirements: async (trainer) =>
