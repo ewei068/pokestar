@@ -448,9 +448,9 @@ const buildBattlePokemonString = (pokemon) => {
 const buildNpcDifficultyString = (difficulty, npcDifficultyData) => {
   const difficultyData = difficultyConfig[difficulty];
   // + 1 here because ace pokemon is one level higher than max level
-  const difficultyHeader = `[Lv. ${npcDifficultyData.minLevel}-${
-    npcDifficultyData.maxLevel + 1
-  }] ${difficultyData.name}`;
+  const difficultyHeader = `${difficultyData.emoji} [Lv. ${
+    npcDifficultyData.minLevel
+  }-${npcDifficultyData.maxLevel + 1}] ${difficultyData.name}`;
 
   const rewardMultipliers =
     npcDifficultyData.rewardMultipliers || difficultyData.rewardMultipliers;

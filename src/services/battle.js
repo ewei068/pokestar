@@ -553,6 +553,7 @@ const buildPveSend = async ({
     };
     const difficultyButtonConfigs = Object.keys(npcData.difficulties).map(
       (difficulty) => ({
+        emoji: difficultyConfig[difficulty].emoji,
         label: difficultyConfig[difficulty].name,
         disabled: false,
         data: {

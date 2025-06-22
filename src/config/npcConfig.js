@@ -3142,6 +3142,7 @@ const difficultyConfig = Object.freeze({
       expMultiplier: 0.5,
       pokemonExpMultiplier: 0.175,
     },
+    emoji: "⚪",
     autoBattleCost: 6,
   },
   [difficulties.EASY]: {
@@ -3151,6 +3152,7 @@ const difficultyConfig = Object.freeze({
       expMultiplier: 1,
       pokemonExpMultiplier: 0.175,
     },
+    emoji: "🟢",
     autoBattleCost: 7,
   },
   [difficulties.MEDIUM]: {
@@ -3160,6 +3162,7 @@ const difficultyConfig = Object.freeze({
       expMultiplier: 1.5,
       pokemonExpMultiplier: 0.185,
     },
+    emoji: "🔵",
     autoBattleCost: 8,
   },
   [difficulties.HARD]: {
@@ -3169,6 +3172,7 @@ const difficultyConfig = Object.freeze({
       expMultiplier: 2,
       pokemonExpMultiplier: 0.21,
     },
+    emoji: "🔴",
     autoBattleCost: 9,
   },
   [difficulties.VERY_HARD]: {
@@ -3178,6 +3182,7 @@ const difficultyConfig = Object.freeze({
       expMultiplier: 3.5,
       pokemonExpMultiplier: 0.25,
     },
+    emoji: "⚫",
     autoBattleCost: 10,
   },
 });
