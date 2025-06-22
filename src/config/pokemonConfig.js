@@ -279,8 +279,8 @@ const statConfig = {
   1: { name: "Atk", emoji: "⚔️", description: "Attack" },
   2: { name: "Def", emoji: "🛡️", description: "Defense" },
   3: { name: "SpA", emoji: "🔮", description: "Special Attack" },
-  4: { name: "SpD", emoji: "🛡️", description: "Special Defense" },
-  5: { name: "Spe", emoji: "🏃", description: "Speed" },
+  4: { name: "SpD", emoji: "🌀", description: "Special Defense" },
+  5: { name: "Spe", emoji: "⚡︎", description: "Speed" },
 };
 
 /** @typedef {Enum<growthRates>} GrowthRateEnum */
