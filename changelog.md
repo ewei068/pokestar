@@ -2,6 +2,13 @@
 
 ## TODO
 
+- Improve UI
+  - Improve look of fields, use inline code when appropriate, use quotes to indent, use emojis!
+  - Also put more emojis in buttons
+- Put tutorial button in upsells
+  - Make the tutorial commands big asf
+  - Can add tips as footers
+
 **Stretch**
 
 - Stretch: Quests (Achievements)
