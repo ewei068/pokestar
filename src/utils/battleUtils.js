@@ -16,7 +16,12 @@ const {
   flattenRewards,
   flattenCategories,
 } = require("./trainerUtils");
-const { getPBar, formatMoney, getHasTag } = require("./utils");
+const {
+  getPBar,
+  formatMoney,
+  getHasTag,
+  buildBlockQuoteString,
+} = require("./utils");
 const { getEffect } = require("../battle/data/effectRegistry");
 const { backpackItemConfig } = require("../config/backpackConfig");
 const { buildPokemonEmojiString } = require("./pokemonUtils");
@@ -322,7 +327,7 @@ const buildMoveString = (moveData, cooldown = 0) => {
     moveData.accuracy || "-"
   } | CD: ${moveData.cooldown}\n`;
   moveString += `**Target:** ${moveData.targetType}/${moveData.targetPosition}/${moveData.targetPattern}\n`;
-  moveString += `${moveData.description}`;
+  moveString += buildBlockQuoteString(moveData.description);
 
   return {
     moveHeader,
