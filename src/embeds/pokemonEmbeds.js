@@ -369,14 +369,14 @@ const buildPokemonEmbed = (
   }
 
   let sixthField = {
-    name: "✨ Shiny",
-    value: pokemon.shiny ? "True" : "False",
+    name: "Shiny",
+    value: pokemon.shiny ? "✨ True" : "🚫 False",
     inline: true,
   };
   if (originalOwnerId) {
     sixthField = {
-      name: "👑 Original Owner",
-      value: `<@${originalOwnerId}>`,
+      name: "Original Owner",
+      value: `👑 <@${originalOwnerId}>`,
       inline: true,
     };
   }
@@ -422,23 +422,29 @@ const buildPokemonEmbed = (
         : "";
 
     embed.addFields(
-      { name: "🏷️ Type", value: typeString, inline: true },
+      { name: "Type", value: typeString, inline: true },
       {
-        name: "💫 Ability",
-        value: getAbilityName(pokemon.abilityId),
+        name: "Ability",
+        value: `💫 ${getAbilityName(pokemon.abilityId)}`,
         inline: true,
       },
       {
-        name: "🧬 Nature",
-        value: `${natureConfig[pokemon.natureId].name} (${
+        name: "Nature",
+        value: `🧬 ${natureConfig[pokemon.natureId].name} (${
           natureConfig[pokemon.natureId].description
         })`,
         inline: true,
       },
-      { name: "💎 Rarity", value: speciesData.rarity, inline: true },
       {
-        name: "🗓️ Date Caught",
-        value: new Date(pokemon.dateAcquired).toLocaleDateString(),
+        name: "Rarity",
+        value: `${rarityConfig[speciesData.rarity].emoji} ${
+          speciesData.rarity
+        }`,
+        inline: true,
+      },
+      {
+        name: "Date Caught",
+        value: `🗓️ ${new Date(pokemon.dateAcquired).toLocaleDateString()}`,
         inline: true,
       },
       sixthField,
@@ -447,7 +453,7 @@ const buildPokemonEmbed = (
         value: `${statString}${heldItemString}`, // TODO: can't find a better place to put this lol
         inline: false,
       },
-      { name: "⏳ Level Progress", value: progressBar, inline: false }
+      { name: "Level Progress", value: `⏳ ${progressBar}`, inline: false }
     );
 
     footerHelp.push("/train <id> to train this Pokemon");
