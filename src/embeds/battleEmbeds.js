@@ -645,7 +645,7 @@ const buildBattleTowerEmbed = (towerStage, { dreamCardString } = {}) => {
   const bossData = pokemonConfig[npcDifficultyData.aceId];
   const bossString = `**Boss**: ${bossData.emoji} #${npcDifficultyData.aceId} **${bossData.name}** \`/pokedex ${npcDifficultyData.aceId}\``;
   difficultyString += `${bossString}\n`;
-  difficultyString += `**Rewards:** ${getFlattenedRewardsString(
+  difficultyString += `**Rewards:**\n${getFlattenedRewardsString(
     flattenRewards(battleTowerData.rewards),
     false
   )}`;

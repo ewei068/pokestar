@@ -469,7 +469,7 @@ const buildNpcDifficultyString = (difficulty, npcDifficultyData) => {
   difficultyString += "\n";
   difficultyString += `**Multipliers:** Money: ${rewardMultipliers.moneyMultiplier} | EXP: ${rewardMultipliers.expMultiplier} | Pkmn. EXP: ${rewardMultipliers.pokemonExpMultiplier}`;
   if (npcDifficultyData.dailyRewards) {
-    difficultyString += `\n**Daily Rewards:** ${getFlattenedRewardsString(
+    difficultyString += `\n**Daily Rewards:**\n${getFlattenedRewardsString(
       flattenRewards(npcDifficultyData.dailyRewards),
       false
     )}`;
