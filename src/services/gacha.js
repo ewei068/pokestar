@@ -584,7 +584,7 @@ const buildBannerSend = async ({
       emoji: backpackItemConfig[backpackItems.MASTERBALL].emoji,
     },
     {
-      label: "Info",
+      label: "ⓘ",
       data: {
         ...pokeballData,
       },
