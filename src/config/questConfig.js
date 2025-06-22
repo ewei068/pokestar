@@ -24,6 +24,7 @@ const { shopItems } = require("./shopConfig");
  *  checkRequirements: (trainer: WithId<Trainer>) => Promise<boolean>,
  *  rewards: Rewards,
  *  image?: string,
+ *  tip?: string,
  * }} TutorialStageData
  */
 
@@ -51,9 +52,9 @@ const newTutorialConfigRaw = {
     name: "Catching Pokemon",
     emoji: emojis.POKEBALL,
     description:
-      "The first thing to do is catch Pokemon! **To catch new Pokemon, use the `/gacha` command**. The gacha costs Pokeballs, with rare Pokeballs catching rarer Pokemon. I would recommend using 10 Pokeballs on the standard banner.",
+      "The first thing to do is catch Pokemon! **To catch new Pokemon, use the `/gacha` command**. \n## `/gacha`",
     requirementString: "Catch 1x Pokemon",
-    proceedString: "Use `/gacha` and catch a Pokemon!",
+    proceedString: "Use `/gacha` and catch a Pokemon! \n## `/gacha`",
     checkRequirements: async (trainer) =>
       await checkNumPokemon(trainer)
         .then((res) => (res.numPokemon ?? 0) > 0)
@@ -63,6 +64,7 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/gacha.gif",
+    tip: "Rarer Pokeballs catch rarer Pokemon!",
   },
   dailyRewards: {
     name: "Daily Rewards",

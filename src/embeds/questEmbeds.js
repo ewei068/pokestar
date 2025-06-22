@@ -65,16 +65,20 @@ const buildTutorialStageEmbed = ({ stage, userTutorialData, page = 1 }) => {
   embed.setTitle(`${completedText}${stageData.emoji} ${stageData.name}`);
   embed.setColor(0xffffff);
   embed.setDescription(buildBlockQuoteString(stageData.description));
-  embed.setFooter({ text: `Stage ${page} / ${newTutorialStages.length}` });
+  let footerText = `Stage ${page} / ${newTutorialStages.length}`;
+  if (stageData.tip) {
+    footerText += ` | TIP: ${stageData.tip}`;
+  }
+  embed.setFooter({ text: footerText });
 
   embed.addFields([
     {
-      name: "Requirements",
+      name: "📋 Requirements",
       value: buildBlockQuoteString(stageData.requirementString),
       inline: false,
     },
     {
-      name: "Rewards",
+      name: "🎁 Rewards",
       value: buildBlockQuoteString(
         getFlattenedRewardsString(flattenRewards(stageData.rewards), false)
       ),
