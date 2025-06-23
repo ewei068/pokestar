@@ -848,24 +848,32 @@ const buildSpeciesDexEmbed = (id, speciesData, tab, ownershipData) => {
       }
     }
 
-    embed.setDescription(`${linebreakString(speciesData.description, 50)}`);
+    embed.setDescription(
+      `${buildBlockQuoteString(linebreakString(speciesData.description, 45))}`
+    );
     embed.addFields(
       { name: "Type", value: typeString, inline: true },
       { name: "Abilities", value: abilityString, inline: true },
       {
         name: "Obtainable",
-        value: speciesData.unobtainable ? "False" : "True",
+        value: speciesData.unobtainable ? "❌ False" : "✅ True",
         inline: true,
       },
-      { name: "Rarity", value: speciesData.rarity, inline: true },
+      {
+        name: "Rarity",
+        value: `${rarityConfig[speciesData.rarity].emoji} ${
+          speciesData.rarity
+        }`,
+        inline: true,
+      },
       {
         name: "Evolvable",
-        value: speciesData.evolution ? "True" : "False",
+        value: speciesData.evolution ? "🧬 True" : "🧬 False",
         inline: true,
       },
       {
         name: "Growth Rate",
-        value: growthRateConfig[speciesData.growthRate].name,
+        value: `📈 ${growthRateConfig[speciesData.growthRate].name}`,
         inline: true,
       }
     );
@@ -877,16 +885,16 @@ const buildSpeciesDexEmbed = (id, speciesData, tab, ownershipData) => {
     embed.setDescription(`Growth information for #${id} ${speciesData.name}:`);
     embed.addFields(
       {
-        name: "Growth Rate",
+        name: "📈 Growth Rate",
         value: growthRateConfig[speciesData.growthRate].name,
         inline: true,
       },
       {
-        name: "Base Stats",
+        name: "💪 Base Stats",
         value: buildPokemonBaseStatString(speciesData),
         inline: false,
       },
-      { name: "Evolutions", value: evolutionString, inline: false }
+      { name: "🧬 Evolutions", value: evolutionString, inline: false }
     );
   } else if (tab === "moves") {
     // display: move strings
@@ -918,7 +926,7 @@ const buildSpeciesDexEmbed = (id, speciesData, tab, ownershipData) => {
         abilityProbability * 100
       )}%)`;
       const abilityString = abilityData
-        ? abilityData.description
+        ? buildBlockQuoteString(abilityData.description)
         : "Not yet implemented!";
       return {
         name: abilityHeader,

@@ -8,6 +8,8 @@ const {
   statusConditions,
   targetPatterns,
   moveTiers,
+  damageTypeConfig,
+  moveTierConfig,
 } = require("../config/battleConfig");
 const { difficultyConfig } = require("../config/npcConfig");
 const { pokemonConfig, typeConfig } = require("../config/pokemonConfig");
@@ -316,16 +318,18 @@ const buildCompactPartyString = (party, id, pokemonMap, active = false) => {
 const buildMoveString = (moveData, cooldown = 0) => {
   let moveHeader = "";
   if (cooldown) {
-    moveHeader += `[ON COOLDOWN: ${cooldown} TURNS]\n`;
+    moveHeader += `⏳ [ON COOLDOWN: ${cooldown} TURNS]\n`;
   }
+  const damageTypeData = damageTypeConfig[moveData.damageType];
+  const moveTierData = moveTierConfig[moveData.tier];
   moveHeader += `${typeConfig[moveData.type].emoji} **${moveData.name}** | ${
-    moveData.damageType
-  } `;
+    damageTypeData.emoji
+  } ${damageTypeData.abbreviation} `;
 
   let moveString = "";
-  moveString += `**[${moveData.tier}]** PWR: ${moveData.power || "-"} | ACC: ${
-    moveData.accuracy || "-"
-  } | CD: ${moveData.cooldown}\n`;
+  moveString += `**[${moveTierData.abbreviation}]**  |  💪 ${
+    moveData.power || "N/A"
+  }  |  ⌖ ${moveData.accuracy || "N/A"}  |  ⏳ ${moveData.cooldown}\n`;
   moveString += `**Target:** ${moveData.targetType}/${moveData.targetPosition}/${moveData.targetPattern}\n`;
   moveString += buildBlockQuoteString(moveData.description);
 
