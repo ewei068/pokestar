@@ -6,7 +6,7 @@
  */
 const { EmbedBuilder } = require("discord.js");
 const { shopCategoryConfig, shopItemConfig } = require("../config/shopConfig");
-const { formatMoney } = require("../utils/utils");
+const { formatMoney, buildBlockQuoteString } = require("../utils/utils");
 const { craftableItemConfig } = require("../config/backpackConfig");
 const { getItemDisplay } = require("../utils/itemUtils");
 const { flattenCategories, getCostString } = require("../utils/trainerUtils");
@@ -25,7 +25,9 @@ const buildShopEmbed = (trainer) => {
   embed.setTitle(`Pokemart`);
   embed.setColor(0xffffff);
   embed.setDescription(
-    "Welcome to the Pokemart! Here you can buy items to help you on your journey. Use the Buttons below to navigate the shop."
+    buildBlockQuoteString(
+      "Welcome to the Pokemart! Here you can buy items to help you on your journey. Use the Buttons below to navigate the shop."
+    )
   );
   embed.addFields({ name: "Categories", value: shopString, inline: true });
   embed.setFooter({
@@ -68,7 +70,9 @@ const buildShopCategoryEmbed = (trainer, categoryId) => {
   embed.setTitle(`Pokemart - ${shopCategoryConfig[categoryId].name}`);
   embed.setColor(0xffffff);
   embed.setDescription(
-    `${categoryData.description}\n\nSelect an item for more information.`
+    buildBlockQuoteString(
+      `${categoryData.description}\n\nSelect an item for more information.`
+    )
   );
   embed.addFields({ name: "Items", value: shopString, inline: true });
   embed.setFooter({
@@ -105,11 +109,17 @@ const buildShopItemEmbed = (trainer, itemId) => {
   embed.setTitle(`Pokemart - ${itemData.name} (ID: ${itemId})`);
   embed.setColor(0xffffff);
   embed.setDescription(
-    `${itemData.description}\n\nUse \`/buy ${itemId} <qty?>\` to buy this item!`
+    buildBlockQuoteString(
+      `${itemData.description}\n\nUse \`/buy ${itemId} <qty?>\` to buy this item!`
+    )
   );
   embed.addFields(
-    { name: "Price", value: priceString, inline: true },
-    { name: "Daily Limit", value: `${itemData.limit || "None"}`, inline: true }
+    { name: "💰 Price", value: priceString, inline: true },
+    {
+      name: "📅 Daily Limit",
+      value: `${itemData.limit || "None"}`,
+      inline: true,
+    }
   );
   embed.setFooter({
     text: `You have ${formatMoney(

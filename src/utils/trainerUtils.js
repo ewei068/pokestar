@@ -83,6 +83,11 @@ const getFlattenedRewardsString = (rewards, received = true) => {
       rewardsString += `\n${backpackItemConfig[itemId].emoji} ${rewards.backpack[itemId]}x ${backpackItemConfig[itemId].name}`;
     }
   }
+
+  // remove beginning newline
+  if (rewardsString.startsWith("\n")) {
+    rewardsString = rewardsString.slice(1);
+  }
   return rewardsString;
 };
 

@@ -402,14 +402,10 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity = 1) => {
   )[bannerType];
   const pokemonIds = [];
   const bannerRateUps = bannerData.rateUp() || {};
-  // if pokeball and standard banner and beginner rolls < 10, roll beginner rolls
+  // if pokeball and beginner rolls < 10, roll beginner rolls
   const currentNumRolls = getOrSetDefault(trainer, "beginnerRolls", 0);
   let beginnerRolls = null;
-  if (
-    pokeballId === backpackItems.POKEBALL &&
-    bannerType === bannerTypes.STANDARD &&
-    currentNumRolls < 10
-  ) {
+  if (pokeballId === backpackItems.POKEBALL && currentNumRolls < 10) {
     beginnerRolls = beginnerRoll(trainer, quantity);
   }
   // get non-rate-ups for each rarity
@@ -421,7 +417,13 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity = 1) => {
     );
   }
   // roll for pokemon
-  for (const rarity of drawnRarities) {
+  for (const [index, rarity] of drawnRarities.entries()) {
+    if (beginnerRolls && beginnerRolls[index]) {
+      pokemonIds.push(beginnerRolls[index]);
+      trainerBannerInfo.pity += pokeballConfig[pokeballId].pity;
+      continue;
+    }
+
     let rarityRateUp = bannerRateUps[rarity];
     if (trainerBannerInfo.pity >= MAX_PITY) {
       // set rarity to legendary
@@ -482,12 +484,6 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity = 1) => {
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error using Pokeball." };
-  }
-
-  if (beginnerRolls) {
-    for (const [index, pokemonId] of Object.entries(beginnerRolls)) {
-      pokemonIds[index] = pokemonId;
-    }
   }
 
   return await giveNewPokemons(trainer, pokemonIds);
@@ -588,7 +584,7 @@ const buildBannerSend = async ({
       emoji: backpackItemConfig[backpackItems.MASTERBALL].emoji,
     },
     {
-      label: "Info",
+      label: "ⓘ",
       data: {
         ...pokeballData,
       },

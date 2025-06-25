@@ -29,6 +29,7 @@ const {
   getFullUTCFortnight,
   getPBar,
   formatMoney,
+  buildBlockQuoteString,
 } = require("../utils/utils");
 const {
   npcConfig,
@@ -45,6 +46,7 @@ const {
 } = require("../utils/trainerUtils");
 const { backpackItemConfig } = require("../config/backpackConfig");
 const { getItemDisplay } = require("../utils/itemUtils");
+const { emojis } = require("../enums/emojis");
 
 /**
  * Builds the header string for a pokemon in the party.
@@ -100,9 +102,9 @@ const buildPartyEmbed = (
     `https://cdn.discordapp.com/avatars/${trainer.userId}/${trainer.user.avatar}.webp`
   );
   embed.addFields(
-    { name: "Power", value: `${power}`, inline: true },
+    { name: "💪 Power", value: `${power}`, inline: true },
     {
-      name: "Pokemon",
+      name: `${emojis.POKEBALL} Pokemon`,
       value: buildPartyString(pokemons, party.rows, party.cols, { isMobile }),
       inline: false,
     }
@@ -112,7 +114,10 @@ const buildPartyEmbed = (
     const pokemonFields = pokemons
       .filter((p) => p !== null)
       .map((pokemon) => ({
-        name: buildPokemonPartyHeaderString(pokemon, pokemons.indexOf(pokemon)),
+        name: buildPokemonPartyHeaderString(
+          pokemon,
+          pokemons.indexOf(pokemon) + 1
+        ),
         value: `${pokemon.combatPower} Power  •  ${getAbilityName(
           pokemon.abilityId
         )}  •  ${
@@ -528,7 +533,7 @@ const buildPveNpcEmbed = (npcId, { dreamCardString } = {}) => {
   const embed = new EmbedBuilder();
   embed.setTitle(`${npc.emoji} ${npc.name} (${npcId})`);
   embed.setColor(0xffffff);
-  embed.setDescription(npc.catchphrase);
+  embed.setDescription(buildBlockQuoteString(npc.catchphrase));
   embed.addFields(fields);
   if (dreamCardString) {
     embed.addFields({
@@ -645,7 +650,7 @@ const buildBattleTowerEmbed = (towerStage, { dreamCardString } = {}) => {
   const bossData = pokemonConfig[npcDifficultyData.aceId];
   const bossString = `**Boss**: ${bossData.emoji} #${npcDifficultyData.aceId} **${bossData.name}** \`/pokedex ${npcDifficultyData.aceId}\``;
   difficultyString += `${bossString}\n`;
-  difficultyString += `**Rewards:** ${getFlattenedRewardsString(
+  difficultyString += `**Rewards:**\n${getFlattenedRewardsString(
     flattenRewards(battleTowerData.rewards),
     false
   )}`;

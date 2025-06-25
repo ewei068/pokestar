@@ -490,6 +490,18 @@ const buildAnsiString = (str) => {
   return ansiString;
 };
 
+const buildBlockQuoteString = (str) => {
+  let blockQuoteString = "";
+  const lines = str.split("\n");
+  for (let i = 0; i < lines.length; i += 1) {
+    blockQuoteString += `> ${lines[i]}`;
+    if (i < lines.length - 1) {
+      blockQuoteString += "\n";
+    }
+  }
+  return blockQuoteString;
+};
+
 /**
  * @param {any} obj
  * @param {PokemonTag | HeldItemTag | MoveTag | EffectTag} tag
@@ -524,6 +536,7 @@ module.exports = {
   attemptToReply,
   setDefaultFields,
   buildAnsiString,
+  buildBlockQuoteString,
   getHasTag,
   getNumIntervalsBetweenDates,
 };

@@ -19,11 +19,39 @@ const damageTypes = Object.freeze({
   OTHER: "Other",
 });
 
+const damageTypeConfig = Object.freeze({
+  [damageTypes.PHYSICAL]: {
+    abbreviation: "Phy",
+    emoji: "💥",
+  },
+  [damageTypes.SPECIAL]: {
+    abbreviation: "Spe",
+    emoji: "🌀",
+  },
+  [damageTypes.OTHER]: {
+    abbreviation: "Other",
+    emoji: "❓",
+  },
+});
 /** @typedef {Enum<moveTiers>} MoveTierEnum */
 const moveTiers = Object.freeze({
   BASIC: "Basic",
   POWER: "Power",
   ULTIMATE: "Ultimate",
+});
+const moveTierConfig = Object.freeze({
+  [moveTiers.BASIC]: {
+    abbreviation: "BAS",
+    emoji: "👊",
+  },
+  [moveTiers.POWER]: {
+    abbreviation: "PWR",
+    emoji: "⚡",
+  },
+  [moveTiers.ULTIMATE]: {
+    abbreviation: "ULT",
+    emoji: "🌟",
+  },
 });
 // create pokemon type advantage matrix
 /*
@@ -16355,4 +16383,6 @@ module.exports = {
   statIndexToBaseStat,
   statIndexToBattleStat,
   battleStatToBaseStat,
+  damageTypeConfig,
+  moveTierConfig,
 };

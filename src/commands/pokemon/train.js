@@ -55,9 +55,9 @@ const train = async (user, pokemonId, location) => {
   const { exp, evs } = res.data;
 
   // build message
-  let message = `Trained ${buildPokemonNameString(
+  let message = `Trained **${buildPokemonNameString(
     pokemon.data
-  )} and gained ${exp} exp.`;
+  )}** and gained 🚀 **${exp} exp**.`;
   if (
     evs[0] !== 0 ||
     evs[1] !== 0 ||
@@ -70,7 +70,7 @@ const train = async (user, pokemonId, location) => {
     // format evs for all that exist
     for (const ev in evs) {
       if (evs[ev] !== 0) {
-        message += ` ${evs[ev]} ${statConfig[ev].name},`;
+        message += ` **${statConfig[ev].emoji} ${evs[ev]} ${statConfig[ev].name}**,`;
       }
     }
     // remove last comma if exists
@@ -81,7 +81,7 @@ const train = async (user, pokemonId, location) => {
   }
   // check if pokemon leveled up
   if (pokemon.data.level > oldLevel) {
-    message += ` ${pokemon.data.name} leveled up to level ${pokemon.data.level}!`;
+    message += ` 🎉 ${pokemon.data.name} leveled up to **level ${pokemon.data.level}**! 🎉`;
   }
 
   return { data: message, err: null };

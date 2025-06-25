@@ -398,9 +398,9 @@ const buildSpeciesEvolutionString = (speciesData) => {
   if (speciesData.evolution) {
     for (let i = 0; i < speciesData.evolution.length; i += 1) {
       const evolution = speciesData.evolution[i];
-      evolutionString += `Lv. ${evolution.level}: #${evolution.id} ${
-        pokemonConfig[evolution.id].name
-      }`;
+      evolutionString += `Lv. ${evolution.level}: ${
+        pokemonConfig[evolution.id].emoji
+      } #${evolution.id} ${pokemonConfig[evolution.id].name}`;
       if (i < speciesData.evolution.length - 1) {
         evolutionString += "\n";
       }

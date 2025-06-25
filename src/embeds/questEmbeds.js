@@ -7,6 +7,7 @@ const {
   getFlattenedRewardsString,
   flattenRewards,
 } = require("../utils/trainerUtils");
+const { buildBlockQuoteString } = require("../utils/utils");
 
 /**
  * @param {object} param0
@@ -35,7 +36,13 @@ const buildTutorialListEmbed = ({
       stageProgressEmoji = "⏳";
     }
 
+    if (userTutorialData.currentTutorialStage === stage) {
+      description += "**";
+    }
     description += `\`[${stageProgressEmoji}]\` • ${stageData.emoji} ${stageData.name}\n`;
+    if (userTutorialData.currentTutorialStage === stage) {
+      description += "**";
+    }
   });
 
   embed.setDescription(description);
@@ -57,20 +64,23 @@ const buildTutorialStageEmbed = ({ stage, userTutorialData, page = 1 }) => {
     : "";
   embed.setTitle(`${completedText}${stageData.emoji} ${stageData.name}`);
   embed.setColor(0xffffff);
-  embed.setDescription(stageData.description);
-  embed.setFooter({ text: `Stage ${page} / ${newTutorialStages.length}` });
+  embed.setDescription(buildBlockQuoteString(stageData.description));
+  let footerText = `Stage ${page} / ${newTutorialStages.length}`;
+  if (stageData.tip) {
+    footerText += ` | TIP: ${stageData.tip}`;
+  }
+  embed.setFooter({ text: footerText });
 
   embed.addFields([
     {
-      name: "Requirements",
-      value: stageData.requirementString,
+      name: "📋 Requirements",
+      value: buildBlockQuoteString(stageData.requirementString),
       inline: false,
     },
     {
-      name: "Rewards",
-      value: getFlattenedRewardsString(
-        flattenRewards(stageData.rewards),
-        false
+      name: "🎁 Rewards",
+      value: buildBlockQuoteString(
+        getFlattenedRewardsString(flattenRewards(stageData.rewards), false)
       ),
       inline: false,
     },

@@ -311,7 +311,7 @@ const getStartTurnSend = async (battle, stateId) => {
           if (rewardRecipients.length > 0) {
             content += `\n**${rewardRecipients
               .map((r) => r.username)
-              .join(", ")} received rewards for their victory:**`;
+              .join(", ")} received rewards for their victory:**\n`;
             content += getFlattenedRewardsString(
               rewardRecipients[0].rewards,
               false
@@ -553,6 +553,7 @@ const buildPveSend = async ({
     };
     const difficultyButtonConfigs = Object.keys(npcData.difficulties).map(
       (difficulty) => ({
+        emoji: difficultyConfig[difficulty].emoji,
         label: difficultyConfig[difficulty].name,
         disabled: false,
         data: {
