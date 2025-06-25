@@ -12,6 +12,7 @@ const {
 } = require("./quest");
 const { getState, deleteState } = require("./state");
 const { getTrainer, updateTrainer } = require("./trainer");
+const { eventNames } = require("../config/eventConfig");
 
 const TUTORIAL_UPSELL_TIME_1 = timeEnum.DAY;
 const TUTORIAL_UPSELL_TIME_2 = 3 * timeEnum.DAY;
@@ -69,7 +70,7 @@ const buttonComponent = buildButtonActionRow(
       disabled: false,
     },
   ],
-  "test"
+  eventNames.TUTORIAL_UPSELL_BUTTON
 );
 
 /**

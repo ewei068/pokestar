@@ -51,6 +51,7 @@ const eventNames = Object.freeze({
   VOTE_REWARDS: "voteRewards",
   EVENT_BUTTON: "eventButton",
   TUTORIAL_BUTTON: "tutorialButton",
+  TUTORIAL_UPSELL_BUTTON: "tutorialUpsellButton",
   BACK: "back",
   POKEMON_ID_SELECT: "pokemonIdSelect",
 });
@@ -344,6 +345,13 @@ const eventConfig = {
     name: "Tutorial Button",
     execute: "tutorialButton.js",
     directory: "help",
+  },
+  [eventNames.TUTORIAL_UPSELL_BUTTON]: {
+    name: "Tutorial Upsell Button",
+    execute: "tutorialUpsellButton.js",
+    directory: "help",
+    exp: 10,
+    money: 25,
   },
   [eventNames.POKEMON_ID_SELECT]: {
     name: "Pokemon ID Select",
