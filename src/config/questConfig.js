@@ -896,7 +896,85 @@ const newTutorialStages = /** @type {TutorialStageEnum[]} */ (
   Object.keys(newTutorialConfig)
 );
 
+/**
+ * @typedef {Enum<typeof questTypeEnum>} QuestTypeEnum
+ */
+const questTypeEnum = Object.freeze({
+  DAILY: "daily",
+  ACHIEVEMENT: "achievement",
+  EVENT: "event",
+});
+
+/**
+ * @typedef {Enum<typeof questRequirementTypeEnum>} QuestRequirementTypeEnum
+ */
+const questRequirementTypeEnum = Object.freeze({
+  NUMERIC: "numeric",
+  BOOLEAN: "boolean",
+});
+
+/**
+ * @typedef {Enum<typeof questProgressionTypeEnum>} QuestProgressionTypeEnum
+ */
+const questProgressionTypeEnum = Object.freeze({
+  INFINITE: "infinite",
+  FINITE: "finite",
+});
+
+/**
+ * @template {any[]} T
+ * @template {any} U
+ * @typedef {(...args: [number] & T) => U} GenericQuestFunction
+ */
+
+/**
+ * @typedef {{
+ *  formatName: GenericQuestFunction<[], string>,
+ *  formatEmoji: GenericQuestFunction<[], string>,
+ *  formatDescription: GenericQuestFunction<[], string>,
+ *  formatRequirementString: GenericQuestFunction<[], string>,
+ *  computeRewards: GenericQuestFunction<[], FlattenedRewards>,
+ *  listeners: any[], // TODO,
+ *  resetProgressOnComplete: boolean,
+ *  image?: string,
+ * }} QuestConfigBase
+ */
+
+/**
+ * @typedef {{
+ *  type: typeof questRequirementTypeEnum.NUMERIC,
+ * }} QuestConfigNumeric
+ */
+/**
+ * @typedef {{
+ *  type: typeof questRequirementTypeEnum.BOOLEAN,
+ *  checkRequirements: GenericQuestFunction<[WithId<Trainer>], Promise<boolean>>,
+ * }} QuestConfigBoolean
+ */
+
+/**
+ * @typedef {{
+ *  progressionType: typeof questProgressionTypeEnum.INFINITE,
+ * }} QuestConfigInfinite
+ */
+/**
+ * @typedef {{
+ *  progressionType: typeof questProgressionTypeEnum.FINITE,
+ *  maxStage: number,
+ * }} QuestConfigFinite
+ */
+
+/**
+ * @typedef {QuestConfigBase & QuestConfigNumeric & QuestConfigInfinite} DailyQuestConfig
+ */
+/**
+ * @typedef {QuestConfigBase & (QuestConfigNumeric | QuestConfigBoolean) & (QuestConfigInfinite | QuestConfigFinite)} AchievementConfig
+ */
+
 module.exports = {
   newTutorialConfig,
   newTutorialStages,
+  questTypeEnum,
+  questRequirementTypeEnum,
+  questProgressionTypeEnum,
 };
