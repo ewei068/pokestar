@@ -2,6 +2,9 @@ const { EmbedBuilder } = require("discord.js");
 const {
   newTutorialConfig,
   newTutorialStages,
+  questTypeEnum,
+  dailyQuestConfig,
+  achievementConfig,
 } = require("../config/questConfig");
 const {
   getFlattenedRewardsString,
@@ -93,7 +96,66 @@ const buildTutorialStageEmbed = ({ stage, userTutorialData, page = 1 }) => {
   return embed;
 };
 
+/**
+ * @param {object} param0
+ * @param {QuestEnum[]} param0.questIds
+ * @param {QuestTypeEnum} param0.questType
+ * @param {UserQuestData} param0.userQuestData
+ * @param {number=} param0.page
+ * @returns {EmbedBuilder}
+ */
+const buildQuestListEmbed = ({
+  questIds,
+  questType,
+  userQuestData,
+  page = 1,
+}) => {
+  const embed = new EmbedBuilder();
+  const questConfig =
+    questType === questTypeEnum.DAILY ? dailyQuestConfig : achievementConfig;
+  const questTypeDisplay =
+    questType === questTypeEnum.DAILY ? "Daily Quests" : "Achievements";
+
+  embed.setTitle(questTypeDisplay);
+  embed.setColor(0xffffff);
+  embed.setFooter({ text: `Page ${page}` });
+
+  let description = "";
+  questIds.forEach((questId) => {
+    const questConfigData = questConfig[questId];
+    const questData =
+      questType === questTypeEnum.DAILY
+        ? userQuestData.dailyQuests[questId]
+        : userQuestData.achievements[questId];
+
+    const progress = questData?.progress || 0;
+    const stage = questData?.stage || 0;
+
+    const progressRequirement =
+      questConfigData.requirementType === "numeric"
+        ? questConfigData.computeProgressRequirement({ stage })
+        : 1;
+
+    const isCompleted = progress >= progressRequirement;
+    const progressEmoji = isCompleted ? "✅" : "⏳";
+
+    const questName = questConfigData.formatName({ stage });
+    const questEmoji = questConfigData.formatEmoji({ stage });
+
+    let progressText = "";
+    if (questConfigData.requirementType === "numeric") {
+      progressText = ` (${progress}/${progressRequirement})`;
+    }
+
+    description += `\`[${progressEmoji}]\` • ${questEmoji} ${questName}${progressText}\n`;
+  });
+
+  embed.setDescription(description);
+  return embed;
+};
+
 module.exports = {
   buildTutorialListEmbed,
   buildTutorialStageEmbed,
+  buildQuestListEmbed,
 };

@@ -108,24 +108,52 @@ const completeTutorialStageForUser = async (user, stage) => {
 };
 
 /**
- * @param {QuestConfig} questConfig
- * @param {DailyQuestData | AchievementData} questData
+ * @param {QuestConfig} questConfigData
+ * @param {DailyQuestData | AchievementData} questDataEntry
  */
-const shouldEmitQuestEvent = (questConfig, questData) => {
+const getCurrentQuestStageForDisplay = (questConfigData, questDataEntry) => {
+  if (questConfigData.progressionType === questProgressionTypeEnum.FINITE) {
+    return Math.min(questDataEntry.stage, questConfigData.maxStage);
+  }
+
+  return questDataEntry.stage;
+};
+
+/**
+ * @param {QuestConfig} questConfigData
+ * @param {DailyQuestData | AchievementData} questDataEntry
+ */
+const computeQuestProgressRequirement = (questConfigData, questDataEntry) => {
   const progressRequirement =
-    questConfig.requirementType === questRequirementTypeEnum.BOOLEAN
+    questConfigData.requirementType === questRequirementTypeEnum.BOOLEAN
       ? 1
-      : questConfig.computeProgressRequirement({
-          stage: questData.stage || 0,
+      : questConfigData.computeProgressRequirement({
+          stage: getCurrentQuestStageForDisplay(
+            questConfigData,
+            questDataEntry
+          ),
         });
 
-  const hasMetRequirement = questData.progress >= progressRequirement;
+  return Math.max(1, progressRequirement);
+};
+
+/**
+ * @param {QuestConfig} questConfigData
+ * @param {DailyQuestData | AchievementData} questDataEntry
+ */
+const shouldEmitQuestEvent = (questConfigData, questDataEntry) => {
+  const progressRequirement = computeQuestProgressRequirement(
+    questConfigData,
+    questDataEntry
+  );
+
+  const hasMetRequirement = questDataEntry.progress >= progressRequirement;
   const doesProgressReset =
-    questConfig.requirementType === questRequirementTypeEnum.NUMERIC &&
-    questConfig.resetProgressOnComplete;
+    questConfigData.requirementType === questRequirementTypeEnum.NUMERIC &&
+    questConfigData.resetProgressOnComplete;
   const hasPassedMaxStage =
-    questConfig.progressionType === questProgressionTypeEnum.FINITE &&
-    questData.stage > questConfig.maxStage;
+    questConfigData.progressionType === questProgressionTypeEnum.FINITE &&
+    questDataEntry.stage > questConfigData.maxStage;
 
   if (doesProgressReset && (hasPassedMaxStage || hasMetRequirement)) {
     return false;
@@ -139,7 +167,7 @@ const shouldEmitQuestEvent = (questConfig, questData) => {
  * @param {QuestTypeEnum} questType
  * @returns {QuestConfig}
  */
-const getQuestConfig = (questName, questType) => {
+const getQuestConfigData = (questName, questType) => {
   if (questType === questTypeEnum.DAILY) {
     return dailyQuestConfig[questName];
     // eslint-disable-next-line no-else-return
@@ -156,28 +184,28 @@ const getQuestConfig = (questName, questType) => {
  * @param {QuestTypeEnum} questType
  */
 const getAndSetQuestData = (trainer, questName, questType) => {
-  let questData;
+  let questDataEntry;
   if (questType === questTypeEnum.DAILY) {
-    questData = trainer.questData.dailyQuests[questName];
-    if (!questData) {
+    questDataEntry = trainer.questData.dailyQuests[questName];
+    if (!questDataEntry) {
       trainer.questData.dailyQuests[questName] = {
         stage: 0,
         progress: 0,
       };
     }
-    questData = trainer.questData.dailyQuests[questName];
+    questDataEntry = trainer.questData.dailyQuests[questName];
   } else if (questType === questTypeEnum.ACHIEVEMENT) {
-    questData = trainer.questData.achievements[questName];
-    if (!questData) {
+    questDataEntry = trainer.questData.achievements[questName];
+    if (!questDataEntry) {
       trainer.questData.achievements[questName] = {
         stage: 0,
         progress: 0,
       };
     }
-    questData = trainer.questData.achievements[questName];
+    questDataEntry = trainer.questData.achievements[questName];
   }
 
-  return questData;
+  return questDataEntry;
 };
 
 /**
@@ -185,7 +213,7 @@ const getAndSetQuestData = (trainer, questName, questType) => {
  * @param {QuestTypeEnum} questType
  */
 const registerQuestListeners = (questName, questType) => {
-  const questConfig = getQuestConfig(questName, questType);
+  const questConfig = getQuestConfigData(questName, questType);
   for (const { eventName, listenerCallback } of questConfig.questListeners) {
     registerTrainerEventListener(eventName, async (args) => {
       const { trainer } = args;
@@ -220,10 +248,21 @@ const getDailyQuests = () => {
   });
 };
 
+/**
+ * @returns {AchievementEnum[]}
+ */
+// @ts-ignore
+const getAchievements = () => Object.keys(achievementConfig);
+
 module.exports = {
   hasTrainerMetTutorialStageRequirements,
   hasTrainerMetCurrentTutorialStageRequirements,
   hasUserMetCurrentTutorialStageRequirements,
   completeTutorialStageForTrainer,
   completeTutorialStageForUser,
+  getAndSetQuestData,
+  getDailyQuests,
+  getAchievements,
+  getCurrentQuestStageForDisplay,
+  computeQuestProgressRequirement,
 };

@@ -2,39 +2,39 @@
  * @file
  * @author Elvis Wei
  *
- * backpack.js Creates a system to display the user's backpack for them.
+ * quest.js Creates a system to display the user's quest for them.
  */
 const { createRoot } = require("../../deact/deact");
-const BackpackEntryPoint = require("../../elements/trainer/BackpackEntryPoint");
+const QuestList = require("../../elements/quest/QuestList");
 const { getUserFromInteraction } = require("../../utils/utils");
 
 /**
- * Displays the user's backpack items.
+ * Displays the user's quest items.
  * @param {any} interaction
- * @param {string=} category
+ * @param {QuestTypeEnum=} questType
  */
-const backpack = async (interaction, category) =>
+const quest = async (interaction, questType) =>
   await createRoot(
-    BackpackEntryPoint,
+    QuestList,
     {
       user: getUserFromInteraction(interaction),
-      backpackCategoryInput: category,
+      initialQuestType: questType,
     },
     interaction,
-    { defer: false, ttl: 180 }
+    { defer: true, ttl: 180 }
   );
 
-const backpackMessageCommand = async (message) => {
-  const category = message.content.split(" ")[1];
-  return await backpack(message, category);
+const questMessageCommand = async (message) => {
+  const questType = message.content.split(" ")[1] ?? undefined;
+  return await quest(message, questType);
 };
 
-const backpackSlashCommand = async (interaction) => {
-  const category = interaction.options.getString("category");
-  return await backpack(interaction, category);
+const questSlashCommand = async (interaction) => {
+  const questType = interaction.options.getString("questType") ?? undefined;
+  return await quest(interaction, questType);
 };
 
 module.exports = {
-  message: backpackMessageCommand,
-  slash: backpackSlashCommand,
+  message: questMessageCommand,
+  slash: questSlashCommand,
 };
