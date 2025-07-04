@@ -1009,7 +1009,7 @@ const dailyQuestConfigRaw = {
     questListeners: [],
     requirementType: questRequirementTypeEnum.NUMERIC,
     computeProgressRequirement: () => 1,
-    resetProgressOnComplete: false,
+    resetProgressOnComplete: true,
     progressionType: questProgressionTypeEnum.FINITE,
     maxStage: 1,
   },

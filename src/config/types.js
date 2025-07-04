@@ -33,7 +33,8 @@
 /** @typedef {import("./questConfig").AchievementConfig} AchievementConfig */
 /** @typedef {import("./questConfig").DailyQuestEnum} DailyQuestEnum */
 /** @typedef {import("./questConfig").AchievementEnum} AchievementEnum */
-
+/** @typedef {DailyQuestEnum | AchievementEnum} QuestEnum */
+/** @typedef {import("./questConfig").QuestTypeEnum} QuestTypeEnum */
 /**
  * @template {UserSettingsEnum} T
  * @typedef {import("./trainerConfig").UserSettingsOptions<T>} UserSettingsOptions

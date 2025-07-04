@@ -2,8 +2,11 @@
 const {
   newTutorialConfig,
   newTutorialStages,
-  questRequirementTypeEnum,
   dailyQuestConfig,
+  questRequirementTypeEnum,
+  questProgressionTypeEnum,
+  questTypeEnum,
+  achievementConfig,
 } = require("../config/questConfig");
 const { addRewards } = require("../utils/trainerUtils");
 const { registerTrainerEventListener } = require("./game/gameEvent");
@@ -102,39 +105,89 @@ const completeTutorialStageForUser = async (user, stage) => {
 };
 
 /**
- * @param {Trainer} trainer
- * @param {DailyQuestEnum} dailyQuestName
+ * @param {QuestConfig} questConfig
+ * @param {DailyQuestData | AchievementData} questData
  */
-const getAndSetDailyQuestData = (trainer, dailyQuestName) => {
-  const questData = trainer.questData.dailyQuests[dailyQuestName];
-  if (!questData) {
-    trainer.questData.dailyQuests[dailyQuestName] = {
-      completed: false,
-      progress: 0,
-    };
+const shouldEmitQuestEvent = (questConfig, questData) => {
+  const progressRequirement =
+    questConfig.requirementType === questRequirementTypeEnum.BOOLEAN
+      ? 1
+      : questConfig.computeProgressRequirement({
+          stage: questData.stage || 0,
+        });
+
+  const hasMetRequirement = questData.progress >= progressRequirement;
+  const doesProgressReset =
+    questConfig.requirementType === questRequirementTypeEnum.NUMERIC &&
+    questConfig.resetProgressOnComplete;
+  const hasPassedMaxStage =
+    questConfig.progressionType === questProgressionTypeEnum.FINITE &&
+    questData.stage > questConfig.maxStage;
+
+  if (doesProgressReset && (hasPassedMaxStage || hasMetRequirement)) {
+    return false;
   }
-  return trainer.questData.dailyQuests[dailyQuestName];
+
+  return true;
 };
 
 /**
- * @param {DailyQuestEnum} dailyQuestName
+ * @param {QuestEnum} questName
+ * @param {QuestTypeEnum} questType
+ * @returns {QuestConfig}
  */
-const registerDailyQuestListeners = (dailyQuestName) => {
-  const questConfig = dailyQuestConfig[dailyQuestName];
+const getQuestConfig = (questName, questType) => {
+  if (questType === questTypeEnum.DAILY) {
+    return dailyQuestConfig[questName];
+    // eslint-disable-next-line no-else-return
+  } else if (questType === questTypeEnum.ACHIEVEMENT) {
+    return achievementConfig[questName];
+  }
+
+  throw new Error("Invalid quest type");
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {QuestEnum} questName
+ * @param {QuestTypeEnum} questType
+ */
+const getAndSetQuestData = (trainer, questName, questType) => {
+  let questData;
+  if (questType === questTypeEnum.DAILY) {
+    questData = trainer.questData.dailyQuests[questName];
+    if (!questData) {
+      trainer.questData.dailyQuests[questName] = {
+        stage: 0,
+        progress: 0,
+      };
+    }
+    questData = trainer.questData.dailyQuests[questName];
+  } else if (questType === questTypeEnum.ACHIEVEMENT) {
+    questData = trainer.questData.achievements[questName];
+    if (!questData) {
+      trainer.questData.achievements[questName] = {
+        stage: 0,
+        progress: 0,
+      };
+    }
+    questData = trainer.questData.achievements[questName];
+  }
+
+  return questData;
+};
+
+/**
+ * @param {QuestEnum} questName
+ * @param {QuestTypeEnum} questType
+ */
+const registerQuestListeners = (questName, questType) => {
+  const questConfig = getQuestConfig(questName, questType);
   for (const { eventName, listenerCallback } of questConfig.questListeners) {
     registerTrainerEventListener(eventName, async (args) => {
-      const { user } = args;
-      // TODO: getting trainer a gazillion times may be bad but IDK
-      const { data: trainer, err } = await getTrainer(user);
-      if (err) {
-        return;
-      }
-      const questData = getAndSetDailyQuestData(trainer, dailyQuestName);
-      if (
-        questData.completed ||
-        questData.progress >=
-          questConfig.computeProgressRequirement({ stage: 1 })
-      ) {
+      const { trainer } = args;
+      const questData = getAndSetQuestData(trainer, questName, questType);
+      if (!shouldEmitQuestEvent(questConfig, questData)) {
         return;
       }
 
@@ -144,8 +197,6 @@ const registerDailyQuestListeners = (dailyQuestName) => {
         questData.progress += progress;
 
         // TODO: if completed, upsell
-
-        await updateTrainer(trainer);
       }
     });
   }

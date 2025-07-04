@@ -6,6 +6,8 @@
 const eventListeners =
   /** @type {Record<TrainerEventEnum, TrainerEventListenerCallback<TrainerEventEnum>[]>} */ ({});
 
+// TODO: generalize these once more event types are added
+
 /**
  * @template {TrainerEventEnum} K
  * @param {K} eventName
@@ -21,7 +23,7 @@ const registerTrainerEventListener = (eventName, listener) => {
  * @param {K} eventName
  * @param {TrainerEventArgs<K>} args
  */
-const emitTrainerEvent = async (eventName, args) => {
+const emitTrainerEventPure = async (eventName, args) => {
   if (!eventListeners[eventName]) return;
   const promises = [];
   eventListeners[eventName].forEach((listener) =>
@@ -40,16 +42,16 @@ const emitTrainerEvent = async (eventName, args) => {
  * @param {K[]} eventNames
  * @param {TrainerEventArgs<K>} args
  */
-const batchEmitTrainerEvents = async (eventNames, args) => {
+const batchEmitTrainerEventsPure = async (eventNames, args) => {
   const promises = [];
   eventNames.forEach((eventName) => {
-    promises.push(emitTrainerEvent(eventName, args));
+    promises.push(emitTrainerEventPure(eventName, args));
   });
   return await Promise.all(promises);
 };
 
 module.exports = {
   registerTrainerEventListener,
-  emitTrainerEvent,
-  batchEmitTrainerEvents,
+  emitTrainerEventPure,
+  batchEmitTrainerEventsPure,
 };
