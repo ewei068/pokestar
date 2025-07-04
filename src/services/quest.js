@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+const seedrandom = require("seedrandom");
 const {
   newTutorialConfig,
   newTutorialStages,
@@ -8,7 +9,9 @@ const {
   questTypeEnum,
   achievementConfig,
 } = require("../config/questConfig");
+const { drawIterable } = require("../utils/gachaUtils");
 const { addRewards } = require("../utils/trainerUtils");
+const { getFullUTCDate } = require("../utils/utils");
 const { registerTrainerEventListener } = require("./game/gameEvent");
 const { updateTrainer, getTrainer, refreshTrainer } = require("./trainer");
 
@@ -200,6 +203,21 @@ const registerQuestListeners = (questName, questType) => {
       }
     });
   }
+};
+
+/**
+ * @returns {DailyQuestEnum[]}
+ */
+const getDailyQuests = () => {
+  const date = getFullUTCDate();
+  const rng = seedrandom(date);
+  // TODO: always add "complete daily quest" quest to list
+
+  // @ts-ignore
+  return drawIterable(Object.keys(dailyQuestConfig), 3, {
+    replacement: false,
+    rng,
+  });
 };
 
 module.exports = {

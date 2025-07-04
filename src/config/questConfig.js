@@ -1013,6 +1013,67 @@ const dailyQuestConfigRaw = {
     progressionType: questProgressionTypeEnum.FINITE,
     maxStage: 1,
   },
+  // placeholders
+  gachaPokemon2: {
+    formatName: () => "Gacha for Pokemon",
+    formatEmoji: () => emojis.POKEBALL,
+    formatDescription: () => "Gacha for Pokemon",
+    formatRequirementString: () => "Gacha for Pokemon",
+    computeRewards: () => ({
+      money: 1000,
+    }),
+    questListeners: [],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 1,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 1,
+  },
+  gachaPokemon3: {
+    formatName: () => "Gacha for Pokemon",
+    formatEmoji: () => emojis.POKEBALL,
+    formatDescription: () => "Gacha for Pokemon",
+    formatRequirementString: () => "Gacha for Pokemon",
+    computeRewards: () => ({
+      money: 1000,
+    }),
+    questListeners: [],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 1,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 1,
+  },
+  gachaPokemon4: {
+    formatName: () => "Gacha for Pokemon",
+    formatEmoji: () => emojis.POKEBALL,
+    formatDescription: () => "Gacha for Pokemon",
+    formatRequirementString: () => "Gacha for Pokemon",
+    computeRewards: () => ({
+      money: 1000,
+    }),
+    questListeners: [],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 1,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 1,
+  },
+  gachaPokemon5: {
+    formatName: () => "Gacha for Pokemon",
+    formatEmoji: () => emojis.POKEBALL,
+    formatDescription: () => "Gacha for Pokemon",
+    formatRequirementString: () => "Gacha for Pokemon",
+    computeRewards: () => ({
+      money: 1000,
+    }),
+    questListeners: [],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 1,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 1,
+  },
 };
 /** @type {Record<DailyQuestEnum, DailyQuestConfig>} */
 const dailyQuestConfig = Object.freeze(dailyQuestConfigRaw);
@@ -1040,6 +1101,10 @@ const achievementConfigRaw = {
 /** @type {Record<AchievementEnum, AchievementConfig>} */
 const achievementConfig = Object.freeze(achievementConfigRaw);
 
+const achievementEnum = /** @type {AchievementEnum[]} */ (
+  Object.freeze(Object.keys(achievementConfigRaw))
+);
+
 module.exports = {
   newTutorialConfig,
   newTutorialStages,
@@ -1048,4 +1113,5 @@ module.exports = {
   questProgressionTypeEnum,
   dailyQuestConfig,
   achievementConfig,
+  achievementEnum,
 };
