@@ -922,9 +922,9 @@ const questProgressionTypeEnum = Object.freeze({
 });
 
 /**
- * @template {any[]} T
+ * @template {any} T
  * @template {any} U
- * @typedef {(...args: [number] & T) => U} GenericQuestFunction
+ * @typedef {(args: {stage: number} & T) => U} GenericQuestFunction
  */
 
 /**
@@ -945,11 +945,11 @@ const questProgressionTypeEnum = Object.freeze({
 
 /**
  * @typedef {{
- *  formatName: GenericQuestFunction<[], string>,
- *  formatEmoji: GenericQuestFunction<[], string>,
- *  formatDescription: GenericQuestFunction<[], string>,
- *  formatRequirementString: GenericQuestFunction<[], string>,
- *  computeRewards: GenericQuestFunction<[], FlattenedRewards>,
+ *  formatName: GenericQuestFunction<{}, string>,
+ *  formatEmoji: GenericQuestFunction<{}, string>,
+ *  formatDescription: GenericQuestFunction<{progressRequrement: number}, string>,
+ *  formatRequirementString: GenericQuestFunction<{progressRequrement: number}, string>,
+ *  computeRewards: GenericQuestFunction<{}, FlattenedRewards>,
  *  questListeners: QuestEventListenerFunctionEntry[],
  *  image?: string,
  * }} QuestConfigBase
@@ -958,14 +958,14 @@ const questProgressionTypeEnum = Object.freeze({
 /**
  * @typedef {{
  *  requirementType: typeof questRequirementTypeEnum.NUMERIC,
- *  computeProgressRequirement: GenericQuestFunction<[], number>,
+ *  computeProgressRequirement: GenericQuestFunction<{}, number>,
  *  resetProgressOnComplete: boolean,
  * }} QuestConfigNumeric
  */
 /**
  * @typedef {{
  *  requirementType: typeof questRequirementTypeEnum.BOOLEAN,
- *  checkRequirements: GenericQuestFunction<[WithId<Trainer>], Promise<boolean>>,
+ *  checkRequirements: GenericQuestFunction<{trainer: WithId<Trainer>}, Promise<boolean>>,
  * }} QuestConfigBoolean
  */
 
@@ -993,10 +993,59 @@ const questProgressionTypeEnum = Object.freeze({
  * @typedef {DailyQuestConfig | AchievementConfig} QuestConfig
  */
 
+/**
+ * @typedef {Keys<dailyQuestConfigRaw>} DailyQuestEnum
+ */
+/** @satisfies {Record<string, DailyQuestConfig>} */
+const dailyQuestConfigRaw = {
+  gachaPokemon: {
+    formatName: () => "Gacha for Pokemon",
+    formatEmoji: () => emojis.POKEBALL,
+    formatDescription: () => "Gacha for Pokemon",
+    formatRequirementString: () => "Gacha for Pokemon",
+    computeRewards: () => ({
+      money: 1000,
+    }),
+    questListeners: [],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 1,
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 1,
+  },
+};
+/** @type {Record<DailyQuestEnum, DailyQuestConfig>} */
+const dailyQuestConfig = Object.freeze(dailyQuestConfigRaw);
+
+/**
+ * @typedef {Keys<achievementConfigRaw>} AchievementQuestEnum
+ */
+/** @satisfies {Record<string, AchievementConfig>} */
+const achievementConfigRaw = {
+  gachaPokemon: {
+    formatName: () => "Gacha for Pokemon",
+    formatEmoji: () => emojis.POKEBALL,
+    formatDescription: () => "Gacha for Pokemon",
+    formatRequirementString: () => "Gacha for Pokemon",
+    computeRewards: ({ stage }) => ({
+      money: 1000 * (stage + 1),
+    }),
+    questListeners: [],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: ({ stage }) => stage,
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+};
+/** @type {Record<AchievementQuestEnum, AchievementConfig>} */
+const achievementConfig = Object.freeze(achievementConfigRaw);
+
 module.exports = {
   newTutorialConfig,
   newTutorialStages,
   questTypeEnum,
   questRequirementTypeEnum,
   questProgressionTypeEnum,
+  dailyQuestConfig,
+  achievementConfig,
 };
