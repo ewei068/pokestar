@@ -6,7 +6,7 @@ const {
   dailyQuestConfig,
 } = require("../config/questConfig");
 const { addRewards } = require("../utils/trainerUtils");
-const { registerGameEventListener } = require("./game/gameEvent");
+const { registerTrainerEventListener } = require("./game/gameEvent");
 const { updateTrainer, getTrainer, refreshTrainer } = require("./trainer");
 
 /**
@@ -122,7 +122,7 @@ const getAndSetDailyQuestData = (trainer, dailyQuestName) => {
 const registerDailyQuestListeners = (dailyQuestName) => {
   const questConfig = dailyQuestConfig[dailyQuestName];
   for (const { eventName, listenerCallback } of questConfig.questListeners) {
-    registerGameEventListener(eventName, async (args) => {
+    registerTrainerEventListener(eventName, async (args) => {
       const { user } = args;
       // TODO: getting trainer a gazillion times may be bad but IDK
       const { data: trainer, err } = await getTrainer(user);

@@ -1,27 +1,27 @@
 /**
- * @template {GameEventEnum} K
- * @typedef {(args: GameEventArgs<K>) => Promise<any> | any} GameEventListenerCallback
+ * @template {TrainerEventEnum} K
+ * @typedef {(args: TrainerEventArgs<K>) => Promise<any> | any} TrainerEventListenerCallback
  */
 
 const eventListeners =
-  /** @type {Record<GameEventEnum, GameEventListenerCallback<GameEventEnum>[]>} */ ({});
+  /** @type {Record<TrainerEventEnum, TrainerEventListenerCallback<TrainerEventEnum>[]>} */ ({});
 
 /**
- * @template {GameEventEnum} K
+ * @template {TrainerEventEnum} K
  * @param {K} eventName
- * @param {GameEventListenerCallback<K>} listener
+ * @param {TrainerEventListenerCallback<K>} listener
  */
-const registerGameEventListener = (eventName, listener) => {
+const registerTrainerEventListener = (eventName, listener) => {
   eventListeners[eventName] = eventListeners[eventName] || [];
   eventListeners[eventName].push(listener);
 };
 
 /**
- * @template {GameEventEnum} K
+ * @template {TrainerEventEnum} K
  * @param {K} eventName
- * @param {GameEventArgs<K>} args
+ * @param {TrainerEventArgs<K>} args
  */
-const emitGameEvent = async (eventName, args) => {
+const emitTrainerEvent = async (eventName, args) => {
   if (!eventListeners[eventName]) return;
   const promises = [];
   eventListeners[eventName].forEach((listener) =>
@@ -36,20 +36,20 @@ const emitGameEvent = async (eventName, args) => {
 };
 
 /**
- * @template {GameEventEnum} K
+ * @template {TrainerEventEnum} K
  * @param {K[]} eventNames
- * @param {GameEventArgs<K>} args
+ * @param {TrainerEventArgs<K>} args
  */
-const batchEmitGameEvents = async (eventNames, args) => {
+const batchEmitTrainerEvents = async (eventNames, args) => {
   const promises = [];
   eventNames.forEach((eventName) => {
-    promises.push(emitGameEvent(eventName, args));
+    promises.push(emitTrainerEvent(eventName, args));
   });
   return await Promise.all(promises);
 };
 
 module.exports = {
-  registerGameEventListener,
-  emitGameEvent,
-  batchEmitGameEvents,
+  registerTrainerEventListener,
+  emitTrainerEvent,
+  batchEmitTrainerEvents,
 };

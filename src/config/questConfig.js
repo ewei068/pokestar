@@ -932,15 +932,15 @@ const questProgressionTypeEnum = Object.freeze({
  */
 
 /**
- * @template {GameEventEnum} T
- * @typedef {(args: GameEventArgs<T>) => Promise<QuestEventListenerCallbackReturnValue> | QuestEventListenerCallbackReturnValue} QuestEventListenerCallback
+ * @template {TrainerEventEnum} T
+ * @typedef {(args: TrainerEventArgs<T>) => Promise<QuestEventListenerCallbackReturnValue> | QuestEventListenerCallbackReturnValue} QuestEventListenerCallback
  */
 /**
  * @template T
- * @typedef {T extends GameEventEnum ? { eventName: T, listenerCallback: QuestEventListenerCallback<T> } : never} QuestEventListenerFunctionEntryGeneric
+ * @typedef {T extends TrainerEventEnum ? { eventName: T, listenerCallback: QuestEventListenerCallback<T> } : never} QuestEventListenerFunctionEntryGeneric
  */
 /**
- * @typedef {QuestEventListenerFunctionEntryGeneric<GameEventEnum>} QuestEventListenerFunctionEntry
+ * @typedef {QuestEventListenerFunctionEntryGeneric<TrainerEventEnum>} QuestEventListenerFunctionEntry
  */
 
 /**

@@ -1,22 +1,22 @@
-/** @typedef {Enum<gameEventEnum>} GameEventEnum */
-const gameEventEnum = Object.freeze({
+/** @typedef {Enum<trainerEventEnum>} TrainerEventEnum */
+const trainerEventEnum = Object.freeze({
   CAUGHT_POKEMON: "caughtPokemon",
   DEFEATED_NPC: "defeatedNpc",
 });
 
 /**
- * @template {GameEventEnum} K
+ * @template {TrainerEventEnum} K
  * @typedef {{
- *  [gameEventEnum.CAUGHT_POKEMON]: {pokemons: WithId<Pokemon>[], method: "gacha" | "wild" | "other" },
- *  [gameEventEnum.DEFEATED_NPC]: {npcId: string, difficulty: NpcDifficultyEnum, type: "pve" | "dungoen" | "raid" | "battletower"},
- * }[K] & {user: CompactUser}} GameEventArgsWithoutEventName
+ *  [trainerEventEnum.CAUGHT_POKEMON]: {pokemons: WithId<Pokemon>[], method: "gacha" | "wild" | "other" },
+ *  [trainerEventEnum.DEFEATED_NPC]: {npcId: string, difficulty: NpcDifficultyEnum, type: "pve" | "dungoen" | "raid" | "battletower"},
+ * }[K] & {trainer: WithId<Trainer>}} TrainerEventArgsWithoutEventName
  */
 
 /**
- * @template {GameEventEnum} K
- * @typedef {GameEventArgsWithoutEventName<K> & { eventName: K }} GameEventArgs
+ * @template {TrainerEventEnum} K
+ * @typedef {TrainerEventArgsWithoutEventName<K> & { eventName: K }} TrainerEventArgs
  */
 
 module.exports = {
-  gameEventEnum,
+  trainerEventEnum,
 };

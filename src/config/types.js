@@ -39,7 +39,7 @@
  * @typedef {import("./trainerConfig").UserSettingsOptions<T>} UserSettingsOptions
  */
 /**
- * @template {GameEventEnum} T
+ * @template {TrainerEventEnum} T
  * @typedef {import("./questConfig").QuestEventListenerCallback<T>} QuestEventListenerCallback
  */
 
