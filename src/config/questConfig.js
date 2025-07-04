@@ -1018,7 +1018,7 @@ const dailyQuestConfigRaw = {
 const dailyQuestConfig = Object.freeze(dailyQuestConfigRaw);
 
 /**
- * @typedef {Keys<achievementConfigRaw>} AchievementQuestEnum
+ * @typedef {Keys<achievementConfigRaw>} AchievementEnum
  */
 /** @satisfies {Record<string, AchievementConfig>} */
 const achievementConfigRaw = {
@@ -1037,7 +1037,7 @@ const achievementConfigRaw = {
     progressionType: questProgressionTypeEnum.INFINITE,
   },
 };
-/** @type {Record<AchievementQuestEnum, AchievementConfig>} */
+/** @type {Record<AchievementEnum, AchievementConfig>} */
 const achievementConfig = Object.freeze(achievementConfigRaw);
 
 module.exports = {

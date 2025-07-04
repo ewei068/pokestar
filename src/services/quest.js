@@ -2,8 +2,11 @@
 const {
   newTutorialConfig,
   newTutorialStages,
+  questRequirementTypeEnum,
+  dailyQuestConfig,
 } = require("../config/questConfig");
 const { addRewards } = require("../utils/trainerUtils");
+const { registerGameEventListener } = require("./game/gameEvent");
 const { updateTrainer, getTrainer, refreshTrainer } = require("./trainer");
 
 /**
@@ -96,6 +99,56 @@ const completeTutorialStageForUser = async (user, stage) => {
   }
 
   return await completeTutorialStageForTrainer(trainer, stage);
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {DailyQuestEnum} dailyQuestName
+ */
+const getAndSetDailyQuestData = (trainer, dailyQuestName) => {
+  const questData = trainer.questData.dailyQuests[dailyQuestName];
+  if (!questData) {
+    trainer.questData.dailyQuests[dailyQuestName] = {
+      completed: false,
+      progress: 0,
+    };
+  }
+  return trainer.questData.dailyQuests[dailyQuestName];
+};
+
+/**
+ * @param {DailyQuestEnum} dailyQuestName
+ */
+const registerDailyQuestListeners = (dailyQuestName) => {
+  const questConfig = dailyQuestConfig[dailyQuestName];
+  for (const { eventName, listenerCallback } of questConfig.questListeners) {
+    registerGameEventListener(eventName, async (args) => {
+      const { user } = args;
+      // TODO: getting trainer a gazillion times may be bad but IDK
+      const { data: trainer, err } = await getTrainer(user);
+      if (err) {
+        return;
+      }
+      const questData = getAndSetDailyQuestData(trainer, dailyQuestName);
+      if (
+        questData.completed ||
+        questData.progress >=
+          questConfig.computeProgressRequirement({ stage: 1 })
+      ) {
+        return;
+      }
+
+      // @ts-ignore
+      const { progress } = await listenerCallback(args);
+      if (progress) {
+        questData.progress += progress;
+
+        // TODO: if completed, upsell
+
+        await updateTrainer(trainer);
+      }
+    });
+  }
 };
 
 module.exports = {

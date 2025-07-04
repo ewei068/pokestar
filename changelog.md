@@ -9,6 +9,78 @@
 - Put tutorial button in upsells
   - Make the tutorial commands big asf
   - Can add tips as footers
+- Quest ideas
+  - Daily
+    - Gacha for Pokemon
+    - Defeat trainers
+    - Catch wild Pokemon
+    - Level-up Pokemon
+    - Upgrade equipment
+    - Spend Dream Cards
+    - Claim daily rewards
+    - Defeat Pokemon
+    - Complete daily quests
+  - Questlines
+    - Gacha Pokemon
+      - Numeric
+      - Infinite
+    - Catch wild Pokemon
+      - Numeric
+      - Infinite
+    - Level-up Pokemon
+      - Numeric
+      - Infinite
+    - Evolve Pokemon
+      - Numeric
+      - Infinite
+    - EV-train Pokemon
+      - Numeric
+      - Infinte
+    - Have Pokemon of level
+      - Milestone
+      - Finite
+    - Have total combat power
+      - Milestone
+      - Infinite
+    - Defeat trainers
+      - Numeric
+      - Infinite
+    - Defeat dungeons
+      - Numeric
+      - Infinite
+    - Upgrade equipment
+      - Numeric
+      - Infinite
+    - Reroll equipment
+      - Numeric
+      - Infinite
+    - Defeat battle tower floors
+      - Milstone
+      - Finite
+    - Craft held items
+      - Numeric
+      - Infinite
+    - Spend dream cards
+      - Numeric
+      - Infinite
+    - Start raids
+      - Numeric
+      - Infinite
+    - Win raids
+      - Numeric
+      - Infinite
+    - Participate in PVP battles
+      - Numeric
+      - Infinite
+    - Have mythics
+      - Milestone
+      - Finite
+    - Claim daily rewards
+      - Numeric
+      - Infinite
+    - Complete daily quests
+      - Numeric
+      - Infinite
 
 **Stretch**
 

@@ -29,6 +29,11 @@
 /** @typedef {import("./questConfig").TutorialStageEnum} TutorialStageEnum */
 /** @typedef {import("./questConfig").TutorialStageData} TutorialStageData */
 /** @typedef {import("./questConfig").QuestConfig} QuestConfig */
+/** @typedef {import("./questConfig").DailyQuestConfig} DailyQuestConfig */
+/** @typedef {import("./questConfig").AchievementConfig} AchievementConfig */
+/** @typedef {import("./questConfig").DailyQuestEnum} DailyQuestEnum */
+/** @typedef {import("./questConfig").AchievementEnum} AchievementEnum */
+
 /**
  * @template {UserSettingsEnum} T
  * @typedef {import("./trainerConfig").UserSettingsOptions<T>} UserSettingsOptions
