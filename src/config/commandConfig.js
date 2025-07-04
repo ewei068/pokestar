@@ -31,6 +31,7 @@ const commandCategoryConfigRaw = {
       "settings",
       "levelrewards",
       "locations",
+      "quest",
     ],
   },
   pokemon: {
@@ -236,6 +237,18 @@ const commandConfigRaw = {
     longDescription:
       "Displays a list of locations you own and the levels of each location.",
     execute: "locations.js",
+    args: {},
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    exp: 5,
+    money: 10,
+  },
+  quest: {
+    name: "Quest",
+    aliases: ["quest", "quests", "q"],
+    description: "View and manage your quests",
+    longDescription:
+      "View your active quests, completed quests, and claim quest rewards.",
+    execute: "quest.js",
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 5,
