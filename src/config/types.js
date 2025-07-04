@@ -28,9 +28,14 @@
 /** @typedef {import("./trainerConfig").UserSettingsData} UserSettingsData */
 /** @typedef {import("./questConfig").TutorialStageEnum} TutorialStageEnum */
 /** @typedef {import("./questConfig").TutorialStageData} TutorialStageData */
+/** @typedef {import("./questConfig").QuestConfig} QuestConfig */
 /**
  * @template {UserSettingsEnum} T
  * @typedef {import("./trainerConfig").UserSettingsOptions<T>} UserSettingsOptions
+ */
+/**
+ * @template {GameEventEnum} T
+ * @typedef {import("./questConfig").QuestEventListenerCallback<T>} QuestEventListenerCallback
  */
 
 /**

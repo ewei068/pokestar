@@ -117,6 +117,18 @@ const userSettingsTrainerFieldsConfig = Object.entries(
   return acc;
 }, {});
 
+const questFields = {
+  dailyQuests: {
+    type: "object",
+    default: {},
+    refreshInterval: timeEnum.DAY,
+  },
+  achievements: {
+    type: "object",
+    default: {},
+  },
+};
+
 /**
  * @type {DefaultFieldConfig<Trainer>}
  */
@@ -479,6 +491,11 @@ const trainerFields = {
       completedTutorialStages: {},
       currentTutorialStage: "welcome", // keep in sync with first stage in tutorialConfig
     },
+  },
+  questData: {
+    type: "object",
+    default: {},
+    config: questFields,
   },
 };
 

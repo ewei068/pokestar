@@ -928,26 +928,43 @@ const questProgressionTypeEnum = Object.freeze({
  */
 
 /**
+ * @typedef {{ progress: number }} QuestEventListenerCallbackReturnValue
+ */
+
+/**
+ * @template {GameEventEnum} T
+ * @typedef {(args: GameEventArgs<T>) => Promise<QuestEventListenerCallbackReturnValue> | QuestEventListenerCallbackReturnValue} QuestEventListenerCallback
+ */
+/**
+ * @template T
+ * @typedef {T extends GameEventEnum ? { eventName: T, listenerCallback: QuestEventListenerCallback<T> } : never} QuestEventListenerFunctionEntryGeneric
+ */
+/**
+ * @typedef {QuestEventListenerFunctionEntryGeneric<GameEventEnum>} QuestEventListenerFunctionEntry
+ */
+
+/**
  * @typedef {{
  *  formatName: GenericQuestFunction<[], string>,
  *  formatEmoji: GenericQuestFunction<[], string>,
  *  formatDescription: GenericQuestFunction<[], string>,
  *  formatRequirementString: GenericQuestFunction<[], string>,
  *  computeRewards: GenericQuestFunction<[], FlattenedRewards>,
- *  listeners: any[], // TODO,
- *  resetProgressOnComplete: boolean,
+ *  questListeners: QuestEventListenerFunctionEntry[],
  *  image?: string,
  * }} QuestConfigBase
  */
 
 /**
  * @typedef {{
- *  type: typeof questRequirementTypeEnum.NUMERIC,
+ *  requirementType: typeof questRequirementTypeEnum.NUMERIC,
+ *  computeProgressRequirement: GenericQuestFunction<[], number>,
+ *  resetProgressOnComplete: boolean,
  * }} QuestConfigNumeric
  */
 /**
  * @typedef {{
- *  type: typeof questRequirementTypeEnum.BOOLEAN,
+ *  requirementType: typeof questRequirementTypeEnum.BOOLEAN,
  *  checkRequirements: GenericQuestFunction<[WithId<Trainer>], Promise<boolean>>,
  * }} QuestConfigBoolean
  */
@@ -963,12 +980,17 @@ const questProgressionTypeEnum = Object.freeze({
  *  maxStage: number,
  * }} QuestConfigFinite
  */
+/**
+ * @typedef {{
+ *  progressionType: typeof questProgressionTypeEnum.FINITE,
+ *  maxStage: 1,
+ * }} QuestConfigSingle
+ */
 
 /**
- * @typedef {QuestConfigBase & QuestConfigNumeric & QuestConfigInfinite} DailyQuestConfig
- */
-/**
+ * @typedef {QuestConfigBase & QuestConfigNumeric & QuestConfigSingle} DailyQuestConfig
  * @typedef {QuestConfigBase & (QuestConfigNumeric | QuestConfigBoolean) & (QuestConfigInfinite | QuestConfigFinite)} AchievementConfig
+ * @typedef {DailyQuestConfig | AchievementConfig} QuestConfig
  */
 
 module.exports = {

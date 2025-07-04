@@ -72,6 +72,7 @@
  * @typedef {{[K in UserSettingsEnum]: UserSettingsOptions<K>}} UserSettings
  * TODO: fix this type
  * @typedef {{ completedTutorialStages: PartialRecord<string, boolean>, currentTutorialStage: TutorialStageEnum }} UserTutorialData
+ * @typedef {{ dailyQuests: PartialRecord<string, {progress: number, completed: boolean}>, achievements: PartialRecord<string, { stage: number, progress: number, completed: boolean}>, }} UserQuestData
  * @typedef {{ timesSeen: number, lastSeen: number }} UserUpsellData
  */
 
@@ -101,6 +102,7 @@
  * @property {PartialRecord<NpcEnum | RaidEnum | DungeonEnum | number, NpcDifficultyEnum[]>} defeatedNPCs
  * @property {number} lastTowerStage
  * @property {UserTutorialData} tutorialData
+ * @property {UserQuestData} questData
  *
  * Party info
  * @property {PartyInfo} party

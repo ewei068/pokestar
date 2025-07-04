@@ -7,9 +7,9 @@ const gameEventEnum = Object.freeze({
 /**
  * @template {GameEventEnum} K
  * @typedef {{
- *  [gameEventEnum.CAUGHT_POKEMON]: { user: CompactUser, pokemons: WithId<Pokemon>[], method: "gacha" | "wild" | "other" },
- *  [gameEventEnum.DEFEATED_NPC]: { user: CompactUser, npcId: string, difficulty: NpcDifficultyEnum, type: "pve" | "dungoen" | "raid" | "battletower"},
- * }} GameEventArgsWithoutEventName
+ *  [gameEventEnum.CAUGHT_POKEMON]: {pokemons: WithId<Pokemon>[], method: "gacha" | "wild" | "other" },
+ *  [gameEventEnum.DEFEATED_NPC]: {npcId: string, difficulty: NpcDifficultyEnum, type: "pve" | "dungoen" | "raid" | "battletower"},
+ * }[K] & {user: CompactUser}} GameEventArgsWithoutEventName
  */
 
 /**
