@@ -153,7 +153,10 @@ const getQuestConfigData = (questName, questType) => {
 
   throw new Error("Invalid quest type");
 };
+
 /**
+ * Gets the stage to compute display data for. Normally uses the stage the user is on, but if the
+ * user has claimed all rewards, uses max stage instead.
  * @param {QuestConfig} questConfigData
  * @param {DailyQuestData | AchievementData} questDataEntry
  */
@@ -225,6 +228,9 @@ const formatQuestDisplayData = (trainer, questName, questType) => {
     questConfigData
   );
   const emoji = questConfigData.formatEmoji({ stage });
+  const doesProgressReset =
+    questConfigData.requirementType === questRequirementTypeEnum.NUMERIC &&
+    questConfigData.resetProgressOnComplete;
   return {
     emoji:
       // eslint-disable-next-line no-nested-ternary
@@ -244,7 +250,11 @@ const formatQuestDisplayData = (trainer, questName, questType) => {
       stage,
       progressRequirement,
     }),
-    progress,
+    // if user has fully claimed rewards, show that progress has been completed
+    progress:
+      completionStatus === "fullyComplete" && doesProgressReset
+        ? progressRequirement
+        : progress,
     completionStatus,
   };
 };
@@ -287,6 +297,22 @@ const getDailyQuests = () => {
     replacement: false,
     rng,
   });
+};
+
+const canTrainerRedeemQuestRewards = (trainer, questName, questType) => {
+  const questConfigData = getQuestConfigData(questName, questType);
+  const questDataEntry = getAndSetQuestData(trainer, questName, questType);
+  if (
+    questType === questTypeEnum.DAILY &&
+    !getDailyQuests().includes(questName)
+  ) {
+    return false;
+  }
+  const completionStatus = getQuestCompletionStatus(
+    questDataEntry,
+    questConfigData
+  );
+  return completionStatus === "complete";
 };
 
 /**

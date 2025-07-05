@@ -142,10 +142,11 @@ const buildQuestListEmbed = ({ questType, questDisplayDataMap, page = 1 }) => {
       header: `${headerFormatting}${emoji} ${name} → ${getCompactFlattenedRewardsString(
         questDisplayData.rewards
       )}${headerFormatting}`,
-      description: `${getNumericPBar(
+      description: `\`${getNumericPBar(
         progress,
-        progressRequirement
-      )}  ${progress}/${progressRequirement}`,
+        progressRequirement,
+        25
+      )}  ${progress}/${progressRequirement}\``,
     });
   });
 
@@ -164,17 +165,9 @@ const buildQuestListEmbed = ({ questType, questDisplayDataMap, page = 1 }) => {
 /**
  * @param {object} param0
  * @param {ReturnType<typeof formatQuestDisplayData>} param0.questDisplayData
- * @param {QuestConfig} param0.questConfigData
- * @param {DailyQuestData | AchievementData} param0.questDataEntry
- * @param {QuestTypeEnum} param0.questType
  * @returns {EmbedBuilder}
  */
-const buildQuestStageEmbed = ({
-  questDisplayData,
-  questConfigData,
-  questDataEntry,
-  questType,
-}) => {
+const buildQuestStageEmbed = ({ questDisplayData }) => {
   const embed = new EmbedBuilder();
   const {
     emoji,
@@ -187,14 +180,7 @@ const buildQuestStageEmbed = ({
     requirementString,
   } = questDisplayData;
 
-  let statusEmoji = "⏳";
-  if (completionStatus === "fullyComplete") {
-    statusEmoji = "✅";
-  } else if (completionStatus === "complete") {
-    statusEmoji = "🎁";
-  }
-
-  embed.setTitle(`${statusEmoji} ${emoji} ${name}`);
+  embed.setTitle(`${emoji} ${name}`);
   embed.setColor(0xffffff);
   embed.setDescription(buildBlockQuoteString(description));
 
@@ -207,32 +193,20 @@ const buildQuestStageEmbed = ({
     {
       name: "📊 Progress",
       value: buildBlockQuoteString(
-        `${getNumericPBar(
+        `\`${getNumericPBar(
           progress,
-          progressRequirement
-        )}  ${progress}/${progressRequirement}`
+          progressRequirement,
+          25
+        )}  ${progress}/${progressRequirement}\``
       ),
       inline: false,
     },
     {
       name: "🎁 Rewards",
-      value: buildBlockQuoteString(
-        getFlattenedRewardsString(flattenRewards(rewards), false)
-      ),
+      value: buildBlockQuoteString(getFlattenedRewardsString(rewards, false)),
       inline: false,
     },
   ];
-
-  if (
-    questType === questTypeEnum.ACHIEVEMENT &&
-    questConfigData.progressionType === "infinite"
-  ) {
-    fields.push({
-      name: "🔄 Stage",
-      value: buildBlockQuoteString(`Stage ${questDataEntry.stage + 1}`),
-      inline: false,
-    });
-  }
 
   embed.addFields(fields);
 

@@ -38,9 +38,6 @@ module.exports = async (ref, { user, questName, questType, backButtonKey }) => {
 
   const embed = buildQuestStageEmbed({
     questDisplayData,
-    questConfigData,
-    questDataEntry,
-    questType,
   });
 
   const claimRewardsKey = useCallbackBinding(
