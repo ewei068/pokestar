@@ -12,7 +12,6 @@ const {
 const {
   buildBlockQuoteString,
   getNumericPBar,
-  getTimeToNextDay,
   getNextTimeIntervalDate,
 } = require("../utils/utils");
 // eslint-disable-next-line no-unused-vars
@@ -162,8 +161,97 @@ const buildQuestListEmbed = ({ questType, questDisplayDataMap, page = 1 }) => {
   return embed;
 };
 
+/**
+ * @param {object} param0
+ * @param {ReturnType<typeof formatQuestDisplayData>} param0.questDisplayData
+ * @param {QuestConfig} param0.questConfigData
+ * @param {DailyQuestData | AchievementData} param0.questDataEntry
+ * @param {QuestTypeEnum} param0.questType
+ * @returns {EmbedBuilder}
+ */
+const buildQuestStageEmbed = ({
+  questDisplayData,
+  questConfigData,
+  questDataEntry,
+  questType,
+}) => {
+  const embed = new EmbedBuilder();
+  const {
+    emoji,
+    name,
+    completionStatus,
+    progress,
+    progressRequirement,
+    rewards,
+    description,
+    requirementString,
+  } = questDisplayData;
+
+  let statusEmoji = "⏳";
+  if (completionStatus === "fullyComplete") {
+    statusEmoji = "✅";
+  } else if (completionStatus === "complete") {
+    statusEmoji = "🎁";
+  }
+
+  embed.setTitle(`${statusEmoji} ${emoji} ${name}`);
+  embed.setColor(0xffffff);
+  embed.setDescription(buildBlockQuoteString(description));
+
+  const fields = [
+    {
+      name: "📋 Requirements",
+      value: buildBlockQuoteString(requirementString),
+      inline: false,
+    },
+    {
+      name: "📊 Progress",
+      value: buildBlockQuoteString(
+        `${getNumericPBar(
+          progress,
+          progressRequirement
+        )}  ${progress}/${progressRequirement}`
+      ),
+      inline: false,
+    },
+    {
+      name: "🎁 Rewards",
+      value: buildBlockQuoteString(
+        getFlattenedRewardsString(flattenRewards(rewards), false)
+      ),
+      inline: false,
+    },
+  ];
+
+  if (
+    questType === questTypeEnum.ACHIEVEMENT &&
+    questConfigData.progressionType === "infinite"
+  ) {
+    fields.push({
+      name: "🔄 Stage",
+      value: buildBlockQuoteString(`Stage ${questDataEntry.stage + 1}`),
+      inline: false,
+    });
+  }
+
+  embed.addFields(fields);
+
+  if (completionStatus === "complete") {
+    embed.setFooter({
+      text: "🎁 Quest completed! Click 'Claim Rewards' to claim your rewards.",
+    });
+  } else if (completionStatus === "fullyComplete") {
+    embed.setFooter({ text: "✅ Quest fully completed!" });
+  } else {
+    embed.setFooter({ text: "⏳ Quest in progress..." });
+  }
+
+  return embed;
+};
+
 module.exports = {
   buildTutorialListEmbed,
   buildTutorialStageEmbed,
   buildQuestListEmbed,
+  buildQuestStageEmbed,
 };

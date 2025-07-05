@@ -365,4 +365,5 @@ module.exports = {
   computeQuestProgressRequirement,
   formatQuestDisplayData,
   registerAllQuestListeners,
+  getQuestConfigData,
 };

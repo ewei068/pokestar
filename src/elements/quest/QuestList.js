@@ -14,6 +14,7 @@ const {
   createElement,
 } = require("../../deact/deact");
 const Button = require("../../deact/elements/Button");
+const QuestStage = require("./QuestStage");
 
 /**
  * @param {Trainer} trainer
@@ -49,6 +50,8 @@ module.exports = async (
     return { err: trainerErr };
   }
   const [questType, setQuestType] = useState(initialQuestType, ref);
+  const [selectedQuestName, setSelectedQuestName] = useState(null, ref);
+
   const questIds = useMemo(
     () =>
       questType === questTypeEnum.DAILY ? getDailyQuests() : getAchievements(),
@@ -60,17 +63,27 @@ module.exports = async (
     [trainer, questIds, questType],
     ref
   );
-  const { page, scrollButtonsElement, selectMenuElement, setPage } =
-    usePaginationAndSelection(
-      {
-        allItems: questIds,
-        pageSize: 8,
-        selectionPlaceholder: "Select a quest",
-        showId: false,
-        itemConfig: questConfigAndData,
-      },
-      ref
-    );
+
+  const {
+    page,
+    scrollButtonsElement,
+    selectMenuElement,
+    setPage,
+    currentItem,
+  } = usePaginationAndSelection(
+    {
+      allItems: questIds,
+      pageSize: 8,
+      selectionPlaceholder: "Select a quest",
+      showId: false,
+      itemConfig: questConfigAndData,
+    },
+    ref
+  );
+
+  if (currentItem) {
+    setSelectedQuestName(currentItem);
+  }
 
   const embed = buildQuestListEmbed({
     // @ts-ignore
@@ -87,6 +100,19 @@ module.exports = async (
     ref,
     { defer: true }
   );
+
+  if (selectedQuestName) {
+    return {
+      elements: [
+        createElement(QuestStage, {
+          user,
+          questName: selectedQuestName,
+          questType,
+          setQuestName: setSelectedQuestName,
+        }),
+      ],
+    };
+  }
 
   return {
     elements: [
