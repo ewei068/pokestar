@@ -45,12 +45,15 @@ module.exports = async (
   ref,
   { user, initialQuestType = questTypeEnum.DAILY }
 ) => {
-  const { trainer, err: trainerErr } = await useTrainer(user, ref);
+  const {
+    trainer,
+    err: trainerErr,
+    refreshTrainer,
+  } = await useTrainer(user, ref);
   if (trainerErr) {
     return { err: trainerErr };
   }
   const [questType, setQuestType] = useState(initialQuestType, ref);
-  const [selectedQuestName, setSelectedQuestName] = useState(null, ref);
 
   const questIds = useMemo(
     () =>
@@ -70,6 +73,7 @@ module.exports = async (
     selectMenuElement,
     setPage,
     currentItem,
+    setItem,
   } = usePaginationAndSelection(
     {
       allItems: questIds,
@@ -80,10 +84,6 @@ module.exports = async (
     },
     ref
   );
-
-  if (currentItem) {
-    setSelectedQuestName(currentItem);
-  }
 
   const embed = buildQuestListEmbed({
     // @ts-ignore
@@ -101,14 +101,23 @@ module.exports = async (
     { defer: true }
   );
 
-  if (selectedQuestName) {
+  const backButtonKey = useCallbackBinding(
+    async () => {
+      setItem(null);
+      await refreshTrainer();
+    },
+    ref,
+    { defer: true }
+  );
+
+  if (currentItem) {
     return {
       elements: [
         createElement(QuestStage, {
           user,
-          questName: selectedQuestName,
+          questName: currentItem,
           questType,
-          setQuestName: setSelectedQuestName,
+          backButtonKey,
         }),
       ],
     };

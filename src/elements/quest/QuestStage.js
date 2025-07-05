@@ -11,6 +11,7 @@ const { updateTrainer } = require("../../services/trainer");
 const useTrainer = require("../../hooks/useTrainer");
 const { useCallbackBinding } = require("../../deact/deact");
 const Button = require("../../deact/elements/Button");
+const ReturnButton = require("../foundation/ReturnButton");
 
 /**
  * @param {DeactElement} ref
@@ -18,10 +19,10 @@ const Button = require("../../deact/elements/Button");
  * @param {CompactUser} param1.user
  * @param {QuestEnum} param1.questName
  * @param {QuestTypeEnum} param1.questType
- * @param {Function} param1.setQuestName
+ * @param {string} param1.backButtonKey
  * @returns {Promise<any>}
  */
-module.exports = async (ref, { user, questName, questType, setQuestName }) => {
+module.exports = async (ref, { user, questName, questType, backButtonKey }) => {
   const { trainer, setTrainer, err: trainerErr } = await useTrainer(user, ref);
   if (trainerErr) {
     return { err: trainerErr };
@@ -92,19 +93,9 @@ module.exports = async (ref, { user, questName, questType, setQuestName }) => {
     { defer: true }
   );
 
-  const backKey = useCallbackBinding(
-    () => {
-      setQuestName(null);
-    },
-    ref,
-    { defer: true }
-  );
-
   const buttons = [
-    createElement(Button, {
-      emoji: "◀️",
-      label: "Back",
-      callbackBindingKey: backKey,
+    createElement(ReturnButton, {
+      callbackBindingKey: backButtonKey,
     }),
   ];
 
