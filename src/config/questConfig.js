@@ -950,7 +950,7 @@ const questProgressionTypeEnum = Object.freeze({
  *  formatEmoji: GenericQuestFunction<{}, string>,
  *  formatDescription: GenericQuestFunction<{progressRequirement: number}, string>,
  *  formatRequirementString: GenericQuestFunction<{progressRequirement: number}, string>,
- *  computeRewards: GenericQuestFunction<{}, FlattenedRewards>,
+ *  computeRewards: GenericQuestFunction<{}, Rewards>,
  *  questListeners: QuestEventListenerFunctionEntry[],
  *  image?: string,
  * }} QuestConfigBase
@@ -984,7 +984,7 @@ const questProgressionTypeEnum = Object.freeze({
 /**
  * @typedef {{
  *  progressionType: typeof questProgressionTypeEnum.FINITE,
- *  maxStage: 1,
+ *  maxStage: 0,
  * }} QuestConfigSingle
  */
 
@@ -1027,7 +1027,7 @@ const dailyQuestConfigRaw = {
     computeProgressRequirement: () => 1,
     resetProgressOnComplete: true,
     progressionType: questProgressionTypeEnum.FINITE,
-    maxStage: 1,
+    maxStage: 0,
   },
   // placeholders
   gachaPokemon2: {
@@ -1043,7 +1043,7 @@ const dailyQuestConfigRaw = {
     computeProgressRequirement: () => 1,
     resetProgressOnComplete: true,
     progressionType: questProgressionTypeEnum.FINITE,
-    maxStage: 1,
+    maxStage: 0,
   },
   gachaPokemon3: {
     formatName: () => "Gacha for Pokemon 3",
@@ -1073,7 +1073,7 @@ const dailyQuestConfigRaw = {
     computeProgressRequirement: () => 1,
     resetProgressOnComplete: true,
     progressionType: questProgressionTypeEnum.FINITE,
-    maxStage: 1,
+    maxStage: 0,
   },
   gachaPokemon4: {
     formatName: () => "Gacha for Pokemon 4",
@@ -1088,7 +1088,7 @@ const dailyQuestConfigRaw = {
     computeProgressRequirement: () => 1,
     resetProgressOnComplete: true,
     progressionType: questProgressionTypeEnum.FINITE,
-    maxStage: 1,
+    maxStage: 0,
   },
   gachaPokemon5: {
     formatName: () => "Gacha for Pokemon 5",
@@ -1103,7 +1103,7 @@ const dailyQuestConfigRaw = {
     computeProgressRequirement: () => 1,
     resetProgressOnComplete: true,
     progressionType: questProgressionTypeEnum.FINITE,
-    maxStage: 1,
+    maxStage: 0,
   },
 };
 /** @type {Record<DailyQuestEnum, DailyQuestConfig>} */
@@ -1139,7 +1139,7 @@ const achievementConfigRaw = {
       },
     ],
     requirementType: questRequirementTypeEnum.NUMERIC,
-    computeProgressRequirement: ({ stage }) => stage,
+    computeProgressRequirement: ({ stage }) => stage * 5,
     resetProgressOnComplete: false,
     progressionType: questProgressionTypeEnum.INFINITE,
   },

@@ -19,7 +19,7 @@ const getPlayer = async () => {
 
 getPlayer()
   .then((res) => {
-    console.log(res);
+    console.dir(res, { depth: null });
   })
   .catch((error) => {
     console.log(error);

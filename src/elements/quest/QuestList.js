@@ -85,6 +85,8 @@ module.exports = async (
     ref
   );
 
+  // TODO: check for complete quests
+
   const embed = buildQuestListEmbed({
     // @ts-ignore
     questDisplayDataMap: questConfigAndData,

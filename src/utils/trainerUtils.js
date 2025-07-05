@@ -153,6 +153,13 @@ const getRewardsString = (rewards, received = true) => {
 };
 
 /**
+ * @param {Rewards} rewards
+ * @returns {string}
+ */
+const getCompactRewardsString = (rewards) =>
+  getCompactFlattenedRewardsString(flattenRewards(rewards));
+
+/**
  *
  * @param {Trainer} trainer
  * @param {Rewards} rewards
@@ -337,6 +344,7 @@ module.exports = {
   getFlattenedRewardsString,
   getCompactFlattenedRewardsString,
   getRewardsString,
+  getCompactRewardsString,
   getCompactCostString,
   flattenCategories,
   flattenRewards,

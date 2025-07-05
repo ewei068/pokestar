@@ -7,7 +7,8 @@ const {
 const {
   getFlattenedRewardsString,
   flattenRewards,
-  getCompactFlattenedRewardsString,
+  getRewardsString,
+  getCompactRewardsString,
 } = require("../utils/trainerUtils");
 const {
   buildBlockQuoteString,
@@ -139,7 +140,7 @@ const buildQuestListEmbed = ({ questType, questDisplayDataMap, page = 1 }) => {
         : "";
 
     questsToDisplay.push({
-      header: `${headerFormatting}${emoji} ${name} → ${getCompactFlattenedRewardsString(
+      header: `${headerFormatting}${emoji} ${name} → ${getCompactRewardsString(
         questDisplayData.rewards
       )}${headerFormatting}`,
       description: `\`${getNumericPBar(
@@ -203,7 +204,7 @@ const buildQuestStageEmbed = ({ questDisplayData }) => {
     },
     {
       name: "🎁 Rewards",
-      value: buildBlockQuoteString(getFlattenedRewardsString(rewards, false)),
+      value: buildBlockQuoteString(getRewardsString(rewards, false)),
       inline: false,
     },
   ];

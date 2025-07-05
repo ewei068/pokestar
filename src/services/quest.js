@@ -158,7 +158,7 @@ const getQuestConfigData = (questName, questType) => {
  * Gets the stage to compute display data for. Normally uses the stage the user is on, but if the
  * user has claimed all rewards, uses max stage instead.
  * @param {QuestConfig} questConfigData
- * @param {DailyQuestData | AchievementData} questDataEntry
+ * @param {QuestDataEntry} questDataEntry
  */
 const getCurrentQuestStageForDisplay = (questConfigData, questDataEntry) => {
   if (questConfigData.progressionType === questProgressionTypeEnum.FINITE) {
@@ -170,7 +170,7 @@ const getCurrentQuestStageForDisplay = (questConfigData, questDataEntry) => {
 
 /**
  * @param {QuestConfig} questConfigData
- * @param {DailyQuestData | AchievementData} questDataEntry
+ * @param {QuestDataEntry} questDataEntry
  */
 const computeQuestProgressRequirement = (questConfigData, questDataEntry) => {
   const progressRequirement =
@@ -191,11 +191,11 @@ const computeQuestProgressRequirement = (questConfigData, questDataEntry) => {
  */
 
 /**
- * @param {DailyQuestData | AchievementData} questDataEntry
  * @param {QuestConfig} questConfigData
+ * @param {QuestDataEntry} questDataEntry
  * @returns {QuestCompletionStatus}
  */
-const getQuestCompletionStatus = (questDataEntry, questConfigData) => {
+const getQuestCompletionStatus = (questConfigData, questDataEntry) => {
   if (
     questConfigData.progressionType === questProgressionTypeEnum.FINITE &&
     questDataEntry.stage > questConfigData.maxStage
@@ -213,6 +213,20 @@ const getQuestCompletionStatus = (questDataEntry, questConfigData) => {
   return "incomplete";
 };
 
+/**
+ * @param {QuestConfig} questConfigData
+ * @param {QuestDataEntry} questDataEntry
+ */
+const computeQuestRewards = (questConfigData, questDataEntry) => {
+  const stage = getCurrentQuestStageForDisplay(questConfigData, questDataEntry);
+  return questConfigData.computeRewards({ stage });
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {QuestEnum} questName
+ * @param {QuestTypeEnum} questType
+ */
 const formatQuestDisplayData = (trainer, questName, questType) => {
   const questDataEntry = getAndSetQuestData(trainer, questName, questType);
   const { progress } = questDataEntry;
@@ -224,8 +238,8 @@ const formatQuestDisplayData = (trainer, questName, questType) => {
     questDataEntry
   );
   const completionStatus = getQuestCompletionStatus(
-    questDataEntry,
-    questConfigData
+    questConfigData,
+    questDataEntry
   );
   const emoji = questConfigData.formatEmoji({ stage });
   const doesProgressReset =
@@ -241,7 +255,7 @@ const formatQuestDisplayData = (trainer, questName, questType) => {
         : emoji,
     name: questConfigData.formatName({ stage }),
     progressRequirement,
-    rewards: questConfigData.computeRewards({ stage }),
+    rewards: computeQuestRewards(questConfigData, questDataEntry),
     description: questConfigData.formatDescription({
       stage,
       progressRequirement,
@@ -261,7 +275,7 @@ const formatQuestDisplayData = (trainer, questName, questType) => {
 
 /**
  * @param {QuestConfig} questConfigData
- * @param {DailyQuestData | AchievementData} questDataEntry
+ * @param {QuestDataEntry} questDataEntry
  */
 const shouldEmitQuestEvent = (questConfigData, questDataEntry) => {
   const progressRequirement = computeQuestProgressRequirement(
@@ -299,7 +313,7 @@ const getDailyQuests = () => {
   });
 };
 
-const canTrainerRedeemQuestRewards = (trainer, questName, questType) => {
+const canTrainerClaimQuestRewards = (trainer, questName, questType) => {
   const questConfigData = getQuestConfigData(questName, questType);
   const questDataEntry = getAndSetQuestData(trainer, questName, questType);
   if (
@@ -309,10 +323,102 @@ const canTrainerRedeemQuestRewards = (trainer, questName, questType) => {
     return false;
   }
   const completionStatus = getQuestCompletionStatus(
-    questDataEntry,
-    questConfigData
+    questConfigData,
+    questDataEntry
   );
   return completionStatus === "complete";
+};
+
+/**
+ * @param {WithId<Trainer>} trainer
+ * @param {QuestEnum} questName
+ * @param {QuestTypeEnum} questType
+ * @param {object} options
+ * @param {FlattenedRewards=} options.accumulator
+ */
+const claimQuestRewardsForTrainer = async (
+  trainer,
+  questName,
+  questType,
+  { accumulator } = {}
+) => {
+  const canClaimRewards = canTrainerClaimQuestRewards(
+    trainer,
+    questName,
+    questType
+  );
+  if (!canClaimRewards) {
+    return { err: "You cannot claim rewards for this quest right now." };
+  }
+
+  const questConfigData = getQuestConfigData(questName, questType);
+  const questDataEntry = getAndSetQuestData(trainer, questName, questType);
+  const rewards = computeQuestRewards(questConfigData, questDataEntry);
+  addRewards(trainer, rewards, accumulator);
+
+  const doesProgressReset =
+    questConfigData.requirementType === questRequirementTypeEnum.NUMERIC &&
+    questConfigData.resetProgressOnComplete;
+  if (doesProgressReset) {
+    questDataEntry.progress = 0;
+  }
+  questDataEntry.stage += 1;
+
+  // if boolean requirement, check if next stage is complete so the user can immediately claim
+  const completionStatus = getQuestCompletionStatus(
+    questConfigData,
+    questDataEntry
+  );
+  if (
+    completionStatus === "incomplete" &&
+    questConfigData.requirementType === questRequirementTypeEnum.BOOLEAN
+  ) {
+    const isComplete = await questConfigData.checkRequirements({
+      stage: questDataEntry.stage,
+      trainer,
+    });
+    if (isComplete) {
+      questDataEntry.progress = 1;
+    }
+  }
+
+  return {
+    data: trainer,
+    completionStatus,
+    rewards: accumulator,
+  };
+};
+
+/**
+ * @param {CompactUser} user
+ * @param {QuestEnum} questName
+ * @param {QuestTypeEnum} questType
+ * @returns {Promise<{data?: WithId<Trainer>, err?: string, rewards?: FlattenedRewards}>}
+ */
+const claimQuestRewardsForUserAndUpdate = async (
+  user,
+  questName,
+  questType
+) => {
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { err: trainerErr };
+  }
+  const rewardsAccumulator = {};
+  const { err: claimErr } = await claimQuestRewardsForTrainer(
+    trainer,
+    questName,
+    questType,
+    { accumulator: rewardsAccumulator }
+  );
+  if (claimErr) {
+    return { err: claimErr };
+  }
+
+  return {
+    ...(await updateTrainer(trainer)),
+    rewards: rewardsAccumulator,
+  };
 };
 
 /**
@@ -392,4 +498,6 @@ module.exports = {
   formatQuestDisplayData,
   registerAllQuestListeners,
   getQuestConfigData,
+  canTrainerClaimQuestRewards,
+  claimQuestRewardsForUserAndUpdate,
 };

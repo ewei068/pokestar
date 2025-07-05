@@ -1,17 +1,17 @@
+const { ButtonStyle } = require("discord.js");
 const { createElement } = require("../../deact/deact");
 const { buildQuestStageEmbed } = require("../../embeds/questEmbeds");
 const {
   formatQuestDisplayData,
-  getAndSetQuestData,
-  getQuestConfigData,
-  getCurrentQuestStageForDisplay,
+  claimQuestRewardsForUserAndUpdate,
+  canTrainerClaimQuestRewards,
 } = require("../../services/quest");
-const { addRewards } = require("../../utils/trainerUtils");
-const { updateTrainer } = require("../../services/trainer");
 const useTrainer = require("../../hooks/useTrainer");
 const { useCallbackBinding } = require("../../deact/deact");
 const Button = require("../../deact/elements/Button");
 const ReturnButton = require("../foundation/ReturnButton");
+const { getInteractionInstance } = require("../../deact/interactions");
+const { getFlattenedRewardsString } = require("../../utils/trainerUtils");
 
 /**
  * @param {DeactElement} ref
@@ -33,79 +33,33 @@ module.exports = async (ref, { user, questName, questType, backButtonKey }) => {
     questName,
     questType
   );
-  const questConfigData = getQuestConfigData(questName, questType);
-  const questDataEntry = getAndSetQuestData(trainer, questName, questType);
 
   const embed = buildQuestStageEmbed({
     questDisplayData,
   });
 
   const claimRewardsKey = useCallbackBinding(
-    async () => {
-      const { completionStatus } = questDisplayData;
-
-      if (completionStatus !== "complete") {
-        return {
-          type: 4,
-          data: {
-            content: "❌ You haven't completed this quest yet!",
-            flags: 64,
-          },
-        };
-      }
-
-      const currentStage = getCurrentQuestStageForDisplay(
-        questConfigData,
-        questDataEntry
+    async (interaction) => {
+      const interactionInstance = getInteractionInstance(interaction);
+      const rewardRes = await claimQuestRewardsForUserAndUpdate(
+        user,
+        questName,
+        questType
       );
-      const rewards = questConfigData.computeRewards({ stage: currentStage });
-
-      addRewards(trainer, rewards);
-
-      questDataEntry.stage += 1;
-      questDataEntry.progress = 0;
-
-      const { err: updateErr } = await updateTrainer(trainer);
-      if (updateErr) {
-        return {
-          type: 4,
-          data: {
-            content: "❌ Failed to claim rewards. Please try again.",
-            flags: 64,
-          },
-        };
+      if (rewardRes.err || !rewardRes.data) {
+        return { err: rewardRes.err };
       }
 
-      await setTrainer(trainer);
-
-      return {
-        type: 4,
-        data: {
-          content: "✅ Quest rewards claimed successfully!",
-          flags: 64,
+      setTrainer(rewardRes.data);
+      await interactionInstance.reply({
+        element: {
+          content: getFlattenedRewardsString(rewardRes.rewards),
         },
-      };
+      });
     },
     ref,
     { defer: true }
   );
-
-  const buttons = [
-    createElement(ReturnButton, {
-      callbackBindingKey: backButtonKey,
-    }),
-  ];
-
-  if (questDisplayData.completionStatus === "complete") {
-    buttons.push(
-      createElement(Button, {
-        emoji: "🎁",
-        label: "Claim Rewards",
-        style: 3,
-        callbackBindingKey: claimRewardsKey,
-      })
-    );
-  }
 
   return {
     elements: [
@@ -114,6 +68,21 @@ module.exports = async (ref, { user, questName, questType, backButtonKey }) => {
         embeds: [embed],
       },
     ],
-    components: [buttons],
+    components: [
+      [
+        createElement(Button, {
+          emoji: "🎁",
+          label: "Claim Rewards",
+          style: ButtonStyle.Success,
+          callbackBindingKey: claimRewardsKey,
+          disabled: !canTrainerClaimQuestRewards(trainer, questName, questType),
+        }),
+      ],
+      [
+        createElement(ReturnButton, {
+          callbackBindingKey: backButtonKey,
+        }),
+      ],
+    ],
   };
 };
