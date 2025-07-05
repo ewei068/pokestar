@@ -182,6 +182,33 @@ const computeQuestProgressRequirement = (questConfigData, questDataEntry) => {
   return Math.max(1, progressRequirement);
 };
 
+/**
+ * @typedef {"incomplete" | "complete" | "fullyComplete"} QuestCompletionStatus
+ */
+
+/**
+ * @param {DailyQuestData | AchievementData} questDataEntry
+ * @param {QuestConfig} questConfigData
+ * @returns {QuestCompletionStatus}
+ */
+const getQuestCompletionStatus = (questDataEntry, questConfigData) => {
+  if (
+    questConfigData.progressionType === questProgressionTypeEnum.FINITE &&
+    questDataEntry.stage > questConfigData.maxStage
+  ) {
+    return "fullyComplete";
+  }
+
+  const progressRequirement = computeQuestProgressRequirement(
+    questConfigData,
+    questDataEntry
+  );
+  if (questDataEntry.progress >= progressRequirement) {
+    return "complete";
+  }
+  return "incomplete";
+};
+
 const formatQuestDisplayData = (trainer, questName, questType) => {
   const questDataEntry = getAndSetQuestData(trainer, questName, questType);
   const { progress } = questDataEntry;
@@ -192,8 +219,19 @@ const formatQuestDisplayData = (trainer, questName, questType) => {
     questConfigData,
     questDataEntry
   );
+  const completionStatus = getQuestCompletionStatus(
+    questDataEntry,
+    questConfigData
+  );
+  const emoji = questConfigData.formatEmoji({ stage });
   return {
-    emoji: questConfigData.formatEmoji({ stage }),
+    emoji:
+      // eslint-disable-next-line no-nested-ternary
+      completionStatus === "fullyComplete"
+        ? "✅"
+        : completionStatus === "complete"
+        ? "🎁"
+        : emoji,
     name: questConfigData.formatName({ stage }),
     progressRequirement,
     rewards: questConfigData.computeRewards({ stage }),
@@ -206,6 +244,7 @@ const formatQuestDisplayData = (trainer, questName, questType) => {
       progressRequirement,
     }),
     progress,
+    completionStatus,
   };
 };
 

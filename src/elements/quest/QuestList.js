@@ -60,27 +60,22 @@ module.exports = async (
     [trainer, questIds, questType],
     ref
   );
-  const {
-    page,
-    items: currentPageItems,
-    scrollButtonsElement,
-    selectMenuElement,
-    setPage,
-  } = usePaginationAndSelection(
-    {
-      allItems: questIds,
-      pageSize: 10,
-      selectionPlaceholder: "Select a quest",
-      showId: false,
-      itemConfig: questConfigAndData,
-    },
-    ref
-  );
+  const { page, scrollButtonsElement, selectMenuElement, setPage } =
+    usePaginationAndSelection(
+      {
+        allItems: questIds,
+        pageSize: 8,
+        selectionPlaceholder: "Select a quest",
+        showId: false,
+        itemConfig: questConfigAndData,
+      },
+      ref
+    );
 
   const embed = buildQuestListEmbed({
-    questIds: currentPageItems,
+    // @ts-ignore
+    questDisplayDataMap: questConfigAndData,
     questType,
-    userQuestData: trainer.questData,
     page,
   });
 
@@ -105,12 +100,14 @@ module.exports = async (
       selectMenuElement,
       [
         createElement(Button, {
+          emoji: "📅",
           label: "Daily Quests",
           data: { type: questTypeEnum.DAILY },
           disabled: questType === questTypeEnum.DAILY,
           callbackBindingKey: changeQuestTypeKey,
         }),
         createElement(Button, {
+          emoji: "🏆",
           label: "Achievements",
           data: { type: questTypeEnum.ACHIEVEMENT },
           disabled: questType === questTypeEnum.ACHIEVEMENT,

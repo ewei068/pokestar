@@ -40,6 +40,22 @@ const getPBar = (percent, size = 20) => {
 };
 
 /**
+ * @param {number} progress
+ * @param {number} total
+ * @param {number=} size
+ * @returns {string}
+ */
+const getNumericPBar = (progress, total, size = 20) => {
+  if (progress > total) {
+    progress = total;
+  } else if (progress < 0) {
+    progress = 0;
+  }
+  const percent = (progress * 100) / total;
+  return getPBar(percent, size);
+};
+
+/**
  * @param {string[]} strings
  * @param {number} len
  * @returns {string[]}
@@ -511,6 +527,7 @@ const getHasTag = (obj, tag) => obj?.tags?.includes?.(tag);
 module.exports = {
   getOrSetDefault,
   getPBar,
+  getNumericPBar,
   getWhitespace,
   linebreakString,
   idFrom,

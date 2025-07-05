@@ -3,14 +3,21 @@ const {
   newTutorialConfig,
   newTutorialStages,
   questTypeEnum,
-  dailyQuestConfig,
-  achievementConfig,
 } = require("../config/questConfig");
 const {
   getFlattenedRewardsString,
   flattenRewards,
+  getCompactFlattenedRewardsString,
 } = require("../utils/trainerUtils");
-const { buildBlockQuoteString } = require("../utils/utils");
+const {
+  buildBlockQuoteString,
+  getNumericPBar,
+  getTimeToNextDay,
+  getNextTimeIntervalDate,
+} = require("../utils/utils");
+// eslint-disable-next-line no-unused-vars
+const { formatQuestDisplayData } = require("../services/quest");
+const { timeEnum } = require("../enums/miscEnums");
 
 /**
  * @param {object} param0
@@ -98,21 +105,13 @@ const buildTutorialStageEmbed = ({ stage, userTutorialData, page = 1 }) => {
 
 /**
  * @param {object} param0
- * @param {QuestEnum[]} param0.questIds
  * @param {QuestTypeEnum} param0.questType
- * @param {UserQuestData} param0.userQuestData
+ * @param {Record<QuestEnum, ReturnType<typeof formatQuestDisplayData>>} param0.questDisplayDataMap
  * @param {number=} param0.page
  * @returns {EmbedBuilder}
  */
-const buildQuestListEmbed = ({
-  questIds,
-  questType,
-  userQuestData,
-  page = 1,
-}) => {
+const buildQuestListEmbed = ({ questType, questDisplayDataMap, page = 1 }) => {
   const embed = new EmbedBuilder();
-  const questConfig =
-    questType === questTypeEnum.DAILY ? dailyQuestConfig : achievementConfig;
   const questTypeDisplay =
     questType === questTypeEnum.DAILY ? "Daily Quests" : "Achievements";
 
@@ -120,37 +119,46 @@ const buildQuestListEmbed = ({
   embed.setColor(0xffffff);
   embed.setFooter({ text: `Page ${page}` });
 
-  let description = "";
-  questIds.forEach((questId) => {
-    const questConfigData = questConfig[questId];
-    const questData =
-      questType === questTypeEnum.DAILY
-        ? userQuestData.dailyQuests[questId]
-        : userQuestData.achievements[questId];
+  if (questType === questTypeEnum.DAILY) {
+    embed.setDescription(
+      `Daily quests reset in 🕒 <t:${Math.floor(
+        getNextTimeIntervalDate(timeEnum.DAY).getTime() / 1000
+      )}:R>`
+    );
+  }
 
-    const progress = questData?.progress || 0;
-    const stage = questData?.stage || 0;
+  const questsToDisplay = [];
+  Object.entries(questDisplayDataMap).forEach(([, questDisplayData]) => {
+    const { emoji, name, progressRequirement, progress, completionStatus } =
+      questDisplayData;
+    const headerFormatting =
+      // eslint-disable-next-line no-nested-ternary
+      completionStatus === "fullyComplete"
+        ? "_"
+        : completionStatus === "complete"
+        ? "**"
+        : "";
 
-    const progressRequirement =
-      questConfigData.requirementType === "numeric"
-        ? questConfigData.computeProgressRequirement({ stage })
-        : 1;
-
-    const isCompleted = progress >= progressRequirement;
-    const progressEmoji = isCompleted ? "✅" : "⏳";
-
-    const questName = questConfigData.formatName({ stage });
-    const questEmoji = questConfigData.formatEmoji({ stage });
-
-    let progressText = "";
-    if (questConfigData.requirementType === "numeric") {
-      progressText = ` (${progress}/${progressRequirement})`;
-    }
-
-    description += `\`[${progressEmoji}]\` • ${questEmoji} ${questName}${progressText}\n`;
+    questsToDisplay.push({
+      header: `${headerFormatting}${emoji} ${name} → ${getCompactFlattenedRewardsString(
+        questDisplayData.rewards
+      )}${headerFormatting}`,
+      description: `${getNumericPBar(
+        progress,
+        progressRequirement
+      )}  ${progress}/${progressRequirement}`,
+    });
   });
 
-  embed.setDescription(description);
+  embed.addFields({
+    name: "Quest Progress",
+    value: questsToDisplay
+      .reduce(
+        (acc, quest) => [...acc, `${quest.header}\n${quest.description}`],
+        []
+      )
+      .join("\n\n"),
+  });
   return embed;
 };
 
