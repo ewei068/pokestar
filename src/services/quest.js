@@ -108,77 +108,6 @@ const completeTutorialStageForUser = async (user, stage) => {
 };
 
 /**
- * @param {QuestConfig} questConfigData
- * @param {DailyQuestData | AchievementData} questDataEntry
- */
-const getCurrentQuestStageForDisplay = (questConfigData, questDataEntry) => {
-  if (questConfigData.progressionType === questProgressionTypeEnum.FINITE) {
-    return Math.min(questDataEntry.stage, questConfigData.maxStage);
-  }
-
-  return questDataEntry.stage;
-};
-
-/**
- * @param {QuestConfig} questConfigData
- * @param {DailyQuestData | AchievementData} questDataEntry
- */
-const computeQuestProgressRequirement = (questConfigData, questDataEntry) => {
-  const progressRequirement =
-    questConfigData.requirementType === questRequirementTypeEnum.BOOLEAN
-      ? 1
-      : questConfigData.computeProgressRequirement({
-          stage: getCurrentQuestStageForDisplay(
-            questConfigData,
-            questDataEntry
-          ),
-        });
-
-  return Math.max(1, progressRequirement);
-};
-
-/**
- * @param {QuestConfig} questConfigData
- * @param {DailyQuestData | AchievementData} questDataEntry
- */
-const shouldEmitQuestEvent = (questConfigData, questDataEntry) => {
-  const progressRequirement = computeQuestProgressRequirement(
-    questConfigData,
-    questDataEntry
-  );
-
-  const hasMetRequirement = questDataEntry.progress >= progressRequirement;
-  const doesProgressReset =
-    questConfigData.requirementType === questRequirementTypeEnum.NUMERIC &&
-    questConfigData.resetProgressOnComplete;
-  const hasPassedMaxStage =
-    questConfigData.progressionType === questProgressionTypeEnum.FINITE &&
-    questDataEntry.stage > questConfigData.maxStage;
-
-  if (doesProgressReset && (hasPassedMaxStage || hasMetRequirement)) {
-    return false;
-  }
-
-  return true;
-};
-
-/**
- * @param {QuestEnum} questName
- * @param {QuestTypeEnum} questType
- * @returns {QuestConfig}
- */
-const getQuestConfigData = (questName, questType) => {
-  if (questType === questTypeEnum.DAILY) {
-    return dailyQuestConfig[questName];
-    // eslint-disable-next-line no-else-return
-  } else if (questType === questTypeEnum.ACHIEVEMENT) {
-    return achievementConfig[questName];
-  }
-
-  throw new Error("Invalid quest type");
-};
-
-/**
  * @param {Trainer} trainer
  * @param {QuestEnum} questName
  * @param {QuestTypeEnum} questType
@@ -211,26 +140,98 @@ const getAndSetQuestData = (trainer, questName, questType) => {
 /**
  * @param {QuestEnum} questName
  * @param {QuestTypeEnum} questType
+ * @returns {QuestConfig}
  */
-const registerQuestListeners = (questName, questType) => {
-  const questConfig = getQuestConfigData(questName, questType);
-  for (const { eventName, listenerCallback } of questConfig.questListeners) {
-    registerTrainerEventListener(eventName, async (args) => {
-      const { trainer } = args;
-      const questData = getAndSetQuestData(trainer, questName, questType);
-      if (!shouldEmitQuestEvent(questConfig, questData)) {
-        return;
-      }
-
-      // @ts-ignore
-      const { progress } = await listenerCallback(args);
-      if (progress) {
-        questData.progress += progress;
-
-        // TODO: if completed, upsell
-      }
-    });
+const getQuestConfigData = (questName, questType) => {
+  if (questType === questTypeEnum.DAILY) {
+    return dailyQuestConfig[questName];
+    // eslint-disable-next-line no-else-return
+  } else if (questType === questTypeEnum.ACHIEVEMENT) {
+    return achievementConfig[questName];
   }
+
+  throw new Error("Invalid quest type");
+};
+/**
+ * @param {QuestConfig} questConfigData
+ * @param {DailyQuestData | AchievementData} questDataEntry
+ */
+const getCurrentQuestStageForDisplay = (questConfigData, questDataEntry) => {
+  if (questConfigData.progressionType === questProgressionTypeEnum.FINITE) {
+    return Math.min(questDataEntry.stage, questConfigData.maxStage);
+  }
+
+  return questDataEntry.stage;
+};
+
+/**
+ * @param {QuestConfig} questConfigData
+ * @param {DailyQuestData | AchievementData} questDataEntry
+ */
+const computeQuestProgressRequirement = (questConfigData, questDataEntry) => {
+  const progressRequirement =
+    questConfigData.requirementType === questRequirementTypeEnum.BOOLEAN
+      ? 1
+      : questConfigData.computeProgressRequirement({
+          stage: getCurrentQuestStageForDisplay(
+            questConfigData,
+            questDataEntry
+          ),
+        });
+
+  return Math.max(1, progressRequirement);
+};
+
+const formatQuestDisplayData = (trainer, questName, questType) => {
+  const questDataEntry = getAndSetQuestData(trainer, questName, questType);
+  const { progress } = questDataEntry;
+  const questConfigData = getQuestConfigData(questName, questType);
+  // @ts-ignore
+  const stage = getCurrentQuestStageForDisplay(questConfigData, questDataEntry);
+  const progressRequirement = computeQuestProgressRequirement(
+    questConfigData,
+    questDataEntry
+  );
+  return {
+    emoji: questConfigData.formatEmoji({ stage }),
+    name: questConfigData.formatName({ stage }),
+    progressRequirement,
+    rewards: questConfigData.computeRewards({ stage }),
+    description: questConfigData.formatDescription({
+      stage,
+      progressRequirement,
+    }),
+    requirementString: questConfigData.formatRequirementString({
+      stage,
+      progressRequirement,
+    }),
+    progress,
+  };
+};
+
+/**
+ * @param {QuestConfig} questConfigData
+ * @param {DailyQuestData | AchievementData} questDataEntry
+ */
+const shouldEmitQuestEvent = (questConfigData, questDataEntry) => {
+  const progressRequirement = computeQuestProgressRequirement(
+    questConfigData,
+    questDataEntry
+  );
+
+  const hasMetRequirement = questDataEntry.progress >= progressRequirement;
+  const doesProgressReset =
+    questConfigData.requirementType === questRequirementTypeEnum.NUMERIC &&
+    questConfigData.resetProgressOnComplete;
+  const hasPassedMaxStage =
+    questConfigData.progressionType === questProgressionTypeEnum.FINITE &&
+    questDataEntry.stage > questConfigData.maxStage;
+
+  if (doesProgressReset && (hasPassedMaxStage || hasMetRequirement)) {
+    return false;
+  }
+
+  return true;
 };
 
 /**
@@ -246,6 +247,37 @@ const getDailyQuests = () => {
     replacement: false,
     rng,
   });
+};
+
+/**
+ * @param {QuestEnum} questName
+ * @param {QuestTypeEnum} questType
+ */
+const registerQuestListeners = (questName, questType) => {
+  const questConfig = getQuestConfigData(questName, questType);
+  for (const { eventName, listenerCallback } of questConfig.questListeners) {
+    registerTrainerEventListener(eventName, async (args) => {
+      const { trainer } = args;
+      const questData = getAndSetQuestData(trainer, questName, questType);
+      if (
+        questType === questTypeEnum.DAILY &&
+        !getDailyQuests().includes(questName)
+      ) {
+        return;
+      }
+      if (!shouldEmitQuestEvent(questConfig, questData)) {
+        return;
+      }
+
+      // @ts-ignore
+      const { progress } = await listenerCallback(args);
+      if (progress) {
+        questData.progress += progress;
+
+        // TODO: if completed, upsell
+      }
+    });
+  }
 };
 
 /**
@@ -265,4 +297,5 @@ module.exports = {
   getAchievements,
   getCurrentQuestStageForDisplay,
   computeQuestProgressRequirement,
+  formatQuestDisplayData,
 };

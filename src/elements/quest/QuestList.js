@@ -1,16 +1,10 @@
 const usePaginationAndSelection = require("../../hooks/usePaginationAndSelection");
 const { buildQuestListEmbed } = require("../../embeds/questEmbeds");
-const {
-  questTypeEnum,
-  dailyQuestConfig,
-  achievementConfig,
-} = require("../../config/questConfig");
+const { questTypeEnum } = require("../../config/questConfig");
 const {
   getDailyQuests,
   getAchievements,
-  getAndSetQuestData,
-  computeQuestProgressRequirement,
-  getCurrentQuestStageForDisplay,
+  formatQuestDisplayData,
 } = require("../../services/quest");
 const useTrainer = require("../../hooks/useTrainer");
 const {
@@ -24,36 +18,18 @@ const Button = require("../../deact/elements/Button");
 /**
  * @param {Trainer} trainer
  * @param {QuestEnum[]} questNames
- * @param {Record<QuestEnum, QuestConfig>} fullQuestConfig
  * @param {QuestTypeEnum} questType
  */
-const formatQuestAndDataConfig = (
-  trainer,
-  questNames,
-  fullQuestConfig,
-  questType
-) =>
+const formatQuestAndDataConfig = (trainer, questNames, questType) =>
   questNames.reduce((acc, questName) => {
-    const questDataEntry = getAndSetQuestData(trainer, questName, questType);
-    const { progress } = questDataEntry;
-    const questConfigData = fullQuestConfig[questName];
-    // @ts-ignore
-    const stage = getCurrentQuestStageForDisplay(
-      questConfigData,
-      questDataEntry
+    const questDisplayData = formatQuestDisplayData(
+      trainer,
+      questName,
+      questType
     );
     return {
       ...acc,
-      [questName]: {
-        emoji: questConfigData.formatEmoji({ stage }),
-        name: questConfigData.formatName({ stage }),
-        progressRequirement: computeQuestProgressRequirement(
-          questConfigData,
-          questDataEntry
-        ),
-        rewards: questConfigData.computeRewards({ stage }),
-        progress,
-      },
+      [questName]: questDisplayData,
     };
   }, {});
 
@@ -80,16 +56,7 @@ module.exports = async (
     ref
   );
   const questConfigAndData = useMemo(
-    () =>
-      formatQuestAndDataConfig(
-        trainer,
-        questIds,
-        // @ts-ignore
-        questType === questTypeEnum.DAILY
-          ? dailyQuestConfig
-          : achievementConfig,
-        questType
-      ),
+    () => formatQuestAndDataConfig(trainer, questIds, questType),
     [trainer, questIds, questType],
     ref
   );

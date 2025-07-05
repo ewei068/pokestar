@@ -947,8 +947,8 @@ const questProgressionTypeEnum = Object.freeze({
  * @typedef {{
  *  formatName: GenericQuestFunction<{}, string>,
  *  formatEmoji: GenericQuestFunction<{}, string>,
- *  formatDescription: GenericQuestFunction<{progressRequrement: number}, string>,
- *  formatRequirementString: GenericQuestFunction<{progressRequrement: number}, string>,
+ *  formatDescription: GenericQuestFunction<{progressRequirement: number}, string>,
+ *  formatRequirementString: GenericQuestFunction<{progressRequirement: number}, string>,
  *  computeRewards: GenericQuestFunction<{}, FlattenedRewards>,
  *  questListeners: QuestEventListenerFunctionEntry[],
  *  image?: string,
