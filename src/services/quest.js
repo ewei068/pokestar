@@ -14,6 +14,7 @@ const { addRewards } = require("../utils/trainerUtils");
 const { getFullUTCDate } = require("../utils/utils");
 const { registerTrainerEventListener } = require("./game/gameEvent");
 const { updateTrainer, getTrainer, refreshTrainer } = require("./trainer");
+const { logger } = require("../log");
 
 /**
  * @param {WithId<Trainer>} trainer
@@ -293,8 +294,11 @@ const getDailyQuests = () => {
  * @param {QuestTypeEnum} questType
  */
 const registerQuestListeners = (questName, questType) => {
-  const questConfig = getQuestConfigData(questName, questType);
-  for (const { eventName, listenerCallback } of questConfig.questListeners) {
+  const questConfigData = getQuestConfigData(questName, questType);
+  for (const {
+    eventName,
+    listenerCallback,
+  } of questConfigData.questListeners) {
     registerTrainerEventListener(eventName, async (args) => {
       const { trainer } = args;
       const questData = getAndSetQuestData(trainer, questName, questType);
@@ -304,7 +308,7 @@ const registerQuestListeners = (questName, questType) => {
       ) {
         return;
       }
-      if (!shouldEmitQuestEvent(questConfig, questData)) {
+      if (!shouldEmitQuestEvent(questConfigData, questData)) {
         return;
       }
 
@@ -312,6 +316,16 @@ const registerQuestListeners = (questName, questType) => {
       const { progress } = await listenerCallback(args);
       if (progress) {
         questData.progress += progress;
+        if (
+          questConfigData.requirementType ===
+            questRequirementTypeEnum.NUMERIC &&
+          questConfigData.resetProgressOnComplete
+        ) {
+          questData.progress = Math.min(
+            questData.progress,
+            computeQuestProgressRequirement(questConfigData, questData)
+          );
+        }
 
         // TODO: if completed, upsell
       }
@@ -325,6 +339,19 @@ const registerQuestListeners = (questName, questType) => {
 // @ts-ignore
 const getAchievements = () => Object.keys(achievementConfig);
 
+const registerAllQuestListeners = () => {
+  for (const questName of Object.keys(dailyQuestConfig)) {
+    // @ts-ignore
+    registerQuestListeners(questName, questTypeEnum.DAILY);
+  }
+  for (const questName of Object.keys(achievementConfig)) {
+    // @ts-ignore
+    registerQuestListeners(questName, questTypeEnum.ACHIEVEMENT);
+  }
+
+  logger.info("Registered all quest listeners");
+};
+
 module.exports = {
   hasTrainerMetTutorialStageRequirements,
   hasTrainerMetCurrentTutorialStageRequirements,
@@ -337,4 +364,5 @@ module.exports = {
   getCurrentQuestStageForDisplay,
   computeQuestProgressRequirement,
   formatQuestDisplayData,
+  registerAllQuestListeners,
 };

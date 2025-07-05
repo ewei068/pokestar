@@ -588,12 +588,16 @@ const updateTrainer = async (trainer) => {
  * Emit a trainer event. Trainer events expect a trainer argument, and will mutate and update the trainer in the process.
  * @template {TrainerEventEnum} K
  * @param {K} eventName
- * @param {TrainerEventArgs<K>} args
+ * @param {TrainerEventArgsWithoutEventName<K>} args
  */
 const emitTrainerEvent = async (eventName, args) => {
-  const { trainer } = args;
-  await emitTrainerEventPure(eventName, args);
-  await updateTrainer(trainer);
+  try {
+    const { trainer } = args;
+    await emitTrainerEventPure(eventName, args);
+    await updateTrainer(trainer);
+  } catch (error) {
+    logger.error(error);
+  }
 };
 
 module.exports = {

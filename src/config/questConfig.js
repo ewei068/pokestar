@@ -1,6 +1,7 @@
 // smell -- this config depends on some services to work properly
 // maybe refactor at some point but I don't think it's a big deal because this is an isolated functionality
 const { emojis } = require("../enums/emojis");
+const { trainerEventEnum } = require("../enums/gameEnums");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const {
   checkNumPokemon,
@@ -1006,7 +1007,22 @@ const dailyQuestConfigRaw = {
     computeRewards: () => ({
       money: 1000,
     }),
-    questListeners: [],
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CAUGHT_POKEMON,
+        listenerCallback: ({ method, pokemons }) => {
+          if (method === "gacha") {
+            return {
+              progress: pokemons.length,
+            };
+          }
+
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
     requirementType: questRequirementTypeEnum.NUMERIC,
     computeProgressRequirement: () => 1,
     resetProgressOnComplete: true,
@@ -1015,7 +1031,7 @@ const dailyQuestConfigRaw = {
   },
   // placeholders
   gachaPokemon2: {
-    formatName: () => "Gacha for Pokemon",
+    formatName: () => "Gacha for Pokemon 2",
     formatEmoji: () => emojis.POKEBALL,
     formatDescription: () => "Gacha for Pokemon",
     formatRequirementString: () => "Gacha for Pokemon",
@@ -1030,14 +1046,29 @@ const dailyQuestConfigRaw = {
     maxStage: 1,
   },
   gachaPokemon3: {
-    formatName: () => "Gacha for Pokemon",
+    formatName: () => "Gacha for Pokemon 3",
     formatEmoji: () => emojis.POKEBALL,
     formatDescription: () => "Gacha for Pokemon",
     formatRequirementString: () => "Gacha for Pokemon",
     computeRewards: () => ({
       money: 1000,
     }),
-    questListeners: [],
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CAUGHT_POKEMON,
+        listenerCallback: ({ method, pokemons }) => {
+          if (method === "gacha") {
+            return {
+              progress: pokemons.length,
+            };
+          }
+
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
     requirementType: questRequirementTypeEnum.NUMERIC,
     computeProgressRequirement: () => 1,
     resetProgressOnComplete: true,
@@ -1045,7 +1076,7 @@ const dailyQuestConfigRaw = {
     maxStage: 1,
   },
   gachaPokemon4: {
-    formatName: () => "Gacha for Pokemon",
+    formatName: () => "Gacha for Pokemon 4",
     formatEmoji: () => emojis.POKEBALL,
     formatDescription: () => "Gacha for Pokemon",
     formatRequirementString: () => "Gacha for Pokemon",
@@ -1060,7 +1091,7 @@ const dailyQuestConfigRaw = {
     maxStage: 1,
   },
   gachaPokemon5: {
-    formatName: () => "Gacha for Pokemon",
+    formatName: () => "Gacha for Pokemon 5",
     formatEmoji: () => emojis.POKEBALL,
     formatDescription: () => "Gacha for Pokemon",
     formatRequirementString: () => "Gacha for Pokemon",
@@ -1091,7 +1122,22 @@ const achievementConfigRaw = {
     computeRewards: ({ stage }) => ({
       money: 1000 * (stage + 1),
     }),
-    questListeners: [],
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CAUGHT_POKEMON,
+        listenerCallback: ({ method, pokemons }) => {
+          if (method === "gacha") {
+            return {
+              progress: pokemons.length,
+            };
+          }
+
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
     requirementType: questRequirementTypeEnum.NUMERIC,
     computeProgressRequirement: ({ stage }) => stage,
     resetProgressOnComplete: false,

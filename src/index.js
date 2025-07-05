@@ -24,6 +24,7 @@ const {
   initialize: initializeBattleData,
 } = require("./battle/data/initialize");
 const { getInteractionCount } = require("./deact/interactions");
+const { registerAllQuestListeners } = require("./services/quest");
 
 console.log(`STAGE: ${process.env.STAGE}`);
 const FFLAG_ENABLE_SPAWN = process.env.FFLAG_ENABLE_SPAWN === "1";
@@ -41,6 +42,7 @@ process.on("unhandledRejection", (reason, promise) => {
 });
 
 initializeBattleData();
+registerAllQuestListeners();
 
 const corsOptions = {
   origin: true,
