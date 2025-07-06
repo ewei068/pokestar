@@ -16,6 +16,8 @@ const emojis = {
   LEFTOVERS: "<:leftovers:1336571394531659837>",
 
   DREAM_CARD: "<:dreamcard:1358203943464993052>",
+
+  RED: "<:red:1117871509185249280>",
 };
 
 module.exports = {

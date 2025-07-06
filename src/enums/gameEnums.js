@@ -8,7 +8,7 @@ const trainerEventEnum = Object.freeze({
  * @template {TrainerEventEnum} K
  * @typedef {{
  *  [trainerEventEnum.CAUGHT_POKEMON]: {pokemons: WithId<Pokemon>[], method: "gacha" | "wild" | "other" },
- *  [trainerEventEnum.DEFEATED_NPC]: {npcId: string, difficulty: NpcDifficultyEnum, type: "pve" | "dungoen" | "raid" | "battletower"},
+ *  [trainerEventEnum.DEFEATED_NPC]: {npcId: NpcEnum, difficulty: NpcDifficultyEnum, type: NpcTypeEnum},
  * }[K] & {trainer: WithId<Trainer>}} TrainerEventArgsWithoutEventName
  */
 

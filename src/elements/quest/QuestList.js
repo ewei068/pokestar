@@ -47,7 +47,7 @@ const formatQuestAndDataConfig = (trainer, questNames, questType) =>
  * @param {QuestEnum=} param1.initialQuestId
  * @returns {Promise<any>}
  */
-module.exports = async (
+const QuestList = async (
   ref,
   { user, initialQuestType = questTypeEnum.DAILY, initialQuestId }
 ) => {
@@ -218,3 +218,5 @@ module.exports = async (
     ],
   };
 };
+
+module.exports = QuestList;

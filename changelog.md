@@ -18,7 +18,7 @@
     - Upgrade equipment
     - Spend Dream Cards
     - Claim daily rewards
-    - Defeat Pokemon
+    - Buy Pokeballs from pokemart
     - Complete daily quests
   - Questlines
     - Gacha Pokemon

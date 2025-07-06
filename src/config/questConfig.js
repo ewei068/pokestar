@@ -1003,10 +1003,17 @@ const dailyQuestConfigRaw = {
   gachaPokemon: {
     formatName: () => "Gacha for Pokemon",
     formatEmoji: () => emojis.POKEBALL,
-    formatDescription: () => "Gacha for Pokemon",
-    formatRequirementString: () => "Gacha for Pokemon",
+    formatDescription: ({ progressRequirement }) =>
+      `Catch ${progressRequirement} Pokemon using the Gacha! Use \`/gacha\` to catch Pokemon.\n## \`/gacha\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Catch ${progressRequirement}x Pokemon with \`/gacha\``,
     computeRewards: () => ({
-      money: 1000,
+      money: 3000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.GREATBALL]: 3,
+        },
+      },
     }),
     questListeners: [
       {
@@ -1025,45 +1032,30 @@ const dailyQuestConfigRaw = {
       },
     ],
     requirementType: questRequirementTypeEnum.NUMERIC,
-    computeProgressRequirement: () => 1,
+    computeProgressRequirement: () => 5,
     resetProgressOnComplete: true,
     progressionType: questProgressionTypeEnum.FINITE,
     maxStage: 0,
   },
-  // placeholders
-  gachaPokemon2: {
-    formatName: () => "Gacha for Pokemon 2",
-    formatEmoji: () => emojis.POKEBALL,
-    formatDescription: () => "Gacha for Pokemon",
-    formatRequirementString: () => "Gacha for Pokemon",
+  defeatNpc: {
+    formatName: () => "Defeat NPCs",
+    formatEmoji: () => emojis.RED,
+    formatDescription: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement} NPCs! Use \`/pve\` to defeat NPCs.\n## \`/pve\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement}x NPCs with \`/pve\``,
     computeRewards: () => ({
-      money: 1000,
-    }),
-    questListeners: [],
-    requirementType: questRequirementTypeEnum.NUMERIC,
-    computeProgressRequirement: () => 1,
-    resetProgressOnComplete: true,
-    progressionType: questProgressionTypeEnum.FINITE,
-    maxStage: 0,
-  },
-  gachaPokemon3: {
-    formatName: () => "Gacha for Pokemon 3",
-    formatEmoji: () => emojis.POKEBALL,
-    formatDescription: () => "Gacha for Pokemon",
-    formatRequirementString: () => "Gacha for Pokemon",
-    computeRewards: () => ({
-      money: 1000,
+      money: 10000,
     }),
     questListeners: [
       {
-        eventName: trainerEventEnum.CAUGHT_POKEMON,
-        listenerCallback: ({ method, pokemons }) => {
-          if (method === "gacha") {
+        eventName: trainerEventEnum.DEFEATED_NPC,
+        listenerCallback: ({ type }) => {
+          if (type === "pve") {
             return {
-              progress: pokemons.length,
+              progress: 1,
             };
           }
-
           return {
             progress: 0,
           };
@@ -1071,37 +1063,31 @@ const dailyQuestConfigRaw = {
       },
     ],
     requirementType: questRequirementTypeEnum.NUMERIC,
-    computeProgressRequirement: () => 1,
+    computeProgressRequirement: () => 2,
     resetProgressOnComplete: true,
     progressionType: questProgressionTypeEnum.FINITE,
     maxStage: 0,
   },
-  gachaPokemon4: {
-    formatName: () => "Gacha for Pokemon 4",
-    formatEmoji: () => emojis.POKEBALL,
-    formatDescription: () => "Gacha for Pokemon",
-    formatRequirementString: () => "Gacha for Pokemon",
+  upgradeEquipment: {
+    formatName: () => "Upgrade Equipment",
+    formatEmoji: () => emojis.POWER_WEIGHT,
+    formatDescription: ({ progressRequirement }) =>
+      `Upgrade your equipment ${progressRequirement} times! Use \`/equipment\` to upgrade your equipment.\n## \`/equipment\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Upgrade your equipment ${progressRequirement}x times with \`/equipment\``,
     computeRewards: () => ({
-      money: 1000,
+      money: 5000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: 10,
+          [backpackItems.KNOWLEDGE_SHARD]: 10,
+          [backpackItems.WILLPOWER_SHARD]: 10,
+        },
+      },
     }),
     questListeners: [],
     requirementType: questRequirementTypeEnum.NUMERIC,
-    computeProgressRequirement: () => 1,
-    resetProgressOnComplete: true,
-    progressionType: questProgressionTypeEnum.FINITE,
-    maxStage: 0,
-  },
-  gachaPokemon5: {
-    formatName: () => "Gacha for Pokemon 5",
-    formatEmoji: () => emojis.POKEBALL,
-    formatDescription: () => "Gacha for Pokemon",
-    formatRequirementString: () => "Gacha for Pokemon",
-    computeRewards: () => ({
-      money: 1000,
-    }),
-    questListeners: [],
-    requirementType: questRequirementTypeEnum.NUMERIC,
-    computeProgressRequirement: () => 1,
+    computeProgressRequirement: () => 3,
     resetProgressOnComplete: true,
     progressionType: questProgressionTypeEnum.FINITE,
     maxStage: 0,
@@ -1124,12 +1110,21 @@ const stageToMythicOrder = [
 /** @satisfies {Record<string, AchievementConfig>} */
 const achievementConfigRaw = {
   gachaPokemon: {
-    formatName: () => "Gacha for Pokemon",
+    formatName: ({ stage }) => `Gacha for Pokemon: ${stage + 1}`,
     formatEmoji: () => emojis.POKEBALL,
-    formatDescription: () => "Gacha for Pokemon",
-    formatRequirementString: () => "Gacha for Pokemon",
+    formatDescription: ({ progressRequirement }) =>
+      `Catch ${progressRequirement} Pokemon using the Gacha! Use \`/gacha\` to catch Pokemon.\n## \`/gacha\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Catch ${progressRequirement}x Pokemon with \`/gacha\``,
+    // money: 10000 * (stage + 1)
+    // pokeballs: 5\left(x+1\right)^{0.75}\ +\ 5
     computeRewards: ({ stage }) => ({
-      money: 1000 * (stage + 1),
+      money: 10000 * (stage + 1),
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: Math.floor(5 * (stage + 1) ** 0.75 + 5),
+        },
+      },
     }),
     questListeners: [
       {
@@ -1148,7 +1143,9 @@ const achievementConfigRaw = {
       },
     ],
     requirementType: questRequirementTypeEnum.NUMERIC,
-    computeProgressRequirement: ({ stage }) => stage * 5,
+    // \left(x+1\right)^{2.5}+2
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor((stage + 1) ** 2.5 + 2),
     resetProgressOnComplete: false,
     progressionType: questProgressionTypeEnum.INFINITE,
   },

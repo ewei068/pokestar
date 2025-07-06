@@ -22,7 +22,7 @@ const { getFlattenedRewardsString } = require("../../utils/trainerUtils");
  * @param {string} param1.backButtonKey
  * @returns {Promise<any>}
  */
-module.exports = async (ref, { user, questId, questType, backButtonKey }) => {
+const QuestStage = async (ref, { user, questId, questType, backButtonKey }) => {
   const { trainer, setTrainer, err: trainerErr } = await useTrainer(user, ref);
   if (trainerErr) {
     return { err: trainerErr };
@@ -82,3 +82,5 @@ module.exports = async (ref, { user, questId, questType, backButtonKey }) => {
     ],
   };
 };
+
+module.exports = QuestStage;

@@ -33,6 +33,7 @@ const {
   addExpAndMoney,
   updateTrainer,
   getTrainerFromId,
+  emitTrainerEvent,
 } = require("./trainer");
 const { addPokemonExpAndEVs, getPokemon } = require("./pokemon");
 const { logger } = require("../log");
@@ -65,6 +66,7 @@ const {
 } = require("../battle/engine/npcs");
 const { heldItemIdEnum } = require("../enums/battleEnums");
 const { emojis } = require("../enums/emojis");
+const { trainerEventEnum } = require("../enums/gameEnums");
 
 /**
  * @param {Trainer} trainer
@@ -195,8 +197,9 @@ const getStartTurnSend = async (battle, stateId) => {
             const user = battle.users[userId];
             // get trainer
             // @ts-ignore
-            const trainer = await getTrainer(user);
-            if (trainer.err) {
+            // eslint-disable-next-line prefer-const
+            let { data: trainer, err } = await getTrainer(user);
+            if (err) {
               logger.warn(
                 // @ts-ignore
                 `Failed to get trainer for user ${user.id} after battle`
@@ -206,21 +209,20 @@ const getStartTurnSend = async (battle, stateId) => {
 
             // trigger battle win callback
             if (battle.winCallback) {
-              await battle.winCallback(battle, trainer.data);
+              await battle.winCallback(battle, trainer);
             }
 
             // add trainer rewards
             // @ts-ignore
             await addExpAndMoney(user, expReward, moneyReward);
             const defeatedDifficultiesToday =
-              trainer.data.defeatedNPCsToday[battle.npcId];
-            const defeatedDifficulties =
-              trainer.data.defeatedNPCs[battle.npcId];
+              trainer.defeatedNPCsToday[battle.npcId];
+            const defeatedDifficulties = trainer.defeatedNPCs[battle.npcId];
             const allRewards = {};
             let modified = false;
             // add battle rewards
             if (battle.rewards) {
-              addRewards(trainer.data, battle.rewards, allRewards);
+              addRewards(trainer, battle.rewards, allRewards);
               modified = true;
             }
             // add daily rewards
@@ -229,12 +231,10 @@ const getStartTurnSend = async (battle, stateId) => {
               (!defeatedDifficultiesToday ||
                 !defeatedDifficultiesToday.includes(battle.difficulty))
             ) {
-              addRewards(trainer.data, battle.dailyRewards, allRewards);
-              getOrSetDefault(
-                trainer.data.defeatedNPCsToday,
-                battle.npcId,
-                []
-              ).push(battle.difficulty);
+              addRewards(trainer, battle.dailyRewards, allRewards);
+              getOrSetDefault(trainer.defeatedNPCsToday, battle.npcId, []).push(
+                battle.difficulty
+              );
               modified = true;
             }
             // add to defeated difficulties if not already there
@@ -242,7 +242,7 @@ const getStartTurnSend = async (battle, stateId) => {
               !defeatedDifficulties ||
               !defeatedDifficulties.includes(battle.difficulty)
             ) {
-              getOrSetDefault(trainer.data.defeatedNPCs, battle.npcId, []).push(
+              getOrSetDefault(trainer.defeatedNPCs, battle.npcId, []).push(
                 battle.difficulty
               );
               modified = true;
@@ -250,14 +250,18 @@ const getStartTurnSend = async (battle, stateId) => {
 
             // attempt to add rewards
             if (modified) {
-              const { err } = await updateTrainer(trainer.data);
-              if (err) {
+              const { data: newTrainer, err: updateErr } = await updateTrainer(
+                trainer
+              );
+
+              if (updateErr) {
                 logger.warn(
                   // @ts-ignore
                   `Failed to update daily trainer for user ${user.id} after battle`
                 );
                 continue;
               } else {
+                trainer = newTrainer;
                 // this is kinda hacky there may be a better way to do this
                 rewardRecipients.push({
                   username: user.username,
@@ -266,13 +270,22 @@ const getStartTurnSend = async (battle, stateId) => {
               }
             }
 
+            if (battle.npcId && battle.npcType) {
+              await emitTrainerEvent(trainerEventEnum.DEFEATED_NPC, {
+                trainer,
+                npcId: battle.npcId,
+                difficulty: battle.difficulty,
+                type: battle.npcType,
+              });
+            }
+
             const levelUps = [];
             // add pokemon rewards
             for (const pokemon of Object.values(battle.allPokemon).filter(
-              (p) => p.originalUserId === trainer.data.userId
+              (p) => p.originalUserId === trainer.userId
             )) {
               // get db pokemon
-              const dbPokemon = await getPokemon(trainer.data, pokemon.id);
+              const dbPokemon = await getPokemon(trainer, pokemon.id);
               if (dbPokemon.err) {
                 logger.warn(`Failed to get pokemon ${pokemon.id} after battle`);
                 continue;
@@ -284,7 +297,7 @@ const getStartTurnSend = async (battle, stateId) => {
                   ? pokemonExpReward * 2
                   : pokemonExpReward;
               const trainResult = await addPokemonExpAndEVs(
-                trainer.data,
+                trainer,
                 dbPokemon.data,
                 thisPokemonExpReward
               );
@@ -457,14 +470,16 @@ const startAuto = async ({ battle, stateId, interaction, user }) => {
     return { err: updateResult.err };
   }
 
-  errorlessAsync(() => {
-    if (trainer.settings.instantAutoBattle) {
-      return instantAutoBattle(battle, stateId, interaction);
-    }
-    return nextAutoTurn(battle, stateId, {
+  if (trainer.settings.instantAutoBattle) {
+    await instantAutoBattle(battle, stateId, interaction);
+    return;
+  }
+
+  errorlessAsync(() =>
+    nextAutoTurn(battle, stateId, {
       interaction,
-    });
-  });
+    })
+  );
 };
 
 const buildPveSend = async ({
@@ -629,6 +644,7 @@ const buildPveSend = async ({
       ...rewardMultipliers,
       dailyRewards: npcDifficultyData.dailyRewards,
       npcId: state.npcId,
+      npcType: "pve",
       difficulty: state.difficulty,
       canAuto: !getCanTrainerAutoBattle(newTrainerResult.data, autoBattleCost)
         .err,

@@ -10,6 +10,7 @@
 /** @typedef {import("./pokemonConfig").PokemonIdEnum} PokemonIdEnum */
 /** @typedef {import("./locationConfig").LocationEnum} LocationEnum */
 /** @typedef {import("./npcConfig").NpcEnum} NpcEnum */
+/** @typedef {"pve" | "dungeon" | "raid" | "battleTower"} NpcTypeEnum */
 /** @typedef {import("./npcConfig").DungeonEnum} DungeonEnum */
 /** @typedef {import("./npcConfig").RaidEnum} RaidEnum */
 /** @typedef {import("./npcConfig").RaidConfigData} RaidConfigData */
