@@ -12,6 +12,7 @@ const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { SUPPORT_SERVER_INVITE, gameEventConfig } = require("./helpConfig");
 const { locations } = require("./locationConfig");
 const { difficulties } = require("./npcConfig");
+const { pokemonConfig } = require("./pokemonConfig");
 const { shopItems } = require("./shopConfig");
 
 /** @typedef {Keys<newTutorialConfigRaw>} TutorialStageEnum */
@@ -1109,6 +1110,14 @@ const dailyQuestConfigRaw = {
 /** @type {Record<DailyQuestEnum, DailyQuestConfig>} */
 const dailyQuestConfig = Object.freeze(dailyQuestConfigRaw);
 
+const stageToMythicOrder = [
+  pokemonIdEnum.DARKRAI,
+  pokemonIdEnum.MEW,
+  pokemonIdEnum.JIRACHI,
+  pokemonIdEnum.DEOXYS,
+  pokemonIdEnum.CELEBI,
+];
+
 /**
  * @typedef {Keys<achievementConfigRaw>} AchievementEnum
  */
@@ -1142,6 +1151,93 @@ const achievementConfigRaw = {
     computeProgressRequirement: ({ stage }) => stage * 5,
     resetProgressOnComplete: false,
     progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  catchMythic: {
+    formatName: ({ stage }) =>
+      `Myths: Catch ${pokemonConfig[stageToMythicOrder[stage]].name}`,
+    formatEmoji: ({ stage }) => pokemonConfig[stageToMythicOrder[stage]].emoji,
+    formatDescription: ({ stage }) =>
+      `Use \`/mythic ${
+        pokemonConfig[stageToMythicOrder[stage]].name
+      }\` to catch ${
+        pokemonConfig[stageToMythicOrder[stage]].name
+      }! If you don't meet the requirements, follow the instructions in the \`/mythic\` command.\n## \`/mythic\``,
+    formatRequirementString: ({ stage }) =>
+      `Catch ${pokemonConfig[stageToMythicOrder[stage]].emoji} ${
+        pokemonConfig[stageToMythicOrder[stage]].name
+      }`,
+    computeRewards: ({ stage }) => {
+      const speciesId = stageToMythicOrder[stage];
+      let backpack;
+      switch (speciesId) {
+        case pokemonIdEnum.DARKRAI:
+          backpack = {
+            [backpackCategories.POKEBALLS]: {
+              [backpackItems.MASTERBALL]: 3,
+            },
+          };
+          break;
+        case pokemonIdEnum.MEW:
+          backpack = {
+            [backpackCategories.MATERIALS]: {
+              [backpackItems.EMOTION_SHARD]: 100,
+              [backpackItems.KNOWLEDGE_SHARD]: 100,
+              [backpackItems.WILLPOWER_SHARD]: 100,
+            },
+          };
+          break;
+        case pokemonIdEnum.JIRACHI:
+          backpack = {
+            [backpackCategories.MATERIALS]: {
+              [backpackItems.STAR_PIECE]: 250,
+            },
+          };
+          break;
+        case pokemonIdEnum.DEOXYS:
+          backpack = {
+            [backpackCategories.HELD_ITEMS]: {
+              [backpackItems.AMULET_COIN]: 1,
+              [backpackItems.LEFTOVERS]: 1,
+              [backpackItems.LIFE_ORB]: 1,
+            },
+          };
+          break;
+        case pokemonIdEnum.CELEBI:
+          backpack = {
+            [backpackCategories.POKEBALLS]: {
+              [backpackItems.MASTERBALL]: 3,
+            },
+          };
+          break;
+        default:
+          backpack = {};
+          break;
+      }
+      return {
+        money: 10000,
+        backpack,
+      };
+    },
+    // TODO: add quest listeners
+    questListeners: [],
+    requirementType: questRequirementTypeEnum.BOOLEAN,
+    checkRequirements: async ({ stage, trainer }) => {
+      // stage order: darkrai -> mew -> jirachi -> deoxys -> celebi
+      const speciesId = stageToMythicOrder[stage];
+      if (!speciesId) {
+        return false;
+      }
+      const { data: pokemons } = await listPokemons(trainer, {
+        pageSize: 1,
+        page: 1,
+        filter: {
+          speciesId,
+        },
+      });
+      return (pokemons?.length ?? 0) > 0;
+    },
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: stageToMythicOrder.length - 1,
   },
 };
 /** @type {Record<AchievementEnum, AchievementConfig>} */

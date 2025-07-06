@@ -6,6 +6,7 @@ const {
   getAchievements,
   formatQuestDisplayData,
   canTrainerClaimAllRewards,
+  tryProgressAndUpdateBooleanQuests,
 } = require("../../services/quest");
 const useTrainer = require("../../hooks/useTrainer");
 const {
@@ -13,6 +14,7 @@ const {
   useState,
   useCallbackBinding,
   createElement,
+  useAwaitedEffect,
 } = require("../../deact/deact");
 const Button = require("../../deact/elements/Button");
 const QuestStage = require("./QuestStage");
@@ -51,6 +53,7 @@ module.exports = async (
     trainer,
     err: trainerErr,
     refreshTrainer,
+    setTrainer,
   } = await useTrainer(user, ref);
   if (trainerErr) {
     return { err: trainerErr };
@@ -88,7 +91,21 @@ module.exports = async (
     ref
   );
 
-  // TODO: check for complete quests
+  await useAwaitedEffect(
+    async () => {
+      const {
+        didProgress,
+        data: newTrainer,
+        // @ts-ignore
+        err,
+      } = await tryProgressAndUpdateBooleanQuests(trainer, questIds, questType);
+      if (didProgress && !err) {
+        setTrainer(newTrainer);
+      }
+    },
+    [trainer, questIds, questType],
+    ref
+  );
 
   const embed = buildQuestListEmbed({
     // @ts-ignore

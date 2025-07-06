@@ -363,6 +363,39 @@ const checkAndProgressBooleanQuest = async (
 
 /**
  * @param {WithId<Trainer>} trainer
+ * @param {QuestEnum[]} questIds
+ * @param {QuestTypeEnum} questType
+ */
+const tryProgressAndUpdateBooleanQuests = async (
+  trainer,
+  questIds,
+  questType
+) => {
+  const promises = questIds.map((questId) => {
+    const questConfigData = getQuestConfigData(questId, questType);
+    const questDataEntry = getAndSetQuestData(trainer, questId, questType);
+    return checkAndProgressBooleanQuest(
+      trainer,
+      questConfigData,
+      questDataEntry
+    );
+  });
+  const results = await Promise.all(promises);
+  const didProgress = results.some((result) => result);
+  if (didProgress) {
+    return {
+      ...(await updateTrainer(trainer)),
+      didProgress,
+    };
+  }
+  return {
+    data: trainer,
+    didProgress,
+  };
+};
+
+/**
+ * @param {WithId<Trainer>} trainer
  * @param {QuestEnum} questId
  * @param {QuestTypeEnum} questType
  * @param {object} options
@@ -558,4 +591,5 @@ module.exports = {
   canTrainerClaimQuestRewards,
   claimQuestRewardsForUserAndUpdate,
   canTrainerClaimAllRewards,
+  tryProgressAndUpdateBooleanQuests,
 };
