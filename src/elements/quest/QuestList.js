@@ -22,15 +22,15 @@ const QuestStage = require("./QuestStage");
  * @param {QuestTypeEnum} questType
  */
 const formatQuestAndDataConfig = (trainer, questNames, questType) =>
-  questNames.reduce((acc, questName) => {
+  questNames.reduce((acc, questId) => {
     const questDisplayData = formatQuestDisplayData(
       trainer,
-      questName,
+      questId,
       questType
     );
     return {
       ...acc,
-      [questName]: questDisplayData,
+      [questId]: questDisplayData,
     };
   }, {});
 
@@ -117,7 +117,7 @@ module.exports = async (
       elements: [
         createElement(QuestStage, {
           user,
-          questName: currentItem,
+          questId: currentItem,
           questType,
           backButtonKey,
         }),

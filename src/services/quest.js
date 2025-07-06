@@ -15,6 +15,7 @@ const { getFullUTCDate } = require("../utils/utils");
 const { registerTrainerEventListener } = require("./game/gameEvent");
 const { updateTrainer, getTrainer, refreshTrainer } = require("./trainer");
 const { logger } = require("../log");
+const { getAsyncContext } = require("./bot/asyncContext");
 
 /**
  * @param {WithId<Trainer>} trainer
@@ -110,45 +111,45 @@ const completeTutorialStageForUser = async (user, stage) => {
 
 /**
  * @param {Trainer} trainer
- * @param {QuestEnum} questName
+ * @param {QuestEnum} questId
  * @param {QuestTypeEnum} questType
  */
-const getAndSetQuestData = (trainer, questName, questType) => {
+const getAndSetQuestData = (trainer, questId, questType) => {
   let questDataEntry;
   if (questType === questTypeEnum.DAILY) {
-    questDataEntry = trainer.questData.dailyQuests[questName];
+    questDataEntry = trainer.questData.dailyQuests[questId];
     if (!questDataEntry) {
-      trainer.questData.dailyQuests[questName] = {
+      trainer.questData.dailyQuests[questId] = {
         stage: 0,
         progress: 0,
       };
     }
-    questDataEntry = trainer.questData.dailyQuests[questName];
+    questDataEntry = trainer.questData.dailyQuests[questId];
   } else if (questType === questTypeEnum.ACHIEVEMENT) {
-    questDataEntry = trainer.questData.achievements[questName];
+    questDataEntry = trainer.questData.achievements[questId];
     if (!questDataEntry) {
-      trainer.questData.achievements[questName] = {
+      trainer.questData.achievements[questId] = {
         stage: 0,
         progress: 0,
       };
     }
-    questDataEntry = trainer.questData.achievements[questName];
+    questDataEntry = trainer.questData.achievements[questId];
   }
 
   return questDataEntry;
 };
 
 /**
- * @param {QuestEnum} questName
+ * @param {QuestEnum} questId
  * @param {QuestTypeEnum} questType
  * @returns {QuestConfig}
  */
-const getQuestConfigData = (questName, questType) => {
+const getQuestConfigData = (questId, questType) => {
   if (questType === questTypeEnum.DAILY) {
-    return dailyQuestConfig[questName];
+    return dailyQuestConfig[questId];
     // eslint-disable-next-line no-else-return
   } else if (questType === questTypeEnum.ACHIEVEMENT) {
-    return achievementConfig[questName];
+    return achievementConfig[questId];
   }
 
   throw new Error("Invalid quest type");
@@ -224,13 +225,13 @@ const computeQuestRewards = (questConfigData, questDataEntry) => {
 
 /**
  * @param {Trainer} trainer
- * @param {QuestEnum} questName
+ * @param {QuestEnum} questId
  * @param {QuestTypeEnum} questType
  */
-const formatQuestDisplayData = (trainer, questName, questType) => {
-  const questDataEntry = getAndSetQuestData(trainer, questName, questType);
+const formatQuestDisplayData = (trainer, questId, questType) => {
+  const questDataEntry = getAndSetQuestData(trainer, questId, questType);
   const { progress } = questDataEntry;
-  const questConfigData = getQuestConfigData(questName, questType);
+  const questConfigData = getQuestConfigData(questId, questType);
   // @ts-ignore
   const stage = getCurrentQuestStageForDisplay(questConfigData, questDataEntry);
   const progressRequirement = computeQuestProgressRequirement(
@@ -313,12 +314,12 @@ const getDailyQuests = () => {
   });
 };
 
-const canTrainerClaimQuestRewards = (trainer, questName, questType) => {
-  const questConfigData = getQuestConfigData(questName, questType);
-  const questDataEntry = getAndSetQuestData(trainer, questName, questType);
+const canTrainerClaimQuestRewards = (trainer, questId, questType) => {
+  const questConfigData = getQuestConfigData(questId, questType);
+  const questDataEntry = getAndSetQuestData(trainer, questId, questType);
   if (
     questType === questTypeEnum.DAILY &&
-    !getDailyQuests().includes(questName)
+    !getDailyQuests().includes(questId)
   ) {
     return false;
   }
@@ -331,28 +332,28 @@ const canTrainerClaimQuestRewards = (trainer, questName, questType) => {
 
 /**
  * @param {WithId<Trainer>} trainer
- * @param {QuestEnum} questName
+ * @param {QuestEnum} questId
  * @param {QuestTypeEnum} questType
  * @param {object} options
  * @param {FlattenedRewards=} options.accumulator
  */
 const claimQuestRewardsForTrainer = async (
   trainer,
-  questName,
+  questId,
   questType,
   { accumulator } = {}
 ) => {
   const canClaimRewards = canTrainerClaimQuestRewards(
     trainer,
-    questName,
+    questId,
     questType
   );
   if (!canClaimRewards) {
     return { err: "You cannot claim rewards for this quest right now." };
   }
 
-  const questConfigData = getQuestConfigData(questName, questType);
-  const questDataEntry = getAndSetQuestData(trainer, questName, questType);
+  const questConfigData = getQuestConfigData(questId, questType);
+  const questDataEntry = getAndSetQuestData(trainer, questId, questType);
   const rewards = computeQuestRewards(questConfigData, questDataEntry);
   addRewards(trainer, rewards, accumulator);
 
@@ -391,15 +392,11 @@ const claimQuestRewardsForTrainer = async (
 
 /**
  * @param {CompactUser} user
- * @param {QuestEnum} questName
+ * @param {QuestEnum} questId
  * @param {QuestTypeEnum} questType
  * @returns {Promise<{data?: WithId<Trainer>, err?: string, rewards?: FlattenedRewards}>}
  */
-const claimQuestRewardsForUserAndUpdate = async (
-  user,
-  questName,
-  questType
-) => {
+const claimQuestRewardsForUserAndUpdate = async (user, questId, questType) => {
   const { data: trainer, err: trainerErr } = await getTrainer(user);
   if (trainerErr) {
     return { err: trainerErr };
@@ -407,7 +404,7 @@ const claimQuestRewardsForUserAndUpdate = async (
   const rewardsAccumulator = {};
   const { err: claimErr } = await claimQuestRewardsForTrainer(
     trainer,
-    questName,
+    questId,
     questType,
     { accumulator: rewardsAccumulator }
   );
@@ -422,44 +419,64 @@ const claimQuestRewardsForUserAndUpdate = async (
 };
 
 /**
- * @param {QuestEnum} questName
+ * @param {QuestEnum} questId
  * @param {QuestTypeEnum} questType
  */
-const registerQuestListeners = (questName, questType) => {
-  const questConfigData = getQuestConfigData(questName, questType);
+const registerQuestListeners = (questId, questType) => {
+  const questConfigData = getQuestConfigData(questId, questType);
   for (const {
     eventName,
     listenerCallback,
   } of questConfigData.questListeners) {
     registerTrainerEventListener(eventName, async (args) => {
       const { trainer } = args;
-      const questData = getAndSetQuestData(trainer, questName, questType);
+      const questDataEntry = getAndSetQuestData(trainer, questId, questType);
       if (
         questType === questTypeEnum.DAILY &&
-        !getDailyQuests().includes(questName)
+        !getDailyQuests().includes(questId)
       ) {
         return;
       }
-      if (!shouldEmitQuestEvent(questConfigData, questData)) {
+      if (!shouldEmitQuestEvent(questConfigData, questDataEntry)) {
         return;
       }
+      const oldQuestCompletionStatus = getQuestCompletionStatus(
+        questConfigData,
+        questDataEntry
+      );
 
       // @ts-ignore
       const { progress } = await listenerCallback(args);
-      if (progress) {
-        questData.progress += progress;
-        if (
-          questConfigData.requirementType ===
-            questRequirementTypeEnum.NUMERIC &&
-          questConfigData.resetProgressOnComplete
-        ) {
-          questData.progress = Math.min(
-            questData.progress,
-            computeQuestProgressRequirement(questConfigData, questData)
-          );
-        }
+      if (!progress) {
+        return;
+      }
 
-        // TODO: if completed, upsell
+      questDataEntry.progress += progress;
+      if (
+        questConfigData.requirementType === questRequirementTypeEnum.NUMERIC &&
+        questConfigData.resetProgressOnComplete
+      ) {
+        questDataEntry.progress = Math.min(
+          questDataEntry.progress,
+          computeQuestProgressRequirement(questConfigData, questDataEntry)
+        );
+      }
+
+      const newQuestCompletionStatus = getQuestCompletionStatus(
+        questConfigData,
+        questDataEntry
+      );
+      const asyncContext = getAsyncContext();
+      if (
+        oldQuestCompletionStatus !== "complete" &&
+        newQuestCompletionStatus === "complete" &&
+        !asyncContext.completedQuest &&
+        asyncContext?.user?.id === trainer?.userId
+      ) {
+        asyncContext.completedQuest = {
+          questId,
+          questType,
+        };
       }
     });
   }
@@ -472,13 +489,13 @@ const registerQuestListeners = (questName, questType) => {
 const getAchievements = () => Object.keys(achievementConfig);
 
 const registerAllQuestListeners = () => {
-  for (const questName of Object.keys(dailyQuestConfig)) {
+  for (const questId of Object.keys(dailyQuestConfig)) {
     // @ts-ignore
-    registerQuestListeners(questName, questTypeEnum.DAILY);
+    registerQuestListeners(questId, questTypeEnum.DAILY);
   }
-  for (const questName of Object.keys(achievementConfig)) {
+  for (const questId of Object.keys(achievementConfig)) {
     // @ts-ignore
-    registerQuestListeners(questName, questTypeEnum.ACHIEVEMENT);
+    registerQuestListeners(questId, questTypeEnum.ACHIEVEMENT);
   }
 
   logger.info("Registered all quest listeners");

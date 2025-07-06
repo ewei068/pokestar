@@ -6,7 +6,7 @@ const asyncLocalStorage = new AsyncLocalStorage();
  * @typedef {{
  *  user?: CompactUser,
  *  completedQuest?: {
- *   questName: QuestEnum,
+ *   questId: QuestEnum,
  *   questType: QuestTypeEnum,
  *  }
  * }} AsyncContextStore

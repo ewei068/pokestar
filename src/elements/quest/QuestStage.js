@@ -17,22 +17,18 @@ const { getFlattenedRewardsString } = require("../../utils/trainerUtils");
  * @param {DeactElement} ref
  * @param {object} param1
  * @param {CompactUser} param1.user
- * @param {QuestEnum} param1.questName
+ * @param {QuestEnum} param1.questId
  * @param {QuestTypeEnum} param1.questType
  * @param {string} param1.backButtonKey
  * @returns {Promise<any>}
  */
-module.exports = async (ref, { user, questName, questType, backButtonKey }) => {
+module.exports = async (ref, { user, questId, questType, backButtonKey }) => {
   const { trainer, setTrainer, err: trainerErr } = await useTrainer(user, ref);
   if (trainerErr) {
     return { err: trainerErr };
   }
 
-  const questDisplayData = formatQuestDisplayData(
-    trainer,
-    questName,
-    questType
-  );
+  const questDisplayData = formatQuestDisplayData(trainer, questId, questType);
 
   const embed = buildQuestStageEmbed({
     questDisplayData,
@@ -43,7 +39,7 @@ module.exports = async (ref, { user, questName, questType, backButtonKey }) => {
       const interactionInstance = getInteractionInstance(interaction);
       const rewardRes = await claimQuestRewardsForUserAndUpdate(
         user,
-        questName,
+        questId,
         questType
       );
       if (rewardRes.err || !rewardRes.data) {
@@ -75,7 +71,7 @@ module.exports = async (ref, { user, questName, questType, backButtonKey }) => {
           label: "Claim Rewards",
           style: ButtonStyle.Success,
           callbackBindingKey: claimRewardsKey,
-          disabled: !canTrainerClaimQuestRewards(trainer, questName, questType),
+          disabled: !canTrainerClaimQuestRewards(trainer, questId, questType),
         }),
       ],
       [

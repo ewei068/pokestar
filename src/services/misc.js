@@ -61,7 +61,7 @@ const getPreInteractionUpsellData = async ({ user }) => {
   };
 };
 
-const buttonComponent = buildButtonActionRow(
+const tutorialButtonComponent = buildButtonActionRow(
   [
     {
       emoji: "👉",
@@ -86,7 +86,6 @@ const sendUpsells = async ({
   user,
   preInteractionUpsellData = {},
 }) => {
-  console.log(getAsyncContext());
   const { hasCompletedCurrentTutorialStage } = preInteractionUpsellData;
   const { data: trainer, err } = await getTrainer(user);
   if (err || !trainer) {
@@ -127,7 +126,7 @@ const sendUpsells = async ({
     if (timesSeen !== 0) {
       await attemptToReply(tutorialState?.messageRef || interaction, {
         content: `🎉 You have completed a tutorial stage! 🎉 ${replyString}Use \`/tutorial\` to claim your **rewards.**`,
-        components: [buttonComponent],
+        components: [tutorialButtonComponent],
       });
       return;
     }
@@ -150,14 +149,14 @@ const sendUpsells = async ({
   ) {
     shouldComputeTutorialUpsell = true;
   }
-  let upsellToShow;
   if (shouldComputeTutorialUpsell) {
+    let upsellToShow;
     if (timesSeen === 0) {
       upsellToShow = {
         content:
           "New to Pokestar? **Press the button** and take the tutorial to learn the bot and get **a ton of 🎉 rewards!** Or, use `/tutorial` to begin.",
         ephemeral: true,
-        components: [buttonComponent],
+        components: [tutorialButtonComponent],
       };
     } else {
       // compute if upsell should be shown
@@ -176,7 +175,7 @@ const sendUpsells = async ({
           content:
             "You have unclaimed tutorial **🎉 rewards!** Press the button or use `/tutorial` to claim them.",
           ephemeral: true,
-          components: [buttonComponent],
+          components: [tutorialButtonComponent],
         };
         shouldShowTutorialUpsell = true;
       }
@@ -194,6 +193,17 @@ const sendUpsells = async ({
 
     // update trainer
     await updateTrainer(trainer);
+    return;
+  }
+
+  const asyncContext = getAsyncContext();
+  if (asyncContext.completedQuest) {
+    const upsellToShow = {
+      content:
+        "🎉 You have completed a quest! 🎉 Click the **button** or use `/quest` to claim your **🎁 rewards.**",
+      ephemeral: true,
+    };
+    await attemptToReply(interaction, upsellToShow);
   }
 };
 
