@@ -98,6 +98,23 @@ const userSettingsConfigRaw = {
       default: true,
     },
   },
+  enableQuestUpsell: {
+    name: "Enable Quest Upsell",
+    options: /** @type {const} */ ([
+      {
+        value: true,
+        display: "Yes",
+      },
+      {
+        value: false,
+        display: "No",
+      },
+    ]),
+    trainerField: {
+      type: "boolean",
+      default: true,
+    },
+  },
 };
 /** @type {Record<UserSettingsEnum, UserSettingsData>} */
 const userSettingsConfig = Object.freeze(userSettingsConfigRaw);
@@ -117,6 +134,9 @@ const userSettingsTrainerFieldsConfig = Object.entries(
   return acc;
 }, {});
 
+/**
+ * @type {DefaultFieldConfig<Trainer>}
+ */
 const questFields = {
   dailyQuests: {
     type: "object",

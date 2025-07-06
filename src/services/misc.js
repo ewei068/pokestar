@@ -106,6 +106,7 @@ const sendUpsells = async ({
     return;
   }
   const { upsellData } = trainer;
+  const { enableQuestUpsell } = trainer.settings;
   const currentTime = Date.now();
 
   // tutorial completion upsell
@@ -123,9 +124,10 @@ const sendUpsells = async ({
       tutorialState.currentStage
     ));
   if (
-    shouldShowUpsellBasedOnTutorialStateStage ||
-    (!hasCompletedCurrentTutorialStage &&
-      (await hasTrainerMetCurrentTutorialStageRequirements(trainer)))
+    (shouldShowUpsellBasedOnTutorialStateStage ||
+      (!hasCompletedCurrentTutorialStage &&
+        (await hasTrainerMetCurrentTutorialStageRequirements(trainer)))) &&
+    enableQuestUpsell
   ) {
     // attempt to update tutorial state
     if (tutorialState?.refreshTutorialState) {
@@ -139,7 +141,7 @@ const sendUpsells = async ({
     // skip if haven't yet seen first tutorial upsell
     if (timesSeen !== 0) {
       await attemptToReply(tutorialState?.messageRef || interaction, {
-        content: `🎉 You have completed a tutorial stage! 🎉 ${replyString}Use \`/tutorial\` to claim your **rewards.**`,
+        content: `🎉 You have completed a tutorial stage! 🎉 ${replyString}Use \`/tutorial\` to claim your **rewards.**\n\nYou can disable this notification in your \`/settings\`.`,
         components: [tutorialButtonComponent],
       });
       return;
@@ -163,7 +165,7 @@ const sendUpsells = async ({
   ) {
     shouldComputeTutorialUpsell = true;
   }
-  if (shouldComputeTutorialUpsell) {
+  if (shouldComputeTutorialUpsell && enableQuestUpsell) {
     let upsellToShow;
     if (timesSeen === 0) {
       upsellToShow = {
@@ -211,10 +213,10 @@ const sendUpsells = async ({
   }
 
   const asyncContext = getAsyncContext();
-  if (asyncContext.completedQuest) {
+  if (asyncContext.completedQuest && enableQuestUpsell) {
     const upsellToShow = {
       content:
-        "🎉 You have completed a quest! 🎉 Click the **button** or use `/quest` to claim your **🎁 rewards.**",
+        "🎉 You have **completed** a quest! 🎉 Click the **button** or use `/quest` to claim your **🎁 rewards.**\n\nYou can disable this notification in your `/settings`.",
       ephemeral: true,
       components: [
         makeQuestButtonComponent(
