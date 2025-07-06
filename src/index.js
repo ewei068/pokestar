@@ -13,7 +13,7 @@ const {
 } = require("./handlers/commandHandler");
 const { handleEvent } = require("./handlers/eventHandler");
 const { logger } = require("./log");
-const { checkRateLimit } = require("./services/rateLimit");
+const { checkRateLimit } = require("./services/bot/rateLimit");
 const { addVote } = require("./services/trainer");
 const { stageNames } = require("./config/stageConfig");
 const { poll } = require("./utils/utils");
@@ -25,6 +25,7 @@ const {
 } = require("./battle/data/initialize");
 const { getInteractionCount } = require("./deact/interactions");
 const { registerAllQuestListeners } = require("./services/quest");
+const { runWithContext } = require("./services/bot/asyncContext");
 
 console.log(`STAGE: ${process.env.STAGE}`);
 const FFLAG_ENABLE_SPAWN = process.env.FFLAG_ENABLE_SPAWN === "1";
@@ -65,22 +66,29 @@ client.on(Events.MessageCreate, async (message) => {
     return;
   }
 
-  runMessageCommand(message, client)
-    .then(() => {
-      // do nothing
-    })
-    .catch(async (error) => {
-      try {
-        logger.error(`Error in message command: ${message.content}`);
-        logger.error(error);
-        await message.reply(
-          "There was an error trying to execute that command!"
-        );
-      } catch (error2) {
-        logger.error(`Error in message command: ${message.content}`);
-        logger.error(error2);
-      }
-    });
+  runWithContext(
+    async () => {
+      runMessageCommand(message, client)
+        .then(() => {
+          // do nothing
+        })
+        .catch(async (error) => {
+          try {
+            logger.error(`Error in message command: ${message.content}`);
+            logger.error(error);
+            await message.reply(
+              "There was an error trying to execute that command!"
+            );
+          } catch (error2) {
+            logger.error(`Error in message command: ${message.content}`);
+            logger.error(error2);
+          }
+        });
+    },
+    {
+      user: message.author,
+    }
+  );
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -92,28 +100,37 @@ client.on(Events.InteractionCreate, async (interaction) => {
     return;
   }
 
-  runSlashCommand(interaction, client)
-    .then(() => {
-      // do nothing
-    })
-    .catch(async (error) => {
-      logger.error(`Error in slash command: ${interaction.commandName}`);
-      logger.error(error);
-      try {
-        await interaction.reply(
-          "There was an error trying to execute that command!"
-        );
-      } catch {
-        try {
-          await interaction.followUp(
-            "There was an error trying to execute that command!"
-          );
-        } catch (error2) {
+  runWithContext(
+    async () => {
+      runSlashCommand(interaction, client)
+        .then(() => {
+          // do nothing
+        })
+        .catch(async (error) => {
           logger.error(`Error in slash command: ${interaction.commandName}`);
-          logger.error(error2);
-        }
-      }
-    });
+          logger.error(error);
+          try {
+            await interaction.reply(
+              "There was an error trying to execute that command!"
+            );
+          } catch {
+            try {
+              await interaction.followUp(
+                "There was an error trying to execute that command!"
+              );
+            } catch (error2) {
+              logger.error(
+                `Error in slash command: ${interaction.commandName}`
+              );
+              logger.error(error2);
+            }
+          }
+        });
+    },
+    {
+      user: interaction.user,
+    }
+  );
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -130,12 +147,19 @@ client.on(Events.InteractionCreate, async (interaction) => {
     return;
   }
 
-  try {
-    await handleEvent(interaction, client);
-  } catch (error) {
-    logger.error(`Error in event handler: ${interaction.customId}`);
-    logger.error(error);
-  }
+  runWithContext(
+    async () => {
+      try {
+        await handleEvent(interaction, client);
+      } catch (error) {
+        logger.error(`Error in event handler: ${interaction.customId}`);
+        logger.error(error);
+      }
+    },
+    {
+      user: interaction.user,
+    }
+  );
 });
 
 // On guild join, log it

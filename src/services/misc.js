@@ -13,6 +13,7 @@ const {
 const { getState, deleteState } = require("./state");
 const { getTrainer, updateTrainer } = require("./trainer");
 const { eventNames } = require("../config/eventConfig");
+const { getAsyncContext } = require("./bot/asyncContext");
 
 const TUTORIAL_UPSELL_TIME_1 = timeEnum.DAY;
 const TUTORIAL_UPSELL_TIME_2 = 3 * timeEnum.DAY;
@@ -85,6 +86,7 @@ const sendUpsells = async ({
   user,
   preInteractionUpsellData = {},
 }) => {
+  console.log(getAsyncContext());
   const { hasCompletedCurrentTutorialStage } = preInteractionUpsellData;
   const { data: trainer, err } = await getTrainer(user);
   if (err || !trainer) {
