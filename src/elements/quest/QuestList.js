@@ -7,6 +7,7 @@ const {
   formatQuestDisplayData,
   canTrainerClaimAllRewards,
   tryProgressAndUpdateBooleanQuests,
+  claimAllQuestRewardsForUserAndUpdate,
 } = require("../../services/quest");
 const useTrainer = require("../../hooks/useTrainer");
 const {
@@ -18,7 +19,8 @@ const {
 } = require("../../deact/deact");
 const Button = require("../../deact/elements/Button");
 const QuestStage = require("./QuestStage");
-
+const { getInteractionInstance } = require("../../deact/interactions");
+const { getFlattenedRewardsString } = require("../../utils/trainerUtils");
 /**
  * @param {Trainer} trainer
  * @param {QuestEnum[]} questNames
@@ -107,11 +109,18 @@ module.exports = async (
     ref
   );
 
+  const canClaimAllRewards = useMemo(
+    () => canTrainerClaimAllRewards(trainer),
+    [trainer],
+    ref
+  );
+
   const embed = buildQuestListEmbed({
     // @ts-ignore
     questDisplayDataMap: questConfigAndData,
     questType,
     page,
+    canClaimAllRewards,
   });
 
   const changeQuestTypeKey = useCallbackBinding(
@@ -123,10 +132,31 @@ module.exports = async (
     { defer: true }
   );
 
-  const canClaimAllRewards = useMemo(
-    () => canTrainerClaimAllRewards(trainer),
-    [trainer],
-    ref
+  const claimAllRewardsKey = useCallbackBinding(
+    async (interaction) => {
+      const interactionInstance = getInteractionInstance(interaction);
+      const {
+        err: claimErr,
+        didProgress,
+        data: newTrainer,
+        rewards,
+      } = await claimAllQuestRewardsForUserAndUpdate(user);
+      if (claimErr) {
+        return { err: claimErr };
+      }
+      if (didProgress && newTrainer) {
+        setTrainer(newTrainer);
+      }
+      if (rewards) {
+        await interactionInstance.reply({
+          element: {
+            content: getFlattenedRewardsString(rewards),
+          },
+        });
+      }
+    },
+    ref,
+    { defer: true }
   );
 
   const backButtonKey = useCallbackBinding(
@@ -165,7 +195,7 @@ module.exports = async (
           emoji: "🎁",
           label: "Claim All Rewards",
           disabled: !canClaimAllRewards,
-          callbackBindingKey: "TODO",
+          callbackBindingKey: claimAllRewardsKey,
         }),
       ],
       selectMenuElement,

@@ -108,9 +108,15 @@ const buildTutorialStageEmbed = ({ stage, userTutorialData, page = 1 }) => {
  * @param {QuestTypeEnum} param0.questType
  * @param {Record<QuestEnum, ReturnType<typeof formatQuestDisplayData>>} param0.questDisplayDataMap
  * @param {number=} param0.page
+ * @param {boolean=} param0.canClaimAllRewards
  * @returns {EmbedBuilder}
  */
-const buildQuestListEmbed = ({ questType, questDisplayDataMap, page = 1 }) => {
+const buildQuestListEmbed = ({
+  questType,
+  questDisplayDataMap,
+  canClaimAllRewards,
+  page = 1,
+}) => {
   const embed = new EmbedBuilder();
   const questTypeDisplay =
     questType === questTypeEnum.DAILY ? "Daily Quests" : "Achievements";
@@ -160,6 +166,13 @@ const buildQuestListEmbed = ({ questType, questDisplayDataMap, page = 1 }) => {
       )
       .join("\n\n"),
   });
+
+  if (canClaimAllRewards) {
+    embed.setFooter({
+      text: "🎁 Click 'Claim All Rewards' to claim your rewards!",
+    });
+  }
+
   return embed;
 };
 

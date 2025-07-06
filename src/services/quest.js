@@ -478,6 +478,96 @@ const claimQuestRewardsForUserAndUpdate = async (user, questId, questType) => {
 const getAchievements = () => Object.keys(achievementConfig);
 
 /**
+ * @param {WithId<Trainer>} trainer
+ * @param {QuestEnum} questId
+ * @param {QuestTypeEnum} questType
+ * @param {object} options
+ * @param {FlattenedRewards=} options.accumulator
+ * @param {number=} options.maxAttempts
+ */
+const tryCompleteAllQuestStagesForTrainer = async (
+  trainer,
+  questId,
+  questType,
+  { accumulator = {}, maxAttempts = 25 } = {}
+) => {
+  const questConfigData = getQuestConfigData(questId, questType);
+  const questDataEntry = getAndSetQuestData(trainer, questId, questType);
+  await checkAndProgressBooleanQuest(trainer, questConfigData, questDataEntry);
+
+  let didProgress = false;
+  for (let i = 0; i < maxAttempts; i += 1) {
+    const { err: claimErr } = await claimQuestRewardsForTrainer(
+      trainer,
+      questId,
+      questType,
+      { accumulator }
+    );
+    if (claimErr) {
+      break;
+    }
+    didProgress = true;
+  }
+  return {
+    data: trainer,
+    didProgress,
+    rewards: accumulator,
+  };
+};
+
+/**
+ * @param {CompactUser} user
+ * @returns {Promise<{data?: WithId<Trainer>, err?: string, rewards?: FlattenedRewards, didProgress?: boolean}>}
+ */
+const claimAllQuestRewardsForUserAndUpdate = async (user) => {
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { err: trainerErr };
+  }
+  const accumulator = {};
+  const promises = [];
+  const dailyQuestIds = getDailyQuests();
+  const achievementQuestIds = getAchievements();
+  for (const questId of dailyQuestIds) {
+    promises.push(
+      tryCompleteAllQuestStagesForTrainer(
+        trainer,
+        questId,
+        questTypeEnum.DAILY,
+        { accumulator }
+      )
+    );
+  }
+  for (const questId of achievementQuestIds) {
+    promises.push(
+      tryCompleteAllQuestStagesForTrainer(
+        trainer,
+        questId,
+        questTypeEnum.ACHIEVEMENT,
+        { accumulator }
+      )
+    );
+  }
+  const results = await Promise.all(promises);
+  const didProgress = results.some((result) => result.didProgress);
+
+  // TODO: check special case for daily quest
+
+  if (didProgress) {
+    return {
+      ...(await updateTrainer(trainer)),
+      didProgress,
+      rewards: accumulator,
+    };
+  }
+  return {
+    data: trainer,
+    didProgress,
+    rewards: null,
+  };
+};
+
+/**
  * @param {Trainer} trainer
  * @returns {boolean}
  */
@@ -512,6 +602,7 @@ const registerQuestListeners = (questId, questType) => {
       const questDataEntry = getAndSetQuestData(trainer, questId, questType);
       if (
         questType === questTypeEnum.DAILY &&
+        // @ts-ignore
         !getDailyQuests().includes(questId)
       ) {
         return;
@@ -592,4 +683,5 @@ module.exports = {
   claimQuestRewardsForUserAndUpdate,
   canTrainerClaimAllRewards,
   tryProgressAndUpdateBooleanQuests,
+  claimAllQuestRewardsForUserAndUpdate,
 };
