@@ -332,6 +332,37 @@ const canTrainerClaimQuestRewards = (trainer, questId, questType) => {
 
 /**
  * @param {WithId<Trainer>} trainer
+ * @param {QuestConfig} questConfigData
+ * @param {QuestDataEntry} questDataEntry
+ * @returns {Promise<boolean>} true if quest was progressed, false otherwise
+ */
+const checkAndProgressBooleanQuest = async (
+  trainer,
+  questConfigData,
+  questDataEntry
+) => {
+  const completionStatus = getQuestCompletionStatus(
+    questConfigData,
+    questDataEntry
+  );
+  if (
+    completionStatus === "incomplete" &&
+    questConfigData.requirementType === questRequirementTypeEnum.BOOLEAN
+  ) {
+    const isComplete = await questConfigData.checkRequirements({
+      stage: questDataEntry.stage,
+      trainer,
+    });
+    if (isComplete) {
+      questDataEntry.progress = 1;
+      return true;
+    }
+  }
+  return false;
+};
+
+/**
+ * @param {WithId<Trainer>} trainer
  * @param {QuestEnum} questId
  * @param {QuestTypeEnum} questType
  * @param {object} options
@@ -370,18 +401,7 @@ const claimQuestRewardsForTrainer = async (
     questConfigData,
     questDataEntry
   );
-  if (
-    completionStatus === "incomplete" &&
-    questConfigData.requirementType === questRequirementTypeEnum.BOOLEAN
-  ) {
-    const isComplete = await questConfigData.checkRequirements({
-      stage: questDataEntry.stage,
-      trainer,
-    });
-    if (isComplete) {
-      questDataEntry.progress = 1;
-    }
-  }
+  await checkAndProgressBooleanQuest(trainer, questConfigData, questDataEntry);
 
   return {
     data: trainer,
@@ -416,6 +436,32 @@ const claimQuestRewardsForUserAndUpdate = async (user, questId, questType) => {
     ...(await updateTrainer(trainer)),
     rewards: rewardsAccumulator,
   };
+};
+
+/**
+ * @returns {AchievementEnum[]}
+ */
+// @ts-ignore
+const getAchievements = () => Object.keys(achievementConfig);
+
+/**
+ * @param {Trainer} trainer
+ * @returns {boolean}
+ */
+const canTrainerClaimAllRewards = (trainer) => {
+  const dailyQuestIds = getDailyQuests();
+  const canClaimDailyQuestRewards = dailyQuestIds.some((questId) =>
+    canTrainerClaimQuestRewards(trainer, questId, questTypeEnum.DAILY)
+  );
+  if (canClaimDailyQuestRewards) {
+    return true;
+  }
+
+  const achievementQuestIds = getAchievements();
+  const canClaimAchievementQuestRewards = achievementQuestIds.some((questId) =>
+    canTrainerClaimQuestRewards(trainer, questId, questTypeEnum.ACHIEVEMENT)
+  );
+  return canClaimAchievementQuestRewards;
 };
 
 /**
@@ -482,12 +528,6 @@ const registerQuestListeners = (questId, questType) => {
   }
 };
 
-/**
- * @returns {AchievementEnum[]}
- */
-// @ts-ignore
-const getAchievements = () => Object.keys(achievementConfig);
-
 const registerAllQuestListeners = () => {
   for (const questId of Object.keys(dailyQuestConfig)) {
     // @ts-ignore
@@ -517,4 +557,5 @@ module.exports = {
   getQuestConfigData,
   canTrainerClaimQuestRewards,
   claimQuestRewardsForUserAndUpdate,
+  canTrainerClaimAllRewards,
 };

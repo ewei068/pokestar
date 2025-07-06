@@ -5,6 +5,7 @@ const {
   getDailyQuests,
   getAchievements,
   formatQuestDisplayData,
+  canTrainerClaimAllRewards,
 } = require("../../services/quest");
 const useTrainer = require("../../hooks/useTrainer");
 const {
@@ -105,6 +106,12 @@ module.exports = async (
     { defer: true }
   );
 
+  const canClaimAllRewards = useMemo(
+    () => canTrainerClaimAllRewards(trainer),
+    [trainer],
+    ref
+  );
+
   const backButtonKey = useCallbackBinding(
     async () => {
       setItem(null);
@@ -135,7 +142,15 @@ module.exports = async (
       },
     ],
     components: [
-      scrollButtonsElement,
+      [
+        scrollButtonsElement,
+        createElement(Button, {
+          emoji: "🎁",
+          label: "Claim All Rewards",
+          disabled: !canClaimAllRewards,
+          callbackBindingKey: "TODO",
+        }),
+      ],
       selectMenuElement,
       [
         createElement(Button, {
