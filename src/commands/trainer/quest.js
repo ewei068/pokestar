@@ -30,7 +30,7 @@ const questMessageCommand = async (message) => {
 };
 
 const questSlashCommand = async (interaction) => {
-  const questType = interaction.options.getString("questType") ?? undefined;
+  const questType = interaction.options.getString("type") ?? undefined;
   return await quest(interaction, questType);
 };
 

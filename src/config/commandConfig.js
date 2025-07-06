@@ -249,7 +249,15 @@ const commandConfigRaw = {
     longDescription:
       "View your active quests, completed quests, and claim quest rewards.",
     execute: "quest.js",
-    args: {},
+    args: {
+      type: {
+        type: "string",
+        description: "type of quest to view",
+        optional: true,
+        variable: false,
+        enum: ["daily", "achievement"],
+      },
+    },
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 5,
     money: 10,
