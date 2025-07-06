@@ -193,7 +193,7 @@ const buildPartyString = (
       const emoji = pokemon ? pokemonConfig[pokemon.speciesId].emoji : "⬛";
       // if j is divisible by 3 and not 0, remove a space from the left
       // const leftSpace = j % 3 === 0 && j !== 0 ? "" : " ";
-      const leftSpace = isMobile ? "\u2002\u2005" : "\u2009\u200a";
+      const leftSpace = isMobile ? "\u2002\u2005" : "\u2005\u2006";
       rowString += `\`${lborder} \`${emoji}${leftSpace}`;
       globalIndex += 1;
       if (j === cols - 1) {
