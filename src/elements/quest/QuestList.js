@@ -39,11 +39,12 @@ const formatQuestAndDataConfig = (trainer, questNames, questType) =>
  * @param {object} param1
  * @param {CompactUser} param1.user
  * @param {QuestTypeEnum=} param1.initialQuestType
+ * @param {QuestEnum=} param1.initialQuestId
  * @returns {Promise<any>}
  */
 module.exports = async (
   ref,
-  { user, initialQuestType = questTypeEnum.DAILY }
+  { user, initialQuestType = questTypeEnum.DAILY, initialQuestId }
 ) => {
   const {
     trainer,
@@ -81,6 +82,7 @@ module.exports = async (
       selectionPlaceholder: "Select a quest",
       showId: false,
       itemConfig: questConfigAndData,
+      initialItem: initialQuestId,
     },
     ref
   );

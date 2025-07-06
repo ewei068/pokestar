@@ -74,6 +74,20 @@ const tutorialButtonComponent = buildButtonActionRow(
   eventNames.TUTORIAL_UPSELL_BUTTON
 );
 
+const makeQuestButtonComponent = (questType, questId) =>
+  buildButtonActionRow(
+    [
+      {
+        emoji: "👉",
+        label: "Go to Quest",
+        data: { type: questType, questId },
+        style: ButtonStyle.Success,
+        disabled: false,
+      },
+    ],
+    eventNames.QUEST_UPSELL_BUTTON
+  );
+
 /**
  * Decides the upsells to send to the user, then sends them
  * @param {object} param0
@@ -202,6 +216,12 @@ const sendUpsells = async ({
       content:
         "🎉 You have completed a quest! 🎉 Click the **button** or use `/quest` to claim your **🎁 rewards.**",
       ephemeral: true,
+      components: [
+        makeQuestButtonComponent(
+          asyncContext.completedQuest.questType,
+          asyncContext.completedQuest.questId
+        ),
+      ],
     };
     await attemptToReply(interaction, upsellToShow);
   }

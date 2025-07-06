@@ -42,6 +42,9 @@
     - Have total combat power
       - Milestone
       - Infinite
+    - Increase your Pokemon limit
+      - Milestone
+      - Finite
     - Defeat trainers
       - Numeric
       - Infinite
