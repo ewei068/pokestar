@@ -229,7 +229,9 @@ const computeQuestRewards = (questConfigData, questDataEntry) => {
  */
 const doesQuestProgressReset = (questConfigData) =>
   questConfigData.requirementType === questRequirementTypeEnum.BOOLEAN ||
-  (questConfigData.requirementType === questRequirementTypeEnum.NUMERIC &&
+  ((questConfigData.requirementType === questRequirementTypeEnum.NUMERIC ||
+    questConfigData.requirementType ===
+      questRequirementTypeEnum.MILESTONE_NUMERIC) &&
     questConfigData.resetProgressOnComplete);
 
 /**
@@ -336,12 +338,42 @@ const canTrainerClaimQuestRewards = (trainer, questId, questType) => {
 };
 
 /**
+ * @param {QuestConfig} questConfigData
+ * @param {QuestDataEntry} questDataEntry
+ * @param {number} amount
+ */
+const progressQuestByAmount = (questConfigData, questDataEntry, amount) => {
+  questDataEntry.progress += amount;
+  if (doesQuestProgressReset(questConfigData)) {
+    questDataEntry.progress = Math.min(
+      questDataEntry.progress,
+      computeQuestProgressRequirement(questConfigData, questDataEntry)
+    );
+  }
+};
+
+/**
+ * @param {QuestConfig} questConfigData
+ * @param {QuestDataEntry} questDataEntry
+ * @param {number} progress
+ */
+const setQuestProgress = (questConfigData, questDataEntry, progress) => {
+  questDataEntry.progress = progress;
+  if (doesQuestProgressReset(questConfigData)) {
+    questDataEntry.progress = Math.min(
+      questDataEntry.progress,
+      computeQuestProgressRequirement(questConfigData, questDataEntry)
+    );
+  }
+};
+
+/**
  * @param {WithId<Trainer>} trainer
  * @param {QuestConfig} questConfigData
  * @param {QuestDataEntry} questDataEntry
- * @returns {Promise<boolean>} true if quest was progressed, false otherwise
+ * @returns {Promise<boolean>} true if quest was progressed (not necessarily completed), false otherwise
  */
-const checkAndProgressBooleanQuest = async (
+const checkAndProgressQuest = async (
   trainer,
   questConfigData,
   questDataEntry
@@ -350,16 +382,28 @@ const checkAndProgressBooleanQuest = async (
     questConfigData,
     questDataEntry
   );
-  if (
-    completionStatus === "incomplete" &&
-    questConfigData.requirementType === questRequirementTypeEnum.BOOLEAN
-  ) {
+  if (completionStatus !== "incomplete") {
+    return false;
+  }
+  if (questConfigData.requirementType === questRequirementTypeEnum.BOOLEAN) {
     const isComplete = await questConfigData.checkRequirements({
       stage: questDataEntry.stage,
       trainer,
     });
     if (isComplete) {
-      questDataEntry.progress = 1;
+      progressQuestByAmount(questConfigData, questDataEntry, 1);
+      return true;
+    }
+  } else if (
+    questConfigData.requirementType ===
+    questRequirementTypeEnum.MILESTONE_NUMERIC
+  ) {
+    const currentProgress = await questConfigData.computeCurrentProgress({
+      stage: questDataEntry.stage,
+      trainer,
+    });
+    if (currentProgress > questDataEntry.progress) {
+      setQuestProgress(questConfigData, questDataEntry, currentProgress);
       return true;
     }
   }
@@ -379,11 +423,7 @@ const tryProgressAndUpdateBooleanQuests = async (
   const promises = questIds.map((questId) => {
     const questConfigData = getQuestConfigData(questId, questType);
     const questDataEntry = getAndSetQuestData(trainer, questId, questType);
-    return checkAndProgressBooleanQuest(
-      trainer,
-      questConfigData,
-      questDataEntry
-    );
+    return checkAndProgressQuest(trainer, questConfigData, questDataEntry);
   });
   const results = await Promise.all(promises);
   const didProgress = results.some((result) => result);
@@ -437,7 +477,7 @@ const claimQuestRewardsForTrainer = async (
     questConfigData,
     questDataEntry
   );
-  await checkAndProgressBooleanQuest(trainer, questConfigData, questDataEntry);
+  await checkAndProgressQuest(trainer, questConfigData, questDataEntry);
 
   return {
     data: trainer,
@@ -496,7 +536,7 @@ const tryCompleteAllQuestStagesForTrainer = async (
 ) => {
   const questConfigData = getQuestConfigData(questId, questType);
   const questDataEntry = getAndSetQuestData(trainer, questId, questType);
-  await checkAndProgressBooleanQuest(trainer, questConfigData, questDataEntry);
+  await checkAndProgressQuest(trainer, questConfigData, questDataEntry);
 
   let didProgress = false;
   for (let i = 0; i < maxAttempts; i += 1) {
@@ -632,13 +672,7 @@ const registerQuestListeners = (questId, questType) => {
         return;
       }
 
-      questDataEntry.progress += progress;
-      if (doesQuestProgressReset(questConfigData)) {
-        questDataEntry.progress = Math.min(
-          questDataEntry.progress,
-          computeQuestProgressRequirement(questConfigData, questDataEntry)
-        );
-      }
+      progressQuestByAmount(questConfigData, questDataEntry, progress);
 
       const newQuestCompletionStatus = getQuestCompletionStatus(
         questConfigData,

@@ -7,6 +7,7 @@ const {
   checkNumPokemon,
   listPokemonsFromTrainer: listPokemons,
 } = require("../services/pokemon");
+const { getExtraTrainerInfo } = require("../services/trainer");
 const { getMaxDreamCards } = require("../utils/trainerUtils");
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { SUPPORT_SERVER_INVITE, gameEventConfig } = require("./helpConfig");
@@ -912,6 +913,7 @@ const questTypeEnum = Object.freeze({
  */
 const questRequirementTypeEnum = Object.freeze({
   NUMERIC: "numeric",
+  MILESTONE_NUMERIC: "milestoneNumeric",
   BOOLEAN: "boolean",
 });
 
@@ -966,6 +968,14 @@ const questProgressionTypeEnum = Object.freeze({
  */
 /**
  * @typedef {{
+ *  requirementType: typeof questRequirementTypeEnum.MILESTONE_NUMERIC,
+ *  computeProgressRequirement: GenericQuestFunction<{}, number>,
+ *  computeCurrentProgress: GenericQuestFunction<{trainer: WithId<Trainer>}, Promise<number>>,
+ *  resetProgressOnComplete: boolean,
+ * }} QuestConfigMilestoneNumeric
+ */
+/**
+ * @typedef {{
  *  requirementType: typeof questRequirementTypeEnum.BOOLEAN,
  *  checkRequirements: GenericQuestFunction<{trainer: WithId<Trainer>}, Promise<boolean>>,
  * }} QuestConfigBoolean
@@ -991,7 +1001,7 @@ const questProgressionTypeEnum = Object.freeze({
 
 /**
  * @typedef {QuestConfigBase & QuestConfigNumeric & QuestConfigSingle} DailyQuestConfig
- * @typedef {QuestConfigBase & (QuestConfigNumeric | QuestConfigBoolean) & (QuestConfigInfinite | QuestConfigFinite)} AchievementConfig
+ * @typedef {QuestConfigBase & (QuestConfigNumeric | QuestConfigBoolean | QuestConfigMilestoneNumeric) & (QuestConfigInfinite | QuestConfigFinite)} AchievementConfig
  * @typedef {DailyQuestConfig | AchievementConfig} QuestConfig
  */
 
@@ -1156,6 +1166,36 @@ const achievementConfigRaw = {
     resetProgressOnComplete: false,
     progressionType: questProgressionTypeEnum.INFINITE,
   },
+  combatPower: {
+    formatName: ({ stage }) => `Reach Combat Power: ${stage + 1}`,
+    formatEmoji: () => "💪",
+    formatDescription: ({ progressRequirement }) =>
+      `Reach ${progressRequirement} total Combat Power! You can increase you Pokemons' combat power by leveling them up, EV training them, and upgrading their equipment.`,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Reach ${progressRequirement} total Combat Power`,
+    computeRewards: ({ stage }) => ({
+      money: 10000 * (stage + 1),
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.MASTERBALL]: 1,
+        },
+      },
+    }),
+    questListeners: [], // TODO: maybe add listeners someday
+    requirementType: questRequirementTypeEnum.MILESTONE_NUMERIC,
+    // 2500\left(x+1\right)^{2.5}+2500
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor(2500 * (stage + 1) ** 2.5 + 2500),
+    computeCurrentProgress: async ({ trainer }) => {
+      const { data: trainerInfo, err } = await getExtraTrainerInfo(trainer);
+      if (err) {
+        return 0;
+      }
+      return trainerInfo?.totalPower ?? 0;
+    },
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
   catchMythic: {
     formatName: ({ stage }) =>
       `Myths: Catch ${pokemonConfig[stageToMythicOrder[stage]].name}`,
@@ -1252,7 +1292,6 @@ const achievementConfigRaw = {
           speciesId,
         },
       });
-      console.log(pokemons);
       return (pokemons?.length ?? 0) > 0;
     },
     progressionType: questProgressionTypeEnum.FINITE,

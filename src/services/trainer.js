@@ -207,7 +207,7 @@ const refreshTrainer = async (trainer) => await getTrainer(trainer.user);
 /**
  * Given a trainer, retrieve extra info for that trainer
  * @param {WithId<Trainer>} trainer
- * @returns {Promise<{data?: Trainer & {pokemon: object, numPokemon: number}, err?: string}>}
+ * @returns {Promise<{data?: Trainer & {totalPower: number, totalWorth: number, totalShiny: number, numPokemon: number}, err?: string}>}
  */
 const getExtraTrainerInfo = async (trainer) => {
   // get extra info
