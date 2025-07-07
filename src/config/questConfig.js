@@ -935,7 +935,7 @@ const questProgressionTypeEnum = Object.freeze({
 
 /**
  * @template {TrainerEventEnum} T
- * @typedef {(args: TrainerEventArgs<T>) => Promise<QuestEventListenerCallbackReturnValue> | QuestEventListenerCallbackReturnValue} QuestEventListenerCallback
+ * @typedef {(args: TrainerEventArgs<T> & {stage: number}) => Promise<QuestEventListenerCallbackReturnValue> | QuestEventListenerCallbackReturnValue} QuestEventListenerCallback
  */
 /**
  * @template T
@@ -1085,7 +1085,14 @@ const dailyQuestConfigRaw = {
         },
       },
     }),
-    questListeners: [],
+    questListeners: [
+      {
+        eventName: trainerEventEnum.UPGRADED_EQUIPMENT,
+        listenerCallback: () => ({
+          progress: 1,
+        }),
+      },
+    ],
     requirementType: questRequirementTypeEnum.NUMERIC,
     computeProgressRequirement: () => 3,
     resetProgressOnComplete: true,
@@ -1215,8 +1222,22 @@ const achievementConfigRaw = {
         backpack,
       };
     },
-    // TODO: add quest listeners
-    questListeners: [],
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CAUGHT_POKEMON,
+        listenerCallback: ({ stage, method, pokemons }) => {
+          const speciesId = stageToMythicOrder[stage];
+          if (
+            method === "mythic" &&
+            pokemons.some((p) => p.speciesId === speciesId)
+          ) {
+            return { progress: pokemons.length };
+          }
+
+          return { progress: 0 };
+        },
+      },
+    ],
     requirementType: questRequirementTypeEnum.BOOLEAN,
     checkRequirements: async ({ stage, trainer }) => {
       // stage order: darkrai -> mew -> jirachi -> deoxys -> celebi
@@ -1231,6 +1252,7 @@ const achievementConfigRaw = {
           speciesId,
         },
       });
+      console.log(pokemons);
       return (pokemons?.length ?? 0) > 0;
     },
     progressionType: questProgressionTypeEnum.FINITE,

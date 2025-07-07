@@ -48,11 +48,12 @@ const {
   checkNumPokemon,
   updatePokemon,
 } = require("./pokemon");
-const { getTrainer, updateTrainer } = require("./trainer");
+const { getTrainer, updateTrainer, emitTrainerEvent } = require("./trainer");
 const { getMoves } = require("../battle/data/moveRegistry");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { statIndexToBattleStat } = require("../config/battleConfig");
 const { getAbilityName } = require("../utils/pokemonUtils");
+const { trainerEventEnum } = require("../enums/gameEnums");
 
 /**
  * @param {Trainer} trainer
@@ -132,6 +133,11 @@ const upsertMythic = async (trainer, mythic) => {
       );
     } else {
       logger.info(`Updated ${mythicData.name} for ${trainer.user.username}`);
+      await emitTrainerEvent(trainerEventEnum.CAUGHT_POKEMON, {
+        trainer,
+        pokemons: [mythic],
+        method: "mythic",
+      });
     }
     return { id: res.upsertedId };
   } catch (err) {

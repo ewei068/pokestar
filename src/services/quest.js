@@ -224,6 +224,15 @@ const computeQuestRewards = (questConfigData, questDataEntry) => {
 };
 
 /**
+ * @param {QuestConfig} questConfigData
+ * @returns {boolean}
+ */
+const doesQuestProgressReset = (questConfigData) =>
+  questConfigData.requirementType === questRequirementTypeEnum.BOOLEAN ||
+  (questConfigData.requirementType === questRequirementTypeEnum.NUMERIC &&
+    questConfigData.resetProgressOnComplete);
+
+/**
  * @param {Trainer} trainer
  * @param {QuestEnum} questId
  * @param {QuestTypeEnum} questType
@@ -243,9 +252,7 @@ const formatQuestDisplayData = (trainer, questId, questType) => {
     questDataEntry
   );
   const emoji = questConfigData.formatEmoji({ stage });
-  const doesProgressReset =
-    questConfigData.requirementType === questRequirementTypeEnum.NUMERIC &&
-    questConfigData.resetProgressOnComplete;
+  const doesProgressReset = doesQuestProgressReset(questConfigData);
   return {
     emoji:
       // eslint-disable-next-line no-nested-ternary
@@ -285,9 +292,7 @@ const shouldEmitQuestEvent = (questConfigData, questDataEntry) => {
   );
 
   const hasMetRequirement = questDataEntry.progress >= progressRequirement;
-  const doesProgressReset =
-    questConfigData.requirementType === questRequirementTypeEnum.NUMERIC &&
-    questConfigData.resetProgressOnComplete;
+  const doesProgressReset = doesQuestProgressReset(questConfigData);
   const hasPassedMaxStage =
     questConfigData.progressionType === questProgressionTypeEnum.FINITE &&
     questDataEntry.stage > questConfigData.maxStage;
@@ -421,9 +426,7 @@ const claimQuestRewardsForTrainer = async (
   const rewards = computeQuestRewards(questConfigData, questDataEntry);
   addRewards(trainer, rewards, accumulator);
 
-  const doesProgressReset =
-    questConfigData.requirementType === questRequirementTypeEnum.NUMERIC &&
-    questConfigData.resetProgressOnComplete;
+  const doesProgressReset = doesQuestProgressReset(questConfigData);
   if (doesProgressReset) {
     questDataEntry.progress = 0;
   }
@@ -614,18 +617,23 @@ const registerQuestListeners = (questId, questType) => {
         questConfigData,
         questDataEntry
       );
+      const stage = getCurrentQuestStageForDisplay(
+        questConfigData,
+        questDataEntry
+      );
 
       // @ts-ignore
-      const { progress } = await listenerCallback(args);
+      const { progress } = await listenerCallback({
+        ...args,
+        // @ts-ignore
+        stage,
+      });
       if (!progress) {
         return;
       }
 
       questDataEntry.progress += progress;
-      if (
-        questConfigData.requirementType === questRequirementTypeEnum.NUMERIC &&
-        questConfigData.resetProgressOnComplete
-      ) {
+      if (doesQuestProgressReset(questConfigData)) {
         questDataEntry.progress = Math.min(
           questDataEntry.progress,
           computeQuestProgressRequirement(questConfigData, questDataEntry)
