@@ -1166,6 +1166,70 @@ const achievementConfigRaw = {
     resetProgressOnComplete: false,
     progressionType: questProgressionTypeEnum.INFINITE,
   },
+  catchWildPokemon: {
+    formatName: ({ stage }) => `Catch Wild Pokemon: ${stage + 1}`,
+    formatEmoji: () => emojis.POKEBALL,
+    formatDescription: ({ progressRequirement }) =>
+      `Catch ${progressRequirement} wild Pokemon! Wild Pokemon spawn periodically in channels in your server. If you're a server admin, use \`/spawn manage\` to manage the spawns.`,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Catch ${progressRequirement}x wild Pokemon`,
+    computeRewards: ({ stage }) => ({
+      money: 10000 * (stage + 1),
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          // 3\left(x+1\right)^{0.75}
+          [backpackItems.GREATBALL]: Math.floor(3 * (stage + 1) ** 0.75),
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CAUGHT_POKEMON,
+        listenerCallback: ({ method, pokemons }) => {
+          if (method === "wild") {
+            return {
+              progress: pokemons.length,
+            };
+          }
+
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    // 0.5\left(x+1\right)^{2.5}+0.5
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor(0.5 * (stage + 1) ** 2.5 + 0.51),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  evolvePokemon: {
+    formatName: ({ stage }) => `Evolve Pokemon: ${stage + 1}`,
+    formatEmoji: () => "🧬",
+    formatDescription: ({ progressRequirement }) =>
+      `Evolve ${progressRequirement} Pokemon! Use \`/evolve\` to evolve your Pokemon.\n## \`/evolve\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Evolve ${progressRequirement}x Pokemon`,
+    computeRewards: ({ stage }) => ({
+      money: 20000 * (stage + 1),
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.EVOLVED_POKEMON,
+        listenerCallback: () => ({
+          progress: 1,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: ({ stage }) =>
+      // 0.25\left(x+1\right)^{2.5}+0.75
+      Math.floor(0.25 * (stage + 1) ** 2.5 + 0.76),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
   combatPower: {
     formatName: ({ stage }) => `Reach Combat Power: ${stage + 1}`,
     formatEmoji: () => "💪",

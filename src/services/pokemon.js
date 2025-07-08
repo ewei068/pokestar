@@ -52,7 +52,12 @@ const {
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
-const { getTrainer, updateTrainer, getTrainerFromId } = require("./trainer");
+const {
+  getTrainer,
+  updateTrainer,
+  getTrainerFromId,
+  emitTrainerEvent,
+} = require("./trainer");
 const { setState, getState } = require("./state");
 const { buildYesNoActionRow } = require("../components/yesNoActionRow");
 const {
@@ -77,6 +82,7 @@ const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
 const { buildEquipmentSelectRow } = require("../components/equipmentSelectRow");
 const { stageNames } = require("../config/stageConfig");
 const { emojis } = require("../enums/emojis");
+const { trainerEventEnum } = require("../enums/gameEnums");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
@@ -2243,6 +2249,16 @@ const evolvePokemon = async (pokemon, evolutionSpeciesId) => {
       return { data: null, err: "Error evolving Pokemon." };
     }
     logger.info(`Evolved Pokemon ${pokemon._id}.`);
+
+    const { data: trainer, err: trainerErr } = await getTrainerFromId(
+      pokemon.userId
+    );
+    if (!trainerErr) {
+      await emitTrainerEvent(trainerEventEnum.EVOLVED_POKEMON, {
+        trainer,
+        pokemon,
+      });
+    }
     return { data: { pokemon, species: evolutionSpeciesData.name }, err: null };
   } catch (error) {
     logger.error(error);
