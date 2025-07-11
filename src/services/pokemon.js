@@ -570,7 +570,7 @@ const transformPokemon = (pokemon, targetSpeciesId) => {
  * @param {WithId<Pokemon>} pokemon
  * @param {number} exp
  * @param {StatArray=} evs
- * @returns {Promise<{data: {exp: number, level: number, evs: number[]}, err: string?}>}
+ * @returns {Promise<{data: {exp: number, level: number, evs: StatArray}, err: string?}>}
  */
 const addPokemonExpAndEVs = async (
   trainer,
@@ -582,7 +582,7 @@ const addPokemonExpAndEVs = async (
   const speciesData = pokemonConfig[pokemon.speciesId];
 
   // add EVs
-  const gainedEvs = [0, 0, 0, 0, 0, 0];
+  const gainedEvs = /** @type {StatArray} */ ([0, 0, 0, 0, 0, 0]);
   if (!pokemon.evs) {
     pokemon.evs = [0, 0, 0, 0, 0, 0];
   }
@@ -668,7 +668,7 @@ const addPokemonExpAndEVs = async (
 
 /**
  *
- * @param {Trainer} trainer
+ * @param {WithId<Trainer>} trainer
  * @param {WithId<Pokemon>} pokemon
  * @param {LocationEnum} locationId
  * @returns {ReturnType<addPokemonExpAndEVs>}
@@ -697,7 +697,17 @@ const trainPokemon = async (trainer, pokemon, locationId) => {
   }
 
   // add exp and evs
-  return await addPokemonExpAndEVs(trainer, pokemon, exp, evs);
+  const trainRes = await addPokemonExpAndEVs(trainer, pokemon, exp, evs);
+  if (!trainRes.err && trainRes.data) {
+    await emitTrainerEvent(trainerEventEnum.TRAINED_POKEMON, {
+      trainer,
+      pokemon,
+      exp: trainRes.data.exp,
+      evs: trainRes.data.evs,
+    });
+  }
+
+  return trainRes;
 };
 
 /**

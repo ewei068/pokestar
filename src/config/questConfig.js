@@ -932,7 +932,7 @@ const questProgressionTypeEnum = Object.freeze({
  */
 
 /**
- * @typedef {{ progress: number }} QuestEventListenerCallbackReturnValue
+ * @typedef {{ progress?: number, progressOverride?: number }} QuestEventListenerCallbackReturnValue
  */
 
 /**
@@ -1018,10 +1018,10 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Catch ${progressRequirement}x Pokemon with \`/gacha\``,
     computeRewards: () => ({
-      money: 3000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.GREATBALL]: 3,
+          [backpackItems.GREATBALL]: 2,
         },
       },
     }),
@@ -1047,15 +1047,15 @@ const dailyQuestConfigRaw = {
     progressionType: questProgressionTypeEnum.FINITE,
     maxStage: 0,
   },
-  defeatNpc: {
-    formatName: () => "Defeat NPCs",
+  defeatTrainers: {
+    formatName: () => "Defeat Trainers",
     formatEmoji: () => emojis.RED,
     formatDescription: ({ progressRequirement }) =>
-      `Defeat ${progressRequirement} NPCs! Use \`/pve\` to defeat NPCs.\n## \`/pve\``,
+      `Defeat ${progressRequirement} Trainers! Use \`/pve\` to defeat Trainers.\n## \`/pve\``,
     formatRequirementString: ({ progressRequirement }) =>
-      `Defeat ${progressRequirement}x NPCs with \`/pve\``,
+      `Defeat ${progressRequirement}x Trainers with \`/pve\``,
     computeRewards: () => ({
-      money: 10000,
+      money: 2500,
     }),
     questListeners: [
       {
@@ -1086,12 +1086,12 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Upgrade your equipment ${progressRequirement}x times with \`/equipment\``,
     computeRewards: () => ({
-      money: 5000,
+      money: 2500,
       backpack: {
         [backpackCategories.MATERIALS]: {
-          [backpackItems.EMOTION_SHARD]: 10,
-          [backpackItems.KNOWLEDGE_SHARD]: 10,
-          [backpackItems.WILLPOWER_SHARD]: 10,
+          [backpackItems.EMOTION_SHARD]: 8,
+          [backpackItems.KNOWLEDGE_SHARD]: 8,
+          [backpackItems.WILLPOWER_SHARD]: 8,
         },
       },
     }),
@@ -1136,7 +1136,7 @@ const achievementConfigRaw = {
     // money: 10000 * (stage + 1)
     // pokeballs: 5\left(x+1\right)^{0.75}\ +\ 5
     computeRewards: ({ stage }) => ({
-      money: 10000 * (stage + 1),
+      money: 2500 * (stage + 1),
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: Math.floor(5 * (stage + 1) ** 0.75 + 5),
@@ -1174,7 +1174,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Catch ${progressRequirement}x wild Pokemon`,
     computeRewards: ({ stage }) => ({
-      money: 10000 * (stage + 1),
+      money: 2500 * (stage + 1),
       backpack: {
         [backpackCategories.POKEBALLS]: {
           // 3\left(x+1\right)^{0.75}
@@ -1213,7 +1213,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Evolve ${progressRequirement}x Pokemon`,
     computeRewards: ({ stage }) => ({
-      money: 20000 * (stage + 1),
+      money: 5000 * (stage + 1),
     }),
     questListeners: [
       {
@@ -1230,6 +1230,31 @@ const achievementConfigRaw = {
     resetProgressOnComplete: false,
     progressionType: questProgressionTypeEnum.INFINITE,
   },
+  evTrain: {
+    formatName: ({ stage }) => `EV Train: ${stage + 1}`,
+    formatEmoji: () => "🎓",
+    formatDescription: ({ progressRequirement }) =>
+      `EV Train your Pokemon to ${progressRequirement} total EVs! Use \`/pokemart\` to purchase EV training locations, then use \`/train\` to EV train your Pokemon.\n## \`/pokemart\` \`/train\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `EV Train your Pokemon to ${progressRequirement} total EVs`,
+    computeRewards: ({ stage }) => ({
+      money: 5000 * (stage + 1),
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.TRAINED_POKEMON,
+        listenerCallback: ({ evs }) => ({
+          progress: evs.reduce((acc, curr) => acc + Math.abs(curr), 0),
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: ({ stage }) =>
+      // 30\left(x+1\right)^{2.5}\ +\ 20
+      Math.floor(30 * (stage + 1) ** 2.5 + 20),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
   combatPower: {
     formatName: ({ stage }) => `Reach Combat Power: ${stage + 1}`,
     formatEmoji: () => "💪",
@@ -1238,7 +1263,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Reach ${progressRequirement} total Combat Power`,
     computeRewards: ({ stage }) => ({
-      money: 10000 * (stage + 1),
+      money: 2500 * (stage + 1),
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.MASTERBALL]: 1,
@@ -1258,6 +1283,88 @@ const achievementConfigRaw = {
       return trainerInfo?.totalPower ?? 0;
     },
     resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  pokemonLimit: {
+    formatName: ({ stage }) => `Increase Pokemon Limit: ${stage + 1}`,
+    formatEmoji: () => "💻",
+    formatDescription: ({ stage }) =>
+      `Increase your Pokemon limit by upgrading the Computer Lab location to level ${
+        stage + 1
+      }! Use \`/pokemart\` to upgrade the Computer Lab location.\n## \`/pokemart\``,
+    formatRequirementString: ({ stage }) =>
+      `Upgrade the Computer Lab location to level ${stage + 1}`,
+    computeRewards: ({ stage }) => {
+      const stageToMoney = [2000, 10000, 50000];
+      return {
+        money: stageToMoney[stage] ?? 0,
+      };
+    },
+    questListeners: [
+      {
+        eventName: trainerEventEnum.MADE_PURCHASE,
+        listenerCallback: ({ itemId, level }) => {
+          if (itemId === shopItems.COMPUTER_LAB && !isNaN(level)) {
+            return {
+              progressOverride: level + 1,
+            };
+          }
+          return {};
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.MILESTONE_NUMERIC,
+    computeProgressRequirement: ({ stage }) => stage + 1,
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 2,
+    computeCurrentProgress: async ({ trainer }) =>
+      trainer.locations[locations.COMPUTER_LAB] ?? 0,
+  },
+  defeatTrainers: {
+    formatName: ({ stage }) => `Defeat Trainers: ${stage + 1}`,
+    formatEmoji: () => emojis.RED,
+    formatDescription: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement} Trainers! Use \`/pve\` to defeat Trainers.\n## \`/pve\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement}x Trainers with \`/pve\``,
+    computeRewards: ({ stage }) => ({
+      money: 3000 * (stage + 1),
+      // 4\left(x+1\right)^{0.75}\ +\ 6
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+          [backpackItems.KNOWLEDGE_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+          [backpackItems.WILLPOWER_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.DEFEATED_NPC,
+        listenerCallback: ({ type }) => {
+          if (type === "pve") {
+            return {
+              progress: 1,
+            };
+          }
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    // 0.5\left(x+1\right)^{2.5}+1.5
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor(0.5 * (stage + 1) ** 2.5 + 1.51),
+    resetProgressOnComplete: true,
     progressionType: questProgressionTypeEnum.INFINITE,
   },
   catchMythic: {

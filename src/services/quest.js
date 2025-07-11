@@ -663,16 +663,20 @@ const registerQuestListeners = (questId, questType) => {
       );
 
       // @ts-ignore
-      const { progress } = await listenerCallback({
+      const { progress, progressOverride } = await listenerCallback({
         ...args,
         // @ts-ignore
         stage,
       });
-      if (!progress) {
+      if (!progress && !progressOverride) {
         return;
       }
 
-      progressQuestByAmount(questConfigData, questDataEntry, progress);
+      if (progressOverride) {
+        setQuestProgress(questConfigData, questDataEntry, progressOverride);
+      } else {
+        progressQuestByAmount(questConfigData, questDataEntry, progress);
+      }
 
       const newQuestCompletionStatus = getQuestCompletionStatus(
         questConfigData,

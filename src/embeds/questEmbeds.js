@@ -106,6 +106,7 @@ const buildTutorialStageEmbed = ({ stage, userTutorialData, page = 1 }) => {
 /**
  * @param {object} param0
  * @param {QuestTypeEnum} param0.questType
+ * @param {QuestEnum[]} param0.questIds
  * @param {Record<QuestEnum, ReturnType<typeof formatQuestDisplayData>>} param0.questDisplayDataMap
  * @param {number=} param0.page
  * @param {boolean=} param0.canClaimAllRewards
@@ -113,6 +114,7 @@ const buildTutorialStageEmbed = ({ stage, userTutorialData, page = 1 }) => {
  */
 const buildQuestListEmbed = ({
   questType,
+  questIds,
   questDisplayDataMap,
   canClaimAllRewards,
   page = 1,
@@ -134,7 +136,8 @@ const buildQuestListEmbed = ({
   }
 
   const questsToDisplay = [];
-  Object.entries(questDisplayDataMap).forEach(([, questDisplayData]) => {
+  questIds.forEach((questId) => {
+    const questDisplayData = questDisplayDataMap[questId];
     const { emoji, name, progressRequirement, progress, completionStatus } =
       questDisplayData;
     const headerFormatting =

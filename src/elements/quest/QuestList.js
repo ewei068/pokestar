@@ -62,15 +62,15 @@ const QuestList = async (
   }
   const [questType, setQuestType] = useState(initialQuestType, ref);
 
-  const questIds = useMemo(
+  const allQuestIds = useMemo(
     () =>
       questType === questTypeEnum.DAILY ? getDailyQuests() : getAchievements(),
     [questType],
     ref
   );
   const questConfigAndData = useMemo(
-    () => formatQuestAndDataConfig(trainer, questIds, questType),
-    [trainer, questIds, questType],
+    () => formatQuestAndDataConfig(trainer, allQuestIds, questType),
+    [trainer, allQuestIds, questType],
     ref
   );
 
@@ -81,10 +81,11 @@ const QuestList = async (
     setPage,
     currentItem,
     setItem,
+    items: questIds,
   } = usePaginationAndSelection(
     {
-      allItems: questIds,
-      pageSize: 8,
+      allItems: allQuestIds,
+      pageSize: 5,
       selectionPlaceholder: "Select a quest",
       showId: false,
       itemConfig: questConfigAndData,
@@ -118,6 +119,7 @@ const QuestList = async (
   const embed = buildQuestListEmbed({
     // @ts-ignore
     questDisplayDataMap: questConfigAndData,
+    questIds,
     questType,
     page,
     canClaimAllRewards,
