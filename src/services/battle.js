@@ -195,6 +195,11 @@ const getStartTurnSend = async (battle, stateId) => {
           // TODO: optimize this it makes too many db calls
           for (const userId of team.userIds) {
             const user = battle.users[userId];
+            // trigger battle win callback
+            if (battle.winCallback) {
+              await battle.winCallback(battle, user);
+            }
+
             // get trainer
             // @ts-ignore
             // eslint-disable-next-line prefer-const
@@ -207,14 +212,7 @@ const getStartTurnSend = async (battle, stateId) => {
               continue;
             }
 
-            // trigger battle win callback
-            if (battle.winCallback) {
-              await battle.winCallback(battle, trainer);
-            }
-
             // add trainer rewards
-            // @ts-ignore
-            await addExpAndMoney(user, expReward, moneyReward);
             const defeatedDifficultiesToday =
               trainer.defeatedNPCsToday[battle.npcId];
             const defeatedDifficulties = trainer.defeatedNPCs[battle.npcId];
@@ -278,6 +276,9 @@ const getStartTurnSend = async (battle, stateId) => {
                 type: battle.npcType,
               });
             }
+
+            // @ts-ignore
+            await addExpAndMoney(user, expReward, moneyReward);
 
             const levelUps = [];
             // add pokemon rewards
@@ -854,6 +855,7 @@ const buildDungeonSend = async ({
       autoBattleCost,
       shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(newTrainerResult.data)
         .err,
+      npcType: "dungeon",
     });
     battle.addTeam("Dungeon", true);
     battle.addTrainer(
