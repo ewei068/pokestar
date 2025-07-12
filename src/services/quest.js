@@ -343,7 +343,7 @@ const canTrainerClaimQuestRewards = (trainer, questId, questType) => {
  * @param {number} amount
  */
 const progressQuestByAmount = (questConfigData, questDataEntry, amount) => {
-  questDataEntry.progress += amount;
+  questDataEntry.progress += Math.max(0, amount);
   if (doesQuestProgressReset(questConfigData)) {
     questDataEntry.progress = Math.min(
       questDataEntry.progress,
@@ -358,6 +358,9 @@ const progressQuestByAmount = (questConfigData, questDataEntry, amount) => {
  * @param {number} progress
  */
 const setQuestProgress = (questConfigData, questDataEntry, progress) => {
+  if (progress <= questDataEntry.progress) {
+    return;
+  }
   questDataEntry.progress = progress;
   if (doesQuestProgressReset(questConfigData)) {
     questDataEntry.progress = Math.min(

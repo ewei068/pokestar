@@ -601,15 +601,19 @@ const updateTrainer = async (trainer) => {
  * @template {TrainerEventEnum} K
  * @param {K} eventName
  * @param {TrainerEventArgsWithoutEventName<K>} args
+ * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
  */
 const emitTrainerEvent = async (eventName, args) => {
   try {
     const { trainer } = args;
+    // @ts-ignore
     await emitTrainerEventPure(eventName, args);
-    await updateTrainer(trainer);
+    return await updateTrainer(trainer);
   } catch (error) {
     logger.error(error);
   }
+
+  return { data: null, err: "Error emitting trainer event." };
 };
 
 module.exports = {

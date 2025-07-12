@@ -34,7 +34,13 @@ const {
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
 const { validatePartyForBattle } = require("./party");
 const { getState, setTtl, setState, deleteState } = require("./state");
-const { getTrainer, updateTrainer, getTrainerFromId } = require("./trainer");
+const {
+  getTrainer,
+  updateTrainer,
+  getTrainerFromId,
+  emitTrainerEvent,
+} = require("./trainer");
+const { trainerEventEnum } = require("../enums/gameEnums");
 
 /**
  * @param {WithId<Raid>} raid
@@ -213,6 +219,92 @@ const onRaidStart = async ({ stateId = null, user = null } = {}) => {
   return {};
 };
 
+/**
+ * @param {object} param0
+ * @param {string} param0.userId
+ * @param {number} param0.damage
+ * @param {RaidConfigData} param0.raidData
+ * @param {any} param0.difficultyData
+ * @param {NpcDifficultyEnum} param0.difficulty
+ * @param {any} param0.raid
+ * @returns {Promise<{ err?: string, data?: WithId<Trainer>, rewards?: any }>}
+ */
+const giveRaidRewards = async ({
+  userId,
+  damage,
+  raidData,
+  difficultyData,
+  difficulty,
+  raid,
+}) => {
+  const trainer = await getTrainerFromId(userId);
+  if (trainer.err) {
+    return { err: trainer.err };
+  }
+  const percentDamage = damage / raid.boss.stats[0];
+
+  const backpack = {};
+  for (const [backpackCategory, items] of Object.entries(
+    difficultyData.backpackPerPercent
+  )) {
+    backpack[backpackCategory] = {};
+    for (const [itemId, count] of Object.entries(items)) {
+      backpack[backpackCategory][itemId] = Math.max(
+        Math.floor(count * percentDamage * 100),
+        1
+      );
+    }
+  }
+  const rewardsForTrainer = {
+    money: Math.max(
+      Math.floor(difficultyData.moneyPerPercent * percentDamage * 100),
+      1
+    ),
+    backpack,
+  };
+  addRewards(trainer.data, rewardsForTrainer);
+
+  // update trainer
+  const updateRes = await updateTrainer(trainer.data);
+  if (updateRes.err) {
+    return { err: updateRes.err };
+  }
+
+  // emit trainer event
+  const eventRes = await emitTrainerEvent(trainerEventEnum.DEFEATED_NPC, {
+    npcId: raid.raidId,
+    difficulty,
+    type: "raid",
+    trainer: updateRes.data,
+  });
+  if (eventRes.err) {
+    return { err: eventRes.err };
+  }
+
+  // if damage >= 10%, shinyChance chance of shiny
+  const shinyChance = trainer.data.hasJirachi
+    ? difficultyData.shinyChance * 2
+    : difficultyData.shinyChance;
+  const receivedShiny = percentDamage >= 0.1 && Math.random() < shinyChance;
+  if (!receivedShiny) {
+    return { data: eventRes.data, rewards: rewardsForTrainer };
+  }
+
+  // give shiny
+  // get random shiny pokemon
+  const speciesId = drawIterable(raidData.shinyRewards, 1)[0];
+  const giveRes = await giveNewPokemons(trainer.data, [speciesId]);
+  if (giveRes.err) {
+    return { err: giveRes.err };
+  }
+  rewardsForTrainer.shiny = speciesId;
+
+  return {
+    data: eventRes.data,
+    rewards: rewardsForTrainer,
+  };
+};
+
 const onRaidWin = async (raid) => {
   // ensure raid is valid
   const { raidId } = raid;
@@ -233,60 +325,30 @@ const onRaidWin = async (raid) => {
 
   // calculate rewards
   const rewards = {};
-  for (const [userId, damage] of Object.entries(raid.participants)) {
-    try {
-      const trainer = await getTrainerFromId(userId);
-      if (trainer.err) {
-        continue;
-      }
-      const percentDamage = damage / raid.boss.stats[0];
+  const promiseData = Object.entries(raid.participants).map(
+    ([userId, damage]) => ({
+      userId,
+      promise: giveRaidRewards({
+        userId,
+        damage,
+        raidData,
+        difficultyData,
+        difficulty,
+        raid,
+      }),
+    })
+  );
 
-      const backpack = {};
-      for (const [backpackCategory, items] of Object.entries(
-        difficultyData.backpackPerPercent
-      )) {
-        backpack[backpackCategory] = {};
-        for (const [itemId, count] of Object.entries(items)) {
-          backpack[backpackCategory][itemId] = Math.max(
-            Math.floor(count * percentDamage * 100),
-            1
-          );
-        }
-      }
-      const rewardsForTrainer = {
-        money: Math.max(
-          Math.floor(difficultyData.moneyPerPercent * percentDamage * 100),
-          1
-        ),
-        backpack,
-      };
-      addRewards(trainer.data, rewardsForTrainer);
-      rewards[userId] = rewardsForTrainer;
-
-      // update trainer
-      await updateTrainer(trainer.data);
-
-      // if damage >= 10%, shinyChance chance of shiny
-      const shinyChance = trainer.data.hasJirachi
-        ? difficultyData.shinyChance * 2
-        : difficultyData.shinyChance;
-      const receivedShiny = percentDamage >= 0.1 && Math.random() < shinyChance;
-      if (!receivedShiny) {
-        continue;
-      }
-
-      // give shiny
-      // get random shiny pokemon
-      const speciesId = drawIterable(raidData.shinyRewards, 1)[0];
-      const giveRes = await giveNewPokemons(trainer.data, [speciesId]);
-      if (giveRes.err) {
-        continue;
-      }
-
-      rewardsForTrainer.shiny = speciesId;
-    } catch (err) {
-      // pass
-      logger.error("Error giving raid rewards", err);
+  const promiseResults = await Promise.allSettled(
+    promiseData.map((p) => p.promise)
+  );
+  for (const [index, promiseResult] of promiseResults.entries()) {
+    if (promiseResult.status === "fulfilled" && !promiseResult.value?.err) {
+      const { userId } = promiseData[index];
+      rewards[userId] = promiseResult.value.rewards;
+    } else {
+      // @ts-ignore
+      logger.error("Error giving raid rewards", promiseResult?.value?.err);
     }
   }
 

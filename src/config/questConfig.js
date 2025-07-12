@@ -8,6 +8,10 @@ const {
   listPokemonsFromTrainer: listPokemons,
 } = require("../services/pokemon");
 const { getExtraTrainerInfo } = require("../services/trainer");
+const {
+  getIdFromTowerStage,
+  getTowerStageFromId,
+} = require("../utils/battleUtils");
 const { getMaxDreamCards } = require("../utils/trainerUtils");
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { SUPPORT_SERVER_INVITE, gameEventConfig } = require("./helpConfig");
@@ -1113,6 +1117,7 @@ const dailyQuestConfigRaw = {
 /** @type {Record<DailyQuestEnum, DailyQuestConfig>} */
 const dailyQuestConfig = Object.freeze(dailyQuestConfigRaw);
 
+const stageToBattleTowerOrder = [1, 5, 10, 15, 20];
 const stageToMythicOrder = [
   pokemonIdEnum.DARKRAI,
   pokemonIdEnum.MEW,
@@ -1364,8 +1369,172 @@ const achievementConfigRaw = {
     // 0.5\left(x+1\right)^{2.5}+1.5
     computeProgressRequirement: ({ stage }) =>
       Math.floor(0.5 * (stage + 1) ** 2.5 + 1.51),
-    resetProgressOnComplete: true,
+    resetProgressOnComplete: false,
     progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  defeatDungeons: {
+    formatName: ({ stage }) => `Defeat Dungeons: ${stage + 1}`,
+    formatEmoji: () => "⛰️",
+    formatDescription: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement} Dungeons! Use \`/dungeons\` to defeat Dungeons.\n## \`/dungeons\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement}x Dungeons with \`/dungeons\``,
+    computeRewards: ({ stage }) => ({
+      money: 2500 * (stage + 1),
+      // 5\left(x+1\right)^{0.75}\ +\ 5
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: Math.floor(
+            5 * (stage + 1) ** 0.75 + 5
+          ),
+          [backpackItems.KNOWLEDGE_SHARD]: Math.floor(
+            5 * (stage + 1) ** 0.75 + 5
+          ),
+          [backpackItems.WILLPOWER_SHARD]: Math.floor(
+            5 * (stage + 1) ** 0.75 + 5
+          ),
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.DEFEATED_NPC,
+        listenerCallback: ({ type }) => {
+          if (type === "dungeon") {
+            return {
+              progress: 1,
+            };
+          }
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: ({ stage }) =>
+      // 0.3\left(x+1\right)^{2.5}+0.7
+      Math.floor(0.3 * (stage + 1) ** 2.5 + 0.71),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  defeatRaid: {
+    formatName: ({ stage }) => `Defeat Raids: ${stage + 1}`,
+    formatEmoji: () => emojis.ARMORED_MEWTWO,
+    formatDescription: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement} Raids! Use \`/raid\` to defeat Raids. You may also participate in other raids in your server!\n## \`/raid\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement}x Raids with \`/raid\``,
+    computeRewards: ({ stage }) => ({
+      money: 2500 * (stage + 1),
+      // 50\left(x+1\right)^{0.75}\ +\ 50
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.STAR_PIECE]: Math.floor(50 * (stage + 1) ** 0.75 + 50),
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.DEFEATED_NPC,
+        listenerCallback: ({ type }) => {
+          if (type === "raid") {
+            return {
+              progress: 1,
+            };
+          }
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: ({ stage }) =>
+      // 0.25\left(x+1\right)^{2.5}+0.75
+      Math.floor(0.25 * (stage + 1) ** 2.5 + 0.751),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  defeatBattleTower: {
+    formatName: ({ stage }) =>
+      `Defeat Battle Tower Stage ${stageToBattleTowerOrder[stage]}`,
+    formatEmoji: () => "🏢",
+    formatDescription: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement} Battle Tower floors! Use \`/battletower\` to defeat Battle Tower floors.\n## \`/battletower\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement}x Battle Tower floors with \`/battletower\``,
+    computeRewards: ({ stage }) => {
+      const battleTowerStage = stageToBattleTowerOrder[stage] ?? 0;
+      let backpack;
+      if (battleTowerStage === 1) {
+        backpack = {
+          [backpackCategories.POKEBALLS]: {
+            [backpackItems.POKEBALL]: 3,
+          },
+        };
+      }
+      if (battleTowerStage === 5) {
+        backpack = {
+          [backpackCategories.POKEBALLS]: {
+            [backpackItems.ULTRABALL]: 3,
+          },
+        };
+      }
+      if (battleTowerStage === 10) {
+        backpack = {
+          [backpackCategories.POKEBALLS]: {
+            [backpackItems.ULTRABALL]: 5,
+          },
+        };
+      }
+      if (battleTowerStage === 15) {
+        backpack = {
+          [backpackCategories.POKEBALLS]: {
+            [backpackItems.ULTRABALL]: 10,
+          },
+        };
+      }
+      if (battleTowerStage === 20) {
+        backpack = {
+          [backpackCategories.POKEBALLS]: {
+            [backpackItems.MASTERBALL]: 5,
+          },
+        };
+      }
+      return {
+        money: 1000 * battleTowerStage,
+        backpack,
+      };
+    },
+    questListeners: [
+      {
+        eventName: trainerEventEnum.DEFEATED_NPC,
+        listenerCallback: ({ type, npcId }) => {
+          if (type === "battleTower") {
+            const towerStage = getTowerStageFromId(npcId);
+            if (towerStage) {
+              return {
+                progressOverride: towerStage,
+              };
+            }
+          }
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.MILESTONE_NUMERIC,
+    computeProgressRequirement: ({ stage }) =>
+      stageToBattleTowerOrder[stage] ?? 999,
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: stageToBattleTowerOrder.length - 1,
+    computeCurrentProgress: async ({ stage, trainer }) =>
+      trainer.defeatedNPCs[getIdFromTowerStage(stageToBattleTowerOrder[stage])]
+        ? stageToBattleTowerOrder[stage]
+        : 0,
   },
   catchMythic: {
     formatName: ({ stage }) =>

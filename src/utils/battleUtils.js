@@ -578,6 +578,15 @@ const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
  */
 const getIdFromTowerStage = (towerStage) => `battleTowerStage${towerStage}`;
 
+/**
+ * @param {string} id
+ * @returns {number?}
+ */
+const getTowerStageFromId = (id) => {
+  const towerStage = id.split("battleTowerStage")[1];
+  return towerStage ? parseInt(towerStage, 10) : null;
+};
+
 const clearCurrentTargetting = (state) => {
   // eslint-disable-next-line no-param-reassign
   state.currentMoveId = null;
@@ -880,4 +889,5 @@ module.exports = {
   getMoveIdHasTag,
   getEffectIdHasTag,
   npcTurnAction,
+  getTowerStageFromId,
 };

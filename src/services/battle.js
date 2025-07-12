@@ -268,13 +268,20 @@ const getStartTurnSend = async (battle, stateId) => {
               }
             }
 
-            if (battle.npcId && battle.npcType) {
-              await emitTrainerEvent(trainerEventEnum.DEFEATED_NPC, {
-                trainer,
-                npcId: battle.npcId,
-                difficulty: battle.difficulty,
-                type: battle.npcType,
-              });
+            // this feels hacky; don't emit event for raids since it handles it differently
+            if (battle.npcId && battle.npcType && battle.npcType !== "raid") {
+              const eventRes = await emitTrainerEvent(
+                trainerEventEnum.DEFEATED_NPC,
+                {
+                  trainer,
+                  npcId: battle.npcId,
+                  difficulty: battle.difficulty,
+                  type: battle.npcType,
+                }
+              );
+              if (!eventRes.err && eventRes.data) {
+                trainer = eventRes.data;
+              }
             }
 
             // @ts-ignore
@@ -900,7 +907,12 @@ const buildDungeonSend = async ({
   return { send, err: null };
 };
 
-const towerWinCallback = async (battle, trainer) => {
+const towerWinCallback = async (battle, user) => {
+  const { data: trainer, err } = await getTrainer(user);
+  if (err) {
+    battle.rewards = null;
+    return;
+  }
   // validate tower stage
   const towerStage = trainer.lastTowerStage + 1;
   if (getIdFromTowerStage(towerStage) !== battle.npcId) {
@@ -984,6 +996,7 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
     canAuto: !getCanTrainerAutoBattle(trainer.data, autoBattleCost).err,
     autoBattleCost,
     shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(trainer.data).err,
+    npcType: "battleTower",
   });
   battle.addTeam("Battle Tower", true);
   battle.addTrainer(
