@@ -1086,7 +1086,7 @@ const dailyQuestConfigRaw = {
     formatName: () => "Upgrade Equipment",
     formatEmoji: () => emojis.POWER_WEIGHT,
     formatDescription: ({ progressRequirement }) =>
-      `Upgrade your equipment ${progressRequirement} times! Use \`/equipment\` to upgrade your equipment.\n## \`/equipment\``,
+      `Upgrade your equipment ${progressRequirement} times! Use \`/equipment\` to upgrade your equipment. You can get shards from the \`/pokemart\` or \`/dungeons\`.\n## \`/equipment\``,
     formatRequirementString: ({ progressRequirement }) =>
       `Upgrade your equipment ${progressRequirement}x times with \`/equipment\``,
     computeRewards: () => ({
@@ -1458,7 +1458,7 @@ const achievementConfigRaw = {
   },
   defeatBattleTower: {
     formatName: ({ stage }) =>
-      `Defeat Battle Tower Stage ${stageToBattleTowerOrder[stage]}`,
+      `Defeat Battle Tower Floor ${stageToBattleTowerOrder[stage]}`,
     formatEmoji: () => "🏢",
     formatDescription: ({ progressRequirement }) =>
       `Defeat ${progressRequirement} Battle Tower floors! Use \`/battletower\` to defeat Battle Tower floors.\n## \`/battletower\``,
@@ -1535,6 +1535,84 @@ const achievementConfigRaw = {
       trainer.defeatedNPCs[getIdFromTowerStage(stageToBattleTowerOrder[stage])]
         ? stageToBattleTowerOrder[stage]
         : 0,
+  },
+  upgradeEquipment: {
+    formatName: ({ stage }) => `Upgrade Equipment: ${stage + 1}`,
+    formatEmoji: () => emojis.POWER_WEIGHT,
+    formatDescription: ({ progressRequirement }) =>
+      `Upgrade your equipment ${progressRequirement} times! Use \`/equipment\` to upgrade your equipment. You can get shards from the \`/pokemart\` or \`/dungeons\`.\n## \`/equipment\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Upgrade your equipment ${progressRequirement}x times with \`/equipment\``,
+    computeRewards: ({ stage }) => ({
+      money: 2000 * (stage + 1),
+      // 4\left(x+1\right)^{0.75}\ +\ 6
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+          [backpackItems.KNOWLEDGE_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+          [backpackItems.WILLPOWER_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.UPGRADED_EQUIPMENT,
+        listenerCallback: () => ({
+          progress: 1,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    // 2\left(x+1\right)^{2.5}+3
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor(2 * (stage + 1) ** 2.5 + 3),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  rerollEquipment: {
+    formatName: ({ stage }) => `Reroll Equipment: ${stage + 1}`,
+    formatEmoji: () => "🔄",
+    formatDescription: ({ progressRequirement }) =>
+      `Reroll your equipment stats ${progressRequirement} times! Use \`/equipment\` to reroll your equipment stats. You can get shards from the \`/pokemart\` or \`/dungeons\`.\n## \`/equipment\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Reroll your equipment stats ${progressRequirement}x times with \`/equipment\``,
+    computeRewards: ({ stage }) => ({
+      money: 2000 * (stage + 1),
+      // 4\left(x+1\right)^{0.75}\ +\ 6
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+          [backpackItems.KNOWLEDGE_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+          [backpackItems.WILLPOWER_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.REROLLED_EQUIPMENT,
+        listenerCallback: () => ({
+          progress: 1,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    // 2\left(x+1\right)^{2.5}+3
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor(2 * (stage + 1) ** 2.5 + 3),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
   },
   catchMythic: {
     formatName: ({ stage }) =>

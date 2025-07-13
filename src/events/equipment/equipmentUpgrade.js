@@ -76,6 +76,11 @@ const equipmentUpgrade = async (interaction, data) => {
       return { err: res.err };
     }
     followUpString = res.data;
+
+    await emitTrainerEvent(trainerEventEnum.REROLLED_EQUIPMENT, {
+      trainer,
+      equipment: pokemon.equipments[state.equipmentType],
+    });
   }
 
   const { send, err } = await buildEquipmentUpgradeSend({
