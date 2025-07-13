@@ -346,6 +346,28 @@ const getStartTurnSend = async (battle, stateId) => {
       logger.error(`Failed to add battle rewards: ${err}`);
     }
 
+    // TODO: optimize and batch this. I'm lazy
+    const promises = [];
+    for (const user of Object.values(battle.users)) {
+      if (!battle.isNpc(user.id)) {
+        promises.push(
+          (async () => {
+            const { data: trainer, err: getTrainerErr } = await getTrainer(
+              user
+            );
+            if (getTrainerErr) {
+              return;
+            }
+            await emitTrainerEvent(trainerEventEnum.PARTICIPATED_IN_BATTLE, {
+              trainer,
+              type: battle.isPvp ? "pvp" : battle.npcType || "other",
+            });
+          })()
+        );
+      }
+    }
+    await Promise.allSettled(promises);
+
     // re-add log to content
     content += `\n${battle.log.join("\n")}`;
 
@@ -477,6 +499,12 @@ const startAuto = async ({ battle, stateId, interaction, user }) => {
   if (updateResult.err) {
     return { err: updateResult.err };
   }
+
+  await emitTrainerEvent(trainerEventEnum.STARTED_AUTO_BATTLE, {
+    trainer: updateResult.data,
+    dreamCards: battle.autoData.autoBattleCost,
+    npcId: battle.npcId,
+  });
 
   if (trainer.settings.instantAutoBattle) {
     await instantAutoBattle(battle, stateId, interaction);

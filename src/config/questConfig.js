@@ -1210,6 +1210,36 @@ const achievementConfigRaw = {
     resetProgressOnComplete: false,
     progressionType: questProgressionTypeEnum.INFINITE,
   },
+  claimDailyRewards: {
+    formatName: ({ stage }) => `Claim Daily Rewards: ${stage + 1}`,
+    formatEmoji: () => "📅",
+    formatDescription: ({ progressRequirement }) =>
+      `Claim daily rewards ${progressRequirement} times! Use \`/daily\` to claim your daily rewards.\n## \`/daily\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Claim ${progressRequirement}x daily rewards with \`/daily\``,
+    computeRewards: () => ({
+      money: 1000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.GREATBALL]: 1,
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CLAIMED_DAILY_REWARDS,
+        listenerCallback: () => ({
+          progress: 1,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    // 0.45\left(x+1\right)^{2.5}+0.55
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor(0.45 * (stage + 1) ** 2.5 + 0.55),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
   evolvePokemon: {
     formatName: ({ stage }) => `Evolve Pokemon: ${stage + 1}`,
     formatEmoji: () => "🧬",
@@ -1535,6 +1565,63 @@ const achievementConfigRaw = {
       trainer.defeatedNPCs[getIdFromTowerStage(stageToBattleTowerOrder[stage])]
         ? stageToBattleTowerOrder[stage]
         : 0,
+  },
+  dreamCards: {
+    formatName: ({ stage }) => `Spend Dream Cards: ${stage + 1}`,
+    formatEmoji: () => emojis.DREAM_CARD,
+    formatDescription: ({ progressRequirement }) =>
+      `Spend ${progressRequirement} Dream Cards! You can spend dream cards by using "Auto" in any PVE stage! To access this feature, you much catch \`/mythic darkrai\` first.`,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Spend ${progressRequirement}x Dream Cards`,
+    computeRewards: ({ stage }) => ({
+      money: 3000 * (stage + 1),
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.STARTED_AUTO_BATTLE,
+        listenerCallback: ({ dreamCards }) => ({
+          progress: dreamCards,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: ({ stage }) =>
+      // 10\left(x+1\right)^{2.5}+40
+      Math.floor(10 * (stage + 1) ** 2.5 + 40),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  pvpBattle: {
+    formatName: ({ stage }) => `PvP Battle: ${stage + 1}`,
+    formatEmoji: () => "⚔️",
+    formatDescription: ({ progressRequirement }) =>
+      `Participate in PvP Battles ${progressRequirement} times! Battling your friends is fun! Use \`/pvp\` to PvP Battle.\n## \`/pvp\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Participate in PvP Battles ${progressRequirement}x times with \`/pvp\``,
+    computeRewards: ({ stage }) => ({
+      money: 3000 * (stage + 1),
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.PARTICIPATED_IN_BATTLE,
+        listenerCallback: ({ type }) => {
+          if (type === "pvp") {
+            return {
+              progress: 1,
+            };
+          }
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: ({ stage }) =>
+      // 0.3\left(x+1\right)^{2.5}+0.7
+      Math.floor(0.3 * (stage + 1) ** 2.5 + 0.71),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
   },
   upgradeEquipment: {
     formatName: ({ stage }) => `Upgrade Equipment: ${stage + 1}`,

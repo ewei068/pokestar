@@ -126,6 +126,12 @@ const drawDaily = async (trainer) => {
       return { data: null, err: "Error daily draw update." };
     }
     logger.info(`Daily draw and update ${trainer.user.username}.`);
+
+    // emit event
+    await emitTrainerEvent(trainerEventEnum.CLAIMED_DAILY_REWARDS, {
+      // @ts-ignore
+      trainer,
+    });
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error daily draw update." };
