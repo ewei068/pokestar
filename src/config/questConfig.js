@@ -1051,6 +1051,43 @@ const dailyQuestConfigRaw = {
     progressionType: questProgressionTypeEnum.FINITE,
     maxStage: 0,
   },
+  catchWildPokemon: {
+    formatName: () => `Catch Wild Pokemon`,
+    formatEmoji: () => emojis.POKEBALL,
+    formatDescription: ({ progressRequirement }) =>
+      `Catch ${progressRequirement} wild Pokemon! Wild Pokemon spawn periodically in channels in your server. If you're a server admin, use \`/spawn manage\` to manage the spawns.`,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Catch ${progressRequirement}x wild Pokemon`,
+    computeRewards: () => ({
+      money: 1500,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: 3,
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CAUGHT_POKEMON,
+        listenerCallback: ({ method, pokemons }) => {
+          if (method === "wild") {
+            return {
+              progress: pokemons.length,
+            };
+          }
+
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 1,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 0,
+  },
   defeatTrainers: {
     formatName: () => "Defeat Trainers",
     formatEmoji: () => emojis.RED,
@@ -1090,7 +1127,7 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Upgrade your equipment ${progressRequirement}x times with \`/equipment\``,
     computeRewards: () => ({
-      money: 2500,
+      money: 2000,
       backpack: {
         [backpackCategories.MATERIALS]: {
           [backpackItems.EMOTION_SHARD]: 8,
@@ -1109,6 +1146,89 @@ const dailyQuestConfigRaw = {
     ],
     requirementType: questRequirementTypeEnum.NUMERIC,
     computeProgressRequirement: () => 3,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 0,
+  },
+  dreamCards: {
+    formatName: () => `Spend Dream Cards`,
+    formatEmoji: () => emojis.DREAM_CARD,
+    formatDescription: ({ progressRequirement }) =>
+      `Spend ${progressRequirement} Dream Cards! You can spend dream cards by using "Auto" in any PVE stage! To access this feature, you much catch \`/mythic darkrai\` first.`,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Spend ${progressRequirement}x Dream Cards`,
+    computeRewards: () => ({
+      money: 2500,
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.STARTED_AUTO_BATTLE,
+        listenerCallback: ({ dreamCards }) => ({
+          progress: dreamCards,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 40,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 0,
+  },
+  buyPokeballs: {
+    formatName: () => `Buy Pokeballs`,
+    formatEmoji: () => emojis.POKEBALL,
+    formatDescription: ({ progressRequirement }) =>
+      `Buy ${progressRequirement} Pokeballs! Use \`/pokemart\` to buy Pokeballs.\n## \`/pokemart\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Buy ${progressRequirement}x Pokeballs with \`/pokemart\``,
+    computeRewards: () => ({
+      money: 2500,
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.MADE_PURCHASE,
+        listenerCallback: ({ itemId }) => {
+          if (itemId === shopItems.RANDOM_POKEBALL) {
+            return {
+              progress: 1,
+            };
+          }
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 3,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 0,
+  },
+  claimDailyRewards: {
+    formatName: () => `Claim Daily Rewards`,
+    formatEmoji: () => "📅",
+    formatDescription: () =>
+      `Claim your daily rewards! Use \`/daily\` to claim your daily rewards.\n## \`/daily\``,
+    formatRequirementString: () => `Claim your daily rewards with \`/daily\``,
+    computeRewards: () => ({
+      money: 1000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.GREATBALL]: 1,
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CLAIMED_DAILY_REWARDS,
+        listenerCallback: () => ({
+          progress: 1,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 1,
     resetProgressOnComplete: true,
     progressionType: questProgressionTypeEnum.FINITE,
     maxStage: 0,
