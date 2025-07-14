@@ -10,6 +10,7 @@ const trainerEventEnum = Object.freeze({
   TRAINED_POKEMON: "trainedPokemon",
   MADE_PURCHASE: "madePurchase",
   CLAIMED_DAILY_REWARDS: "claimedDailyRewards",
+  COMPLETED_QUESTS: "completedQuests",
 });
 
 /**
@@ -25,6 +26,7 @@ const trainerEventEnum = Object.freeze({
  *  [trainerEventEnum.TRAINED_POKEMON]: {pokemon: WithId<Pokemon>, exp: number, evs: StatArray},
  *  [trainerEventEnum.MADE_PURCHASE]: { itemId: ShopItemEnum, level?: number, quantity: number },
  *  [trainerEventEnum.CLAIMED_DAILY_REWARDS]: {},
+ *  [trainerEventEnum.COMPLETED_QUESTS]: { quests: Array<{questId: QuestEnum, stage: number, questType: QuestTypeEnum}> },
  * }[K] & {trainer: WithId<Trainer>}} TrainerEventArgsWithoutEventName
  */
 

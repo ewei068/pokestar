@@ -13,9 +13,15 @@ const { drawIterable } = require("../utils/gachaUtils");
 const { addRewards } = require("../utils/trainerUtils");
 const { getFullUTCDate } = require("../utils/utils");
 const { registerTrainerEventListener } = require("./game/gameEvent");
-const { updateTrainer, getTrainer, refreshTrainer } = require("./trainer");
+const {
+  updateTrainer,
+  getTrainer,
+  refreshTrainer,
+  emitTrainerEvent,
+} = require("./trainer");
 const { logger } = require("../log");
 const { getAsyncContext } = require("./bot/asyncContext");
+const { trainerEventEnum } = require("../enums/gameEnums");
 
 /**
  * @param {WithId<Trainer>} trainer
@@ -312,13 +318,17 @@ const shouldEmitQuestEvent = (questConfigData, questDataEntry) => {
 const getDailyQuests = () => {
   const date = getFullUTCDate();
   const rng = seedrandom(date);
-  // TODO: always add "complete daily quest" quest to list
+  const possibleQuests = Object.keys(dailyQuestConfig).filter(
+    (questId) => questId !== "completeDailyQuest"
+  );
 
   // @ts-ignore
-  return drawIterable(Object.keys(dailyQuestConfig), 3, {
+  const drawnQuests = drawIterable(possibleQuests, 4, {
     replacement: false,
     rng,
   });
+  // @ts-ignore
+  return [...drawnQuests, "completeDailyQuest"];
 };
 
 const canTrainerClaimQuestRewards = (trainer, questId, questType) => {
@@ -486,6 +496,7 @@ const claimQuestRewardsForTrainer = async (
     data: trainer,
     completionStatus,
     rewards: accumulator,
+    completedStage: questDataEntry.stage - 1,
   };
 };
 
@@ -501,7 +512,7 @@ const claimQuestRewardsForUserAndUpdate = async (user, questId, questType) => {
     return { err: trainerErr };
   }
   const rewardsAccumulator = {};
-  const { err: claimErr } = await claimQuestRewardsForTrainer(
+  const { err: claimErr, completedStage } = await claimQuestRewardsForTrainer(
     trainer,
     questId,
     questType,
@@ -511,8 +522,21 @@ const claimQuestRewardsForUserAndUpdate = async (user, questId, questType) => {
     return { err: claimErr };
   }
 
+  const { data: updatedTrainer, err: updateErr } = await updateTrainer(trainer);
+  if (updateErr) {
+    return { err: updateErr };
+  }
+
+  const { data: eventRes } = await emitTrainerEvent(
+    trainerEventEnum.COMPLETED_QUESTS,
+    {
+      quests: [{ questId, questType, stage: completedStage }],
+      trainer: updatedTrainer,
+    }
+  );
+
   return {
-    ...(await updateTrainer(trainer)),
+    data: eventRes || updatedTrainer,
     rewards: rewardsAccumulator,
   };
 };
@@ -542,8 +566,9 @@ const tryCompleteAllQuestStagesForTrainer = async (
   await checkAndProgressQuest(trainer, questConfigData, questDataEntry);
 
   let didProgress = false;
+  const questsCompleted = [];
   for (let i = 0; i < maxAttempts; i += 1) {
-    const { err: claimErr } = await claimQuestRewardsForTrainer(
+    const { err: claimErr, completedStage } = await claimQuestRewardsForTrainer(
       trainer,
       questId,
       questType,
@@ -553,11 +578,14 @@ const tryCompleteAllQuestStagesForTrainer = async (
       break;
     }
     didProgress = true;
+    questsCompleted.push({ questId, questType, stage: completedStage });
   }
+
   return {
     data: trainer,
     didProgress,
     rewards: accumulator,
+    questsCompleted,
   };
 };
 
@@ -574,6 +602,7 @@ const claimAllQuestRewardsForUserAndUpdate = async (user) => {
   const promises = [];
   const dailyQuestIds = getDailyQuests();
   const achievementQuestIds = getAchievements();
+  const allQuestsCompleted = [];
   for (const questId of dailyQuestIds) {
     promises.push(
       tryCompleteAllQuestStagesForTrainer(
@@ -596,20 +625,66 @@ const claimAllQuestRewardsForUserAndUpdate = async (user) => {
   }
   const results = await Promise.all(promises);
   const didProgress = results.some((result) => result.didProgress);
+  for (const result of results) {
+    if (result.questsCompleted) {
+      allQuestsCompleted.push(...result.questsCompleted);
+    }
+  }
 
-  // TODO: check special case for daily quest
-
-  if (didProgress) {
+  if (!didProgress) {
     return {
-      ...(await updateTrainer(trainer)),
+      data: trainer,
+      didProgress,
+      rewards: null,
+    };
+  }
+
+  const { data: eventUpdatedTrainer, err: eventErr } = await emitTrainerEvent(
+    trainerEventEnum.COMPLETED_QUESTS,
+    {
+      quests: allQuestsCompleted,
+      trainer,
+    }
+  );
+  if (eventErr) {
+    return { err: eventErr };
+  }
+
+  const { questsCompleted: dailyQuestsCompleted } =
+    await tryCompleteAllQuestStagesForTrainer(
+      eventUpdatedTrainer,
+      "completeDailyQuest",
+      questTypeEnum.DAILY,
+      { accumulator }
+    );
+
+  const { data: updatedTrainer, err: updateErr } = await updateTrainer(
+    eventUpdatedTrainer
+  );
+  if (updateErr) {
+    return { err: updateErr };
+  }
+
+  if (dailyQuestsCompleted) {
+    const { data: dailyEventUpdatedTrainer } = await emitTrainerEvent(
+      trainerEventEnum.COMPLETED_QUESTS,
+      {
+        quests: dailyQuestsCompleted,
+        trainer: updatedTrainer,
+      }
+    );
+
+    return {
+      data: dailyEventUpdatedTrainer || updatedTrainer,
       didProgress,
       rewards: accumulator,
     };
   }
+
   return {
-    data: trainer,
+    data: updatedTrainer,
     didProgress,
-    rewards: null,
+    rewards: accumulator,
   };
 };
 
@@ -690,7 +765,8 @@ const registerQuestListeners = (questId, questType) => {
         oldQuestCompletionStatus !== "complete" &&
         newQuestCompletionStatus === "complete" &&
         !asyncContext.completedQuest &&
-        asyncContext?.user?.id === trainer?.userId
+        asyncContext?.user?.id === trainer?.userId &&
+        questId !== "completeDailyQuest"
       ) {
         asyncContext.completedQuest = {
           questId,

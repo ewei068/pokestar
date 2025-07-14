@@ -1233,6 +1233,40 @@ const dailyQuestConfigRaw = {
     progressionType: questProgressionTypeEnum.FINITE,
     maxStage: 0,
   },
+  completeDailyQuest: {
+    formatName: () => `Complete Daily Quests`,
+    formatEmoji: () => "📅",
+    formatDescription: ({ progressRequirement }) =>
+      `Complete ${progressRequirement} daily quests! Use \`/quest\` to complete view and complete your daily quests.\n## \`/quest\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Complete ${progressRequirement}x daily quests with \`/quest\``,
+    computeRewards: () => ({
+      money: 3000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.ULTRABALL]: 1,
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.COMPLETED_QUESTS,
+        listenerCallback: ({ quests }) => {
+          const numDailyQuests = quests.filter(
+            (quest) => quest.questType === questTypeEnum.DAILY
+          ).length;
+          return {
+            progress: numDailyQuests,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 3,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 0,
+  },
 };
 /** @type {Record<DailyQuestEnum, DailyQuestConfig>} */
 const dailyQuestConfig = Object.freeze(dailyQuestConfigRaw);
