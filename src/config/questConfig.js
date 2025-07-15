@@ -1187,10 +1187,10 @@ const dailyQuestConfigRaw = {
     questListeners: [
       {
         eventName: trainerEventEnum.MADE_PURCHASE,
-        listenerCallback: ({ itemId }) => {
+        listenerCallback: ({ itemId, quantity }) => {
           if (itemId === shopItems.RANDOM_POKEBALL) {
             return {
-              progress: 1,
+              progress: quantity,
             };
           }
           return {
@@ -1235,7 +1235,7 @@ const dailyQuestConfigRaw = {
   },
   completeDailyQuest: {
     formatName: () => `Complete Daily Quests`,
-    formatEmoji: () => "📅",
+    formatEmoji: () => "📜",
     formatDescription: ({ progressRequirement }) =>
       `Complete ${progressRequirement} daily quests! Use \`/quest\` to complete view and complete your daily quests.\n## \`/quest\``,
     formatRequirementString: ({ progressRequirement }) =>
@@ -1391,6 +1391,41 @@ const achievementConfigRaw = {
     // 0.45\left(x+1\right)^{2.5}+0.55
     computeProgressRequirement: ({ stage }) =>
       Math.floor(0.45 * (stage + 1) ** 2.5 + 0.55),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  completeDailyQuest: {
+    formatName: ({ stage }) => `Complete Daily Quests: ${stage + 1}`,
+    formatEmoji: () => "📜",
+    formatDescription: ({ progressRequirement }) =>
+      `Complete ${progressRequirement} daily quests! Use \`/quest\` to complete view and complete your daily quests.\n## \`/quest\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Complete ${progressRequirement}x daily quests with \`/quest\``,
+    computeRewards: () => ({
+      money: 2000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.ULTRABALL]: 1,
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.COMPLETED_QUESTS,
+        listenerCallback: ({ quests }) => {
+          const numDailyQuests = quests.filter(
+            (quest) => quest.questType === questTypeEnum.DAILY
+          ).length;
+          return {
+            progress: numDailyQuests,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    // 0.75\left(x+1\right)^{2.5}+2.25
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor(0.75 * (stage + 1) ** 2.5 + 2.25),
     resetProgressOnComplete: false,
     progressionType: questProgressionTypeEnum.INFINITE,
   },
