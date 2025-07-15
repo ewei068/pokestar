@@ -1,22 +1,15 @@
 # Pokéstar Changelog
 
-## TODO
-
-- Improve UI
-  - Improve look of fields, use inline code when appropriate, use quotes to indent, use emojis!
-  - Also put more emojis in buttons
-  - Move, ability, and held item description formatting?
-- Put tutorial button in upsells
-  - Make the tutorial commands big asf
-  - Can add tips as footers
-
 **Stretch**
 
-- Stretch: Quests (Achievements)
 - Stretch: Ability slots
 
 ### 1.4.3
 
+- Add Quests with `/quest`
+  - Quests give tons of rewards
+  - There are two quest types: Daily and Achievements
+  - Added option to silence quest and tutorial upsells in `/settings`
 - Added new `/party manage` command! Much more easily add, move, and remove Pokemon from your party!
   - Adding pokemon from `/info` brings up the party manage UI
   - Added party manage to the `/tutorial`

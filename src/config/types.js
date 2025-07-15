@@ -10,6 +10,7 @@
 /** @typedef {import("./pokemonConfig").PokemonIdEnum} PokemonIdEnum */
 /** @typedef {import("./locationConfig").LocationEnum} LocationEnum */
 /** @typedef {import("./npcConfig").NpcEnum} NpcEnum */
+/** @typedef {"pve" | "dungeon" | "raid" | "battleTower"} NpcTypeEnum */
 /** @typedef {import("./npcConfig").DungeonEnum} DungeonEnum */
 /** @typedef {import("./npcConfig").RaidEnum} RaidEnum */
 /** @typedef {import("./npcConfig").RaidConfigData} RaidConfigData */
@@ -28,9 +29,20 @@
 /** @typedef {import("./trainerConfig").UserSettingsData} UserSettingsData */
 /** @typedef {import("./questConfig").TutorialStageEnum} TutorialStageEnum */
 /** @typedef {import("./questConfig").TutorialStageData} TutorialStageData */
+/** @typedef {import("./questConfig").QuestConfig} QuestConfig */
+/** @typedef {import("./questConfig").DailyQuestConfig} DailyQuestConfig */
+/** @typedef {import("./questConfig").AchievementConfig} AchievementConfig */
+/** @typedef {import("./questConfig").DailyQuestEnum} DailyQuestEnum */
+/** @typedef {import("./questConfig").AchievementEnum} AchievementEnum */
+/** @typedef {DailyQuestEnum | AchievementEnum} QuestEnum */
+/** @typedef {import("./questConfig").QuestTypeEnum} QuestTypeEnum */
 /**
  * @template {UserSettingsEnum} T
  * @typedef {import("./trainerConfig").UserSettingsOptions<T>} UserSettingsOptions
+ */
+/**
+ * @template {TrainerEventEnum} T
+ * @typedef {import("./questConfig").QuestEventListenerCallback<T>} QuestEventListenerCallback
  */
 
 /**

@@ -2,12 +2,22 @@ const { EmbedBuilder } = require("discord.js");
 const {
   newTutorialConfig,
   newTutorialStages,
+  questTypeEnum,
 } = require("../config/questConfig");
 const {
   getFlattenedRewardsString,
   flattenRewards,
+  getRewardsString,
+  getCompactRewardsString,
 } = require("../utils/trainerUtils");
-const { buildBlockQuoteString } = require("../utils/utils");
+const {
+  buildBlockQuoteString,
+  getNumericPBar,
+  getNextTimeIntervalDate,
+} = require("../utils/utils");
+// eslint-disable-next-line no-unused-vars
+const { formatQuestDisplayData } = require("../services/quest");
+const { timeEnum } = require("../enums/miscEnums");
 
 /**
  * @param {object} param0
@@ -93,7 +103,146 @@ const buildTutorialStageEmbed = ({ stage, userTutorialData, page = 1 }) => {
   return embed;
 };
 
+/**
+ * @param {object} param0
+ * @param {QuestTypeEnum} param0.questType
+ * @param {QuestEnum[]} param0.questIds
+ * @param {Record<QuestEnum, ReturnType<typeof formatQuestDisplayData>>} param0.questDisplayDataMap
+ * @param {number=} param0.page
+ * @param {boolean=} param0.canClaimAllRewards
+ * @returns {EmbedBuilder}
+ */
+const buildQuestListEmbed = ({
+  questType,
+  questIds,
+  questDisplayDataMap,
+  canClaimAllRewards,
+  page = 1,
+}) => {
+  const embed = new EmbedBuilder();
+  const questTypeDisplay =
+    questType === questTypeEnum.DAILY ? "Daily Quests" : "Achievements";
+
+  embed.setTitle(questTypeDisplay);
+  embed.setColor(0xffffff);
+  embed.setFooter({ text: `Page ${page}` });
+
+  if (questType === questTypeEnum.DAILY) {
+    embed.setDescription(
+      `Daily quests reset in 🕒 <t:${Math.floor(
+        getNextTimeIntervalDate(timeEnum.DAY).getTime() / 1000
+      )}:R>`
+    );
+  }
+
+  const questsToDisplay = [];
+  questIds.forEach((questId) => {
+    const questDisplayData = questDisplayDataMap[questId];
+    const { emoji, name, progressRequirement, progress, completionStatus } =
+      questDisplayData;
+    const headerFormatting =
+      // eslint-disable-next-line no-nested-ternary
+      completionStatus === "fullyComplete"
+        ? "_"
+        : completionStatus === "complete"
+        ? "**"
+        : "";
+
+    questsToDisplay.push({
+      header: `${headerFormatting}${emoji} ${name} → ${getCompactRewardsString(
+        questDisplayData.rewards
+      )}${headerFormatting}`,
+      description: `\`${getNumericPBar(
+        progress,
+        progressRequirement,
+        25
+      )}  ${progress}/${progressRequirement}\``,
+    });
+  });
+
+  embed.addFields({
+    name: "Quest Progress",
+    value: questsToDisplay
+      .reduce(
+        (acc, quest) => [...acc, `${quest.header}\n${quest.description}`],
+        []
+      )
+      .join("\n\n"),
+  });
+
+  if (canClaimAllRewards) {
+    embed.setFooter({
+      text: "🎁 Click 'Claim All Rewards' to claim your rewards!",
+    });
+  }
+
+  return embed;
+};
+
+/**
+ * @param {object} param0
+ * @param {ReturnType<typeof formatQuestDisplayData>} param0.questDisplayData
+ * @returns {EmbedBuilder}
+ */
+const buildQuestStageEmbed = ({ questDisplayData }) => {
+  const embed = new EmbedBuilder();
+  const {
+    emoji,
+    name,
+    completionStatus,
+    progress,
+    progressRequirement,
+    rewards,
+    description,
+    requirementString,
+  } = questDisplayData;
+
+  embed.setTitle(`${emoji} ${name}`);
+  embed.setColor(0xffffff);
+  embed.setDescription(buildBlockQuoteString(description));
+
+  const fields = [
+    {
+      name: "📋 Requirements",
+      value: buildBlockQuoteString(requirementString),
+      inline: false,
+    },
+    {
+      name: "📊 Progress",
+      value: buildBlockQuoteString(
+        `\`${getNumericPBar(
+          progress,
+          progressRequirement,
+          25
+        )}  ${progress}/${progressRequirement}\``
+      ),
+      inline: false,
+    },
+    {
+      name: "🎁 Rewards",
+      value: buildBlockQuoteString(getRewardsString(rewards, false)),
+      inline: false,
+    },
+  ];
+
+  embed.addFields(fields);
+
+  if (completionStatus === "complete") {
+    embed.setFooter({
+      text: "🎁 Quest completed! Click 'Claim Rewards' to claim your rewards.",
+    });
+  } else if (completionStatus === "fullyComplete") {
+    embed.setFooter({ text: "✅ Quest fully completed!" });
+  } else {
+    embed.setFooter({ text: "⏳ Quest in progress..." });
+  }
+
+  return embed;
+};
+
 module.exports = {
   buildTutorialListEmbed,
   buildTutorialStageEmbed,
+  buildQuestListEmbed,
+  buildQuestStageEmbed,
 };

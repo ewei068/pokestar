@@ -59,8 +59,9 @@ class Battle {
    * @param {object?=} param0.dailyRewards
    * @param {Function?=} param0.winCallback
    * @param {Function?=} param0.loseCallback
-   * @param {string?=} param0.npcId
-   * @param {string?=} param0.difficulty
+   * @param {NpcEnum?=} param0.npcId
+   * @param {NpcTypeEnum?=} param0.npcType
+   * @param {NpcDifficultyEnum?=} param0.difficulty
    * @param {boolean?=} param0.isPvp
    * @param {boolean?=} param0.canAuto
    * @param {number?=} param0.autoBattleCost
@@ -78,6 +79,7 @@ class Battle {
     winCallback = null,
     loseCallback = null,
     npcId = null,
+    npcType = null,
     difficulty = null,
     isPvp = false,
     canAuto = false,
@@ -147,6 +149,7 @@ class Battle {
     this.rewardString = rewardString;
     this.dailyRewards = dailyRewards;
     this.npcId = npcId;
+    this.npcType = npcType;
     this.difficulty = difficulty;
     this.winCallback = winCallback;
     this.loseCallback = loseCallback;

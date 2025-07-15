@@ -5,6 +5,7 @@ const emojis = {
   STARMIE: "<:121:1100290825935671307>",
   POKESTARMIE: "<:pokestarmie:1368808978938855474>",
   MEW: "<:151:1116755839919853670>",
+  ARMORED_MEWTWO: "<:armoredmewtwo:1117130461282578535>",
 
   POKEBALL: "<:pokeball:1100296136931156008>",
   GREATBALL: "<:greatball:1100296107759779840>",
@@ -16,6 +17,8 @@ const emojis = {
   LEFTOVERS: "<:leftovers:1336571394531659837>",
 
   DREAM_CARD: "<:dreamcard:1358203943464993052>",
+
+  RED: "<:red:1117871509185249280>",
 };
 
 module.exports = {

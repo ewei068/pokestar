@@ -193,7 +193,7 @@ const buildPartyString = (
       const emoji = pokemon ? pokemonConfig[pokemon.speciesId].emoji : "⬛";
       // if j is divisible by 3 and not 0, remove a space from the left
       // const leftSpace = j % 3 === 0 && j !== 0 ? "" : " ";
-      const leftSpace = isMobile ? "\u2002\u2005" : "\u2009\u200a";
+      const leftSpace = isMobile ? "\u2002\u2005" : "\u2005\u2006";
       rowString += `\`${lborder} \`${emoji}${leftSpace}`;
       globalIndex += 1;
       if (j === cols - 1) {
@@ -578,6 +578,15 @@ const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
  */
 const getIdFromTowerStage = (towerStage) => `battleTowerStage${towerStage}`;
 
+/**
+ * @param {string} id
+ * @returns {number?}
+ */
+const getTowerStageFromId = (id) => {
+  const towerStage = id.split("battleTowerStage")[1];
+  return towerStage ? parseInt(towerStage, 10) : null;
+};
+
 const clearCurrentTargetting = (state) => {
   // eslint-disable-next-line no-param-reassign
   state.currentMoveId = null;
@@ -880,4 +889,5 @@ module.exports = {
   getMoveIdHasTag,
   getEffectIdHasTag,
   npcTurnAction,
+  getTowerStageFromId,
 };

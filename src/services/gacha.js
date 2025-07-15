@@ -39,7 +39,7 @@ const {
   NUM_DAILY_SHARDS,
   NUM_DAILY_REWARDS,
 } = require("../config/trainerConfig");
-const { getTrainer } = require("./trainer");
+const { getTrainer, emitTrainerEvent } = require("./trainer");
 const { getState } = require("./state");
 
 const { logger } = require("../log");
@@ -58,6 +58,7 @@ const { addItems } = require("../utils/trainerUtils");
 const { equipmentConfig } = require("../config/equipmentConfig");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { heldItemIdEnum } = require("../enums/battleEnums");
+const { trainerEventEnum } = require("../enums/gameEnums");
 
 const DAILY_MONEY = process.env.STAGE === stageNames.ALPHA ? 100000 : 300;
 
@@ -125,6 +126,12 @@ const drawDaily = async (trainer) => {
       return { data: null, err: "Error daily draw update." };
     }
     logger.info(`Daily draw and update ${trainer.user.username}.`);
+
+    // emit event
+    await emitTrainerEvent(trainerEventEnum.CLAIMED_DAILY_REWARDS, {
+      // @ts-ignore
+      trainer,
+    });
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error daily draw update." };
@@ -480,13 +487,23 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity = 1) => {
       );
       return { data: null, err: "Error using Pokeball." };
     }
+
     // logger.info(`Used pokeball and updated ${trainer.user.username}.`);
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error using Pokeball." };
   }
 
-  return await giveNewPokemons(trainer, pokemonIds);
+  const giveNewPokemonsRes = await giveNewPokemons(trainer, pokemonIds);
+  if (!giveNewPokemonsRes.err) {
+    emitTrainerEvent(trainerEventEnum.CAUGHT_POKEMON, {
+      trainer,
+      method: "gacha",
+      pokemons: giveNewPokemonsRes.data?.pokemons ?? [],
+    });
+  }
+
+  return giveNewPokemonsRes;
 };
 
 /**

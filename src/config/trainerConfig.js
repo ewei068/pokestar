@@ -98,6 +98,23 @@ const userSettingsConfigRaw = {
       default: true,
     },
   },
+  enableQuestUpsell: {
+    name: "Enable Quest Upsell",
+    options: /** @type {const} */ ([
+      {
+        value: true,
+        display: "Yes",
+      },
+      {
+        value: false,
+        display: "No",
+      },
+    ]),
+    trainerField: {
+      type: "boolean",
+      default: true,
+    },
+  },
 };
 /** @type {Record<UserSettingsEnum, UserSettingsData>} */
 const userSettingsConfig = Object.freeze(userSettingsConfigRaw);
@@ -116,6 +133,21 @@ const userSettingsTrainerFieldsConfig = Object.entries(
   acc[key] = value.trainerField;
   return acc;
 }, {});
+
+/**
+ * @type {DefaultFieldConfig<Trainer>}
+ */
+const questFields = {
+  dailyQuests: {
+    type: "object",
+    default: {},
+    refreshInterval: timeEnum.DAY,
+  },
+  achievements: {
+    type: "object",
+    default: {},
+  },
+};
 
 /**
  * @type {DefaultFieldConfig<Trainer>}
@@ -479,6 +511,11 @@ const trainerFields = {
       completedTutorialStages: {},
       currentTutorialStage: "welcome", // keep in sync with first stage in tutorialConfig
     },
+  },
+  questData: {
+    type: "object",
+    default: {},
+    config: questFields,
   },
 };
 

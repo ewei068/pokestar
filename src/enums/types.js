@@ -7,6 +7,7 @@
  * @typedef {import("./pokemonEnums").AllPokemonIdEnum} AllPokemonIdEnum
  * @typedef {import("./battleEnums").HeldItemIdEnum} HeldItemIdEnum
  * @typedef {import("./miscEnums").UpsellEnum} UpsellEnum
+ * @typedef {import("./gameEnums").TrainerEventEnum} TrainerEventEnum
  */
 
 /**
@@ -17,4 +18,14 @@
 /**
  * @template {BattleEventEnum} K
  * @typedef {import("./battleEnums").BattleEventArgs<K>} BattleEventArgs
+ */
+
+/**
+ * @template {TrainerEventEnum} K
+ * @typedef {import("./gameEnums").TrainerEventArgsWithoutEventName<K>} TrainerEventArgsWithoutEventName
+ */
+
+/**
+ * @template {TrainerEventEnum} K
+ * @typedef {import("./gameEnums").TrainerEventArgs<K>} TrainerEventArgs
  */

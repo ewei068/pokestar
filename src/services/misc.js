@@ -13,6 +13,7 @@ const {
 const { getState, deleteState } = require("./state");
 const { getTrainer, updateTrainer } = require("./trainer");
 const { eventNames } = require("../config/eventConfig");
+const { getAsyncContext } = require("./bot/asyncContext");
 
 const TUTORIAL_UPSELL_TIME_1 = timeEnum.DAY;
 const TUTORIAL_UPSELL_TIME_2 = 3 * timeEnum.DAY;
@@ -60,7 +61,7 @@ const getPreInteractionUpsellData = async ({ user }) => {
   };
 };
 
-const buttonComponent = buildButtonActionRow(
+const tutorialButtonComponent = buildButtonActionRow(
   [
     {
       emoji: "👉",
@@ -72,6 +73,20 @@ const buttonComponent = buildButtonActionRow(
   ],
   eventNames.TUTORIAL_UPSELL_BUTTON
 );
+
+const makeQuestButtonComponent = (questType, questId) =>
+  buildButtonActionRow(
+    [
+      {
+        emoji: "👉",
+        label: "Go to Quest",
+        data: { type: questType, questId },
+        style: ButtonStyle.Success,
+        disabled: false,
+      },
+    ],
+    eventNames.QUEST_UPSELL_BUTTON
+  );
 
 /**
  * Decides the upsells to send to the user, then sends them
@@ -91,6 +106,7 @@ const sendUpsells = async ({
     return;
   }
   const { upsellData } = trainer;
+  const { enableQuestUpsell } = trainer.settings;
   const currentTime = Date.now();
 
   // tutorial completion upsell
@@ -108,9 +124,10 @@ const sendUpsells = async ({
       tutorialState.currentStage
     ));
   if (
-    shouldShowUpsellBasedOnTutorialStateStage ||
-    (!hasCompletedCurrentTutorialStage &&
-      (await hasTrainerMetCurrentTutorialStageRequirements(trainer)))
+    (shouldShowUpsellBasedOnTutorialStateStage ||
+      (!hasCompletedCurrentTutorialStage &&
+        (await hasTrainerMetCurrentTutorialStageRequirements(trainer)))) &&
+    enableQuestUpsell
   ) {
     // attempt to update tutorial state
     if (tutorialState?.refreshTutorialState) {
@@ -124,8 +141,8 @@ const sendUpsells = async ({
     // skip if haven't yet seen first tutorial upsell
     if (timesSeen !== 0) {
       await attemptToReply(tutorialState?.messageRef || interaction, {
-        content: `🎉 You have completed a tutorial stage! 🎉 ${replyString}Use \`/tutorial\` to claim your **rewards.**`,
-        components: [buttonComponent],
+        content: `🎉 You have completed a tutorial stage! 🎉 ${replyString}Use \`/tutorial\` to claim your **rewards.**\n\nYou can disable this notification in your \`/settings\`.`,
+        components: [tutorialButtonComponent],
       });
       return;
     }
@@ -148,14 +165,14 @@ const sendUpsells = async ({
   ) {
     shouldComputeTutorialUpsell = true;
   }
-  let upsellToShow;
-  if (shouldComputeTutorialUpsell) {
+  if (shouldComputeTutorialUpsell && enableQuestUpsell) {
+    let upsellToShow;
     if (timesSeen === 0) {
       upsellToShow = {
         content:
           "New to Pokestar? **Press the button** and take the tutorial to learn the bot and get **a ton of 🎉 rewards!** Or, use `/tutorial` to begin.",
         ephemeral: true,
-        components: [buttonComponent],
+        components: [tutorialButtonComponent],
       };
     } else {
       // compute if upsell should be shown
@@ -174,7 +191,7 @@ const sendUpsells = async ({
           content:
             "You have unclaimed tutorial **🎉 rewards!** Press the button or use `/tutorial` to claim them.",
           ephemeral: true,
-          components: [buttonComponent],
+          components: [tutorialButtonComponent],
         };
         shouldShowTutorialUpsell = true;
       }
@@ -192,6 +209,23 @@ const sendUpsells = async ({
 
     // update trainer
     await updateTrainer(trainer);
+    return;
+  }
+
+  const asyncContext = getAsyncContext();
+  if (asyncContext.completedQuest && enableQuestUpsell) {
+    const upsellToShow = {
+      content:
+        "🎉 You have **completed** a quest! 🎉 Click the **button** or use `/quest` to claim your **🎁 rewards.**\n\nYou can disable this notification in your `/settings`.",
+      ephemeral: true,
+      components: [
+        makeQuestButtonComponent(
+          asyncContext.completedQuest.questType,
+          asyncContext.completedQuest.questId
+        ),
+      ],
+    };
+    await attemptToReply(interaction, upsellToShow);
   }
 };
 

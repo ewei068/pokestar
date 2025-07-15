@@ -31,6 +31,7 @@ const {
   getBackpackItemsString,
 } = require("../utils/trainerUtils");
 const { getVoteMultiplier } = require("../config/socialConfig");
+const { emitTrainerEventPure } = require("./game/gameEvent");
 
 /* 
 "user": {
@@ -79,7 +80,53 @@ const initTrainer = async (user) => {
 };
 
 /**
- * Gets a trainer from a user ID, without initiating it or refreshing time-interval fields
+ * Attempts to update trainer fields.
+ * @param {WithId<Trainer>} trainer
+ * @param {boolean} forceUpdate
+ * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
+ */
+const tryUpdateTrainerFields = async (trainer, forceUpdate = false) => {
+  // attempt to reset time-interval fields
+  const lastCorrectedDate = new Date(trainer.lastCorrected);
+  const newCorrectedDate = new Date();
+  const modified =
+    setDefaultFields(
+      trainer,
+      trainerFields,
+      lastCorrectedDate,
+      newCorrectedDate
+    ) || forceUpdate;
+
+  if (modified) {
+    // eslint-disable-next-line no-param-reassign
+    trainer.lastCorrected = newCorrectedDate.getTime();
+    try {
+      const res = await updateDocument(
+        collectionNames.USERS,
+        { userId: trainer.userId },
+        { $set: trainer }
+      );
+      if (res.modifiedCount === 0) {
+        logger.error(`Failed to update trainer ${trainer.user.username}.`);
+        return { data: null, err: "Error updating trainer." };
+      }
+      logger.info(`Updated trainer ${trainer.user.username}.`);
+    } catch (error) {
+      logger.error(error);
+      return { data: null, err: "Error updating trainer." };
+    }
+
+    // re-retrieve trainer to flush pointers
+    // TODO: possibly better way to do this
+    return await getTrainerFromId(trainer.userId);
+  }
+
+  // @ts-ignore
+  return { data: trainer, err: null };
+};
+
+/**
+ * Gets a trainer from a user ID; does not initiate a trainer but will update time-interval fields
  * @param {string} userId
  * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
  */
@@ -93,7 +140,7 @@ const getTrainerFromId = async (userId) => {
       return { data: null, err: "Error finding trainer." };
     }
     const [trainer] = trainers;
-    return { data: trainer, err: null };
+    return await tryUpdateTrainerFields(trainer, false);
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error finding trainer." };
@@ -160,42 +207,8 @@ const getTrainer = async (discordUser, refresh = true) => {
     }
   }
 
-  // attempt to reset time-interval fields
-  const lastCorrectedDate = new Date(trainer.lastCorrected);
-  const newCorrectedDate = new Date();
-  modified =
-    setDefaultFields(
-      trainer,
-      trainerFields,
-      lastCorrectedDate,
-      newCorrectedDate
-    ) || modified;
-
-  if (modified) {
-    trainer.lastCorrected = newCorrectedDate.getTime();
-    try {
-      const res = await updateDocument(
-        collectionNames.USERS,
-        { userId: user.id },
-        { $set: trainer }
-      );
-      if (res.modifiedCount === 0) {
-        logger.error(`Failed to update trainer ${trainer.user.username}.`);
-        return { data: null, err: "Error updating trainer." };
-      }
-      logger.info(`Updated trainer ${trainer.user.username}.`);
-    } catch (error) {
-      logger.error(error);
-      return { data: null, err: "Error updating trainer." };
-    }
-
-    // re-retrieve trainer to flush pointers
-    // TODO: possibly better way to do this
-    return await getTrainerFromId(user.id);
-  }
-
   // @ts-ignore
-  return { data: trainer, err: null };
+  return await tryUpdateTrainerFields(trainer, modified);
 };
 
 /**
@@ -206,7 +219,7 @@ const refreshTrainer = async (trainer) => await getTrainer(trainer.user);
 /**
  * Given a trainer, retrieve extra info for that trainer
  * @param {WithId<Trainer>} trainer
- * @returns {Promise<{data?: Trainer & {pokemon: object, numPokemon: number}, err?: string}>}
+ * @returns {Promise<{data?: Trainer & {totalPower: number, totalWorth: number, totalShiny: number, numPokemon: number}, err?: string}>}
  */
 const getExtraTrainerInfo = async (trainer) => {
   // get extra info
@@ -583,6 +596,26 @@ const updateTrainer = async (trainer) => {
   }
 };
 
+/**
+ * Emit a trainer event. Trainer events expect a trainer argument, and will mutate and update the trainer in the process.
+ * @template {TrainerEventEnum} K
+ * @param {K} eventName
+ * @param {TrainerEventArgsWithoutEventName<K>} args
+ * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
+ */
+const emitTrainerEvent = async (eventName, args) => {
+  try {
+    const { trainer } = args;
+    // @ts-ignore
+    await emitTrainerEventPure(eventName, args);
+    return await updateTrainer(trainer);
+  } catch (error) {
+    logger.error(error);
+  }
+
+  return { data: null, err: "Error emitting trainer event." };
+};
+
 module.exports = {
   getTrainer,
   getTrainerFromId,
@@ -597,4 +630,5 @@ module.exports = {
   addVote,
   getVoteRewards,
   updateTrainer,
+  emitTrainerEvent,
 };

@@ -92,6 +92,24 @@ const getFlattenedRewardsString = (rewards, received = true) => {
 };
 
 /**
+ * @param {FlattenedRewards} rewards
+ * @returns {string}
+ */
+const getCompactFlattenedRewardsString = (rewards) => {
+  let rewardsString = "";
+  if (rewards.money) {
+    rewardsString += "💵";
+  }
+  if (rewards.backpack) {
+    // console.log(rewards.backpack)
+    for (const itemId in rewards.backpack) {
+      rewardsString += `${backpackItemConfig[itemId].emoji}`;
+    }
+  }
+  return rewardsString;
+};
+
+/**
  * @param {Backpack} backpack
  * @returns {FlattenedBackpack}
  */
@@ -133,6 +151,13 @@ const getRewardsString = (rewards, received = true) => {
   const flattenedRewards = flattenRewards(rewards);
   return getFlattenedRewardsString(flattenedRewards, received);
 };
+
+/**
+ * @param {Rewards} rewards
+ * @returns {string}
+ */
+const getCompactRewardsString = (rewards) =>
+  getCompactFlattenedRewardsString(flattenRewards(rewards));
 
 /**
  *
@@ -317,7 +342,9 @@ module.exports = {
   getPokeballsString,
   getBackpackItemsString,
   getFlattenedRewardsString,
+  getCompactFlattenedRewardsString,
   getRewardsString,
+  getCompactRewardsString,
   getCompactCostString,
   flattenCategories,
   flattenRewards,
