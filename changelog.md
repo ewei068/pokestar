@@ -1,97 +1,15 @@
 # Pokéstar Changelog
 
-## TODO
-
-- Improve UI
-  - Improve look of fields, use inline code when appropriate, use quotes to indent, use emojis!
-  - Also put more emojis in buttons
-  - Move, ability, and held item description formatting?
-- Put tutorial button in upsells
-  - Make the tutorial commands big asf
-  - Can add tips as footers
-- Quest ideas
-  - Daily
-    - Gacha for Pokemon
-    - Defeat trainers
-    - Catch wild Pokemon
-    - Level-up Pokemon
-    - Upgrade equipment
-    - Spend Dream Cards
-    - Claim daily rewards
-    - Buy Pokeballs from pokemart
-    - Complete daily quests
-  - Questlines
-    - Gacha Pokemon
-      - Numeric
-      - Infinite
-    - Catch wild Pokemon
-      - Numeric
-      - Infinite
-    - Level-up Pokemon
-      - Numeric
-      - Infinite
-    - Evolve Pokemon
-      - Numeric
-      - Infinite
-    - EV-train Pokemon
-      - Numeric
-      - Infinte
-    - Have Pokemon of level
-      - Milestone
-      - Finite
-    - Have total combat power
-      - Milestone
-      - Infinite
-    - Increase your Pokemon limit
-      - Milestone
-      - Finite
-    - Defeat trainers
-      - Numeric
-      - Infinite
-    - Defeat dungeons
-      - Numeric
-      - Infinite
-    - Upgrade equipment
-      - Numeric
-      - Infinite
-    - Reroll equipment
-      - Numeric
-      - Infinite
-    - Defeat battle tower floors
-      - Milstone
-      - Finite
-    - Craft held items
-      - Numeric
-      - Infinite
-    - Spend dream cards
-      - Numeric
-      - Infinite
-    - Start raids
-      - Numeric
-      - Infinite
-    - Win raids
-      - Numeric
-      - Infinite
-    - Participate in PVP battles
-      - Numeric
-      - Infinite
-    - Have mythics
-      - Milestone
-      - Finite
-    - Claim daily rewards
-      - Numeric
-      - Infinite
-    - Complete daily quests
-      - Numeric
-      - Infinite
-
 **Stretch**
 
-- Stretch: Quests (Achievements)
 - Stretch: Ability slots
 
 ### 1.4.3
 
+- Add Quests with `/quest`
+  - Quests give tons of rewards
+  - There are two quest types: Daily and Achievements
+  - Added option to silence quest and tutorial upsells in `/settings`
 - Added new `/party manage` command! Much more easily add, move, and remove Pokemon from your party!
   - Adding pokemon from `/info` brings up the party manage UI
   - Added party manage to the `/tutorial`
