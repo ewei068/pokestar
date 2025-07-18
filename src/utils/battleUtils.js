@@ -8,6 +8,8 @@ const {
   statusConditions,
   targetPatterns,
   moveTiers,
+  damageTypeConfig,
+  moveTierConfig,
 } = require("../config/battleConfig");
 const { difficultyConfig } = require("../config/npcConfig");
 const { pokemonConfig, typeConfig } = require("../config/pokemonConfig");
@@ -16,7 +18,12 @@ const {
   flattenRewards,
   flattenCategories,
 } = require("./trainerUtils");
-const { getPBar, formatMoney, getHasTag } = require("./utils");
+const {
+  getPBar,
+  formatMoney,
+  getHasTag,
+  buildBlockQuoteString,
+} = require("./utils");
 const { getEffect } = require("../battle/data/effectRegistry");
 const { backpackItemConfig } = require("../config/backpackConfig");
 const { buildPokemonEmojiString } = require("./pokemonUtils");
@@ -186,7 +193,7 @@ const buildPartyString = (
       const emoji = pokemon ? pokemonConfig[pokemon.speciesId].emoji : "⬛";
       // if j is divisible by 3 and not 0, remove a space from the left
       // const leftSpace = j % 3 === 0 && j !== 0 ? "" : " ";
-      const leftSpace = isMobile ? "\u2002\u2005" : "\u2009\u200a";
+      const leftSpace = isMobile ? "\u2002\u2005" : "\u2005\u2006";
       rowString += `\`${lborder} \`${emoji}${leftSpace}`;
       globalIndex += 1;
       if (j === cols - 1) {
@@ -311,18 +318,20 @@ const buildCompactPartyString = (party, id, pokemonMap, active = false) => {
 const buildMoveString = (moveData, cooldown = 0) => {
   let moveHeader = "";
   if (cooldown) {
-    moveHeader += `[ON COOLDOWN: ${cooldown} TURNS]\n`;
+    moveHeader += `⏳ [ON COOLDOWN: ${cooldown} TURNS]\n`;
   }
+  const damageTypeData = damageTypeConfig[moveData.damageType];
+  const moveTierData = moveTierConfig[moveData.tier];
   moveHeader += `${typeConfig[moveData.type].emoji} **${moveData.name}** | ${
-    moveData.damageType
-  } `;
+    damageTypeData.emoji
+  } ${damageTypeData.abbreviation} `;
 
   let moveString = "";
-  moveString += `**[${moveData.tier}]** PWR: ${moveData.power || "-"} | ACC: ${
-    moveData.accuracy || "-"
-  } | CD: ${moveData.cooldown}\n`;
+  moveString += `**[${moveTierData.abbreviation}]**  |  💪 ${
+    moveData.power || "N/A"
+  }  |  ⌖ ${moveData.accuracy || "N/A"}  |  ⏳ ${moveData.cooldown}\n`;
   moveString += `**Target:** ${moveData.targetType}/${moveData.targetPosition}/${moveData.targetPattern}\n`;
-  moveString += `${moveData.description}`;
+  moveString += buildBlockQuoteString(moveData.description);
 
   return {
     moveHeader,
@@ -448,9 +457,9 @@ const buildBattlePokemonString = (pokemon) => {
 const buildNpcDifficultyString = (difficulty, npcDifficultyData) => {
   const difficultyData = difficultyConfig[difficulty];
   // + 1 here because ace pokemon is one level higher than max level
-  const difficultyHeader = `[Lv. ${npcDifficultyData.minLevel}-${
-    npcDifficultyData.maxLevel + 1
-  }] ${difficultyData.name}`;
+  const difficultyHeader = `${difficultyData.emoji} [Lv. ${
+    npcDifficultyData.minLevel
+  }-${npcDifficultyData.maxLevel + 1}] ${difficultyData.name}`;
 
   const rewardMultipliers =
     npcDifficultyData.rewardMultipliers || difficultyData.rewardMultipliers;
@@ -469,7 +478,7 @@ const buildNpcDifficultyString = (difficulty, npcDifficultyData) => {
   difficultyString += "\n";
   difficultyString += `**Multipliers:** Money: ${rewardMultipliers.moneyMultiplier} | EXP: ${rewardMultipliers.expMultiplier} | Pkmn. EXP: ${rewardMultipliers.pokemonExpMultiplier}`;
   if (npcDifficultyData.dailyRewards) {
-    difficultyString += `\n**Daily Rewards:** ${getFlattenedRewardsString(
+    difficultyString += `\n**Daily Rewards:**\n${getFlattenedRewardsString(
       flattenRewards(npcDifficultyData.dailyRewards),
       false
     )}`;
@@ -568,6 +577,15 @@ const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
  * @returns {string}
  */
 const getIdFromTowerStage = (towerStage) => `battleTowerStage${towerStage}`;
+
+/**
+ * @param {string} id
+ * @returns {number?}
+ */
+const getTowerStageFromId = (id) => {
+  const towerStage = id.split("battleTowerStage")[1];
+  return towerStage ? parseInt(towerStage, 10) : null;
+};
 
 const clearCurrentTargetting = (state) => {
   // eslint-disable-next-line no-param-reassign
@@ -871,4 +889,5 @@ module.exports = {
   getMoveIdHasTag,
   getEffectIdHasTag,
   npcTurnAction,
+  getTowerStageFromId,
 };

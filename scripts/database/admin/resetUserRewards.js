@@ -1,25 +1,31 @@
 /* eslint-disable no-console */
 require("dotenv").config();
-const { QueryBuilder } = require("../../../src/database/mongoHandler");
+const { updateDocuments } = require("../../../src/database/mongoHandler");
 const { collectionNames } = require("../../../src/config/databaseConfig");
 
 const tutorialUserId = "638163104236175427";
 const userId = process.argv[2] || tutorialUserId;
 
-// get the specified player
+// reset the specified player's rewards
 
-const getPlayer = async () => {
-  const res = await new QueryBuilder(collectionNames.USERS)
-    .setFilter({
+const resetUserRewards = async () => {
+  const res = await updateDocuments(
+    collectionNames.USERS,
+    {
       userId,
-    })
-    .findOne();
+    },
+    {
+      $set: {
+        questData: null,
+      },
+    }
+  );
   return res;
 };
 
-getPlayer()
+resetUserRewards()
   .then((res) => {
-    console.dir(res, { depth: null });
+    console.log(res);
   })
   .catch((error) => {
     console.log(error);

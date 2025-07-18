@@ -5,7 +5,7 @@
  * pvp.js is the encapsulating program for the PVP system.
  */
 const { getTrainerWithExtraInfo } = require("../../services/trainer");
-const { validateParty } = require("../../services/party");
+const { validatePartyForBattle } = require("../../services/party");
 const { Battle } = require("../../battle/engine/Battle");
 const { setState } = require("../../services/state");
 const { buildButtonActionRow } = require("../../components/buttonActionRow");
@@ -38,7 +38,7 @@ const pvp = async (user, opponentUserId, level) => {
   }
 
   // validate party
-  const validate = await validateParty(trainer.data);
+  const validate = await validatePartyForBattle(trainer.data);
   if (validate.err) {
     return { send: null, err: validate.err };
   }

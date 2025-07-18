@@ -39,7 +39,7 @@ const {
   NUM_DAILY_SHARDS,
   NUM_DAILY_REWARDS,
 } = require("../config/trainerConfig");
-const { getTrainer } = require("./trainer");
+const { getTrainer, emitTrainerEvent } = require("./trainer");
 const { getState } = require("./state");
 
 const { logger } = require("../log");
@@ -58,6 +58,7 @@ const { addItems } = require("../utils/trainerUtils");
 const { equipmentConfig } = require("../config/equipmentConfig");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { heldItemIdEnum } = require("../enums/battleEnums");
+const { trainerEventEnum } = require("../enums/gameEnums");
 
 const DAILY_MONEY = process.env.STAGE === stageNames.ALPHA ? 100000 : 300;
 
@@ -125,6 +126,12 @@ const drawDaily = async (trainer) => {
       return { data: null, err: "Error daily draw update." };
     }
     logger.info(`Daily draw and update ${trainer.user.username}.`);
+
+    // emit event
+    await emitTrainerEvent(trainerEventEnum.CLAIMED_DAILY_REWARDS, {
+      // @ts-ignore
+      trainer,
+    });
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error daily draw update." };
@@ -402,14 +409,10 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity = 1) => {
   )[bannerType];
   const pokemonIds = [];
   const bannerRateUps = bannerData.rateUp() || {};
-  // if pokeball and standard banner and beginner rolls < 10, roll beginner rolls
+  // if pokeball and beginner rolls < 10, roll beginner rolls
   const currentNumRolls = getOrSetDefault(trainer, "beginnerRolls", 0);
   let beginnerRolls = null;
-  if (
-    pokeballId === backpackItems.POKEBALL &&
-    bannerType === bannerTypes.STANDARD &&
-    currentNumRolls < 10
-  ) {
+  if (pokeballId === backpackItems.POKEBALL && currentNumRolls < 10) {
     beginnerRolls = beginnerRoll(trainer, quantity);
   }
   // get non-rate-ups for each rarity
@@ -421,7 +424,13 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity = 1) => {
     );
   }
   // roll for pokemon
-  for (const rarity of drawnRarities) {
+  for (const [index, rarity] of drawnRarities.entries()) {
+    if (beginnerRolls && beginnerRolls[index]) {
+      pokemonIds.push(beginnerRolls[index]);
+      trainerBannerInfo.pity += pokeballConfig[pokeballId].pity;
+      continue;
+    }
+
     let rarityRateUp = bannerRateUps[rarity];
     if (trainerBannerInfo.pity >= MAX_PITY) {
       // set rarity to legendary
@@ -478,19 +487,23 @@ const usePokeball = async (trainer, pokeballId, bannerIndex, quantity = 1) => {
       );
       return { data: null, err: "Error using Pokeball." };
     }
+
     // logger.info(`Used pokeball and updated ${trainer.user.username}.`);
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error using Pokeball." };
   }
 
-  if (beginnerRolls) {
-    for (const [index, pokemonId] of Object.entries(beginnerRolls)) {
-      pokemonIds[index] = pokemonId;
-    }
+  const giveNewPokemonsRes = await giveNewPokemons(trainer, pokemonIds);
+  if (!giveNewPokemonsRes.err) {
+    emitTrainerEvent(trainerEventEnum.CAUGHT_POKEMON, {
+      trainer,
+      method: "gacha",
+      pokemons: giveNewPokemonsRes.data?.pokemons ?? [],
+    });
   }
 
-  return await giveNewPokemons(trainer, pokemonIds);
+  return giveNewPokemonsRes;
 };
 
 /**
@@ -588,7 +601,7 @@ const buildBannerSend = async ({
       emoji: backpackItemConfig[backpackItems.MASTERBALL].emoji,
     },
     {
-      label: "Info",
+      label: "ⓘ",
       data: {
         ...pokeballData,
       },

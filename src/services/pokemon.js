@@ -52,7 +52,12 @@ const {
 const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
-const { getTrainer, updateTrainer, getTrainerFromId } = require("./trainer");
+const {
+  getTrainer,
+  updateTrainer,
+  getTrainerFromId,
+  emitTrainerEvent,
+} = require("./trainer");
 const { setState, getState } = require("./state");
 const { buildYesNoActionRow } = require("../components/yesNoActionRow");
 const {
@@ -73,11 +78,11 @@ const {
   backpackItems,
 } = require("../config/backpackConfig");
 const { drawIterable, drawUniform } = require("../utils/gachaUtils");
-const { partyAddRow } = require("../components/partyAddRow");
 const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
 const { buildEquipmentSelectRow } = require("../components/equipmentSelectRow");
 const { stageNames } = require("../config/stageConfig");
 const { emojis } = require("../enums/emojis");
+const { trainerEventEnum } = require("../enums/gameEnums");
 
 // TODO: move this?
 const PAGE_SIZE = 10;
@@ -565,7 +570,7 @@ const transformPokemon = (pokemon, targetSpeciesId) => {
  * @param {WithId<Pokemon>} pokemon
  * @param {number} exp
  * @param {StatArray=} evs
- * @returns {Promise<{data: {exp: number, level: number, evs: number[]}, err: string?}>}
+ * @returns {Promise<{data: {exp: number, level: number, evs: StatArray}, err: string?}>}
  */
 const addPokemonExpAndEVs = async (
   trainer,
@@ -577,7 +582,7 @@ const addPokemonExpAndEVs = async (
   const speciesData = pokemonConfig[pokemon.speciesId];
 
   // add EVs
-  const gainedEvs = [0, 0, 0, 0, 0, 0];
+  const gainedEvs = /** @type {StatArray} */ ([0, 0, 0, 0, 0, 0]);
   if (!pokemon.evs) {
     pokemon.evs = [0, 0, 0, 0, 0, 0];
   }
@@ -663,7 +668,7 @@ const addPokemonExpAndEVs = async (
 
 /**
  *
- * @param {Trainer} trainer
+ * @param {WithId<Trainer>} trainer
  * @param {WithId<Pokemon>} pokemon
  * @param {LocationEnum} locationId
  * @returns {ReturnType<addPokemonExpAndEVs>}
@@ -692,7 +697,17 @@ const trainPokemon = async (trainer, pokemon, locationId) => {
   }
 
   // add exp and evs
-  return await addPokemonExpAndEVs(trainer, pokemon, exp, evs);
+  const trainRes = await addPokemonExpAndEVs(trainer, pokemon, exp, evs);
+  if (!trainRes.err && trainRes.data) {
+    await emitTrainerEvent(trainerEventEnum.TRAINED_POKEMON, {
+      trainer,
+      pokemon,
+      exp: trainRes.data.exp,
+      evs: trainRes.data.evs,
+    });
+  }
+
+  return trainRes;
 };
 
 /**
@@ -1103,15 +1118,7 @@ const buildPokemonInfoSend = async ({
   );
   send.components.push(actionActionRow);
 
-  if (action === "add") {
-    const partySelectRow = partyAddRow(
-      pokemonId,
-      trainer.data.party.pokemonIds.length
-    );
-    send.components.push(partySelectRow);
-  }
-
-  return { send, err: null };
+  return { send, pokemon: pokemon.data, err: null };
 };
 
 const getPokemonOwnershipStats = async (speciesId) => {
@@ -2252,6 +2259,16 @@ const evolvePokemon = async (pokemon, evolutionSpeciesId) => {
       return { data: null, err: "Error evolving Pokemon." };
     }
     logger.info(`Evolved Pokemon ${pokemon._id}.`);
+
+    const { data: trainer, err: trainerErr } = await getTrainerFromId(
+      pokemon.userId
+    );
+    if (!trainerErr) {
+      await emitTrainerEvent(trainerEventEnum.EVOLVED_POKEMON, {
+        trainer,
+        pokemon,
+      });
+    }
     return { data: { pokemon, species: evolutionSpeciesData.name }, err: null };
   } catch (error) {
     logger.error(error);

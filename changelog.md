@@ -1,12 +1,23 @@
 # Pokéstar Changelog
 
-## TODO
-
 **Stretch**
 
-- Stretch: Quests (Achievements)
 - Stretch: Ability slots
-- Stretch: Improve party management
+
+### 1.4.3
+
+- Add Quests with `/quest`
+  - Quests give tons of rewards
+  - There are two quest types: Daily and Achievements
+  - Added option to silence quest and tutorial upsells in `/settings`
+  - Added quest completion to `/tutorial`
+- Added new `/party manage` command! Much more easily add, move, and remove Pokemon from your party!
+  - Adding pokemon from `/info` brings up the party manage UI
+  - Added party manage to the `/tutorial`
+- Tutorial and general UI improvements
+  - Improved the UI of the `/tutorial` and other UI
+  - Re-ordered some tutorial stages
+  - Made the beginner gacha boost (10 pulls) apply to all banners
 
 ### 1.4.2 Gen 4 Part 2 (5/26)
 

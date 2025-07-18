@@ -33,6 +33,7 @@ const {
   addExpAndMoney,
   updateTrainer,
   getTrainerFromId,
+  emitTrainerEvent,
 } = require("./trainer");
 const { addPokemonExpAndEVs, getPokemon } = require("./pokemon");
 const { logger } = require("../log");
@@ -49,7 +50,7 @@ const { buildScrollActionRow } = require("../components/scrollActionRow");
 const { getState } = require("./state");
 const { eventNames } = require("../config/eventConfig");
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
-const { validateParty } = require("./party");
+const { validatePartyForBattle } = require("./party");
 const {
   addRewards,
   getFlattenedRewardsString,
@@ -65,6 +66,7 @@ const {
 } = require("../battle/engine/npcs");
 const { heldItemIdEnum } = require("../enums/battleEnums");
 const { emojis } = require("../enums/emojis");
+const { trainerEventEnum } = require("../enums/gameEnums");
 
 /**
  * @param {Trainer} trainer
@@ -193,10 +195,16 @@ const getStartTurnSend = async (battle, stateId) => {
           // TODO: optimize this it makes too many db calls
           for (const userId of team.userIds) {
             const user = battle.users[userId];
+            // trigger battle win callback
+            if (battle.winCallback) {
+              await battle.winCallback(battle, user);
+            }
+
             // get trainer
             // @ts-ignore
-            const trainer = await getTrainer(user);
-            if (trainer.err) {
+            // eslint-disable-next-line prefer-const
+            let { data: trainer, err } = await getTrainer(user);
+            if (err) {
               logger.warn(
                 // @ts-ignore
                 `Failed to get trainer for user ${user.id} after battle`
@@ -204,23 +212,15 @@ const getStartTurnSend = async (battle, stateId) => {
               continue;
             }
 
-            // trigger battle win callback
-            if (battle.winCallback) {
-              await battle.winCallback(battle, trainer.data);
-            }
-
             // add trainer rewards
-            // @ts-ignore
-            await addExpAndMoney(user, expReward, moneyReward);
             const defeatedDifficultiesToday =
-              trainer.data.defeatedNPCsToday[battle.npcId];
-            const defeatedDifficulties =
-              trainer.data.defeatedNPCs[battle.npcId];
+              trainer.defeatedNPCsToday[battle.npcId];
+            const defeatedDifficulties = trainer.defeatedNPCs[battle.npcId];
             const allRewards = {};
             let modified = false;
             // add battle rewards
             if (battle.rewards) {
-              addRewards(trainer.data, battle.rewards, allRewards);
+              addRewards(trainer, battle.rewards, allRewards);
               modified = true;
             }
             // add daily rewards
@@ -229,12 +229,10 @@ const getStartTurnSend = async (battle, stateId) => {
               (!defeatedDifficultiesToday ||
                 !defeatedDifficultiesToday.includes(battle.difficulty))
             ) {
-              addRewards(trainer.data, battle.dailyRewards, allRewards);
-              getOrSetDefault(
-                trainer.data.defeatedNPCsToday,
-                battle.npcId,
-                []
-              ).push(battle.difficulty);
+              addRewards(trainer, battle.dailyRewards, allRewards);
+              getOrSetDefault(trainer.defeatedNPCsToday, battle.npcId, []).push(
+                battle.difficulty
+              );
               modified = true;
             }
             // add to defeated difficulties if not already there
@@ -242,7 +240,7 @@ const getStartTurnSend = async (battle, stateId) => {
               !defeatedDifficulties ||
               !defeatedDifficulties.includes(battle.difficulty)
             ) {
-              getOrSetDefault(trainer.data.defeatedNPCs, battle.npcId, []).push(
+              getOrSetDefault(trainer.defeatedNPCs, battle.npcId, []).push(
                 battle.difficulty
               );
               modified = true;
@@ -250,14 +248,18 @@ const getStartTurnSend = async (battle, stateId) => {
 
             // attempt to add rewards
             if (modified) {
-              const { err } = await updateTrainer(trainer.data);
-              if (err) {
+              const { data: newTrainer, err: updateErr } = await updateTrainer(
+                trainer
+              );
+
+              if (updateErr) {
                 logger.warn(
                   // @ts-ignore
                   `Failed to update daily trainer for user ${user.id} after battle`
                 );
                 continue;
               } else {
+                trainer = newTrainer;
                 // this is kinda hacky there may be a better way to do this
                 rewardRecipients.push({
                   username: user.username,
@@ -266,13 +268,32 @@ const getStartTurnSend = async (battle, stateId) => {
               }
             }
 
+            // this feels hacky; don't emit event for raids since it handles it differently
+            if (battle.npcId && battle.npcType && battle.npcType !== "raid") {
+              const eventRes = await emitTrainerEvent(
+                trainerEventEnum.DEFEATED_NPC,
+                {
+                  trainer,
+                  npcId: battle.npcId,
+                  difficulty: battle.difficulty,
+                  type: battle.npcType,
+                }
+              );
+              if (!eventRes.err && eventRes.data) {
+                trainer = eventRes.data;
+              }
+            }
+
+            // @ts-ignore
+            await addExpAndMoney(user, expReward, moneyReward);
+
             const levelUps = [];
             // add pokemon rewards
             for (const pokemon of Object.values(battle.allPokemon).filter(
-              (p) => p.originalUserId === trainer.data.userId
+              (p) => p.originalUserId === trainer.userId
             )) {
               // get db pokemon
-              const dbPokemon = await getPokemon(trainer.data, pokemon.id);
+              const dbPokemon = await getPokemon(trainer, pokemon.id);
               if (dbPokemon.err) {
                 logger.warn(`Failed to get pokemon ${pokemon.id} after battle`);
                 continue;
@@ -284,7 +305,7 @@ const getStartTurnSend = async (battle, stateId) => {
                   ? pokemonExpReward * 2
                   : pokemonExpReward;
               const trainResult = await addPokemonExpAndEVs(
-                trainer.data,
+                trainer,
                 dbPokemon.data,
                 thisPokemonExpReward
               );
@@ -311,7 +332,7 @@ const getStartTurnSend = async (battle, stateId) => {
           if (rewardRecipients.length > 0) {
             content += `\n**${rewardRecipients
               .map((r) => r.username)
-              .join(", ")} received rewards for their victory:**`;
+              .join(", ")} received rewards for their victory:**\n`;
             content += getFlattenedRewardsString(
               rewardRecipients[0].rewards,
               false
@@ -324,6 +345,28 @@ const getStartTurnSend = async (battle, stateId) => {
     } catch (err) {
       logger.error(`Failed to add battle rewards: ${err}`);
     }
+
+    // TODO: optimize and batch this. I'm lazy
+    const promises = [];
+    for (const user of Object.values(battle.users)) {
+      if (!battle.isNpc(user.id)) {
+        promises.push(
+          (async () => {
+            const { data: trainer, err: getTrainerErr } = await getTrainer(
+              user
+            );
+            if (getTrainerErr) {
+              return;
+            }
+            await emitTrainerEvent(trainerEventEnum.PARTICIPATED_IN_BATTLE, {
+              trainer,
+              type: battle.isPvp ? "pvp" : battle.npcType || "other",
+            });
+          })()
+        );
+      }
+    }
+    await Promise.allSettled(promises);
 
     // re-add log to content
     content += `\n${battle.log.join("\n")}`;
@@ -457,14 +500,22 @@ const startAuto = async ({ battle, stateId, interaction, user }) => {
     return { err: updateResult.err };
   }
 
-  errorlessAsync(() => {
-    if (trainer.settings.instantAutoBattle) {
-      return instantAutoBattle(battle, stateId, interaction);
-    }
-    return nextAutoTurn(battle, stateId, {
-      interaction,
-    });
+  await emitTrainerEvent(trainerEventEnum.STARTED_AUTO_BATTLE, {
+    trainer: updateResult.data,
+    dreamCards: battle.autoData.autoBattleCost,
+    npcId: battle.npcId,
   });
+
+  if (trainer.settings.instantAutoBattle) {
+    await instantAutoBattle(battle, stateId, interaction);
+    return;
+  }
+
+  errorlessAsync(() =>
+    nextAutoTurn(battle, stateId, {
+      interaction,
+    })
+  );
 };
 
 const buildPveSend = async ({
@@ -553,6 +604,7 @@ const buildPveSend = async ({
     };
     const difficultyButtonConfigs = Object.keys(npcData.difficulties).map(
       (difficulty) => ({
+        emoji: difficultyConfig[difficulty].emoji,
         label: difficultyConfig[difficulty].name,
         disabled: false,
         data: {
@@ -612,7 +664,7 @@ const buildPveSend = async ({
     }
 
     // validate party
-    const validate = await validateParty(newTrainerResult.data);
+    const validate = await validatePartyForBattle(newTrainerResult.data);
     if (validate.err) {
       return { err: validate.err };
     }
@@ -628,6 +680,7 @@ const buildPveSend = async ({
       ...rewardMultipliers,
       dailyRewards: npcDifficultyData.dailyRewards,
       npcId: state.npcId,
+      npcType: "pve",
       difficulty: state.difficulty,
       canAuto: !getCanTrainerAutoBattle(newTrainerResult.data, autoBattleCost)
         .err,
@@ -813,7 +866,7 @@ const buildDungeonSend = async ({
     }
 
     // validate party
-    const validate = await validateParty(newTrainerResult.data);
+    const validate = await validatePartyForBattle(newTrainerResult.data);
     if (validate.err) {
       return { err: validate.err };
     }
@@ -837,6 +890,7 @@ const buildDungeonSend = async ({
       autoBattleCost,
       shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(newTrainerResult.data)
         .err,
+      npcType: "dungeon",
     });
     battle.addTeam("Dungeon", true);
     battle.addTrainer(
@@ -881,7 +935,12 @@ const buildDungeonSend = async ({
   return { send, err: null };
 };
 
-const towerWinCallback = async (battle, trainer) => {
+const towerWinCallback = async (battle, user) => {
+  const { data: trainer, err } = await getTrainer(user);
+  if (err) {
+    battle.rewards = null;
+    return;
+  }
   // validate tower stage
   const towerStage = trainer.lastTowerStage + 1;
   if (getIdFromTowerStage(towerStage) !== battle.npcId) {
@@ -944,7 +1003,7 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
     return { embed: null, err: `You must complete the previous stage first!` };
   }
   // validate party
-  const validate = await validateParty(trainer.data);
+  const validate = await validatePartyForBattle(trainer.data);
   if (validate.err) {
     return { err: validate.err };
   }
@@ -965,6 +1024,7 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
     canAuto: !getCanTrainerAutoBattle(trainer.data, autoBattleCost).err,
     autoBattleCost,
     shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(trainer.data).err,
+    npcType: "battleTower",
   });
   battle.addTeam("Battle Tower", true);
   battle.addTrainer(

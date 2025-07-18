@@ -8,6 +8,7 @@ module.exports = async (
 ) => ({
   components: [
     createElement(Button, {
+      emoji: "↩",
       label: "Return",
       style,
       callbackBindingKey,

@@ -22,7 +22,6 @@ const eventNames = Object.freeze({
   SHOP_SELECT: "shopSelect",
   SHOP_BUY: "shopBuy",
   HELP_SELECT: "helpSelect",
-  PARTY_ADD: "partyAdd",
   PVP_ACCEPT: "pvpAccept",
   PVE_SCROLL: "pveScroll",
   PVE_SELECT: "pveSelect",
@@ -52,6 +51,8 @@ const eventNames = Object.freeze({
   VOTE_REWARDS: "voteRewards",
   EVENT_BUTTON: "eventButton",
   TUTORIAL_BUTTON: "tutorialButton",
+  TUTORIAL_UPSELL_BUTTON: "tutorialUpsellButton",
+  QUEST_UPSELL_BUTTON: "questUpsellButton",
   BACK: "back",
   POKEMON_ID_SELECT: "pokemonIdSelect",
 });
@@ -177,13 +178,6 @@ const eventConfig = {
   [eventNames.BACK]: {
     name: "Back",
     execute: "back.js",
-  },
-  [eventNames.PARTY_ADD]: {
-    name: "Party Add",
-    execute: "partyAdd.js",
-    directory: "battle",
-    exp: 5,
-    money: 10,
   },
   [eventNames.PVP_ACCEPT]: {
     name: "PVP Accept",
@@ -352,6 +346,20 @@ const eventConfig = {
     name: "Tutorial Button",
     execute: "tutorialButton.js",
     directory: "help",
+  },
+  [eventNames.TUTORIAL_UPSELL_BUTTON]: {
+    name: "Tutorial Upsell Button",
+    execute: "tutorialUpsellButton.js",
+    directory: "help",
+    exp: 10,
+    money: 25,
+  },
+  [eventNames.QUEST_UPSELL_BUTTON]: {
+    name: "Quest Upsell Button",
+    execute: "questUpsellButton.js",
+    directory: "trainer",
+    exp: 10,
+    money: 25,
   },
   [eventNames.POKEMON_ID_SELECT]: {
     name: "Pokemon ID Select",

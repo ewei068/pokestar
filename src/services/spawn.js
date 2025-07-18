@@ -24,9 +24,10 @@ const {
   drawUniform,
 } = require("../utils/gachaUtils");
 const { setState } = require("./state");
-const { getTrainer } = require("./trainer");
+const { getTrainer, emitTrainerEvent } = require("./trainer");
 const { giveNewPokemons } = require("./gacha");
 const { getGuildData } = require("./guild");
+const { trainerEventEnum } = require("../enums/gameEnums");
 
 const SPAWN_TIME =
   process.env.STAGE === stageNames.ALPHA ? 30 * 60 * 1000 : 60 * 60 * 1000;
@@ -286,6 +287,12 @@ const onButtonPress = async (interaction, data, state) => {
     if (give.err) {
       return { send: null, err: give.err };
     }
+
+    await emitTrainerEvent(trainerEventEnum.CAUGHT_POKEMON, {
+      trainer: trainer.data,
+      method: "wild",
+      pokemons: give.data.pokemons,
+    });
 
     const embed = buildNewPokemonEmbed(give.data.pokemons[0]);
     const followUpSend = {

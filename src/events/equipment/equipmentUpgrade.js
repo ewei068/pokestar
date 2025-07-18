@@ -13,7 +13,8 @@ const {
   getPokemon,
   rerollStatSlot,
 } = require("../../services/pokemon");
-const { getTrainer } = require("../../services/trainer");
+const { getTrainer, emitTrainerEvent } = require("../../services/trainer");
+const { trainerEventEnum } = require("../../enums/gameEnums");
 
 const equipmentUpgrade = async (interaction, data) => {
   // get state
@@ -35,17 +36,18 @@ const equipmentUpgrade = async (interaction, data) => {
     return { err: "Invalid button." };
   }
 
-  let trainer = await getTrainer(interaction.user);
-  if (trainer.err) {
-    return { err: trainer.err };
+  const { data: trainer, err: trainerErr } = await getTrainer(interaction.user);
+  if (trainerErr) {
+    return { err: trainerErr };
   }
-  trainer = trainer.data;
 
-  let pokemon = await getPokemon(trainer, state.pokemonId);
-  if (pokemon.err) {
-    return { err: pokemon.err };
+  const { data: pokemon, err: pokemonErr } = await getPokemon(
+    trainer,
+    state.pokemonId
+  );
+  if (pokemonErr) {
+    return { err: pokemonErr };
   }
-  pokemon = pokemon.data;
 
   let followUpString = null;
   if (button === "upgrade") {
@@ -58,6 +60,11 @@ const equipmentUpgrade = async (interaction, data) => {
       return { err: res.err };
     }
     followUpString = res.data;
+
+    await emitTrainerEvent(trainerEventEnum.UPGRADED_EQUIPMENT, {
+      trainer,
+      equipment: pokemon.equipments[state.equipmentType],
+    });
   } else if (button === "slot") {
     const res = await rerollStatSlot(
       trainer,
@@ -69,6 +76,11 @@ const equipmentUpgrade = async (interaction, data) => {
       return { err: res.err };
     }
     followUpString = res.data;
+
+    await emitTrainerEvent(trainerEventEnum.REROLLED_EQUIPMENT, {
+      trainer,
+      equipment: pokemon.equipments[state.equipmentType],
+    });
   }
 
   const { send, err } = await buildEquipmentUpgradeSend({

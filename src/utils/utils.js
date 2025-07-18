@@ -40,6 +40,22 @@ const getPBar = (percent, size = 20) => {
 };
 
 /**
+ * @param {number} progress
+ * @param {number} total
+ * @param {number=} size
+ * @returns {string}
+ */
+const getNumericPBar = (progress, total, size = 20) => {
+  if (progress > total) {
+    progress = total;
+  } else if (progress < 0) {
+    progress = 0;
+  }
+  const percent = (progress * 100) / total;
+  return getPBar(percent, size);
+};
+
+/**
  * @param {string[]} strings
  * @param {number} len
  * @returns {string[]}
@@ -490,6 +506,18 @@ const buildAnsiString = (str) => {
   return ansiString;
 };
 
+const buildBlockQuoteString = (str) => {
+  let blockQuoteString = "";
+  const lines = str.split("\n");
+  for (let i = 0; i < lines.length; i += 1) {
+    blockQuoteString += `> ${lines[i]}`;
+    if (i < lines.length - 1) {
+      blockQuoteString += "\n";
+    }
+  }
+  return blockQuoteString;
+};
+
 /**
  * @param {any} obj
  * @param {PokemonTag | HeldItemTag | MoveTag | EffectTag} tag
@@ -499,6 +527,7 @@ const getHasTag = (obj, tag) => obj?.tags?.includes?.(tag);
 module.exports = {
   getOrSetDefault,
   getPBar,
+  getNumericPBar,
   getWhitespace,
   linebreakString,
   idFrom,
@@ -524,6 +553,7 @@ module.exports = {
   attemptToReply,
   setDefaultFields,
   buildAnsiString,
+  buildBlockQuoteString,
   getHasTag,
   getNumIntervalsBetweenDates,
 };

@@ -23,6 +23,7 @@ const {
   getOrSetDefault,
   formatMoney,
   getNextTimeIntervalDate,
+  buildBlockQuoteString,
 } = require("../utils/utils");
 const {
   getPokemonExpNeeded,
@@ -117,7 +118,9 @@ const buildBannerEmbed = (trainer, bannerData) => {
 
   const embed = new EmbedBuilder();
   embed.setTitle(`${displayPokemon.emoji} ${bannerData.name}`);
-  embed.setDescription(`${linebreakString(bannerData.description, 50)}`);
+  embed.setDescription(
+    buildBlockQuoteString(linebreakString(bannerData.description, 45))
+  );
   embed.setColor(0xffffff);
   embed.setThumbnail(`${displayPokemon.sprite}`);
   embed.addFields(
@@ -146,7 +149,7 @@ const buildGachaInfoString = () => {
     "**Gacha Info**\nUse Pokeballs to draw Pokemon from the Gacha! Each Pokeball has a different chance of drawing a Pokemon, with **better Pokeballs being more likely to draw rarer Pokemon.** The higher the rarity, the lower the chance of drawing that Pokemon.\n\n";
   infoString += "**Getting Pokeballs**\n";
   infoString +=
-    "You can get Pokeballs from `/daily` (3 random), `/vote` (2 per vote), `/levelrewards`. and `/pokemart`.\n\n";
+    "You can get Pokeballs from `/daily` (3 random), `/vote` (2 per vote), `/tutorial`, `/pve` (daily), `/levelrewards`. and `/pokemart`.\n\n";
   infoString += "**Banners**\n";
   infoString +=
     "Scroll through the banners using the buttons. Each banner has a different set of rate-up Pokemon. **When a rarity is drawn, there is a 50% chance to get a random rate-up Pokemon of that rarity instead.** If there are no rate-ups for that rarity, the Pokemon is random. There are also 3 banner types: Standard, Rotating, and Special.\n\n";
@@ -367,13 +370,13 @@ const buildPokemonEmbed = (
 
   let sixthField = {
     name: "Shiny",
-    value: pokemon.shiny ? "True" : "False",
+    value: pokemon.shiny ? "✨ True" : "🚫 False",
     inline: true,
   };
   if (originalOwnerId) {
     sixthField = {
       name: "Original Owner",
-      value: `<@${originalOwnerId}>`,
+      value: `👑 <@${originalOwnerId}>`,
       inline: true,
     };
   }
@@ -405,7 +408,9 @@ const buildPokemonEmbed = (
   embed.setDescription(
     `${pokemon.shiny ? "✨" : ""}**[Lv. ${pokemon.level}]** ${
       speciesData.name
-    } (#${pokemon.speciesId})\n${linebreakString(speciesData.description, 50)}`
+    } (#${pokemon.speciesId})\n${buildBlockQuoteString(
+      speciesData.description
+    )}`
   );
   embed.setColor(rarityConfig[speciesData.rarity].color);
 
@@ -420,29 +425,35 @@ const buildPokemonEmbed = (
       { name: "Type", value: typeString, inline: true },
       {
         name: "Ability",
-        value: getAbilityName(pokemon.abilityId),
+        value: `💫 ${getAbilityName(pokemon.abilityId)}`,
         inline: true,
       },
       {
         name: "Nature",
-        value: `${natureConfig[pokemon.natureId].name} (${
+        value: `🧬 ${natureConfig[pokemon.natureId].name} (${
           natureConfig[pokemon.natureId].description
         })`,
         inline: true,
       },
-      { name: "Rarity", value: speciesData.rarity, inline: true },
+      {
+        name: "Rarity",
+        value: `${rarityConfig[speciesData.rarity].emoji} ${
+          speciesData.rarity
+        }`,
+        inline: true,
+      },
       {
         name: "Date Caught",
-        value: new Date(pokemon.dateAcquired).toLocaleDateString(),
+        value: `🗓️ ${new Date(pokemon.dateAcquired).toLocaleDateString()}`,
         inline: true,
       },
       sixthField,
       {
-        name: "Stats (Stat|IVs|EVs)",
+        name: "💪 Stats (Stat|IVs|EVs)",
         value: `${statString}${heldItemString}`, // TODO: can't find a better place to put this lol
         inline: false,
       },
-      { name: "Level Progress", value: progressBar, inline: false }
+      { name: "Level Progress", value: `⏳ ${progressBar}`, inline: false }
     );
 
     footerHelp.push("/train <id> to train this Pokemon");
@@ -471,7 +482,9 @@ const buildPokemonEmbed = (
     const abilityData = getAbility(pokemon.abilityId);
     embed.addFields({
       name: `Ability: ${getAbilityName(pokemon.abilityId)}`,
-      value: abilityData ? abilityData.description : "Not yet implemented!",
+      value: abilityData
+        ? buildBlockQuoteString(abilityData.description)
+        : "Not yet implemented!",
       inline: false,
     });
 
@@ -479,14 +492,12 @@ const buildPokemonEmbed = (
     if (pokemon.heldItemId) {
       embed.addFields({
         name: `Held Item: ${getItemDisplay(pokemon.heldItemId)}`,
-        value: backpackItemConfig[pokemon.heldItemId].description,
+        value: buildBlockQuoteString(
+          backpackItemConfig[pokemon.heldItemId].description
+        ),
         inline: false,
       });
     }
-
-    footerHelp.push(
-      "/partyadd <id> <position> to add this Pokemon to your party"
-    );
   }
 
   // equipment
@@ -515,7 +526,7 @@ const buildPokemonEmbed = (
     // add stat boost field
     if (oldPokemon) {
       embed.addFields({
-        name: "Stat Boost",
+        name: "⬆️ Stat Boost",
         value: buildBoostString(oldPokemon, pokemon),
         inline: false,
       });
@@ -837,24 +848,32 @@ const buildSpeciesDexEmbed = (id, speciesData, tab, ownershipData) => {
       }
     }
 
-    embed.setDescription(`${linebreakString(speciesData.description, 50)}`);
+    embed.setDescription(
+      `${buildBlockQuoteString(linebreakString(speciesData.description, 45))}`
+    );
     embed.addFields(
       { name: "Type", value: typeString, inline: true },
       { name: "Abilities", value: abilityString, inline: true },
       {
         name: "Obtainable",
-        value: speciesData.unobtainable ? "False" : "True",
+        value: speciesData.unobtainable ? "❌ False" : "✅ True",
         inline: true,
       },
-      { name: "Rarity", value: speciesData.rarity, inline: true },
+      {
+        name: "Rarity",
+        value: `${rarityConfig[speciesData.rarity].emoji} ${
+          speciesData.rarity
+        }`,
+        inline: true,
+      },
       {
         name: "Evolvable",
-        value: speciesData.evolution ? "True" : "False",
+        value: speciesData.evolution ? "🧬 True" : "🧬 False",
         inline: true,
       },
       {
         name: "Growth Rate",
-        value: growthRateConfig[speciesData.growthRate].name,
+        value: `📈 ${growthRateConfig[speciesData.growthRate].name}`,
         inline: true,
       }
     );
@@ -866,16 +885,16 @@ const buildSpeciesDexEmbed = (id, speciesData, tab, ownershipData) => {
     embed.setDescription(`Growth information for #${id} ${speciesData.name}:`);
     embed.addFields(
       {
-        name: "Growth Rate",
+        name: "📈 Growth Rate",
         value: growthRateConfig[speciesData.growthRate].name,
         inline: true,
       },
       {
-        name: "Base Stats",
+        name: "💪 Base Stats",
         value: buildPokemonBaseStatString(speciesData),
         inline: false,
       },
-      { name: "Evolutions", value: evolutionString, inline: false }
+      { name: "🧬 Evolutions", value: evolutionString, inline: false }
     );
   } else if (tab === "moves") {
     // display: move strings
@@ -907,7 +926,7 @@ const buildSpeciesDexEmbed = (id, speciesData, tab, ownershipData) => {
         abilityProbability * 100
       )}%)`;
       const abilityString = abilityData
-        ? abilityData.description
+        ? buildBlockQuoteString(abilityData.description)
         : "Not yet implemented!";
       return {
         name: abilityHeader,

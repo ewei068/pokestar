@@ -16,6 +16,7 @@ const {
 const { getPBar, getWhitespace, formatMoney } = require("../utils/utils");
 const { locationConfig } = require("../config/locationConfig");
 const { formatDreamCards } = require("../utils/trainerUtils");
+const { emojis } = require("../enums/emojis");
 
 /*
 "trainer": {
@@ -56,17 +57,25 @@ const buildTrainerEmbed = (trainerInfo) => {
     `https://cdn.discordapp.com/avatars/${trainerInfo.userId}/${trainerInfo.user.avatar}.webp`
   );
   embed.addFields(
-    { name: "Level", value: `${trainerInfo.level}`, inline: true },
-    { name: "Money", value: `${formatMoney(trainerInfo.money)}`, inline: true },
-    { name: "Pokemon", value: `${trainerInfo.numPokemon}`, inline: true },
-    { name: "Power", value: `${trainerInfo.totalPower}`, inline: true },
+    { name: "Level", value: `🚀 ${trainerInfo.level}`, inline: true },
     {
-      name: "Worth",
-      value: `${formatMoney(trainerInfo.totalWorth)}`,
+      name: "Money",
+      value: `💵 ${formatMoney(trainerInfo.money)}`,
       inline: true,
     },
-    { name: "Shinies", value: `${trainerInfo.totalShiny}`, inline: true },
-    { name: "Level Progress", value: `${progressBar}`, inline: false }
+    {
+      name: `Pokemon`,
+      value: `${emojis.POKEBALL} ${trainerInfo.numPokemon}`,
+      inline: true,
+    },
+    { name: "Power", value: `💪 ${trainerInfo.totalPower}`, inline: true },
+    {
+      name: "Worth",
+      value: `💎 ${formatMoney(trainerInfo.totalWorth)}`,
+      inline: true,
+    },
+    { name: "Shinies", value: `✨ ${trainerInfo.totalShiny}`, inline: true },
+    { name: "Level Progress", value: `⏳ ${progressBar}`, inline: false }
   );
 
   const footerString = "Use /settings to make your profile private";

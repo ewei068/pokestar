@@ -1,16 +1,23 @@
 // smell -- this config depends on some services to work properly
 // maybe refactor at some point but I don't think it's a big deal because this is an isolated functionality
 const { emojis } = require("../enums/emojis");
+const { trainerEventEnum } = require("../enums/gameEnums");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const {
   checkNumPokemon,
   listPokemonsFromTrainer: listPokemons,
 } = require("../services/pokemon");
+const { getExtraTrainerInfo } = require("../services/trainer");
+const {
+  getIdFromTowerStage,
+  getTowerStageFromId,
+} = require("../utils/battleUtils");
 const { getMaxDreamCards } = require("../utils/trainerUtils");
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { SUPPORT_SERVER_INVITE, gameEventConfig } = require("./helpConfig");
 const { locations } = require("./locationConfig");
 const { difficulties } = require("./npcConfig");
+const { pokemonConfig } = require("./pokemonConfig");
 const { shopItems } = require("./shopConfig");
 
 /** @typedef {Keys<newTutorialConfigRaw>} TutorialStageEnum */
@@ -24,6 +31,7 @@ const { shopItems } = require("./shopConfig");
  *  checkRequirements: (trainer: WithId<Trainer>) => Promise<boolean>,
  *  rewards: Rewards,
  *  image?: string,
+ *  tip?: string,
  * }} TutorialStageData
  */
 
@@ -51,9 +59,9 @@ const newTutorialConfigRaw = {
     name: "Catching Pokemon",
     emoji: emojis.POKEBALL,
     description:
-      "The first thing to do is catch Pokemon! **To catch new Pokemon, use the `/gacha` command**. The gacha costs Pokeballs, with rare Pokeballs catching rarer Pokemon. I would recommend using 10 Pokeballs on the standard banner.",
+      "The first thing to do is catch Pokemon! **To catch new Pokemon, use the `/gacha` command**. \n## `/gacha`",
     requirementString: "Catch 1x Pokemon",
-    proceedString: "Use `/gacha` and catch a Pokemon!",
+    proceedString: "Use `/gacha` and catch a Pokemon! \n## `/gacha`",
     checkRequirements: async (trainer) =>
       await checkNumPokemon(trainer)
         .then((res) => (res.numPokemon ?? 0) > 0)
@@ -63,33 +71,15 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/gacha.gif",
-  },
-  buyPokeballs: {
-    name: "Buying Pokeballs",
-    emoji: emojis.POKEBALL,
-    description: `One of the best ways to get more Pokeballs is to buy them from the Pokemart every day. Use \`/pokemart\` to buy ${emojis.POKEBALL} Pokeballs, or use \`/buy itemid: 0 quantity: 5\` to buy the maximum amount.`,
-    requirementString: `Buy 5x ${emojis.POKEBALL} Pokeballs`,
-    proceedString:
-      "Use `/pokemart` or `/buy itemid: 0 quantity: 5` to buy 5 Pokeballs!",
-    checkRequirements: async (trainer) =>
-      trainer.purchasedShopItemsToday[shopItems.RANDOM_POKEBALL] >= 5,
-    rewards: {
-      backpack: {
-        [backpackCategories.POKEBALLS]: {
-          [backpackItems.GREATBALL]: 5,
-        },
-      },
-    },
-    image:
-      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pokemart.gif",
+    tip: "Rarer Pokeballs catch rarer Pokemon!",
   },
   dailyRewards: {
     name: "Daily Rewards",
     emoji: "📅",
     description:
-      "You can get more money and Pokeballs for free every day! **Use `/daily` to claim your daily rewards.**",
+      "You can get more money and Pokeballs for free every day! **Use `/daily` to claim your daily rewards.** \n## `/daily`",
     requirementString: "Claim Daily Rewards",
-    proceedString: "Use `/daily` to claim your daily rewards!",
+    proceedString: "Use `/daily` to claim your daily rewards! \n## `/daily`",
     checkRequirements: async (trainer) => trainer.claimedDaily,
     rewards: {
       backpack: {
@@ -104,10 +94,11 @@ const newTutorialConfigRaw = {
   backpack: {
     name: "Backpack Management",
     emoji: "🎒",
-    description: "You can view your items and money by using `/backpack`.",
+    description:
+      "You can view your items and money by using `/backpack`. \n## `/backpack`",
     requirementString: "Complete the previous stage",
     proceedString:
-      "Use `/backpack` to view your backpack, and complete the previous stage.",
+      "Use `/backpack` to view your backpack, and complete the previous stage. \n## `/backpack`",
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.dailyRewards,
     rewards: {
@@ -116,30 +107,13 @@ const newTutorialConfigRaw = {
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/backpack.png",
   },
-  voting: {
-    name: "(Optional) Voting",
-    emoji: "🗳️",
-    description:
-      "Voting for Pokestar helps the bot grow! **Vote for Pokestar on top.gg [here](https://top.gg/bot/1093411444877439066/vote)**. Then, use `/vote` to claim your rewards.\n\n" +
-      `Voting gives you many rewards, and voting consistently gives you a streak. With a max streak, **you can get up to 15x ${emojis.POKEBALL} Pokeballs every 12 hours!**`,
-    requirementString: "Complete the previous stage",
-    proceedString:
-      "(Optional) Vote for Pokestar on top.gg, and complete the previous stage.",
-    checkRequirements: async (trainer) =>
-      trainer.tutorialData.completedTutorialStages.backpack,
-    rewards: {
-      money: 1000,
-    },
-    image:
-      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/vote.png",
-  },
   catchSixPokemon: {
     name: "Catch More Pokemon",
     emoji: emojis.GREATBALL,
     description:
-      "Catch more Pokemon to build your team! **Use `/gacha` to catch 6 Pokemon**.",
+      "Catch more Pokemon to build your team! **Use `/gacha` to catch 6 Pokemon**.\n## `/gacha`",
     requirementString: "Catch 6x Pokemon",
-    proceedString: "Use `/gacha` to catch 6 Pokemon!",
+    proceedString: "Use `/gacha` to catch 6 Pokemon! \n## `/gacha`",
     checkRequirements: async (trainer) =>
       await checkNumPokemon(trainer)
         .then((res) => (res.numPokemon ?? 0) >= 6)
@@ -158,10 +132,10 @@ const newTutorialConfigRaw = {
     name: "Building Your Party",
     emoji: emojis.PIKACHU,
     description:
-      "Build your party by adding 6 Pokemon to your party! **Use `/party auto` to add your 6 strongest Pokemon to your party**. You can also use `/party add` and `/party remove` to make finer adjustments to your party.",
+      "Build your party by adding 6 Pokemon to your party! **Use `/party auto` to add your 6 strongest Pokemon to your party**. You can also use `/party manage` to make finer adjustments to your party. \n## `/party auto` `/party manage`",
     requirementString: "Add 6x Pokemon to Party",
     proceedString:
-      "Use `/party auto` or `/party add` to add a Pokemon to your party!",
+      "Use `/party auto` or `/party manage` to add a Pokemon to your party! \n## `/party auto` `/party manage`",
     checkRequirements: async (trainer) => {
       const partyPokemon = trainer.party.pokemonIds.filter((id) => id);
       return partyPokemon.length >= 6;
@@ -174,13 +148,13 @@ const newTutorialConfigRaw = {
       },
     },
     image:
-      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/partyadd.png",
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/partymanage.gif",
   },
   learnBattleTurns: {
     name: "Learning to Battle: Taking Turns",
     emoji: "➡️",
     description:
-      "Before you battle, you must learn how they work! Battles in Pokestar are unique; **all 6 Pokemon fight at a time!**\n\n**Taking turns is based off combat readiness.** Pokemon with higher speed gain combat readiness faster. The current active Pokemon is highlighted in asterisks.\n\nYou may view the combat readiness of a team by clicking the **🔴 NPC** or **🔵 Player** tabs. There is also an indicator of which Pokemon moves next.",
+      "Before you battle, you must learn how they work! Battles in Pokestar are unique; **all 6 Pokemon fight at a time!**\n\n**Taking turns is based off combat readiness.** Pokemon with higher speed gain combat readiness faster. The current active Pokemon is highlighted in asterisks.",
     requirementString: "Complete the previous stage",
     proceedString:
       "Read the description to learn about battles, and complete the previous stage.",
@@ -191,6 +165,7 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/combat-readiness.png",
+    tip: "View the combat readiness of a team by clicking the 🔴 NPC or 🔵 Player tabs",
   },
   learnBattleMoves: {
     name: "Learning to Battle: Using Moves",
@@ -213,7 +188,7 @@ const newTutorialConfigRaw = {
     emoji: "🎯",
     description:
       "When using a move, you must select a target! **Click on the Pokemon you want to target from the dropdown menu.** Most moves may only target certain Pokemon, which is indicated in the **Target:** section of the move description." +
-      "\n\n**Some moves may affect an area of Pokemon.** When a target is selected, that area is indicated by a wider border. **When satisfied, click the ⚔️ Confirm button to use the move.** This can be disabled in your `/settings`." +
+      "\n\n**Some moves may affect an area of Pokemon.** When a target is selected, that area is indicated by a wider border. **When satisfied, click the ⚔️ Confirm button to use the move.**" +
       "\n\nFor more detailed battle mechanics, check out the [documentation on Github](https://github.com/ewei068/pokestar?tab=readme-ov-file#-battle-mechanics).",
     requirementString: "Complete the previous stage",
     proceedString:
@@ -225,14 +200,15 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/battle-target-select.gif",
+    tip: "You can disable target indicators in your /settings",
   },
   winNpcBattle: {
     name: "Battle an NPC!",
     emoji: "⚔️",
     description:
-      "Now that you know how to battle, **use `/pve` to battle an NPC!** I'd recommend starting with the <:bugcatcher:1117871382399815812> Bug Catcher on Very Easy difficulty.",
+      "Now that you know how to battle, **use `/pve` to battle an NPC!** I'd recommend starting with the <:bugcatcher:1117871382399815812> Bug Catcher on Very Easy difficulty. \n## `/pve`",
     requirementString: "Win any NPC Battle",
-    proceedString: "Use `/pve` to battle an NPC!",
+    proceedString: "Use `/pve` to battle an NPC! \n## `/pve`",
     checkRequirements: async (trainer) =>
       Object.keys(trainer.defeatedNPCs).length > 0,
     rewards: {
@@ -246,15 +222,36 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif",
+    tip: "Some NPCs give daily victory rewards!",
+  },
+  buyPokeballs: {
+    name: "Buying Pokeballs",
+    emoji: emojis.POKEBALL,
+    description: `One of the best ways to get more Pokeballs is to buy them from the Pokemart every day. Use \`/pokemart\` to buy ${emojis.POKEBALL} Pokeballs, or use \`/buy itemid: 0 quantity: 5\` to buy the maximum amount.\n## \`/pokemart\``,
+    requirementString: `Buy 5x ${emojis.POKEBALL} Pokeballs`,
+    proceedString:
+      "Use `/pokemart` or `/buy itemid: 0 quantity: 5` to buy 5 Pokeballs! \n## `/pokemart`",
+    checkRequirements: async (trainer) =>
+      trainer.purchasedShopItemsToday[shopItems.RANDOM_POKEBALL] >= 5,
+    rewards: {
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.GREATBALL]: 5,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pokemart.gif",
+    tip: "You can buy 5 Pokeballs every day!",
   },
   listPokemon: {
     name: "Viewing Pokemon: List",
     emoji: "📜",
     description:
-      "You can view all your Pokemon using `/list`. **Use `/list` to view your Pokemon.**",
+      "You can view all your Pokemon using `/list`. **Use `/list` to view your Pokemon.** \n## `/list`",
     requirementString: "Complete the previous stage",
     proceedString:
-      "Use `/list` to view your Pokemon, and complete the previous stage.",
+      "Use `/list` to view your Pokemon, and complete the previous stage. \n## `/list`",
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.winNpcBattle,
     rewards: {
@@ -262,15 +259,16 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/list.png",
+    tip: "You can search, sort, and release Pokemon from the /list!",
   },
   viewPokemon: {
     name: "Viewing Pokemon: Info",
     emoji: "🔍",
     description:
-      "You can view a specific Pokemon using `/info`, or clicking them from the `/list` dropdown menu. **Use `/info` to view a specific Pokemon.**\n\nFor **mobile users**, you can long press + copy to copy a Pokemon's ID from here.",
+      "You can view a specific Pokemon using `/info`, or clicking them from the `/list` dropdown menu. **Use `/info` to view a specific Pokemon.**\n## `/info <name>`",
     requirementString: "Complete the previous stage",
     proceedString:
-      "Use `/info` to view a specific Pokemon, and complete the previous stage.",
+      "Use `/info` to view a specific Pokemon, and complete the previous stage. \n## `/info <name>`",
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.listPokemon,
     rewards: {
@@ -278,14 +276,16 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/info.png",
+    tip: "For mobile users, you can long press + copy to copy a Pokemon's ID from here",
   },
   trainPokemon: {
     name: "Training Pokemon",
     emoji: "🏋️",
     description:
-      "One way to give your Pokemon more EXP is by training! Copy a Pokemon's ID, then **Use `/train` to train a Pokemon to level 12.**\n\nTip: On desktop, you can use the Up Arrow key to use your last command.",
+      "One way to give your Pokemon more EXP is by training! Copy a Pokemon's ID, then **Use `/train` to train a Pokemon to level 12.**\n## `/train <id>`",
     requirementString: "Have 1x Pokemon at level 12 or higher",
-    proceedString: "Use `/train` to train a Pokemon to level 12.",
+    proceedString:
+      "Use `/train` to train a Pokemon to level 12. \n## `/train <id>`",
     checkRequirements: async (trainer) => {
       const { data: pokemons } = await listPokemons(trainer, {
         pageSize: 1,
@@ -305,15 +305,16 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/train.png",
+    tip: "On desktop, you can use the Up Arrow key to use your last command.",
   },
   trainerInfo: {
     name: "Viewing Trainer Info",
     emoji: "📊",
     description:
-      "You can view your trainer info using `/trainerinfo`. **Use `/trainerinfo` to view your trainer info.**",
+      "You can view your trainer info using `/trainerinfo`. **Use `/trainerinfo` to view your trainer info.** \n## `/trainerinfo`",
     requirementString: "Complete the previous stage",
     proceedString:
-      "Use `/trainerinfo` to view your trainer info, and complete the previous stage.",
+      "Use `/trainerinfo` to view your trainer info, and complete the previous stage. \n## `/trainerinfo`",
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.trainPokemon,
     rewards: {
@@ -321,6 +322,7 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/trainerinfo.png",
+    tip: "You can also view the trainer info of other trainers",
   },
   trainerLevel: {
     name: "Trainer Level",
@@ -343,9 +345,10 @@ const newTutorialConfigRaw = {
     name: "Level Rewards",
     emoji: "🎁",
     description:
-      "Every time you level up, you gain level rewards! **Use `/levelrewards` to claim your level rewards.**",
+      "Every time you level up, you gain level rewards! **Use `/levelrewards` to claim your level rewards.** \n## `/levelrewards`",
     requirementString: "Claim Level Rewards",
-    proceedString: "Use `/levelrewards` to claim your level rewards!",
+    proceedString:
+      "Use `/levelrewards` to claim your level rewards! \n## `/levelrewards`",
     checkRequirements: async (trainer) =>
       trainer.claimedLevelRewards.length > 0,
     rewards: {
@@ -358,10 +361,10 @@ const newTutorialConfigRaw = {
     name: "Purchasing Locations",
     emoji: "🌍",
     description:
-      "You may purchase and upgrade locations from the `/pokemart` for permanent boosts! **Use `/pokemart` to purchase the 🏠 Home location and upgrade it to level 3.** The Home locations improves the EXP gained from `/train`!\n\nYou can use `/locations` to view your locations.",
+      "You may purchase and upgrade locations from the `/pokemart` for permanent boosts! **Use `/pokemart` to purchase the 🏠 Home location and upgrade it to level 3.** The Home locations improves the EXP gained from `/train`!\n## `/pokemart`",
     requirementString: "Have a level 3 🏠 Home location",
     proceedString:
-      "Use `/pokemart` to purchase the Home location and upgrade it to level 3!",
+      "Use `/pokemart` to purchase the Home location and upgrade it to level 3! \n## `/pokemart`",
     checkRequirements: async (trainer) =>
       (trainer.locations?.[locations.HOME] ?? 0) >= 3,
     rewards: {
@@ -373,6 +376,7 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/home.png",
+    tip: "You can use /locations to view your locations",
   },
   beginnerLeveling: {
     name: "Beginner Pokemon Leveling",
@@ -380,7 +384,8 @@ const newTutorialConfigRaw = {
     description:
       "Now that you can `/train` your Pokemon faster, **train 6 Pokemon to level 15.**\n\nTip: On desktop, you can use the Up Arrow key to use your last command.",
     requirementString: "Train 6x Pokemon to level 15",
-    proceedString: "Use `/train` to train 6 Pokemon to level 15!",
+    proceedString:
+      "Use `/train` to train 6 Pokemon to level 15! \n## `/train <id>`",
     checkRequirements: async (trainer) => {
       const { data: pokemons } = await listPokemons(trainer, {
         pageSize: 6,
@@ -428,14 +433,40 @@ const newTutorialConfigRaw = {
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif",
   },
+  quests: {
+    name: "Quests",
+    emoji: "📜",
+    description:
+      "Quests are another way to get **daily and one-time rewards.** Use `/quest` to view and complete quests. \n## `/quest`",
+    requirementString: "Complete a quest",
+    proceedString: "Use `/quest` to view and complete quests. \n## `/quest`",
+    checkRequirements: async (trainer) =>
+      Object.values(trainer.questData.dailyQuests).some(
+        (quest) => quest.stage > 0
+      ) ||
+      Object.values(trainer.questData.achievements).some(
+        (quest) => quest.stage > 0
+      ),
+    rewards: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: 10,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/quest.png",
+    tip: "There are multiple types of quests, such as daily quests and achievements.",
+  },
   events: {
     name: "Events",
     emoji: "🎉",
     description:
-      "Pokestar has events which provide **limited-time rewards, benefits, and custom Pokemon!** Use `/events` to view ongoing events.",
+      "Pokestar has events which provide **limited-time rewards, benefits, and custom Pokemon!** Use `/events` to view ongoing events. \n## `/events`",
     requirementString: "Complete the previous stage",
     proceedString:
-      "Use `/events` to view ongoing events, and complete the previous stage.",
+      "Use `/events` to view ongoing events, and complete the previous stage. \n## `/events`",
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.winEasyDifficulty,
     rewards: {
@@ -443,14 +474,31 @@ const newTutorialConfigRaw = {
     },
     image: gameEventConfig[0]?.image,
   },
+  voting: {
+    name: "(Optional) Voting",
+    emoji: "🗳️",
+    description:
+      "Voting for Pokestar helps the bot grow! **Vote for Pokestar on top.gg [here](https://top.gg/bot/1093411444877439066/vote)**. Then, use `/vote` to claim your rewards.\n\n" +
+      `Voting gives you many rewards, and voting consistently gives you a streak. With a max streak, **you can get up to 15x ${emojis.POKEBALL} Pokeballs every 12 hours!**`,
+    requirementString: "Complete the previous stage",
+    proceedString:
+      "(Optional) Vote for Pokestar on top.gg, and complete the previous stage.",
+    checkRequirements: async (trainer) =>
+      trainer.tutorialData.completedTutorialStages.events,
+    rewards: {
+      money: 1000,
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/vote.png",
+  },
   userSettings: {
     name: "Settings",
     emoji: "⚙️",
     description:
-      "You can view and change your settings using `/settings`. **Use `/settings` to view and change your settings.**\n\nIf you're getting the hang of battles, you can speed them up by disabling target indicators. You can also set your device type to mobile for mobile optimizations.",
+      "You can view and change your settings using `/settings`. **Use `/settings` to view and change your settings.**\n\nIf you're getting the hang of battles, you can speed them up by disabling target indicators. You can also set your device type to mobile for mobile optimizations. \n## `/settings`",
     requirementString: "Complete the previous stage",
     proceedString:
-      "Use `/settings` to view and change your settings, and complete the previous stage.",
+      "Use `/settings` to view and change your settings, and complete the previous stage. \n## `/settings`",
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.events,
     rewards: {
@@ -482,12 +530,13 @@ const newTutorialConfigRaw = {
         },
       },
     },
+    tip: "Battling will give you more EXP than training",
   },
   evolvePokemon: {
     name: "Evolving Pokemon",
     emoji: "🧬",
     description:
-      "Some Pokemon can evolve at the right level! Use `/pokedex` and click the growth tab to know when a Pokemon evolves, then **use `/evolve` to evolve a Pokemon.**",
+      "Some Pokemon can evolve at the right level! Use `/pokedex` and click the growth tab to know when a Pokemon evolves, then **use `/evolve` to evolve a Pokemon.** \n## `/pokedex <name>` `/evolve <name>`",
     requirementString: "Complete the previous stage",
     proceedString:
       "Use `/evolve` to evolve a Pokemon, and complete the previous stage.",
@@ -503,9 +552,10 @@ const newTutorialConfigRaw = {
     name: "Win Medium Difficulty",
     emoji: "🏆",
     description:
-      "Now that you have evolved your Pokemon, **use `/pve` to win a battle on Medium difficulty.**",
+      "Now that you have evolved your Pokemon, **use `/pve` to win a battle on Medium difficulty.** \n## `/pve`",
     requirementString: "Win any battle on Medium difficulty",
-    proceedString: "Use `/pve` to win a battle on Medium difficulty!",
+    proceedString:
+      "Use `/pve` to win a battle on Medium difficulty! \n## `/pve`",
     checkRequirements: async (trainer) => {
       for (const defeatedDifficulties of Object.values(trainer.defeatedNPCs)) {
         if (defeatedDifficulties.includes(difficulties.MEDIUM)) {
@@ -529,9 +579,9 @@ const newTutorialConfigRaw = {
     name: "Catching More Pokemon",
     emoji: emojis.ULTRABALL,
     description:
-      "You should keep using the `/gatcha` to catch strong Pokemon. **Catch 50 Pokemon.**",
+      "You should keep using the `/gacha` to catch strong Pokemon. **Catch 50 Pokemon.** \n## `/gacha`",
     requirementString: "Catch 50x Pokemon",
-    proceedString: "Use `/gacha` to catch 50 Pokemon!",
+    proceedString: "Use `/gacha` to catch 50 Pokemon! \n## `/gacha`",
     checkRequirements: async (trainer) =>
       await checkNumPokemon(trainer)
         .then((res) => (res.numPokemon ?? 0) >= 50)
@@ -551,9 +601,10 @@ const newTutorialConfigRaw = {
     name: "Catching Darkrai",
     emoji: "<:491:1351027502801354822>",
     description:
-      "Darkrai is a Mythical Pokemon that can be caught after **completing 25 tutorial stages.** Use **`/mythic darkrai`** to catch Darkrai!",
+      "Darkrai is a Mythical Pokemon that can be caught after **completing 25 tutorial stages.** Use **`/mythic darkrai`** to catch Darkrai! \n## `/mythic darkrai`",
     requirementString: "Complete 25x tutorial stages and catch Darkrai",
-    proceedString: "Use `/mythic darkrai` to catch Darkrai!",
+    proceedString:
+      "Use `/mythic darkrai` to catch Darkrai! \n## `/mythic darkrai`",
     checkRequirements: async (trainer) => trainer.hasDarkrai,
     rewards: {
       money: 10000,
@@ -581,6 +632,7 @@ const newTutorialConfigRaw = {
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/auto-battle.png",
+    tip: "You can increase your Dream Card limit by leveling up your trainer",
   },
   advancedLeveling: {
     name: "Advanced Pokemon Leveling",
@@ -607,6 +659,7 @@ const newTutorialConfigRaw = {
         },
       },
     },
+    tip: "Battling will give you more EXP than training. Use auto battle to save time!",
   },
   winHardDifficulty: {
     name: "Win Hard Difficulty",
@@ -876,7 +929,1109 @@ const newTutorialStages = /** @type {TutorialStageEnum[]} */ (
   Object.keys(newTutorialConfig)
 );
 
+/**
+ * @typedef {Enum<typeof questTypeEnum>} QuestTypeEnum
+ */
+const questTypeEnum = Object.freeze({
+  DAILY: "daily",
+  ACHIEVEMENT: "achievement",
+  EVENT: "event",
+});
+
+/**
+ * @typedef {Enum<typeof questRequirementTypeEnum>} QuestRequirementTypeEnum
+ */
+const questRequirementTypeEnum = Object.freeze({
+  NUMERIC: "numeric",
+  MILESTONE_NUMERIC: "milestoneNumeric",
+  BOOLEAN: "boolean",
+});
+
+/**
+ * @typedef {Enum<typeof questProgressionTypeEnum>} QuestProgressionTypeEnum
+ */
+const questProgressionTypeEnum = Object.freeze({
+  INFINITE: "infinite",
+  FINITE: "finite",
+});
+
+/**
+ * @template {any} T
+ * @template {any} U
+ * @typedef {(args: {stage: number} & T) => U} GenericQuestFunction
+ */
+
+/**
+ * @typedef {{ progress?: number, progressOverride?: number }} QuestEventListenerCallbackReturnValue
+ */
+
+/**
+ * @template {TrainerEventEnum} T
+ * @typedef {(args: TrainerEventArgs<T> & {stage: number}) => Promise<QuestEventListenerCallbackReturnValue> | QuestEventListenerCallbackReturnValue} QuestEventListenerCallback
+ */
+/**
+ * @template T
+ * @typedef {T extends TrainerEventEnum ? { eventName: T, listenerCallback: QuestEventListenerCallback<T> } : never} QuestEventListenerFunctionEntryGeneric
+ */
+/**
+ * @typedef {QuestEventListenerFunctionEntryGeneric<TrainerEventEnum>} QuestEventListenerFunctionEntry
+ */
+
+/**
+ * @typedef {{
+ *  formatName: GenericQuestFunction<{}, string>,
+ *  formatEmoji: GenericQuestFunction<{}, string>,
+ *  formatDescription: GenericQuestFunction<{progressRequirement: number}, string>,
+ *  formatRequirementString: GenericQuestFunction<{progressRequirement: number}, string>,
+ *  computeRewards: GenericQuestFunction<{}, Rewards>,
+ *  questListeners: QuestEventListenerFunctionEntry[],
+ *  image?: string,
+ * }} QuestConfigBase
+ */
+
+/**
+ * @typedef {{
+ *  requirementType: typeof questRequirementTypeEnum.NUMERIC,
+ *  computeProgressRequirement: GenericQuestFunction<{}, number>,
+ *  resetProgressOnComplete: boolean,
+ * }} QuestConfigNumeric
+ */
+/**
+ * @typedef {{
+ *  requirementType: typeof questRequirementTypeEnum.MILESTONE_NUMERIC,
+ *  computeProgressRequirement: GenericQuestFunction<{}, number>,
+ *  computeCurrentProgress: GenericQuestFunction<{trainer: WithId<Trainer>}, Promise<number>>,
+ *  resetProgressOnComplete: boolean,
+ * }} QuestConfigMilestoneNumeric
+ */
+/**
+ * @typedef {{
+ *  requirementType: typeof questRequirementTypeEnum.BOOLEAN,
+ *  checkRequirements: GenericQuestFunction<{trainer: WithId<Trainer>}, Promise<boolean>>,
+ * }} QuestConfigBoolean
+ */
+
+/**
+ * @typedef {{
+ *  progressionType: typeof questProgressionTypeEnum.INFINITE,
+ * }} QuestConfigInfinite
+ */
+/**
+ * @typedef {{
+ *  progressionType: typeof questProgressionTypeEnum.FINITE,
+ *  maxStage: number,
+ * }} QuestConfigFinite
+ */
+/**
+ * @typedef {{
+ *  progressionType: typeof questProgressionTypeEnum.FINITE,
+ *  maxStage: 0,
+ * }} QuestConfigSingle
+ */
+
+/**
+ * @typedef {QuestConfigBase & QuestConfigNumeric & QuestConfigSingle} DailyQuestConfig
+ * @typedef {QuestConfigBase & (QuestConfigNumeric | QuestConfigBoolean | QuestConfigMilestoneNumeric) & (QuestConfigInfinite | QuestConfigFinite)} AchievementConfig
+ * @typedef {DailyQuestConfig | AchievementConfig} QuestConfig
+ */
+
+/**
+ * @typedef {Keys<dailyQuestConfigRaw>} DailyQuestEnum
+ */
+/** @satisfies {Record<string, DailyQuestConfig>} */
+const dailyQuestConfigRaw = {
+  gachaPokemon: {
+    formatName: () => "Gacha for Pokemon",
+    formatEmoji: () => emojis.POKEBALL,
+    formatDescription: ({ progressRequirement }) =>
+      `Catch ${progressRequirement} Pokemon using the Gacha! Use \`/gacha\` to catch Pokemon.\n## \`/gacha\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Catch ${progressRequirement}x Pokemon with \`/gacha\``,
+    computeRewards: () => ({
+      money: 1000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.GREATBALL]: 2,
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CAUGHT_POKEMON,
+        listenerCallback: ({ method, pokemons }) => {
+          if (method === "gacha") {
+            return {
+              progress: pokemons.length,
+            };
+          }
+
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 5,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 0,
+  },
+  catchWildPokemon: {
+    formatName: () => `Catch Wild Pokemon`,
+    formatEmoji: () => emojis.POKEBALL,
+    formatDescription: ({ progressRequirement }) =>
+      `Catch ${progressRequirement} wild Pokemon! Wild Pokemon spawn periodically in channels in your server. If you're a server admin, use \`/spawn manage\` to manage the spawns.`,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Catch ${progressRequirement}x wild Pokemon`,
+    computeRewards: () => ({
+      money: 1500,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: 3,
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CAUGHT_POKEMON,
+        listenerCallback: ({ method, pokemons }) => {
+          if (method === "wild") {
+            return {
+              progress: pokemons.length,
+            };
+          }
+
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 1,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 0,
+  },
+  defeatTrainers: {
+    formatName: () => "Defeat Trainers",
+    formatEmoji: () => emojis.RED,
+    formatDescription: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement} Trainers! Use \`/pve\` to defeat Trainers.\n## \`/pve\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement}x Trainers with \`/pve\``,
+    computeRewards: () => ({
+      money: 2500,
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.DEFEATED_NPC,
+        listenerCallback: ({ type }) => {
+          if (type === "pve") {
+            return {
+              progress: 1,
+            };
+          }
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 2,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 0,
+  },
+  upgradeEquipment: {
+    formatName: () => "Upgrade Equipment",
+    formatEmoji: () => emojis.POWER_WEIGHT,
+    formatDescription: ({ progressRequirement }) =>
+      `Upgrade your equipment ${progressRequirement} times! Use \`/equipment\` to upgrade your equipment. You can get shards from the \`/pokemart\` or \`/dungeons\`.\n## \`/equipment\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Upgrade your equipment ${progressRequirement}x times with \`/equipment\``,
+    computeRewards: () => ({
+      money: 2000,
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: 8,
+          [backpackItems.KNOWLEDGE_SHARD]: 8,
+          [backpackItems.WILLPOWER_SHARD]: 8,
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.UPGRADED_EQUIPMENT,
+        listenerCallback: () => ({
+          progress: 1,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 3,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 0,
+  },
+  dreamCards: {
+    formatName: () => `Spend Dream Cards`,
+    formatEmoji: () => emojis.DREAM_CARD,
+    formatDescription: ({ progressRequirement }) =>
+      `Spend ${progressRequirement} Dream Cards! You can spend dream cards by using "Auto" in any PVE stage! To access this feature, you much catch \`/mythic darkrai\` first.`,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Spend ${progressRequirement}x Dream Cards`,
+    computeRewards: () => ({
+      money: 2500,
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.STARTED_AUTO_BATTLE,
+        listenerCallback: ({ dreamCards }) => ({
+          progress: dreamCards,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 40,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 0,
+  },
+  buyPokeballs: {
+    formatName: () => `Buy Pokeballs`,
+    formatEmoji: () => emojis.POKEBALL,
+    formatDescription: ({ progressRequirement }) =>
+      `Buy ${progressRequirement} Pokeballs! Use \`/pokemart\` to buy Pokeballs.\n## \`/pokemart\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Buy ${progressRequirement}x Pokeballs with \`/pokemart\``,
+    computeRewards: () => ({
+      money: 2500,
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.MADE_PURCHASE,
+        listenerCallback: ({ itemId, quantity }) => {
+          if (itemId === shopItems.RANDOM_POKEBALL) {
+            return {
+              progress: quantity,
+            };
+          }
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 3,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 0,
+  },
+  claimDailyRewards: {
+    formatName: () => `Claim Daily Rewards`,
+    formatEmoji: () => "📅",
+    formatDescription: () =>
+      `Claim your daily rewards! Use \`/daily\` to claim your daily rewards.\n## \`/daily\``,
+    formatRequirementString: () => `Claim your daily rewards with \`/daily\``,
+    computeRewards: () => ({
+      money: 1000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.GREATBALL]: 1,
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CLAIMED_DAILY_REWARDS,
+        listenerCallback: () => ({
+          progress: 1,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 1,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 0,
+  },
+  completeDailyQuest: {
+    formatName: () => `Complete Daily Quests`,
+    formatEmoji: () => "📜",
+    formatDescription: ({ progressRequirement }) =>
+      `Complete ${progressRequirement} daily quests! Use \`/quest\` to complete view and complete your daily quests.\n## \`/quest\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Complete ${progressRequirement}x daily quests with \`/quest\``,
+    computeRewards: () => ({
+      money: 3000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.ULTRABALL]: 1,
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.COMPLETED_QUESTS,
+        listenerCallback: ({ quests }) => {
+          const numDailyQuests = quests.filter(
+            (quest) => quest.questType === questTypeEnum.DAILY
+          ).length;
+          return {
+            progress: numDailyQuests,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: () => 3,
+    resetProgressOnComplete: true,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 0,
+  },
+};
+/** @type {Record<DailyQuestEnum, DailyQuestConfig>} */
+const dailyQuestConfig = Object.freeze(dailyQuestConfigRaw);
+
+const stageToBattleTowerOrder = [1, 5, 10, 15, 20];
+const stageToMythicOrder = [
+  pokemonIdEnum.DARKRAI,
+  pokemonIdEnum.MEW,
+  pokemonIdEnum.JIRACHI,
+  pokemonIdEnum.DEOXYS,
+  pokemonIdEnum.CELEBI,
+];
+
+/**
+ * @typedef {Keys<achievementConfigRaw>} AchievementEnum
+ */
+/** @satisfies {Record<string, AchievementConfig>} */
+const achievementConfigRaw = {
+  gachaPokemon: {
+    formatName: ({ stage }) => `Gacha for Pokemon: ${stage + 1}`,
+    formatEmoji: () => emojis.POKEBALL,
+    formatDescription: ({ progressRequirement }) =>
+      `Catch ${progressRequirement} Pokemon using the Gacha! Use \`/gacha\` to catch Pokemon.\n## \`/gacha\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Catch ${progressRequirement}x Pokemon with \`/gacha\``,
+    // money: 10000 * (stage + 1)
+    // pokeballs: 5\left(x+1\right)^{0.75}\ +\ 5
+    computeRewards: ({ stage }) => ({
+      money: 2500 * (stage + 1),
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: Math.floor(5 * (stage + 1) ** 0.75 + 5),
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CAUGHT_POKEMON,
+        listenerCallback: ({ method, pokemons }) => {
+          if (method === "gacha") {
+            return {
+              progress: pokemons.length,
+            };
+          }
+
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    // \left(x+1\right)^{2.5}+2
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor((stage + 1) ** 2.5 + 2),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  catchWildPokemon: {
+    formatName: ({ stage }) => `Catch Wild Pokemon: ${stage + 1}`,
+    formatEmoji: () => emojis.POKEBALL,
+    formatDescription: ({ progressRequirement }) =>
+      `Catch ${progressRequirement} wild Pokemon! Wild Pokemon spawn periodically in channels in your server. If you're a server admin, use \`/spawn manage\` to manage the spawns.`,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Catch ${progressRequirement}x wild Pokemon`,
+    computeRewards: ({ stage }) => ({
+      money: 2500 * (stage + 1),
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          // 3\left(x+1\right)^{0.75}
+          [backpackItems.GREATBALL]: Math.floor(3 * (stage + 1) ** 0.75),
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CAUGHT_POKEMON,
+        listenerCallback: ({ method, pokemons }) => {
+          if (method === "wild") {
+            return {
+              progress: pokemons.length,
+            };
+          }
+
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    // 0.5\left(x+1\right)^{2.5}+0.5
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor(0.5 * (stage + 1) ** 2.5 + 0.51),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  claimDailyRewards: {
+    formatName: ({ stage }) => `Claim Daily Rewards: ${stage + 1}`,
+    formatEmoji: () => "📅",
+    formatDescription: ({ progressRequirement }) =>
+      `Claim daily rewards ${progressRequirement} times! Use \`/daily\` to claim your daily rewards.\n## \`/daily\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Claim ${progressRequirement}x daily rewards with \`/daily\``,
+    computeRewards: () => ({
+      money: 1000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.GREATBALL]: 1,
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CLAIMED_DAILY_REWARDS,
+        listenerCallback: () => ({
+          progress: 1,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    // 0.45\left(x+1\right)^{2.5}+0.55
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor(0.45 * (stage + 1) ** 2.5 + 0.55),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  completeDailyQuest: {
+    formatName: ({ stage }) => `Complete Daily Quests: ${stage + 1}`,
+    formatEmoji: () => "📜",
+    formatDescription: ({ progressRequirement }) =>
+      `Complete ${progressRequirement} daily quests! Use \`/quest\` to complete view and complete your daily quests.\n## \`/quest\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Complete ${progressRequirement}x daily quests with \`/quest\``,
+    computeRewards: () => ({
+      money: 2000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.ULTRABALL]: 1,
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.COMPLETED_QUESTS,
+        listenerCallback: ({ quests }) => {
+          const numDailyQuests = quests.filter(
+            (quest) => quest.questType === questTypeEnum.DAILY
+          ).length;
+          return {
+            progress: numDailyQuests,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    // 0.75\left(x+1\right)^{2.5}+2.25
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor(0.75 * (stage + 1) ** 2.5 + 2.25),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  evolvePokemon: {
+    formatName: ({ stage }) => `Evolve Pokemon: ${stage + 1}`,
+    formatEmoji: () => "🧬",
+    formatDescription: ({ progressRequirement }) =>
+      `Evolve ${progressRequirement} Pokemon! Use \`/evolve\` to evolve your Pokemon.\n## \`/evolve\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Evolve ${progressRequirement}x Pokemon`,
+    computeRewards: ({ stage }) => ({
+      money: 5000 * (stage + 1),
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.EVOLVED_POKEMON,
+        listenerCallback: () => ({
+          progress: 1,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: ({ stage }) =>
+      // 0.25\left(x+1\right)^{2.5}+0.75
+      Math.floor(0.25 * (stage + 1) ** 2.5 + 0.76),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  evTrain: {
+    formatName: ({ stage }) => `EV Train: ${stage + 1}`,
+    formatEmoji: () => "🎓",
+    formatDescription: ({ progressRequirement }) =>
+      `EV Train your Pokemon to ${progressRequirement} total EVs! Use \`/pokemart\` to purchase EV training locations, then use \`/train\` to EV train your Pokemon.\n## \`/pokemart\` \`/train\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `EV Train your Pokemon to ${progressRequirement} total EVs`,
+    computeRewards: ({ stage }) => ({
+      money: 5000 * (stage + 1),
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.TRAINED_POKEMON,
+        listenerCallback: ({ evs }) => ({
+          progress: evs.reduce((acc, curr) => acc + Math.abs(curr), 0),
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: ({ stage }) =>
+      // 30\left(x+1\right)^{2.5}\ +\ 20
+      Math.floor(30 * (stage + 1) ** 2.5 + 20),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  combatPower: {
+    formatName: ({ stage }) => `Reach Combat Power: ${stage + 1}`,
+    formatEmoji: () => "💪",
+    formatDescription: ({ progressRequirement }) =>
+      `Reach ${progressRequirement} total Combat Power! You can increase you Pokemons' combat power by leveling them up, EV training them, and upgrading their equipment.`,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Reach ${progressRequirement} total Combat Power`,
+    computeRewards: ({ stage }) => ({
+      money: 2500 * (stage + 1),
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.MASTERBALL]: 1,
+        },
+      },
+    }),
+    questListeners: [], // TODO: maybe add listeners someday
+    requirementType: questRequirementTypeEnum.MILESTONE_NUMERIC,
+    // 2500\left(x+1\right)^{2.5}+2500
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor(2500 * (stage + 1) ** 2.5 + 2500),
+    computeCurrentProgress: async ({ trainer }) => {
+      const { data: trainerInfo, err } = await getExtraTrainerInfo(trainer);
+      if (err) {
+        return 0;
+      }
+      return trainerInfo?.totalPower ?? 0;
+    },
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  pokemonLimit: {
+    formatName: ({ stage }) => `Increase Pokemon Limit: ${stage + 1}`,
+    formatEmoji: () => "💻",
+    formatDescription: ({ stage }) =>
+      `Increase your Pokemon limit by upgrading the Computer Lab location to level ${
+        stage + 1
+      }! Use \`/pokemart\` to upgrade the Computer Lab location.\n## \`/pokemart\``,
+    formatRequirementString: ({ stage }) =>
+      `Upgrade the Computer Lab location to level ${stage + 1}`,
+    computeRewards: ({ stage }) => {
+      const stageToMoney = [2000, 10000, 50000];
+      return {
+        money: stageToMoney[stage] ?? 0,
+      };
+    },
+    questListeners: [
+      {
+        eventName: trainerEventEnum.MADE_PURCHASE,
+        listenerCallback: ({ itemId, level }) => {
+          if (itemId === shopItems.COMPUTER_LAB && !isNaN(level)) {
+            return {
+              progressOverride: level + 1,
+            };
+          }
+          return {};
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.MILESTONE_NUMERIC,
+    computeProgressRequirement: ({ stage }) => stage + 1,
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: 2,
+    computeCurrentProgress: async ({ trainer }) =>
+      trainer.locations[locations.COMPUTER_LAB] ?? 0,
+  },
+  defeatTrainers: {
+    formatName: ({ stage }) => `Defeat Trainers: ${stage + 1}`,
+    formatEmoji: () => emojis.RED,
+    formatDescription: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement} Trainers! Use \`/pve\` to defeat Trainers.\n## \`/pve\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement}x Trainers with \`/pve\``,
+    computeRewards: ({ stage }) => ({
+      money: 3000 * (stage + 1),
+      // 4\left(x+1\right)^{0.75}\ +\ 6
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+          [backpackItems.KNOWLEDGE_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+          [backpackItems.WILLPOWER_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.DEFEATED_NPC,
+        listenerCallback: ({ type }) => {
+          if (type === "pve") {
+            return {
+              progress: 1,
+            };
+          }
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    // 0.5\left(x+1\right)^{2.5}+1.5
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor(0.5 * (stage + 1) ** 2.5 + 1.51),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  defeatDungeons: {
+    formatName: ({ stage }) => `Defeat Dungeons: ${stage + 1}`,
+    formatEmoji: () => "⛰️",
+    formatDescription: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement} Dungeons! Use \`/dungeons\` to defeat Dungeons.\n## \`/dungeons\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement}x Dungeons with \`/dungeons\``,
+    computeRewards: ({ stage }) => ({
+      money: 2500 * (stage + 1),
+      // 5\left(x+1\right)^{0.75}\ +\ 5
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: Math.floor(
+            5 * (stage + 1) ** 0.75 + 5
+          ),
+          [backpackItems.KNOWLEDGE_SHARD]: Math.floor(
+            5 * (stage + 1) ** 0.75 + 5
+          ),
+          [backpackItems.WILLPOWER_SHARD]: Math.floor(
+            5 * (stage + 1) ** 0.75 + 5
+          ),
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.DEFEATED_NPC,
+        listenerCallback: ({ type }) => {
+          if (type === "dungeon") {
+            return {
+              progress: 1,
+            };
+          }
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: ({ stage }) =>
+      // 0.3\left(x+1\right)^{2.5}+0.7
+      Math.floor(0.3 * (stage + 1) ** 2.5 + 0.71),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  defeatRaid: {
+    formatName: ({ stage }) => `Defeat Raids: ${stage + 1}`,
+    formatEmoji: () => emojis.ARMORED_MEWTWO,
+    formatDescription: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement} Raids! Use \`/raid\` to defeat Raids. You may also participate in other raids in your server!\n## \`/raid\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement}x Raids with \`/raid\``,
+    computeRewards: ({ stage }) => ({
+      money: 2500 * (stage + 1),
+      // 50\left(x+1\right)^{0.75}\ +\ 50
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.STAR_PIECE]: Math.floor(50 * (stage + 1) ** 0.75 + 50),
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.DEFEATED_NPC,
+        listenerCallback: ({ type }) => {
+          if (type === "raid") {
+            return {
+              progress: 1,
+            };
+          }
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: ({ stage }) =>
+      // 0.25\left(x+1\right)^{2.5}+0.75
+      Math.floor(0.25 * (stage + 1) ** 2.5 + 0.751),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  defeatBattleTower: {
+    formatName: ({ stage }) =>
+      `Defeat Battle Tower Floor ${stageToBattleTowerOrder[stage]}`,
+    formatEmoji: () => "🏢",
+    formatDescription: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement} Battle Tower floors! Use \`/battletower\` to defeat Battle Tower floors.\n## \`/battletower\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Defeat ${progressRequirement}x Battle Tower floors with \`/battletower\``,
+    computeRewards: ({ stage }) => {
+      const battleTowerStage = stageToBattleTowerOrder[stage] ?? 0;
+      let backpack;
+      if (battleTowerStage === 1) {
+        backpack = {
+          [backpackCategories.POKEBALLS]: {
+            [backpackItems.POKEBALL]: 3,
+          },
+        };
+      }
+      if (battleTowerStage === 5) {
+        backpack = {
+          [backpackCategories.POKEBALLS]: {
+            [backpackItems.ULTRABALL]: 3,
+          },
+        };
+      }
+      if (battleTowerStage === 10) {
+        backpack = {
+          [backpackCategories.POKEBALLS]: {
+            [backpackItems.ULTRABALL]: 5,
+          },
+        };
+      }
+      if (battleTowerStage === 15) {
+        backpack = {
+          [backpackCategories.POKEBALLS]: {
+            [backpackItems.ULTRABALL]: 10,
+          },
+        };
+      }
+      if (battleTowerStage === 20) {
+        backpack = {
+          [backpackCategories.POKEBALLS]: {
+            [backpackItems.MASTERBALL]: 5,
+          },
+        };
+      }
+      return {
+        money: 1000 * battleTowerStage,
+        backpack,
+      };
+    },
+    questListeners: [
+      {
+        eventName: trainerEventEnum.DEFEATED_NPC,
+        listenerCallback: ({ type, npcId }) => {
+          if (type === "battleTower") {
+            const towerStage = getTowerStageFromId(npcId);
+            if (towerStage) {
+              return {
+                progressOverride: towerStage,
+              };
+            }
+          }
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.MILESTONE_NUMERIC,
+    computeProgressRequirement: ({ stage }) =>
+      stageToBattleTowerOrder[stage] ?? 999,
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: stageToBattleTowerOrder.length - 1,
+    computeCurrentProgress: async ({ stage, trainer }) =>
+      trainer.defeatedNPCs[getIdFromTowerStage(stageToBattleTowerOrder[stage])]
+        ? stageToBattleTowerOrder[stage]
+        : 0,
+  },
+  dreamCards: {
+    formatName: ({ stage }) => `Spend Dream Cards: ${stage + 1}`,
+    formatEmoji: () => emojis.DREAM_CARD,
+    formatDescription: ({ progressRequirement }) =>
+      `Spend ${progressRequirement} Dream Cards! You can spend dream cards by using "Auto" in any PVE stage! To access this feature, you much catch \`/mythic darkrai\` first.`,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Spend ${progressRequirement}x Dream Cards`,
+    computeRewards: ({ stage }) => ({
+      money: 3000 * (stage + 1),
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.STARTED_AUTO_BATTLE,
+        listenerCallback: ({ dreamCards }) => ({
+          progress: dreamCards,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: ({ stage }) =>
+      // 10\left(x+1\right)^{2.5}+40
+      Math.floor(10 * (stage + 1) ** 2.5 + 40),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  pvpBattle: {
+    formatName: ({ stage }) => `PvP Battle: ${stage + 1}`,
+    formatEmoji: () => "⚔️",
+    formatDescription: ({ progressRequirement }) =>
+      `Participate in PvP Battles ${progressRequirement} times! Battling your friends is fun! Use \`/pvp\` to PvP Battle.\n## \`/pvp\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Participate in PvP Battles ${progressRequirement}x times with \`/pvp\``,
+    computeRewards: ({ stage }) => ({
+      money: 3000 * (stage + 1),
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.PARTICIPATED_IN_BATTLE,
+        listenerCallback: ({ type }) => {
+          if (type === "pvp") {
+            return {
+              progress: 1,
+            };
+          }
+          return {
+            progress: 0,
+          };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    computeProgressRequirement: ({ stage }) =>
+      // 0.3\left(x+1\right)^{2.5}+0.7
+      Math.floor(0.3 * (stage + 1) ** 2.5 + 0.71),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  upgradeEquipment: {
+    formatName: ({ stage }) => `Upgrade Equipment: ${stage + 1}`,
+    formatEmoji: () => emojis.POWER_WEIGHT,
+    formatDescription: ({ progressRequirement }) =>
+      `Upgrade your equipment ${progressRequirement} times! Use \`/equipment\` to upgrade your equipment. You can get shards from the \`/pokemart\` or \`/dungeons\`.\n## \`/equipment\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Upgrade your equipment ${progressRequirement}x times with \`/equipment\``,
+    computeRewards: ({ stage }) => ({
+      money: 2000 * (stage + 1),
+      // 4\left(x+1\right)^{0.75}\ +\ 6
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+          [backpackItems.KNOWLEDGE_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+          [backpackItems.WILLPOWER_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.UPGRADED_EQUIPMENT,
+        listenerCallback: () => ({
+          progress: 1,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    // 2\left(x+1\right)^{2.5}+3
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor(2 * (stage + 1) ** 2.5 + 3),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  rerollEquipment: {
+    formatName: ({ stage }) => `Reroll Equipment: ${stage + 1}`,
+    formatEmoji: () => "🔄",
+    formatDescription: ({ progressRequirement }) =>
+      `Reroll your equipment stats ${progressRequirement} times! Use \`/equipment\` to reroll your equipment stats. You can get shards from the \`/pokemart\` or \`/dungeons\`.\n## \`/equipment\``,
+    formatRequirementString: ({ progressRequirement }) =>
+      `Reroll your equipment stats ${progressRequirement}x times with \`/equipment\``,
+    computeRewards: ({ stage }) => ({
+      money: 2000 * (stage + 1),
+      // 4\left(x+1\right)^{0.75}\ +\ 6
+      backpack: {
+        [backpackCategories.MATERIALS]: {
+          [backpackItems.EMOTION_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+          [backpackItems.KNOWLEDGE_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+          [backpackItems.WILLPOWER_SHARD]: Math.floor(
+            4 * (stage + 1) ** 0.75 + 6
+          ),
+        },
+      },
+    }),
+    questListeners: [
+      {
+        eventName: trainerEventEnum.REROLLED_EQUIPMENT,
+        listenerCallback: () => ({
+          progress: 1,
+        }),
+      },
+    ],
+    requirementType: questRequirementTypeEnum.NUMERIC,
+    // 2\left(x+1\right)^{2.5}+3
+    computeProgressRequirement: ({ stage }) =>
+      Math.floor(2 * (stage + 1) ** 2.5 + 3),
+    resetProgressOnComplete: false,
+    progressionType: questProgressionTypeEnum.INFINITE,
+  },
+  catchMythic: {
+    formatName: ({ stage }) =>
+      `Myths: Catch ${pokemonConfig[stageToMythicOrder[stage]].name}`,
+    formatEmoji: ({ stage }) => pokemonConfig[stageToMythicOrder[stage]].emoji,
+    formatDescription: ({ stage }) =>
+      `Use \`/mythic ${
+        pokemonConfig[stageToMythicOrder[stage]].name
+      }\` to catch ${
+        pokemonConfig[stageToMythicOrder[stage]].name
+      }! If you don't meet the requirements, follow the instructions in the \`/mythic\` command.\n## \`/mythic\``,
+    formatRequirementString: ({ stage }) =>
+      `Catch ${pokemonConfig[stageToMythicOrder[stage]].emoji} ${
+        pokemonConfig[stageToMythicOrder[stage]].name
+      }`,
+    computeRewards: ({ stage }) => {
+      const speciesId = stageToMythicOrder[stage];
+      let backpack;
+      switch (speciesId) {
+        case pokemonIdEnum.DARKRAI:
+          backpack = {
+            [backpackCategories.POKEBALLS]: {
+              [backpackItems.MASTERBALL]: 3,
+            },
+          };
+          break;
+        case pokemonIdEnum.MEW:
+          backpack = {
+            [backpackCategories.MATERIALS]: {
+              [backpackItems.EMOTION_SHARD]: 100,
+              [backpackItems.KNOWLEDGE_SHARD]: 100,
+              [backpackItems.WILLPOWER_SHARD]: 100,
+            },
+          };
+          break;
+        case pokemonIdEnum.JIRACHI:
+          backpack = {
+            [backpackCategories.MATERIALS]: {
+              [backpackItems.STAR_PIECE]: 250,
+            },
+          };
+          break;
+        case pokemonIdEnum.DEOXYS:
+          backpack = {
+            [backpackCategories.HELD_ITEMS]: {
+              [backpackItems.AMULET_COIN]: 1,
+              [backpackItems.LEFTOVERS]: 1,
+              [backpackItems.LIFE_ORB]: 1,
+            },
+          };
+          break;
+        case pokemonIdEnum.CELEBI:
+          backpack = {
+            [backpackCategories.POKEBALLS]: {
+              [backpackItems.MASTERBALL]: 3,
+            },
+          };
+          break;
+        default:
+          backpack = {};
+          break;
+      }
+      return {
+        money: 10000,
+        backpack,
+      };
+    },
+    questListeners: [
+      {
+        eventName: trainerEventEnum.CAUGHT_POKEMON,
+        listenerCallback: ({ stage, method, pokemons }) => {
+          const speciesId = stageToMythicOrder[stage];
+          if (
+            method === "mythic" &&
+            pokemons.some((p) => p.speciesId === speciesId)
+          ) {
+            return { progress: pokemons.length };
+          }
+
+          return { progress: 0 };
+        },
+      },
+    ],
+    requirementType: questRequirementTypeEnum.BOOLEAN,
+    checkRequirements: async ({ stage, trainer }) => {
+      // stage order: darkrai -> mew -> jirachi -> deoxys -> celebi
+      const speciesId = stageToMythicOrder[stage];
+      if (!speciesId) {
+        return false;
+      }
+      const { data: pokemons } = await listPokemons(trainer, {
+        pageSize: 1,
+        page: 1,
+        filter: {
+          speciesId,
+        },
+      });
+      return (pokemons?.length ?? 0) > 0;
+    },
+    progressionType: questProgressionTypeEnum.FINITE,
+    maxStage: stageToMythicOrder.length - 1,
+  },
+};
+/** @type {Record<AchievementEnum, AchievementConfig>} */
+const achievementConfig = Object.freeze(achievementConfigRaw);
+
+const achievementEnum = /** @type {AchievementEnum[]} */ (
+  Object.freeze(Object.keys(achievementConfigRaw))
+);
+
 module.exports = {
   newTutorialConfig,
   newTutorialStages,
+  questTypeEnum,
+  questRequirementTypeEnum,
+  questProgressionTypeEnum,
+  dailyQuestConfig,
+  achievementConfig,
+  achievementEnum,
 };

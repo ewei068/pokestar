@@ -29,6 +29,7 @@ const {
   getFullUTCFortnight,
   getPBar,
   formatMoney,
+  buildBlockQuoteString,
 } = require("../utils/utils");
 const {
   npcConfig,
@@ -45,20 +46,47 @@ const {
 } = require("../utils/trainerUtils");
 const { backpackItemConfig } = require("../config/backpackConfig");
 const { getItemDisplay } = require("../utils/itemUtils");
+const { emojis } = require("../enums/emojis");
+
+/**
+ * Builds the header string for a pokemon in the party.
+ * @param {Pokemon} pokemon the pokemon to build the header for.
+ * @param {number=} position the position of the pokemon in the party.
+ * @returns {string} the header string.
+ */
+const buildPokemonPartyHeaderString = (pokemon, position) =>
+  `${position ?? "\\-"} ${buildPokemonEmojiString(pokemon)}  •  Lv. ${
+    pokemon.level
+  }  •  ${Math.round((pokemon.ivTotal * 100) / (31 * 6))}%  •  ${pokemon.name}`;
+
+/**
+ * Builds the compact info string for a pokemon.
+ * @param {WithId<Pokemon>} pokemon the pokemon to build the compact info for.
+ * @returns {string} the compact info string.
+ */
+const buildPokemonCompactInfoString = (pokemon) => {
+  const statString = buildPokemonStatString(pokemon, 10, true);
+  const heldItemString = pokemon.heldItemId
+    ? `\n**Held Item:** ${getItemDisplay(pokemon.heldItemId)}`
+    : "";
+  return `${statString}\n**Ability:** ${getAbilityName(
+    pokemon.abilityId
+  )}${heldItemString}\n_${pokemon._id}_`;
+};
 
 /**
  * Handles building the party embedded instructions for building a party.
  * @param {Trainer} trainer the trainer to build the party for.
  * @param {WithId<Pokemon>[]} pokemons the pokemon the trainer has.
  * @param {object} options
- * @param {boolean=} options.detailed whether it's a detailed party formation.
+ * @param {0 | 1 | 2=} options.verbosity whether it's a detailed party formation.
  * @param {boolean=} options.isMobile whether it's a mobile device.
  * @returns {EmbedBuilder} an embeded.
  */
 const buildPartyEmbed = (
   trainer,
   pokemons,
-  { detailed = false, isMobile = false } = {}
+  { verbosity = 0, isMobile = false } = {}
 ) => {
   const { party } = trainer;
 
@@ -74,42 +102,86 @@ const buildPartyEmbed = (
     `https://cdn.discordapp.com/avatars/${trainer.userId}/${trainer.user.avatar}.webp`
   );
   embed.addFields(
-    { name: "Power", value: `${power}`, inline: true },
+    { name: "💪 Power", value: `${power}`, inline: true },
     {
-      name: "Pokemon",
+      name: `${emojis.POKEBALL} Pokemon`,
       value: buildPartyString(pokemons, party.rows, party.cols, { isMobile }),
       inline: false,
     }
   );
 
-  if (detailed) {
+  if (verbosity === 1) {
     const pokemonFields = pokemons
       .filter((p) => p !== null)
-      .map((pokemon) => {
-        const statString = buildPokemonStatString(pokemon, 10, true);
-        const heldItemString = pokemon.heldItemId
-          ? `\n**Held Item:** ${getItemDisplay(pokemon.heldItemId)}`
-          : "";
-        return {
-          name: `${buildPokemonEmojiString(pokemon)} [${
-            pokemons.indexOf(pokemon) + 1
-          }] [Lv. ${pokemon.level}] ${pokemon.name}`,
-          value: `${pokemon._id}\n${statString}\n**Ability:** ${getAbilityName(
-            pokemon.abilityId
-          )}${heldItemString}`,
-          inline: true,
-        };
-      });
+      .map((pokemon) => ({
+        name: buildPokemonPartyHeaderString(
+          pokemon,
+          pokemons.indexOf(pokemon) + 1
+        ),
+        value: `${pokemon.combatPower} Power  •  ${getAbilityName(
+          pokemon.abilityId
+        )}  •  ${
+          pokemon.heldItemId
+            ? backpackItemConfig[pokemon.heldItemId].emoji
+            : "🚫"
+        }\n_${pokemon._id}_`,
+        inline: true,
+      }));
+    embed.addFields(pokemonFields);
+  }
+
+  if (verbosity === 2) {
+    const pokemonFields = pokemons
+      .filter((p) => p !== null)
+      .map((pokemon) => ({
+        name: buildPokemonPartyHeaderString(
+          pokemon,
+          pokemons.indexOf(pokemon) + 1
+        ),
+        value: buildPokemonCompactInfoString(pokemon),
+        inline: true,
+      }));
     // every 2 fields, add a blank field
     setTwoInline(pokemonFields);
     embed.addFields(pokemonFields);
   }
 
-  const footerString = "Modify your party with /partyadd and /partyremove";
+  const footerString = "Modify your party with `/party manage`";
   embed.setFooter({ text: footerString });
 
   return embed;
 };
+
+/**
+ * Builds the embed for adding or moving a pokemon to the party.
+ * @param {WithId<Pokemon>} pokemon the pokemon to add or move.
+ * @param {number=} currentPosition the current position of the pokemon in the party.
+ * @returns {EmbedBuilder} an embeded.
+ */
+const buildAddOrMoveToPartyEmbed = (pokemon, currentPosition) => {
+  const embed = new EmbedBuilder();
+  embed.setTitle(
+    `${buildPokemonEmojiString(pokemon)} Add or Move ${
+      pokemon.name
+    } to which position?`
+  );
+  embed.setColor(0xffffff);
+  embed.setDescription(
+    `**${buildPokemonPartyHeaderString(
+      pokemon,
+      currentPosition
+    )}**\n${buildPokemonCompactInfoString(pokemon)}`
+  );
+  return embed;
+};
+
+const buildMoveOrRemoveFromPartyEmbed = () => {
+  const embed = new EmbedBuilder();
+  embed.setTitle("Select Pokemon to Move or Remove");
+  embed.setColor(0xffffff);
+  return embed;
+};
+
 /**
  * Shows the built parties of the user.
  * @param {Trainer} trainer the trainer who's parties we're showing.
@@ -461,7 +533,7 @@ const buildPveNpcEmbed = (npcId, { dreamCardString } = {}) => {
   const embed = new EmbedBuilder();
   embed.setTitle(`${npc.emoji} ${npc.name} (${npcId})`);
   embed.setColor(0xffffff);
-  embed.setDescription(npc.catchphrase);
+  embed.setDescription(buildBlockQuoteString(npc.catchphrase));
   embed.addFields(fields);
   if (dreamCardString) {
     embed.addFields({
@@ -578,7 +650,7 @@ const buildBattleTowerEmbed = (towerStage, { dreamCardString } = {}) => {
   const bossData = pokemonConfig[npcDifficultyData.aceId];
   const bossString = `**Boss**: ${bossData.emoji} #${npcDifficultyData.aceId} **${bossData.name}** \`/pokedex ${npcDifficultyData.aceId}\``;
   difficultyString += `${bossString}\n`;
-  difficultyString += `**Rewards:** ${getFlattenedRewardsString(
+  difficultyString += `**Rewards:**\n${getFlattenedRewardsString(
     flattenRewards(battleTowerData.rewards),
     false
   )}`;
@@ -781,6 +853,8 @@ const buildRaidWinEmbed = (raid, rewards) => {
 
 module.exports = {
   buildPartyEmbed,
+  buildAddOrMoveToPartyEmbed,
+  buildMoveOrRemoveFromPartyEmbed,
   buildPartiesEmbed,
   buildBattleEmbed,
   buildBattleMovesetEmbed,

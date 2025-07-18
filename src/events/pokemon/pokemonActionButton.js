@@ -1,5 +1,6 @@
 const { createRoot } = require("../../deact/deact");
 const { getInteractionInstance } = require("../../deact/interactions");
+const PartyManageEntryPoint = require("../../elements/party/PartyManage");
 const ChangeForm = require("../../elements/pokemon/ChangeForm");
 const ChangeHeldItem = require("../../elements/pokemon/ChangeHeldItem");
 const { buildPokemonInfoSend } = require("../../services/pokemon");
@@ -8,7 +9,7 @@ const pokemonActionButton = async (incomingInteraction, data) => {
   const { action } = data;
   const interaction = getInteractionInstance(incomingInteraction);
 
-  const { send, err } = await buildPokemonInfoSend({
+  const { send, pokemon, err } = await buildPokemonInfoSend({
     user: incomingInteraction.user,
     pokemonId: data.id,
     action,
@@ -46,6 +47,18 @@ const pokemonActionButton = async (incomingInteraction, data) => {
         return createRoot(
           ChangeForm,
           { user: incomingInteraction.user, pokemonId: data.id },
+          incomingInteraction,
+          { ttl: 240, defer: false }
+        );
+      }
+      if (action === "add") {
+        return createRoot(
+          PartyManageEntryPoint,
+          {
+            user: incomingInteraction.user,
+            initialPokemon: pokemon,
+            initialAction: "add",
+          },
           incomingInteraction,
           { ttl: 240, defer: false }
         );

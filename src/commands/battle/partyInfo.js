@@ -39,13 +39,13 @@ const partyInfo = async (user) => {
   if (partyPokemonsFiltered.length === 0) {
     return {
       send: null,
-      err: `You have no Pokemon in your party! Add a Pokemon with \`/partyadd\``,
+      err: `You have no Pokemon in your party! Add a Pokemon with \`/party manage\``,
     };
   }
 
   // build embed
   const partyEmbed = buildPartyEmbed(trainer.data, partyPokemons.data, {
-    detailed: true,
+    verbosity: 2,
     isMobile: getUserSelectedDevice(user, trainer.data.settings) === "mobile",
   });
 

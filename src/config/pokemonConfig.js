@@ -279,8 +279,8 @@ const statConfig = {
   1: { name: "Atk", emoji: "⚔️", description: "Attack" },
   2: { name: "Def", emoji: "🛡️", description: "Defense" },
   3: { name: "SpA", emoji: "🔮", description: "Special Attack" },
-  4: { name: "SpD", emoji: "🛡️", description: "Special Defense" },
-  5: { name: "Spe", emoji: "🏃", description: "Speed" },
+  4: { name: "SpD", emoji: "🌀", description: "Special Defense" },
+  5: { name: "Spe", emoji: "⚡︎", description: "Speed" },
 };
 
 /** @typedef {Enum<growthRates>} GrowthRateEnum */
@@ -10982,6 +10982,7 @@ const rarityConfig = {
     money: 25,
     formChangeCost: 500,
     statMultiplier: [1.15, 1.1, 1.15, 1.1, 1.15, 1.1],
+    emoji: "⚪",
   },
   [rarities.RARE]: {
     pokemon: [],
@@ -10989,6 +10990,7 @@ const rarityConfig = {
     money: 50,
     formChangeCost: 1000,
     statMultiplier: [1.15, 1.1, 1.15, 1.1, 1.15, 1.1],
+    emoji: "💎",
   },
   [rarities.EPIC]: {
     pokemon: [],
@@ -10996,18 +10998,21 @@ const rarityConfig = {
     money: 75,
     formChangeCost: 2500,
     statMultiplier: [1.075, 1.05, 1.075, 1.05, 1.075, 1.05],
+    emoji: "🔮",
   },
   [rarities.LEGENDARY]: {
     pokemon: [],
     color: 0xffff00,
     money: 200,
     formChangeCost: 10000,
+    emoji: "🌟",
   },
   [rarities.MYTHICAL]: {
     pokemon: [],
     color: 0xff0000,
     money: 10000,
     formChangeCost: 10000,
+    emoji: "㊙️",
   },
 };
 

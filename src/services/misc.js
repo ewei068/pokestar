@@ -1,5 +1,7 @@
 // im really not sure where to put these sorry
 
+const { ButtonStyle } = require("discord.js");
+const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { newTutorialStages } = require("../config/questConfig");
 const { timeEnum, upsellEnum } = require("../enums/miscEnums");
 const { generateTutorialStateId } = require("../utils/questUtils");
@@ -10,6 +12,8 @@ const {
 } = require("./quest");
 const { getState, deleteState } = require("./state");
 const { getTrainer, updateTrainer } = require("./trainer");
+const { eventNames } = require("../config/eventConfig");
+const { getAsyncContext } = require("./bot/asyncContext");
 
 const TUTORIAL_UPSELL_TIME_1 = timeEnum.DAY;
 const TUTORIAL_UPSELL_TIME_2 = 3 * timeEnum.DAY;
@@ -57,6 +61,33 @@ const getPreInteractionUpsellData = async ({ user }) => {
   };
 };
 
+const tutorialButtonComponent = buildButtonActionRow(
+  [
+    {
+      emoji: "👉",
+      label: "Go to Tutorial",
+      data: {},
+      style: ButtonStyle.Success,
+      disabled: false,
+    },
+  ],
+  eventNames.TUTORIAL_UPSELL_BUTTON
+);
+
+const makeQuestButtonComponent = (questType, questId) =>
+  buildButtonActionRow(
+    [
+      {
+        emoji: "👉",
+        label: "Go to Quest",
+        data: { type: questType, questId },
+        style: ButtonStyle.Success,
+        disabled: false,
+      },
+    ],
+    eventNames.QUEST_UPSELL_BUTTON
+  );
+
 /**
  * Decides the upsells to send to the user, then sends them
  * @param {object} param0
@@ -75,6 +106,7 @@ const sendUpsells = async ({
     return;
   }
   const { upsellData } = trainer;
+  const { enableQuestUpsell } = trainer.settings;
   const currentTime = Date.now();
 
   // tutorial completion upsell
@@ -92,9 +124,10 @@ const sendUpsells = async ({
       tutorialState.currentStage
     ));
   if (
-    shouldShowUpsellBasedOnTutorialStateStage ||
-    (!hasCompletedCurrentTutorialStage &&
-      (await hasTrainerMetCurrentTutorialStageRequirements(trainer)))
+    (shouldShowUpsellBasedOnTutorialStateStage ||
+      (!hasCompletedCurrentTutorialStage &&
+        (await hasTrainerMetCurrentTutorialStageRequirements(trainer)))) &&
+    enableQuestUpsell
   ) {
     // attempt to update tutorial state
     if (tutorialState?.refreshTutorialState) {
@@ -102,15 +135,15 @@ const sendUpsells = async ({
     }
 
     const replyString = tutorialState?.messageRef
-      ? "**Press the replied-to message to return to the tutorial,** or "
-      : "";
+      ? "**Press the button or replied-to message** to return to the tutorial, or "
+      : "**Press the button** to go to the tutorial, or ";
 
     // skip if haven't yet seen first tutorial upsell
     if (timesSeen !== 0) {
-      await attemptToReply(
-        tutorialState?.messageRef || interaction,
-        `You have completed a tutorial stage! ${replyString}Use \`/tutorial\` to claim your rewards.`
-      );
+      await attemptToReply(tutorialState?.messageRef || interaction, {
+        content: `🎉 You have completed a tutorial stage! 🎉 ${replyString}Use \`/tutorial\` to claim your **rewards.**\n\nYou can disable this notification in your \`/settings\`.`,
+        components: [tutorialButtonComponent],
+      });
       return;
     }
   }
@@ -132,13 +165,14 @@ const sendUpsells = async ({
   ) {
     shouldComputeTutorialUpsell = true;
   }
-  let upsellToShow;
-  if (shouldComputeTutorialUpsell) {
+  if (shouldComputeTutorialUpsell && enableQuestUpsell) {
+    let upsellToShow;
     if (timesSeen === 0) {
       upsellToShow = {
         content:
-          "New to Pokestar? **Take the tutorial to learn the bot and get a ton of rewards!** Use `/tutorial` to begin.",
+          "New to Pokestar? **Press the button** and take the tutorial to learn the bot and get **a ton of 🎉 rewards!** Or, use `/tutorial` to begin.",
         ephemeral: true,
+        components: [tutorialButtonComponent],
       };
     } else {
       // compute if upsell should be shown
@@ -155,8 +189,9 @@ const sendUpsells = async ({
       if ((await Promise.all(promises)).some((x) => x)) {
         upsellToShow = {
           content:
-            "You have unclaimed tutorial rewards! Use `/tutorial` to claim them.",
+            "You have unclaimed tutorial **🎉 rewards!** Press the button or use `/tutorial` to claim them.",
           ephemeral: true,
+          components: [tutorialButtonComponent],
         };
         shouldShowTutorialUpsell = true;
       }
@@ -174,6 +209,23 @@ const sendUpsells = async ({
 
     // update trainer
     await updateTrainer(trainer);
+    return;
+  }
+
+  const asyncContext = getAsyncContext();
+  if (asyncContext.completedQuest && enableQuestUpsell) {
+    const upsellToShow = {
+      content:
+        "🎉 You have **completed** a quest! 🎉 Click the **button** or use `/quest` to claim your **🎁 rewards.**\n\nYou can disable this notification in your `/settings`.",
+      ephemeral: true,
+      components: [
+        makeQuestButtonComponent(
+          asyncContext.completedQuest.questType,
+          asyncContext.completedQuest.questId
+        ),
+      ],
+    };
+    await attemptToReply(interaction, upsellToShow);
   }
 };
 

@@ -52,7 +52,7 @@
  *  teamName: string,
  *  username: string,
  *  discriminator: string,
- *  userId: string,
+ *  id: string,
  *  npc?: BattleNPC,
  *  nextPhase?: (Battle) => any
  * }} BattleUser

@@ -19,7 +19,7 @@ const { collectionNames } = require("../config/databaseConfig");
 const { logger } = require("../log");
 const { locations, locationConfig } = require("../config/locationConfig");
 
-const { getTrainer, updateTrainer } = require("./trainer");
+const { getTrainer, updateTrainer, emitTrainerEvent } = require("./trainer");
 const { getState } = require("./state");
 const {
   buildShopEmbed,
@@ -39,6 +39,7 @@ const {
 } = require("../utils/trainerUtils");
 const { craftableItemConfig } = require("../config/backpackConfig");
 const { getItemDisplay } = require("../utils/itemUtils");
+const { trainerEventEnum } = require("../enums/gameEnums");
 
 // map item id to location id
 const itemIdToLocationId = {
@@ -177,6 +178,7 @@ const buyItem = async (trainer, itemId, quantity) => {
 
   let cost = 0;
   let returnString = "";
+  let levelPurchased;
 
   // functionality dependent on item
   if (itemId === shopItems.RANDOM_POKEBALL) {
@@ -251,6 +253,7 @@ const buyItem = async (trainer, itemId, quantity) => {
     returnString = `You purchased a level ${level + 1} ${
       locationData.name
     } for ${formatMoney(cost)}. View your locations with \`/locations\`.`;
+    levelPurchased = level;
   } else if (item.category === shopCategories.MATERIALS) {
     // check if trainer has enough money
     cost = item.price[0] * quantity;
@@ -276,25 +279,22 @@ const buyItem = async (trainer, itemId, quantity) => {
 
   // update trainer
   try {
-    const res = await updateDocument(
-      collectionNames.USERS,
-      { userId: trainer.userId },
-      {
-        $set: {
-          backpack: trainer.backpack,
-          purchasedShopItemsToday: trainer.purchasedShopItemsToday,
-          locations: trainer.locations,
-        },
-        $inc: { money: -cost },
-      }
-    );
-    if (res.modifiedCount === 0) {
+    const res = await updateTrainer(trainer);
+    if (res.err) {
       logger.error(
         `Failed to update ${trainer.user.username} after shop purchase.`
       );
       return { data: null, err: "Error shop purchase." };
     }
-    // logger.info(`Updated ${trainer.user.username} after shop purchase.`);
+
+    if (res.data) {
+      await emitTrainerEvent(trainerEventEnum.MADE_PURCHASE, {
+        trainer,
+        itemId,
+        level: levelPurchased,
+        quantity,
+      });
+    }
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error shop purchase." };
