@@ -10,6 +10,7 @@
   - Quests give tons of rewards
   - There are two quest types: Daily and Achievements
   - Added option to silence quest and tutorial upsells in `/settings`
+  - Added quest completion to `/tutorial`
 - Added new `/party manage` command! Much more easily add, move, and remove Pokemon from your party!
   - Adding pokemon from `/info` brings up the party manage UI
   - Added party manage to the `/tutorial`
