@@ -433,6 +433,32 @@ const newTutorialConfigRaw = {
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pve.gif",
   },
+  quests: {
+    name: "Quests",
+    emoji: "📜",
+    description:
+      "Quests are another way to get **daily and one-time rewards.** Use `/quest` to view and complete quests. \n## `/quest`",
+    requirementString: "Complete a quest",
+    proceedString: "Use `/quest` to view and complete quests. \n## `/quest`",
+    checkRequirements: async (trainer) =>
+      Object.values(trainer.questData.dailyQuests).some(
+        (quest) => quest.stage > 0
+      ) ||
+      Object.values(trainer.questData.achievements).some(
+        (quest) => quest.stage > 0
+      ),
+    rewards: {
+      money: 5000,
+      backpack: {
+        [backpackCategories.POKEBALLS]: {
+          [backpackItems.POKEBALL]: 10,
+        },
+      },
+    },
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/quest.png",
+    tip: "There are multiple types of quests, such as daily quests and achievements.",
+  },
   events: {
     name: "Events",
     emoji: "🎉",
