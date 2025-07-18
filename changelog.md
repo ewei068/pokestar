@@ -4,7 +4,7 @@
 
 - Stretch: Ability slots
 
-### 1.4.3
+### 1.4.3 (7/17)
 
 - Add Quests with `/quest`
   - Quests give tons of rewards
