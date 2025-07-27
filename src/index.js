@@ -7,6 +7,7 @@ const express = require("express");
 const cors = require("cors");
 const { default: axios } = require("axios");
 const microstats = require("microstats");
+const v8 = require("v8");
 const {
   runMessageCommand,
   runSlashCommand,
@@ -270,6 +271,24 @@ client.once(Events.ClientReady, (c) => {
       logger.warn("Error logging metrics");
     }
   }, 1000 * 60 * 15);
+
+  // v8 heap snapshots for ALPHA stage only
+  // TEMP do this in production lol
+  if (
+    process.env.STAGE === stageNames.ALPHA ||
+    process.env.STAGE === stageNames.PROD
+  ) {
+    const createHeapSnapshot = () => {
+      try {
+        const filename = v8.writeHeapSnapshot();
+        logger.info(`Created heap snapshot: ${filename}`);
+      } catch (error) {
+        logger.error("Error creating heap snapshot:", error);
+      }
+    };
+
+    poll(createHeapSnapshot, 30 * 60 * 1000);
+  }
 
   // connect to discord bot directories
   if (process.env.STAGE === stageNames.PROD && process.env.DBL_TOKEN) {
