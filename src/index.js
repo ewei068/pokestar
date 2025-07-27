@@ -272,12 +272,8 @@ client.once(Events.ClientReady, (c) => {
     }
   }, 1000 * 60 * 15);
 
-  // v8 heap snapshots for ALPHA stage only
-  // TEMP do this in production lol
-  if (
-    process.env.STAGE === stageNames.ALPHA ||
-    process.env.STAGE === stageNames.PROD
-  ) {
+  // v8 heap snapshots. currently disabled
+  if (process.env.STAGE === "pass") {
     const createHeapSnapshot = () => {
       try {
         const filename = v8.writeHeapSnapshot();
