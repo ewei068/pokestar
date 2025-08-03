@@ -146,7 +146,7 @@
 
 /**
  * @callback MoveExecute
- * @this {MoveInstance}
+ * @this {MoveInstance & { id: MoveIdEnum }}
  */
 
 /**

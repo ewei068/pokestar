@@ -9,18 +9,12 @@ const {
   effectTypes,
   weatherConditions,
 } = require("../../config/battleConfig");
-const { getMove } = require("./moveRegistry");
 const { getHeldItem } = require("./heldItemRegistry");
 const { getEffect } = require("./effectRegistry");
 const { getHeldItemIdHasTag } = require("../../utils/battleUtils");
-const {
-  moveIdEnum,
-  abilityIdEnum,
-  effectIdEnum,
-} = require("../../enums/battleEnums");
+const { moveIdEnum, effectIdEnum } = require("../../enums/battleEnums");
 const { drawIterable } = require("../../utils/gachaUtils");
 const { pokemonIdEnum } = require("../../enums/pokemonEnums");
-const { logger } = require("../../log");
 
 /** @typedef {"charge" | "punch" | "slice"} MoveTag */
 
@@ -82,396 +76,6 @@ class Move {
     this.chargeMoveEffectId = chargeMoveEffectId;
     this.tags = tags;
   }
-
-  genericDealSingleDamage({
-    source,
-    target,
-    primaryTarget,
-    allTargets,
-    missedTargets = [],
-    offTargetDamageMultiplier,
-    backTargetDamageMultiplier,
-    calculateDamageFunction = undefined,
-    attackOverride = null,
-  }) {
-    const damageFunc =
-      calculateDamageFunction || ((args) => source.calculateMoveDamage(args));
-    const damageToDeal = damageFunc({
-      move: getMove(this.id),
-      target,
-      primaryTarget,
-      allTargets,
-      missedTargets,
-      offTargetDamageMultiplier,
-      backTargetDamageMultiplier,
-      attackOverride,
-    });
-    return source.dealDamage(damageToDeal, target, {
-      type: "move",
-      moveId: this.id,
-    });
-  }
-
-  /**
-   * @typedef {{
-   *  damageInstances: Record<string, number>,
-   *  totalDamageDealt: number,
-   * }} GenericDealAllDamageResult
-   */
-
-  /**
-   * @param {object} param0
-   * @param {BattlePokemon} param0.source
-   * @param {BattlePokemon} param0.primaryTarget
-   * @param {Array<BattlePokemon>} param0.allTargets
-   * @param {Array<BattlePokemon>=} param0.missedTargets
-   * @param {number=} param0.offTargetDamageMultiplier
-   * @param {number=} param0.backTargetDamageMultiplier
-   * @param {CalculateMoveDamageImpl=} param0.calculateDamageFunction
-   * @param {number=} param0.attackOverride
-   * @returns {GenericDealAllDamageResult}
-   */
-  genericDealAllDamage({
-    source,
-    primaryTarget,
-    allTargets,
-    missedTargets = [],
-    offTargetDamageMultiplier,
-    backTargetDamageMultiplier,
-    calculateDamageFunction = undefined,
-    attackOverride = null,
-  }) {
-    const /** @type {Record<string, number>} */ damageInstances = {};
-    for (const target of allTargets) {
-      const damageToTarget = this.genericDealSingleDamage({
-        source,
-        target,
-        primaryTarget,
-        allTargets,
-        missedTargets,
-        offTargetDamageMultiplier,
-        backTargetDamageMultiplier,
-        calculateDamageFunction,
-        attackOverride,
-      });
-      damageInstances[target.id] = damageToTarget;
-    }
-    return {
-      damageInstances,
-      totalDamageDealt: Object.values(damageInstances).reduce(
-        (sum, damage) => sum + damage,
-        0
-      ),
-    };
-  }
-
-  /**
-   * @template {any} T
-   * @template {any} U
-   * @param {object} param0
-   * @param {BattlePokemon} param0.source
-   * @param {number=} param0.probability
-   * @param {() => T} param0.onShouldTrigger
-   * @param {() => U=} param0.onShouldNotTrigger
-   * @returns {{
-   *  triggered: boolean,
-   *  onShouldTriggerResult?: T,
-   *  onShouldNotTriggerResult?: U,
-   * }}
-   */
-  // eslint-disable-next-line class-methods-use-this
-  triggerSecondaryEffect({
-    source,
-    onShouldTrigger,
-    onShouldNotTrigger = () => undefined,
-    probability = 1,
-  }) {
-    let shouldTrigger = false;
-    const roll = Math.random();
-    if (roll < probability) {
-      shouldTrigger = true;
-    } else if (
-      source.hasActiveAbility(abilityIdEnum.SERENE_GRACE) &&
-      roll < 2 * probability
-    ) {
-      source.battle.addToLog(`${source.name}'s Serene Grace activates!`);
-      shouldTrigger = true;
-    }
-
-    if (shouldTrigger) {
-      return {
-        triggered: true,
-        onShouldTriggerResult: onShouldTrigger(),
-      };
-    }
-    return {
-      triggered: false,
-      onShouldNotTriggerResult: onShouldNotTrigger(),
-    };
-  }
-
-  /**
-   * @param {Parameters<typeof this.triggerSecondaryEffect>[0] & {
-   *  target: BattlePokemon,
-   *  missedTargets?: BattlePokemon[],
-   * }} args
-   */
-  triggerSecondaryEffectOnTarget(args) {
-    const { target, missedTargets = [] } = args;
-    if (!missedTargets.includes(target)) {
-      return this.triggerSecondaryEffect(args);
-    }
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  genericApplySingleStatus({
-    source,
-    target,
-    // eslint-disable-next-line no-unused-vars
-    primaryTarget,
-    // eslint-disable-next-line no-unused-vars
-    allTargets,
-    missedTargets = [],
-    statusId,
-    options,
-    probability = 1,
-  }) {
-    const { triggered, onShouldTriggerResult } =
-      this.triggerSecondaryEffectOnTarget({
-        source,
-        target,
-        missedTargets,
-        probability,
-        onShouldTrigger: () => target.applyStatus(statusId, source, options),
-      }) || {};
-    if (triggered) {
-      return onShouldTriggerResult;
-    }
-    return false;
-  }
-
-  /**
-   * @param {object} param0
-   * @param {BattlePokemon} param0.source
-   * @param {BattlePokemon} param0.primaryTarget
-   * @param {Array<BattlePokemon>} param0.allTargets
-   * @param {Array<BattlePokemon>=} param0.missedTargets
-   * @param {StatusConditionEnum} param0.statusId
-   * @param {object=} param0.options
-   * @param {number=} param0.probability
-   */
-  genericApplyAllStatus({
-    source,
-    primaryTarget,
-    allTargets,
-    missedTargets = [],
-    statusId,
-    options,
-    probability = 1,
-  }) {
-    for (const target of allTargets) {
-      this.genericApplySingleStatus({
-        source,
-        target,
-        primaryTarget,
-        allTargets,
-        missedTargets,
-        statusId,
-        options,
-        probability,
-      });
-    }
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  genericApplySingleEffect({
-    source,
-    target,
-    // eslint-disable-next-line no-unused-vars
-    primaryTarget,
-    // eslint-disable-next-line no-unused-vars
-    allTargets,
-    missedTargets = [],
-    effectId,
-    duration,
-    initialArgs = {},
-    probability = 1,
-  }) {
-    const { triggered, onShouldTriggerResult } =
-      this.triggerSecondaryEffectOnTarget({
-        source,
-        target,
-        missedTargets,
-        probability,
-        onShouldTrigger: () =>
-          target.applyEffect(effectId, duration, source, initialArgs),
-      }) || {};
-    if (triggered) {
-      return onShouldTriggerResult;
-    }
-    return false;
-  }
-
-  /**
-   * @template {EffectIdEnum} K
-   * @param {object} param0
-   * @param {BattlePokemon} param0.source
-   * @param {BattlePokemon} param0.primaryTarget
-   * @param {Array<BattlePokemon>} param0.allTargets
-   * @param {Array<BattlePokemon>=} param0.missedTargets
-   * @param {K} param0.effectId
-   * @param {number} param0.duration
-   * @param {EffectInitialArgsTypeFromId<K>=} param0.initialArgs
-   * @param {number=} param0.probability
-   */
-  genericApplyAllEffects({
-    source,
-    primaryTarget,
-    allTargets,
-    missedTargets = [],
-    effectId,
-    duration,
-    // @ts-ignore
-    initialArgs = {},
-    probability = 1,
-  }) {
-    for (const target of allTargets) {
-      this.genericApplySingleEffect({
-        source,
-        target,
-        primaryTarget,
-        allTargets,
-        missedTargets,
-        effectId,
-        duration,
-        initialArgs,
-        probability,
-      });
-    }
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  genericChangeSingleCombatReadiness({
-    source,
-    target,
-    // eslint-disable-next-line no-unused-vars
-    primaryTarget,
-    // eslint-disable-next-line no-unused-vars
-    allTargets,
-    missedTargets = [],
-    amount,
-    action,
-    probability = 1,
-    triggerEvents = true,
-  }) {
-    const shouldChangeCombatReadiness =
-      !missedTargets.includes(target) && Math.random() < probability;
-
-    if (shouldChangeCombatReadiness) {
-      if (action === "boost") {
-        return target.boostCombatReadiness(source, amount, triggerEvents);
-      }
-      if (action === "reduce") {
-        return target.reduceCombatReadiness(source, amount);
-      }
-    }
-    return 0;
-  }
-
-  /**
-   * @param {object} param0
-   * @param {BattlePokemon} param0.source
-   * @param {BattlePokemon} param0.primaryTarget
-   * @param {Array<BattlePokemon>} param0.allTargets
-   * @param {Array<BattlePokemon>=} param0.missedTargets
-   * @param {number} param0.amount
-   * @param {"boost" | "reduce"} param0.action
-   * @param {number=} param0.probability
-   * @param {boolean=} param0.triggerEvents
-   */
-  genericChangeAllCombatReadiness({
-    source,
-    primaryTarget,
-    allTargets,
-    missedTargets = [],
-    amount,
-    action,
-    probability = 1,
-    triggerEvents = true,
-  }) {
-    for (const target of allTargets) {
-      this.genericChangeSingleCombatReadiness({
-        source,
-        target,
-        primaryTarget,
-        allTargets,
-        missedTargets,
-        amount,
-        action,
-        probability,
-        triggerEvents,
-      });
-    }
-  }
-
-  /**
-   * Heals a single target for a specific amount or percentage of max HP
-   * @param {object} param0
-   * @param {BattlePokemon} param0.source
-   * @param {BattlePokemon} param0.target
-   * @param {number=} param0.healAmount - Direct amount to heal
-   * @param {number=} param0.healPercent - Percentage of max HP to heal (0-100)
-   * @returns {number} - Amount healed
-   */
-  genericHealSingleTarget({
-    source,
-    target,
-    healAmount = undefined,
-    healPercent = undefined,
-  }) {
-    if (healAmount === undefined && healPercent === undefined) {
-      logger.warn(
-        `genericHealSingleTarget called with no healAmount or healPercent for move ${this.id}`
-      );
-      return 0;
-    }
-
-    const amountToHeal =
-      healAmount !== undefined
-        ? healAmount
-        : Math.max(1, Math.floor((target.maxHp * healPercent) / 100));
-    return source.giveHeal(amountToHeal, target, {
-      type: "move",
-      moveId: this.id,
-    });
-  }
-
-  /**
-   * Heals all targets for a specific amount or percentage of max HP
-   * @param {object} param0
-   * @param {BattlePokemon} param0.source
-   * @param {Array<BattlePokemon>} param0.allTargets
-   * @param {number=} param0.healAmount - Direct amount to heal
-   * @param {number=} param0.healPercent - Percentage of max HP to heal (0-100)
-   * @returns {number} - Total amount healed
-   */
-  genericHealAllTargets({
-    source,
-    allTargets,
-    healAmount = undefined,
-    healPercent = undefined,
-  }) {
-    let totalHealed = 0;
-    for (const target of allTargets) {
-      totalHealed += this.genericHealSingleTarget({
-        source,
-        target,
-        healAmount,
-        healPercent,
-      });
-    }
-    return totalHealed;
-  }
 }
 
 const movesToRegister = Object.freeze({
@@ -489,17 +93,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The target is punched with a fiery fist. It may also leave the target with a burn with a 50% chance.",
-    execute({ source, primaryTarget, allTargets, missedTargets }) {
-      this.genericDealAllDamage({
-        source,
-        primaryTarget,
-        allTargets,
-        missedTargets,
-      });
+    execute() {
+      this.genericDealAllDamage();
       this.genericApplyAllStatus({
-        source,
-        primaryTarget,
-        allTargets,
         statusId: statusConditions.BURN,
         probability: 0.5,
       });
@@ -520,10 +116,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The target is punched with an icy fist. It may also leave the target frozen with a 50% chance.",
-    execute(args) {
-      this.genericDealAllDamage(args);
+    execute() {
+      this.genericDealAllDamage();
       this.genericApplyAllStatus({
-        ...args,
         statusId: statusConditions.FROZEN,
         probability: 0.5,
       });
@@ -544,13 +139,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The target is struck with slender, whiplike vines to inflict damage.",
-    execute({ source, primaryTarget, allTargets, missedTargets }) {
-      this.genericDealAllDamage({
-        source,
-        primaryTarget,
-        allTargets,
-        missedTargets,
-      });
+    execute() {
+      this.genericDealAllDamage();
     },
   }),
   [moveIdEnum.CONFUSION]: new Move({
@@ -567,10 +157,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The target is hit by a weak telekinetic force. This has a 25% chance to confuse the target for 1 turn.",
-    execute(args) {
-      this.genericDealAllDamage(args);
+    execute() {
+      this.genericDealAllDamage();
       this.genericApplyAllEffects({
-        ...args,
         effectId: "confused",
         duration: 1,
         probability: 0.25,
@@ -591,10 +180,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The target is hit by a strong telekinetic force. This has a 60% chance to lower the targets' Special Defense for 2 turns.",
-    execute(args) {
-      this.genericDealAllDamage(args);
+    execute() {
+      this.genericDealAllDamage();
       this.genericApplyAllEffects({
-        ...args,
         effectId: "spdDown",
         duration: 2,
         probability: 0.6,
@@ -615,10 +203,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The target is hit by a strong icy wind. This lowers targets' Spped for 2 turns.",
-    execute(args) {
-      this.genericDealAllDamage(args);
+    execute() {
+      this.genericDealAllDamage();
       this.genericApplyAllEffects({
-        ...args,
         effectId: "speDown",
         duration: 2,
       });
@@ -638,8 +225,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The target is struck with a hard head made of iron. This removes the target's defensive buffs before dealing damage.",
-    execute(args) {
-      const { allTargets, missedTargets } = args;
+    execute() {
+      const { allTargets, missedTargets } = this;
       for (const target of allTargets) {
         const miss = missedTargets.includes(target);
         // if not miss, attempt to remove defUp, greaterDefUp, spdUp, greaterSpdUp
@@ -655,7 +242,7 @@ const movesToRegister = Object.freeze({
           }
         }
       }
-      this.genericDealAllDamage(args);
+      this.genericDealAllDamage();
     },
   }),
   [moveIdEnum.FEATHER_DANCE]: new Move({
@@ -672,16 +259,12 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user covers the target and surrounding enemies with feathers. The primary target's Attack is sharply lowered for 3 turns, while other targets' Attack is lowered for 3 turns.",
-    execute(args) {
-      const { source, primaryTarget, allTargets, missedTargets } = args;
+    execute() {
+      const { primaryTarget, allTargets } = this;
 
       // Apply sharply lowered attack to the primary target
       this.genericApplySingleEffect({
-        source,
         target: primaryTarget,
-        primaryTarget,
-        allTargets,
-        missedTargets,
         effectId: "greaterAtkDown",
         duration: 3,
         initialArgs: {},
@@ -693,11 +276,7 @@ const movesToRegister = Object.freeze({
         if (target === primaryTarget) continue;
 
         this.genericApplySingleEffect({
-          source,
           target,
-          primaryTarget,
-          allTargets,
-          missedTargets,
           effectId: "atkDown",
           duration: 3,
           initialArgs: {},
@@ -719,14 +298,12 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "Two turns after this move is used, the user's strikes the target with a concentrated bundle of light (undispellable). This move also has a 10% chance to apply Perish Song.",
-    execute(args) {
+    execute() {
       this.genericApplyAllEffects({
-        ...args,
         effectId: effectIdEnum.DOOM_DESIRE,
         duration: 2,
       });
       this.genericApplyAllEffects({
-        ...args,
         effectId: "perishSong",
         duration: 3,
         probability: 0.1,
@@ -747,12 +324,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user slashes with a blade of darkness, inflicting additional true damage to the primary target equal to 5% of the user's attackß.",
-    execute({ source, primaryTarget, allTargets, missedTargets }) {
+    execute() {
+      const { source, primaryTarget, missedTargets } = this;
       this.genericDealAllDamage({
-        source,
-        primaryTarget,
-        allTargets,
-        missedTargets,
         calculateDamageFunction: (args) => {
           const { target } = args;
           const baseDamage = source.calculateMoveDamage(args);
@@ -783,10 +357,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The target is struck with a hard head made of iron. This has a 50% chance to flinch.",
-    execute(args) {
-      this.genericDealAllDamage(args);
+    execute() {
+      this.genericDealAllDamage();
       this.genericApplyAllEffects({
-        ...args,
         effectId: "flinched",
         duration: 1,
         probability: 0.5,
@@ -807,9 +380,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The target is struck with a hard head made of iron. The user takes 33% recoil damage.",
-    execute(args) {
-      const { totalDamageDealt } = this.genericDealAllDamage(args);
-      args.source.dealDamage(Math.floor(totalDamageDealt * 0.33), args.source, {
+    execute() {
+      const { totalDamageDealt } = this.genericDealAllDamage();
+      this.source.dealDamage(Math.floor(totalDamageDealt * 0.33), this.source, {
         type: "recoil",
       });
     },
@@ -828,14 +401,12 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user supresses the target, reducing its combat readiness to 0 and sharply decreasing its Speed for 1 turn.",
-    execute(args) {
+    execute() {
       this.genericChangeAllCombatReadiness({
-        ...args,
         amount: 100,
         action: "reduce",
       });
       this.genericApplyAllEffects({
-        ...args,
         effectId: "greaterSpeDown",
         duration: 1,
       });
@@ -855,10 +426,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user launches a sharp icicle at the target. This has a 30% chance to flinch.",
-    execute(args) {
-      this.genericDealAllDamage(args);
+    execute() {
+      this.genericDealAllDamage();
       this.genericApplyAllEffects({
-        ...args,
         effectId: "flinched",
         duration: 1,
         probability: 0.3,
@@ -879,18 +449,14 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user crushes the target with great force. If hit, this move increases its damage by 25% of the target's current HP.",
-    execute({ source, primaryTarget, allTargets, missedTargets }) {
+    execute() {
       this.genericDealAllDamage({
-        source,
-        primaryTarget,
-        allTargets,
-        missedTargets,
         calculateDamageFunction: (args) => {
           const { target } = args;
-          const baseDamage = source.calculateMoveDamage(args);
+          const baseDamage = this.source.calculateMoveDamage(args);
 
           // Only add bonus damage if the target wasn't missed
-          if (!missedTargets.includes(target)) {
+          if (!this.missedTargets.includes(target)) {
             // Calculate bonus damage as 25% of current HP
             const bonusDamage = Math.floor(target.hp * 0.25);
             return baseDamage + bonusDamage;
@@ -915,7 +481,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The targets are struck with a high-pressure flood of water. If hit, does true damage equal to 5% of the highest stat (excluding HP) among other Water or Dark type Pokemon on your team.",
-    execute({ source, primaryTarget, allTargets, missedTargets }) {
+    execute() {
+      const { source, missedTargets } = this;
       const sourceTeamPokemons = source.getPartyPokemon();
       let highestStat = 0;
       for (const pokemon of sourceTeamPokemons) {
@@ -940,10 +507,6 @@ const movesToRegister = Object.freeze({
       }
 
       this.genericDealAllDamage({
-        source,
-        primaryTarget,
-        allTargets,
-        missedTargets,
         calculateDamageFunction: (args) => {
           const { target } = args;
           const baseDamage = source.calculateMoveDamage(args);
@@ -970,16 +533,15 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The targets are struck with blades of magma. If hit and the target is not a full HP, deals 1.5x damage.",
-    execute({ source, primaryTarget, allTargets, missedTargets }) {
+    execute() {
       this.genericDealAllDamage({
-        source,
-        primaryTarget,
-        allTargets,
-        missedTargets,
         calculateDamageFunction: (args) => {
           const { target } = args;
-          const baseDamage = source.calculateMoveDamage(args);
-          if (!missedTargets.includes(target) && target.hp < target.maxHp) {
+          const baseDamage = this.source.calculateMoveDamage(args);
+          if (
+            !this.missedTargets.includes(target) &&
+            target.hp < target.maxHp
+          ) {
             return Math.floor(baseDamage * 1.5);
           }
           return baseDamage;
@@ -1001,14 +563,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user strikes the targets with an exploding fiery ball, heating up its allies. For each hit, boosts the combat readiness of a random Fire or Ground type ally by 15%.",
-    execute({ battle, source, primaryTarget, allTargets, missedTargets }) {
-      this.genericDealAllDamage({
-        source,
-        primaryTarget,
-        allTargets,
-        missedTargets,
-      });
-
+    execute() {
+      this.genericDealAllDamage();
+      const { source, allTargets, missedTargets, battle } = this;
       const sourceTeamPokemons = source.getPartyPokemon();
       const fireGroundAllies = sourceTeamPokemons.filter(
         (pokemon) =>
@@ -1049,7 +606,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user bites the target. If the target is holding a berry, the user eats it and gains its effect. The user may also steal a random buff from the target.",
-    execute({ battle, source, primaryTarget, allTargets, missedTargets }) {
+    execute() {
+      const { battle, source, allTargets, missedTargets } = this;
       for (const target of allTargets) {
         const miss = missedTargets.includes(target);
         if (miss) continue;
@@ -1097,12 +655,7 @@ const movesToRegister = Object.freeze({
           }
         }
       }
-      this.genericDealAllDamage({
-        source,
-        primaryTarget,
-        allTargets,
-        missedTargets,
-      });
+      this.genericDealAllDamage();
     },
   }),
   [moveIdEnum.BITE]: new Move({
@@ -1119,10 +672,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user bites the target with sharp fangs. This has a 30% chance to make the target flinch.",
-    execute(args) {
-      this.genericDealAllDamage(args);
+    execute() {
+      this.genericDealAllDamage();
       this.genericApplyAllEffects({
-        ...args,
         effectId: "flinched",
         duration: 1,
         probability: 0.3,
@@ -1143,10 +695,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user rams its head into the target. This has a 30% chance to make the target flinch.",
-    execute(args) {
-      this.genericDealAllDamage(args);
+    execute() {
+      this.genericDealAllDamage();
       this.genericApplyAllEffects({
-        ...args,
         effectId: "flinched",
         duration: 1,
         probability: 0.3,
@@ -1167,10 +718,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "An attack that inflicts double damage if the user has a status condition.",
-    execute(args) {
-      const { source, battle } = args;
+    execute() {
+      const { source, battle } = this;
       this.genericDealAllDamage({
-        ...args,
         calculateDamageFunction: (damageArgs) => {
           const baseDamage = source.calculateMoveDamage(damageArgs);
 
@@ -1201,9 +751,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user attacks with a hazardous, full-power headbutt. This deals massive damage but the user takes 50% of the damage dealt as recoil.",
-    execute(args) {
-      const { source } = args;
-      const { totalDamageDealt } = this.genericDealAllDamage(args);
+    execute() {
+      const { source } = this;
+      const { totalDamageDealt } = this.genericDealAllDamage();
       source.dealDamage(Math.floor(totalDamageDealt * 0.5), source, {
         type: "recoil",
       });
@@ -1223,9 +773,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user blocks the target's way, preventing escape. The target cannot gain boosted combat readiness for 2 turns.",
-    execute(args) {
+    execute() {
       this.genericApplyAllEffects({
-        ...args,
         effectId: "restricted",
         duration: 2,
       });
@@ -1245,7 +794,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user retaliates with a powerful metal counterattack. This deals true damage equal to 75% of each target's attack, increased to 150% for the primary target.",
-    execute({ source, primaryTarget, allTargets, missedTargets }) {
+    execute() {
+      const { source, primaryTarget, allTargets, missedTargets } = this;
       for (const target of allTargets) {
         if (missedTargets.includes(target)) {
           continue;
@@ -1257,6 +807,8 @@ const movesToRegister = Object.freeze({
         source.dealDamage(damage, target, {
           type: "move",
           moveId: this.id,
+          id: this.id,
+          instance: this,
         });
       }
     },
@@ -1275,9 +827,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user commands its healing bees to mend wounds. Heals the user or a targeted ally for 50% of their maximum HP.",
-    execute(args) {
+    execute() {
       this.genericHealAllTargets({
-        ...args,
         healPercent: 50,
       });
     },
@@ -1296,17 +847,15 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user commands its defensive bees to protect. Raises the target's Defense and Special Defense for 3 turns and creates a shield equal to 5% of their combined defenses.",
-    execute(args) {
-      const { allTargets } = args;
+    execute() {
+      const { allTargets } = this;
       for (const target of allTargets) {
         this.genericApplySingleEffect({
-          ...args,
           effectId: "defUp",
           duration: 3,
           target,
         });
         this.genericApplySingleEffect({
-          ...args,
           effectId: "spdUp",
           duration: 3,
           target,
@@ -1317,7 +866,6 @@ const movesToRegister = Object.freeze({
         const spdStat = target.getStat("spd");
         const shieldAmount = Math.floor((defStat + spdStat) * 0.05);
         this.genericApplySingleEffect({
-          ...args,
           effectId: "shield",
           duration: 3,
           target,
@@ -1340,8 +888,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user commands its offensive bees to attack. The attack's power increases by 10% for each non-fainted ally on the field.",
-    execute(args) {
-      const { source } = args;
+    execute() {
+      const { source } = this;
       // Count non-fainted allies (excluding self) to boost damage
       const allyPokemons = source.getPartyPokemon();
       const nonFaintedAllies = allyPokemons.filter(
@@ -1350,7 +898,6 @@ const movesToRegister = Object.freeze({
       const damageMultiplier = 1 + nonFaintedAllies * 0.1;
 
       this.genericDealAllDamage({
-        ...args,
         calculateDamageFunction: (damageArgs) => {
           const baseDamage = source.calculateMoveDamage(damageArgs);
           return Math.floor(baseDamage * damageMultiplier);
@@ -1372,7 +919,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user trades held items with the target faster than the eye can follow. This swaps the held items of the user and the target.",
-    execute({ battle, source, primaryTarget }) {
+    execute() {
+      const { battle, source, primaryTarget } = this;
       // Store the held item IDs
       const sourceHeldItemId = source.heldItem?.heldItemId;
       const targetHeldItemId = primaryTarget.heldItem?.heldItemId;
@@ -1405,10 +953,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user nuzzles its electrified cheeks against the target. This has a 60% chance to paralyze the target.",
-    execute(args) {
-      this.genericDealAllDamage(args);
+    execute() {
+      this.genericDealAllDamage();
       this.genericApplyAllStatus({
-        ...args,
         statusId: statusConditions.PARALYSIS,
         probability: 0.6,
       });
@@ -1428,9 +975,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user sends a sinister flame at the target. This inflicts a burn on the target.",
-    execute(args) {
+    execute() {
       this.genericApplyAllStatus({
-        ...args,
         statusId: statusConditions.BURN,
       });
     },
@@ -1449,7 +995,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user forces the target to use a move for 1 turn. A random move that's on cooldown for the target is reset to 0 cooldown, and all other moves are disabled.",
-    execute({ battle, source, allTargets }) {
+    execute() {
+      const { battle, source, allTargets } = this;
       for (const target of allTargets) {
         // Find moves that are on cooldown
         const movesOnCooldown = Object.entries(target.moveIds)
@@ -1488,14 +1035,12 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user enrages the target, confusing and sharply raising the target's Attack for 3 turns.",
-    execute(args) {
+    execute() {
       this.genericApplyAllEffects({
-        ...args,
         effectId: "confused",
         duration: 3,
       });
       this.genericApplyAllEffects({
-        ...args,
         effectId: "greaterAtkUp",
         duration: 3,
       });
@@ -1515,12 +1060,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user tackles the target with a heavy, spinning steel ball. Power increases based on the target's Speed, and deals 1.5x damage if the user is slower than the target.",
-    execute({ source, primaryTarget, allTargets, missedTargets }) {
+    execute() {
       this.genericDealAllDamage({
-        source,
-        primaryTarget,
-        allTargets,
-        missedTargets,
         calculateDamageFunction: (args) => {
           const { target } = args;
           // Calculate power based on target's speed / 5
@@ -1528,11 +1069,11 @@ const movesToRegister = Object.freeze({
           const basePower = Math.max(Math.floor(targetSpeed / 5), 1);
 
           // Check if user is slower than target
-          const sourceSpeed = source.getStat("spe");
+          const sourceSpeed = this.source.getStat("spe");
           const speedMultiplier = sourceSpeed < targetSpeed ? 1.5 : 1;
 
           // Calculate damage with the modified power
-          const baseDamage = source.calculateMoveDamage({
+          const baseDamage = this.source.calculateMoveDamage({
             ...args,
             powerOverride: basePower,
           });
@@ -1557,18 +1098,16 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user chases down a target, striking with doubled power if the target has higher Speed than the user. Has no back target damage penalty.",
-    execute(args) {
-      const { source } = args;
+    execute() {
       this.genericDealAllDamage({
-        ...args,
         backTargetDamageMultiplier: 1,
         calculateDamageFunction: (damageArgs) => {
           const { target } = damageArgs;
-          const baseDamage = source.calculateMoveDamage(damageArgs);
+          const baseDamage = this.source.calculateMoveDamage(damageArgs);
 
           // Check if target has higher speed than the user
           const targetSpeed = target.getStat("spe");
-          const sourceSpeed = source.getStat("spe");
+          const sourceSpeed = this.source.getStat("spe");
           if (targetSpeed > sourceSpeed) {
             return baseDamage * 2;
           }
@@ -1592,8 +1131,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user slashes the target with sharp claws in an X pattern. It has no additional effects.",
-    execute(args) {
-      this.genericDealAllDamage(args);
+    execute() {
+      this.genericDealAllDamage();
     },
   }),
   [moveIdEnum.DARK_VOID]: new Move({
@@ -1610,9 +1149,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user creates a void of darkness that puts all targets to sleep.",
-    execute(args) {
+    execute() {
       this.genericApplyAllStatus({
-        ...args,
         statusId: statusConditions.SLEEP,
       });
     },
@@ -1631,21 +1169,20 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "A consecutive three-kick attack that becomes more powerful with each successful hit. Each hit has a 90% accuracy.",
-    execute(args) {
+    execute() {
       const {
         source,
         primaryTarget,
         allTargets,
         missedTargets,
         extraOptions = {},
-      } = args;
+      } = this;
       const maxHits = 3;
       const { hitCounts = {}, currentHit = 1 } = extraOptions;
       const newHitCounts = { ...hitCounts };
 
       // Calculate damage with power boost based on previous hits
       this.genericDealAllDamage({
-        ...args,
         calculateDamageFunction: (damageArgs) => {
           const { target } = damageArgs;
           const previousHits = hitCounts[target.id] || 0;
@@ -1691,9 +1228,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user hurls a huge boulder at the target. The user must recharge after using this move.",
-    execute(args) {
-      const { source } = args;
-      this.genericDealAllDamage(args);
+    execute() {
+      const { source } = this;
+      this.genericDealAllDamage();
       source.applyEffect("recharge", 1, source, {});
     },
   }),
@@ -1711,7 +1248,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user tricks the target into trading held items. This swaps the held items of the user and the target.",
-    execute({ battle, source, primaryTarget }) {
+    execute() {
+      const { battle, source, primaryTarget } = this;
       // Store the held item IDs
       const sourceHeldItemId = source.heldItem?.heldItemId;
       const targetHeldItemId = primaryTarget.heldItem?.heldItemId;
@@ -1744,9 +1282,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The user attacks the opposing team with intense flames. After using this move, the user's Special Attack stat is sharply lowered for 2 turns.",
-    execute(args) {
-      const { source } = args;
-      this.genericDealAllDamage(args);
+    execute() {
+      const { source } = this;
+      this.genericDealAllDamage();
       source.applyEffect("greaterSpaDown", 2, source, {});
     },
   }),
@@ -1764,10 +1302,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The user attacks with a blade of air that slices even the sky. This has a 25% chance to flinch the target.",
-    execute(args) {
-      this.genericDealAllDamage(args);
+    execute() {
+      this.genericDealAllDamage();
       this.genericApplyAllEffects({
-        ...args,
         effectId: "flinched",
         duration: 1,
         probability: 0.25,
@@ -1789,8 +1326,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The user attacks by exhaling hot breath on the opposing team. This only deals damage to the target row, but has a 30% of burning all targets",
-    execute(args) {
-      const { source, primaryTarget } = args;
+    execute() {
+      const { source, primaryTarget } = this;
       // Get only target row
       const targetParty = source.battle.parties[primaryTarget.teamName];
       const damageTargets = source.getPatternTargets(
@@ -1802,13 +1339,11 @@ const movesToRegister = Object.freeze({
 
       // Deal damage only to targets in the primary target's row
       this.genericDealAllDamage({
-        ...args,
         allTargets: damageTargets,
       });
 
       // Apply burn chance to all targets
       this.genericApplyAllStatus({
-        ...args,
         statusId: statusConditions.BURN,
         probability: 0.3,
       });
@@ -1837,8 +1372,8 @@ const movesToRegister = Object.freeze({
     },
     tags: ["charge", "slice"],
     chargeMoveEffectId: "absorbLight",
-    execute(args) {
-      const { source, battle } = args;
+    execute() {
+      const { source, battle } = this;
       // If pokemon doesn't have "absorb light" buff, apply it
       // TODO: genericify charge moves?
       if (
@@ -1855,7 +1390,6 @@ const movesToRegister = Object.freeze({
 
         // Deal damage with weather multiplier
         this.genericDealAllDamage({
-          ...args,
           calculateDamageFunction: (damageArgs) => {
             const mult =
               battle.weather.weatherId !== weatherConditions.SUN &&
@@ -1886,8 +1420,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The user unleashes mystical energy, damaging enemies based on the highest of the user's non-HP stats. Provides allies with unique buffs if used by Uxie, Mesprit, or Azelf.",
-    execute(args) {
-      const { source } = args;
+    execute() {
+      const { source } = this;
       // apply special effect to all allies
       const allies = source.getPartyPokemon().filter((p) => p && !p.isFainted);
       for (const ally of allies) {
@@ -1904,7 +1438,6 @@ const movesToRegister = Object.freeze({
         }
       }
       this.genericDealAllDamage({
-        ...args,
         attackOverride: source.getStat(source.getHighestNonHpStatId()),
       });
     },
@@ -1923,17 +1456,15 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user empties their mind, sharply raising their Special Defense and providing a shield equal to 15% of their Special Defense.",
-    execute(args) {
-      const { allTargets } = args;
+    execute() {
+      const { allTargets } = this;
       this.genericApplyAllEffects({
-        ...args,
         effectId: "greaterSpdUp",
         duration: 3,
       });
 
       for (const target of allTargets) {
         this.genericApplySingleEffect({
-          ...args,
           target,
           effectId: "shield",
           duration: 3,
@@ -1958,20 +1489,18 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "Traps the foe in a vortex of searing magma, dealing damage and restricting movement. The vortex causes ongoing 1/8th HP damage for 3 turns.",
-    execute(args) {
-      const { allTargets } = args;
-      this.genericDealAllDamage(args);
+    execute() {
+      const { allTargets } = this;
+      this.genericDealAllDamage();
 
       // Apply restricted and DoT effects to targets
       for (const target of allTargets) {
         this.genericApplySingleEffect({
-          ...args,
           target,
           effectId: "restricted",
           duration: 3,
         });
         this.genericApplySingleEffect({
-          ...args,
           target,
           effectId: "dot",
           duration: 3,
@@ -1996,10 +1525,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user bathes allies in mystical moonlight, healing them for 25% of their maximum HP, removing all status conditions, and dispelling all debuffs.",
-    execute(args) {
-      const { allTargets } = args;
+    execute() {
+      const { allTargets } = this;
       this.genericHealAllTargets({
-        ...args,
         healPercent: 25,
       });
 
@@ -2031,8 +1559,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user dances in the moonlight, sacrificing 50% of its maximum HP to heal allies (excluding itself) by the same amount and increase their Defense and Special Defense for 2 turns.",
-    execute(args) {
-      const { source } = args;
+    execute() {
+      const { source } = this;
 
       // Calculate the amount of HP to sacrifice (50% of max HP)
       const sacrificeAmount = Math.floor(source.maxHp * 0.5);
@@ -2043,21 +1571,18 @@ const movesToRegister = Object.freeze({
       });
 
       // Create a new array of targets excluding the source
-      const healTargets = args.allTargets.filter((target) => target !== source);
+      const healTargets = this.allTargets.filter((target) => target !== source);
       if (healTargets.length > 0) {
         this.genericHealAllTargets({
-          ...args,
           allTargets: healTargets,
           healAmount: sacrificeAmount,
         });
       }
       this.genericApplyAllEffects({
-        ...args,
         effectId: "defUp",
         duration: 2,
       });
       this.genericApplyAllEffects({
-        ...args,
         effectId: "spdUp",
         duration: 2,
       });
@@ -2077,30 +1602,27 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The user strikes with three different elemental attacks in succession. The first hit has a 33% chance to burn, the second has a 33% chance to paralyze, and the third has a 33% chance to freeze.",
-    execute(args) {
-      const { source, primaryTarget, extraOptions = {} } = args;
+    execute() {
+      const { source, primaryTarget, extraOptions = {} } = this;
       const maxHits = 3;
       const { currentHit = 1 } = extraOptions;
 
       // Deal damage for the current hit
-      this.genericDealAllDamage(args);
+      this.genericDealAllDamage();
 
       // Apply the appropriate status effect based on the current hit
       if (currentHit === 1) {
         this.genericApplyAllStatus({
-          ...args,
           statusId: statusConditions.BURN,
           probability: 0.33,
         });
       } else if (currentHit === 2) {
         this.genericApplyAllStatus({
-          ...args,
           statusId: statusConditions.PARALYSIS,
           probability: 0.33,
         });
       } else if (currentHit === 3) {
         this.genericApplyAllStatus({
-          ...args,
           statusId: statusConditions.FREEZE,
           probability: 0.33,
         });
@@ -2132,9 +1654,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user tears at the target with blades formed by psychic power. This has no damage reduction when hitting back row or non-primary targets.",
-    execute(args) {
+    execute() {
       this.genericDealAllDamage({
-        ...args,
         offTargetDamageMultiplier: 1,
         backTargetDamageMultiplier: 1,
       });
@@ -2154,11 +1675,10 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user celebrates the anniversary of Pokestar, increasing allies' combat readiness by 10% and permanently increasing their non-HP stats by 2%, multiplied by the number of years Pokestar has been around.",
-    execute(args) {
-      const { allTargets, battle } = args;
+    execute() {
+      const { allTargets, battle } = this;
       // Boost combat readiness by 20%
       this.genericChangeAllCombatReadiness({
-        ...args,
         amount: 20,
         action: "boost",
       });
@@ -2195,14 +1715,12 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.OTHER,
     description:
       "The user coaches an ally, boosting its Attack and Defense for 2 turns.",
-    execute(args) {
+    execute() {
       this.genericApplyAllEffects({
-        ...args,
         effectId: "atkUp",
         duration: 2,
       });
       this.genericApplyAllEffects({
-        ...args,
         effectId: "defUp",
         duration: 2,
       });
@@ -2222,14 +1740,12 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user slashes with a sword honed to exceptional sharpness. This attack ignores the target's defensive boosts and has perfect accuracy.",
-    execute(args) {
-      const { source } = args;
+    execute() {
       this.genericDealAllDamage({
-        ...args,
         calculateDamageFunction: (damageArgs) => {
           const { target } = damageArgs;
           // Override defense with base defense to ignore boosts
-          return source.calculateMoveDamage({
+          return this.source.calculateMoveDamage({
             ...damageArgs,
             defenseOverride: target.bdef,
           });
@@ -2251,8 +1767,8 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.PHYSICAL,
     description:
       "The user slashes at the target with sharp claws or blades, striking all enemies in the row.",
-    execute(args) {
-      this.genericDealAllDamage(args);
+    execute() {
+      this.genericDealAllDamage();
     },
     tags: ["slice"],
   }),
@@ -2270,9 +1786,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The user roars to distort time, dealing massive damage. Fully reduces the highest move cooldown for each adjacent ally, and the user must recharge for 1 turn.",
-    execute(args) {
-      const { source } = args;
-      this.genericDealAllDamage(args);
+    execute() {
+      const { source } = this;
+      this.genericDealAllDamage();
 
       // Get adjacent allies (SQUARE pattern excluding self)
       const sourceParty = source.battle.parties[source.teamName];
@@ -2331,9 +1847,9 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The user tears the spatial fabric, dealing damage to enemies. Adjacent allies receive a spatial blessing that enhances their move patterns for 1 turn.",
-    execute(args) {
-      const { source } = args;
-      this.genericDealAllDamage(args);
+    execute() {
+      const { source } = this;
+      this.genericDealAllDamage();
 
       const sourceParty = source.battle.parties[source.teamName];
       const adjacentAllies = source
@@ -2370,8 +1886,8 @@ const movesToRegister = Object.freeze({
     },
     tags: ["charge"],
     chargeMoveEffectId: effectIdEnum.VANISHED,
-    execute(args) {
-      const { source, battle } = args;
+    execute() {
+      const { source, battle } = this;
       // If pokemon doesn't have "vanished" buff, apply it
       if (source.effectIds[effectIdEnum.VANISHED] === undefined) {
         source.applyEffect(effectIdEnum.VANISHED, 1, source, {});
@@ -2392,9 +1908,8 @@ const movesToRegister = Object.freeze({
       } else {
         source.removeEffect(effectIdEnum.VANISHED);
         // remove all buffs from targets
-        for (const target of args.allTargets) {
+        for (const target of this.allTargets) {
           this.triggerSecondaryEffectOnTarget({
-            ...args,
             target,
             onShouldTrigger: () => {
               for (const effectId of Object.keys(target.effectIds)) {
@@ -2404,7 +1919,7 @@ const movesToRegister = Object.freeze({
             },
           });
         }
-        this.genericDealAllDamage(args);
+        this.genericDealAllDamage();
       }
     },
   }),
@@ -2422,11 +1937,10 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The user blasts the target with a gust of repulsive wind. This may also raise the user's highest non-HP stat with a 50% chance.",
-    execute(args) {
-      const { source } = args;
-      this.genericDealAllDamage(args);
+    execute() {
+      const { source } = this;
+      this.genericDealAllDamage();
       this.triggerSecondaryEffect({
-        ...args,
         probability: 0.5,
         onShouldTrigger: () => {
           // get highest non-hp base stat

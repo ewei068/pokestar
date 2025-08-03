@@ -54,7 +54,9 @@ class MoveInstance {
     targetPattern = targetPatterns.SINGLE,
     tier = moveTiers.BASIC,
     damageType = damageTypes.PHYSICAL,
-    execute = () => {},
+    execute = () => {
+      this.genericDealAllDamage();
+    },
     chargeMoveEffectId = null,
     tags = [],
 
@@ -64,6 +66,7 @@ class MoveInstance {
     extraOptions = {},
   }) {
     this._source = source;
+    this._battle = source.battle;
     this._target = primaryTarget;
     this._id = id;
     this._name = name;
@@ -102,6 +105,7 @@ class MoveInstance {
     }
 
     return new MoveInstance({
+      id: args.moveId,
       ...args,
       ...move,
     });
@@ -113,6 +117,10 @@ class MoveInstance {
 
   get primaryTarget() {
     return this._target;
+  }
+
+  get battle() {
+    return this._battle;
   }
 
   get id() {
@@ -252,6 +260,14 @@ class MoveInstance {
     this._missedTargets = value;
   }
 
+  get extraOptions() {
+    return this._extraOptions;
+  }
+
+  set extraOptions(value) {
+    this._extraOptions = value;
+  }
+
   genericDealSingleDamage({
     source = this.source,
     target,
@@ -311,7 +327,7 @@ class MoveInstance {
     backTargetDamageMultiplier,
     calculateDamageFunction = undefined,
     attackOverride = null,
-  }) {
+  } = {}) {
     const /** @type {Record<string, number>} */ damageInstances = {};
     for (const target of allTargets) {
       const damageToTarget = this.genericDealSingleDamage({
@@ -452,6 +468,19 @@ class MoveInstance {
     }
   }
 
+  /**
+   * @template {EffectIdEnum} K
+   * @param {object} param0
+   * @param {BattlePokemon=} param0.source
+   * @param {BattlePokemon=} param0.target
+   * @param {BattlePokemon=} param0.primaryTarget
+   * @param {BattlePokemon[]=} param0.allTargets
+   * @param {BattlePokemon[]=} param0.missedTargets
+   * @param {K} param0.effectId
+   * @param {number} param0.duration
+   * @param {EffectInitialArgsTypeFromId<K>=} param0.initialArgs
+   * @param {number=} param0.probability
+   */
   genericApplySingleEffect({
     source = this.source,
     target,
@@ -462,6 +491,7 @@ class MoveInstance {
     missedTargets = this.missedTargets,
     effectId,
     duration,
+    // @ts-ignore
     initialArgs = {},
     probability = 1,
   }) {
