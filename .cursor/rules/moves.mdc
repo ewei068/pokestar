@@ -38,26 +38,26 @@ Moves in Pokestar differ from traditional Pokémon games:
 }),
 ```
 
+**NOTE:** The `execute` function binds `this` to the @MoveInstance.js `MoveInstance` class, which holds information about the move's lifecycle, such as current `source`, `primaryTarget`, `allTargets`, and `missedTargets`. It also has generic methods for common move execution functions.
+
 ## Best Practices
 
 ### 1. Use Generic Methods
 
-Always use the Move class's generic methods for common operations:
+Always use the `MoveInstance` class's generic methods for common operations:
 
 ```javascript
 // For damage
-this.genericDealAllDamage(args);
+this.genericDealAllDamage();
 
 // For status
 this.genericApplyAllStatus({
-  ...args,
   statusId: statusConditions.BURNED,
   probability: 0.3
 });
 
 // For effects
 this.genericApplyAllEffects({
-  ...args,
   effectId: effectIdEnum.ATK_UP,
   duration: 3,
   probability: 0.5
@@ -65,26 +65,8 @@ this.genericApplyAllEffects({
 
 // For combat readiness changes
 this.genericChangeAllCombatReadiness({
-  ...args,
   amount: 25,
   action: "boost"
 });
 ```
 
-### 2. CRITICAL RULE: Pass Full Args Object
-
-Always pass the full `args` object to generic methods rather than destructuring, in case the methods the rule uses changes:
-
-```javascript
-// CORRECT, DO THIS:
-execute(args) {
-  this.genericDealAllDamage(...args, extraParams);
-}
-
-// INCORRECT, NOT THIS:
-execute({ source, primaryTarget, allTargets, missedTargets }) {
-  this.genericDealAllDamage({ 
-    source, primaryTarget, allTargets, missedTargets, extraParams
-  });
-}
-```
