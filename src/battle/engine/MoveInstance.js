@@ -25,6 +25,7 @@ class MoveInstance {
    * @param {MoveInstanceId=} param0.id
    * @param {string=} param0.name
    * @param {PokemonTypeEnum=} param0.type
+   * @param {((options?: {source?: BattlePokemon}) => PokemonTypeEnum)=} param0.getEffectiveType
    * @param {number=} param0.power
    * @param {number=} param0.accuracy
    * @param {number=} param0.cooldown
@@ -46,6 +47,7 @@ class MoveInstance {
     id = "NO_ID", // IDK how to make this static LOL
     name = "No Name",
     type = pokemonTypes.NORMAL,
+    getEffectiveType,
     power = 40,
     accuracy = 100,
     cooldown = 0,
@@ -71,6 +73,7 @@ class MoveInstance {
     this._id = id;
     this._name = name;
     this._type = type;
+    this._getEffectiveType = getEffectiveType;
     this._power = power;
     this._accuracy = accuracy;
     this._cooldown = cooldown;
@@ -140,7 +143,7 @@ class MoveInstance {
   }
 
   get type() {
-    return this._type;
+    return this._getEffectiveType?.({ source: this.source }) || this._type;
   }
 
   set type(value) {

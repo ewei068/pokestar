@@ -24,6 +24,7 @@ class Move {
    * @param {AllMoveIdEnum} param0.id
    * @param {string} param0.name
    * @param {PokemonTypeEnum} param0.type
+   * @param {((this: Move, options?: {source?: BattlePokemon}) => PokemonTypeEnum)=} param0.getEffectiveType
    * @param {number} param0.power
    * @param {number?} param0.accuracy
    * @param {number} param0.cooldown
@@ -42,6 +43,7 @@ class Move {
     id,
     name,
     type,
+    getEffectiveType = () => this.type,
     power,
     accuracy,
     cooldown,
@@ -61,6 +63,9 @@ class Move {
     this.id = id;
     this.name = name;
     this.type = type;
+    // maybe a hack we'll see
+    this.getEffectiveType = (/** @type {any} */ ...args) =>
+      getEffectiveType.call(this, ...args);
     this.power = power;
     this.accuracy = accuracy;
     this.cooldown = cooldown;
