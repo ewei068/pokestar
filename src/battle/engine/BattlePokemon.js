@@ -34,6 +34,7 @@ const { getEffect } = require("../data/effectRegistry");
 const { getAbility } = require("../data/abilityRegistry");
 const { getPatternTargetIndices } = require("../../utils/battleUtils");
 const { getHeldItem } = require("../data/heldItemRegistry");
+const { MoveInstance } = require("./MoveInstance");
 
 class BattlePokemon {
   /**
@@ -478,33 +479,45 @@ class BattlePokemon {
     // HACK: set primary / all targets for later damage calculation
     this.currentPrimaryTarget = primaryTarget;
     this.currentAllTargets = allTargets;
-    if (!move.isLegacyMove) {
-      move.execute({
-        battle: this.battle,
-        source: this,
-        primaryTarget,
-        allTargets,
-        missedTargets,
-        extraOptions,
-      });
-    } else {
-      const legacyMove = /** @type {any} */ (move);
-      legacyMove.execute(
-        this.battle,
-        this,
-        primaryTarget,
-        allTargets,
-        missedTargets
-      );
-    }
+
+    // create move instance and execute
+    // maybe the move instance should be passed as params? but then callers have to create it themselves
+    // this introduces a bit of a circular dependency which I don't know how to resolve
+    const moveInstance = MoveInstance.fromMoveId({
+      source: this,
+      primaryTarget,
+      moveId,
+      allTargets,
+      missedTargets,
+      extraOptions,
+    });
+    this.executeMoveInstance(moveInstance);
     // clear primary / all targets
     this.currentPrimaryTarget = null;
     this.currentAllTargets = null;
   }
 
   /**
+   * @param {MoveInstance} moveInstance
+   */
+  executeMoveInstance(moveInstance) {
+    if (moveInstance.isLegacyMove) {
+      // @ts-ignore
+      moveInstance.execute(
+        this.battle,
+        this,
+        moveInstance.primaryTarget,
+        moveInstance.allTargets,
+        moveInstance.missedTargets
+      );
+    } else {
+      moveInstance.execute();
+    }
+  }
+
+  /**
    * @param {object} param0
-   * @param {Move} param0.move
+   * @param {Move | MoveInstance} param0.move
    * @param {BattlePokemon} param0.target
    * @param {BattlePokemon} param0.primaryTarget
    * @param {Array<BattlePokemon>} param0.allTargets
