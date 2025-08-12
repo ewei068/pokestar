@@ -21,10 +21,10 @@ const { pokemonIdEnum } = require("../../enums/pokemonEnums");
 class Move {
   /**
    * @param {object} param0
+   * @param {FieldOverrideCallback=} param0.overrideFields
    * @param {AllMoveIdEnum} param0.id
    * @param {string} param0.name
    * @param {PokemonTypeEnum} param0.type
-   * @param {((this: Move, options?: {source?: BattlePokemon}) => PokemonTypeEnum)=} param0.getEffectiveType
    * @param {number} param0.power
    * @param {number?} param0.accuracy
    * @param {number} param0.cooldown
@@ -40,10 +40,10 @@ class Move {
    * @param {MoveTag[]=} param0.tags
    */
   constructor({
+    overrideFields,
     id,
     name,
     type,
-    getEffectiveType = () => this.type,
     power,
     accuracy,
     cooldown,
@@ -63,9 +63,6 @@ class Move {
     this.id = id;
     this.name = name;
     this.type = type;
-    // maybe a hack we'll see
-    this.getEffectiveType = (/** @type {any} */ ...args) =>
-      getEffectiveType.call(this, ...args);
     this.power = power;
     this.accuracy = accuracy;
     this.cooldown = cooldown;
@@ -80,6 +77,19 @@ class Move {
     this.silenceIf = silenceIf;
     this.chargeMoveEffectId = chargeMoveEffectId;
     this.tags = tags;
+
+    // maybe a hack we'll see
+    /**
+     * @template {keyof Move} K
+     * @param {K} field
+     * @param {FieldOverrideOptions=} options
+     * @returns {Move[K]}
+     */
+    this.getEffectiveValue = (field, options = {}) => {
+      const fieldOverride = overrideFields?.(options)?.[field];
+      // @ts-ignore
+      return fieldOverride?.[field] ?? this[field];
+    };
   }
 }
 

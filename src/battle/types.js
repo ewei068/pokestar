@@ -211,3 +211,13 @@
  * @param {BattleEventArgs<K>} args
  * @returns {boolean}
  */
+
+/**
+ * @typedef {{
+ *  source?: BattlePokemon,
+ *  primaryTarget?: BattlePokemon,
+ * }} FieldOverrideOptions
+ * @callback FieldOverrideCallback
+ * @param {FieldOverrideOptions} options
+ * @returns {Partial<Move>}
+ */
