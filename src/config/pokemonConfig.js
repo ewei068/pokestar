@@ -10410,6 +10410,34 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
+    formSpeciesIds: [pokemonIdEnum.DIALGA_ORIGIN],
+  },
+  [pokemonIdEnum.DIALGA_ORIGIN]: {
+    name: "Dialga-Origin",
+    emoji: "<:483origin:1404654211324448848>",
+    description:
+      "A Pokémon spoken of in legend. It is said that time began moving when Dialga was born. This is its true form, awakened by the Adamant Orb.",
+    type: [types.STEEL, types.DRAGON],
+    baseStats: [100, 100, 120, 150, 120, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10245.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10245.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.TELEPATHY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.THUNDER_WAVE,
+      moveIdEnum.STEALTH_ROCK,
+      moveIdEnum.ROAR_OF_TIME,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    baseSpeciesId: pokemonIdEnum.DIALGA,
+    noGacha: true,
   },
   [pokemonIdEnum.PALKIA]: {
     name: "Palkia",

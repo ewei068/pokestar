@@ -357,10 +357,19 @@ class BattlePokemon {
     // check if pokemon can use move make sure pokemon is alive
     canUseMove = !!(canUseMove && !this.isFainted);
 
+    const moveOptions = {
+      source: this,
+      primaryTarget,
+      battle: this.battle,
+    };
+
     // get move data and execute move
     if (canUseMove) {
       // set cooldown
-      this.moveIds[moveId].cooldown = moveData.cooldown;
+      this.moveIds[moveId].cooldown = moveData.getEffectiveValue(
+        "cooldown",
+        moveOptions
+      );
 
       // execute move
       const { allTargets, missedTargets, err } = this.executeMoveAgainstTarget({

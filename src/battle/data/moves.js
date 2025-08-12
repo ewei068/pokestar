@@ -88,7 +88,7 @@ class Move {
     this.getEffectiveValue = (field, options = {}) => {
       const fieldOverride = overrideFields?.(options)?.[field];
       // @ts-ignore
-      return fieldOverride?.[field] ?? this[field];
+      return fieldOverride ?? this[field];
     };
   }
 }
@@ -1801,6 +1801,16 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The user roars to distort time, dealing massive damage. Fully reduces the highest move cooldown for each adjacent ally, and the user must recharge for 1 turn.",
+    overrideFields: (options) => {
+      if (options.source?.speciesId === pokemonIdEnum.DIALGA_ORIGIN) {
+        return {
+          description:
+            "The user roars to distort time, dealing massive damage. Fully reduces the highest move cooldown for each adjacent ally.",
+          power: 80,
+          cooldown: 5,
+        };
+      }
+    },
     execute() {
       const { source } = this;
       this.genericDealAllDamage();
@@ -1844,8 +1854,10 @@ const movesToRegister = Object.freeze({
         }
       }
 
-      // Apply recharge effect to the user
-      source.applyEffect("recharge", 1, source, {});
+      // Apply recharge effect to the user if not dialga origin
+      if (source.speciesId !== pokemonIdEnum.DIALGA_ORIGIN) {
+        source.applyEffect("recharge", 1, source, {});
+      }
     },
   }),
   [moveIdEnum.SPACIAL_REND]: new Move({

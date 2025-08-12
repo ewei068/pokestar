@@ -37,6 +37,7 @@ const registerLegacyMoves = (moveConfig, moveExecutes) => {
     allMoves[moveId] = {
       ...move,
       execute: moveExecutes[moveId],
+      getEffectiveValue: (field) => move[field],
       isLegacyMove: true,
     };
     movesRegistered += 1;

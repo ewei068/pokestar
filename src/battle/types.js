@@ -212,10 +212,12 @@
  * @returns {boolean}
  */
 
+// TODO: this typing might be too fluid
 /**
  * @typedef {{
- *  source?: BattlePokemon,
- *  primaryTarget?: BattlePokemon,
+ *  source?: BattlePokemon | Pokemon | undefined,
+ *  primaryTarget?: BattlePokemon | undefined,
+ *  battle?: Battle | undefined,
  * }} FieldOverrideOptions
  * @callback FieldOverrideCallback
  * @param {FieldOverrideOptions} options

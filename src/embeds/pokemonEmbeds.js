@@ -463,7 +463,10 @@ const buildPokemonEmbed = (
   if (tab === "battle" || tab === "all") {
     const fields = getMoveIds(pokemon).map((moveId) => {
       const moveData = getMove(moveId);
-      const { moveHeader, moveString } = buildMoveString(moveData);
+      const { moveHeader, moveString } = buildMoveString({
+        moveData,
+        source: pokemon,
+      });
       return {
         name: moveHeader,
         value: moveString,
@@ -903,7 +906,13 @@ const buildSpeciesDexEmbed = (id, speciesData, tab, ownershipData) => {
     } else {
       const fields = speciesData.moveIds.map((moveId) => {
         const moveData = getMove(moveId);
-        const { moveHeader, moveString } = buildMoveString(moveData);
+        const { moveHeader, moveString } = buildMoveString({
+          moveData,
+          // @ts-ignore
+          source: {
+            speciesId: id,
+          },
+        });
         return {
           name: moveHeader,
           value: moveString,

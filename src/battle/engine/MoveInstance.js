@@ -121,7 +121,13 @@ class MoveInstance {
    */
   getEffectiveValue(field, defaultValue) {
     // @ts-ignore
-    return this._getEffectiveValue?.(field, {}) ?? defaultValue;
+    return (
+      this._getEffectiveValue?.(field, {
+        source: this.source,
+        primaryTarget: this.primaryTarget,
+        battle: this.battle,
+      }) ?? defaultValue
+    );
   }
 
   get source() {
