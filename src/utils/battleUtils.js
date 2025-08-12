@@ -29,6 +29,7 @@ const { backpackItemConfig } = require("../config/backpackConfig");
 const { buildPokemonEmojiString } = require("./pokemonUtils");
 const { getHeldItem } = require("../battle/data/heldItemRegistry");
 const { getMove } = require("../battle/data/moveRegistry");
+const { MoveInstance } = require("../battle/engine/MoveInstance");
 
 const plus = "┼";
 const plusEmph = "*";
@@ -869,8 +870,13 @@ const npcTurnAction = (battle) => {
   for (const moveId in validMoveIdsToTargets) {
     for (const target of validMoveIdsToTargets[moveId]) {
       const source = activePokemon;
-      // @ts-ignore
-      const targetsHit = source.getMoveExecuteTargets(moveId, target);
+      const moveInstance = MoveInstance.fromMoveId({
+        source,
+        primaryTarget: target,
+        // @ts-ignore
+        moveId,
+      });
+      const targetsHit = source.getMoveExecuteTargets(moveInstance, target);
       const heuristic = calculateTurnHeuristic(
         // @ts-ignore
         moveId,

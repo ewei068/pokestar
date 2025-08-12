@@ -412,11 +412,23 @@ class BattlePokemon {
       return {};
     }
 
-    // calculate miss and targets
-    const allTargets = this.getMoveExecuteTargets(moveId, primaryTarget);
-    const missedTargets = this.getMisses(moveId, allTargets);
+    // create move instance and execute
+    // maybe the move instance should be passed as params? but then callers have to create it themselves
+    // this introduces a bit of a circular dependency which I don't know how to resolve
+    const moveInstance = MoveInstance.fromMoveId({
+      source: this,
+      primaryTarget,
+      moveId,
+      extraOptions,
+    });
 
-    // TODO: Move to executeMove?
+    // calculate miss and targets
+    const allTargets = this.getMoveExecuteTargets(moveInstance, primaryTarget);
+    moveInstance.allTargets = allTargets;
+    const missedTargets = this.getMisses(moveInstance);
+    moveInstance.missedTargets = missedTargets;
+
+    // TODO: Move to executeMoveId?
     // trigger before execute move events
     const executeEventArgs = {
       source: this,
@@ -435,28 +447,22 @@ class BattlePokemon {
       moveData.silenceIf && moveData.silenceIf(this.battle, this);
     if (!isSilenced) {
       const targetString =
-        moveData.targetPattern === targetPatterns.ALL ||
-        moveData.targetPattern === targetPatterns.ALL_EXCEPT_SELF ||
-        moveData.targetPattern === targetPatterns.RANDOM ||
-        moveData.targetPosition === targetPositions.SELF
+        moveInstance.targetPattern === targetPatterns.ALL ||
+        moveInstance.targetPattern === targetPatterns.ALL_EXCEPT_SELF ||
+        moveInstance.targetPattern === targetPatterns.RANDOM ||
+        moveInstance.targetPosition === targetPositions.SELF
           ? "!"
           : ` against ${primaryTarget.name}!`;
-      this.battle.addToLog(`${this.name} used ${moveData.name}${targetString}`);
+      this.battle.addToLog(
+        `${this.name} used ${moveInstance.name}${targetString}`
+      );
     }
     if (missedTargets.length > 0 && !isSilenced) {
       this.battle.addToLog(
         `Missed ${missedTargets.map((target) => target.name).join(", ")}!`
       );
     }
-
-    // execute move
-    this.executeMove({
-      moveId,
-      primaryTarget,
-      allTargets,
-      missedTargets,
-      extraOptions,
-    });
+    this.executeMoveInstance(moveInstance);
 
     return {
       allTargets,
@@ -472,7 +478,7 @@ class BattlePokemon {
    * @param {Array<object>=} param0.missedTargets
    * @param {object=} param0.extraOptions
    */
-  executeMove({
+  executeMoveId({
     moveId,
     primaryTarget,
     allTargets,
@@ -485,13 +491,7 @@ class BattlePokemon {
       return;
     }
 
-    // HACK: set primary / all targets for later damage calculation
-    this.currentPrimaryTarget = primaryTarget;
-    this.currentAllTargets = allTargets;
-
     // create move instance and execute
-    // maybe the move instance should be passed as params? but then callers have to create it themselves
-    // this introduces a bit of a circular dependency which I don't know how to resolve
     const moveInstance = MoveInstance.fromMoveId({
       source: this,
       primaryTarget,
@@ -501,15 +501,16 @@ class BattlePokemon {
       extraOptions,
     });
     this.executeMoveInstance(moveInstance);
-    // clear primary / all targets
-    this.currentPrimaryTarget = null;
-    this.currentAllTargets = null;
   }
 
   /**
    * @param {MoveInstance} moveInstance
    */
   executeMoveInstance(moveInstance) {
+    // HACK: set primary / all targets for later damage calculation
+    this.currentPrimaryTarget = moveInstance.primaryTarget;
+    this.currentAllTargets = moveInstance.allTargets;
+
     if (moveInstance.isLegacyMove) {
       // @ts-ignore
       moveInstance.execute(
@@ -522,6 +523,10 @@ class BattlePokemon {
     } else {
       moveInstance.execute();
     }
+
+    // clear primary / all targets
+    this.currentPrimaryTarget = null;
+    this.currentAllTargets = null;
   }
 
   /**
@@ -805,7 +810,7 @@ class BattlePokemon {
    * @param {TargetPatternEnum} targetPattern
    * @param {number} targetPosition
    * @param {object} options
-   * @param {MoveIdEnum=} options.moveId
+   * @param {MoveInstanceId=} options.moveId
    * @param {boolean=} options.ignoreHittable
    * @returns {BattlePokemon[]} targets
    */
@@ -850,11 +855,11 @@ class BattlePokemon {
   }
 
   /**
-   * @param {MoveIdEnum} moveId
+   * @param {MoveInstance} moveInstance
    * @returns {TargetPatternEnum}
    */
-  getMovePattern(moveId) {
-    let pattern = getMove(moveId)?.targetPattern || targetPatterns.SINGLE;
+  getMovePattern(moveInstance) {
+    let pattern = moveInstance?.targetPattern || targetPatterns.SINGLE;
 
     // spatial blessing special case
     if (this.effectIds[effectIdEnum.SPATIAL_BLESSING]) {
@@ -895,21 +900,27 @@ class BattlePokemon {
 
     const targetParty = this.battle.parties[target.teamName];
 
+    const moveInstance = MoveInstance.fromMoveId({
+      source: this,
+      primaryTarget: target,
+      moveId,
+    });
+
     return {
       [target.teamName]: getPatternTargetIndices(
         targetParty,
-        this.getMovePattern(moveId),
+        this.getMovePattern(moveInstance),
         target.position
       ),
     };
   }
 
   /**
-   * @param {MoveIdEnum} moveId
+   * @param {MoveInstance} moveInstance
    * @param {BattlePokemon?} target
    * @returns {BattlePokemon[]}
    */
-  getMoveExecuteTargets(moveId, target) {
+  getMoveExecuteTargets(moveInstance, target) {
     if (!target) {
       return [];
     }
@@ -920,28 +931,32 @@ class BattlePokemon {
     // TODO: use getTargetIndices?
     return this.getPatternTargets(
       targetParty,
-      this.getMovePattern(moveId),
+      this.getMovePattern(moveInstance),
       target.position,
-      { moveId }
+      { moveId: moveInstance.id }
     );
   }
 
   /**
-   * @param {MoveIdEnum} moveId
-   * @param {BattlePokemon[]} targetPokemons
+   * @param {MoveInstance} moveInstance
    * @returns {BattlePokemon[]}
    */
-  getMisses(moveId, targetPokemons) {
-    const moveData = getMove(moveId);
+  getMisses(moveInstance) {
     const misses = [];
-    if (!moveData.accuracy) {
+    const {
+      accuracy,
+      type,
+      id: moveId,
+      allTargets: targetPokemons,
+    } = moveInstance;
+    if (!accuracy) {
       return misses;
     }
-    for (const target of targetPokemons) {
+    for (const target of targetPokemons || []) {
       let hitChance =
-        (moveData.accuracy * calculateEffectiveAccuracy(this.acc)) /
+        (accuracy * calculateEffectiveAccuracy(this.acc)) /
         calculateEffectiveEvasion(target.eva);
-      const damageMult = this.getTypeDamageMultiplier(moveData.type, target);
+      const damageMult = this.getTypeDamageMultiplier(type, target);
       if (damageMult >= 4) {
         hitChance *= 1.4;
       } else if (damageMult >= 2) {

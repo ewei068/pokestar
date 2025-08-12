@@ -1874,6 +1874,15 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The user tears the spatial fabric, dealing damage to enemies. Adjacent allies receive a spatial blessing that enhances their move patterns for 1 turn.",
+    overrideFields: (options) => {
+      if (options.source?.speciesId === pokemonIdEnum.PALKIA_ORIGIN) {
+        return {
+          accuracy: 75,
+          description:
+            "The user tears the spatial fabric, dealing damage to enemies. All allies receive a spatial blessing that enhances their move patterns for 1 turn.",
+        };
+      }
+    },
     execute() {
       const { source } = this;
       this.genericDealAllDamage();
@@ -1882,7 +1891,9 @@ const movesToRegister = Object.freeze({
       const adjacentAllies = source
         .getPatternTargets(
           sourceParty,
-          targetPatterns.SQUARE,
+          source.speciesId === pokemonIdEnum.PALKIA_ORIGIN
+            ? targetPatterns.ALL
+            : targetPatterns.SQUARE,
           source.position,
           {
             ignoreHittable: true,

@@ -1283,7 +1283,7 @@ const effectConfig = Object.freeze({
             invulnPokemon.battle.addToLog(
               `${invulnPokemon.name} reflected the move back at ${sourcePokemon.name}!`
             );
-            invulnPokemon.executeMove({
+            invulnPokemon.executeMoveId({
               moveId,
               primaryTarget: sourcePokemon,
               allTargets: [sourcePokemon],
@@ -7619,7 +7619,7 @@ const moveExecutes = {
     // get random target & use move
     const randomTarget =
       eligibleTargets[Math.floor(Math.random() * eligibleTargets.length)];
-    source.executeMove({
+    source.executeMoveId({
       moveId: randomMoveId,
       primaryTarget: randomTarget,
       allTargets: [randomTarget],
@@ -8578,7 +8578,7 @@ const moveExecutes = {
     );
     // use move against target
     battle.addToLog(`${randomMoveData.name} hit ${randomTarget.name}!`);
-    source.executeMove({
+    source.executeMoveId({
       moveId: randomMoveId,
       primaryTarget: randomTarget,
       allTargets: targets,
@@ -11653,7 +11653,7 @@ const moveExecutes = {
             target.position,
             { moveId }
           );
-          source.executeMove({
+          source.executeMoveId({
             moveId,
             primaryTarget: target,
             allTargets: targets,
@@ -14943,7 +14943,7 @@ const abilityConfig = Object.freeze({
           initialPokemon.battle.addToLog(
             `${initialPokemon.name}'s Magic Bounce reflects the move!`
           );
-          initialPokemon.executeMove({
+          initialPokemon.executeMoveId({
             moveId: args.moveId,
             primaryTarget: sourcePokemon,
             allTargets: [sourcePokemon],
@@ -15986,7 +15986,7 @@ const abilityConfig = Object.freeze({
           // use move against target
           battle.addToLog(`${randomMoveData.name} hit ${target.name}!`);
           // yes I know the targets are confusing
-          targetPokemon.executeMove({
+          targetPokemon.executeMoveId({
             moveId: randomMoveId,
             primaryTarget: target,
             allTargets: targets,

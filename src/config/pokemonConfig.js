@@ -10463,6 +10463,34 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
+    formSpeciesIds: [pokemonIdEnum.PALKIA_ORIGIN],
+  },
+  [pokemonIdEnum.PALKIA_ORIGIN]: {
+    name: "Palkia-Origin",
+    emoji: "<:484origin:1404654213325131797>",
+    description:
+      "A Pokémon spoken of in legend. It is said that space became stable when Palkia was born. This is its true form, awakened by the Lustrous Orb.",
+    type: [types.WATER, types.DRAGON],
+    baseStats: [90, 100, 100, 150, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10246.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10246.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.TELEPATHY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.ROAR,
+      moveIdEnum.DRAGON_TAIL,
+      moveIdEnum.SPACIAL_REND,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    baseSpeciesId: pokemonIdEnum.PALKIA,
+    noGacha: true,
   },
   [pokemonIdEnum.HEATRAN]: {
     name: "Heatran",
