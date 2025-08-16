@@ -10677,6 +10677,58 @@ const pokemonConfigRaw = {
     growthRate: growthRates.SLOW,
     noGacha: true,
   },
+  [pokemonIdEnum.ARCEUS_BUG]: {
+    name: "Arceus-Bug",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.BUG],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-bug.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-bug.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.BUG_BITE,
+      moveIdEnum.STONE_EDGE,
+      moveIdEnum.HEAL_ORDER,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_DARK]: {
+    name: "Arceus-Dark",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.DARK],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-dark.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-dark.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.REFRESH,
+      moveIdEnum.TAUNT,
+      moveIdEnum.FOUL_PLAY,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
   "725-1": {
     name: "Littenyan",
     emoji: "<:littenyan:1145193884817834005>",

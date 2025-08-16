@@ -2080,6 +2080,32 @@ const movesToRegister = Object.freeze({
       this.genericDealAllDamage();
     },
   }),
+  [moveIdEnum.REFRESH]: new Move({
+    id: moveIdEnum.REFRESH,
+    name: "Refresh",
+    type: pokemonTypes.NORMAL,
+    power: null,
+    accuracy: null,
+    cooldown: 0,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user heals its status condition and recovers 15% of its maximum HP.",
+    execute() {
+      const { allTargets } = this;
+
+      this.genericHealAllTargets({
+        healPercent: 15,
+      });
+
+      for (const target of allTargets) {
+        target.removeStatus();
+      }
+    },
+  }),
 });
 
 module.exports = {

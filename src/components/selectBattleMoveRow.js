@@ -29,16 +29,25 @@ const buildSelectBattleMoveRow = (battle, stateId, selectedMoveId = null) => {
     .setPlaceholder("Select a move")
     .addOptions(
       Object.keys(battle.activePokemon.moveIds).map((moveId) => {
+        const moveOptions = {
+          source: battle.activePokemon,
+          battle,
+        };
         // TODO: remove moves on cooldown?
+        // @ts-ignore
         const moveData = getMove(moveId);
         const { cooldown } = battle.activePokemon.moveIds[moveId];
         const cdString = cooldown > 0 ? `[COOLDOWN ${cooldown}] ` : "";
         const { disabledCounter } = battle.activePokemon.moveIds[moveId];
         const disabledString = disabledCounter ? "[DISABLED] " : "";
         return {
-          label: `${disabledString}${cdString} ${moveData.name}`,
+          label: `${disabledString}${cdString} ${moveData.getEffectiveValue(
+            "name",
+            moveOptions
+          )}`,
           value: `${moveId}`,
-          emoji: typeConfig[moveData.type].emoji,
+          emoji:
+            typeConfig[moveData.getEffectiveValue("type", moveOptions)].emoji,
           default: selectedMoveId === moveId,
         };
       })
