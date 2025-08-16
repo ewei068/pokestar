@@ -275,12 +275,22 @@ const stats = Object.freeze({
 });
 
 const statConfig = {
-  0: { name: "HP", emoji: "❤️", description: "Hit Points" },
-  1: { name: "Atk", emoji: "⚔️", description: "Attack" },
-  2: { name: "Def", emoji: "🛡️", description: "Defense" },
-  3: { name: "SpA", emoji: "🔮", description: "Special Attack" },
-  4: { name: "SpD", emoji: "🌀", description: "Special Defense" },
-  5: { name: "Spe", emoji: "⚡︎", description: "Speed" },
+  0: { name: "HP", emoji: "❤️", description: "Hit Points", battleStatId: "hp" },
+  1: { name: "Atk", emoji: "⚔️", description: "Attack", battleStatId: "atk" },
+  2: { name: "Def", emoji: "🛡️", description: "Defense", battleStatId: "def" },
+  3: {
+    name: "SpA",
+    emoji: "🔮",
+    description: "Special Attack",
+    battleStatId: "spa",
+  },
+  4: {
+    name: "SpD",
+    emoji: "🌀",
+    description: "Special Defense",
+    battleStatId: "spd",
+  },
+  5: { name: "Spe", emoji: "⚡︎", description: "Speed", battleStatId: "spe" },
 };
 
 /** @typedef {Enum<growthRates>} GrowthRateEnum */
@@ -10636,6 +10646,31 @@ const pokemonConfigRaw = {
       moveIdEnum.DARK_PULSE,
       moveIdEnum.NASTY_PLOT,
       moveIdEnum.DARK_VOID,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+  },
+  [pokemonIdEnum.ARCEUS]: {
+    name: "Arceus",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.NORMAL],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.SHADOW_SNEAK,
+      moveIdEnum.SWORDS_DANCE,
+      moveIdEnum.EXTREME_SPEED,
+      moveIdEnum.JUDGMENT,
     ],
     battleEligible: true,
     rarity: rarities.MYTHICAL,

@@ -3,7 +3,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-param-reassign */
-const { types: pokemonTypes } = require("./pokemonConfig");
+const { types: pokemonTypes, statConfig } = require("./pokemonConfig");
 const { getMove, getMoveIds } = require("../battle/data/moveRegistry");
 const { getEffect } = require("../battle/data/effectRegistry");
 const {
@@ -322,14 +322,9 @@ const targetPatterns = Object.freeze({
   X: "X-shape",
 });
 
-const statIndexToBattleStat = /** @type {const} */ ([
-  "hp",
-  "atk",
-  "def",
-  "spa",
-  "spd",
-  "spe",
-]);
+const statIndexToBattleStatId = /** @type {StatId[]} */ (
+  Object.values(statConfig).map((stat) => stat.battleStatId)
+);
 const statIndexToBaseStat = /** @type {const} */ ([
   "maxHp",
   "batk",
@@ -342,8 +337,13 @@ const statIndexToBaseStat = /** @type {const} */ ([
  * @param {StatId} stat
  */
 const battleStatToBaseStat = function (stat) {
-  return statIndexToBaseStat[statIndexToBattleStat.indexOf(stat)];
+  return statIndexToBaseStat[statIndexToBattleStatId.indexOf(stat)];
 };
+const statIdToIndex = /** @type {Record<StatId, number>} */ (
+  Object.fromEntries(
+    statIndexToBattleStatId.map((stat, index) => [stat, index])
+  )
+);
 
 /** @typedef {Enum<effectTypes>} EffectTypeEnum */
 const effectTypes = Object.freeze({
@@ -16381,8 +16381,9 @@ module.exports = {
   abilityConfig,
   damageTypes,
   statIndexToBaseStat,
-  statIndexToBattleStat,
+  statIndexToBattleStatId,
   battleStatToBaseStat,
+  statIdToIndex,
   damageTypeConfig,
   moveTierConfig,
 };

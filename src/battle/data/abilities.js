@@ -4,7 +4,7 @@ const {
   damageTypes,
   targetPatterns,
   statusConditions,
-  statIndexToBattleStat,
+  statIndexToBattleStatId,
   effectTypes,
 } = require("../../config/battleConfig");
 const { types: pokemonTypes } = require("../../config/pokemonConfig");
@@ -165,7 +165,7 @@ const abilitiesToRegister = Object.freeze({
                 ) + 1; // +1 to account for HP
             allyPokemon.applyEffect(effectIdEnum.AQUA_BLESSING, 3, target, {
               // @ts-ignore
-              statId: statIndexToBattleStat[highestStatIndex],
+              statId: statIndexToBattleStatId[highestStatIndex],
             });
 
             battle.createWeather(weatherConditions.RAIN, target);
@@ -1189,6 +1189,41 @@ const abilitiesToRegister = Object.freeze({
     abilityRemove({ target }) {
       target.dispellEffect("atkDown");
       target.dispellEffect("speDown");
+    },
+  }),
+  [abilityIdEnum.MULTITYPE]: new Ability({
+    id: abilityIdEnum.MULTITYPE,
+    name: "Multitype",
+    description:
+      "Boosts the damage of ally moves by 10% if it's the same type as the Multitype Pokemon.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage, damageInfo, source }) => {
+            const moveId = damageInfo?.moveId;
+            const moveData = damageInfo?.instance || getMove(moveId);
+
+            if (moveData && target.hasType(moveData.type)) {
+              battle.addToLog(
+                `${target.name}'s Multitype powers up ${source.name}'s move!`
+              );
+              return {
+                damage: Math.floor(damage * 1.1),
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourceSameTeamCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
     },
   }),
 });

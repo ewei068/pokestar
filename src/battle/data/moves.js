@@ -1,4 +1,7 @@
-const { types: pokemonTypes } = require("../../config/pokemonConfig");
+const {
+  types: pokemonTypes,
+  pokemonConfig,
+} = require("../../config/pokemonConfig");
 const {
   targetTypes,
   targetPositions,
@@ -8,6 +11,7 @@ const {
   statusConditions,
   effectTypes,
   weatherConditions,
+  statIdToIndex,
 } = require("../../config/battleConfig");
 const { getHeldItem } = require("./heldItemRegistry");
 const { getEffect } = require("./effectRegistry");
@@ -15,6 +19,34 @@ const { getHeldItemIdHasTag } = require("../../utils/battleUtils");
 const { moveIdEnum, effectIdEnum } = require("../../enums/battleEnums");
 const { drawIterable } = require("../../utils/gachaUtils");
 const { pokemonIdEnum } = require("../../enums/pokemonEnums");
+const { BattlePokemon } = require("../engine/BattlePokemon");
+
+// TODO: code smells?
+/**
+ * @param {Pokemon | BattlePokemon} pokemon
+ * @returns {PokemonTypeEnum}
+ */
+const getPokemonPrimaryType = (pokemon) => {
+  if (pokemon instanceof BattlePokemon) {
+    return pokemon.type1;
+  }
+  return pokemonConfig[pokemon.speciesId].type[0];
+};
+
+/**
+ * @param {Pokemon | BattlePokemon} pokemon
+ * @param {StatId} statId
+ * @returns {number}
+ */
+const getPokemonStat = (pokemon, statId) => {
+  if (pokemon instanceof BattlePokemon) {
+    if (statId === "hp") {
+      return pokemon.hp;
+    }
+    return pokemon.getStat(statId);
+  }
+  return pokemon.stats[statIdToIndex[statId]];
+};
 
 /** @typedef {"charge" | "punch" | "slice"} MoveTag */
 
@@ -2015,6 +2047,37 @@ const movesToRegister = Object.freeze({
           }
         },
       });
+    },
+  }),
+  [moveIdEnum.JUDGMENT]: new Move({
+    id: moveIdEnum.JUDGMENT,
+    name: "Judgment",
+    type: pokemonTypes.NORMAL,
+    power: 100,
+    accuracy: 100,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.X,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user unleashes divine judgment upon its foes. This move's type matches the user's primary type, and uses the user's higher attack stat to determine damage category.",
+    overrideFields: (options) => {
+      const { source } = options;
+      if (!source) return {};
+
+      const primaryType = getPokemonPrimaryType(source);
+      const atk = getPokemonStat(source, "atk");
+      const spa = getPokemonStat(source, "spa");
+      const damageType = atk > spa ? damageTypes.PHYSICAL : damageTypes.SPECIAL;
+      return {
+        type: primaryType,
+        damageType,
+      };
+    },
+    execute() {
+      this.genericDealAllDamage();
     },
   }),
 });
