@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * selectBattleMoveRow.js Creates the action row for selecting a move during a battle.
  */
@@ -16,7 +14,7 @@ const { typeConfig } = require("../config/pokemonConfig");
  * @param {*} battle the battle that is occurring.
  * @param {*} stateId the current state of the battle
  * @param {*} selectedMoveId the Id of the move selected. starts as null
- * @returns ActionRowBuilder
+ * @returns {ActionRowBuilder} ActionRowBuilder
  */
 const buildSelectBattleMoveRow = (battle, stateId, selectedMoveId = null) => {
   const selectMenu = new StringSelectMenuBuilder()

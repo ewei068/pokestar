@@ -2106,6 +2106,71 @@ const movesToRegister = Object.freeze({
       }
     },
   }),
+  [moveIdEnum.BODY_PRESS]: new Move({
+    id: moveIdEnum.BODY_PRESS,
+    name: "Body Press",
+    type: pokemonTypes.FIGHTING,
+    power: 80,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.CROSS,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user attacks by pressing down on the target with its body. This attack uses the user's Defense stat to calculate damage and deals half damage to non-primary targets.",
+    execute() {
+      this.genericDealAllDamage({
+        attackOverride: this.source.getStat("def"),
+        offTargetDamageMultiplier: 0.5,
+      });
+    },
+  }),
+  [moveIdEnum.STORED_POWER]: new Move({
+    id: moveIdEnum.STORED_POWER,
+    name: "Stored Power",
+    type: pokemonTypes.PSYCHIC,
+    power: 35,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.ROW,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user attacks the target with stored power. The more the user's stats are boosted, the greater the damage (up to 3x).",
+    execute() {
+      this.genericDealAllDamage({
+        calculateDamageFunction: (damageArgs) => {
+          const { source } = this;
+
+          // Calculate sum of effective stats (excluding HP)
+          const effectiveStatsSum =
+            source.getStat("atk") +
+            source.getStat("def") +
+            source.getStat("spa") +
+            source.getStat("spd") +
+            source.getStat("spe");
+
+          // Calculate sum of base stats (excluding HP)
+          const baseStatsSum =
+            source.batk + source.bdef + source.bspa + source.bspd + source.bspe;
+
+          // Calculate stat ratio, clamped between 1x and 3x
+          const statRatio = Math.min(
+            3,
+            Math.max(1, effectiveStatsSum / baseStatsSum)
+          );
+
+          // Calculate base damage and multiply by stat ratio
+          const baseDamage = source.calculateMoveDamage(damageArgs);
+          return Math.floor(baseDamage * statRatio);
+        },
+      });
+    },
+  }),
 });
 
 module.exports = {

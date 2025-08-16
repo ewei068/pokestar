@@ -10667,7 +10667,7 @@ const pokemonConfigRaw = {
       [abilityIdEnum.MULTITYPE]: 1,
     },
     moveIds: [
-      moveIdEnum.SHADOW_SNEAK,
+      moveIdEnum.MIMIC,
       moveIdEnum.SWORDS_DANCE,
       moveIdEnum.EXTREME_SPEED,
       moveIdEnum.JUDGMENT,
@@ -10721,6 +10721,396 @@ const pokemonConfigRaw = {
       moveIdEnum.REFRESH,
       moveIdEnum.TAUNT,
       moveIdEnum.FOUL_PLAY,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_DRAGON]: {
+    name: "Arceus-Dragon",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.DRAGON],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-dragon.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-dragon.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.BULLET_PUNCH,
+      moveIdEnum.DRAGON_CLAW,
+      moveIdEnum.DRAGON_DANCE,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_ELECTRIC]: {
+    name: "Arceus-Electric",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.ELECTRIC],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-electric.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-electric.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.NUZZLE,
+      moveIdEnum.ICE_BEAM,
+      moveIdEnum.CALM_MIND,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_FAIRY]: {
+    name: "Arceus-Fairy",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.FAIRY],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-fairy.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-fairy.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.REFRESH,
+      moveIdEnum.CALM_MIND,
+      moveIdEnum.AURA_SPHERE,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_FIGHTING]: {
+    name: "Arceus-Fighting",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.FIGHTING],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-fighting.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-fighting.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.SHADOW_SNEAK,
+      moveIdEnum.IRON_DEFENSE,
+      moveIdEnum.BODY_PRESS,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_FIRE]: {
+    name: "Arceus-Fire",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.FIRE],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-fire.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-fire.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.REFRESH,
+      moveIdEnum.THUNDERBOLT,
+      moveIdEnum.WILL_O_WISP,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_FLYING]: {
+    name: "Arceus-Flying",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.FLYING],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-flying.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-flying.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.HELPING_HAND,
+      moveIdEnum.AIR_SLASH,
+      moveIdEnum.DEFOG,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_GHOST]: {
+    name: "Arceus-Ghost",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.GHOST],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-ghost.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-ghost.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.OMINOUS_WIND,
+      moveIdEnum.AURA_SPHERE,
+      moveIdEnum.NASTY_PLOT,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_GRASS]: {
+    name: "Arceus-Grass",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.GRASS],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-grass.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-grass.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.SPORE,
+      moveIdEnum.STRENGTH_SAP,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_GROUND]: {
+    name: "Arceus-Ground",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.GROUND],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-ground.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-ground.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.SMACK_DOWN,
+      moveIdEnum.SPIKES,
+      moveIdEnum.STONE_EDGE,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_ICE]: {
+    name: "Arceus-Ice",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.ICE],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-ice.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-ice.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.REFRESH,
+      moveIdEnum.CALM_MIND,
+      moveIdEnum.FREEZE_DRY,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_POISON]: {
+    name: "Arceus-Poison",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.POISON],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-poison.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-poison.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.SMOG,
+      moveIdEnum.TOXIC,
+      moveIdEnum.FLAMETHROWER,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_PSYCHIC]: {
+    name: "Arceus-Psychic",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.PSYCHIC],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-psychic.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-psychic.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.TELEPORT,
+      moveIdEnum.CALM_MIND,
+      moveIdEnum.STORED_POWER,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_ROCK]: {
+    name: "Arceus-Rock",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.ROCK],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-rock.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-rock.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.STEALTH_ROCK,
+      moveIdEnum.WIDE_GUARD,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_STEEL]: {
+    name: "Arceus-Steel",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.STEEL],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-steel.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-steel.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.HARDEN,
+      moveIdEnum.IRON_HEAD,
+      moveIdEnum.BODY_PRESS,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_WATER]: {
+    name: "Arceus-Water",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.WATER],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-water.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-water.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.REFRESH,
+      moveIdEnum.ICE_BEAM,
+      moveIdEnum.SCALD,
       moveIdEnum.JUDGMENT,
     ],
     battleEligible: true,
