@@ -1411,7 +1411,7 @@ const battleEventEnum = Object.freeze({
  *  [battleEventEnum.TURN_END]: { activePokemon: BattlePokemon },
  *  [battleEventEnum.TURN_BEGIN]: {},
  *  [battleEventEnum.BEFORE_MOVE]: { canUseMove: boolean, source: BattlePokemon, primaryTarget: BattlePokemon, moveId: MoveIdEnum} ,
- *  [battleEventEnum.BEFORE_MOVE_EXECUTE]: { source: BattlePokemon, primaryTarget: BattlePokemon, allTargets: BattlePokemon[], missedTargets: BattlePokemon[], moveId: MoveIdEnum },
+ *  [battleEventEnum.BEFORE_MOVE_EXECUTE]: { source: BattlePokemon, primaryTarget: BattlePokemon, allTargets: BattlePokemon[], missedTargets: BattlePokemon[], moveId: MoveIdEnum, moveInstance: MoveInstance },
  *  [battleEventEnum.AFTER_MOVE]: { source: BattlePokemon, primaryTarget: BattlePokemon, allTargets: BattlePokemon[], missedTargets: BattlePokemon[], moveId: MoveIdEnum },
  *  [battleEventEnum.AFTER_SKIP_TURN]: { source: BattlePokemon },
  *  [battleEventEnum.BEFORE_DAMAGE_DEALT]: { target: BattlePokemon, source: BattlePokemon, damage: number, damageInfo: any },

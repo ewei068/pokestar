@@ -7,7 +7,10 @@ const {
   statIndexToBattleStatId,
   effectTypes,
 } = require("../../config/battleConfig");
-const { types: pokemonTypes } = require("../../config/pokemonConfig");
+const {
+  types: pokemonTypes,
+  typeConfig,
+} = require("../../config/pokemonConfig");
 const {
   abilityIdEnum,
   battleEventEnum,
@@ -1195,10 +1198,10 @@ const abilitiesToRegister = Object.freeze({
     id: abilityIdEnum.MULTITYPE,
     name: "Multitype",
     description:
-      "Boosts the damage of ally moves by 10% if it's the same type as the Multitype Pokemon.",
+      "Boosts the damage of ally moves by 10% if it's the same Primary type as the Multitype Pokemon. When using a move, the user's Secondary type becomes the move's type if possible.",
     abilityAdd({ battle, target }) {
       return {
-        listenerId: this.registerListenerFunction({
+        damageListenerId: this.registerListenerFunction({
           battle,
           target,
           eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
@@ -1206,7 +1209,7 @@ const abilitiesToRegister = Object.freeze({
             const moveId = damageInfo?.moveId;
             const moveData = damageInfo?.instance || getMove(moveId);
 
-            if (moveData && target.hasType(moveData.type)) {
+            if (moveData && target.type1 === moveData.type) {
               battle.addToLog(
                 `${target.name}'s Multitype powers up ${source.name}'s move!`
               );
@@ -1220,10 +1223,29 @@ const abilitiesToRegister = Object.freeze({
             getIsInstanceOfType("move")
           ),
         }),
+        moveListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_MOVE_EXECUTE,
+          callback: ({ source, moveInstance }) => {
+            if (moveInstance.type && !source.hasType(moveInstance.type)) {
+              battle.addToLog(
+                `${source.name}'s Multitype changes its secondary type to ${
+                  typeConfig[moveInstance.type].name
+                }!`
+              );
+              source.type2 = moveInstance.type;
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourcePokemonCallback(target)
+          ),
+        }),
       };
     },
     abilityRemove({ battle, properties }) {
-      battle.unregisterListener(properties.listenerId);
+      battle.unregisterListener(properties.damageListenerId);
+      battle.unregisterListener(properties.moveListenerId);
     },
   }),
 });

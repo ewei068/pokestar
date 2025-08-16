@@ -436,6 +436,7 @@ class BattlePokemon {
       targets: allTargets,
       missedTargets,
       moveId,
+      moveInstance,
     };
     this.battle.eventHandler.emit(
       battleEventEnum.BEFORE_MOVE_EXECUTE,
