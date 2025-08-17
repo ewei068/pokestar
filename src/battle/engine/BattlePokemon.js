@@ -103,12 +103,6 @@ class BattlePokemon {
       this.bspd = 1,
       this.bspe = 1,
     ] = this.pokemonData.stats.slice(1);
-    // for debug and/or backwards compat fallback
-    this.atk = this.getStat("atk");
-    this.def = this.getStat("def");
-    this.spa = this.getStat("spa");
-    this.spd = this.getStat("spd");
-    this.spe = this.getStat("spe");
 
     this.acc = 100;
     this.eva = 100;
@@ -240,13 +234,6 @@ class BattlePokemon {
     this.addMoves(this.pokemonData);
     this.setAbility(this.pokemonData.abilityId);
     this.applyAbility();
-
-    // for debug and/or backwards compat fallback
-    this.atk = this.getStat("atk");
-    this.def = this.getStat("def");
-    this.spa = this.getStat("spa");
-    this.spd = this.getStat("spd");
-    this.spe = this.getStat("spe");
 
     this.battle.addToLog(`${oldName} transformed into ${this.name}!`);
 
@@ -2306,6 +2293,26 @@ class BattlePokemon {
       default:
         return stat;
     }
+  }
+
+  get atk() {
+    return this.getStat("atk");
+  }
+
+  get def() {
+    return this.getStat("def");
+  }
+
+  get spa() {
+    return this.getStat("spa");
+  }
+
+  get spd() {
+    return this.getStat("spd");
+  }
+
+  get spe() {
+    return this.getStat("spe");
   }
 
   /**
