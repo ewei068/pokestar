@@ -11262,6 +11262,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.MEDIUMSLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   20101: {
     name: "Cave Dweller Electrode",
@@ -11282,6 +11283,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.MEDIUMFAST,
     unobtainable: true,
+    tags: ["boss"],
   },
   20113: {
     name: "Cave Dweller Chansey",
@@ -11302,6 +11304,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.MEDIUMFAST,
     unobtainable: true,
+    tags: ["boss"],
   },
   20144: {
     name: "Temple Guardian Articuno",
@@ -11322,6 +11325,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   20149: {
     name: "Spirit Priest Dragonite",
@@ -11342,6 +11346,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   20150: {
     name: "Spirit Priest Mewtwo",
@@ -11362,6 +11367,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   "20150-1": {
     name: "Raid Boss Mewtwo",
@@ -11382,6 +11388,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   "20249-1": {
     name: "Raid Boss Lugia",
@@ -11402,6 +11409,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   [pokemonIdEnum.RAID_BOSS_KYOGRE]: {
     name: "Raid Boss Kyogre",
@@ -11422,6 +11430,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   [pokemonIdEnum.META_GROUDON]: {
     name: "Meta Groudon",
@@ -11462,6 +11471,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   20384: {
     name: "Palmer's Rayquaza",

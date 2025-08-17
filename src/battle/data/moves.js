@@ -1786,7 +1786,7 @@ const movesToRegister = Object.freeze({
     tier: moveTiers.BASIC,
     damageType: damageTypes.OTHER,
     description:
-      "The user transforms into the target, copying its appearance and most of its properties. Then, gain 50% combat readiness",
+      "The user transforms into the target, copying its appearance and most of its properties. Then, gain 50% combat readiness. Doesn't work on boss Pokemon.",
     execute() {
       const { source, primaryTarget } = this;
       source.transformIntoTarget(primaryTarget);

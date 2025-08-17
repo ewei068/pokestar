@@ -35,6 +35,7 @@ const { getAbility } = require("../data/abilityRegistry");
 const { getPatternTargetIndices } = require("../../utils/battleUtils");
 const { getHeldItem } = require("../data/heldItemRegistry");
 const { MoveInstance } = require("./MoveInstance");
+const { getHasTag } = require("../../utils/utils");
 
 class BattlePokemon {
   /**
@@ -250,6 +251,10 @@ class BattlePokemon {
    * @param {BattlePokemon} target
    */
   transformIntoTarget(target) {
+    if (getHasTag(pokemonConfig[target.speciesId], "boss")) {
+      return;
+    }
+
     // set pokemon data evs, ivs, nature, equipment, and level since thay aren't species-dependent
     this.pokemonData.evs = target.pokemonData.evs;
     this.pokemonData.ivs = target.pokemonData.ivs;

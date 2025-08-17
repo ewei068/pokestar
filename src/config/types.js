@@ -46,7 +46,7 @@
  */
 
 /**
- * @typedef {"eviolite" | "testTag"} PokemonTag
+ * @typedef {"eviolite" | "boss" | "testTag"} PokemonTag
  * @typedef {{
  *  name: string,
  *  emoji: string,
