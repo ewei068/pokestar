@@ -575,8 +575,10 @@ class BattlePokemon {
       (atkDamageType === damageTypes.PHYSICAL
         ? this.getStat("atk")
         : this.getStat("spa"));
-    // modify attack amount -- any attack over 800 is only half as effective
-    const attack = attackRaw > 800 ? 800 + (attackRaw - 800) / 2 : attackRaw;
+    // modify attack amount
+    // \left(x-500\right)^{0.965}+500\ \left\{x\ >\ 500\right\}
+    const attack =
+      attackRaw > 500 ? 500 + (attackRaw - 500) ** 0.965 : attackRaw;
 
     const defDamageType = defDamageTypeOverride || move.damageType;
     const defense =
@@ -1114,9 +1116,9 @@ class BattlePokemon {
       this.battle.addToLog(`${this.name} is affected by recoil!`);
     }
 
-    // if pvp, deal 15% less damage
+    // if pvp, deal 10% less damage
     if (this.battle.isPvp) {
-      damage = Math.max(1, Math.floor(damage * 0.85));
+      damage = Math.max(1, Math.floor(damage * 0.9));
     }
 
     const eventArgs = {
