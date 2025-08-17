@@ -109,7 +109,7 @@ class BattlePokemon {
     [this.type1 = null, this.type2 = null] = this.speciesData.type;
     // map effectId => effect data (duration, args)
     /**
-     * @type {PartialRecord<EffectIdEnum, any>}
+     * @type {PartialRecord<EffectIdEnum, { duration: number, source: BattlePokemon, initialArgs: any, args?: any }>}
      */
     this.effectIds = {};
 
@@ -233,7 +233,9 @@ class BattlePokemon {
     // set moves and ability
     this.addMoves(this.pokemonData);
     this.setAbility(this.pokemonData.abilityId);
-    this.applyAbility();
+    if (this.battle.hasStarted) {
+      this.applyAbility();
+    }
 
     this.battle.addToLog(`${oldName} transformed into ${this.name}!`);
 
@@ -242,6 +244,48 @@ class BattlePokemon {
       beforeSpeciesId,
       afterSpeciesId: this.speciesId,
     });
+  }
+
+  /**
+   * @param {BattlePokemon} target
+   */
+  transformIntoTarget(target) {
+    // set pokemon data evs, ivs, nature, equipment, and level since thay aren't species-dependent
+    this.pokemonData.evs = target.pokemonData.evs;
+    this.pokemonData.ivs = target.pokemonData.ivs;
+    this.pokemonData.natureId = target.pokemonData.natureId;
+    this.pokemonData.equipments = target.pokemonData.equipments;
+    this.pokemonData.level = target.pokemonData.level;
+
+    // Transform into the target's species, ability, and moves
+    this.transformInto(target.speciesId, {
+      // @ts-ignore
+      abilityId: target.ability.abilityId,
+      moveIds: target.getMoveIds(),
+    });
+
+    // Copy all dispellable effects from target
+    for (const effectId of /** @type {EffectIdEnum[]} */ (
+      Object.keys(target.effectIds)
+    )) {
+      const effectInstance = target.getEffectInstance(effectId);
+      const effect = getEffect(effectId);
+      if (effect && effect.dispellable && effectInstance) {
+        this.applyEffect(
+          effectId,
+          effectInstance.duration,
+          effectInstance.source,
+          effectInstance.initialArgs
+        );
+      }
+    }
+
+    // Copy status condition from target
+    if (target.status.statusId) {
+      this.applyStatus(target.status.statusId, target.status.source, {
+        startingTurns: target.status.turns,
+      });
+    }
   }
 
   /**
@@ -1362,9 +1406,6 @@ class BattlePokemon {
       return;
     }
     if (!abilityId || !applied) {
-      logger.error(
-        `Ability ${abilityId} is not applied to Pokemon ${this.id} ${this.name}.`
-      );
       return;
     }
 
@@ -2205,8 +2246,6 @@ class BattlePokemon {
   addStatMult(statId, mult) {
     const statData = this.allStatData[statId];
     statData.addMult += mult;
-    // debug
-    this[statId] = this.getStat(statId);
   }
 
   /**
@@ -2216,8 +2255,6 @@ class BattlePokemon {
   multiplyStatMult(statId, mult) {
     const statData = this.allStatData[statId];
     statData.multMult *= mult;
-    // debug
-    this[statId] = this.getStat(statId);
   }
 
   /**
@@ -2227,8 +2264,6 @@ class BattlePokemon {
   addFlatStatBoost(statId, boost) {
     const statData = this.allStatData[statId];
     statData.flatBoost += boost;
-    // debug
-    this[statId] = this.getStat(statId);
   }
 
   /**

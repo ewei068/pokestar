@@ -3107,6 +3107,26 @@ const pokemonConfigRaw = {
     growthRate: growthRates.MEDIUMSLOW,
     noGacha: true,
   },
+  132: {
+    name: "Ditto",
+    emoji: "<:132:1100291596718702613>",
+    description:
+      "Capable of copying an enemy's genetic code to instantly transform itself into a duplicate of the enemy.",
+    type: [types.NORMAL],
+    baseStats: [48, 48, 48, 48, 48, 48],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/132.png",
+    abilities: {
+      [abilityIdEnum.LIMBER]: 0.8,
+      [abilityIdEnum.IMPOSTER]: 0.2,
+    },
+    moveIds: [moveIdEnum.TRANSFORM],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   133: {
     name: "Eevee",
     emoji: "<:133:1100291598564204634>",

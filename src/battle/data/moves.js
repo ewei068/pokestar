@@ -1773,6 +1773,26 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.TRANSFORM]: new Move({
+    id: moveIdEnum.TRANSFORM,
+    name: "Transform",
+    type: pokemonTypes.NORMAL,
+    power: null,
+    accuracy: null,
+    cooldown: 0,
+    targetType: targetTypes.ANY,
+    targetPosition: targetPositions.NON_SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user transforms into the target, copying its appearance and most of its properties. Then, gain 50% combat readiness",
+    execute() {
+      const { source, primaryTarget } = this;
+      source.transformIntoTarget(primaryTarget);
+      source.boostCombatReadiness(source, 50);
+    },
+  }),
   [moveIdEnum.SACRED_SWORD]: new Move({
     id: moveIdEnum.SACRED_SWORD,
     name: "Sacred Sword",

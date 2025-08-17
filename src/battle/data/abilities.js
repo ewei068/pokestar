@@ -1248,6 +1248,44 @@ const abilitiesToRegister = Object.freeze({
       battle.unregisterListener(properties.moveListenerId);
     },
   }),
+  [abilityIdEnum.IMPOSTER]: new Ability({
+    id: abilityIdEnum.IMPOSTER,
+    name: "Imposter",
+    description:
+      "When applied, the Pokemon transforms into a random directly adjacent ally, filtering out allies that have the ability Imposter.",
+    abilityAdd({ battle, target }) {
+      const allyParty = battle.parties[target.teamName];
+      const adjacentAllies = target.getPatternTargets(
+        allyParty,
+        targetPatterns.CROSS,
+        target.position,
+        { ignoreHittable: true }
+      );
+
+      const validTargets = adjacentAllies.filter(
+        (ally) =>
+          ally &&
+          ally !== target &&
+          !ally.isFainted &&
+          !ally.hasAbility(abilityIdEnum.IMPOSTER)
+      );
+
+      if (validTargets.length === 0) {
+        battle.addToLog(
+          `${target.name}'s Imposter couldn't find a valid target to copy!`
+        );
+        return;
+      }
+
+      const randomTarget =
+        validTargets[Math.floor(Math.random() * validTargets.length)];
+      battle.addToLog(`${target.name}'s Imposter activated!`);
+      target.transformIntoTarget(randomTarget);
+    },
+    abilityRemove() {
+      // do nothing
+    },
+  }),
 });
 
 module.exports = {
