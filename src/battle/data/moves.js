@@ -20,6 +20,7 @@ const { moveIdEnum, effectIdEnum } = require("../../enums/battleEnums");
 const { drawIterable } = require("../../utils/gachaUtils");
 const { pokemonIdEnum } = require("../../enums/pokemonEnums");
 const { BattlePokemon } = require("../engine/BattlePokemon");
+const { getMove } = require("./moveRegistry");
 
 // TODO: code smells?
 /**
@@ -125,7 +126,7 @@ class Move {
   }
 }
 
-const movesToRegister = Object.freeze({
+const movesToRegisterRaw = {
   [moveIdEnum.FIRE_PUNCH]: new Move({
     id: moveIdEnum.FIRE_PUNCH,
     name: "Fire Punch",
@@ -2236,6 +2237,182 @@ const movesToRegister = Object.freeze({
       }
     },
   }),
+  [moveIdEnum.HIDDEN_POWER]: new Move({
+    id: moveIdEnum.HIDDEN_POWER,
+    name: "Hidden Power",
+    type: pokemonTypes.NORMAL, // Will be overridden based on IVs
+    power: 50,
+    accuracy: 100,
+    cooldown: 2,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.X,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.SPECIAL, // Will be overridden based on IVs
+    description:
+      "A unique attack that varies in type and damage category depending on the user's IVs.",
+    overrideFields: (options) => {
+      const { source } = options;
+      const ivs =
+        source instanceof BattlePokemon ? source.pokemonData.ivs : source?.ivs;
+      if (!ivs) return {};
+
+      // Calculate Hidden Power type based on IVs
+      // Formula: floor(((IV_ATK % 2) + 2*(IV_DEF % 2) + 4*(IV_SPE % 2) + 8*(IV_SPA % 2) + 16*(IV_SPD % 2) + 32*(IV_HP % 2)) * 15 / 63)
+      const typeValue = Math.floor(
+        (((ivs[1] % 2) +
+          2 * (ivs[2] % 2) +
+          4 * (ivs[5] % 2) +
+          8 * (ivs[3] % 2) +
+          16 * (ivs[4] % 2) +
+          32 * (ivs[0] % 2)) *
+          15) /
+          63
+      );
+
+      // Map type value to Pokemon types (excluding Normal)
+      const hiddenPowerTypes = [
+        pokemonTypes.FIGHTING,
+        pokemonTypes.FLYING,
+        pokemonTypes.POISON,
+        pokemonTypes.GROUND,
+        pokemonTypes.ROCK,
+        pokemonTypes.BUG,
+        pokemonTypes.GHOST,
+        pokemonTypes.STEEL,
+        pokemonTypes.FIRE,
+        pokemonTypes.WATER,
+        pokemonTypes.GRASS,
+        pokemonTypes.ELECTRIC,
+        pokemonTypes.PSYCHIC,
+        pokemonTypes.ICE,
+        pokemonTypes.DRAGON,
+        pokemonTypes.DARK,
+      ];
+
+      const hiddenPowerType =
+        hiddenPowerTypes[typeValue] || pokemonTypes.NORMAL;
+
+      // use Gen 3 type chart to determine damage type
+      const physicalTypes = [
+        pokemonTypes.NORMAL,
+        pokemonTypes.FIGHTING,
+        pokemonTypes.POISON,
+        pokemonTypes.GROUND,
+        pokemonTypes.ROCK,
+        pokemonTypes.BUG,
+        pokemonTypes.GHOST,
+        pokemonTypes.STEEL,
+        pokemonTypes.FLYING,
+      ];
+
+      // @ts-ignore
+      const calculatedDamageType = physicalTypes.includes(hiddenPowerType)
+        ? damageTypes.PHYSICAL
+        : damageTypes.SPECIAL;
+
+      return {
+        type: hiddenPowerType,
+        damageType: calculatedDamageType,
+      };
+    },
+    execute() {
+      this.genericDealAllDamage();
+    },
+  }),
+};
+
+// Helper function to create Sketch moves for different slots
+/**
+ * @param {1 | 2 | 3 | 4} slotNumber
+ * @returns {Move}
+ */
+function createSketchMove(slotNumber) {
+  const slotToMoveId = {
+    1: moveIdEnum.SKETCH,
+    2: moveIdEnum.SKETCH_2,
+    3: moveIdEnum.SKETCH_3,
+    4: moveIdEnum.SKETCH_4,
+  };
+
+  const slotToDescription = {
+    1: "The user learns the target's first move for the battle. If successful, the user gains 90% combat readiness.",
+    2: "The user learns the target's second move for the battle. If successful, the user gains 90% combat readiness.",
+    3: "The user learns the target's third move for the battle. If successful, the user gains 90% combat readiness.",
+    4: "The user learns the target's fourth move for the battle. If successful, the user gains 90% combat readiness.",
+  };
+
+  return new Move({
+    id: slotToMoveId[slotNumber],
+    name: "Sketch",
+    type: pokemonTypes.NORMAL,
+    power: null,
+    accuracy: null,
+    cooldown: 0,
+    targetType: targetTypes.ANY,
+    targetPosition: targetPositions.NON_SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.OTHER,
+    description: slotToDescription[slotNumber],
+    execute() {
+      const { source, primaryTarget, battle } = this;
+
+      // Get the target's moves as an array
+      const targetMoveIds = Object.keys(primaryTarget.moveIds);
+
+      // Check if target has a move in the specified slot (slotNumber - 1 for 0-based indexing)
+      const targetIndex = slotNumber - 1;
+      const moveToLearn = /** @type {MoveIdEnum} */ (
+        targetMoveIds[targetIndex]
+      );
+      if (!moveToLearn) {
+        battle.addToLog(`${primaryTarget.name} has no move in that slot!`);
+        return;
+      }
+      const moveToLearnName = getMove(moveToLearn).name;
+
+      // check if the move is sketch
+      // @ts-ignore
+      if (Object.values(slotToMoveId).includes(moveToLearn)) {
+        battle.addToLog(
+          `${source.name} failed to copy ${moveToLearnName}! It's a sketch move!`
+        );
+        return;
+      }
+
+      // Replace this Sketch move with the learned move
+      const removed = source.removeMove(this.id);
+      if (!removed) {
+        battle.addToLog(`${source.name} failed to copy ${moveToLearnName}!`);
+        return;
+      }
+      const added = source.addMove(moveToLearn);
+      if (!added) {
+        battle.addToLog(`${source.name} failed to copy ${moveToLearnName}!`);
+        return;
+      }
+
+      battle.addToLog(
+        `${source.name} sketched ${primaryTarget.name}'s ${moveToLearnName}!`
+      );
+
+      // Boost combat readiness by 90%
+      source.boostCombatReadiness(source, 90);
+    },
+  });
+}
+
+const sketchMoves = {
+  [moveIdEnum.SKETCH]: createSketchMove(1),
+  [moveIdEnum.SKETCH_2]: createSketchMove(2),
+  [moveIdEnum.SKETCH_3]: createSketchMove(3),
+  [moveIdEnum.SKETCH_4]: createSketchMove(4),
+};
+
+const movesToRegister = Object.freeze({
+  ...sketchMoves,
+  ...movesToRegisterRaw,
 });
 
 module.exports = {

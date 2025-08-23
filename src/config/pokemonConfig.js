@@ -3197,7 +3197,7 @@ const pokemonConfigRaw = {
     growthRate: growthRates.MEDIUMSLOW,
     noGacha: true,
   },
-  132: {
+  [pokemonIdEnum.DITTO]: {
     name: "Ditto",
     emoji: "<:132:1100291596718702613>",
     description:
@@ -4476,6 +4476,64 @@ const pokemonConfigRaw = {
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMSLOW,
   },
+  [pokemonIdEnum.NATU]: {
+    name: "Natu",
+    emoji: "<:177:1116755999097897013>",
+    description:
+      "Because its wings aren't yet fully grown, it has to hop to get around. It is always staring at something.",
+    type: [types.PSYCHIC, types.FLYING],
+    baseStats: [40, 50, 45, 70, 45, 70],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/177.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/177.png",
+    evolution: [
+      {
+        level: 25,
+        id: pokemonIdEnum.XATU,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SYNCHRONIZE]: 0.45,
+      [abilityIdEnum.EARLY_BIRD]: 0.45,
+      [abilityIdEnum.MAGIC_BOUNCE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.PECK,
+      moveIdEnum.TELEPORT,
+      moveIdEnum.PSYCHIC,
+      moveIdEnum.REFLECT,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.XATU]: {
+    name: "Xatu",
+    emoji: "<:178:1116756065791508531>",
+    description:
+      "They say that it stays still and quiet because it is seeing both the past and future at the same time.",
+    type: [types.PSYCHIC, types.FLYING],
+    baseStats: [65, 75, 70, 95, 70, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/178.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/178.png",
+    abilities: {
+      [abilityIdEnum.SYNCHRONIZE]: 0.45,
+      [abilityIdEnum.EARLY_BIRD]: 0.45,
+      [abilityIdEnum.MAGIC_BOUNCE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.TELEPORT,
+      moveIdEnum.REFLECT,
+      moveIdEnum.AIR_SLASH,
+      moveIdEnum.TAILWIND,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   179: {
     name: "Mareep",
     emoji: "<:179:1116756067767029843>",
@@ -4950,6 +5008,25 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.UNOWN]: {
+    name: "Unown",
+    emoji: "<:201:1119803386364186674>",
+    description:
+      "This Pokémon is shaped like ancient writing. It is a mystery as to which came first, the ancient writings or the various Unown.",
+    type: [types.PSYCHIC],
+    baseStats: [48, 72, 48, 72, 48, 48],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/201.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/201.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [moveIdEnum.HIDDEN_POWER],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+  },
   202: {
     name: "Wobbuffet",
     emoji: "<:202:1119803387874119821>",
@@ -5396,6 +5473,32 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.SMEARGLE]: {
+    name: "Smeargle",
+    emoji: "<:235:1119803687708143636>",
+    description:
+      "Smeargle marks the boundaries of its territory using a body fluid that leaks out from the tip of its tail. Over 5,000 different marks left by this Pokémon have been found.",
+    type: [types.NORMAL],
+    baseStats: [55, 20, 35, 20, 45, 75],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/235.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/235.png",
+    abilities: {
+      [abilityIdEnum.OWN_TEMPO]: 0.45,
+      [abilityIdEnum.TECHNICIAN]: 0.45,
+      [abilityIdEnum.MOODY]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.SKETCH,
+      moveIdEnum.SKETCH_2,
+      moveIdEnum.SKETCH_3,
+      moveIdEnum.SKETCH_4,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
   },
   236: {
     name: "Tyrogue",
