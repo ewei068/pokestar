@@ -2701,11 +2701,11 @@ const moveConfig = Object.freeze({
     cooldown: 0,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.SINGLE,
+    targetPattern: targetPatterns.ROW,
     tier: moveTiers.BASIC,
     damageType: damageTypes.OTHER,
     description:
-      "The target is stared down with intimidating eyes, lowering its defense for 4 turns.",
+      "The targets are stared down with intimidating eyes, lowering their defense for 3 turns.",
   },
   m46: {
     name: "Roar",
@@ -3416,7 +3416,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.BASIC,
     damageType: damageTypes.OTHER,
     description:
-      "The user takes a deep breath and focuses, sharply raising the user's attack for 1 turn and gaining 60% combat readiness.",
+      "The user takes a deep breath and focuses, sharply raising the user's attack and special attack for 1 turn and gaining 50% combat readiness.",
   },
   m118: {
     name: "Metronome",
@@ -4823,7 +4823,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.POWER,
     damageType: damageTypes.SPECIAL,
     description:
-      "The user attacks by shooting a wave of muddy water at the opposing team. This may also lower their accuracy for 2 turns with a 50% chance.",
+      "The user attacks by shooting a wave of muddy water at the opposing team. This may also lower their accuracy and evasionfor 2 turns with a 50% chance.",
   },
   m331: {
     name: "Bullet Seed",
@@ -6801,8 +6801,8 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (!miss) {
-        // def down 4 turns
-        target.applyEffect("defDown", 4, source);
+        // def down 3 turns
+        target.applyEffect("defDown", 3, source);
       }
     }
   },
@@ -7594,9 +7594,11 @@ const moveExecutes = {
     for (const target of allTargets) {
       // greater atk up for 1 turn
       target.applyEffect("greaterAtkUp", 1, source);
+      // greater spa up for 1 turn
+      target.applyEffect("greaterSpaUp", 1, source);
 
-      // boost 60% cr
-      target.boostCombatReadiness(source, 60);
+      // boost 50% cr
+      target.boostCombatReadiness(source, 50);
     }
   },
   m118(battle, source) {
@@ -9558,6 +9560,11 @@ const moveExecutes = {
       // if not miss, 50% acc down 2 turns
       if (!miss && Math.random() < 0.5) {
         target.applyEffect("accDown", 2, source);
+      }
+
+      // if not miss, 50% evasion down 2 turns
+      if (!miss && Math.random() < 0.5) {
+        target.applyEffect("evaDown", 2, source);
       }
     }
   },

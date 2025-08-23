@@ -2785,6 +2785,96 @@ const pokemonConfigRaw = {
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMFAST,
   },
+  115: {
+    name: "Kangaskhan",
+    emoji: "<:115:1100290446514733136>",
+    description:
+      "The infant rarely ventures out of its mother's protective pouch until it is 3 years old.",
+    type: [types.NORMAL],
+    baseStats: [105, 95, 80, 40, 80, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/115.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/115.png",
+    abilities: {
+      [abilityIdEnum.EARLY_BIRD]: 0.45,
+      [abilityIdEnum.SCRAPPY]: 0.45,
+      [abilityIdEnum.INNER_FOCUS]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POWER_UP_PUNCH,
+      moveIdEnum.CRUNCH,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.DOUBLE_EDGE,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  116: {
+    name: "Horsea",
+    emoji: "<:116:1100290448708354049>",
+    description:
+      "Known to shoot down flying bugs with precision blasts of ink from the surface of the water.",
+    type: [types.WATER],
+    baseStats: [30, 40, 70, 70, 25, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/116.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/116.png",
+    evolution: [
+      {
+        level: 32,
+        id: pokemonIdEnum.SEADRA,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SWIFT_SWIM]: 0.45,
+      [abilityIdEnum.SNIPER]: 0.45,
+      [abilityIdEnum.DAMP]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.LEER,
+      moveIdEnum.WATER_GUN,
+      moveIdEnum.ICE_BEAM,
+      moveIdEnum.WATER_PULSE,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  117: {
+    name: "Seadra",
+    emoji: "<:117:1100290449991807008>",
+    description:
+      "Capable of swimming backwards by rapidly flapping its wing-like pectoral fins and stout tail.",
+    type: [types.WATER],
+    baseStats: [55, 65, 95, 95, 45, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/117.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/117.png",
+    evolution: [
+      {
+        level: 45,
+        id: pokemonIdEnum.KINGDRA,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SWIFT_SWIM]: 0.45,
+      [abilityIdEnum.SNIPER]: 0.45,
+      [abilityIdEnum.DAMP]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.WATER_GUN,
+      moveIdEnum.ICE_BEAM,
+      moveIdEnum.WATER_PULSE,
+      moveIdEnum.DRAGON_PULSE,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   120: {
     name: "Staryu",
     emoji: "<:120:1100290515284525177>",
@@ -3684,6 +3774,7 @@ const pokemonConfigRaw = {
         "m526",
         "m574",
         "m1",
+        moveIdEnum.TRANSFORM,
       ],
       powerMoveIds: [
         "m14",
@@ -5090,6 +5181,32 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
+  },
+  230: {
+    name: "Kingdra",
+    emoji: "<:230:1119803623904383017>",
+    description:
+      "Kingdra lives at extreme ocean depths that are otherwise uninhabited. It has long been believed that the yawning of this Pokémon creates spiraling ocean currents.",
+    type: [types.WATER, types.DRAGON],
+    baseStats: [75, 95, 95, 95, 95, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/230.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/230.png",
+    abilities: {
+      [abilityIdEnum.SWIFT_SWIM]: 0.45,
+      [abilityIdEnum.SNIPER]: 0.45,
+      [abilityIdEnum.DAMP]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.FOCUS_ENERGY,
+      moveIdEnum.ICE_BEAM,
+      moveIdEnum.MUDDY_WATER,
+      moveIdEnum.DRACO_METEOR,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
   },
   231: {
     name: "Phanpy",

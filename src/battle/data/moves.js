@@ -2191,6 +2191,51 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.POWER_UP_PUNCH]: new Move({
+    id: moveIdEnum.POWER_UP_PUNCH,
+    name: "Power-up Punch",
+    type: pokemonTypes.FIGHTING,
+    power: 40,
+    accuracy: 100,
+    cooldown: 0,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user strikes the target with an empowering punch. The attack boosts the user's Attack for 2 turns.",
+    execute() {
+      const { source } = this;
+      this.genericDealAllDamage();
+      source.applyEffect("atkUp", 2, source, {});
+    },
+    tags: ["punch"],
+  }),
+  [moveIdEnum.DRACO_METEOR]: new Move({
+    id: moveIdEnum.DRACO_METEOR,
+    name: "Draco Meteor",
+    type: pokemonTypes.DRAGON,
+    power: 110,
+    accuracy: 90,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user summons a devastating meteor infused with draconic power. If any targets are missed, the user's Special Attack is sharply lowered for 2 turns.",
+    execute() {
+      const { source, missedTargets } = this;
+      this.genericDealAllDamage();
+
+      // If any targets were missed, sharply reduce the user's special attack
+      if (missedTargets.length > 0) {
+        source.applyEffect("greaterSpaDown", 2, source, {});
+      }
+    },
+  }),
 });
 
 module.exports = {
