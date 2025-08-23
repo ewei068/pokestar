@@ -57,10 +57,10 @@
  *  shinySprite: string,
  *  evolution?: Array<{
  *    level: number,
- *    id: any // TODO,
+ *    id: AllPokemonIdEnum,
  *  }>,
- *  baseSpeciesId?: string,
- *  formSpeciesIds?: string[],
+ *  baseSpeciesId?: AllPokemonIdEnum,
+ *  formSpeciesIds?: AllPokemonIdEnum[],
  *  abilities: {
  *    [key: number | string]: number // TODO?
  *  },

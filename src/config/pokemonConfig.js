@@ -959,7 +959,7 @@ const pokemonConfigRaw = {
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/25.png",
     evolution: [
       {
-        level: 16,
+        level: 25,
         id: "26",
       },
     ],
@@ -4325,6 +4325,101 @@ const pokemonConfigRaw = {
     moveIds: ["m17", "m269", "m305", "m366"],
     battleEligible: true,
     rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.PICHU]: {
+    name: "Pichu",
+    emoji: "<:172:1116755986728886342>",
+    description:
+      "It is not yet skilled at storing electricity. It may send out a jolt if amused or startled.",
+    type: [types.ELECTRIC],
+    baseStats: [20, 40, 15, 35, 35, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/172.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/172.png",
+    evolution: [
+      {
+        level: 15,
+        id: pokemonIdEnum.PIKACHU,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.STATIC]: 0.8,
+      [abilityIdEnum.LIGHTNING_ROD]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.CHARM,
+      moveIdEnum.NUZZLE,
+      moveIdEnum.THUNDERBOLT,
+      moveIdEnum.THUNDER_WAVE,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.CLEFFA]: {
+    name: "Cleffa",
+    emoji: "<:173:1116755987949432842>",
+    description:
+      "On nights with many shooting stars, Cleffa can be seen dancing in a ring. They dance through the night and stop only at the break of day, when these Pokémon quench their thirst with the morning dew.",
+    type: [types.FAIRY],
+    baseStats: [50, 25, 28, 45, 55, 15],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/173.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/173.png",
+    evolution: [
+      {
+        level: 15,
+        id: pokemonIdEnum.CLEFAIRY,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.CUTE_CHARM]: 0.45,
+      [abilityIdEnum.MAGIC_GUARD]: 0.45,
+      [abilityIdEnum.FRIEND_GUARD]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POUND,
+      moveIdEnum.CHARM,
+      moveIdEnum.SING,
+      moveIdEnum.ENCORE,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.IGGLYBUFF]: {
+    name: "Igglybuff",
+    emoji: "<:174:1116755993150357686>",
+    description:
+      "Igglybuff's vocal cords are not yet developed. This Pokémon only hums a simple melody, and it communicates by bouncing around like a rubber ball.",
+    type: [types.NORMAL, types.FAIRY],
+    baseStats: [90, 30, 15, 40, 20, 15],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/174.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/174.png",
+    evolution: [
+      {
+        level: 15,
+        id: pokemonIdEnum.JIGGLYPUFF,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.CUTE_CHARM]: 0.45,
+      [abilityIdEnum.COMPETITIVE]: 0.45,
+      [abilityIdEnum.FRIEND_GUARD]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POUND,
+      moveIdEnum.CHARM,
+      moveIdEnum.DEFENSE_CURL,
+      moveIdEnum.SWEET_KISS,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
     growthRate: growthRates.MEDIUMFAST,
   },
   [pokemonIdEnum.TOGEPI]: {
