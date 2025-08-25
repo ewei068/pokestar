@@ -29,6 +29,7 @@ const { backpackItemConfig } = require("../config/backpackConfig");
 const { buildPokemonEmojiString } = require("./pokemonUtils");
 const { getHeldItem } = require("../battle/data/heldItemRegistry");
 const { getMove } = require("../battle/data/moveRegistry");
+const { MoveInstance } = require("../battle/engine/MoveInstance");
 
 const plus = "┼";
 const plusEmph = "*";
@@ -311,27 +312,47 @@ const buildCompactPartyString = (party, id, pokemonMap, active = false) => {
 };
 
 /**
- * @param {Move} moveData
- * @param {number=} cooldown
+ * @param {object} param0
+ * @param {Move} param0.moveData
+ * @param {(Pokemon | BattlePokemon)=} param0.source
+ * @param {number=} param0.cooldown
  * @returns {{moveHeader: string, moveString: string}}
  */
-const buildMoveString = (moveData, cooldown = 0) => {
+const buildMoveString = ({ moveData, source, cooldown = 0 }) => {
   let moveHeader = "";
   if (cooldown) {
     moveHeader += `⏳ [ON COOLDOWN: ${cooldown} TURNS]\n`;
   }
-  const damageTypeData = damageTypeConfig[moveData.damageType];
-  const moveTierData = moveTierConfig[moveData.tier];
-  moveHeader += `${typeConfig[moveData.type].emoji} **${moveData.name}** | ${
-    damageTypeData.emoji
-  } ${damageTypeData.abbreviation} `;
+  const options = {
+    source,
+  };
+
+  const damageTypeData =
+    damageTypeConfig[moveData.getEffectiveValue("damageType", options)];
+  const moveTierData =
+    moveTierConfig[moveData.getEffectiveValue("tier", options)];
+  moveHeader += `${
+    typeConfig[moveData.getEffectiveValue("type", options)].emoji
+  } **${moveData.name}** | ${damageTypeData.emoji} ${
+    damageTypeData.abbreviation
+  } `;
 
   let moveString = "";
   moveString += `**[${moveTierData.abbreviation}]**  |  💪 ${
-    moveData.power || "N/A"
-  }  |  ⌖ ${moveData.accuracy || "N/A"}  |  ⏳ ${moveData.cooldown}\n`;
-  moveString += `**Target:** ${moveData.targetType}/${moveData.targetPosition}/${moveData.targetPattern}\n`;
-  moveString += buildBlockQuoteString(moveData.description);
+    moveData.getEffectiveValue("power", options) || "N/A"
+  }  |  ⌖ ${
+    moveData.getEffectiveValue("accuracy", options) || "N/A"
+  }  |  ⏳ ${moveData.getEffectiveValue("cooldown", options)}\n`;
+  moveString += `**Target:** ${moveData.getEffectiveValue(
+    "targetType",
+    options
+  )}/${moveData.getEffectiveValue(
+    "targetPosition",
+    options
+  )}/${moveData.getEffectiveValue("targetPattern", options)}\n`;
+  moveString += buildBlockQuoteString(
+    moveData.getEffectiveValue("description", options)
+  );
 
   return {
     moveHeader,
@@ -849,8 +870,13 @@ const npcTurnAction = (battle) => {
   for (const moveId in validMoveIdsToTargets) {
     for (const target of validMoveIdsToTargets[moveId]) {
       const source = activePokemon;
-      // @ts-ignore
-      const targetsHit = source.getMoveExecuteTargets(moveId, target);
+      const moveInstance = MoveInstance.fromMoveId({
+        source,
+        primaryTarget: target,
+        // @ts-ignore
+        moveId,
+      });
+      const targetsHit = source.getMoveExecuteTargets(moveInstance, target);
       const heuristic = calculateTurnHeuristic(
         // @ts-ignore
         moveId,

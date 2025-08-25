@@ -20,12 +20,12 @@ const { logger } = require("../../log");
 class MoveInstance {
   /**
    * @param {object} param0
+   * @param {Move['getEffectiveValue']=} param0.getEffectiveValue
    * @param {BattlePokemon} param0.source
    * @param {BattlePokemon} param0.primaryTarget
    * @param {MoveInstanceId=} param0.id
    * @param {string=} param0.name
    * @param {PokemonTypeEnum=} param0.type
-   * @param {((options?: {source?: BattlePokemon}) => PokemonTypeEnum)=} param0.getEffectiveType
    * @param {number=} param0.power
    * @param {number=} param0.accuracy
    * @param {number=} param0.cooldown
@@ -47,7 +47,6 @@ class MoveInstance {
     id = "NO_ID", // IDK how to make this static LOL
     name = "No Name",
     type = pokemonTypes.NORMAL,
-    getEffectiveType,
     power = 40,
     accuracy = 100,
     cooldown = 0,
@@ -61,7 +60,7 @@ class MoveInstance {
     },
     chargeMoveEffectId = null,
     tags = [],
-
+    getEffectiveValue,
     // variables that may not be known when initialized
     allTargets = [],
     missedTargets = [],
@@ -73,7 +72,6 @@ class MoveInstance {
     this._id = id;
     this._name = name;
     this._type = type;
-    this._getEffectiveType = getEffectiveType;
     this._power = power;
     this._accuracy = accuracy;
     this._cooldown = cooldown;
@@ -88,6 +86,7 @@ class MoveInstance {
     this._allTargets = allTargets;
     this._missedTargets = missedTargets;
     this._extraOptions = extraOptions;
+    this._getEffectiveValue = getEffectiveValue;
   }
 
   /**
@@ -114,6 +113,23 @@ class MoveInstance {
     });
   }
 
+  /**
+   * @template {keyof Move} K
+   * @param {K} field
+   * @param {Move[K]} defaultValue
+   * @returns {Move[K]}
+   */
+  getEffectiveValue(field, defaultValue) {
+    // @ts-ignore
+    return (
+      this._getEffectiveValue?.(field, {
+        source: this.source,
+        primaryTarget: this.primaryTarget,
+        battle: this.battle,
+      }) ?? defaultValue
+    );
+  }
+
   get source() {
     return this._source;
   }
@@ -126,8 +142,12 @@ class MoveInstance {
     return this._battle;
   }
 
+  /**
+   * @returns {MoveInstanceId}
+   */
   get id() {
-    return this._id;
+    // @ts-ignore
+    return this.getEffectiveValue("id", this._id);
   }
 
   set id(value) {
@@ -135,7 +155,7 @@ class MoveInstance {
   }
 
   get name() {
-    return this._name;
+    return this.getEffectiveValue("name", this._name);
   }
 
   set name(value) {
@@ -143,7 +163,7 @@ class MoveInstance {
   }
 
   get type() {
-    return this._getEffectiveType?.({ source: this.source }) || this._type;
+    return this.getEffectiveValue("type", this._type);
   }
 
   set type(value) {
@@ -151,7 +171,7 @@ class MoveInstance {
   }
 
   get power() {
-    return this._power;
+    return this.getEffectiveValue("power", this._power);
   }
 
   set power(value) {
@@ -159,7 +179,7 @@ class MoveInstance {
   }
 
   get accuracy() {
-    return this._accuracy;
+    return this.getEffectiveValue("accuracy", this._accuracy);
   }
 
   set accuracy(value) {
@@ -167,7 +187,7 @@ class MoveInstance {
   }
 
   get cooldown() {
-    return this._cooldown;
+    return this.getEffectiveValue("cooldown", this._cooldown);
   }
 
   set cooldown(value) {
@@ -175,7 +195,7 @@ class MoveInstance {
   }
 
   get targetType() {
-    return this._targetType;
+    return this.getEffectiveValue("targetType", this._targetType);
   }
 
   set targetType(value) {
@@ -183,7 +203,7 @@ class MoveInstance {
   }
 
   get targetPosition() {
-    return this._targetPosition;
+    return this.getEffectiveValue("targetPosition", this._targetPosition);
   }
 
   set targetPosition(value) {
@@ -191,7 +211,7 @@ class MoveInstance {
   }
 
   get targetPattern() {
-    return this._targetPattern;
+    return this.getEffectiveValue("targetPattern", this._targetPattern);
   }
 
   set targetPattern(value) {
@@ -199,7 +219,7 @@ class MoveInstance {
   }
 
   get tier() {
-    return this._tier;
+    return this.getEffectiveValue("tier", this._tier);
   }
 
   set tier(value) {
@@ -207,7 +227,7 @@ class MoveInstance {
   }
 
   get damageType() {
-    return this._damageType;
+    return this.getEffectiveValue("damageType", this._damageType);
   }
 
   set damageType(value) {
@@ -232,7 +252,10 @@ class MoveInstance {
   }
 
   get chargeMoveEffectId() {
-    return this._chargeMoveEffectId;
+    return this.getEffectiveValue(
+      "chargeMoveEffectId",
+      this._chargeMoveEffectId
+    );
   }
 
   set chargeMoveEffectId(value) {
@@ -240,7 +263,7 @@ class MoveInstance {
   }
 
   get tags() {
-    return this._tags;
+    return this.getEffectiveValue("tags", this._tags);
   }
 
   set tags(value) {

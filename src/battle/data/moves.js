@@ -1,4 +1,7 @@
-const { types: pokemonTypes } = require("../../config/pokemonConfig");
+const {
+  types: pokemonTypes,
+  pokemonConfig,
+} = require("../../config/pokemonConfig");
 const {
   targetTypes,
   targetPositions,
@@ -8,6 +11,7 @@ const {
   statusConditions,
   effectTypes,
   weatherConditions,
+  statIdToIndex,
 } = require("../../config/battleConfig");
 const { getHeldItem } = require("./heldItemRegistry");
 const { getEffect } = require("./effectRegistry");
@@ -15,16 +19,45 @@ const { getHeldItemIdHasTag } = require("../../utils/battleUtils");
 const { moveIdEnum, effectIdEnum } = require("../../enums/battleEnums");
 const { drawIterable } = require("../../utils/gachaUtils");
 const { pokemonIdEnum } = require("../../enums/pokemonEnums");
+const { BattlePokemon } = require("../engine/BattlePokemon");
+const { getMove } = require("./moveRegistry");
+
+// TODO: code smells?
+/**
+ * @param {Pokemon | BattlePokemon} pokemon
+ * @returns {PokemonTypeEnum}
+ */
+const getPokemonPrimaryType = (pokemon) => {
+  if (pokemon instanceof BattlePokemon) {
+    return pokemon.type1;
+  }
+  return pokemonConfig[pokemon.speciesId].type[0];
+};
+
+/**
+ * @param {Pokemon | BattlePokemon} pokemon
+ * @param {StatId} statId
+ * @returns {number}
+ */
+const getPokemonStat = (pokemon, statId) => {
+  if (pokemon instanceof BattlePokemon) {
+    if (statId === "hp") {
+      return pokemon.hp;
+    }
+    return pokemon.getStat(statId);
+  }
+  return pokemon.stats[statIdToIndex[statId]];
+};
 
 /** @typedef {"charge" | "punch" | "slice"} MoveTag */
 
 class Move {
   /**
    * @param {object} param0
+   * @param {FieldOverrideCallback=} param0.overrideFields
    * @param {AllMoveIdEnum} param0.id
    * @param {string} param0.name
    * @param {PokemonTypeEnum} param0.type
-   * @param {((this: Move, options?: {source?: BattlePokemon}) => PokemonTypeEnum)=} param0.getEffectiveType
    * @param {number} param0.power
    * @param {number?} param0.accuracy
    * @param {number} param0.cooldown
@@ -40,10 +73,10 @@ class Move {
    * @param {MoveTag[]=} param0.tags
    */
   constructor({
+    overrideFields,
     id,
     name,
     type,
-    getEffectiveType = () => this.type,
     power,
     accuracy,
     cooldown,
@@ -63,9 +96,6 @@ class Move {
     this.id = id;
     this.name = name;
     this.type = type;
-    // maybe a hack we'll see
-    this.getEffectiveType = (/** @type {any} */ ...args) =>
-      getEffectiveType.call(this, ...args);
     this.power = power;
     this.accuracy = accuracy;
     this.cooldown = cooldown;
@@ -80,10 +110,23 @@ class Move {
     this.silenceIf = silenceIf;
     this.chargeMoveEffectId = chargeMoveEffectId;
     this.tags = tags;
+
+    // maybe a hack we'll see
+    /**
+     * @template {keyof Move} K
+     * @param {K} field
+     * @param {FieldOverrideOptions=} options
+     * @returns {Move[K]}
+     */
+    this.getEffectiveValue = (field, options = {}) => {
+      const fieldOverride = overrideFields?.(options)?.[field];
+      // @ts-ignore
+      return fieldOverride ?? this[field];
+    };
   }
 }
 
-const movesToRegister = Object.freeze({
+const movesToRegisterRaw = {
   [moveIdEnum.FIRE_PUNCH]: new Move({
     id: moveIdEnum.FIRE_PUNCH,
     name: "Fire Punch",
@@ -1731,6 +1774,26 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.TRANSFORM]: new Move({
+    id: moveIdEnum.TRANSFORM,
+    name: "Transform",
+    type: pokemonTypes.NORMAL,
+    power: null,
+    accuracy: null,
+    cooldown: 0,
+    targetType: targetTypes.ANY,
+    targetPosition: targetPositions.NON_SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user transforms into the target, copying its appearance and most of its properties. Then, gain 50% combat readiness. Doesn't work on boss Pokemon.",
+    execute() {
+      const { source, primaryTarget } = this;
+      source.transformIntoTarget(primaryTarget);
+      source.boostCombatReadiness(source, 50);
+    },
+  }),
   [moveIdEnum.SACRED_SWORD]: new Move({
     id: moveIdEnum.SACRED_SWORD,
     name: "Sacred Sword",
@@ -1791,6 +1854,16 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The user roars to distort time, dealing massive damage. Fully reduces the highest move cooldown for each adjacent ally, and the user must recharge for 1 turn.",
+    overrideFields: (options) => {
+      if (options.source?.speciesId === pokemonIdEnum.DIALGA_ORIGIN) {
+        return {
+          description:
+            "The user roars to distort time, dealing massive damage. Fully reduces the highest move cooldown for each adjacent ally.",
+          power: 80,
+          cooldown: 5,
+        };
+      }
+    },
     execute() {
       const { source } = this;
       this.genericDealAllDamage();
@@ -1834,8 +1907,10 @@ const movesToRegister = Object.freeze({
         }
       }
 
-      // Apply recharge effect to the user
-      source.applyEffect("recharge", 1, source, {});
+      // Apply recharge effect to the user if not dialga origin
+      if (source.speciesId !== pokemonIdEnum.DIALGA_ORIGIN) {
+        source.applyEffect("recharge", 1, source, {});
+      }
     },
   }),
   [moveIdEnum.SPACIAL_REND]: new Move({
@@ -1852,6 +1927,15 @@ const movesToRegister = Object.freeze({
     damageType: damageTypes.SPECIAL,
     description:
       "The user tears the spatial fabric, dealing damage to enemies. Adjacent allies receive a spatial blessing that enhances their move patterns for 1 turn.",
+    overrideFields: (options) => {
+      if (options.source?.speciesId === pokemonIdEnum.PALKIA_ORIGIN) {
+        return {
+          accuracy: 75,
+          description:
+            "The user tears the spatial fabric, dealing damage to enemies. All allies receive a spatial blessing that enhances their move patterns for 1 turn.",
+        };
+      }
+    },
     execute() {
       const { source } = this;
       this.genericDealAllDamage();
@@ -1860,7 +1944,9 @@ const movesToRegister = Object.freeze({
       const adjacentAllies = source
         .getPatternTargets(
           sourceParty,
-          targetPatterns.SQUARE,
+          source.speciesId === pokemonIdEnum.PALKIA_ORIGIN
+            ? targetPatterns.ALL
+            : targetPatterns.SQUARE,
           source.position,
           {
             ignoreHittable: true,
@@ -1984,6 +2070,398 @@ const movesToRegister = Object.freeze({
       });
     },
   }),
+  [moveIdEnum.JUDGMENT]: new Move({
+    id: moveIdEnum.JUDGMENT,
+    name: "Judgment",
+    type: pokemonTypes.NORMAL,
+    power: 100,
+    accuracy: 100,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.X,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user unleashes divine judgment upon its foes. This move's type matches the user's primary type, and uses the user's higher attack stat to determine damage category.",
+    overrideFields: (options) => {
+      const { source } = options;
+      if (!source) return {};
+
+      const primaryType = getPokemonPrimaryType(source);
+      const atk = getPokemonStat(source, "atk");
+      const spa = getPokemonStat(source, "spa");
+      const damageType = atk > spa ? damageTypes.PHYSICAL : damageTypes.SPECIAL;
+      return {
+        type: primaryType,
+        damageType,
+      };
+    },
+    execute() {
+      this.genericDealAllDamage();
+    },
+  }),
+  [moveIdEnum.REFRESH]: new Move({
+    id: moveIdEnum.REFRESH,
+    name: "Refresh",
+    type: pokemonTypes.NORMAL,
+    power: null,
+    accuracy: null,
+    cooldown: 0,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user heals its status condition and recovers 15% of its maximum HP.",
+    execute() {
+      const { allTargets } = this;
+
+      this.genericHealAllTargets({
+        healPercent: 15,
+      });
+
+      for (const target of allTargets) {
+        target.removeStatus();
+      }
+    },
+  }),
+  [moveIdEnum.BODY_PRESS]: new Move({
+    id: moveIdEnum.BODY_PRESS,
+    name: "Body Press",
+    type: pokemonTypes.FIGHTING,
+    power: 80,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.CROSS,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user attacks by pressing down on the target with its body. This attack uses the user's Defense stat to calculate damage and deals half damage to non-primary targets.",
+    execute() {
+      this.genericDealAllDamage({
+        attackOverride: this.source.getStat("def"),
+        offTargetDamageMultiplier: 0.5,
+      });
+    },
+  }),
+  [moveIdEnum.STORED_POWER]: new Move({
+    id: moveIdEnum.STORED_POWER,
+    name: "Stored Power",
+    type: pokemonTypes.PSYCHIC,
+    power: 35,
+    accuracy: 100,
+    cooldown: 3,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.ROW,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user attacks the target with stored power. The more the user's stats are boosted, the greater the damage (up to 3x).",
+    execute() {
+      this.genericDealAllDamage({
+        calculateDamageFunction: (damageArgs) => {
+          const { source } = this;
+
+          // Calculate sum of effective stats (excluding HP)
+          const effectiveStatsSum =
+            source.getStat("atk") +
+            source.getStat("def") +
+            source.getStat("spa") +
+            source.getStat("spd") +
+            source.getStat("spe");
+
+          // Calculate sum of base stats (excluding HP)
+          const baseStatsSum =
+            source.batk + source.bdef + source.bspa + source.bspd + source.bspe;
+
+          // Calculate stat ratio, clamped between 1x and 3x
+          const statRatio = Math.min(
+            3,
+            Math.max(1, effectiveStatsSum / baseStatsSum)
+          );
+
+          // Calculate base damage and multiply by stat ratio
+          const baseDamage = source.calculateMoveDamage(damageArgs);
+          return Math.floor(baseDamage * statRatio);
+        },
+      });
+    },
+  }),
+  [moveIdEnum.POWER_UP_PUNCH]: new Move({
+    id: moveIdEnum.POWER_UP_PUNCH,
+    name: "Power-up Punch",
+    type: pokemonTypes.FIGHTING,
+    power: 40,
+    accuracy: 100,
+    cooldown: 0,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.FRONT,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user strikes the target with an empowering punch. The attack boosts the user's Attack for 2 turns.",
+    execute() {
+      const { source } = this;
+      this.genericDealAllDamage();
+      source.applyEffect("atkUp", 2, source, {});
+    },
+    tags: ["punch"],
+  }),
+  [moveIdEnum.DRACO_METEOR]: new Move({
+    id: moveIdEnum.DRACO_METEOR,
+    name: "Draco Meteor",
+    type: pokemonTypes.DRAGON,
+    power: 110,
+    accuracy: 90,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.SPECIAL,
+    description:
+      "The user summons a devastating meteor infused with draconic power. If any targets are missed, the user's Special Attack is sharply lowered for 2 turns.",
+    execute() {
+      const { source, missedTargets } = this;
+      this.genericDealAllDamage();
+
+      // If any targets were missed, sharply reduce the user's special attack
+      if (missedTargets.length > 0) {
+        source.applyEffect("greaterSpaDown", 2, source, {});
+      }
+    },
+  }),
+  [moveIdEnum.HIDDEN_POWER]: new Move({
+    id: moveIdEnum.HIDDEN_POWER,
+    name: "Hidden Power",
+    type: pokemonTypes.NORMAL, // Will be overridden based on IVs
+    power: 50,
+    accuracy: 100,
+    cooldown: 2,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.X,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.SPECIAL, // Will be overridden based on IVs
+    description:
+      "A unique attack that varies in type and damage category depending on the user's IVs.",
+    overrideFields: (options) => {
+      const { source } = options;
+      const ivs =
+        source instanceof BattlePokemon ? source.pokemonData.ivs : source?.ivs;
+      if (!ivs) return {};
+
+      // Calculate Hidden Power type based on IVs
+      // Formula: floor(((IV_ATK % 2) + 2*(IV_DEF % 2) + 4*(IV_SPE % 2) + 8*(IV_SPA % 2) + 16*(IV_SPD % 2) + 32*(IV_HP % 2)) * 15 / 63)
+      const typeValue = Math.floor(
+        (((ivs[1] % 2) +
+          2 * (ivs[2] % 2) +
+          4 * (ivs[5] % 2) +
+          8 * (ivs[3] % 2) +
+          16 * (ivs[4] % 2) +
+          32 * (ivs[0] % 2)) *
+          15) /
+          63
+      );
+
+      // Map type value to Pokemon types (excluding Normal)
+      const hiddenPowerTypes = [
+        pokemonTypes.FIGHTING,
+        pokemonTypes.FLYING,
+        pokemonTypes.POISON,
+        pokemonTypes.GROUND,
+        pokemonTypes.ROCK,
+        pokemonTypes.BUG,
+        pokemonTypes.GHOST,
+        pokemonTypes.STEEL,
+        pokemonTypes.FIRE,
+        pokemonTypes.WATER,
+        pokemonTypes.GRASS,
+        pokemonTypes.ELECTRIC,
+        pokemonTypes.PSYCHIC,
+        pokemonTypes.ICE,
+        pokemonTypes.DRAGON,
+        pokemonTypes.DARK,
+      ];
+
+      const hiddenPowerType =
+        hiddenPowerTypes[typeValue] || pokemonTypes.NORMAL;
+
+      // use Gen 3 type chart to determine damage type
+      const physicalTypes = [
+        pokemonTypes.NORMAL,
+        pokemonTypes.FIGHTING,
+        pokemonTypes.POISON,
+        pokemonTypes.GROUND,
+        pokemonTypes.ROCK,
+        pokemonTypes.BUG,
+        pokemonTypes.GHOST,
+        pokemonTypes.STEEL,
+        pokemonTypes.FLYING,
+      ];
+
+      // @ts-ignore
+      const calculatedDamageType = physicalTypes.includes(hiddenPowerType)
+        ? damageTypes.PHYSICAL
+        : damageTypes.SPECIAL;
+
+      return {
+        type: hiddenPowerType,
+        damageType: calculatedDamageType,
+      };
+    },
+    execute() {
+      this.genericDealAllDamage();
+    },
+  }),
+  [moveIdEnum.MEDITATE]: new Move({
+    id: moveIdEnum.MEDITATE,
+    name: "Meditate",
+    type: pokemonTypes.PSYCHIC,
+    power: null,
+    accuracy: null,
+    cooldown: 0,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user meditates to awaken its inner power, raising its Attack for 3 turns and increasing its combat readiness by 50%.",
+    execute() {
+      this.genericApplyAllEffects({
+        effectId: "atkUp",
+        duration: 3,
+      });
+      this.genericChangeAllCombatReadiness({
+        amount: 50,
+        action: "boost",
+      });
+    },
+  }),
+  [moveIdEnum.SUCKER_PUNCH]: new Move({
+    id: moveIdEnum.SUCKER_PUNCH,
+    name: "Sucker Punch",
+    type: pokemonTypes.DARK,
+    power: 70,
+    accuracy: 100,
+    cooldown: 2,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user strikes first with a sneaky punch. If the target has any moves on cooldown, the user gains 80% combat readiness.",
+    execute() {
+      this.genericDealAllDamage();
+      const { primaryTarget, source } = this;
+      const moveDatas = Object.values(primaryTarget.moveIds);
+      if (moveDatas.some((moveData) => moveData.cooldown > 0)) {
+        source.boostCombatReadiness(source, 80);
+      }
+    },
+    tags: ["punch"],
+  }),
+};
+
+// Helper function to create Sketch moves for different slots
+/**
+ * @param {1 | 2 | 3 | 4} slotNumber
+ * @returns {Move}
+ */
+function createSketchMove(slotNumber) {
+  const slotToMoveId = {
+    1: moveIdEnum.SKETCH,
+    2: moveIdEnum.SKETCH_2,
+    3: moveIdEnum.SKETCH_3,
+    4: moveIdEnum.SKETCH_4,
+  };
+
+  const slotToDescription = {
+    1: "The user learns the target's first move for the battle. If successful, the user gains 90% combat readiness.",
+    2: "The user learns the target's second move for the battle. If successful, the user gains 90% combat readiness.",
+    3: "The user learns the target's third move for the battle. If successful, the user gains 90% combat readiness.",
+    4: "The user learns the target's fourth move for the battle. If successful, the user gains 90% combat readiness.",
+  };
+
+  return new Move({
+    id: slotToMoveId[slotNumber],
+    name: "Sketch",
+    type: pokemonTypes.NORMAL,
+    power: null,
+    accuracy: null,
+    cooldown: 0,
+    targetType: targetTypes.ANY,
+    targetPosition: targetPositions.NON_SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.OTHER,
+    description: slotToDescription[slotNumber],
+    execute() {
+      const { source, primaryTarget, battle } = this;
+
+      // Get the target's moves as an array
+      const targetMoveIds = Object.keys(primaryTarget.moveIds);
+
+      // Check if target has a move in the specified slot (slotNumber - 1 for 0-based indexing)
+      const targetIndex = slotNumber - 1;
+      const moveToLearn = /** @type {MoveIdEnum} */ (
+        targetMoveIds[targetIndex]
+      );
+      if (!moveToLearn) {
+        battle.addToLog(`${primaryTarget.name} has no move in that slot!`);
+        return;
+      }
+      const moveToLearnName = getMove(moveToLearn).name;
+
+      // check if the move is sketch
+      // @ts-ignore
+      if (Object.values(slotToMoveId).includes(moveToLearn)) {
+        battle.addToLog(
+          `${source.name} failed to copy ${moveToLearnName}! It's a sketch move!`
+        );
+        return;
+      }
+
+      // Replace this Sketch move with the learned move
+      const removed = source.removeMove(this.id);
+      if (!removed) {
+        battle.addToLog(`${source.name} failed to copy ${moveToLearnName}!`);
+        return;
+      }
+      const added = source.addMove(moveToLearn);
+      if (!added) {
+        battle.addToLog(`${source.name} failed to copy ${moveToLearnName}!`);
+        return;
+      }
+
+      battle.addToLog(
+        `${source.name} sketched ${primaryTarget.name}'s ${moveToLearnName}!`
+      );
+
+      // Boost combat readiness by 90%
+      source.boostCombatReadiness(source, 90);
+    },
+  });
+}
+
+const sketchMoves = {
+  [moveIdEnum.SKETCH]: createSketchMove(1),
+  [moveIdEnum.SKETCH_2]: createSketchMove(2),
+  [moveIdEnum.SKETCH_3]: createSketchMove(3),
+  [moveIdEnum.SKETCH_4]: createSketchMove(4),
+};
+
+const movesToRegister = Object.freeze({
+  ...sketchMoves,
+  ...movesToRegisterRaw,
 });
 
 module.exports = {

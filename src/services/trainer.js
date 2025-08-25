@@ -110,7 +110,6 @@ const tryUpdateTrainerFields = async (trainer, forceUpdate = false) => {
         logger.error(`Failed to update trainer ${trainer.user.username}.`);
         return { data: null, err: "Error updating trainer." };
       }
-      logger.info(`Updated trainer ${trainer.user.username}.`);
     } catch (error) {
       logger.error(error);
       return { data: null, err: "Error updating trainer." };
@@ -431,9 +430,6 @@ const getLevelRewards = async (user) => {
       );
       return { data: null, err: "Error updating trainer." };
     }
-    logger.info(
-      `Updated trainer ${user.username} after claiming level rewards.`
-    );
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error updating trainer." };

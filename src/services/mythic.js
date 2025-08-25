@@ -51,7 +51,7 @@ const {
 const { getTrainer, updateTrainer, emitTrainerEvent } = require("./trainer");
 const { getMoves } = require("../battle/data/moveRegistry");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
-const { statIndexToBattleStat } = require("../config/battleConfig");
+const { statIndexToBattleStatId } = require("../config/battleConfig");
 const { getAbilityName } = require("../utils/pokemonUtils");
 const { trainerEventEnum } = require("../enums/gameEnums");
 
@@ -901,7 +901,7 @@ const useWish = async (user, { wishId, pokemon }) => {
       if (updateStatsRes.err) {
         return { err: updateStatsRes.err };
       }
-      result = `**${pokemon.name}'s ${statIndexToBattleStat[
+      result = `**${pokemon.name}'s ${statIndexToBattleStatId[
         randomIndex
       ].toUpperCase()}** IV was set to 31!`;
       break;
