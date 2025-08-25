@@ -7083,6 +7083,62 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
   },
+  [pokemonIdEnum.MEDITITE]: {
+    name: "Meditite",
+    emoji: "<:307:1132496482566676580>",
+    description:
+      "Meditite undertakes rigorous mental training deep in the mountains. However, whenever it meditates, this Pokémon always loses its concentration and focus. As a result, its training never ends.",
+    type: [types.FIGHTING, types.PSYCHIC],
+    baseStats: [30, 40, 55, 40, 55, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/307.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/307.png",
+    evolution: [
+      {
+        level: 37,
+        id: pokemonIdEnum.MEDICHAM,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.PURE_POWER]: 0.8,
+      [abilityIdEnum.TELEPATHY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.MEDITATE,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.DRAIN_PUNCH,
+      moveIdEnum.ZEN_HEADBUTT,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.MEDICHAM]: {
+    name: "Medicham",
+    emoji: "<:308:1132496483690758194>",
+    description:
+      "It is said that through meditation, Medicham heightens energy inside its body and sharpens its sixth sense. This Pokémon hides its presence by merging with fields and mountains.",
+    type: [types.FIGHTING, types.PSYCHIC],
+    baseStats: [60, 60, 75, 60, 75, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/308.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/308.png",
+    abilities: {
+      [abilityIdEnum.PURE_POWER]: 0.8,
+      [abilityIdEnum.TELEPATHY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.MEDITATE,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.ZEN_HEADBUTT,
+      moveIdEnum.HIGH_JUMP_KICK,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   309: {
     name: "Electrike",
     emoji: "<:309:1132496527521230870>",
@@ -7129,6 +7185,56 @@ const pokemonConfigRaw = {
     moveIds: ["m98", "m46", "m86", "m87"],
     battleEligible: true,
     rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.PLUSLE]: {
+    name: "Plusle",
+    emoji: "<:311:1132496530742456391>",
+    description:
+      "Plusle always acts as a cheerleader for its partners. Whenever a teammate puts out a good effort in battle, this Pokémon shorts out its body to create the crackling noises of sparks to show its joy.",
+    type: [types.ELECTRIC],
+    baseStats: [60, 50, 40, 85, 75, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/311.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/311.png",
+    abilities: {
+      [abilityIdEnum.PLUS]: 0.8,
+      [abilityIdEnum.LIGHTNING_ROD]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.NUZZLE,
+      moveIdEnum.BATON_PASS,
+      moveIdEnum.NASTY_PLOT,
+      moveIdEnum.THUNDER,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.MINUN]: {
+    name: "Minun",
+    emoji: "<:312:1132496531757486131>",
+    description:
+      "Minun is more concerned about cheering on its partners than its own safety. It shorts out the electricity in its body to create brilliant showers of sparks to cheer on its teammates.",
+    type: [types.ELECTRIC],
+    baseStats: [60, 40, 50, 75, 85, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/312.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/312.png",
+    abilities: {
+      [abilityIdEnum.MINUS]: 0.8,
+      [abilityIdEnum.VOLT_ABSORB]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.HELPING_HAND,
+      moveIdEnum.ENCORE,
+      moveIdEnum.NASTY_PLOT,
+      moveIdEnum.THUNDER,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMFAST,
   },
   [pokemonIdEnum.ROSELIA]: {
@@ -7735,6 +7841,32 @@ const pokemonConfigRaw = {
     ],
     battleEligible: true,
     rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.ABSOL]: {
+    name: "Absol",
+    emoji: "<:359:1132496959765229610>",
+    description:
+      "Every time Absol appears before people, it is followed by a disaster such as an earthquake or a tidal wave. As a result, it came to be known as the disaster Pokémon.",
+    type: [types.DARK],
+    baseStats: [65, 130, 60, 75, 60, 75],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/359.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/359.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.45,
+      [abilityIdEnum.SUPER_LUCK]: 0.45,
+      [abilityIdEnum.JUSTIFIED]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.QUICK_ATTACK,
+      moveIdEnum.SWORDS_DANCE,
+      moveIdEnum.SUCKER_PUNCH,
+      moveIdEnum.IRON_TAIL,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
   },
   [pokemonIdEnum.SNORUNT]: {

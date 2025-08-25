@@ -1286,6 +1286,96 @@ const abilitiesToRegister = Object.freeze({
       // do nothing
     },
   }),
+  [abilityIdEnum.PURE_POWER]: new Ability({
+    id: abilityIdEnum.PURE_POWER,
+    name: "Pure Power",
+    description: "Doubles the user's Attack stat.",
+    abilityAdd({ battle, target }) {
+      battle.addToLog(`${target.name}'s Pure Power raises its Attack!`);
+      target.multiplyStatMult("atk", 2);
+    },
+    abilityRemove({ target }) {
+      target.multiplyStatMult("atk", 0.5);
+    },
+  }),
+  [abilityIdEnum.PLUS]: new Ability({
+    id: abilityIdEnum.PLUS,
+    name: "Plus",
+    description:
+      "Powers up moves by 50% for each Pokémon with the Minus ability on the battlefield.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage }) => {
+            // Count Pokemon with Minus ability on battlefield
+            const allPokemons = Object.values(battle.allPokemon);
+            const minusCount = allPokemons.filter((pokemon) =>
+              pokemon?.hasActiveAbility?.(abilityIdEnum.MINUS)
+            ).length;
+
+            if (minusCount > 0) {
+              const multiplier = 1 + 0.5 * minusCount;
+              battle.addToLog(
+                `${target.name}'s Plus ability powers up its move! (${minusCount} Minus Pokémon found)`
+              );
+              return {
+                damage: Math.floor(damage * multiplier),
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourcePokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.MINUS]: new Ability({
+    id: abilityIdEnum.MINUS,
+    name: "Minus",
+    description:
+      "Powers up moves by 50% for each Pokémon with the Plus ability on the battlefield.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage }) => {
+            // Count Pokemon with Plus ability on battlefield
+            const allPokemons = Object.values(battle.allPokemon);
+            const plusCount = allPokemons.filter((pokemon) =>
+              pokemon?.hasActiveAbility?.(abilityIdEnum.PLUS)
+            ).length;
+
+            if (plusCount > 0) {
+              const multiplier = 1 + 0.5 * plusCount;
+              battle.addToLog(
+                `${target.name}'s Minus ability powers up its move! (${plusCount} Plus Pokémon found)`
+              );
+              return {
+                damage: Math.floor(damage * multiplier),
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourcePokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
 });
 
 module.exports = {

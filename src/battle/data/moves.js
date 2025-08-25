@@ -2320,6 +2320,55 @@ const movesToRegisterRaw = {
       this.genericDealAllDamage();
     },
   }),
+  [moveIdEnum.MEDITATE]: new Move({
+    id: moveIdEnum.MEDITATE,
+    name: "Meditate",
+    type: pokemonTypes.PSYCHIC,
+    power: null,
+    accuracy: null,
+    cooldown: 0,
+    targetType: targetTypes.ALLY,
+    targetPosition: targetPositions.SELF,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.BASIC,
+    damageType: damageTypes.OTHER,
+    description:
+      "The user meditates to awaken its inner power, raising its Attack for 3 turns and increasing its combat readiness by 50%.",
+    execute() {
+      this.genericApplyAllEffects({
+        effectId: "atkUp",
+        duration: 3,
+      });
+      this.genericChangeAllCombatReadiness({
+        amount: 50,
+        action: "boost",
+      });
+    },
+  }),
+  [moveIdEnum.SUCKER_PUNCH]: new Move({
+    id: moveIdEnum.SUCKER_PUNCH,
+    name: "Sucker Punch",
+    type: pokemonTypes.DARK,
+    power: 70,
+    accuracy: 100,
+    cooldown: 2,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SINGLE,
+    tier: moveTiers.POWER,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user strikes first with a sneaky punch. If the target has any moves on cooldown, the user gains 80% combat readiness.",
+    execute() {
+      this.genericDealAllDamage();
+      const { primaryTarget, source } = this;
+      const moveDatas = Object.values(primaryTarget.moveIds);
+      if (moveDatas.some((moveData) => moveData.cooldown > 0)) {
+        source.boostCombatReadiness(source, 80);
+      }
+    },
+    tags: ["punch"],
+  }),
 };
 
 // Helper function to create Sketch moves for different slots
