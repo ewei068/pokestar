@@ -241,9 +241,38 @@ const deoxysMythicConfig = {
   speciesIds: ["386", "10001", "10002", "10003"],
 };
 
+/**
+ * @type {{
+ *  speciesIds: PokemonIdEnum[],
+ * }}
+ */
+const arceusMythicConfig = {
+  speciesIds: [
+    pokemonIdEnum.ARCEUS,
+    pokemonIdEnum.ARCEUS_BUG,
+    pokemonIdEnum.ARCEUS_DARK,
+    pokemonIdEnum.ARCEUS_DRAGON,
+    pokemonIdEnum.ARCEUS_ELECTRIC,
+    pokemonIdEnum.ARCEUS_FAIRY,
+    pokemonIdEnum.ARCEUS_FIGHTING,
+    pokemonIdEnum.ARCEUS_FIRE,
+    pokemonIdEnum.ARCEUS_FLYING,
+    pokemonIdEnum.ARCEUS_GHOST,
+    pokemonIdEnum.ARCEUS_GRASS,
+    pokemonIdEnum.ARCEUS_GROUND,
+    pokemonIdEnum.ARCEUS_ICE,
+    pokemonIdEnum.ARCEUS_POISON,
+    pokemonIdEnum.ARCEUS_PSYCHIC,
+    pokemonIdEnum.ARCEUS_ROCK,
+    pokemonIdEnum.ARCEUS_STEEL,
+    pokemonIdEnum.ARCEUS_WATER,
+  ],
+};
+
 module.exports = {
   mewMythicConfig,
   celebiMythicConfig,
   jirachiMythicConfig,
   deoxysMythicConfig,
+  arceusMythicConfig,
 };

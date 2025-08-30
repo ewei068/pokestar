@@ -47,6 +47,7 @@ const {
   DEPRECATEDcalculateAndUpdatePokemonStats: calculateAndUpdatePokemonStats,
   checkNumPokemon,
   updatePokemon,
+  transformPokemon,
 } = require("./pokemon");
 const { getTrainer, updateTrainer, emitTrainerEvent } = require("./trainer");
 const { getMoves } = require("../battle/data/moveRegistry");
@@ -58,6 +59,7 @@ const {
   mewMythicConfig,
   deoxysMythicConfig,
   jirachiMythicConfig,
+  arceusMythicConfig,
 } = require("../config/mythicConfig");
 
 /**
@@ -78,7 +80,7 @@ const getMythic = async (trainer, speciesId) => {
     filter: {
       speciesId,
     },
-    limit: 1,
+    pageSize: 1,
     allowNone: true,
   });
   if (pokemons.err) {
@@ -964,6 +966,100 @@ const useWish = async (user, { wishId, pokemon }) => {
   return { result, err: null };
 };
 
+const ARCEUS_SPECIES_IDS = arceusMythicConfig.speciesIds;
+
+/**
+ * @param {WithId<Trainer>} trainer
+ * @returns {Promise<{err?: string, data?: WithId<Pokemon>}>}
+ */
+const getArceus = async (trainer) => {
+  const arceusRes = await Promise.all(
+    ARCEUS_SPECIES_IDS.map(
+      async (speciesId) => await getMythic(trainer, speciesId)
+    )
+  );
+
+  let arceus = null;
+  for (const possibleArceus of arceusRes) {
+    if (possibleArceus.data) {
+      arceus = possibleArceus.data;
+      break;
+    }
+  }
+
+  let modified = false;
+  const speciesId = (arceus && arceus.speciesId) || ARCEUS_SPECIES_IDS[0];
+  if (!arceus) {
+    // TODO
+    // eslint-disable-next-line no-constant-condition
+    if (true) {
+      return {
+        err: "TODO.",
+      };
+    }
+
+    arceus = generateMythic(trainer, speciesId);
+    modified = true;
+  }
+
+  // update arceus if modified
+  if (modified) {
+    const { err, id } = await upsertMythic(trainer, arceus);
+    if (err) {
+      return { err };
+    }
+    // @ts-ignore
+    arceus._id = id || arceus._id;
+  }
+
+  // @ts-ignore
+  return { data: arceus };
+};
+
+/**
+ * @param {DiscordUser} user
+ * @param {PokemonIdEnum} speciesId
+ * @returns {Promise<{err?: string, data?: WithId<Pokemon>}>}
+ */
+const onArceusFormSelect = async (user, speciesId) => {
+  if (!ARCEUS_SPECIES_IDS.includes(speciesId)) {
+    return { err: "Invalid Arceus Form" };
+  }
+
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { err: trainerErr };
+  }
+
+  const { data: arceus, err: arceusErr } = await getArceus(trainer);
+  if (arceusErr) {
+    return { err: arceusErr };
+  }
+
+  const newArceusData = pokemonConfig[speciesId];
+  if (!newArceusData) {
+    return { err: "Invalid Arceus Form" };
+  }
+  if (arceus.speciesId === speciesId) {
+    return { err: "You already have this Arceus Form" };
+  }
+
+  // update arceus
+  const newArceus = transformPokemon(arceus, speciesId);
+
+  // recalculate stats
+  const updateRes = await calculateAndUpdatePokemonStats(
+    newArceus,
+    newArceusData,
+    true
+  );
+  if (updateRes.err) {
+    return { err: updateRes.err };
+  }
+
+  return { err: null, data: updateRes.data };
+};
+
 module.exports = {
   getMew,
   updateMew,
@@ -978,4 +1074,6 @@ module.exports = {
   canTrainerUseWish,
   useWish,
   getDarkrai,
+  getArceus,
+  onArceusFormSelect,
 };
