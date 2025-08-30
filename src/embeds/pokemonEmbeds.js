@@ -65,13 +65,13 @@ const {
   equipmentConfig,
   SWAP_COST,
 } = require("../config/equipmentConfig");
-const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { timeEnum } = require("../enums/miscEnums");
 const {
   formatItemQuantityFromBackpack,
   getItemDisplay,
 } = require("../utils/itemUtils");
 const { emojis } = require("../enums/emojis");
+const { jirachiMythicConfig } = require("../config/mythicConfig");
 
 /**
  *
@@ -1027,7 +1027,6 @@ const buildCelebiAbilityEmbed = (trainer) => {
  * @param {Trainer} trainer
  */
 const buildJirachiAbilityEmbed = (trainer) => {
-  const { mythicConfig } = pokemonConfig[pokemonIdEnum.JIRACHI];
   const embed = new EmbedBuilder();
   embed.setTitle(`Jirachi's Abilities`);
   embed.setColor("#FFFFFF");
@@ -1037,7 +1036,7 @@ const buildJirachiAbilityEmbed = (trainer) => {
 
   embed.addFields({
     name: "Passive: Serene Luck",
-    value: `Jirachi calls upon the stars to grant you improved luck! **You are ${mythicConfig.shinyChanceMultiplier}x more likely to find Shiny Pokemon** from most methods (spawning excluded).`,
+    value: `Jirachi calls upon the stars to grant you improved luck! **You are ${jirachiMythicConfig.shinyChanceMultiplier}x more likely to find Shiny Pokemon** from most methods (spawning excluded).`,
     inline: false,
   });
 
@@ -1046,7 +1045,7 @@ const buildJirachiAbilityEmbed = (trainer) => {
     ? `(next Wish: <t:${Math.floor(nextWeek.getTime() / 1000)}:R>) `
     : "";
   let wishString = `Wish upon a star **once a week** ${remainingTimeString}for one of the following powerful effects:\n`;
-  for (const wish of Object.values(mythicConfig.wishes)) {
+  for (const wish of Object.values(jirachiMythicConfig.wishes)) {
     wishString += `* **[${
       backpackItemConfig[backpackItems.STAR_PIECE].emoji
     } x${wish.starPieceCost}] Wish for ${wish.name}:** ${wish.description}\n`;

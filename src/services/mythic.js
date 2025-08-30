@@ -54,6 +54,11 @@ const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { statIndexToBattleStatId } = require("../config/battleConfig");
 const { getAbilityName } = require("../utils/pokemonUtils");
 const { trainerEventEnum } = require("../enums/gameEnums");
+const {
+  mewMythicConfig,
+  deoxysMythicConfig,
+  jirachiMythicConfig,
+} = require("../config/mythicConfig");
 
 /**
  * @param {Trainer} trainer
@@ -146,9 +151,7 @@ const upsertMythic = async (trainer, mythic) => {
   }
 };
 
-const validateMewMoves = (mew, mewData) => {
-  const { mythicConfig } = mewData;
-
+const validateMewMoves = (mew) => {
   // if len moveIds != 4, return false
   if (mew.moveIds.length !== 4) {
     return { err: "Mew must have 4 moves!" };
@@ -163,19 +166,19 @@ const validateMewMoves = (mew, mewData) => {
 
   // iterate over moveIds and check if move is in mewData.mythicConfig
   // first move in basic
-  if (!mythicConfig.basicMoveIds.includes(moveIds[0])) {
+  if (!mewMythicConfig.basicMoveIds.includes(moveIds[0])) {
     return { err: "Mew's first move must be a valid basic move!" };
   }
   // second move in power
-  if (!mythicConfig.powerMoveIds.includes(moveIds[1])) {
+  if (!mewMythicConfig.powerMoveIds.includes(moveIds[1])) {
     return { err: "Mew's second move must be a valid power move!" };
   }
   // third move in power
-  if (!mythicConfig.powerMoveIds.includes(moveIds[2])) {
+  if (!mewMythicConfig.powerMoveIds.includes(moveIds[2])) {
     return { err: "Mew's third move must be a valid power move!" };
   }
   // fourth move in ultimate
-  if (!mythicConfig.ultimateMoveIds.includes(moveIds[3])) {
+  if (!mewMythicConfig.ultimateMoveIds.includes(moveIds[3])) {
     return { err: "Mew's fourth move must be a valid ultimate move!" };
   }
 
@@ -206,7 +209,7 @@ const getMew = async (trainer) => {
   }
 
   // if moves not valid, reset moves
-  if (validateMewMoves(mew, mewData).err) {
+  if (validateMewMoves(mew).err) {
     mew.moveIds = [...mewData.moveIds];
     modified = true;
   }
@@ -244,19 +247,19 @@ const updateMew = async (user, tab, selection) => {
   switch (tab) {
     case "basic":
       mew.moveIds[0] = selection;
-      err = validateMewMoves(mew, mewData).err;
+      err = validateMewMoves(mew).err;
       break;
     case "power1":
       mew.moveIds[1] = selection;
-      err = validateMewMoves(mew, mewData).err;
+      err = validateMewMoves(mew).err;
       break;
     case "power2":
       mew.moveIds[2] = selection;
-      err = validateMewMoves(mew, mewData).err;
+      err = validateMewMoves(mew).err;
       break;
     case "ultimate":
       mew.moveIds[3] = selection;
-      err = validateMewMoves(mew, mewData).err;
+      err = validateMewMoves(mew).err;
       break;
     case "nature":
       mew.natureId = selection;
@@ -284,10 +287,6 @@ const buildMewSend = async ({ user = null, tab = "basic" } = {}) => {
   }
   trainer = trainer.data;
 
-  const mewId = "151";
-  const mewData = pokemonConfig[mewId];
-  const { mythicConfig } = mewData;
-
   const mewRes = await getMew(trainer);
   if (mewRes.err) {
     return { err: mewRes.err };
@@ -300,25 +299,25 @@ const buildMewSend = async ({ user = null, tab = "basic" } = {}) => {
   let extraFields = [];
   switch (tab) {
     case "basic":
-      selectIds = mythicConfig.basicMoveIds;
+      selectIds = mewMythicConfig.basicMoveIds;
       // filter out moves that mew already knows
       selectIds = selectIds.filter((moveId) => !mew.moveIds.includes(moveId));
       selectConfig = getMoves({});
       break;
     case "power1":
-      selectIds = mythicConfig.powerMoveIds;
+      selectIds = mewMythicConfig.powerMoveIds;
       // filter out moves that mew already knows
       selectIds = selectIds.filter((moveId) => !mew.moveIds.includes(moveId));
       selectConfig = getMoves({});
       break;
     case "power2":
-      selectIds = mythicConfig.powerMoveIds;
+      selectIds = mewMythicConfig.powerMoveIds;
       // filter out moves that mew already knows
       selectIds = selectIds.filter((moveId) => !mew.moveIds.includes(moveId));
       selectConfig = getMoves({});
       break;
     case "ultimate":
-      selectIds = mythicConfig.ultimateMoveIds;
+      selectIds = mewMythicConfig.ultimateMoveIds;
       // filter out moves that mew already knows
       selectIds = selectIds.filter((moveId) => !mew.moveIds.includes(moveId));
       selectConfig = getMoves({});
@@ -574,7 +573,7 @@ const buildTimeTravelSend = async (user) => {
   return { send, err: null };
 };
 
-const DEOXYS_SPECIES_IDS = pokemonConfig["386"].mythicConfig.speciesIds;
+const DEOXYS_SPECIES_IDS = deoxysMythicConfig.speciesIds;
 
 const getDeoxys = async (trainer) => {
   const deoxysRes = await Promise.all(
@@ -822,8 +821,7 @@ const getDarkrai = async (trainer) => {
  * @returns {{err?: string}}
  */
 const canTrainerUseWish = (trainer, { wishId, pokemon }) => {
-  const wishData =
-    pokemonConfig[pokemonIdEnum.JIRACHI].mythicConfig.wishes[wishId];
+  const wishData = jirachiMythicConfig.wishes[wishId];
   if (!wishData) {
     return { err: "Invalid wish" };
   }
@@ -871,8 +869,7 @@ const useWish = async (user, { wishId, pokemon }) => {
   }
 
   // use wish
-  const wishData =
-    pokemonConfig[pokemonIdEnum.JIRACHI].mythicConfig.wishes[wishId];
+  const wishData = jirachiMythicConfig.wishes[wishId];
   const { starPieceCost } = wishData;
   // remove star pieces and set usedWish to true
   removeItems(trainer, backpackItems.STAR_PIECE, starPieceCost);

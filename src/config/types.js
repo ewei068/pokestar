@@ -69,7 +69,6 @@
  *  rarity: RarityEnum,
  *  growthRate: GrowthRateEnum,
  *  noGacha?: boolean,
- *  mythicConfig?: any,
  *  unobtainable?: boolean
  *  tags?: PokemonTag[]
  * }} PokemonConfigData
