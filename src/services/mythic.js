@@ -64,22 +64,14 @@ const {
 
 /**
  * @param {Trainer} trainer
- * @param {string | number} speciesId
+ * @param {pokemonIdEnum | (pokemonIdEnum[])} speciesIdOrIds
  * @returns {Promise<{data?: WithId<Pokemon>, err?: string}>}
  */
-const getMythic = async (trainer, speciesId) => {
-  const speciesData = pokemonConfig[speciesId];
-  if (!speciesData) {
-    return { err: "Pokemon doesn't exist!" };
-  }
-  if (speciesData.rarity !== rarities.MYTHICAL) {
-    return { err: "Pokemon is not Mythical!" };
-  }
-
+const getMythic = async (trainer, speciesIdOrIds) => {
   const pokemons = await listPokemons(trainer, {
-    filter: {
-      speciesId,
-    },
+    filter: Array.isArray(speciesIdOrIds)
+      ? { speciesId: { $in: speciesIdOrIds } }
+      : { speciesId: speciesIdOrIds },
     pageSize: 1,
     allowNone: true,
   });
@@ -578,19 +570,8 @@ const buildTimeTravelSend = async (user) => {
 const DEOXYS_SPECIES_IDS = deoxysMythicConfig.speciesIds;
 
 const getDeoxys = async (trainer) => {
-  const deoxysRes = await Promise.all(
-    DEOXYS_SPECIES_IDS.map(
-      async (speciesId) => await getMythic(trainer, speciesId)
-    )
-  );
-
-  let deoxys = null;
-  for (const possibleDeoxys of deoxysRes) {
-    if (possibleDeoxys.data) {
-      deoxys = possibleDeoxys.data;
-      break;
-    }
-  }
+  const deoxysRes = await getMythic(trainer, DEOXYS_SPECIES_IDS);
+  const deoxys = deoxysRes.data;
 
   let modified = false;
   const speciesId = (deoxys && deoxys.speciesId) || DEOXYS_SPECIES_IDS[0];
@@ -973,19 +954,9 @@ const ARCEUS_SPECIES_IDS = arceusMythicConfig.speciesIds;
  * @returns {Promise<{err?: string, data?: WithId<Pokemon>}>}
  */
 const getArceus = async (trainer) => {
-  const arceusRes = await Promise.all(
-    ARCEUS_SPECIES_IDS.map(
-      async (speciesId) => await getMythic(trainer, speciesId)
-    )
-  );
-
-  let arceus = null;
-  for (const possibleArceus of arceusRes) {
-    if (possibleArceus.data) {
-      arceus = possibleArceus.data;
-      break;
-    }
-  }
+  // @ts-ignore
+  const arceusRes = await getMythic(trainer, ARCEUS_SPECIES_IDS);
+  const arceus = arceusRes.data;
 
   let modified = false;
   const speciesId = (arceus && arceus.speciesId) || ARCEUS_SPECIES_IDS[0];
