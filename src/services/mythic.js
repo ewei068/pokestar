@@ -53,7 +53,10 @@ const { getTrainer, updateTrainer, emitTrainerEvent } = require("./trainer");
 const { getMoves } = require("../battle/data/moveRegistry");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { statIndexToBattleStatId } = require("../config/battleConfig");
-const { getAbilityName } = require("../utils/pokemonUtils");
+const {
+  getAbilityName,
+  buildSpeciesNameString,
+} = require("../utils/pokemonUtils");
 const { trainerEventEnum } = require("../enums/gameEnums");
 const {
   mewMythicConfig,
@@ -956,19 +959,116 @@ const ARCEUS_SPECIES_IDS = arceusMythicConfig.speciesIds;
 const getArceus = async (trainer) => {
   // @ts-ignore
   const arceusRes = await getMythic(trainer, ARCEUS_SPECIES_IDS);
-  const arceus = arceusRes.data;
+  let arceus = arceusRes.data;
 
   let modified = false;
   const speciesId = (arceus && arceus.speciesId) || ARCEUS_SPECIES_IDS[0];
   if (!arceus) {
-    // TODO
-    // eslint-disable-next-line no-constant-condition
-    if (true) {
+    // to get Arceus, the user must complete the following 3 steps:
+    // 1. Have at least 1 unown
+    // 2. Have at least 1 Dialga Origin, Palkia Origin, Giratina Origin, Azelf, Uxie, and Mesprit
+    // 3. Have the following Mythical Pokemon: Mew, Celebi, Jirachi, Deoxys, and Darkrai
+
+    // unown check
+    const unownRes = await listPokemons(trainer, {
+      filter: { speciesId: pokemonIdEnum.UNOWN },
+      pageSize: 1,
+      allowNone: true,
+    });
+    const numUnown = unownRes?.data?.length || 0;
+    if (numUnown === 0) {
       return {
-        err: "TODO.",
+        err: `First, Arceus demands its arms of creation! Catch one ${buildSpeciesNameString(
+          pokemonIdEnum.UNOWN
+        )}!`,
       };
     }
 
+    // dialga, palkia, giratina, azelf, uxie, mesprit check
+    const speciesIds = [
+      pokemonIdEnum.DIALGA_ORIGIN,
+      pokemonIdEnum.PALKIA_ORIGIN,
+      pokemonIdEnum.GIRATINA_ORIGIN,
+      pokemonIdEnum.AZELF,
+      pokemonIdEnum.UXIE,
+      pokemonIdEnum.MESPRIT,
+    ];
+    const promises = speciesIds.map((speciesIdToFind) =>
+      listPokemons(trainer, {
+        filter: { speciesId: speciesIdToFind },
+        pageSize: 1,
+        allowNone: true,
+      })
+    );
+    const results = await Promise.allSettled(promises);
+    let numNotFound = 0;
+    for (const result of results) {
+      if (result.status === "rejected") {
+        numNotFound += 1;
+      } else if (result.value?.data?.length === 0) {
+        numNotFound += 1;
+      }
+    }
+    if (numNotFound > 0) {
+      return {
+        err: `Next, Arceus needs its creation Pokemon! Catch the following Pokemon: ${speciesIds
+          .map(buildSpeciesNameString)
+          .join(", ")}`,
+      };
+    }
+
+    // mythical check
+    const mythicPromises = [
+      listPokemons(trainer, {
+        filter: { speciesId: pokemonIdEnum.MEW },
+        pageSize: 1,
+        allowNone: true,
+      }),
+      listPokemons(trainer, {
+        filter: { speciesId: pokemonIdEnum.CELEBI },
+        pageSize: 1,
+        allowNone: true,
+      }),
+      listPokemons(trainer, {
+        filter: { speciesId: pokemonIdEnum.JIRACHI },
+        pageSize: 1,
+        allowNone: true,
+      }),
+      listPokemons(trainer, {
+        filter: { speciesId: { $in: DEOXYS_SPECIES_IDS } },
+        pageSize: 1,
+        allowNone: true,
+      }),
+      listPokemons(trainer, {
+        filter: { speciesId: pokemonIdEnum.DARKRAI },
+        pageSize: 1,
+        allowNone: true,
+      }),
+    ];
+    const mythicResults = await Promise.allSettled(mythicPromises);
+    numNotFound = 0;
+    for (const result of mythicResults) {
+      if (result.status === "rejected") {
+        numNotFound += 1;
+      } else if (result.value?.data?.length === 0 || result.value?.err) {
+        numNotFound += 1;
+      }
+    }
+    if (numNotFound > 0) {
+      return {
+        err: `Finally, Arceus needs its Mythical Pokemon! Use the \`/mythic\` command to catch the following Pokemon: ${[
+          pokemonIdEnum.MEW,
+          pokemonIdEnum.CELEBI,
+          pokemonIdEnum.JIRACHI,
+          pokemonIdEnum.DEOXYS,
+          pokemonIdEnum.DARKRAI,
+        ]
+          .map(buildSpeciesNameString)
+          .join(", ")}`,
+      };
+    }
+
+    // @ts-ignore
     arceus = generateMythic(trainer, speciesId);
     modified = true;
   }
