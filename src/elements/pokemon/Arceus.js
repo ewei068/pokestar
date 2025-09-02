@@ -1,6 +1,8 @@
+const { ButtonStyle } = require("discord.js");
 const {
   buildPokemonEmbed,
   buildNewPokemonEmbed,
+  buildDexListEmbed,
 } = require("../../embeds/pokemonEmbeds");
 const {
   useAwaitedMemo,
@@ -21,6 +23,9 @@ const { arceusMythicConfig } = require("../../config/mythicConfig");
 const IdConfigSelectMenu = require("../foundation/IdConfigSelectMenu");
 const usePaginationAndSelection = require("../../hooks/usePaginationAndSelection");
 const { getInteractionInstance } = require("../../deact/interactions");
+const ReturnButton = require("../foundation/ReturnButton");
+const Button = require("../../deact/elements/Button");
+const { emojis } = require("../../enums/emojis");
 
 const defaultPokemonIds = /** @type {PokemonIdEnum[]} */ (
   Object.keys(pokemonConfig).filter((/** @type {PokemonIdEnum} */ speciesId) =>
@@ -36,7 +41,7 @@ const defaultPokemonIds = /** @type {PokemonIdEnum[]} */ (
  * @returns {Promise<ComposedElements>}
  */
 const CreatePokemon = async (ref, { user, goBack }) => {
-  const allIds = useState(defaultPokemonIds, ref);
+  const [allIds, setAllIds] = useState(defaultPokemonIds, ref);
 
   const onSelect = useCallback(
     async (interaction, speciesId) => {
@@ -52,6 +57,7 @@ const CreatePokemon = async (ref, { user, goBack }) => {
       if (interactionInstance) {
         await interactionInstance.reply({
           element: {
+            content: newPokemon._id.toString(),
             embeds: [buildNewPokemonEmbed(newPokemon)],
           },
         });
@@ -63,7 +69,7 @@ const CreatePokemon = async (ref, { user, goBack }) => {
     ref
   );
 
-  const { items, selectMenuElement, scrollButtonsElement } =
+  const { items, selectMenuElement, scrollButtonsElement, page } =
     usePaginationAndSelection(
       {
         allItems: allIds,
@@ -84,9 +90,18 @@ const CreatePokemon = async (ref, { user, goBack }) => {
     content = "No Pokemon found. Try a different search term!";
   }
 
+  const goBackKey = useCallbackBinding(() => {
+    goBack();
+  }, ref);
+
   return {
     contents: [content],
-    components: [selectMenuElement, scrollButtonsElement],
+    embeds: [buildDexListEmbed(items, page)],
+    components: [
+      selectMenuElement,
+      scrollButtonsElement,
+      createElement(ReturnButton, { callbackBindingKey: goBackKey }),
+    ],
   };
 };
 
@@ -97,7 +112,12 @@ const CreatePokemon = async (ref, { user, goBack }) => {
  * @returns {Promise<ComposedElements>}
  */
 const Arceus = async (ref, { user }) => {
-  const { trainer, err: trainerErr } = await useTrainer(user, ref);
+  const [tab, setTab] = useState("default", ref);
+  const {
+    trainer,
+    err: trainerErr,
+    refreshTrainer,
+  } = await useTrainer(user, ref);
   if (trainerErr) {
     return { err: trainerErr };
   }
@@ -136,10 +156,46 @@ const Arceus = async (ref, { user }) => {
     showId: true,
   });
 
+  const goBack = useCallback(
+    async () => {
+      setTab("default");
+      await refreshTrainer();
+    },
+    [setTab, refreshTrainer],
+    ref
+  );
+
+  const changeTabKey = useCallbackBinding(
+    (_interaction, data) => {
+      const { tab: tabPressed } = data;
+      setTab(tabPressed);
+    },
+    ref,
+    { defer: false }
+  );
+
+  if (tab === "create") {
+    return {
+      elements: [createElement(CreatePokemon, { user, goBack })],
+    };
+  }
+
   return {
     contents: [arceus._id.toString()],
     embeds: [buildPokemonEmbed(user, arceus, "info")],
-    components: [formSelectMenu],
+    components: [
+      formSelectMenu,
+      [
+        createElement(Button, {
+          label: "Create Pokemon",
+          style: ButtonStyle.Secondary,
+          callbackBindingKey: changeTabKey,
+          data: { tab: "create" },
+          emoji: emojis.PIKACHU,
+          disabled: trainer.usedCreation,
+        }),
+      ],
+    ],
   };
 };
 
