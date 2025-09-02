@@ -846,6 +846,10 @@ const useWish = async (user, { wishId, pokemon }) => {
   if (trainerErr) {
     return { err: trainerErr };
   }
+  const jirachiRes = await getJirachi(trainer);
+  if (jirachiRes.err) {
+    return { err: jirachiRes.err };
+  }
   const { err: canUseWishErr } = canTrainerUseWish(trainer, {
     wishId,
     pokemon,
@@ -925,12 +929,12 @@ const useWish = async (user, { wishId, pokemon }) => {
       break;
     case "wealth":
       rewards = {
-        money: 100000,
+        money: 40000,
         backpack: {
           [backpackCategories.MATERIALS]: {
-            [backpackItems.EMOTION_SHARD]: 400,
-            [backpackItems.KNOWLEDGE_SHARD]: 400,
-            [backpackItems.WILLPOWER_SHARD]: 400,
+            [backpackItems.EMOTION_SHARD]: 300,
+            [backpackItems.KNOWLEDGE_SHARD]: 300,
+            [backpackItems.WILLPOWER_SHARD]: 300,
             [backpackItems.MINT]: 5,
           },
         },
@@ -1131,6 +1135,59 @@ const onArceusFormSelect = async (user, speciesId) => {
   return { err: null, data: updateRes.data };
 };
 
+/**
+ * @param {PokemonIdEnum} speciesId
+ * @returns {boolean}
+ */
+const canArceusCreatePokemon = (speciesId) => {
+  const pokemonData = pokemonConfig[speciesId];
+  if (!pokemonData) {
+    return false;
+  }
+  return !pokemonData.noGacha && !pokemonData.unobtainable;
+};
+
+/**
+ * Uses Arceus to create a Pokemon of the user's choosing
+ * @param {DiscordUser} user
+ * @param {PokemonIdEnum} speciesId
+ * @returns {Promise<{err?: string, data?: WithId<Pokemon>}>}
+ */
+const arceusCreatePokemon = async (user, speciesId) => {
+  if (!canArceusCreatePokemon(speciesId)) {
+    return { err: "Arceus cannot create this Pokemon" };
+  }
+
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { err: trainerErr };
+  }
+  if (trainer.usedCreation) {
+    return { err: "You have already used Arceus's creation powers this week!" };
+  }
+  const { err: arceusErr } = await getArceus(trainer);
+  if (arceusErr) {
+    return { err: arceusErr };
+  }
+
+  const givePokemonRes = await giveNewPokemons(trainer, [speciesId], 1, {
+    betterIvs: true,
+  });
+  if (givePokemonRes.err) {
+    return { err: givePokemonRes.err };
+  }
+  const pokemon = givePokemonRes.data.pokemons[0];
+
+  // make updates
+  // trainer.usedCreation = true; TODO later
+  const updateRes = await updateTrainer(trainer);
+  if (updateRes.err) {
+    return { err: updateRes.err };
+  }
+
+  return { err: null, data: pokemon };
+};
+
 module.exports = {
   getMew,
   updateMew,
@@ -1147,4 +1204,6 @@ module.exports = {
   getDarkrai,
   getArceus,
   onArceusFormSelect,
+  arceusCreatePokemon,
+  canArceusCreatePokemon,
 };

@@ -224,8 +224,8 @@ const jirachiMythicConfig = Object.freeze({
     wealth: {
       name: "Wealth",
       description: `Grants ${formatMoney(
-        100000
-      )}, 400 of each Equipment Shard, and 5 mints.`,
+        40000
+      )}, 300 of each Equipment Shard, and 5 mints.`,
       starPieceCost: 200,
     },
   },

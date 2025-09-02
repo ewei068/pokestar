@@ -467,6 +467,11 @@ const trainerFields = {
     default: false,
     refreshInterval: timeEnum.WEEK,
   },
+  usedCreation: {
+    type: "boolean",
+    default: false,
+    refreshInterval: timeEnum.WEEK,
+  },
   dreamCards: {
     type: "number",
     default: 100,

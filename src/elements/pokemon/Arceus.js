@@ -1,15 +1,94 @@
-const { buildPokemonEmbed } = require("../../embeds/pokemonEmbeds");
+const {
+  buildPokemonEmbed,
+  buildNewPokemonEmbed,
+} = require("../../embeds/pokemonEmbeds");
 const {
   useAwaitedMemo,
   useCallbackBinding,
   createElement,
   useState,
+  useCallback,
 } = require("../../deact/deact");
 const useTrainer = require("../../hooks/useTrainer");
-const { getArceus, onArceusFormSelect } = require("../../services/mythic");
+const {
+  getArceus,
+  onArceusFormSelect,
+  canArceusCreatePokemon,
+  arceusCreatePokemon,
+} = require("../../services/mythic");
 const { pokemonConfig } = require("../../config/pokemonConfig");
 const { arceusMythicConfig } = require("../../config/mythicConfig");
 const IdConfigSelectMenu = require("../foundation/IdConfigSelectMenu");
+const usePaginationAndSelection = require("../../hooks/usePaginationAndSelection");
+const { getInteractionInstance } = require("../../deact/interactions");
+
+const defaultPokemonIds = /** @type {PokemonIdEnum[]} */ (
+  Object.keys(pokemonConfig).filter((/** @type {PokemonIdEnum} */ speciesId) =>
+    canArceusCreatePokemon(speciesId)
+  )
+);
+
+/**
+ * @param {DeactElement} ref
+ * @param {object} param1
+ * @param {DiscordUser} param1.user
+ * @param {Function} param1.goBack
+ * @returns {Promise<ComposedElements>}
+ */
+const CreatePokemon = async (ref, { user, goBack }) => {
+  const allIds = useState(defaultPokemonIds, ref);
+
+  const onSelect = useCallback(
+    async (interaction, speciesId) => {
+      const { data: newPokemon, err: newPokemonErr } =
+        await arceusCreatePokemon(user, speciesId);
+      if (newPokemonErr) {
+        return {
+          err: newPokemonErr,
+        };
+      }
+
+      const interactionInstance = getInteractionInstance(interaction);
+      if (interactionInstance) {
+        await interactionInstance.reply({
+          element: {
+            embeds: [buildNewPokemonEmbed(newPokemon)],
+          },
+        });
+      }
+
+      goBack();
+    },
+    [user, goBack],
+    ref
+  );
+
+  const { items, selectMenuElement, scrollButtonsElement } =
+    usePaginationAndSelection(
+      {
+        allItems: allIds,
+        pageSize: 10,
+        initialPage: 1,
+        selectionPlaceholder: "Select a Pokemon to create",
+        itemConfig: pokemonConfig,
+        showId: true,
+        selectionCallbackOptions: { defer: true },
+        paginationCallbackOptions: { defer: true },
+        onSelect,
+      },
+      ref
+    );
+
+  let content = "Select a Pokemon to create";
+  if (items.length === 0) {
+    content = "No Pokemon found. Try a different search term!";
+  }
+
+  return {
+    contents: [content],
+    components: [selectMenuElement, scrollButtonsElement],
+  };
+};
 
 /**
  * @param {DeactElement} ref
