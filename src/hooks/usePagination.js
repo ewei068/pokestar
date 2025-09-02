@@ -27,7 +27,7 @@ module.exports = (
   const minPage = 1;
   const maxPage = Math.ceil(allItems.length / pageSize);
   const [page, setPage] = useState(initialPage, ref);
-  const pageClamped = Math.min(Math.max(page, minPage), maxPage);
+  const pageClamped = Math.min(Math.max(page, minPage));
 
   const items = allItems.slice(
     (pageClamped - 1) * pageSize,
@@ -52,8 +52,8 @@ module.exports = (
   const scrollButtonsElement = createElement(ScrollButtons, {
     onPrevPressedKey: prevActionBindng,
     onNextPressedKey: nextActionBindng,
-    isPrevDisabled: pageClamped === 1,
-    isNextDisabled: pageClamped === maxPage,
+    isPrevDisabled: pageClamped <= 1,
+    isNextDisabled: pageClamped >= maxPage,
   });
 
   return {

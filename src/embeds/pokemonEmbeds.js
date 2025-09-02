@@ -810,7 +810,11 @@ const buildDexListEmbed = (speciesIds, page) => {
     `Pokédex Entries ${speciesIds[0]} - ${speciesIds[speciesIds.length - 1]}`
   );
   embed.setColor("#FFFFFF");
-  embed.setDescription(pokedexString);
+  if (pokedexString.length === 0) {
+    embed.setDescription("No Pokemon found. Try a different search term!");
+  } else {
+    embed.setDescription(pokedexString);
+  }
   embed.setFooter({ text: `Page ${page}` });
 
   return embed;

@@ -10,6 +10,8 @@ const {
   createElement,
   useState,
   useCallback,
+  useModalSubmitCallbackBinding,
+  createModal,
 } = require("../../deact/deact");
 const useTrainer = require("../../hooks/useTrainer");
 const {
@@ -26,6 +28,8 @@ const { getInteractionInstance } = require("../../deact/interactions");
 const ReturnButton = require("../foundation/ReturnButton");
 const Button = require("../../deact/elements/Button");
 const { emojis } = require("../../enums/emojis");
+const { fuzzyMatchAll } = require("../../utils/utils");
+const { buildPokemonSearchModal } = require("../../modals/pokemonModals");
 
 const defaultPokemonIds = /** @type {PokemonIdEnum[]} */ (
   Object.keys(pokemonConfig).filter((/** @type {PokemonIdEnum} */ speciesId) =>
@@ -94,12 +98,35 @@ const CreatePokemon = async (ref, { user, goBack }) => {
     goBack();
   }, ref);
 
+  const onSearchKey = useModalSubmitCallbackBinding((interaction) => {
+    const search = interaction.fields.getTextInputValue("pokemonSearchInput");
+    setAllIds(
+      fuzzyMatchAll(defaultPokemonIds, search, (id) => pokemonConfig[id].name)
+    );
+  }, ref);
+
+  const openSearchModalKey = useCallbackBinding(async (interaction) => {
+    await createModal(
+      buildPokemonSearchModal,
+      {},
+      onSearchKey,
+      interaction,
+      ref
+    );
+  }, ref);
+
   return {
     contents: [content],
     embeds: [buildDexListEmbed(items, page)],
     components: [
       selectMenuElement,
       scrollButtonsElement,
+      createElement(Button, {
+        emoji: "🔍",
+        label: "Search",
+        style: ButtonStyle.Secondary,
+        callbackBindingKey: openSearchModalKey,
+      }),
       createElement(ReturnButton, { callbackBindingKey: goBackKey }),
     ],
   };
