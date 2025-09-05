@@ -38,6 +38,7 @@ const {
   removeItems,
   addRewards,
   getRewardsString,
+  addItems,
 } = require("../utils/trainerUtils");
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
 const {
@@ -47,33 +48,35 @@ const {
   DEPRECATEDcalculateAndUpdatePokemonStats: calculateAndUpdatePokemonStats,
   checkNumPokemon,
   updatePokemon,
+  transformPokemon,
 } = require("./pokemon");
 const { getTrainer, updateTrainer, emitTrainerEvent } = require("./trainer");
 const { getMoves } = require("../battle/data/moveRegistry");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { statIndexToBattleStatId } = require("../config/battleConfig");
-const { getAbilityName } = require("../utils/pokemonUtils");
+const {
+  getAbilityName,
+  buildSpeciesNameString,
+} = require("../utils/pokemonUtils");
 const { trainerEventEnum } = require("../enums/gameEnums");
+const {
+  mewMythicConfig,
+  deoxysMythicConfig,
+  jirachiMythicConfig,
+  arceusMythicConfig,
+} = require("../config/mythicConfig");
 
 /**
  * @param {Trainer} trainer
- * @param {string | number} speciesId
+ * @param {pokemonIdEnum | (pokemonIdEnum[])} speciesIdOrIds
  * @returns {Promise<{data?: WithId<Pokemon>, err?: string}>}
  */
-const getMythic = async (trainer, speciesId) => {
-  const speciesData = pokemonConfig[speciesId];
-  if (!speciesData) {
-    return { err: "Pokemon doesn't exist!" };
-  }
-  if (speciesData.rarity !== rarities.MYTHICAL) {
-    return { err: "Pokemon is not Mythical!" };
-  }
-
+const getMythic = async (trainer, speciesIdOrIds) => {
   const pokemons = await listPokemons(trainer, {
-    filter: {
-      speciesId,
-    },
-    limit: 1,
+    filter: Array.isArray(speciesIdOrIds)
+      ? { speciesId: { $in: speciesIdOrIds } }
+      : { speciesId: speciesIdOrIds },
+    pageSize: 1,
     allowNone: true,
   });
   if (pokemons.err) {
@@ -146,9 +149,7 @@ const upsertMythic = async (trainer, mythic) => {
   }
 };
 
-const validateMewMoves = (mew, mewData) => {
-  const { mythicConfig } = mewData;
-
+const validateMewMoves = (mew) => {
   // if len moveIds != 4, return false
   if (mew.moveIds.length !== 4) {
     return { err: "Mew must have 4 moves!" };
@@ -163,19 +164,19 @@ const validateMewMoves = (mew, mewData) => {
 
   // iterate over moveIds and check if move is in mewData.mythicConfig
   // first move in basic
-  if (!mythicConfig.basicMoveIds.includes(moveIds[0])) {
+  if (!mewMythicConfig.basicMoveIds.includes(moveIds[0])) {
     return { err: "Mew's first move must be a valid basic move!" };
   }
   // second move in power
-  if (!mythicConfig.powerMoveIds.includes(moveIds[1])) {
+  if (!mewMythicConfig.powerMoveIds.includes(moveIds[1])) {
     return { err: "Mew's second move must be a valid power move!" };
   }
   // third move in power
-  if (!mythicConfig.powerMoveIds.includes(moveIds[2])) {
+  if (!mewMythicConfig.powerMoveIds.includes(moveIds[2])) {
     return { err: "Mew's third move must be a valid power move!" };
   }
   // fourth move in ultimate
-  if (!mythicConfig.ultimateMoveIds.includes(moveIds[3])) {
+  if (!mewMythicConfig.ultimateMoveIds.includes(moveIds[3])) {
     return { err: "Mew's fourth move must be a valid ultimate move!" };
   }
 
@@ -206,7 +207,7 @@ const getMew = async (trainer) => {
   }
 
   // if moves not valid, reset moves
-  if (validateMewMoves(mew, mewData).err) {
+  if (validateMewMoves(mew).err) {
     mew.moveIds = [...mewData.moveIds];
     modified = true;
   }
@@ -244,19 +245,19 @@ const updateMew = async (user, tab, selection) => {
   switch (tab) {
     case "basic":
       mew.moveIds[0] = selection;
-      err = validateMewMoves(mew, mewData).err;
+      err = validateMewMoves(mew).err;
       break;
     case "power1":
       mew.moveIds[1] = selection;
-      err = validateMewMoves(mew, mewData).err;
+      err = validateMewMoves(mew).err;
       break;
     case "power2":
       mew.moveIds[2] = selection;
-      err = validateMewMoves(mew, mewData).err;
+      err = validateMewMoves(mew).err;
       break;
     case "ultimate":
       mew.moveIds[3] = selection;
-      err = validateMewMoves(mew, mewData).err;
+      err = validateMewMoves(mew).err;
       break;
     case "nature":
       mew.natureId = selection;
@@ -284,10 +285,6 @@ const buildMewSend = async ({ user = null, tab = "basic" } = {}) => {
   }
   trainer = trainer.data;
 
-  const mewId = "151";
-  const mewData = pokemonConfig[mewId];
-  const { mythicConfig } = mewData;
-
   const mewRes = await getMew(trainer);
   if (mewRes.err) {
     return { err: mewRes.err };
@@ -300,25 +297,25 @@ const buildMewSend = async ({ user = null, tab = "basic" } = {}) => {
   let extraFields = [];
   switch (tab) {
     case "basic":
-      selectIds = mythicConfig.basicMoveIds;
+      selectIds = mewMythicConfig.basicMoveIds;
       // filter out moves that mew already knows
       selectIds = selectIds.filter((moveId) => !mew.moveIds.includes(moveId));
       selectConfig = getMoves({});
       break;
     case "power1":
-      selectIds = mythicConfig.powerMoveIds;
+      selectIds = mewMythicConfig.powerMoveIds;
       // filter out moves that mew already knows
       selectIds = selectIds.filter((moveId) => !mew.moveIds.includes(moveId));
       selectConfig = getMoves({});
       break;
     case "power2":
-      selectIds = mythicConfig.powerMoveIds;
+      selectIds = mewMythicConfig.powerMoveIds;
       // filter out moves that mew already knows
       selectIds = selectIds.filter((moveId) => !mew.moveIds.includes(moveId));
       selectConfig = getMoves({});
       break;
     case "ultimate":
-      selectIds = mythicConfig.ultimateMoveIds;
+      selectIds = mewMythicConfig.ultimateMoveIds;
       // filter out moves that mew already knows
       selectIds = selectIds.filter((moveId) => !mew.moveIds.includes(moveId));
       selectConfig = getMoves({});
@@ -574,22 +571,11 @@ const buildTimeTravelSend = async (user) => {
   return { send, err: null };
 };
 
-const DEOXYS_SPECIES_IDS = pokemonConfig["386"].mythicConfig.speciesIds;
+const DEOXYS_SPECIES_IDS = deoxysMythicConfig.speciesIds;
 
 const getDeoxys = async (trainer) => {
-  const deoxysRes = await Promise.all(
-    DEOXYS_SPECIES_IDS.map(
-      async (speciesId) => await getMythic(trainer, speciesId)
-    )
-  );
-
-  let deoxys = null;
-  for (const possibleDeoxys of deoxysRes) {
-    if (possibleDeoxys.data) {
-      deoxys = possibleDeoxys.data;
-      break;
-    }
-  }
+  const deoxysRes = await getMythic(trainer, DEOXYS_SPECIES_IDS);
+  const deoxys = deoxysRes.data;
 
   let modified = false;
   const speciesId = (deoxys && deoxys.speciesId) || DEOXYS_SPECIES_IDS[0];
@@ -822,8 +808,7 @@ const getDarkrai = async (trainer) => {
  * @returns {{err?: string}}
  */
 const canTrainerUseWish = (trainer, { wishId, pokemon }) => {
-  const wishData =
-    pokemonConfig[pokemonIdEnum.JIRACHI].mythicConfig.wishes[wishId];
+  const wishData = jirachiMythicConfig.wishes[wishId];
   if (!wishData) {
     return { err: "Invalid wish" };
   }
@@ -862,6 +847,10 @@ const useWish = async (user, { wishId, pokemon }) => {
   if (trainerErr) {
     return { err: trainerErr };
   }
+  const jirachiRes = await getJirachi(trainer);
+  if (jirachiRes.err) {
+    return { err: jirachiRes.err };
+  }
   const { err: canUseWishErr } = canTrainerUseWish(trainer, {
     wishId,
     pokemon,
@@ -871,8 +860,7 @@ const useWish = async (user, { wishId, pokemon }) => {
   }
 
   // use wish
-  const wishData =
-    pokemonConfig[pokemonIdEnum.JIRACHI].mythicConfig.wishes[wishId];
+  const wishData = jirachiMythicConfig.wishes[wishId];
   const { starPieceCost } = wishData;
   // remove star pieces and set usedWish to true
   removeItems(trainer, backpackItems.STAR_PIECE, starPieceCost);
@@ -942,12 +930,12 @@ const useWish = async (user, { wishId, pokemon }) => {
       break;
     case "wealth":
       rewards = {
-        money: 100000,
+        money: 40000,
         backpack: {
           [backpackCategories.MATERIALS]: {
-            [backpackItems.EMOTION_SHARD]: 400,
-            [backpackItems.KNOWLEDGE_SHARD]: 400,
-            [backpackItems.WILLPOWER_SHARD]: 400,
+            [backpackItems.EMOTION_SHARD]: 300,
+            [backpackItems.KNOWLEDGE_SHARD]: 300,
+            [backpackItems.WILLPOWER_SHARD]: 300,
             [backpackItems.MINT]: 5,
           },
         },
@@ -967,6 +955,269 @@ const useWish = async (user, { wishId, pokemon }) => {
   return { result, err: null };
 };
 
+const ARCEUS_SPECIES_IDS = arceusMythicConfig.speciesIds;
+
+/**
+ * @param {WithId<Trainer>} trainer
+ * @returns {Promise<{err?: string, data?: WithId<Pokemon>}>}
+ */
+const getArceus = async (trainer) => {
+  // @ts-ignore
+  const arceusRes = await getMythic(trainer, ARCEUS_SPECIES_IDS);
+  let arceus = arceusRes.data;
+
+  let modified = false;
+  const speciesId = (arceus && arceus.speciesId) || ARCEUS_SPECIES_IDS[0];
+  if (!arceus) {
+    // to get Arceus, the user must complete the following 3 steps:
+    // 1. Have at least 1 unown
+    // 2. Have at least 1 Dialga Origin, Palkia Origin, Giratina Origin, Azelf, Uxie, and Mesprit
+    // 3. Have the following Mythical Pokemon: Mew, Celebi, Jirachi, Deoxys, and Darkrai
+
+    // unown check
+    const unownRes = await listPokemons(trainer, {
+      filter: { speciesId: pokemonIdEnum.UNOWN },
+      pageSize: 1,
+      allowNone: true,
+    });
+    const numUnown = unownRes?.data?.length || 0;
+    if (numUnown === 0) {
+      return {
+        err: `First, Arceus demands its arms of creation! Catch one ${buildSpeciesNameString(
+          pokemonIdEnum.UNOWN
+        )}!`,
+      };
+    }
+
+    // dialga, palkia, giratina, azelf, uxie, mesprit check
+    const speciesIds = [
+      pokemonIdEnum.DIALGA_ORIGIN,
+      pokemonIdEnum.PALKIA_ORIGIN,
+      pokemonIdEnum.GIRATINA_ORIGIN,
+      pokemonIdEnum.AZELF,
+      pokemonIdEnum.UXIE,
+      pokemonIdEnum.MESPRIT,
+    ];
+    const promises = speciesIds.map((speciesIdToFind) =>
+      listPokemons(trainer, {
+        filter: { speciesId: speciesIdToFind },
+        pageSize: 1,
+        allowNone: true,
+      })
+    );
+    const results = await Promise.allSettled(promises);
+    let numNotFound = 0;
+    for (const result of results) {
+      if (result.status === "rejected") {
+        numNotFound += 1;
+      } else if (result.value?.data?.length === 0) {
+        numNotFound += 1;
+      }
+    }
+    if (numNotFound > 0) {
+      return {
+        err: `Next, Arceus needs its creation Pokemon! Catch the following Pokemon: ${speciesIds
+          .map(buildSpeciesNameString)
+          .join(", ")}`,
+      };
+    }
+
+    // mythical check
+    const mythicPromises = [
+      listPokemons(trainer, {
+        filter: { speciesId: pokemonIdEnum.MEW },
+        pageSize: 1,
+        allowNone: true,
+      }),
+      listPokemons(trainer, {
+        filter: { speciesId: pokemonIdEnum.CELEBI },
+        pageSize: 1,
+        allowNone: true,
+      }),
+      listPokemons(trainer, {
+        filter: { speciesId: pokemonIdEnum.JIRACHI },
+        pageSize: 1,
+        allowNone: true,
+      }),
+      listPokemons(trainer, {
+        filter: { speciesId: { $in: DEOXYS_SPECIES_IDS } },
+        pageSize: 1,
+        allowNone: true,
+      }),
+      listPokemons(trainer, {
+        filter: { speciesId: pokemonIdEnum.DARKRAI },
+        pageSize: 1,
+        allowNone: true,
+      }),
+    ];
+    const mythicResults = await Promise.allSettled(mythicPromises);
+    numNotFound = 0;
+    for (const result of mythicResults) {
+      if (result.status === "rejected") {
+        numNotFound += 1;
+      } else if (result.value?.data?.length === 0 || result.value?.err) {
+        numNotFound += 1;
+      }
+    }
+    if (numNotFound > 0) {
+      return {
+        err: `Finally, Arceus needs its Mythical Pokemon! Use the \`/mythic\` command to catch the following Pokemon: ${[
+          pokemonIdEnum.MEW,
+          pokemonIdEnum.CELEBI,
+          pokemonIdEnum.JIRACHI,
+          pokemonIdEnum.DEOXYS,
+          pokemonIdEnum.DARKRAI,
+        ]
+          .map(buildSpeciesNameString)
+          .join(", ")}`,
+      };
+    }
+
+    // @ts-ignore
+    arceus = generateMythic(trainer, speciesId);
+    modified = true;
+  }
+
+  // update arceus if modified
+  if (modified) {
+    const { err, id } = await upsertMythic(trainer, arceus);
+    if (err) {
+      return { err };
+    }
+    // @ts-ignore
+    arceus._id = id || arceus._id;
+  }
+
+  // @ts-ignore
+  return { data: arceus };
+};
+
+/**
+ * @param {DiscordUser} user
+ * @param {PokemonIdEnum} speciesId
+ * @returns {Promise<{err?: string, data?: WithId<Pokemon>}>}
+ */
+const onArceusFormSelect = async (user, speciesId) => {
+  if (!ARCEUS_SPECIES_IDS.includes(speciesId)) {
+    return { err: "Invalid Arceus Form" };
+  }
+
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { err: trainerErr };
+  }
+
+  const { data: arceus, err: arceusErr } = await getArceus(trainer);
+  if (arceusErr) {
+    return { err: arceusErr };
+  }
+
+  const newArceusData = pokemonConfig[speciesId];
+  if (!newArceusData) {
+    return { err: "Invalid Arceus Form" };
+  }
+  if (arceus.speciesId === speciesId) {
+    return { err: "You already have this Arceus Form" };
+  }
+
+  // update arceus
+  const newArceus = transformPokemon(arceus, speciesId);
+
+  // recalculate stats
+  const updateRes = await calculateAndUpdatePokemonStats(
+    newArceus,
+    newArceusData,
+    true
+  );
+  if (updateRes.err) {
+    return { err: updateRes.err };
+  }
+
+  return { err: null, data: updateRes.data };
+};
+
+/**
+ * @param {PokemonIdEnum} speciesId
+ * @returns {boolean}
+ */
+const canArceusCreatePokemon = (speciesId) => {
+  const pokemonData = pokemonConfig[speciesId];
+  if (!pokemonData) {
+    return false;
+  }
+  return !pokemonData.noGacha && !pokemonData.unobtainable;
+};
+
+/**
+ * Uses Arceus to create a Pokemon of the user's choosing
+ * @param {DiscordUser} user
+ * @param {PokemonIdEnum} speciesId
+ * @returns {Promise<{err?: string, data?: WithId<Pokemon>}>}
+ */
+const arceusCreatePokemon = async (user, speciesId) => {
+  if (!canArceusCreatePokemon(speciesId)) {
+    return { err: "Arceus cannot create this Pokemon" };
+  }
+
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { err: trainerErr };
+  }
+  if (trainer.usedCreation) {
+    return { err: "You have already used Arceus's creation powers this week!" };
+  }
+  const { err: arceusErr } = await getArceus(trainer);
+  if (arceusErr) {
+    return { err: arceusErr };
+  }
+
+  const givePokemonRes = await giveNewPokemons(trainer, [speciesId], 1, {
+    betterIvs: true,
+  });
+  if (givePokemonRes.err) {
+    return { err: givePokemonRes.err };
+  }
+  const pokemon = givePokemonRes.data.pokemons[0];
+
+  // make updates
+  trainer.usedCreation = true;
+  const updateRes = await updateTrainer(trainer);
+  if (updateRes.err) {
+    return { err: updateRes.err };
+  }
+
+  return { err: null, data: pokemon };
+};
+
+/**
+ * @param {DiscordUser} user
+ * @param {BackpackItemEnum} itemId
+ * @returns {Promise<{err?: string}>}
+ */
+const arceusCreateItem = async (user, itemId) => {
+  if (!backpackItemConfig[itemId]) {
+    return { err: "Invalid Item" };
+  }
+
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { err: trainerErr };
+  }
+  if (trainer.usedCreation) {
+    return { err: "You have already used Arceus's creation powers this week!" };
+  }
+
+  addItems(trainer, itemId, 1);
+  trainer.usedCreation = true;
+
+  const updateRes = await updateTrainer(trainer);
+  if (updateRes.err) {
+    return { err: updateRes.err };
+  }
+
+  return { err: null };
+};
+
 module.exports = {
   getMew,
   updateMew,
@@ -981,4 +1232,9 @@ module.exports = {
   canTrainerUseWish,
   useWish,
   getDarkrai,
+  getArceus,
+  onArceusFormSelect,
+  arceusCreatePokemon,
+  canArceusCreatePokemon,
+  arceusCreateItem,
 };

@@ -65,13 +65,13 @@ const {
   equipmentConfig,
   SWAP_COST,
 } = require("../config/equipmentConfig");
-const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { timeEnum } = require("../enums/miscEnums");
 const {
   formatItemQuantityFromBackpack,
   getItemDisplay,
 } = require("../utils/itemUtils");
 const { emojis } = require("../enums/emojis");
+const { jirachiMythicConfig } = require("../config/mythicConfig");
 
 /**
  *
@@ -810,7 +810,11 @@ const buildDexListEmbed = (speciesIds, page) => {
     `Pokédex Entries ${speciesIds[0]} - ${speciesIds[speciesIds.length - 1]}`
   );
   embed.setColor("#FFFFFF");
-  embed.setDescription(pokedexString);
+  if (pokedexString.length === 0) {
+    embed.setDescription("No Pokemon found. Try a different search term!");
+  } else {
+    embed.setDescription(pokedexString);
+  }
   embed.setFooter({ text: `Page ${page}` });
 
   return embed;
@@ -1027,7 +1031,6 @@ const buildCelebiAbilityEmbed = (trainer) => {
  * @param {Trainer} trainer
  */
 const buildJirachiAbilityEmbed = (trainer) => {
-  const { mythicConfig } = pokemonConfig[pokemonIdEnum.JIRACHI];
   const embed = new EmbedBuilder();
   embed.setTitle(`Jirachi's Abilities`);
   embed.setColor("#FFFFFF");
@@ -1037,7 +1040,7 @@ const buildJirachiAbilityEmbed = (trainer) => {
 
   embed.addFields({
     name: "Passive: Serene Luck",
-    value: `Jirachi calls upon the stars to grant you improved luck! **You are ${mythicConfig.shinyChanceMultiplier}x more likely to find Shiny Pokemon** from most methods (spawning excluded).`,
+    value: `Jirachi calls upon the stars to grant you improved luck! **You are ${jirachiMythicConfig.shinyChanceMultiplier}x more likely to find Shiny Pokemon** from most methods (spawning excluded).`,
     inline: false,
   });
 
@@ -1046,7 +1049,7 @@ const buildJirachiAbilityEmbed = (trainer) => {
     ? `(next Wish: <t:${Math.floor(nextWeek.getTime() / 1000)}:R>) `
     : "";
   let wishString = `Wish upon a star **once a week** ${remainingTimeString}for one of the following powerful effects:\n`;
-  for (const wish of Object.values(mythicConfig.wishes)) {
+  for (const wish of Object.values(jirachiMythicConfig.wishes)) {
     wishString += `* **[${
       backpackItemConfig[backpackItems.STAR_PIECE].emoji
     } x${wish.starPieceCost}] Wish for ${wish.name}:** ${wish.description}\n`;
@@ -1090,6 +1093,41 @@ const buildDarkraiAbilityEmbed = (trainer) => {
   return embed;
 };
 
+const buildArceusAbilityEmbed = (trainer) => {
+  const embed = new EmbedBuilder();
+  embed.setTitle(`Arceus's Abilities`);
+  embed.setColor("#FFFFFF");
+  embed.setDescription(
+    `Arceus can change into unique forms and has one special ability!`
+  );
+
+  const timeLeftString = trainer.usedCreation
+    ? `(next Creation: <t:${Math.floor(
+        getNextTimeIntervalDate(timeEnum.WEEK).getTime() / 1000
+      )}:R>) `
+    : "";
+
+  embed.addFields([
+    {
+      name: "Forms: Multitype",
+      value:
+        "Arceus can change into unique forms! Each form changes type and moves, also changing the type of its signature move Judgment.",
+      inline: false,
+    },
+    {
+      name: "Active: Creation",
+      value: `Arceus can create Pokemon and Items. Once a week, you can create a Pokemon or Item of your choosing. ${timeLeftString}`,
+      inline: false,
+    },
+  ]);
+
+  embed.setImage(
+    "https://64.media.tumblr.com/dc2a8b0f3bd0f5a01281e8088e29a4e0/4f9e9b448c2b75e3-84/s2048x3072/80806673caab5dd58acc5b7075ecc827021575a9.pnj"
+  );
+
+  return embed;
+};
+
 module.exports = {
   buildBannerEmbed,
   buildPokemonSpawnEmbed,
@@ -1109,4 +1147,5 @@ module.exports = {
   buildCelebiAbilityEmbed,
   buildJirachiAbilityEmbed,
   buildDarkraiAbilityEmbed,
+  buildArceusAbilityEmbed,
 };

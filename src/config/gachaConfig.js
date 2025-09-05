@@ -1,14 +1,10 @@
 const seedrandom = require("seedrandom");
 const { backpackItems } = require("./backpackConfig");
-const {
-  rarities,
-  rarityBins,
-  pokemonConfig,
-  getGeneration,
-} = require("./pokemonConfig");
+const { rarities, rarityBins, getGeneration } = require("./pokemonConfig");
 const { drawIterable } = require("../utils/gachaUtils");
 const { getFullUTCDate } = require("../utils/utils");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
+const { celebiMythicConfig } = require("./mythicConfig");
 
 const dailyRewardChances = Object.freeze({
   [backpackItems.POKEBALL]: 0.7,
@@ -621,21 +617,19 @@ const bannerConfigRaw = [
 const bannerConfig = Object.freeze(bannerConfigRaw);
 
 const getCelebiPool = () => {
-  const celebiId = "251";
-  const celebiConfig = pokemonConfig[celebiId];
   // seedrandom using date
   const date = getFullUTCDate();
   const rng = seedrandom(date);
   return {
     [rarities.LEGENDARY]: drawIterable(
-      celebiConfig.mythicConfig[rarities.LEGENDARY],
+      celebiMythicConfig[rarities.LEGENDARY],
       3,
       {
         replacement: false,
         rng,
       }
     ),
-    [rarities.EPIC]: drawIterable(celebiConfig.mythicConfig[rarities.EPIC], 3, {
+    [rarities.EPIC]: drawIterable(celebiMythicConfig[rarities.EPIC], 3, {
       replacement: false,
       rng,
     }),
