@@ -72,7 +72,7 @@ const CreatePokemon = async (ref, { user, goBack }) => {
         });
       }
 
-      goBack();
+      await goBack();
     },
     [user, goBack],
     ref
@@ -99,8 +99,8 @@ const CreatePokemon = async (ref, { user, goBack }) => {
     content = "No Pokemon found. Try a different search term!";
   }
 
-  const goBackKey = useCallbackBinding(() => {
-    goBack();
+  const goBackKey = useCallbackBinding(async () => {
+    await goBack();
   }, ref);
 
   const onSearchKey = useModalSubmitCallbackBinding((interaction) => {
@@ -169,7 +169,7 @@ const CreateItem = async (ref, { user, goBack }) => {
         });
       }
 
-      goBack();
+      await goBack();
     },
     [user, goBack],
     ref
@@ -206,8 +206,8 @@ const CreateItem = async (ref, { user, goBack }) => {
     await createModal(buildItemSearchModal, {}, onSearchKey, interaction, ref);
   }, ref);
 
-  const goBackKey = useCallbackBinding(() => {
-    goBack();
+  const goBackKey = useCallbackBinding(async () => {
+    await goBack();
   }, ref);
 
   return {

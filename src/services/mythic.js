@@ -1180,7 +1180,7 @@ const arceusCreatePokemon = async (user, speciesId) => {
   const pokemon = givePokemonRes.data.pokemons[0];
 
   // make updates
-  // trainer.usedCreation = true; TODO later
+  trainer.usedCreation = true;
   const updateRes = await updateTrainer(trainer);
   if (updateRes.err) {
     return { err: updateRes.err };
@@ -1208,6 +1208,7 @@ const arceusCreateItem = async (user, itemId) => {
   }
 
   addItems(trainer, itemId, 1);
+  trainer.usedCreation = true;
 
   const updateRes = await updateTrainer(trainer);
   if (updateRes.err) {
