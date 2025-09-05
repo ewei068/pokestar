@@ -201,6 +201,10 @@ const buildItemListEmbed = (itemIds) => {
     itemString += `${item.emoji} **${item.name}**\n`;
   }
 
+  if (itemString.length === 0) {
+    itemString = "No Items found. Try a different search term!";
+  }
+
   const embed = new EmbedBuilder();
   embed.setTitle("Items");
   embed.setColor(0xffffff);

@@ -34,6 +34,7 @@ const { buildPokemonSearchModal } = require("../../modals/pokemonModals");
 const { getFlattenedRewardsString } = require("../../utils/trainerUtils");
 const { backpackItemConfig } = require("../../config/backpackConfig");
 const { buildItemListEmbed } = require("../../embeds/shopEmbeds");
+const { buildItemSearchModal } = require("../../modals/trainerModals");
 
 const defaultPokemonIds = /** @type {PokemonIdEnum[]} */ (
   Object.keys(pokemonConfig).filter((/** @type {PokemonIdEnum} */ speciesId) =>
@@ -194,6 +195,17 @@ const CreateItem = async (ref, { user, goBack }) => {
     content = "No Items found. Try a different search term!";
   }
 
+  const onSearchKey = useModalSubmitCallbackBinding((interaction) => {
+    const search = interaction.fields.getTextInputValue("itemSearchInput");
+    setAllItems(
+      fuzzyMatchAll(defaultItems, search, (id) => backpackItemConfig[id].name)
+    );
+  }, ref);
+
+  const openSearchModalKey = useCallbackBinding(async (interaction) => {
+    await createModal(buildItemSearchModal, {}, onSearchKey, interaction, ref);
+  }, ref);
+
   const goBackKey = useCallbackBinding(() => {
     goBack();
   }, ref);
@@ -204,6 +216,12 @@ const CreateItem = async (ref, { user, goBack }) => {
     components: [
       selectMenuElement,
       scrollButtonsElement,
+      createElement(Button, {
+        emoji: "🔍",
+        label: "Search",
+        style: ButtonStyle.Secondary,
+        callbackBindingKey: openSearchModalKey,
+      }),
       createElement(ReturnButton, { callbackBindingKey: goBackKey }),
     ],
   };
