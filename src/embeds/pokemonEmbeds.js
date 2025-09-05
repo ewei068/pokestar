@@ -1093,6 +1093,41 @@ const buildDarkraiAbilityEmbed = (trainer) => {
   return embed;
 };
 
+const buildArceusAbilityEmbed = (trainer) => {
+  const embed = new EmbedBuilder();
+  embed.setTitle(`Arceus's Abilities`);
+  embed.setColor("#FFFFFF");
+  embed.setDescription(
+    `Arceus can change into unique forms and has one special ability!`
+  );
+
+  const timeLeftString = trainer.usedCreation
+    ? `(next Creation: <t:${Math.floor(
+        getNextTimeIntervalDate(timeEnum.WEEK).getTime() / 1000
+      )}:R>) `
+    : "";
+
+  embed.addFields([
+    {
+      name: "Forms: Multitype",
+      value:
+        "Arceus can change into unique forms! Each form changes type and moves, also changing the type of its signature move Judgment.",
+      inline: false,
+    },
+    {
+      name: "Active: Creation",
+      value: `Arceus can create Pokemon and Items. Once a week, you can create a Pokemon or Item of your choosing. ${timeLeftString}`,
+      inline: false,
+    },
+  ]);
+
+  embed.setImage(
+    "https://64.media.tumblr.com/dc2a8b0f3bd0f5a01281e8088e29a4e0/4f9e9b448c2b75e3-84/s2048x3072/80806673caab5dd58acc5b7075ecc827021575a9.pnj"
+  );
+
+  return embed;
+};
+
 module.exports = {
   buildBannerEmbed,
   buildPokemonSpawnEmbed,
@@ -1112,4 +1147,5 @@ module.exports = {
   buildCelebiAbilityEmbed,
   buildJirachiAbilityEmbed,
   buildDarkraiAbilityEmbed,
+  buildArceusAbilityEmbed,
 };

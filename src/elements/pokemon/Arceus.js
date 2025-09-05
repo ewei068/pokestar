@@ -3,6 +3,7 @@ const {
   buildPokemonEmbed,
   buildNewPokemonEmbed,
   buildDexListEmbed,
+  buildArceusAbilityEmbed,
 } = require("../../embeds/pokemonEmbeds");
 const {
   useAwaitedMemo,
@@ -309,7 +310,10 @@ const Arceus = async (ref, { user }) => {
 
   return {
     contents: [arceus._id.toString()],
-    embeds: [buildPokemonEmbed(user, arceus, "info")],
+    embeds: [
+      buildPokemonEmbed(user, arceus, "info"),
+      buildArceusAbilityEmbed(trainer),
+    ],
     components: [
       formSelectMenu,
       [
