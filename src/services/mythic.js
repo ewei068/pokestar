@@ -38,6 +38,7 @@ const {
   removeItems,
   addRewards,
   getRewardsString,
+  addItems,
 } = require("../utils/trainerUtils");
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
 const {
@@ -1188,6 +1189,34 @@ const arceusCreatePokemon = async (user, speciesId) => {
   return { err: null, data: pokemon };
 };
 
+/**
+ * @param {DiscordUser} user
+ * @param {BackpackItemEnum} itemId
+ * @returns {Promise<{err?: string}>}
+ */
+const arceusCreateItem = async (user, itemId) => {
+  if (!backpackItemConfig[itemId]) {
+    return { err: "Invalid Item" };
+  }
+
+  const { data: trainer, err: trainerErr } = await getTrainer(user);
+  if (trainerErr) {
+    return { err: trainerErr };
+  }
+  if (trainer.usedCreation) {
+    return { err: "You have already used Arceus's creation powers this week!" };
+  }
+
+  addItems(trainer, itemId, 1);
+
+  const updateRes = await updateTrainer(trainer);
+  if (updateRes.err) {
+    return { err: updateRes.err };
+  }
+
+  return { err: null };
+};
+
 module.exports = {
   getMew,
   updateMew,
@@ -1206,4 +1235,5 @@ module.exports = {
   onArceusFormSelect,
   arceusCreatePokemon,
   canArceusCreatePokemon,
+  arceusCreateItem,
 };

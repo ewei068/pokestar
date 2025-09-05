@@ -19,6 +19,7 @@ const {
   onArceusFormSelect,
   canArceusCreatePokemon,
   arceusCreatePokemon,
+  arceusCreateItem,
 } = require("../../services/mythic");
 const { pokemonConfig } = require("../../config/pokemonConfig");
 const { arceusMythicConfig } = require("../../config/mythicConfig");
@@ -30,6 +31,9 @@ const Button = require("../../deact/elements/Button");
 const { emojis } = require("../../enums/emojis");
 const { fuzzyMatchAll } = require("../../utils/utils");
 const { buildPokemonSearchModal } = require("../../modals/pokemonModals");
+const { getFlattenedRewardsString } = require("../../utils/trainerUtils");
+const { backpackItemConfig } = require("../../config/backpackConfig");
+const { buildItemListEmbed } = require("../../embeds/shopEmbeds");
 
 const defaultPokemonIds = /** @type {PokemonIdEnum[]} */ (
   Object.keys(pokemonConfig).filter((/** @type {PokemonIdEnum} */ speciesId) =>
@@ -132,6 +136,79 @@ const CreatePokemon = async (ref, { user, goBack }) => {
   };
 };
 
+const defaultItems = /** @type {BackpackItemEnum[]} */ (
+  Object.keys(backpackItemConfig)
+);
+
+const CreateItem = async (ref, { user, goBack }) => {
+  const [allItems, setAllItems] = useState(defaultItems, ref);
+
+  const onSelect = useCallback(
+    async (interaction, itemId) => {
+      const { err } = await arceusCreateItem(user, itemId);
+      if (err) {
+        return {
+          err,
+        };
+      }
+
+      const interactionInstance = getInteractionInstance(interaction);
+      if (interactionInstance) {
+        await interactionInstance.reply({
+          element: {
+            content: getFlattenedRewardsString(
+              {
+                backpack: {
+                  [itemId]: 1,
+                },
+              },
+              true
+            ),
+          },
+        });
+      }
+
+      goBack();
+    },
+    [user, goBack],
+    ref
+  );
+
+  const { items, selectMenuElement, scrollButtonsElement } =
+    usePaginationAndSelection(
+      {
+        allItems,
+        pageSize: 10,
+        initialPage: 1,
+        selectionPlaceholder: "Select an Item to create",
+        itemConfig: backpackItemConfig,
+        selectionCallbackOptions: { defer: true },
+        paginationCallbackOptions: { defer: false },
+        onSelect,
+      },
+      ref
+    );
+
+  let content = "Select an Item to create";
+  if (items.length === 0) {
+    content = "No Items found. Try a different search term!";
+  }
+
+  const goBackKey = useCallbackBinding(() => {
+    goBack();
+  }, ref);
+
+  return {
+    contents: [content],
+    embeds: [buildItemListEmbed(items)],
+    components: [
+      selectMenuElement,
+      scrollButtonsElement,
+      createElement(ReturnButton, { callbackBindingKey: goBackKey }),
+    ],
+  };
+};
+
 /**
  * @param {DeactElement} ref
  * @param {object} param1
@@ -206,6 +283,11 @@ const Arceus = async (ref, { user }) => {
       elements: [createElement(CreatePokemon, { user, goBack })],
     };
   }
+  if (tab === "createItem") {
+    return {
+      elements: [createElement(CreateItem, { user, goBack })],
+    };
+  }
 
   return {
     contents: [arceus._id.toString()],
@@ -219,6 +301,14 @@ const Arceus = async (ref, { user }) => {
           callbackBindingKey: changeTabKey,
           data: { tab: "create" },
           emoji: emojis.PIKACHU,
+          disabled: trainer.usedCreation,
+        }),
+        createElement(Button, {
+          label: "Create Item",
+          style: ButtonStyle.Secondary,
+          callbackBindingKey: changeTabKey,
+          data: { tab: "createItem" },
+          emoji: emojis.MASTERBALL,
           disabled: trainer.usedCreation,
         }),
       ],

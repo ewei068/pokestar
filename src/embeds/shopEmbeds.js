@@ -7,7 +7,10 @@
 const { EmbedBuilder } = require("discord.js");
 const { shopCategoryConfig, shopItemConfig } = require("../config/shopConfig");
 const { formatMoney, buildBlockQuoteString } = require("../utils/utils");
-const { craftableItemConfig } = require("../config/backpackConfig");
+const {
+  craftableItemConfig,
+  backpackItemConfig,
+} = require("../config/backpackConfig");
 const { getItemDisplay } = require("../utils/itemUtils");
 const { flattenCategories, getCostString } = require("../utils/trainerUtils");
 
@@ -191,10 +194,25 @@ const buildCraftItemEmbed = (trainer, itemId) => {
   return embed;
 };
 
+const buildItemListEmbed = (itemIds) => {
+  let itemString = "";
+  for (const itemId of itemIds) {
+    const item = backpackItemConfig[itemId];
+    itemString += `${item.emoji} **${item.name}**\n`;
+  }
+
+  const embed = new EmbedBuilder();
+  embed.setTitle("Items");
+  embed.setColor(0xffffff);
+  embed.setDescription(itemString);
+  return embed;
+};
+
 module.exports = {
   buildShopEmbed,
   buildShopCategoryEmbed,
   buildShopItemEmbed,
   buildCraftListEmbed,
   buildCraftItemEmbed,
+  buildItemListEmbed,
 };
