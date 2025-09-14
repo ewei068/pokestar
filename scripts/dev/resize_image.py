@@ -21,6 +21,19 @@ def resize_images_in_directory(directory, new_size):
                 frames = []
                 durations = []
                 for frame in ImageSequence.Iterator(image):
+                    # get transparency index if exists. If not 0, convert all pixels of that index to transparent
+                    try:
+                        if frame.info.get("transparency"):
+                            transparency_index = frame.info["transparency"]
+                            mode = frame.mode
+                            if transparency_index != 0 and mode == "P":
+                                for y in range(frame.size[1]):
+                                    for x in range(frame.size[0]):
+                                        if frame.getpixel((x, y)) == transparency_index:
+                                            frame.putpixel((x, y), 0)
+                    except:
+                        print(f"Error getting transparency index for {filename}")
+
                     # Resize the frame
                     frame_resized = frame.resize(new_size, Image.LANCZOS)
                     frame_resized = frame_resized.convert("RGBA")
@@ -65,5 +78,5 @@ def resize_images_in_directory(directory, new_size):
 
 
 if __name__ == "__main__":
-    directory_path = input("Enter the directory path: ")
-    resize_images_in_directory(directory_path, (96, 96))
+    # directory_path = input("Enter the directory path: ")
+    resize_images_in_directory("media/images/sprites", (96, 96))
