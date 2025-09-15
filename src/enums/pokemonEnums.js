@@ -477,6 +477,7 @@ const pokemonIdEnum = Object.freeze({
   GIBLE: "443",
   GABITE: "444",
   GARCHOMP: "445",
+  CYNTHIA_GARCHOMP: "445-1",
   MUNCHLAX: "446",
   RIOLU: "447",
   LUCARIO: "448",

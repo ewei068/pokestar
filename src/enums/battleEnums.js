@@ -966,6 +966,7 @@ const moveIdEnum = Object.freeze({
   AQUA_IMPACT: "m618-1",
   MAGMA_IMPACT: "m619-1",
   FLAME_BALL: "m780-1",
+  CATACLYSMIC_QUAKE: "m89-1",
 });
 
 /**
@@ -1348,6 +1349,7 @@ const abilityIdEnum = Object.freeze({
   JET_SPEED: "20019",
   ALPHA_CORE: "20020",
   OMEGA_CORE: "20021",
+  SURGING_SAND: "159-1",
 });
 
 /** @typedef {Enum<heldItemIdEnum>} HeldItemIdEnum */

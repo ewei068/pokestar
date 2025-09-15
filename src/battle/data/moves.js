@@ -2369,6 +2369,26 @@ const movesToRegisterRaw = {
     },
     tags: ["punch"],
   }),
+  [moveIdEnum.CATACLYSMIC_QUAKE]: new Move({
+    id: moveIdEnum.CATACLYSMIC_QUAKE,
+    name: "Cataclysmic Quake",
+    type: pokemonTypes.GROUND,
+    power: 90,
+    accuracy: 85,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user unleashes a devastating earthquake that reshapes the battlefield. Sets a sandstorm before dealing massive damage.",
+    execute() {
+      const { source, battle } = this;
+      battle.createWeather(weatherConditions.SANDSTORM, source);
+      this.genericDealAllDamage();
+    },
+  }),
 };
 
 // Helper function to create Sketch moves for different slots

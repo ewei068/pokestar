@@ -9744,6 +9744,31 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.SLOW,
   },
+  [pokemonIdEnum.CYNTHIA_GARCHOMP]: {
+    name: "Cynthia's Garchomp",
+    emoji: "<:cynthiagarchomp:1416980451473490130>",
+    description:
+      "It flies at the speed of sound while searching for prey, and it has midair battles with Salamence as the two compete for food.",
+    type: [types.DRAGON, types.GROUND],
+    baseStats: [108, 135, 85, 75, 85, 112],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/sprites/cynthia-garchomp-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/sprites/cynthia-garchomp-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.SURGING_SAND]: 1,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.BRICK_BREAK,
+      moveIdEnum.DRAGON_RUSH,
+      moveIdEnum.CATACLYSMIC_QUAKE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+  },
   [pokemonIdEnum.MUNCHLAX]: {
     name: "Munchlax",
     emoji: "<:446:1351027086944636939>",

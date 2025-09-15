@@ -47,6 +47,30 @@ const getIsInstanceOfType = (instanceType) => (eventArgs) => {
   return eventInfo?.type === instanceType;
 };
 
+/**
+ * @param {WeatherConditionEnum | "None"} weatherCondition
+ * @param {Battle} battle
+ * @param {boolean=} includeNegatedCheck
+ */
+const getIsWeatherCondition = // TODO: add battle to event args lol
+
+    (weatherCondition, battle, includeNegatedCheck = true) =>
+    () => {
+      if (weatherCondition === "None") {
+        if (
+          !battle.weather?.weatherId ||
+          (includeNegatedCheck && battle.isWeatherNegated())
+        ) {
+          return false;
+        }
+        return true;
+      }
+      return (
+        battle.weather?.weatherId === weatherCondition &&
+        (!includeNegatedCheck || !battle.isWeatherNegated())
+      );
+    };
+
 const composeConditionCallbacks =
   (...conditionCallbacks) =>
   (eventArgs) =>
@@ -72,4 +96,5 @@ module.exports = {
   getIsInstanceOfType,
   composeConditionCallbacks,
   anyConditionCallbacks,
+  getIsWeatherCondition,
 };

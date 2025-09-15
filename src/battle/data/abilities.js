@@ -28,6 +28,7 @@ const {
   getIsTargetOpponentCallback,
   getIsSourceSameTeamCallback,
   getIsNotSourcePokemonCallback,
+  getIsWeatherCondition,
 } = require("../engine/eventConditions");
 const { getMove } = require("./moveRegistry");
 const { getEffect } = require("./effectRegistry");
@@ -1368,6 +1369,53 @@ const abilitiesToRegister = Object.freeze({
           conditionCallback: composeConditionCallbacks(
             getIsSourcePokemonCallback(target),
             getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.SURGING_SAND]: new Ability({
+    id: abilityIdEnum.SURGING_SAND,
+    name: "Surging Sand",
+    description:
+      "Increases the damage of ally Ground moves by 15% in a Sandstorm. For the user, this boost is 30%.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage, damageInfo, source }) => {
+            const moveId = damageInfo?.moveId;
+            const moveData = damageInfo?.instance || getMove(moveId);
+            if (moveData?.type !== pokemonTypes.GROUND) {
+              return;
+            }
+
+            // Determine if source is the user or an ally
+            const isUser = source === target;
+            if (isUser) {
+              battle.addToLog(
+                `${target.name}'s Surging Sand greatly powers up its move!`
+              );
+              return {
+                damage: Math.floor(damage * 1.3),
+              };
+            }
+            battle.addToLog(
+              `${target.name}'s Surging Sand powers up ${source.name}'s move!`
+            );
+            return {
+              damage: Math.floor(damage * 1.15),
+            };
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourceSameTeamCallback(target),
+            getIsInstanceOfType("move"),
+            getIsWeatherCondition(weatherConditions.SANDSTORM, battle)
           ),
         }),
       };
