@@ -118,6 +118,8 @@ Some subsystems have their own specific rules with more detail:
 - Prefer to write self-documenting code over comments
 - Don't remove or add code that's not instructed or related to instructions by the prompt
 
+NEVER run `node` commands to test changed code unless directed to.
+
 
 
 

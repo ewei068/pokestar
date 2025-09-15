@@ -4,6 +4,7 @@ const { pokemonConfig } = require("../../config/pokemonConfig");
 const { createElement, useMemo } = require("../../deact/deact");
 const PokedexPokemon = require("./PokedexPokemon");
 const usePaginationAndSelection = require("../../hooks/usePaginationAndSelection");
+const { fuzzyMatchAll } = require("../../utils/utils");
 
 const PAGE_SIZE = 10;
 
@@ -34,18 +35,11 @@ module.exports = async (
             pokemonConfig[foundSpeciesId].name.toLowerCase() ===
             initialSpeciesIdOrName.toLowerCase()
         );
-        const fuzzyMatch = allIds.find(
-          (foundSpeciesId) =>
-            pokemonConfig[foundSpeciesId].name
-              .toLowerCase()
-              .includes(initialSpeciesIdOrName.toLowerCase()) ||
-            pokemonConfig[foundSpeciesId].name
-              .toLowerCase()
-              .replace(/[^a-z0-9]/g, "")
-              .includes(
-                initialSpeciesIdOrName.toLowerCase().replace(/[^a-z0-9]/g, "")
-              )
-        );
+        const fuzzyMatch = fuzzyMatchAll(
+          allIds,
+          initialSpeciesIdOrName,
+          (id) => pokemonConfig[id].name
+        )[0];
         if (selectedSpeciesId) {
           initialSpeciesId = selectedSpeciesId;
         } else if (fuzzyMatch) {

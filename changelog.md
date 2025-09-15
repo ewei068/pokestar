@@ -1,5 +1,13 @@
 # Pokéstar Changelog
 
+TODO:
+
+- gen4 event
+- arceus
+- add some more normal pokemon
+- mass release page
+- improve vote rewards / tune rewards
+
 **Stretch**
 
 - Stretch: Ability slots

@@ -17,8 +17,6 @@ const {
   canTrainerUseWish,
   useWish,
 } = require("../../services/mythic");
-const { pokemonConfig } = require("../../config/pokemonConfig");
-const { pokemonIdEnum } = require("../../enums/pokemonEnums");
 const Button = require("../../deact/elements/Button");
 const {
   backpackItemConfig,
@@ -28,9 +26,9 @@ const YesNoButtons = require("../foundation/YesNoButtons");
 const { buildPokemonIdSearchModal } = require("../../modals/pokemonModals");
 const { getPokemon } = require("../../services/pokemon");
 const { formatItemQuantity } = require("../../utils/itemUtils");
+const { jirachiMythicConfig } = require("../../config/mythicConfig");
 
 const starPieceEmoji = backpackItemConfig[backpackItems.STAR_PIECE].emoji;
-const { mythicConfig } = pokemonConfig[pokemonIdEnum.JIRACHI];
 
 /**
  * @param {DeactElement} ref
@@ -50,7 +48,7 @@ const ConfirmWish = async (
   const [shouldShowResults, setShouldShowResults] = useState(false, ref);
 
   // confirm buttons
-  const currentWishData = mythicConfig.wishes[wishId];
+  const currentWishData = jirachiMythicConfig.wishes[wishId];
   const selectedPokemonString = selectedPokemon
     ? `on **${selectedPokemon.name}** `
     : "";
@@ -166,7 +164,7 @@ const Jirachi = async (ref, { user }) => {
     ref,
     { defer: false }
   );
-  const wishButtons = Object.entries(mythicConfig.wishes).map(
+  const wishButtons = Object.entries(jirachiMythicConfig.wishes).map(
     ([wishId, wish]) => {
       const canUseWish = canTrainerUseWish(trainer, { wishId });
       return createElement(Button, {

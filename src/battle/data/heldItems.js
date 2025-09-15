@@ -433,7 +433,9 @@ const heldItemsToRegister = Object.freeze({
             // if fatal damage from full hp, set hp to 1
             const damageWillTake = Math.min(damage, maxDamage);
             if (damageWillTake > target.hp && target.hp >= target.maxHp) {
-              target.battle.addToLog(`${target.name} hung on with Sturdy!`);
+              target.battle.addToLog(
+                `${target.name} hung on with its Focus Sash!`
+              );
               target.applyEffect("moveInvulnerable", 1, target, {});
               target.removeHeldItem();
               return {

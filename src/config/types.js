@@ -46,7 +46,7 @@
  */
 
 /**
- * @typedef {"eviolite" | "testTag"} PokemonTag
+ * @typedef {"eviolite" | "boss" | "testTag"} PokemonTag
  * @typedef {{
  *  name: string,
  *  emoji: string,
@@ -57,10 +57,10 @@
  *  shinySprite: string,
  *  evolution?: Array<{
  *    level: number,
- *    id: any // TODO,
+ *    id: AllPokemonIdEnum,
  *  }>,
- *  baseSpeciesId?: string,
- *  formSpeciesIds?: string[],
+ *  baseSpeciesId?: AllPokemonIdEnum,
+ *  formSpeciesIds?: AllPokemonIdEnum[],
  *  abilities: {
  *    [key: number | string]: number // TODO?
  *  },
@@ -69,7 +69,6 @@
  *  rarity: RarityEnum,
  *  growthRate: GrowthRateEnum,
  *  noGacha?: boolean,
- *  mythicConfig?: any,
  *  unobtainable?: boolean
  *  tags?: PokemonTag[]
  * }} PokemonConfigData

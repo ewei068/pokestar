@@ -18,7 +18,6 @@ const {
   dailyRewardChances,
   pokeballConfig,
   bannerConfig,
-  bannerTypes,
   MAX_PITY,
 } = require("../config/gachaConfig");
 const {
@@ -56,9 +55,9 @@ const { eventNames } = require("../config/eventConfig");
 const { buildButtonActionRow } = require("../components/buttonActionRow");
 const { addItems } = require("../utils/trainerUtils");
 const { equipmentConfig } = require("../config/equipmentConfig");
-const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { heldItemIdEnum } = require("../enums/battleEnums");
 const { trainerEventEnum } = require("../enums/gameEnums");
+const { jirachiMythicConfig } = require("../config/mythicConfig");
 
 const DAILY_MONEY = process.env.STAGE === stageNames.ALPHA ? 100000 : 300;
 
@@ -282,8 +281,7 @@ const giveNewPokemons = async (
   newOptions.shinyChance = newOptions.shinyChance || BASE_SHINY_CHANCE;
   if (trainer.hasJirachi) {
     newOptions.shinyChance = Math.floor(
-      newOptions.shinyChance /
-        pokemonConfig[pokemonIdEnum.JIRACHI].mythicConfig.shinyChanceMultiplier
+      newOptions.shinyChance / jirachiMythicConfig.shinyChanceMultiplier
     );
   }
   for (const pokemonId of pokemonIds) {

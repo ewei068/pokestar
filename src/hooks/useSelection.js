@@ -16,6 +16,7 @@ const IdConfigSelectMenu = require("../elements/foundation/IdConfigSelectMenu");
  * @param {PartialRecord<T, any>} param0.itemConfig
  * @param {boolean=} param0.showId
  * @param {CallbackBindingOptions=} param0.callbackOptions
+ * @param {((interaction: any, item: T) => Promise<any> | any)=} param0.onSelect
  * @param {DeactElement} ref
  * @returns {{
  *  currentItem: T?,
@@ -32,16 +33,19 @@ module.exports = (
     itemConfig,
     showId = true,
     callbackOptions = {},
+    onSelect = () => {},
   },
   ref
 ) => {
   const [currentItem, setItem] = useState(initialItem, ref);
 
   const onSelectKey = useCallbackBinding(
-    (interaction) => {
+    async (interaction) => {
       // @ts-ignore ts is stupid
       const id = interaction?.values?.[0];
       setItem(id);
+      // @ts-ignore ts pmo
+      await onSelect(interaction, id);
     },
     ref,
     callbackOptions

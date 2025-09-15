@@ -1,0 +1,278 @@
+const { moveIdEnum } = require("../enums/battleEnums");
+const { pokemonIdEnum } = require("../enums/pokemonEnums");
+const { formatMoney } = require("../utils/utils");
+const { rarities } = require("./pokemonConfig");
+
+/**
+ * @type {{
+ *  basicMoveIds: MoveIdEnum[],
+ *  powerMoveIds: MoveIdEnum[],
+ *  ultimateMoveIds: MoveIdEnum[],
+ * }}
+ */
+const mewMythicConfig = {
+  basicMoveIds: [
+    "m16",
+    "m17",
+    moveIdEnum.VINE_WHIP,
+    "m35",
+    "m40",
+    "m43",
+    "m51",
+    "m52",
+    "m55",
+    "m71",
+    "m77",
+    "m81",
+    "m84",
+    "m93",
+    "m98",
+    "m100",
+    "m102",
+    "m106",
+    "m116",
+    "m118",
+    "m122",
+    "m123",
+    "m175",
+    "m189",
+    "m205",
+    "m214",
+    "m239",
+    "m246",
+    "m249",
+    "m270",
+    "m311",
+    "m418",
+    "m420",
+    "m453",
+    "m479",
+    "m506",
+    "m526",
+    "m574",
+    "m1",
+    moveIdEnum.TRANSFORM,
+  ],
+  powerMoveIds: [
+    "m14",
+    "m34",
+    "m36",
+    "m46",
+    "m53",
+    "m57",
+    "m58",
+    "m60",
+    "m65",
+    "m68",
+    "m70",
+    "m85",
+    "m86",
+    "m91",
+    "m92",
+    "m94",
+    "m113",
+    "m115",
+    "m127",
+    "m168",
+    "m182",
+    "m188",
+    "m191",
+    "m203",
+    "m215",
+    "m216",
+    "m219",
+    "m226",
+    "m240",
+    "m241",
+    "m247",
+    "m258",
+    "m269",
+    "m202",
+    "m252",
+    "m276",
+    "m283",
+    "m317",
+    "m334",
+    "m340",
+    "m347",
+    "m352",
+    "m355",
+    "m369",
+    "m387",
+    "m396",
+    "m398",
+    "m402",
+    "m406",
+    "m409",
+    "m412",
+    "m414",
+    "m417",
+    "m424",
+    "m430",
+    "m432",
+    "m441",
+    "m444",
+    "m446",
+    "m450",
+    "m492",
+    "m503",
+    "m521",
+    "m523",
+    "m525",
+    "m529",
+    "m583",
+    "m710",
+  ],
+  ultimateMoveIds: [
+    "m38",
+    "m56",
+    "m59",
+    "m63",
+    "m76",
+    "m87",
+    "m89",
+    "m126",
+    "m135",
+    "m143",
+    "m153",
+    "m156",
+    "m157",
+    "m162",
+    "m192",
+    "m200",
+    "m223",
+    "m257",
+    "m304",
+    "m366",
+    "m394",
+    "m405",
+    "m413",
+    "m416",
+    "m428",
+    "m433",
+    "m437",
+    "m482",
+    "m528",
+    "m542",
+  ],
+};
+
+/**
+ * @type {{
+ *  [rarities.LEGENDARY]: PokemonIdEnum[],
+ *  [rarities.EPIC]: PokemonIdEnum[],
+ * }}
+ */
+const celebiMythicConfig = {
+  [rarities.LEGENDARY]: [
+    "9-1",
+    "25-1",
+    "52-1",
+    "136-1",
+    "139-1",
+    "145-1",
+    "150-1",
+    "150-2",
+    "249-1",
+    "302-1",
+    pokemonIdEnum.ARCHIES_KYOGRE,
+    pokemonIdEnum.MAXIES_GROUDON,
+    "384-1",
+    "392-1",
+    "828-1",
+  ],
+  [rarities.EPIC]: [
+    "18-1",
+    "24-1",
+    "34-1",
+    "49-1",
+    "110-1",
+    "123-1",
+    "131-1",
+    "143-1",
+    "157-1",
+    "237-1",
+    "248-1",
+    "289-1",
+    "319-1",
+    pokemonIdEnum.AQUAS_SHARPEDO,
+    pokemonIdEnum.MAGMAS_CAMERUPT,
+    pokemonIdEnum.LITTENYAN,
+  ],
+};
+
+const jirachiMythicConfig = Object.freeze({
+  wishes: {
+    power: {
+      name: "Power",
+      description:
+        "Sets a random IV stat of a selected Pokemon to 31. Will select a stat that does not already have 31 IVs.",
+      starPieceCost: 100,
+    },
+    rebirth: {
+      name: "Rebirth",
+      description:
+        "Rerolls a selected Pokemon's ability, guaranteeing a new ability. Will not work if the Pokemon has only one ability.",
+      starPieceCost: 150,
+    },
+    allies: {
+      name: "Allies",
+      description:
+        "Grants 50 random Pokeballs, with odds equal to `/daily` and the Pokemart.",
+      starPieceCost: 200,
+    },
+    wealth: {
+      name: "Wealth",
+      description: `Grants ${formatMoney(
+        40000
+      )}, 300 of each Equipment Shard, and 5 mints.`,
+      starPieceCost: 200,
+    },
+  },
+  shinyChanceMultiplier: 2,
+});
+
+/**
+ * @type {{
+ *  speciesIds: PokemonIdEnum[],
+ * }}
+ */
+const deoxysMythicConfig = {
+  speciesIds: ["386", "10001", "10002", "10003"],
+};
+
+/**
+ * @type {{
+ *  speciesIds: PokemonIdEnum[],
+ * }}
+ */
+const arceusMythicConfig = {
+  speciesIds: [
+    pokemonIdEnum.ARCEUS,
+    pokemonIdEnum.ARCEUS_BUG,
+    pokemonIdEnum.ARCEUS_DARK,
+    pokemonIdEnum.ARCEUS_DRAGON,
+    pokemonIdEnum.ARCEUS_ELECTRIC,
+    pokemonIdEnum.ARCEUS_FAIRY,
+    pokemonIdEnum.ARCEUS_FIGHTING,
+    pokemonIdEnum.ARCEUS_FIRE,
+    pokemonIdEnum.ARCEUS_FLYING,
+    pokemonIdEnum.ARCEUS_GHOST,
+    pokemonIdEnum.ARCEUS_GRASS,
+    pokemonIdEnum.ARCEUS_GROUND,
+    pokemonIdEnum.ARCEUS_ICE,
+    pokemonIdEnum.ARCEUS_POISON,
+    pokemonIdEnum.ARCEUS_PSYCHIC,
+    pokemonIdEnum.ARCEUS_ROCK,
+    pokemonIdEnum.ARCEUS_STEEL,
+    pokemonIdEnum.ARCEUS_WATER,
+  ],
+};
+
+module.exports = {
+  mewMythicConfig,
+  celebiMythicConfig,
+  jirachiMythicConfig,
+  deoxysMythicConfig,
+  arceusMythicConfig,
+};

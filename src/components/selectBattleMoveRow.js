@@ -1,8 +1,6 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * selectBattleMoveRow.js Creates the action row for selecting a move during a battle.
  */
@@ -16,7 +14,7 @@ const { typeConfig } = require("../config/pokemonConfig");
  * @param {*} battle the battle that is occurring.
  * @param {*} stateId the current state of the battle
  * @param {*} selectedMoveId the Id of the move selected. starts as null
- * @returns ActionRowBuilder
+ * @returns {ActionRowBuilder} ActionRowBuilder
  */
 const buildSelectBattleMoveRow = (battle, stateId, selectedMoveId = null) => {
   const selectMenu = new StringSelectMenuBuilder()
@@ -29,16 +27,25 @@ const buildSelectBattleMoveRow = (battle, stateId, selectedMoveId = null) => {
     .setPlaceholder("Select a move")
     .addOptions(
       Object.keys(battle.activePokemon.moveIds).map((moveId) => {
+        const moveOptions = {
+          source: battle.activePokemon,
+          battle,
+        };
         // TODO: remove moves on cooldown?
+        // @ts-ignore
         const moveData = getMove(moveId);
         const { cooldown } = battle.activePokemon.moveIds[moveId];
         const cdString = cooldown > 0 ? `[COOLDOWN ${cooldown}] ` : "";
         const { disabledCounter } = battle.activePokemon.moveIds[moveId];
         const disabledString = disabledCounter ? "[DISABLED] " : "";
         return {
-          label: `${disabledString}${cdString} ${moveData.name}`,
+          label: `${disabledString}${cdString} ${moveData.getEffectiveValue(
+            "name",
+            moveOptions
+          )}`,
           value: `${moveId}`,
-          emoji: typeConfig[moveData.type].emoji,
+          emoji:
+            typeConfig[moveData.getEffectiveValue("type", moveOptions)].emoji,
           default: selectedMoveId === moveId,
         };
       })

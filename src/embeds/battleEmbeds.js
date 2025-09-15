@@ -382,7 +382,10 @@ const buildBattleEmbed = (
 
   const move = selectedMoveId ? getMove(selectedMoveId) : null;
   if (move) {
-    const { moveHeader, moveString } = buildMoveString(move);
+    const { moveHeader, moveString } = buildMoveString({
+      moveData: move,
+      source: battle.activePokemon,
+    });
     fields.push({
       name: moveHeader,
       value: moveString,
@@ -405,7 +408,11 @@ const buildBattleMovesetEmbed = (pokemon) => {
     (/** @type {MoveIdEnum} */ moveId) => {
       const { cooldown } = pokemon.moveIds[moveId];
       const moveData = getMove(moveId);
-      const { moveHeader, moveString } = buildMoveString(moveData, cooldown);
+      const { moveHeader, moveString } = buildMoveString({
+        moveData,
+        source: pokemon,
+        cooldown,
+      });
       return {
         name: moveHeader,
         value: moveString,

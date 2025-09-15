@@ -524,6 +524,26 @@ const buildBlockQuoteString = (str) => {
  */
 const getHasTag = (obj, tag) => obj?.tags?.includes?.(tag);
 
+/**
+ * @template T
+ * @param {T[]} allItems
+ * @param {string} searchString
+ * @param {(item: T) => string} mapItem
+ * @returns {T[]}
+ */
+// @ts-ignore
+const fuzzyMatchAll = (allItems, searchString, mapItem = (item) => item) => {
+  const matchedItems = allItems.filter(
+    (item) =>
+      mapItem(item).toLowerCase().includes(searchString.toLowerCase()) ||
+      mapItem(item)
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "")
+        .includes(searchString.toLowerCase().replace(/[^a-z0-9]/g, ""))
+  );
+  return matchedItems;
+};
+
 module.exports = {
   getOrSetDefault,
   getPBar,
@@ -556,4 +576,5 @@ module.exports = {
   buildBlockQuoteString,
   getHasTag,
   getNumIntervalsBetweenDates,
+  fuzzyMatchAll,
 };

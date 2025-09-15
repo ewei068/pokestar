@@ -30,7 +30,7 @@ const { getGuildData } = require("./guild");
 const { trainerEventEnum } = require("../enums/gameEnums");
 
 const SPAWN_TIME =
-  process.env.STAGE === stageNames.ALPHA ? 30 * 60 * 1000 : 40 * 60 * 1000;
+  process.env.STAGE === stageNames.ALPHA ? 30 * 60 * 1000 : 60 * 60 * 1000;
 // const SPAWN_TIME_VARIANCE =
 //  process.env.STAGE === stageNames.ALPHA ? 3 * 60 * 1000 : 30 * 60 * 1000;
 // blacklist emoji servers
