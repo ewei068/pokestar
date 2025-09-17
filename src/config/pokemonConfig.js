@@ -9744,6 +9744,31 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.SLOW,
   },
+  [pokemonIdEnum.CYNTHIA_GARCHOMP]: {
+    name: "Cynthia's Garchomp",
+    emoji: "<:cynthiagarchomp:1416980451473490130>",
+    description:
+      "It flies at the speed of sound while searching for prey, and it has midair battles with Salamence as the two compete for food.",
+    type: [types.DRAGON, types.GROUND],
+    baseStats: [108, 135, 85, 75, 85, 112],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/sprites/cynthia-garchomp-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/sprites/cynthia-garchomp-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.SURGING_SAND]: 1,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.BRICK_BREAK,
+      moveIdEnum.DRAGON_RUSH,
+      moveIdEnum.CATACLYSMIC_QUAKE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+  },
   [pokemonIdEnum.MUNCHLAX]: {
     name: "Munchlax",
     emoji: "<:446:1351027086944636939>",
@@ -10852,6 +10877,58 @@ const pokemonConfigRaw = {
     growthRate: growthRates.SLOW,
     baseSpeciesId: pokemonIdEnum.GIRATINA_ALTERED,
     noGacha: true,
+  },
+  [pokemonIdEnum.VOLO_GIRATINA_ALTERED]: {
+    name: "Volo's Giratina",
+    emoji: "<:vologiratina:1416980461376507924> ",
+    description:
+      "This Pokémon is said to live in a world on the reverse side of ours, where common knowledge is distorted and strange.",
+    type: [types.GHOST, types.DRAGON],
+    baseStats: [150, 90, 130, 90, 130, 90],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/sprites/volo-giratina-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/sprites/volo-giratina-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.ELDRITCH_REVIVAL]: 1,
+    },
+    moveIds: [
+      moveIdEnum.OMINOUS_WIND,
+      moveIdEnum.DRAGON_CLAW,
+      moveIdEnum.AURA_SPHERE,
+      moveIdEnum.DISTORTION_FORCE,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+  },
+  [pokemonIdEnum.VOLO_GIRATINA_ORIGIN]: {
+    name: "Volo's True Giratina",
+    emoji: "<:vologiratinaorigin:1416980459786600528>",
+    description:
+      "Volo's Giratina in its true Origin Form. Its power is unleashed through the bonds forged with its trainer in the Distortion World.",
+    type: [types.GHOST, types.DRAGON],
+    baseStats: [150, 130, 90, 130, 90, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10007.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10007.png",
+    abilities: {
+      [abilityIdEnum.THE_HEAVENS_AND_EARTH_AS_ONE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.OMINOUS_WIND,
+      moveIdEnum.DRAGON_CLAW,
+      moveIdEnum.EARTH_POWER,
+      moveIdEnum.DISTORTION_FORCE,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    baseSpeciesId: pokemonIdEnum.VOLO_GIRATINA_ALTERED,
+    noGacha: true,
+    unobtainable: true,
   },
   [pokemonIdEnum.CRESSELIA]: {
     name: "Cresselia",
