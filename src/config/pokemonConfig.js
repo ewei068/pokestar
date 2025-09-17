@@ -10878,6 +10878,58 @@ const pokemonConfigRaw = {
     baseSpeciesId: pokemonIdEnum.GIRATINA_ALTERED,
     noGacha: true,
   },
+  [pokemonIdEnum.VOLO_GIRATINA_ALTERED]: {
+    name: "Volo's Giratina",
+    emoji: "<:vologiratina:1416980461376507924> ",
+    description:
+      "This Pokémon is said to live in a world on the reverse side of ours, where common knowledge is distorted and strange.",
+    type: [types.GHOST, types.DRAGON],
+    baseStats: [150, 90, 130, 90, 130, 90],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/sprites/volo-giratina-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/sprites/volo-giratina-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.ELDRITCH_REVIVAL]: 1,
+    },
+    moveIds: [
+      moveIdEnum.OMINOUS_WIND,
+      moveIdEnum.DRAGON_CLAW,
+      moveIdEnum.AURA_SPHERE,
+      moveIdEnum.DISTORTION_FORCE,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+  },
+  [pokemonIdEnum.VOLO_GIRATINA_ORIGIN]: {
+    name: "Volo's True Giratina",
+    emoji: "<:vologiratinaorigin:1416980459786600528>",
+    description:
+      "Volo's Giratina in its true Origin Form. Its power is unleashed through the bonds forged with its trainer in the Distortion World.",
+    type: [types.GHOST, types.DRAGON],
+    baseStats: [150, 130, 90, 130, 90, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10007.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10007.png",
+    abilities: {
+      [abilityIdEnum.THE_HEAVENS_AND_EARTH_AS_ONE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.OMINOUS_WIND,
+      moveIdEnum.DRAGON_CLAW,
+      moveIdEnum.EARTH_POWER,
+      moveIdEnum.DISTORTION_FORCE,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    baseSpeciesId: pokemonIdEnum.VOLO_GIRATINA_ALTERED,
+    noGacha: true,
+    unobtainable: true,
+  },
   [pokemonIdEnum.CRESSELIA]: {
     name: "Cresselia",
     emoji: "<:488:1351027498275835954>",
