@@ -29,6 +29,7 @@ const npcs = Object.freeze({
   ACE_TRAINER: "aceTrainer",
   PALMER: "palmer",
   PROFESSOR_WILLOW: "professorWillow",
+  VOLO: "volo",
   // BUTLER: "butler",
   // STRAW_HATS: "strawHats",
   // TEAM_ROCKET: "teamRocket",
@@ -48,6 +49,58 @@ const difficulties = Object.freeze({
 const seed = getFullUTCDate();
 
 const npcConfig = Object.freeze({
+  [npcs.VOLO]: {
+    name: "Volo",
+    displayName: "**[Event]** Pokemon Wielder Volo",
+    sprite:
+      "https://static.wikia.nocookie.net/intelligence-scaling-purgatory/images/f/fa/VoloSickoModeNew.webp/revision/latest/scale-to-width/360?cb=20241028171248",
+    emoji: "<:volo:1424925761864994866>",
+    catchphrase: "Why? Why you?! Why do you have the blessing of Arceus?!",
+    difficulties: {
+      [difficulties.HARD]: {
+        minLevel: 67,
+        maxLevel: 74,
+        numPokemon: 6,
+        pokemonIds: [
+          pokemonIdEnum.SPIRITOMB,
+          pokemonIdEnum.ROSERADE,
+          pokemonIdEnum.TOGEKISS,
+          pokemonIdEnum.ARCANINE,
+          pokemonIdEnum.LUCARIO,
+          pokemonIdEnum.CYNTHIA_GARCHOMP,
+        ],
+        aceId: pokemonIdEnum.CYNTHIA_GARCHOMP,
+        dailyRewards: {
+          backpack: {
+            [backpackCategories.POKEBALLS]: {
+              [backpackItems.POKEBALL]: 2,
+            },
+          },
+        },
+      },
+      [difficulties.VERY_HARD]: {
+        minLevel: 120,
+        maxLevel: 139,
+        numPokemon: 6,
+        pokemonIds: [
+          pokemonIdEnum.SPIRITOMB,
+          pokemonIdEnum.ROSERADE,
+          pokemonIdEnum.TOGEKISS,
+          pokemonIdEnum.ARCANINE,
+          pokemonIdEnum.LUCARIO,
+          pokemonIdEnum.CYNTHIA_GARCHOMP,
+        ],
+        aceId: pokemonIdEnum.VOLO_GIRATINA_ALTERED,
+        dailyRewards: {
+          backpack: {
+            [backpackCategories.POKEBALLS]: {
+              [backpackItems.POKEBALL]: 3,
+            },
+          },
+        },
+      },
+    },
+  },
   [npcs.BUG_CATCHER]: {
     name: "Bug Catcher",
     sprite:
@@ -746,7 +799,7 @@ const npcConfig = Object.freeze({
           pokemonIdEnum.GLACEON,
           pokemonIdEnum.PORYGON_Z,
         ],
-        aceId: pokemonIdEnum.GARCHOMP,
+        aceId: pokemonIdEnum.CYNTHIA_GARCHOMP,
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
@@ -767,7 +820,7 @@ const npcConfig = Object.freeze({
           pokemonIdEnum.MILOTIC,
           pokemonIdEnum.GIRATINA_ALTERED,
         ],
-        aceId: pokemonIdEnum.GARCHOMP,
+        aceId: pokemonIdEnum.CYNTHIA_GARCHOMP,
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {

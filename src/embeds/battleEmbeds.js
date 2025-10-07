@@ -495,7 +495,10 @@ const buildPveListEmbed = (npcIds, page, { dreamCardString } = {}) => {
     }
     levelString = levelString.slice(0, -1);
     levelString += "]**";
-    npcString += `${npcData.emoji} ${levelString} ${npcData.name} (${npcId})\n`;
+    npcString += `${npcData.emoji} ${levelString} ${
+      // @ts-ignore
+      npcData.displayName || npcData.name
+    } (${npcId})\n`;
   });
 
   const embed = new EmbedBuilder();
@@ -538,7 +541,8 @@ const buildPveNpcEmbed = (npcId, { dreamCardString } = {}) => {
   );
 
   const embed = new EmbedBuilder();
-  embed.setTitle(`${npc.emoji} ${npc.name} (${npcId})`);
+  // @ts-ignore
+  embed.setTitle(`${npc.emoji} ${npc.displayName || npc.name} (${npcId})`);
   embed.setColor(0xffffff);
   embed.setDescription(buildBlockQuoteString(npc.catchphrase));
   embed.addFields(fields);
