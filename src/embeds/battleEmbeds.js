@@ -568,7 +568,10 @@ const buildPveNpcEmbed = (npcId, { dreamCardString } = {}) => {
 const buildDungeonListEmbed = ({ dreamCardString } = {}) => {
   let dungeonString = "";
   Object.entries(dungeonConfig).forEach(([, dungeonData]) => {
-    dungeonString += `**${dungeonData.emoji} ${dungeonData.name}** • ${dungeonData.description}\n\n`;
+    dungeonString += `**${dungeonData.emoji} ${
+      // @ts-ignore
+      dungeonData.displayName || dungeonData.name
+    }** • ${dungeonData.description}\n\n`;
   });
 
   const embed = new EmbedBuilder();
@@ -612,7 +615,12 @@ const buildDungeonEmbed = (dungeonId, { dreamCardString } = {}) => {
   );
 
   const embed = new EmbedBuilder();
-  embed.setTitle(`${dungeonData.emoji} ${dungeonData.name}`);
+  embed.setTitle(
+    `${dungeonData.emoji} ${
+      // @ts-ignore
+      dungeonData.displayName || dungeonData.name
+    }`
+  );
   embed.setColor(0xffffff);
   embed.setDescription(dungeonData.description);
   embed.addFields({ name: "Bosses", value: bossString, inline: false });

@@ -193,6 +193,23 @@ Pokestar launched this time 2 years ago, and it's time to celebrate! Thank you t
 * Shiny Hat Pikachu: https://www.deviantart.com/lukethefoxen/art/Pikachu-with-Ash-s-Hat-923733788
 `;
 
+const GEN_4_WRAPUP_DESCRIPTION = `⛰️**CALAMITY ON MT. CORONET**⛰️
+
+Volo, Cyrus, and Team Galactic have sought to awaken the Pokemon of Myth! Defend Sinnoh from this calamity as we wrap up Gen 4!
+
+<:vologiratinaorigin:1416980459786600528> **Event Pokemon:** New event Pokemon from legends Volo and Cynthia are available for a limited time! Use \`/gacha\` to try your luck!
+
+🌋 **Limited Dungeon:** Stop the crisis on Mt. Coronet in the new limited Mt. Coronet dungeon for tons of rewards! Use \`/dungeons\` to challenge it!
+
+<:493:1351027589258543166> **Arceus:** Arceus has finally arrived, with multiple forms and a powerful creationg ability! Use \`/mythic arceus\` to catch your Arceus!
+
+<:volo:1424925761864994866> **Volo:** Volo is available to challeng in \`/pve\` for a limited time! Additionally, Cynthia will temporarily give additional rewards!
+
+🖌️ **Art Credits**
+* Mt. Coronet Dungeon: [MonsterHam](https://x.com/angryMonsterHam/status/1799104616229200380)
+* Volo Trainer Icon: [Liliblob](https://www.deviantart.com/liliblob/art/PLA-Volo-Sprite-Edit-912345597)
+`;
+
 /**
  * @typedef {{
  *  name: string,
@@ -206,14 +223,10 @@ Pokestar launched this time 2 years ago, and it's time to celebrate! Thank you t
  */
 const gameEventConfig = [
   {
-    name: "Pokestar Anniversary",
-    description: ANNIVERSARY_DESCRIPTION,
+    name: "Generation IV Wrap-Up",
+    description: GEN_4_WRAPUP_DESCRIPTION,
     image:
-      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-main-banner.png",
-  },
-  {
-    name: "Generation IV",
-    description: GEN_4_DESCRIPTION,
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-gen4-banner.png",
   },
   /* {
     name: "Twitch Plays Pokemon (Re-run)",

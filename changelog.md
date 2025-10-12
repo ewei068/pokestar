@@ -4,13 +4,14 @@ TODO:
 
 - gen4 event
 - arceus
+  - add arceus quest
 - add some more normal pokemon
-- mass release page
 - improve vote rewards / tune rewards
 
 **Stretch**
 
 - Stretch: Ability slots
+- mass release page
 
 ### 1.4.3 (7/17)
 
