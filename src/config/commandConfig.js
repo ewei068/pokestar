@@ -871,6 +871,7 @@ const commandConfigRaw = {
           "cynthia",
           "palmer",
           "professorWillow",
+          "volo",
         ],
       },
       difficulty: {

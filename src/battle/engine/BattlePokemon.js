@@ -1312,6 +1312,15 @@ class BattlePokemon {
    */
   faint(source) {
     // TODO: trigger before faint effects
+    const beforeFaintArgs = {
+      target: this,
+      source,
+      canFaint: true,
+    };
+    this.battle.emitEvent(battleEventEnum.BEFORE_FAINT, beforeFaintArgs);
+    if (!beforeFaintArgs.canFaint) {
+      return;
+    }
 
     this.hp = 0;
     this.isFainted = true;

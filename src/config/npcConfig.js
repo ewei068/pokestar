@@ -29,6 +29,7 @@ const npcs = Object.freeze({
   ACE_TRAINER: "aceTrainer",
   PALMER: "palmer",
   PROFESSOR_WILLOW: "professorWillow",
+  VOLO: "volo",
   // BUTLER: "butler",
   // STRAW_HATS: "strawHats",
   // TEAM_ROCKET: "teamRocket",
@@ -48,6 +49,58 @@ const difficulties = Object.freeze({
 const seed = getFullUTCDate();
 
 const npcConfig = Object.freeze({
+  [npcs.VOLO]: {
+    name: "Volo",
+    displayName: "**[Event]** Pokemon Wielder Volo",
+    sprite:
+      "https://static.wikia.nocookie.net/intelligence-scaling-purgatory/images/f/fa/VoloSickoModeNew.webp/revision/latest/scale-to-width/360?cb=20241028171248",
+    emoji: "<:volo:1424925761864994866>",
+    catchphrase: "Why? Why you?! Why do you have the blessing of Arceus?!",
+    difficulties: {
+      [difficulties.HARD]: {
+        minLevel: 67,
+        maxLevel: 74,
+        numPokemon: 6,
+        pokemonIds: [
+          pokemonIdEnum.SPIRITOMB,
+          pokemonIdEnum.ROSERADE,
+          pokemonIdEnum.TOGEKISS,
+          pokemonIdEnum.ARCANINE,
+          pokemonIdEnum.LUCARIO,
+          pokemonIdEnum.CYNTHIA_GARCHOMP,
+        ],
+        aceId: pokemonIdEnum.CYNTHIA_GARCHOMP,
+        dailyRewards: {
+          backpack: {
+            [backpackCategories.POKEBALLS]: {
+              [backpackItems.POKEBALL]: 2,
+            },
+          },
+        },
+      },
+      [difficulties.VERY_HARD]: {
+        minLevel: 120,
+        maxLevel: 139,
+        numPokemon: 6,
+        pokemonIds: [
+          pokemonIdEnum.SPIRITOMB,
+          pokemonIdEnum.ROSERADE,
+          pokemonIdEnum.TOGEKISS,
+          pokemonIdEnum.ARCANINE,
+          pokemonIdEnum.LUCARIO,
+          pokemonIdEnum.CYNTHIA_GARCHOMP,
+        ],
+        aceId: pokemonIdEnum.VOLO_GIRATINA_ALTERED,
+        dailyRewards: {
+          backpack: {
+            [backpackCategories.POKEBALLS]: {
+              [backpackItems.POKEBALL]: 3,
+            },
+          },
+        },
+      },
+    },
+  },
   [npcs.BUG_CATCHER]: {
     name: "Bug Catcher",
     sprite:
@@ -594,7 +647,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 1 * 2,
+              [backpackItems.POKEBALL]: 1,
             },
           },
         },
@@ -608,7 +661,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 1 * 2,
+              [backpackItems.POKEBALL]: 1,
             },
           },
         },
@@ -622,7 +675,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 1 * 2,
+              [backpackItems.POKEBALL]: 1,
             },
           },
         },
@@ -644,7 +697,7 @@ const npcConfig = Object.freeze({
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 2 * 2,
+              [backpackItems.POKEBALL]: 2,
             },
           },
         },
@@ -746,11 +799,11 @@ const npcConfig = Object.freeze({
           pokemonIdEnum.GLACEON,
           pokemonIdEnum.PORYGON_Z,
         ],
-        aceId: pokemonIdEnum.GARCHOMP,
+        aceId: pokemonIdEnum.CYNTHIA_GARCHOMP,
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 1,
+              [backpackItems.POKEBALL]: 1 * 2,
             },
           },
         },
@@ -767,11 +820,11 @@ const npcConfig = Object.freeze({
           pokemonIdEnum.MILOTIC,
           pokemonIdEnum.GIRATINA_ALTERED,
         ],
-        aceId: pokemonIdEnum.GARCHOMP,
+        aceId: pokemonIdEnum.CYNTHIA_GARCHOMP,
         dailyRewards: {
           backpack: {
             [backpackCategories.POKEBALLS]: {
-              [backpackItems.POKEBALL]: 2,
+              [backpackItems.POKEBALL]: 2 * 2,
             },
           },
         },
@@ -1299,12 +1352,331 @@ const dungeons = Object.freeze({
   SOUL_CAVE: "soulCave",
   SPIRIT_ALTAR: "spiritAltar",
   NEW_ISLAND: "newIsland",
+  MOUNT_CORONET: "mountCoronet",
   // SOOTOPOLIS_CITY: "sootopolisCity",
   // ONIGASHIMA: "onigashima",
   // BLOODY_SUNDAY: "bloodySunday",
 });
 
 const dungeonConfig = Object.freeze({
+  [dungeons.MOUNT_CORONET]: {
+    name: "Mount Coronet",
+    displayName: "[Event] Mount Coronet",
+    sprite: "https://pbs.twimg.com/media/GPezGJhW4AArdKo.png",
+    emoji: "🏔️",
+    description:
+      "Cyrus and Team Galatic have awoken the Pokemon of Myth! Defend Sinnoh against their threat... and somone else?",
+    bosses: [
+      pokemonIdEnum.DIALGA_ORIGIN,
+      pokemonIdEnum.PALKIA_ORIGIN,
+      pokemonIdEnum.GIRATINA_ORIGIN,
+      pokemonIdEnum.ARCEUS,
+    ],
+    difficulties: {
+      [difficulties.HARD]: {
+        phases: [
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.HONCHKROW,
+                level: 100,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.CROBAT,
+                level: 100,
+                position: 3,
+              },
+              {
+                speciesId: pokemonIdEnum.WEAVILE,
+                level: 100,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.AZELF,
+                level: 110,
+                position: 11,
+              },
+              {
+                speciesId: pokemonIdEnum.UXIE,
+                level: 100,
+                position: 13,
+              },
+              {
+                speciesId: pokemonIdEnum.MESPRIT,
+                level: 110,
+                position: 15,
+              },
+            ],
+          },
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.GIRATINA_ORIGIN,
+                level: 120,
+                position: 3,
+              },
+              {
+                speciesId: pokemonIdEnum.DIALGA_ORIGIN,
+                level: 120,
+                position: 12,
+              },
+              {
+                speciesId: pokemonIdEnum.PALKIA_ORIGIN,
+                level: 120,
+                position: 14,
+              },
+            ],
+          },
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 100,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 100,
+                position: 2,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 100,
+                position: 3,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 100,
+                position: 4,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 100,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 100,
+                position: 6,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 100,
+                position: 7,
+              },
+              {
+                speciesId: pokemonIdEnum.ARCEUS,
+                level: 150,
+                position: 8,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 100,
+                position: 9,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 100,
+                position: 10,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 100,
+                position: 11,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 100,
+                position: 12,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 100,
+                position: 13,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 100,
+                position: 14,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 100,
+                position: 15,
+              },
+            ],
+          },
+        ],
+        rewards: {
+          backpack: {
+            [backpackCategories.MATERIALS]: {
+              [backpackItems.KNOWLEDGE_SHARD]: 9,
+              [backpackItems.EMOTION_SHARD]: 9,
+              [backpackItems.WILLPOWER_SHARD]: 9,
+            },
+          },
+        },
+      },
+      [difficulties.VERY_HARD]: {
+        phases: [
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.HONCHKROW,
+                level: 120,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.CROBAT,
+                level: 120,
+                position: 3,
+              },
+              {
+                speciesId: pokemonIdEnum.WEAVILE,
+                level: 120,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.AZELF,
+                level: 130,
+                position: 11,
+              },
+              {
+                speciesId: pokemonIdEnum.UXIE,
+                level: 130,
+                position: 13,
+              },
+              {
+                speciesId: pokemonIdEnum.MESPRIT,
+                level: 130,
+                position: 15,
+              },
+            ],
+          },
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.GIRATINA_ORIGIN,
+                level: 167,
+                position: 3,
+              },
+              {
+                speciesId: pokemonIdEnum.DIALGA_ORIGIN,
+                level: 150,
+                position: 12,
+              },
+              {
+                speciesId: pokemonIdEnum.PALKIA_ORIGIN,
+                level: 150,
+                position: 14,
+              },
+            ],
+          },
+          {
+            rows: 3,
+            cols: 5,
+            pokemons: [
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 120,
+                position: 1,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 120,
+                position: 2,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 120,
+                position: 3,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 120,
+                position: 4,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 120,
+                position: 5,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 120,
+                position: 6,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 120,
+                position: 7,
+              },
+              {
+                speciesId: pokemonIdEnum.ARCEUS,
+                level: 200,
+                position: 8,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 120,
+                position: 9,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 120,
+                position: 10,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 120,
+                position: 11,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 120,
+                position: 12,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 120,
+                position: 13,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 120,
+                position: 14,
+              },
+              {
+                speciesId: pokemonIdEnum.UNOWN,
+                level: 120,
+                position: 15,
+              },
+            ],
+          },
+        ],
+        rewards: {
+          backpack: {
+            [backpackCategories.MATERIALS]: {
+              [backpackItems.KNOWLEDGE_SHARD]: 13,
+              [backpackItems.EMOTION_SHARD]: 13,
+              [backpackItems.WILLPOWER_SHARD]: 13,
+            },
+          },
+        },
+      },
+    },
+  },
   [dungeons.MIND_TEMPLE]: {
     name: "Mind Temple",
     sprite:

@@ -929,6 +929,7 @@ const moveIdEnum = Object.freeze({
   PSYCHIC_NOISE: "m917",
   UPPER_HAND: "m918",
   MALIGNANT_CHAIN: "m919",
+  DISTORTION_FORCE: "m679-1",
   SHADOW_RUSH: "m10001",
   SHADOW_BLAST: "m10002",
   SHADOW_BLITZ: "m10003",
@@ -966,6 +967,7 @@ const moveIdEnum = Object.freeze({
   AQUA_IMPACT: "m618-1",
   MAGMA_IMPACT: "m619-1",
   FLAME_BALL: "m780-1",
+  CATACLYSMIC_QUAKE: "m89-1",
 });
 
 /**
@@ -1348,6 +1350,9 @@ const abilityIdEnum = Object.freeze({
   JET_SPEED: "20019",
   ALPHA_CORE: "20020",
   OMEGA_CORE: "20021",
+  SURGING_SAND: "159-1",
+  ELDRITCH_REVIVAL: "20022",
+  THE_HEAVENS_AND_EARTH_AS_ONE: "20023",
 });
 
 /** @typedef {Enum<heldItemIdEnum>} HeldItemIdEnum */
@@ -1430,7 +1435,7 @@ const battleEventEnum = Object.freeze({
  *  [battleEventEnum.BEFORE_STATUS_APPLY]: { target: BattlePokemon, source: BattlePokemon, statusId: StatusConditionEnum, canApply: boolean },
  *  [battleEventEnum.AFTER_STATUS_APPLY]: { target: BattlePokemon, source: BattlePokemon, statusId: StatusConditionEnum },
  *  [battleEventEnum.BEFORE_CAUSE_FAINT]: any,
- *  [battleEventEnum.BEFORE_FAINT]: any,
+ *  [battleEventEnum.BEFORE_FAINT]: { target: BattlePokemon, source: BattlePokemon, canFaint: boolean },
  *  [battleEventEnum.AFTER_FAINT]: any,
  *  [battleEventEnum.CALCULATE_TYPE_MULTIPLIER]: any,
  *  [battleEventEnum.CALCULATE_MISS]: any,

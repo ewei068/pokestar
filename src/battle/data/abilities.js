@@ -17,6 +17,7 @@ const {
   effectIdEnum,
   moveIdEnum,
 } = require("../../enums/battleEnums");
+const { pokemonIdEnum } = require("../../enums/pokemonEnums");
 const { getMoveIdHasTag } = require("../../utils/battleUtils");
 const {
   getIsActivePokemonCallback,
@@ -28,6 +29,7 @@ const {
   getIsTargetOpponentCallback,
   getIsSourceSameTeamCallback,
   getIsNotSourcePokemonCallback,
+  getIsWeatherCondition,
 } = require("../engine/eventConditions");
 const { getMove } = require("./moveRegistry");
 const { getEffect } = require("./effectRegistry");
@@ -1363,6 +1365,129 @@ const abilitiesToRegister = Object.freeze({
               return {
                 damage: Math.floor(damage * multiplier),
               };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourcePokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.SURGING_SAND]: new Ability({
+    id: abilityIdEnum.SURGING_SAND,
+    name: "Surging Sand",
+    description:
+      "Increases the damage of ally Ground moves by 15% in a Sandstorm. For the user, this boost is 30%.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage, damageInfo, source }) => {
+            const moveId = damageInfo?.moveId;
+            const moveData = damageInfo?.instance || getMove(moveId);
+            if (moveData?.type !== pokemonTypes.GROUND) {
+              return;
+            }
+
+            // Determine if source is the user or an ally
+            const isUser = source === target;
+            if (isUser) {
+              battle.addToLog(
+                `${target.name}'s Surging Sand greatly powers up its move!`
+              );
+              return {
+                damage: Math.floor(damage * 1.3),
+              };
+            }
+            battle.addToLog(
+              `${target.name}'s Surging Sand powers up ${source.name}'s move!`
+            );
+            return {
+              damage: Math.floor(damage * 1.15),
+            };
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourceSameTeamCallback(target),
+            getIsInstanceOfType("move"),
+            getIsWeatherCondition(weatherConditions.SANDSTORM, battle)
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.ELDRITCH_REVIVAL]: new Ability({
+    id: abilityIdEnum.ELDRITCH_REVIVAL,
+    name: "Eldritch Revival",
+    description:
+      "Before the user faints, prevent the faint, transform into Volo's Giratina Origin, and heal back to full health.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_FAINT,
+          callback: (args) => {
+            const { abilityInstance } = args;
+            // Check if this ability has already been used
+            if (abilityInstance.data.used) {
+              return;
+            }
+
+            args.canFaint = false;
+            abilityInstance.data.used = true;
+
+            battle.addToLog(
+              `${target.name}'s Eldritch Revival activates! It rises from the brink of death!`
+            );
+
+            // Transform into Volo's Giratina Origin
+            target.transformInto(pokemonIdEnum.VOLO_GIRATINA_ORIGIN);
+            target.hp = target.maxHp;
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+        used: false,
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.THE_HEAVENS_AND_EARTH_AS_ONE]: new Ability({
+    id: abilityIdEnum.THE_HEAVENS_AND_EARTH_AS_ONE,
+    name: "The Heavens and Earth as One",
+    description:
+      "When the user damages an enemy with a move, it has a 20% chance to flinch, 30% chance to confuse, and 40% chance to restrict the enemy for 1 turn.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_DEALT,
+          callback: ({ target: damagedTarget, source }) => {
+            // 20% chance to flinch
+            if (Math.random() < 0.2) {
+              damagedTarget.applyEffect("flinched", 1, source, {});
+            }
+
+            // 30% chance to confuse
+            if (Math.random() < 0.3) {
+              damagedTarget.applyEffect("confused", 1, source, {});
+            }
+
+            // 40% chance to restrict
+            if (Math.random() < 0.4) {
+              damagedTarget.applyEffect("restricted", 1, source, {});
             }
           },
           conditionCallback: composeConditionCallbacks(

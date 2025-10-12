@@ -2369,6 +2369,92 @@ const movesToRegisterRaw = {
     },
     tags: ["punch"],
   }),
+  [moveIdEnum.CATACLYSMIC_QUAKE]: new Move({
+    id: moveIdEnum.CATACLYSMIC_QUAKE,
+    name: "Cataclysmic Quake",
+    type: pokemonTypes.GROUND,
+    power: 90,
+    accuracy: 85,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.SQUARE,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user unleashes a devastating earthquake that reshapes the battlefield. Sets a sandstorm before dealing massive damage.",
+    execute() {
+      const { source, battle } = this;
+      battle.createWeather(weatherConditions.SANDSTORM, source);
+      this.genericDealAllDamage();
+    },
+  }),
+  [moveIdEnum.DISTORTION_FORCE]: new Move({
+    id: moveIdEnum.DISTORTION_FORCE,
+    name: "Distortion Force",
+    type: pokemonTypes.GHOST,
+    power: 120,
+    accuracy: 90,
+    cooldown: 5,
+    targetType: targetTypes.ENEMY,
+    targetPosition: targetPositions.ANY,
+    targetPattern: targetPatterns.X,
+    tier: moveTiers.ULTIMATE,
+    damageType: damageTypes.PHYSICAL,
+    description:
+      "The user disappears into a distorted space and strikes the targets on the next turn.",
+    overrideFields: (options) => {
+      if (options.source?.speciesId === pokemonIdEnum.VOLO_GIRATINA_ALTERED) {
+        return {
+          description:
+            "The user disappears into a distorted space and strikes the targets on the next turn. On the first turn, the user raises the evasion of all allies for 2 turns.",
+        };
+      }
+      if (options.source?.speciesId === pokemonIdEnum.VOLO_GIRATINA_ORIGIN) {
+        return {
+          targetPattern: targetPatterns.SQUARE,
+          description:
+            "The user disappears into a distorted space and strikes the many targets on the next turn.",
+        };
+      }
+    },
+    silenceIf(_battle, pokemon) {
+      return pokemon.effectIds[effectIdEnum.VANISHED] === undefined;
+    },
+    tags: ["charge"],
+    chargeMoveEffectId: effectIdEnum.VANISHED,
+    execute() {
+      const { source, battle } = this;
+      // If pokemon doesn't have "vanished" buff, apply it
+      if (source.effectIds[effectIdEnum.VANISHED] === undefined) {
+        source.applyEffect(effectIdEnum.VANISHED, 1, source, {});
+        source.moveIds[this.id].cooldown = 0;
+
+        // Special effects for Volo's Giratina forms during charge phase
+        // @ts-ignore
+        if (source.speciesId === pokemonIdEnum.VOLO_GIRATINA_ALTERED) {
+          battle.addToLog(
+            `${source.name} vanishes into the distortion and empowers its allies!`
+          );
+          // Raise evasion of all allies for 2 turns
+          const allies = source
+            .getPartyPokemon()
+            .filter((p) => p && !p.isFainted);
+          for (const ally of allies) {
+            ally.applyEffect("evaUp", 2, source, {});
+          }
+          // @ts-ignore
+        } else if (source.speciesId === pokemonIdEnum.VOLO_GIRATINA_ORIGIN) {
+          battle.addToLog(
+            `${source.name} vanishes into the distortion with greater power!`
+          );
+        }
+      } else {
+        source.removeEffect(effectIdEnum.VANISHED);
+        this.genericDealAllDamage();
+      }
+    },
+  }),
 };
 
 // Helper function to create Sketch moves for different slots

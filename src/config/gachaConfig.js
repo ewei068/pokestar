@@ -87,6 +87,19 @@ const bannerTypeConfig = Object.freeze({
 const bannerConfigRaw = [
   {
     bannerType: bannerTypes.SPECIAL,
+    name: "[EVENT] Volo's Giratina",
+    description:
+      "The legendary Volo's Giratina and Cynthia's Garchomp are available for a limited time as we wrap up Gen 4! For more information, use `/events`.",
+    rateUp: () => ({
+      [rarities.LEGENDARY]: [pokemonIdEnum.VOLO_GIRATINA_ALTERED],
+      [rarities.EPIC]: [pokemonIdEnum.CYNTHIA_GARCHOMP],
+    }),
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-gen4-banner.png",
+  },
+  /**
+     {
+    bannerType: bannerTypes.SPECIAL,
     name: "[EVENT] Pokestar Anniversary",
     description:
       "To celebrate Pokestar's anniversary, the mascot of Pokestar, PokeStarmie, is available for a limited time! For more information, use `/events`.",
@@ -199,7 +212,8 @@ const bannerConfigRaw = [
     }),
   },
    */
-  {
+  /**
+     {
     bannerType: bannerTypes.SPECIAL,
     name: "[GEN 4] VGC Legends Banner",
     description:
@@ -497,7 +511,8 @@ const bannerConfigRaw = [
             }
         },
         "image": "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-launch-banner.png"
-    }, */
+    },
+   */
   {
     bannerType: bannerTypes.ROTATING,
     name: "[GEN 1] Rotating",

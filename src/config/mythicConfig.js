@@ -180,6 +180,7 @@ const celebiMythicConfig = {
     "384-1",
     "392-1",
     "828-1",
+    pokemonIdEnum.POKESTARMIE,
   ],
   [rarities.EPIC]: [
     "18-1",

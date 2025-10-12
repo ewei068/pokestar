@@ -488,7 +488,7 @@ const trainerFields = {
         newCorrectedDate,
         lastCorrectedDate
       );
-      const max = 100 + previousObject.level + 50;
+      const max = 100 + previousObject.level;
       if (previousValue > max) {
         return previousValue; // Don't reduce dream cards if they're over limit
       }

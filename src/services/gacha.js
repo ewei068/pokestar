@@ -223,11 +223,8 @@ const generateRandomPokemon = (
     ? drawIterable(Object.values(heldItemIdEnum), 1)[0]
     : undefined;
 
-  const tempShinyChance = Math.floor(shinyChance / 2);
   isShiny =
-    isShiny === null
-      ? drawUniform(0, tempShinyChance - 1, 1)[0] === 0
-      : isShiny;
+    isShiny === null ? drawUniform(0, shinyChance - 1, 1)[0] === 0 : isShiny;
   const shouldLock =
     process.env.STAGE !== stageNames.ALPHA &&
     (isShiny || speciesData.rarity === rarities.LEGENDARY);
