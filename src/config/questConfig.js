@@ -16,6 +16,7 @@ const { getMaxDreamCards } = require("../utils/trainerUtils");
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { SUPPORT_SERVER_INVITE, gameEventConfig } = require("./helpConfig");
 const { locations } = require("./locationConfig");
+const { arceusMythicConfig, deoxysMythicConfig } = require("./mythicConfig");
 const { difficulties } = require("./npcConfig");
 const { pokemonConfig } = require("./pokemonConfig");
 const { shopItems } = require("./shopConfig");
@@ -1304,6 +1305,7 @@ const stageToMythicOrder = [
   pokemonIdEnum.JIRACHI,
   pokemonIdEnum.DEOXYS,
   pokemonIdEnum.CELEBI,
+  pokemonIdEnum.ARCEUS,
 ];
 
 /**
@@ -1973,6 +1975,13 @@ const achievementConfigRaw = {
             },
           };
           break;
+        case pokemonIdEnum.ARCEUS:
+          backpack = {
+            [backpackCategories.POKEBALLS]: {
+              [backpackItems.MASTERBALL]: 5,
+            },
+          };
+          break;
         default:
           backpack = {};
           break;
@@ -2000,17 +2009,25 @@ const achievementConfigRaw = {
     ],
     requirementType: questRequirementTypeEnum.BOOLEAN,
     checkRequirements: async ({ stage, trainer }) => {
-      // stage order: darkrai -> mew -> jirachi -> deoxys -> celebi
       const speciesId = stageToMythicOrder[stage];
       if (!speciesId) {
         return false;
       }
+      const filter = {};
+      switch (speciesId) {
+        case pokemonIdEnum.ARCEUS:
+          filter.speciesId = { $in: arceusMythicConfig.speciesIds };
+          break;
+        case pokemonIdEnum.DEOXYS:
+          filter.speciesId = { $in: deoxysMythicConfig.speciesIds };
+          break;
+        default:
+          filter.speciesId = speciesId;
+      }
       const { data: pokemons } = await listPokemons(trainer, {
         pageSize: 1,
         page: 1,
-        filter: {
-          speciesId,
-        },
+        filter,
       });
       return (pokemons?.length ?? 0) > 0;
     },
