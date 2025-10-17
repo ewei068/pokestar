@@ -1341,11 +1341,6 @@ const battleTowerConfig = Object.freeze({
   },
 });
 
-// TEMP: 2x money
-for (const towerData of Object.values(battleTowerConfig)) {
-  towerData.rewards.money *= 2;
-}
-
 /** @typedef {Enum<dungeons>} DungeonEnum */
 const dungeons = Object.freeze({
   MIND_TEMPLE: "mindTemple",
