@@ -68,7 +68,7 @@ const newTutorialConfigRaw = {
         .then((res) => (res.numPokemon ?? 0) > 0)
         .catch(() => false),
     rewards: {
-      money: 5000,
+      money: 1000,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/gacha.gif",
@@ -103,7 +103,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.dailyRewards,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/backpack.png",
@@ -162,7 +162,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.buildParty,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/combat-readiness.png",
@@ -179,7 +179,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.learnBattleTurns,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/battle-move-select.gif",
@@ -197,7 +197,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.learnBattleMoves,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/battle-target-select.gif",
@@ -213,7 +213,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       Object.keys(trainer.defeatedNPCs).length > 0,
     rewards: {
-      money: 5000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: 10,
@@ -256,7 +256,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.winNpcBattle,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/list.png",
@@ -273,7 +273,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.listPokemon,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/info.png",
@@ -319,7 +319,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.trainPokemon,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/trainerinfo.png",
@@ -398,7 +398,7 @@ const newTutorialConfigRaw = {
       return (pokemons?.length ?? 0) >= 6;
     },
     rewards: {
-      money: 5000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: 10,
@@ -424,10 +424,10 @@ const newTutorialConfigRaw = {
       return false;
     },
     rewards: {
-      money: 10000,
+      money: 2000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.ULTRABALL]: 10,
+          [backpackItems.ULTRABALL]: 5,
         },
       },
     },
@@ -449,7 +449,7 @@ const newTutorialConfigRaw = {
         (quest) => quest.stage > 0
       ),
     rewards: {
-      money: 5000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: 10,
@@ -471,7 +471,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.winEasyDifficulty,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image: gameEventConfig[0]?.image,
   },
@@ -487,7 +487,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.events,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/vote.png",
@@ -503,7 +503,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.events,
     rewards: {
-      money: 1000,
+      money: 100,
     },
   },
   intermediateLeveling: {
@@ -524,7 +524,7 @@ const newTutorialConfigRaw = {
       return (pokemons?.length ?? 0) >= 6;
     },
     rewards: {
-      money: 10000,
+      money: 2000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.GREATBALL]: 10,
@@ -544,7 +544,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.intermediateLeveling,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/evolve.png",
@@ -566,10 +566,10 @@ const newTutorialConfigRaw = {
       return false;
     },
     rewards: {
-      money: 10000,
+      money: 2000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.POKEBALL]: 50,
+          [backpackItems.POKEBALL]: 25,
         },
       },
     },
@@ -588,7 +588,7 @@ const newTutorialConfigRaw = {
         .then((res) => (res.numPokemon ?? 0) >= 50)
         .catch(() => false),
     rewards: {
-      money: 5000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: 5,
@@ -608,7 +608,7 @@ const newTutorialConfigRaw = {
       "Use `/mythic darkrai` to catch Darkrai! \n## `/mythic darkrai`",
     checkRequirements: async (trainer) => trainer.hasDarkrai,
     rewards: {
-      money: 10000,
+      money: 2000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.MASTERBALL]: 3,
@@ -629,7 +629,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.hasDarkrai && trainer.dreamCards < getMaxDreamCards(trainer),
     rewards: {
-      money: 10000,
+      money: 2000,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/auto-battle.png",
@@ -653,7 +653,7 @@ const newTutorialConfigRaw = {
       return (pokemons?.length ?? 0) >= 6;
     },
     rewards: {
-      money: 10000,
+      money: 2000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.GREATBALL]: 10,
@@ -678,10 +678,10 @@ const newTutorialConfigRaw = {
       return false;
     },
     rewards: {
-      money: 10000,
+      money: 2000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.ULTRABALL]: 10,
+          [backpackItems.ULTRABALL]: 5,
         },
       },
     },
@@ -698,10 +698,10 @@ const newTutorialConfigRaw = {
       "Use `/battletower` to view and defeat a Battle Tower level!",
     checkRequirements: async (trainer) => (trainer.lastTowerStage ?? 0) > 0,
     rewards: {
-      money: 5000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.POKEBALL]: 25,
+          [backpackItems.POKEBALL]: 20,
         },
       },
     },
@@ -726,7 +726,7 @@ const newTutorialConfigRaw = {
       return (pokemons?.length ?? 0) >= 6;
     },
     rewards: {
-      money: 5000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.GREATBALL]: 10,
@@ -750,10 +750,10 @@ const newTutorialConfigRaw = {
       return false;
     },
     rewards: {
-      money: 10000,
+      money: 2000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.ULTRABALL]: 10,
+          [backpackItems.ULTRABALL]: 5,
         },
       },
     },
@@ -771,7 +771,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.eliteLeveling,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pvp.png",
@@ -787,7 +787,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.winVeryHardDifficulty,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/leaderboard.png",
@@ -829,7 +829,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       (trainer.locations?.[locations.TRACK] ?? 0) >= 3,
     rewards: {
-      money: 5000,
+      money: 1000,
     },
   },
   evTraining: {
@@ -870,10 +870,10 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       (trainer.defeatedNPCs.newIsland?.length ?? 0) > 0,
     rewards: {
-      money: 10000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.MASTERBALL]: 5,
+          [backpackItems.MASTERBALL]: 1,
         },
       },
     },
@@ -917,7 +917,7 @@ const newTutorialConfigRaw = {
     proceedString: `This is the end of the tutorial! Please join the support server for the newest updates, guides, and events! ${SUPPORT_SERVER_INVITE}`,
     checkRequirements: async () => false,
     rewards: {
-      money: 286,
+      money: 67,
     },
     image:
       "https://dbl-static.usercontent.prism.gg/02f7065e82d8c66e66299b74eda565b6.png",
