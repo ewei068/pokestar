@@ -1049,10 +1049,10 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Catch ${progressRequirement}x Pokemon with \`/gacha\``,
     computeRewards: () => ({
-      money: 1000,
+      money: 200,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.GREATBALL]: 2,
+          [backpackItems.GREATBALL]: 1,
         },
       },
     }),
@@ -1086,10 +1086,10 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Catch ${progressRequirement}x wild Pokemon`,
     computeRewards: () => ({
-      money: 1500,
+      money: 300,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.POKEBALL]: 3,
+          [backpackItems.POKEBALL]: 2,
         },
       },
     }),
@@ -1123,7 +1123,7 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Defeat ${progressRequirement}x Trainers with \`/pve\``,
     computeRewards: () => ({
-      money: 2500,
+      money: 500,
     }),
     questListeners: [
       {
@@ -1154,12 +1154,12 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Upgrade your equipment ${progressRequirement}x times with \`/equipment\``,
     computeRewards: () => ({
-      money: 2000,
+      money: 400,
       backpack: {
         [backpackCategories.MATERIALS]: {
-          [backpackItems.EMOTION_SHARD]: 8,
-          [backpackItems.KNOWLEDGE_SHARD]: 8,
-          [backpackItems.WILLPOWER_SHARD]: 8,
+          [backpackItems.EMOTION_SHARD]: 6,
+          [backpackItems.KNOWLEDGE_SHARD]: 6,
+          [backpackItems.WILLPOWER_SHARD]: 6,
         },
       },
     }),
@@ -1185,7 +1185,7 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Spend ${progressRequirement}x Dream Cards`,
     computeRewards: () => ({
-      money: 2500,
+      money: 500,
     }),
     questListeners: [
       {
@@ -1209,7 +1209,7 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Buy ${progressRequirement}x Pokeballs with \`/pokemart\``,
     computeRewards: () => ({
-      money: 2500,
+      money: 500,
     }),
     questListeners: [
       {
@@ -1239,7 +1239,7 @@ const dailyQuestConfigRaw = {
       `Claim your daily rewards! Use \`/daily\` to claim your daily rewards.\n## \`/daily\``,
     formatRequirementString: () => `Claim your daily rewards with \`/daily\``,
     computeRewards: () => ({
-      money: 1000,
+      money: 200,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.GREATBALL]: 1,
@@ -1268,7 +1268,7 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Complete ${progressRequirement}x daily quests with \`/quest\``,
     computeRewards: () => ({
-      money: 3000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.ULTRABALL]: 1,
@@ -1323,7 +1323,7 @@ const achievementConfigRaw = {
     // money: 10000 * (stage + 1)
     // pokeballs: 5\left(x+1\right)^{0.75}\ +\ 5
     computeRewards: ({ stage }) => ({
-      money: 2500 * (stage + 1),
+      money: 500 * (stage + 1),
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: Math.floor(5 * (stage + 1) ** 0.75 + 5),
@@ -1361,7 +1361,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Catch ${progressRequirement}x wild Pokemon`,
     computeRewards: ({ stage }) => ({
-      money: 2500 * (stage + 1),
+      money: 500 * (stage + 1),
       backpack: {
         [backpackCategories.POKEBALLS]: {
           // 3\left(x+1\right)^{0.75}
@@ -1400,7 +1400,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Claim ${progressRequirement}x daily rewards with \`/daily\``,
     computeRewards: () => ({
-      money: 1000,
+      money: 250,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.GREATBALL]: 1,
@@ -1430,7 +1430,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Complete ${progressRequirement}x daily quests with \`/quest\``,
     computeRewards: () => ({
-      money: 2000,
+      money: 500,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.ULTRABALL]: 1,
@@ -1465,7 +1465,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Evolve ${progressRequirement}x Pokemon`,
     computeRewards: ({ stage }) => ({
-      money: 5000 * (stage + 1),
+      money: 1000 * (stage + 1),
     }),
     questListeners: [
       {
@@ -1490,7 +1490,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `EV Train your Pokemon to ${progressRequirement} total EVs`,
     computeRewards: ({ stage }) => ({
-      money: 5000 * (stage + 1),
+      money: 1000 * (stage + 1),
     }),
     questListeners: [
       {
@@ -1515,7 +1515,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Reach ${progressRequirement} total Combat Power`,
     computeRewards: ({ stage }) => ({
-      money: 2500 * (stage + 1),
+      money: 500 * (stage + 1),
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.MASTERBALL]: 1,
@@ -1547,7 +1547,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ stage }) =>
       `Upgrade the Computer Lab location to level ${stage + 1}`,
     computeRewards: ({ stage }) => {
-      const stageToMoney = [2000, 10000, 50000];
+      const stageToMoney = [1000, 5000, 25000];
       return {
         money: stageToMoney[stage] ?? 0,
       };
@@ -1581,7 +1581,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Defeat ${progressRequirement}x Trainers with \`/pve\``,
     computeRewards: ({ stage }) => ({
-      money: 3000 * (stage + 1),
+      money: 600 * (stage + 1),
       // 4\left(x+1\right)^{0.75}\ +\ 6
       backpack: {
         [backpackCategories.MATERIALS]: {
@@ -1627,7 +1627,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Defeat ${progressRequirement}x Dungeons with \`/dungeons\``,
     computeRewards: ({ stage }) => ({
-      money: 2500 * (stage + 1),
+      money: 500 * (stage + 1),
       // 5\left(x+1\right)^{0.75}\ +\ 5
       backpack: {
         [backpackCategories.MATERIALS]: {
@@ -1673,7 +1673,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Defeat ${progressRequirement}x Raids with \`/raid\``,
     computeRewards: ({ stage }) => ({
-      money: 2500 * (stage + 1),
+      money: 500 * (stage + 1),
       // 50\left(x+1\right)^{0.75}\ +\ 50
       backpack: {
         [backpackCategories.MATERIALS]: {
@@ -1791,7 +1791,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Spend ${progressRequirement}x Dream Cards`,
     computeRewards: ({ stage }) => ({
-      money: 3000 * (stage + 1),
+      money: 500 * (stage + 1),
     }),
     questListeners: [
       {
@@ -1816,7 +1816,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Participate in PvP Battles ${progressRequirement}x times with \`/pvp\``,
     computeRewards: ({ stage }) => ({
-      money: 3000 * (stage + 1),
+      money: 500 * (stage + 1),
     }),
     questListeners: [
       {
@@ -1848,7 +1848,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Upgrade your equipment ${progressRequirement}x times with \`/equipment\``,
     computeRewards: ({ stage }) => ({
-      money: 2000 * (stage + 1),
+      money: 500 * (stage + 1),
       // 4\left(x+1\right)^{0.75}\ +\ 6
       backpack: {
         [backpackCategories.MATERIALS]: {
@@ -1887,7 +1887,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Reroll your equipment stats ${progressRequirement}x times with \`/equipment\``,
     computeRewards: ({ stage }) => ({
-      money: 2000 * (stage + 1),
+      money: 500 * (stage + 1),
       // 4\left(x+1\right)^{0.75}\ +\ 6
       backpack: {
         [backpackCategories.MATERIALS]: {
