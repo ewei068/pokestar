@@ -54,7 +54,7 @@ const buildVoteEmbed = (trainer) => {
   embed.setTitle(`${emojis.POKESTARMIE} Vote for Pokestar!`);
   embed.setDescription(
     buildBlockQuoteString(
-      "Vote on the sites below every 12 hours, then click the Claim Rewards button to claim rewards!\n\nVote often to accumulate a streak and earn up to 5x the rewards! Additionally, top.gg votes give twice the rewards!"
+      "Vote on the sites below every 12 hours to get **🎁 Vote Rewards Boxes,** then open your boxes for tons of rewards!\n\nVote often to accumulate a **streak** and earn up to **5x the rewards!** Additionally, **top.gg** votes give **twice** the rewards!"
     )
   );
   embed.setColor("#FFFFFF");
@@ -62,9 +62,9 @@ const buildVoteEmbed = (trainer) => {
     "https://cdn.discordapp.com/avatars/1093411444877439066/d4b45f3d46965964f6a913eb6825541a.png"
   );
   embed.addFields(
-    { name: "Rewards", value: `🎁 ${voting.rewards}`, inline: true },
+    { name: "Reward Boxes", value: `🎁 x${voting.rewards}`, inline: true },
     {
-      name: "Reward Multiplier",
+      name: "Reward Box Multiplier",
       value: `📈 ${getVoteMultiplier(voting.streak)}x`,
       inline: true,
     },

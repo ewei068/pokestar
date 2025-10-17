@@ -6,6 +6,7 @@
  *
  * vote.js is used to help the bot gain more visibility within the discord bot microcosm. Sets up the outline for easing the voting process for users.
  */
+const { ButtonStyle } = require("discord.js");
 const { buildButtonActionRow } = require("../../components/buttonActionRow");
 const { buildUrlButton } = require("../../components/urlButton");
 const { eventNames } = require("../../config/eventConfig");
@@ -30,11 +31,12 @@ const vote = async (user) => {
   const rewardsButton = buildButtonActionRow(
     [
       {
-        label: "Claim Rewards!",
+        label: "Open Reward Boxes!",
         disabled: false,
         data: {},
+        style: ButtonStyle.Success,
         // celebration
-        emoji: "🎉",
+        emoji: "🎁",
       },
     ],
     eventNames.VOTE_REWARDS

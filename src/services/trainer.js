@@ -507,7 +507,7 @@ const getVoteRewards = async (user) => {
   if (rewards < 1) {
     return {
       data: null,
-      err: "No rewards to claim! Use `/vote` to vote and try again!",
+      err: "You have no Reward Boxes to open! Use `/vote` to vote and try again!",
     };
   }
 
