@@ -25,6 +25,7 @@ const { getUserFromInteraction } = require("../utils/utils");
  * @param {boolean=} param3.defer
  * @param {any=} param3.userIdForFilter TODO: better name?
  * @param {((interaction: import("discord.js").MessageInteraction | Message, user: DiscordUser) => Promise<{err?: string}>)=} param3.customFilter
+ * @param {boolean=} param3.ephemeral
  * @param {number=} param3.ttl
  * @returns {Promise<any>}
  */
@@ -37,6 +38,7 @@ const createRoot = async (
     ttl,
     userIdForFilter = userTypeEnum.DEFAULT,
     customFilter = async () => ({}),
+    ephemeral = false,
   }
 ) => {
   const interactionInstance = getInteractionInstance(interaction);
@@ -64,6 +66,7 @@ const createRoot = async (
       ttl,
       userIdForFilter,
       customFilter,
+      ephemeral,
     }
   );
   if (defer) {

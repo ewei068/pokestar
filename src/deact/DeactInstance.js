@@ -7,13 +7,13 @@ class DeactInstance {
    * @param {Function} render
    * @param {any} props
    * @param {any} initialUserId
-   * @param {{ ttl?: number, userIdForFilter: any, customFilter: any }} param2
+   * @param {{ ttl?: number, userIdForFilter: any, customFilter: any, ephemeral: boolean }} param2
    */
   constructor(
     render,
     props,
     initialUserId,
-    { ttl = 300, userIdForFilter, customFilter }
+    { ttl = 300, userIdForFilter, customFilter, ephemeral }
   ) {
     this.stateId = setState(this.getStateToSet(), ttl);
     const initialElement = new DeactElement(this, render);
@@ -28,6 +28,7 @@ class DeactInstance {
     this.userIdForFilter = userIdForFilter;
     this.customFilter = customFilter;
     this.initialUserId = initialUserId;
+    this.ephemeral = ephemeral;
     // for backwards compat with old elements
     this.legacyState = {};
   }
@@ -76,7 +77,10 @@ class DeactInstance {
           messageRef: this.messageRef,
         }
       : {
-          element: res,
+          element: {
+            ...res,
+            ephemeral: this.ephemeral,
+          },
           messageRef: this.messageRef,
         };
   }

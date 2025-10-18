@@ -10,6 +10,8 @@ const { getVoteMultiplier } = require("../config/socialConfig");
 const { formatMoney, buildBlockQuoteString } = require("../utils/utils");
 const { pokemonConfig } = require("../config/pokemonConfig");
 const { emojis } = require("../enums/emojis");
+const { buildRarityProbabilityString } = require("../utils/gachaUtils");
+const { voteRewardsProbabilityDistribution } = require("../config/gachaConfig");
 
 /**
  *
@@ -62,6 +64,11 @@ const buildVoteEmbed = (trainer) => {
     "https://cdn.discordapp.com/avatars/1093411444877439066/d4b45f3d46965964f6a913eb6825541a.png"
   );
   embed.addFields(
+    {
+      name: "Reward Types",
+      value: buildRarityProbabilityString(voteRewardsProbabilityDistribution),
+      inline: false,
+    },
     { name: "Reward Boxes", value: `🎁 x${voting.rewards}`, inline: true },
     {
       name: "Reward Box Multiplier",

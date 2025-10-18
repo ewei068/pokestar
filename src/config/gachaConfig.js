@@ -655,10 +655,10 @@ const getCelebiPool = () => {
 const MAX_PITY = 100;
 
 const voteRewardsProbabilityDistribution = Object.freeze({
-  [rarities.LEGENDARY]: 0.01,
-  [rarities.EPIC]: 0.04,
-  [rarities.RARE]: 0.25,
-  [rarities.COMMON]: 0.7,
+  [rarities.LEGENDARY]: 0.02,
+  [rarities.EPIC]: 0.05,
+  [rarities.RARE]: 0.26,
+  [rarities.COMMON]: 0.67,
 });
 
 /** @typedef {Keys<rewardTypesConfigRaw>} RewardTypeEnum */

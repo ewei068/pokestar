@@ -1,4 +1,5 @@
 const { moveIdEnum, abilityIdEnum } = require("../enums/battleEnums");
+const { ansiTokens } = require("../enums/miscEnums");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
 
 /** @typedef {Enum<types>} PokemonTypeEnum */
@@ -11853,6 +11854,8 @@ const rarityConfig = {
     formChangeCost: 500,
     statMultiplier: [1.15, 1.1, 1.15, 1.1, 1.15, 1.1],
     emoji: "⚪",
+    ansiColor: ansiTokens.TEXT_GREEN,
+    name: "Common",
   },
   [rarities.RARE]: {
     pokemon: [],
@@ -11861,6 +11864,8 @@ const rarityConfig = {
     formChangeCost: 1000,
     statMultiplier: [1.15, 1.1, 1.15, 1.1, 1.15, 1.1],
     emoji: "💎",
+    ansiColor: ansiTokens.TEXT_BLUE,
+    name: "Rare",
   },
   [rarities.EPIC]: {
     pokemon: [],
@@ -11869,6 +11874,8 @@ const rarityConfig = {
     formChangeCost: 2500,
     statMultiplier: [1.075, 1.05, 1.075, 1.05, 1.075, 1.05],
     emoji: "🔮",
+    ansiColor: ansiTokens.TEXT_MAGENTA,
+    name: "Epic",
   },
   [rarities.LEGENDARY]: {
     pokemon: [],
@@ -11876,6 +11883,8 @@ const rarityConfig = {
     money: 200,
     formChangeCost: 10000,
     emoji: "🌟",
+    ansiColor: ansiTokens.TEXT_YELLOW,
+    name: "Legendary",
   },
   [rarities.MYTHICAL]: {
     pokemon: [],
@@ -11883,6 +11892,8 @@ const rarityConfig = {
     money: 10000,
     formChangeCost: 10000,
     emoji: "㊙️",
+    ansiColor: ansiTokens.TEXT_RED,
+    name: "Mythical",
   },
 };
 
