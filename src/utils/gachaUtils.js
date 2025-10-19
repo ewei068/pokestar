@@ -5,6 +5,10 @@
  * gachaUtils.js the lowest level of gacha code used by gacha.js
  */
 
+const { rarityConfig } = require("../config/pokemonConfig");
+const { ansiTokens } = require("../enums/miscEnums");
+const { getWhitespace, buildAnsiString } = require("./utils");
+
 /**
  * Draws a random item from a probability distribution.
  * @template {string | number} T
@@ -91,8 +95,60 @@ const drawUniform = (min, max, times) => {
   return results;
 };
 
+/**
+ * Formats a probability as a percentage.
+ * @param {number} probability
+ * @returns {string}
+ */
+const formatProbability = (probability) => {
+  if (probability >= 0.0001) {
+    // For probabilities >= 0.01%, show up to 2 decimal places
+    return `${(probability * 100).toFixed(2)}%`;
+  }
+
+  // For very small probabilities, find minimum decimals needed
+  let decimals = 3;
+  while ((probability * 100).toFixed(decimals).endsWith("0") && decimals < 10) {
+    decimals += 1;
+  }
+  return `${(probability * 100).toFixed(decimals)}%`;
+};
+
+/**
+ * Builds a string of rarity probabilities.
+ * @param {PartialRecord<RarityEnum, number>} rarityProbabilityDistribution
+ * @returns {string}
+ */
+const buildRarityProbabilityString = (rarityProbabilityDistribution) => {
+  const rarityNames = Object.keys(rarityProbabilityDistribution).map(
+    (rarity) => `[${rarityConfig[rarity].name}]`
+  );
+  const headerWhitespace = getWhitespace(rarityNames);
+
+  // this can be done with maps and format strings but it's easier to read this way
+  let probabilityString = "";
+  for (let i = 0; i < rarityNames.length; i += 1) {
+    const rarity = Object.keys(rarityProbabilityDistribution)[i];
+    probabilityString += `${rarityConfig[rarity].emoji} `;
+    probabilityString += ansiTokens.BOLD + rarityConfig[rarity].ansiColor;
+    probabilityString += rarityNames[i];
+    probabilityString += ansiTokens.RESET;
+    probabilityString += `${headerWhitespace[i]}`;
+    probabilityString += ": ";
+    probabilityString += formatProbability(
+      rarityProbabilityDistribution[rarity] ?? 0
+    );
+    if (i < rarityNames.length - 1) {
+      probabilityString += "\n";
+    }
+  }
+  return buildAnsiString(probabilityString);
+};
+
 module.exports = {
   drawDiscrete,
   drawIterable,
   drawUniform,
+  formatProbability,
+  buildRarityProbabilityString,
 };

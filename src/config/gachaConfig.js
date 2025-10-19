@@ -1,10 +1,15 @@
 const seedrandom = require("seedrandom");
-const { backpackItems } = require("./backpackConfig");
+const {
+  backpackItems,
+  backpackItemConfig,
+  backpackHeldItemConfig,
+} = require("./backpackConfig");
 const { rarities, rarityBins, getGeneration } = require("./pokemonConfig");
 const { drawIterable } = require("../utils/gachaUtils");
-const { getFullUTCDate } = require("../utils/utils");
+const { getFullUTCDate, formatMoney } = require("../utils/utils");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { celebiMythicConfig } = require("./mythicConfig");
+const { emojis } = require("../enums/emojis");
 
 const dailyRewardChances = Object.freeze({
   [backpackItems.POKEBALL]: 0.7,
@@ -653,6 +658,158 @@ const getCelebiPool = () => {
 
 const MAX_PITY = 100;
 
+const voteRewardsProbabilityDistribution = Object.freeze({
+  [rarities.LEGENDARY]: 0.02,
+  [rarities.EPIC]: 0.05,
+  [rarities.RARE]: 0.26,
+  [rarities.COMMON]: 0.67,
+});
+
+/** @typedef {Keys<rewardTypesConfigRaw>} RewardTypeEnum */
+
+const defaultDisplayFunction = (displayName) => (quantity) =>
+  `${displayName} x${quantity}`;
+
+const defaultBackpackItemRewards = (itemId) => (quantity) => ({
+  backpack: {
+    [itemId]: quantity,
+  },
+});
+
+/**
+ * @satisfies {Record<string, {
+ *  emoji: string,
+ *  display: (quantity: number) => string,
+ *  getRewards: (quantity: number) => FlattenedRewards,
+ * }>}
+ */
+const rewardTypesConfigRaw = {
+  masterball: {
+    emoji: backpackItemConfig[backpackItems.MASTERBALL].emoji,
+    display: defaultDisplayFunction("Masterball"),
+    getRewards: defaultBackpackItemRewards(backpackItems.MASTERBALL),
+  },
+  greatball: {
+    emoji: backpackItemConfig[backpackItems.GREATBALL].emoji,
+    display: defaultDisplayFunction("Greatball"),
+    getRewards: defaultBackpackItemRewards(backpackItems.GREATBALL),
+  },
+  ultraball: {
+    emoji: backpackItemConfig[backpackItems.ULTRABALL].emoji,
+    display: defaultDisplayFunction("Ultraball"),
+    getRewards: defaultBackpackItemRewards(backpackItems.ULTRABALL),
+  },
+  pokeball: {
+    emoji: backpackItemConfig[backpackItems.POKEBALL].emoji,
+    display: defaultDisplayFunction("Pokeball"),
+    getRewards: defaultBackpackItemRewards(backpackItems.POKEBALL),
+  },
+  knowledgeShard: {
+    emoji: backpackItemConfig[backpackItems.KNOWLEDGE_SHARD].emoji,
+    display: defaultDisplayFunction("Knowledge Shard"),
+    getRewards: defaultBackpackItemRewards(backpackItems.KNOWLEDGE_SHARD),
+  },
+  emotionShard: {
+    emoji: backpackItemConfig[backpackItems.EMOTION_SHARD].emoji,
+    display: defaultDisplayFunction("Emotion Shard"),
+    getRewards: defaultBackpackItemRewards(backpackItems.EMOTION_SHARD),
+  },
+  willpowerShard: {
+    emoji: backpackItemConfig[backpackItems.WILLPOWER_SHARD].emoji,
+    display: defaultDisplayFunction("Willpower Shard"),
+    getRewards: defaultBackpackItemRewards(backpackItems.WILLPOWER_SHARD),
+  },
+  mint: {
+    emoji: backpackItemConfig[backpackItems.MINT].emoji,
+    display: defaultDisplayFunction("Mint"),
+    getRewards: defaultBackpackItemRewards(backpackItems.MINT),
+  },
+  raidPass: {
+    emoji: backpackItemConfig[backpackItems.RAID_PASS].emoji,
+    display: defaultDisplayFunction("Raid Pass"),
+    getRewards: defaultBackpackItemRewards(backpackItems.RAID_PASS),
+  },
+  dreamCard: {
+    emoji: emojis.DREAM_CARD,
+    display: defaultDisplayFunction("Dream Card"),
+    getRewards: (quantity) => ({
+      dreamCards: quantity,
+    }),
+  },
+  money: {
+    emoji: emojis.MONEY,
+    display: formatMoney,
+    getRewards: (quantity) => ({
+      money: quantity,
+    }),
+  },
+  randomHeldItem: {
+    emoji: emojis.LEFTOVERS,
+    display: defaultDisplayFunction("Random Held Item"),
+    getRewards: (quantity) => {
+      const heldItemsDrawn = drawIterable(
+        Object.keys(backpackHeldItemConfig),
+        quantity,
+        {
+          replacement: true,
+        }
+      );
+      const backpack = {};
+      for (const heldItem of heldItemsDrawn) {
+        backpack[heldItem] = (backpack[heldItem] || 0) + 1;
+      }
+      return {
+        backpack,
+      };
+    },
+  },
+};
+
+const rewardTypesConfig = Object.freeze(rewardTypesConfigRaw);
+
+// TODO: make some reusable util to display this stuff
+/**
+ * @type {Record<RarityEnum, PartialRecord<RewardTypeEnum, number>>}
+ */
+// @ts-ignore
+const voteRewardsConfigRaw = {
+  [rarities.LEGENDARY]: {
+    masterball: 2,
+    ultraball: 5,
+    money: 20000,
+    randomHeldItem: 2,
+    raidPass: 3,
+  },
+  [rarities.EPIC]: {
+    masterball: 1,
+    ultraball: 2,
+    money: 5000,
+    randomHeldItem: 1,
+    raidPass: 1,
+    mint: 3,
+    dreamCard: 30,
+  },
+  [rarities.RARE]: {
+    greatball: 2,
+    pokeball: 8,
+    money: 2500,
+    mint: 1,
+    dreamCard: 15,
+    knowledgeShard: 7,
+    emotionShard: 7,
+    willpowerShard: 7,
+  },
+  [rarities.COMMON]: {
+    pokeball: 3,
+    money: 1000,
+    knowledgeShard: 3,
+    emotionShard: 3,
+    willpowerShard: 3,
+  },
+};
+
+const voteRewardsConfig = Object.freeze(voteRewardsConfigRaw);
+
 module.exports = {
   dailyRewardChances,
   pokeballConfig,
@@ -661,4 +818,7 @@ module.exports = {
   bannerConfig,
   MAX_PITY,
   getCelebiPool,
+  voteRewardsProbabilityDistribution,
+  rewardTypesConfig,
+  voteRewardsConfig,
 };

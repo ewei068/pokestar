@@ -1041,7 +1041,7 @@ const battleTowerConfig = Object.freeze({
     minLevel: 40,
     maxLevel: 49,
     rewards: {
-      money: 1000,
+      money: 250,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: 5,
@@ -1055,7 +1055,7 @@ const battleTowerConfig = Object.freeze({
     minLevel: 48,
     maxLevel: 57,
     rewards: {
-      money: 1000,
+      money: 250,
       backpack: {
         [backpackCategories.MATERIALS]: {
           [backpackItems.KNOWLEDGE_SHARD]: 20,
@@ -1069,7 +1069,7 @@ const battleTowerConfig = Object.freeze({
     minLevel: 56,
     maxLevel: 65,
     rewards: {
-      money: 1000,
+      money: 250,
       backpack: {
         [backpackCategories.MATERIALS]: {
           [backpackItems.EMOTION_SHARD]: 20,
@@ -1083,7 +1083,7 @@ const battleTowerConfig = Object.freeze({
     minLevel: 64,
     maxLevel: 73,
     rewards: {
-      money: 1000,
+      money: 250,
       backpack: {
         [backpackCategories.MATERIALS]: {
           [backpackItems.WILLPOWER_SHARD]: 20,
@@ -1097,7 +1097,7 @@ const battleTowerConfig = Object.freeze({
     minLevel: 74,
     maxLevel: 83,
     rewards: {
-      money: 5000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.MASTERBALL]: 1,
@@ -1117,7 +1117,7 @@ const battleTowerConfig = Object.freeze({
     minLevel: 82,
     maxLevel: 91,
     rewards: {
-      money: 2000,
+      money: 500,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: 10,
@@ -1131,10 +1131,10 @@ const battleTowerConfig = Object.freeze({
     minLevel: 90,
     maxLevel: 99,
     rewards: {
-      money: 2000,
+      money: 500,
       backpack: {
         [backpackCategories.MATERIALS]: {
-          [backpackItems.KNOWLEDGE_SHARD]: 30,
+          [backpackItems.KNOWLEDGE_SHARD]: 25,
         },
       },
     },
@@ -1145,10 +1145,10 @@ const battleTowerConfig = Object.freeze({
     minLevel: 98,
     maxLevel: 107,
     rewards: {
-      money: 2000,
+      money: 500,
       backpack: {
         [backpackCategories.MATERIALS]: {
-          [backpackItems.EMOTION_SHARD]: 30,
+          [backpackItems.EMOTION_SHARD]: 25,
         },
       },
     },
@@ -1159,10 +1159,10 @@ const battleTowerConfig = Object.freeze({
     minLevel: 106,
     maxLevel: 115,
     rewards: {
-      money: 2000,
+      money: 500,
       backpack: {
         [backpackCategories.MATERIALS]: {
-          [backpackItems.WILLPOWER_SHARD]: 30,
+          [backpackItems.WILLPOWER_SHARD]: 25,
         },
       },
     },
@@ -1173,15 +1173,15 @@ const battleTowerConfig = Object.freeze({
     minLevel: 114,
     maxLevel: 123,
     rewards: {
-      money: 10000,
+      money: 2500,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.MASTERBALL]: 2,
+          [backpackItems.MASTERBALL]: 1,
         },
         [backpackCategories.MATERIALS]: {
-          [backpackItems.KNOWLEDGE_SHARD]: 100,
-          [backpackItems.EMOTION_SHARD]: 100,
-          [backpackItems.WILLPOWER_SHARD]: 100,
+          [backpackItems.KNOWLEDGE_SHARD]: 75,
+          [backpackItems.EMOTION_SHARD]: 75,
+          [backpackItems.WILLPOWER_SHARD]: 75,
           [backpackItems.MINT]: 2,
         },
       },
@@ -1193,7 +1193,7 @@ const battleTowerConfig = Object.freeze({
     minLevel: 122,
     maxLevel: 131,
     rewards: {
-      money: 3000,
+      money: 750,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: 10,
@@ -1207,7 +1207,7 @@ const battleTowerConfig = Object.freeze({
     minLevel: 130,
     maxLevel: 139,
     rewards: {
-      money: 3000,
+      money: 750,
       backpack: {
         [backpackCategories.MATERIALS]: {
           [backpackItems.KNOWLEDGE_SHARD]: 30,
@@ -1221,7 +1221,7 @@ const battleTowerConfig = Object.freeze({
     minLevel: 138,
     maxLevel: 147,
     rewards: {
-      money: 3000,
+      money: 750,
       backpack: {
         [backpackCategories.MATERIALS]: {
           [backpackItems.EMOTION_SHARD]: 30,
@@ -1235,7 +1235,7 @@ const battleTowerConfig = Object.freeze({
     minLevel: 146,
     maxLevel: 155,
     rewards: {
-      money: 3000,
+      money: 750,
       backpack: {
         [backpackCategories.MATERIALS]: {
           [backpackItems.WILLPOWER_SHARD]: 30,
@@ -1249,15 +1249,15 @@ const battleTowerConfig = Object.freeze({
     minLevel: 154,
     maxLevel: 163,
     rewards: {
-      money: 15000,
+      money: 5000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.MASTERBALL]: 3,
+          [backpackItems.MASTERBALL]: 2,
         },
         [backpackCategories.MATERIALS]: {
-          [backpackItems.KNOWLEDGE_SHARD]: 150,
-          [backpackItems.EMOTION_SHARD]: 150,
-          [backpackItems.WILLPOWER_SHARD]: 150,
+          [backpackItems.KNOWLEDGE_SHARD]: 100,
+          [backpackItems.EMOTION_SHARD]: 100,
+          [backpackItems.WILLPOWER_SHARD]: 100,
           [backpackItems.MINT]: 3,
         },
       },
@@ -1269,7 +1269,7 @@ const battleTowerConfig = Object.freeze({
     minLevel: 162,
     maxLevel: 171,
     rewards: {
-      money: 4000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: 15,
@@ -1283,7 +1283,7 @@ const battleTowerConfig = Object.freeze({
     minLevel: 170,
     maxLevel: 179,
     rewards: {
-      money: 4000,
+      money: 1000,
       backpack: {
         [backpackCategories.MATERIALS]: {
           [backpackItems.KNOWLEDGE_SHARD]: 40,
@@ -1297,7 +1297,7 @@ const battleTowerConfig = Object.freeze({
     minLevel: 178,
     maxLevel: 187,
     rewards: {
-      money: 4000,
+      money: 1000,
       backpack: {
         [backpackCategories.MATERIALS]: {
           [backpackItems.EMOTION_SHARD]: 40,
@@ -1311,7 +1311,7 @@ const battleTowerConfig = Object.freeze({
     minLevel: 186,
     maxLevel: 195,
     rewards: {
-      money: 4000,
+      money: 1000,
       backpack: {
         [backpackCategories.MATERIALS]: {
           [backpackItems.WILLPOWER_SHARD]: 40,
@@ -1325,26 +1325,21 @@ const battleTowerConfig = Object.freeze({
     minLevel: 194,
     maxLevel: 203,
     rewards: {
-      money: 25000,
+      money: 10000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.MASTERBALL]: 5,
+          [backpackItems.MASTERBALL]: 4,
         },
         [backpackCategories.MATERIALS]: {
-          [backpackItems.KNOWLEDGE_SHARD]: 250,
-          [backpackItems.EMOTION_SHARD]: 250,
-          [backpackItems.WILLPOWER_SHARD]: 250,
-          [backpackItems.MINT]: 5,
+          [backpackItems.KNOWLEDGE_SHARD]: 200,
+          [backpackItems.EMOTION_SHARD]: 200,
+          [backpackItems.WILLPOWER_SHARD]: 200,
+          [backpackItems.MINT]: 4,
         },
       },
     },
   },
 });
-
-// TEMP: 2x money
-for (const towerData of Object.values(battleTowerConfig)) {
-  towerData.rewards.money *= 2;
-}
 
 /** @typedef {Enum<dungeons>} DungeonEnum */
 const dungeons = Object.freeze({

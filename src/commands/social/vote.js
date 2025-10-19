@@ -1,24 +1,33 @@
 /**
  * @file
  * @author Elvis Wei
- * @date 2023
- * @section Description
  *
  * vote.js is used to help the bot gain more visibility within the discord bot microcosm. Sets up the outline for easing the voting process for users.
  */
+const { ButtonStyle } = require("discord.js");
 const { buildButtonActionRow } = require("../../components/buttonActionRow");
 const { buildUrlButton } = require("../../components/urlButton");
 const { eventNames } = require("../../config/eventConfig");
 const { voteConfig } = require("../../config/socialConfig");
 const { buildVoteEmbed } = require("../../embeds/socialEmbeds");
 const { getTrainer } = require("../../services/trainer");
+const { getInteractionInstance } = require("../../deact/interactions");
+const { createRoot, userTypeEnum } = require("../../deact/deact");
+// @ts-ignore
+const PaginatedRewardsPreview = require("../../elements/gacha/PaginatedRewardsPreview");
+const {
+  voteRewardsProbabilityDistribution,
+  voteRewardsConfig,
+} = require("../../config/gachaConfig");
 
 /**
  * Syncs the voting to the discord user to give rewards on successful voting.
+ * @param {any} interaction The interaction (message or slash command)
  * @param {*} user the user who decided to vote.
- * @returns
  */
-const vote = async (user) => {
+const vote = async (interaction, user) => {
+  const interactionInstance = getInteractionInstance(interaction);
+
   const trainer = await getTrainer(user);
   if (trainer.err) {
     return { send: null, err: trainer.err };
@@ -30,41 +39,47 @@ const vote = async (user) => {
   const rewardsButton = buildButtonActionRow(
     [
       {
-        label: "Claim Rewards!",
+        label: "Open Reward Boxes!",
         disabled: false,
         data: {},
+        style: ButtonStyle.Success,
         // celebration
-        emoji: "🎉",
+        emoji: "🎁",
       },
     ],
     eventNames.VOTE_REWARDS
   );
 
-  const send = {
-    embeds: [voteEmbed],
-    components: [voteButtons, rewardsButton],
-  };
-
-  return { send, err: null };
-};
-
-const voteMessageCommand = async (message) => {
-  const { send, err } = await vote(message.author);
-  if (err) {
-    await message.channel.send(`${err}`);
-    return { err };
+  try {
+    await interactionInstance.reply({
+      element: {
+        embeds: [voteEmbed],
+        components: [voteButtons, rewardsButton],
+      },
+    });
+  } catch (err) {
+    return { err: err.message };
   }
-  await message.channel.send(send);
+
+  return createRoot(
+    PaginatedRewardsPreview,
+    {
+      rewardDistribution: voteRewardsProbabilityDistribution,
+      rewardsConfig: voteRewardsConfig,
+    },
+    interaction,
+    {
+      ephemeral: true,
+      defer: false,
+      userIdForFilter: userTypeEnum.ANY,
+    }
+  );
 };
 
-const voteSlashCommand = async (interaction) => {
-  const { send, err } = await vote(interaction.user);
-  if (err) {
-    await interaction.reply(`${err}`);
-    return { err };
-  }
-  await interaction.reply(send);
-};
+const voteMessageCommand = async (message) => vote(message, message.author);
+
+const voteSlashCommand = async (interaction) =>
+  vote(interaction, interaction.user);
 
 module.exports = {
   message: voteMessageCommand,

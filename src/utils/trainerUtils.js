@@ -9,9 +9,11 @@ const {
   backpackCategories,
   backpackItemConfig,
 } = require("../config/backpackConfig");
+const { rarityConfig } = require("../config/pokemonConfig");
 const { emojis } = require("../enums/emojis");
+const { ansiTokens } = require("../enums/miscEnums");
 const { formatItemQuantity } = require("./itemUtils");
-const { getOrSetDefault, formatMoney } = require("./utils");
+const { getOrSetDefault, formatMoney, buildAnsiString } = require("./utils");
 
 /**
  * @param {Trainer} trainer
@@ -75,13 +77,16 @@ const getCompactCostString = (cost) => {
 const getFlattenedRewardsString = (rewards, received = true) => {
   let rewardsString = received ? "**You received:**" : "";
   if (rewards.money) {
-    rewardsString += `\n${formatMoney(rewards.money)}`;
+    rewardsString += `\n💵 ${formatMoney(rewards.money)}`;
   }
   if (rewards.backpack) {
     // console.log(rewards.backpack)
     for (const itemId in rewards.backpack) {
       rewardsString += `\n${backpackItemConfig[itemId].emoji} ${rewards.backpack[itemId]}x ${backpackItemConfig[itemId].name}`;
     }
+  }
+  if (rewards.dreamCards) {
+    rewardsString += `\n${emojis.DREAM_CARD} ${rewards.dreamCards}x Dream Cards`;
   }
 
   // remove beginning newline
@@ -106,7 +111,30 @@ const getCompactFlattenedRewardsString = (rewards) => {
       rewardsString += `${backpackItemConfig[itemId].emoji}`;
     }
   }
+  if (rewards.dreamCards) {
+    rewardsString += emojis.DREAM_CARD;
+  }
   return rewardsString;
+};
+
+/**
+ * @param {PartialRecord<RarityEnum, number>} rewardRarities
+ * @param {boolean=} includeHeader
+ * @returns {string}
+ */
+const getRewardRaritiesString = (rewardRarities, includeHeader = false) => {
+  let rewardRaritiesString = "";
+  if (includeHeader) {
+    rewardRaritiesString += "**You drew the following rarities:**\n";
+  }
+  const raritiesDrawnString = Object.entries(rewardRarities)
+    .map(
+      ([rarity, quantity]) =>
+        `${rarityConfig[rarity].emoji} ${quantity}x ${ansiTokens.BOLD}${rarityConfig[rarity].ansiColor}${rarityConfig[rarity].name}${ansiTokens.RESET}`
+    )
+    .join("\n");
+  rewardRaritiesString += buildAnsiString(raritiesDrawnString);
+  return rewardRaritiesString;
 };
 
 /**
@@ -162,37 +190,49 @@ const getCompactRewardsString = (rewards) =>
 /**
  *
  * @param {Trainer} trainer
- * @param {Rewards} rewards
- * @param {any} accumulator
+ * @param {FlattenedRewards} rewards
+ * @param {FlattenedRewards} accumulator
  * @returns {FlattenedRewards}
  */
-const addRewards = (trainer, rewards, accumulator = {}) => {
+const addFlattenedRewards = (trainer, rewards, accumulator = {}) => {
   if (rewards.money) {
     accumulator.money = (accumulator.money || 0) + rewards.money;
-    // eslint-disable-next-line no-param-reassign
     trainer.money += rewards.money;
   }
   if (rewards.backpack) {
-    const backpack = getOrSetDefault(accumulator, "backpack", {});
-    for (const categoryId in rewards.backpack) {
+    const accumulatorBackpack = getOrSetDefault(accumulator, "backpack", {});
+    for (const itemId in rewards.backpack) {
+      const categoryId = backpackItemConfig[itemId].category;
       const trainerBackpackCategory = getOrSetDefault(
         trainer.backpack,
         categoryId,
         {}
       );
-      for (const itemId in rewards.backpack[categoryId]) {
-        backpack[itemId] =
-          getOrSetDefault(backpack, itemId, 0) +
-          rewards.backpack[categoryId][itemId];
-        trainerBackpackCategory[itemId] =
-          getOrSetDefault(trainerBackpackCategory, itemId, 0) +
-          rewards.backpack[categoryId][itemId];
-      }
+      accumulatorBackpack[itemId] =
+        getOrSetDefault(accumulatorBackpack, itemId, 0) +
+        rewards.backpack[itemId];
+      trainerBackpackCategory[itemId] =
+        getOrSetDefault(trainerBackpackCategory, itemId, 0) +
+        rewards.backpack[itemId];
     }
+  }
+  if (rewards.dreamCards) {
+    accumulator.dreamCards = (accumulator.dreamCards || 0) + rewards.dreamCards;
+    trainer.dreamCards += rewards.dreamCards;
   }
 
   return accumulator;
 };
+
+/**
+ *
+ * @param {Trainer} trainer
+ * @param {Rewards} rewards
+ * @param {FlattenedRewards} accumulator
+ * @returns {FlattenedRewards}
+ */
+const addRewards = (trainer, rewards, accumulator = {}) =>
+  addFlattenedRewards(trainer, flattenRewards(rewards), accumulator);
 
 /**
  * @param {Trainer} trainer
@@ -348,6 +388,7 @@ module.exports = {
   getCompactCostString,
   flattenCategories,
   flattenRewards,
+  addFlattenedRewards,
   addRewards,
   removeMoney,
   removeCost,
@@ -361,4 +402,5 @@ module.exports = {
   formatDreamCards,
   getMaxDreamCards,
   formatDreamCardsForTrainer,
+  getRewardRaritiesString,
 };

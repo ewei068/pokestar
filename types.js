@@ -57,10 +57,12 @@
  * @typedef {{
  *  money?: number,
  *  backpack?: Backpack
+ *  dreamCards?: number
  * }} Rewards
  * @typedef {{
  *  money?: number,
  *  backpack?: FlattenedBackpack
+ *  dreamCards?: number
  * }} FlattenedRewards
  *
  * These are the same type for now

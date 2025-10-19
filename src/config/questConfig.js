@@ -16,6 +16,7 @@ const { getMaxDreamCards } = require("../utils/trainerUtils");
 const { backpackCategories, backpackItems } = require("./backpackConfig");
 const { SUPPORT_SERVER_INVITE, gameEventConfig } = require("./helpConfig");
 const { locations } = require("./locationConfig");
+const { arceusMythicConfig, deoxysMythicConfig } = require("./mythicConfig");
 const { difficulties } = require("./npcConfig");
 const { pokemonConfig } = require("./pokemonConfig");
 const { shopItems } = require("./shopConfig");
@@ -67,7 +68,7 @@ const newTutorialConfigRaw = {
         .then((res) => (res.numPokemon ?? 0) > 0)
         .catch(() => false),
     rewards: {
-      money: 5000,
+      money: 1000,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/gacha.gif",
@@ -102,7 +103,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.dailyRewards,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/backpack.png",
@@ -161,7 +162,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.buildParty,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/combat-readiness.png",
@@ -178,7 +179,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.learnBattleTurns,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/battle-move-select.gif",
@@ -196,7 +197,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.learnBattleMoves,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/battle-target-select.gif",
@@ -212,7 +213,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       Object.keys(trainer.defeatedNPCs).length > 0,
     rewards: {
-      money: 5000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: 10,
@@ -255,7 +256,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.winNpcBattle,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/list.png",
@@ -272,7 +273,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.listPokemon,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/info.png",
@@ -318,7 +319,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.trainPokemon,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/trainerinfo.png",
@@ -397,7 +398,7 @@ const newTutorialConfigRaw = {
       return (pokemons?.length ?? 0) >= 6;
     },
     rewards: {
-      money: 5000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: 10,
@@ -423,10 +424,10 @@ const newTutorialConfigRaw = {
       return false;
     },
     rewards: {
-      money: 10000,
+      money: 2000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.ULTRABALL]: 10,
+          [backpackItems.ULTRABALL]: 5,
         },
       },
     },
@@ -448,7 +449,7 @@ const newTutorialConfigRaw = {
         (quest) => quest.stage > 0
       ),
     rewards: {
-      money: 5000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: 10,
@@ -470,7 +471,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.winEasyDifficulty,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image: gameEventConfig[0]?.image,
   },
@@ -486,7 +487,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.events,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/vote.png",
@@ -502,7 +503,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.events,
     rewards: {
-      money: 1000,
+      money: 100,
     },
   },
   intermediateLeveling: {
@@ -523,7 +524,7 @@ const newTutorialConfigRaw = {
       return (pokemons?.length ?? 0) >= 6;
     },
     rewards: {
-      money: 10000,
+      money: 2000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.GREATBALL]: 10,
@@ -543,7 +544,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.intermediateLeveling,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/evolve.png",
@@ -565,10 +566,10 @@ const newTutorialConfigRaw = {
       return false;
     },
     rewards: {
-      money: 10000,
+      money: 2000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.POKEBALL]: 50,
+          [backpackItems.POKEBALL]: 25,
         },
       },
     },
@@ -587,7 +588,7 @@ const newTutorialConfigRaw = {
         .then((res) => (res.numPokemon ?? 0) >= 50)
         .catch(() => false),
     rewards: {
-      money: 5000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: 5,
@@ -607,7 +608,7 @@ const newTutorialConfigRaw = {
       "Use `/mythic darkrai` to catch Darkrai! \n## `/mythic darkrai`",
     checkRequirements: async (trainer) => trainer.hasDarkrai,
     rewards: {
-      money: 10000,
+      money: 2000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.MASTERBALL]: 3,
@@ -628,7 +629,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.hasDarkrai && trainer.dreamCards < getMaxDreamCards(trainer),
     rewards: {
-      money: 10000,
+      money: 2000,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/auto-battle.png",
@@ -652,7 +653,7 @@ const newTutorialConfigRaw = {
       return (pokemons?.length ?? 0) >= 6;
     },
     rewards: {
-      money: 10000,
+      money: 2000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.GREATBALL]: 10,
@@ -677,10 +678,10 @@ const newTutorialConfigRaw = {
       return false;
     },
     rewards: {
-      money: 10000,
+      money: 2000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.ULTRABALL]: 10,
+          [backpackItems.ULTRABALL]: 5,
         },
       },
     },
@@ -697,10 +698,10 @@ const newTutorialConfigRaw = {
       "Use `/battletower` to view and defeat a Battle Tower level!",
     checkRequirements: async (trainer) => (trainer.lastTowerStage ?? 0) > 0,
     rewards: {
-      money: 5000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.POKEBALL]: 25,
+          [backpackItems.POKEBALL]: 20,
         },
       },
     },
@@ -725,7 +726,7 @@ const newTutorialConfigRaw = {
       return (pokemons?.length ?? 0) >= 6;
     },
     rewards: {
-      money: 5000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.GREATBALL]: 10,
@@ -749,10 +750,10 @@ const newTutorialConfigRaw = {
       return false;
     },
     rewards: {
-      money: 10000,
+      money: 2000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.ULTRABALL]: 10,
+          [backpackItems.ULTRABALL]: 5,
         },
       },
     },
@@ -770,7 +771,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.eliteLeveling,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/pvp.png",
@@ -786,7 +787,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       trainer.tutorialData.completedTutorialStages.winVeryHardDifficulty,
     rewards: {
-      money: 1000,
+      money: 100,
     },
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/tutorial/leaderboard.png",
@@ -828,7 +829,7 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       (trainer.locations?.[locations.TRACK] ?? 0) >= 3,
     rewards: {
-      money: 5000,
+      money: 1000,
     },
   },
   evTraining: {
@@ -869,10 +870,10 @@ const newTutorialConfigRaw = {
     checkRequirements: async (trainer) =>
       (trainer.defeatedNPCs.newIsland?.length ?? 0) > 0,
     rewards: {
-      money: 10000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.MASTERBALL]: 5,
+          [backpackItems.MASTERBALL]: 1,
         },
       },
     },
@@ -916,7 +917,7 @@ const newTutorialConfigRaw = {
     proceedString: `This is the end of the tutorial! Please join the support server for the newest updates, guides, and events! ${SUPPORT_SERVER_INVITE}`,
     checkRequirements: async () => false,
     rewards: {
-      money: 286,
+      money: 67,
     },
     image:
       "https://dbl-static.usercontent.prism.gg/02f7065e82d8c66e66299b74eda565b6.png",
@@ -1048,10 +1049,10 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Catch ${progressRequirement}x Pokemon with \`/gacha\``,
     computeRewards: () => ({
-      money: 1000,
+      money: 200,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.GREATBALL]: 2,
+          [backpackItems.GREATBALL]: 1,
         },
       },
     }),
@@ -1085,10 +1086,10 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Catch ${progressRequirement}x wild Pokemon`,
     computeRewards: () => ({
-      money: 1500,
+      money: 300,
       backpack: {
         [backpackCategories.POKEBALLS]: {
-          [backpackItems.POKEBALL]: 3,
+          [backpackItems.POKEBALL]: 2,
         },
       },
     }),
@@ -1122,7 +1123,7 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Defeat ${progressRequirement}x Trainers with \`/pve\``,
     computeRewards: () => ({
-      money: 2500,
+      money: 500,
     }),
     questListeners: [
       {
@@ -1153,12 +1154,12 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Upgrade your equipment ${progressRequirement}x times with \`/equipment\``,
     computeRewards: () => ({
-      money: 2000,
+      money: 400,
       backpack: {
         [backpackCategories.MATERIALS]: {
-          [backpackItems.EMOTION_SHARD]: 8,
-          [backpackItems.KNOWLEDGE_SHARD]: 8,
-          [backpackItems.WILLPOWER_SHARD]: 8,
+          [backpackItems.EMOTION_SHARD]: 6,
+          [backpackItems.KNOWLEDGE_SHARD]: 6,
+          [backpackItems.WILLPOWER_SHARD]: 6,
         },
       },
     }),
@@ -1184,7 +1185,7 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Spend ${progressRequirement}x Dream Cards`,
     computeRewards: () => ({
-      money: 2500,
+      money: 500,
     }),
     questListeners: [
       {
@@ -1208,7 +1209,7 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Buy ${progressRequirement}x Pokeballs with \`/pokemart\``,
     computeRewards: () => ({
-      money: 2500,
+      money: 500,
     }),
     questListeners: [
       {
@@ -1238,7 +1239,7 @@ const dailyQuestConfigRaw = {
       `Claim your daily rewards! Use \`/daily\` to claim your daily rewards.\n## \`/daily\``,
     formatRequirementString: () => `Claim your daily rewards with \`/daily\``,
     computeRewards: () => ({
-      money: 1000,
+      money: 200,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.GREATBALL]: 1,
@@ -1267,7 +1268,7 @@ const dailyQuestConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Complete ${progressRequirement}x daily quests with \`/quest\``,
     computeRewards: () => ({
-      money: 3000,
+      money: 1000,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.ULTRABALL]: 1,
@@ -1304,6 +1305,7 @@ const stageToMythicOrder = [
   pokemonIdEnum.JIRACHI,
   pokemonIdEnum.DEOXYS,
   pokemonIdEnum.CELEBI,
+  pokemonIdEnum.ARCEUS,
 ];
 
 /**
@@ -1321,7 +1323,7 @@ const achievementConfigRaw = {
     // money: 10000 * (stage + 1)
     // pokeballs: 5\left(x+1\right)^{0.75}\ +\ 5
     computeRewards: ({ stage }) => ({
-      money: 2500 * (stage + 1),
+      money: 500 * (stage + 1),
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.POKEBALL]: Math.floor(5 * (stage + 1) ** 0.75 + 5),
@@ -1359,7 +1361,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Catch ${progressRequirement}x wild Pokemon`,
     computeRewards: ({ stage }) => ({
-      money: 2500 * (stage + 1),
+      money: 500 * (stage + 1),
       backpack: {
         [backpackCategories.POKEBALLS]: {
           // 3\left(x+1\right)^{0.75}
@@ -1398,7 +1400,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Claim ${progressRequirement}x daily rewards with \`/daily\``,
     computeRewards: () => ({
-      money: 1000,
+      money: 250,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.GREATBALL]: 1,
@@ -1428,7 +1430,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Complete ${progressRequirement}x daily quests with \`/quest\``,
     computeRewards: () => ({
-      money: 2000,
+      money: 500,
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.ULTRABALL]: 1,
@@ -1463,7 +1465,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Evolve ${progressRequirement}x Pokemon`,
     computeRewards: ({ stage }) => ({
-      money: 5000 * (stage + 1),
+      money: 1000 * (stage + 1),
     }),
     questListeners: [
       {
@@ -1488,7 +1490,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `EV Train your Pokemon to ${progressRequirement} total EVs`,
     computeRewards: ({ stage }) => ({
-      money: 5000 * (stage + 1),
+      money: 1000 * (stage + 1),
     }),
     questListeners: [
       {
@@ -1513,7 +1515,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Reach ${progressRequirement} total Combat Power`,
     computeRewards: ({ stage }) => ({
-      money: 2500 * (stage + 1),
+      money: 500 * (stage + 1),
       backpack: {
         [backpackCategories.POKEBALLS]: {
           [backpackItems.MASTERBALL]: 1,
@@ -1545,7 +1547,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ stage }) =>
       `Upgrade the Computer Lab location to level ${stage + 1}`,
     computeRewards: ({ stage }) => {
-      const stageToMoney = [2000, 10000, 50000];
+      const stageToMoney = [1000, 5000, 25000];
       return {
         money: stageToMoney[stage] ?? 0,
       };
@@ -1579,7 +1581,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Defeat ${progressRequirement}x Trainers with \`/pve\``,
     computeRewards: ({ stage }) => ({
-      money: 3000 * (stage + 1),
+      money: 600 * (stage + 1),
       // 4\left(x+1\right)^{0.75}\ +\ 6
       backpack: {
         [backpackCategories.MATERIALS]: {
@@ -1625,7 +1627,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Defeat ${progressRequirement}x Dungeons with \`/dungeons\``,
     computeRewards: ({ stage }) => ({
-      money: 2500 * (stage + 1),
+      money: 500 * (stage + 1),
       // 5\left(x+1\right)^{0.75}\ +\ 5
       backpack: {
         [backpackCategories.MATERIALS]: {
@@ -1671,7 +1673,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Defeat ${progressRequirement}x Raids with \`/raid\``,
     computeRewards: ({ stage }) => ({
-      money: 2500 * (stage + 1),
+      money: 500 * (stage + 1),
       // 50\left(x+1\right)^{0.75}\ +\ 50
       backpack: {
         [backpackCategories.MATERIALS]: {
@@ -1789,7 +1791,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Spend ${progressRequirement}x Dream Cards`,
     computeRewards: ({ stage }) => ({
-      money: 3000 * (stage + 1),
+      money: 500 * (stage + 1),
     }),
     questListeners: [
       {
@@ -1814,7 +1816,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Participate in PvP Battles ${progressRequirement}x times with \`/pvp\``,
     computeRewards: ({ stage }) => ({
-      money: 3000 * (stage + 1),
+      money: 500 * (stage + 1),
     }),
     questListeners: [
       {
@@ -1846,7 +1848,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Upgrade your equipment ${progressRequirement}x times with \`/equipment\``,
     computeRewards: ({ stage }) => ({
-      money: 2000 * (stage + 1),
+      money: 500 * (stage + 1),
       // 4\left(x+1\right)^{0.75}\ +\ 6
       backpack: {
         [backpackCategories.MATERIALS]: {
@@ -1885,7 +1887,7 @@ const achievementConfigRaw = {
     formatRequirementString: ({ progressRequirement }) =>
       `Reroll your equipment stats ${progressRequirement}x times with \`/equipment\``,
     computeRewards: ({ stage }) => ({
-      money: 2000 * (stage + 1),
+      money: 500 * (stage + 1),
       // 4\left(x+1\right)^{0.75}\ +\ 6
       backpack: {
         [backpackCategories.MATERIALS]: {
@@ -1973,6 +1975,13 @@ const achievementConfigRaw = {
             },
           };
           break;
+        case pokemonIdEnum.ARCEUS:
+          backpack = {
+            [backpackCategories.POKEBALLS]: {
+              [backpackItems.MASTERBALL]: 5,
+            },
+          };
+          break;
         default:
           backpack = {};
           break;
@@ -2000,17 +2009,25 @@ const achievementConfigRaw = {
     ],
     requirementType: questRequirementTypeEnum.BOOLEAN,
     checkRequirements: async ({ stage, trainer }) => {
-      // stage order: darkrai -> mew -> jirachi -> deoxys -> celebi
       const speciesId = stageToMythicOrder[stage];
       if (!speciesId) {
         return false;
       }
+      const filter = {};
+      switch (speciesId) {
+        case pokemonIdEnum.ARCEUS:
+          filter.speciesId = { $in: arceusMythicConfig.speciesIds };
+          break;
+        case pokemonIdEnum.DEOXYS:
+          filter.speciesId = { $in: deoxysMythicConfig.speciesIds };
+          break;
+        default:
+          filter.speciesId = speciesId;
+      }
       const { data: pokemons } = await listPokemons(trainer, {
         pageSize: 1,
         page: 1,
-        filter: {
-          speciesId,
-        },
+        filter,
       });
       return (pokemons?.length ?? 0) > 0;
     },

@@ -36,6 +36,7 @@
 /** @typedef {import("./questConfig").AchievementEnum} AchievementEnum */
 /** @typedef {DailyQuestEnum | AchievementEnum} QuestEnum */
 /** @typedef {import("./questConfig").QuestTypeEnum} QuestTypeEnum */
+/** @typedef {import("./gachaConfig").RewardTypeEnum} RewardTypeEnum */
 /**
  * @template {UserSettingsEnum} T
  * @typedef {import("./trainerConfig").UserSettingsOptions<T>} UserSettingsOptions
