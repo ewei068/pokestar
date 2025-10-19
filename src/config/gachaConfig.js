@@ -751,7 +751,7 @@ const rewardTypesConfigRaw = {
         Object.keys(backpackHeldItemConfig),
         quantity,
         {
-          replacement: false,
+          replacement: true,
         }
       );
       const backpack = {};

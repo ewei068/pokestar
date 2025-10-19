@@ -24,7 +24,8 @@ const {
   getFlattenedRewardsString,
   getPokeballsString,
   addRewards,
-  getBackpackItemsString,
+  addFlattenedRewards,
+  getRewardRaritiesString,
 } = require("../utils/trainerUtils");
 const { getVoteMultiplier } = require("../config/socialConfig");
 const { emitTrainerEventPure } = require("./game/gameEvent");
@@ -497,6 +498,7 @@ const addVote = async (user, votes = 1) => {
 /**
  * @param {PartialRecord<RarityEnum, number>} rarityDistribution
  * @param {number} quantity
+ * @returns {PartialRecord<RarityEnum, number>}
  */
 const drawRewardRarities = (rarityDistribution, quantity) => {
   const drawnRewardRarities = drawDiscrete(
@@ -537,13 +539,13 @@ const addRewardsForDrawnRarities = (
     }
     const drawnRewardsForRarity = /** @type {Array<RewardTypeEnum>} */ (
       drawIterable(Object.keys(rarityRewards), rarityQuantity, {
-        replacement: false,
+        replacement: true,
       })
     );
     for (const rewardType of drawnRewardsForRarity) {
       const rewardQuantity = rarityRewards[rewardType];
       const rewardConfig = rewardTypesConfig[rewardType];
-      addRewards(
+      addFlattenedRewards(
         trainer,
         rewardConfig.getRewards(rewardQuantity),
         receivedRewards
@@ -577,25 +579,11 @@ const getVoteRewards = async (user) => {
     voteRewardsProbabilityDistribution,
     numRewards
   );
-
-  // I can probably speed this up but there's no way this causes a bottleneck
-  const receivedRewards = {};
-  for (const rarity of drawnRewardRarities) {
-    const rarityRewards = voteRewardsConfig[rarity];
-    const [receivedRewardForRarity] = drawIterable(
-      Object.keys(rarityRewards),
-      1,
-      {
-        replacement: false,
-      }
-    );
-    const receivedRewardQuantity = rarityRewards[receivedRewardForRarity];
-    addRewards(
-      trainer,
-      rarityRewards[receivedRewardForRarity],
-      receivedRewards
-    );
-  }
+  const rewardsReceived = addRewardsForDrawnRarities(
+    trainer,
+    drawnRewardRarities,
+    voteRewardsConfig
+  );
 
   // reset rewards
   trainer.voting.rewards = 0;
@@ -623,17 +611,10 @@ const getVoteRewards = async (user) => {
   }
 
   // build itemized rewards string
-  let rewardsString = `You claimed **${numRewards}** vote rewards! **Thank you for voting!** Remember to vote again in 12 hours!\n\n`;
-  rewardsString += getFlattenedRewardsString(receivedRewards);
-  rewardsString += "\n\n**You now own:**";
-  if (receivedRewards.money) {
-    rewardsString += `\n${formatMoney(trainer.money)}`;
-  }
-  rewardsString += getBackpackItemsString(
-    trainer,
-    // @ts-ignore
-    Object.keys(receivedRewards.backpack)
-  );
+  let rewardsString = `You claimed **${numRewards}** 🎁 Reward Boxes! **Thank you for voting!** Remember to vote again in 12 hours!\n\n`;
+  rewardsString += getRewardRaritiesString(drawnRewardRarities, true);
+  rewardsString += "\n";
+  rewardsString += getFlattenedRewardsString(rewardsReceived);
   rewardsString +=
     "\nSpend your Pokedollars at the `/pokemart` | Use `/gacha` to use your Pokeballs";
 

@@ -9,9 +9,11 @@ const {
   backpackCategories,
   backpackItemConfig,
 } = require("../config/backpackConfig");
+const { rarityConfig } = require("../config/pokemonConfig");
 const { emojis } = require("../enums/emojis");
+const { ansiTokens } = require("../enums/miscEnums");
 const { formatItemQuantity } = require("./itemUtils");
-const { getOrSetDefault, formatMoney } = require("./utils");
+const { getOrSetDefault, formatMoney, buildAnsiString } = require("./utils");
 
 /**
  * @param {Trainer} trainer
@@ -75,13 +77,16 @@ const getCompactCostString = (cost) => {
 const getFlattenedRewardsString = (rewards, received = true) => {
   let rewardsString = received ? "**You received:**" : "";
   if (rewards.money) {
-    rewardsString += `\n${formatMoney(rewards.money)}`;
+    rewardsString += `\n💵 ${formatMoney(rewards.money)}`;
   }
   if (rewards.backpack) {
     // console.log(rewards.backpack)
     for (const itemId in rewards.backpack) {
       rewardsString += `\n${backpackItemConfig[itemId].emoji} ${rewards.backpack[itemId]}x ${backpackItemConfig[itemId].name}`;
     }
+  }
+  if (rewards.dreamCards) {
+    rewardsString += `\n${emojis.DREAM_CARD} ${rewards.dreamCards}x Dream Cards`;
   }
 
   // remove beginning newline
@@ -106,7 +111,30 @@ const getCompactFlattenedRewardsString = (rewards) => {
       rewardsString += `${backpackItemConfig[itemId].emoji}`;
     }
   }
+  if (rewards.dreamCards) {
+    rewardsString += emojis.DREAM_CARD;
+  }
   return rewardsString;
+};
+
+/**
+ * @param {PartialRecord<RarityEnum, number>} rewardRarities
+ * @param {boolean=} includeHeader
+ * @returns {string}
+ */
+const getRewardRaritiesString = (rewardRarities, includeHeader = false) => {
+  let rewardRaritiesString = "";
+  if (includeHeader) {
+    rewardRaritiesString += "**You drew the following rarities:**\n";
+  }
+  const raritiesDrawnString = Object.entries(rewardRarities)
+    .map(
+      ([rarity, quantity]) =>
+        `${rarityConfig[rarity].emoji} ${quantity}x ${ansiTokens.BOLD}${rarityConfig[rarity].ansiColor}${rarityConfig[rarity].name}${ansiTokens.RESET}`
+    )
+    .join("\n");
+  rewardRaritiesString += buildAnsiString(raritiesDrawnString);
+  return rewardRaritiesString;
 };
 
 /**
@@ -374,4 +402,5 @@ module.exports = {
   formatDreamCards,
   getMaxDreamCards,
   formatDreamCardsForTrainer,
+  getRewardRaritiesString,
 };
