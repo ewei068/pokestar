@@ -162,37 +162,49 @@ const getCompactRewardsString = (rewards) =>
 /**
  *
  * @param {Trainer} trainer
- * @param {Rewards} rewards
- * @param {any} accumulator
+ * @param {FlattenedRewards} rewards
+ * @param {FlattenedRewards} accumulator
  * @returns {FlattenedRewards}
  */
-const addRewards = (trainer, rewards, accumulator = {}) => {
+const addFlattenedRewards = (trainer, rewards, accumulator = {}) => {
   if (rewards.money) {
     accumulator.money = (accumulator.money || 0) + rewards.money;
-    // eslint-disable-next-line no-param-reassign
     trainer.money += rewards.money;
   }
   if (rewards.backpack) {
-    const backpack = getOrSetDefault(accumulator, "backpack", {});
-    for (const categoryId in rewards.backpack) {
+    const accumulatorBackpack = getOrSetDefault(accumulator, "backpack", {});
+    for (const itemId in rewards.backpack) {
+      const categoryId = backpackItemConfig[itemId].category;
       const trainerBackpackCategory = getOrSetDefault(
         trainer.backpack,
         categoryId,
         {}
       );
-      for (const itemId in rewards.backpack[categoryId]) {
-        backpack[itemId] =
-          getOrSetDefault(backpack, itemId, 0) +
-          rewards.backpack[categoryId][itemId];
-        trainerBackpackCategory[itemId] =
-          getOrSetDefault(trainerBackpackCategory, itemId, 0) +
-          rewards.backpack[categoryId][itemId];
-      }
+      accumulatorBackpack[itemId] =
+        getOrSetDefault(accumulatorBackpack, itemId, 0) +
+        rewards.backpack[itemId];
+      trainerBackpackCategory[itemId] =
+        getOrSetDefault(trainerBackpackCategory, itemId, 0) +
+        rewards.backpack[itemId];
     }
+  }
+  if (rewards.dreamCards) {
+    accumulator.dreamCards = (accumulator.dreamCards || 0) + rewards.dreamCards;
+    trainer.dreamCards += rewards.dreamCards;
   }
 
   return accumulator;
 };
+
+/**
+ *
+ * @param {Trainer} trainer
+ * @param {Rewards} rewards
+ * @param {FlattenedRewards} accumulator
+ * @returns {FlattenedRewards}
+ */
+const addRewards = (trainer, rewards, accumulator = {}) =>
+  addFlattenedRewards(trainer, flattenRewards(rewards), accumulator);
 
 /**
  * @param {Trainer} trainer
@@ -348,6 +360,7 @@ module.exports = {
   getCompactCostString,
   flattenCategories,
   flattenRewards,
+  addFlattenedRewards,
   addRewards,
   removeMoney,
   removeCost,

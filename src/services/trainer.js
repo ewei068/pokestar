@@ -21,10 +21,6 @@ const {
 const { logger } = require("../log");
 const { formatMoney, setDefaultFields } = require("../utils/utils");
 const {
-  backpackItems,
-  backpackCategories,
-} = require("../config/backpackConfig");
-const {
   getFlattenedRewardsString,
   getPokeballsString,
   addRewards,
@@ -32,6 +28,12 @@ const {
 } = require("../utils/trainerUtils");
 const { getVoteMultiplier } = require("../config/socialConfig");
 const { emitTrainerEventPure } = require("./game/gameEvent");
+const {
+  voteRewardsProbabilityDistribution,
+  voteRewardsConfig,
+  rewardTypesConfig,
+} = require("../config/gachaConfig");
+const { drawIterable, drawDiscrete } = require("../utils/gachaUtils");
 
 /* 
 "user": {
@@ -493,6 +495,66 @@ const addVote = async (user, votes = 1) => {
 };
 
 /**
+ * @param {PartialRecord<RarityEnum, number>} rarityDistribution
+ * @param {number} quantity
+ */
+const drawRewardRarities = (rarityDistribution, quantity) => {
+  const drawnRewardRarities = drawDiscrete(
+    /** @type {Record<RarityEnum, number>} */ (rarityDistribution),
+    quantity
+  );
+  // reduce it to rarity : quantity
+  const reducedResults = drawnRewardRarities.reduce((acc, curr) => {
+    if (acc[curr] === undefined) {
+      acc[curr] = 1;
+    } else {
+      acc[curr] += 1;
+    }
+    return acc;
+  }, {});
+  return reducedResults;
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {PartialRecord<RarityEnum, number>} drawnRewardRarities
+ * @param {PartialRecord<RarityEnum, PartialRecord<RewardTypeEnum, number>>} rewardTypeDistribution
+ * @returns {FlattenedRewards} receivedRewards
+ */
+const addRewardsForDrawnRarities = (
+  trainer,
+  drawnRewardRarities,
+  rewardTypeDistribution
+) => {
+  const receivedRewards = {};
+  for (const [rarity, rarityQuantity] of Object.entries(drawnRewardRarities)) {
+    const rarityRewards = voteRewardsConfig[rarity];
+    if (!rarityRewards) {
+      logger.error(
+        `No rewards found for rarity ${rarity} in ${rewardTypeDistribution}.`
+      );
+      continue;
+    }
+    const drawnRewardsForRarity = /** @type {Array<RewardTypeEnum>} */ (
+      drawIterable(Object.keys(rarityRewards), rarityQuantity, {
+        replacement: false,
+      })
+    );
+    for (const rewardType of drawnRewardsForRarity) {
+      const rewardQuantity = rarityRewards[rewardType];
+      const rewardConfig = rewardTypesConfig[rewardType];
+      addRewards(
+        trainer,
+        rewardConfig.getRewards(rewardQuantity),
+        receivedRewards
+      );
+    }
+  }
+
+  return receivedRewards;
+};
+
+/**
  * @param {DiscordUser} user
  * @returns {Promise<{data?: string, err?: string}>}
  */
@@ -503,28 +565,37 @@ const getVoteRewards = async (user) => {
   }
   const trainer = trainerRes.data;
 
-  const { rewards } = trainer.voting;
-  if (rewards < 1) {
+  const { rewards: numRewards } = trainer.voting;
+  if (numRewards < 1) {
     return {
       data: null,
       err: "You have no Reward Boxes to open! Use `/vote` to vote and try again!",
     };
   }
 
-  // add vote rewards
-  const receivedRewards = addRewards(trainer, {
-    money: rewards * 100,
-    backpack: {
-      [backpackCategories.POKEBALLS]: {
-        [backpackItems.POKEBALL]: rewards * 1,
-      },
-      [backpackCategories.MATERIALS]: {
-        [backpackItems.KNOWLEDGE_SHARD]: rewards * 1,
-        [backpackItems.EMOTION_SHARD]: rewards * 1,
-        [backpackItems.WILLPOWER_SHARD]: rewards * 1,
-      },
-    },
-  });
+  const drawnRewardRarities = drawRewardRarities(
+    voteRewardsProbabilityDistribution,
+    numRewards
+  );
+
+  // I can probably speed this up but there's no way this causes a bottleneck
+  const receivedRewards = {};
+  for (const rarity of drawnRewardRarities) {
+    const rarityRewards = voteRewardsConfig[rarity];
+    const [receivedRewardForRarity] = drawIterable(
+      Object.keys(rarityRewards),
+      1,
+      {
+        replacement: false,
+      }
+    );
+    const receivedRewardQuantity = rarityRewards[receivedRewardForRarity];
+    addRewards(
+      trainer,
+      rarityRewards[receivedRewardForRarity],
+      receivedRewards
+    );
+  }
 
   // reset rewards
   trainer.voting.rewards = 0;
@@ -552,7 +623,7 @@ const getVoteRewards = async (user) => {
   }
 
   // build itemized rewards string
-  let rewardsString = `You claimed **${rewards}** vote rewards! **Thank you for voting!** Remember to vote again in 12 hours!\n\n`;
+  let rewardsString = `You claimed **${numRewards}** vote rewards! **Thank you for voting!** Remember to vote again in 12 hours!\n\n`;
   rewardsString += getFlattenedRewardsString(receivedRewards);
   rewardsString += "\n\n**You now own:**";
   if (receivedRewards.money) {

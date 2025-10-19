@@ -1,5 +1,9 @@
 const seedrandom = require("seedrandom");
-const { backpackItems, backpackItemConfig } = require("./backpackConfig");
+const {
+  backpackItems,
+  backpackItemConfig,
+  backpackHeldItemConfig,
+} = require("./backpackConfig");
 const { rarities, rarityBins, getGeneration } = require("./pokemonConfig");
 const { drawIterable } = require("../utils/gachaUtils");
 const { getFullUTCDate, formatMoney } = require("../utils/utils");
@@ -666,60 +670,98 @@ const voteRewardsProbabilityDistribution = Object.freeze({
 const defaultDisplayFunction = (displayName) => (quantity) =>
   `${displayName} x${quantity}`;
 
+const defaultBackpackItemRewards = (itemId) => (quantity) => ({
+  backpack: {
+    [itemId]: quantity,
+  },
+});
+
 /**
  * @satisfies {Record<string, {
  *  emoji: string,
  *  display: (quantity: number) => string,
+ *  getRewards: (quantity: number) => FlattenedRewards,
  * }>}
  */
 const rewardTypesConfigRaw = {
   masterball: {
     emoji: backpackItemConfig[backpackItems.MASTERBALL].emoji,
     display: defaultDisplayFunction("Masterball"),
+    getRewards: defaultBackpackItemRewards(backpackItems.MASTERBALL),
   },
   greatball: {
     emoji: backpackItemConfig[backpackItems.GREATBALL].emoji,
     display: defaultDisplayFunction("Greatball"),
+    getRewards: defaultBackpackItemRewards(backpackItems.GREATBALL),
   },
   ultraball: {
     emoji: backpackItemConfig[backpackItems.ULTRABALL].emoji,
     display: defaultDisplayFunction("Ultraball"),
+    getRewards: defaultBackpackItemRewards(backpackItems.ULTRABALL),
   },
   pokeball: {
     emoji: backpackItemConfig[backpackItems.POKEBALL].emoji,
     display: defaultDisplayFunction("Pokeball"),
+    getRewards: defaultBackpackItemRewards(backpackItems.POKEBALL),
   },
   knowledgeShard: {
     emoji: backpackItemConfig[backpackItems.KNOWLEDGE_SHARD].emoji,
     display: defaultDisplayFunction("Knowledge Shard"),
+    getRewards: defaultBackpackItemRewards(backpackItems.KNOWLEDGE_SHARD),
   },
   emotionShard: {
     emoji: backpackItemConfig[backpackItems.EMOTION_SHARD].emoji,
     display: defaultDisplayFunction("Emotion Shard"),
+    getRewards: defaultBackpackItemRewards(backpackItems.EMOTION_SHARD),
   },
   willpowerShard: {
     emoji: backpackItemConfig[backpackItems.WILLPOWER_SHARD].emoji,
     display: defaultDisplayFunction("Willpower Shard"),
+    getRewards: defaultBackpackItemRewards(backpackItems.WILLPOWER_SHARD),
   },
   mint: {
     emoji: backpackItemConfig[backpackItems.MINT].emoji,
     display: defaultDisplayFunction("Mint"),
+    getRewards: defaultBackpackItemRewards(backpackItems.MINT),
   },
   raidPass: {
     emoji: backpackItemConfig[backpackItems.RAID_PASS].emoji,
     display: defaultDisplayFunction("Raid Pass"),
+    getRewards: defaultBackpackItemRewards(backpackItems.RAID_PASS),
   },
   dreamCard: {
     emoji: emojis.DREAM_CARD,
     display: defaultDisplayFunction("Dream Card"),
+    getRewards: (quantity) => ({
+      dreamCards: quantity,
+    }),
   },
   money: {
     emoji: emojis.MONEY,
     display: formatMoney,
+    getRewards: (quantity) => ({
+      money: quantity,
+    }),
   },
   randomHeldItem: {
     emoji: emojis.LEFTOVERS,
     display: defaultDisplayFunction("Random Held Item"),
+    getRewards: (quantity) => {
+      const heldItemsDrawn = drawIterable(
+        Object.keys(backpackHeldItemConfig),
+        quantity,
+        {
+          replacement: false,
+        }
+      );
+      const backpack = {};
+      for (const heldItem of heldItemsDrawn) {
+        backpack[heldItem] = (backpack[heldItem] || 0) + 1;
+      }
+      return {
+        backpack,
+      };
+    },
   },
 };
 
