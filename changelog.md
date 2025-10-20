@@ -22,6 +22,7 @@
   - Greatly improvded the amount of money and Pokeballs from voting
   - Voting can now grant a ton of other items
   - Reduced the number of shards from voting
+- Improve damage calculation for high-damage attackers
 - Fixed Deoxys's mythic quest
 - Ended the Anniversary and Gen 4 events
 
