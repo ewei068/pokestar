@@ -290,7 +290,7 @@ const commandConfigRaw = {
     aliases: ["vote", "v"],
     description: "Vote for the bot and claim rewards!",
     longDescription:
-      "Vote for the bot and claim rewards, ₽200 and 2 Pokeballs per-vote! You can vote on every site once every 12 hours.",
+      "Vote for the bot and claim rewards! You can vote on every site once every 12 hours.",
     execute: "vote.js",
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],

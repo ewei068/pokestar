@@ -98,7 +98,7 @@ const buildGachaInfoString = () => {
     "**Gacha Info**\nUse Pokeballs to draw Pokemon from the Gacha! Each Pokeball has a different chance of drawing a Pokemon, with **better Pokeballs being more likely to draw rarer Pokemon.** The higher the rarity, the lower the chance of drawing that Pokemon.\n\n";
   infoString += "**Getting Pokeballs**\n";
   infoString +=
-    "You can get Pokeballs from `/daily` (3 random), `/vote` (2 per vote), `/tutorial`, `/pve` (daily), `/levelrewards`. and `/pokemart`.\n\n";
+    "You can get Pokeballs from `/daily` (3 random), `/vote`, `/tutorial`, `/pve` (daily), `/levelrewards`. and `/pokemart`.\n\n";
   infoString += "**Banners**\n";
   infoString +=
     "Scroll through the banners using the buttons. Each banner has a different set of rate-up Pokemon. **When a rarity is drawn, there is a 50% chance to get a random rate-up Pokemon of that rarity instead.** If there are no rate-ups for that rarity, the Pokemon is random. There are also 3 banner types: Standard, Rotating, and Special.\n\n";

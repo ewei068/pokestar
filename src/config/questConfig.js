@@ -480,7 +480,7 @@ const newTutorialConfigRaw = {
     emoji: "🗳️",
     description:
       "Voting for Pokestar helps the bot grow! **Vote for Pokestar on top.gg [here](https://top.gg/bot/1093411444877439066/vote)**. Then, use `/vote` to claim your rewards.\n\n" +
-      `Voting gives you many rewards, and voting consistently gives you a streak. With a max streak, **you can get up to 15x ${emojis.POKEBALL} Pokeballs every 12 hours!**`,
+      `Voting gives you many rewards, and voting consistently gives you a streak. Voting gives you **💵 Pokedollars, ${emojis.POKEBALL} Pokeballs, and tons of items!**`,
     requirementString: "Complete the previous stage",
     proceedString:
       "(Optional) Vote for Pokestar on top.gg, and complete the previous stage.",
@@ -490,7 +490,7 @@ const newTutorialConfigRaw = {
       money: 100,
     },
     image:
-      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/vote.png",
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/tutorial/vote2.png",
   },
   userSettings: {
     name: "Settings",
