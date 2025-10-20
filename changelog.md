@@ -5,7 +5,7 @@
 - Stretch: Ability slots
 - mass release page
 
-### 1.4.4 Gen 4 Wrap-up Event
+### 1.4.4 Gen 4 Wrap-up Event (10/19)
 
 - Gen 4 Wrap-up Event: **Calamity on Mt. Coronet**! Check `/events` for details
   - Added new **limited** event Pokemon in the `/gacha`
