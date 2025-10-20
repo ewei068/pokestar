@@ -467,6 +467,11 @@ const trainerFields = {
     default: false,
     refreshInterval: timeEnum.WEEK,
   },
+  usedCreation: {
+    type: "boolean",
+    default: false,
+    refreshInterval: timeEnum.WEEK,
+  },
   dreamCards: {
     type: "number",
     default: 100,
@@ -483,7 +488,7 @@ const trainerFields = {
         newCorrectedDate,
         lastCorrectedDate
       );
-      const max = 100 + previousObject.level + 50;
+      const max = 100 + previousObject.level;
       if (previousValue > max) {
         return previousValue; // Don't reduce dream cards if they're over limit
       }

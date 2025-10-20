@@ -36,6 +36,7 @@
 /** @typedef {import("./questConfig").AchievementEnum} AchievementEnum */
 /** @typedef {DailyQuestEnum | AchievementEnum} QuestEnum */
 /** @typedef {import("./questConfig").QuestTypeEnum} QuestTypeEnum */
+/** @typedef {import("./gachaConfig").RewardTypeEnum} RewardTypeEnum */
 /**
  * @template {UserSettingsEnum} T
  * @typedef {import("./trainerConfig").UserSettingsOptions<T>} UserSettingsOptions
@@ -46,7 +47,7 @@
  */
 
 /**
- * @typedef {"eviolite" | "testTag"} PokemonTag
+ * @typedef {"eviolite" | "boss" | "testTag"} PokemonTag
  * @typedef {{
  *  name: string,
  *  emoji: string,
@@ -57,10 +58,10 @@
  *  shinySprite: string,
  *  evolution?: Array<{
  *    level: number,
- *    id: any // TODO,
+ *    id: AllPokemonIdEnum,
  *  }>,
- *  baseSpeciesId?: string,
- *  formSpeciesIds?: string[],
+ *  baseSpeciesId?: AllPokemonIdEnum,
+ *  formSpeciesIds?: AllPokemonIdEnum[],
  *  abilities: {
  *    [key: number | string]: number // TODO?
  *  },
@@ -69,7 +70,6 @@
  *  rarity: RarityEnum,
  *  growthRate: GrowthRateEnum,
  *  noGacha?: boolean,
- *  mythicConfig?: any,
  *  unobtainable?: boolean
  *  tags?: PokemonTag[]
  * }} PokemonConfigData

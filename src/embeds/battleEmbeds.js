@@ -382,7 +382,10 @@ const buildBattleEmbed = (
 
   const move = selectedMoveId ? getMove(selectedMoveId) : null;
   if (move) {
-    const { moveHeader, moveString } = buildMoveString(move);
+    const { moveHeader, moveString } = buildMoveString({
+      moveData: move,
+      source: battle.activePokemon,
+    });
     fields.push({
       name: moveHeader,
       value: moveString,
@@ -405,7 +408,11 @@ const buildBattleMovesetEmbed = (pokemon) => {
     (/** @type {MoveIdEnum} */ moveId) => {
       const { cooldown } = pokemon.moveIds[moveId];
       const moveData = getMove(moveId);
-      const { moveHeader, moveString } = buildMoveString(moveData, cooldown);
+      const { moveHeader, moveString } = buildMoveString({
+        moveData,
+        source: pokemon,
+        cooldown,
+      });
       return {
         name: moveHeader,
         value: moveString,
@@ -488,7 +495,10 @@ const buildPveListEmbed = (npcIds, page, { dreamCardString } = {}) => {
     }
     levelString = levelString.slice(0, -1);
     levelString += "]**";
-    npcString += `${npcData.emoji} ${levelString} ${npcData.name} (${npcId})\n`;
+    npcString += `${npcData.emoji} ${levelString} ${
+      // @ts-ignore
+      npcData.displayName || npcData.name
+    } (${npcId})\n`;
   });
 
   const embed = new EmbedBuilder();
@@ -531,7 +541,8 @@ const buildPveNpcEmbed = (npcId, { dreamCardString } = {}) => {
   );
 
   const embed = new EmbedBuilder();
-  embed.setTitle(`${npc.emoji} ${npc.name} (${npcId})`);
+  // @ts-ignore
+  embed.setTitle(`${npc.emoji} ${npc.displayName || npc.name} (${npcId})`);
   embed.setColor(0xffffff);
   embed.setDescription(buildBlockQuoteString(npc.catchphrase));
   embed.addFields(fields);
@@ -557,7 +568,10 @@ const buildPveNpcEmbed = (npcId, { dreamCardString } = {}) => {
 const buildDungeonListEmbed = ({ dreamCardString } = {}) => {
   let dungeonString = "";
   Object.entries(dungeonConfig).forEach(([, dungeonData]) => {
-    dungeonString += `**${dungeonData.emoji} ${dungeonData.name}** • ${dungeonData.description}\n\n`;
+    dungeonString += `**${dungeonData.emoji} ${
+      // @ts-ignore
+      dungeonData.displayName || dungeonData.name
+    }** • ${dungeonData.description}\n\n`;
   });
 
   const embed = new EmbedBuilder();
@@ -601,7 +615,12 @@ const buildDungeonEmbed = (dungeonId, { dreamCardString } = {}) => {
   );
 
   const embed = new EmbedBuilder();
-  embed.setTitle(`${dungeonData.emoji} ${dungeonData.name}`);
+  embed.setTitle(
+    `${dungeonData.emoji} ${
+      // @ts-ignore
+      dungeonData.displayName || dungeonData.name
+    }`
+  );
   embed.setColor(0xffffff);
   embed.setDescription(dungeonData.description);
   embed.addFields({ name: "Bosses", value: bossString, inline: false });

@@ -811,7 +811,7 @@ class Battle {
   /**
    * TODO: move to pokemon
    * @param {BattlePokemon} pokemon
-   * @param {MoveIdEnum} moveId
+   * @param {MoveInstanceId} moveId
    * @returns {boolean}
    */
   // eslint-disable-next-line class-methods-use-this
@@ -849,7 +849,7 @@ class Battle {
   /**
    * TODO: move to pokemon
    * @param {BattlePokemon} pokemon
-   * @param {MoveIdEnum} moveId
+   * @param {MoveInstanceId} moveId
    * @returns {boolean}
    */
   // eslint-disable-next-line class-methods-use-this

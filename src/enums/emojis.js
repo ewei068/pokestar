@@ -19,6 +19,8 @@ const emojis = {
   DREAM_CARD: "<:dreamcard:1358203943464993052>",
 
   RED: "<:red:1117871509185249280>",
+
+  MONEY: "💵",
 };
 
 module.exports = {

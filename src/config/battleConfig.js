@@ -3,7 +3,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-param-reassign */
-const { types: pokemonTypes } = require("./pokemonConfig");
+const { types: pokemonTypes, statConfig } = require("./pokemonConfig");
 const { getMove, getMoveIds } = require("../battle/data/moveRegistry");
 const { getEffect } = require("../battle/data/effectRegistry");
 const {
@@ -322,14 +322,9 @@ const targetPatterns = Object.freeze({
   X: "X-shape",
 });
 
-const statIndexToBattleStat = /** @type {const} */ ([
-  "hp",
-  "atk",
-  "def",
-  "spa",
-  "spd",
-  "spe",
-]);
+const statIndexToBattleStatId = /** @type {StatId[]} */ (
+  Object.values(statConfig).map((stat) => stat.battleStatId)
+);
 const statIndexToBaseStat = /** @type {const} */ ([
   "maxHp",
   "batk",
@@ -342,8 +337,13 @@ const statIndexToBaseStat = /** @type {const} */ ([
  * @param {StatId} stat
  */
 const battleStatToBaseStat = function (stat) {
-  return statIndexToBaseStat[statIndexToBattleStat.indexOf(stat)];
+  return statIndexToBaseStat[statIndexToBattleStatId.indexOf(stat)];
 };
+const statIdToIndex = /** @type {Record<StatId, number>} */ (
+  Object.fromEntries(
+    statIndexToBattleStatId.map((stat, index) => [stat, index])
+  )
+);
 
 /** @typedef {Enum<effectTypes>} EffectTypeEnum */
 const effectTypes = Object.freeze({
@@ -1283,7 +1283,7 @@ const effectConfig = Object.freeze({
             invulnPokemon.battle.addToLog(
               `${invulnPokemon.name} reflected the move back at ${sourcePokemon.name}!`
             );
-            invulnPokemon.executeMove({
+            invulnPokemon.executeMoveId({
               moveId,
               primaryTarget: sourcePokemon,
               allTargets: [sourcePokemon],
@@ -2701,11 +2701,11 @@ const moveConfig = Object.freeze({
     cooldown: 0,
     targetType: targetTypes.ENEMY,
     targetPosition: targetPositions.FRONT,
-    targetPattern: targetPatterns.SINGLE,
+    targetPattern: targetPatterns.ROW,
     tier: moveTiers.BASIC,
     damageType: damageTypes.OTHER,
     description:
-      "The target is stared down with intimidating eyes, lowering its defense for 4 turns.",
+      "The targets are stared down with intimidating eyes, lowering their defense for 3 turns.",
   },
   m46: {
     name: "Roar",
@@ -3416,7 +3416,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.BASIC,
     damageType: damageTypes.OTHER,
     description:
-      "The user takes a deep breath and focuses, sharply raising the user's attack for 1 turn and gaining 60% combat readiness.",
+      "The user takes a deep breath and focuses, sharply raising the user's attack and special attack for 1 turn and gaining 50% combat readiness.",
   },
   m118: {
     name: "Metronome",
@@ -4823,7 +4823,7 @@ const moveConfig = Object.freeze({
     tier: moveTiers.POWER,
     damageType: damageTypes.SPECIAL,
     description:
-      "The user attacks by shooting a wave of muddy water at the opposing team. This may also lower their accuracy for 2 turns with a 50% chance.",
+      "The user attacks by shooting a wave of muddy water at the opposing team. This may also lower their accuracy and evasionfor 2 turns with a 50% chance.",
   },
   m331: {
     name: "Bullet Seed",
@@ -6801,8 +6801,8 @@ const moveExecutes = {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       if (!miss) {
-        // def down 4 turns
-        target.applyEffect("defDown", 4, source);
+        // def down 3 turns
+        target.applyEffect("defDown", 3, source);
       }
     }
   },
@@ -7594,9 +7594,11 @@ const moveExecutes = {
     for (const target of allTargets) {
       // greater atk up for 1 turn
       target.applyEffect("greaterAtkUp", 1, source);
+      // greater spa up for 1 turn
+      target.applyEffect("greaterSpaUp", 1, source);
 
-      // boost 60% cr
-      target.boostCombatReadiness(source, 60);
+      // boost 50% cr
+      target.boostCombatReadiness(source, 50);
     }
   },
   m118(battle, source) {
@@ -7619,7 +7621,7 @@ const moveExecutes = {
     // get random target & use move
     const randomTarget =
       eligibleTargets[Math.floor(Math.random() * eligibleTargets.length)];
-    source.executeMove({
+    source.executeMoveId({
       moveId: randomMoveId,
       primaryTarget: randomTarget,
       allTargets: [randomTarget],
@@ -8578,7 +8580,7 @@ const moveExecutes = {
     );
     // use move against target
     battle.addToLog(`${randomMoveData.name} hit ${randomTarget.name}!`);
-    source.executeMove({
+    source.executeMoveId({
       moveId: randomMoveId,
       primaryTarget: randomTarget,
       allTargets: targets,
@@ -9558,6 +9560,11 @@ const moveExecutes = {
       // if not miss, 50% acc down 2 turns
       if (!miss && Math.random() < 0.5) {
         target.applyEffect("accDown", 2, source);
+      }
+
+      // if not miss, 50% evasion down 2 turns
+      if (!miss && Math.random() < 0.5) {
+        target.applyEffect("evaDown", 2, source);
       }
     }
   },
@@ -11653,7 +11660,7 @@ const moveExecutes = {
             target.position,
             { moveId }
           );
-          source.executeMove({
+          source.executeMoveId({
             moveId,
             primaryTarget: target,
             allTargets: targets,
@@ -14943,7 +14950,7 @@ const abilityConfig = Object.freeze({
           initialPokemon.battle.addToLog(
             `${initialPokemon.name}'s Magic Bounce reflects the move!`
           );
-          initialPokemon.executeMove({
+          initialPokemon.executeMoveId({
             moveId: args.moveId,
             primaryTarget: sourcePokemon,
             allTargets: [sourcePokemon],
@@ -15986,7 +15993,7 @@ const abilityConfig = Object.freeze({
           // use move against target
           battle.addToLog(`${randomMoveData.name} hit ${target.name}!`);
           // yes I know the targets are confusing
-          targetPokemon.executeMove({
+          targetPokemon.executeMoveId({
             moveId: randomMoveId,
             primaryTarget: target,
             allTargets: targets,
@@ -16381,8 +16388,9 @@ module.exports = {
   abilityConfig,
   damageTypes,
   statIndexToBaseStat,
-  statIndexToBattleStat,
+  statIndexToBattleStatId,
   battleStatToBaseStat,
+  statIdToIndex,
   damageTypeConfig,
   moveTierConfig,
 };

@@ -508,6 +508,15 @@ const buildPokemonNameString = (pokemon, options = {}) => {
 
 /**
  * @param {PokemonIdEnum} speciesId
+ * @returns {string}
+ */
+const buildSpeciesNameString = (speciesId) => {
+  const speciesData = pokemonConfig[speciesId];
+  return `${speciesData.emoji} ${speciesData.name}`;
+};
+
+/**
+ * @param {PokemonIdEnum} speciesId
  * @param {PokemonTag} tag
  */
 const getSpeciesIdHasTag = (speciesId, tag) => {
@@ -539,4 +548,5 @@ module.exports = {
   getPartyPokemonIds,
   getMoveIds,
   getSpeciesIdHasTag,
+  buildSpeciesNameString,
 };

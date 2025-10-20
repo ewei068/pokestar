@@ -3,6 +3,28 @@
 **Stretch**
 
 - Stretch: Ability slots
+- mass release page
+
+### 1.4.4 Gen 4 Wrap-up Event
+
+- Gen 4 Wrap-up Event: **Calamity on Mt. Coronet**! Check `/events` for details
+  - Added new **limited** event Pokemon in the `/gacha`
+  - New event Mt. Coronet dungeon in `/dungeons`
+  - New limited Volo NPC in `/pve`
+- New **Arceus** mythic! Catch with `/mythic arceus`
+  - Arceus has a ton of requirements but comes with powerful rewards!
+  - Arceus can change form at will to any of its types!
+  - Create any item or Pokemon with Arceus's Creation ability
+- New Pokemon
+  - Added **origin forms** to Dialga and Palkia
+  - Added a ton of new Pokemon from older generations
+- Improved **vote rewards** in `/vote`
+  - Greatly improvded the amount of money and Pokeballs from voting
+  - Voting can now grant a ton of other items
+  - Reduced the number of shards from voting
+- Improve damage calculation for high-damage attackers
+- Fixed Deoxys's mythic quest
+- Ended the Anniversary and Gen 4 events
 
 ### 1.4.3 (7/17)
 

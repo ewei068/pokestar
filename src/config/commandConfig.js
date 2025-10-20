@@ -58,6 +58,7 @@ const commandCategoryConfigRaw = {
       "deoxys",
       "jirachi",
       "darkrai",
+      "arceus",
       // "togglespawn",
     ],
   },
@@ -289,7 +290,7 @@ const commandConfigRaw = {
     aliases: ["vote", "v"],
     description: "Vote for the bot and claim rewards!",
     longDescription:
-      "Vote for the bot and claim rewards, ₽200 and 2 Pokeballs per-vote! You can vote on every site once every 12 hours.",
+      "Vote for the bot and claim rewards! You can vote on every site once every 12 hours.",
     execute: "vote.js",
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
@@ -870,6 +871,7 @@ const commandConfigRaw = {
           "cynthia",
           "palmer",
           "professorWillow",
+          "volo",
         ],
       },
       difficulty: {
@@ -1060,7 +1062,7 @@ const commandConfigRaw = {
     name: "Mythic",
     aliases: ["mythic"],
     description: "Entry point for Mythical Pokemon",
-    subcommands: ["mew", "celebi", "deoxys", "jirachi", "darkrai"],
+    subcommands: ["mew", "celebi", "deoxys", "jirachi", "darkrai", "arceus"],
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
   },
@@ -1122,6 +1124,19 @@ const commandConfigRaw = {
     longDescription:
       "View your Darkrai! Darkrai is a special Pokemon that can control your sleeping Pokemon for you (auto battle)!",
     execute: "darkrai.js",
+    args: {},
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+    exp: 5,
+    money: 10,
+    parent: "mythic",
+  },
+  arceus: {
+    name: "Arceus",
+    aliases: ["arceus"],
+    description: "View your Arceus and change its type!",
+    longDescription:
+      "View your Arceus and change its type! Arceus is the Alpha Pokemon that can change its type!",
+    execute: "arceus.js",
     args: {},
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 5,

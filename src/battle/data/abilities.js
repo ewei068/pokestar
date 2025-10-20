@@ -4,16 +4,20 @@ const {
   damageTypes,
   targetPatterns,
   statusConditions,
-  statIndexToBattleStat,
+  statIndexToBattleStatId,
   effectTypes,
 } = require("../../config/battleConfig");
-const { types: pokemonTypes } = require("../../config/pokemonConfig");
+const {
+  types: pokemonTypes,
+  typeConfig,
+} = require("../../config/pokemonConfig");
 const {
   abilityIdEnum,
   battleEventEnum,
   effectIdEnum,
   moveIdEnum,
 } = require("../../enums/battleEnums");
+const { pokemonIdEnum } = require("../../enums/pokemonEnums");
 const { getMoveIdHasTag } = require("../../utils/battleUtils");
 const {
   getIsActivePokemonCallback,
@@ -25,6 +29,7 @@ const {
   getIsTargetOpponentCallback,
   getIsSourceSameTeamCallback,
   getIsNotSourcePokemonCallback,
+  getIsWeatherCondition,
 } = require("../engine/eventConditions");
 const { getMove } = require("./moveRegistry");
 const { getEffect } = require("./effectRegistry");
@@ -165,7 +170,7 @@ const abilitiesToRegister = Object.freeze({
                 ) + 1; // +1 to account for HP
             allyPokemon.applyEffect(effectIdEnum.AQUA_BLESSING, 3, target, {
               // @ts-ignore
-              statId: statIndexToBattleStat[highestStatIndex],
+              statId: statIndexToBattleStatId[highestStatIndex],
             });
 
             battle.createWeather(weatherConditions.RAIN, target);
@@ -1189,6 +1194,311 @@ const abilitiesToRegister = Object.freeze({
     abilityRemove({ target }) {
       target.dispellEffect("atkDown");
       target.dispellEffect("speDown");
+    },
+  }),
+  [abilityIdEnum.MULTITYPE]: new Ability({
+    id: abilityIdEnum.MULTITYPE,
+    name: "Multitype",
+    description:
+      "Boosts the damage of ally moves by 10% if it's the same Primary type as the Multitype Pokemon. When using a move, the user's Secondary type becomes the move's type if possible.",
+    abilityAdd({ battle, target }) {
+      return {
+        damageListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage, damageInfo, source }) => {
+            const moveId = damageInfo?.moveId;
+            const moveData = damageInfo?.instance || getMove(moveId);
+
+            if (moveData && target.type1 === moveData.type) {
+              battle.addToLog(
+                `${target.name}'s Multitype powers up ${source.name}'s move!`
+              );
+              return {
+                damage: Math.floor(damage * 1.1),
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourceSameTeamCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+        moveListenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_MOVE_EXECUTE,
+          callback: ({ source, moveInstance }) => {
+            if (moveInstance.type && !source.hasType(moveInstance.type)) {
+              battle.addToLog(
+                `${source.name}'s Multitype changes its secondary type to ${
+                  typeConfig[moveInstance.type].name
+                }!`
+              );
+              source.type2 = moveInstance.type;
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourcePokemonCallback(target)
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.damageListenerId);
+      battle.unregisterListener(properties.moveListenerId);
+    },
+  }),
+  [abilityIdEnum.IMPOSTER]: new Ability({
+    id: abilityIdEnum.IMPOSTER,
+    name: "Imposter",
+    description:
+      "When applied, the Pokemon transforms into a random directly adjacent ally, filtering out allies that have the ability Imposter.",
+    abilityAdd({ battle, target }) {
+      const allyParty = battle.parties[target.teamName];
+      const adjacentAllies = target.getPatternTargets(
+        allyParty,
+        targetPatterns.CROSS,
+        target.position,
+        { ignoreHittable: true }
+      );
+
+      const validTargets = adjacentAllies.filter(
+        (ally) =>
+          ally &&
+          ally !== target &&
+          !ally.isFainted &&
+          !ally.hasAbility(abilityIdEnum.IMPOSTER)
+      );
+
+      if (validTargets.length === 0) {
+        battle.addToLog(
+          `${target.name}'s Imposter couldn't find a valid target to copy!`
+        );
+        return;
+      }
+
+      const randomTarget =
+        validTargets[Math.floor(Math.random() * validTargets.length)];
+      battle.addToLog(`${target.name}'s Imposter activated!`);
+      target.transformIntoTarget(randomTarget);
+    },
+    abilityRemove() {
+      // do nothing
+    },
+  }),
+  [abilityIdEnum.PURE_POWER]: new Ability({
+    id: abilityIdEnum.PURE_POWER,
+    name: "Pure Power",
+    description: "Doubles the user's Attack stat.",
+    abilityAdd({ battle, target }) {
+      battle.addToLog(`${target.name}'s Pure Power raises its Attack!`);
+      target.multiplyStatMult("atk", 2);
+    },
+    abilityRemove({ target }) {
+      target.multiplyStatMult("atk", 0.5);
+    },
+  }),
+  [abilityIdEnum.PLUS]: new Ability({
+    id: abilityIdEnum.PLUS,
+    name: "Plus",
+    description:
+      "Powers up moves by 50% for each Pokémon with the Minus ability on the battlefield.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage }) => {
+            // Count Pokemon with Minus ability on battlefield
+            const allPokemons = Object.values(battle.allPokemon);
+            const minusCount = allPokemons.filter((pokemon) =>
+              pokemon?.hasActiveAbility?.(abilityIdEnum.MINUS)
+            ).length;
+
+            if (minusCount > 0) {
+              const multiplier = 1 + 0.5 * minusCount;
+              battle.addToLog(
+                `${target.name}'s Plus ability powers up its move! (${minusCount} Minus Pokémon found)`
+              );
+              return {
+                damage: Math.floor(damage * multiplier),
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourcePokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.MINUS]: new Ability({
+    id: abilityIdEnum.MINUS,
+    name: "Minus",
+    description:
+      "Powers up moves by 50% for each Pokémon with the Plus ability on the battlefield.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage }) => {
+            // Count Pokemon with Plus ability on battlefield
+            const allPokemons = Object.values(battle.allPokemon);
+            const plusCount = allPokemons.filter((pokemon) =>
+              pokemon?.hasActiveAbility?.(abilityIdEnum.PLUS)
+            ).length;
+
+            if (plusCount > 0) {
+              const multiplier = 1 + 0.5 * plusCount;
+              battle.addToLog(
+                `${target.name}'s Minus ability powers up its move! (${plusCount} Plus Pokémon found)`
+              );
+              return {
+                damage: Math.floor(damage * multiplier),
+              };
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourcePokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.SURGING_SAND]: new Ability({
+    id: abilityIdEnum.SURGING_SAND,
+    name: "Surging Sand",
+    description:
+      "Increases the damage of ally Ground moves by 15% in a Sandstorm. For the user, this boost is 30%.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_DAMAGE_DEALT,
+          callback: ({ damage, damageInfo, source }) => {
+            const moveId = damageInfo?.moveId;
+            const moveData = damageInfo?.instance || getMove(moveId);
+            if (moveData?.type !== pokemonTypes.GROUND) {
+              return;
+            }
+
+            // Determine if source is the user or an ally
+            const isUser = source === target;
+            if (isUser) {
+              battle.addToLog(
+                `${target.name}'s Surging Sand greatly powers up its move!`
+              );
+              return {
+                damage: Math.floor(damage * 1.3),
+              };
+            }
+            battle.addToLog(
+              `${target.name}'s Surging Sand powers up ${source.name}'s move!`
+            );
+            return {
+              damage: Math.floor(damage * 1.15),
+            };
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourceSameTeamCallback(target),
+            getIsInstanceOfType("move"),
+            getIsWeatherCondition(weatherConditions.SANDSTORM, battle)
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.ELDRITCH_REVIVAL]: new Ability({
+    id: abilityIdEnum.ELDRITCH_REVIVAL,
+    name: "Eldritch Revival",
+    description:
+      "Before the user faints, prevent the faint, transform into Volo's Giratina Origin, and heal back to full health.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.BEFORE_FAINT,
+          callback: (args) => {
+            const { abilityInstance } = args;
+            // Check if this ability has already been used
+            if (abilityInstance.data.used) {
+              return;
+            }
+
+            args.canFaint = false;
+            abilityInstance.data.used = true;
+
+            battle.addToLog(
+              `${target.name}'s Eldritch Revival activates! It rises from the brink of death!`
+            );
+
+            // Transform into Volo's Giratina Origin
+            target.transformInto(pokemonIdEnum.VOLO_GIRATINA_ORIGIN);
+            target.hp = target.maxHp;
+          },
+          conditionCallback: getIsTargetPokemonCallback(target),
+        }),
+        used: false,
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
+    },
+  }),
+  [abilityIdEnum.THE_HEAVENS_AND_EARTH_AS_ONE]: new Ability({
+    id: abilityIdEnum.THE_HEAVENS_AND_EARTH_AS_ONE,
+    name: "The Heavens and Earth as One",
+    description:
+      "When the user damages an enemy with a move, it has a 20% chance to flinch, 30% chance to confuse, and 40% chance to restrict the enemy for 1 turn.",
+    abilityAdd({ battle, target }) {
+      return {
+        listenerId: this.registerListenerFunction({
+          battle,
+          target,
+          eventName: battleEventEnum.AFTER_DAMAGE_DEALT,
+          callback: ({ target: damagedTarget, source }) => {
+            // 20% chance to flinch
+            if (Math.random() < 0.2) {
+              damagedTarget.applyEffect("flinched", 1, source, {});
+            }
+
+            // 30% chance to confuse
+            if (Math.random() < 0.3) {
+              damagedTarget.applyEffect("confused", 1, source, {});
+            }
+
+            // 40% chance to restrict
+            if (Math.random() < 0.4) {
+              damagedTarget.applyEffect("restricted", 1, source, {});
+            }
+          },
+          conditionCallback: composeConditionCallbacks(
+            getIsSourcePokemonCallback(target),
+            getIsInstanceOfType("move")
+          ),
+        }),
+      };
+    },
+    abilityRemove({ battle, properties }) {
+      battle.unregisterListener(properties.listenerId);
     },
   }),
 });

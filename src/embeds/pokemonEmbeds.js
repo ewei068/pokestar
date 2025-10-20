@@ -16,11 +16,9 @@ const {
 const { getAbility } = require("../battle/data/abilityRegistry");
 const { getMove } = require("../battle/data/moveRegistry");
 const {
-  getWhitespace,
   getPBar,
   linebreakString,
   setTwoInline,
-  getOrSetDefault,
   formatMoney,
   getNextTimeIntervalDate,
   buildBlockQuoteString,
@@ -44,14 +42,8 @@ const {
   backpackItems,
   backpackItemConfig,
 } = require("../config/backpackConfig");
-const { trainerFields } = require("../config/trainerConfig");
+const { getCelebiPool } = require("../config/gachaConfig");
 const {
-  bannerTypeConfig,
-  pokeballConfig,
-  getCelebiPool,
-} = require("../config/gachaConfig");
-const {
-  getPokeballsString,
   getItems,
   formatDreamCardsForTrainer,
 } = require("../utils/trainerUtils");
@@ -65,109 +57,15 @@ const {
   equipmentConfig,
   SWAP_COST,
 } = require("../config/equipmentConfig");
-const { pokemonIdEnum } = require("../enums/pokemonEnums");
 const { timeEnum } = require("../enums/miscEnums");
 const {
   formatItemQuantityFromBackpack,
   getItemDisplay,
 } = require("../utils/itemUtils");
 const { emojis } = require("../enums/emojis");
-
-/**
- *
- * @param {Trainer} trainer
- * @param {BannerData} bannerData
- * @returns {EmbedBuilder}
- */
-const buildBannerEmbed = (trainer, bannerData) => {
-  const type = bannerData.bannerType;
-  const rateUp = bannerData.rateUp() || {};
-  const { pity } = getOrSetDefault(
-    trainer,
-    "banners",
-    trainerFields.banners.default
-  )[type];
-
-  let displayPokemon = pokemonConfig["25"];
-  if (rateUp[rarities.LEGENDARY]) {
-    displayPokemon = pokemonConfig[rateUp[rarities.LEGENDARY][0]];
-  }
-
-  const rateUpRarities = Object.keys(rateUp);
-  const rateUpWhitespace = getWhitespace(rateUpRarities);
-
-  let rateUpString = "";
-  for (let i = 0; i < rateUpRarities.length; i += 1) {
-    const rarity = rateUpRarities[i];
-    if (rateUp[rarity].length <= 0) {
-      continue;
-    }
-    rateUpString += `\`${rateUpWhitespace[i]} ${rarity} \``;
-    for (const speciesId of rateUp[rarity].slice(0, 15)) {
-      const speciesData = pokemonConfig[speciesId];
-      rateUpString += ` ${speciesData.emoji}`;
-    }
-    if (rateUp[rarity].length > 15) {
-      rateUpString += ` ...and ${rateUp[rarity].length - 15} more!`;
-    }
-    rateUpString += "\n";
-  }
-  if (rateUpString === "") {
-    rateUpString = "None";
-  }
-
-  const embed = new EmbedBuilder();
-  embed.setTitle(`${displayPokemon.emoji} ${bannerData.name}`);
-  embed.setDescription(
-    buildBlockQuoteString(linebreakString(bannerData.description, 45))
-  );
-  embed.setColor(0xffffff);
-  embed.setThumbnail(`${displayPokemon.sprite}`);
-  embed.addFields(
-    { name: "Type", value: `${bannerTypeConfig[type].name}`, inline: true },
-    { name: "Pity", value: `${pity}/100`, inline: true },
-    { name: "Rate Up", value: `${rateUpString}`, inline: false },
-    {
-      name: "Your Pokeballs",
-      value: getPokeballsString(trainer),
-      inline: false,
-    }
-  );
-  embed.setFooter({
-    text: "Get more Pokeballs with /daily, /vote, /levelrewards, /pokemart",
-  });
-
-  if (bannerData.image) {
-    embed.setImage(bannerData.image);
-  }
-
-  return embed;
-};
-
-const buildGachaInfoString = () => {
-  let infoString =
-    "**Gacha Info**\nUse Pokeballs to draw Pokemon from the Gacha! Each Pokeball has a different chance of drawing a Pokemon, with **better Pokeballs being more likely to draw rarer Pokemon.** The higher the rarity, the lower the chance of drawing that Pokemon.\n\n";
-  infoString += "**Getting Pokeballs**\n";
-  infoString +=
-    "You can get Pokeballs from `/daily` (3 random), `/vote` (2 per vote), `/tutorial`, `/pve` (daily), `/levelrewards`. and `/pokemart`.\n\n";
-  infoString += "**Banners**\n";
-  infoString +=
-    "Scroll through the banners using the buttons. Each banner has a different set of rate-up Pokemon. **When a rarity is drawn, there is a 50% chance to get a random rate-up Pokemon of that rarity instead.** If there are no rate-ups for that rarity, the Pokemon is random. There are also 3 banner types: Standard, Rotating, and Special.\n\n";
-  infoString += "**Pity**\n";
-  infoString +=
-    "Each banner has a pity counter. When a Pokemon is drawn, the pity counter increases according to the Pokeball used. **When the pity counter reaches 100, the next Pokemon drawn will be a random rate-up Legendary Pokemon,** or a random availible Legendary if no rate up. The pity counter resets when a rate-up Legendary Pokemon is drawn. Additionally, **pity is shared between all banners of the same type, and does not reset when rotating.**\n\n";
-  infoString += "**Pokeballs**\n";
-  for (const pokeball in pokeballConfig) {
-    const { chances } = pokeballConfig[pokeball];
-    const { pity } = pokeballConfig[pokeball];
-    infoString += `${backpackItemConfig[pokeball].emoji} ${backpackItemConfig[pokeball].name}:`;
-    for (const rarity in chances) {
-      infoString += ` ${rarity}: ${Math.floor(chances[rarity] * 100)}% | `;
-    }
-    infoString += `Pity: ${pity}\n`;
-  }
-  return infoString;
-};
+const { jirachiMythicConfig } = require("../config/mythicConfig");
+// TODO LOL!!!
+const { buildBannerEmbed, buildGachaInfoString } = require("./gachaEmbeds");
 
 /**
  * @param {PokemonIdEnum} speciesId
@@ -463,7 +361,10 @@ const buildPokemonEmbed = (
   if (tab === "battle" || tab === "all") {
     const fields = getMoveIds(pokemon).map((moveId) => {
       const moveData = getMove(moveId);
-      const { moveHeader, moveString } = buildMoveString(moveData);
+      const { moveHeader, moveString } = buildMoveString({
+        moveData,
+        source: pokemon,
+      });
       return {
         name: moveHeader,
         value: moveString,
@@ -807,7 +708,11 @@ const buildDexListEmbed = (speciesIds, page) => {
     `Pokédex Entries ${speciesIds[0]} - ${speciesIds[speciesIds.length - 1]}`
   );
   embed.setColor("#FFFFFF");
-  embed.setDescription(pokedexString);
+  if (pokedexString.length === 0) {
+    embed.setDescription("No Pokemon found. Try a different search term!");
+  } else {
+    embed.setDescription(pokedexString);
+  }
   embed.setFooter({ text: `Page ${page}` });
 
   return embed;
@@ -903,7 +808,13 @@ const buildSpeciesDexEmbed = (id, speciesData, tab, ownershipData) => {
     } else {
       const fields = speciesData.moveIds.map((moveId) => {
         const moveData = getMove(moveId);
-        const { moveHeader, moveString } = buildMoveString(moveData);
+        const { moveHeader, moveString } = buildMoveString({
+          moveData,
+          // @ts-ignore
+          source: {
+            speciesId: id,
+          },
+        });
         return {
           name: moveHeader,
           value: moveString,
@@ -1018,7 +929,6 @@ const buildCelebiAbilityEmbed = (trainer) => {
  * @param {Trainer} trainer
  */
 const buildJirachiAbilityEmbed = (trainer) => {
-  const { mythicConfig } = pokemonConfig[pokemonIdEnum.JIRACHI];
   const embed = new EmbedBuilder();
   embed.setTitle(`Jirachi's Abilities`);
   embed.setColor("#FFFFFF");
@@ -1028,7 +938,7 @@ const buildJirachiAbilityEmbed = (trainer) => {
 
   embed.addFields({
     name: "Passive: Serene Luck",
-    value: `Jirachi calls upon the stars to grant you improved luck! **You are ${mythicConfig.shinyChanceMultiplier}x more likely to find Shiny Pokemon** from most methods (spawning excluded).`,
+    value: `Jirachi calls upon the stars to grant you improved luck! **You are ${jirachiMythicConfig.shinyChanceMultiplier}x more likely to find Shiny Pokemon** from most methods (spawning excluded).`,
     inline: false,
   });
 
@@ -1037,7 +947,7 @@ const buildJirachiAbilityEmbed = (trainer) => {
     ? `(next Wish: <t:${Math.floor(nextWeek.getTime() / 1000)}:R>) `
     : "";
   let wishString = `Wish upon a star **once a week** ${remainingTimeString}for one of the following powerful effects:\n`;
-  for (const wish of Object.values(mythicConfig.wishes)) {
+  for (const wish of Object.values(jirachiMythicConfig.wishes)) {
     wishString += `* **[${
       backpackItemConfig[backpackItems.STAR_PIECE].emoji
     } x${wish.starPieceCost}] Wish for ${wish.name}:** ${wish.description}\n`;
@@ -1081,6 +991,41 @@ const buildDarkraiAbilityEmbed = (trainer) => {
   return embed;
 };
 
+const buildArceusAbilityEmbed = (trainer) => {
+  const embed = new EmbedBuilder();
+  embed.setTitle(`Arceus's Abilities`);
+  embed.setColor("#FFFFFF");
+  embed.setDescription(
+    `Arceus can change into unique forms and has one special ability!`
+  );
+
+  const timeLeftString = trainer.usedCreation
+    ? `(next Creation: <t:${Math.floor(
+        getNextTimeIntervalDate(timeEnum.WEEK).getTime() / 1000
+      )}:R>) `
+    : "";
+
+  embed.addFields([
+    {
+      name: "Forms: Multitype",
+      value:
+        "Arceus can change into unique forms! Each form changes type and moves, also changing the type of its signature move Judgment.",
+      inline: false,
+    },
+    {
+      name: "Active: Creation",
+      value: `Arceus can create Pokemon and Items. Once a week, you can create a Pokemon or Item of your choosing. ${timeLeftString}`,
+      inline: false,
+    },
+  ]);
+
+  embed.setImage(
+    "https://64.media.tumblr.com/dc2a8b0f3bd0f5a01281e8088e29a4e0/4f9e9b448c2b75e3-84/s2048x3072/80806673caab5dd58acc5b7075ecc827021575a9.pnj"
+  );
+
+  return embed;
+};
+
 module.exports = {
   buildBannerEmbed,
   buildPokemonSpawnEmbed,
@@ -1100,4 +1045,5 @@ module.exports = {
   buildCelebiAbilityEmbed,
   buildJirachiAbilityEmbed,
   buildDarkraiAbilityEmbed,
+  buildArceusAbilityEmbed,
 };

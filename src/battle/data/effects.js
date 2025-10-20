@@ -269,7 +269,10 @@ const effectsToRegister = Object.freeze({
     effectAdd({ battle, target }) {
       battle.addToLog(`${target.name} vanished instantly!`);
       for (const moveId in target.moveIds) {
-        if (moveId !== moveIdEnum.SHADOW_FORCE) {
+        if (
+          moveId !== moveIdEnum.SHADOW_FORCE &&
+          moveId !== moveIdEnum.DISTORTION_FORCE
+        ) {
           // @ts-ignore
           target.disableMove(moveId, target);
         }
@@ -281,7 +284,10 @@ const effectsToRegister = Object.freeze({
     effectRemove({ battle, target }) {
       battle.addToLog(`${target.name} reappeared!`);
       for (const moveId in target.moveIds) {
-        if (moveId !== moveIdEnum.SHADOW_FORCE) {
+        if (
+          moveId !== moveIdEnum.SHADOW_FORCE &&
+          moveId !== moveIdEnum.DISTORTION_FORCE
+        ) {
           // @ts-ignore
           target.enableMove(moveId, target);
         }

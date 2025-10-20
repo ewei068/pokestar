@@ -1,6 +1,6 @@
 const { moveIdEnum, abilityIdEnum } = require("../enums/battleEnums");
+const { ansiTokens } = require("../enums/miscEnums");
 const { pokemonIdEnum } = require("../enums/pokemonEnums");
-const { formatMoney } = require("../utils/utils");
 
 /** @typedef {Enum<types>} PokemonTypeEnum */
 const types = Object.freeze({
@@ -275,12 +275,22 @@ const stats = Object.freeze({
 });
 
 const statConfig = {
-  0: { name: "HP", emoji: "❤️", description: "Hit Points" },
-  1: { name: "Atk", emoji: "⚔️", description: "Attack" },
-  2: { name: "Def", emoji: "🛡️", description: "Defense" },
-  3: { name: "SpA", emoji: "🔮", description: "Special Attack" },
-  4: { name: "SpD", emoji: "🌀", description: "Special Defense" },
-  5: { name: "Spe", emoji: "⚡︎", description: "Speed" },
+  0: { name: "HP", emoji: "❤️", description: "Hit Points", battleStatId: "hp" },
+  1: { name: "Atk", emoji: "⚔️", description: "Attack", battleStatId: "atk" },
+  2: { name: "Def", emoji: "🛡️", description: "Defense", battleStatId: "def" },
+  3: {
+    name: "SpA",
+    emoji: "🔮",
+    description: "Special Attack",
+    battleStatId: "spa",
+  },
+  4: {
+    name: "SpD",
+    emoji: "🌀",
+    description: "Special Defense",
+    battleStatId: "spd",
+  },
+  5: { name: "Spe", emoji: "⚡︎", description: "Speed", battleStatId: "spe" },
 };
 
 /** @typedef {Enum<growthRates>} GrowthRateEnum */
@@ -949,7 +959,7 @@ const pokemonConfigRaw = {
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/25.png",
     evolution: [
       {
-        level: 16,
+        level: 25,
         id: "26",
       },
     ],
@@ -2775,6 +2785,96 @@ const pokemonConfigRaw = {
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMFAST,
   },
+  115: {
+    name: "Kangaskhan",
+    emoji: "<:115:1100290446514733136>",
+    description:
+      "The infant rarely ventures out of its mother's protective pouch until it is 3 years old.",
+    type: [types.NORMAL],
+    baseStats: [105, 95, 80, 40, 80, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/115.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/115.png",
+    abilities: {
+      [abilityIdEnum.EARLY_BIRD]: 0.45,
+      [abilityIdEnum.SCRAPPY]: 0.45,
+      [abilityIdEnum.INNER_FOCUS]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POWER_UP_PUNCH,
+      moveIdEnum.CRUNCH,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.DOUBLE_EDGE,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  116: {
+    name: "Horsea",
+    emoji: "<:116:1100290448708354049>",
+    description:
+      "Known to shoot down flying bugs with precision blasts of ink from the surface of the water.",
+    type: [types.WATER],
+    baseStats: [30, 40, 70, 70, 25, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/116.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/116.png",
+    evolution: [
+      {
+        level: 32,
+        id: pokemonIdEnum.SEADRA,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SWIFT_SWIM]: 0.45,
+      [abilityIdEnum.SNIPER]: 0.45,
+      [abilityIdEnum.DAMP]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.LEER,
+      moveIdEnum.WATER_GUN,
+      moveIdEnum.ICE_BEAM,
+      moveIdEnum.WATER_PULSE,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  117: {
+    name: "Seadra",
+    emoji: "<:117:1100290449991807008>",
+    description:
+      "Capable of swimming backwards by rapidly flapping its wing-like pectoral fins and stout tail.",
+    type: [types.WATER],
+    baseStats: [55, 65, 95, 95, 45, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/117.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/117.png",
+    evolution: [
+      {
+        level: 45,
+        id: pokemonIdEnum.KINGDRA,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SWIFT_SWIM]: 0.45,
+      [abilityIdEnum.SNIPER]: 0.45,
+      [abilityIdEnum.DAMP]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.WATER_GUN,
+      moveIdEnum.ICE_BEAM,
+      moveIdEnum.WATER_PULSE,
+      moveIdEnum.DRAGON_PULSE,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   120: {
     name: "Staryu",
     emoji: "<:120:1100290515284525177>",
@@ -3096,6 +3196,26 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
     noGacha: true,
+  },
+  [pokemonIdEnum.DITTO]: {
+    name: "Ditto",
+    emoji: "<:132:1100291596718702613>",
+    description:
+      "Capable of copying an enemy's genetic code to instantly transform itself into a duplicate of the enemy.",
+    type: [types.NORMAL],
+    baseStats: [48, 48, 48, 48, 48, 48],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/132.png",
+    abilities: {
+      [abilityIdEnum.LIMBER]: 0.8,
+      [abilityIdEnum.IMPOSTER]: 0.2,
+    },
+    moveIds: [moveIdEnum.TRANSFORM],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
   },
   133: {
     name: "Eevee",
@@ -3613,151 +3733,6 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.MEDIUMSLOW,
     noGacha: true,
-    mythicConfig: {
-      basicMoveIds: [
-        "m16",
-        "m17",
-        moveIdEnum.VINE_WHIP,
-        "m35",
-        "m40",
-        "m43",
-        "m51",
-        "m52",
-        "m55",
-        "m71",
-        "m77",
-        "m81",
-        "m84",
-        "m93",
-        "m98",
-        "m100",
-        "m102",
-        "m106",
-        "m116",
-        "m118",
-        "m122",
-        "m123",
-        "m175",
-        "m189",
-        "m205",
-        "m214",
-        "m239",
-        "m246",
-        "m249",
-        "m270",
-        "m311",
-        "m418",
-        "m420",
-        "m453",
-        "m479",
-        "m506",
-        "m526",
-        "m574",
-        "m1",
-      ],
-      powerMoveIds: [
-        "m14",
-        "m34",
-        "m36",
-        "m46",
-        "m53",
-        "m57",
-        "m58",
-        "m60",
-        "m65",
-        "m68",
-        "m70",
-        "m85",
-        "m86",
-        "m91",
-        "m92",
-        "m94",
-        "m113",
-        "m115",
-        "m127",
-        "m168",
-        "m182",
-        "m188",
-        "m191",
-        "m203",
-        "m215",
-        "m216",
-        "m219",
-        "m226",
-        "m240",
-        "m241",
-        "m247",
-        "m258",
-        "m269",
-        "m202",
-        "m252",
-        "m276",
-        "m283",
-        "m317",
-        "m334",
-        "m340",
-        "m347",
-        "m352",
-        "m355",
-        "m369",
-        "m387",
-        "m396",
-        "m398",
-        "m402",
-        "m406",
-        "m409",
-        "m412",
-        "m414",
-        "m417",
-        "m424",
-        "m430",
-        "m432",
-        "m441",
-        "m444",
-        "m446",
-        "m450",
-        "m492",
-        "m503",
-        "m521",
-        "m523",
-        "m525",
-        "m529",
-        "m583",
-        "m710",
-      ],
-      ultimateMoveIds: [
-        "m38",
-        "m56",
-        "m59",
-        "m63",
-        "m76",
-        "m87",
-        "m89",
-        "m126",
-        "m135",
-        "m143",
-        "m153",
-        "m156",
-        "m157",
-        "m162",
-        "m192",
-        "m200",
-        "m223",
-        "m257",
-        "m304",
-        "m366",
-        "m394",
-        "m405",
-        "m413",
-        "m416",
-        "m428",
-        "m433",
-        "m437",
-        "m482",
-        "m528",
-        "m542",
-      ],
-    },
   },
   152: {
     name: "Chikorita",
@@ -4206,6 +4181,101 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.PICHU]: {
+    name: "Pichu",
+    emoji: "<:172:1116755986728886342>",
+    description:
+      "It is not yet skilled at storing electricity. It may send out a jolt if amused or startled.",
+    type: [types.ELECTRIC],
+    baseStats: [20, 40, 15, 35, 35, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/172.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/172.png",
+    evolution: [
+      {
+        level: 15,
+        id: pokemonIdEnum.PIKACHU,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.STATIC]: 0.8,
+      [abilityIdEnum.LIGHTNING_ROD]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.CHARM,
+      moveIdEnum.NUZZLE,
+      moveIdEnum.THUNDERBOLT,
+      moveIdEnum.THUNDER_WAVE,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.CLEFFA]: {
+    name: "Cleffa",
+    emoji: "<:173:1116755987949432842>",
+    description:
+      "On nights with many shooting stars, Cleffa can be seen dancing in a ring. They dance through the night and stop only at the break of day, when these Pokémon quench their thirst with the morning dew.",
+    type: [types.FAIRY],
+    baseStats: [50, 25, 28, 45, 55, 15],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/173.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/173.png",
+    evolution: [
+      {
+        level: 15,
+        id: pokemonIdEnum.CLEFAIRY,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.CUTE_CHARM]: 0.45,
+      [abilityIdEnum.MAGIC_GUARD]: 0.45,
+      [abilityIdEnum.FRIEND_GUARD]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POUND,
+      moveIdEnum.CHARM,
+      moveIdEnum.SING,
+      moveIdEnum.ENCORE,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.IGGLYBUFF]: {
+    name: "Igglybuff",
+    emoji: "<:174:1116755993150357686>",
+    description:
+      "Igglybuff's vocal cords are not yet developed. This Pokémon only hums a simple melody, and it communicates by bouncing around like a rubber ball.",
+    type: [types.NORMAL, types.FAIRY],
+    baseStats: [90, 30, 15, 40, 20, 15],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/174.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/174.png",
+    evolution: [
+      {
+        level: 15,
+        id: pokemonIdEnum.JIGGLYPUFF,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.CUTE_CHARM]: 0.45,
+      [abilityIdEnum.COMPETITIVE]: 0.45,
+      [abilityIdEnum.FRIEND_GUARD]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.POUND,
+      moveIdEnum.CHARM,
+      moveIdEnum.DEFENSE_CURL,
+      moveIdEnum.SWEET_KISS,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   [pokemonIdEnum.TOGEPI]: {
     name: "Togepi",
     emoji: "<:175:1116755996228976770>",
@@ -4259,6 +4329,64 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.NATU]: {
+    name: "Natu",
+    emoji: "<:177:1116755999097897013>",
+    description:
+      "Because its wings aren't yet fully grown, it has to hop to get around. It is always staring at something.",
+    type: [types.PSYCHIC, types.FLYING],
+    baseStats: [40, 50, 45, 70, 45, 70],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/177.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/177.png",
+    evolution: [
+      {
+        level: 25,
+        id: pokemonIdEnum.XATU,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.SYNCHRONIZE]: 0.45,
+      [abilityIdEnum.EARLY_BIRD]: 0.45,
+      [abilityIdEnum.MAGIC_BOUNCE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.PECK,
+      moveIdEnum.TELEPORT,
+      moveIdEnum.PSYCHIC,
+      moveIdEnum.REFLECT,
+    ],
+    battleEligible: true,
+    rarity: rarities.COMMON,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.XATU]: {
+    name: "Xatu",
+    emoji: "<:178:1116756065791508531>",
+    description:
+      "They say that it stays still and quiet because it is seeing both the past and future at the same time.",
+    type: [types.PSYCHIC, types.FLYING],
+    baseStats: [65, 75, 70, 95, 70, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/178.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/178.png",
+    abilities: {
+      [abilityIdEnum.SYNCHRONIZE]: 0.45,
+      [abilityIdEnum.EARLY_BIRD]: 0.45,
+      [abilityIdEnum.MAGIC_BOUNCE]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.TELEPORT,
+      moveIdEnum.REFLECT,
+      moveIdEnum.AIR_SLASH,
+      moveIdEnum.TAILWIND,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
   },
   179: {
     name: "Mareep",
@@ -4734,6 +4862,25 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMFAST,
   },
+  [pokemonIdEnum.UNOWN]: {
+    name: "Unown",
+    emoji: "<:201:1119803386364186674>",
+    description:
+      "This Pokémon is shaped like ancient writing. It is a mystery as to which came first, the ancient writings or the various Unown.",
+    type: [types.PSYCHIC],
+    baseStats: [48, 72, 48, 72, 48, 48],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/201.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/201.png",
+    abilities: {
+      [abilityIdEnum.LEVITATE]: 1,
+    },
+    moveIds: [moveIdEnum.HIDDEN_POWER],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.FAST,
+  },
   202: {
     name: "Wobbuffet",
     emoji: "<:202:1119803387874119821>",
@@ -5061,6 +5208,32 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
   },
+  230: {
+    name: "Kingdra",
+    emoji: "<:230:1119803623904383017>",
+    description:
+      "Kingdra lives at extreme ocean depths that are otherwise uninhabited. It has long been believed that the yawning of this Pokémon creates spiraling ocean currents.",
+    type: [types.WATER, types.DRAGON],
+    baseStats: [75, 95, 95, 95, 95, 85],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/230.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/230.png",
+    abilities: {
+      [abilityIdEnum.SWIFT_SWIM]: 0.45,
+      [abilityIdEnum.SNIPER]: 0.45,
+      [abilityIdEnum.DAMP]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.FOCUS_ENERGY,
+      moveIdEnum.ICE_BEAM,
+      moveIdEnum.MUDDY_WATER,
+      moveIdEnum.DRACO_METEOR,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   231: {
     name: "Phanpy",
     emoji: "<:231:1119803681806753833>",
@@ -5154,6 +5327,32 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMSLOW,
+  },
+  [pokemonIdEnum.SMEARGLE]: {
+    name: "Smeargle",
+    emoji: "<:235:1119803687708143636>",
+    description:
+      "Smeargle marks the boundaries of its territory using a body fluid that leaks out from the tip of its tail. Over 5,000 different marks left by this Pokémon have been found.",
+    type: [types.NORMAL],
+    baseStats: [55, 20, 35, 20, 45, 75],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/235.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/235.png",
+    abilities: {
+      [abilityIdEnum.OWN_TEMPO]: 0.45,
+      [abilityIdEnum.TECHNICIAN]: 0.45,
+      [abilityIdEnum.MOODY]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.SKETCH,
+      moveIdEnum.SKETCH_2,
+      moveIdEnum.SKETCH_3,
+      moveIdEnum.SKETCH_4,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
   },
   236: {
     name: "Tyrogue",
@@ -5554,43 +5753,6 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.FAST,
     noGacha: true,
-    mythicConfig: {
-      [rarities.LEGENDARY]: [
-        "9-1",
-        "25-1",
-        "52-1",
-        "136-1",
-        "139-1",
-        "145-1",
-        "150-1",
-        "150-2",
-        "249-1",
-        "302-1",
-        pokemonIdEnum.ARCHIES_KYOGRE,
-        pokemonIdEnum.MAXIES_GROUDON,
-        "384-1",
-        "392-1",
-        "828-1",
-      ],
-      [rarities.EPIC]: [
-        "18-1",
-        "24-1",
-        "34-1",
-        "49-1",
-        "110-1",
-        "123-1",
-        "131-1",
-        "143-1",
-        "157-1",
-        "237-1",
-        "248-1",
-        "289-1",
-        "319-1",
-        pokemonIdEnum.AQUAS_SHARPEDO,
-        pokemonIdEnum.MAGMAS_CAMERUPT,
-        pokemonIdEnum.LITTENYAN,
-      ],
-    },
   },
   252: {
     name: "Treecko",
@@ -6738,6 +6900,62 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.MEDIUMSLOW,
   },
+  [pokemonIdEnum.MEDITITE]: {
+    name: "Meditite",
+    emoji: "<:307:1132496482566676580>",
+    description:
+      "Meditite undertakes rigorous mental training deep in the mountains. However, whenever it meditates, this Pokémon always loses its concentration and focus. As a result, its training never ends.",
+    type: [types.FIGHTING, types.PSYCHIC],
+    baseStats: [30, 40, 55, 40, 55, 60],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/307.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/307.png",
+    evolution: [
+      {
+        level: 37,
+        id: pokemonIdEnum.MEDICHAM,
+      },
+    ],
+    abilities: {
+      [abilityIdEnum.PURE_POWER]: 0.8,
+      [abilityIdEnum.TELEPATHY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.MEDITATE,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.DRAIN_PUNCH,
+      moveIdEnum.ZEN_HEADBUTT,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.MEDICHAM]: {
+    name: "Medicham",
+    emoji: "<:308:1132496483690758194>",
+    description:
+      "It is said that through meditation, Medicham heightens energy inside its body and sharpens its sixth sense. This Pokémon hides its presence by merging with fields and mountains.",
+    type: [types.FIGHTING, types.PSYCHIC],
+    baseStats: [60, 60, 75, 60, 75, 80],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/308.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/308.png",
+    abilities: {
+      [abilityIdEnum.PURE_POWER]: 0.8,
+      [abilityIdEnum.TELEPATHY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.MEDITATE,
+      moveIdEnum.FAKE_OUT,
+      moveIdEnum.ZEN_HEADBUTT,
+      moveIdEnum.HIGH_JUMP_KICK,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
   309: {
     name: "Electrike",
     emoji: "<:309:1132496527521230870>",
@@ -6784,6 +7002,56 @@ const pokemonConfigRaw = {
     moveIds: ["m98", "m46", "m86", "m87"],
     battleEligible: true,
     rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.PLUSLE]: {
+    name: "Plusle",
+    emoji: "<:311:1132496530742456391>",
+    description:
+      "Plusle always acts as a cheerleader for its partners. Whenever a teammate puts out a good effort in battle, this Pokémon shorts out its body to create the crackling noises of sparks to show its joy.",
+    type: [types.ELECTRIC],
+    baseStats: [60, 50, 40, 85, 75, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/311.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/311.png",
+    abilities: {
+      [abilityIdEnum.PLUS]: 0.8,
+      [abilityIdEnum.LIGHTNING_ROD]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.NUZZLE,
+      moveIdEnum.BATON_PASS,
+      moveIdEnum.NASTY_PLOT,
+      moveIdEnum.THUNDER,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
+    growthRate: growthRates.MEDIUMFAST,
+  },
+  [pokemonIdEnum.MINUN]: {
+    name: "Minun",
+    emoji: "<:312:1132496531757486131>",
+    description:
+      "Minun is more concerned about cheering on its partners than its own safety. It shorts out the electricity in its body to create brilliant showers of sparks to cheer on its teammates.",
+    type: [types.ELECTRIC],
+    baseStats: [60, 40, 50, 75, 85, 95],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/312.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/312.png",
+    abilities: {
+      [abilityIdEnum.MINUS]: 0.8,
+      [abilityIdEnum.VOLT_ABSORB]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.HELPING_HAND,
+      moveIdEnum.ENCORE,
+      moveIdEnum.NASTY_PLOT,
+      moveIdEnum.THUNDER,
+    ],
+    battleEligible: true,
+    rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMFAST,
   },
   [pokemonIdEnum.ROSELIA]: {
@@ -7392,6 +7660,32 @@ const pokemonConfigRaw = {
     rarity: rarities.RARE,
     growthRate: growthRates.MEDIUMSLOW,
   },
+  [pokemonIdEnum.ABSOL]: {
+    name: "Absol",
+    emoji: "<:359:1132496959765229610>",
+    description:
+      "Every time Absol appears before people, it is followed by a disaster such as an earthquake or a tidal wave. As a result, it came to be known as the disaster Pokémon.",
+    type: [types.DARK],
+    baseStats: [65, 130, 60, 75, 60, 75],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/359.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/359.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.45,
+      [abilityIdEnum.SUPER_LUCK]: 0.45,
+      [abilityIdEnum.JUSTIFIED]: 0.1,
+    },
+    moveIds: [
+      moveIdEnum.QUICK_ATTACK,
+      moveIdEnum.SWORDS_DANCE,
+      moveIdEnum.SUCKER_PUNCH,
+      moveIdEnum.IRON_TAIL,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.MEDIUMSLOW,
+  },
   [pokemonIdEnum.SNORUNT]: {
     name: "Snorunt",
     emoji: "<:361:1132496962969677864>",
@@ -7902,36 +8196,6 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     noGacha: true,
-    mythicConfig: {
-      wishes: {
-        power: {
-          name: "Power",
-          description:
-            "Sets a random IV stat of a selected Pokemon to 31. Will select a stat that does not already have 31 IVs.",
-          starPieceCost: 100,
-        },
-        rebirth: {
-          name: "Rebirth",
-          description:
-            "Rerolls a selected Pokemon's ability, guaranteeing a new ability. Will not work if the Pokemon has only one ability.",
-          starPieceCost: 150,
-        },
-        allies: {
-          name: "Allies",
-          description:
-            "Grants 50 random Pokeballs, with odds equal to `/daily` and the Pokemart.",
-          starPieceCost: 200,
-        },
-        wealth: {
-          name: "Wealth",
-          description: `Grants ${formatMoney(
-            100000
-          )}, 400 of each Equipment Shard, and 5 mints.`,
-          starPieceCost: 200,
-        },
-      },
-      shinyChanceMultiplier: 2,
-    },
   },
   386: {
     name: "Deoxys",
@@ -7952,9 +8216,6 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     noGacha: true,
-    mythicConfig: {
-      speciesIds: ["386", "10001", "10002", "10003"],
-    },
   },
   [pokemonIdEnum.TURTWIG]: {
     name: "Turtwig",
@@ -9484,6 +9745,31 @@ const pokemonConfigRaw = {
     rarity: rarities.EPIC,
     growthRate: growthRates.SLOW,
   },
+  [pokemonIdEnum.CYNTHIA_GARCHOMP]: {
+    name: "Cynthia's Garchomp",
+    emoji: "<:cynthiagarchomp:1416980451473490130>",
+    description:
+      "It flies at the speed of sound while searching for prey, and it has midair battles with Salamence as the two compete for food.",
+    type: [types.DRAGON, types.GROUND],
+    baseStats: [108, 135, 85, 75, 85, 112],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/sprites/cynthia-garchomp-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/sprites/cynthia-garchomp-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.SURGING_SAND]: 1,
+    },
+    moveIds: [
+      moveIdEnum.BITE,
+      moveIdEnum.BRICK_BREAK,
+      moveIdEnum.DRAGON_RUSH,
+      moveIdEnum.CATACLYSMIC_QUAKE,
+    ],
+    battleEligible: true,
+    rarity: rarities.EPIC,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+  },
   [pokemonIdEnum.MUNCHLAX]: {
     name: "Munchlax",
     emoji: "<:446:1351027086944636939>",
@@ -10410,6 +10696,34 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
+    formSpeciesIds: [pokemonIdEnum.DIALGA_ORIGIN],
+  },
+  [pokemonIdEnum.DIALGA_ORIGIN]: {
+    name: "Dialga-Origin",
+    emoji: "<:483origin:1404654211324448848>",
+    description:
+      "A Pokémon spoken of in legend. It is said that time began moving when Dialga was born. This is its true form, awakened by the Adamant Orb.",
+    type: [types.STEEL, types.DRAGON],
+    baseStats: [100, 100, 120, 150, 120, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10245.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10245.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.TELEPATHY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.THUNDER_WAVE,
+      moveIdEnum.STEALTH_ROCK,
+      moveIdEnum.ROAR_OF_TIME,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    baseSpeciesId: pokemonIdEnum.DIALGA,
+    noGacha: true,
   },
   [pokemonIdEnum.PALKIA]: {
     name: "Palkia",
@@ -10435,6 +10749,34 @@ const pokemonConfigRaw = {
     battleEligible: true,
     rarity: rarities.LEGENDARY,
     growthRate: growthRates.SLOW,
+    formSpeciesIds: [pokemonIdEnum.PALKIA_ORIGIN],
+  },
+  [pokemonIdEnum.PALKIA_ORIGIN]: {
+    name: "Palkia-Origin",
+    emoji: "<:484origin:1404654213325131797>",
+    description:
+      "A Pokémon spoken of in legend. It is said that space became stable when Palkia was born. This is its true form, awakened by the Lustrous Orb.",
+    type: [types.WATER, types.DRAGON],
+    baseStats: [90, 100, 100, 150, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10246.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10246.png",
+    abilities: {
+      [abilityIdEnum.PRESSURE]: 0.8,
+      [abilityIdEnum.TELEPATHY]: 0.2,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.ROAR,
+      moveIdEnum.DRAGON_TAIL,
+      moveIdEnum.SPACIAL_REND,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    baseSpeciesId: pokemonIdEnum.PALKIA,
+    noGacha: true,
   },
   [pokemonIdEnum.HEATRAN]: {
     name: "Heatran",
@@ -10537,6 +10879,58 @@ const pokemonConfigRaw = {
     baseSpeciesId: pokemonIdEnum.GIRATINA_ALTERED,
     noGacha: true,
   },
+  [pokemonIdEnum.VOLO_GIRATINA_ALTERED]: {
+    name: "Volo's Giratina",
+    emoji: "<:vologiratina:1416980461376507924> ",
+    description:
+      "This Pokémon is said to live in a world on the reverse side of ours, where common knowledge is distorted and strange.",
+    type: [types.GHOST, types.DRAGON],
+    baseStats: [150, 90, 130, 90, 130, 90],
+    sprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/sprites/volo-giratina-resized.gif",
+    shinySprite:
+      "https://raw.githubusercontent.com/ewei068/pokestar/refs/heads/main/media/images/sprites/volo-giratina-shiny-resized.gif",
+    abilities: {
+      [abilityIdEnum.ELDRITCH_REVIVAL]: 1,
+    },
+    moveIds: [
+      moveIdEnum.OMINOUS_WIND,
+      moveIdEnum.DRAGON_CLAW,
+      moveIdEnum.AURA_SPHERE,
+      moveIdEnum.DISTORTION_FORCE,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+  },
+  [pokemonIdEnum.VOLO_GIRATINA_ORIGIN]: {
+    name: "Volo's True Giratina",
+    emoji: "<:vologiratinaorigin:1416980459786600528>",
+    description:
+      "Volo's Giratina in its true Origin Form. Its power is unleashed through the bonds forged with its trainer in the Distortion World.",
+    type: [types.GHOST, types.DRAGON],
+    baseStats: [150, 130, 90, 130, 90, 90],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10007.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10007.png",
+    abilities: {
+      [abilityIdEnum.THE_HEAVENS_AND_EARTH_AS_ONE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.OMINOUS_WIND,
+      moveIdEnum.DRAGON_CLAW,
+      moveIdEnum.EARTH_POWER,
+      moveIdEnum.DISTORTION_FORCE,
+    ],
+    battleEligible: true,
+    rarity: rarities.LEGENDARY,
+    growthRate: growthRates.SLOW,
+    baseSpeciesId: pokemonIdEnum.VOLO_GIRATINA_ALTERED,
+    noGacha: true,
+    unobtainable: true,
+  },
   [pokemonIdEnum.CRESSELIA]: {
     name: "Cresselia",
     emoji: "<:488:1351027498275835954>",
@@ -10585,6 +10979,473 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     noGacha: true,
+  },
+  [pokemonIdEnum.ARCEUS]: {
+    name: "Arceus",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.NORMAL],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.MIMIC,
+      moveIdEnum.SWORDS_DANCE,
+      moveIdEnum.EXTREME_SPEED,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+  },
+  [pokemonIdEnum.ARCEUS_BUG]: {
+    name: "Arceus-Bug",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.BUG],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-bug.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-bug.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.BUG_BITE,
+      moveIdEnum.STONE_EDGE,
+      moveIdEnum.HEAL_ORDER,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_DARK]: {
+    name: "Arceus-Dark",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.DARK],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-dark.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-dark.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.REFRESH,
+      moveIdEnum.TAUNT,
+      moveIdEnum.FOUL_PLAY,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_DRAGON]: {
+    name: "Arceus-Dragon",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.DRAGON],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-dragon.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-dragon.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.BULLET_PUNCH,
+      moveIdEnum.DRAGON_CLAW,
+      moveIdEnum.DRAGON_DANCE,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_ELECTRIC]: {
+    name: "Arceus-Electric",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.ELECTRIC],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-electric.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-electric.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.NUZZLE,
+      moveIdEnum.ICE_BEAM,
+      moveIdEnum.CALM_MIND,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_FAIRY]: {
+    name: "Arceus-Fairy",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.FAIRY],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-fairy.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-fairy.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.REFRESH,
+      moveIdEnum.CALM_MIND,
+      moveIdEnum.AURA_SPHERE,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_FIGHTING]: {
+    name: "Arceus-Fighting",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.FIGHTING],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-fighting.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-fighting.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.SHADOW_SNEAK,
+      moveIdEnum.IRON_DEFENSE,
+      moveIdEnum.BODY_PRESS,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_FIRE]: {
+    name: "Arceus-Fire",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.FIRE],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-fire.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-fire.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.REFRESH,
+      moveIdEnum.THUNDERBOLT,
+      moveIdEnum.WILL_O_WISP,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_FLYING]: {
+    name: "Arceus-Flying",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.FLYING],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-flying.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-flying.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.HELPING_HAND,
+      moveIdEnum.AIR_SLASH,
+      moveIdEnum.DEFOG,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_GHOST]: {
+    name: "Arceus-Ghost",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.GHOST],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-ghost.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-ghost.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.OMINOUS_WIND,
+      moveIdEnum.AURA_SPHERE,
+      moveIdEnum.NASTY_PLOT,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_GRASS]: {
+    name: "Arceus-Grass",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.GRASS],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-grass.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-grass.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.SPORE,
+      moveIdEnum.STRENGTH_SAP,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_GROUND]: {
+    name: "Arceus-Ground",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.GROUND],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-ground.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-ground.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.SMACK_DOWN,
+      moveIdEnum.SPIKES,
+      moveIdEnum.STONE_EDGE,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_ICE]: {
+    name: "Arceus-Ice",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.ICE],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-ice.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-ice.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.REFRESH,
+      moveIdEnum.CALM_MIND,
+      moveIdEnum.FREEZE_DRY,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_POISON]: {
+    name: "Arceus-Poison",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.POISON],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-poison.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-poison.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.SMOG,
+      moveIdEnum.TOXIC,
+      moveIdEnum.FLAMETHROWER,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_PSYCHIC]: {
+    name: "Arceus-Psychic",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.PSYCHIC],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-psychic.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-psychic.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.TELEPORT,
+      moveIdEnum.CALM_MIND,
+      moveIdEnum.STORED_POWER,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_ROCK]: {
+    name: "Arceus-Rock",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.ROCK],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-rock.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-rock.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.ANCIENT_POWER,
+      moveIdEnum.STEALTH_ROCK,
+      moveIdEnum.WIDE_GUARD,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_STEEL]: {
+    name: "Arceus-Steel",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.STEEL],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-steel.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-steel.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.HARDEN,
+      moveIdEnum.IRON_HEAD,
+      moveIdEnum.BODY_PRESS,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
+  },
+  [pokemonIdEnum.ARCEUS_WATER]: {
+    name: "Arceus-Water",
+    emoji: "<:493:1351027589258543166>",
+    description:
+      "According to the legends of Sinnoh, this Pokémon emerged from an egg and shaped all there is in this world.",
+    type: [types.WATER],
+    baseStats: [120, 120, 120, 120, 120, 120],
+    sprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/493-water.png",
+    shinySprite:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/493-water.png",
+    abilities: {
+      [abilityIdEnum.MULTITYPE]: 1,
+    },
+    moveIds: [
+      moveIdEnum.REFRESH,
+      moveIdEnum.ICE_BEAM,
+      moveIdEnum.SCALD,
+      moveIdEnum.JUDGMENT,
+    ],
+    battleEligible: true,
+    rarity: rarities.MYTHICAL,
+    growthRate: growthRates.SLOW,
+    noGacha: true,
+    baseSpeciesId: pokemonIdEnum.ARCEUS,
   },
   "725-1": {
     name: "Littenyan",
@@ -10709,6 +11570,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.MEDIUMSLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   20101: {
     name: "Cave Dweller Electrode",
@@ -10729,6 +11591,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.MEDIUMFAST,
     unobtainable: true,
+    tags: ["boss"],
   },
   20113: {
     name: "Cave Dweller Chansey",
@@ -10749,6 +11612,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.MEDIUMFAST,
     unobtainable: true,
+    tags: ["boss"],
   },
   20144: {
     name: "Temple Guardian Articuno",
@@ -10769,6 +11633,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   20149: {
     name: "Spirit Priest Dragonite",
@@ -10789,6 +11654,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   20150: {
     name: "Spirit Priest Mewtwo",
@@ -10809,6 +11675,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   "20150-1": {
     name: "Raid Boss Mewtwo",
@@ -10829,6 +11696,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   "20249-1": {
     name: "Raid Boss Lugia",
@@ -10849,6 +11717,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   [pokemonIdEnum.RAID_BOSS_KYOGRE]: {
     name: "Raid Boss Kyogre",
@@ -10869,6 +11738,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   [pokemonIdEnum.META_GROUDON]: {
     name: "Meta Groudon",
@@ -10909,6 +11779,7 @@ const pokemonConfigRaw = {
     rarity: rarities.MYTHICAL,
     growthRate: growthRates.SLOW,
     unobtainable: true,
+    tags: ["boss"],
   },
   20384: {
     name: "Palmer's Rayquaza",
@@ -10983,6 +11854,8 @@ const rarityConfig = {
     formChangeCost: 500,
     statMultiplier: [1.15, 1.1, 1.15, 1.1, 1.15, 1.1],
     emoji: "⚪",
+    ansiColor: ansiTokens.TEXT_GREEN,
+    name: "Common",
   },
   [rarities.RARE]: {
     pokemon: [],
@@ -10991,6 +11864,8 @@ const rarityConfig = {
     formChangeCost: 1000,
     statMultiplier: [1.15, 1.1, 1.15, 1.1, 1.15, 1.1],
     emoji: "💎",
+    ansiColor: ansiTokens.TEXT_BLUE,
+    name: "Rare",
   },
   [rarities.EPIC]: {
     pokemon: [],
@@ -10999,6 +11874,8 @@ const rarityConfig = {
     formChangeCost: 2500,
     statMultiplier: [1.075, 1.05, 1.075, 1.05, 1.075, 1.05],
     emoji: "🔮",
+    ansiColor: ansiTokens.TEXT_MAGENTA,
+    name: "Epic",
   },
   [rarities.LEGENDARY]: {
     pokemon: [],
@@ -11006,6 +11883,8 @@ const rarityConfig = {
     money: 200,
     formChangeCost: 10000,
     emoji: "🌟",
+    ansiColor: ansiTokens.TEXT_YELLOW,
+    name: "Legendary",
   },
   [rarities.MYTHICAL]: {
     pokemon: [],
@@ -11013,6 +11892,8 @@ const rarityConfig = {
     money: 10000,
     formChangeCost: 10000,
     emoji: "㊙️",
+    ansiColor: ansiTokens.TEXT_RED,
+    name: "Mythical",
   },
 };
 

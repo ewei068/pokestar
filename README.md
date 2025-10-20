@@ -133,7 +133,7 @@ Make sure to claim your daily rewards every day! This is a very easy way to get 
 
 **Voting**
 
-Use `/vote` to vote and get rewards! Every vote gives ₽200 and 2 Pokeballs, and can be done every 12 hours. Once voted, press "Claim Rewards" to get your rewards. Using all your votes would be a great source of extra Pokeballs and money!
+Use `/vote` to vote and get rewards! Every vote gives a variety of rewards, and can be done every 12 hours. Once voted, press "Open Reward Boxes" to get your rewards. Using all your votes would be a great source of extra Pokeballs and money!
 
 **Trainer Experience**
 

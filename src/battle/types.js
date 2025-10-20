@@ -2,6 +2,8 @@
  * @typedef {import("./engine/Battle").Battle} Battle
  * @typedef {import("./engine/BattlePokemon").BattlePokemon} BattlePokemon
  * @typedef {import("./engine/npcs").BattleNPC} BattleNPC
+ * @typedef {import("./engine/MoveInstance").MoveInstance} MoveInstance
+ * @typedef {import("./engine/MoveInstance").MoveInstanceId} MoveInstanceId
  * @typedef {(...args: Parameters<BattlePokemon['calculateMoveDamage']>) => ReturnType<BattlePokemon['calculateMoveDamage']>} CalculateMoveDamageImpl
  */
 
@@ -144,14 +146,7 @@
 
 /**
  * @callback MoveExecute
- * @this {Move}
- * @param {object} param0
- * @param {Battle} param0.battle
- * @param {BattlePokemon} param0.source
- * @param {BattlePokemon} param0.primaryTarget
- * @param {Array<BattlePokemon>} param0.allTargets
- * @param {Array<BattlePokemon>} param0.missedTargets
- * @param {object=} param0.extraOptions
+ * @this {MoveInstance & { id: MoveIdEnum }}
  */
 
 /**
@@ -215,4 +210,16 @@
  * @callback BattleEventListenerConditionCallback
  * @param {BattleEventArgs<K>} args
  * @returns {boolean}
+ */
+
+// TODO: this typing might be too fluid
+/**
+ * @typedef {{
+ *  source?: BattlePokemon | Pokemon | undefined,
+ *  primaryTarget?: BattlePokemon | undefined,
+ *  battle?: Battle | undefined,
+ * }} FieldOverrideOptions
+ * @callback FieldOverrideCallback
+ * @param {FieldOverrideOptions} options
+ * @returns {Partial<Move>}
  */
