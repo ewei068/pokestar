@@ -102,6 +102,35 @@ const bannerConfigRaw = [
     image:
       "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-gen4-banner.png",
   },
+  {
+    bannerType: bannerTypes.SPECIAL,
+    name: "[EVENT] Gen 4 Wrap-up New Pokemon",
+    description:
+      "Pull for the new Pokemon released during the Gen 4 Wrap-up Event! These Pokemon are NOT limited and are available in all banners.",
+    rateUp: () => ({
+      [rarities.LEGENDARY]: [
+        pokemonIdEnum.DIALGA,
+        pokemonIdEnum.PALKIA,
+        pokemonIdEnum.GIRATINA_ALTERED,
+      ],
+      [rarities.EPIC]: [
+        pokemonIdEnum.DITTO,
+        pokemonIdEnum.KINGDRA,
+        pokemonIdEnum.SMEARGLE,
+        pokemonIdEnum.MEDICHAM,
+        pokemonIdEnum.ABSOL,
+      ],
+      [rarities.RARE]: [
+        pokemonIdEnum.KANGASKHAN,
+        pokemonIdEnum.XATU,
+        pokemonIdEnum.UNOWN,
+        pokemonIdEnum.PLUSLE,
+        pokemonIdEnum.MINUN,
+      ],
+    }),
+    image:
+      "https://raw.githubusercontent.com/ewei068/pokestar/main/media/images/events/pokestar-gen4-banner.png",
+  },
   /**
      {
     bannerType: bannerTypes.SPECIAL,
