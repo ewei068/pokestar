@@ -5,6 +5,10 @@
 - Stretch: Ability slots
 - mass release page
 
+### 1.4.4.1 Gen 4 Wrap-up Rate-up (10/31)
+
+- Add a rate-up banner for the new Pokemon released during the Gen 4 wrap-up event
+
 ### 1.4.4 Gen 4 Wrap-up Event (10/19)
 
 - Gen 4 Wrap-up Event: **Calamity on Mt. Coronet**! Check `/events` for details
