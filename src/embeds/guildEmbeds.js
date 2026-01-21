@@ -4,14 +4,16 @@ const { ansiTokens } = require("../enums/miscEnums");
 
 /**
  * @param {GuildData} guildData
+ * @param {string[]} channelIds
+ * @param {number} page
  * @returns {EmbedBuilder}
  */
-const buildSpawnManagerEmbed = (guildData) => {
+const buildSpawnManagerEmbed = (guildData, channelIds, page = 1) => {
   const embed = new EmbedBuilder();
   embed.setTitle("Server Spawn Manager");
   embed.setColor(0xffffff);
 
-  const { mode, channelIds } = guildData.spawnSettings;
+  const { mode } = guildData.spawnSettings;
   let description = `Channel Spawn Mode: ${ansiTokens.BOLD}`;
   description +=
     mode === "allowlist"
@@ -30,6 +32,8 @@ const buildSpawnManagerEmbed = (guildData) => {
       ? channelIds.map((id) => `<#${id}>`).join(", ")
       : "No channels in list.",
   });
+
+  embed.setFooter({ text: `Page ${page}` });
 
   return embed;
 };
