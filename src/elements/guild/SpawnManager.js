@@ -17,6 +17,7 @@ const {
 } = require("../../services/guild");
 const { buildSpawnManagerEmbed } = require("../../embeds/guildEmbeds");
 const { buildGenericTextInputModal } = require("../../modals/genericModals");
+const usePagination = require("../../hooks/usePagination");
 
 const TEXT_INPUT_ID = "channelSubmitInput";
 
@@ -151,17 +152,33 @@ module.exports = async (
     { defer: false }
   );
 
+  const {
+    items: channelIds,
+    page,
+    scrollButtonsElement,
+  } = usePagination(
+    {
+      allItems: guildData?.spawnSettings?.channelIds ?? [],
+      pageSize: 20,
+      initialPage: 1,
+    },
+    ref
+  );
+
   return {
     elements: [
       {
         content: errorString
           ? `**ERROR:** ${errorString}`
           : "Manage spawning in your server by changing the spawn mode and adding or removing channels.",
-        embeds: guildData ? [buildSpawnManagerEmbed(guildData)] : [],
+        embeds: guildData
+          ? [buildSpawnManagerEmbed(guildData, channelIds, page)]
+          : [],
       },
     ],
     components: guildData
       ? [
+          scrollButtonsElement,
           [
             createElement(Button, {
               label: "Add Channel ID",
