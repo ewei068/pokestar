@@ -1,13 +1,15 @@
 ---
-description: 
+description:
 globs: src/battle/**
 alwaysApply: false
 ---
+
 # Pokestar Battle System
 
 This is a condensed reference for Cursor AI. For full documentation, see the [README.md](mdc:src/battle/README.md) in `src/battle/`.
 
 ## Unique Traits
+
 - All 6 Pokemon on battlefield simultaneously, positioned in a grid
 - Combat Readiness (CR) system: faster Pokemon act more frequently
 - 3-tier move system: Basic, Power, Ultimate moves with cooldowns
@@ -16,27 +18,33 @@ This is a condensed reference for Cursor AI. For full documentation, see the [RE
 - Missed moves still deal damage but tend to not apply secondary effects
 
 ## Core Architecture
+
 - `src/battle/engine/`: Battle, BattlePokemon classes and event system
 - `src/battle/data/`: Moves, abilities, effects, and held items
 
 ## Key Patterns
 
 1. **Properties Pattern**: When implementing `abilityAdd`, `effectAdd`, or `itemAdd`:
+
    ```javascript
-   return { 
+   return {
      listenerId: this.registerListenerFunction(...),
      // Any other state to preserve
    };
    ```
+
    This returned object becomes `properties` in the corresponding remove function.
 
 2. **Event Listener Registration**: Always use the class's `registerListenerFunction` method if available which adds helpful additional arguments and instance checks:
+
    ```javascript
    this.registerListenerFunction({
      battle,
      target,
      eventName: battleEventEnum.SOME_EVENT,
-     callback: (args) => { /* effect logic */ },
+     callback: (args) => {
+       /* effect logic */
+     },
      conditionCallback: getIsSourcePokemonCallback(target),
    });
    ```
@@ -47,16 +55,16 @@ This is a condensed reference for Cursor AI. For full documentation, see the [RE
    ```
 
 ## Essential Components
+
 1. Moves [moves.js](mdc:src/battle/data/moves.js): Define type, power, targeting, cooldown, and execute behavior
 2. Abilities [abilities.js](mdc:src/battle/data/abilities.js): Register event listeners in abilityAdd, clean up in abilityRemove
 3. Effects [effects.js](mdc:src/battle/data/effects.js): Temporary buffs/debuffs with duration and dispellable property
 4. Held Items [heldItems.js](mdc:src/battle/data/heldItems.js): Passive or usable effects implemented through event listeners
 
 ## When Extending
+
 1. Add enum entry in [battleEnums.js](mdc:src/enums/battleEnums.js) ONLY IF the entry doesn't already exist
 2. Create instance in appropriate data file
 3. Implement required methods
 4. Use existing methods for moves, abilities, held items, or effects when available
 5. DO NOT modify [battleConfig.js](mdc:src/config/battleConfig.js) unless directly told to; it may be useful to refer to, but this file is largely deprecated
-
-
