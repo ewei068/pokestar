@@ -124,4 +124,4 @@ overrideFields: (options) => {
 
 - `references/target-patterns.md` - Visual guide to target patterns
 - `references/effects.md` - List of all buff/debuff effect IDs
-- `references/move-patterns.md` - Code examples for common move types
+- `references/pattern-*.md` - Code examples for common move types

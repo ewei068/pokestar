@@ -259,4 +259,4 @@ conditionCallback: composeConditionCallbacks(
 ## References
 
 - `add-event-listener` skill - Common event types and condition callbacks
-- `references/ability-patterns.md` - Common ability implementation patterns
+- `references/pattern-*` - Common ability implementation patterns

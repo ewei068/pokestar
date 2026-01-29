@@ -115,6 +115,5 @@ effectRemove({ battle, target, initialArgs }) {
 
 ## References
 
-- `references/effect-types.md` - List of effect types and common effect IDs
-- `references/effect-patterns.md` - Common effect implementation patterns
+- `references/pattern-*.md` - Common effect implementation patterns
 - `add-event-listener` skill - Common event types and condition callbacks

@@ -72,7 +72,7 @@ itemAdd({ battle, target }) {
 },
 ```
 
-## Item Tags
+## Example Item Tags
 
 | Tag      | Description                                     |
 | -------- | ----------------------------------------------- |
@@ -99,5 +99,5 @@ itemAdd({ battle, target }) {
 
 ## References
 
-- `references/held-item-patterns.md` - Common held item implementation patterns
+- `references/pattern-*.md` - Common held item implementation patterns
 - `add-event-listener` skill - Common event types and condition callbacks

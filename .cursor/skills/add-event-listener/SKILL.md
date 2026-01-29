@@ -154,4 +154,4 @@ callback: (args) => {
 
 ## References
 
-- `references/listener-patterns.md` - Common event listener implementation patterns
+- `references/pattern-*.md` - Common event listener implementation patterns

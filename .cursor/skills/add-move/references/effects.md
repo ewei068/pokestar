@@ -1,6 +1,6 @@
 # Common Effects
 
-Effects are temporary buffs/debuffs applied to Pokemon during battle.
+Effects are temporary buffs/debuffs applied to Pokemon during battle. Find a full list in `effects.js` and `battleConfig.js`.
 
 ## Stat Buffs
 
