@@ -8,10 +8,11 @@ listenerId: battle.registerListenerFunction({
   callback: (args) => {
     const effect = getEffect(args.effectId);
     if (effect.type === effectTypes.DEBUFF) {
-      args.canAdd = false;
+      return {
+        canAdd: false
+      };
     }
   },
   conditionCallback: getIsTargetPokemonCallback(target),
 }),
 ```
-

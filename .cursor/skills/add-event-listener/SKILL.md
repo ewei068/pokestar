@@ -94,8 +94,6 @@ If an event isn't strongly typed, search for where it is emitted in `BattlePokem
 
 Import from `../engine/eventConditions`:
 
-````
-
 ### Common Condition Callbacks
 
 | Callback                                 | Description                                  |
@@ -117,30 +115,18 @@ conditionCallback: composeConditionCallbacks(
   getIsTargetPokemonCallback(target),
   getIsInstanceOfType("move"),
 ),
-````
+```
 
 ## Modifying Event Arguments
 
-Return an object from the callback to modify event behavior:
+RECOMMENDED: Return an object from the callback to modify event behavior:
 
 ```javascript
-// Reduce damage by 50%
 callback: (args) => {
-  return { damage: Math.floor(args.damage * 0.5) };
-};
-```
-
-```javascript
-// Prevent an effect from being applied
-callback: (args) => {
-  args.canAdd = false;
-};
-```
-
-```javascript
-// Prevent status from being applied
-callback: (args) => {
-  args.canApply = false;
+  return {
+    damage: Math.floor(args.damage * 0.5), // reduce damange by 50%
+    canAdd: false, // prevent something from being applied
+  };
 };
 ```
 
@@ -152,7 +138,7 @@ callback: (args) => {
    - `getIsSourcePokemonCallback` - when this Pokemon is dealing damage/using moves
    - `getIsTargetPokemonCallback` - when this Pokemon is receiving damage/effects
 
-3. **Return vs Mutate**: For damage modification, return the new value. For boolean flags like `canAdd`, mutate the args directly.
+3. **Return vs Mutate**: When modifying arguments, ALWAYS return the new value instead of mutating. Mutating is an old, deprecated pattern.
 
 4. **Instance Check**: Class-level `registerListenerFunction` automatically checks if the component is still active before firing the callback.
 

@@ -5,6 +5,8 @@ description: Use Deact hooks for state management, memoization, and side effects
 
 # Using Deact Hooks
 
+Hooks are re-usable functions in Deact elements inspired by React hooks. Similarly to React hooks, they should always be invoked in the same order within a component.
+
 ## Key Difference from React
 
 **All hooks require `ref` as the last parameter.**

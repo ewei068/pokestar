@@ -9,11 +9,12 @@ listenerId: this.registerListenerFunction({
   eventName: battleEventEnum.BEFORE_STATUS_APPLY,
   callback: (args) => {
     if (args.statusId === statusConditions.PARALYSIS) {
-      args.canApply = false;
       battle.addToLog(`${target.name}'s ability prevents paralysis!`);
+      return {
+        canAdd: false
+      };
     }
   },
   conditionCallback: getIsTargetPokemonCallback(target),
 }),
 ```
-

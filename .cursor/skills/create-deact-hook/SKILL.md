@@ -86,40 +86,12 @@ const useInfoToggle = ({ initial = false, deferToggle = false }, ref) => {
 module.exports = useInfoToggle;
 ```
 
-## Return Patterns
-
-### Return state + setter + element
-
-```javascript
-return {
-  value,
-  setValue,
-  element: createElement(Component, { ... }),
-};
-```
-
-### Return only element (wrapper hook)
-
-```javascript
-return scrollButtonsElement;
-```
-
-### Return data + error + element
-
-```javascript
-return {
-  data,
-  err: result.err,
-  element,
-};
-```
-
 ## Key Rules
 
 1. **`ref` is always the last parameter**
 2. **Prefix hook names with `use`**
 3. **Async hooks must be `await`ed when called**
-4. **Return pre-built elements for convenience**
+4. **May return pre-built elements for convenience**
 5. **Document return type with JSDoc**
 
 ## Related Skills

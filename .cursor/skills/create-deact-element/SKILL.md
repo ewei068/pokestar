@@ -9,7 +9,7 @@ description: Create Deact UI elements for Discord bot interfaces. Use when build
 
 **File location:** `src/elements/<category>/YourElement.js`
 
-**Categories:** `foundation/`, `pokemon/`, `party/`, `shop/`, `trainer/`, `quest/`, `social/`, `guild/`, `gacha/`, `help/`
+You may create a new category if no category is appropriate.
 
 ## Element Structure
 

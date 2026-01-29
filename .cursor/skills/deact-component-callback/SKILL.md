@@ -97,7 +97,8 @@ const normalKey = useCallbackBinding(() => setValue(1), ref);
 
 // Modal callback (defer: false required)
 const modalKey = useCallbackBinding(
-  (interaction) => createModal(builder, props, submitKey, interaction, ref),
+  async (interaction) =>
+    await createModal(builder, props, submitKey, interaction, ref),
   ref,
   { defer: false },
 );
@@ -105,7 +106,7 @@ const modalKey = useCallbackBinding(
 
 ## Async Callbacks
 
-Callbacks can be async:
+Callbacks can and almost always should be async:
 
 ```javascript
 const saveKey = useCallbackBinding(async (interaction, data) => {
@@ -142,7 +143,7 @@ const actionKey = useCallbackBinding(async (interaction, data) => {
 ## Related Skills
 
 - `use-deact-hook` - All available hooks including useCallbackBinding
-- `create-deact-modal` - Using modals with callbacks
+- `deact-modal` - Using modals with callbacks
 
 ## References
 
