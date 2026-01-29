@@ -47,7 +47,9 @@ description: Add new moves to the battle system. Use when implementing attack, s
 - `this.battle` - Battle instance
 - `this.power`, `this.type`, `this.id` - Move properties
 
-## Generic Methods
+## Example Generic Methods
+
+All generic methods are available in `MoveInstance.js`. These are some common examples:
 
 ```javascript
 // Deal damage to all targets

@@ -1,0 +1,85 @@
+---
+description: Deact UI framework for Discord bot interfaces
+globs: src/deact/**,src/elements/**,src/hooks/**
+alwaysApply: false
+---
+
+# Deact Framework
+
+Deact is a React-inspired UI library for building Discord bot interfaces. It manages component state, re-renders on state changes, and handles Discord interactions.
+
+## Key Differences from React
+
+### 1. Element Signature: `ref` is the First Parameter
+
+Every Deact element receives `ref` (the DeactElement instance) as its first parameter, and all hooks require `ref` as their **last** argument:
+
+```javascript
+const MyElement = async (ref, { someProp }) => {
+  const [value, setValue] = useState(initialValue, ref);
+  return { embeds: [...] };
+};
+```
+
+### 2. Elements are Async Functions
+
+Elements can use `await` directly and return a `ComposedElements` object (not JSX):
+
+```javascript
+return {
+  contents: [], // strings (concatenated)
+  embeds: [], // EmbedBuilder[] (max 10)
+  components: [], // 2D array of component rows (max 5)
+  err: "string", // early exit with error
+};
+```
+
+### 3. Awaited Hooks
+
+Deact provides async versions of hooks for data fetching:
+
+- `useAwaitedMemo(asyncFn, deps, ref)` - async memoization
+- `useAwaitedEffect(asyncFn, deps, ref)` - async side effects with async cleanup
+
+### 4. Callback Bindings for Interactions
+
+Instead of `onClick` props, use `useCallbackBinding` to bind callbacks to Discord component interactions:
+
+```javascript
+const onClickKey = useCallbackBinding(
+  (interaction, data) => {
+    setValue(data.value);
+  },
+  ref,
+  { defer: true },
+);
+
+createElement(Button, { callbackBindingKey: onClickKey, data: { value: 1 } });
+```
+
+### 5. Component Layout is a 2D Array
+
+Components are organized as rows (outer array) containing components (inner array):
+
+```javascript
+components: [
+  [button1, button2], // Row 1: two buttons
+  selectMenu, // Row 2: single component
+  condition ? [button3] : [], // Conditional row
+];
+```
+
+## Built-in Elements
+
+- `Button` - Discord button component
+- `StringSelectMenu` - Discord select menu
+- `Fragment` - Empty container
+
+## File Organization
+
+- `src/deact/` - Core framework
+- `src/deact/elements/` - Built-in primitive elements
+- `src/embeds/` - Reusable Embeds -- Discord's presentational UI
+- `src/elements/` - Application UI components using Deact
+- `src/hooks/` - Reusable custom hooks
+- `src/modals/` - Reusable modals to capture user input
