@@ -1,3 +1,8 @@
+---
+name: add-held-item
+description: Add held items to the battle system. Use when creating items Pokemon can hold for passive or triggered effects.
+---
+
 # Adding Held Items to Pokestar
 
 ## Quick Reference

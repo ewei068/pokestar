@@ -1,3 +1,8 @@
+---
+name: add-event-listener
+description: Register and manage battle event listeners. Use when abilities, effects, or items need to respond to battle events.
+---
+
 # Adding Event Listeners in Pokestar Battle System
 
 Event listeners are the core mechanism for abilities, effects, and held items to respond to battle events.
@@ -144,7 +149,6 @@ callback: (args) => {
 1. **Always Unregister**: Store listenerId and call `battle.unregisterListener(listenerId)` in the remove function to prevent memory leaks.
 
 2. **Source vs Target**: Use the correct condition callback:
-
    - `getIsSourcePokemonCallback` - when this Pokemon is dealing damage/using moves
    - `getIsTargetPokemonCallback` - when this Pokemon is receiving damage/effects
 

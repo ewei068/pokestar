@@ -1,3 +1,8 @@
+---
+name: add-ability
+description: Add Pokemon abilities to the battle system. Use when implementing passive abilities that trigger on events.
+---
+
 # Adding Abilities to Pokestar
 
 ## Quick Reference

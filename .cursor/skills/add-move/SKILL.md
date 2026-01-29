@@ -1,3 +1,8 @@
+---
+name: add-move
+description: Add new moves to the battle system. Use when implementing attack, status, or support moves for Pokemon.
+---
+
 # Adding Moves to Pokestar
 
 ## Quick Reference

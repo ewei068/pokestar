@@ -1,3 +1,8 @@
+---
+name: add-effect
+description: Add battle effects (buffs, debuffs, shields) to the battle system. Use when creating temporary status modifiers.
+---
+
 # Adding Effects to Pokestar
 
 ## Quick Reference
