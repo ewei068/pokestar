@@ -127,6 +127,18 @@ overrideFields: (options) => {
 - `pokemon.getPartyPokemon()` - Get ally array
 - `pokemon.isFainted` - Check if fainted
 
+## Validation
+
+After implementing a move, run the move test suite to validate the implementation:
+
+```bash
+npm test -- src/battle/data/__tests__/moves.test.js
+```
+
+This runs an e2e test that verifies all moves can execute without throwing errors. If your new move causes a test failure, fix the implementation and re-run until tests pass.
+
+See the `unit-test` skill for more details on testing.
+
 ## References
 
 - `references/target-patterns.md` - Visual guide to target patterns
