@@ -26,7 +26,7 @@ export default [
   },
   { languageOptions: { globals: globals.node } },
   {
-    files: ["**/__tests__/**/*.js"],
+    files: ["**/__tests__/**/*.js", "**/__testing__/**/*.js"],
     languageOptions: { globals: globals.jest },
   },
   {
