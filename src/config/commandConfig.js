@@ -146,7 +146,6 @@ const commandCategoryConfig = Object.freeze(commandCategoryConfigRaw);
  *  money?: number,
  *  parent?: string,
  *  subcommands?: string[],
- *  isDeact?: boolean,
  * }} CommandConfigData
  */
 
@@ -376,7 +375,6 @@ const commandConfigRaw = {
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
     exp: 10,
     money: 25,
-    isDeact: true,
   },
   info: {
     name: "Info",
@@ -413,7 +411,6 @@ const commandConfigRaw = {
       },
     },
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
-    isDeact: true,
   },
   release: {
     name: "Release",
