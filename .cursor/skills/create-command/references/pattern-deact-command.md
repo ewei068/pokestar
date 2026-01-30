@@ -71,7 +71,7 @@ module.exports = {
    - Third arg: The interaction (message or slash interaction)
    - Fourth arg: Options object (typically `{ ttl: seconds }`)
 
-2. **getUserFromInteraction**: Utility to extract user from either message or slash interaction
+2. **getUserFromInteraction**: Utility to extract user from either message or slash interaction. Must be used when passing a user.
 
 3. **Return pattern**: Just return the `createRoot` result directly - it handles the response
 
