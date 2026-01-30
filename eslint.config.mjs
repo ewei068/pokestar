@@ -26,6 +26,10 @@ export default [
   },
   { languageOptions: { globals: globals.node } },
   {
+    files: ["**/__tests__/**/*.js"],
+    languageOptions: { globals: globals.jest },
+  },
+  {
     rules: {
       "consistent-return": "off",
       "no-return-await": "off", // deprecated
