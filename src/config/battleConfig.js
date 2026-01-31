@@ -278,7 +278,7 @@ const calculateDamage = (
     power = null,
     type = null,
     moveType = null,
-  } = {}
+  } = {},
 ) =>
   source.calculateMoveDamage({
     move,
@@ -341,7 +341,7 @@ const battleStatToBaseStat = function (stat) {
 };
 const statIdToIndex = /** @type {Record<StatId, number>} */ (
   Object.fromEntries(
-    statIndexToBattleStatId.map((stat, index) => [stat, index])
+    statIndexToBattleStatId.map((stat, index) => [stat, index]),
   )
 );
 
@@ -954,10 +954,10 @@ const effectConfig = Object.freeze({
               },
               inflictedPokemon,
               inflictedPokemon,
-              false
+              false,
             );
             battle.addToLog(
-              `${inflictedPokemon.name} hurt itself in its confusion!`
+              `${inflictedPokemon.name} hurt itself in its confusion!`,
             );
             inflictedPokemon.dealDamage(damage, inflictedPokemon, {
               type: "confusion",
@@ -971,7 +971,7 @@ const effectConfig = Object.freeze({
       battle.addToLog(`${target.name} became confused!`);
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_MOVE,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -1020,10 +1020,10 @@ const effectConfig = Object.freeze({
             },
             targetPokemon,
             sourcePokemon,
-            false
+            false,
           );
           battle.addToLog(
-            `${targetPokemon.name} countered ${sourcePokemon.name}'s ${moveData.name}!`
+            `${targetPokemon.name} countered ${sourcePokemon.name}'s ${moveData.name}!`,
           );
           targetPokemon.dealDamage(damage, sourcePokemon, {
             type: "counter",
@@ -1033,7 +1033,7 @@ const effectConfig = Object.freeze({
       battle.addToLog(`${target.name} assumes a counter stance!`);
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -1082,10 +1082,10 @@ const effectConfig = Object.freeze({
             },
             targetPokemon,
             sourcePokemon,
-            false
+            false,
           );
           battle.addToLog(
-            `${targetPokemon.name} reflected ${sourcePokemon.name}'s ${moveData.name}!`
+            `${targetPokemon.name} reflected ${sourcePokemon.name}'s ${moveData.name}!`,
           );
           targetPokemon.dealDamage(damage, sourcePokemon, {
             type: "mirrorCoat",
@@ -1095,7 +1095,7 @@ const effectConfig = Object.freeze({
       battle.addToLog(`${target.name} puts up a reflective field!`);
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -1140,7 +1140,7 @@ const effectConfig = Object.freeze({
     dispellable: true,
     effectAdd(battle, _source, target) {
       battle.addToLog(
-        `${target.name} is restricted and cannot gain combat readiness via boosts!`
+        `${target.name} is restricted and cannot gain combat readiness via boosts!`,
       );
       target.restricted = true;
     },
@@ -1169,7 +1169,7 @@ const effectConfig = Object.freeze({
           // if damage would reduce HP below 1, set damage to HP - 1
           if (args.damage >= damagedPokemon.hp) {
             immortalPokemon.battle.addToLog(
-              `${immortalPokemon.name} cannot be reduced below 1 HP!`
+              `${immortalPokemon.name} cannot be reduced below 1 HP!`,
             );
             args.damage = damagedPokemon.hp - 1;
             args.maxDamage = Math.min(args.maxDamage, args.damage);
@@ -1178,7 +1178,7 @@ const effectConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -1215,13 +1215,13 @@ const effectConfig = Object.freeze({
           args.damage = 0;
           args.maxDamage = Math.min(args.maxDamage, args.damage);
           invulnPokemon.battle.addToLog(
-            `${invulnPokemon.name} protected itself!`
+            `${invulnPokemon.name} protected itself!`,
           );
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -1261,7 +1261,7 @@ const effectConfig = Object.freeze({
           args.damage = 0;
           args.maxDamage = Math.min(args.maxDamage, args.damage);
           invulnPokemon.battle.addToLog(
-            `${invulnPokemon.name} is super stretchy!`
+            `${invulnPokemon.name} is super stretchy!`,
           );
 
           // get move data
@@ -1281,7 +1281,7 @@ const effectConfig = Object.freeze({
           } else if (moveType === damageTypes.SPECIAL) {
             // reflect move back at attacker
             invulnPokemon.battle.addToLog(
-              `${invulnPokemon.name} reflected the move back at ${sourcePokemon.name}!`
+              `${invulnPokemon.name} reflected the move back at ${sourcePokemon.name}!`,
             );
             invulnPokemon.executeMoveId({
               moveId,
@@ -1294,7 +1294,7 @@ const effectConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -1337,14 +1337,14 @@ const effectConfig = Object.freeze({
 
           // set damage to half
           wideGuardPokemon.battle.addToLog(
-            `${wideGuardPokemon.name} is protecting its allies!`
+            `${wideGuardPokemon.name} is protecting its allies!`,
           );
           args.damage = Math.max(Math.floor(args.damage * multiplier), 1);
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -1385,12 +1385,12 @@ const effectConfig = Object.freeze({
               allyParty,
               targetPatterns.ALL_EXCEPT_SELF,
               moneyBagsPokemon.position,
-              { ignoreHittable: true }
+              { ignoreHittable: true },
             )
             .filter((pokemon) => !pokemon.isFainted);
 
           moneyBagsPokemon.battle.addToLog(
-            `Coins drop from ${moneyBagsPokemon.name}'s wallet!`
+            `Coins drop from ${moneyBagsPokemon.name}'s wallet!`,
           );
           for (const ally of moneyBagsAllies) {
             const healAmount = Math.floor(damage / 2);
@@ -1402,7 +1402,7 @@ const effectConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -1432,13 +1432,13 @@ const effectConfig = Object.freeze({
 
           args.canApply = false;
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name} is immune to status conditions!`
+            `${targetPokemon.name} is immune to status conditions!`,
           );
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_STATUS_APPLY,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -1446,7 +1446,7 @@ const effectConfig = Object.freeze({
     },
     effectRemove(battle, target, args) {
       battle.addToLog(
-        `${target.name} is no longer immune to status conditions!`
+        `${target.name} is no longer immune to status conditions!`,
       );
       const { listenerId } = args;
       battle.eventHandler.unregisterListener(listenerId);
@@ -1489,7 +1489,7 @@ const effectConfig = Object.freeze({
           }
 
           regenPokemon.battle.addToLog(
-            `${regenPokemon.name} regenerated some health!`
+            `${regenPokemon.name} regenerated some health!`,
           );
           const { healAmount } = initialArgs;
           regenPokemon.takeHeal(healAmount, regenPokemon, {
@@ -1499,7 +1499,7 @@ const effectConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.TURN_END,
-        listener
+        listener,
       );
       battle.addToLog(`${target.name} is regenerating health!`);
       return {
@@ -1530,7 +1530,7 @@ const effectConfig = Object.freeze({
           }
 
           dotPokemon.battle.addToLog(
-            `${dotPokemon.name} took damage from the DoT!`
+            `${dotPokemon.name} took damage from the DoT!`,
           );
           const { damage } = initialArgs;
           dotPokemon.takeDamage(damage, initialArgs.source, {
@@ -1540,7 +1540,7 @@ const effectConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.TURN_END,
-        listener
+        listener,
       );
       battle.addToLog(`${target.name} is taking damage from a DoT effect!`);
       return {
@@ -1571,7 +1571,7 @@ const effectConfig = Object.freeze({
           }
 
           dotPokemon.battle.addToLog(
-            `${dotPokemon.name} took damage from the Leech Seed!`
+            `${dotPokemon.name} took damage from the Leech Seed!`,
           );
           const damage = Math.floor(dotPokemon.maxHp / 4);
           const damageTaken = dotPokemon.takeDamage(
@@ -1579,7 +1579,7 @@ const effectConfig = Object.freeze({
             initialArgs.source,
             {
               type: "leechSeed",
-            }
+            },
           );
           initialArgs.source.giveHeal(damageTaken, initialArgs.source, {
             type: "leechSeed",
@@ -1588,7 +1588,7 @@ const effectConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.TURN_END,
-        listener
+        listener,
       );
       battle.addToLog(`${target.name} is affected by a Leech Seed!`);
       return {
@@ -1618,14 +1618,14 @@ const effectConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name} takes an additional turn!`
+            `${targetPokemon.name} takes an additional turn!`,
           );
           targetPokemon.boostCombatReadiness(targetPokemon, 100);
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.TURN_END,
-        listener
+        listener,
       );
       battle.addToLog(`${target.name} is taking extra turns!!`);
       return {
@@ -1665,7 +1665,7 @@ const effectConfig = Object.freeze({
           // get damage multiplier
           let mult = targetPokemon.getTypeDamageMultiplier(
             pokemonTypes.ROCK,
-            targetPokemon
+            targetPokemon,
           );
           if (mult >= 4) {
             mult = 2;
@@ -1691,11 +1691,11 @@ const effectConfig = Object.freeze({
 
       const crListenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_CR_GAINED,
-        listener
+        listener,
       );
       const buffListenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_EFFECT_ADD,
-        listener
+        listener,
       );
       return {
         crListenerId,
@@ -1761,11 +1761,11 @@ const effectConfig = Object.freeze({
 
       const crListenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_CR_GAINED,
-        crListener
+        crListener,
       );
       const beforeMoveListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_MOVE,
-        beforeMoveListener
+        beforeMoveListener,
       );
       return {
         crListenerId,
@@ -1797,7 +1797,7 @@ const effectConfig = Object.freeze({
       }
       if (disabledMoves.length > 0) {
         battle.addToLog(
-          `${target.name}'s ${disabledMoves.join(", ")} was disabled!`
+          `${target.name}'s ${disabledMoves.join(", ")} was disabled!`,
         );
       } else {
         battle.addToLog(`${target.name} has no ultimate moves!`);
@@ -1824,7 +1824,7 @@ const effectConfig = Object.freeze({
     dispellable: true,
     effectAdd(battle, source, target) {
       battle.addToLog(
-        `${target.name} is silenced and can only use basic moves!`
+        `${target.name} is silenced and can only use basic moves!`,
       );
       for (const moveId in target.moveIds) {
         const moveData = getMove(moveId);
@@ -1938,7 +1938,7 @@ const effectConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.GET_ELIGIBLE_TARGETS,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -1983,7 +1983,7 @@ const effectConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_DEALT,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -2195,7 +2195,7 @@ const effectConfig = Object.freeze({
     dispellable: true,
     effectAdd(battle, source, target) {
       battle.addToLog(
-        `${source.name} is foreseeing an attack against ${target.name}!`
+        `${source.name} is foreseeing an attack against ${target.name}!`,
       );
     },
     effectRemove(battle, target) {
@@ -2207,7 +2207,7 @@ const effectConfig = Object.freeze({
       if (remainingDuration === undefined) return;
 
       battle.addToLog(
-        `${target.name} was hit by ${source.name}'s Future Sight!`
+        `${target.name} was hit by ${source.name}'s Future Sight!`,
       );
       const damageCalc = calculateDamage(getMove("m248"), source, target);
       // calculate damage based on remaining duration. 0 => 100%, 1 => 50%, >= 2 => 25%
@@ -2315,10 +2315,10 @@ const effectConfig = Object.freeze({
           const enemyPokemons = targetPokemon.getPatternTargets(
             targetPokemon.battle.parties[enemyTeamName],
             targetPatterns.ALL,
-            1
+            1,
           );
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s holds a grudge!`
+            `${targetPokemon.name}'s holds a grudge!`,
           );
           for (const enemyPokemon of enemyPokemons) {
             enemyPokemon.applyEffect("silenced", 2, targetPokemon);
@@ -2327,7 +2327,7 @@ const effectConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_FAINT,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -2345,8 +2345,11 @@ const effectConfig = Object.freeze({
     type: effectTypes.BUFF,
     dispellable: true,
     effectAdd(battle, _source, target, initialArgs) {
+      if (!initialArgs.boundPokemon) {
+        return {};
+      }
       battle.addToLog(
-        `${target.name} binds ${initialArgs.boundPokemon.name} by a vow!`
+        `${target.name} binds ${initialArgs.boundPokemon.name} by a vow!`,
       );
       const listener = {
         initialArgs: {
@@ -2361,7 +2364,7 @@ const effectConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name} is bound by a vow!`
+            `${targetPokemon.name} is bound by a vow!`,
           );
           const { boundPokemon } = initialArgs;
           boundPokemon.takeFaint(targetPokemon);
@@ -2369,7 +2372,7 @@ const effectConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_FAINT,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -6477,7 +6480,7 @@ const moveExecutes = {
         moveData,
         source,
         target,
-        missedTargets.includes(target)
+        missedTargets.includes(target),
       );
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -6491,7 +6494,7 @@ const moveExecutes = {
       party,
       targetPatterns.ALL_EXCEPT_SELF,
       source.position,
-      { ignoreHittable: true }
+      { ignoreHittable: true },
     );
     if (pokemons.length > 0) {
       const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
@@ -6544,7 +6547,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m7-1";
     const moveData = getMove(moveId);
@@ -6582,7 +6585,7 @@ const moveExecutes = {
         moveData,
         source,
         target,
-        missedTargets.includes(target)
+        missedTargets.includes(target),
       );
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -6622,7 +6625,7 @@ const moveExecutes = {
         moveData,
         source,
         target,
-        missedTargets.includes(target)
+        missedTargets.includes(target),
       );
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -6705,7 +6708,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m34-1";
     const moveData = getMove(moveId);
@@ -6768,7 +6771,7 @@ const moveExecutes = {
         moveData,
         source,
         target,
-        missedTargets.includes(target)
+        missedTargets.includes(target),
       );
       damageDealt += source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -6920,7 +6923,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m56-1";
     const moveData = getMove(moveId);
@@ -6944,7 +6947,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m56-2";
     const moveData = getMove(moveId);
@@ -7042,7 +7045,7 @@ const moveExecutes = {
         {
           type: "move",
           moveId,
-        }
+        },
       );
     }
     // apply recharge to self
@@ -7120,7 +7123,7 @@ const moveExecutes = {
         target.type2 === pokemonTypes.GRASS
       ) {
         battle.addToLog(
-          `${target.name}'s Grass type renders it immune to Leech Seed!`
+          `${target.name}'s Grass type renders it immune to Leech Seed!`,
         );
         continue;
       }
@@ -7175,7 +7178,7 @@ const moveExecutes = {
         target.type2 === pokemonTypes.GRASS
       ) {
         battle.addToLog(
-          `${target.name}'s Grass type renders it immune to spore moves!`
+          `${target.name}'s Grass type renders it immune to spore moves!`,
         );
         continue;
       }
@@ -7196,7 +7199,7 @@ const moveExecutes = {
         target.type2 === pokemonTypes.GRASS
       ) {
         battle.addToLog(
-          `${target.name}'s Grass type renders it immune to spore moves!`
+          `${target.name}'s Grass type renders it immune to spore moves!`,
         );
         continue;
       }
@@ -7300,7 +7303,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m87-1";
     const moveData = getMove(moveId);
@@ -7348,7 +7351,7 @@ const moveExecutes = {
         dig ? false : miss,
         {
           power: power * (dig ? 2 : 1),
-        }
+        },
       );
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -7441,12 +7444,12 @@ const moveExecutes = {
         party,
         targetPatterns.ALL_EXCEPT_SELF,
         source.position,
-        { ignoreHittable: true }
+        { ignoreHittable: true },
       )
       .filter((pokemon) => !pokemon.isFainted);
     if (pokemons.length > 0) {
       const pokemon = pokemons.reduce((a, b) =>
-        a.combatReadiness > b.combatReadiness ? a : b
+        a.combatReadiness > b.combatReadiness ? a : b,
       );
       pokemon.boostCombatReadiness(source, 60);
     }
@@ -7469,7 +7472,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // attempt to get targets ultimate move
       const ultimateMoveIds = Object.keys(target.moveIds).filter(
-        (moveId) => getMove(moveId).tier === moveTiers.ULTIMATE
+        (moveId) => getMove(moveId).tier === moveTiers.ULTIMATE,
       );
       if (ultimateMoveIds.length === 0) {
         battle.addToLog(`But if failed!`);
@@ -7560,7 +7563,7 @@ const moveExecutes = {
     const targetRow = source.getPatternTargets(
       allyParty,
       targetPatterns.ROW,
-      primaryTarget.position
+      primaryTarget.position,
     );
     for (const target of allTargets) {
       if (targetRow.includes(target)) {
@@ -7578,7 +7581,7 @@ const moveExecutes = {
     const targetRow = source.getPatternTargets(
       allyParty,
       targetPatterns.ROW,
-      primaryTarget.position
+      primaryTarget.position,
     );
     for (const target of allTargets) {
       if (targetRow.includes(target)) {
@@ -7776,7 +7779,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -7821,13 +7824,13 @@ const moveExecutes = {
     const surroundingTargets = source.getPatternTargets(
       targetParty,
       targetPatterns.ALL,
-      primaryTarget.position
+      primaryTarget.position,
     );
     for (const target of surroundingTargets) {
       // flinch chance = (30 + source speed/10)
       const flinchChance = Math.min(
         0.3 + source.getStat("spe") / 10 / 100,
-        0.75
+        0.75,
       );
       if (Math.random() < flinchChance) {
         target.applyEffect("flinched", 1, source);
@@ -7842,7 +7845,7 @@ const moveExecutes = {
         target.type2 === pokemonTypes.GRASS
       ) {
         battle.addToLog(
-          `${target.name}'s Grass type renders it immune to spore moves!`
+          `${target.name}'s Grass type renders it immune to spore moves!`,
         );
         continue;
       }
@@ -7903,14 +7906,14 @@ const moveExecutes = {
     const allyTargets = source.getPatternTargets(
       allyParty,
       targetPatterns.SQUARE,
-      source.position
+      source.position,
     );
     for (const target of allyTargets) {
       if (target !== source) {
         const damageToDeal = Math.floor(
           calculateDamage(moveData, source, target, false, {
             power,
-          }) * 0.33
+          }) * 0.33,
         );
         source.dealDamage(Math.max(damageToDeal, 1), target, {
           type: "move",
@@ -7930,7 +7933,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m154-1";
     const moveData = getMove(moveId);
@@ -7970,7 +7973,7 @@ const moveExecutes = {
       source.hp === source.maxHp
     ) {
       battle.addToLog(
-        `${source.name} tried to use ${moveData.name}, but it failed!`
+        `${source.name} tried to use ${moveData.name}, but it failed!`,
       );
       return;
     }
@@ -8064,7 +8067,7 @@ const moveExecutes = {
             return (
               effectData.type === effectTypes.BUFF && effectData.dispellable
             );
-          }
+          },
         );
         if (possibleBuffs.length === 0) {
           return;
@@ -8082,7 +8085,7 @@ const moveExecutes = {
             buffIdToSteal,
             buffToSteal.duration,
             buffToSteal.source,
-            buffToSteal.initialArgs
+            buffToSteal.initialArgs,
           );
         }
       }
@@ -8157,7 +8160,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m177-1";
     const moveData = getMove(moveId);
@@ -8211,7 +8214,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m183-1";
     const moveData = getMove(moveId);
@@ -8291,7 +8294,7 @@ const moveExecutes = {
   m191(battle, source, primaryTarget, allTargets, missedTargets) {
     // spikes log
     battle.addToLog(
-      `Spikes were scattered around ${primaryTarget.name}'s surroundings!`
+      `Spikes were scattered around ${primaryTarget.name}'s surroundings!`,
     );
     for (const target of allTargets) {
       // if not miss, apply spikes 5 turns
@@ -8338,7 +8341,7 @@ const moveExecutes = {
     const allyTargets = source.getPatternTargets(
       allyParty,
       targetPatterns.SQUARE,
-      source.position
+      source.position,
     );
     for (const target of allyTargets) {
       target.applyEffect("perishSong", 3, source);
@@ -8463,7 +8466,7 @@ const moveExecutes = {
         {
           type: "move",
           moveId,
-        }
+        },
       );
     }
   },
@@ -8525,7 +8528,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
@@ -8546,7 +8549,7 @@ const moveExecutes = {
 
     // choose random non-sleep talk move
     const sleepTalkMoves = Object.keys(source.moveIds).filter(
-      (mId) => mId !== moveId
+      (mId) => mId !== moveId,
     );
     // if no moves, return
     if (sleepTalkMoves.length === 0) {
@@ -8576,7 +8579,7 @@ const moveExecutes = {
       targetParty,
       randomMoveData.targetPattern,
       randomTarget.position,
-      { moveId: randomMoveId }
+      { moveId: randomMoveId },
     );
     // use move against target
     battle.addToLog(`${randomMoveData.name} hit ${randomTarget.name}!`);
@@ -8684,7 +8687,7 @@ const moveExecutes = {
           enemyParty,
           targetPatterns.SQUARE,
           target.position,
-          { moveId }
+          { moveId },
         );
         for (const enemyTarget of enemyTargets) {
           enemyTarget.applyEffect("confused", 2, source);
@@ -8721,7 +8724,7 @@ const moveExecutes = {
           effectId,
           effect.duration,
           effect.source,
-          effect.initialArgs
+          effect.initialArgs,
         );
       }
     }
@@ -8753,7 +8756,7 @@ const moveExecutes = {
     const allyTargets = source.getPatternTargets(
       allyParty,
       targetPatterns.SQUARE,
-      source.position
+      source.position,
     );
     for (const ally of allyTargets) {
       for (const effectId of Object.keys(ally.effectIds)) {
@@ -8852,7 +8855,7 @@ const moveExecutes = {
         {
           type: "move",
           moveId,
-        }
+        },
       );
     }
   },
@@ -8953,7 +8956,7 @@ const moveExecutes = {
     // argmax
     const highestStatIndex = statValues.reduce(
       (iMax, x, i, arr) => (x > arr[iMax] ? i : iMax),
-      0
+      0,
     );
     switch (highestStatIndex + 1) {
       case 1:
@@ -9104,7 +9107,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m269-1";
     const moveData = getMove(moveId);
@@ -9198,7 +9201,7 @@ const moveExecutes = {
       // damage bonus = 0.25 * buffs up to 1
       const damageBonus = Math.min(1, 0.25 * buffsRemoved);
       const damageToDeal = Math.floor(
-        calculateDamage(moveData, source, target, miss) * (1 + damageBonus)
+        calculateDamage(moveData, source, target, miss) * (1 + damageBonus),
       );
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -9258,7 +9261,7 @@ const moveExecutes = {
 
     // check if ally has mist ball on cooldown
     const allyPokemons = Object.values(battle.allPokemon).filter(
-      (pokemon) => pokemon.teamName === source.teamName
+      (pokemon) => pokemon.teamName === source.teamName,
     );
     let mistBallCooldown = false;
     for (const allyPokemon of allyPokemons) {
@@ -9276,7 +9279,7 @@ const moveExecutes = {
         enemyParty,
         targetPatterns.ALL,
         primaryTarget.position,
-        { moveId }
+        { moveId },
       );
     }
 
@@ -9286,7 +9289,7 @@ const moveExecutes = {
         moveData,
         source,
         target,
-        !mistBallCooldown && miss
+        !mistBallCooldown && miss,
       );
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -9305,7 +9308,7 @@ const moveExecutes = {
 
     // check if ally has luster purge on cooldown
     const allyPokemons = Object.values(battle.allPokemon).filter(
-      (pokemon) => pokemon.teamName === source.teamName
+      (pokemon) => pokemon.teamName === source.teamName,
     );
     let lusterPurgeCooldown = false;
     for (const allyPokemon of allyPokemons) {
@@ -9322,7 +9325,7 @@ const moveExecutes = {
         moveData,
         source,
         target,
-        !lusterPurgeCooldown && miss
+        !lusterPurgeCooldown && miss,
       );
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -9504,7 +9507,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m317-1";
     const moveData = getMove(moveId);
@@ -9529,7 +9532,7 @@ const moveExecutes = {
       // get 10% defenses as shield
       target.applyEffect("shield", 3, source, {
         shield: Math.floor(
-          target.getStat("def") * 0.1 + target.getStat("spd") * 0.1
+          target.getStat("def") * 0.1 + target.getStat("spd") * 0.1,
         ),
       });
     }
@@ -9592,7 +9595,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m331-1";
     const moveData = getMove(moveId);
@@ -9652,7 +9655,7 @@ const moveExecutes = {
     source,
     primaryTarget,
     allTargets,
-    _missedTargets
+    _missedTargets,
   ) {
     const moveData = getMove("m334-1");
     // put primary target at front of allTargets
@@ -9682,7 +9685,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    _missedTargets
+    _missedTargets,
   ) {
     const moveData = getMove("m334-2");
     for (const target of allTargets) {
@@ -9781,7 +9784,7 @@ const moveExecutes = {
         {
           type: "move",
           moveId,
-        }
+        },
       );
     }
   },
@@ -9818,7 +9821,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
 
     const allAllies = battle.parties[source.teamName].pokemons.filter(
-      (p) => p && !p.isFainted
+      (p) => p && !p.isFainted,
     );
     for (const ally of allAllies) {
       // get highest non-hp base stat
@@ -9832,7 +9835,7 @@ const moveExecutes = {
       // argmax
       const highestStatIndex = statValues.reduce(
         (iMax, x, i, arr) => (x > arr[iMax] ? i : iMax),
-        0
+        0,
       );
       switch (highestStatIndex + 1) {
         case 1:
@@ -9869,7 +9872,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m354-1";
     const moveData = getMove(moveId);
@@ -9897,14 +9900,14 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    _missedTargets
+    _missedTargets,
   ) {
     const moveData = getMove("m354-2");
     for (const target of allTargets) {
       // get 25% def, spd as shield
       target.applyEffect("shield", 3, source, {
         shield: Math.floor(
-          source.getStat("def") * 0.25 + source.getStat("spd") * 0.25
+          source.getStat("def") * 0.25 + source.getStat("spd") * 0.25,
         ),
       });
     }
@@ -9914,7 +9917,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    _missedTargets
+    _missedTargets,
   ) {
     const moveId = "m354-3";
     const moveData = getMove(moveId);
@@ -9932,7 +9935,7 @@ const moveExecutes = {
         {
           type: "move",
           moveId,
-        }
+        },
       );
 
       // lose flying type
@@ -9978,7 +9981,7 @@ const moveExecutes = {
     const boostTargets = source.getPatternTargets(
       targetParty,
       targetPatterns.ROW,
-      primaryTarget.position
+      primaryTarget.position,
     );
 
     for (const target of allTargets) {
@@ -9999,7 +10002,7 @@ const moveExecutes = {
         moveData,
         source,
         target,
-        missedTargets.includes(target)
+        missedTargets.includes(target),
       );
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -10014,7 +10017,7 @@ const moveExecutes = {
         party,
         targetPatterns.ALL_EXCEPT_SELF,
         source.position,
-        { ignoreHittable: true }
+        { ignoreHittable: true },
       )
       .filter((pokemon) => !pokemon.isFainted);
     if (pokemons.length > 0) {
@@ -10043,7 +10046,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m370-1";
     const moveData = getMove(moveId);
@@ -10066,7 +10069,7 @@ const moveExecutes = {
     for (const target of allTargets) {
       // calculate power = base power * moves on cooldown
       const numCooldownMoves = Object.values(source.moveIds).filter(
-        (m) => m.cooldown > 0
+        (m) => m.cooldown > 0,
       ).length;
       const power = moveData.power * numCooldownMoves;
       const miss = missedTargets.includes(target);
@@ -10104,7 +10107,7 @@ const moveExecutes = {
         {
           type: "move",
           moveId,
-        }
+        },
       );
 
       // 10% chance to burn
@@ -10123,7 +10126,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m394-1";
     const moveData = getMove(moveId);
@@ -10133,11 +10136,11 @@ const moveExecutes = {
       // get max of fire, dark multiplier
       const fireMultiplier = source.getTypeDamageMultiplier(
         pokemonTypes.FIRE,
-        target
+        target,
       );
       const darkMultiplier = source.getTypeDamageMultiplier(
         pokemonTypes.DARK,
-        target
+        target,
       );
       const damageToDeal = calculateDamage(moveData, source, target, miss, {
         type: Math.max(fireMultiplier, darkMultiplier),
@@ -10212,7 +10215,7 @@ const moveExecutes = {
         {
           type: "move",
           moveId,
-        }
+        },
       );
     }
   },
@@ -10232,7 +10235,7 @@ const moveExecutes = {
           moveData,
           source,
           target,
-          miss
+          miss,
         );
         source.dealDamage(secondDamageToDeal * 2, target, {
           type: "move",
@@ -10371,7 +10374,7 @@ const moveExecutes = {
         {
           type: "move",
           moveId,
-        }
+        },
       );
     }
     // apply recharge to self
@@ -10382,7 +10385,7 @@ const moveExecutes = {
     source,
     primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m416-1";
     const moveData = getMove(moveId);
@@ -10396,7 +10399,7 @@ const moveExecutes = {
         {
           type: "move",
           moveId,
-        }
+        },
       );
     }
     // apply greater spe down to self
@@ -10418,7 +10421,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    _missedTargets
+    _missedTargets,
   ) {
     const moveId = "m417-1";
     const moveData = getMove(moveId);
@@ -10535,7 +10538,7 @@ const moveExecutes = {
     const moveId = "m432";
     const moveData = getMove(moveId);
     const targets = Object.values(battle.allPokemon).filter((p) =>
-      battle.isPokemonHittable(p, moveId)
+      battle.isPokemonHittable(p, moveId),
     );
     // if no targets, return
     if (targets.length === 0) {
@@ -10570,7 +10573,7 @@ const moveExecutes = {
     const moveId = "m433";
     // get all non-fainted, hitable pokemon
     const targets = Object.values(battle.allPokemon).filter((p) =>
-      battle.isPokemonHittable(p, moveId)
+      battle.isPokemonHittable(p, moveId),
     );
     // if no targets, return
     if (targets.length === 0) {
@@ -10625,7 +10628,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m435-1";
     const moveData = getMove(moveId);
@@ -10645,7 +10648,7 @@ const moveExecutes = {
             return (
               effectData.type === effectTypes.DEBUFF && effectData.dispellable
             );
-          }
+          },
         );
         if (possibleDebuffs.length === 0) {
           continue;
@@ -10666,7 +10669,7 @@ const moveExecutes = {
           debuffId,
           debuff.duration,
           source,
-          debuff.initialArgs
+          debuff.initialArgs,
         );
       }
     }
@@ -10695,7 +10698,7 @@ const moveExecutes = {
         moveData,
         source,
         primaryTarget,
-        false
+        false,
       );
 
       // if target poisoned, 1.5x damage
@@ -10734,7 +10737,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     // stealth rock log
     battle.addToLog(
-      `Sharp rocks were scattered on the ground near ${primaryTarget.teamName}'s side!`
+      `Sharp rocks were scattered on the ground near ${primaryTarget.teamName}'s side!`,
     );
     for (const target of allTargets) {
       // give target stealthRock
@@ -10805,7 +10808,7 @@ const moveExecutes = {
     const damageTargets = source.getPatternTargets(
       targetParty,
       targetPatterns.ROW,
-      primaryTarget.position
+      primaryTarget.position,
     );
 
     for (const target of allTargets) {
@@ -10941,7 +10944,7 @@ const moveExecutes = {
         moveData,
         source,
         target,
-        missedTargets.includes(target)
+        missedTargets.includes(target),
       );
       source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -10956,7 +10959,7 @@ const moveExecutes = {
         party,
         targetPatterns.ALL_EXCEPT_SELF,
         source.position,
-        { ignoreHittable: true }
+        { ignoreHittable: true },
       )
       .filter((pokemon) => !pokemon.isFainted);
     if (pokemons.length > 0) {
@@ -11036,7 +11039,7 @@ const moveExecutes = {
         missedTargets.includes(target),
         {
           power: Math.floor(moveData.power + source.getStat("spe") * 0.2),
-        }
+        },
       );
       damageDealt += source.dealDamage(damageToDeal, target, {
         type: "move",
@@ -11094,7 +11097,7 @@ const moveExecutes = {
         {
           type: "move",
           moveId,
-        }
+        },
       );
     }
   },
@@ -11103,7 +11106,7 @@ const moveExecutes = {
     source,
     primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m540-1";
     const moveData = getMove(moveId);
@@ -11120,7 +11123,7 @@ const moveExecutes = {
         {
           type: "move",
           moveId,
-        }
+        },
       );
 
       // if target fainted, increase targets fainted
@@ -11156,7 +11159,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m542-1";
     const moveData = getMove(moveId);
@@ -11207,7 +11210,7 @@ const moveExecutes = {
         moveData,
         source,
         primaryTarget,
-        false
+        false,
       );
       source.dealDamage(damageToDeal, primaryTarget, {
         type: "move",
@@ -11417,7 +11420,7 @@ const moveExecutes = {
     source,
     _primaryTarget,
     allTargets,
-    missedTargets
+    missedTargets,
   ) {
     const moveId = "m620-1";
     const moveData = getMove(moveId);
@@ -11537,7 +11540,7 @@ const moveExecutes = {
       enemyParty,
       targetPatterns.ROW,
       primaryTarget.position,
-      { moveId }
+      { moveId },
     );
     for (const target of rowTargets) {
       const miss = missedTargets.includes(target);
@@ -11557,7 +11560,7 @@ const moveExecutes = {
       enemyParty,
       targetPatterns.COLUMN,
       primaryTarget.position,
-      { moveId }
+      { moveId },
     );
     for (const target of columnTargets) {
       const miss = missedTargets.includes(target);
@@ -11589,7 +11592,7 @@ const moveExecutes = {
           moveData,
           source,
           target,
-          miss
+          miss,
         );
         source.dealDamage(secondDamageToDeal, target, {
           type: "move",
@@ -11658,7 +11661,7 @@ const moveExecutes = {
             targetParty,
             moveData.targetPattern,
             target.position,
-            { moveId }
+            { moveId },
           );
           source.executeMoveId({
             moveId,
@@ -11705,7 +11708,7 @@ const moveExecutes = {
       !randomFaintedPokemon.switchPositions(
         source.userId,
         randomEmptyIndex + 1,
-        source
+        source,
       )
     ) {
       battle.addToLog(`But it failed!`);
@@ -11715,7 +11718,7 @@ const moveExecutes = {
     // revive fainted pokemon with 50% hp
     randomFaintedPokemon.beRevived(
       Math.floor(randomFaintedPokemon.maxHp / 2),
-      source
+      source,
     );
   },
   m20004(battle, source, _primaryTarget, _allTargets, _missedTargets) {
@@ -11723,7 +11726,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     // get all non-fainted, hitable pokemon
     const targets = Object.values(battle.allPokemon).filter((p) =>
-      battle.isPokemonHittable(p, moveId)
+      battle.isPokemonHittable(p, moveId),
     );
     for (const target of targets) {
       const effectId =
@@ -11776,7 +11779,7 @@ const moveExecutes = {
     const moveData = getMove(moveId);
     // get all non-fainted, hitable pokemon
     const targets = Object.values(battle.allPokemon).filter((p) =>
-      battle.isPokemonHittable(p, moveId)
+      battle.isPokemonHittable(p, moveId),
     );
     for (const target of targets) {
       const crBoost = target.teamName === source.teamName ? 30 : 10;
@@ -11939,14 +11942,14 @@ const abilityConfig = Object.freeze({
 
           initialArgs.pokemon.battle.createWeather(
             weatherConditions.RAIN,
-            initialArgs.pokemon
+            initialArgs.pokemon,
           );
         },
       };
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BATTLE_BEGIN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -11990,18 +11993,18 @@ const abilityConfig = Object.freeze({
           abilityData.turns = abilityData.turns ? abilityData.turns + 1 : 1;
           const crBoost = Math.min(60, abilityData.turns * 20);
           initialArgs.pokemon.battle.addToLog(
-            `${initialArgs.pokemon.name}'s Speed Boost increases its combat readiness!`
+            `${initialArgs.pokemon.name}'s Speed Boost increases its combat readiness!`,
           );
           initialArgs.pokemon.boostCombatReadiness(
             initialArgs.pokemon,
-            crBoost
+            crBoost,
           );
         },
       };
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.TURN_END,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -12041,7 +12044,7 @@ const abilityConfig = Object.freeze({
             args.damage = targetPokemon.hp - 1;
             args.maxDamage = Math.min(args.maxDamage, args.damage);
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name} hung on with Sturdy!`
+              `${targetPokemon.name} hung on with Sturdy!`,
             );
             // gain move invuln
             target.applyEffect("moveInvulnerable", 1, target, {});
@@ -12051,7 +12054,7 @@ const abilityConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -12088,14 +12091,14 @@ const abilityConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Limber prevents it from being paralyzed!`
+            `${targetPokemon.name}'s Limber prevents it from being paralyzed!`,
           );
           args.canApply = false;
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_STATUS_APPLY,
-        listener
+        listener,
       );
       if (target.status?.statusId === statusConditions.PARALYSIS) {
         target.removeStatus();
@@ -12143,18 +12146,18 @@ const abilityConfig = Object.freeze({
             Math.random() < 0.5
           ) {
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Static affects ${sourcePokemon.name}!`
+              `${targetPokemon.name}'s Static affects ${sourcePokemon.name}!`,
             );
             sourcePokemon.applyStatus(
               statusConditions.PARALYSIS,
-              targetPokemon
+              targetPokemon,
             );
           }
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -12195,14 +12198,14 @@ const abilityConfig = Object.freeze({
           const moveData = getMove(args.damageInfo.moveId);
           if (moveData.type === pokemonTypes.ELECTRIC) {
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name} is healed by Volt Absorb!`
+              `${targetPokemon.name} is healed by Volt Absorb!`,
             );
             targetPokemon.giveHeal(
               Math.floor(targetPokemon.maxHp * 0.25),
               targetPokemon,
               {
                 type: "waterAbsorb",
-              }
+              },
             );
             args.damage = 0;
             args.maxDamage = Math.min(args.maxDamage, args.damage);
@@ -12211,7 +12214,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -12252,14 +12255,14 @@ const abilityConfig = Object.freeze({
           const moveData = getMove(args.damageInfo.moveId);
           if (moveData.type === pokemonTypes.WATER) {
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name} is healed by Water Absorb!`
+              `${targetPokemon.name} is healed by Water Absorb!`,
             );
             targetPokemon.giveHeal(
               Math.floor(targetPokemon.maxHp * 0.25),
               targetPokemon,
               {
                 type: "waterAbsorb",
-              }
+              },
             );
             args.damage = 0;
             args.maxDamage = Math.min(args.maxDamage, args.damage);
@@ -12268,7 +12271,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -12288,7 +12291,7 @@ const abilityConfig = Object.freeze({
     description: "Negates all weather effects.",
     abilityAdd(battle, _source, target) {
       battle.addToLog(
-        `${target.name}'s Cloud Nine ability negates all weather effects!`
+        `${target.name}'s Cloud Nine ability negates all weather effects!`,
       );
     },
     abilityRemove(_battle, _source, _target) {},
@@ -12298,7 +12301,7 @@ const abilityConfig = Object.freeze({
     description: "Increases accuracy of moves by 50%.",
     abilityAdd(battle, _source, target) {
       battle.addToLog(
-        `${target.name}'s Compound Eyes ability increases its accuracy!`
+        `${target.name}'s Compound Eyes ability increases its accuracy!`,
       );
       target.acc += 50;
     },
@@ -12328,14 +12331,14 @@ const abilityConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Insomnia prevents it from falling asleep!`
+            `${targetPokemon.name}'s Insomnia prevents it from falling asleep!`,
           );
           args.canApply = false;
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_STATUS_APPLY,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -12376,7 +12379,7 @@ const abilityConfig = Object.freeze({
           const moveData = getMove(args.damageInfo.moveId);
           if (moveData.type === pokemonTypes.FIRE) {
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Flash Fire was activated by the Fire attack!`
+              `${targetPokemon.name}'s Flash Fire was activated by the Fire attack!`,
             );
             targetPokemon.applyEffect("atkUp", 2, targetPokemon);
             targetPokemon.applyEffect("spaUp", 2, targetPokemon);
@@ -12387,7 +12390,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -12430,7 +12433,7 @@ const abilityConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Shield Dust blocks the debuff!`
+            `${targetPokemon.name}'s Shield Dust blocks the debuff!`,
           );
           args.canAdd = false;
         },
@@ -12438,7 +12441,7 @@ const abilityConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_EFFECT_ADD,
-        listener
+        listener,
       );
 
       return {
@@ -12473,14 +12476,14 @@ const abilityConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Own Tempo prevents confusion!`
+            `${targetPokemon.name}'s Own Tempo prevents confusion!`,
           );
           args.canAdd = false;
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_EFFECT_ADD,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -12509,7 +12512,7 @@ const abilityConfig = Object.freeze({
           const { battle } = args;
           const enemyParty = sourcePokemon.getEnemyParty();
           const enemyPokemons = enemyParty.pokemons.filter((p) =>
-            battle.isPokemonHittable(p)
+            battle.isPokemonHittable(p),
           );
           if (enemyPokemons.length === 0) {
             return;
@@ -12525,7 +12528,7 @@ const abilityConfig = Object.freeze({
             }
           }
           battle.addToLog(
-            `${sourcePokemon.name}'s Intimidate affects ${highestAtkPokemon.name}!`
+            `${sourcePokemon.name}'s Intimidate affects ${highestAtkPokemon.name}!`,
           );
           highestAtkPokemon.applyEffect("atkDown", 2, sourcePokemon);
 
@@ -12542,14 +12545,14 @@ const abilityConfig = Object.freeze({
             return;
           }
           battle.addToLog(
-            `${sourcePokemon.name}'s Intimidate affects ${highestSpePokemon.name}!`
+            `${sourcePokemon.name}'s Intimidate affects ${highestSpePokemon.name}!`,
           );
           highestSpePokemon.applyEffect("atkDown", 2, sourcePokemon);
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BATTLE_BEGIN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -12577,13 +12580,13 @@ const abilityConfig = Object.freeze({
           const { battle } = args;
           const enemyParty = sourcePokemon.getEnemyParty();
           const enemyPokemons = enemyParty.pokemons.filter((p) =>
-            battle.isPokemonHittable(p)
+            battle.isPokemonHittable(p),
           );
           if (enemyPokemons.length === 0) {
             return;
           }
           battle.addToLog(
-            `${sourcePokemon.name}'s Shadow Tag restricts all enemies!`
+            `${sourcePokemon.name}'s Shadow Tag restricts all enemies!`,
           );
 
           for (const pokemon of enemyPokemons) {
@@ -12594,7 +12597,7 @@ const abilityConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BATTLE_BEGIN,
-        listener
+        listener,
       );
 
       return {
@@ -12638,11 +12641,11 @@ const abilityConfig = Object.freeze({
           const moveType = moveData.type;
           const damageMultiplier = sourcePokemon.getTypeDamageMultiplier(
             moveData.type,
-            targetPokemon
+            targetPokemon,
           );
           if (damageMultiplier <= 1) {
             sourcePokemon.battle.addToLog(
-              `${targetPokemon.name}'s Wonder Guard protects it from ${sourcePokemon.name}'s ${moveData.name}!`
+              `${targetPokemon.name}'s Wonder Guard protects it from ${sourcePokemon.name}'s ${moveData.name}!`,
             );
             args.damage = 0;
             args.maxDamage = 0;
@@ -12652,7 +12655,7 @@ const abilityConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
 
       source.maxHp = Math.max(1, Math.floor(source.maxHp * 0.25));
@@ -12695,7 +12698,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.CALCULATE_TYPE_MULTIPLIER,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -12740,7 +12743,7 @@ const abilityConfig = Object.freeze({
             Math.random() < 0.5
           ) {
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Effect Spore affects ${sourcePokemon.name}!`
+              `${targetPokemon.name}'s Effect Spore affects ${sourcePokemon.name}!`,
             );
             // get status randomly
             const possibleStatusConditions = [
@@ -12758,7 +12761,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -12798,14 +12801,14 @@ const abilityConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Synchronize affects ${sourcePokemon.name}!`
+            `${targetPokemon.name}'s Synchronize affects ${sourcePokemon.name}!`,
           );
           sourcePokemon.applyStatus(args.statusId, targetPokemon);
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_STATUS_APPLY,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -12849,13 +12852,13 @@ const abilityConfig = Object.freeze({
 
           args.canAdd = false;
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Clear Body prevents ${effectData.name}!`
+            `${targetPokemon.name}'s Clear Body prevents ${effectData.name}!`,
           );
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_EFFECT_ADD,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -12894,7 +12897,7 @@ const abilityConfig = Object.freeze({
             }
 
             target.battle.addToLog(
-              `${sourcePokemon.name}'s Natural Cure remedies ${target.name}!`
+              `${sourcePokemon.name}'s Natural Cure remedies ${target.name}!`,
             );
             target.removeStatus();
             const moveData = getMove(args.moveId);
@@ -12911,7 +12914,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_MOVE,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -12983,18 +12986,18 @@ const abilityConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Lightning Rod was activated by the Electric attack!`
+            `${targetPokemon.name}'s Lightning Rod was activated by the Electric attack!`,
           );
           targetPokemon.applyEffect("spaUp", 2, targetPokemon);
         },
       };
       const listenerId1 = battle.eventHandler.registerListener(
         battleEventEnum.GET_ELIGIBLE_TARGETS,
-        listener1
+        listener1,
       );
       const listenerId2 = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        listener2
+        listener2,
       );
       return {
         listenerId1,
@@ -13056,11 +13059,11 @@ const abilityConfig = Object.freeze({
           const enemyPokemons = sourcePokemon.getPatternTargets(
             sourcePokemon.battle.parties[enemyTeamName],
             targetPatterns.ROW,
-            1
+            1,
           );
           for (const pokemon of enemyPokemons) {
             battle.addToLog(
-              `${sourcePokemon.name}'s Illuminate affects ${pokemon.name}!`
+              `${sourcePokemon.name}'s Illuminate affects ${pokemon.name}!`,
             );
             pokemon.applyEffect("evaDown", 4, sourcePokemon);
           }
@@ -13068,7 +13071,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BATTLE_BEGIN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -13124,7 +13127,7 @@ const abilityConfig = Object.freeze({
             Math.random() < 0.5
           ) {
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Poison Point affects ${sourcePokemon.name}!`
+              `${targetPokemon.name}'s Poison Point affects ${sourcePokemon.name}!`,
             );
             sourcePokemon.applyStatus(statusConditions.POISON, targetPokemon);
           }
@@ -13132,7 +13135,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -13166,14 +13169,14 @@ const abilityConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Inner Focus prevents flinching!`
+            `${targetPokemon.name}'s Inner Focus prevents flinching!`,
           );
           args.canAdd = false;
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_EFFECT_ADD,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -13203,14 +13206,14 @@ const abilityConfig = Object.freeze({
 
           initialArgs.pokemon.battle.createWeather(
             weatherConditions.SANDSTORM,
-            initialArgs.pokemon
+            initialArgs.pokemon,
           );
         },
       };
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BATTLE_BEGIN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -13267,7 +13270,7 @@ const abilityConfig = Object.freeze({
               const moveData = getMove(moveId);
               const currentCooldown = move.cooldown;
               return moveData.cooldown && currentCooldown === 0;
-            }
+            },
           );
           if (possibleMoves.length === 0) {
             return;
@@ -13278,7 +13281,7 @@ const abilityConfig = Object.freeze({
           targetPokemon.battle.addToLog(
             `${initialArgs.pokemon.name} is exerting Pressure against ${
               targetPokemon.name
-            }'s ${getMove(randomMove[0]).name}!`
+            }'s ${getMove(randomMove[0]).name}!`,
           );
           abilityData.affectedPokemons.push(targetPokemon);
         },
@@ -13287,11 +13290,11 @@ const abilityConfig = Object.freeze({
       // add listener to after damage dealt and after damage taken
       const dealtListenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_DEALT,
-        listener
+        listener,
       );
       const takenListenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        listener
+        listener,
       );
 
       return {
@@ -13356,7 +13359,7 @@ const abilityConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${initialArgs.pokemon.name} is exerting Conqueror's Pressure against ${targetPokemon.name}!`
+            `${initialArgs.pokemon.name} is exerting Conqueror's Pressure against ${targetPokemon.name}!`,
           );
           abilityData.affectedPokemons.push(targetPokemon);
           const power = moveData.power ? Math.floor(moveData.power * 0.3) : 15;
@@ -13371,7 +13374,7 @@ const abilityConfig = Object.freeze({
             false,
             {
               defStat: damageTypes.SPECIAL,
-            }
+            },
           );
           initialArgs.pokemon.dealDamage(damage, targetPokemon, {
             type: "conquerorsPressure",
@@ -13382,11 +13385,11 @@ const abilityConfig = Object.freeze({
       // add listener to after damage dealt and after damage taken
       const dealtListenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_DEALT,
-        listener
+        listener,
       );
       const takenListenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        listener
+        listener,
       );
 
       return {
@@ -13430,7 +13433,7 @@ const abilityConfig = Object.freeze({
             moveData.type === pokemonTypes.ICE
           ) {
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Thick Fat reduces damage taken!`
+              `${targetPokemon.name}'s Thick Fat reduces damage taken!`,
             );
             args.damage = Math.round(args.damage * 0.5);
           }
@@ -13439,7 +13442,7 @@ const abilityConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
 
       return {
@@ -13483,12 +13486,12 @@ const abilityConfig = Object.freeze({
           // if hp < 33%, increase combat readiness to 100%
           if (targetPokemon.hp < targetPokemon.maxHp / 3) {
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Run Away increases its combat readiness!`
+              `${targetPokemon.name}'s Run Away increases its combat readiness!`,
             );
             targetPokemon.boostCombatReadiness(targetPokemon, 100);
             // remove event listener
             targetPokemon.battle.eventHandler.unregisterListener(
-              abilityData.listenerId
+              abilityData.listenerId,
             );
           }
         },
@@ -13496,7 +13499,7 @@ const abilityConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        listener
+        listener,
       );
 
       return {
@@ -13535,7 +13538,7 @@ const abilityConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Hyper Cutter prevents its attack from being lowered!`
+            `${targetPokemon.name}'s Hyper Cutter prevents its attack from being lowered!`,
           );
           args.canAdd = false;
         },
@@ -13543,7 +13546,7 @@ const abilityConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_EFFECT_ADD,
-        listener
+        listener,
       );
 
       return {
@@ -13589,7 +13592,7 @@ const abilityConfig = Object.freeze({
           // 30% chance to gain buff
           if (Math.random() < 0.3) {
             targetPokemon.battle.addToLog(
-              `${initialArgs.pokemon.name}'s Pickup gains ${effectData.name}!`
+              `${initialArgs.pokemon.name}'s Pickup gains ${effectData.name}!`,
             );
             // apply buff to self
             source.applyEffect(args.effectId, 1, args.source, args.initialArgs);
@@ -13599,7 +13602,7 @@ const abilityConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_EFFECT_REMOVE,
-        listener
+        listener,
       );
 
       return {
@@ -13645,7 +13648,7 @@ const abilityConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.TURN_END,
-        listener
+        listener,
       );
 
       return {
@@ -13685,7 +13688,7 @@ const abilityConfig = Object.freeze({
           }
           if (ability.data.turn % 2 === 0) {
             pokemon.battle.addToLog(
-              `${pokemon.name}'s Old Age is holding it back!`
+              `${pokemon.name}'s Old Age is holding it back!`,
             );
             activePokemon.applyEffect("greaterSpeDown", 1, activePokemon);
           }
@@ -13695,7 +13698,7 @@ const abilityConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.TURN_END,
-        listener
+        listener,
       );
 
       return {
@@ -13739,7 +13742,7 @@ const abilityConfig = Object.freeze({
             Math.random() < 0.5
           ) {
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Cute Charm affects ${sourcePokemon.name}!`
+              `${targetPokemon.name}'s Cute Charm affects ${sourcePokemon.name}!`,
             );
             sourcePokemon.applyEffect("atkDown", 1, targetPokemon);
           }
@@ -13748,7 +13751,7 @@ const abilityConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
 
       return {
@@ -13781,13 +13784,13 @@ const abilityConfig = Object.freeze({
 
           targetPokemon.multiplyStatMult("atk", 2);
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Guts increases its attack!`
+            `${targetPokemon.name}'s Guts increases its attack!`,
           );
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_STATUS_APPLY,
-        listener
+        listener,
       );
 
       return {
@@ -13828,7 +13831,7 @@ const abilityConfig = Object.freeze({
             userPokemon.hp < userPokemon.maxHp / 2
           ) {
             userPokemon.battle.addToLog(
-              `${userPokemon.name}'s Overgrow increases damage!`
+              `${userPokemon.name}'s Overgrow increases damage!`,
             );
             args.damage = Math.round(args.damage * 1.5);
           }
@@ -13836,7 +13839,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_DEALT,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -13876,7 +13879,7 @@ const abilityConfig = Object.freeze({
             userPokemon.hp < userPokemon.maxHp / 2
           ) {
             userPokemon.battle.addToLog(
-              `${userPokemon.name}'s Blaze increases damage!`
+              `${userPokemon.name}'s Blaze increases damage!`,
             );
             args.damage = Math.round(args.damage * 1.5);
           }
@@ -13884,7 +13887,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_DEALT,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -13924,7 +13927,7 @@ const abilityConfig = Object.freeze({
             userPokemon.hp < userPokemon.maxHp / 2
           ) {
             userPokemon.battle.addToLog(
-              `${userPokemon.name}'s Torrent increases damage!`
+              `${userPokemon.name}'s Torrent increases damage!`,
             );
             args.damage = Math.round(args.damage * 1.5);
           }
@@ -13932,7 +13935,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_DEALT,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -13972,7 +13975,7 @@ const abilityConfig = Object.freeze({
             userPokemon.hp < userPokemon.maxHp / 2
           ) {
             userPokemon.battle.addToLog(
-              `${userPokemon.name}'s Swarm increases damage!`
+              `${userPokemon.name}'s Swarm increases damage!`,
             );
             args.damage = Math.round(args.damage * 1.5);
           }
@@ -13980,7 +13983,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_DEALT,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14010,14 +14013,14 @@ const abilityConfig = Object.freeze({
 
           initialArgs.pokemon.battle.createWeather(
             weatherConditions.SUN,
-            initialArgs.pokemon
+            initialArgs.pokemon,
           );
         },
       };
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BATTLE_BEGIN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14052,7 +14055,7 @@ const abilityConfig = Object.freeze({
           if (
             sourcePokemon.getTypeDamageMultiplier(
               pokemonTypes.GROUND,
-              targetPokemon
+              targetPokemon,
             ) !== 0
           ) {
             targetPokemon.applyEffect("restricted", 2, sourcePokemon);
@@ -14061,7 +14064,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_DEALT,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14081,7 +14084,7 @@ const abilityConfig = Object.freeze({
     description: "Reduces damage taken from moves by 12.5%.",
     abilityAdd(battle, _source, target) {
       battle.addToLog(
-        `${target.name}'s Shell Armor is reducing its damage taken!`
+        `${target.name}'s Shell Armor is reducing its damage taken!`,
       );
       const listener = {
         initialArgs: {
@@ -14103,7 +14106,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14123,7 +14126,7 @@ const abilityConfig = Object.freeze({
     description: "Negates all weather effects.",
     abilityAdd(battle, _source, target) {
       battle.addToLog(
-        `${target.name}'s Air Lock ability negates all weather effects!`
+        `${target.name}'s Air Lock ability negates all weather effects!`,
       );
     },
     abilityRemove(_battle, _source, _target) {},
@@ -14149,7 +14152,7 @@ const abilityConfig = Object.freeze({
           // if sunny, increase damage by 35%
           if (userPokemon.battle.weather.weatherId === weatherConditions.SUN) {
             userPokemon.battle.addToLog(
-              `${userPokemon.name}'s Solar Power increases the damage!`
+              `${userPokemon.name}'s Solar Power increases the damage!`,
             );
             args.damage = Math.round(args.damage * 1.35);
           }
@@ -14157,7 +14160,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_DEALT,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14200,7 +14203,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_DEALT,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14238,7 +14241,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.CALCULATE_MISS,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14277,7 +14280,7 @@ const abilityConfig = Object.freeze({
           const moveData = getMove(args.damageInfo.moveId);
           if (moveData.power <= 70) {
             sourcePokemon.battle.addToLog(
-              `${sourcePokemon.name}'s Technician is increasing its damage!`
+              `${sourcePokemon.name}'s Technician is increasing its damage!`,
             );
             args.damage = Math.round(args.damage * 1.5);
           }
@@ -14285,7 +14288,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_DEALT,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14330,11 +14333,11 @@ const abilityConfig = Object.freeze({
             moveData.tier === moveTiers.ULTIMATE ||
             sourcePokemon.getTypeDamageMultiplier(
               moveData.type,
-              targetPokemon
+              targetPokemon,
             ) > 1
           ) {
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Forewarn reduces the damage!`
+              `${targetPokemon.name}'s Forewarn reduces the damage!`,
             );
             args.damage = Math.round(args.damage * 0.85);
           }
@@ -14342,7 +14345,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14385,11 +14388,11 @@ const abilityConfig = Object.freeze({
           if (
             sourcePokemon.getTypeDamageMultiplier(
               moveData.type,
-              targetPokemon
+              targetPokemon,
             ) > 1
           ) {
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Filter reduces the damage!`
+              `${targetPokemon.name}'s Filter reduces the damage!`,
             );
             args.damage = Math.round(args.damage * 0.8);
           }
@@ -14397,7 +14400,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14469,7 +14472,7 @@ const abilityConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Storm Drain was activated by the Water attack!`
+            `${targetPokemon.name}'s Storm Drain was activated by the Water attack!`,
           );
           args.damage = 0;
           args.maxDamage = 0;
@@ -14478,11 +14481,11 @@ const abilityConfig = Object.freeze({
       };
       const listenerId1 = battle.eventHandler.registerListener(
         battleEventEnum.GET_ELIGIBLE_TARGETS,
-        listener1
+        listener1,
       );
       const listenerId2 = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener2
+        listener2,
       );
       return {
         listenerId1,
@@ -14525,7 +14528,7 @@ const abilityConfig = Object.freeze({
 
           // heal 33% of max hp
           battle.addToLog(
-            `${activePokemon.name}'s Ice Body restores its health!`
+            `${activePokemon.name}'s Ice Body restores its health!`,
           );
           const healAmount = Math.floor(activePokemon.maxHp * 0.33);
           activePokemon.giveHeal(healAmount, activePokemon, {
@@ -14535,7 +14538,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.TURN_END,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14588,7 +14591,7 @@ const abilityConfig = Object.freeze({
 
           // prevent effects and status conditions
           sourcePokemon.battle.addToLog(
-            `${sourcePokemon.name}'s Sheer Force prevents the status or effect!`
+            `${sourcePokemon.name}'s Sheer Force prevents the status or effect!`,
           );
           args.canApply = false;
           args.canAdd = false;
@@ -14598,15 +14601,15 @@ const abilityConfig = Object.freeze({
       battle.addToLog(`${target.name}'s Sheer Force is increasing its damage!`);
       const damageListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_DEALT,
-        damageListener
+        damageListener,
       );
       const effectListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_EFFECT_ADD,
-        effectAndStatusListener
+        effectAndStatusListener,
       );
       const statusListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_STATUS_APPLY,
-        effectAndStatusListener
+        effectAndStatusListener,
       );
       return {
         damageListenerId,
@@ -14650,14 +14653,14 @@ const abilityConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${sourcePokemon.name} was cursed by ${targetPokemon.name}'s Cursed Body!`
+            `${sourcePokemon.name} was cursed by ${targetPokemon.name}'s Cursed Body!`,
           );
           sourcePokemon.moveIds[args.damageInfo.moveId].cooldown += 2;
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14698,17 +14701,17 @@ const abilityConfig = Object.freeze({
 
           // increase damage by 8% of defense
           const damageIncrease = Math.round(
-            sourcePokemon.getStat("def") * 0.08
+            sourcePokemon.getStat("def") * 0.08,
           );
           args.damage += damageIncrease;
           targetPokemon.battle.addToLog(
-            `${sourcePokemon.name}'s Heavy Metal increases the damage!`
+            `${sourcePokemon.name}'s Heavy Metal increases the damage!`,
           );
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_DEALT,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14744,7 +14747,7 @@ const abilityConfig = Object.freeze({
           // if hp is full, reduce damage by 50%
           if (targetPokemon.hp === targetPokemon.maxHp) {
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Multiscale reduces damage taken!`
+              `${targetPokemon.name}'s Multiscale reduces damage taken!`,
             );
             args.damage = Math.round(args.damage * 0.5);
           }
@@ -14752,7 +14755,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14797,7 +14800,7 @@ const abilityConfig = Object.freeze({
             Math.random() < 0.5
           ) {
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Poison Touch affects ${sourcePokemon.name}!`
+              `${targetPokemon.name}'s Poison Touch affects ${sourcePokemon.name}!`,
             );
             sourcePokemon.applyStatus(statusConditions.POISON, targetPokemon);
           }
@@ -14805,7 +14808,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14842,14 +14845,14 @@ const abilityConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Big Pecks prevents the defense drop!`
+            `${targetPokemon.name}'s Big Pecks prevents the defense drop!`,
           );
           args.canAdd = false;
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_EFFECT_ADD,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14885,12 +14888,12 @@ const abilityConfig = Object.freeze({
           // increase attack or greatly increase attack
           if (sourcePokemon.effectIds.atkUp) {
             sourcePokemon.battle.addToLog(
-              `${sourcePokemon.name}'s Moxie greatly increases its attack!`
+              `${sourcePokemon.name}'s Moxie greatly increases its attack!`,
             );
             sourcePokemon.applyEffect("greaterAtkUp", 2, sourcePokemon);
           } else {
             sourcePokemon.battle.addToLog(
-              `${sourcePokemon.name}'s Moxie increases its attack!`
+              `${sourcePokemon.name}'s Moxie increases its attack!`,
             );
             sourcePokemon.applyEffect("atkUp", 2, sourcePokemon);
           }
@@ -14901,7 +14904,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_FAINT,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -14948,7 +14951,7 @@ const abilityConfig = Object.freeze({
 
           // use move against source
           initialPokemon.battle.addToLog(
-            `${initialPokemon.name}'s Magic Bounce reflects the move!`
+            `${initialPokemon.name}'s Magic Bounce reflects the move!`,
           );
           initialPokemon.executeMoveId({
             moveId: args.moveId,
@@ -14960,7 +14963,7 @@ const abilityConfig = Object.freeze({
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_MOVE_EXECUTE,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -15003,14 +15006,14 @@ const abilityConfig = Object.freeze({
 
           // gain 30% combat readiness
           sourcePokemon.battle.addToLog(
-            `${sourcePokemon.name}'s Prankster increases its combat readiness!`
+            `${sourcePokemon.name}'s Prankster increases its combat readiness!`,
           );
           sourcePokemon.boostCombatReadiness(sourcePokemon, 30);
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_MOVE,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -15052,14 +15055,14 @@ const abilityConfig = Object.freeze({
 
           // increase special attack
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Competitive increases its special attack!`
+            `${targetPokemon.name}'s Competitive increases its special attack!`,
           );
           targetPokemon.applyEffect("greaterSpaUp", 3, targetPokemon);
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_EFFECT_ADD,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -15096,13 +15099,13 @@ const abilityConfig = Object.freeze({
 
           args.damage = Math.round(args.damage * 1.3);
           targetPokemon.battle.addToLog(
-            `${initialArgs.pokemon.name}'s Stakeout increases the damage!`
+            `${initialArgs.pokemon.name}'s Stakeout increases the damage!`,
           );
         },
       };
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_DEALT,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -15134,7 +15137,7 @@ const abilityConfig = Object.freeze({
           }
 
           pokemon.battle.addToLog(
-            `${pokemon.name}'s Mind Presence increases its combat readiness and attacking stats!`
+            `${pokemon.name}'s Mind Presence increases its combat readiness and attacking stats!`,
           );
           pokemon.boostCombatReadiness(pokemon, 10, false);
           pokemon.multiplyStatMult("atk", 1.02);
@@ -15157,7 +15160,7 @@ const abilityConfig = Object.freeze({
             args.damage = Math.floor(maxHp * 0.35);
             args.maxDamage = Math.min(args.maxDamage, args.damage);
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Mind Presence reduces damage taken!`
+              `${targetPokemon.name}'s Mind Presence reduces damage taken!`,
             );
           }
         },
@@ -15174,22 +15177,22 @@ const abilityConfig = Object.freeze({
 
           args.canFaint = false;
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Mind Presence prevents it from fainting!`
+            `${targetPokemon.name}'s Mind Presence prevents it from fainting!`,
           );
         },
       };
 
       const turnListenerId = battle.eventHandler.registerListener(
         battleEventEnum.TURN_END,
-        turnListener
+        turnListener,
       );
       const damageListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        damageListener
+        damageListener,
       );
       const faintListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_CAUSE_FAINT,
-        faintListener
+        faintListener,
       );
       return {
         turnListenerId,
@@ -15227,7 +15230,7 @@ const abilityConfig = Object.freeze({
           }
 
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Soul Body increases its combat readiness and heals its allies!`
+            `${targetPokemon.name}'s Soul Body increases its combat readiness and heals its allies!`,
           );
           targetPokemon.boostCombatReadiness(targetPokemon, 15, false);
           const allyParty =
@@ -15235,7 +15238,7 @@ const abilityConfig = Object.freeze({
           const allyPokemons = targetPokemon.getPatternTargets(
             allyParty,
             targetPatterns.ALL_EXCEPT_SELF,
-            targetPokemon.position
+            targetPokemon.position,
           );
           for (const allyPokemon of allyPokemons) {
             targetPokemon.giveHeal(
@@ -15243,7 +15246,7 @@ const abilityConfig = Object.freeze({
               allyPokemon,
               {
                 type: "soulBody",
-              }
+              },
             );
           }
         },
@@ -15264,7 +15267,7 @@ const abilityConfig = Object.freeze({
             args.damage = Math.floor(maxHp * 0.35);
             args.maxDamage = Math.min(args.maxDamage, args.damage);
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Soul Body reduces damage taken!`
+              `${targetPokemon.name}'s Soul Body reduces damage taken!`,
             );
           }
         },
@@ -15281,22 +15284,22 @@ const abilityConfig = Object.freeze({
 
           args.canFaint = false;
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Soul Body prevents it from fainting!`
+            `${targetPokemon.name}'s Soul Body prevents it from fainting!`,
           );
         },
       };
 
       const afterDamageListenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        afterDamageListener
+        afterDamageListener,
       );
       const damageListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        damageListener
+        damageListener,
       );
       const faintListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_CAUSE_FAINT,
-        faintListener
+        faintListener,
       );
       return {
         afterDamageListenerId,
@@ -15332,13 +15335,13 @@ const abilityConfig = Object.freeze({
           }
 
           pokemon.battle.addToLog(
-            `${pokemon.name}'s Soul Energy increases its allies' combat readiness!`
+            `${pokemon.name}'s Soul Energy increases its allies' combat readiness!`,
           );
           const allyParty = pokemon.battle.parties[pokemon.teamName];
           const allyPokemons = pokemon.getPatternTargets(
             allyParty,
             targetPatterns.ALL,
-            pokemon.position
+            pokemon.position,
           );
           for (const allyPokemon of allyPokemons) {
             allyPokemon.boostCombatReadiness(pokemon, 15, false);
@@ -15361,7 +15364,7 @@ const abilityConfig = Object.freeze({
             args.damage = Math.floor(maxHp * 0.55);
             args.maxDamage = Math.min(args.maxDamage, args.damage);
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Soul Energy reduces damage taken!`
+              `${targetPokemon.name}'s Soul Energy reduces damage taken!`,
             );
           }
         },
@@ -15378,22 +15381,22 @@ const abilityConfig = Object.freeze({
 
           args.canFaint = false;
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Soul Energy prevents it from fainting!`
+            `${targetPokemon.name}'s Soul Energy prevents it from fainting!`,
           );
         },
       };
 
       const turnListenerId = battle.eventHandler.registerListener(
         battleEventEnum.TURN_END,
-        turnListener
+        turnListener,
       );
       const damageListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        damageListener
+        damageListener,
       );
       const faintListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_CAUSE_FAINT,
-        faintListener
+        faintListener,
       );
       return {
         turnListenerId,
@@ -15429,7 +15432,7 @@ const abilityConfig = Object.freeze({
           }
 
           pokemon.battle.addToLog(
-            `${pokemon.name}'s Spirit Power increases its attacking stats and speed!`
+            `${pokemon.name}'s Spirit Power increases its attacking stats and speed!`,
           );
           pokemon.multiplyStatMult("atk", 1.2);
           pokemon.multiplyStatMult("spa", 1.2);
@@ -15452,7 +15455,7 @@ const abilityConfig = Object.freeze({
             args.damage = Math.floor(maxHp * 0.55);
             args.maxDamage = Math.min(args.maxDamage, args.damage);
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Spirit Power reduces damage taken!`
+              `${targetPokemon.name}'s Spirit Power reduces damage taken!`,
             );
           }
         },
@@ -15469,22 +15472,22 @@ const abilityConfig = Object.freeze({
 
           args.canFaint = false;
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Spirit Power prevents it from fainting!`
+            `${targetPokemon.name}'s Spirit Power prevents it from fainting!`,
           );
         },
       };
 
       const afterFaintListenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_FAINT,
-        afterFaintListener
+        afterFaintListener,
       );
       const damageListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        damageListener
+        damageListener,
       );
       const faintListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_CAUSE_FAINT,
-        faintListener
+        faintListener,
       );
       return {
         afterFaintListenerId,
@@ -15535,7 +15538,7 @@ const abilityConfig = Object.freeze({
 
           // apply disable for 1 turn
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name} suffers under ${initialArgs.pokemon.name}'s False Democracy!`
+            `${targetPokemon.name} suffers under ${initialArgs.pokemon.name}'s False Democracy!`,
           );
           targetPokemon.applyEffect("disable", 1, initialArgs.pokemon);
           abilityData.affectedPokemons.push(targetPokemon);
@@ -15545,7 +15548,7 @@ const abilityConfig = Object.freeze({
       // add listener to after cr gain
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_CR_GAINED,
-        listener
+        listener,
       );
 
       return {
@@ -15604,7 +15607,7 @@ const abilityConfig = Object.freeze({
       // add listener to after turn end
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.TURN_END,
-        listener
+        listener,
       );
 
       // start in anarchy mode
@@ -15652,7 +15655,7 @@ const abilityConfig = Object.freeze({
           // if user not fainted, set user cr to 100%
           if (!initialArgs.pokemon.isFainted) {
             battle.addToLog(
-              `${targetPokemon.name} has been sacrificed to ${initialArgs.pokemon.name}'s Bloody Sunday!`
+              `${targetPokemon.name} has been sacrificed to ${initialArgs.pokemon.name}'s Bloody Sunday!`,
             );
             initialArgs.pokemon.boostCombatReadiness(initialArgs.pokemon, 100);
             initialArgs.pokemon.giveHeal(
@@ -15661,7 +15664,7 @@ const abilityConfig = Object.freeze({
               {
                 type: "ability",
                 id: "20007",
-              }
+              },
             );
           }
         },
@@ -15670,7 +15673,7 @@ const abilityConfig = Object.freeze({
       // add listener to after faint
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_FAINT,
-        listener
+        listener,
       );
 
       return {
@@ -15716,7 +15719,7 @@ const abilityConfig = Object.freeze({
             targetPokemon.boostCombatReadiness(targetPokemon, 100);
             // remove event listener
             targetPokemon.battle.eventHandler.unregisterListener(
-              abilityData.listenerId
+              abilityData.listenerId,
             );
           }
         },
@@ -15724,7 +15727,7 @@ const abilityConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -15779,7 +15782,7 @@ const abilityConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BATTLE_BEGIN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -15812,7 +15815,7 @@ const abilityConfig = Object.freeze({
 
       const listenerId = battle.eventHandler.registerListener(
         battleEventEnum.BATTLE_BEGIN,
-        listener
+        listener,
       );
       return {
         listenerId,
@@ -15854,7 +15857,7 @@ const abilityConfig = Object.freeze({
 
           // increase duration
           pokemon.battle.addToLog(
-            `${pokemon.name}'s Blue Haki increased the duration of ${effectData.name}!`
+            `${pokemon.name}'s Blue Haki increased the duration of ${effectData.name}!`,
           );
           args.duration += 1;
         },
@@ -15888,7 +15891,7 @@ const abilityConfig = Object.freeze({
           // if buffed, increase damage
           if (isBuffed) {
             pokemon.battle.addToLog(
-              `${pokemon.name}'s Blue Haki increased its damage!`
+              `${pokemon.name}'s Blue Haki increased its damage!`,
             );
             args.damage = Math.floor(args.damage * 1.25);
           }
@@ -15897,11 +15900,11 @@ const abilityConfig = Object.freeze({
 
       const listenerId1 = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_EFFECT_ADD,
-        listener
+        listener,
       );
       const listenerId2 = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_DEALT,
-        listener2
+        listener2,
       );
       return {
         listenerId1,
@@ -15948,7 +15951,7 @@ const abilityConfig = Object.freeze({
 
           // increase defenses by 5%
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Armored Behemoth's Pressence increases its defenses!`
+            `${targetPokemon.name}'s Armored Behemoth's Pressence increases its defenses!`,
           );
           targetPokemon.addStatMult("def", 0.05);
           targetPokemon.addStatMult("spd", 0.05);
@@ -15967,12 +15970,12 @@ const abilityConfig = Object.freeze({
             validMoves[Math.floor(Math.random() * validMoves.length)];
           const randomMoveData = getMove(randomMoveId);
           battle.addToLog(
-            `${targetPokemon.name} countered with ${randomMoveData.name}!`
+            `${targetPokemon.name} countered with ${randomMoveData.name}!`,
           );
           // get valid targets
           const validTargets = battle.getEligibleTargets(
             targetPokemon,
-            randomMoveId
+            randomMoveId,
           );
           // if no valid targets, return
           if (validTargets.length === 0) {
@@ -15988,7 +15991,7 @@ const abilityConfig = Object.freeze({
             targetParty,
             randomMoveData.targetPattern,
             target.position,
-            { moveId: randomMoveId }
+            { moveId: randomMoveId },
           );
           // use move against target
           battle.addToLog(`${randomMoveData.name} hit ${target.name}!`);
@@ -16051,22 +16054,22 @@ const abilityConfig = Object.freeze({
 
           args.canFaint = false;
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Armored Behemoth's Pressence prevents it from fainting!`
+            `${targetPokemon.name}'s Armored Behemoth's Pressence prevents it from fainting!`,
           );
         },
       };
 
       const afterDamageListenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        afterDamageListener
+        afterDamageListener,
       );
       const damageListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        damageListener
+        damageListener,
       );
       const faintListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_CAUSE_FAINT,
-        faintListener
+        faintListener,
       );
       return {
         afterDamageListenerId,
@@ -16117,14 +16120,14 @@ const abilityConfig = Object.freeze({
 
           // increase offenses by 5%
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Shadow Berserker's Rage increases its offenses!`
+            `${targetPokemon.name}'s Shadow Berserker's Rage increases its offenses!`,
           );
           targetPokemon.addStatMult("atk", 0.05);
           targetPokemon.addStatMult("spa", 0.05);
 
           // gain 30%
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Shadow Berserker's Rage increases its combat readiness!`
+            `${targetPokemon.name}'s Shadow Berserker's Rage increases its combat readiness!`,
           );
           targetPokemon.boostCombatReadiness(targetPokemon, 30);
         },
@@ -16179,22 +16182,22 @@ const abilityConfig = Object.freeze({
 
           args.canFaint = false;
           targetPokemon.battle.addToLog(
-            `${targetPokemon.name}'s Shadow Berserker's Rage prevents it from fainting!`
+            `${targetPokemon.name}'s Shadow Berserker's Rage prevents it from fainting!`,
           );
         },
       };
 
       const afterDamageListenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        afterDamageListener
+        afterDamageListener,
       );
       const damageListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        damageListener
+        damageListener,
       );
       const faintListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_CAUSE_FAINT,
-        faintListener
+        faintListener,
       );
       return {
         afterDamageListenerId,
@@ -16238,13 +16241,13 @@ const abilityConfig = Object.freeze({
           if (effectId === "atkDown" || effectId === "greaterAtkDown") {
             // increase special attack
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Cosmic Strength increases its special attack!`
+              `${targetPokemon.name}'s Cosmic Strength increases its special attack!`,
             );
             targetPokemon.applyEffect("greaterSpaUp", 2, targetPokemon);
           } else if (effectId === "spaDown" || effectId === "greaterSpaDown") {
             // increase attack
             targetPokemon.battle.addToLog(
-              `${targetPokemon.name}'s Cosmic Strength increases its attack!`
+              `${targetPokemon.name}'s Cosmic Strength increases its attack!`,
             );
             targetPokemon.applyEffect("greaterAtkUp", 2, targetPokemon);
           }
@@ -16253,7 +16256,7 @@ const abilityConfig = Object.freeze({
 
       const debuffListenerId = battle.eventHandler.registerListener(
         battleEventEnum.AFTER_EFFECT_ADD,
-        debuffListener
+        debuffListener,
       );
       return {
         debuffListenerId,
@@ -16294,7 +16297,7 @@ const abilityConfig = Object.freeze({
 
       const damageListenerId = battle.eventHandler.registerListener(
         battleEventEnum.BEFORE_DAMAGE_TAKEN,
-        damageListener
+        damageListener,
       );
       return {
         damageListenerId,
@@ -16337,7 +16340,7 @@ const abilityConfig = Object.freeze({
           abilityData.turns = turns + 1;
 
           pokemon.battle.addToLog(
-            `${pokemon.name}'s Cosmic Agility increases the stats of all allies!`
+            `${pokemon.name}'s Cosmic Agility increases the stats of all allies!`,
           );
           const allies = pokemon.battle.parties[
             pokemon.teamName
@@ -16354,7 +16357,7 @@ const abilityConfig = Object.freeze({
 
       const turnListenerId = battle.eventHandler.registerListener(
         battleEventEnum.TURN_BEGIN,
-        turnListener
+        turnListener,
       );
       return {
         turnListenerId,
