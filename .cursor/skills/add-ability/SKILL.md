@@ -95,6 +95,18 @@ Refer to `references/pattern-*` for common ability implementations.
    - `getIsSourcePokemonCallback` - when this Pokemon is dealing damage/using moves
    - `getIsTargetPokemonCallback` - when this Pokemon is receiving damage/effects
 
+## Validation
+
+After implementing an ability, run the ability test suite to validate the implementation:
+
+```bash
+npm test -- src/battle/data/__tests__/abilities.test.js
+```
+
+This runs an e2e test that verifies all abilities can be applied and removed without throwing errors. If your new ability causes a test failure, fix the implementation and re-run until tests pass.
+
+See the `unit-test` skill for more details on testing.
+
 ## References
 
 - `add-event-listener` skill - Common event types and condition callbacks

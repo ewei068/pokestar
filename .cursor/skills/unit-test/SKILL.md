@@ -83,7 +83,3 @@ If tests fail:
 2. Fix the implementation (not the test, unless the test is wrong)
 3. Re-run the tests
 4. Repeat until all tests pass
-
-## References
-
-- `references/pattern-moves-e2e.md` - Testing all moves execute without error
