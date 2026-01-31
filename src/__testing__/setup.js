@@ -3,4 +3,4 @@ jest.mock("../database/mongoHandler", () => require("./mocks/database"));
 
 const { initialize } = require("../battle/data/initialize");
 
-initialize();
+initialize(true);

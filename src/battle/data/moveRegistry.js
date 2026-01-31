@@ -4,33 +4,37 @@ const allMoves = {};
 
 /**
  * @param {{[K in MoveIdEnum]: Move}} moves
+ * @param {boolean=} silent
  */
-const registerMoves = (moves) => {
+const registerMoves = (moves, silent = false) => {
   let movesRegistered = 0;
   Object.entries(moves).forEach(([moveId, move]) => {
     allMoves[moveId] = move;
     movesRegistered += 1;
   });
-  logger.info(`Registered ${movesRegistered} moves.`);
+  if (!silent) {
+    logger.info(`Registered ${movesRegistered} moves.`);
+  }
 };
 
 /**
  * @param {{[K in MoveIdEnum]: object}} moveConfig
  * @param {{[K in MoveIdEnum]: Function}} moveExecutes
+ * @param {boolean=} silent
  */
-const registerLegacyMoves = (moveConfig, moveExecutes) => {
+const registerLegacyMoves = (moveConfig, moveExecutes, silent = false) => {
   let movesRegistered = 0;
   Object.entries(moveConfig).forEach(([moveId, move]) => {
     if (allMoves[moveId]) {
       logger.warn(
-        `Move ${moveId} ${allMoves[moveId].name} already exists. Continuing...`
+        `Move ${moveId} ${allMoves[moveId].name} already exists. Continuing...`,
       );
       return;
     }
     const moveExecute = moveExecutes[moveId];
     if (!moveExecute) {
       logger.warn(
-        `Move ${moveId} ${move.name} has no execute function. Proceeding without it.`
+        `Move ${moveId} ${move.name} has no execute function. Proceeding without it.`,
       );
       return;
     }
@@ -42,7 +46,9 @@ const registerLegacyMoves = (moveConfig, moveExecutes) => {
     };
     movesRegistered += 1;
   });
-  logger.info(`Registered ${movesRegistered} legacy moves.`);
+  if (!silent) {
+    logger.info(`Registered ${movesRegistered} legacy moves.`);
+  }
 };
 
 /**
