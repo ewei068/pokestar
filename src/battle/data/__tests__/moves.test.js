@@ -8,6 +8,7 @@ const {
 } = require("../../../__testing__/mocks/pokemon");
 const {
   HIGH_ACCURACY,
+  getValidTargetForMove,
   givePokemonMove,
   useMoveOnValidTarget,
   describeStatusProbability,
@@ -38,6 +39,7 @@ describe("All Moves e2e", () => {
 
 // eslint-disable-next-line no-unused-vars
 const DEFAULT_SPECIES = pokemonIdEnum.PIKACHU;
+const ALWAYS_HITTABLE_SPECIES = pokemonIdEnum.ARCEUS_FIGHTING;
 const BURNABLE_SPECIES = pokemonIdEnum.BULBASAUR;
 
 describe("Fire Punch", () => {
@@ -101,5 +103,47 @@ describe("Confusion", () => {
       const target = useMoveOnValidTarget(battle, source, moveIdEnum.CONFUSION);
       return { target };
     },
+  });
+});
+
+describe("Brick Break", () => {
+  const DEFENSIVE_BUFFS = ["defUp", "greaterDefUp", "spdUp", "greaterSpdUp"];
+  let battle;
+  let source;
+
+  beforeEach(() => {
+    ({ battle } = createMockBattle({
+      autoStart: true,
+      team1Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+      team2Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+    }));
+    source = battle.activePokemon;
+    source.acc = HIGH_ACCURACY;
+    givePokemonMove(source, moveIdEnum.BRICK_BREAK);
+  });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it("should deal damage", () => {
+    const target = useMoveOnValidTarget(battle, source, moveIdEnum.BRICK_BREAK);
+    expect(target).toBeDamaged();
+  });
+
+  it.each(DEFENSIVE_BUFFS)("should remove %s from the target", (effectId) => {
+    const target = getValidTargetForMove(
+      battle,
+      source,
+      moveIdEnum.BRICK_BREAK,
+    );
+    target.applyEffect(effectId, 5, target);
+    expect(target.effectIds[effectId]).toBeDefined();
+
+    source.useMove(moveIdEnum.BRICK_BREAK, target.id);
+
+    expect(target.effectIds[effectId]).toBeUndefined();
   });
 });
