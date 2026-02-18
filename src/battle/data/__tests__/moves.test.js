@@ -11,6 +11,7 @@ const {
   givePokemonMove,
   useMoveOnValidTarget,
   describeStatusProbability,
+  describeEffectProbability,
 } = require("../../../__testing__/utils/battle");
 
 describe("All Moves e2e", () => {
@@ -35,7 +36,9 @@ describe("All Moves e2e", () => {
   );
 });
 
-const NON_FIRE_SPECIES = [pokemonIdEnum.BULBASAUR, pokemonIdEnum.SQUIRTLE];
+// eslint-disable-next-line no-unused-vars
+const DEFAULT_SPECIES = pokemonIdEnum.PIKACHU;
+const BURNABLE_SPECIES = pokemonIdEnum.BULBASAUR;
 
 describe("Fire Punch", () => {
   let battle;
@@ -44,8 +47,8 @@ describe("Fire Punch", () => {
   beforeEach(() => {
     ({ battle } = createMockBattle({
       autoStart: true,
-      team1Party: createMockPokemonParty({ speciesIds: NON_FIRE_SPECIES }),
-      team2Party: createMockPokemonParty({ speciesIds: NON_FIRE_SPECIES }),
+      team1Party: createMockPokemonParty({ speciesIds: [BURNABLE_SPECIES] }),
+      team2Party: createMockPokemonParty({ speciesIds: [BURNABLE_SPECIES] }),
     }));
     source = battle.activePokemon;
     source.acc = HIGH_ACCURACY;
@@ -68,6 +71,34 @@ describe("Fire Punch", () => {
         source,
         moveIdEnum.FIRE_PUNCH,
       );
+      return { target };
+    },
+  });
+});
+
+describe("Confusion", () => {
+  let battle;
+  let source;
+
+  beforeEach(() => {
+    ({ battle } = createMockBattle({ autoStart: true }));
+    source = battle.activePokemon;
+    source.acc = HIGH_ACCURACY;
+    givePokemonMove(source, moveIdEnum.CONFUSION);
+  });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it("should deal damage", () => {
+    const target = useMoveOnValidTarget(battle, source, moveIdEnum.CONFUSION);
+    expect(target).toBeDamaged();
+  });
+
+  describeEffectProbability({
+    effectId: "confused",
+    probability: 0.25,
+    setup: () => {
+      const target = useMoveOnValidTarget(battle, source, moveIdEnum.CONFUSION);
       return { target };
     },
   });

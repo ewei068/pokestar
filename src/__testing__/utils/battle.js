@@ -69,6 +69,21 @@ const describeStatusProbability = ({ statusId, probability, setup }) => {
   });
 };
 
+const describeEffectProbability = ({ effectId, probability, setup }) => {
+  describe(`${effectId} (${probability * 100}% chance)`, () => {
+    describeProbability({ probability }, (triggered) => {
+      it(`should ${triggered ? "" : "not "}apply ${effectId}`, () => {
+        const { target } = setup();
+        if (triggered) {
+          expect(target.effectIds[effectId]).toBeDefined();
+        } else {
+          expect(target.effectIds[effectId]).toBeUndefined();
+        }
+      });
+    });
+  });
+};
+
 module.exports = {
   HIGH_ACCURACY,
   getFirstActivePokemon,
@@ -77,4 +92,5 @@ module.exports = {
   useMoveOnValidTarget,
   describeProbability,
   describeStatusProbability,
+  describeEffectProbability,
 };
