@@ -15,6 +15,8 @@ const {
   describeEffectProbability,
 } = require("../../../__testing__/utils/battle");
 
+afterEach(() => jest.restoreAllMocks());
+
 describe("All Moves e2e", () => {
   const getTestCases = () =>
     getMoveIds({}).map((moveId) => [moveId, getMove(moveId).name]);
@@ -54,11 +56,8 @@ describe("Fire Punch", () => {
       team2Party: createMockPokemonParty({ speciesIds: [BURNABLE_SPECIES] }),
     }));
     source = battle.activePokemon;
-    source.acc = HIGH_ACCURACY;
     givePokemonMove(source, moveIdEnum.FIRE_PUNCH);
   });
-
-  afterEach(() => jest.restoreAllMocks());
 
   it("should deal damage", () => {
     const target = useMoveOnValidTarget(battle, source, moveIdEnum.FIRE_PUNCH);
@@ -69,6 +68,7 @@ describe("Fire Punch", () => {
     statusId: statusConditions.BURN,
     probability: 0.5,
     setup: () => {
+      source.acc = HIGH_ACCURACY;
       const target = useMoveOnValidTarget(
         battle,
         source,
@@ -86,11 +86,8 @@ describe("Confusion", () => {
   beforeEach(() => {
     ({ battle } = createMockBattle({ autoStart: true }));
     source = battle.activePokemon;
-    source.acc = HIGH_ACCURACY;
     givePokemonMove(source, moveIdEnum.CONFUSION);
   });
-
-  afterEach(() => jest.restoreAllMocks());
 
   it("should deal damage", () => {
     const target = useMoveOnValidTarget(battle, source, moveIdEnum.CONFUSION);
@@ -101,6 +98,7 @@ describe("Confusion", () => {
     effectId: "confused",
     probability: 0.25,
     setup: () => {
+      source.acc = HIGH_ACCURACY;
       const target = useMoveOnValidTarget(battle, source, moveIdEnum.CONFUSION);
       return { target };
     },
@@ -123,11 +121,8 @@ describe("Brick Break", () => {
       }),
     }));
     source = battle.activePokemon;
-    source.acc = HIGH_ACCURACY;
     givePokemonMove(source, moveIdEnum.BRICK_BREAK);
   });
-
-  afterEach(() => jest.restoreAllMocks());
 
   it("should deal damage", () => {
     const target = useMoveOnValidTarget(battle, source, moveIdEnum.BRICK_BREAK);
@@ -135,6 +130,7 @@ describe("Brick Break", () => {
   });
 
   it.each(DEFENSIVE_BUFFS)("should remove %s from the target", (effectId) => {
+    source.acc = HIGH_ACCURACY;
     const target = getValidTargetForMove(
       battle,
       source,
@@ -146,6 +142,32 @@ describe("Brick Break", () => {
     source.useMove(moveIdEnum.BRICK_BREAK, target.id);
 
     expect(target.effectIds[effectId]).toBeUndefined();
+  });
+});
+
+describe("Wood Hammer", () => {
+  let battle;
+  let source;
+
+  beforeEach(() => {
+    ({ battle } = createMockBattle({
+      autoStart: true,
+      team1Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+      team2Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+    }));
+    source = battle.activePokemon;
+    givePokemonMove(source, moveIdEnum.WOOD_HAMMER);
+  });
+
+  it("should deal damage to the target and recoil damage to the user", () => {
+    const target = useMoveOnValidTarget(battle, source, moveIdEnum.WOOD_HAMMER);
+
+    expect(target).toBeDamaged();
+    expect(source).toBeDamaged();
   });
 });
 
@@ -167,8 +189,6 @@ describe("Night Slash", () => {
     source.acc = HIGH_ACCURACY;
     givePokemonMove(source, moveIdEnum.NIGHT_SLASH);
   });
-
-  afterEach(() => jest.restoreAllMocks());
 
   it("should deal damage including at least 5% atk true damage to primary target", () => {
     const target = getValidTargetForMove(
