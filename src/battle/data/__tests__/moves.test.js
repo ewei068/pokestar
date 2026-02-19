@@ -41,6 +41,7 @@ describe("All Moves e2e", () => {
 const DEFAULT_SPECIES = pokemonIdEnum.PIKACHU;
 const ALWAYS_HITTABLE_SPECIES = pokemonIdEnum.ARCEUS_FIGHTING;
 const BURNABLE_SPECIES = pokemonIdEnum.BULBASAUR;
+const VERY_HIGH_HP = 99999;
 
 describe("Fire Punch", () => {
   let battle;
@@ -145,5 +146,44 @@ describe("Brick Break", () => {
     source.useMove(moveIdEnum.BRICK_BREAK, target.id);
 
     expect(target.effectIds[effectId]).toBeUndefined();
+  });
+});
+
+describe("Night Slash", () => {
+  let battle;
+  let source;
+
+  beforeEach(() => {
+    ({ battle } = createMockBattle({
+      autoStart: true,
+      team1Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+      team2Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+    }));
+    source = battle.activePokemon;
+    source.acc = HIGH_ACCURACY;
+    givePokemonMove(source, moveIdEnum.NIGHT_SLASH);
+  });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it("should deal damage including at least 5% atk true damage to primary target", () => {
+    const target = getValidTargetForMove(
+      battle,
+      source,
+      moveIdEnum.NIGHT_SLASH,
+    );
+    target.hp = VERY_HIGH_HP;
+    target.maxHp = VERY_HIGH_HP;
+
+    source.useMove(moveIdEnum.NIGHT_SLASH, target.id);
+
+    const expectedMinTrueDamage = Math.floor(source.getStat("atk") * 0.05);
+    expect(target).toBeDamagedBy(
+      expect.toBeGreaterThanOrEqual(expectedMinTrueDamage),
+    );
   });
 });
