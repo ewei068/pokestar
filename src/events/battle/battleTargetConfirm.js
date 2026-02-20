@@ -67,7 +67,11 @@ const battleTargetSelect = async (interaction, data) => {
 
   // use move on target
   // TODO: do something with result?
-  battle.activePokemon.useMove(moveId, targetId);
+  battle.performAction({
+    action: "useMove",
+    moveId,
+    targetPokemonId: targetId,
+  });
 
   const send = await getStartTurnSend(battle, data.stateId);
   clearCurrentTargetting(state);

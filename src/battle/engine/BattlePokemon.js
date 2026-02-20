@@ -296,11 +296,12 @@ class BattlePokemon {
   /**
    * @param {MoveIdEnum} moveId
    * @param {string} targetPokemonId
+   * @returns {boolean}
    */
   useMove(moveId, targetPokemonId) {
     // make sure pokemon can move
     if (!this.canMove()) {
-      return;
+      return false;
     }
     // make sure move exists and is not on cooldown & disabled
     const moveData = getMove(moveId);
@@ -309,7 +310,7 @@ class BattlePokemon {
       this.moveIds[moveId].cooldown > 0 ||
       this.moveIds[moveId].disabledCounter
     ) {
-      return;
+      return false;
     }
     // check to see if target is valid
     const primaryTarget = this.battle.allPokemon[targetPokemonId];
@@ -317,11 +318,8 @@ class BattlePokemon {
       !primaryTarget ||
       !this.battle.getEligibleTargets(this, moveId).includes(primaryTarget)
     ) {
-      return;
+      return false;
     }
-
-    // clear battle log
-    this.battle.clearLog();
 
     // reset combat readiness
     this.combatReadiness = 0;
@@ -426,8 +424,7 @@ class BattlePokemon {
       }
     }
 
-    // end turn
-    this.battle.nextTurn();
+    return true;
   }
 
   /**
@@ -721,20 +718,13 @@ class BattlePokemon {
 
   /**
    * Called if the Pokemon is the active Pokemon but can't move.
-   * @returns {undefined}
+   * @returns {boolean}
    */
   skipTurn() {
     // make sure its this Pokemon's turn
     if (this.battle.activePokemon !== this) {
-      return;
+      return false;
     }
-    // make sure Pokemon can't move
-    if (this.canMove()) {
-      return;
-    }
-
-    // clear battle log
-    this.battle.clearLog();
 
     // reset combat readiness
     this.combatReadiness = 0;
@@ -768,8 +758,7 @@ class BattlePokemon {
     };
     this.battle.emitEvent(battleEventEnum.AFTER_SKIP_TURN, eventArgs);
 
-    // end turn
-    this.battle.nextTurn();
+    return true;
   }
 
   /**

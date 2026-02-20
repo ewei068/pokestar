@@ -15,6 +15,7 @@ const { battleEventEnum, heldItemIdEnum } = require("../../enums/battleEnums");
 const { getMove } = require("../data/moveRegistry");
 const { BattleEventHandler } = require("./events");
 const { BattlePokemon } = require("./BattlePokemon");
+const { logger } = require("../../log");
 
 const MAX_CR = 100;
 
@@ -551,6 +552,38 @@ class Battle {
         this.pokemonExpReward
       } BASE Pokemon exp. Losers recieved half the amount.`,
     );
+  }
+
+  /**
+   * @typedef {{ action: "skipTurn" } |
+   *  { action: "useMove", moveId: MoveIdEnum, targetPokemonId: string }
+   * } ActionPayload
+   */
+
+  /** @param {ActionPayload} payload */
+  performAction(payload) {
+    this.clearLog();
+    let success = false;
+    switch (payload.action) {
+      case "skipTurn":
+        success = this.activePokemon.skipTurn();
+        break;
+      case "useMove":
+        success = this.activePokemon.useMove(
+          payload.moveId,
+          payload.targetPokemonId,
+        );
+        break;
+      default:
+        // @ts-ignore
+        logger.error(`Unknown action: ${payload.action}`);
+        break;
+    }
+    if (!success) {
+      logger.error(`Failed to perform action: ${payload.action}`);
+      this.activePokemon.skipTurn();
+    }
+    this.nextTurn();
   }
 
   /**

@@ -83,11 +83,11 @@ const battleTargetSelect = async (interaction, data) => {
         const npc = state.npcs[battle.activePokemon.userId];
         if (!npc) {
           logger.error(`No NPC found for user ${battle.activePokemon.userId}`);
-          battle.activePokemon.skipTurn();
+          battle.performAction({ action: "skipTurn" });
         }
         npc.action(battle);
       } else {
-        battle.activePokemon.skipTurn();
+        battle.performAction({ action: "skipTurn" });
       }
       // TODO: setting to disable target confirmation
     } else {
@@ -98,7 +98,11 @@ const battleTargetSelect = async (interaction, data) => {
 
       // use move on target
       // TODO: do something with result?
-      battle.activePokemon.useMove(moveId, targetId);
+      battle.performAction({
+        action: "useMove",
+        moveId,
+        targetPokemonId: targetId,
+      });
     }
     const send = await getStartTurnSend(battle, data.stateId);
 

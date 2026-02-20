@@ -139,7 +139,11 @@ describe("Brick Break", () => {
     target.applyEffect(effectId, 5, target);
     expect(target.effectIds[effectId]).toBeDefined();
 
-    source.useMove(moveIdEnum.BRICK_BREAK, target.id);
+    battle.performAction({
+      action: "useMove",
+      moveId: moveIdEnum.BRICK_BREAK,
+      targetPokemonId: target.id,
+    });
 
     expect(target.effectIds[effectId]).toBeUndefined();
   });
@@ -210,7 +214,11 @@ describe("Aqua Impact", () => {
 
     source.acc = HIGH_ACCURACY;
     givePokemonMove(source, moveIdEnum.AQUA_IMPACT);
-    source.useMove(moveIdEnum.AQUA_IMPACT, target.id);
+    battle.performAction({
+      action: "useMove",
+      moveId: moveIdEnum.AQUA_IMPACT,
+      targetPokemonId: target.id,
+    });
 
     expect(target).toBeDamagedBy(
       expect.toBeGreaterThanOrEqual(Math.floor(1e5 * 0.05)),
@@ -247,7 +255,11 @@ describe("Night Slash", () => {
     target.hp = VERY_HIGH_HP;
     target.maxHp = VERY_HIGH_HP;
 
-    source.useMove(moveIdEnum.NIGHT_SLASH, target.id);
+    battle.performAction({
+      action: "useMove",
+      moveId: moveIdEnum.NIGHT_SLASH,
+      targetPokemonId: target.id,
+    });
 
     const expectedMinTrueDamage = Math.floor(source.getStat("atk") * 0.05);
     expect(target).toBeDamagedBy(

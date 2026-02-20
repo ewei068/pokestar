@@ -25,7 +25,11 @@ const givePokemonMove = (pokemon, moveId) => {
 const useMoveOnValidTarget = (battle, source, moveId) => {
   const target = getValidTargetForMove(battle, source, moveId);
   expect(target).not.toBeNull();
-  source.useMove(moveId, target.id);
+  battle.performAction({
+    action: "useMove",
+    moveId,
+    targetPokemonId: target.id,
+  });
   return target;
 };
 
