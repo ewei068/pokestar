@@ -171,6 +171,54 @@ describe("Wood Hammer", () => {
   });
 });
 
+describe("Aqua Impact", () => {
+  const WATER_SPECIES = pokemonIdEnum.SQUIRTLE;
+  const NON_WATER_DARK_SPECIES = pokemonIdEnum.PIKACHU;
+
+  it("should deal true damage proportional to the highest ally Water/Dark non-HP stat", () => {
+    const { battle } = createMockBattle({
+      autoStart: false,
+      team1Party: createMockPokemonParty({
+        size: 3,
+        speciesIds: [WATER_SPECIES, WATER_SPECIES, NON_WATER_DARK_SPECIES],
+      }),
+      team2Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+    });
+
+    const team1Pokemons = battle.parties.Team1.pokemons.filter(
+      (p) => p !== null,
+    );
+    const [source, waterAlly, nonWaterAlly] = team1Pokemons;
+    const target = battle.parties.Team2.pokemons.find((p) => p !== null);
+
+    // should not pull any of these stats
+    source.bspe = 1e6;
+    waterAlly.hp = 1e6;
+    waterAlly.maxHp = 1e6;
+    nonWaterAlly.batk = 1e6;
+
+    // should pull this stat
+    waterAlly.batk = 1e5;
+
+    target.hp = 1e7;
+    target.maxHp = 1e7;
+
+    battle.start();
+    expect(battle.activePokemon).toBe(source);
+
+    source.acc = HIGH_ACCURACY;
+    givePokemonMove(source, moveIdEnum.AQUA_IMPACT);
+    source.useMove(moveIdEnum.AQUA_IMPACT, target.id);
+
+    expect(target).toBeDamagedBy(
+      expect.toBeGreaterThanOrEqual(Math.floor(1e5 * 0.05)),
+    );
+    expect(target).toBeDamagedBy(expect.toBeLessThan(Math.floor(1e6 * 0.05)));
+  });
+});
+
 describe("Night Slash", () => {
   let battle;
   let source;

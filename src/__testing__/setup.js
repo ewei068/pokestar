@@ -31,4 +31,28 @@ expect.extend({
         `expected ${this.utils.printReceived(received)}${pass ? " not" : ""} to be greater than or equal to ${this.utils.printExpected(expected)}`,
     };
   },
+  toBeGreaterThan(received, expected) {
+    const pass = received > expected;
+    return {
+      pass,
+      message: () =>
+        `expected ${this.utils.printReceived(received)}${pass ? " not" : ""} to be greater than ${this.utils.printExpected(expected)}`,
+    };
+  },
+  toBeLessThanOrEqual(received, expected) {
+    const pass = received <= expected;
+    return {
+      pass,
+      message: () =>
+        `expected ${this.utils.printReceived(received)}${pass ? " not" : ""} to be less than or equal to ${this.utils.printExpected(expected)}`,
+    };
+  },
+  toBeLessThan(received, expected) {
+    const pass = received < expected;
+    return {
+      pass,
+      message: () =>
+        `expected ${this.utils.printReceived(received)}${pass ? " not" : ""} to be less than ${this.utils.printExpected(expected)}`,
+    };
+  },
 });

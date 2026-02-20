@@ -8,5 +8,8 @@ declare namespace jest {
 
   interface Expect {
     toBeGreaterThanOrEqual(expected: number): AsymmetricMatcher;
+    toBeGreaterThan(expected: number): AsymmetricMatcher;
+    toBeLessThanOrEqual(expected: number): AsymmetricMatcher;
+    toBeLessThan(expected: number): AsymmetricMatcher;
   }
 }
