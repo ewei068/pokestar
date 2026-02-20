@@ -945,7 +945,7 @@ const effectConfig = Object.freeze({
             return;
           }
           // 33% chance to hurt self
-          if (Math.random() < 0.33) {
+          if (battle.rng() < 0.33) {
             const damage = calculateDamage(
               {
                 power: 40,
@@ -6497,7 +6497,7 @@ const moveExecutes = {
       { ignoreHittable: true },
     );
     if (pokemons.length > 0) {
-      const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
+      const pokemon = pokemons[Math.floor(battle.rng() * pokemons.length)];
       for (const moveId in pokemon.moveIds) {
         pokemon.reduceMoveCooldown(moveId, 1, source);
       }
@@ -6529,7 +6529,7 @@ const moveExecutes = {
         ignoreHittable: true,
       });
       if (pokemons.length > 0) {
-        const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
+        const pokemon = pokemons[Math.floor(battle.rng() * pokemons.length)];
         battle.addToLog(`${pokemon.name}'s cooldowns were reduced by 1!`);
         for (const moveId in pokemon.moveIds) {
           pokemon.reduceMoveCooldown(moveId, 1, source, true);
@@ -6645,7 +6645,7 @@ const moveExecutes = {
       });
     }
   },
-  m23(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m23(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m23";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -6657,7 +6657,7 @@ const moveExecutes = {
       });
 
       // if not miss, flinch with 30% chance
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyEffect("flinched", 1, source);
       }
     }
@@ -6686,7 +6686,7 @@ const moveExecutes = {
       });
     }
   },
-  m34(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m34(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m34";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -6698,13 +6698,13 @@ const moveExecutes = {
       });
 
       // if not miss, 30% chance to paralyze
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyStatus(statusConditions.PARALYSIS, source);
       }
     }
   },
   "m34-1": function (
-    _battle,
+    battle,
     source,
     _primaryTarget,
     allTargets,
@@ -6721,7 +6721,7 @@ const moveExecutes = {
       });
 
       // if not miss, 30% chance to paralyze
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyStatus(statusConditions.PARALYSIS, source);
       }
     }
@@ -6783,7 +6783,7 @@ const moveExecutes = {
       type: "recoil",
     });
   },
-  m40(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m40(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m40";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -6795,7 +6795,7 @@ const moveExecutes = {
       });
 
       // if hit 75% chance to poison
-      if (!miss && Math.random() < 0.75) {
+      if (!miss && battle.rng() < 0.75) {
         target.applyStatus(statusConditions.POISON, source);
       }
     }
@@ -6838,7 +6838,7 @@ const moveExecutes = {
       }
     }
   },
-  m51(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m51(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m51";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -6850,12 +6850,12 @@ const moveExecutes = {
       });
 
       // 20% chance spd down 2 turn
-      if (!miss && Math.random() < 0.2) {
+      if (!miss && battle.rng() < 0.2) {
         target.applyEffect("spdDown", 2, source);
       }
     }
   },
-  m52(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m52(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m52";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -6867,12 +6867,12 @@ const moveExecutes = {
       });
 
       // 20% chance to burn
-      if (!miss && Math.random() < 0.2) {
+      if (!miss && battle.rng() < 0.2) {
         target.applyStatus(statusConditions.BURN, source);
       }
     }
   },
-  m53(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m53(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m53";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -6884,7 +6884,7 @@ const moveExecutes = {
       });
 
       // 20% chance to burn
-      if (!miss && Math.random() < 0.2) {
+      if (!miss && battle.rng() < 0.2) {
         target.applyStatus(statusConditions.BURN, source);
       }
     }
@@ -6981,7 +6981,7 @@ const moveExecutes = {
       });
     }
   },
-  m58(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m58(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m58";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -6993,12 +6993,12 @@ const moveExecutes = {
       });
 
       // if hit, freeze target with 25% chance
-      if (!miss && Math.random() < 0.25) {
+      if (!miss && battle.rng() < 0.25) {
         target.applyStatus(statusConditions.FREEZE, source);
       }
     }
   },
-  m59(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m59(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m59";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -7010,12 +7010,12 @@ const moveExecutes = {
       });
 
       // if hit, freeze target with 30% chance
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyStatus(statusConditions.FREEZE, source);
       }
     }
   },
-  m60(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m60(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m60";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -7027,7 +7027,7 @@ const moveExecutes = {
       });
 
       // if not miss, 50% chance to confuse for 2 turn
-      if (!miss && Math.random() < 0.5) {
+      if (!miss && battle.rng() < 0.5) {
         target.applyEffect("confused", 2, source);
       }
     }
@@ -7225,7 +7225,7 @@ const moveExecutes = {
       target.reduceCombatReadiness(source, 30);
     }
   },
-  m84(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m84(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m84";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -7237,12 +7237,12 @@ const moveExecutes = {
       });
 
       // if not miss, 10% chance to paralyze
-      if (!miss && Math.random() < 0.1) {
+      if (!miss && battle.rng() < 0.1) {
         target.applyStatus(statusConditions.PARALYSIS, source);
       }
     }
   },
-  m85(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m85(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m85";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -7254,7 +7254,7 @@ const moveExecutes = {
       });
 
       // if not miss, 25% chance to paralyze
-      if (!miss && Math.random() < 0.25) {
+      if (!miss && battle.rng() < 0.25) {
         target.applyStatus(statusConditions.PARALYSIS, source);
       }
     }
@@ -7277,7 +7277,7 @@ const moveExecutes = {
       target.applyStatus(statusConditions.PARALYSIS, source);
     }
   },
-  m87(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m87(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m87";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -7293,7 +7293,7 @@ const moveExecutes = {
       });
 
       // if not miss, 30% chance to paralyze
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyStatus(statusConditions.PARALYSIS, source);
       }
     }
@@ -7610,7 +7610,7 @@ const moveExecutes = {
       fieldFilter: { tier: moveTiers.BASIC },
     });
     const randomMoveId =
-      basicMoves[Math.floor(Math.random() * basicMoves.length)];
+      basicMoves[Math.floor(battle.rng() * basicMoves.length)];
     const randomMoveData = getMove(randomMoveId);
     battle.addToLog(`${source.name} used ${randomMoveData.name}!`);
 
@@ -7623,7 +7623,7 @@ const moveExecutes = {
 
     // get random target & use move
     const randomTarget =
-      eligibleTargets[Math.floor(Math.random() * eligibleTargets.length)];
+      eligibleTargets[Math.floor(battle.rng() * eligibleTargets.length)];
     source.executeMoveId({
       moveId: randomMoveId,
       primaryTarget: randomTarget,
@@ -7631,7 +7631,7 @@ const moveExecutes = {
       missedTargets: [],
     });
   },
-  m122(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m122(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m122";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -7643,12 +7643,12 @@ const moveExecutes = {
       });
 
       // if not miss, 30% chance to paralyze
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyStatus(statusConditions.PARALYSIS, source);
       }
     }
   },
-  m123(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m123(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m123";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -7660,12 +7660,12 @@ const moveExecutes = {
       });
 
       // if hit 50% chance to poison
-      if (!miss && Math.random() < 0.5) {
+      if (!miss && battle.rng() < 0.5) {
         target.applyStatus(statusConditions.POISON, source);
       }
     }
   },
-  m126(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m126(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m126";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -7677,12 +7677,12 @@ const moveExecutes = {
       });
 
       // 30% chance to burn
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyStatus(statusConditions.BURN, source);
       }
     }
   },
-  m127(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m127(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m127";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -7698,7 +7698,7 @@ const moveExecutes = {
         source.getStat("atk") > target.getStat("atk")
           ? 0.2 + (source.getStat("atk") / target.getStat("atk") - 1)
           : 0.2;
-      if (!miss && Math.random() < flinchChance) {
+      if (!miss && battle.rng() < flinchChance) {
         target.applyEffect("flinched", 1, source);
       }
     }
@@ -7832,7 +7832,7 @@ const moveExecutes = {
         0.3 + source.getStat("spe") / 10 / 100,
         0.75,
       );
-      if (Math.random() < flinchChance) {
+      if (battle.rng() < flinchChance) {
         target.applyEffect("flinched", 1, source);
       }
     }
@@ -7861,7 +7861,7 @@ const moveExecutes = {
   m150(battle, source, _primaryTarget, allTargets) {
     for (const target of allTargets) {
       // SECRET: has 1/1000 chance to instakill
-      if (Math.random() < 0.001) {
+      if (battle.rng() < 0.001) {
         battle.addToLog(`Arceus looks upon you with favor today...`);
         target.takeFaint(source);
       } else {
@@ -7998,7 +7998,7 @@ const moveExecutes = {
       target.applyStatus(statusConditions.SLEEP, source, { startingTurns: -1 });
     }
   },
-  m157(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m157(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m157";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -8010,7 +8010,7 @@ const moveExecutes = {
       });
 
       // if not miss, 70% chance to flinch for 1 turn
-      if (!miss && Math.random() < 0.7) {
+      if (!miss && battle.rng() < 0.7) {
         target.applyEffect("flinched", 1, source);
       }
     }
@@ -8119,7 +8119,7 @@ const moveExecutes = {
       });
     }
   },
-  m177(_battle, source, primaryTarget, allTargets, missedTargets) {
+  m177(battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m177";
     const moveData = getMove(moveId);
     // filter out allTargets => just the primary target and up to 2 random other targets
@@ -8128,7 +8128,7 @@ const moveExecutes = {
       const newTargets = [primaryTarget];
       const otherTargets = allTargets.filter((t) => t !== primaryTarget);
       for (let i = 0; i < 2; i += 1) {
-        const randomIndex = Math.floor(Math.random() * otherTargets.length);
+        const randomIndex = Math.floor(battle.rng() * otherTargets.length);
         newTargets.push(otherTargets[randomIndex]);
         otherTargets.splice(randomIndex, 1);
       }
@@ -8257,7 +8257,7 @@ const moveExecutes = {
       target.boostCombatReadiness(source, 100);
     }
   },
-  m188(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m188(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m188";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -8269,7 +8269,7 @@ const moveExecutes = {
       });
 
       // if not missed, 30% chance to poison
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyStatus(statusConditions.POISON, source);
       }
     }
@@ -8557,7 +8557,7 @@ const moveExecutes = {
       return;
     }
     const randomMoveId =
-      sleepTalkMoves[Math.floor(Math.random() * sleepTalkMoves.length)];
+      sleepTalkMoves[Math.floor(battle.rng() * sleepTalkMoves.length)];
     const randomMoveData = getMove(randomMoveId);
     battle.addToLog(`${source.name} used ${randomMoveData.name}!`);
 
@@ -8573,7 +8573,7 @@ const moveExecutes = {
     const randomTarget =
       randomMoveData.targetPosition === targetPositions.SELF
         ? source
-        : validTargets[Math.floor(Math.random() * validTargets.length)];
+        : validTargets[Math.floor(battle.rng() * validTargets.length)];
     const targetParty = battle.parties[randomTarget.teamName];
     const targets = source.getPatternTargets(
       targetParty,
@@ -8596,7 +8596,7 @@ const moveExecutes = {
       return;
     }
     const wakeupChance = source.status.turns * 0.66;
-    const wakeupRoll = Math.random();
+    const wakeupRoll = battle.rng();
     if (wakeupRoll < wakeupChance) {
       source.removeStatus();
     }
@@ -8636,7 +8636,7 @@ const moveExecutes = {
       target.applyEffect("statusImmunity", 3, source);
     }
   },
-  m221(_battle, source, primaryTarget, allTargets, missedTargets) {
+  m221(battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m221";
     const moveData = getMove(moveId);
     // filter out allTargets => just the primary target and up to 2 random other targets
@@ -8645,7 +8645,7 @@ const moveExecutes = {
       const newTargets = [primaryTarget];
       const otherTargets = allTargets.filter((t) => t !== primaryTarget);
       for (let i = 0; i < 2; i += 1) {
-        const randomIndex = Math.floor(Math.random() * otherTargets.length);
+        const randomIndex = Math.floor(battle.rng() * otherTargets.length);
         newTargets.push(otherTargets[randomIndex]);
         otherTargets.splice(randomIndex, 1);
       }
@@ -8664,7 +8664,7 @@ const moveExecutes = {
       }
 
       // if not miss, 50% chance to burn
-      if (!miss && Math.random() < 0.5) {
+      if (!miss && battle.rng() < 0.5) {
         target.applyStatus(statusConditions.BURN, source);
       }
     }
@@ -8859,7 +8859,7 @@ const moveExecutes = {
       );
     }
   },
-  m239(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m239(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m239";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -8871,7 +8871,7 @@ const moveExecutes = {
       });
 
       // if not missed, 30% chance to flinch
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyEffect("flinched", 1, source);
       }
     }
@@ -8888,7 +8888,7 @@ const moveExecutes = {
     // gain 50 combat readiness
     source.boostCombatReadiness(source, 50);
   },
-  m242(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m242(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m242";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -8900,7 +8900,7 @@ const moveExecutes = {
       });
 
       // if not miss, 85% chance to reduce def
-      if (!miss && Math.random() < 0.85) {
+      if (!miss && battle.rng() < 0.85) {
         target.applyEffect("defDown", 3, source);
       }
     }
@@ -8928,7 +8928,7 @@ const moveExecutes = {
     // raise own cr by 80%
     source.boostCombatReadiness(source, 80);
   },
-  m246(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m246(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m246";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -8941,7 +8941,7 @@ const moveExecutes = {
     }
 
     // 50% chance to boost highest stat
-    if (Math.random() > 0.5) {
+    if (battle.rng() > 0.5) {
       return;
     }
 
@@ -8978,7 +8978,7 @@ const moveExecutes = {
         break;
     }
   },
-  m247(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m247(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m247";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -8990,7 +8990,7 @@ const moveExecutes = {
       });
 
       // if not miss, 85% chance to reduce sp def
-      if (!miss && Math.random() < 0.85) {
+      if (!miss && battle.rng() < 0.85) {
         target.applyEffect("spdDown", 3, source);
       }
     }
@@ -9008,7 +9008,7 @@ const moveExecutes = {
       target.applyEffect("futureSight", 2, source);
     }
   },
-  m249(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m249(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m249";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -9020,7 +9020,7 @@ const moveExecutes = {
       });
 
       // if not miss, def down 2 turns 70% chance
-      if (!miss && Math.random() < 0.7) {
+      if (!miss && battle.rng() < 0.7) {
         target.applyEffect("defDown", 2, source);
       }
     }
@@ -9388,7 +9388,7 @@ const moveExecutes = {
       });
     }
   },
-  m305(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m305(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m305";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -9400,7 +9400,7 @@ const moveExecutes = {
       });
 
       // if not miss, badly poison 75% chance
-      if (!miss && Math.random() < 0.75) {
+      if (!miss && battle.rng() < 0.75) {
         target.applyStatus(statusConditions.BADLY_POISON, source);
       }
     }
@@ -9549,7 +9549,7 @@ const moveExecutes = {
       });
     }
   },
-  m330(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m330(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m330";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -9561,17 +9561,17 @@ const moveExecutes = {
       });
 
       // if not miss, 50% acc down 2 turns
-      if (!miss && Math.random() < 0.5) {
+      if (!miss && battle.rng() < 0.5) {
         target.applyEffect("accDown", 2, source);
       }
 
       // if not miss, 50% evasion down 2 turns
-      if (!miss && Math.random() < 0.5) {
+      if (!miss && battle.rng() < 0.5) {
         target.applyEffect("evaDown", 2, source);
       }
     }
   },
-  m331(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m331(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m331";
     const moveData = getMove(moveId);
     // loop 5 times, hitting random non-fainted target
@@ -9581,7 +9581,7 @@ const moveExecutes = {
         break;
       }
 
-      const target = allTargets[Math.floor(Math.random() * allTargets.length)];
+      const target = allTargets[Math.floor(battle.rng() * allTargets.length)];
       const miss = missedTargets.includes(target);
       const damageToDeal = calculateDamage(moveData, source, target, miss);
       source.dealDamage(damageToDeal, target, {
@@ -9591,7 +9591,7 @@ const moveExecutes = {
     }
   },
   "m331-1": function (
-    _battle,
+    battle,
     source,
     _primaryTarget,
     allTargets,
@@ -9613,8 +9613,7 @@ const moveExecutes = {
           break;
         }
 
-        const target =
-          allTargets[Math.floor(Math.random() * allTargets.length)];
+        const target = allTargets[Math.floor(battle.rng() * allTargets.length)];
         const miss = missedTargets.includes(target);
         // if not miss, deal 5% target max hp
         const damageToDeal =
@@ -9707,7 +9706,7 @@ const moveExecutes = {
       target.boostCombatReadiness(source, 15);
     }
   },
-  m340(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m340(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m340";
     const moveData = getMove(moveId);
     // if pokemon doesnt have "sprungUp" buff, apply it
@@ -9727,7 +9726,7 @@ const moveExecutes = {
         });
 
         // if hit, 30% chance to paralyze
-        if (!miss && Math.random() < 0.3) {
+        if (!miss && battle.rng() < 0.3) {
           target.applyStatus(statusConditions.PARALYSIS, source);
         }
       }
@@ -9746,7 +9745,7 @@ const moveExecutes = {
       });
 
       // if not miss, 20% chance to paralyze
-      if (!miss && Math.random() < 0.2) {
+      if (!miss && battle.rng() < 0.2) {
         target.applyStatus(statusConditions.PARALYSIS, source);
       }
     }
@@ -9799,7 +9798,7 @@ const moveExecutes = {
       target.boostCombatReadiness(source, 50);
     }
   },
-  m352(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m352(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m352";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -9811,7 +9810,7 @@ const moveExecutes = {
       });
 
       // if not miss, confuse with 40% chance
-      if (!miss && Math.random() < 0.4) {
+      if (!miss && battle.rng() < 0.4) {
         target.applyEffect("confused", 2, source);
       }
     }
@@ -10021,7 +10020,7 @@ const moveExecutes = {
       )
       .filter((pokemon) => !pokemon.isFainted);
     if (pokemons.length > 0) {
-      const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
+      const pokemon = pokemons[Math.floor(battle.rng() * pokemons.length)];
       pokemon.boostCombatReadiness(source, 100);
     }
   },
@@ -10111,7 +10110,7 @@ const moveExecutes = {
       );
 
       // 10% chance to burn
-      if (!miss && Math.random() < 0.1) {
+      if (!miss && battle.rng() < 0.1) {
         target.applyStatus(statusConditions.BURN, source);
       }
     }
@@ -10168,7 +10167,7 @@ const moveExecutes = {
       });
     }
   },
-  m398(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m398(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m398";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -10180,12 +10179,12 @@ const moveExecutes = {
       });
 
       // 80% chance to poison
-      if (!miss && Math.random() < 0.8) {
+      if (!miss && battle.rng() < 0.8) {
         target.applyStatus(statusConditions.POISON, source);
       }
     }
   },
-  m399(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m399(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m399";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -10197,7 +10196,7 @@ const moveExecutes = {
       });
 
       // 25% chance to flinch 1 turn
-      if (!miss && Math.random() < 0.35) {
+      if (!miss && battle.rng() < 0.35) {
         target.applyEffect("flinched", 1, source);
       }
     }
@@ -10244,13 +10243,13 @@ const moveExecutes = {
       }
     }
   },
-  m405(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m405(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m405";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
       const miss = missedTargets.includes(target);
       // if not miss, 80% to spd down
-      if (!miss && Math.random() < 0.8) {
+      if (!miss && battle.rng() < 0.8) {
         target.applyEffect("spdDown", 2, source);
       }
 
@@ -10273,7 +10272,7 @@ const moveExecutes = {
       });
     }
   },
-  m407(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m407(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m407";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -10285,7 +10284,7 @@ const moveExecutes = {
       });
 
       // if not miss, 30% chance to flinch
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyEffect("flinched", 1, source);
       }
     }
@@ -10309,7 +10308,7 @@ const moveExecutes = {
       moveId,
     });
   },
-  m412(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m412(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m412";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -10321,7 +10320,7 @@ const moveExecutes = {
       });
 
       // if not miss, 85% chance to reduce sp def
-      if (!miss && Math.random() < 0.85) {
+      if (!miss && battle.rng() < 0.85) {
         target.applyEffect("spdDown", 4, source);
       }
     }
@@ -10344,7 +10343,7 @@ const moveExecutes = {
       type: "recoil",
     });
   },
-  m414(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m414(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m414";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -10356,7 +10355,7 @@ const moveExecutes = {
       });
 
       // if not miss, 30% spd down 3 turns
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyEffect("spdDown", 3, source);
       }
     }
@@ -10464,7 +10463,7 @@ const moveExecutes = {
     // boost self cr by 30
     source.boostCombatReadiness(source, 30);
   },
-  m424(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m424(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m424";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -10476,11 +10475,11 @@ const moveExecutes = {
       });
 
       // if not miss, 25% chance to burn
-      if (!miss && Math.random() < 0.25) {
+      if (!miss && battle.rng() < 0.25) {
         target.applyStatus(statusConditions.BURN, source);
       }
       // if not miss, 25% chance to flinch for 1 turn
-      if (!miss && Math.random() < 0.25) {
+      if (!miss && battle.rng() < 0.25) {
         target.applyEffect("flinched", 1, source);
       }
     }
@@ -10517,7 +10516,7 @@ const moveExecutes = {
       }
     }
   },
-  m430(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m430(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m430";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -10529,7 +10528,7 @@ const moveExecutes = {
       });
 
       // if not miss, 40% to spd down
-      if (!miss && Math.random() < 0.4) {
+      if (!miss && battle.rng() < 0.4) {
         target.applyEffect("spdDown", 2, source);
       }
     }
@@ -10606,7 +10605,7 @@ const moveExecutes = {
       }
     }
   },
-  m435(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m435(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m435";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -10618,13 +10617,13 @@ const moveExecutes = {
       });
 
       // 35% chance to paralyze
-      if (!miss && Math.random() < 0.35) {
+      if (!miss && battle.rng() < 0.35) {
         target.applyStatus(statusConditions.PARALYSIS, source);
       }
     }
   },
   "m435-1": function (
-    _battle,
+    battle,
     source,
     _primaryTarget,
     allTargets,
@@ -10656,7 +10655,7 @@ const moveExecutes = {
 
         // get random debuff
         const debuffId =
-          possibleDebuffs[Math.floor(Math.random() * possibleDebuffs.length)];
+          possibleDebuffs[Math.floor(battle.rng() * possibleDebuffs.length)];
         const debuff = source.effectIds[debuffId];
         // remove debuff from source
         const dispelled = source.dispellEffect(debuffId);
@@ -10689,7 +10688,7 @@ const moveExecutes = {
     // apply greater spa down to user 2 turns
     source.applyEffect("greaterSpaDown", 2, source);
   },
-  m441(_battle, source, primaryTarget, allTargets, missedTargets) {
+  m441(battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m441";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -10715,7 +10714,7 @@ const moveExecutes = {
       });
 
       // if not miss, 50% chance to poison
-      if (!miss && Math.random() < 0.5) {
+      if (!miss && battle.rng() < 0.5) {
         primaryTarget.applyStatus(statusConditions.POISON, source);
       }
     }
@@ -10823,7 +10822,7 @@ const moveExecutes = {
       }
 
       // if not miss, 50% chance to poison
-      if (!miss && Math.random() < 0.5) {
+      if (!miss && battle.rng() < 0.5) {
         target.applyStatus(statusConditions.POISON, source);
       }
     }
@@ -10883,7 +10882,7 @@ const moveExecutes = {
       });
     }
   },
-  m503(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m503(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m503";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -10895,7 +10894,7 @@ const moveExecutes = {
       });
 
       // 75% chance to burn
-      if (!miss && Math.random() < 0.75) {
+      if (!miss && battle.rng() < 0.75) {
         target.applyStatus(statusConditions.BURN, source);
       }
     }
@@ -10963,7 +10962,7 @@ const moveExecutes = {
       )
       .filter((pokemon) => !pokemon.isFainted);
     if (pokemons.length > 0) {
-      const pokemon = pokemons[Math.floor(Math.random() * pokemons.length)];
+      const pokemon = pokemons[Math.floor(battle.rng() * pokemons.length)];
       pokemon.boostCombatReadiness(source, 100);
     }
   },
@@ -11063,7 +11062,7 @@ const moveExecutes = {
       });
     }
   },
-  m534(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m534(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m534";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -11077,7 +11076,7 @@ const moveExecutes = {
       });
 
       // if not miss, 50% to def down for 2 turns
-      if (!miss && Math.random() < 0.5) {
+      if (!miss && battle.rng() < 0.5) {
         target.applyEffect("defDown", 2, source);
       }
     }
@@ -11137,7 +11136,7 @@ const moveExecutes = {
       source.boostCombatReadiness(source, targetsFainted * 30);
     }
   },
-  m542(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m542(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m542";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -11149,13 +11148,13 @@ const moveExecutes = {
       });
 
       // if hit, 30% chance to confuse target
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyEffect("confused", 2, source);
       }
     }
   },
   "m542-1": function (
-    _battle,
+    battle,
     source,
     _primaryTarget,
     allTargets,
@@ -11179,7 +11178,7 @@ const moveExecutes = {
       });
 
       // if hit, 30% chance to flinch
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyEffect("flinched", 1, source);
       }
     }
@@ -11239,7 +11238,7 @@ const moveExecutes = {
       }
     }
   },
-  m573(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m573(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m573";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -11257,7 +11256,7 @@ const moveExecutes = {
       });
 
       // if hit, 30% chance to freeze target (water = 100%)
-      if (!miss && (waterType || Math.random() < 0.3)) {
+      if (!miss && (waterType || battle.rng() < 0.3)) {
         target.applyStatus(statusConditions.FREEZE, source);
       }
     }
@@ -11291,7 +11290,7 @@ const moveExecutes = {
       });
     }
   },
-  m583(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m583(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m583";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -11303,11 +11302,11 @@ const moveExecutes = {
       });
 
       // if not miss, 70% chance to lower atk
-      if (!miss && Math.random() < 0.7) {
+      if (!miss && battle.rng() < 0.7) {
         target.applyEffect("atkDown", 2, source);
       }
       // if not miss, 70% chance to lower spe
-      if (!miss && Math.random() < 0.7) {
+      if (!miss && battle.rng() < 0.7) {
         target.applyEffect("speDown", 2, source);
       }
     }
@@ -11480,7 +11479,7 @@ const moveExecutes = {
       }
     }
   },
-  m710(_battle, source, _primaryTarget, allTargets, missedTargets) {
+  m710(battle, source, _primaryTarget, allTargets, missedTargets) {
     const moveId = "m710";
     const moveData = getMove(moveId);
     for (const target of allTargets) {
@@ -11492,12 +11491,12 @@ const moveExecutes = {
       });
 
       // if not miss, 85% chance to reduce def
-      if (!miss && Math.random() < 0.85) {
+      if (!miss && battle.rng() < 0.85) {
         target.applyEffect("defDown", 3, source);
       }
     }
   },
-  m719(_battle, source, primaryTarget, allTargets, missedTargets) {
+  m719(battle, source, primaryTarget, allTargets, missedTargets) {
     const moveId = "m719";
     const moveData = getMove(moveId);
     // filter out allTargets => just the primary target and up to 2 random other targets
@@ -11506,7 +11505,7 @@ const moveExecutes = {
       const newTargets = [primaryTarget];
       const otherTargets = allTargets.filter((t) => t !== primaryTarget);
       for (let i = 0; i < 2; i += 1) {
-        const randomIndex = Math.floor(Math.random() * otherTargets.length);
+        const randomIndex = Math.floor(battle.rng() * otherTargets.length);
         newTargets.push(otherTargets[randomIndex]);
         otherTargets.splice(randomIndex, 1);
       }
@@ -11525,7 +11524,7 @@ const moveExecutes = {
       }
 
       // if not miss, 20% chance to paralysis
-      if (!miss && Math.random() < 0.2) {
+      if (!miss && battle.rng() < 0.2) {
         target.applyStatus(statusConditions.PARALYSIS, source);
       }
     }
@@ -11551,7 +11550,7 @@ const moveExecutes = {
       });
 
       // if not miss, 30% chance to flinch
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyEffect("flinched", 1, source);
       }
     }
@@ -11571,7 +11570,7 @@ const moveExecutes = {
       });
 
       // if not miss, 30% chance to flinch
-      if (!miss && Math.random() < 0.3) {
+      if (!miss && battle.rng() < 0.3) {
         target.applyEffect("flinched", 1, source);
       }
     }
@@ -11688,7 +11687,7 @@ const moveExecutes = {
       battle.addToLog(`But it failed!`);
       return;
     }
-    const randomIndex = Math.floor(Math.random() * faintedPokemons.length);
+    const randomIndex = Math.floor(battle.rng() * faintedPokemons.length);
     const randomFaintedPokemon = faintedPokemons[randomIndex];
 
     // find an empty position in the party
@@ -11701,7 +11700,7 @@ const moveExecutes = {
       return;
     }
     const randomEmptyIndex =
-      emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+      emptyIndices[Math.floor(battle.rng() * emptyIndices.length)];
 
     // attempt to switch positions
     if (
@@ -11824,8 +11823,7 @@ const moveExecutes = {
         if (enemyPokemons.length === 0) {
           break;
         }
-        target =
-          enemyPokemons[Math.floor(Math.random() * enemyPokemons.length)];
+        target = enemyPokemons[Math.floor(battle.rng() * enemyPokemons.length)];
       }
 
       // deal damage
@@ -12143,7 +12141,7 @@ const abilityConfig = Object.freeze({
           const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
-            Math.random() < 0.5
+            battle.rng() < 0.5
           ) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Static affects ${sourcePokemon.name}!`,
@@ -12740,7 +12738,7 @@ const abilityConfig = Object.freeze({
           const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
-            Math.random() < 0.5
+            battle.rng() < 0.5
           ) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Effect Spore affects ${sourcePokemon.name}!`,
@@ -12753,7 +12751,7 @@ const abilityConfig = Object.freeze({
             ];
             const status =
               possibleStatusConditions[
-                Math.floor(Math.random() * possibleStatusConditions.length)
+                Math.floor(battle.rng() * possibleStatusConditions.length)
               ];
             sourcePokemon.applyStatus(status, targetPokemon);
           }
@@ -13124,7 +13122,7 @@ const abilityConfig = Object.freeze({
           const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
-            Math.random() < 0.5
+            battle.rng() < 0.5
           ) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Poison Point affects ${sourcePokemon.name}!`,
@@ -13276,7 +13274,7 @@ const abilityConfig = Object.freeze({
             return;
           }
           const randomMove =
-            possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+            possibleMoves[Math.floor(battle.rng() * possibleMoves.length)];
           randomMove[1].cooldown = 2;
           targetPokemon.battle.addToLog(
             `${initialArgs.pokemon.name} is exerting Pressure against ${
@@ -13590,7 +13588,7 @@ const abilityConfig = Object.freeze({
           }
 
           // 30% chance to gain buff
-          if (Math.random() < 0.3) {
+          if (battle.rng() < 0.3) {
             targetPokemon.battle.addToLog(
               `${initialArgs.pokemon.name}'s Pickup gains ${effectData.name}!`,
             );
@@ -13739,7 +13737,7 @@ const abilityConfig = Object.freeze({
           const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
-            Math.random() < 0.5
+            battle.rng() < 0.5
           ) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Cute Charm affects ${sourcePokemon.name}!`,
@@ -14797,7 +14795,7 @@ const abilityConfig = Object.freeze({
           const moveData = getMove(args.damageInfo.moveId);
           if (
             moveData.damageType === damageTypes.PHYSICAL &&
-            Math.random() < 0.5
+            battle.rng() < 0.5
           ) {
             targetPokemon.battle.addToLog(
               `${targetPokemon.name}'s Poison Touch affects ${sourcePokemon.name}!`,
@@ -15957,7 +15955,7 @@ const abilityConfig = Object.freeze({
           targetPokemon.addStatMult("spd", 0.05);
 
           // 30% chance to counter with a random move
-          if (Math.random() > 0.3 || !sourcePokemon) {
+          if (battle.rng() > 0.3 || !sourcePokemon) {
             return;
           }
           const validMoves = Object.keys(targetPokemon.moveIds);
@@ -15967,7 +15965,7 @@ const abilityConfig = Object.freeze({
             return;
           }
           const randomMoveId =
-            validMoves[Math.floor(Math.random() * validMoves.length)];
+            validMoves[Math.floor(battle.rng() * validMoves.length)];
           const randomMoveData = getMove(randomMoveId);
           battle.addToLog(
             `${targetPokemon.name} countered with ${randomMoveData.name}!`,
@@ -15985,7 +15983,7 @@ const abilityConfig = Object.freeze({
           // choose target or random valid target
           const target = validTargets.includes(sourcePokemon)
             ? sourcePokemon
-            : validTargets[Math.floor(Math.random() * validTargets.length)];
+            : validTargets[Math.floor(battle.rng() * validTargets.length)];
           const targetParty = battle.parties[target.teamName];
           const targets = targetPokemon.getPatternTargets(
             targetParty,

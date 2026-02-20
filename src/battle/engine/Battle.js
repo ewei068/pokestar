@@ -118,6 +118,7 @@ class Battle {
         // TODO: handle win/lose callbacks
       };
     }
+    /** @type {() => number} */
     this.rng = seedrandom(this.id);
     /** @type {ActionPayload[]} */
     this.actions = [];

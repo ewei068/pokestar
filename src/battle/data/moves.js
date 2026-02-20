@@ -621,7 +621,7 @@ const movesToRegisterRaw = {
           pokemon &&
           !pokemon.isFainted &&
           (pokemon.hasType(pokemonTypes.FIRE) ||
-            pokemon.hasType(pokemonTypes.GROUND))
+            pokemon.hasType(pokemonTypes.GROUND)),
       );
       if (fireGroundAllies.length === 0) {
         return;
@@ -630,11 +630,11 @@ const movesToRegisterRaw = {
       const hitCount = allTargets.reduce(
         (count, target) =>
           !missedTargets.includes(target) ? count + 1 : count,
-        0
+        0,
       );
       if (hitCount > 0) {
         battle.addToLog(
-          `${randomAlly.name} is burning up from the Flame Ball!`
+          `${randomAlly.name} is burning up from the Flame Ball!`,
         );
         randomAlly.boostCombatReadiness(source, hitCount * 15);
       }
@@ -668,7 +668,7 @@ const movesToRegisterRaw = {
         ) {
           const targetHeldItem = getHeldItem(target.heldItem.heldItemId);
           battle.addToLog(
-            `${source.name} ate ${target.name}'s ${targetHeldItem.name}!`
+            `${source.name} ate ${target.name}'s ${targetHeldItem.name}!`,
           );
           target.useHeldItem(source);
         }
@@ -687,7 +687,7 @@ const movesToRegisterRaw = {
         if (possibleBuffs.length > 0) {
           // Get random buff
           const buffIdToSteal =
-            possibleBuffs[Math.floor(Math.random() * possibleBuffs.length)];
+            possibleBuffs[Math.floor(battle.rng() * possibleBuffs.length)];
           const buffToSteal = target.effectIds[buffIdToSteal];
 
           // Steal buff
@@ -698,7 +698,7 @@ const movesToRegisterRaw = {
               buffIdToSteal,
               buffToSteal.duration,
               buffToSteal.source,
-              buffToSteal.initialArgs
+              buffToSteal.initialArgs,
             );
           }
         }
@@ -775,7 +775,7 @@ const movesToRegisterRaw = {
           // If the user has a status condition, double the damage
           if (source.status.statusId) {
             battle.addToLog(
-              `${source.name} is furious! It's attacking with double power!`
+              `${source.name} is furious! It's attacking with double power!`,
             );
             return baseDamage * 2;
           }
@@ -941,7 +941,7 @@ const movesToRegisterRaw = {
       // Count non-fainted allies (excluding self) to boost damage
       const allyPokemons = source.getPartyPokemon();
       const nonFaintedAllies = allyPokemons.filter(
-        (p) => p && !p.isFainted && p !== source
+        (p) => p && !p.isFainted && p !== source,
       ).length;
       const damageMultiplier = 1 + nonFaintedAllies * 0.1;
 
@@ -983,7 +983,7 @@ const movesToRegisterRaw = {
       primaryTarget.applyHeldItem();
 
       battle.addToLog(
-        `${source.name} switched items with ${primaryTarget.name}!`
+        `${source.name} switched items with ${primaryTarget.name}!`,
       );
     },
   }),
@@ -1052,7 +1052,7 @@ const movesToRegisterRaw = {
           .map(([moveId]) => moveId);
         if (movesOnCooldown.length === 0) {
           battle.addToLog(
-            `But it failed! ${target.name} has no moves on cooldown!`
+            `But it failed! ${target.name} has no moves on cooldown!`,
           );
           continue;
         }
@@ -1312,7 +1312,7 @@ const movesToRegisterRaw = {
       primaryTarget.applyHeldItem();
 
       battle.addToLog(
-        `${source.name} switched items with ${primaryTarget.name}!`
+        `${source.name} switched items with ${primaryTarget.name}!`,
       );
     },
   }),
@@ -1382,7 +1382,7 @@ const movesToRegisterRaw = {
         targetParty,
         targetPatterns.ROW,
         primaryTarget.position,
-        { moveId: this.id }
+        { moveId: this.id },
       );
 
       // Deal damage only to targets in the primary target's row
@@ -1877,7 +1877,7 @@ const movesToRegisterRaw = {
           source.position,
           {
             ignoreHittable: true,
-          }
+          },
         )
         .filter((pokemon) => pokemon !== source);
 
@@ -1950,7 +1950,7 @@ const movesToRegisterRaw = {
           source.position,
           {
             ignoreHittable: true,
-          }
+          },
         )
         .filter((pokemon) => !pokemon.isFainted);
       for (const ally of adjacentAllies) {
@@ -2045,7 +2045,7 @@ const movesToRegisterRaw = {
           // argmax
           const highestStatIndex = statValues.reduce(
             (iMax, x, i, arr) => (x > arr[iMax] ? i : iMax),
-            0
+            0,
           );
           switch (highestStatIndex + 1) {
             case 1:
@@ -2182,7 +2182,7 @@ const movesToRegisterRaw = {
           // Calculate stat ratio, clamped between 1x and 3x
           const statRatio = Math.min(
             3,
-            Math.max(1, effectiveStatsSum / baseStatsSum)
+            Math.max(1, effectiveStatsSum / baseStatsSum),
           );
 
           // Calculate base damage and multiply by stat ratio
@@ -2267,7 +2267,7 @@ const movesToRegisterRaw = {
           16 * (ivs[4] % 2) +
           32 * (ivs[0] % 2)) *
           15) /
-          63
+          63,
       );
 
       // Map type value to Pokemon types (excluding Normal)
@@ -2434,7 +2434,7 @@ const movesToRegisterRaw = {
         // @ts-ignore
         if (source.speciesId === pokemonIdEnum.VOLO_GIRATINA_ALTERED) {
           battle.addToLog(
-            `${source.name} vanishes into the distortion and empowers its allies!`
+            `${source.name} vanishes into the distortion and empowers its allies!`,
           );
           // Raise evasion of all allies for 2 turns
           const allies = source
@@ -2446,7 +2446,7 @@ const movesToRegisterRaw = {
           // @ts-ignore
         } else if (source.speciesId === pokemonIdEnum.VOLO_GIRATINA_ORIGIN) {
           battle.addToLog(
-            `${source.name} vanishes into the distortion with greater power!`
+            `${source.name} vanishes into the distortion with greater power!`,
           );
         }
       } else {
@@ -2511,7 +2511,7 @@ function createSketchMove(slotNumber) {
       // @ts-ignore
       if (Object.values(slotToMoveId).includes(moveToLearn)) {
         battle.addToLog(
-          `${source.name} failed to copy ${moveToLearnName}! It's a sketch move!`
+          `${source.name} failed to copy ${moveToLearnName}! It's a sketch move!`,
         );
         return;
       }
@@ -2529,7 +2529,7 @@ function createSketchMove(slotNumber) {
       }
 
       battle.addToLog(
-        `${source.name} sketched ${primaryTarget.name}'s ${moveToLearnName}!`
+        `${source.name} sketched ${primaryTarget.name}'s ${moveToLearnName}!`,
       );
 
       // Boost combat readiness by 90%

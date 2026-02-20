@@ -224,7 +224,8 @@ class BattlePokemon {
     this.pokemonData.name = this.speciesData.name;
     this.pokemonData.moveIds = moveIds;
     this.pokemonData.abilityId =
-      abilityId || drawDiscrete(this.speciesData.abilities, 1)[0];
+      abilityId ||
+      drawDiscrete(this.speciesData.abilities, 1, this.battle.rng)[0];
     calculatePokemonStats(this.pokemonData, this.speciesData);
 
     // set stats (except hp)
@@ -338,7 +339,7 @@ class BattlePokemon {
 
           // thaw chance (turns => chance): 0 => 0%, 1 => 40%, 2 => 80%, 3 => 100%
           const thawChance = this.status.turns * 0.4;
-          const thawRoll = Math.random();
+          const thawRoll = this.battle.rng();
           if (thawRoll < thawChance) {
             this.removeStatus();
           } else {
@@ -348,7 +349,7 @@ class BattlePokemon {
           break;
         case statusConditions.PARALYSIS:
           // 25% chance to be paralyzed
-          const paralysisRoll = Math.random();
+          const paralysisRoll = this.battle.rng();
           if (paralysisRoll < 0.25) {
             this.battle.addToLog(`${this.name} is paralyzed and can't move!`);
             canUseMove = false;
@@ -361,7 +362,7 @@ class BattlePokemon {
           }
           // sleep wakeup chance: 0 turns: 0%, 1 turn: 66%, 2 turns: 100%
           const wakeupChance = this.status.turns * 0.66;
-          const wakeupRoll = Math.random();
+          const wakeupRoll = this.battle.rng();
           if (wakeupRoll < wakeupChance) {
             this.removeStatus();
           } else {
@@ -643,7 +644,7 @@ class BattlePokemon {
     } else {
       typeMultiplier = 0.35;
     }
-    const random = Math.random() * (1 - 0.85) + 0.85;
+    const random = this.battle.rng() * (1 - 0.85) + 0.85;
     const burn = this.status.statusId === statusConditions.BURN ? 0.65 : 1;
 
     let weatherMult = 1;
@@ -735,7 +736,7 @@ class BattlePokemon {
         case statusConditions.FREEZE:
           // thaw chance (turns => chance): 0 => 0%, 1 => 40%, 2 => 80%, 3 => 100%
           const thawChance = this.status.turns * 0.4;
-          const thawRoll = Math.random();
+          const thawRoll = this.battle.rng();
           if (thawRoll < thawChance) {
             this.removeStatus();
           }
@@ -743,7 +744,7 @@ class BattlePokemon {
         case statusConditions.SLEEP:
           // sleep wakeup chance: 0 turns: 0%, 1 turn: 33%, 2 turns: 66%, 3 turns: 100%
           const wakeupChance = this.status.turns * 0.33;
-          const wakeupRoll = Math.random();
+          const wakeupRoll = this.battle.rng();
           if (wakeupRoll < wakeupChance) {
             this.removeStatus();
           }
@@ -860,7 +861,7 @@ class BattlePokemon {
         }
       }
       targets.push(
-        validPokemons[Math.floor(Math.random() * validPokemons.length)],
+        validPokemons[Math.floor(this.battle.rng() * validPokemons.length)],
       );
     } else {
       const targetIndices = getPatternTargetIndices(
@@ -1034,7 +1035,7 @@ class BattlePokemon {
         calculateMissArgs,
       );
 
-      if (Math.random() > calculateMissArgs.hitChance / 100) {
+      if (this.battle.rng() > calculateMissArgs.hitChance / 100) {
         misses.push(target);
       }
     }

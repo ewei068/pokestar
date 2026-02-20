@@ -14,16 +14,17 @@ const { getWhitespace, buildAnsiString } = require("./utils");
  * @template {string | number} T
  * @param {Record<T, number>} probabilityDistribution
  * @param {number} times
+ * @param {(() => number)=} rng
  * @returns {T[]}
  */
-const drawDiscrete = (probabilityDistribution, times) => {
+const drawDiscrete = (probabilityDistribution, times, rng = Math.random) => {
   const results = [];
   const totalProbability = Object.values(probabilityDistribution).reduce(
     (acc, curr) => acc + curr,
-    0
+    0,
   );
   for (let i = 0; i < times; i += 1) {
-    const rand = Math.random() * totalProbability;
+    const rand = rng() * totalProbability;
     let sum = 0;
     let item;
     for (item in probabilityDistribution) {
@@ -55,12 +56,12 @@ const drawDiscrete = (probabilityDistribution, times) => {
 const drawIterable = (
   iterable,
   times,
-  { replacement = true, rng = Math.random } = {}
+  { replacement = true, rng = Math.random } = {},
 ) => {
   // check replacement and times
   if (!replacement && times > iterable.length) {
     throw new Error(
-      "Cannot draw without replacement more times than there are items in the iterable."
+      "Cannot draw without replacement more times than there are items in the iterable.",
     );
   }
 
@@ -121,7 +122,7 @@ const formatProbability = (probability) => {
  */
 const buildRarityProbabilityString = (rarityProbabilityDistribution) => {
   const rarityNames = Object.keys(rarityProbabilityDistribution).map(
-    (rarity) => `[${rarityConfig[rarity].name}]`
+    (rarity) => `[${rarityConfig[rarity].name}]`,
   );
   const headerWhitespace = getWhitespace(rarityNames);
 
@@ -136,7 +137,7 @@ const buildRarityProbabilityString = (rarityProbabilityDistribution) => {
     probabilityString += `${headerWhitespace[i]}`;
     probabilityString += ": ";
     probabilityString += formatProbability(
-      rarityProbabilityDistribution[rarity] ?? 0
+      rarityProbabilityDistribution[rarity] ?? 0,
     );
     if (i < rarityNames.length - 1) {
       probabilityString += "\n";

@@ -118,9 +118,9 @@ const abilitiesToRegister = Object.freeze({
           eventName: battleEventEnum.AFTER_DAMAGE_DEALT,
           callback: ({ target: damagedTarget, source }) => {
             // 10% chance to make the target flinch
-            if (Math.random() < 0.1) {
+            if (battle.rng() < 0.1) {
               battle.addToLog(
-                `${damagedTarget.name} is affected by ${source.name}'s Stench!`
+                `${damagedTarget.name} is affected by ${source.name}'s Stench!`,
               );
               damagedTarget.applyEffect("flinched", 1, source, {});
             }
@@ -152,7 +152,7 @@ const abilitiesToRegister = Object.freeze({
                 pokemon &&
                 !pokemon.isFainted &&
                 (pokemon.hasType(pokemonTypes.WATER) ||
-                  pokemon.hasType(pokemonTypes.DARK))
+                  pokemon.hasType(pokemonTypes.DARK)),
             );
             if (otherWaterDarkAllies.length !== 1) {
               return;
@@ -166,7 +166,7 @@ const abilitiesToRegister = Object.freeze({
                 .reduce(
                   (maxIndex, stat, index, arr) =>
                     stat > arr[maxIndex] ? index : maxIndex,
-                  0
+                  0,
                 ) + 1; // +1 to account for HP
             allyPokemon.applyEffect(effectIdEnum.AQUA_BLESSING, 3, target, {
               // @ts-ignore
@@ -203,9 +203,9 @@ const abilitiesToRegister = Object.freeze({
               return;
             }
 
-            if (Math.random() < 0.5) {
+            if (battle.rng() < 0.5) {
               battle.addToLog(
-                `${target.name}'s Flame Body affects ${source.name}!`
+                `${target.name}'s Flame Body affects ${source.name}!`,
               );
               source.applyStatus(statusConditions.BURN, target);
             }
@@ -237,7 +237,7 @@ const abilitiesToRegister = Object.freeze({
                 pokemon &&
                 !pokemon.isFainted &&
                 (pokemon.hasType(pokemonTypes.FIRE) ||
-                  pokemon.hasType(pokemonTypes.GROUND))
+                  pokemon.hasType(pokemonTypes.GROUND)),
             );
             if (otherFireGroundAllies.length !== 1) {
               return;
@@ -315,7 +315,7 @@ const abilitiesToRegister = Object.freeze({
                   spd: acc.spd + spdStat,
                 };
               },
-              { def: 0, spd: 0 }
+              { def: 0, spd: 0 },
             );
 
             const { def, spd } = enemyTotalDefStats;
@@ -354,7 +354,7 @@ const abilitiesToRegister = Object.freeze({
           },
           conditionCallback: composeConditionCallbacks(
             getIsSourcePokemonCallback(target),
-            getIsInstanceOfType("move")
+            getIsInstanceOfType("move"),
           ),
         }),
       };
@@ -376,7 +376,7 @@ const abilitiesToRegister = Object.freeze({
           callback: ({ activePokemon }) => {
             // heal 15% of max hp
             battle.addToLog(
-              `${activePokemon.name}'s Regenerator restores its health!`
+              `${activePokemon.name}'s Regenerator restores its health!`,
             );
             const healAmount = Math.floor(activePokemon.maxHp * 0.15);
             activePokemon.giveHeal(healAmount, activePokemon, {
@@ -403,7 +403,7 @@ const abilitiesToRegister = Object.freeze({
           callback: () => {
             const allyPokemons = target.getPartyPokemon();
             battle.addToLog(
-              `${target.name}'s Burning Draft increases its allies' combat readiness!`
+              `${target.name}'s Burning Draft increases its allies' combat readiness!`,
             );
             allyPokemons.forEach((ally) => {
               if (!ally) {
@@ -472,13 +472,13 @@ const abilitiesToRegister = Object.freeze({
             abilityInstance.data.charges += 1;
             if (abilityInstance.data.charges < 4) {
               battle.addToLog(
-                `${target.name} is charging its Alpha Core! Current charges: ${abilityInstance.data.charges}/4`
+                `${target.name} is charging its Alpha Core! Current charges: ${abilityInstance.data.charges}/4`,
               );
               return;
             }
 
             battle.addToLog(
-              `${target.name}'s Alpha Core reached maximum charges! Consuming charges to unleash its power! (+25% SpA/SpD, sets Rain, and uses Aqua Impact)`
+              `${target.name}'s Alpha Core reached maximum charges! Consuming charges to unleash its power! (+25% SpA/SpD, sets Rain, and uses Aqua Impact)`,
             );
             abilityInstance.data.charges = 0;
             target.addStatMult("spa", 0.25);
@@ -490,7 +490,7 @@ const abilitiesToRegister = Object.freeze({
               enemyParty,
               targetPatterns.RANDOM,
               1,
-              { moveId: moveIdEnum.AQUA_IMPACT }
+              { moveId: moveIdEnum.AQUA_IMPACT },
             )[0]; // this target isn't the real enemy; but required for the move execution TODO: maybe improve this lol
             if (randomEnemy) {
               target.executeMoveAgainstTarget({
@@ -537,7 +537,7 @@ const abilitiesToRegister = Object.freeze({
           callback: (args) => {
             args.canFaint = false;
             battle.addToLog(
-              `${target.name}'s Alpha Core prevents it from fainting!`
+              `${target.name}'s Alpha Core prevents it from fainting!`,
             );
           },
           conditionCallback: getIsTargetPokemonCallback(target),
@@ -574,13 +574,13 @@ const abilitiesToRegister = Object.freeze({
             abilityInstance.data.charges += 1;
             if (abilityInstance.data.charges < 4) {
               battle.addToLog(
-                `${target.name} is charging its Omega Core! Current charges: ${abilityInstance.data.charges}/4`
+                `${target.name} is charging its Omega Core! Current charges: ${abilityInstance.data.charges}/4`,
               );
               return;
             }
 
             battle.addToLog(
-              `${target.name}'s Omega Core reached maximum charges! Consuming charges to unleash its power! (+25% Atk/Def, sets Sun, and uses Magma Impact)`
+              `${target.name}'s Omega Core reached maximum charges! Consuming charges to unleash its power! (+25% Atk/Def, sets Sun, and uses Magma Impact)`,
             );
             abilityInstance.data.charges = 0;
             target.addStatMult("atk", 0.25);
@@ -592,7 +592,7 @@ const abilitiesToRegister = Object.freeze({
               enemyParty,
               targetPatterns.RANDOM,
               1,
-              { moveId: moveIdEnum.MAGMA_IMPACT }
+              { moveId: moveIdEnum.MAGMA_IMPACT },
             )[0]; // this target isn't the real enemy; but required for the move execution TODO: maybe improve this lol
             if (randomEnemy) {
               target.executeMoveAgainstTarget({
@@ -639,7 +639,7 @@ const abilitiesToRegister = Object.freeze({
           callback: (args) => {
             args.canFaint = false;
             battle.addToLog(
-              `${target.name}'s Omega Core prevents it from fainting!`
+              `${target.name}'s Omega Core prevents it from fainting!`,
             );
           },
           conditionCallback: getIsTargetPokemonCallback(target),
@@ -741,7 +741,7 @@ const abilitiesToRegister = Object.freeze({
             // Damage the attacker for 8% of their max HP
             const damage = Math.max(Math.floor(source.maxHp * 0.08), 1);
             battle.addToLog(
-              `${source.name} was hurt by ${target.name}'s Rough Skin!`
+              `${source.name} was hurt by ${target.name}'s Rough Skin!`,
             );
             source.takeDamage(damage, target, {
               type: "ability",
@@ -750,7 +750,7 @@ const abilitiesToRegister = Object.freeze({
           },
           conditionCallback: composeConditionCallbacks(
             getIsTargetPokemonCallback(target),
-            getIsInstanceOfType("move")
+            getIsInstanceOfType("move"),
           ),
         }),
       };
@@ -778,7 +778,7 @@ const abilitiesToRegister = Object.freeze({
               if (enemy.status.statusId === statusConditions.SLEEP) {
                 const damage = Math.max(Math.floor(enemy.maxHp * 0.03), 1);
                 battle.addToLog(
-                  `${enemy.name} is tormented by ${target.name}'s Bad Dreams!`
+                  `${enemy.name} is tormented by ${target.name}'s Bad Dreams!`,
                 );
                 enemy.takeDamage(damage, target, {
                   type: "ability",
@@ -806,7 +806,7 @@ const abilitiesToRegister = Object.freeze({
           eventName: battleEventEnum.BATTLE_BEGIN,
           callback: () => {
             battle.addToLog(
-              `${target.name}'s Snow Warning creates a hailstorm!`
+              `${target.name}'s Snow Warning creates a hailstorm!`,
             );
             battle.createWeather(weatherConditions.HAIL, target);
           },
@@ -830,7 +830,7 @@ const abilitiesToRegister = Object.freeze({
           callback: ({ amount, target: crTarget }) => {
             if (crTarget.hasType(pokemonTypes.STEEL) && amount > 0) {
               battle.addToLog(
-                `${crTarget.name} is being pulled by ${target.name}'s Magnet Pull!`
+                `${crTarget.name} is being pulled by ${target.name}'s Magnet Pull!`,
               );
               return {
                 amount: Math.floor(amount * 0.2),
@@ -861,7 +861,7 @@ const abilitiesToRegister = Object.freeze({
             const moveData = getMove(moveId);
             if (moveData?.type === pokemonTypes.ELECTRIC) {
               battle.addToLog(
-                `${target.name}'s Motor Drive activated! It's charged with electricity!`
+                `${target.name}'s Motor Drive activated! It's charged with electricity!`,
               );
               target.applyEffect("speUp", 2, target, {});
               return {
@@ -872,7 +872,7 @@ const abilitiesToRegister = Object.freeze({
           },
           conditionCallback: composeConditionCallbacks(
             getIsTargetPokemonCallback(target),
-            getIsInstanceOfType("move")
+            getIsInstanceOfType("move"),
           ),
         }),
       };
@@ -899,7 +899,7 @@ const abilitiesToRegister = Object.freeze({
             ) {
               const healAmount = Math.max(Math.floor(target.maxHp * 0.1), 1);
               battle.addToLog(
-                `${target.name}'s Poison Heal converts poison damage into healing!`
+                `${target.name}'s Poison Heal converts poison damage into healing!`,
               );
               target.giveHeal(healAmount, target, {
                 type: "ability",
@@ -913,7 +913,7 @@ const abilitiesToRegister = Object.freeze({
           },
           conditionCallback: composeConditionCallbacks(
             getIsTargetPokemonCallback(target),
-            getIsInstanceOfType("statusCondition")
+            getIsInstanceOfType("statusCondition"),
           ),
         }),
       };
@@ -935,7 +935,7 @@ const abilitiesToRegister = Object.freeze({
           eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
           callback: () => {
             battle.addToLog(
-              `${target.name}'s Overcoat protects it from weather damage!`
+              `${target.name}'s Overcoat protects it from weather damage!`,
             );
             return {
               damage: 0,
@@ -944,7 +944,7 @@ const abilitiesToRegister = Object.freeze({
           },
           conditionCallback: composeConditionCallbacks(
             getIsTargetPokemonCallback(target),
-            getIsInstanceOfType("weather")
+            getIsInstanceOfType("weather"),
           ),
         }),
         beforeStatusAppliedListenerId: this.registerListenerFunction({
@@ -953,7 +953,7 @@ const abilitiesToRegister = Object.freeze({
           eventName: battleEventEnum.BEFORE_STATUS_APPLY,
           callback: () => {
             battle.addToLog(
-              `${target.name}'s Overcoat protects it from status conditions!`
+              `${target.name}'s Overcoat protects it from status conditions!`,
             );
             return {
               canApply: false,
@@ -983,16 +983,17 @@ const abilitiesToRegister = Object.freeze({
             const allyPokemons = target
               .getPartyPokemon()
               .filter(
-                (pokemon) => pokemon && pokemon !== target && !pokemon.isFainted
+                (pokemon) =>
+                  pokemon && pokemon !== target && !pokemon.isFainted,
               );
             if (!allyPokemons.length) {
               return;
             }
 
             const randomAlly =
-              allyPokemons[Math.floor(Math.random() * allyPokemons.length)];
+              allyPokemons[Math.floor(battle.rng() * allyPokemons.length)];
             battle.addToLog(
-              `${target.name}'s Star Boost increases ${randomAlly.name}'s combat readiness!`
+              `${target.name}'s Star Boost increases ${randomAlly.name}'s combat readiness!`,
             );
             randomAlly.boostCombatReadiness(target, 20);
           },
@@ -1023,10 +1024,10 @@ const abilitiesToRegister = Object.freeze({
             ) {
               const healAmount = Math.max(
                 Math.floor(activePokemon.maxHp * 0.25),
-                1
+                1,
               );
               battle.addToLog(
-                `${activePokemon.name}'s Dry Skin absorbs moisture from the rain!`
+                `${activePokemon.name}'s Dry Skin absorbs moisture from the rain!`,
               );
               activePokemon.giveHeal(healAmount, activePokemon, {
                 type: "ability",
@@ -1038,10 +1039,10 @@ const abilitiesToRegister = Object.freeze({
             ) {
               const damageAmount = Math.max(
                 Math.floor(activePokemon.maxHp * 0.125),
-                1
+                1,
               );
               battle.addToLog(
-                `${activePokemon.name}'s Dry Skin makes it suffer in the sun!`
+                `${activePokemon.name}'s Dry Skin makes it suffer in the sun!`,
               );
               activePokemon.takeDamage(damageAmount, activePokemon, {
                 type: "ability",
@@ -1075,7 +1076,7 @@ const abilitiesToRegister = Object.freeze({
             // Check if the move type matches one of the Pokémon's types (STAB condition)
             if (target.hasType(moveData?.type)) {
               battle.addToLog(
-                `${target.name}'s Adaptability powers up its STAB move!`
+                `${target.name}'s Adaptability powers up its STAB move!`,
               );
               return {
                 damage: Math.floor(damage * 1.3),
@@ -1084,7 +1085,7 @@ const abilitiesToRegister = Object.freeze({
           },
           conditionCallback: composeConditionCallbacks(
             getIsSourcePokemonCallback(target),
-            getIsInstanceOfType("move")
+            getIsInstanceOfType("move"),
           ),
         }),
       };
@@ -1107,7 +1108,7 @@ const abilitiesToRegister = Object.freeze({
             const moveId = damageInfo?.moveId;
             if (getMoveIdHasTag(moveId, "slice")) {
               battle.addToLog(
-                `${target.name}'s Sharpness powers up its slicing move!`
+                `${target.name}'s Sharpness powers up its slicing move!`,
               );
               return {
                 damage: Math.floor(damage * 1.5),
@@ -1116,7 +1117,7 @@ const abilitiesToRegister = Object.freeze({
           },
           conditionCallback: composeConditionCallbacks(
             getIsSourcePokemonCallback(target),
-            getIsInstanceOfType("move")
+            getIsInstanceOfType("move"),
           ),
         }),
       };
@@ -1134,7 +1135,7 @@ const abilitiesToRegister = Object.freeze({
       const baseCallback = composeConditionCallbacks(
         getIsTargetPokemonCallback(target),
         getIsSourceSameTeamCallback(target),
-        getIsNotSourcePokemonCallback(target)
+        getIsNotSourcePokemonCallback(target),
       );
       return {
         beforeDamageListenerId: this.registerListenerFunction({
@@ -1143,7 +1144,7 @@ const abilitiesToRegister = Object.freeze({
           eventName: battleEventEnum.BEFORE_DAMAGE_TAKEN,
           callback: () => {
             battle.addToLog(
-              `${target.name}'s Telepathy prevents ally-infllicted damage!`
+              `${target.name}'s Telepathy prevents ally-infllicted damage!`,
             );
             return {
               damage: 0,
@@ -1161,7 +1162,7 @@ const abilitiesToRegister = Object.freeze({
             const effect = getEffect(effectId);
             if (effect?.type === effectTypes.DEBUFF && effect?.dispellable) {
               battle.addToLog(
-                `${target.name}'s Telepathy prevented ${effect.name} from ${source.name}!`
+                `${target.name}'s Telepathy prevented ${effect.name} from ${source.name}!`,
               );
               return {
                 canAdd: false,
@@ -1184,7 +1185,7 @@ const abilitiesToRegister = Object.freeze({
       "When the user enters battle, its Attack and Speed are lowered for 2 turns.",
     abilityAdd({ battle, target }) {
       battle.addToLog(
-        `${target.name} can't get it going because of its Slow Start!`
+        `${target.name} can't get it going because of its Slow Start!`,
       );
       target.applyEffect("atkDown", 2, target, {});
       target.applyEffect("speDown", 2, target, {});
@@ -1213,7 +1214,7 @@ const abilitiesToRegister = Object.freeze({
 
             if (moveData && target.type1 === moveData.type) {
               battle.addToLog(
-                `${target.name}'s Multitype powers up ${source.name}'s move!`
+                `${target.name}'s Multitype powers up ${source.name}'s move!`,
               );
               return {
                 damage: Math.floor(damage * 1.1),
@@ -1222,7 +1223,7 @@ const abilitiesToRegister = Object.freeze({
           },
           conditionCallback: composeConditionCallbacks(
             getIsSourceSameTeamCallback(target),
-            getIsInstanceOfType("move")
+            getIsInstanceOfType("move"),
           ),
         }),
         moveListenerId: this.registerListenerFunction({
@@ -1234,13 +1235,13 @@ const abilitiesToRegister = Object.freeze({
               battle.addToLog(
                 `${source.name}'s Multitype changes its secondary type to ${
                   typeConfig[moveInstance.type].name
-                }!`
+                }!`,
               );
               source.type2 = moveInstance.type;
             }
           },
           conditionCallback: composeConditionCallbacks(
-            getIsSourcePokemonCallback(target)
+            getIsSourcePokemonCallback(target),
           ),
         }),
       };
@@ -1261,7 +1262,7 @@ const abilitiesToRegister = Object.freeze({
         allyParty,
         targetPatterns.CROSS,
         target.position,
-        { ignoreHittable: true }
+        { ignoreHittable: true },
       );
 
       const validTargets = adjacentAllies.filter(
@@ -1269,18 +1270,18 @@ const abilitiesToRegister = Object.freeze({
           ally &&
           ally !== target &&
           !ally.isFainted &&
-          !ally.hasAbility(abilityIdEnum.IMPOSTER)
+          !ally.hasAbility(abilityIdEnum.IMPOSTER),
       );
 
       if (validTargets.length === 0) {
         battle.addToLog(
-          `${target.name}'s Imposter couldn't find a valid target to copy!`
+          `${target.name}'s Imposter couldn't find a valid target to copy!`,
         );
         return;
       }
 
       const randomTarget =
-        validTargets[Math.floor(Math.random() * validTargets.length)];
+        validTargets[Math.floor(battle.rng() * validTargets.length)];
       battle.addToLog(`${target.name}'s Imposter activated!`);
       target.transformIntoTarget(randomTarget);
     },
@@ -1315,13 +1316,13 @@ const abilitiesToRegister = Object.freeze({
             // Count Pokemon with Minus ability on battlefield
             const allPokemons = Object.values(battle.allPokemon);
             const minusCount = allPokemons.filter((pokemon) =>
-              pokemon?.hasActiveAbility?.(abilityIdEnum.MINUS)
+              pokemon?.hasActiveAbility?.(abilityIdEnum.MINUS),
             ).length;
 
             if (minusCount > 0) {
               const multiplier = 1 + 0.5 * minusCount;
               battle.addToLog(
-                `${target.name}'s Plus ability powers up its move! (${minusCount} Minus Pokémon found)`
+                `${target.name}'s Plus ability powers up its move! (${minusCount} Minus Pokémon found)`,
               );
               return {
                 damage: Math.floor(damage * multiplier),
@@ -1330,7 +1331,7 @@ const abilitiesToRegister = Object.freeze({
           },
           conditionCallback: composeConditionCallbacks(
             getIsSourcePokemonCallback(target),
-            getIsInstanceOfType("move")
+            getIsInstanceOfType("move"),
           ),
         }),
       };
@@ -1354,13 +1355,13 @@ const abilitiesToRegister = Object.freeze({
             // Count Pokemon with Plus ability on battlefield
             const allPokemons = Object.values(battle.allPokemon);
             const plusCount = allPokemons.filter((pokemon) =>
-              pokemon?.hasActiveAbility?.(abilityIdEnum.PLUS)
+              pokemon?.hasActiveAbility?.(abilityIdEnum.PLUS),
             ).length;
 
             if (plusCount > 0) {
               const multiplier = 1 + 0.5 * plusCount;
               battle.addToLog(
-                `${target.name}'s Minus ability powers up its move! (${plusCount} Plus Pokémon found)`
+                `${target.name}'s Minus ability powers up its move! (${plusCount} Plus Pokémon found)`,
               );
               return {
                 damage: Math.floor(damage * multiplier),
@@ -1369,7 +1370,7 @@ const abilitiesToRegister = Object.freeze({
           },
           conditionCallback: composeConditionCallbacks(
             getIsSourcePokemonCallback(target),
-            getIsInstanceOfType("move")
+            getIsInstanceOfType("move"),
           ),
         }),
       };
@@ -1400,14 +1401,14 @@ const abilitiesToRegister = Object.freeze({
             const isUser = source === target;
             if (isUser) {
               battle.addToLog(
-                `${target.name}'s Surging Sand greatly powers up its move!`
+                `${target.name}'s Surging Sand greatly powers up its move!`,
               );
               return {
                 damage: Math.floor(damage * 1.3),
               };
             }
             battle.addToLog(
-              `${target.name}'s Surging Sand powers up ${source.name}'s move!`
+              `${target.name}'s Surging Sand powers up ${source.name}'s move!`,
             );
             return {
               damage: Math.floor(damage * 1.15),
@@ -1416,7 +1417,7 @@ const abilitiesToRegister = Object.freeze({
           conditionCallback: composeConditionCallbacks(
             getIsSourceSameTeamCallback(target),
             getIsInstanceOfType("move"),
-            getIsWeatherCondition(weatherConditions.SANDSTORM, battle)
+            getIsWeatherCondition(weatherConditions.SANDSTORM, battle),
           ),
         }),
       };
@@ -1447,7 +1448,7 @@ const abilitiesToRegister = Object.freeze({
             abilityInstance.data.used = true;
 
             battle.addToLog(
-              `${target.name}'s Eldritch Revival activates! It rises from the brink of death!`
+              `${target.name}'s Eldritch Revival activates! It rises from the brink of death!`,
             );
 
             // Transform into Volo's Giratina Origin
@@ -1476,23 +1477,23 @@ const abilitiesToRegister = Object.freeze({
           eventName: battleEventEnum.AFTER_DAMAGE_DEALT,
           callback: ({ target: damagedTarget, source }) => {
             // 20% chance to flinch
-            if (Math.random() < 0.2) {
+            if (battle.rng() < 0.2) {
               damagedTarget.applyEffect("flinched", 1, source, {});
             }
 
             // 30% chance to confuse
-            if (Math.random() < 0.3) {
+            if (battle.rng() < 0.3) {
               damagedTarget.applyEffect("confused", 1, source, {});
             }
 
             // 40% chance to restrict
-            if (Math.random() < 0.4) {
+            if (battle.rng() < 0.4) {
               damagedTarget.applyEffect("restricted", 1, source, {});
             }
           },
           conditionCallback: composeConditionCallbacks(
             getIsSourcePokemonCallback(target),
-            getIsInstanceOfType("move")
+            getIsInstanceOfType("move"),
           ),
         }),
       };
