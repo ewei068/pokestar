@@ -80,7 +80,11 @@ const battleTargetSelect = async (interaction, data) => {
     if (data.skipTurn) {
       // if npc turn. have npc use move
       if (battle.isNpc(battle.activePokemon.userId)) {
-        const { npc } = battle.users[battle.activePokemon.userId];
+        const npc = state.npcs[battle.activePokemon.userId];
+        if (!npc) {
+          logger.error(`No NPC found for user ${battle.activePokemon.userId}`);
+          battle.activePokemon.skipTurn();
+        }
         npc.action(battle);
       } else {
         battle.activePokemon.skipTurn();
@@ -134,7 +138,7 @@ const battleTargetSelect = async (interaction, data) => {
     targets,
     moveId,
     data.stateId,
-    targetId
+    targetId,
   );
 
   // build target confirmation button
@@ -146,10 +150,10 @@ const battleTargetSelect = async (interaction, data) => {
     },
     ButtonStyle.Success,
     false,
-    eventNames.BATTLE_TARGET_CONFIRM
+    eventNames.BATTLE_TARGET_CONFIRM,
   );
   const confirmButtonActionRow = new ActionRowBuilder().addComponents(
-    confirmButton
+    confirmButton,
   );
 
   // pop first embed and rebuild with target indices and up next indicator

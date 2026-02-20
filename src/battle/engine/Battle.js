@@ -2,6 +2,8 @@
 // TODO: probably fix both
 /* eslint-disable no-param-reassign */
 
+const seedrandom = require("seedrandom");
+const { v4: uuidv4 } = require("uuid");
 const { formatMoney } = require("../../utils/utils");
 const { types: pokemonTypes } = require("../../config/pokemonConfig");
 const {
@@ -66,6 +68,8 @@ class Battle {
    * @param {boolean?=} param0.canAuto
    * @param {number?=} param0.autoBattleCost
    * @param {boolean?=} param0.shouldShowAutoBattle
+   * @param {boolean?=} param0.enableReplay
+   * @param {string?=} param0.id
    */
   constructor({
     moneyMultiplier = 1,
@@ -85,7 +89,36 @@ class Battle {
     canAuto = false,
     autoBattleCost = 999,
     shouldShowAutoBattle = false,
+    enableReplay = false,
+    id,
   } = {}) {
+    this.id = id || uuidv4();
+    this.enableReplay = enableReplay;
+    if (enableReplay) {
+      this.initialParams = {
+        moneyMultiplier,
+        expMultiplier,
+        pokemonExpMultiplier,
+        level,
+        equipmentLevel,
+        rewards,
+        rewardString,
+        dailyRewards,
+        npcId,
+        npcType,
+        difficulty,
+        isPvp,
+        canAuto,
+        autoBattleCost,
+        shouldShowAutoBattle,
+        enableReplay,
+        id,
+
+        // TODO: handle win/lose callbacks
+      };
+    }
+    this.rng = seedrandom(this.id);
+
     // initial
     this.baseMoney = 100;
     this.baseExp = 50;
@@ -214,7 +247,7 @@ class Battle {
           trainer,
           pokemonData,
           teamName,
-          partyPokemons.length + 1
+          partyPokemons.length + 1,
         );
         partyPokemons.push(pokemonInstance);
         this.allPokemon[pokemonInstance.id] = pokemonInstance;
@@ -268,7 +301,7 @@ class Battle {
         if (pokemon && !pokemon.isFainted) {
           pokemon.combatReadiness = Math.min(
             MAX_CR,
-            pokemon.combatReadiness + pokemon.effectiveSpeed() * minTicks
+            pokemon.combatReadiness + pokemon.effectiveSpeed() * minTicks,
           );
         }
       }
@@ -305,7 +338,7 @@ class Battle {
         pokemonOrder.push(minTicksPokemon);
         allEligiblePokemon.splice(
           allEligiblePokemon.indexOf(minTicksPokemon),
-          1
+          1,
         );
       } else {
         break;
@@ -364,11 +397,11 @@ class Battle {
       : `<@${this.activePokemon.userId}>`;
     if (this.activePokemon.canMove()) {
       this.log.push(
-        `**[Turn ${this.turn}] It is ${userString}'s ${this.activePokemon.name}'s turn.**`
+        `**[Turn ${this.turn}] It is ${userString}'s ${this.activePokemon.name}'s turn.**`,
       );
     } else {
       this.log.push(
-        `**[Turn ${this.turn}] ${userString}'s ${this.activePokemon.name} is unable to move.**`
+        `**[Turn ${this.turn}] ${userString}'s ${this.activePokemon.name} is unable to move.**`,
       );
     }
   }
@@ -483,10 +516,10 @@ class Battle {
         }
         return acc;
       },
-      1
+      1,
     );
     this.moneyReward = Math.floor(
-      this.baseMoney * this.moneyMultiplier * amuletCoinMoneyMultiplier
+      this.baseMoney * this.moneyMultiplier * amuletCoinMoneyMultiplier,
     );
     const expShareExpMultiplier = Object.values(this.allPokemon).reduce(
       (acc, pokemon) => {
@@ -495,10 +528,10 @@ class Battle {
         }
         return acc;
       },
-      1
+      1,
     );
     this.expReward = Math.floor(
-      this.baseExp * this.expMultiplier * expShareExpMultiplier
+      this.baseExp * this.expMultiplier * expShareExpMultiplier,
     );
     // calculate pokemon exp by summing defeated pokemon's levels
     this.pokemonExpReward =
@@ -508,7 +541,7 @@ class Battle {
             return acc + Math.max(12, this.minLevel || pokemon.level);
           }
           return acc;
-        }, 0) * this.pokemonExpMultiplier
+        }, 0) * this.pokemonExpMultiplier,
       ) || 1;
 
     this.addToLog(
@@ -516,7 +549,7 @@ class Battle {
         this.expReward
       } exp, and ${
         this.pokemonExpReward
-      } BASE Pokemon exp. Losers recieved half the amount.`
+      } BASE Pokemon exp. Losers recieved half the amount.`,
     );
   }
 
@@ -618,7 +651,7 @@ class Battle {
                 this.weather.source,
                 {
                   type: "weather",
-                }
+                },
               );
             }
           }
@@ -642,7 +675,7 @@ class Battle {
                 this.weather.source,
                 {
                   type: "weather",
-                }
+                },
               );
             }
           }
@@ -680,12 +713,13 @@ class Battle {
   }
 
   /**
+   * TODO: remove this, all NPC tracking should be done externally, not within the Battle engine
    * @param {string} userId
    * @returns {boolean}
    */
   isNpc(userId) {
     const user = this.users[userId];
-    return user?.npc !== undefined;
+    return user?.isNpc;
   }
 
   /**

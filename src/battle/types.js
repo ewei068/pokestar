@@ -55,7 +55,7 @@
  *  username: string,
  *  discriminator: string,
  *  id: string,
- *  npc?: BattleNPC,
+ *  isNpc?: boolean,
  *  nextPhase?: (Battle) => any
  * }} BattleUser
  */

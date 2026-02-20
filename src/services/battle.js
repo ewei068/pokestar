@@ -207,7 +207,7 @@ const getStartTurnSend = async (battle, stateId) => {
             if (err) {
               logger.warn(
                 // @ts-ignore
-                `Failed to get trainer for user ${user.id} after battle`
+                `Failed to get trainer for user ${user.id} after battle`,
               );
               continue;
             }
@@ -231,7 +231,7 @@ const getStartTurnSend = async (battle, stateId) => {
             ) {
               addRewards(trainer, battle.dailyRewards, allRewards);
               getOrSetDefault(trainer.defeatedNPCsToday, battle.npcId, []).push(
-                battle.difficulty
+                battle.difficulty,
               );
               modified = true;
             }
@@ -241,21 +241,20 @@ const getStartTurnSend = async (battle, stateId) => {
               !defeatedDifficulties.includes(battle.difficulty)
             ) {
               getOrSetDefault(trainer.defeatedNPCs, battle.npcId, []).push(
-                battle.difficulty
+                battle.difficulty,
               );
               modified = true;
             }
 
             // attempt to add rewards
             if (modified) {
-              const { data: newTrainer, err: updateErr } = await updateTrainer(
-                trainer
-              );
+              const { data: newTrainer, err: updateErr } =
+                await updateTrainer(trainer);
 
               if (updateErr) {
                 logger.warn(
                   // @ts-ignore
-                  `Failed to update daily trainer for user ${user.id} after battle`
+                  `Failed to update daily trainer for user ${user.id} after battle`,
                 );
                 continue;
               } else {
@@ -277,7 +276,7 @@ const getStartTurnSend = async (battle, stateId) => {
                   npcId: battle.npcId,
                   difficulty: battle.difficulty,
                   type: battle.npcType,
-                }
+                },
               );
               if (!eventRes.err && eventRes.data) {
                 trainer = eventRes.data;
@@ -290,7 +289,7 @@ const getStartTurnSend = async (battle, stateId) => {
             const levelUps = [];
             // add pokemon rewards
             for (const pokemon of Object.values(battle.allPokemon).filter(
-              (p) => p.originalUserId === trainer.userId
+              (p) => p.originalUserId === trainer.userId,
             )) {
               // get db pokemon
               const dbPokemon = await getPokemon(trainer, pokemon.id);
@@ -307,7 +306,7 @@ const getStartTurnSend = async (battle, stateId) => {
               const trainResult = await addPokemonExpAndEVs(
                 trainer,
                 dbPokemon.data,
-                thisPokemonExpReward
+                thisPokemonExpReward,
               );
               if (trainResult.err) {
                 continue;
@@ -335,7 +334,7 @@ const getStartTurnSend = async (battle, stateId) => {
               .join(", ")} received rewards for their victory:**\n`;
             content += getFlattenedRewardsString(
               rewardRecipients[0].rewards,
-              false
+              false,
             );
           }
         }
@@ -352,9 +351,8 @@ const getStartTurnSend = async (battle, stateId) => {
       if (!battle.isNpc(user.id)) {
         promises.push(
           (async () => {
-            const { data: trainer, err: getTrainerErr } = await getTrainer(
-              user
-            );
+            const { data: trainer, err: getTrainerErr } =
+              await getTrainer(user);
             if (getTrainerErr) {
               return;
             }
@@ -362,7 +360,7 @@ const getStartTurnSend = async (battle, stateId) => {
               trainer,
               type: battle.isPvp ? "pvp" : battle.npcType || "other",
             });
-          })()
+          })(),
         );
       }
     }
@@ -426,7 +424,7 @@ const instantAutoBattle = async (battle, stateId, interaction) => {
 const nextAutoTurn = async (
   battle,
   stateId,
-  { messageRef, interaction, retry = 0, totalTurns = 0 }
+  { messageRef, interaction, retry = 0, totalTurns = 0 },
 ) => {
   if (totalTurns > 300) {
     logger.error("Auto turn timed out");
@@ -469,7 +467,7 @@ const nextAutoTurn = async (
         messageRef: newMessageRef,
         totalTurns: totalTurns + 1,
       }),
-    1000
+    1000,
   );
 };
 
@@ -484,7 +482,7 @@ const startAuto = async ({ battle, stateId, interaction, user }) => {
   const { data: trainer } = await getTrainer(user);
   const canAutoRes = getCanTrainerAutoBattle(
     trainer,
-    battle.autoData.autoBattleCost
+    battle.autoData.autoBattleCost,
   );
   if (canAutoRes.err) {
     return { err: canAutoRes.err };
@@ -514,7 +512,7 @@ const startAuto = async ({ battle, stateId, interaction, user }) => {
   errorlessAsync(() =>
     nextAutoTurn(battle, stateId, {
       interaction,
-    })
+    }),
   );
 };
 
@@ -566,7 +564,7 @@ const buildPveSend = async ({
       page,
       page === maxPages,
       scrollData,
-      eventNames.PVE_SCROLL
+      eventNames.PVE_SCROLL,
     );
     send.components.push(scrollRow);
 
@@ -580,7 +578,7 @@ const buildPveSend = async ({
       "Select an NPC to battle:",
       npcSelectRowData,
       eventNames.PVE_SELECT,
-      false
+      false,
     );
     send.components.push(npcSelectRow);
   } else if (view === "npc") {
@@ -611,11 +609,11 @@ const buildPveSend = async ({
           ...difficultySelectData,
           difficulty,
         },
-      })
+      }),
     );
     const difficultyRow = buildButtonActionRow(
       difficultyButtonConfigs,
-      eventNames.PVE_ACCEPT
+      eventNames.PVE_ACCEPT,
     );
     send.components.push(difficultyRow);
 
@@ -635,7 +633,7 @@ const buildPveSend = async ({
     ];
     const returnRow = buildButtonActionRow(
       returnButtonConfigs,
-      eventNames.PVE_SCROLL
+      eventNames.PVE_SCROLL,
     );
 
     state.npcId = option;
@@ -670,7 +668,7 @@ const buildPveSend = async ({
     }
 
     // add npc to battle
-    const npc = new BasicNPC(npcData, state.difficulty);
+    const npc = new BasicNPC(npcData, state.difficulty, state);
     npc.setPokemon(npcData, state.difficulty);
     const rewardMultipliers =
       npcDifficultyData.rewardMultipliers ||
@@ -694,7 +692,7 @@ const buildPveSend = async ({
       npc.party.pokemons,
       "NPC",
       npc.party.rows,
-      npc.party.cols
+      npc.party.cols,
     );
     battle.addTeam("Player", false);
     battle.addTrainer(newTrainerResult.data, validate.data, "Player");
@@ -718,7 +716,7 @@ const buildPveSend = async ({
     ];
     const difficultyRow = buildButtonActionRow(
       difficultyButtonConfigs,
-      eventNames.PVE_ACCEPT
+      eventNames.PVE_ACCEPT,
     );
 
     const returnData = {
@@ -733,7 +731,7 @@ const buildPveSend = async ({
     ];
     const returnRow = buildButtonActionRow(
       returnButtonConfigs,
-      eventNames.PVE_SELECT
+      eventNames.PVE_SELECT,
     );
 
     state.endBattleComponents = [difficultyRow, returnRow];
@@ -786,7 +784,7 @@ const buildDungeonSend = async ({
       "Select a Dungeon to battle:",
       dungeonSelectRowData,
       eventNames.DUNGEON_SELECT,
-      false
+      false,
     );
     send.components.push(dungeonSelectRow);
   } else if (view === "dungeon") {
@@ -816,11 +814,11 @@ const buildDungeonSend = async ({
           ...difficultySelectData,
           difficulty,
         },
-      })
+      }),
     );
     const difficultyRow = buildButtonActionRow(
       difficultyButtonConfigs,
-      eventNames.DUNGEON_ACCEPT
+      eventNames.DUNGEON_ACCEPT,
     );
     send.components.push(difficultyRow);
 
@@ -838,7 +836,7 @@ const buildDungeonSend = async ({
     const returnRow = buildButtonActionRow(
       returnButtonConfigs,
       // im lazy and using the same event name
-      eventNames.DUNGEON_ACCEPT
+      eventNames.DUNGEON_ACCEPT,
     );
 
     state.dungeonId = option;
@@ -872,7 +870,7 @@ const buildDungeonSend = async ({
     }
 
     // add npc to battle
-    const npc = new DungeonNPC(dungeonData, state.difficulty);
+    const npc = new DungeonNPC(dungeonData, state.difficulty, state);
     npc.setPokemon();
     const rewardMultipliers =
       dungeonDifficultyData.rewardMultipliers ||
@@ -898,7 +896,7 @@ const buildDungeonSend = async ({
       npc.party.pokemons,
       "Dungeon",
       npc.party.rows,
-      npc.party.cols
+      npc.party.cols,
     );
     battle.addTeam("Player", false);
     battle.addTrainer(newTrainerResult.data, validate.data, "Player");
@@ -922,7 +920,7 @@ const buildDungeonSend = async ({
     ];
     const difficultyRow = buildButtonActionRow(
       difficultyButtonConfigs,
-      eventNames.DUNGEON_ACCEPT
+      eventNames.DUNGEON_ACCEPT,
     );
     state.endBattleComponents = [difficultyRow];
 
@@ -1009,7 +1007,7 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
   }
 
   // add npc to battle
-  const npc = new TowerNPC(battleTowerData, battleTowerData.difficulty);
+  const npc = new TowerNPC(battleTowerData, battleTowerData.difficulty, state);
   npc.setPokemon(battleTowerData, battleTowerData.difficulty);
   const rewardMultipliers =
     npcDifficultyData.rewardMultipliers ||
@@ -1032,7 +1030,7 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
     npc.party.pokemons,
     "Battle Tower",
     npc.party.rows,
-    npc.party.cols
+    npc.party.cols,
   );
   battle.addTeam("Player", false);
   battle.addTrainer(trainer.data, validate.data, "Player");
@@ -1056,7 +1054,7 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
   const returnRow = buildButtonActionRow(
     returnButtonConfigs,
     // im lazy and using the same event name
-    eventNames.TOWER_SCROLL
+    eventNames.TOWER_SCROLL,
   );
   state.endBattleComponents = [returnRow];
 
@@ -1110,7 +1108,7 @@ const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
     towerStage,
     towerStage === maxPages,
     scrollData,
-    eventNames.TOWER_SCROLL
+    eventNames.TOWER_SCROLL,
   );
   send.components.push(scrollRow);
 
@@ -1128,7 +1126,7 @@ const buildBattleTowerSend = async ({ stateId = null, user = null } = {}) => {
   ];
   const battleRow = buildButtonActionRow(
     battleButtonConfigs,
-    eventNames.TOWER_ACCEPT
+    eventNames.TOWER_ACCEPT,
   );
   send.components.push(battleRow);
 

@@ -14,18 +14,23 @@ class NPC {
   constructor(
     npcData,
     difficulty,
+    state,
     // eslint-disable-next-line no-unused-vars
-    { userId = null, user = null, party = null } = {}
+    { userId = null, user = null, party = null } = {},
   ) {
     this.userId = userId || uuidv4();
     this.user = {
       username: npcData.name,
       discriminator: "0",
-      npc: this,
+      isNpc: true,
       id: this.userId,
       // data: npcData,
       // difficulty: difficulty,
     };
+    if (!state.npcs) {
+      state.npcs = {};
+    }
+    state.npcs[this.userId] = this;
 
     // this.setPokemon(npcData, difficulty);
   }
@@ -65,7 +70,7 @@ class BasicNPC extends NPC {
     const pokemons = [];
     const pokemonIds = drawIterable(
       npcDifficultyData.pokemonIds,
-      numPokemon - 1
+      numPokemon - 1,
     );
     for (const pokemonId of pokemonIds) {
       const pokemon = generateRandomPokemon(
@@ -74,10 +79,11 @@ class BasicNPC extends NPC {
         drawUniform(
           npcDifficultyData.minLevel,
           npcDifficultyData.maxLevel,
-          1
-        )[0]
+          1,
+        )[0],
       );
       // give random id
+      // @ts-ignore
       pokemon._id = uuidv4();
       pokemons.push(pokemon);
     }
@@ -85,8 +91,9 @@ class BasicNPC extends NPC {
     const acePokemon = generateRandomPokemon(
       this.userId,
       npcDifficultyData.aceId,
-      npcDifficultyData.maxLevel + 1
+      npcDifficultyData.maxLevel + 1,
     );
+    // @ts-ignore
     acePokemon._id = uuidv4();
     pokemons.push(acePokemon);
 
@@ -103,8 +110,8 @@ class BasicNPC extends NPC {
 }
 
 class DungeonNPC extends NPC {
-  constructor(dungeonData, difficulty) {
-    super(dungeonData, difficulty);
+  constructor(dungeonData, difficulty, state) {
+    super(dungeonData, difficulty, state);
     this.phaseNumber = 0;
     this.phases = dungeonData.difficulties[difficulty].phases;
     this.dungeonData = dungeonData;
@@ -125,9 +132,10 @@ class DungeonNPC extends NPC {
       const pokemon = generateRandomPokemon(
         this.userId,
         pokemonData.speciesId,
-        pokemonData.level
+        pokemonData.level,
       );
       // give random id
+      // @ts-ignore
       pokemon._id = uuidv4();
       this.party.pokemons[pokemonData.position - 1] = pokemon;
     }
@@ -149,9 +157,9 @@ class DungeonNPC extends NPC {
 }
 
 class TowerNPC extends BasicNPC {
-  constructor(towerData, difficulty) {
+  constructor(towerData, difficulty, state) {
     const npcData = npcConfig[towerData.npcId];
-    super(npcData, difficulty);
+    super(npcData, difficulty, state);
   }
 
   setPokemon(towerData, difficulty) {
@@ -161,8 +169,8 @@ class TowerNPC extends BasicNPC {
 }
 
 class RaidNPC extends NPC {
-  constructor(raidData, difficulty, raidUserId, boss) {
-    super(raidData, difficulty, {
+  constructor(raidData, difficulty, raidUserId, boss, state) {
+    super(raidData, difficulty, state, {
       userId: raidUserId,
     });
     this.raidData = raidData;
@@ -182,7 +190,7 @@ class RaidNPC extends NPC {
           : generateRandomPokemon(
               this.userId,
               pokemonData.speciesId,
-              pokemonData.level
+              pokemonData.level,
             );
       // give random id
       pokemon._id = pokemon._id || uuidv4();
