@@ -119,6 +119,8 @@ class Battle {
       };
     }
     this.rng = seedrandom(this.id);
+    /** @type {ActionPayload[]} */
+    this.actions = [];
 
     // initial
     this.baseMoney = 100;
@@ -555,6 +557,16 @@ class Battle {
   }
 
   /**
+   * @param {ActionPayload} payload
+   */
+  logAction(payload) {
+    if (!this.enableReplay) {
+      return;
+    }
+    this.actions.push(payload);
+  }
+
+  /**
    * @typedef {{ action: "skipTurn" } |
    *  { action: "useMove", moveId: MoveIdEnum, targetPokemonId: string }
    * } ActionPayload
@@ -579,8 +591,11 @@ class Battle {
         logger.error(`Unknown action: ${payload.action}`);
         break;
     }
-    if (!success) {
+    if (success) {
+      this.logAction(payload);
+    } else {
       logger.error(`Failed to perform action: ${payload.action}`);
+      this.logAction({ action: "skipTurn" });
       this.activePokemon.skipTurn();
     }
     this.nextTurn();
