@@ -626,7 +626,9 @@ const movesToRegisterRaw = {
       if (fireGroundAllies.length === 0) {
         return;
       }
-      const [randomAlly] = drawIterable(fireGroundAllies, 1);
+      const [randomAlly] = drawIterable(fireGroundAllies, 1, {
+        rng: battle.rng,
+      });
       const hitCount = allTargets.reduce(
         (count, target) =>
           !missedTargets.includes(target) ? count + 1 : count,
@@ -1059,7 +1061,9 @@ const movesToRegisterRaw = {
 
         // Select a random move on cooldown
         const [randomMoveId] = /** @type {MoveIdEnum[]} */ (
-          drawIterable(movesOnCooldown, 1)
+          drawIterable(movesOnCooldown, 1, {
+            rng: battle.rng,
+          })
         );
         target.reduceMoveCooldown(randomMoveId, 99, source);
         // Apply the Encore effect, forcing the target to only use the selected move
@@ -1901,7 +1905,9 @@ const movesToRegisterRaw = {
 
         // If there are moves on cooldown, reset a random one
         if (highestCooldownMoves.length > 0) {
-          const [randomMoveId] = drawIterable(highestCooldownMoves, 1);
+          const [randomMoveId] = drawIterable(highestCooldownMoves, 1, {
+            rng: this.battle.rng,
+          });
           const resetAmount = ally.moveIds[randomMoveId].cooldown;
           ally.reduceMoveCooldown(randomMoveId, resetAmount, source);
         }

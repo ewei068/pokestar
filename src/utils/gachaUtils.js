@@ -14,10 +14,15 @@ const { getWhitespace, buildAnsiString } = require("./utils");
  * @template {string | number} T
  * @param {Record<T, number>} probabilityDistribution
  * @param {number} times
- * @param {(() => number)=} rng
+ * @param {object} param2
+ * @param {(() => number)?=} param2.rng
  * @returns {T[]}
  */
-const drawDiscrete = (probabilityDistribution, times, rng = Math.random) => {
+const drawDiscrete = (
+  probabilityDistribution,
+  times,
+  { rng = Math.random } = {},
+) => {
   const results = [];
   const totalProbability = Object.values(probabilityDistribution).reduce(
     (acc, curr) => acc + curr,

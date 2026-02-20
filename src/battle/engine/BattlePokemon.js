@@ -225,7 +225,7 @@ class BattlePokemon {
     this.pokemonData.moveIds = moveIds;
     this.pokemonData.abilityId =
       abilityId ||
-      drawDiscrete(this.speciesData.abilities, 1, this.battle.rng)[0];
+      drawDiscrete(this.speciesData.abilities, 1, { rng: this.battle.rng })[0];
     calculatePokemonStats(this.pokemonData, this.speciesData);
 
     // set stats (except hp)

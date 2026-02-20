@@ -399,7 +399,7 @@ class MoveInstance {
     probability = 1,
   }) {
     let shouldTrigger = false;
-    const roll = source.battle.rng();
+    const roll = this.battle.rng();
     if (roll < probability) {
       shouldTrigger = true;
     } else if (
@@ -588,7 +588,7 @@ class MoveInstance {
     triggerEvents = true,
   }) {
     const shouldChangeCombatReadiness =
-      !missedTargets.includes(target) && source.battle.rng() < probability;
+      !missedTargets.includes(target) && this.battle.rng() < probability;
 
     if (shouldChangeCombatReadiness) {
       if (action === "boost") {
