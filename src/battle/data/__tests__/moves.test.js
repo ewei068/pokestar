@@ -269,3 +269,70 @@ describe("Night Slash", () => {
     );
   });
 });
+
+describe("Facade", () => {
+  let battle;
+  let source;
+
+  beforeEach(() => {
+    ({ battle } = createMockBattle({
+      autoStart: true,
+      team1Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+      team2Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+    }));
+    source = battle.activePokemon;
+    source.acc = HIGH_ACCURACY;
+    givePokemonMove(source, moveIdEnum.FACADE);
+  });
+
+  it("should deal damage without status", () => {
+    const target = useMoveOnValidTarget(battle, source, moveIdEnum.FACADE);
+    expect(target).toBeDamaged();
+  });
+
+  it("should deal close to double damage when the user has a status condition", () => {
+    const target = getValidTargetForMove(battle, source, moveIdEnum.FACADE);
+    target.hp = VERY_HIGH_HP;
+    target.maxHp = VERY_HIGH_HP;
+
+    battle.performAction({
+      action: "useMove",
+      moveId: moveIdEnum.FACADE,
+      targetPokemonId: target.id,
+    });
+
+    const normalDamage = VERY_HIGH_HP - target.hp;
+    expect(normalDamage).toBeGreaterThan(0);
+
+    battle.initialParams.id = battle.id;
+    const clone = battle.cloneAndReset();
+    clone.start();
+
+    const cloneSource = clone.activePokemon;
+    cloneSource.acc = HIGH_ACCURACY;
+    givePokemonMove(cloneSource, moveIdEnum.FACADE);
+
+    const cloneTarget = clone.allPokemon[target.id];
+    cloneTarget.hp = VERY_HIGH_HP;
+    cloneTarget.maxHp = VERY_HIGH_HP;
+
+    cloneSource.status = {
+      statusId: statusConditions.POISON,
+      source: cloneSource,
+      turns: 0,
+    };
+
+    clone.performAction({
+      action: "useMove",
+      moveId: moveIdEnum.FACADE,
+      targetPokemonId: cloneTarget.id,
+    });
+
+    const statusDamage = cloneTarget.maxHp - cloneTarget.hp;
+    expect(statusDamage).toBe(normalDamage * 2);
+  });
+});

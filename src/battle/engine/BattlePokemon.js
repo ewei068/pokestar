@@ -62,7 +62,6 @@ class BattlePokemon {
     }
     pokemonData = calculatePokemonStats(pokemonData, this.speciesData);
     this.pokemonData = { ...pokemonData };
-    this.originalPokemonData = { ...pokemonData };
     this.id = pokemonData._id.toString();
     this.userId = trainer.userId;
     this.originalUserId = trainer.userId;
