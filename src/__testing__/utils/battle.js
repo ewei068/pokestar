@@ -36,33 +36,25 @@ const useMoveOnValidTarget = (battle, source, moveId) => {
 const describeProbability = ({ probability }, callback) => {
   const cases = [];
   if (probability > 0.01) {
-    cases.push({ triggered: true, mockValue: probability - 0.01 });
+    cases.push({ triggered: true, rngValue: probability - 0.01 });
   }
   if (probability < 0.99) {
-    cases.push({ triggered: false, mockValue: probability + 0.01 });
+    cases.push({ triggered: false, rngValue: probability + 0.01 });
   }
 
   describe.each(cases)(
     "when probability roll $triggered",
-    ({ triggered, mockValue }) => {
-      beforeEach(() => {
-        jest.spyOn(Math, "random").mockReturnValue(mockValue);
-      });
-
-      afterEach(() => {
-        jest.restoreAllMocks();
-      });
-
-      callback(triggered);
+    ({ triggered, rngValue }) => {
+      callback(triggered, rngValue);
     },
   );
 };
 
 const describeStatusProbability = ({ statusId, probability, setup }) => {
   describe(`${statusId} (${probability * 100}% chance)`, () => {
-    describeProbability({ probability }, (triggered) => {
+    describeProbability({ probability }, (triggered, rngValue) => {
       it(`should ${triggered ? "" : "not "}apply ${statusId}`, () => {
-        const { target } = setup();
+        const { target } = setup(rngValue);
         if (triggered) {
           expect(target.status.statusId).toBe(statusId);
         } else {
@@ -75,9 +67,9 @@ const describeStatusProbability = ({ statusId, probability, setup }) => {
 
 const describeEffectProbability = ({ effectId, probability, setup }) => {
   describe(`${effectId} (${probability * 100}% chance)`, () => {
-    describeProbability({ probability }, (triggered) => {
+    describeProbability({ probability }, (triggered, rngValue) => {
       it(`should ${triggered ? "" : "not "}apply ${effectId}`, () => {
-        const { target } = setup();
+        const { target } = setup(rngValue);
         if (triggered) {
           expect(target.effectIds[effectId]).toBeDefined();
         } else {

@@ -67,7 +67,8 @@ describe("Fire Punch", () => {
   describeStatusProbability({
     statusId: statusConditions.BURN,
     probability: 0.5,
-    setup: () => {
+    setup: (rngValue) => {
+      battle.rng = jest.fn().mockReturnValue(rngValue);
       source.acc = HIGH_ACCURACY;
       const target = useMoveOnValidTarget(
         battle,
@@ -97,7 +98,8 @@ describe("Confusion", () => {
   describeEffectProbability({
     effectId: "confused",
     probability: 0.25,
-    setup: () => {
+    setup: (rngValue) => {
+      battle.rng = jest.fn().mockReturnValue(rngValue);
       source.acc = HIGH_ACCURACY;
       const target = useMoveOnValidTarget(battle, source, moveIdEnum.CONFUSION);
       return { target };
