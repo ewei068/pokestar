@@ -95,29 +95,28 @@ class Battle {
   } = {}) {
     this.id = id || uuidv4();
     this.enableReplay = enableReplay;
-    if (enableReplay) {
-      this.initialParams = {
-        moneyMultiplier,
-        expMultiplier,
-        pokemonExpMultiplier,
-        level,
-        equipmentLevel,
-        rewards,
-        rewardString,
-        dailyRewards,
-        npcId,
-        npcType,
-        difficulty,
-        isPvp,
-        canAuto,
-        autoBattleCost,
-        shouldShowAutoBattle,
-        enableReplay,
-        id,
+    this.initialParams = {
+      moneyMultiplier,
+      expMultiplier,
+      pokemonExpMultiplier,
+      level,
+      equipmentLevel,
+      rewards,
+      rewardString,
+      dailyRewards,
+      npcId,
+      npcType,
+      difficulty,
+      isPvp,
+      canAuto,
+      autoBattleCost,
+      shouldShowAutoBattle,
+      enableReplay,
+      id,
 
-        // TODO: handle win/lose callbacks
-      };
-    }
+      // TODO: handle win/lose callbacks
+    };
+
     /** @type {() => number} */
     this.rng = seedrandom(this.id);
     /** @type {ActionPayload[]} */
@@ -224,15 +223,13 @@ class Battle {
     if (this.users[trainer.userId]) {
       return;
     }
-
     this.teams[teamName].userIds.push(trainer.userId);
     this.users[trainer.userId] = {
       teamName,
+      parties: [],
       ...trainer.user,
     };
     this.userIds.push(trainer.userId);
-
-    this.addPokemons(trainer, pokemons, teamName, rows, cols);
   }
 
   /**
@@ -243,6 +240,11 @@ class Battle {
    * @param {number} cols
    */
   addPokemons(trainer, pokemons, teamName, rows, cols) {
+    this.users[trainer.userId].parties.push({
+      pokemons,
+      rows,
+      cols,
+    });
     const partyPokemons = [];
     for (const pokemonData of pokemons) {
       if (pokemonData) {
@@ -265,6 +267,25 @@ class Battle {
       rows,
       cols,
     };
+  }
+
+  cloneAndReset() {
+    const newBattle = new Battle(this.initialParams);
+    for (const [teamName, team] of Object.entries(this.teams)) {
+      newBattle.addTeam(teamName, team.isNpc);
+    }
+    for (const [, user] of Object.entries(this.users)) {
+      const firstParty = user.parties[0];
+      newBattle.addTrainer(
+        user,
+        // @ts-ignore
+        firstParty.pokemons,
+        user.teamName,
+        firstParty.rows,
+        firstParty.cols,
+      );
+    }
+    return newBattle;
   }
 
   increaseCombatReadiness() {
@@ -378,7 +399,6 @@ class Battle {
       battle: this,
     });
 
-    // begin turn
     this.beginTurn();
   }
 

@@ -57,6 +57,11 @@
  *  id: string,
  *  isNpc?: boolean,
  *  nextPhase?: (Battle) => any
+ *  parties: {
+ *    rows: number,
+ *    cols: number,
+ *    pokemons: Pokemon[],
+ *  }[]
  * }} BattleUser
  */
 
