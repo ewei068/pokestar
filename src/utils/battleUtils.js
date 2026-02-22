@@ -751,9 +751,17 @@ const getEffectIdHasTag = (effectId, tag) => {
  * @param {BattlePokemon} source
  * @param {BattlePokemon} primaryTarget
  * @param {BattlePokemon[]} targetsHit
+ * @param {object} options
+ * @param {(() => number)=} options.rng
  * @returns {number}
  */
-const calculateTurnHeuristic = (moveId, source, primaryTarget, targetsHit) => {
+const calculateTurnHeuristic = (
+  moveId,
+  source,
+  primaryTarget,
+  targetsHit,
+  { rng = Math.random } = {},
+) => {
   const moveData = getMove(moveId);
 
   let heuristic = 0;
@@ -788,6 +796,7 @@ const calculateTurnHeuristic = (moveId, source, primaryTarget, targetsHit) => {
         primaryTarget,
         allTargets: targetsHit,
         target,
+        rng,
       });
       heuristic += damage;
     }
@@ -811,8 +820,7 @@ const calculateTurnHeuristic = (moveId, source, primaryTarget, targetsHit) => {
   }
   heuristic *= tierMultiplier;
 
-  // calculate nonce for small random variation
-  const nonce = Math.random();
+  const nonce = rng();
   return heuristic + nonce;
 };
 
@@ -876,13 +884,16 @@ const npcTurnAction = (battle) => {
         // @ts-ignore
         moveId,
       });
-      const targetsHit = source.getMoveExecuteTargets(moveInstance, target);
+      const targetsHit = source.getMoveExecuteTargets(moveInstance, target, {
+        rng: Math.random,
+      });
       const heuristic = calculateTurnHeuristic(
         // @ts-ignore
         moveId,
         source,
         target,
         targetsHit,
+        { rng: Math.random },
       );
       if (heuristic > bestHeuristic) {
         bestMoveId = moveId;

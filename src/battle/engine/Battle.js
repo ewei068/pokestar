@@ -230,6 +230,7 @@ class Battle {
       ...trainer.user,
     };
     this.userIds.push(trainer.userId);
+    this.addPokemons(trainer, pokemons, teamName, rows, cols);
   }
 
   /**
@@ -274,10 +275,13 @@ class Battle {
     for (const [teamName, team] of Object.entries(this.teams)) {
       newBattle.addTeam(teamName, team.isNpc);
     }
-    for (const [, user] of Object.entries(this.users)) {
+    for (const [userId, user] of Object.entries(this.users)) {
+      // TODO: phases
       const firstParty = user.parties[0];
+      // eslint-disable-next-line no-unused-vars
+      const { parties, ...userProps } = user;
       newBattle.addTrainer(
-        user,
+        { userId, user: userProps },
         // @ts-ignore
         firstParty.pokemons,
         user.teamName,
@@ -1020,6 +1024,55 @@ class Battle {
    */
   emitEvent(eventName, args) {
     this.eventHandler.emit(eventName, args || {});
+  }
+
+  takeSnapshot() {
+    const pokemonSnapshots = {};
+    for (const [id, pokemon] of Object.entries(this.allPokemon)) {
+      pokemonSnapshots[id] = {
+        id: pokemon.id,
+        speciesId: pokemon.speciesId,
+        name: pokemon.name,
+        hp: pokemon.hp,
+        maxHp: pokemon.maxHp,
+        level: pokemon.level,
+        isFainted: pokemon.isFainted,
+        combatReadiness: pokemon.combatReadiness,
+        position: pokemon.position,
+        teamName: pokemon.teamName,
+        acc: pokemon.acc,
+        eva: pokemon.eva,
+        type1: pokemon.type1,
+        type2: pokemon.type2,
+        targetable: pokemon.targetable,
+        hittable: pokemon.hittable,
+        incapacitated: pokemon.incapacitated,
+        restricted: pokemon.restricted,
+        allStatData: JSON.parse(JSON.stringify(pokemon.allStatData)),
+        status: {
+          statusId: pokemon.status.statusId,
+          turns: pokemon.status.turns,
+        },
+        effectIds: Object.fromEntries(
+          Object.entries(pokemon.effectIds).map(([effectId, effect]) => [
+            effectId,
+            { duration: effect.duration },
+          ]),
+        ),
+        abilityId: pokemon.ability.abilityId,
+        heldItemId: pokemon.heldItem?.heldItemId ?? null,
+        moveIds: JSON.parse(JSON.stringify(pokemon.moveIds)),
+      };
+    }
+    return {
+      turn: this.turn,
+      activePokemonId: this.activePokemon?.id ?? null,
+      weather: {
+        weatherId: this.weather.weatherId,
+        duration: this.weather.duration,
+      },
+      pokemon: pokemonSnapshots,
+    };
   }
 
   clearLog() {

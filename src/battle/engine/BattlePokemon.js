@@ -61,7 +61,8 @@ class BattlePokemon {
       }
     }
     pokemonData = calculatePokemonStats(pokemonData, this.speciesData);
-    this.pokemonData = pokemonData;
+    this.pokemonData = { ...pokemonData };
+    this.originalPokemonData = { ...pokemonData };
     this.id = pokemonData._id.toString();
     this.userId = trainer.userId;
     this.originalUserId = trainer.userId;
@@ -581,6 +582,7 @@ class BattlePokemon {
    * @param {number=} param0.offTargetDamageMultiplier
    * @param {number=} param0.missedTargetDamageMultiplier
    * @param {number=} param0.backTargetDamageMultiplier
+   * @param {(() => number)=} param0.rng
    * @returns {number}
    */
   calculateMoveDamage({
@@ -600,6 +602,7 @@ class BattlePokemon {
     offTargetDamageMultiplier = 0.85,
     backTargetDamageMultiplier = 0.85,
     missedTargetDamageMultiplier = 0.6,
+    rng = null,
   }) {
     const power = powerOverride || move.power;
     const { level } = this;
@@ -644,7 +647,8 @@ class BattlePokemon {
     } else {
       typeMultiplier = 0.35;
     }
-    const random = this.battle.rng() * (1 - 0.85) + 0.85;
+    const effectiveRng = rng || this.battle.rng;
+    const random = effectiveRng() * (1 - 0.85) + 0.85;
     const burn = this.status.statusId === statusConditions.BURN ? 0.65 : 1;
 
     let weatherMult = 1;
@@ -841,13 +845,14 @@ class BattlePokemon {
    * @param {object} options
    * @param {MoveInstanceId=} options.moveId
    * @param {boolean=} options.ignoreHittable
+   * @param {(() => number)=} options.rng
    * @returns {BattlePokemon[]} targets
    */
   getPatternTargets(
     targetParty,
     targetPattern,
     targetPosition,
-    { moveId = null, ignoreHittable = false } = {},
+    { moveId = null, ignoreHittable = false, rng = null } = {},
   ) {
     const targets = [];
 
@@ -860,8 +865,9 @@ class BattlePokemon {
           validPokemons.push(pokemon);
         }
       }
+      const effectiveRng = rng || this.battle.rng;
       targets.push(
-        validPokemons[Math.floor(this.battle.rng() * validPokemons.length)],
+        validPokemons[Math.floor(effectiveRng() * validPokemons.length)],
       );
     } else {
       const targetIndices = getPatternTargetIndices(
@@ -947,9 +953,11 @@ class BattlePokemon {
   /**
    * @param {MoveInstance} moveInstance
    * @param {BattlePokemon?} target
+   * @param {object} options
+   * @param {(() => number)=} options.rng
    * @returns {BattlePokemon[]}
    */
-  getMoveExecuteTargets(moveInstance, target) {
+  getMoveExecuteTargets(moveInstance, target, { rng = null } = {}) {
     if (!target) {
       return [];
     }
@@ -962,7 +970,7 @@ class BattlePokemon {
       targetParty,
       this.getMovePattern(moveInstance),
       target.position,
-      { moveId: moveInstance.id },
+      { moveId: moveInstance.id, rng },
     );
   }
 
