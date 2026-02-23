@@ -1182,7 +1182,7 @@ const movesToRegisterRaw = {
     tier: moveTiers.POWER,
     damageType: damageTypes.PHYSICAL,
     description:
-      "The user slashes the target with sharp claws in an X pattern. It has no additional effects.",
+      "The user slashes the target with sharp draconic claws in an X pattern.",
     execute() {
       this.genericDealAllDamage();
     },

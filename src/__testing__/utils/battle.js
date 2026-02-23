@@ -71,9 +71,9 @@ const describeEffectProbability = ({ effectId, probability, setup }) => {
       it(`should ${triggered ? "" : "not "}apply ${effectId}`, () => {
         const { target } = setup(rngValue);
         if (triggered) {
-          expect(target.effectIds[effectId]).toBeDefined();
+          expect(target).toHaveEffect(effectId);
         } else {
-          expect(target.effectIds[effectId]).toBeUndefined();
+          expect(target).not.toHaveEffect(effectId);
         }
       });
     });

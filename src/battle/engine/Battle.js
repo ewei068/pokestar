@@ -829,11 +829,15 @@ class Battle {
         }
         break;
       default:
-        // return all pokemon
         for (const teamName in this.parties) {
           const party = this.parties[teamName];
           for (const pokemon of party.pokemons) {
-            if (this.isPokemonTargetable(pokemon, moveId)) {
+            if (
+              this.isPokemonTargetable(pokemon, moveId) &&
+              // TODO: probably should check targeting restrictions on both teams instead of this lol
+              (moveData.targetPosition !== targetPositions.NON_SELF ||
+                pokemon !== source)
+            ) {
               eligibleTargets.push(pokemon);
             }
           }
