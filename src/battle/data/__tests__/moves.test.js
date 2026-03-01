@@ -542,6 +542,206 @@ describe("Bug Bite", () => {
   });
 });
 
+describe("Triple Axel", () => {
+  let battle;
+  let source;
+
+  beforeEach(() => {
+    ({ battle } = createMockBattle({
+      autoStart: true,
+      team1Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+      team2Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+    }));
+    source = battle.activePokemon;
+    source.acc = HIGH_ACCURACY;
+    givePokemonMove(source, moveIdEnum.TRIPLE_AXEL);
+  });
+
+  it("should hit 3 times with each hit dealing more damage than the last", () => {
+    const target = getValidTargetForMove(
+      battle,
+      source,
+      moveIdEnum.TRIPLE_AXEL,
+    );
+    target.hp = VERY_HIGH_HP;
+    target.maxHp = VERY_HIGH_HP;
+
+    const takeDamageSpy = jest.spyOn(target, "takeDamage");
+
+    battle.performAction({
+      action: "useMove",
+      moveId: moveIdEnum.TRIPLE_AXEL,
+      targetPokemonId: target.id,
+    });
+
+    expect(takeDamageSpy).toHaveBeenCalledTimes(3);
+    const damages = /** @type {number[]} */ (
+      takeDamageSpy.mock.calls.map((call) => call[0])
+    );
+    expect(damages[0]).toBeGreaterThan(0);
+    expect(damages[1]).toBeGreaterThan(damages[0]);
+    expect(damages[2]).toBeGreaterThan(damages[1]);
+  });
+});
+
+describe("Solar Blade", () => {
+  let battle;
+  let source;
+
+  beforeEach(() => {
+    ({ battle } = createMockBattle({
+      autoStart: true,
+      team1Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+      team2Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+    }));
+    source = battle.activePokemon;
+    source.acc = HIGH_ACCURACY;
+    givePokemonMove(source, moveIdEnum.SOLAR_BLADE);
+  });
+
+  it("should apply absorbLight and not deal damage on the first turn", () => {
+    const target = getValidTargetForMove(
+      battle,
+      source,
+      moveIdEnum.SOLAR_BLADE,
+    );
+
+    battle.performAction({
+      action: "useMove",
+      moveId: moveIdEnum.SOLAR_BLADE,
+      targetPokemonId: target.id,
+    });
+
+    expect(source).toHaveEffect("absorbLight");
+    expect(target).not.toBeDamaged();
+    expect(source.moveIds[moveIdEnum.SOLAR_BLADE].cooldown).toBe(0);
+  });
+
+  it("should deal damage and remove absorbLight on the second turn", () => {
+    const target = getValidTargetForMove(
+      battle,
+      source,
+      moveIdEnum.SOLAR_BLADE,
+    );
+
+    battle.performAction({
+      action: "useMove",
+      moveId: moveIdEnum.SOLAR_BLADE,
+      targetPokemonId: target.id,
+    });
+    expect(source).toHaveEffect("absorbLight");
+
+    source.combatReadiness = 100;
+    battle.nextTurn();
+
+    battle.performAction({
+      action: "useMove",
+      moveId: moveIdEnum.SOLAR_BLADE,
+      targetPokemonId: target.id,
+    });
+
+    expect(source).not.toHaveEffect("absorbLight");
+    expect(target).toBeDamaged();
+  });
+});
+
+describe("Mystical Power", () => {
+  const setupMysticalPower = (sourceSpeciesId) => {
+    const { battle } = createMockBattle({
+      autoStart: false,
+      team1Party: createMockPokemonParty({
+        size: 3,
+        speciesIds: [
+          sourceSpeciesId,
+          ALWAYS_HITTABLE_SPECIES,
+          ALWAYS_HITTABLE_SPECIES,
+        ],
+      }),
+      team2Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+    });
+
+    const team1Pokemons = battle.parties.Team1.pokemons.filter(
+      (p) => p !== null,
+    );
+    const [source, ...allies] = team1Pokemons;
+
+    source.combatReadiness = 100;
+    battle.start();
+    expect(battle.activePokemon).toBe(source);
+
+    source.acc = HIGH_ACCURACY;
+    givePokemonMove(source, moveIdEnum.MYSTICAL_POWER);
+
+    return { battle, source, allies };
+  };
+
+  it("should deal damage", () => {
+    const { battle, source } = setupMysticalPower(pokemonIdEnum.UXIE);
+    const target = useMoveOnValidTarget(
+      battle,
+      source,
+      moveIdEnum.MYSTICAL_POWER,
+    );
+    expect(target).toBeDamaged();
+  });
+
+  it("should apply defUp and spdUp to all allies when used by Uxie", () => {
+    const { battle, source, allies } = setupMysticalPower(pokemonIdEnum.UXIE);
+    useMoveOnValidTarget(battle, source, moveIdEnum.MYSTICAL_POWER);
+
+    for (const ally of [source, ...allies]) {
+      expect(ally).toHaveEffect("defUp");
+      expect(ally).toHaveEffect("spdUp");
+    }
+  });
+
+  it("should apply regeneration to all allies when used by Mesprit", () => {
+    const { battle, source, allies } = setupMysticalPower(
+      pokemonIdEnum.MESPRIT,
+    );
+    useMoveOnValidTarget(battle, source, moveIdEnum.MYSTICAL_POWER);
+
+    for (const ally of [source, ...allies]) {
+      expect(ally).toHaveEffect("regeneration");
+    }
+  });
+
+  it("should apply atkUp and spaUp to all allies when used by Azelf", () => {
+    const { battle, source, allies } = setupMysticalPower(pokemonIdEnum.AZELF);
+    useMoveOnValidTarget(battle, source, moveIdEnum.MYSTICAL_POWER);
+
+    for (const ally of [source, ...allies]) {
+      expect(ally).toHaveEffect("atkUp");
+      expect(ally).toHaveEffect("spaUp");
+    }
+  });
+
+  it("should not apply any effects to allies when used by a non-lake guardian", () => {
+    const { battle, source, allies } = setupMysticalPower(
+      ALWAYS_HITTABLE_SPECIES,
+    );
+    useMoveOnValidTarget(battle, source, moveIdEnum.MYSTICAL_POWER);
+
+    for (const ally of allies) {
+      expect(ally).not.toHaveEffect("defUp");
+      expect(ally).not.toHaveEffect("spdUp");
+      expect(ally).not.toHaveEffect("regeneration");
+      expect(ally).not.toHaveEffect("atkUp");
+      expect(ally).not.toHaveEffect("spaUp");
+    }
+  });
+});
+
 describe("Encore", () => {
   let battle;
   let source;
@@ -585,5 +785,218 @@ describe("Encore", () => {
         0,
       );
     }
+  });
+});
+
+describe("Transform", () => {
+  let battle;
+  let source;
+
+  beforeEach(() => {
+    ({ battle } = createMockBattle({
+      autoStart: true,
+      team1Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+      team2Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+    }));
+    source = battle.activePokemon;
+    givePokemonMove(source, moveIdEnum.TRANSFORM);
+  });
+
+  it("should transform into the target and gain 50% combat readiness", () => {
+    const target = getValidTargetForMove(battle, source, moveIdEnum.TRANSFORM);
+    const originalSpeciesId = source.speciesId;
+    expect(originalSpeciesId).not.toBe(target.speciesId);
+
+    const boostCrSpy = jest.spyOn(source, "boostCombatReadiness");
+
+    battle.performAction({
+      action: "useMove",
+      moveId: moveIdEnum.TRANSFORM,
+      targetPokemonId: target.id,
+    });
+
+    expect(source.speciesId).toBe(target.speciesId);
+    expect(boostCrSpy).toHaveBeenCalledWith(source, 50);
+  });
+
+  it("should not transform when targeting a boss Pokemon", () => {
+    const BOSS_SPECIES = pokemonIdEnum.TEMPLE_GUARDIAN_CLOYSTER;
+    const { battle: bossBattle } = createMockBattle({
+      autoStart: false,
+      team1Party: createMockPokemonParty({
+        size: 1,
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+      team2Party: createMockPokemonParty({
+        size: 1,
+        speciesIds: [BOSS_SPECIES],
+      }),
+    });
+
+    const bossSource = bossBattle.parties.Team1.pokemons.find(
+      (p) => p !== null,
+    );
+    bossSource.combatReadiness = 100;
+    bossBattle.start();
+    expect(bossBattle.activePokemon).toBe(bossSource);
+
+    givePokemonMove(bossSource, moveIdEnum.TRANSFORM);
+
+    const bossTarget = getValidTargetForMove(
+      bossBattle,
+      bossSource,
+      moveIdEnum.TRANSFORM,
+    );
+    const originalSpeciesId = bossSource.speciesId;
+
+    bossBattle.performAction({
+      action: "useMove",
+      moveId: moveIdEnum.TRANSFORM,
+      targetPokemonId: bossTarget.id,
+    });
+
+    expect(bossSource.speciesId).toBe(originalSpeciesId);
+  });
+});
+
+describe("Spacial Rend", () => {
+  const setupSpacialRend = (sourceSpeciesId) => {
+    const { battle } = createMockBattle({
+      autoStart: false,
+      team1Party: createMockPokemonParty({
+        size: 4,
+        speciesIds: [
+          sourceSpeciesId,
+          ALWAYS_HITTABLE_SPECIES,
+          ALWAYS_HITTABLE_SPECIES,
+          ALWAYS_HITTABLE_SPECIES,
+        ],
+      }),
+      team2Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+    });
+
+    const team1Pokemons = battle.parties.Team1.pokemons.filter(
+      (p) => p !== null,
+    );
+    const [source, adjacentAlly, ...nonAdjacentAllies] = team1Pokemons;
+
+    source.combatReadiness = 100;
+    battle.start();
+    expect(battle.activePokemon).toBe(source);
+
+    source.acc = HIGH_ACCURACY;
+    givePokemonMove(source, moveIdEnum.SPACIAL_REND);
+
+    return { battle, source, adjacentAlly, nonAdjacentAllies };
+  };
+
+  it("should deal damage and apply spatial blessing to adjacent allies", () => {
+    const { battle, source, adjacentAlly, nonAdjacentAllies } =
+      setupSpacialRend(ALWAYS_HITTABLE_SPECIES);
+    const target = useMoveOnValidTarget(
+      battle,
+      source,
+      moveIdEnum.SPACIAL_REND,
+    );
+
+    expect(target).toBeDamaged();
+    expect(adjacentAlly).toHaveEffect("spatialBlessing");
+    for (const ally of nonAdjacentAllies) {
+      expect(ally).not.toHaveEffect("spatialBlessing");
+    }
+  });
+
+  it("should apply spatial blessing to all allies including non-adjacent when used by Palkia Origin", () => {
+    const { battle, source, adjacentAlly, nonAdjacentAllies } =
+      setupSpacialRend(pokemonIdEnum.PALKIA_ORIGIN);
+    useMoveOnValidTarget(battle, source, moveIdEnum.SPACIAL_REND);
+
+    expect(adjacentAlly).toHaveEffect("spatialBlessing");
+    for (const ally of nonAdjacentAllies) {
+      expect(ally).toHaveEffect("spatialBlessing");
+    }
+  });
+});
+
+describe("Roar of Time", () => {
+  const setupRoarOfTime = (sourceSpeciesId) => {
+    const { battle } = createMockBattle({
+      autoStart: false,
+      team1Party: createMockPokemonParty({
+        size: 3,
+        speciesIds: [
+          ALWAYS_HITTABLE_SPECIES,
+          sourceSpeciesId,
+          ALWAYS_HITTABLE_SPECIES,
+        ],
+      }),
+      team2Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+    });
+
+    const team1Pokemons = battle.parties.Team1.pokemons.filter(
+      (p) => p !== null,
+    );
+    const [ally1, source, ally2] = team1Pokemons;
+
+    source.combatReadiness = 100;
+    battle.start();
+    expect(battle.activePokemon).toBe(source);
+
+    source.acc = HIGH_ACCURACY;
+    givePokemonMove(source, moveIdEnum.ROAR_OF_TIME);
+
+    return { battle, source, allies: [ally1, ally2] };
+  };
+
+  it("should deal damage", () => {
+    const { battle, source } = setupRoarOfTime(pokemonIdEnum.DIALGA);
+    const target = useMoveOnValidTarget(
+      battle,
+      source,
+      moveIdEnum.ROAR_OF_TIME,
+    );
+    expect(target).toBeDamaged();
+  });
+
+  it("should reduce the highest cooldown move for adjacent allies", () => {
+    const { battle, source, allies } = setupRoarOfTime(pokemonIdEnum.DIALGA);
+
+    for (const ally of allies) {
+      const allyMoveIds = Object.keys(ally.moveIds);
+      ally.moveIds[allyMoveIds[0]].cooldown = 5;
+      if (allyMoveIds[1]) {
+        ally.moveIds[allyMoveIds[1]].cooldown = 3;
+      }
+    }
+
+    useMoveOnValidTarget(battle, source, moveIdEnum.ROAR_OF_TIME);
+
+    for (const ally of allies) {
+      const allyMoveIds = Object.keys(ally.moveIds);
+      expect(ally.moveIds[allyMoveIds[0]].cooldown).toBe(0);
+      if (allyMoveIds[1]) {
+        expect(ally.moveIds[allyMoveIds[1]].cooldown).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it("should apply recharge effect when used by Dialga", () => {
+    const { battle, source } = setupRoarOfTime(pokemonIdEnum.DIALGA);
+    useMoveOnValidTarget(battle, source, moveIdEnum.ROAR_OF_TIME);
+    expect(source).toHaveEffect("recharge");
+  });
+
+  it("should not apply recharge effect when used by Dialga Origin", () => {
+    const { battle, source } = setupRoarOfTime(pokemonIdEnum.DIALGA_ORIGIN);
+    useMoveOnValidTarget(battle, source, moveIdEnum.ROAR_OF_TIME);
+    expect(source).not.toHaveEffect("recharge");
   });
 });

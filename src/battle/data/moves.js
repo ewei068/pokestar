@@ -2440,7 +2440,7 @@ const movesToRegisterRaw = {
         // @ts-ignore
         if (source.speciesId === pokemonIdEnum.VOLO_GIRATINA_ALTERED) {
           battle.addToLog(
-            `${source.name} vanishes into the distortion and empowers its allies!`,
+            `${source.name} vanishes into the Distortion Realm and empowers its allies!`,
           );
           // Raise evasion of all allies for 2 turns
           const allies = source
@@ -2452,8 +2452,10 @@ const movesToRegisterRaw = {
           // @ts-ignore
         } else if (source.speciesId === pokemonIdEnum.VOLO_GIRATINA_ORIGIN) {
           battle.addToLog(
-            `${source.name} vanishes into the distortion with greater power!`,
+            `${source.name} vanishes into the Distortion Realm with greater power!`,
           );
+        } else {
+          battle.addToLog(`${source.name} vanishes into the Distortion Realm!`);
         }
       } else {
         source.removeEffect(effectIdEnum.VANISHED);
