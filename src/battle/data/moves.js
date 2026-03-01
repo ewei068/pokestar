@@ -1254,6 +1254,7 @@ const movesToRegisterRaw = {
       }
 
       // If we haven't reached max hits, execute the move again
+      // TODO: create a better system for multi-hit moves
       if (currentHit < maxHits) {
         source.executeMoveAgainstTarget({
           moveId: this.id,

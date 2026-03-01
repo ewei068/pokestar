@@ -588,6 +588,39 @@ describe("Triple Axel", () => {
     expect(damages[1]).toBeGreaterThan(damages[0]);
     expect(damages[2]).toBeGreaterThan(damages[1]);
   });
+
+  it("should not error when the only target faints before all hits execute", () => {
+    const { battle: singleTargetBattle } = createMockBattle({
+      autoStart: true,
+      team1Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+      team2Party: createMockPokemonParty({
+        size: 1,
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+    });
+    const attacker = singleTargetBattle.activePokemon;
+    attacker.acc = HIGH_ACCURACY;
+    givePokemonMove(attacker, moveIdEnum.TRIPLE_AXEL);
+
+    const target = getValidTargetForMove(
+      singleTargetBattle,
+      attacker,
+      moveIdEnum.TRIPLE_AXEL,
+    );
+    target.hp = 1;
+
+    expect(() => {
+      useMoveOnValidTarget(
+        singleTargetBattle,
+        attacker,
+        moveIdEnum.TRIPLE_AXEL,
+      );
+    }).not.toThrow();
+
+    expect(target.isFainted).toBe(true);
+  });
 });
 
 describe("Solar Blade", () => {
@@ -1255,6 +1288,35 @@ describe("Tri Attack", () => {
       statusId: statusConditions.FREEZE,
       probability: 0.33,
     });
+  });
+
+  it("should not error when the only target faints before all hits execute", () => {
+    const { battle: singleTargetBattle } = createMockBattle({
+      autoStart: true,
+      team1Party: createMockPokemonParty({
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+      team2Party: createMockPokemonParty({
+        size: 1,
+        speciesIds: [ALWAYS_HITTABLE_SPECIES],
+      }),
+    });
+    const attacker = singleTargetBattle.activePokemon;
+    attacker.acc = HIGH_ACCURACY;
+    givePokemonMove(attacker, moveIdEnum.TRI_ATTACK);
+
+    const target = getValidTargetForMove(
+      singleTargetBattle,
+      attacker,
+      moveIdEnum.TRI_ATTACK,
+    );
+    target.hp = 1;
+
+    expect(() => {
+      useMoveOnValidTarget(singleTargetBattle, attacker, moveIdEnum.TRI_ATTACK);
+    }).not.toThrow();
+
+    expect(target.isFainted).toBe(true);
   });
 });
 

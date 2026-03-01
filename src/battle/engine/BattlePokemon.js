@@ -459,6 +459,13 @@ class BattlePokemon {
     // calculate miss and targets
     const allTargets = this.getMoveExecuteTargets(moveInstance, primaryTarget);
     moveInstance.allTargets = allTargets;
+    if (allTargets.length === 0) {
+      return {
+        allTargets: [],
+        missedTargets: [],
+        err: "No targets found.",
+      };
+    }
     const missedTargets = this.getMisses(moveInstance);
     moveInstance.missedTargets = missedTargets;
 
@@ -863,6 +870,9 @@ class BattlePokemon {
         if (ignoreHittable || this.battle.isPokemonHittable(pokemon, moveId)) {
           validPokemons.push(pokemon);
         }
+      }
+      if (validPokemons.length === 0) {
+        return [];
       }
       const effectiveRng = rng || this.battle.rng;
       targets.push(
