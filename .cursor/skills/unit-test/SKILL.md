@@ -69,6 +69,12 @@ describe("Feature Name", () => {
 });
 ```
 
+## Relevant Skills
+
+For additional instructions, refer to the following skills on how to create tests:
+
+- `test-move`: Create tests for Pokemon Battle moves
+
 ## Running After Implementation
 
 After implementing a feature that has tests, run the relevant test suite:
