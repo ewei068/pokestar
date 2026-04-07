@@ -132,7 +132,7 @@ const upsertMythic = async (trainer, mythic) => {
 
     if (res.upsertedCount !== 1) {
       logger.warn(
-        `Error updating ${mythicData.name} for ${trainer.user.username}`
+        `Error updating ${mythicData.name} for ${trainer.user.username}`,
       );
     } else {
       logger.info(`Updated ${mythicData.name} for ${trainer.user.username}`);
@@ -379,7 +379,7 @@ const buildMewSend = async ({ user = null, tab = "basic" } = {}) => {
   ];
   const tabButtons = buildButtonActionRow(
     tabButtonConfigs,
-    eventNames.MEW_BUTTON
+    eventNames.MEW_BUTTON,
   );
   send.components.push(tabButtons);
 
@@ -401,7 +401,7 @@ const buildMewSend = async ({ user = null, tab = "basic" } = {}) => {
       selectData,
       eventNames.MEW_SELECT,
       false,
-      extraFields
+      extraFields,
     );
     send.components.push(selectRow);
   }
@@ -513,7 +513,7 @@ const buildCelebiSend = async (user) => {
         data: {},
       },
     ],
-    eventNames.CELEBI_TIME_TRAVEL
+    eventNames.CELEBI_TIME_TRAVEL,
   );
   send.components.push(timeTravelButton);
 
@@ -559,7 +559,7 @@ const buildTimeTravelSend = async (user) => {
   const embed = buildNewPokemonEmbed(
     pokemon,
     backpackItems.POKEBALL,
-    getItems(trainer, backpackItems.POKEBALL)
+    getItems(trainer, backpackItems.POKEBALL),
   );
 
   const send = {
@@ -575,7 +575,7 @@ const DEOXYS_SPECIES_IDS = deoxysMythicConfig.speciesIds;
 
 const getDeoxys = async (trainer) => {
   const deoxysRes = await getMythic(trainer, DEOXYS_SPECIES_IDS);
-  const deoxys = deoxysRes.data;
+  let deoxys = deoxysRes.data;
 
   let modified = false;
   const speciesId = (deoxys && deoxys.speciesId) || DEOXYS_SPECIES_IDS[0];
@@ -643,7 +643,7 @@ const buildDeoxysSend = async (user) => {
   });
   const tabButtons = buildButtonActionRow(
     tabButtonConfigs,
-    eventNames.DEOXYS_FORM_SELECT
+    eventNames.DEOXYS_FORM_SELECT,
   );
   send.components.push(tabButtons);
 
@@ -884,7 +884,7 @@ const useWish = async (user, { wishId, pokemon }) => {
       const updateStatsRes = await calculateAndUpdatePokemonStats(
         pokemon,
         pokemonConfig[pokemon.speciesId],
-        true
+        true,
       );
       if (updateStatsRes.err) {
         return { err: updateStatsRes.err };
@@ -908,7 +908,7 @@ const useWish = async (user, { wishId, pokemon }) => {
         return { err: updateRes.err };
       }
       result = `**${pokemon.name}'s** ability was changed to **${getAbilityName(
-        newAbilityId
+        newAbilityId,
       )}**!`;
       break;
     case "allies":
@@ -922,7 +922,7 @@ const useWish = async (user, { wishId, pokemon }) => {
         },
         {
           [backpackCategories.POKEBALLS]: {},
-        }
+        },
       );
       rewards = { backpack: backpackRewards };
       addRewards(trainer, rewards);
@@ -984,7 +984,7 @@ const getArceus = async (trainer) => {
     if (numUnown === 0) {
       return {
         err: `First, Arceus demands its arms of creation! Catch one ${buildSpeciesNameString(
-          pokemonIdEnum.UNOWN
+          pokemonIdEnum.UNOWN,
         )}!`,
       };
     }
@@ -1003,7 +1003,7 @@ const getArceus = async (trainer) => {
         filter: { speciesId: speciesIdToFind },
         pageSize: 1,
         allowNone: true,
-      })
+      }),
     );
     const results = await Promise.allSettled(promises);
     let numNotFound = 0;
@@ -1127,7 +1127,7 @@ const onArceusFormSelect = async (user, speciesId) => {
   const updateRes = await calculateAndUpdatePokemonStats(
     newArceus,
     newArceusData,
-    true
+    true,
   );
   if (updateRes.err) {
     return { err: updateRes.err };
