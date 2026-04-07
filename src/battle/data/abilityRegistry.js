@@ -6,25 +6,29 @@ const allAbilities = {};
 
 /**
  * @param {Record<AbilityIdEnum, Ability<any>>} abilities
+ * @param {boolean=} silent
  */
-const registerAbilities = (abilities) => {
+const registerAbilities = (abilities, silent = false) => {
   let abilitiesRegistered = 0;
   Object.entries(abilities).forEach(([abilityId, ability]) => {
     allAbilities[abilityId] = ability;
     abilitiesRegistered += 1;
   });
-  logger.info(`Registered ${abilitiesRegistered} abilities.`);
+  if (!silent) {
+    logger.info(`Registered ${abilitiesRegistered} abilities.`);
+  }
 };
 
 /**
  * @param {Record<AbilityIdEnum, object>} abilityConfig
+ * @param {boolean=} silent
  */
-const registerLegacyAbilities = (abilityConfig) => {
+const registerLegacyAbilities = (abilityConfig, silent = false) => {
   let abilitiesRegistered = 0;
   Object.entries(abilityConfig).forEach(([abilityId, ability]) => {
     if (allAbilities[abilityId]) {
       logger.warn(
-        `Ability ${abilityId} ${allAbilities[abilityId].name} already exists. Continuing...`
+        `Ability ${abilityId} ${allAbilities[abilityId].name} already exists. Continuing...`,
       );
       return;
     }
@@ -34,7 +38,9 @@ const registerLegacyAbilities = (abilityConfig) => {
     };
     abilitiesRegistered += 1;
   });
-  logger.info(`Registered ${abilitiesRegistered} legacy abilities.`);
+  if (!silent) {
+    logger.info(`Registered ${abilitiesRegistered} legacy abilities.`);
+  }
 };
 
 /**

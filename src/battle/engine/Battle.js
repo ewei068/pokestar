@@ -2,6 +2,8 @@
 // TODO: probably fix both
 /* eslint-disable no-param-reassign */
 
+const seedrandom = require("seedrandom");
+const { v4: uuidv4 } = require("uuid");
 const { formatMoney } = require("../../utils/utils");
 const { types: pokemonTypes } = require("../../config/pokemonConfig");
 const {
@@ -13,6 +15,7 @@ const { battleEventEnum, heldItemIdEnum } = require("../../enums/battleEnums");
 const { getMove } = require("../data/moveRegistry");
 const { BattleEventHandler } = require("./events");
 const { BattlePokemon } = require("./BattlePokemon");
+const { logger } = require("../../log");
 
 const MAX_CR = 100;
 
@@ -66,6 +69,8 @@ class Battle {
    * @param {boolean?=} param0.canAuto
    * @param {number?=} param0.autoBattleCost
    * @param {boolean?=} param0.shouldShowAutoBattle
+   * @param {boolean?=} param0.enableReplay
+   * @param {string?=} param0.id
    */
   constructor({
     moneyMultiplier = 1,
@@ -85,7 +90,38 @@ class Battle {
     canAuto = false,
     autoBattleCost = 999,
     shouldShowAutoBattle = false,
+    enableReplay = false,
+    id,
   } = {}) {
+    this.id = id || uuidv4();
+    this.enableReplay = enableReplay;
+    this.initialParams = {
+      moneyMultiplier,
+      expMultiplier,
+      pokemonExpMultiplier,
+      level,
+      equipmentLevel,
+      rewards,
+      rewardString,
+      dailyRewards,
+      npcId,
+      npcType,
+      difficulty,
+      isPvp,
+      canAuto,
+      autoBattleCost,
+      shouldShowAutoBattle,
+      enableReplay,
+      id,
+
+      // TODO: handle win/lose callbacks
+    };
+
+    /** @type {() => number} */
+    this.rng = seedrandom(this.id);
+    /** @type {ActionPayload[]} */
+    this.actions = [];
+
     // initial
     this.baseMoney = 100;
     this.baseExp = 50;
@@ -187,14 +223,13 @@ class Battle {
     if (this.users[trainer.userId]) {
       return;
     }
-
     this.teams[teamName].userIds.push(trainer.userId);
     this.users[trainer.userId] = {
       teamName,
+      parties: [],
       ...trainer.user,
     };
     this.userIds.push(trainer.userId);
-
     this.addPokemons(trainer, pokemons, teamName, rows, cols);
   }
 
@@ -206,6 +241,11 @@ class Battle {
    * @param {number} cols
    */
   addPokemons(trainer, pokemons, teamName, rows, cols) {
+    this.users[trainer.userId].parties.push({
+      pokemons,
+      rows,
+      cols,
+    });
     const partyPokemons = [];
     for (const pokemonData of pokemons) {
       if (pokemonData) {
@@ -214,7 +254,7 @@ class Battle {
           trainer,
           pokemonData,
           teamName,
-          partyPokemons.length + 1
+          partyPokemons.length + 1,
         );
         partyPokemons.push(pokemonInstance);
         this.allPokemon[pokemonInstance.id] = pokemonInstance;
@@ -228,6 +268,28 @@ class Battle {
       rows,
       cols,
     };
+  }
+
+  cloneAndReset() {
+    const newBattle = new Battle(this.initialParams);
+    for (const [teamName, team] of Object.entries(this.teams)) {
+      newBattle.addTeam(teamName, team.isNpc);
+    }
+    for (const [userId, user] of Object.entries(this.users)) {
+      // TODO: phases
+      const firstParty = user.parties[0];
+      // eslint-disable-next-line no-unused-vars
+      const { parties, ...userProps } = user;
+      newBattle.addTrainer(
+        { userId, user: userProps },
+        // @ts-ignore
+        firstParty.pokemons,
+        user.teamName,
+        firstParty.rows,
+        firstParty.cols,
+      );
+    }
+    return newBattle;
   }
 
   increaseCombatReadiness() {
@@ -268,7 +330,7 @@ class Battle {
         if (pokemon && !pokemon.isFainted) {
           pokemon.combatReadiness = Math.min(
             MAX_CR,
-            pokemon.combatReadiness + pokemon.effectiveSpeed() * minTicks
+            pokemon.combatReadiness + pokemon.effectiveSpeed() * minTicks,
           );
         }
       }
@@ -305,7 +367,7 @@ class Battle {
         pokemonOrder.push(minTicksPokemon);
         allEligiblePokemon.splice(
           allEligiblePokemon.indexOf(minTicksPokemon),
-          1
+          1,
         );
       } else {
         break;
@@ -341,7 +403,6 @@ class Battle {
       battle: this,
     });
 
-    // begin turn
     this.beginTurn();
   }
 
@@ -364,11 +425,11 @@ class Battle {
       : `<@${this.activePokemon.userId}>`;
     if (this.activePokemon.canMove()) {
       this.log.push(
-        `**[Turn ${this.turn}] It is ${userString}'s ${this.activePokemon.name}'s turn.**`
+        `**[Turn ${this.turn}] It is ${userString}'s ${this.activePokemon.name}'s turn.**`,
       );
     } else {
       this.log.push(
-        `**[Turn ${this.turn}] ${userString}'s ${this.activePokemon.name} is unable to move.**`
+        `**[Turn ${this.turn}] ${userString}'s ${this.activePokemon.name} is unable to move.**`,
       );
     }
   }
@@ -483,10 +544,10 @@ class Battle {
         }
         return acc;
       },
-      1
+      1,
     );
     this.moneyReward = Math.floor(
-      this.baseMoney * this.moneyMultiplier * amuletCoinMoneyMultiplier
+      this.baseMoney * this.moneyMultiplier * amuletCoinMoneyMultiplier,
     );
     const expShareExpMultiplier = Object.values(this.allPokemon).reduce(
       (acc, pokemon) => {
@@ -495,10 +556,10 @@ class Battle {
         }
         return acc;
       },
-      1
+      1,
     );
     this.expReward = Math.floor(
-      this.baseExp * this.expMultiplier * expShareExpMultiplier
+      this.baseExp * this.expMultiplier * expShareExpMultiplier,
     );
     // calculate pokemon exp by summing defeated pokemon's levels
     this.pokemonExpReward =
@@ -508,7 +569,7 @@ class Battle {
             return acc + Math.max(12, this.minLevel || pokemon.level);
           }
           return acc;
-        }, 0) * this.pokemonExpMultiplier
+        }, 0) * this.pokemonExpMultiplier,
       ) || 1;
 
     this.addToLog(
@@ -516,8 +577,53 @@ class Battle {
         this.expReward
       } exp, and ${
         this.pokemonExpReward
-      } BASE Pokemon exp. Losers recieved half the amount.`
+      } BASE Pokemon exp. Losers recieved half the amount.`,
     );
+  }
+
+  /**
+   * @param {ActionPayload} payload
+   */
+  logAction(payload) {
+    if (!this.enableReplay) {
+      return;
+    }
+    this.actions.push(payload);
+  }
+
+  /**
+   * @typedef {{ action: "skipTurn" } |
+   *  { action: "useMove", moveId: MoveIdEnum, targetPokemonId: string }
+   * } ActionPayload
+   */
+
+  /** @param {ActionPayload} payload */
+  performAction(payload) {
+    this.clearLog();
+    let success = false;
+    switch (payload.action) {
+      case "skipTurn":
+        success = this.activePokemon.skipTurn();
+        break;
+      case "useMove":
+        success = this.activePokemon.useMove(
+          payload.moveId,
+          payload.targetPokemonId,
+        );
+        break;
+      default:
+        // @ts-ignore
+        logger.error(`Unknown action: ${payload.action}`);
+        break;
+    }
+    if (success) {
+      this.logAction(payload);
+    } else {
+      logger.error(`Failed to perform action: ${payload.action}`);
+      this.logAction({ action: "skipTurn" });
+      this.activePokemon.skipTurn();
+    }
+    this.nextTurn();
   }
 
   /**
@@ -618,7 +724,7 @@ class Battle {
                 this.weather.source,
                 {
                   type: "weather",
-                }
+                },
               );
             }
           }
@@ -642,7 +748,7 @@ class Battle {
                 this.weather.source,
                 {
                   type: "weather",
-                }
+                },
               );
             }
           }
@@ -680,12 +786,13 @@ class Battle {
   }
 
   /**
+   * TODO: remove this, all NPC tracking should be done externally, not within the Battle engine
    * @param {string} userId
    * @returns {boolean}
    */
   isNpc(userId) {
     const user = this.users[userId];
-    return user?.npc !== undefined;
+    return user?.isNpc;
   }
 
   /**
@@ -722,11 +829,15 @@ class Battle {
         }
         break;
       default:
-        // return all pokemon
         for (const teamName in this.parties) {
           const party = this.parties[teamName];
           for (const pokemon of party.pokemons) {
-            if (this.isPokemonTargetable(pokemon, moveId)) {
+            if (
+              this.isPokemonTargetable(pokemon, moveId) &&
+              // TODO: probably should check targeting restrictions on both teams instead of this lol
+              (moveData.targetPosition !== targetPositions.NON_SELF ||
+                pokemon !== source)
+            ) {
               eligibleTargets.push(pokemon);
             }
           }
@@ -917,6 +1028,55 @@ class Battle {
    */
   emitEvent(eventName, args) {
     this.eventHandler.emit(eventName, args || {});
+  }
+
+  takeSnapshot() {
+    const pokemonSnapshots = {};
+    for (const [id, pokemon] of Object.entries(this.allPokemon)) {
+      pokemonSnapshots[id] = {
+        id: pokemon.id,
+        speciesId: pokemon.speciesId,
+        name: pokemon.name,
+        hp: pokemon.hp,
+        maxHp: pokemon.maxHp,
+        level: pokemon.level,
+        isFainted: pokemon.isFainted,
+        combatReadiness: pokemon.combatReadiness,
+        position: pokemon.position,
+        teamName: pokemon.teamName,
+        acc: pokemon.acc,
+        eva: pokemon.eva,
+        type1: pokemon.type1,
+        type2: pokemon.type2,
+        targetable: pokemon.targetable,
+        hittable: pokemon.hittable,
+        incapacitated: pokemon.incapacitated,
+        restricted: pokemon.restricted,
+        allStatData: JSON.parse(JSON.stringify(pokemon.allStatData)),
+        status: {
+          statusId: pokemon.status.statusId,
+          turns: pokemon.status.turns,
+        },
+        effectIds: Object.fromEntries(
+          Object.entries(pokemon.effectIds).map(([effectId, effect]) => [
+            effectId,
+            { duration: effect.duration },
+          ]),
+        ),
+        abilityId: pokemon.ability.abilityId,
+        heldItemId: pokemon.heldItem?.heldItemId ?? null,
+        moveIds: JSON.parse(JSON.stringify(pokemon.moveIds)),
+      };
+    }
+    return {
+      turn: this.turn,
+      activePokemonId: this.activePokemon?.id ?? null,
+      weather: {
+        weatherId: this.weather.weatherId,
+        duration: this.weather.duration,
+      },
+      pokemon: pokemonSnapshots,
+    };
   }
 
   clearLog() {

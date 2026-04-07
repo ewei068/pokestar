@@ -18,14 +18,14 @@ const { abilitiesToRegister } = require("./abilities");
 const { registerHeldItems } = require("./heldItemRegistry");
 const { heldItemsToRegister } = require("./heldItems");
 
-const initialize = () => {
-  registerEffects(effectsToRegister);
-  registerLegacyEffects(effectConfig);
-  registerMoves(movesToRegister);
-  registerLegacyMoves(moveConfig, moveExecutes);
-  registerAbilities(abilitiesToRegister);
-  registerLegacyAbilities(abilityConfig);
-  registerHeldItems(heldItemsToRegister);
+const initialize = (silent = false) => {
+  registerEffects(effectsToRegister, silent);
+  registerLegacyEffects(effectConfig, silent);
+  registerMoves(movesToRegister, silent);
+  registerLegacyMoves(moveConfig, moveExecutes, silent);
+  registerAbilities(abilitiesToRegister, silent);
+  registerLegacyAbilities(abilityConfig, silent);
+  registerHeldItems(heldItemsToRegister, silent);
 };
 
 module.exports = {

@@ -1,0 +1,39 @@
+---
+description:
+globs: src/battle/data/__tests__/**
+alwaysApply: false
+---
+
+# Battle Data Test Infrastructure
+
+## Custom Matchers
+
+Available via `expect` on Pokemon instances:
+
+- `expect(pokemon).toBeDamaged()` - has HP < maxHP
+- `expect(pokemon).toBeDamagedBy(amount)` - took exactly `amount` damage (supports asymmetric matchers like `expect.toBeGreaterThanOrEqual(n)`)
+- `expect(pokemon).toHaveEffect(effectId)` - has a specific effect
+- `expect(pokemon).toBeShielded()` - has an active shield
+- `expect(pokemon).toHaveHeldItem(heldItemId?)` - has a held item (optionally a specific one)
+
+Additional asymmetric matchers for use inside `toBeDamagedBy` or standalone:
+
+- `expect.toBeGreaterThanOrEqual(n)`
+- `expect.toBeGreaterThan(n)`
+- `expect.toBeLessThanOrEqual(n)`
+- `expect.toBeLessThan(n)`
+
+**You may add additional matchers if they represent common matching patterns.** Update this documentation if doing so.
+
+## Test Utilities
+
+Import from `src/__testing__/utils/battle.js`:
+
+- `HIGH_ACCURACY` - set `source.acc = HIGH_ACCURACY` to guarantee hits
+- `getValidTargetForMove(battle, source, moveId)` - get a valid target without using the move
+- `givePokemonMove(pokemon, moveId)` - give a Pokemon a move with 0 cooldown
+- `useMoveOnValidTarget(battle, source, moveId)` - use a move on a valid target and return the target
+- `describeStatusProbability({ statusId, probability, setup })` - generate tests for probabilistic status application
+- `describeEffectProbability({ effectId, probability, setup })` - generate tests for probabilistic effect application
+
+**You may add additional test utilites if they represent common testing patterns.** Update this documentation if doing so.

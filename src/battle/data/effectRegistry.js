@@ -6,25 +6,29 @@ const allEffects = {};
 
 /**
  * @param {Record<EffectIdEnum, Effect<any, any>>} effects
+ * @param silent
  */
-const registerEffects = (effects) => {
+const registerEffects = (effects, silent = false) => {
   let effectsRegistered = 0;
   Object.entries(effects).forEach(([effectId, effect]) => {
     allEffects[effectId] = effect;
     effectsRegistered += 1;
   });
-  logger.info(`Registered ${effectsRegistered} effects.`);
+  if (!silent) {
+    logger.info(`Registered ${effectsRegistered} effects.`);
+  }
 };
 
 /**
  * @param {Record<EffectIdEnum, object>} effectConfig
+ * @param silent
  */
-const registerLegacyEffects = (effectConfig) => {
+const registerLegacyEffects = (effectConfig, silent = false) => {
   let effectsRegistered = 0;
   Object.entries(effectConfig).forEach(([effectId, effect]) => {
     if (allEffects[effectId]) {
       logger.warn(
-        `Effect ${effectId} ${allEffects[effectId].name} already exists. Continuing...`
+        `Effect ${effectId} ${allEffects[effectId].name} already exists. Continuing...`,
       );
       return;
     }
@@ -34,7 +38,9 @@ const registerLegacyEffects = (effectConfig) => {
     };
     effectsRegistered += 1;
   });
-  logger.info(`Registered ${effectsRegistered} legacy effects.`);
+  if (!silent) {
+    logger.info(`Registered ${effectsRegistered} legacy effects.`);
+  }
 };
 
 /**

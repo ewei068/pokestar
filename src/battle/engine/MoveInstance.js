@@ -254,7 +254,7 @@ class MoveInstance {
   get chargeMoveEffectId() {
     return this.getEffectiveValue(
       "chargeMoveEffectId",
-      this._chargeMoveEffectId
+      this._chargeMoveEffectId,
     );
   }
 
@@ -373,7 +373,7 @@ class MoveInstance {
       damageInstances,
       totalDamageDealt: Object.values(damageInstances).reduce(
         (sum, damage) => sum + damage,
-        0
+        0,
       ),
     };
   }
@@ -399,7 +399,7 @@ class MoveInstance {
     probability = 1,
   }) {
     let shouldTrigger = false;
-    const roll = Math.random();
+    const roll = this.battle.rng();
     if (roll < probability) {
       shouldTrigger = true;
     } else if (
@@ -588,7 +588,7 @@ class MoveInstance {
     triggerEvents = true,
   }) {
     const shouldChangeCombatReadiness =
-      !missedTargets.includes(target) && Math.random() < probability;
+      !missedTargets.includes(target) && this.battle.rng() < probability;
 
     if (shouldChangeCombatReadiness) {
       if (action === "boost") {
@@ -654,7 +654,7 @@ class MoveInstance {
   }) {
     if (healAmount === undefined && healPercent === undefined) {
       logger.warn(
-        `genericHealSingleTarget called with no healAmount or healPercent for move ${this.id}`
+        `genericHealSingleTarget called with no healAmount or healPercent for move ${this.id}`,
       );
       return 0;
     }

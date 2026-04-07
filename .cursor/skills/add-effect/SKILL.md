@@ -118,6 +118,18 @@ effectRemove({ battle, target, initialArgs }) {
 
 4. **Dispellable Flag**: Set `dispellable: false` for effects that should persist through dispell abilities.
 
+## Validation
+
+After implementing an effect, run the effect test suite to validate the implementation:
+
+```bash
+npm test -- src/battle/data/__tests__/effects.test.js
+```
+
+This runs an e2e test that verifies all effects can be applied and removed without throwing errors. If your new effect causes a test failure, fix the implementation and re-run until tests pass.
+
+See the `unit-test` skill for more details on testing.
+
 ## References
 
 - `references/pattern-*.md` - Common effect implementation patterns

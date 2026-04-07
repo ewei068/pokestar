@@ -102,6 +102,18 @@ itemAdd({ battle, target }) {
 
 5. **heldItemInstance**: Access stored properties via `heldItemInstance.data` in callbacks.
 
+## Validation
+
+After implementing a held item, run the held item test suite to validate the implementation:
+
+```bash
+npm test -- src/battle/data/__tests__/heldItems.test.js
+```
+
+This runs an e2e test that verifies all held items can be applied and removed without throwing errors. For items with the `usable` tag, it also verifies that `itemUse` can be called. If your new held item causes a test failure, fix the implementation and re-run until tests pass.
+
+See the `unit-test` skill for more details on testing.
+
 ## References
 
 - `references/pattern-*.md` - Common held item implementation patterns

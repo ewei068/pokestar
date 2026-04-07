@@ -53,7 +53,7 @@ const updateRaid = async (raid) => {
     },
     {
       $set: raid,
-    }
+    },
   );
 };
 
@@ -176,7 +176,7 @@ const onRaidStart = async ({ stateId = null, user = null } = {}) => {
   // create boss pokemon
   const bossId = raidData.boss;
   const bossData = difficultyData.pokemons.filter(
-    (p) => p.speciesId === bossId
+    (p) => p.speciesId === bossId,
   )[0];
   const raidUserId = uuidv4(); // placeholder ID for raid enemy
   const boss = generateRandomPokemon(raidUserId, bossId, bossData.level, {
@@ -245,20 +245,20 @@ const giveRaidRewards = async ({
 
   const backpack = {};
   for (const [backpackCategory, items] of Object.entries(
-    difficultyData.backpackPerPercent
+    difficultyData.backpackPerPercent,
   )) {
     backpack[backpackCategory] = {};
     for (const [itemId, count] of Object.entries(items)) {
       backpack[backpackCategory][itemId] = Math.max(
         Math.floor(count * percentDamage * 100),
-        1
+        1,
       );
     }
   }
   const rewardsForTrainer = {
     money: Math.max(
       Math.floor(difficultyData.moneyPerPercent * percentDamage * 100),
-      1
+      1,
     ),
     backpack,
   };
@@ -336,11 +336,11 @@ const onRaidWin = async (raid) => {
         difficulty,
         raid,
       }),
-    })
+    }),
   );
 
   const promiseResults = await Promise.allSettled(
-    promiseData.map((p) => p.promise)
+    promiseData.map((p) => p.promise),
   );
   for (const [index, promiseResult] of promiseResults.entries()) {
     if (promiseResult.status === "fulfilled" && !promiseResult.value?.err) {
@@ -406,13 +406,13 @@ const getBattleEndCallbacks = (raidInstanceId, user, remainingHp) => {
     // adjust damage dealt in case of overflow
     damageDealt = Math.max(raid.boss.remainingHp - newRemainingHp, 1);
     const percentRemainingHp = Math.floor(
-      (newRemainingHp / bossPokemon.maxHp) * 100
+      (newRemainingHp / bossPokemon.maxHp) * 100,
     );
     const percentDamageDealt = Math.floor(
-      (damageDealt / bossPokemon.maxHp) * 100
+      (damageDealt / bossPokemon.maxHp) * 100,
     );
     battle.addToLog(
-      `**You dealt ${damageDealt} (${percentDamageDealt}%) damage to ${bossPokemon.name}! ${bossPokemon.name} has ${newRemainingHp} (${percentRemainingHp}%) HP remaining.**`
+      `**You dealt ${damageDealt} (${percentDamageDealt}%) damage to ${bossPokemon.name}! ${bossPokemon.name} has ${newRemainingHp} (${percentRemainingHp}%) HP remaining.**`,
     );
 
     // update boss hp
@@ -432,7 +432,7 @@ const getBattleEndCallbacks = (raidInstanceId, user, remainingHp) => {
           async () =>
             await state.messageRef.edit({
               embeds: [embed],
-            })
+            }),
         );
       } catch (err) {
         // pass
@@ -494,7 +494,7 @@ const onRaidAccept = async ({ stateId = null, user = null } = {}) => {
   }
 
   // add npc to battle
-  const npc = new RaidNPC(raidData, difficulty, raidUserId, boss);
+  const npc = new RaidNPC(raidData, difficulty, raidUserId, boss, state);
   npc.setPokemon(raidData, difficulty);
   const rewardMultipliers =
     raidDifficultyData.rewardMultipliers ||
@@ -515,7 +515,7 @@ const onRaidAccept = async ({ stateId = null, user = null } = {}) => {
     npc.party.pokemons,
     "Raid",
     npc.party.rows,
-    npc.party.cols
+    npc.party.cols,
   );
   battle.addTeam("Player", false);
   battle.addTrainer(trainer.data, validate.data, "Player");
@@ -527,7 +527,7 @@ const onRaidAccept = async ({ stateId = null, user = null } = {}) => {
       battle,
       userId: user.id,
     },
-    300
+    300,
   );
 
   return {
@@ -595,7 +595,7 @@ const buildRaidSend = async ({ stateId = null, user = null } = {}) => {
     ];
     const acceptButtonRow = buildButtonActionRow(
       acceptButtonConfigs,
-      eventNames.RAID_ACCEPT
+      eventNames.RAID_ACCEPT,
     );
     send.components.push(acceptButtonRow);
   } else if (state.view === "list") {
@@ -613,7 +613,7 @@ const buildRaidSend = async ({ stateId = null, user = null } = {}) => {
       "Select a Raid to battle:",
       raidSelectRowData,
       eventNames.RAID_SELECT,
-      false
+      false,
     );
     send.components.push(raidSelectRow);
   } else if (state.view === "raid") {
@@ -645,11 +645,11 @@ const buildRaidSend = async ({ stateId = null, user = null } = {}) => {
           difficulty,
         },
         emoji: raidPassData.emoji,
-      })
+      }),
     );
     const difficultyRow = buildButtonActionRow(
       difficultyButtonConfigs,
-      eventNames.RAID_START
+      eventNames.RAID_START,
     );
     send.components.push(difficultyRow);
 
@@ -666,7 +666,7 @@ const buildRaidSend = async ({ stateId = null, user = null } = {}) => {
     ];
     const returnRow = buildButtonActionRow(
       returnButtonConfigs,
-      eventNames.RAID_RETURN
+      eventNames.RAID_RETURN,
     );
 
     send.components.push(returnRow);

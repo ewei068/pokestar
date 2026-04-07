@@ -10,6 +10,7 @@ const { getEffect } = require("./effectRegistry");
 const { getMove } = require("./moveRegistry");
 
 /** @typedef {"hazard" | "test"} EffectTag */
+/** @typedef {EffectAddBasicArgs & {initialArgs: any}} EffectNoInitialArgs */
 
 /**
  * @template T
@@ -26,6 +27,7 @@ class Effect {
    * @param {EffectAddCallback<T, U>} param0.effectAdd
    * @param {EffectRemoveCallback<T, U>} param0.effectRemove
    * @param {EffectTag[]=} param0.tags
+   * @param {Partial<T>=} param0.defaultInitialArgs
    */
   constructor({
     id,
@@ -36,6 +38,7 @@ class Effect {
     effectAdd,
     effectRemove,
     tags = [],
+    defaultInitialArgs = {},
   }) {
     this.id = id;
     this.name = name;
@@ -46,6 +49,7 @@ class Effect {
     this.effectRemove = effectRemove;
     this.tags = tags;
     this.isLegacyEffect = false;
+    this.defaultInitialArgs = defaultInitialArgs;
   }
 }
 
@@ -57,7 +61,7 @@ const effectsToRegister = Object.freeze({
     type: effectTypes.BUFF,
     dispellable: true,
     /**
-     * @param {EffectAddBasicArgs & {initialArgs: any}} args
+     * @param {EffectNoInitialArgs} args
      */
     effectAdd({ battle, target }) {
       // if greaterAtkUp exists on target, remove atkUp and refresh greaterAtkUp
@@ -113,7 +117,7 @@ const effectsToRegister = Object.freeze({
     type: effectTypes.BUFF,
     dispellable: true,
     /**
-     * @param {EffectAddBasicArgs & {initialArgs: any}} args
+     * @param {EffectNoInitialArgs} args
      */
     effectAdd({ battle, target }) {
       battle.addToLog(`${target.name} is immune to debuffs!`);
@@ -128,7 +132,7 @@ const effectsToRegister = Object.freeze({
 
             eventArgs.canAdd = false;
             battle.addToLog(
-              `${target.name} is immune to debuffs and cannot be affected by ${effect.name}!`
+              `${target.name} is immune to debuffs and cannot be affected by ${effect.name}!`,
             );
           },
           conditionCallback: getIsTargetPokemonCallback(target),
@@ -160,6 +164,9 @@ const effectsToRegister = Object.freeze({
       battle.addToLog(`${target.name}'s ${statId} boost wore off!`);
       target.addStatMult(statId, -1);
     },
+    defaultInitialArgs: {
+      statId: "spa",
+    },
   }),
   [effectIdEnum.DOOM_DESIRE]: new Effect({
     id: effectIdEnum.DOOM_DESIRE,
@@ -168,17 +175,17 @@ const effectsToRegister = Object.freeze({
     type: effectTypes.DEBUFF,
     dispellable: false,
     /**
-     * @param {EffectAddBasicArgs & {initialArgs: any}} args
+     * @param {EffectNoInitialArgs} args
      */
     effectAdd({ battle, target, source }) {
       battle.addToLog(
-        `${source.name} is foreseeing an attack against ${target.name}!`
+        `${source.name} is foreseeing an attack against ${target.name}!`,
       );
       return {};
     },
     effectRemove({ battle, target, source }) {
       battle.addToLog(
-        `${target.name} was hit by ${source.name}'s Doom Desire!`
+        `${target.name} was hit by ${source.name}'s Doom Desire!`,
       );
       const damageToDeal = source.calculateMoveDamage({
         move: getMove(moveIdEnum.DOOM_DESIRE),
@@ -204,9 +211,14 @@ const effectsToRegister = Object.freeze({
      * @param {EffectAddBasicArgs & {initialArgs: { moveId: MoveIdEnum }}} args
      */
     effectAdd({ battle, source, target, initialArgs }) {
-      if (!initialArgs || !initialArgs.moveId) {
+      if (!target.moveIds[initialArgs.moveId]) {
         battle.addToLog(`${target.name} couldn't be affected by Encore!`);
-        return null;
+        // this is probably not right -- the effect should be removed instead
+        return {
+          source,
+          moveId: null,
+          disabledMoveIds: [],
+        };
       }
       const moveData = getMove(initialArgs.moveId);
       battle.addToLog(`${target.name} can only use ${moveData.name}!`);
@@ -229,7 +241,7 @@ const effectsToRegister = Object.freeze({
     effectRemove({ battle, target, source, initialArgs, properties }) {
       const moveData = getMove(initialArgs.moveId);
       battle.addToLog(
-        `${target.name} is no longer limited to using only ${moveData.name}!`
+        `${target.name} is no longer limited to using only ${moveData?.name}!`,
       );
 
       // Re-enable all disabled moves
@@ -245,7 +257,7 @@ const effectsToRegister = Object.freeze({
     type: effectTypes.BUFF,
     dispellable: true,
     /**
-     * @param {EffectAddBasicArgs & {initialArgs: any}} args
+     * @param {EffectNoInitialArgs} args
      */
     effectAdd({ battle, target }) {
       battle.addToLog(`${target.name} received a spatial blessing!`);
@@ -264,7 +276,7 @@ const effectsToRegister = Object.freeze({
     type: effectTypes.BUFF,
     dispellable: false,
     /**
-     * @param {EffectAddBasicArgs & {initialArgs: any}} args
+     * @param {EffectNoInitialArgs} args
      */
     effectAdd({ battle, target }) {
       battle.addToLog(`${target.name} vanished instantly!`);

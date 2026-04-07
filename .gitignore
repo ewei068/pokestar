@@ -103,7 +103,6 @@ dist
 # TernJS port file
 .tern-port
 
-package-lock.json
 extra_data
 src/test.js
 src/test.ts
@@ -114,3 +113,5 @@ notes.md
 venv/
 Heap.*
 tutorialStats.csv
+
+__debug__

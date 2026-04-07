@@ -64,7 +64,7 @@ const buildPartyString = (
     emphPosition = null,
     targetIndices = null,
     isMobile = false, // TODO
-  } = {}
+  } = {},
 ) => {
   const targetIndexSet = new Set(targetIndices || []);
   let globalIndex = 0;
@@ -127,7 +127,7 @@ const buildPartyString = (
         if (pokemon.hp > 0) {
           hpPercent = Math.max(
             Math.round(Math.floor((pokemon.hp * 100) / pokemon.maxHp)),
-            1
+            1,
           );
         } else {
           hpPercent = 0;
@@ -283,13 +283,13 @@ const buildCompactPartyString = (party, id, pokemonMap, active = false) => {
     : `Party ${id} \`/partyload ${id}\``;
 
   const pokemons = party.pokemonIds.map(
-    (pokemonId) => pokemonMap[pokemonId] || null
+    (pokemonId) => pokemonMap[pokemonId] || null,
   );
   const { rows } = party;
   const { cols } = party;
   const power = pokemons.reduce(
     (acc, pokemon) => acc + (pokemon ? pokemon.combatPower : 0),
-    0
+    0,
   );
 
   let partyString = `Power: ${power}\n`;
@@ -345,13 +345,13 @@ const buildMoveString = ({ moveData, source, cooldown = 0 }) => {
   }  |  ⏳ ${moveData.getEffectiveValue("cooldown", options)}\n`;
   moveString += `**Target:** ${moveData.getEffectiveValue(
     "targetType",
-    options
+    options,
   )}/${moveData.getEffectiveValue(
     "targetPosition",
-    options
+    options,
   )}/${moveData.getEffectiveValue("targetPattern", options)}\n`;
   moveString += buildBlockQuoteString(
-    moveData.getEffectiveValue("description", options)
+    moveData.getEffectiveValue("description", options),
   );
 
   return {
@@ -399,7 +399,7 @@ const buildBattlePokemonInfoString = (pokemon) =>
 const buildBattlePokemonHpString = (pokemon, barWidth = 10) => {
   const hpPercent = Math.min(
     Math.round(Math.floor((pokemon.hp * 100) / pokemon.maxHp)),
-    100
+    100,
   );
   return `**HP** ${getPBar(hpPercent, barWidth)} ${hpPercent}`;
 };
@@ -458,7 +458,7 @@ const buildBattlePokemonString = (pokemon) => {
   // build cr string
   const crPercent = Math.min(
     Math.round(Math.floor((pokemon.combatReadiness * 100) / 100)),
-    100
+    100,
   );
   pokemonString += `**CR** ${getPBar(crPercent, 10)} ${crPercent}\n`;
   // build effects string
@@ -501,7 +501,7 @@ const buildNpcDifficultyString = (difficulty, npcDifficultyData) => {
   if (npcDifficultyData.dailyRewards) {
     difficultyString += `\n**Daily Rewards:**\n${getFlattenedRewardsString(
       flattenRewards(npcDifficultyData.dailyRewards),
-      false
+      false,
     )}`;
   }
 
@@ -520,12 +520,12 @@ const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
   const difficultyData = difficultyConfig[difficulty];
   const allDungeonPokemons = dungeonDifficultyData.phases.reduce(
     (acc, phase) => acc.concat(phase.pokemons),
-    []
+    [],
   );
   const { rewards } = dungeonDifficultyData;
 
   const maxLevel = Math.max(
-    ...allDungeonPokemons.map((pokemon) => pokemon.level)
+    ...allDungeonPokemons.map((pokemon) => pokemon.level),
   );
   const difficultyHeader = `[Lv. ${maxLevel}] ${difficultyData.name}`;
 
@@ -534,13 +534,13 @@ const buildDungeonDifficultyString = (difficulty, dungeonDifficultyData) => {
     ...new Set(allDungeonPokemons.map((pokemon) => pokemon.speciesId)),
   ];
   const pokemonEmojis = uniqueSpeciesIds.map(
-    (speciesId) => pokemonConfig[speciesId].emoji
+    (speciesId) => pokemonConfig[speciesId].emoji,
   );
   difficultyString += `**Phases:** ${dungeonDifficultyData.phases.length}\n`;
   difficultyString += `**Pokemon:** ${pokemonEmojis.join(" ")}\n`;
   difficultyString += `**Rewards:** ${getFlattenedRewardsString(
     flattenRewards(rewards),
-    false
+    false,
   )}`;
 
   return {
@@ -566,7 +566,7 @@ const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
     ...new Set(allRaidPokemons.map((pokemon) => pokemon.speciesId)),
   ];
   const pokemonEmojis = uniqueSpeciesIds.map(
-    (speciesId) => pokemonConfig[speciesId].emoji
+    (speciesId) => pokemonConfig[speciesId].emoji,
   );
   difficultyString += `**Pokemon:** ${pokemonEmojis.join(" ")}\n`;
   // TODO: make time better
@@ -574,13 +574,13 @@ const buildRaidDifficultyString = (difficulty, raidDifficultyData) => {
   const shinyChance = Math.round(raidDifficultyData.shinyChance * 10000) / 100;
 
   difficultyString += `**Shiny Chance:** ${shinyChance}% • **Money/%:** ${formatMoney(
-    raidDifficultyData.moneyPerPercent
+    raidDifficultyData.moneyPerPercent,
   )} • **Time:** ${raidDifficultyData.ttl / (1000 * 60 * 60)} hours\n`;
 
   if (raidDifficultyData.backpackPerPercent) {
     difficultyString += "**Items/%: ** ";
     for (const [item, itemPerPercent] of Object.entries(
-      flattenCategories(raidDifficultyData.backpackPerPercent)
+      flattenCategories(raidDifficultyData.backpackPerPercent),
     )) {
       const itemData = backpackItemConfig[item];
       difficultyString += `${itemData.emoji} x${itemPerPercent} `;
@@ -645,7 +645,7 @@ const setCurrentTargetting = (state, moveId, targetId) => {
 const getPatternTargetIndices = (
   targetParty,
   targetPattern,
-  targetPosition
+  targetPosition,
 ) => {
   const targetIndex = targetPosition - 1;
   const targetRow = Math.floor(targetIndex / targetParty.cols);
@@ -751,9 +751,17 @@ const getEffectIdHasTag = (effectId, tag) => {
  * @param {BattlePokemon} source
  * @param {BattlePokemon} primaryTarget
  * @param {BattlePokemon[]} targetsHit
+ * @param {object} options
+ * @param {(() => number)=} options.rng
  * @returns {number}
  */
-const calculateTurnHeuristic = (moveId, source, primaryTarget, targetsHit) => {
+const calculateTurnHeuristic = (
+  moveId,
+  source,
+  primaryTarget,
+  targetsHit,
+  { rng = Math.random } = {},
+) => {
   const moveData = getMove(moveId);
 
   let heuristic = 0;
@@ -788,6 +796,7 @@ const calculateTurnHeuristic = (moveId, source, primaryTarget, targetsHit) => {
         primaryTarget,
         allTargets: targetsHit,
         target,
+        rng,
       });
       heuristic += damage;
     }
@@ -811,8 +820,7 @@ const calculateTurnHeuristic = (moveId, source, primaryTarget, targetsHit) => {
   }
   heuristic *= tierMultiplier;
 
-  // calculate nonce for small random variation
-  const nonce = Math.random();
+  const nonce = rng();
   return heuristic + nonce;
 };
 
@@ -837,7 +845,7 @@ const npcTurnAction = (battle) => {
 
   // if cant move, skip turn
   if (!activePokemon.canMove()) {
-    activePokemon.skipTurn();
+    battle.performAction({ action: "skipTurn" });
     return;
   }
 
@@ -859,7 +867,7 @@ const npcTurnAction = (battle) => {
 
   // if for some reason no moves exist, skip turn
   if (Object.keys(validMoveIdsToTargets).length === 0) {
-    activePokemon.skipTurn();
+    battle.performAction({ action: "skipTurn" });
     return;
   }
 
@@ -876,13 +884,16 @@ const npcTurnAction = (battle) => {
         // @ts-ignore
         moveId,
       });
-      const targetsHit = source.getMoveExecuteTargets(moveInstance, target);
+      const targetsHit = source.getMoveExecuteTargets(moveInstance, target, {
+        rng: Math.random,
+      });
       const heuristic = calculateTurnHeuristic(
         // @ts-ignore
         moveId,
         source,
         target,
-        targetsHit
+        targetsHit,
+        { rng: Math.random },
       );
       if (heuristic > bestHeuristic) {
         bestMoveId = moveId;
@@ -893,8 +904,12 @@ const npcTurnAction = (battle) => {
   }
 
   // use move
-  // @ts-ignore
-  activePokemon.useMove(bestMoveId, bestTarget.id);
+  battle.performAction({
+    action: "useMove",
+    // @ts-ignore
+    moveId: bestMoveId,
+    targetPokemonId: bestTarget.id,
+  });
 };
 
 module.exports = {

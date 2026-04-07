@@ -127,6 +127,33 @@ overrideFields: (options) => {
 - `pokemon.getPartyPokemon()` - Get ally array
 - `pokemon.isFainted` - Check if fainted
 
+## Testing
+
+After implementing a move, run the move test suite to validate the implementation:
+
+```bash
+npm test -- src/battle/data/__tests__/moves.test.js
+```
+
+This runs an e2e test that verifies all moves can execute without throwing errors. If your new move causes a test failure, fix the implementation and re-run until tests pass.
+
+### When to Write Move-Specific Tests
+
+**Do NOT write tests** for simple moves that only use generic methods (e.g. just calling `genericDealAllDamage`, `genericApplyAllEffects`, `genericApplyAllStatus`, `genericHealAllTargets`, etc.) with no additional logic.
+
+**DO write tests** for moves that have:
+
+- Complex or unique logic in `execute()` (conditional branches, multi-step flows, form-specific behavior)
+- Long execute functions with multiple interacting operations
+- Charge/two-turn move mechanics
+- Species-specific behavior (e.g. different effects for different Pokemon forms)
+- Non-standard damage calculations or targeting
+- Item/effect manipulation (stealing, swapping, dispelling)
+
+### How to Write Move Tests
+
+Add tests to `src/battle/data/__tests__/moves.test.js`. See the `test-move` skill for the full testing infrastructure, including custom matchers, test utilities, and test patterns.
+
 ## References
 
 - `references/target-patterns.md` - Visual guide to target patterns

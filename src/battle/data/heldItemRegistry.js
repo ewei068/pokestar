@@ -4,14 +4,17 @@ const allHeldItems = {};
 
 /**
  * @param {Record<HeldItemIdEnum, HeldItem<any>>} heldItems
+ * @param {boolean=} silent
  */
-const registerHeldItems = (heldItems) => {
+const registerHeldItems = (heldItems, silent = false) => {
   let heldItemsRegistered = 0;
   Object.entries(heldItems).forEach(([heldItemId, heldItem]) => {
     allHeldItems[heldItemId] = heldItem;
     heldItemsRegistered += 1;
   });
-  logger.info(`Registered ${heldItemsRegistered} held items.`);
+  if (!silent) {
+    logger.info(`Registered ${heldItemsRegistered} held items.`);
+  }
 };
 
 /**
@@ -39,7 +42,7 @@ const getHeldItems = ({ fieldFilter, tagFilter, customFilter }) => {
         }
         return acc;
       },
-      {}
+      {},
     );
   }
 
@@ -51,7 +54,7 @@ const getHeldItems = ({ fieldFilter, tagFilter, customFilter }) => {
         }
         return acc;
       },
-      {}
+      {},
     );
   }
 
@@ -66,7 +69,7 @@ const getHeldItems = ({ fieldFilter, tagFilter, customFilter }) => {
         acc[heldItemId] = heldItem;
         return acc;
       },
-      {}
+      {},
     );
   }
 

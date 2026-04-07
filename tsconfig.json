@@ -14,6 +14,7 @@
   "exclude": ["node_modules"],
   "include": [
     "./types.js",
+    "./src/**/*.d.ts",
     "./src/**/*.ts",
     "./src/**/*.js",
     "./scripts/**/*.ts",

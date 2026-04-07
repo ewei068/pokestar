@@ -61,7 +61,7 @@ class BattlePokemon {
       }
     }
     pokemonData = calculatePokemonStats(pokemonData, this.speciesData);
-    this.pokemonData = pokemonData;
+    this.pokemonData = { ...pokemonData };
     this.id = pokemonData._id.toString();
     this.userId = trainer.userId;
     this.originalUserId = trainer.userId;
@@ -224,7 +224,8 @@ class BattlePokemon {
     this.pokemonData.name = this.speciesData.name;
     this.pokemonData.moveIds = moveIds;
     this.pokemonData.abilityId =
-      abilityId || drawDiscrete(this.speciesData.abilities, 1)[0];
+      abilityId ||
+      drawDiscrete(this.speciesData.abilities, 1, { rng: this.battle.rng })[0];
     calculatePokemonStats(this.pokemonData, this.speciesData);
 
     // set stats (except hp)
@@ -280,7 +281,7 @@ class BattlePokemon {
           effectId,
           effectInstance.duration,
           effectInstance.source,
-          effectInstance.initialArgs
+          effectInstance.initialArgs,
         );
       }
     }
@@ -296,11 +297,12 @@ class BattlePokemon {
   /**
    * @param {MoveIdEnum} moveId
    * @param {string} targetPokemonId
+   * @returns {boolean}
    */
   useMove(moveId, targetPokemonId) {
     // make sure pokemon can move
     if (!this.canMove()) {
-      return;
+      return false;
     }
     // make sure move exists and is not on cooldown & disabled
     const moveData = getMove(moveId);
@@ -309,7 +311,7 @@ class BattlePokemon {
       this.moveIds[moveId].cooldown > 0 ||
       this.moveIds[moveId].disabledCounter
     ) {
-      return;
+      return false;
     }
     // check to see if target is valid
     const primaryTarget = this.battle.allPokemon[targetPokemonId];
@@ -317,11 +319,8 @@ class BattlePokemon {
       !primaryTarget ||
       !this.battle.getEligibleTargets(this, moveId).includes(primaryTarget)
     ) {
-      return;
+      return false;
     }
-
-    // clear battle log
-    this.battle.clearLog();
 
     // reset combat readiness
     this.combatReadiness = 0;
@@ -340,7 +339,7 @@ class BattlePokemon {
 
           // thaw chance (turns => chance): 0 => 0%, 1 => 40%, 2 => 80%, 3 => 100%
           const thawChance = this.status.turns * 0.4;
-          const thawRoll = Math.random();
+          const thawRoll = this.battle.rng();
           if (thawRoll < thawChance) {
             this.removeStatus();
           } else {
@@ -350,7 +349,7 @@ class BattlePokemon {
           break;
         case statusConditions.PARALYSIS:
           // 25% chance to be paralyzed
-          const paralysisRoll = Math.random();
+          const paralysisRoll = this.battle.rng();
           if (paralysisRoll < 0.25) {
             this.battle.addToLog(`${this.name} is paralyzed and can't move!`);
             canUseMove = false;
@@ -363,7 +362,7 @@ class BattlePokemon {
           }
           // sleep wakeup chance: 0 turns: 0%, 1 turn: 66%, 2 turns: 100%
           const wakeupChance = this.status.turns * 0.66;
-          const wakeupRoll = Math.random();
+          const wakeupRoll = this.battle.rng();
           if (wakeupRoll < wakeupChance) {
             this.removeStatus();
           } else {
@@ -404,7 +403,7 @@ class BattlePokemon {
       // set cooldown
       this.moveIds[moveId].cooldown = moveData.getEffectiveValue(
         "cooldown",
-        moveOptions
+        moveOptions,
       );
 
       // execute move
@@ -426,8 +425,7 @@ class BattlePokemon {
       }
     }
 
-    // end turn
-    this.battle.nextTurn();
+    return true;
   }
 
   /**
@@ -461,6 +459,13 @@ class BattlePokemon {
     // calculate miss and targets
     const allTargets = this.getMoveExecuteTargets(moveInstance, primaryTarget);
     moveInstance.allTargets = allTargets;
+    if (allTargets.length === 0) {
+      return {
+        allTargets: [],
+        missedTargets: [],
+        err: "No targets found.",
+      };
+    }
     const missedTargets = this.getMisses(moveInstance);
     moveInstance.missedTargets = missedTargets;
 
@@ -476,7 +481,7 @@ class BattlePokemon {
     };
     this.battle.eventHandler.emit(
       battleEventEnum.BEFORE_MOVE_EXECUTE,
-      executeEventArgs
+      executeEventArgs,
     );
 
     // move logging
@@ -491,12 +496,12 @@ class BattlePokemon {
           ? "!"
           : ` against ${primaryTarget.name}!`;
       this.battle.addToLog(
-        `${this.name} used ${moveInstance.name}${targetString}`
+        `${this.name} used ${moveInstance.name}${targetString}`,
       );
     }
     if (missedTargets.length > 0 && !isSilenced) {
       this.battle.addToLog(
-        `Missed ${missedTargets.map((target) => target.name).join(", ")}!`
+        `Missed ${missedTargets.map((target) => target.name).join(", ")}!`,
       );
     }
     this.executeMoveInstance(moveInstance);
@@ -555,7 +560,7 @@ class BattlePokemon {
         this,
         moveInstance.primaryTarget,
         moveInstance.allTargets,
-        moveInstance.missedTargets
+        moveInstance.missedTargets,
       );
     } else {
       moveInstance.execute();
@@ -583,6 +588,7 @@ class BattlePokemon {
    * @param {number=} param0.offTargetDamageMultiplier
    * @param {number=} param0.missedTargetDamageMultiplier
    * @param {number=} param0.backTargetDamageMultiplier
+   * @param {(() => number)=} param0.rng
    * @returns {number}
    */
   calculateMoveDamage({
@@ -602,6 +608,7 @@ class BattlePokemon {
     offTargetDamageMultiplier = 0.85,
     backTargetDamageMultiplier = 0.85,
     missedTargetDamageMultiplier = 0.6,
+    rng = null,
   }) {
     const power = powerOverride || move.power;
     const { level } = this;
@@ -646,7 +653,8 @@ class BattlePokemon {
     } else {
       typeMultiplier = 0.35;
     }
-    const random = Math.random() * (1 - 0.85) + 0.85;
+    const effectiveRng = rng || this.battle.rng;
+    const random = effectiveRng() * (1 - 0.85) + 0.85;
     const burn = this.status.statusId === statusConditions.BURN ? 0.65 : 1;
 
     let weatherMult = 1;
@@ -680,7 +688,7 @@ class BattlePokemon {
     for (let i = 0; i < targetRowNum; i += 1) {
       const row = partyPokemons.slice(
         i * targetParty.cols,
-        (i + 1) * targetParty.cols
+        (i + 1) * targetParty.cols,
       );
       for (const pokemon of row) {
         if (this.battle.isPokemonTargetable(pokemon, move.id)) {
@@ -713,7 +721,7 @@ class BattlePokemon {
         weatherMult *
         missMult *
         maybeOffTargetMult *
-        maybeBackTargetMult
+        maybeBackTargetMult,
     );
 
     return Math.max(damage, 1);
@@ -721,20 +729,13 @@ class BattlePokemon {
 
   /**
    * Called if the Pokemon is the active Pokemon but can't move.
-   * @returns {undefined}
+   * @returns {boolean}
    */
   skipTurn() {
     // make sure its this Pokemon's turn
     if (this.battle.activePokemon !== this) {
-      return;
+      return false;
     }
-    // make sure Pokemon can't move
-    if (this.canMove()) {
-      return;
-    }
-
-    // clear battle log
-    this.battle.clearLog();
 
     // reset combat readiness
     this.combatReadiness = 0;
@@ -745,7 +746,7 @@ class BattlePokemon {
         case statusConditions.FREEZE:
           // thaw chance (turns => chance): 0 => 0%, 1 => 40%, 2 => 80%, 3 => 100%
           const thawChance = this.status.turns * 0.4;
-          const thawRoll = Math.random();
+          const thawRoll = this.battle.rng();
           if (thawRoll < thawChance) {
             this.removeStatus();
           }
@@ -753,7 +754,7 @@ class BattlePokemon {
         case statusConditions.SLEEP:
           // sleep wakeup chance: 0 turns: 0%, 1 turn: 33%, 2 turns: 66%, 3 turns: 100%
           const wakeupChance = this.status.turns * 0.33;
-          const wakeupRoll = Math.random();
+          const wakeupRoll = this.battle.rng();
           if (wakeupRoll < wakeupChance) {
             this.removeStatus();
           }
@@ -768,8 +769,7 @@ class BattlePokemon {
     };
     this.battle.emitEvent(battleEventEnum.AFTER_SKIP_TURN, eventArgs);
 
-    // end turn
-    this.battle.nextTurn();
+    return true;
   }
 
   /**
@@ -838,7 +838,7 @@ class BattlePokemon {
     };
     this.battle.eventHandler.emit(
       battleEventEnum.CALCULATE_TYPE_MULTIPLIER, // This maybe shouldn't be an event. Code run by the NPC should not have possible side-effects
-      eventArgs
+      eventArgs,
     );
 
     return eventArgs.multiplier;
@@ -851,13 +851,14 @@ class BattlePokemon {
    * @param {object} options
    * @param {MoveInstanceId=} options.moveId
    * @param {boolean=} options.ignoreHittable
+   * @param {(() => number)=} options.rng
    * @returns {BattlePokemon[]} targets
    */
   getPatternTargets(
     targetParty,
     targetPattern,
     targetPosition,
-    { moveId = null, ignoreHittable = false } = {}
+    { moveId = null, ignoreHittable = false, rng = null } = {},
   ) {
     const targets = [];
 
@@ -870,14 +871,18 @@ class BattlePokemon {
           validPokemons.push(pokemon);
         }
       }
+      if (validPokemons.length === 0) {
+        return [];
+      }
+      const effectiveRng = rng || this.battle.rng;
       targets.push(
-        validPokemons[Math.floor(Math.random() * validPokemons.length)]
+        validPokemons[Math.floor(effectiveRng() * validPokemons.length)],
       );
     } else {
       const targetIndices = getPatternTargetIndices(
         targetParty,
         targetPattern,
-        targetPosition
+        targetPosition,
       );
       for (const index of targetIndices) {
         const target = targetParty.pokemons[index];
@@ -949,7 +954,7 @@ class BattlePokemon {
       [target.teamName]: getPatternTargetIndices(
         targetParty,
         this.getMovePattern(moveInstance),
-        target.position
+        target.position,
       ),
     };
   }
@@ -957,9 +962,11 @@ class BattlePokemon {
   /**
    * @param {MoveInstance} moveInstance
    * @param {BattlePokemon?} target
+   * @param {object} options
+   * @param {(() => number)=} options.rng
    * @returns {BattlePokemon[]}
    */
-  getMoveExecuteTargets(moveInstance, target) {
+  getMoveExecuteTargets(moveInstance, target, { rng = null } = {}) {
     if (!target) {
       return [];
     }
@@ -972,7 +979,7 @@ class BattlePokemon {
       targetParty,
       this.getMovePattern(moveInstance),
       target.position,
-      { moveId: moveInstance.id }
+      { moveId: moveInstance.id, rng },
     );
   }
 
@@ -1042,10 +1049,10 @@ class BattlePokemon {
       };
       this.battle.eventHandler.emit(
         battleEventEnum.CALCULATE_MISS,
-        calculateMissArgs
+        calculateMissArgs,
       );
 
-      if (Math.random() > calculateMissArgs.hitChance / 100) {
+      if (this.battle.rng() > calculateMissArgs.hitChance / 100) {
         misses.push(target);
       }
     }
@@ -1131,7 +1138,7 @@ class BattlePokemon {
     this.position = newPosition;
 
     this.battle.addToLog(
-      `${this.name} switched to position to ${newPosition}!`
+      `${this.name} switched to position to ${newPosition}!`,
     );
 
     return true;
@@ -1166,7 +1173,7 @@ class BattlePokemon {
 
     this.battle.eventHandler.emit(
       battleEventEnum.BEFORE_DAMAGE_DEALT,
-      eventArgs
+      eventArgs,
     );
     damage = eventArgs.damage;
 
@@ -1181,7 +1188,7 @@ class BattlePokemon {
       };
       this.battle.eventHandler.emit(
         battleEventEnum.AFTER_DAMAGE_DEALT,
-        afterDamageArgs
+        afterDamageArgs,
       );
     }
 
@@ -1210,7 +1217,7 @@ class BattlePokemon {
       if (this.removeStatus()) {
         damage = Math.floor(damage * 1.5);
         this.battle.addToLog(
-          `${this.name} Took extra damage because it was frozen!`
+          `${this.name} Took extra damage because it was frozen!`,
         );
       }
     }
@@ -1233,7 +1240,7 @@ class BattlePokemon {
       shieldData.args.shield -= shieldDamage;
 
       this.battle.addToLog(
-        `${this.name} took ${shieldDamage} shield damage! (${shieldData.args.shield} left)`
+        `${this.name} took ${shieldDamage} shield damage! (${shieldData.args.shield} left)`,
       );
       if (shieldData.args.shield <= 0) {
         this.removeEffect("shield");
@@ -1251,7 +1258,7 @@ class BattlePokemon {
 
     this.battle.eventHandler.emit(
       battleEventEnum.BEFORE_DAMAGE_TAKEN,
-      eventArgs
+      eventArgs,
     );
     damage = Math.min(eventArgs.damage, eventArgs.maxDamage);
 
@@ -1276,7 +1283,7 @@ class BattlePokemon {
       };
       this.battle.eventHandler.emit(
         battleEventEnum.AFTER_DAMAGE_TAKEN,
-        afterDamageArgs
+        afterDamageArgs,
       );
     }
 
@@ -1298,7 +1305,7 @@ class BattlePokemon {
     };
     this.battle.eventHandler.emit(
       battleEventEnum.BEFORE_CAUSE_FAINT,
-      beforeCauseFaintArgs
+      beforeCauseFaintArgs,
     );
     if (!beforeCauseFaintArgs.canFaint) {
       return;
@@ -1388,7 +1395,7 @@ class BattlePokemon {
   applyHeldItem() {
     const { heldItemId } = this.heldItem;
     const heldItemData = getHeldItem(
-      /** @type {HeldItemIdEnum} */ (heldItemId)
+      /** @type {HeldItemIdEnum} */ (heldItemId),
     );
     if (
       !heldItemData ||
@@ -1445,14 +1452,14 @@ class BattlePokemon {
     // remove held item effects
     const { heldItemId, applied } = this.heldItem;
     const heldItemData = getHeldItem(
-      /** @type {HeldItemIdEnum} */ (heldItemId)
+      /** @type {HeldItemIdEnum} */ (heldItemId),
     );
     if (!heldItemData || !heldItemData.itemRemove || !heldItemId) {
       return false;
     }
     if (!applied) {
       logger.error(
-        `Held item ${heldItemId} is not applied to Pokemon ${this.id} ${this.name}.`
+        `Held item ${heldItemId} is not applied to Pokemon ${this.id} ${this.name}.`,
       );
       return false;
     }
@@ -1511,7 +1518,7 @@ class BattlePokemon {
     }
     if (!heldItemData.tags.includes("usable")) {
       logger.warn(
-        `Attempted to use held item ${heldItemId} on ${this.name}, but it is not usable!`
+        `Attempted to use held item ${heldItemId} on ${this.name}, but it is not usable!`,
       );
       return false;
     }
@@ -1586,7 +1593,7 @@ class BattlePokemon {
 
     if (this.restricted) {
       this.battle.addToLog(
-        `${this.name} is restricted and cannot gain combat readiness!`
+        `${this.name} is restricted and cannot gain combat readiness!`,
       );
       return 0;
     }
@@ -1599,20 +1606,20 @@ class BattlePokemon {
     if (triggerEvents) {
       this.battle.eventHandler.emit(
         battleEventEnum.BEFORE_CR_GAINED,
-        beforeBoostArgs
+        beforeBoostArgs,
       );
     }
 
     const oldCombatReadiness = this.combatReadiness;
     this.combatReadiness = Math.min(
       100,
-      this.combatReadiness + beforeBoostArgs.amount
+      this.combatReadiness + beforeBoostArgs.amount,
     );
     const combatReadinessGained = this.combatReadiness - oldCombatReadiness;
     this.battle.addToLog(
       `${this.name} gained ${Math.round(
-        combatReadinessGained
-      )} combat readiness!`
+        combatReadinessGained,
+      )} combat readiness!`,
     );
 
     if (combatReadinessGained > 0 && triggerEvents) {
@@ -1642,7 +1649,7 @@ class BattlePokemon {
     this.combatReadiness = Math.max(0, this.combatReadiness - amount);
     const combatReadinessLost = oldCombatReadiness - this.combatReadiness;
     this.battle.addToLog(
-      `${this.name} lost ${Math.round(combatReadinessLost)} combat readiness!`
+      `${this.name} lost ${Math.round(combatReadinessLost)} combat readiness!`,
     );
     return combatReadinessLost;
   }
@@ -1652,14 +1659,18 @@ class BattlePokemon {
    * @param {K} effectId
    * @param {number} duration
    * @param {BattlePokemon} source
-   * @param {EffectInitialArgsTypeFromId<K>} initialArgs
+   * @param {EffectInitialArgsTypeFromId<K>} incomingInitialArgs
    */
-  applyEffect(effectId, duration, source, initialArgs) {
+  applyEffect(effectId, duration, source, incomingInitialArgs) {
     // if faint, do nothing
     if (this.isFainted) {
       return;
     }
     const effect = getEffect(effectId);
+    const initialArgs = {
+      ...(effect.defaultInitialArgs || {}),
+      ...incomingInitialArgs,
+    };
     if (!effect) {
       logger.error(`Effect ${effectId} does not exist.`);
       return;
@@ -1698,7 +1709,7 @@ class BattlePokemon {
     };
     this.battle.eventHandler.emit(
       battleEventEnum.BEFORE_EFFECT_ADD,
-      beforeAddArgs
+      beforeAddArgs,
     );
     if (!beforeAddArgs.canAdd) {
       return;
@@ -1749,7 +1760,7 @@ class BattlePokemon {
       };
       this.battle.eventHandler.emit(
         battleEventEnum.AFTER_EFFECT_ADD,
-        afterAddArgs
+        afterAddArgs,
       );
     }
   }
@@ -1828,7 +1839,7 @@ class BattlePokemon {
         this.battle,
         this,
         effectInstance.args,
-        effectInstance.initialArgs
+        effectInstance.initialArgs,
       );
     }
 
@@ -1843,7 +1854,7 @@ class BattlePokemon {
       };
       this.battle.eventHandler.emit(
         battleEventEnum.AFTER_EFFECT_REMOVE,
-        afterRemoveArgs
+        afterRemoveArgs,
       );
     }
 
@@ -1878,7 +1889,7 @@ class BattlePokemon {
     };
     this.battle.eventHandler.emit(
       battleEventEnum.BEFORE_STATUS_APPLY,
-      beforeApplyArgs
+      beforeApplyArgs,
     );
     if (!beforeApplyArgs.canApply) {
       return;
@@ -1893,7 +1904,7 @@ class BattlePokemon {
           this.type2 === pokemonTypes.FIRE
         ) {
           this.battle.addToLog(
-            `${this.name}'s Fire type renders it immune to burns!`
+            `${this.name}'s Fire type renders it immune to burns!`,
           );
           break;
         }
@@ -1912,14 +1923,14 @@ class BattlePokemon {
           this.type2 === pokemonTypes.ICE
         ) {
           this.battle.addToLog(
-            `${this.name}'s Ice type renders it immune to freezing!`
+            `${this.name}'s Ice type renders it immune to freezing!`,
           );
           break;
         }
 
         if (this.battle.weather.weatherId === weatherConditions.SUN) {
           this.battle.addToLog(
-            `${this.name} was protected from freezing by the sun!`
+            `${this.name} was protected from freezing by the sun!`,
           );
           break;
         }
@@ -1938,7 +1949,7 @@ class BattlePokemon {
           this.type2 === pokemonTypes.ELECTRIC
         ) {
           this.battle.addToLog(
-            `${this.name}'s Electric type renders it immune to paralysis!`
+            `${this.name}'s Electric type renders it immune to paralysis!`,
           );
           break;
         }
@@ -1960,7 +1971,7 @@ class BattlePokemon {
           this.type2 === pokemonTypes.POISON
         ) {
           this.battle.addToLog(
-            `${this.name}'s Poison type renders it immune to poison!`
+            `${this.name}'s Poison type renders it immune to poison!`,
           );
           break;
         }
@@ -1988,7 +1999,7 @@ class BattlePokemon {
           this.type2 === pokemonTypes.POISON
         ) {
           this.battle.addToLog(
-            `${this.name}'s Poison type renders it immune to poison!`
+            `${this.name}'s Poison type renders it immune to poison!`,
           );
           break;
         }
@@ -2013,7 +2024,7 @@ class BattlePokemon {
       };
       this.battle.eventHandler.emit(
         battleEventEnum.AFTER_STATUS_APPLY,
-        afterStatusArgs
+        afterStatusArgs,
       );
     }
   }
@@ -2129,7 +2140,7 @@ class BattlePokemon {
     // enable move
     this.moveIds[moveId].disabledCounter = Math.max(
       0,
-      this.moveIds[moveId].disabledCounter - 1
+      this.moveIds[moveId].disabledCounter - 1,
     );
     // this.battle.addToLog(`${this.name}'s ${getMove(moveId).name} is no longer disabled!`);
   }
@@ -2207,7 +2218,7 @@ class BattlePokemon {
       this.battle.addToLog(
         `${this.name}'s ${getMove(moveId).name}'s cooldown was reduced by ${
           oldCooldown - newCooldown
-        } turns!`
+        } turns!`,
       );
     }
     return oldCooldown - newCooldown;
@@ -2218,7 +2229,7 @@ class BattlePokemon {
       moveId,
       this.moveIds[moveId].cooldown,
       source,
-      silenceLog
+      silenceLog,
     );
   }
 

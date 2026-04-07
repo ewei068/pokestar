@@ -79,7 +79,7 @@ const pvp = async (user, opponentUserId, level) => {
         data: rowData,
       },
     ],
-    eventNames.PVP_ACCEPT
+    eventNames.PVP_ACCEPT,
   );
 
   const opponentString = opponentUserId
