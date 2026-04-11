@@ -1,0 +1,16 @@
+{
+  "browser": {
+    "browserName": "chromium",
+    "launchOptions": {
+      "headless": false
+    },
+    "contextOptions": {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      }
+    }
+  },
+  "outputDir": ".playwright/output",
+  "codegen": "none"
+}
