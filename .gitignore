@@ -115,3 +115,5 @@ Heap.*
 tutorialStats.csv
 
 __debug__
+
+.playwright/output/
