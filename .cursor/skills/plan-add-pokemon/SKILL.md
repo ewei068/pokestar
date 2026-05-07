@@ -28,6 +28,7 @@ Optional inputs the user may provide upfront (use them verbatim if given, otherw
 3. Switch to plan mode (`SwitchMode` → `plan`) before producing the plan output.
 4. Build the three tables (Pokemon → Moves → Abilities) in order. While filling the Pokemon table, append rows to the moves/abilities tables as you discover unimplemented entries.
 5. Append the implementation instructions section at the end.
+6. **Persist the plan to disk.** Write the full plan (all three tables + implementation instructions, exactly as emitted in chat) to `.cursor/plans/add-pokemon-<slug>.md`, where `<slug>` is a short kebab-case identifier derived from the descriptor (e.g. `lucario`, `ashs-greninja`, `gen3-fire-starters`). This file is the canonical source of truth for `Done` checkbox state across implementation steps and sessions — every time a row is checked off during implementation, update both the chat message and this file. Report the file path back to the user. If the file already exists for this slug, append a numeric suffix (`-2`, `-3`) rather than overwriting.
 
 ## Plan output structure
 
@@ -74,7 +75,7 @@ One row per **unimplemented** move discovered while filling the Pokemon table. A
 - **Move** — display name (the `add-move` skill maps to `moveIdEnum`).
 - **Tier** — `basic`, `power`, or `ultimate`.
 - **Additional Effects** — secondary effects like "60% chance to burn", "raises user Atk +1", "flinch on hit". May be empty.
-- **Generic Description** — any fields the user specified or that you think the move *must* have: power, accuracy, cooldown, damage type, target pattern, charge mechanics, etc. You do NOT need to specify every field — `add-move` infers the rest.
+- **Generic Description** — any fields the user specified or that you think the move _must_ have: power, accuracy, cooldown, damage type, target pattern, charge mechanics, etc. You do NOT need to specify every field — `add-move` infers the rest.
 - **Done** — `[ ]` initially; `[x]` after implementation.
 
 ### 3. Abilities table
@@ -91,15 +92,15 @@ One row per ability flagged for implementation (either user-requested or the cho
 
 Append this section verbatim (adjust only if the user explicitly overrode the iteration policy):
 
-> **Implementation order:** Iterate over the Pokemon table top-to-bottom, implementing one Pokemon at a time. For each Pokemon:
+> **Implementation order:** Iterate over the Pokemon table top-to-bottom, implementing one Pokemon at a time. **Before starting Pokemon #1, switch back to agent mode (`SwitchMode` → `agent`)** — implementation requires write access. For each Pokemon:
 >
 > 1. Refer to the `add-pokemon` skill and follow it to completion (which will dispatch `add-move` / `add-ability` subagents for any rows still unchecked in the Moves / Abilities tables).
-> 2. After each implemented move or ability, check off its row in the Moves / Abilities table.
+> 2. After each implemented move or ability, check off its row in **both** the in-chat plan and the persisted `.cursor/plans/add-pokemon-<slug>.md` file.
 > 3. Verify the Pokemon (the `add-pokemon` skill ends with verification via `verify-pokemon`).
-> 4. Check off the Pokemon's row in the Pokemon table.
+> 4. Check off the Pokemon's row in both places.
 > 5. **STOP and await further user instructions before starting the next Pokemon**, unless the user has explicitly said to implement multiple without pausing.
 >
-> Do not re-implement rows that are already checked off.
+> Do not re-implement rows that are already checked off. If resuming work in a later session, re-read the persisted plan file to recover progress.
 
 ## Pre-population checks
 

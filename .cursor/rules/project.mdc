@@ -117,9 +117,3 @@ Some subsystems have their own specific rules with more detail:
 - Do not modify the order of imports or exports
 - Prefer to write self-documenting code over comments
 - Don't remove or add code that's not instructed or related to instructions by the prompt
-
-NEVER run `node` commands to test changed code unless directed to.
-
-
-
-

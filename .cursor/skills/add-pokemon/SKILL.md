@@ -43,29 +43,91 @@ Heuristic backup: IDs containing a `-` (e.g. `"9-1"`) or ≥ `"20000"` are almos
 
 Check `src/enums/pokemonEnums.js` for the desired enum entry. **Canonical Pokemon are usually already in the enum** because it's auto-populated from a PokeAPI scrape script — most of the time you can skip this step for canonical entries. Fake Pokemon and brand-new alt forms typically need to be added by hand.
 
-If the entry is missing, add it inside `pokemonIdEnum` in numerical ID order next to similar Pokemon (alt forms next to their base species):
+If the entry is missing, add it inside `pokemonIdEnum` in numerical ID order next to similar Pokemon (alt forms next to their base species). Pick the pattern that matches what you're adding:
 
 ```javascript
-LUCARIO: "448",
+LUCARIO: "448",                // canonical (real Pokedex ID)
+WORMADAM_SANDY: "10004",       // canonical alt form (10000-range, no dash; place adjacent to WORMADAM_PLANT)
+ASHS_PIKACHU: "25-1",          // fakemon variant of a real species (dashed ID; place after PIKACHU)
+EXAMPLE_FAKEMON: "20024",      // fully original fakemon (>= 20000)
 ```
 
 **Every other file references the Pokemon through `pokemonIdEnum.XXX`, so this must exist before editing the config.**
 
 ## Step 1: Validate inputs and dispatch subagents
 
-Once you know the config type and have the required inputs, **dispatch subagents in parallel** to do the work. One message, multiple `Task` tool calls:
+Once you know the config type and have the required inputs, dispatch subagents to do the work. **Read the subagent dispatch model below carefully** — parallel agents writing to the same file race each other and silently lose edits.
 
-1. **Emoji agent** — dispatch with the `find-pokemon-emoji` skill to look up the Pokemon's emoji string (canonical `<:id:snowflake>`, form `<:idform:snowflake>`, or fakemon name-based). Give the agent the Pokemon's numeric ID, display name, and (for alt forms) the form suffix. Have the subagent return the emoji string so the main config agent can paste it directly into the `emoji` field — or, once Step 2 has produced the config entry, point the subagent at that entry and let it paste the emoji in place itself. Either approach is fine; whichever is simpler for the current task.
+### Subagent dispatch model
 
-2. **One agent per unimplemented move** — dispatch with the `add-move` skill to implement and test each missing move. The `add-move` skill is responsible for adding the corresponding entry to `moveIdEnum`, so you don't need to do that here. Tell the agent to also refer to the `test-move` skill if the move has complex logic. Wait for these before proceeding to Step 2.
+The shared files (`src/enums/battleEnums.js`, `src/battle/data/moves.js`, `src/battle/data/abilities.js`, `src/battle/data/effects.js`, `src/battle/data/heldItems.js`) all have N subagents trying to insert at the same closing-brace boundary. Direct parallel writes will collide via `StrReplace` anchor races.
 
-3. **One agent per ability flagged for implementation** — dispatch with the `add-ability` skill. Abilities referenced **without** an implementation directive can just be listed (for fakes) or skipped (for canonical, see below).
+The fix: subagents implement and test in **isolated git worktrees** (via `subagent_type: "best-of-n-runner"`), but instead of having the main agent merge the worktrees, each subagent **returns a structured payload of insertions** that the main agent applies serially.
 
-   **Important for canonical Pokemon:** even if an ability needs implementing, do NOT add it to the Pokemon's `abilities` config field if that ability already appears in the Pokemon's entry in `data/pokemonData.json` — `buildCanonicalEntry` will auto-merge it. Implement the ability, but leave the config alone.
+#### Emoji subagent
 
-4. **Main config agent** (or handle inline) — add the Pokemon entry to `pokemonConfig.js` using the templates below, including move refs, ability refs, and all other fields. Paste the emoji string returned by the emoji agent into the `emoji` field (or leave a brief placeholder if the emoji agent will fill it in directly after Step 2).
+Dispatch with `find-pokemon-emoji`. The subagent **must return the emoji string** in its final response (`<:id:snowflake>` / `<:idform:snowflake>` / `<:name:snowflake>`). The main agent pastes the string into the `emoji` field during Step 2. Do not have the subagent edit `pokemonConfig.js` directly.
 
-If the task is small (e.g. all moves/abilities already exist), skip subagents and do the config edit inline — but still run the `find-pokemon-emoji` skill yourself to fill in the `emoji` field.
+#### Move / ability subagents — return-payload contract
+
+Dispatch with `add-move` (one per unimplemented move) or `add-ability` (one per flagged ability), using `subagent_type: "best-of-n-runner"`. Each subagent implements + tests inside its own worktree, then **returns a structured payload** in its final response. The payload has this shape:
+
+```
+enum_entries: {
+  <enumName>: ["KEY: \"value\",", ...],   // e.g. moveIdEnum, abilityIdEnum, effectIdEnum
+  ...
+}
+blocks: {
+  "<file path>": ["<full block as a code string>", ...],
+  // e.g. "src/battle/data/moves.js": ["[moveIdEnum.FIRE_PUNCH]: new Move({...})"]
+  // Each block is ready to drop into the corresponding "...ToRegisterRaw" / "...ToRegister" object before its closing brace.
+}
+test_outcome: "pass" | { status: "fail", summary: "..." }
+requires_coordination?: ["<description of any cross-cutting change the subagent could not make on its own>"]
+```
+
+The payload supports **multiple files** because a move/ability may legitimately need additive changes in more than one place — e.g. a new move that also introduces a new effect adds to `moveIdEnum`, `effectIdEnum`, `moves.js`, AND `effects.js`. List each insert under its appropriate key.
+
+#### `requires_coordination` — when the subagent must NOT implement
+
+The subagent **must not** make mutative changes to the battle engine (`src/battle/engine/*`) or to existing methods on `BattlePokemon`, `Battle`, `MoveInstance`, etc. It also must not modify `battleConfig.js` or other files outside the additive-registry set. If the subagent decides its move/ability requires such a change:
+
+1. It does NOT implement the engine change.
+2. It returns its move/ability payload as best it can (possibly with a stub or `test_outcome: "fail"`).
+3. It populates `requires_coordination` with a description of what's needed (file, function, what behavior to add/change).
+
+The main agent then chooses one of:
+
+- Implement the cross-cutting change first as a coordinated single-author edit, then re-dispatch the subagent with the engine change in place.
+- Re-scope the move/ability to use existing primitives.
+- Escalate to the user.
+
+This guard exists because engine changes affect every move/ability; they should never be made in parallel by autonomous per-move subagents.
+
+#### Main agent integration
+
+After all subagents return, the main agent serially:
+
+1. **Dedupes** payloads — if two subagents added the same effect / enum entry / block, drop the duplicates. Detect this by exact-match on the enum key or block body.
+2. **Resolves `requires_coordination`** — handle every flagged item before applying any payloads (see options above).
+3. **Applies enum entries** — for each `(enumName, entries)` pair, insert into the corresponding enum in `battleEnums.js` (or other enum file) before its closing `});`.
+4. **Applies blocks** — for each `(filePath, blocks)` pair, insert each block before the closing `}` of the corresponding registry object (e.g. `movesToRegisterRaw`, `abilitiesToRegister`, `effectsToRegister`, `heldItemsToRegister`).
+5. **Runs the focused test suites** once for each touched data file:
+   - `npm test -- src/battle/data/__tests__/moves.test.js` if moves changed
+   - `npm test -- src/battle/data/__tests__/abilities.test.js` if abilities changed
+   - `npm test -- src/battle/data/__tests__/effects.test.js` if effects changed
+   - `npm test -- src/battle/data/__tests__/heldItems.test.js` if held items changed
+6. **Discards subagent worktrees.**
+
+Abilities referenced **without** an implementation directive can just be listed (for fakes) or skipped (for canonical — see Step 2). No subagent dispatch needed.
+
+### Inline shortcut
+
+If the task is small (e.g. all moves/abilities already exist, or only one of each is missing), skip subagents and do the work inline — implement + test in the main agent. Still call the `find-pokemon-emoji` skill yourself for the `emoji` field.
+
+### Main agent finishes the config
+
+After moves, abilities, and emoji are resolved, the main agent adds the Pokemon entry to `pokemonConfig.js` using the templates in Step 2.
 
 ## Step 2: Write the config entry
 
@@ -94,7 +156,11 @@ Insert the entry in numerical-ID order inside the correct config object. For alt
 Canonical-only rules:
 
 - **`evolution`**: use the canonical evolution level if level-based; invent a reasonable level otherwise. **Omit if the evolution target isn't implemented.** If the new Pokemon evolves **from** an already-implemented Pokemon, go add it to that Pokemon's `evolution` array too.
-- **`abilities`**: **omit** unless you need to override the auto-populated abilities from `pokemonData.json`. Never add abilities to the config that already appear in the Pokemon's `pokemonData.json` entry — they're merged automatically. Alt forms (e.g. `DEOXYS_ATTACK`) typically need an explicit `abilities` override.
+- **`abilities`**: how `buildCanonicalEntry` actually works — when this field is **omitted**, the cached abilities from `pokemonData.json` are auto-populated via `buildAbilityMap`. When this field is **present**, it **completely replaces** the auto-populated map (it's a shallow override, not a merge). So:
+  - To use the canonical ability set as-is → omit `abilities`. (This is the default and what you want for most canonical Pokemon.)
+  - To use a totally different ability set (e.g. alt forms like `DEOXYS_ATTACK`) → list every desired ability explicitly; the cached set is wiped.
+  - To **add** a custom-implemented ability while keeping the canonical ones → you must list **all** desired abilities (cached + new) in `abilities`. There is no merge path.
+  - For canonical Pokemon whose existing `pokemonData.json` abilities are sufficient, do not re-list them — let auto-populate handle it.
 - **`baseSpeciesId`, `formSpeciesIds`, `noGacha`, `tags`**: omit entirely unless explicitly required (alt forms, user-requested flags). Do not add them proactively.
 
 ### Canonical alt form template
@@ -154,7 +220,7 @@ Fake-only rules:
 | `baseStats`              | auto                         | required          | `[HP, Atk, Def, SpA, SpD, Spe]`                                                     |
 | `sprite` / `shinySprite` | auto                         | required          | Use MissingNo placeholder for fakes                                                 |
 | `moveIds`                | required                     | required          | Array of `moveIdEnum.*` refs                                                        |
-| `abilities`              | optional override            | required          | `{ [abilityIdEnum.X]: weight }`; never list abilities already in `pokemonData.json` |
+| `abilities`              | optional override            | required          | `{ [abilityIdEnum.X]: weight }`. For canonical: omit to auto-populate from `pokemonData.json`; specifying this field **replaces** the auto-populated map (no merge — see Step 2 canonical rules) |
 | `battleEligible`         | always `true`                | always `true`     |                                                                                     |
 | `rarity`                 | required                     | required          | `rarities.COMMON/RARE/EPIC/LEGENDARY/MYTHICAL`                                      |
 | `growthRate`             | required                     | required          | Match evolution line; see below                                                     |
@@ -194,7 +260,7 @@ After the config entry is in place:
 ## Pitfalls
 
 - **Missing `pokemonIdEnum` entry** — config edits using an undefined enum value produce silent bugs. Canonical Pokemon usually already have entries from the PokeAPI scrape, but always check.
-- **Re-listing canonical abilities in the config** — abilities that already appear in the Pokemon's `pokemonData.json` entry are auto-merged; listing them again is redundant and should be removed. Only override to add something custom (e.g. alt forms).
+- **Misunderstanding `abilities` override semantics** — the override is a shallow replacement, not a merge. Specifying `abilities: { [abilityIdEnum.NEW]: 1 }` on a canonical Pokemon **wipes out** the abilities auto-populated from `pokemonData.json`. To keep the canonical set, omit the field entirely; to add a single custom ability while keeping canonical ones, you must list all of them explicitly.
 - **Adding optional fields proactively** — do not include `baseSpeciesId`, `formSpeciesIds`, `noGacha`, `tags`, or `unobtainable` unless the user explicitly requests them or the Pokemon is an alt form that requires them.
 - **Adding an unimplemented Pokemon to another Pokemon's `evolution`** — evolution targets must exist in the config; if they don't, omit the evolution arrow (and revisit once they're added).
 - **Mismatched growth rates within an evolution line** — always match related species.

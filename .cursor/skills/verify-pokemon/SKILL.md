@@ -25,16 +25,40 @@ Before starting, read the Pokemon's config in `src/config/pokemonConfig.js` and 
    },
    ```
 
-   Revert this after testing.
+   Revert this after testing — see "Tracking temporary edits" below.
 
 3. **Probability overrides** — If a move or ability has a probabilistic secondary effect (e.g. Static's 50% paralysis chance), temporarily set the probability to `1` (or `0` to disable) in the source code so testing is deterministic. Find the implementation in:
    - `src/config/battleConfig.js` — legacy moves and abilities (look for `battle.rng()` comparisons or probability values)
    - `src/battle/data/moves.js` — new moves (look for `probability` fields in `genericApplyAllStatus` calls or similar)
    - `src/battle/data/abilities.js` — new abilities
+   - `src/battle/data/effects.js` — probabilistic branches inside effect implementations (some abilities/moves only roll their dice via the effect they apply)
+   - `src/battle/data/heldItems.js` — held-item triggers with `battle.rng()` checks
 
-   Revert these changes after testing.
+   Revert these changes after testing — see "Tracking temporary edits" below.
 
 4. **Ability trigger conditions** — Read the ability implementation to understand what triggers it. Plan which NPC to fight based on what conditions the ability needs.
+
+### Tracking temporary edits
+
+Both the abilities override (step 2) and probability overrides (step 3) leave time-bombed edits in the source tree that *must* be reverted before the work is committed. Use this lightweight tracking discipline:
+
+1. **Capture a baseline diff.** Before making any temporary edit, run:
+
+   ```bash
+   git diff src/config/pokemonConfig.js src/config/battleConfig.js src/battle/data/
+   ```
+
+   Save the output. This is your "expected" diff (it should contain only the legitimate Pokemon/move/ability/effect/held-item additions you're verifying — anything `add-pokemon` and friends produced).
+
+2. **Add a TODO per temp edit.** When you make a temporary edit, immediately add a TODO via the `TodoWrite` tool with a description like:
+
+   > Revert temp ability override on `pokemonIdEnum.LUCARIO` in `src/config/pokemonConfig.js`
+
+   One TODO per edit. Mark it `in_progress` until reverted, then `completed`.
+
+3. **Revert before cleanup.** Use `StrReplace` to put each line back exactly as it was. Do not rely on memory — re-read the file after each revert.
+
+4. **Verify against baseline.** At cleanup time (step 7), re-run the same `git diff` command and compare against the captured baseline. They must match exactly. Any extra lines = an unreverted temp edit; track it down before stopping.
 
 ## NPC Selection Strategy
 
@@ -126,13 +150,25 @@ For abilities, verify:
 
 ### 7. Cleanup
 
-Revert any temporary config changes (ability overrides, probability overrides). Close the browser and stop the bot:
+1. **Revert all temporary edits.** Walk the TODO list from "Tracking temporary edits" — every revert TODO must be `completed`. Use `StrReplace` to undo each change.
 
-```bash
-playwright-cli -s=main close
-```
+2. **Verify against the baseline diff.** Re-run:
 
-Kill the `node src/index.js` process.
+   ```bash
+   git diff src/config/pokemonConfig.js src/config/battleConfig.js src/battle/data/
+   ```
+
+   Compare against the baseline captured before testing. They must match exactly. If extra hunks remain, find and revert them now.
+
+3. **DO NOT commit until the diff matches.** This is a hard guard — if the diff still contains probability overrides, ability overrides, or any other temp edit, fix it before stopping. Only the legitimate `add-pokemon` / `add-move` / `add-ability` additions should remain.
+
+4. **Stop the bot and browser:**
+
+   ```bash
+   playwright-cli -s=main close
+   ```
+
+   Kill the `node src/index.js` process.
 
 ## Tips
 

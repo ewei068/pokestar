@@ -10,7 +10,7 @@ description: Add new moves to the battle system. Use when implementing attack, s
 **Files to modify:**
 
 1. `src/enums/battleEnums.js` - Add `moveIdEnum.YOUR_MOVE` entry (ONLY if not exists)
-2. `src/battle/data/moves.js` - Add the move implementation
+2. `src/battle/data/moves.js` - Add the move implementation as a new entry in the `movesToRegisterRaw` object (NOT `sketchMoves` or the frozen `movesToRegister` re-export)
 
 **DO NOT** modify other moves or `battleConfig.js` unless explicitly asked.
 
@@ -141,16 +141,28 @@ This runs an e2e test that verifies all moves can execute without throwing error
 
 ### When to Write Move-Specific Tests
 
-**Do NOT write tests** for simple moves that only use generic methods (e.g. just calling `genericDealAllDamage`, `genericApplyAllEffects`, `genericApplyAllStatus`, `genericHealAllTargets`, etc.) with no additional logic.
+**Default: write at least one assertion test for the move.** The e2e test in `moves.test.js` only verifies that `execute()` does not throw — a move with the wrong damage, wrong target, missing status application, or silently-broken side effect will pass the e2e test but still be wrong. So unless the move is *purely* a thin wrapper around a single generic method, write a focused test.
 
-**DO write tests** for moves that have:
+**Skip move-specific tests only when ALL of these are true:**
 
-- Complex or unique logic in `execute()` (conditional branches, multi-step flows, form-specific behavior)
+- The `execute()` body is one (or zero) generic method calls (`genericDealAllDamage`, `genericApplyAllEffects`, `genericApplyAllStatus`, `genericHealAllTargets`, `genericChangeAllCombatReadiness`, etc.) with no extra logic before or after.
+- There are no conditionals (`if`, ternary, `&&`/`||` short-circuits used for control flow).
+- There is no `overrideFields`, no `tags` interactions you want to verify, and no charge/two-turn behavior.
+- There are no probabilistic secondary effects worth pinning down (status chance, effect chance).
+
+If **any** non-generic call appears in `execute()` (a custom damage calculation, a manual `pokemon.applyEffect`, a `pokemon.dealDamage`, a `pokemon.removeStatus`, a custom target loop, etc.), or any of the conditions above is false, write at least one assertion test. Examples of what counts as "non-generic" and warrants a test:
+
+- Conditional branches or multi-step flows in `execute()`
 - Long execute functions with multiple interacting operations
-- Charge/two-turn move mechanics
-- Species-specific behavior (e.g. different effects for different Pokemon forms)
-- Non-standard damage calculations or targeting
-- Item/effect manipulation (stealing, swapping, dispelling)
+- Charge / two-turn move mechanics
+- Species-specific or form-specific behavior
+- Non-standard damage calculations or targeting (custom `calculateDamageFunction`, custom multipliers)
+- Item / effect manipulation (stealing, swapping, dispelling)
+- Probabilistic effects whose probability you want to lock in via `describeStatusProbability` / `describeEffectProbability`
+- Direct calls to `BattlePokemon` methods (`applyEffect`, `dispellEffect`, `dealDamage`, `giveHeal`, `boostCombatReadiness`, etc.) outside of the generic helpers
+- Any `tags` you want to confirm interact correctly with abilities (e.g. `"punch"` + Iron Fist)
+
+The bar is "non-generic call → one assertion test", not "complex logic → one assertion test". Prefer one short, focused test that asserts the unique behavior over no test at all.
 
 ### How to Write Move Tests
 

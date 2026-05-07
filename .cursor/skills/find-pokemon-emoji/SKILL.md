@@ -13,6 +13,16 @@ Pokemon emojis are posted as plain-text messages in Discord emoji servers under 
 
 Decide which workflow to use based on the request, then follow that section.
 
+## Setup (run before any workflow)
+
+Do not assume a Playwright session is already open. Always close any existing session first, then open a fresh one with the persistent `main` profile. This avoids inheriting a stale page or a different user profile.
+
+```bash
+playwright-cli -s=main close 2>/dev/null || true
+```
+
+The `|| true` swallows the error when no session is open. The actual `playwright-cli -s=main open ...` call happens inside each workflow's "open the channel" step (the URL differs per workflow), so do not pre-open a generic page here.
+
 ## Canonical Pokemon Workflow
 
 ### 1. Compute the server number
@@ -24,6 +34,7 @@ serverNumber = ceil(pokemonId / 50)
 ```
 
 Examples:
+
 - Pikachu (25) → server 1
 - Mamoswine (473) → server 10
 
@@ -31,18 +42,18 @@ Examples:
 
 Use the URL table below (do not search the sidebar). These links open `pokestar-pk-{n}`'s `#general` channel.
 
-| n | URL |
-|---|-----|
-| 1 | https://discord.com/channels/1099523950297485323/1099523951195078819 |
-| 2 | https://discord.com/channels/1100284426044309555/1100284426690244731 |
-| 3 | https://discord.com/channels/1100289786046058518/1100289787648294984 |
-| 4 | https://discord.com/channels/1116755651876618320/1116755653973790874 |
-| 5 | https://discord.com/channels/1119802868413775965/1119802869307158610 |
-| 6 | https://discord.com/channels/1126680474778091570/1126680475948306434 |
-| 7 | https://discord.com/channels/1132495466542678079/1132495467553489000 |
-| 8 | https://discord.com/channels/1132495525929816137/1132495526886133803 |
-| 9 | https://discord.com/channels/1351024398462619670/1351024398945091617 |
-| 10 | https://discord.com/channels/1351024742563319820/1351024742999523332 |
+| n   | URL                                                                  |
+| --- | -------------------------------------------------------------------- |
+| 1   | https://discord.com/channels/1099523950297485323/1099523951195078819 |
+| 2   | https://discord.com/channels/1100284426044309555/1100284426690244731 |
+| 3   | https://discord.com/channels/1100289786046058518/1100289787648294984 |
+| 4   | https://discord.com/channels/1116755651876618320/1116755653973790874 |
+| 5   | https://discord.com/channels/1119802868413775965/1119802869307158610 |
+| 6   | https://discord.com/channels/1126680474778091570/1126680475948306434 |
+| 7   | https://discord.com/channels/1132495466542678079/1132495467553489000 |
+| 8   | https://discord.com/channels/1132495525929816137/1132495526886133803 |
+| 9   | https://discord.com/channels/1351024398462619670/1351024398945091617 |
+| 10  | https://discord.com/channels/1351024742563319820/1351024742999523332 |
 
 Open it with the persistent `main` profile:
 
@@ -96,6 +107,7 @@ Form emojis use the token format `<:{id}{form}:{snowflake}>`, where `{form}` is 
 ### 1. Identify the base ID and form suffix
 
 From the user's request, determine:
+
 - The base Pokemon's numeric ID (e.g. Dialga = 483)
 - The form suffix (e.g. "Origin" → `origin`)
 
@@ -217,6 +229,25 @@ Report the server used and the final emoji string, e.g.:
 > Mamoswine (473) — server `pokestar-pk-10` — `<:473:1351027335155024042>`
 > Dialga Origin (483, `origin`) — server `pokestar-forms-1` — `<:483origin:1404654211324448848>`
 > Ash's Pikachu — server `pokestar-pk-extra` — `<:ashpikachu:1109522092283658250>`
+
+## Fallback when the emoji can't be found
+
+If the emoji genuinely doesn't exist (most common for newly-conceived fakemon or a brand-new form that has not yet been uploaded to the emoji server), or if you've spent a reasonable amount of effort searching and still can't locate it, **do not block the implementation**. Instead:
+
+1. Return the placeholder string `❓` in place of the emoji.
+2. **Explicitly flag to the user** that the emoji is missing, what you searched for, and which server you expected it in. Example:
+
+   > Could not find an emoji for "Ash's Greninja" — searched `pokestar-pk-extra` for candidates `ashgreninja`, `ashsgreninja`, `greninja658`, plus a numeric `658-1` fallback. Using `❓` as a placeholder; please upload the emoji and replace.
+
+3. The caller (e.g. the `add-pokemon` skill) should still complete the rest of its work using `❓`. The user can swap in the real emoji later.
+
+What counts as "reasonable effort":
+
+- **Canonical**: scrolled through the matching `pokestar-pk-{n}` server's `#general` and the bulk-emoji message doesn't contain the ID. Try the adjacent server (`n-1` or `n+1`) once in case the ID is borderline (e.g. id `100` could be in server 2 instead of server 3 due to off-by-one). If still missing → fallback.
+- **Form**: scrolled the entire `pokestar-forms-1` `#general` from top to bottom and no `<:{id}{form}:...>` token matches. → fallback.
+- **Fakemon**: tried at least 3 candidate search terms (stripped, with apostrophes, numeric ID) and Discord search returned no matches. → fallback.
+
+Do not silently substitute a different Pokemon's emoji or invent an emoji ID — always use `❓` and flag.
 
 ## Notes
 
