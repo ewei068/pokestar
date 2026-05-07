@@ -16,6 +16,8 @@ description: Add new moves to the battle system. Use when implementing attack, s
 
 ## Move Structure
 
+The move name and tier should be provided as inputs to this skill. For all other fields, they are optional, and if unprovided, you can infer them yourself.
+
 ```javascript
 [moveIdEnum.MOVE_NAME]: new Move({
   id: moveIdEnum.MOVE_NAME,

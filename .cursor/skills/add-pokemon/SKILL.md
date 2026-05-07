@@ -15,7 +15,7 @@ Before doing anything, collect these from the user. **If any required input is m
 
 - Pokemon `name` (for the enum key) and intended `pokemonIdEnum` identifier (e.g. `LUCARIO`, `ASHS_PIKACHU`)
 - Numeric/string **ID** (e.g. `"448"`, `"25-2"`, `"20024"`)
-- `moveIds` — the four (or fewer) moves. For each move, note whether it's already implemented in `moveIdEnum`.
+- `moveIds` — the four (or fewer) moves. For each move, note whether it's already implemented in `moves.js` or `battleConfig.js`. If a move is unimplemented and a description of how to implement the move isn't provided, stop and ask for it.
 - `rarity` (`COMMON` | `RARE` | `EPIC` | `LEGENDARY` | `MYTHICAL`) — infer from power level if not given
 - Any abilities to add, and whether each needs **implementation** or just a config reference
 - Do not introduce `baseSpeciesId`, `formSpeciesIds`, or `tags` unless the user explicitly indicates the Pokemon needs them.
