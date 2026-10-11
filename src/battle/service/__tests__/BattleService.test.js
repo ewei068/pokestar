@@ -135,4 +135,27 @@ describe("BattleService", () => {
       }),
     ).toEqual({ accepted: false, reason: "battle_not_found" });
   });
+
+  it("keeps an expired result readable only during its retention window", async () => {
+    let now = new Date("2026-01-01T00:00:00.000Z");
+    const store = new BattleStore(new MemoryBattleCollection(), { now: () => now });
+    const service = new BattleService(store);
+    const { battle } = createMockBattle();
+    const userId = battle.userIds.find((id) => !battle.isNpc(id));
+    await service.start({
+      battle,
+      idleTimeoutMs: 500,
+      resultRetentionMs: 1000,
+    });
+
+    now = new Date(now.getTime() + 600);
+    const expired = await service.get({ battleId: battle.id, userId });
+    expect(expired).toEqual(expect.objectContaining({ found: true, status: "expired" }));
+    expect(await service.listActive(userId)).toEqual([]);
+
+    now = new Date(now.getTime() + 1001);
+    expect(await service.get({ battleId: battle.id, userId })).toEqual({
+      found: false,
+    });
+  });
 });
