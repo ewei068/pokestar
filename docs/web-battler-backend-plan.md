@@ -34,6 +34,7 @@ Each branch builds on the preceding branch. Open a reviewable PR after its unit 
 
 - Use Jest unit tests and the existing full Jest suite for this run. Do not build or exercise the web UI yet.
 - Each PR must exercise behavior at its boundary: invalid actions do not mutate state; replay matches after restart; one of two concurrent actions wins; duplicate completion does not duplicate rewards; both Discord and resumed actions use the same battle ID.
+- A unit test recreates `BattleService` and `BattleStore` over the same stored collection, then lists, reads, and submits another action on the original battle ID. It validates process-independent service state but is not a real MongoDB restart test.
 - MongoDB integration and browser tests remain later gates before production deployment. Unit tests alone cannot establish real database atomicity, OAuth behavior, CORS, or browser animation.
 
 ## Working conventions
