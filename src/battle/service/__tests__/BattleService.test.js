@@ -88,6 +88,53 @@ describe("BattleService", () => {
     expect(onCompleted).not.toHaveBeenCalled();
   });
 
+  it("continues the same battle through a fresh service instance", async () => {
+    const collection = new MemoryBattleCollection();
+    const npcAction = () => ({ action: "skipTurn" });
+    const firstService = new BattleService(new BattleStore(collection), { npcAction });
+    const { battle } = createMockBattle({
+      team1Party: createMockPokemonParty({ size: 1 }),
+      team2Party: createMockPokemonParty({ size: 1 }),
+    });
+    const userId = battle.userIds.find((id) => !battle.isNpc(id));
+    const started = await firstService.start({ battle, mode: { type: "pve" } });
+    const firstAction = await firstService.act({
+      battleId: battle.id,
+      userId,
+      expectedRevision: started.revision,
+      requestId: "before-restart",
+      action: { action: "skipTurn" },
+    });
+    expect(firstAction.accepted).toBe(true);
+
+    const resumedService = new BattleService(new BattleStore(collection), { npcAction });
+    const listed = await resumedService.listActive(userId);
+    const resumed = await resumedService.get({
+      battleId: battle.id,
+      userId,
+      sinceRevision: started.revision,
+    });
+    expect(listed[0].battleId).toBe(battle.id);
+    expect(resumed.revision).toBe(firstAction.revision);
+    expect(resumed.updates).toEqual(firstAction.updates);
+
+    const nextAction = await resumedService.act({
+      battleId: battle.id,
+      userId,
+      expectedRevision: resumed.revision,
+      requestId: "after-restart",
+      action: { action: "skipTurn" },
+    });
+    expect(nextAction.accepted).toBe(true);
+    expect(nextAction.revision).toBeGreaterThan(resumed.revision);
+    expect((await resumedService.store.get(battle.id)).actions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ requestId: "before-restart" }),
+        expect.objectContaining({ requestId: "after-restart" }),
+      ]),
+    );
+  });
+
   it("lists only a participant's active battles and hides setup from reads", async () => {
     const { service } = makeService({ npcAction: () => ({ action: "skipTurn" }) });
     const { battle } = createMockBattle();
