@@ -33,12 +33,12 @@ describe("PvE durable start", () => {
     const difficulty = Object.keys(npcData.difficulties)[0];
     const state = { npcId, difficulty };
     const trainer = createMockTrainer();
-    getState.mockReturnValue(state);
-    getTrainer.mockResolvedValue({ data: trainer.trainer });
-    validatePartyForBattle.mockResolvedValue({ data: trainer.party.pokemons });
+    /** @type {jest.Mock} */ (getState).mockReturnValue(state);
+    /** @type {jest.Mock} */ (getTrainer).mockResolvedValue({ data: trainer.trainer });
+    /** @type {jest.Mock} */ (validatePartyForBattle).mockResolvedValue({ data: trainer.party.pokemons });
     const service = { start: jest.fn().mockResolvedValue({ battleId: "pve-1" }) };
-    getDurableBattleService.mockResolvedValue(service);
-    renderBattle.mockResolvedValue({ content: "Current battle" });
+    /** @type {jest.Mock} */ (getDurableBattleService).mockResolvedValue(service);
+    /** @type {jest.Mock} */ (renderBattle).mockResolvedValue({ content: "Current battle" });
 
     const result = await buildPveSend({
       stateId: "menu",

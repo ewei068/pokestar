@@ -31,15 +31,15 @@ const pvpAccept = require("../pvpAccept");
 
 describe("PvP durable acceptance", () => {
   it("starts once and reopens the same stored battle after another accept", async () => {
-    isDurableBattleEnabled.mockReturnValue(true);
+    /** @type {jest.Mock} */ (isDurableBattleEnabled).mockReturnValue(true);
     const battle = { addTeam: jest.fn(), addTrainer: jest.fn() };
     const state = { battle, userId: "challenger", opponentUserId: "opponent" };
     const service = { start: jest.fn().mockResolvedValue({ battleId: "battle-1" }) };
-    getState.mockReturnValue(state);
-    getDurableBattleService.mockResolvedValue(service);
-    getTrainer.mockResolvedValue({ data: { userId: "opponent" } });
-    validatePartyForBattle.mockResolvedValue({ data: [{ _id: "pokemon" }] });
-    renderBattle.mockResolvedValue({ content: "Current battle" });
+    /** @type {jest.Mock} */ (getState).mockReturnValue(state);
+    /** @type {jest.Mock} */ (getDurableBattleService).mockResolvedValue(service);
+    /** @type {jest.Mock} */ (getTrainer).mockResolvedValue({ data: { userId: "opponent" } });
+    /** @type {jest.Mock} */ (validatePartyForBattle).mockResolvedValue({ data: [{ _id: "pokemon" }] });
+    /** @type {jest.Mock} */ (renderBattle).mockResolvedValue({ content: "Current battle" });
     const interaction = {
       user: { id: "opponent" },
       update: jest.fn(),
@@ -58,18 +58,18 @@ describe("PvP durable acceptance", () => {
   });
 
   it("keeps the existing in-memory flow when durable battles are disabled", async () => {
-    isDurableBattleEnabled.mockReturnValue(false);
-    getDurableBattleService.mockClear();
+    /** @type {jest.Mock} */ (isDurableBattleEnabled).mockReturnValue(false);
+    /** @type {jest.Mock} */ (getDurableBattleService).mockClear();
     const battle = {
       hasStarted: false,
       addTeam: jest.fn(),
       addTrainer: jest.fn(),
       start: jest.fn(),
     };
-    getState.mockReturnValue({ battle, userId: "challenger" });
-    getTrainer.mockResolvedValue({ data: { userId: "opponent" } });
-    validatePartyForBattle.mockResolvedValue({ data: [{ _id: "pokemon" }] });
-    getStartTurnSend.mockResolvedValue({ content: "Legacy battle" });
+    /** @type {jest.Mock} */ (getState).mockReturnValue({ battle, userId: "challenger" });
+    /** @type {jest.Mock} */ (getTrainer).mockResolvedValue({ data: { userId: "opponent" } });
+    /** @type {jest.Mock} */ (validatePartyForBattle).mockResolvedValue({ data: [{ _id: "pokemon" }] });
+    /** @type {jest.Mock} */ (getStartTurnSend).mockResolvedValue({ content: "Legacy battle" });
     const interaction = { user: { id: "opponent" }, update: jest.fn() };
 
     await pvpAccept(interaction, { stateId: "challenge" });
