@@ -56,12 +56,13 @@ export type BattleUpdate = {
   action: BattleAction;
   events: BattleEvent[];
   log: string[];
-  view: BattleView;
+  view?: BattleView;
 };
 
 export type BattleResponse = {
   found: true;
   battleId: string;
+  stateId: string;
   rulesetVersion: number;
   revision: number;
   status: string;

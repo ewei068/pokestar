@@ -37,10 +37,10 @@ export const getMe = () => request<{ discordUserId: string }>("/me");
 export const getCatalog = () => request<BattleCatalog>("/catalog");
 export const listBattles = async () =>
   (await request<{ battles: BattleSummary[] }>("/battles")).battles;
-export const getBattle = (battleId: string, since?: number) =>
-  request<BattleResponse>(`/battles/${encodeURIComponent(battleId)}${
-    since === undefined ? "" : `?since=${since}`
-  }`);
+export const getBattle = async (battleId: string, after?: string): Promise<BattleResponse | null> =>
+  (await request<BattleResponse | void>(`/battles/${encodeURIComponent(battleId)}${
+    after === undefined ? "" : `?after=${encodeURIComponent(after)}`
+  }`)) || null;
 export const submitAction = (
   battleId: string,
   expectedRevision: number,

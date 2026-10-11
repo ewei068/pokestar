@@ -1,4 +1,8 @@
-const { restoreBattle } = require("../persistence/battleRecord");
+const {
+  BATTLE_RULESET_VERSION,
+  restoreBattle,
+} = require("../persistence/battleRecord");
+const { battleStateId } = require("./battleStateCursor");
 
 const participantTeams = (record, userId) => new Set(
   record.setup.trainers
@@ -77,10 +81,19 @@ const availableActions = (record, battle, userId) => {
 
 const projectBattleRecord = (record, userId, sinceRevision = null) => {
   const ownTeams = participantTeams(record, userId);
-  const battle = restoreBattle(record);
+  let firstRevision = sinceRevision;
+  if (firstRevision !== null && firstRevision > record.revision) firstRevision = 0;
+  const replayedViews = new Map();
+  const battle = restoreBattle(record, BATTLE_RULESET_VERSION, (entry, outcome) => {
+    if (firstRevision !== null && entry.revision > firstRevision &&
+        entry.revision < record.revision) {
+      replayedViews.set(entry.revision, outcome.snapshot);
+    }
+  });
   return {
     found: true,
     battleId: record._id,
+    stateId: battleStateId(record),
     rulesetVersion: record.rulesetVersion,
     revision: record.revision,
     status: record.status,
@@ -93,14 +106,16 @@ const projectBattleRecord = (record, userId, sinceRevision = null) => {
     isMyTurn: record.status === "active" && battle.activePokemon?.userId === userId,
     view: projectSnapshot(record.view, ownTeams),
     availableActions: availableActions(record, battle, userId),
-    updates: sinceRevision === null ? [] : record.actions
-      .filter((entry) => entry.revision > sinceRevision)
+    updates: firstRevision === null ? [] : record.actions
+      .filter((entry) => entry.revision > firstRevision)
       .map((entry) => ({
         revision: entry.revision,
         action: entry.action,
         events: entry.events,
         log: entry.log,
-        view: projectSnapshot(entry.view, ownTeams),
+        ...(entry.revision < record.revision ? {
+          view: projectSnapshot(replayedViews.get(entry.revision), ownTeams),
+        } : {}),
       })),
   };
 };

@@ -6,9 +6,17 @@ Vite, CSS Grid, and Pokémon icons. Combat remains authoritative on the server.
 ## Browser contract
 
 `BattleWebService` is the only battle service result intended for HTTP clients.
-It returns the current projected view immediately; optional `sinceRevision`
-returns ordered updates for actions observed after that revision. Each update
-contains its accepted action, combat events, log, and projected resulting view.
+It returns the current projected view immediately with a battle state ID. The
+browser sends that ID as `after` on later reads. An unchanged read returns HTTP
+204 without replaying the engine; a changed read returns ordered updates after
+the ID's revision. A malformed, foreign, or future ID requests all action
+updates. The ID changes for action, completion, and expiry transitions, without
+the server tracking client sessions. It is not based on the turn number because
+several actions can occur in one turn cycle.
+
+Each update contains its accepted action, combat events, and log. The server
+replays actions to build intermediate post-action views for missed updates; the
+last update uses the response's current view instead of repeating it.
 The current response also provides legal move IDs and target Pokémon IDs. The
 browser submits an action with its observed revision and a unique request ID;
 stale submissions receive the latest view and updates.
@@ -38,7 +46,8 @@ parameters or send the unprojected `BattleService` result to the browser.
   Discord OAuth, the session, and battle routes. Local development can use the
   Vite proxy without either public hostname.
 - Poll while the battle page is visible and refresh on focus. The event and
-  revision contract also supports SSE or WebSockets later.
+  state ID contract also supports SSE or WebSockets later. JSON API responses
+  use HTTP compression when the client supports it.
 - Keep battle state, animation queue, and renderer separate. CSS/DOM can serve
   the initial UI; a canvas renderer can consume the same view and events later.
 
@@ -53,9 +62,11 @@ These are examples, not a bound for raids or unusually long battles.
 
 The immutable initial setup contains full generated party data, so edits to a
 user's collection do not change an ongoing battle. Replay recomputes derived
-combat data from the versioned ruleset. The current record also stores one
-latest view and a full view after every action. Keep that for MVP, measure long
-battles, then consider compact action/event entries with periodic checkpoints.
+combat data from the versioned ruleset. The current record stores one latest
+view for quick reads and replay verification. New action entries store the
+command, ordered events, and log, without a full view. Existing records with
+older per-action views remain readable; those old fields are not removed by
+this change. Measure long battles before considering true engine checkpoints.
 
 ## Next implementation steps
 
