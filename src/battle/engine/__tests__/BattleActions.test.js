@@ -161,4 +161,28 @@ describe("Battle action outcomes", () => {
     expect(damageIndex).toBeGreaterThan(healIndex);
     expect(outcome.events[damageIndex].hp).toBe(target.hp);
   });
+
+  it("consumes a turn safely when a rule removes the chosen move", () => {
+    const { battle } = createMockBattle({ autoStart: true });
+    const source = battle.activePokemon;
+    const moveId = moveIdEnum.FIRE_PUNCH;
+    givePokemonMove(source, moveId);
+    const target = getValidTargetForMove(battle, source, moveId);
+    battle.eventHandler.registerListener(battleEventEnum.BEFORE_MOVE, {
+      execute: () => {
+        delete source.moveIds[moveId];
+      },
+    });
+
+    const outcome = battle.performAction({
+      action: "useMove",
+      moveId,
+      targetPokemonId: target.id,
+    });
+
+    expect(outcome.accepted).toBe(true);
+    expect(outcome.events.some((event) => event.type === "actionBlocked")).toBe(true);
+    expect(outcome.events.some((event) => event.type === "moveStarted")).toBe(false);
+    expect(battle.turn).toBe(1);
+  });
 });

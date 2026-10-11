@@ -397,7 +397,7 @@ class BattlePokemon {
     }
 
     // check if pokemon can use move make sure pokemon is alive
-    canUseMove = !!(canUseMove && !this.isFainted);
+    canUseMove = !!(canUseMove && !this.isFainted && this.moveIds[moveId]);
     if (!canUseMove) {
       this.battle.recordCombatEvent({
         type: "actionBlocked",
