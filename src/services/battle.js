@@ -67,6 +67,11 @@ const {
 const { heldItemIdEnum } = require("../enums/battleEnums");
 const { emojis } = require("../enums/emojis");
 const { trainerEventEnum } = require("../enums/gameEnums");
+const {
+  getDurableBattleService,
+  isDurableBattleEnabled,
+} = require("./durableBattle");
+const { renderBattle } = require("../battle/discord/durableBattleMessages");
 
 /**
  * @param {Trainer} trainer
@@ -741,9 +746,20 @@ const buildPveSend = async ({
     battle.addTeam("Player", false);
     battle.addTrainer(newTrainerResult.data, validate.data, "Player");
 
-    // start battle and add to state
-    battle.start();
-    state.battle = battle;
+    let battleSend;
+    if (isDurableBattleEnabled()) {
+      const durableService = await getDurableBattleService();
+      const started = await durableService.start({
+        battle,
+        mode: { type: "pve", npcId: state.npcId, difficulty: state.difficulty },
+      });
+      state.durableBattleId = started.battleId;
+      battleSend = await renderBattle(durableService, started.battleId, user.id);
+    } else {
+      battle.start();
+      state.battle = battle;
+      battleSend = await getStartTurnSend(battle, stateId);
+    }
 
     // add a replay button to state for later
     // build difficulty row
@@ -781,7 +797,7 @@ const buildPveSend = async ({
     state.endBattleComponents = [difficultyRow, returnRow];
 
     return {
-      send: await getStartTurnSend(battle, stateId),
+      send: battleSend,
       err: null,
     };
   }

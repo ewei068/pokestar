@@ -13,17 +13,18 @@ Status: active plan. This run covers the engine, durable battle service, and Dis
 7. [#122](https://github.com/ewei068/pokestar/pull/122): completion rewards extracted from Discord rendering with a strict failure mode.
 8. [#123](https://github.com/ewei068/pokestar/pull/123): preserve MongoDB index options when creating the battle TTL index.
 9. [#126](https://github.com/ewei068/pokestar/pull/126): pre-generate dungeon phase parties for deterministic replay.
+10. [#127](https://github.com/ewei068/pokestar/pull/127): claim completion once, record strict reward failures, and retain records needing review.
 
-Live battle creation and reward processing still use the in-memory path. The next cutover gate is to make trainer, Pokémon, quest, and battle completion writes individually idempotent, then route callback-free starts and Discord actions through the service. Dungeon phase parties can now be prepared for replay, but their live mode completion handling and tower/raid handlers still need durable implementations before those modes can be cut over.
+Live battle creation still uses the in-memory path unless `DURABLE_BATTLES_ENABLED=true`. With this flag, PvE and PvP starts and Discord actions use stored battle IDs; their completion effects use the strict handler and claim. Dungeon phase parties can be prepared for replay, but dungeon, tower, and raid live starts still need durable completion handlers. The flag should remain off in production until reward reconciliation and Discord feature parity are accepted.
 
 ## Remaining cutover steps
 
 Each branch builds on the preceding branch. Open a reviewable PR after its unit tests pass, then continue without waiting for review. The bottom PR targets `main`; each higher PR targets the branch below it.
 
 1. Make completion effects individually idempotent for trainer, Pokémon, and quest writes. The battle record now coordinates a single handler claim, but interrupted or failed claims require manual reconciliation. Verify behavior when an action is retried after completion or a process restart. Confirm production MongoDB topology before considering transactions; the local 6.0.18 server is standalone.
-2. Route callback-free `/pve` and `/pvp` starts and Discord actions through the shared service. Keep old messages refreshable; prove that `/continue-battle` resumes the same battle ID after restart.
+2. Validate opt-in `/pve` and `/pvp` starts and Discord actions against a real MongoDB process. `/continue-battle` uses the same battle ID after restart; stale legacy battle buttons can remain stale while a participant reopens the durable record. The old Discord auto-battle control is not yet in the durable renderer.
 3. Replace dungeon phase callbacks and tower/raid completion callbacks with durable mode data and handlers. Add focused unit tests for each mode, then enable them for continuation.
-4. Run MongoDB integration and restart tests before production cutover. Enable `/continue-battle` beyond alpha only after reward and mode gates pass.
+4. Run MongoDB integration and restart tests before production cutover. `/continue-battle` is registered in every stage; the start cutover remains behind `DURABLE_BATTLES_ENABLED`.
 
 ## Validation
 

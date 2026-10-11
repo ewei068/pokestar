@@ -895,7 +895,7 @@ const commandConfigRaw = {
         variable: false,
       },
     },
-    stages: [stageNames.ALPHA],
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
   },
   dungeons: {
     name: "Dungeons",
