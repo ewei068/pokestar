@@ -150,6 +150,10 @@ class Battle {
     // map pokemonId to pokemon
     /** @type {Record<string, BattlePokemon>} */
     this.allPokemon = {};
+    /** @type {Record<string, Array<{ pokemons: any[], rows: number, cols: number }>>} */
+    this.phaseQueues = {};
+    /** @type {Record<string, number>} */
+    this.phaseIndices = {};
     /**
      * @type {{
      *  weatherId?: WeatherConditionEnum,
@@ -271,6 +275,19 @@ class Battle {
     };
   }
 
+  /**
+   * Persistable phase parties for a trainer, generated before the battle starts.
+   * @param {string} userId
+   * @param {Array<{ pokemons: any[], rows: number, cols: number }>} phases
+   */
+  setPhaseQueue(userId, phases) {
+    if (this.hasStarted) {
+      throw new Error("Set battle phases before starting");
+    }
+    this.phaseQueues[userId] = JSON.parse(JSON.stringify(phases));
+    this.phaseIndices[userId] = 0;
+  }
+
   cloneAndReset() {
     const newBattle = new Battle(this.initialParams);
     for (const [teamName, team] of Object.entries(this.teams)) {
@@ -289,6 +306,9 @@ class Battle {
         firstParty.rows,
         firstParty.cols,
       );
+    }
+    for (const [userId, phases] of Object.entries(this.phaseQueues)) {
+      newBattle.setPhaseQueue(userId, phases);
     }
     return newBattle;
   }
@@ -383,6 +403,7 @@ class Battle {
     }
     this.log.push("The battle begins!");
     this.turn = 0;
+    this.winner = null;
     this.hasStarted = true;
 
     // sort all pokemon by speed descending
@@ -505,10 +526,22 @@ class Battle {
       let nextPhase = false;
       for (const userId of this.teams[loser].userIds) {
         const user = this.users[userId];
-        if (user.nextPhase !== undefined) {
-          const userNextPhase = user.nextPhase(this);
+        const phases = this.phaseQueues[userId];
+        if (phases !== undefined || user.nextPhase !== undefined) {
+          const phaseIndex = this.phaseIndices[userId] || 0;
+          const queuedPhase = phases?.[phaseIndex];
+          const userNextPhase =
+            phases !== undefined
+              ? queuedPhase && {
+                  trainer: { userId },
+                  ...JSON.parse(JSON.stringify(queuedPhase)),
+                }
+              : user.nextPhase(this);
           if (!userNextPhase) {
             continue;
+          }
+          if (phases !== undefined) {
+            this.phaseIndices[userId] = phaseIndex + 1;
           }
           const { trainer, pokemons, rows, cols } = userNextPhase;
 

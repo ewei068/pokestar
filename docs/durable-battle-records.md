@@ -6,6 +6,8 @@ An accepted submission appends `{ revision, requestId, actorUserId, action, even
 
 The record also contains participant IDs for active-battle listing, mode context, status, timestamps, and a ruleset version. Recovery currently requires the same manually maintained `BATTLE_RULESET_VERSION`. Incompatible records are rejected; this code does not delete them. The store sets a 24-hour inactivity expiry, capped by an optional mode deadline, and refreshes it after accepted actions. Completed and expired results are readable for seven days by default; callers may set both durations when starting a battle. Expiration marks a battle closed without running completion effects.
 
-Callbacks for phase transitions or completion are deliberately rejected during capture. The next slice needs durable mode handlers that can reattach phase behavior and apply completion effects once. Until that exists, this store should only be used for ordinary callback-free battles.
+Completion callbacks are rejected during capture. Phase callbacks are accepted only when that trainer has a generated phase queue in the setup. Dungeon parties can be generated before the first turn, stored in this queue, and consumed by the engine on phase transitions. Recovery replays the same transitions without recreating the dungeon NPC or invoking its callback. Other modes still need durable mode handlers for completion effects before their live starts can use this store.
+
+Local MongoDB 6.0.18 currently runs as a standalone server, so multi-document transactions are unavailable there. Production topology has not been verified. Reward processing must not assume transactions until that check is complete; making completion writes idempotent remains a cutover follow-up.
 
 The Jest tests use an isolated in-memory collection to prove the compare-and-swap and replay behavior. MongoDB integration, indexes on a real collection, and recovery across a process restart remain deployment gates.
