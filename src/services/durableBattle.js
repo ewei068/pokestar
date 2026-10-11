@@ -11,11 +11,11 @@ const getDurableBattleService = () => {
   if (!servicePromise) {
     servicePromise = createMongoBattleStore()
       .then((store) => new BattleService(store, {
-        onCompleted: (battle) => {
+        onCompleted: (battle, record) => {
           // Resolve after battle.js has loaded; it also starts durable battles.
           // eslint-disable-next-line global-require
-          const { processBattleCompletionRewards } = require("./battle");
-          return processBattleCompletionRewards(battle, { strict: true });
+          const { processDurableBattleCompletion } = require("./battle");
+          return processDurableBattleCompletion(battle, record);
         },
       }))
       .catch((error) => {
