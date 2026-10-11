@@ -240,6 +240,12 @@ class BattlePokemon {
     }
 
     this.battle.addToLog(`${oldName} transformed into ${this.name}!`);
+    this.battle.recordCombatEvent({
+      type: "pokemonTransformed",
+      pokemonId: this.id,
+      previousSpeciesId: beforeSpeciesId,
+      speciesId: this.speciesId,
+    });
 
     this.battle.emitEvent(battleEventEnum.AFTER_TRANSFORM, {
       target: this,
@@ -392,6 +398,13 @@ class BattlePokemon {
 
     // check if pokemon can use move make sure pokemon is alive
     canUseMove = !!(canUseMove && !this.isFainted);
+    if (!canUseMove) {
+      this.battle.recordCombatEvent({
+        type: "actionBlocked",
+        pokemonId: this.id,
+        moveId,
+      });
+    }
 
     const moveOptions = {
       source: this,
@@ -480,6 +493,25 @@ class BattlePokemon {
       moveId,
       moveInstance,
     };
+    this.battle.recordCombatEvent({
+      type: "moveStarted",
+      pokemonId: this.id,
+      moveId,
+      moveType: moveInstance.type,
+      damageType: moveInstance.damageType,
+      targetPattern: moveInstance.targetPattern,
+      primaryTargetId: primaryTarget.id,
+      targetIds: allTargets.map((target) => target.id),
+      missedTargetIds: missedTargets.map((target) => target.id),
+    });
+    for (const target of missedTargets) {
+      this.battle.recordCombatEvent({
+        type: "targetMissed",
+        pokemonId: this.id,
+        targetPokemonId: target.id,
+        moveId,
+      });
+    }
     this.battle.eventHandler.emit(
       battleEventEnum.BEFORE_MOVE_EXECUTE,
       executeEventArgs,
@@ -506,6 +538,11 @@ class BattlePokemon {
       );
     }
     this.executeMoveInstance(moveInstance);
+    this.battle.recordCombatEvent({
+      type: "moveCompleted",
+      pokemonId: this.id,
+      moveId,
+    });
 
     return {
       allTargets,
@@ -1137,6 +1174,12 @@ class BattlePokemon {
     // add to new position
     newParty.pokemons[newIndex] = this;
     this.position = newPosition;
+    this.battle.recordCombatEvent({
+      type: "pokemonMoved",
+      pokemonId: this.id,
+      teamName: this.teamName,
+      position: newPosition,
+    });
 
     this.battle.addToLog(
       `${this.name} switched to position to ${newPosition}!`,
@@ -1239,6 +1282,13 @@ class BattlePokemon {
     if (shieldData && shieldData.args && shieldData.args.shield) {
       const shieldDamage = Math.min(damage, shieldData.args.shield);
       shieldData.args.shield -= shieldDamage;
+      this.battle.recordCombatEvent({
+        type: "shieldChanged",
+        pokemonId: this.id,
+        sourcePokemonId: source?.id ?? null,
+        amount: -shieldDamage,
+        shield: shieldData.args.shield,
+      });
 
       this.battle.addToLog(
         `${this.name} took ${shieldDamage} shield damage! (${shieldData.args.shield} left)`,
@@ -1269,6 +1319,16 @@ class BattlePokemon {
     }
     this.hp = Math.max(0, this.hp - damage);
     const damageTaken = oldHp - this.hp;
+    if (damageTaken > 0) {
+      this.battle.recordCombatEvent({
+        type: "hpChanged",
+        pokemonId: this.id,
+        sourcePokemonId: source?.id ?? null,
+        previousHp: oldHp,
+        hp: this.hp,
+        amount: -damageTaken,
+      });
+    }
     this.battle.addToLog(`${this.name} took ${damageTaken} damage!`);
     if (this.hp <= 0) {
       this.hp = 0;
@@ -1332,6 +1392,11 @@ class BattlePokemon {
 
     this.hp = 0;
     this.isFainted = true;
+    this.battle.recordCombatEvent({
+      type: "pokemonFainted",
+      pokemonId: this.id,
+      sourcePokemonId: source?.id ?? null,
+    });
     this.disableHeldItem();
     this.battle.addToLog(`${this.name} fainted!`);
 
@@ -1359,6 +1424,12 @@ class BattlePokemon {
 
     this.hp = Math.min(this.maxHp, reviveHp);
     this.isFainted = false;
+    this.battle.recordCombatEvent({
+      type: "pokemonRevived",
+      pokemonId: this.id,
+      sourcePokemonId: source?.id ?? null,
+      hp: this.hp,
+    });
     this.battle.addToLog(`${this.name} was revived!`);
 
     // re-add ability and held item
@@ -1575,6 +1646,14 @@ class BattlePokemon {
     this.hp = Math.min(this.maxHp, this.hp + heal);
     const healTaken = this.hp - oldHp;
     if (healTaken > 0) {
+      this.battle.recordCombatEvent({
+        type: "hpChanged",
+        pokemonId: this.id,
+        sourcePokemonId: source?.id ?? null,
+        previousHp: oldHp,
+        hp: this.hp,
+        amount: healTaken,
+      });
       this.battle.addToLog(`${this.name} healed ${healTaken} HP!`);
     }
     return healTaken;
@@ -1750,6 +1829,13 @@ class BattlePokemon {
     }
 
     if (this.effectIds[effectId] !== undefined) {
+      this.battle.recordCombatEvent({
+        type: "effectApplied",
+        pokemonId: this.id,
+        sourcePokemonId: source?.id ?? null,
+        effectId,
+        duration: this.effectIds[effectId].duration,
+      });
       // trigger after add effect events
       const afterAddArgs = {
         target: this,
@@ -1860,6 +1946,11 @@ class BattlePokemon {
     }
 
     delete this.effectIds[effectId];
+    this.battle.recordCombatEvent({
+      type: "effectRemoved",
+      pokemonId: this.id,
+      effectId,
+    });
     return true;
   }
 
@@ -2018,6 +2109,12 @@ class BattlePokemon {
     }
 
     if (statusApplied) {
+      this.battle.recordCombatEvent({
+        type: "statusApplied",
+        pokemonId: this.id,
+        sourcePokemonId: source?.id ?? null,
+        statusId,
+      });
       const afterStatusArgs = {
         target: this,
         source,
@@ -2104,10 +2201,16 @@ class BattlePokemon {
         break;
     }
 
+    const removedStatusId = this.status.statusId;
     this.status = {
       statusId: null,
       turns: 0,
     };
+    this.battle.recordCombatEvent({
+      type: "statusRemoved",
+      pokemonId: this.id,
+      statusId: removedStatusId,
+    });
 
     return true;
   }

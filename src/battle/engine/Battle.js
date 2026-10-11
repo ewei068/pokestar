@@ -120,6 +120,8 @@ class Battle {
     this.rng = seedrandom(this.id);
     /** @type {ActionPayload[]} */
     this.actions = [];
+    /** @type {Array<object> | null} */
+    this.actionEvents = null;
 
     // initial
     this.baseMoney = 100;
@@ -376,6 +378,9 @@ class Battle {
   }
 
   start() {
+    if (this.hasStarted) {
+      this.recordCombatEvent({ type: "phaseStarted" });
+    }
     this.log.push("The battle begins!");
     this.turn = 0;
     this.hasStarted = true;
@@ -416,6 +421,11 @@ class Battle {
 
     // begin turn
     this.eventHandler.emit(battleEventEnum.TURN_BEGIN);
+    this.recordCombatEvent({
+      type: "turnStarted",
+      turn: this.turn,
+      pokemonId: this.activePokemon.id,
+    });
 
     // log
     const userIsNpc = this.isNpc(this.activePokemon.userId);
@@ -529,6 +539,7 @@ class Battle {
       this.addToLog("**The battle has ended in a draw!**");
     }
     this.ended = true;
+    this.recordCombatEvent({ type: "battleEnded", winner: this.winner });
 
     // if winner is npc, no rewards
     if (this.teams[this.winner] && this.teams[this.winner].isNpc) {
@@ -591,6 +602,16 @@ class Battle {
   }
 
   /**
+   * Records a serializable observation, separate from the mutable rules event bus.
+   * @param {object} event
+   */
+  recordCombatEvent(event) {
+    if (this.actionEvents) {
+      this.actionEvents.push({ sequence: this.actionEvents.length, ...event });
+    }
+  }
+
+  /**
    * @typedef {{ action: "skipTurn" } |
    *  { action: "useMove", moveId: MoveIdEnum, targetPokemonId: string }
    * } ActionPayload
@@ -598,19 +619,26 @@ class Battle {
 
   /**
    * @param {ActionPayload} payload
-   * @returns {{ accepted: boolean, reason?: string, log?: string[], snapshot: ReturnType<Battle['takeSnapshot']> }}
+   * @returns {{ accepted: boolean, reason?: string, log?: string[], events?: object[], snapshot: ReturnType<Battle['takeSnapshot']> }}
    */
   performAction(payload) {
     if (!this.hasStarted || this.ended || !this.activePokemon) {
       return {
         accepted: false,
         reason: "battle_inactive",
+        events: [],
         snapshot: this.takeSnapshot(),
       };
     }
 
     const previousLog = this.log;
     this.clearLog();
+    this.actionEvents = [];
+    this.recordCombatEvent({
+      type: "actionStarted",
+      pokemonId: this.activePokemon.id,
+      action: payload?.action ?? null,
+    });
     let success = false;
     switch (payload?.action) {
       case "skipTurn":
@@ -627,18 +655,23 @@ class Battle {
     }
     if (!success) {
       this.log = previousLog;
+      this.actionEvents = null;
       return {
         accepted: false,
         reason: "invalid_action",
+        events: [],
         snapshot: this.takeSnapshot(),
       };
     }
 
     this.logAction({ ...payload });
     this.nextTurn();
+    const events = this.actionEvents;
+    this.actionEvents = null;
     return {
       accepted: true,
       log: [...this.log],
+      events,
       snapshot: this.takeSnapshot(),
     };
   }
@@ -1086,6 +1119,10 @@ class Battle {
       };
     }
     return {
+      battleId: this.id,
+      hasStarted: this.hasStarted,
+      ended: this.ended,
+      winner: this.winner,
       turn: this.turn,
       activePokemonId: this.activePokemon?.id ?? null,
       weather: {
