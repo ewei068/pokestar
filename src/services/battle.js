@@ -1043,6 +1043,38 @@ const towerWinCallback = async (battle, user) => {
   };
 };
 
+/**
+ * Reapply tower progression from stored mode data, without a battle callback.
+ * @param {Battle} battle
+ * @param {{ stage: number }} mode
+ */
+const applyDurableTowerCompletion = async (battle, mode) => {
+  if (!battle.winner || battle.teams[battle.winner].isNpc) return;
+  const towerData = battleTowerConfig[mode.stage];
+  if (!towerData || getIdFromTowerStage(mode.stage) !== battle.npcId) {
+    throw new Error(`Invalid stored tower stage ${mode.stage}`);
+  }
+  for (const userId of battle.teams[battle.winner].userIds) {
+    const user = battle.users[userId];
+    const { data: trainer, err } = await getTrainer(user);
+    if (err || !trainer) throw new Error(`Failed to get tower trainer ${userId}`);
+    if (trainer.lastTowerStage + 1 !== mode.stage) {
+      throw new Error(`Tower stage changed for ${userId}`);
+    }
+    trainer.lastTowerStage = mode.stage;
+    const update = await updateTrainer(trainer);
+    if (update.err) throw new Error(`Failed to advance tower trainer ${userId}`);
+  }
+  battle.rewards = { ...towerData.rewards };
+};
+
+const processDurableBattleCompletion = async (battle, record) => {
+  if (record.mode.type === "tower") {
+    await applyDurableTowerCompletion(battle, record.mode);
+  }
+  return processBattleCompletionRewards(battle, { strict: true });
+};
+
 const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
   // get state
   const state = getState(stateId);
@@ -1090,11 +1122,12 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
     difficultyConfig[battleTowerData.difficulty].rewardMultipliers;
   const autoBattleCost =
     difficultyConfig[battleTowerData.difficulty].autoBattleCost + 2;
+  const durable = isDurableBattleEnabled();
   const battle = new Battle({
     ...rewardMultipliers,
     npcId: getIdFromTowerStage(towerStage),
     difficulty: battleTowerData.difficulty,
-    winCallback: towerWinCallback,
+    winCallback: durable ? null : towerWinCallback,
     canAuto: !getCanTrainerAutoBattle(trainer.data, autoBattleCost).err,
     autoBattleCost,
     shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(trainer.data).err,
@@ -1111,9 +1144,19 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
   battle.addTeam("Player", false);
   battle.addTrainer(trainer.data, validate.data, "Player");
 
-  // start battle and add to state
-  battle.start();
-  state.battle = battle;
+  let battleSend = null;
+  if (durable) {
+    const durableService = await getDurableBattleService();
+    const started = await durableService.start({
+      battle,
+      mode: { type: "tower", stage: towerStage },
+    });
+    state.durableBattleId = started.battleId;
+    battleSend = await renderBattle(durableService, started.battleId, user.id);
+  } else {
+    battle.start();
+    state.battle = battle;
+  }
 
   // build return button
   const returnData = {
@@ -1134,7 +1177,7 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
   );
   state.endBattleComponents = [returnRow];
 
-  return { err: null };
+  return { err: null, send: battleSend };
 };
 
 /**
@@ -1214,6 +1257,8 @@ module.exports = {
   getCanTrainerAutoBattle,
   getCanUserAutoBattle,
   processBattleCompletionRewards,
+  processDurableBattleCompletion,
+  applyDurableTowerCompletion,
   getStartTurnSend,
   nextAutoTurn,
   startAuto,
