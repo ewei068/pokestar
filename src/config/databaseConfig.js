@@ -62,6 +62,7 @@ const collectionConfig = Object.freeze({
     indexes: [
       { key: { participantIds: 1, status: 1 }, unique: false },
       { key: { expiresAt: 1 }, unique: false },
+      { key: { resultExpiresAt: 1 }, expireAfterSeconds: 0 },
     ],
   },
   [collectionNames.USERS]: {

@@ -12,6 +12,16 @@ const sameAction = (left, right) => {
   );
 };
 
+const DEFAULT_IDLE_TIMEOUT_MS = 24 * 60 * 60 * 1000;
+const DEFAULT_RESULT_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
+
+const getExpiry = (now, idleTimeoutMs, modeDeadlineAt) => {
+  const idleExpiry = new Date(now.getTime() + idleTimeoutMs);
+  return modeDeadlineAt && modeDeadlineAt < idleExpiry
+    ? modeDeadlineAt
+    : idleExpiry;
+};
+
 /**
  * Mongo-backed durable battle actions. The collection must have a unique _id.
  */
@@ -21,8 +31,24 @@ class BattleStore {
     this.now = now;
   }
 
-  /** @param {{ battle: Battle, mode?: object, expiresAt?: Date }} options */
-  async create({ battle, mode = {}, expiresAt = null }) {
+  /**
+   * @param {object} options
+   * @param {Battle} options.battle
+   * @param {object=} options.mode
+   * @param {number=} options.idleTimeoutMs
+   * @param {Date=} options.modeDeadlineAt
+   * @param {number=} options.resultRetentionMs
+   */
+  async create({
+    battle,
+    mode = {},
+    idleTimeoutMs = DEFAULT_IDLE_TIMEOUT_MS,
+    modeDeadlineAt = null,
+    resultRetentionMs = DEFAULT_RESULT_RETENTION_MS,
+  }) {
+    if (idleTimeoutMs <= 0 || resultRetentionMs <= 0) {
+      throw new Error("Battle timeouts must be positive");
+    }
     const setup = captureBattleSetup(battle);
     battle.start();
     const now = this.now();
@@ -40,14 +66,44 @@ class BattleStore {
       view: battle.takeSnapshot(),
       createdAt: now,
       updatedAt: now,
-      expiresAt,
+      expiresAt: getExpiry(now, idleTimeoutMs, modeDeadlineAt),
+      modeDeadlineAt,
+      idleTimeoutMs,
+      resultRetentionMs,
+      resultExpiresAt: null,
     };
     await this.collection.insertOne(record);
     return record;
   }
 
   async get(battleId) {
-    return this.collection.findOne({ _id: battleId });
+    const record = await this.collection.findOne({ _id: battleId });
+    if (
+      record?.status === "active" &&
+      record.expiresAt &&
+      record.expiresAt <= this.now()
+    ) {
+      const now = this.now();
+      await this.collection.updateOne(
+        {
+          _id: battleId,
+          status: "active",
+          expiresAt: { $lte: now },
+        },
+        {
+          $set: {
+            status: "expired",
+            closedAt: now,
+            updatedAt: now,
+            resultExpiresAt: new Date(
+              now.getTime() + record.resultRetentionMs,
+            ),
+          },
+        },
+      );
+      return this.collection.findOne({ _id: battleId });
+    }
+    return record;
   }
 
   async listActive(userId) {
@@ -93,7 +149,10 @@ class BattleStore {
       };
     }
     if (record.status !== "active") {
-      return this.rejected("battle_inactive", record);
+      return this.rejected(
+        record.status === "expired" ? "battle_expired" : "battle_inactive",
+        record,
+      );
     }
     if (record.expiresAt && record.expiresAt <= this.now()) {
       return this.rejected("battle_expired", record);
@@ -112,6 +171,7 @@ class BattleStore {
     }
 
     const nextRevision = record.revision + 1;
+    const now = this.now();
     const update = {
       revision: nextRevision,
       requestId,
@@ -128,7 +188,14 @@ class BattleStore {
           revision: nextRevision,
           status: battle.ended ? "completed" : "active",
           view: outcome.snapshot,
-          updatedAt: this.now(),
+          updatedAt: now,
+          expiresAt: battle.ended
+            ? null
+            : getExpiry(now, record.idleTimeoutMs, record.modeDeadlineAt),
+          resultExpiresAt: battle.ended
+            ? new Date(now.getTime() + record.resultRetentionMs)
+            : null,
+          completedAt: battle.ended ? now : null,
         },
         $push: { actions: update },
       },

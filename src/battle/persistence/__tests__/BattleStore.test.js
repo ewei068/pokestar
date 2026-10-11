@@ -2,6 +2,9 @@ const { createMockBattle } = require("../../../__testing__/mocks/battle");
 const { BattleStore } = require("../BattleStore");
 const { restoreBattle } = require("../battleRecord");
 const {
+  createMockPokemonParty,
+} = require("../../../__testing__/mocks/pokemon");
+const {
   MemoryBattleCollection,
 } = require("../../../__testing__/mocks/battleCollection");
 
@@ -173,5 +176,88 @@ describe("BattleStore", () => {
     await expect(store.create({ battle })).rejects.toThrow(
       "Battle phase callbacks need a durable mode handler",
     );
+  });
+
+  it("closes an inactive battle at the earlier mode deadline without rewards", async () => {
+    let now = new Date("2026-01-01T00:00:00.000Z");
+    const store = new BattleStore(new MemoryBattleCollection(), { now: () => now });
+    const { battle } = createMockBattle();
+    const modeDeadlineAt = new Date(now.getTime() + 500);
+    const created = await store.create({
+      battle,
+      idleTimeoutMs: 1000,
+      modeDeadlineAt,
+      resultRetentionMs: 2000,
+    });
+    expect(created.expiresAt).toEqual(modeDeadlineAt);
+
+    now = new Date(now.getTime() + 600);
+    const expired = await store.get(battle.id);
+    expect(expired.status).toBe("expired");
+    expect(expired.resultExpiresAt).toEqual(new Date(now.getTime() + 2000));
+    expect(await store.listActive(created.participantIds[0])).toEqual([]);
+    expect(
+      await store.submit({
+        battleId: battle.id,
+        actorUserId: battle.activePokemon.userId,
+        expectedRevision: 0,
+        requestId: "late",
+        action: { action: "skipTurn" },
+      }),
+    ).toEqual(
+      expect.objectContaining({ accepted: false, reason: "battle_expired" }),
+    );
+  });
+
+  it("extends inactivity expiry after an accepted action", async () => {
+    let now = new Date("2026-01-01T00:00:00.000Z");
+    const store = new BattleStore(new MemoryBattleCollection(), { now: () => now });
+    const { battle } = createMockBattle();
+    await store.create({ battle, idleTimeoutMs: 1000 });
+    now = new Date(now.getTime() + 500);
+
+    const result = await store.submit({
+      battleId: battle.id,
+      actorUserId: battle.activePokemon.userId,
+      expectedRevision: 0,
+      requestId: "before-timeout",
+      action: { action: "skipTurn" },
+    });
+
+    expect(result.accepted).toBe(true);
+    expect((await store.get(battle.id)).expiresAt).toEqual(
+      new Date(now.getTime() + 1000),
+    );
+    now = new Date(now.getTime() + 600);
+    expect((await store.get(battle.id)).status).toBe("active");
+  });
+
+  it("stores a completed result with a limited read-only retention", async () => {
+    const now = new Date("2026-01-01T00:00:00.000Z");
+    const store = new BattleStore(new MemoryBattleCollection(), { now: () => now });
+    const { battle, team2 } = createMockBattle({
+      team1Party: createMockPokemonParty({ size: 1 }),
+      team2Party: createMockPokemonParty({ size: 1 }),
+    });
+    team2.party.pokemons[0].remainingHp = 1;
+    battle.parties.Team2.pokemons[0].hp = 1;
+    await store.create({ battle, resultRetentionMs: 1000 });
+    const source = battle.activePokemon;
+    const target = battle.parties.Team2.pokemons[0];
+
+    const result = await store.submit({
+      battleId: battle.id,
+      actorUserId: source.userId,
+      expectedRevision: 0,
+      requestId: "last-hit",
+      action: { action: "useMove", moveId: "m33", targetPokemonId: target.id },
+    });
+
+    expect(result.accepted).toBe(true);
+    const completed = await store.get(battle.id);
+    expect(completed.status).toBe("completed");
+    expect(completed.resultExpiresAt).toEqual(new Date(now.getTime() + 1000));
+    expect(await store.listActive(team2.trainer.userId)).toEqual([]);
+    expect(restoreBattle(completed).ended).toBe(true);
   });
 });

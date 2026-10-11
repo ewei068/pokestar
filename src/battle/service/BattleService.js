@@ -12,8 +12,20 @@ class BattleService {
     this.npcAction = npcAction;
   }
 
-  async start({ battle, mode = {}, expiresAt = null }) {
-    const record = await this.store.create({ battle, mode, expiresAt });
+  async start({
+    battle,
+    mode = {},
+    idleTimeoutMs,
+    modeDeadlineAt,
+    resultRetentionMs,
+  }) {
+    const record = await this.store.create({
+      battle,
+      mode,
+      idleTimeoutMs,
+      modeDeadlineAt,
+      resultRetentionMs,
+    });
     await this.advanceNpcs(record._id);
     const latest = await this.store.get(record._id);
     return {
@@ -40,6 +52,9 @@ class BattleService {
   async get({ battleId, userId, sinceRevision = null }) {
     const record = await this.store.get(battleId);
     if (!record || !record.participantIds.includes(userId)) {
+      return { found: false };
+    }
+    if (record.resultExpiresAt && record.resultExpiresAt <= this.store.now()) {
       return { found: false };
     }
     return {

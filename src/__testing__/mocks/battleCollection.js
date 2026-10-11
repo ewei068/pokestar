@@ -31,13 +31,16 @@ class MemoryBattleCollection {
     const document = this.documents.get(filter._id);
     if (
       !document ||
-      document.revision !== filter.revision ||
-      document.status !== filter.status
+      (filter.revision !== undefined && document.revision !== filter.revision) ||
+      document.status !== filter.status ||
+      (filter.expiresAt?.$lte && document.expiresAt > filter.expiresAt.$lte)
     ) {
       return { modifiedCount: 0 };
     }
     Object.assign(document, structuredClone(update.$set));
-    document.actions.push(structuredClone(update.$push.actions));
+    if (update.$push?.actions) {
+      document.actions.push(structuredClone(update.$push.actions));
+    }
     return { modifiedCount: 1 };
   }
 }
