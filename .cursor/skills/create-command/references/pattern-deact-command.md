@@ -98,6 +98,4 @@ Use Deact when your command needs:
 
 ## Related Skills
 
-- `create-deact-element` - Creating the Deact element component
-- `deact-component-callback` - Handling button/select interactions
-- `use-deact-hook` - Using state and other hooks in elements
+- `deact` - Writing the element, its hooks, and its interaction callbacks

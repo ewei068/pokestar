@@ -73,7 +73,7 @@ this.genericApplyAllStatus({
   probability: 0.3,
 });
 
-// Apply effect (see references/effects.md)
+// Apply effect by ID: effectIdEnum entries, or legacy effectConfig keys in battleConfig.js
 this.genericApplyAllEffects({
   effectId: "atkUp",
   duration: 3,
@@ -129,47 +129,30 @@ overrideFields: (options) => {
 - `pokemon.getPartyPokemon()` - Get ally array
 - `pokemon.isFainted` - Check if fainted
 
-## Testing
+## Examples in `moves.js`
 
-After implementing a move, run the move test suite to validate the implementation:
+| Pattern                                 | Copy from                    |
+| --------------------------------------- | ---------------------------- |
+| Plain damage                            | `VINE_WHIP`                  |
+| Damage plus status chance               | `FIRE_PUNCH`                 |
+| Damage plus debuff                      | `ICY_WIND`, `IRON_HEAD`      |
+| Buff allies                             | `COACHING`, `DEFEND_ORDER`   |
+| Different debuffs for primary vs others | `FEATHER_DANCE`              |
+| Conditional damage multiplier           | `FACADE`                     |
+| Damage scaled by allies' types          | `AQUA_IMPACT`                |
+| Attack with a different stat            | `BODY_PRESS`                 |
+| Recoil                                  | `WOOD_HAMMER`, `HEAD_SMASH`  |
+| Multi-hit with escalating power         | `TRIPLE_AXEL`                |
+| Charge (two-turn) move                  | `SOLAR_BLADE`                |
+| Combat Readiness manipulation           | `QUASH`                      |
+| Healing                                 | `HEAL_ORDER`                 |
+| Swap held items                         | `TRICK`, `SWITCHEROO`        |
+| Fixed damage that ignores defenses      | `METAL_BURST`                |
+| Fields that change with species or form | `JUDGMENT`, `HIDDEN_POWER`   |
 
-```bash
-npm test -- src/battle/data/__tests__/moves.test.js
-```
+`references/target-patterns.md` shows each `targetPatterns` value as a grid.
 
-This runs an e2e test that verifies all moves can execute without throwing errors. If your new move causes a test failure, fix the implementation and re-run until tests pass.
+## Validation
 
-### When to Write Move-Specific Tests
-
-**Default: write at least one assertion test for the move.** The e2e test in `moves.test.js` only verifies that `execute()` does not throw — a move with the wrong damage, wrong target, missing status application, or silently-broken side effect will pass the e2e test but still be wrong. So unless the move is *purely* a thin wrapper around a single generic method, write a focused test.
-
-**Skip move-specific tests only when ALL of these are true:**
-
-- The `execute()` body is one (or zero) generic method calls (`genericDealAllDamage`, `genericApplyAllEffects`, `genericApplyAllStatus`, `genericHealAllTargets`, `genericChangeAllCombatReadiness`, etc.) with no extra logic before or after.
-- There are no conditionals (`if`, ternary, `&&`/`||` short-circuits used for control flow).
-- There is no `overrideFields`, no `tags` interactions you want to verify, and no charge/two-turn behavior.
-- There are no probabilistic secondary effects worth pinning down (status chance, effect chance).
-
-If **any** non-generic call appears in `execute()` (a custom damage calculation, a manual `pokemon.applyEffect`, a `pokemon.dealDamage`, a `pokemon.removeStatus`, a custom target loop, etc.), or any of the conditions above is false, write at least one assertion test. Examples of what counts as "non-generic" and warrants a test:
-
-- Conditional branches or multi-step flows in `execute()`
-- Long execute functions with multiple interacting operations
-- Charge / two-turn move mechanics
-- Species-specific or form-specific behavior
-- Non-standard damage calculations or targeting (custom `calculateDamageFunction`, custom multipliers)
-- Item / effect manipulation (stealing, swapping, dispelling)
-- Probabilistic effects whose probability you want to lock in via `describeStatusProbability` / `describeEffectProbability`
-- Direct calls to `BattlePokemon` methods (`applyEffect`, `dispellEffect`, `dealDamage`, `giveHeal`, `boostCombatReadiness`, etc.) outside of the generic helpers
-- Any `tags` you want to confirm interact correctly with abilities (e.g. `"punch"` + Iron Fist)
-
-The bar is "non-generic call → one assertion test", not "complex logic → one assertion test". Prefer one short, focused test that asserts the unique behavior over no test at all.
-
-### How to Write Move Tests
-
-Add tests to `src/battle/data/__tests__/moves.test.js`. See the `test-move` skill for the full testing infrastructure, including custom matchers, test utilities, and test patterns.
-
-## References
-
-- `references/target-patterns.md` - Visual guide to target patterns
-- `references/effects.md` - List of all buff/debuff effect IDs
-- `references/pattern-*.md` - Code examples for common move types
+1. Run `npm test -- src/battle/data/__tests__/moves.test.js`. The suite executes every registered move, so it catches crashes but not wrong damage, targets, or side effects.
+2. Write at least one behavior test unless `execute()` is a single generic call with no conditions. The `write-tests` skill defines that bar and the move-test helpers.

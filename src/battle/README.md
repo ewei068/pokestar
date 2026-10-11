@@ -113,6 +113,17 @@ conditionCallback: composeConditionCallbacks(
 ),
 ```
 
+Where to look things up:
+
+- Event names: `battleEventEnum` in `../enums/battleEnums.js`. The callback arguments for each event are typed in the `BattleEventArgsWithoutEventName` typedef directly below it. If an event is missing there, find where it is emitted in `Battle.js` or `BattlePokemon.js` and add its type.
+- Condition callbacks: `engine/eventConditions.js`. Use `getIsSourcePokemonCallback` when the Pokémon is dealing damage or using a move, `getIsTargetPokemonCallback` when it is receiving damage or effects, and `getIsInstanceOfType("move" | "effect" | "statusCondition" | "weather")` to filter by damage source. Combine them with `composeConditionCallbacks` (all) or `anyConditionCallbacks` (any).
+
+Listener rules:
+
+- Abilities and held items register through their class-level `this.registerListenerFunction({ battle, target, ... })`, which skips the callback once the ability or item is gone and adds `abilityInstance` or `heldItemInstance` (with its `data`) to the callback arguments. Effects register through `battle.registerListenerFunction` directly.
+- Return the listener IDs from the add function, so they arrive as `properties` in the remove function, and unregister each one there with `battle.unregisterListener(properties.listenerId)`.
+- Change event behavior by returning an object of overrides from the callback, such as `{ damage: 0 }` or `{ canAdd: false }`. Mutating `args` in place is the deprecated pattern.
+
 ## Battle Flow
 
 1. **Battle Creation**: Teams and Pokemon are added to the battle
@@ -128,7 +139,7 @@ conditionCallback: composeConditionCallbacks(
 
 ### Adding Moves
 
-Moves have a few key features such as type, power, accuracy, cooldown, targetting, and move tier. New moves are added in `data/moves.js` by extending the `movesToRegister` object. The execute function of a move is the effect the move has when executed, such as damaging enemies or applying effects. The effect arguments include the battle, source, primary target, all targets, missed targets, and some additional information. It is preferred to roll these arguments as `args` into the generic damage, status, and effect applying methods in the `Move` class in case the argument requirements for these methods change in the future.
+Moves have a few key features such as type, power, accuracy, cooldown, targetting, and move tier. New moves are added in `data/moves.js` by extending the `movesToRegisterRaw` object. The execute function of a move is the effect the move has when executed, such as damaging enemies or applying effects. The effect arguments include the battle, source, primary target, all targets, missed targets, and some additional information. It is preferred to roll these arguments as `args` into the generic damage, status, and effect applying methods in the `Move` class in case the argument requirements for these methods change in the future.
 
 ```javascript
 [moveIdEnum.NEW_MOVE]: new Move({
@@ -138,10 +149,10 @@ Moves have a few key features such as type, power, accuracy, cooldown, targettin
   power: 80,
   accuracy: 100,
   cooldown: 3,
-  targetType: targetTypes.OPPONENT,
+  targetType: targetTypes.ENEMY,
   targetPosition: targetPositions.ANY,
   targetPattern: targetPatterns.SINGLE,
-  tier: moveTiers.SPECIAL,
+  tier: moveTiers.POWER,
   damageType: damageTypes.PHYSICAL,
   description: "Description and flavor text of the move",
   execute(args) {

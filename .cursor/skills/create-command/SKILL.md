@@ -12,7 +12,7 @@ description: Add Discord commands to the bot. Use when implementing new slash co
 1. `src/config/commandConfig.js` - Add category (if needed) and command configuration
 2. `src/commands/<category>/<command>.js` - Implement the command
 
-**For interactive UI commands:** Also refer to the `create-deact-element` skill.
+**For interactive UI commands:** Also refer to the `deact` skill.
 
 ## Step 1: Add Command Category (if needed)
 
@@ -176,5 +176,4 @@ See `references/` for implementation examples:
 
 ## Related Skills
 
-- `create-deact-element` - Creating interactive UI components
-- `deact-component-callback` - Handling button clicks and selections
+- `deact` - Elements, hooks, callbacks, and modals for interactive UI
