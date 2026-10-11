@@ -180,7 +180,6 @@ class BattleStore {
       action: { ...action },
       events: outcome.events,
       log: outcome.log,
-      view: outcome.snapshot,
     };
     const result = await this.collection.updateOne(
       { _id: battleId, revision: record.revision, status: "active" },

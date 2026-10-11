@@ -18,6 +18,7 @@ export const BattlePage = ({ battleId, catalog }: { battleId: string; catalog: B
   const [eventQueue, setEventQueue] = useState<QueuedEvent[]>([]);
   const [history, setHistory] = useState<string[]>([]);
   const revisionRef = useRef<number | null>(null);
+  const stateIdRef = useRef<string | null>(null);
 
   const applyResponse = useCallback((response: BattleResponse) => {
     if (revisionRef.current !== null && response.revision < revisionRef.current) return;
@@ -25,14 +26,16 @@ export const BattlePage = ({ battleId, catalog }: { battleId: string; catalog: B
     const unseen = response.updates.filter((update) =>
       previousRevision === null || update.revision > previousRevision);
     revisionRef.current = response.revision;
+    stateIdRef.current = response.stateId;
     setBattle(response);
     if (previousRevision === null || response.revision > previousRevision) {
       setSelectedMoveId(null);
     }
     if (unseen.length > 0) {
       const queued = unseen.flatMap((update) => update.events.flatMap((event) => {
-        const text = eventText(event, update.view, catalog);
-        return text ? [{ event, view: update.view, text }] : [];
+        const view = update.view || response.view;
+        const text = eventText(event, view, catalog);
+        return text ? [{ event, view, text }] : [];
       }));
       setEventQueue((current) => [...current, ...queued]);
       setHistory((current) => [...current, ...queued.map((item) => item.text)].slice(-20));
@@ -42,8 +45,8 @@ export const BattlePage = ({ battleId, catalog }: { battleId: string; catalog: B
   const refresh = useCallback(async () => {
     if (document.visibilityState === "hidden") return;
     try {
-      const response = await getBattle(battleId, revisionRef.current ?? undefined);
-      applyResponse(response);
+      const response = await getBattle(battleId, stateIdRef.current ?? undefined);
+      if (response) applyResponse(response);
       setError(null);
     } catch (cause) {
       setError(isApiError(cause, 404) ? "This battle is unavailable or has expired."

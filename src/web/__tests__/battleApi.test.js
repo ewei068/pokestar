@@ -32,7 +32,11 @@ const startApi = async () => {
     clientSecret: "private-secret",
     redirectUri,
     exchangeCode,
-    catalog: { rulesetVersion: 2, species: {}, moves: {}, effects: {}, abilities: {}, heldItems: {} },
+    catalog: {
+      rulesetVersion: 2,
+      species: { sample: { description: "x".repeat(2000) } },
+      moves: {}, effects: {}, abilities: {}, heldItems: {},
+    },
   }));
   const server = await new Promise((resolve) => {
     const listener = app.listen(0, () => { resolve(listener); });
@@ -70,9 +74,12 @@ describe("web battle API", () => {
   it("uses Discord OAuth and a persisted opaque session for battle routes", async () => {
     const unauthenticated = await fetch(`${api.url}/api/battles`);
     expect(unauthenticated.status).toBe(401);
-    const catalog = await fetch(`${api.url}/api/catalog`);
+    const catalog = await fetch(`${api.url}/api/catalog`, {
+      headers: { "Accept-Encoding": "gzip" },
+    });
     expect(catalog.status).toBe(200);
     expect(catalog.headers.get("cache-control")).toBe("no-store");
+    expect(catalog.headers.get("content-encoding")).toBe("gzip");
     expect((await catalog.json()).rulesetVersion).toBe(2);
 
     const { authorization, callback, sessionCookie } = await login(api.url);
@@ -91,13 +98,19 @@ describe("web battle API", () => {
     expect((await list.json()).battles).toHaveLength(1);
     expect(api.battleService.listActive).toHaveBeenCalledWith("123456789");
 
-    const read = await fetch(`${api.url}/api/battles/battle-1?since=0`, {
+    const read = await fetch(`${api.url}/api/battles/battle-1?after=known-state`, {
       headers: { Cookie: sessionCookie },
     });
     expect(read.status).toBe(200);
     expect(api.battleService.get).toHaveBeenCalledWith({
-      battleId: "battle-1", userId: "123456789", sinceRevision: 0,
+      battleId: "battle-1", userId: "123456789", afterStateId: "known-state",
     });
+    api.battleService.get.mockResolvedValueOnce({ found: true, unchanged: true });
+    const unchanged = await fetch(`${api.url}/api/battles/battle-1?after=known-state`, {
+      headers: { Cookie: sessionCookie },
+    });
+    expect(unchanged.status).toBe(204);
+    expect(await unchanged.text()).toBe("");
 
     const action = await fetch(`${api.url}/api/battles/battle-1/actions`, {
       method: "POST",

@@ -48,8 +48,13 @@ const captureBattleSetup = (battle) => {
 /**
  * @param {object} record
  * @param {number=} rulesetVersion
+ * @param {Function=} onAction Called with each stored action and replay outcome.
  */
-const restoreBattle = (record, rulesetVersion = BATTLE_RULESET_VERSION) => {
+const restoreBattle = (
+  record,
+  rulesetVersion = BATTLE_RULESET_VERSION,
+  onAction = null,
+) => {
   if (record.rulesetVersion !== rulesetVersion) {
     throw new Error(`Unsupported battle ruleset ${record.rulesetVersion}`);
   }
@@ -82,6 +87,7 @@ const restoreBattle = (record, rulesetVersion = BATTLE_RULESET_VERSION) => {
     if (!outcome.accepted) {
       throw new Error(`Cannot replay battle action at revision ${entry.revision}`);
     }
+    if (onAction) onAction(entry, outcome);
   }
   if (JSON.stringify(battle.takeSnapshot()) !== JSON.stringify(record.view)) {
     throw new Error(`Battle ${record._id} replay diverged from stored view`);

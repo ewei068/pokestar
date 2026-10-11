@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const compression = require("compression");
 const {
   OAUTH_STATE_LIFETIME_MS,
   newState,
@@ -70,6 +71,7 @@ const createBattleApi = ({
   const stateCookie = secureCookies ? "__Host-pokestar_oauth_state" : "pokestar_oauth_state";
 
   router.use(cors({ origin: siteOrigin, credentials: true }));
+  router.use(compression());
   router.use((request, response, next) => {
     response.set("Cache-Control", "no-store");
     next();
@@ -138,19 +140,19 @@ const createBattleApi = ({
   }));
   router.get("/battles/:battleId", requireSession,
     asyncRoute(async (request, response) => {
-      const { since } = request.query;
-      const sinceRevision = since === undefined ? null : Number(since);
-      if (sinceRevision !== null &&
-          (!Number.isSafeInteger(sinceRevision) || sinceRevision < 0)) {
-        response.status(400).json({ error: "invalid_revision" });
+      const { after } = request.query;
+      if (after !== undefined &&
+          (typeof after !== "string" || after.length > 512)) {
+        response.status(400).json({ error: "invalid_state_id" });
         return;
       }
       const result = await battleService.get({
         battleId: request.params.battleId,
         userId: request.discordUserId,
-        sinceRevision,
+        afterStateId: after ?? null,
       });
-      response.status(result.found ? 200 : 404).json(result);
+      if (result.unchanged) response.status(204).end();
+      else response.status(result.found ? 200 : 404).json(result);
     }));
   router.post("/battles/:battleId/actions", requireSiteOrigin, requireSession,
     asyncRoute(async (request, response) => {

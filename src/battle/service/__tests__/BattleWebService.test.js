@@ -5,6 +5,8 @@ const { MemoryBattleCollection } = require("../../../__testing__/mocks/battleCol
 const { BattleStore } = require("../../persistence/BattleStore");
 const { BattleService } = require("../BattleService");
 const { BattleWebService } = require("../BattleWebService");
+const { restoreBattle } = require("../../persistence/battleRecord");
+const { Battle } = require("../../engine/Battle");
 
 const makeBattle = () => {
   const team1Party = createMockPokemonParty({ size: 2 });
@@ -74,6 +76,7 @@ describe("BattleWebService", () => {
     expect(first.updates).toHaveLength(1);
     expect(first.updates[0].revision).toBe(current.revision + 1);
     expect(first.updates[0].events[0].type).toBe("actionStarted");
+    expect(first.updates[0].view).toBeUndefined();
     expect(first.updates[0].requestId).toBeUndefined();
     expect(first.updates[0].actorUserId).toBeUndefined();
 
@@ -98,5 +101,75 @@ describe("BattleWebService", () => {
       requestId: "stranger",
       action: { action: "skipTurn" },
     })).toEqual({ accepted: false, reason: "battle_not_found" });
+  });
+
+  it("returns no body or replay work when the state ID is unchanged", async () => {
+    const service = new BattleService(new BattleStore(new MemoryBattleCollection()));
+    const web = new BattleWebService(service);
+    const { battle } = makeBattle();
+    await service.start({ battle });
+    const { userId } = battle.activePokemon;
+    const first = await web.act({
+      battleId: battle.id, userId, expectedRevision: 0,
+      requestId: "first", action: { action: "skipTurn" },
+    });
+    const replay = jest.spyOn(Battle.prototype, "performAction");
+    try {
+      expect(await web.get({
+        battleId: battle.id, userId, afterStateId: first.stateId,
+      })).toEqual({ found: true, unchanged: true });
+      expect(replay).not.toHaveBeenCalled();
+    } finally {
+      replay.mockRestore();
+    }
+  });
+
+  it("recreates intermediate views and returns all events for an invalid state ID", async () => {
+    const service = new BattleService(new BattleStore(new MemoryBattleCollection()));
+    const web = new BattleWebService(service);
+    const { battle } = makeBattle();
+    await service.start({ battle });
+    const initialUserId = battle.activePokemon.userId;
+    const initial = await web.get({ battleId: battle.id, userId: initialUserId });
+    const first = await web.act({
+      battleId: battle.id, userId: initialUserId, expectedRevision: 0,
+      requestId: "one", action: { action: "skipTurn" },
+    });
+    const nextUserId = restoreBattle(await service.store.get(battle.id)).activePokemon.userId;
+    await web.act({
+      battleId: battle.id, userId: nextUserId, expectedRevision: 1,
+      requestId: "two", action: { action: "skipTurn" },
+    });
+    const updates = await web.get({
+      battleId: battle.id, userId: initialUserId, afterStateId: initial.stateId,
+    });
+    expect(updates.updates).toHaveLength(2);
+    expect(updates.updates[0].view).toEqual(first.view);
+    expect(updates.updates[1].view).toBeUndefined();
+    expect(updates.view).toEqual((await web.get({
+      battleId: battle.id, userId: initialUserId,
+    })).view);
+    expect((await web.get({
+      battleId: battle.id, userId: initialUserId, afterStateId: "invalid",
+    })).updates).toEqual(updates.updates);
+  });
+
+  it("changes the state ID when a battle expires without another action", async () => {
+    let now = new Date("2026-01-01T00:00:00.000Z");
+    const store = new BattleStore(new MemoryBattleCollection(), { now: () => now });
+    const web = new BattleWebService(new BattleService(store));
+    const { battle } = makeBattle();
+    await web.battleService.start({ battle, idleTimeoutMs: 1000 });
+    const { userId } = battle.activePokemon;
+    const active = await web.get({ battleId: battle.id, userId });
+    now = new Date(now.getTime() + 1100);
+    const expired = await web.get({
+      battleId: battle.id, userId, afterStateId: active.stateId,
+    });
+    expect(expired.unchanged).toBeUndefined();
+    expect(expired.revision).toBe(active.revision);
+    expect(expired.status).toBe("expired");
+    expect(expired.stateId).not.toBe(active.stateId);
+    expect(expired.updates).toEqual([]);
   });
 });

@@ -1,4 +1,5 @@
 const { projectBattleRecord } = require("./battleWebView");
+const { battleStateId, revisionFromStateId } = require("./battleStateCursor");
 
 /** Browser-facing adapter: only its projected responses may be sent over HTTP. */
 class BattleWebService {
@@ -18,7 +19,7 @@ class BattleWebService {
     }));
   }
 
-  async get({ battleId, userId, sinceRevision = null }) {
+  async get({ battleId, userId, sinceRevision = null, afterStateId = null }) {
     const access = await this.battleService.get({ battleId, userId });
     if (!access.found) return { found: false };
 
@@ -28,6 +29,14 @@ class BattleWebService {
     if (!record || !record.participantIds.includes(userId) ||
         (record.resultExpiresAt && record.resultExpiresAt <= this.battleService.store.now())) {
       return { found: false };
+    }
+    if (afterStateId !== null) {
+      if (afterStateId === battleStateId(record)) {
+        return { found: true, unchanged: true };
+      }
+      return projectBattleRecord(
+        record, userId, revisionFromStateId(afterStateId, record),
+      );
     }
     return projectBattleRecord(record, userId, sinceRevision);
   }

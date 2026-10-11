@@ -1,6 +1,7 @@
 const { createMockBattle } = require("../../../__testing__/mocks/battle");
 const { BattleStore } = require("../BattleStore");
 const { restoreBattle } = require("../battleRecord");
+const { battleStateId } = require("../../service/battleStateCursor");
 const {
   createMockPokemonParty,
 } = require("../../../__testing__/mocks/pokemon");
@@ -38,6 +39,7 @@ describe("BattleStore", () => {
     const stored = await store.get(battle.id);
     const recovered = restoreBattle(stored);
     expect(stored.actions).toHaveLength(3);
+    expect(stored.actions.every((entry) => entry.view === undefined)).toBe(true);
     expect(recovered.takeSnapshot()).toEqual(stored.view);
     expect(recovered.actions).toEqual(stored.actions.map((entry) => entry.action));
   });
@@ -257,6 +259,7 @@ describe("BattleStore", () => {
     const completed = await store.get(battle.id);
     expect(completed.status).toBe("completed");
     expect(completed.completionStatus).toBe("pending");
+    const pendingStateId = battleStateId(completed);
     expect(completed.resultExpiresAt).toBeNull();
     expect(await store.listActive(team2.trainer.userId)).toEqual([]);
     expect(restoreBattle(completed).ended).toBe(true);
@@ -266,12 +269,15 @@ describe("BattleStore", () => {
       store.claimCompletion(battle.id, "claim-b"),
     ]);
     expect(claims).toEqual([true, false]);
+    const processing = await store.get(battle.id);
+    expect(battleStateId(processing)).not.toBe(pendingStateId);
     await expect(
       store.finishCompletion(battle.id, "claim-b", { summary: "wrong owner" }),
     ).rejects.toThrow("Lost completion claim");
     await store.finishCompletion(battle.id, "claim-a", { summary: "Done" });
     const applied = await store.get(battle.id);
     expect(applied.completionStatus).toBe("applied");
+    expect(battleStateId(applied)).not.toBe(battleStateId(processing));
     expect(applied.completionSummary).toBe("Done");
     expect(applied.resultExpiresAt).toEqual(new Date(now.getTime() + 1000));
   });
