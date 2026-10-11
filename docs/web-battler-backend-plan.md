@@ -2,15 +2,26 @@
 
 Status: active plan. This run covers the engine, durable battle service, and Discord continuation. Discord OAuth, HTTP battle routes, and the web UI follow later.
 
-## Review stack
+## Current review stack
+
+1. [#116](https://github.com/ewei068/pokestar/pull/116): safe action outcomes and replay seed.
+2. [#117](https://github.com/ewei068/pokestar/pull/117): ordered combat events.
+3. [#118](https://github.com/ewei068/pokestar/pull/118): stored setup, replay, revision checks, and duplicate requests.
+4. [#119](https://github.com/ewei068/pokestar/pull/119): participant-authorized service and NPC progression.
+5. [#120](https://github.com/ewei068/pokestar/pull/120): inactivity expiry, mode deadlines, and result retention.
+6. [#121](https://github.com/ewei068/pokestar/pull/121): alpha Discord continuation for durable records.
+7. [#122](https://github.com/ewei068/pokestar/pull/122): completion rewards extracted from Discord rendering with a strict failure mode.
+
+Live battle creation and reward processing still use the in-memory path. The next cutover gate is to make trainer, Pokémon, quest, and battle completion writes atomic or individually idempotent, then route callback-free starts and Discord actions through the service. Dungeon phases, tower, and raid need durable mode data and completion handlers before they can be cut over.
+
+## Remaining cutover steps
 
 Each branch builds on the preceding branch. Open a reviewable PR after its unit tests pass, then continue without waiting for review. The bottom PR targets `main`; each higher PR targets the branch below it.
 
-1. **Safe battle actions and reproducible setup.** Preserve the generated battle ID as the replay seed. Reject invalid actions without consuming a turn. Make the engine return an action outcome. Cover normal-ID replay and invalid moves with Jest.
-2. **Ordered combat outcomes.** Record plain-data events at actual engine mutations, including targets, misses, HP, effects, and turn transitions. Keep this recorder separate from mutable rule events. Unit test multi-target and chained outcomes.
-3. **Durable battle records.** Save initial setup, mode context, version, revisions, actions, and outcomes in MongoDB. Recover under the same ruleset; reject stale and duplicate submissions. Unit test recovery and concurrency semantics with isolated fakes.
-4. **Shared battle application service.** Route mode creation, player and NPC actions, completion, and rewards through one service. Make completion effects idempotent. Unit test each mode's distinct lifecycle.
-5. **Discord continuation and cutover.** Add `/continue-battle` selection and fresh rendering. Change Discord actions to use the shared service and return the current view on stale input. Unit test handlers and run the full Jest suite.
+1. Make completion effects durable with a processed marker and atomic or individually idempotent trainer, Pokémon, and quest writes. Verify behavior when an action is retried after completion or a process restart.
+2. Route callback-free `/pve` and `/pvp` starts and Discord actions through the shared service. Keep old messages refreshable; prove that `/continue-battle` resumes the same battle ID after restart.
+3. Replace dungeon phase callbacks and tower/raid completion callbacks with durable mode data and handlers. Add focused unit tests for each mode, then enable them for continuation.
+4. Run MongoDB integration and restart tests before production cutover. Enable `/continue-battle` beyond alpha only after reward and mode gates pass.
 
 ## Validation
 
