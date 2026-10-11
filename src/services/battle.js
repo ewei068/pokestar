@@ -962,9 +962,24 @@ const buildDungeonSend = async ({
     battle.addTrainer(newTrainerResult.data, validate.data, "Player");
     battle.setPhaseQueue(npc.userId, npc.getRemainingPhaseParties());
 
-    // start battle and add to state
-    battle.start();
-    state.battle = battle;
+    let battleSend;
+    if (isDurableBattleEnabled()) {
+      const durableService = await getDurableBattleService();
+      const started = await durableService.start({
+        battle,
+        mode: {
+          type: "dungeon",
+          dungeonId: state.dungeonId,
+          difficulty: state.difficulty,
+        },
+      });
+      state.durableBattleId = started.battleId;
+      battleSend = await renderBattle(durableService, started.battleId, user.id);
+    } else {
+      battle.start();
+      state.battle = battle;
+      battleSend = await getStartTurnSend(battle, stateId);
+    }
 
     // add a replay button to state for later
     // build difficulty row
@@ -986,7 +1001,7 @@ const buildDungeonSend = async ({
     state.endBattleComponents = [difficultyRow];
 
     return {
-      send: await getStartTurnSend(battle, stateId),
+      send: battleSend,
       err: null,
     };
   }
