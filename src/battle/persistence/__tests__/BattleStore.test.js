@@ -232,7 +232,7 @@ describe("BattleStore", () => {
     expect((await store.get(battle.id)).status).toBe("active");
   });
 
-  it("stores a completed result with a limited read-only retention", async () => {
+  it("claims completed rewards once and starts result retention after processing", async () => {
     const now = new Date("2026-01-01T00:00:00.000Z");
     const store = new BattleStore(new MemoryBattleCollection(), { now: () => now });
     const { battle, team2 } = createMockBattle({
@@ -256,9 +256,24 @@ describe("BattleStore", () => {
     expect(result.accepted).toBe(true);
     const completed = await store.get(battle.id);
     expect(completed.status).toBe("completed");
-    expect(completed.resultExpiresAt).toEqual(new Date(now.getTime() + 1000));
+    expect(completed.completionStatus).toBe("pending");
+    expect(completed.resultExpiresAt).toBeNull();
     expect(await store.listActive(team2.trainer.userId)).toEqual([]);
     expect(restoreBattle(completed).ended).toBe(true);
+
+    const claims = await Promise.all([
+      store.claimCompletion(battle.id, "claim-a"),
+      store.claimCompletion(battle.id, "claim-b"),
+    ]);
+    expect(claims).toEqual([true, false]);
+    await expect(
+      store.finishCompletion(battle.id, "claim-b", { summary: "wrong owner" }),
+    ).rejects.toThrow("Lost completion claim");
+    await store.finishCompletion(battle.id, "claim-a", { summary: "Done" });
+    const applied = await store.get(battle.id);
+    expect(applied.completionStatus).toBe("applied");
+    expect(applied.completionSummary).toBe("Done");
+    expect(applied.resultExpiresAt).toEqual(new Date(now.getTime() + 1000));
   });
 
   it("replays a phase transition from queued generated Pokémon", async () => {

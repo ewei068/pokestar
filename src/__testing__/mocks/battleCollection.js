@@ -33,6 +33,10 @@ class MemoryBattleCollection {
       !document ||
       (filter.revision !== undefined && document.revision !== filter.revision) ||
       document.status !== filter.status ||
+      (filter.completionStatus !== undefined &&
+        document.completionStatus !== filter.completionStatus) ||
+      (filter.completionClaimId !== undefined &&
+        document.completionClaimId !== filter.completionClaimId) ||
       (filter.expiresAt?.$lte && document.expiresAt > filter.expiresAt.$lte)
     ) {
       return { modifiedCount: 0 };

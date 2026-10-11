@@ -15,6 +15,79 @@ const makeService = (options = {}) => {
 };
 
 describe("BattleService", () => {
+  const finishOneHitBattle = async (service) => {
+    const { battle, team2 } = createMockBattle({
+      team1Party: createMockPokemonParty({ size: 1 }),
+      team2Party: createMockPokemonParty({ size: 1 }),
+    });
+    team2.party.pokemons[0].remainingHp = 1;
+    battle.parties.Team2.pokemons[0].hp = 1;
+    const started = await service.start({ battle, mode: { type: "pve" } });
+    const result = await service.act({
+      battleId: battle.id,
+      userId: battle.activePokemon.userId,
+      expectedRevision: started.revision,
+      requestId: "finishing-hit",
+      action: {
+        action: "useMove",
+        moveId: "m33",
+        targetPokemonId: battle.parties.Team2.pokemons[0].id,
+      },
+    });
+    expect(result.accepted).toBe(true);
+    expect(result.status).toBe("completed");
+    return { battle, result };
+  };
+
+  it("claims completion once across duplicate actions and subsequent reads", async () => {
+    const onCompleted = jest.fn().mockResolvedValue("Rewards applied");
+    const { service, store } = makeService({ onCompleted });
+    const { battle } = await finishOneHitBattle(service);
+    const record = await store.get(battle.id);
+    expect(record.completionStatus).toBe("applied");
+    expect(record.completionSummary).toBe("Rewards applied");
+
+    await service.act({
+      battleId: battle.id,
+      userId: battle.activePokemon.userId,
+      expectedRevision: 0,
+      requestId: "finishing-hit",
+      action: {
+        action: "useMove",
+        moveId: "m33",
+        targetPokemonId: battle.parties.Team2.pokemons[0].id,
+      },
+    });
+    await service.get({ battleId: battle.id, userId: battle.activePokemon.userId });
+    expect(onCompleted).toHaveBeenCalledTimes(1);
+  });
+
+  it("records a failed completion for manual reconciliation", async () => {
+    const onCompleted = jest.fn().mockRejectedValue(new Error("reward write failed"));
+    const { service, store } = makeService({ onCompleted });
+    const { battle } = await finishOneHitBattle(service);
+    const record = await store.get(battle.id);
+    expect(record.completionStatus).toBe("failed");
+    expect(record.completionError).toContain("reward write failed");
+    await service.get({ battleId: battle.id, userId: battle.activePokemon.userId });
+    expect(onCompleted).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not replay an interrupted reward claim after service restart", async () => {
+    const { service, store } = makeService();
+    const { battle } = await finishOneHitBattle(service);
+    expect(await store.claimCompletion(battle.id, "interrupted-claim")).toBe(true);
+
+    const onCompleted = jest.fn();
+    const restarted = new BattleService(store, { onCompleted });
+    const view = await restarted.get({
+      battleId: battle.id,
+      userId: battle.activePokemon.userId,
+    });
+    expect(view.completionStatus).toBe("processing");
+    expect(onCompleted).not.toHaveBeenCalled();
+  });
+
   it("lists only a participant's active battles and hides setup from reads", async () => {
     const { service } = makeService({ npcAction: () => ({ action: "skipTurn" }) });
     const { battle } = createMockBattle();

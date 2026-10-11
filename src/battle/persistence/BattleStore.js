@@ -71,6 +71,7 @@ class BattleStore {
       idleTimeoutMs,
       resultRetentionMs,
       resultExpiresAt: null,
+      completionStatus: "not_due",
     };
     await this.collection.insertOne(record);
     return record;
@@ -192,10 +193,9 @@ class BattleStore {
           expiresAt: battle.ended
             ? null
             : getExpiry(now, record.idleTimeoutMs, record.modeDeadlineAt),
-          resultExpiresAt: battle.ended
-            ? new Date(now.getTime() + record.resultRetentionMs)
-            : null,
+          resultExpiresAt: null,
           completedAt: battle.ended ? now : null,
+          completionStatus: battle.ended ? "pending" : "not_due",
         },
         $push: { actions: update },
       },
@@ -227,6 +227,53 @@ class BattleStore {
       revision: nextRevision,
       view: outcome.snapshot,
     };
+  }
+
+  /**
+   * Claim completion once. An interrupted claim requires manual reconciliation.
+   * @param {string} battleId
+   * @param {string} claimId
+   */
+  async claimCompletion(battleId, claimId) {
+    const result = await this.collection.updateOne(
+      { _id: battleId, status: "completed", completionStatus: "pending" },
+      {
+        $set: {
+          completionStatus: "processing",
+          completionClaimId: claimId,
+          completionClaimedAt: this.now(),
+          resultExpiresAt: null,
+        },
+      },
+    );
+    return result.modifiedCount === 1;
+  }
+
+  async finishCompletion(battleId, claimId, { summary = null, error = null } = {}) {
+    const record = await this.get(battleId);
+    const now = this.now();
+    const result = await this.collection.updateOne(
+      {
+        _id: battleId,
+        status: "completed",
+        completionStatus: "processing",
+        completionClaimId: claimId,
+      },
+      {
+        $set: {
+          completionStatus: error ? "failed" : "applied",
+          completionSummary: summary,
+          completionError: error,
+          completionFinishedAt: now,
+          resultExpiresAt: error
+            ? null
+            : new Date(now.getTime() + record.resultRetentionMs),
+        },
+      },
+    );
+    if (result.modifiedCount !== 1) {
+      throw new Error(`Lost completion claim for battle ${battleId}`);
+    }
   }
 
   // eslint-disable-next-line class-methods-use-this

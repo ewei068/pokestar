@@ -1,15 +1,22 @@
+const { randomUUID } = require("crypto");
 const { restoreBattle } = require("../persistence/battleRecord");
 const { chooseNpcAction } = require("../../utils/battleUtils");
+const { logger } = require("../../log");
 
 /**
  * Surface-neutral battle reads and actions. Authorization belongs here, not
  * in Discord component handlers or a future HTTP route.
  */
 class BattleService {
-  constructor(store, { maxNpcActions = 300, npcAction = chooseNpcAction } = {}) {
+  constructor(store, {
+    maxNpcActions = 300,
+    npcAction = chooseNpcAction,
+    onCompleted = null,
+  } = {}) {
     this.store = store;
     this.maxNpcActions = maxNpcActions;
     this.npcAction = npcAction;
+    this.onCompleted = onCompleted;
   }
 
   /**
@@ -31,6 +38,7 @@ class BattleService {
       resultRetentionMs,
     });
     await this.advanceNpcs(record._id);
+    await this.settleCompletion(record._id);
     const latest = await this.store.get(record._id);
     return {
       battleId: latest._id,
@@ -61,17 +69,24 @@ class BattleService {
     if (record.resultExpiresAt && record.resultExpiresAt <= this.store.now()) {
       return { found: false };
     }
+    if (record.completionStatus === "pending") {
+      await this.settleCompletion(battleId);
+    }
+    const latest = record.completionStatus === "pending"
+      ? await this.store.get(battleId)
+      : record;
     return {
       found: true,
       battleId,
-      revision: record.revision,
-      status: record.status,
-      mode: record.mode,
-      view: record.view,
+      revision: latest.revision,
+      status: latest.status,
+      completionStatus: latest.completionStatus,
+      mode: latest.mode,
+      view: latest.view,
       updates:
         sinceRevision === null
           ? []
-          : record.actions.filter((entry) => entry.revision > sinceRevision),
+          : latest.actions.filter((entry) => entry.revision > sinceRevision),
     };
   }
 
@@ -90,6 +105,7 @@ class BattleService {
     if (!result.accepted) return result;
 
     await this.advanceNpcs(battleId);
+    await this.settleCompletion(battleId);
     const latest = await this.store.get(battleId);
     return {
       accepted: true,
@@ -101,6 +117,22 @@ class BattleService {
         (entry) => entry.revision > expectedRevision,
       ),
     };
+  }
+
+  async settleCompletion(battleId) {
+    if (!this.onCompleted) return;
+    const claimId = randomUUID();
+    if (!await this.store.claimCompletion(battleId, claimId)) return;
+    try {
+      const record = await this.store.get(battleId);
+      const summary = await this.onCompleted(restoreBattle(record), record);
+      await this.store.finishCompletion(battleId, claimId, { summary });
+    } catch (error) {
+      logger.error(`Battle ${battleId} completion requires review: ${error}`);
+      await this.store.finishCompletion(battleId, claimId, {
+        error: String(error),
+      });
+    }
   }
 
   async advanceNpcs(battleId) {

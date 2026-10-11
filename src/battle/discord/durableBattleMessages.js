@@ -136,6 +136,13 @@ const renderBattle = async (service, battleId, userId) => {
   return {
     content: [
       `Battle ${battleId} · ${record.status} · Revision ${record.revision}`,
+      record.completionStatus === "failed"
+        ? "Reward processing needs manual review. Your battle result is saved."
+        : null,
+      record.completionStatus === "processing"
+        ? "Battle rewards are being processed."
+        : null,
+      record.completionSummary?.slice(0, 300),
       logText.slice(0, 1500),
     ]
       .filter(Boolean)
