@@ -52,6 +52,7 @@ const validAction = (action) => {
  * @param {string} options.clientSecret Discord OAuth client secret
  * @param {string} options.redirectUri Registered Discord callback URI
  * @param {Function=} options.exchangeCode Injectable Discord exchange
+ * @param {object=} options.catalog Display-only Pokémon and move metadata
  */
 const createBattleApi = ({
   battleService,
@@ -61,6 +62,7 @@ const createBattleApi = ({
   clientSecret,
   redirectUri,
   exchangeCode = exchangeDiscordCode,
+  catalog = null,
 }) => {
   const router = express.Router();
   const secureCookies = new URL(redirectUri).protocol === "https:";
@@ -72,6 +74,12 @@ const createBattleApi = ({
     response.set("Cache-Control", "no-store");
     next();
   });
+
+  if (catalog) {
+    router.get("/catalog", (request, response) => {
+      response.json(catalog);
+    });
+  }
 
   router.get("/auth/discord/login", (request, response) => {
     const state = newState(request.query.returnTo);

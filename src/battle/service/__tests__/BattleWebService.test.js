@@ -48,6 +48,7 @@ describe("BattleWebService", () => {
     expect(opponent.heldItemId).toBeUndefined();
     expect(opponent.allStatData).toBeUndefined();
     expect(active.mode).toEqual({ type: "pvp" });
+    expect(active.myTeamNames).toContain(activePokemon.teamName);
     expect(active.view.teams.Team1).toEqual({ rows: 3, cols: 4 });
     expect(Object.values(active.view.pokemon).some((pokemon) => pokemon.shiny)).toBe(true);
     expect(await web.get({ battleId: battle.id, userId: "stranger" })).toEqual({ found: false });

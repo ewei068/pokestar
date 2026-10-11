@@ -32,6 +32,7 @@ const startApi = async () => {
     clientSecret: "private-secret",
     redirectUri,
     exchangeCode,
+    catalog: { rulesetVersion: 2, species: {}, moves: {}, effects: {}, abilities: {}, heldItems: {} },
   }));
   const server = await new Promise((resolve) => {
     const listener = app.listen(0, () => { resolve(listener); });
@@ -69,6 +70,10 @@ describe("web battle API", () => {
   it("uses Discord OAuth and a persisted opaque session for battle routes", async () => {
     const unauthenticated = await fetch(`${api.url}/api/battles`);
     expect(unauthenticated.status).toBe(401);
+    const catalog = await fetch(`${api.url}/api/catalog`);
+    expect(catalog.status).toBe(200);
+    expect(catalog.headers.get("cache-control")).toBe("no-store");
+    expect((await catalog.json()).rulesetVersion).toBe(2);
 
     const { authorization, callback, sessionCookie } = await login(api.url);
     expect(authorization.origin).toBe("https://discord.com");

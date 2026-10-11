@@ -4,6 +4,7 @@ const { getDurableBattleService } = require("../services/durableBattle");
 const { BattleWebService } = require("../battle/service/BattleWebService");
 const { WebSessionStore } = require("./sessionStore");
 const { createBattleApi } = require("./battleApi");
+const { buildBattleCatalog } = require("./battleCatalog");
 
 const createMongoBattleApi = async (config = process.env) => {
   const site = new URL(config.WEB_SITE_ORIGIN);
@@ -31,6 +32,7 @@ const createMongoBattleApi = async (config = process.env) => {
     clientId: config.CLIENT_ID,
     clientSecret: config.DISCORD_CLIENT_SECRET,
     redirectUri,
+    catalog: buildBattleCatalog(),
   });
 };
 
