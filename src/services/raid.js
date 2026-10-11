@@ -31,6 +31,11 @@ const {
   getCanTrainerAutoBattle,
   getDoesTrainerHaveAutoBattle,
 } = require("./battle");
+const {
+  getDurableBattleService,
+  isDurableRaidEnabled,
+} = require("./durableBattle");
+const { renderBattle } = require("../battle/discord/durableBattleMessages");
 const { generateRandomPokemon, giveNewPokemons } = require("./gacha");
 const { validatePartyForBattle } = require("./party");
 const { getState, setTtl, setState, deleteState } = require("./state");
@@ -45,8 +50,8 @@ const { trainerEventEnum } = require("../enums/gameEnums");
 /**
  * @param {WithId<Raid>} raid
  */
-const updateRaid = async (raid) => {
-  await updateDocument(
+const updateRaid = async (raid) =>
+  updateDocument(
     collectionNames.RAIDS,
     {
       _id: raid._id,
@@ -55,7 +60,6 @@ const updateRaid = async (raid) => {
       $set: raid,
     },
   );
-};
 
 /**
  * @param {WithId<Raid>} raid
@@ -305,7 +309,7 @@ const giveRaidRewards = async ({
   };
 };
 
-const onRaidWin = async (raid) => {
+const onRaidWin = async (raid, { strict = false } = {}) => {
   // ensure raid is valid
   const { raidId } = raid;
   const raidData = /** @type {RaidConfigData?} */ (raidConfig[raidId]);
@@ -342,18 +346,27 @@ const onRaidWin = async (raid) => {
   const promiseResults = await Promise.allSettled(
     promiseData.map((p) => p.promise),
   );
+  const failedRecipients = [];
   for (const [index, promiseResult] of promiseResults.entries()) {
     if (promiseResult.status === "fulfilled" && !promiseResult.value?.err) {
       const { userId } = promiseData[index];
       rewards[userId] = promiseResult.value.rewards;
     } else {
-      // @ts-ignore
-      logger.error("Error giving raid rewards", promiseResult?.value?.err);
+      failedRecipients.push(promiseData[index].userId);
+      logger.error(
+        "Error giving raid rewards",
+        promiseResult.status === "rejected"
+          ? promiseResult.reason
+          : promiseResult.value?.err,
+      );
     }
   }
 
   // hacky: remove 10% damage from owner
   raid.participants[ownerId] -= raid.boss.stats[0] * 0.1;
+  if (strict && failedRecipients.length > 0) {
+    throw new Error(`Failed raid rewards for ${failedRecipients.join(", ")}`);
+  }
 
   // reply to all messages
   const stateIds = raid.stateIds || [];
@@ -375,10 +388,16 @@ const onRaidWin = async (raid) => {
   await deleteRaid(raid);
 };
 
-const getBattleEndCallbacks = (raidInstanceId, user, remainingHp) => {
+const getBattleEndCallbacks = (
+  raidInstanceId,
+  user,
+  remainingHp,
+  { strict = false } = {},
+) => {
   const raidCallback = async (battle) => {
     const raid = await getRaidByInstanceId({ raidInstanceId });
     if (!raid) {
+      if (strict) throw new Error("Raid instance expired before completion");
       battle.addToLog("**This raid has expired.**");
       return;
     }
@@ -386,12 +405,14 @@ const getBattleEndCallbacks = (raidInstanceId, user, remainingHp) => {
     // validate raid
     // if user is participant, return
     if (raid.participants[user.id]) {
+      if (strict) throw new Error("Raid participant already recorded");
       battle.addToLog("**You have already participated in this raid.**");
       return;
     }
 
     // check if raid defeated (this should never happen)
     if (raid.boss.remainingHp <= 0) {
+      if (strict) throw new Error("Raid already defeated before completion");
       // raid defeated
       battle.addToLog("**The raid has already been defeated!**");
       await deleteRaid(raid);
@@ -419,7 +440,10 @@ const getBattleEndCallbacks = (raidInstanceId, user, remainingHp) => {
     raid.boss.remainingHp = newRemainingHp;
     // update participants
     raid.participants[user.id] = damageDealt;
-    await updateRaid(raid);
+    const update = await updateRaid(raid);
+    if (strict && update.modifiedCount !== 1) {
+      throw new Error("Failed to update raid instance");
+    }
 
     // update state messages
     const stateIds = raid.stateIds || [];
@@ -443,13 +467,72 @@ const getBattleEndCallbacks = (raidInstanceId, user, remainingHp) => {
     if (raid.boss.remainingHp <= 0) {
       // raid defeated
       battle.addToLog("**The raid has been defeated!**");
-      onRaidWin(raid);
+      if (strict) {
+        await onRaidWin(raid, { strict: true });
+      } else {
+        onRaidWin(raid);
+      }
     }
   };
 
   return {
     loseCallback: raidCallback,
     winCallback: raidCallback,
+  };
+};
+
+/**
+ * Reconstruct the raid completion action from data stored with the battle.
+ * @param {Battle} battle
+ * @param {{participantId: string, raidInstanceId: string, startingHp: number}} mode
+ */
+const applyDurableRaidCompletion = async (battle, mode) => {
+  const user = battle.users[mode.participantId];
+  if (!user) throw new Error("Stored raid participant is missing");
+  const before = battle.log.length;
+  const { winCallback } = getBattleEndCallbacks(
+    mode.raidInstanceId,
+    user,
+    mode.startingHp,
+    { strict: true },
+  );
+  await winCallback(battle);
+  return battle.log.slice(before).join("\n");
+};
+
+const createRaidBattle = ({ raid, state, user, trainer, party, durable }) => {
+  const { raidId, difficulty, raidUserId, boss } = raid;
+  const raidData = raidConfig[raidId];
+  const raidDifficultyData = raidData.difficulties[difficulty];
+  const npc = new RaidNPC(raidData, difficulty, raidUserId, boss, state);
+  npc.setPokemon(raidData, difficulty);
+  const rewardMultipliers =
+    raidDifficultyData.rewardMultipliers ||
+    difficultyConfig[difficulty].rewardMultipliers;
+  const autoBattleCost = 20;
+  const battle = new Battle({
+    ...rewardMultipliers,
+    npcId: raidId,
+    difficulty,
+    canAuto: !getCanTrainerAutoBattle(trainer, autoBattleCost).err,
+    autoBattleCost,
+    shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(trainer).err,
+    ...(durable
+      ? {}
+      : getBattleEndCallbacks(state.raidInstanceId, user, boss.remainingHp)),
+  });
+  battle.addTeam("Raid", true);
+  battle.addTrainer(npc, npc.party.pokemons, "Raid", npc.party.rows, npc.party.cols);
+  battle.addTeam("Player", false);
+  battle.addTrainer(trainer, party, "Player");
+  return {
+    battle,
+    mode: {
+      type: "raid",
+      raidInstanceId: String(state.raidInstanceId),
+      participantId: user.id,
+      startingHp: boss.remainingHp,
+    },
   };
 };
 
@@ -465,7 +548,7 @@ const onRaidAccept = async ({ stateId = null, user = null } = {}) => {
     deleteState(stateId);
     return { send: null, err: "This raid has expired." };
   }
-  const { raidId, difficulty, participants, boss, raidUserId } = raid;
+  const { raidId, difficulty, participants } = raid;
 
   // validate raid
   // if user is participant, return
@@ -493,47 +576,32 @@ const onRaidAccept = async ({ stateId = null, user = null } = {}) => {
     return { err: validate.err };
   }
 
-  // add npc to battle
-  const npc = new RaidNPC(raidData, difficulty, raidUserId, boss, state);
-  npc.setPokemon(raidData, difficulty);
-  const rewardMultipliers =
-    raidDifficultyData.rewardMultipliers ||
-    difficultyConfig[difficulty].rewardMultipliers;
-  const autoBattleCost = 20;
-  const battle = new Battle({
-    ...rewardMultipliers,
-    npcId: raidId,
-    difficulty,
-    canAuto: !getCanTrainerAutoBattle(trainer.data, autoBattleCost).err,
-    autoBattleCost,
-    shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(trainer.data).err,
-    ...getBattleEndCallbacks(state.raidInstanceId, user, boss.remainingHp),
+  const durable = isDurableRaidEnabled();
+  const { battle, mode } = createRaidBattle({
+    raid,
+    state,
+    user,
+    trainer: trainer.data,
+    party: validate.data,
+    durable,
   });
-  battle.addTeam("Raid", true);
-  battle.addTrainer(
-    npc,
-    npc.party.pokemons,
-    "Raid",
-    npc.party.rows,
-    npc.party.cols,
-  );
-  battle.addTeam("Player", false);
-  battle.addTrainer(trainer.data, validate.data, "Player");
 
-  // start battle and create a new state
-  battle.start();
-  const raidStateId = setState(
-    {
+  if (durable) {
+    const service = await getDurableBattleService();
+    const started = await service.start({
       battle,
-      userId: user.id,
-    },
-    300,
-  );
+      mode,
+      modeDeadlineAt: new Date(raid.ttl),
+    });
+    return {
+      send: await renderBattle(service, started.battleId, user.id),
+      err: null,
+    };
+  }
 
-  return {
-    send: await getStartTurnSend(battle, raidStateId),
-    err: null,
-  };
+  battle.start();
+  const raidStateId = setState({ battle, userId: user.id }, 300);
+  return { send: await getStartTurnSend(battle, raidStateId), err: null };
 };
 
 const buildRaidSend = async ({ stateId = null, user = null } = {}) => {
@@ -696,6 +764,9 @@ const cleanupRaids = async () => {
 module.exports = {
   onRaidStart,
   onRaidAccept,
+  applyDurableRaidCompletion,
+  createRaidBattle,
+  onRaidWin,
   buildRaidSend,
   cleanupRaids,
 };

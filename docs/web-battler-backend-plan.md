@@ -16,8 +16,9 @@ Status: active plan. This run covers the engine, durable battle service, and Dis
 10. [#127](https://github.com/ewei068/pokestar/pull/127): claim completion once, record strict reward failures, and retain records needing review.
 11. [#128](https://github.com/ewei068/pokestar/pull/128): opt-in PvE/PvP durable starts and Discord actions behind a flag.
 12. [#129](https://github.com/ewei068/pokestar/pull/129): opt-in dungeon starts with generated phase queues.
+13. [#130](https://github.com/ewei068/pokestar/pull/130): opt-in tower starts and completion progression from a stored stage.
 
-Live battle creation still uses the in-memory path unless `DURABLE_BATTLES_ENABLED=true`. With this flag, PvE, PvP, dungeon, and tower starts and Discord actions use stored battle IDs; their completion effects use the strict handler and claim. Dungeon phase parties are generated and stored before the first turn. Tower progression is derived from a stored stage descriptor on completion. Raid still needs a durable completion handler. The flag should remain off in production until reward reconciliation and Discord feature parity are accepted.
+Live battle creation still uses the in-memory path unless `DURABLE_BATTLES_ENABLED=true`. With this flag, PvE, PvP, dungeon, and tower starts and Discord actions use stored battle IDs; their completion effects use the strict handler and claim. Dungeon phase parties are generated before the first turn. Tower progression uses a stored stage. Raid starts require the separate `DURABLE_RAIDS_ENABLED=true` flag as well. Raid completion reconstructs its callback from the raid instance ID, participant, and starting boss HP; its battle deadline follows the raid deadline. Both flags should remain off in production until reward reconciliation, concurrent raid writes, and Discord feature parity are accepted.
 
 ## Remaining cutover steps
 
@@ -25,7 +26,7 @@ Each branch builds on the preceding branch. Open a reviewable PR after its unit 
 
 1. Make completion effects individually idempotent for trainer, Pokémon, and quest writes. The battle record now coordinates a single handler claim, but interrupted or failed claims require manual reconciliation. Verify behavior when an action is retried after completion or a process restart. Confirm production MongoDB topology before considering transactions; the local 6.0.18 server is standalone.
 2. Validate opt-in `/pve` and `/pvp` starts and Discord actions against a real MongoDB process. `/continue-battle` uses the same battle ID after restart; stale legacy battle buttons can remain stale while a participant reopens the durable record. The old Discord auto-battle control is not yet in the durable renderer.
-3. Replace the raid completion callback with durable mode data and a handler. Dungeon phases use generated phase queues, and tower progression uses a stored stage descriptor. Add focused raid tests before enabling continuation.
+3. Make raid instance updates safe when multiple battles complete at once. The stored raid mode now contains enough data to reconstruct its callback after a restart, and strict reward failures leave the battle claim for manual review. A concurrent raid completion can still overwrite another participant's raid document update.
 4. Run MongoDB integration and restart tests before production cutover. `/continue-battle` is registered in every stage; the start cutover remains behind `DURABLE_BATTLES_ENABLED`.
 
 ## Validation

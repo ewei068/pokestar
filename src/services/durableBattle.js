@@ -6,16 +6,25 @@ const { BattleService } = require("../battle/service/BattleService");
 let servicePromise = null;
 
 const isDurableBattleEnabled = () => process.env.DURABLE_BATTLES_ENABLED === "true";
+const isDurableRaidEnabled = () =>
+  isDurableBattleEnabled() && process.env.DURABLE_RAIDS_ENABLED === "true";
 
 const getDurableBattleService = () => {
   if (!servicePromise) {
     servicePromise = createMongoBattleStore()
       .then((store) => new BattleService(store, {
-        onCompleted: (battle, record) => {
+        onCompleted: async (battle, record) => {
           // Resolve after battle.js has loaded; it also starts durable battles.
           // eslint-disable-next-line global-require
           const { processDurableBattleCompletion } = require("./battle");
-          return processDurableBattleCompletion(battle, record);
+          let modeSummary = "";
+          if (record.mode.type === "raid") {
+            // eslint-disable-next-line global-require
+            const { applyDurableRaidCompletion } = require("./raid");
+            modeSummary = await applyDurableRaidCompletion(battle, record.mode);
+          }
+          const rewardSummary = await processDurableBattleCompletion(battle, record);
+          return [modeSummary, rewardSummary].filter(Boolean).join("\n");
         },
       }))
       .catch((error) => {
@@ -26,4 +35,8 @@ const getDurableBattleService = () => {
   return servicePromise;
 };
 
-module.exports = { getDurableBattleService, isDurableBattleEnabled };
+module.exports = {
+  getDurableBattleService,
+  isDurableBattleEnabled,
+  isDurableRaidEnabled,
+};
