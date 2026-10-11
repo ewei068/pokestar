@@ -15,7 +15,6 @@ const { battleEventEnum, heldItemIdEnum } = require("../../enums/battleEnums");
 const { getMove } = require("../data/moveRegistry");
 const { BattleEventHandler } = require("./events");
 const { BattlePokemon } = require("./BattlePokemon");
-const { logger } = require("../../log");
 
 const MAX_CR = 100;
 
@@ -112,7 +111,7 @@ class Battle {
       autoBattleCost,
       shouldShowAutoBattle,
       enableReplay,
-      id,
+      id: this.id,
 
       // TODO: handle win/lose callbacks
     };
@@ -597,11 +596,23 @@ class Battle {
    * } ActionPayload
    */
 
-  /** @param {ActionPayload} payload */
+  /**
+   * @param {ActionPayload} payload
+   * @returns {{ accepted: boolean, reason?: string, log?: string[], snapshot: ReturnType<Battle['takeSnapshot']> }}
+   */
   performAction(payload) {
+    if (!this.hasStarted || this.ended || !this.activePokemon) {
+      return {
+        accepted: false,
+        reason: "battle_inactive",
+        snapshot: this.takeSnapshot(),
+      };
+    }
+
+    const previousLog = this.log;
     this.clearLog();
     let success = false;
-    switch (payload.action) {
+    switch (payload?.action) {
       case "skipTurn":
         success = this.activePokemon.skipTurn();
         break;
@@ -612,18 +623,24 @@ class Battle {
         );
         break;
       default:
-        // @ts-ignore
-        logger.error(`Unknown action: ${payload.action}`);
         break;
     }
-    if (success) {
-      this.logAction(payload);
-    } else {
-      logger.error(`Failed to perform action: ${payload.action}`);
-      this.logAction({ action: "skipTurn" });
-      this.activePokemon.skipTurn();
+    if (!success) {
+      this.log = previousLog;
+      return {
+        accepted: false,
+        reason: "invalid_action",
+        snapshot: this.takeSnapshot(),
+      };
     }
+
+    this.logAction({ ...payload });
     this.nextTurn();
+    return {
+      accepted: true,
+      log: [...this.log],
+      snapshot: this.takeSnapshot(),
+    };
   }
 
   /**

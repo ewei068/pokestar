@@ -308,6 +308,7 @@ class BattlePokemon {
     const moveData = getMove(moveId);
     if (
       !moveData ||
+      !this.moveIds[moveId] ||
       this.moveIds[moveId].cooldown > 0 ||
       this.moveIds[moveId].disabledCounter
     ) {
