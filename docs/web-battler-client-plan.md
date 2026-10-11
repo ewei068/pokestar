@@ -58,14 +58,21 @@ battles, then consider compact action/event entries with periodic checkpoints.
 
 ## Next implementation steps
 
-1. Add authenticated Express list/read/action endpoints that expose only the
-   browser contract. Implement Discord OAuth code exchange on the server and
-   an HTTP-only session with origin and CSRF controls.
-2. Generate the display catalog and build the icon-based battle list and board.
-3. Add polling, action submission, stale-response recovery, and simple event
+1. Generate the display catalog and build the icon-based battle list and board.
+2. Add polling, action submission, stale-response recovery, and simple event
    playback. Test API authorization and browser behavior before deployment.
-4. Finish the backend's reward-recovery and real-MongoDB cutover gates before
+3. Finish the backend's reward-recovery and real-MongoDB cutover gates before
    enabling durable starts in production.
+
+The Express API now mounts only when `WEB_BATTLER_ENABLED=true`. Configure
+`WEB_SITE_ORIGIN`, `WEB_DISCORD_REDIRECT_URI`, `CLIENT_ID`, and
+`DISCORD_CLIENT_SECRET`; register the exact callback URL in Discord's developer
+portal. `GET /api/auth/discord/login` starts login, `/api/auth/discord/callback`
+sets an HTTP-only session, `GET /api/me` checks it, and `/api/battles` plus
+`/api/battles/:id` list and read participant battles. POST
+`/api/battles/:id/actions` requires the configured site origin, expected
+revision, request ID, and action. Sessions are opaque tokens stored by hash in
+MongoDB with a TTL. The API returns no unprojected battle records.
 
 The battle snapshot format now includes `shiny` and team grid dimensions.
 `BATTLE_RULESET_VERSION` is 2; version 1 records must be completed or cleared

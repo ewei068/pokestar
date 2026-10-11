@@ -55,6 +55,7 @@ const collectionNames = Object.freeze({
   POKEMON_AND_USERS: "pokemonAndUsers",
   EQUIPMENT: "equipment",
   BATTLES: "battles",
+  WEB_SESSIONS: "webSessions",
 });
 
 const collectionConfig = Object.freeze({
