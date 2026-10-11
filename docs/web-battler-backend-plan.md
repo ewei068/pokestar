@@ -17,6 +17,7 @@ Status: active plan. This run covers the engine, durable battle service, and Dis
 11. [#128](https://github.com/ewei068/pokestar/pull/128): opt-in PvE/PvP durable starts and Discord actions behind a flag.
 12. [#129](https://github.com/ewei068/pokestar/pull/129): opt-in dungeon starts with generated phase queues.
 13. [#130](https://github.com/ewei068/pokestar/pull/130): opt-in tower starts and completion progression from a stored stage.
+14. [#131](https://github.com/ewei068/pokestar/pull/131): separately flagged durable raid starts and completion from stored context.
 
 Live battle creation still uses the in-memory path unless `DURABLE_BATTLES_ENABLED=true`. With this flag, PvE, PvP, dungeon, and tower starts and Discord actions use stored battle IDs; their completion effects use the strict handler and claim. Dungeon phase parties are generated before the first turn. Tower progression uses a stored stage. Raid starts require the separate `DURABLE_RAIDS_ENABLED=true` flag as well. Raid completion reconstructs its callback from the raid instance ID, participant, and starting boss HP; its battle deadline follows the raid deadline. Both flags should remain off in production until reward reconciliation, concurrent raid writes, and Discord feature parity are accepted.
 
