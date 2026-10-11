@@ -54,9 +54,16 @@ const collectionNames = Object.freeze({
   POKEMON_GROUPED: "pokemonGrouped",
   POKEMON_AND_USERS: "pokemonAndUsers",
   EQUIPMENT: "equipment",
+  BATTLES: "battles",
 });
 
 const collectionConfig = Object.freeze({
+  [collectionNames.BATTLES]: {
+    indexes: [
+      { key: { participantIds: 1, status: 1 }, unique: false },
+      { key: { expiresAt: 1 }, unique: false },
+    ],
+  },
   [collectionNames.USERS]: {
     indexes: [
       {
