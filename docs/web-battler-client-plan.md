@@ -25,13 +25,14 @@ parameters or send the unprojected `BattleService` result to the browser.
 
 ## Static app and assets
 
-- Build a small display catalog from checked-in Pokémon and battle configuration.
-  It should contain only display metadata (names, types, sprite URLs, move and
-  effect descriptions), not move execution callbacks or the full bot bundle.
+- Serve a small JSON display catalog at `GET /api/catalog`, generated from the
+  running server's checked-in Pokémon and battle configuration. It contains
+  names, types, sprite URLs, move and effect descriptions, but no execution
+  callbacks or bot code. The catalog version matches the battle ruleset.
 - The repository already contains canonical sprite URLs in
   `data/pokemonData.json` and custom Pokémon URLs in `src/config/pokemonConfig.js`.
-  Custom image files are already in `media/images/sprites`. Generate the catalog
-  at build time; load images separately and provide a missing-image fallback.
+  Custom image files are already in `media/images/sprites`. Load images
+  separately and provide a missing-image fallback.
 - For the first public release, use a site subdomain on GitHub Pages and an API
   subdomain pointing to the GCP VM through a reserved static IP. Express owns
   Discord OAuth, the session, and battle routes. Local development can use the
@@ -58,10 +59,9 @@ battles, then consider compact action/event entries with periodic checkpoints.
 
 ## Next implementation steps
 
-1. Generate the display catalog and build the icon-based battle list and board.
-2. Add polling, action submission, stale-response recovery, and simple event
-   playback. Test API authorization and browser behavior before deployment.
-3. Finish the backend's reward-recovery and real-MongoDB cutover gates before
+1. Test Discord OAuth, cookie/CORS behavior, icon loading, and the battle board
+   in a real browser with a configured local or staging API.
+2. Finish the backend's reward-recovery and real-MongoDB cutover gates before
    enabling durable starts in production.
 
 The Express API now mounts only when `WEB_BATTLER_ENABLED=true`. Configure
@@ -77,3 +77,9 @@ MongoDB with a TTL. The API returns no unprojected battle records.
 The battle snapshot format now includes `shiny` and team grid dimensions.
 `BATTLE_RULESET_VERSION` is 2; version 1 records must be completed or cleared
 before this branch is deployed with durable starts enabled.
+
+The `web/` client is a static Vite build. It lists ongoing battles, displays
+the current board with sprites, exposes legal attacks and skip, polls for
+remote actions, and plays new combat events as a brief text/tile sequence.
+The first load opens at current state without replaying old actions. Build and
+unit tests are available now; browser behavior has not yet been validated.

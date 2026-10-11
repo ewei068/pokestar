@@ -89,6 +89,7 @@ const projectBattleRecord = (record, userId, sinceRevision = null) => {
     updatedAt: record.updatedAt,
     expiresAt: record.expiresAt,
     resultExpiresAt: record.resultExpiresAt,
+    myTeamNames: [...ownTeams],
     isMyTurn: record.status === "active" && battle.activePokemon?.userId === userId,
     view: projectSnapshot(record.view, ownTeams),
     availableActions: availableActions(record, battle, userId),
