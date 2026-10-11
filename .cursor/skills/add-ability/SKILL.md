@@ -3,111 +3,59 @@ name: add-ability
 description: Add Pokemon abilities to the battle system. Use when implementing passive abilities that trigger on events.
 ---
 
-# Adding Abilities to Pokestar
+# Adding Abilities
 
-## Quick Reference
+## Steps
 
-**Files to modify:**
+1. Add `abilityIdEnum.YOUR_ABILITY` to `src/enums/battleEnums.js` if it isn't there yet.
+2. Find the closest existing ability in the examples table below and read its implementation in `src/battle/data/abilities.js`.
+3. Add the new entry to `abilitiesToRegister` in `src/battle/data/abilities.js`, following the listener rules in the "Event Listeners" section of `src/battle/README.md`.
+4. Run `npm test -- src/battle/data/__tests__/abilities.test.js`. The suite applies and removes every registered ability, so it catches crashes but not wrong behavior.
+5. Write at least one behavior test unless the ability is a single generic listener (see the `write-tests` skill).
 
-1. `src/enums/battleEnums.js` - Add `abilityIdEnum.YOUR_ABILITY` entry (ONLY if not exists)
-2. `src/battle/data/abilities.js` - Add the ability implementation
+Leave other abilities and `battleConfig.js` unchanged.
 
-**DO NOT** modify other abilities or `battleConfig.js` unless explicitly asked.
-
-## Ability Structure
+## Shape
 
 ```javascript
 [abilityIdEnum.ABILITY_NAME]: new Ability({
   id: abilityIdEnum.ABILITY_NAME,
   name: "Ability Name",
-  description: "Description of what the ability does",
+  description: "What the ability does",
   abilityAdd({ battle, target }) {
-    // Called when ability is applied (battle start)
     return {
-      // Properties to store for later use in abilityRemove
-      listenerId: this.registerListenerFunction({...}),
+      listenerId: this.registerListenerFunction({
+        battle,
+        target,
+        eventName: battleEventEnum.AFTER_DAMAGE_DEALT,
+        callback: ({ abilityInstance }) => {
+          // abilityInstance.data is the object abilityAdd returned
+        },
+        conditionCallback: getIsSourcePokemonCallback(target),
+      }),
     };
   },
-  abilityRemove({ battle, target, properties }) {
-    // Called when ability is removed
+  abilityRemove({ battle, properties }) {
     battle.unregisterListener(properties.listenerId);
   },
 }),
 ```
 
-## Properties Pattern
+## Examples in `abilities.js`
 
-Return state from `abilityAdd` that you'll need in `abilityRemove`:
-
-```javascript
-abilityAdd({ battle, target }) {
-  return {
-    listenerId: this.registerListenerFunction({...}),
-    originalValue: target.getStat("atk"),
-    triggered: false,
-  };
-},
-abilityRemove({ battle, target, properties }) {
-  battle.unregisterListener(properties.listenerId);
-}
-```
-
-## Event Listener Registration
-
-Abilities have a class-level `registerListenerFunction` method that automatically includes the ability instance:
-
-```javascript
-abilityAdd({ battle, target }) {
-  return {
-    listenerId: this.registerListenerFunction({
-      battle,
-      target,
-      eventName: battleEventEnum.AFTER_DAMAGE_DEALT,
-      callback: ({ damage, abilityInstance }) => {
-        // abilityInstance.data contains the properties
-        // Perform ability logic
-      },
-      conditionCallback: getIsSourcePokemonCallback(target),
-    }),
-  };
-},
-```
-
-## Common Patterns
-
-Refer to `references/pattern-*` for common ability implementations.
-
-## Common Gotchas
-
-1. **Always Clean Up Listeners**: Failing to unregister listeners causes memory leaks.
-
-2. **Event Argument Modification**: Return modified values from callbacks:
-
-   ```javascript
-   callback: (args) => {
-     return { damage: Math.floor(args.damage * 0.5) };
-   };
-   ```
-
-3. **abilityInstance**: Access stored properties via `abilityInstance.data` in callbacks.
-
-4. **Source vs Target**: Use the right condition callback:
-   - `getIsSourcePokemonCallback` - when this Pokemon is dealing damage/using moves
-   - `getIsTargetPokemonCallback` - when this Pokemon is receiving damage/effects
-
-## Validation
-
-After implementing an ability, run the ability test suite to validate the implementation:
-
-```bash
-npm test -- src/battle/data/__tests__/abilities.test.js
-```
-
-This runs an e2e test that verifies all abilities can be applied and removed without throwing errors. If your new ability causes a test failure, fix the implementation and re-run until tests pass.
-
-See the `unit-test` skill for more details on testing.
-
-## References
-
-- `add-event-listener` skill - Common event types and condition callbacks
-- `references/pattern-*` - Common ability implementation patterns
+| Pattern                                   | Copy from                     |
+| ----------------------------------------- | ----------------------------- |
+| Buff self at battle start                 | `DOWNLOAD`                    |
+| Set weather at battle start               | `SNOW_WARNING`, `MAGMA_POWER` |
+| Punish attackers on contact               | `ROUGH_SKIN`, `FLAME_BODY`    |
+| Boost damage of tagged moves              | `IRON_FIST`, `SHARPNESS`      |
+| Reduce incoming damage                    | `FRIEND_GUARD`                |
+| Chance to apply an effect on hit          | `STENCH`                      |
+| Stat boost when hit                       | `ANGER_POINT`                 |
+| Block status conditions                   | `OVERCOAT`                    |
+| Absorb a type and gain a buff             | `MOTOR_DRIVE`                 |
+| Turn-end healing or damage                | `REGENERATOR`, `BAD_DREAMS`   |
+| React to weather changes                  | `JET_SPEED`, `DRY_SKIN`       |
+| Trigger on faint                          | `AFTERMATH`                   |
+| Ignore damage and debuffs from allies     | `TELEPATHY`                   |
+| Several listeners with shared state       | `ALPHA_CORE`                  |

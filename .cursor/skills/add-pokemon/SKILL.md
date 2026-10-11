@@ -272,4 +272,4 @@ After the config entry is in place:
 - `src/config/types.js` — `CanonicalPokemonConfigData` / `PokemonConfigData` typedefs (source of truth for required fields)
 - `src/enums/pokemonEnums.js` — the ID enum
 - `data/pokemonData.json` — cached Bulbapedia data; existence in this file = canonical
-- Sibling skills: `find-pokemon-emoji`, `add-move`, `test-move`, `add-ability`, `verify-pokemon`
+- Sibling skills: `find-pokemon-emoji`, `add-move`, `write-tests`, `add-ability`, `verify-pokemon`

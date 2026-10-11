@@ -27,6 +27,15 @@ Project Structure (not all directories included):
   - `components/` - DEPRECATED components for users to interact with
   - `events/` - DEPRECATED handling of the deprecated `components/` interactions
 
+**Command Flow**
+
+1. `commands/` files define Discord slash and message commands, registered in @commandConfig.js
+2. Handlers in `handlers/` route commands and component interactions
+3. Commands call `services/` for business logic; services own all database access
+4. Results are sent as `embeds/` or as Deact `elements/`
+
+Discord limits that shape this code: component custom IDs max out at 100 characters (hence state IDs instead of payloads), messages hold at most 10 embeds and 5 component rows, and interactions must be acknowledged within 3 seconds.
+
 **Battle Overview**
 
 The `src/battle/` directory holds the data and engine that runs Battles in Pokestar. The `data/` directory stores the data of all moves, effects, abilities, and held items. The `engine/` directory handles the Battle simulation logic and has classes used for Battle simulation. There is also the @battleEnums.js file which stores the enums for moves, effects, abilities, and held items.
