@@ -260,4 +260,37 @@ describe("BattleStore", () => {
     expect(await store.listActive(team2.trainer.userId)).toEqual([]);
     expect(restoreBattle(completed).ended).toBe(true);
   });
+
+  it("replays a phase transition from queued generated Pokémon", async () => {
+    const store = createStore();
+    const { battle, team2 } = createMockBattle({
+      team1Party: createMockPokemonParty({ size: 1 }),
+      team2Party: createMockPokemonParty({ size: 1 }),
+    });
+    team2.party.pokemons[0].remainingHp = 1;
+    battle.parties.Team2.pokemons[0].hp = 1;
+    const nextParty = createMockPokemonParty({ size: 1 });
+    const npcUserId = team2.trainer.userId;
+    battle.users[npcUserId].nextPhase = () => {
+      throw new Error("The callback should not run");
+    };
+    battle.setPhaseQueue(npcUserId, [nextParty]);
+    await store.create({ battle, mode: { type: "dungeon" } });
+    const targetId = battle.parties.Team2.pokemons[0].id;
+
+    const result = await store.submit({
+      battleId: battle.id,
+      actorUserId: battle.activePokemon.userId,
+      expectedRevision: 0,
+      requestId: "phase-hit",
+      action: { action: "useMove", moveId: "m33", targetPokemonId: targetId },
+    });
+
+    expect(result.accepted).toBe(true);
+    expect(result.update.events.some((event) => event.type === "phaseStarted")).toBe(true);
+    const restored = restoreBattle(await store.get(battle.id));
+    expect(restored.phaseIndices[npcUserId]).toBe(1);
+    expect(restored.parties.Team2.pokemons[0].id).toBe(nextParty.pokemons[0]._id);
+    expect(restored.takeSnapshot()).toEqual(result.view);
+  });
 });

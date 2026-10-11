@@ -18,7 +18,7 @@ const captureBattleSetup = (battle) => {
   }
 
   const trainers = Object.entries(battle.users).map(([userId, user]) => {
-    if (user.nextPhase) {
+    if (user.nextPhase && battle.phaseQueues[userId] === undefined) {
       throw new Error("Battle phase callbacks need a durable mode handler");
     }
     const { parties, teamName, ...profile } = user;
@@ -41,6 +41,7 @@ const captureBattleSetup = (battle) => {
       isNpc,
     })),
     trainers,
+    phaseQueues: plainData(battle.phaseQueues),
   };
 };
 
@@ -71,6 +72,9 @@ const restoreBattle = (record, rulesetVersion = BATTLE_RULESET_VERSION) => {
         party.cols,
       );
     }
+  }
+  for (const [userId, phases] of Object.entries(record.setup.phaseQueues || {})) {
+    battle.setPhaseQueue(userId, phases);
   }
   battle.start();
   for (const entry of record.actions) {

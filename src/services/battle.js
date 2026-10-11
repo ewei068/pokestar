@@ -944,6 +944,7 @@ const buildDungeonSend = async ({
     );
     battle.addTeam("Player", false);
     battle.addTrainer(newTrainerResult.data, validate.data, "Player");
+    battle.setPhaseQueue(npc.userId, npc.getRemainingPhaseParties());
 
     // start battle and add to state
     battle.start();
