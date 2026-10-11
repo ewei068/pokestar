@@ -1120,6 +1120,7 @@ class Battle {
         id: pokemon.id,
         speciesId: pokemon.speciesId,
         name: pokemon.name,
+        shiny: pokemon.shiny,
         hp: pokemon.hp,
         maxHp: pokemon.maxHp,
         level: pokemon.level,
@@ -1162,6 +1163,12 @@ class Battle {
         weatherId: this.weather.weatherId,
         duration: this.weather.duration,
       },
+      teams: Object.fromEntries(
+        Object.entries(this.parties).map(([teamName, party]) => [
+          teamName,
+          { rows: party.rows, cols: party.cols },
+        ]),
+      ),
       pokemon: pokemonSnapshots,
     };
   }

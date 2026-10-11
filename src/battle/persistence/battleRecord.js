@@ -1,7 +1,7 @@
 const { Battle } = require("../engine/Battle");
 
 // Bump when the engine or rule-affecting Pokémon data changes incompatibly.
-const BATTLE_RULESET_VERSION = 1;
+const BATTLE_RULESET_VERSION = 2;
 
 const plainData = (value) => JSON.parse(JSON.stringify(value));
 
