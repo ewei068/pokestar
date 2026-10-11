@@ -12,6 +12,10 @@ class BattleService {
     this.npcAction = npcAction;
   }
 
+  /**
+   * @param {{ battle: Battle, mode?: object, idleTimeoutMs?: number,
+   *   modeDeadlineAt?: Date, resultRetentionMs?: number }} options
+   */
   async start({
     battle,
     mode = {},
