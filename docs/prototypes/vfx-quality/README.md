@@ -1,6 +1,6 @@
 # Normal Physical and Fairy Status quality studies
 
-Question: can one small texture plus timed canvas layers make two very different
+Question: can small textures plus timed canvas layers make two very different
 tile effects clearer and richer than the current SVG matrix?
 
 These are throwaway development stories on the existing VFX lab. Run
@@ -11,7 +11,7 @@ including empty tiles.
 
 | Study | Review URL | Variants |
 | --- | --- | --- |
-| Normal Physical | `?previewBattle=1&story=vfx&type=normal&kind=physical&pattern=all&variant=impact` | Current SVG, impact lines, crossing strikes, pressure rings |
+| Normal Physical | `?previewBattle=1&story=vfx&type=normal&kind=physical&pattern=all&variant=impact` | Current SVG, impact arcs, crossing strikes, pressure rings |
 | Fairy Status | `?previewBattle=1&story=vfx&type=fairy&kind=status&pattern=all&variant=halo` | Current SVG, mote halo, gathering spiral, ribbon veil |
 
 ## Captures
@@ -19,7 +19,7 @@ including empty tiles.
 | Normal Physical | Still at about 650 ms |
 | --- | --- |
 | Current SVG | ![Normal SVG](normal-physical-original.png) |
-| Impact lines | ![Impact lines](normal-physical-impact.png) |
+| Impact arcs | ![Impact arcs](normal-physical-impact.png) |
 | Crossing strikes | ![Crossing strikes](normal-physical-cross.png) |
 | Pressure rings | ![Pressure rings](normal-physical-ripple.png) |
 
@@ -34,11 +34,23 @@ including empty tiles.
 
 ![Fairy spiral motion](fairy-spiral-motion.gif)
 
-The Normal texture is an independently generated impact streak at
-`media/vfx/experiments/normal-impact-streak.png`; the Fairy texture is an
-independently generated mote at `media/vfx/experiments/fairy-status-mote.png`.
-Canvas timing, rings, ribbons, positioning, and per-tile seeded variation are
-code-driven. The stories remain outside the production build.
+The Normal impact variant now draws two staggered pulses, each with two or three
+partial jagged arcs spanning 60–120 degrees. Radius, rotation, timing, and arc
+shape vary by tile seed. The older crossing and ripple variants still use the
+independently generated streak at `media/vfx/experiments/normal-impact-streak.png`.
+
+Fairy uses the existing higher-detail center mote at
+`media/vfx/experiments/fairy-status-mote.png` plus two new low-resolution,
+32-pixel glint and pearl sprites (`fairy-status-glint-small.png` and
+`fairy-status-pearl-small.png`). Different small sprites emit outward at staggered
+times through most of the VFX interval; the main mote appears occasionally as
+an accent. Canvas timing, arcs, rings, ribbons, positioning, and per-tile seeded
+variation are code-driven. The stories remain outside the production build.
+
+As a choreography reference, [Pokémon Showdown's move table](https://github.com/smogon/pokemon-showdown-client/blob/master/play.pokemonshowdown.com/src/battle-animations-moves.ts)
+uses two staggered expanding impact images for Giga Impact, reuses that sequence
+for Double-Edge, and combines actor motion with two target-side wisps for Body
+Slam. These studies use their own art and geometry.
 
 The Normal study tests whether a short, sharp pulse reads as physical without
 comic-book symbols. The Fairy study tests whether the status effect reads as

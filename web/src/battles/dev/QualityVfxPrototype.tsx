@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import impactUrl from "../../../../media/vfx/experiments/normal-impact-streak.png";
 import fairyUrl from "../../../../media/vfx/experiments/fairy-status-mote.png";
+import fairyGlintUrl from "../../../../media/vfx/experiments/fairy-status-glint-small.png";
+import fairyPearlUrl from "../../../../media/vfx/experiments/fairy-status-pearl-small.png";
 
 export const qualityVfxVariants = {
   "normal-physical": ["original", "impact", "cross", "ripple"],
@@ -12,7 +14,7 @@ export type QualityVfxStudy = keyof typeof qualityVfxVariants;
 export type QualityVfxVariant = "original" | "impact" | "cross" | "ripple" | "halo" | "spiral" | "veil";
 export const qualityVfxNames: Record<QualityVfxVariant, string> = {
   original: "Current SVG",
-  impact: "Impact lines",
+  impact: "Impact arcs",
   cross: "Crossing strikes",
   ripple: "Pressure rings",
   halo: "Mote halo",
@@ -68,37 +70,65 @@ const drawRing = (ctx: CanvasRenderingContext2D, tile: Tile, radius: number,
   ctx.restore();
 };
 
+const drawImpactArc = (ctx: CanvasRenderingContext2D, tile: Tile, start: number,
+  sweep: number, radius: number, width: number, opacity: number, seed: number) => {
+  const segments = 18;
+  ctx.save();
+  ctx.globalAlpha = clamp(opacity);
+  ctx.beginPath();
+  for (let step = 0; step <= segments; step++) {
+    const progress = step / segments;
+    const taper = Math.sin(Math.PI * progress);
+    const spike = step % 3 === 1 ? .55 + random(seed + step * 31) * .8 :
+      random(seed + step * 31) * .18;
+    const angle = start + sweep * progress;
+    const outer = radius + width * taper * spike;
+    const x = tile.x + Math.cos(angle) * outer;
+    const y = tile.y + Math.sin(angle) * outer * .82;
+    if (!step) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  for (let step = segments; step >= 0; step--) {
+    const progress = step / segments;
+    const taper = Math.sin(Math.PI * progress);
+    const angle = start + sweep * progress;
+    const inner = radius - width * taper * (.8 + random(seed + step * 37) * .15);
+    ctx.lineTo(tile.x + Math.cos(angle) * inner,
+      tile.y + Math.sin(angle) * inner * .82);
+  }
+  ctx.closePath();
+  ctx.fillStyle = "#fffaf0";
+  ctx.fill();
+  ctx.strokeStyle = "#525d66";
+  ctx.lineWidth = Math.max(1, tile.radius * .035);
+  ctx.stroke();
+  ctx.restore();
+};
+
 const drawNormalPhysical = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
   tile: Tile, ms: number, variant: QualityVfxVariant) => {
   const seed = tile.seed;
   const r = tile.radius;
   if (variant === "impact") {
-    const coreAge = (ms - 25) / 310;
-    if (coreAge >= 0 && coreAge <= 1) {
-      ctx.save();
-      ctx.globalAlpha = fade(coreAge) * .65;
-      ctx.fillStyle = "#fff8e5";
-      ctx.beginPath();
-      ctx.ellipse(tile.x, tile.y, r * (.09 + coreAge * .11),
-        r * (.08 + coreAge * .08), 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = "#525967";
-      ctx.lineWidth = Math.max(1, r * .035);
-      ctx.stroke();
-      ctx.restore();
-    }
-    const ringAge = ms / 370;
-    if (ringAge <= 1) drawRing(ctx, tile, r * (.18 + ringAge * .74),
-      fade(ringAge) * .65, "#b7a993", Math.max(1.5, r * .075));
-    const count = 6 + Math.floor(random(seed + 7) * 4);
-    const phase = random(seed + 11) * Math.PI * 2;
-    for (let index = 0; index < count; index++) {
-      const key = seed + index * 101;
-      const age = (ms - 28 - random(key + 17) * 90) / (260 + random(key + 19) * 170);
-      if (age < 0 || age > 1) continue;
-      const angle = phase + index / count * Math.PI * 2 + (random(key + 23) - .5) * .3;
-      const length = r * (1.03 + random(key + 29) * .7) * (1 - age * .25);
-      drawStreak(ctx, image, tile, angle, r * age * .33, length, fade(age) * .87);
+    for (let pulse = 0; pulse < 2; pulse++) {
+      const pulseAge = (ms - 45 - pulse * 210) / (pulse ? 390 : 330);
+      if (pulseAge < 0 || pulseAge > 1) continue;
+      drawRing(ctx, tile, r * (.28 + pulseAge * .7), fade(pulseAge) * (pulse ? .3 : .48),
+        "#8e9293", Math.max(1.5, r * (pulse ? .09 : .13)), .82);
+      const count = 2 + Math.floor(random(seed + pulse * 43 + 7) * 2);
+      const rotation = random(seed + pulse * 43 + 11) * Math.PI * 2;
+      for (let index = 0; index < count; index++) {
+        const key = seed + pulse * 503 + index * 101;
+        const arcAge = (ms - 45 - pulse * 210 - random(key + 5) * 65) /
+          (260 + random(key + 9) * 150);
+        if (arcAge < 0 || arcAge > 1) continue;
+        const start = rotation + index / count * Math.PI * 2 +
+          (random(key + 13) - .5) * .35;
+        const sweep = (60 + random(key + 17) * 60) * Math.PI / 180;
+        const radius = r * (.38 + arcAge * .42 + random(key + 23) * .17);
+        const width = r * (.18 + random(key + 29) * .13) * (1 - arcAge * .35);
+        drawImpactArc(ctx, tile, start, sweep, radius, width,
+          fade(arcAge) * (pulse ? .76 : .92), key);
+      }
     }
   } else if (variant === "cross") {
     const base = -.5 + (random(seed + 11) - .5) * .22;
@@ -153,29 +183,39 @@ const drawFairyGlow = (ctx: CanvasRenderingContext2D, tile: Tile, time: number) 
   ctx.fillRect(tile.x - radius, tile.y - radius, radius * 2, radius * 2);
 };
 
-const drawFairyStatus = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
+type FairySprites = { main: HTMLImageElement; glint: HTMLImageElement; pearl: HTMLImageElement };
+const drawFairyOutwardMotes = (ctx: CanvasRenderingContext2D, sprites: FairySprites,
+  tile: Tile, ms: number, count: number) => {
+  for (let index = 0; index < count; index++) {
+    const key = tile.seed + index * 131;
+    const birth = 15 + index * 30 + random(key + 3) * 36;
+    const life = 160 + random(key + 7) * 175;
+    const age = (ms - birth) / life;
+    if (age < 0 || age > 1) continue;
+    const angle = random(key + 11) * Math.PI * 2;
+    const radius = tile.radius * (.13 + age * (.48 + random(key + 17) * .48));
+    const sprite = index % 6 === 0 ? sprites.main : index % 2 ? sprites.glint : sprites.pearl;
+    const size = tile.radius * (index % 6 === 0 ? .3 : .15 + random(key + 23) * .12);
+    drawMote(ctx, sprite, tile.x + Math.cos(angle) * radius,
+      tile.y + Math.sin(angle) * radius * .75 - age * tile.radius * .12,
+      size, (random(key + 29) - .5) * .7 + age * .35,
+      Math.min(1, age * 9) * Math.pow(1 - age, .65) * .88);
+  }
+};
+
+const drawFairyStatus = (ctx: CanvasRenderingContext2D, sprites: FairySprites,
   tile: Tile, ms: number, variant: QualityVfxVariant) => {
   const seed = tile.seed;
   const r = tile.radius;
   drawFairyGlow(ctx, tile, ms / 760);
   if (variant === "halo") {
-    const age = ms / 690;
-    if (age <= 1) {
-      drawRing(ctx, tile, r * (.22 + age * .65), fade(age) * .75,
-        "#f4b7f2", Math.max(1.5, r * .055), .7);
-      drawRing(ctx, tile, r * (.14 + age * .47), fade(age) * .5,
-        "#bbf7ff", Math.max(1, r * .03), .7);
-    }
-    for (let index = 0; index < 8; index++) {
-      const key = seed + index * 97;
-      const birth = 65 + random(key + 3) * 180;
-      const age = (ms - birth) / (360 + random(key + 7) * 190);
+    for (let pulse = 0; pulse < 2; pulse++) {
+      const age = (ms - pulse * 290) / (pulse ? 430 : 520);
       if (age < 0 || age > 1) continue;
-      const angle = index / 8 * Math.PI * 2 + random(seed + 11) * .4 + age * .35;
-      const radius = r * (.33 + age * .57);
-      drawMote(ctx, image, tile.x + Math.cos(angle) * radius,
-        tile.y + Math.sin(angle) * radius * .72 - age * r * .17,
-        r * (.23 + random(key + 13) * .23), angle + age, fade(age) * .92);
+      drawRing(ctx, tile, r * (.22 + age * .65), fade(age) * (pulse ? .58 : .75),
+        "#f4b7f2", Math.max(1.5, r * .055), .7);
+      drawRing(ctx, tile, r * (.14 + age * .47), fade(age) * .42,
+        "#bbf7ff", Math.max(1, r * .03), .7);
     }
   } else if (variant === "spiral") {
     const curveAge = ms / 700;
@@ -199,19 +239,20 @@ const drawFairyStatus = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
         ctx.restore();
       }
     }
-    for (let index = 0; index < 11; index++) {
+    for (let index = 0; index < 8; index++) {
       const key = seed + index * 101;
       const birth = index * 28 + random(key + 5) * 65;
       const age = (ms - birth) / 450;
       if (age < 0 || age > 1) continue;
       const angle = index * 2.4 + age * 3.5 + random(seed + 7);
       const radius = r * (.9 - age * .62);
-      drawMote(ctx, image, tile.x + Math.cos(angle) * radius,
+      const sprite = index % 2 ? sprites.glint : sprites.pearl;
+      drawMote(ctx, sprite, tile.x + Math.cos(angle) * radius,
         tile.y + Math.sin(angle) * radius * .72 - age * r * .22,
-        r * (.25 + random(key + 17) * .28), angle, fade(age) * .95);
+        r * (.2 + random(key + 17) * .18), angle, fade(age) * .95);
     }
     const age = (ms - 325) / 410;
-    if (age >= 0 && age <= 1) drawMote(ctx, image, tile.x, tile.y - age * r * .2,
+    if (age >= 0 && age <= 1) drawMote(ctx, sprites.main, tile.x, tile.y - age * r * .2,
       r * (.62 + age * .36), age * .6, fade(age) * .9);
   } else {
     const progress = clamp(ms / 760);
@@ -237,10 +278,12 @@ const drawFairyStatus = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
       if (age < 0 || age > 1) continue;
       const x = tile.x + r * (-.75 + age * 1.5);
       const y = tile.y + Math.sin(age * Math.PI * 2 + index) * r * .34 - age * r * .18;
-      drawMote(ctx, image, x, y, r * (.19 + random(key + 3) * .24),
+      drawMote(ctx, index % 2 ? sprites.glint : sprites.pearl,
+        x, y, r * (.17 + random(key + 3) * .16),
         age * .7, fade(age) * .8);
     }
   }
+  drawFairyOutwardMotes(ctx, sprites, tile, ms, variant === "halo" ? 18 : 14);
 };
 
 export const QualityVfxPrototype = ({ study, variant, replayKey }: {
@@ -254,8 +297,9 @@ export const QualityVfxPrototype = ({ study, variant, replayKey }: {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const image = new Image();
-    image.src = study === "normal-physical" ? impactUrl : fairyUrl;
+    const imageUrls = study === "normal-physical" ? [impactUrl] :
+      [fairyUrl, fairyGlintUrl, fairyPearlUrl];
+    const images = imageUrls.map((url) => { const image = new Image(); image.src = url; return image; });
     let frame = 0;
     let tiles: Tile[] = [];
     let disposed = false;
@@ -284,12 +328,13 @@ export const QualityVfxPrototype = ({ study, variant, replayKey }: {
       const density = Math.min(window.devicePixelRatio || 1, 2);
       ctx.clearRect(0, 0, canvas.width / density, canvas.height / density);
       const effectMs = elapsed - 405;
-      if (image.complete && image.naturalWidth > 0 && effectMs >= 0 && effectMs <= 760) {
+      if (images.every((image) => image.complete && image.naturalWidth > 0) &&
+        effectMs >= 0 && effectMs <= 760) {
         tiles.forEach((tile) => {
           const ms = effectMs - random(tile.seed + 3) * 65;
           if (ms < 0) return;
-          if (study === "normal-physical") drawNormalPhysical(ctx, image, tile, ms, variant);
-          else drawFairyStatus(ctx, image, tile, ms, variant);
+          if (study === "normal-physical") drawNormalPhysical(ctx, images[0], tile, ms, variant);
+          else drawFairyStatus(ctx, { main: images[0], glint: images[1], pearl: images[2] }, tile, ms, variant);
         });
       }
       if (elapsed < 1500) frame = requestAnimationFrame(render);
