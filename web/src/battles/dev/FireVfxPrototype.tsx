@@ -47,8 +47,16 @@ export const FireVfxSwitcher = ({ variant, onChange }: {
   </nav>;
 };
 
-type Tile = { x: number; y: number; radius: number };
+type Tile = { x: number; y: number; radius: number; seed: number };
 type FireTextures = { flame: HTMLImageElement; embers: HTMLImageElement[] };
+const tileSeed = (teamName: string, position: string) => {
+  // The same action/tile pair should keep its look even if the target list changes order.
+  let hash = 2166136261;
+  for (const character of `${teamName}:${position}`) {
+    hash = Math.imul(hash ^ character.charCodeAt(0), 16777619);
+  }
+  return hash >>> 0;
+};
 const random = (seed: number) => {
   const value = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
   return value - Math.floor(value);
@@ -106,59 +114,75 @@ const drawEmbers = (ctx: CanvasRenderingContext2D, textures: FireTextures, tile:
 };
 
 const drawTile = (ctx: CanvasRenderingContext2D, textures: FireTextures,
-  tile: Tile, ms: number, variant: Exclude<FireVfxVariant, "original">, seed: number) => {
+  tile: Tile, ms: number, variant: Exclude<FireVfxVariant, "original">) => {
+  const seed = tile.seed;
   const image = textures.flame;
-  const time = clamp(ms / 760);
+  const offset = random(seed + 3) * 105;
+  const localMs = ms - offset;
+  if (localMs < 0) return;
+  const time = clamp(localMs / (760 - offset));
   if (variant === "bloom") {
-    drawGlow(ctx, tile, time, .7);
-    for (let index = 0; index < 6; index++) {
-      const birth = index * 27;
-      const age = (ms - birth) / 560;
+    drawGlow(ctx, tile, time, .5 + random(seed + 5) * .35);
+    const flameCount = 4 + Math.floor(random(seed + 11) * 4);
+    const spread = random(seed + 13) * Math.PI * 2;
+    for (let index = 0; index < flameCount; index++) {
+      const birth = random(seed + index * 97 + 17) * 135;
+      const life = 340 + random(seed + index * 97 + 19) * 215;
+      const age = (localMs - birth) / life;
       if (age < 0 || age > 1) continue;
-      const angle = index / 6 * Math.PI * 2 + random(seed + index) * .4;
-      const distance = tile.radius * (.08 + age * .36);
-      const size = tile.radius * (.8 + random(seed + index * 9) * .32) * (1 - age * .35);
+      const angle = spread + index / flameCount * Math.PI * 2 +
+        (random(seed + index * 97 + 23) - .5) * .65;
+      const distance = tile.radius * (.05 + age * (.2 + random(seed + index * 97 + 29) * .36));
+      const size = tile.radius * (.65 + random(seed + index * 97 + 31) * .65) * (1 - age * .35);
       drawFlame(ctx, image, tile.x + Math.cos(angle) * distance,
         tile.y + Math.sin(angle) * distance * .55 + tile.radius * .2 - age * tile.radius * .33,
-        size * .6, size, Math.cos(angle) * .32, fade(age) * .76);
+        size * .6, size, Math.cos(angle) * .4, fade(age) * (.57 + random(seed + index * 97 + 37) * .26));
     }
-    // One larger coal anchors the bloom and outlives the surrounding flame tongues.
-    const coalAge = ms / 760;
-    const coalSize = tile.radius * (.79 + random(seed + 61) * .18) * (1 - coalAge * .12);
+    // A large, tailed ember anchors each tile and outlives its surrounding flames.
+    const emberAge = localMs / (760 - offset);
+    const emberSize = tile.radius * (1.1 + random(seed + 61) * .32) * (1 - emberAge * .13);
+    const emberX = tile.x + (random(seed + 67) - .5) * tile.radius * .3;
+    const emberY = tile.y + tile.radius * .09 - emberAge * tile.radius * .14;
+    const flip = random(seed + 69) < .5 ? -1 : 1;
     ctx.save();
-    ctx.translate(tile.x + (random(seed + 67) - .5) * tile.radius * .12,
-      tile.y + tile.radius * .08 - coalAge * tile.radius * .1);
-    ctx.rotate((random(seed + 71) - .5) * .25);
-    ctx.globalAlpha = Math.min(1, coalAge * 12) * Math.pow(1 - coalAge, .45) * .95;
-    ctx.drawImage(textures.embers[0], -coalSize / 2, -coalSize / 2, coalSize, coalSize);
+    ctx.translate(emberX, emberY);
+    ctx.rotate((random(seed + 71) - .5) * .55);
+    ctx.scale(flip, 1);
+    ctx.globalAlpha = Math.min(1, emberAge * 12) * Math.pow(1 - emberAge, .42) * .95;
+    ctx.drawImage(textures.embers[1], -emberSize / 2, -emberSize / 2, emberSize, emberSize);
+    const coreSize = emberSize * .38;
+    ctx.drawImage(textures.embers[0], -coreSize / 2 - emberSize * .12,
+      -coreSize / 2 + emberSize * .13, coreSize, coreSize);
     ctx.restore();
-    drawEmbers(ctx, textures, tile, ms, 13, false, seed);
+    drawEmbers(ctx, textures, tile, localMs, 10 + Math.floor(random(seed + 73) * 7), false, seed);
   } else if (variant === "column") {
     drawGlow(ctx, { ...tile, y: tile.y + tile.radius * .25 }, time, .5);
-    for (let index = 0; index < 8; index++) {
-      const birth = index * 62;
-      const age = (ms - birth) / 450;
+    const count = 6 + Math.floor(random(seed + 11) * 4);
+    for (let index = 0; index < count; index++) {
+      const birth = index * 55 + random(seed + index * 97 + 13) * 38;
+      const age = (localMs - birth) / 450;
       if (age < 0 || age > 1) continue;
-      const sway = Math.sin(age * 6 + index * 1.8) * tile.radius * .12;
+      const sway = Math.sin(age * 6 + index * 1.8 + random(seed + 17) * 3) * tile.radius * .12;
       const size = tile.radius * (.68 + random(seed + index * 9) * .38);
       drawFlame(ctx, image, tile.x + sway + (random(seed + index * 3) - .5) * tile.radius * .35,
         tile.y + tile.radius * .42 - age * tile.radius * 1.05,
         size * .62, size, sway / tile.radius * .7, fade(age) * .75);
     }
-    drawEmbers(ctx, textures, tile, ms, 12, false, seed + 101);
+    drawEmbers(ctx, textures, tile, localMs, 12, false, seed + 101);
   } else {
-    drawGlow(ctx, tile, clamp((ms - 50) / 500), .95);
-    for (let index = 0; index < 4; index++) {
-      const birth = 70 + index * 32;
-      const age = (ms - birth) / 430;
+    drawGlow(ctx, tile, clamp((localMs - 50) / 500), .95);
+    const count = 3 + Math.floor(random(seed + 11) * 3);
+    for (let index = 0; index < count; index++) {
+      const birth = 55 + index * 32 + random(seed + index * 97 + 13) * 45;
+      const age = (localMs - birth) / 430;
       if (age < 0 || age > 1) continue;
-      const angle = (index - 1.5) * .3;
+      const angle = (index - (count - 1) / 2) * .3 + (random(seed + 17) - .5) * .35;
       const size = tile.radius * (1.05 - age * .4);
       drawFlame(ctx, image, tile.x + angle * tile.radius * .38,
         tile.y + tile.radius * .22 - age * tile.radius * .27,
         size * .66, size, angle, fade(age) * .9);
     }
-    drawEmbers(ctx, textures, tile, ms, 23, true, seed + 203);
+    drawEmbers(ctx, textures, tile, localMs, 18 + Math.floor(random(seed + 73) * 9), true, seed + 203);
   }
 };
 
@@ -198,7 +222,8 @@ export const FireVfxPrototype = ({ variant, replayKey }: {
           const rect = cell.getBoundingClientRect();
           return { x: rect.left + rect.width / 2 - boardRect.left,
             y: rect.top + rect.height / 2 - boardRect.top,
-            radius: Math.min(rect.width, rect.height) * .52 };
+            radius: Math.min(rect.width, rect.height) * .52,
+            seed: tileSeed(cell.dataset.teamName || "", cell.dataset.position || "") };
         });
     };
     const observer = new ResizeObserver(measure);
@@ -215,7 +240,7 @@ export const FireVfxPrototype = ({ variant, replayKey }: {
       const images = [textures.flame, ...textures.embers];
       if (images.every((image) => image.complete && image.naturalWidth > 0) &&
         effectMs >= 0 && effectMs <= 760) {
-        tiles.forEach((tile, index) => drawTile(ctx, textures, tile, effectMs, variant, index * 1009 + 17));
+        tiles.forEach((tile) => drawTile(ctx, textures, tile, effectMs, variant));
       }
       if (elapsed < 1500) frame = requestAnimationFrame(render);
     };

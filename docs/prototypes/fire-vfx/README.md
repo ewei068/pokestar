@@ -22,10 +22,13 @@ empty tiles), and shares the move's 1.5-second playback interval. The three new
 variants use the generated transparent flame source at
 `media/vfx/experiments/fire-special-flame-source.png` and three small generated
 ember sprites (`fire-ember-coal.png`, `fire-ember-fleck.png`, and
-`fire-ember-fork.png`). The bloom has one larger central coal that lasts for the
-whole effect, while smaller embers have individually seeded birth times,
-lifetimes, directions, sizes, rotations, and sprite selections. The seed keeps
-replays visually consistent. The effect is excluded from production builds.
+`fire-ember-fork.png`). The bloom has one larger tailed ember with a bright core
+at its base that lasts for the whole effect. Smaller embers have individually
+seeded birth times, lifetimes, directions, sizes, rotations, and sprite
+selections. Each tile's seed comes from its team and position, so tiles vary even
+within the same action and replaying the story keeps each tile's appearance.
+For production, combine this tile key with the battle event's stable identity.
+The effect is excluded from production builds.
 
 The mobile layout was also checked with the column variant:
 
@@ -44,7 +47,10 @@ effect on lower-powered phones when more targets or overlapping effects are adde
 
 Pokémon Showdown is a useful choreography reference: its [animation
 renderer](https://github.com/smogon/pokemon-showdown-client/blob/master/play.pokemonshowdown.com/src/battle-animations.ts)
-places image effects at timed positions, and its [move animation
-table](https://github.com/smogon/pokemon-showdown-client/blob/master/play.pokemonshowdown.com/src/battle-animations-moves.ts)
-reuses behaviors across moves. Its [client license](https://github.com/smogon/pokemon-showdown-client#license)
+places and animates image effects at timed positions. A `fireball` is defined as
+a 64×64 image, while the [Flamethrower move
+animation](https://github.com/smogon/pokemon-showdown-client/blob/master/play.pokemonshowdown.com/src/battle-animations-moves.ts)
+launches several copies at staggered times and slightly different endpoints.
+The move table also maps other moves, including Ember, onto that choreography.
+Its [client license](https://github.com/smogon/pokemon-showdown-client#license)
 is AGPLv3, so this study uses independently generated art and code.
