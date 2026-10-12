@@ -21,32 +21,6 @@ export const readFireVfxVariant = (params: URLSearchParams): FireVfxVariant => {
   return fireVfxVariants.find((variant) => variant === value) || "bloom";
 };
 
-export const FireVfxSwitcher = ({ variant, onChange }: {
-  variant: FireVfxVariant; onChange: (variant: FireVfxVariant) => void;
-}) => {
-  const advance = (direction: number) => {
-    const index = fireVfxVariants.indexOf(variant);
-    onChange(fireVfxVariants[(index + direction + fireVfxVariants.length) % fireVfxVariants.length]);
-  };
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null;
-      if (target?.closest("input, textarea, select, [contenteditable]")) return;
-      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-        event.preventDefault();
-        advance(event.key === "ArrowLeft" ? -1 : 1);
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [variant]);
-  return <nav className="battle-fire-vfx-switcher" aria-label="Fire VFX prototype variants">
-    <button type="button" onClick={() => advance(-1)} aria-label="Previous VFX variant">←</button>
-    <span><small>Fire Special prototype</small><strong>{fireVfxVariantName[variant]}</strong></span>
-    <button type="button" onClick={() => advance(1)} aria-label="Next VFX variant">→</button>
-  </nav>;
-};
-
 type Tile = { x: number; y: number; radius: number; seed: number };
 type FireTextures = { flame: HTMLImageElement; embers: HTMLImageElement[] };
 const tileSeed = (teamName: string, position: string) => {
@@ -146,7 +120,7 @@ const drawTile = (ctx: CanvasRenderingContext2D, textures: FireTextures,
     const flip = random(seed + 69) < .5 ? -1 : 1;
     ctx.save();
     ctx.translate(emberX, emberY);
-    ctx.rotate((random(seed + 71) - .5) * .55);
+    ctx.rotate((random(seed + 71) - .5) * .2);
     ctx.scale(flip, 1);
     ctx.globalAlpha = Math.min(1, emberAge * 12) * Math.pow(1 - emberAge, .42) * .95;
     ctx.drawImage(textures.embers[1], -emberSize / 2, -emberSize / 2, emberSize, emberSize);
@@ -222,7 +196,7 @@ export const FireVfxPrototype = ({ variant, replayKey }: {
           const rect = cell.getBoundingClientRect();
           return { x: rect.left + rect.width / 2 - boardRect.left,
             y: rect.top + rect.height / 2 - boardRect.top,
-            radius: Math.min(rect.width, rect.height) * .52,
+            radius: Math.min(rect.width * .36, rect.height * .52),
             seed: tileSeed(cell.dataset.teamName || "", cell.dataset.position || "") };
         });
     };
@@ -248,6 +222,6 @@ export const FireVfxPrototype = ({ variant, replayKey }: {
     return () => { disposed = true; cancelAnimationFrame(frame); observer.disconnect(); };
   }, [board, replayKey, variant]);
 
-  return board && createPortal(<canvas ref={canvasRef} className="battle-fire-vfx-prototype"
+  return board && createPortal(<canvas ref={canvasRef} className="battle-vfx-study-canvas"
     aria-hidden="true" />, board);
 };
