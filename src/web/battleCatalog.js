@@ -1,4 +1,4 @@
-const { pokemonConfig } = require("../config/pokemonConfig");
+const { pokemonConfig, typeConfig } = require("../config/pokemonConfig");
 const { getMoves } = require("../battle/data/moveRegistry");
 const { getEffects } = require("../battle/data/effectRegistry");
 const { getAbilities } = require("../battle/data/abilityRegistry");
@@ -44,6 +44,7 @@ const buildBattleCatalog = () => ({
     "targetPattern", "description",
   ]),
   effects: select(getEffects({}), ["name", "description", "type"]),
+  types: select(typeConfig, ["name"]),
   abilities: select(getAbilities({}), ["name", "description"]),
   heldItems: select(getHeldItems({}), ["name", "description"]),
   statuses: statusDisplay,

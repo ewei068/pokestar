@@ -14,8 +14,9 @@ Discord login, sessions, battle actions, and the display catalog.
 
 For a visual review of the production battle screen without login, open
 `http://localhost:5173/?previewBattle=1` while Vite runs. This development-only
-fixture never submits an action. In a live battle, select a move, choose a
-target to preview all pattern tiles, then press **Use move**. On a narrow
+fixture never submits an action. In a live battle, select a move, hover a target
+to preview all pattern tiles, then click it to use the move. Click the selected
+move again to cancel. On a narrow
 screen, the command tray has an Expand/Collapse control.
 
 Durable battle starts also need `DURABLE_BATTLES_ENABLED=true`. Keep the

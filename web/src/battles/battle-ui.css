@@ -133,10 +133,9 @@
 .arena-command-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
 .arena-command-foot > span { color: var(--arena-soft); font-size: .63rem; line-height: 1.3; }
 .arena-command-foot > div { display: flex; gap: 5px; flex: none; }
-.arena-confirm, .arena-skip { padding: 5px 8px; border: 1px solid #6a8190;
+.arena-skip { padding: 5px 8px; border: 1px solid #6a8190;
   background: #fff9d5; font-size: .64rem; font-weight: 850; white-space: nowrap; }
-.arena-confirm { background: #f8d576; border-color: #ba8947; }
-.arena-confirm:disabled, .arena-skip:disabled { opacity: .5; }
+.arena-skip:disabled { opacity: .5; }
 .arena-inspector h3 { margin: 0 0 4px; font-size: .9rem; }
 .arena-inspector p { margin: 0 0 8px; color: #52657a; font-size: .68rem; line-height: 1.43; }
 .arena-inspector-facts, .arena-inspector-types, .arena-inspector-tags { display: flex;

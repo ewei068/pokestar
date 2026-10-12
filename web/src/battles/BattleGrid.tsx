@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import type { BattleCatalog, BattleTile, BattleView, PokemonView } from "./types";
+import { typeClass, typeName } from "./typeDisplay";
 
 type Props = {
   view: BattleView;
@@ -18,7 +19,6 @@ type Props = {
 };
 
 const percent = (value: number, max = 100) => Math.max(0, Math.min(100, value / Math.max(1, max) * 100));
-const typeClass = (type: string) => `arena-type-${type.toLowerCase().replace(/[^a-z]/g, "")}`;
 
 const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern, affected, playback,
   highlighted, onChooseTarget, onInspect, onHover }: {
@@ -52,14 +52,14 @@ const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern,
     onMouseEnter={() => onHover(pokemon.id)} onMouseLeave={() => onHover(null)}
     onFocus={() => onHover(pokemon.id)} onBlur={() => onHover(null)}
     aria-label={`${pokemon.name}, ${pokemon.hp} of ${pokemon.maxHp} HP, ${Math.round(pokemon.combatReadiness)} percent combat readiness${
-      targetable ? ", preview target" : ", inspect"}`}>
+      targetable ? ", use selected move" : ", inspect"}`}>
     <span className="arena-mon-head"><strong>{pokemon.name}</strong><small>Lv {pokemon.level}</small></span>
     <span className="arena-mon-main"><span className="arena-sprite">{
       sprite && !imageFailed ? <img src={sprite} alt="" loading="lazy" onError={() => setImageFailed(true)} />
         : <span aria-hidden="true">?</span>
     }</span><span className="arena-mon-cues">
-      <span className="arena-type-dots">{[pokemon.type1, pokemon.type2].filter(Boolean)
-        .map((type) => <i className={`arena-type-dot ${typeClass(String(type))}`} key={type} title={String(type)} />)}</span>
+      <span className="arena-type-dots">{[pokemon.type1, pokemon.type2].filter((type) => type !== null && type !== undefined)
+        .map((type) => <i className={`arena-type-dot ${typeClass(type, catalog)}`} key={type} title={typeName(type, catalog)} />)}</span>
       {pokemon.status?.statusId && <span className="arena-status-cue">{pokemon.status.statusId}</span>}
       <span className="arena-effect-counters">
         {buffs > 0 && <span className="arena-effect-count is-buff" title={`${buffs} buffs`}>↑{buffs}</span>}
@@ -82,7 +82,9 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
   const affectedSet = new Set(affectedIds);
   const tileSet = new Set(patternTiles.map((tile) => `${tile.teamName}:${tile.position}`));
   return <div className="arena-board">
-    {Object.entries(view.teams).map(([teamName, dimensions]) => {
+    {[...Object.entries(view.teams)]
+      .sort(([left], [right]) => Number(ownTeamNames.includes(right)) - Number(ownTeamNames.includes(left)))
+      .map(([teamName, dimensions]) => {
       const own = ownTeamNames.includes(teamName);
       const pokemonByPosition = new Map(Object.values(view.pokemon)
         .filter((entry) => entry.teamName === teamName)

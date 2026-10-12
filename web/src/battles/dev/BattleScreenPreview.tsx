@@ -93,6 +93,7 @@ export const BattleScreenPreview = () => {
       const option = fixture.availableActions.moves.find((move) => move.moveId === selectedMoveId);
       const preview = option?.targetPreviews?.find((entry) => entry.primaryTargetPokemonId === id);
       if (!preview) return;
+      selectMove(null);
       const text = `${pokemon[`${own}-157`].name} used ${catalog.moves[selectedMoveId || ""]?.name}.`;
       setPlaying({ view: fixture.view, text, event: { type: "moveStarted", sequence: 0,
         pokemonId: `${own}-157`, primaryTargetId: id, targetIds: preview.affectedPokemonIds,

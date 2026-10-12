@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BattleGrid } from "./BattleGrid";
 import { BattleInspector } from "./BattleInspector";
 import type { InspectDetail } from "./BattleInspector";
@@ -36,11 +36,9 @@ export const BattleScreen = ({ catalog, session }: {
   } = session;
   const [hoveredPokemonId, setHoveredPokemonId] = useState<string | null>(null);
   const [hoveredMoveId, setHoveredMoveId] = useState<string | null>(null);
-  const [selectedTargetId, setSelectedTargetId] = useState<string | null>(null);
   const [inspectorFocus, setInspectorFocus] = useState<"pokemon" | "move">("pokemon");
   const [detail, setDetail] = useState<InspectDetail | null>(null);
   const [trayCollapsed, setTrayCollapsed] = useState(false);
-  useEffect(() => setSelectedTargetId(null), [battle?.revision, selectedMoveId]);
 
   if (loading && !battle) return <div className="battle-surface"><main className="page-shell"><p>Loading battle…</p></main></div>;
   if (!battle) return <div className="battle-surface"><main className="page-shell">
@@ -54,10 +52,8 @@ export const BattleScreen = ({ catalog, session }: {
   const selected = battle.availableActions.moves.find((option) => option.moveId === selectedMoveId);
   const canChoose = !busy && !playing && versionMatches && battle.status === "active";
   const targetIds = canChoose ? selected?.targetPokemonIds || [] : [];
-  const previewId = selectedTargetId || (hoveredPokemonId && targetIds.includes(hoveredPokemonId)
-    ? hoveredPokemonId : null);
+  const previewId = hoveredPokemonId && targetIds.includes(hoveredPokemonId) ? hoveredPokemonId : null;
   const targetPreview = canChoose ? targetPreviewFor(displayView, selected, previewId) : null;
-  const selectedTargetPreview = targetPreviewFor(displayView, selected, selectedTargetId);
   const event = playing?.event;
   const eventFootprint = moveEventFootprint(displayView, event);
   const patternTiles = eventFootprint?.patternTiles || targetPreview?.patternTiles || [];
@@ -65,9 +61,9 @@ export const BattleScreen = ({ catalog, session }: {
   const primaryTargetId = eventFootprint
     ? eventFootprint.primaryTargetPokemonId : targetPreview?.primaryTargetPokemonId || null;
   const inspected = displayView.pokemon[
-    hoveredPokemonId || selectedTargetId || inspectedPokemonId || displayView.activePokemonId || ""
+    hoveredPokemonId || inspectedPokemonId || displayView.activePokemonId || ""
   ] || null;
-  const inspectorMoveId = hoveredPokemonId || selectedTargetId ? null
+  const inspectorMoveId = hoveredPokemonId ? null
     : hoveredMoveId || (inspectorFocus === "move" ? selectedMoveId : null);
   const teamNames = Object.keys(displayView.teams);
   const ownNames = teamNames.filter((name) => battle.myTeamNames.includes(name));
@@ -75,30 +71,24 @@ export const BattleScreen = ({ catalog, session }: {
   const weatherIcon: Record<string, string> = { Sun: "☀", Rain: "☂", Sandstorm: "◌", Hail: "❄" };
 
   const chooseMove = (moveId: string | null) => {
-    setSelectedTargetId(null);
     setHoveredPokemonId(null);
     setDetail(null);
     setInspectorFocus(moveId ? "move" : "pokemon");
     selectMove(moveId);
   };
   const inspect = (id: string) => {
-    setSelectedTargetId(null);
     setHoveredMoveId(null);
     setDetail(null);
     setInspectorFocus("pokemon");
     inspectPokemon(id);
   };
   const chooseTarget = (id: string) => {
-    setSelectedTargetId(id);
+    if (!canChoose || !targetIds.includes(id)) return;
     setHoveredMoveId(null);
     setDetail(null);
     setInspectorFocus("pokemon");
     inspectPokemon(id);
-  };
-  const confirmTarget = () => {
-    if (!selectedTargetId || !targetIds.includes(selectedTargetId)) return;
-    targetPokemon(selectedTargetId);
-    setSelectedTargetId(null);
+    targetPokemon(id);
   };
 
   return <div className="battle-surface"><main className="page-shell arena-page">
@@ -122,9 +112,7 @@ export const BattleScreen = ({ catalog, session }: {
         affectedIds={affectedIds} playback={!!eventFootprint} highlightedId={highlightedPokemonId(event)}
         onChooseTarget={chooseTarget} onInspect={inspect} onHover={setHoveredPokemonId} />
       <div className="arena-event" aria-live="polite"><span aria-hidden="true">✦</span>
-        <strong>{playing?.text || (selectedTargetId && selectedTargetPreview
-          ? `${displayView.pokemon[selectedTargetId]?.name || "Target"} selected. Confirm the move to act.`
-          : targetPreview ? `Pattern reaches ${targetPreview.affectedPokemonIds.length} Pokémon and ${
+        <strong>{playing?.text || (targetPreview ? `Pattern reaches ${targetPreview.affectedPokemonIds.length} Pokémon and ${
             targetPreview.emptyTileTargets.length} empty tiles${targetPreview.random ? "; final target is random" : ""}.`
           : battle.isMyTurn ? "Choose an action." : "Waiting for the next action…")}</strong>
         <small>Turn {displayView.turn}</small></div>
@@ -135,10 +123,10 @@ export const BattleScreen = ({ catalog, session }: {
       <ReadinessRail view={displayView} catalog={catalog} ownTeams={battle.myTeamNames} />
     </div><aside className="arena-sidebar">
       <MovePanel view={displayView} availableActions={battle.availableActions} isMyTurn={battle.isMyTurn}
-        catalog={catalog} selectedMoveId={selectedMoveId} selectedTargetId={selectedTargetId}
-        preview={selectedTargetPreview} busy={!canChoose} collapsed={trayCollapsed}
+        catalog={catalog} selectedMoveId={selectedMoveId}
+        preview={targetPreview} busy={!canChoose} collapsed={trayCollapsed}
         onToggleCollapsed={() => setTrayCollapsed((current) => !current)}
-        onSelectMove={chooseMove} onHoverMove={setHoveredMoveId} onConfirm={confirmTarget} onSkip={skipTurn} />
+        onSelectMove={chooseMove} onHoverMove={setHoveredMoveId} onSkip={skipTurn} />
       <BattleInspector pokemon={inspected} moveId={inspectorMoveId} detail={detail}
         catalog={catalog} onOpenDetail={(next) => { setHoveredMoveId(null); setDetail(next); }}
         onBack={() => setDetail(null)} />

@@ -1,4 +1,5 @@
 import type { BattleCatalog, PokemonView } from "./types";
+import { typeClass, typeName } from "./typeDisplay";
 
 export type InspectDetail = { category: string; name: string; description: string };
 
@@ -11,7 +12,6 @@ type Props = {
   onBack: () => void;
 };
 
-const typeClass = (type: string) => `arena-type-${type.toLowerCase().replace(/[^a-z]/g, "")}`;
 const percent = (value: number, max = 100) => Math.max(0, Math.min(100, value / Math.max(1, max) * 100));
 
 export const BattleInspector = ({ pokemon, moveId, detail, catalog, onOpenDetail, onBack }: Props) => {
@@ -25,14 +25,14 @@ export const BattleInspector = ({ pokemon, moveId, detail, catalog, onOpenDetail
       <small>{detail.category}</small><h3>{detail.name}</h3><p>{detail.description}</p>
     </div> : move ? <>
       <h3>{move.name || moveId}</h3><p>{move.description || "No description available."}</p>
-      <div className="arena-inspector-facts"><span className={`arena-type-label ${typeClass(move.type)}`}>{move.type}</span>
+      <div className="arena-inspector-facts"><span className={`arena-type-label ${typeClass(move.type, catalog)}`}>{typeName(move.type, catalog)}</span>
         <span>{move.damageType || "Status"}</span><span>Power {move.power ?? "—"}</span>
         <span>Accuracy {move.accuracy ?? "—"}</span><span>{move.targetPattern || "Single target"}</span></div>
     </> : pokemon ? <>
       <div className="arena-inspector-pokemon">{sprite && <img src={sprite} alt="" loading="lazy" />}
         <div><h3>{pokemon.name}</h3><small>Lv {pokemon.level} · {pokemon.teamName}</small>
-          <div className="arena-inspector-types">{[pokemon.type1, pokemon.type2].filter(Boolean)
-            .map((type) => <span className={`arena-type-label ${typeClass(String(type))}`} key={type}>{type}</span>)}</div>
+          <div className="arena-inspector-types">{[pokemon.type1, pokemon.type2].filter((type) => type !== null && type !== undefined)
+            .map((type) => <span className={`arena-type-label ${typeClass(type, catalog)}`} key={type}>{typeName(type, catalog)}</span>)}</div>
         </div></div>
       <div className="arena-inspector-bars"><span>♥ HP <strong>{pokemon.hp}/{pokemon.maxHp}</strong></span>
         <span className="arena-meter arena-hp"><i style={{ width: `${percent(pokemon.hp, pokemon.maxHp)}%` }} /></span>

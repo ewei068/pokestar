@@ -101,7 +101,8 @@ an immediate readable result.
 The implemented battle screen uses the facing formation on desktop and stacks
 the teams on phones with their front rows toward each other. A participant
 selects a move, previews a primary target's server-supplied geometric footprint
-(including empty tiles), then confirms the action. On phones, the command tray
+(including empty tiles) on hover or focus, then clicks a legal target to act.
+Clicking the selected move again exits targeting. On phones, the command tray
 can collapse while the board is inspected. The same board highlights
 `moveStarted.patternTiles` during ordered playback; this executed footprint
 can later drive a VFX renderer without putting targeting rules in the browser.
