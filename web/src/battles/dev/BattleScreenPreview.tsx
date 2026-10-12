@@ -10,6 +10,8 @@ import { readVfxLabSelection, vfxLabKinds, vfxLabPatterns, vfxLabTypes, vfxLabUr
 import type { VfxLabSelection, VfxLabType, VfxLabPattern } from "./vfxLab";
 import { standardVfxTypes } from "../vfx/types";
 import type { VfxKind } from "../vfx/types";
+import { FireVfxPrototype, FireVfxSwitcher, readFireVfxVariant } from "./FireVfxPrototype";
+import type { FireVfxVariant } from "./FireVfxPrototype";
 import "./story.css";
 
 const requestedStory = new URLSearchParams(window.location.search).get("story");
@@ -24,6 +26,7 @@ export const BattleScreenPreview = () => {
   const [notice, setNotice] = useState<string | null>(null);
   const [history, setHistory] = useState<string[]>(story.history);
   const [replayKey, setReplayKey] = useState(0);
+  const [fireVariant, setFireVariant] = useState(() => readFireVfxVariant(new URLSearchParams(window.location.search)));
   const timers = useRef<number[]>([]);
   useEffect(() => () => { timers.current.forEach(window.clearTimeout); }, []);
   useEffect(() => {
@@ -44,7 +47,19 @@ export const BattleScreenPreview = () => {
     setHistory(nextStory.history);
     setNotice(null);
     setReplayKey((current) => current + 1);
-    window.history.replaceState(null, "", vfxLabUrl(next));
+    const params = new URLSearchParams(vfxLabUrl(next).slice(1));
+    if (next.type === "fire" && next.kind === "special") params.set("variant", fireVariant);
+    window.history.replaceState(null, "", `?${params.toString()}`);
+  };
+
+  const firePilot = story.id === "vfx" && labSelection.type === "fire" && labSelection.kind === "special";
+  const changeFireVariant = (next: FireVfxVariant) => {
+    setFireVariant(next);
+    setPlaying(story.playing);
+    setReplayKey((current) => current + 1);
+    const params = new URLSearchParams(window.location.search);
+    params.set("variant", next);
+    window.history.replaceState(null, "", `?${params.toString()}`);
   };
 
   const session: BattleSession = {
@@ -70,7 +85,7 @@ export const BattleScreenPreview = () => {
     skipTurn: () => setNotice("Development story: no action was sent."),
   };
 
-  return <div className="battle-story-page">
+  return <div className={`battle-story-page ${firePilot && fireVariant !== "original" ? "is-fire-pilot" : ""}`}>
     <section className="battle-story-toolbar" aria-label="Battle story controls">
       <div><strong>Battle UI stories</strong><span>Development data · no server actions</span></div>
       <nav aria-label="Story scenarios">{storyGroups.map((group) =>
@@ -96,6 +111,7 @@ export const BattleScreenPreview = () => {
         </select></label>
         {!standardVfxTypes.some((type) => type === labSelection.type) &&
           <small>Uses Normal VFX until this type receives its own art.</small>}
+        {firePilot && <small>Fire Special particle study · use the floating arrows to compare variants.</small>}
       </fieldset>}
       {story.playing && <button type="button" onClick={() => {
         setPlaying(story.playing);
@@ -103,5 +119,8 @@ export const BattleScreenPreview = () => {
       }}>Replay action</button>}
     </section>
     <BattleScreen key={`${story.id}-${replayKey}`} catalog={story.catalog} session={session} />
+    {firePilot && fireVariant !== "original" &&
+      <FireVfxPrototype key={`${fireVariant}-${replayKey}`} variant={fireVariant} replayKey={replayKey} />}
+    {firePilot && <FireVfxSwitcher variant={fireVariant} onChange={changeFireVariant} />}
   </div>;
 };
