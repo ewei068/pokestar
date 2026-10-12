@@ -74,6 +74,10 @@ const availableActions = (record, battle, userId) => {
       return targets.length > 0 ? [{
         moveId,
         targetPokemonIds: targets.map((target) => target.id),
+        targetPreviews: targets.map((target) => ({
+          primaryTargetPokemonId: target.id,
+          ...pokemon.getMoveTargetPreview(/** @type {MoveIdEnum} */ (moveId), target),
+        })),
       }] : [];
     }),
   };

@@ -1,5 +1,5 @@
 const { createMockBattle } = require("../../../__testing__/mocks/battle");
-const { moveIdEnum, battleEventEnum } = require("../../../enums/battleEnums");
+const { moveIdEnum, battleEventEnum, effectIdEnum } = require("../../../enums/battleEnums");
 const {
   getValidTargetForMove,
   givePokemonMove,
@@ -123,6 +123,18 @@ describe("Battle action outcomes", () => {
       }),
     );
     expect(moveEvent.targetIds.length).toBeGreaterThan(1);
+    const targetParty = battle.parties[target.teamName];
+    expect(moveEvent.patternTiles).toHaveLength(targetParty.rows * targetParty.cols);
+    expect(moveEvent.patternTiles).toContainEqual({
+      teamName: target.teamName,
+      position: target.position,
+    });
+    expect(moveEvent.patternTiles).toEqual(expect.arrayContaining(
+      moveEvent.targetIds.map((id) => ({
+        teamName: battle.allPokemon[id].teamName,
+        position: battle.allPokemon[id].position,
+      })),
+    ));
     const hpEvents = outcome.events.filter((event) => event.type === "hpChanged");
     expect(hpEvents.length).toBeGreaterThan(1);
     expect(hpEvents.every((event) => event.sequence > moveEvent.sequence)).toBe(true);
@@ -130,6 +142,34 @@ describe("Battle action outcomes", () => {
       outcome.events.map((_, index) => index),
     );
     expect(JSON.parse(JSON.stringify(outcome.events))).toEqual(outcome.events);
+  });
+
+  it("previews expanded and random patterns without choosing a random target", () => {
+    const { battle } = createMockBattle({ autoStart: true });
+    const source = battle.activePokemon;
+    const target = getValidTargetForMove(battle, source, moveIdEnum.FIRE_PUNCH);
+    const single = source.getMoveTargetPreview(moveIdEnum.FIRE_PUNCH, target);
+    expect(single.patternTiles).toEqual([{
+      teamName: target.teamName, position: target.position,
+    }]);
+
+    source.effectIds[effectIdEnum.SPATIAL_BLESSING] = { duration: 1 };
+    const expanded = source.getMoveTargetPreview(moveIdEnum.FIRE_PUNCH, target);
+    expect(expanded.patternTiles.length).toBeGreaterThan(1);
+    expect(expanded.patternTiles).toContainEqual({
+      teamName: target.teamName, position: target.position,
+    });
+    expect(expanded.emptyTileTargets.length).toBeGreaterThan(0);
+
+    const random = source.getMoveTargetPreview(moveIdEnum.TRI_ATTACK, target);
+    expect(random.random).toBe(true);
+    expect(random.emptyTileTargets).toEqual([]);
+    expect(random.patternTiles).toEqual(expect.arrayContaining(
+      random.affectedPokemonIds.map((id) => ({
+        teamName: battle.allPokemon[id].teamName,
+        position: battle.allPokemon[id].position,
+      })),
+    ));
   });
 
   it("keeps reactive healing before damage in the same action timeline", () => {

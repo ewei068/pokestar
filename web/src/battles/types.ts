@@ -38,11 +38,23 @@ export type BattleEvent = {
   sourcePokemonId?: string | null;
   targetPokemonId?: string;
   moveId?: string;
+  patternTiles?: BattleTile[];
   amount?: number;
   hp?: number;
   statusId?: string;
   effectId?: string;
   winner?: string;
+};
+
+export type BattleTile = { teamName: string; position: number };
+
+export type TargetPreview = {
+  primaryTargetPokemonId: string;
+  targetPattern: string;
+  random: boolean;
+  patternTiles: BattleTile[];
+  affectedPokemonIds: string[];
+  emptyTileTargets: BattleTile[];
 };
 
 export type BattleAction = { action: "skipTurn" } | {
@@ -73,7 +85,7 @@ export type BattleResponse = {
   view: BattleView;
   availableActions: {
     canSkip: boolean;
-    moves: { moveId: string; targetPokemonIds: string[] }[];
+    moves: { moveId: string; targetPokemonIds: string[]; targetPreviews?: TargetPreview[] }[];
   };
   updates: BattleUpdate[];
   accepted?: boolean;
