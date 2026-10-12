@@ -81,6 +81,11 @@ export type BattleResponse = {
   reason?: string;
 };
 
+/** The participant projection the screen needs; transport metadata stays in the session. */
+export type BattleDisplay = Pick<BattleResponse,
+  "battleId" | "rulesetVersion" | "revision" | "status" | "completionStatus" |
+  "mode" | "myTeamNames" | "isMyTurn" | "view" | "availableActions">;
+
 export type BattleSummary = {
   battleId: string;
   revision: number;
