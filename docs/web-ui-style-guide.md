@@ -47,7 +47,8 @@ site shell and future non-battle pages consistent with that direction.
   target, special and status approach its lane at the board center, and self
   targeting stays put. Tile VFX follow move type and category, reaching every
   executed pattern tile, even an empty one. The actor returns before result
-  effects. The Normal type is the first example; keep other types extensible.
+  effects. The 18 standard types each have Physical, Special, and Status VFX;
+  unrecognized types use Normal VFX for now.
 - The battle screen reads projected state and calls session commands. It does
   not recreate targeting or damage rules in the browser.
 

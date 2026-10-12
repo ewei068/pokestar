@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { BattleMotion } from "./BattleMotion";
 import { MOVE_MOTION_DURATION_MS, moveMotion } from "./motion";
+import { TileVfx } from "./vfx/TileVfx";
 import type { BattleCatalog, BattleEvent, BattleTile, BattleView, PokemonView } from "./types";
 import { typeClass, typeName } from "./typeDisplay";
 
@@ -118,13 +119,13 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
               {entry ? <PokemonTile pokemon={entry} catalog={catalog}
                 active={entry.id === view.activePokemonId} targetable={targetSet.has(entry.id)}
                 primary={entry.id === primaryTargetId} inPattern={inPattern}
-                playback={playback && inPattern && !motion?.normalVfx}
+                playback={playback && inPattern && !motion?.vfxType}
                 affected={affectedSet.has(entry.id)} highlighted={entry.id === highlightedId}
                 onChooseTarget={() => onChooseTarget(entry.id)} onInspect={() => onInspect(entry.id)}
                 onHover={onHover} />
                 : <span className={`arena-empty ${inPattern ? "is-affected" : ""} ${
-                  playback && inPattern && !motion?.normalVfx ? "is-playback" : ""}`} aria-hidden="true" />}
-              {inPattern && motion?.normalVfx && <NormalTileVfx kind={motion.kind} />}
+                  playback && inPattern && !motion?.vfxType ? "is-playback" : ""}`} aria-hidden="true" />}
+              {inPattern && motion?.vfxType && <TileVfx type={motion.vfxType} kind={motion.kind} />}
             </div>;
           })}
         </div>
@@ -134,17 +135,3 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
     {motionEvent && <BattleMotion boardRef={boardRef} view={view} catalog={catalog} event={motionEvent} />}
   </div>;
 };
-
-const NormalTileVfx = ({ kind }: { kind: "physical" | "special" | "status" }) =>
-  <svg className={`arena-normal-vfx is-${kind}`} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-    {kind === "physical" ? <g className="arena-normal-impact">
-      <path d="M14 28 36 41 M8 55 33 55 M18 82 39 65 M83 18 65 38 M92 51 68 52 M81 82 64 65" />
-      <path d="M28 14 43 39 M64 11 57 35 M87 69 66 59 M39 89 47 68" />
-    </g> : kind === "special" ? <g className="arena-normal-energy">
-      <circle cx="50" cy="50" r="21" /><circle cx="50" cy="50" r="34" />
-      <path d="M51 18 C84 21 91 60 66 75 C43 90 16 66 28 43 C36 29 59 30 65 47" />
-    </g> : <g className="arena-normal-pulse">
-      <circle cx="50" cy="50" r="17" /><circle cx="50" cy="50" r="29" />
-      <path d="M50 11 54 20 50 29 46 20Z M85 50 77 54 69 50 77 46Z M50 88 46 79 50 71 54 79Z M15 50 23 46 31 50 23 54Z" />
-    </g>}
-  </svg>;

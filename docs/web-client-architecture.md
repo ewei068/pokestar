@@ -106,12 +106,14 @@ Clicking the selected move again exits targeting. On phones, the command tray
 can collapse while the board is inspected. The same board highlights
 `moveStarted.patternTiles` during ordered playback; this executed footprint
 drives VFX without putting targeting rules in the browser.
-The first motion renderer now uses the executed `moveStarted` event for a
+The motion renderer uses the executed `moveStarted` event for a
 three-phase sequence: actor travel, VFX on every pattern tile, and actor return.
 Physical actions stop short of their primary target; special and status actions
 move into that target's lane at the board center. Self-targeted actions remain
 in place. Travel depends on the action category, while tile VFX depends on the
-move type and category. Normal is the first implemented type. Resulting damage,
+move type and category. The 18 standard types each have three SVG tile effects;
+Unknown, Shadow, Stellar, and future type names resolve to Normal VFX until
+they receive art. Resulting damage,
 status, and faint animations remain a later layer over subsequent combat
 events. Motion timing belongs to the playback session; the board owns only
 presentation geometry. Reduced-motion playback shows the static footprint.
