@@ -2,6 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import flameUrl from "../../../../media/vfx/experiments/fire-special-flame-source.png";
+import emberCoalUrl from "../../../../media/vfx/experiments/fire-ember-coal.png";
+import emberFleckUrl from "../../../../media/vfx/experiments/fire-ember-fleck.png";
+import emberForkUrl from "../../../../media/vfx/experiments/fire-ember-fork.png";
 
 export const fireVfxVariants = ["original", "bloom", "column", "burst"] as const;
 export type FireVfxVariant = typeof fireVfxVariants[number];
@@ -45,6 +48,7 @@ export const FireVfxSwitcher = ({ variant, onChange }: {
 };
 
 type Tile = { x: number; y: number; radius: number };
+type FireTextures = { flame: HTMLImageElement; embers: HTMLImageElement[] };
 const random = (seed: number) => {
   const value = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
   return value - Math.floor(value);
@@ -74,29 +78,36 @@ const drawGlow = (ctx: CanvasRenderingContext2D, tile: Tile, time: number, stren
   ctx.fillRect(tile.x - radius, tile.y - radius, radius * 2, radius * 2);
 };
 
-const drawEmbers = (ctx: CanvasRenderingContext2D, tile: Tile, ms: number,
-  count: number, burst: boolean, seed: number) => {
+const drawEmbers = (ctx: CanvasRenderingContext2D, textures: FireTextures, tile: Tile,
+  ms: number, count: number, burst: boolean, seed: number) => {
   for (let index = 0; index < count; index++) {
-    const birth = burst ? 95 + random(seed + index * 7) * 110 : index * 40;
-    const life = 350 + random(seed + index * 13) * 260;
+    const particleSeed = seed + index * 101;
+    const birth = 35 + random(particleSeed + 7) * (burst ? 170 : 190);
+    const life = 180 + random(particleSeed + 13) * (burst ? 260 : 200);
     const age = (ms - birth) / life;
     if (age < 0 || age > 1) continue;
-    const angle = random(seed + index * 17) * Math.PI * 2;
-    const speed = (.4 + random(seed + index * 23)) * tile.radius;
-    const x = tile.x + (burst ? Math.cos(angle) * speed * age :
-      (random(seed + index * 19) - .5) * tile.radius * (.35 + age));
-    const y = tile.y + (burst ? Math.sin(angle) * speed * age :
-      tile.radius * .24 - speed * age * 1.2);
-    const size = Math.max(1.5, tile.radius * (.045 + random(seed + index * 29) * .045));
-    ctx.globalAlpha = Math.pow(1 - age, .7) * .95;
-    ctx.fillStyle = index % 3 === 0 ? "#fff8bd" : index % 3 === 1 ? "#ffc545" : "#f36c24";
-    ctx.fillRect(Math.round(x), Math.round(y), Math.ceil(size), Math.ceil(size));
+    // Every particle has a stable seed so replaying the story reproduces its motion.
+    const angle = (burst ? random(particleSeed + 17) * Math.PI * 2 :
+      -Math.PI / 2 + (random(particleSeed + 17) - .5) * Math.PI * 1.5);
+    const speed = (.45 + random(particleSeed + 23) * .95) * tile.radius;
+    const originX = (random(particleSeed + 19) - .5) * tile.radius * .55;
+    const originY = (random(particleSeed + 31) - .5) * tile.radius * .35;
+    const x = tile.x + originX + Math.cos(angle) * speed * age;
+    const y = tile.y + originY + Math.sin(angle) * speed * age;
+    const size = Math.max(4, tile.radius * (.14 + random(particleSeed + 29) * .13)) * (1 - age * .35);
+    const sprite = textures.embers[Math.floor(random(particleSeed + 37) * textures.embers.length)];
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate((random(particleSeed + 41) - .5) * 1.2 + age * (random(particleSeed + 43) - .5));
+    ctx.globalAlpha = Math.min(1, age * 7) * Math.pow(1 - age, .8) * .9;
+    ctx.drawImage(sprite, -size / 2, -size / 2, size, size);
+    ctx.restore();
   }
-  ctx.globalAlpha = 1;
 };
 
-const drawTile = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
+const drawTile = (ctx: CanvasRenderingContext2D, textures: FireTextures,
   tile: Tile, ms: number, variant: Exclude<FireVfxVariant, "original">, seed: number) => {
+  const image = textures.flame;
   const time = clamp(ms / 760);
   if (variant === "bloom") {
     drawGlow(ctx, tile, time, .7);
@@ -111,7 +122,17 @@ const drawTile = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
         tile.y + Math.sin(angle) * distance * .55 + tile.radius * .2 - age * tile.radius * .33,
         size * .6, size, Math.cos(angle) * .32, fade(age) * .76);
     }
-    drawEmbers(ctx, tile, ms, 13, false, seed);
+    // One larger coal anchors the bloom and outlives the surrounding flame tongues.
+    const coalAge = ms / 760;
+    const coalSize = tile.radius * (.79 + random(seed + 61) * .18) * (1 - coalAge * .12);
+    ctx.save();
+    ctx.translate(tile.x + (random(seed + 67) - .5) * tile.radius * .12,
+      tile.y + tile.radius * .08 - coalAge * tile.radius * .1);
+    ctx.rotate((random(seed + 71) - .5) * .25);
+    ctx.globalAlpha = Math.min(1, coalAge * 12) * Math.pow(1 - coalAge, .45) * .95;
+    ctx.drawImage(textures.embers[0], -coalSize / 2, -coalSize / 2, coalSize, coalSize);
+    ctx.restore();
+    drawEmbers(ctx, textures, tile, ms, 13, false, seed);
   } else if (variant === "column") {
     drawGlow(ctx, { ...tile, y: tile.y + tile.radius * .25 }, time, .5);
     for (let index = 0; index < 8; index++) {
@@ -124,7 +145,7 @@ const drawTile = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
         tile.y + tile.radius * .42 - age * tile.radius * 1.05,
         size * .62, size, sway / tile.radius * .7, fade(age) * .75);
     }
-    drawEmbers(ctx, tile, ms, 12, false, seed + 101);
+    drawEmbers(ctx, textures, tile, ms, 12, false, seed + 101);
   } else {
     drawGlow(ctx, tile, clamp((ms - 50) / 500), .95);
     for (let index = 0; index < 4; index++) {
@@ -137,7 +158,7 @@ const drawTile = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
         tile.y + tile.radius * .22 - age * tile.radius * .27,
         size * .66, size, angle, fade(age) * .9);
     }
-    drawEmbers(ctx, tile, ms, 23, true, seed + 203);
+    drawEmbers(ctx, textures, tile, ms, 23, true, seed + 203);
   }
 };
 
@@ -153,8 +174,15 @@ export const FireVfxPrototype = ({ variant, replayKey }: {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const image = new Image();
-    image.src = flameUrl;
+    const imageFor = (url: string) => {
+      const image = new Image();
+      image.src = url;
+      return image;
+    };
+    const textures: FireTextures = {
+      flame: imageFor(flameUrl),
+      embers: [emberCoalUrl, emberFleckUrl, emberForkUrl].map(imageFor),
+    };
     let frame = 0;
     let disposed = false;
     let tiles: Tile[] = [];
@@ -184,8 +212,10 @@ export const FireVfxPrototype = ({ variant, replayKey }: {
       const height = canvas.height / Math.min(window.devicePixelRatio || 1, 2);
       ctx.clearRect(0, 0, width, height);
       const effectMs = elapsed - 405;
-      if (image.complete && image.naturalWidth > 0 && effectMs >= 0 && effectMs <= 760) {
-        tiles.forEach((tile, index) => drawTile(ctx, image, tile, effectMs, variant, index * 1009 + 17));
+      const images = [textures.flame, ...textures.embers];
+      if (images.every((image) => image.complete && image.naturalWidth > 0) &&
+        effectMs >= 0 && effectMs <= 760) {
+        tiles.forEach((tile, index) => drawTile(ctx, textures, tile, effectMs, variant, index * 1009 + 17));
       }
       if (elapsed < 1500) frame = requestAnimationFrame(render);
     };
