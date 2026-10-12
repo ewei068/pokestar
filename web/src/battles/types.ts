@@ -10,8 +10,8 @@ export type PokemonView = {
   combatReadiness: number;
   position: number;
   teamName: string;
-  type1: string;
-  type2?: string | null;
+  type1: string | number;
+  type2?: string | number | null;
   status: { statusId?: string | null; turns?: number };
   effectIds: Record<string, { duration?: number }>;
   moveIds?: Record<string, { cooldown: number; disabledCounter: number }>;
@@ -38,6 +38,12 @@ export type BattleEvent = {
   sourcePokemonId?: string | null;
   targetPokemonId?: string;
   moveId?: string;
+  moveType?: string;
+  damageType?: string;
+  targetPattern?: string;
+  primaryTargetId?: string;
+  targetIds?: string[];
+  missedTargetIds?: string[];
   patternTiles?: BattleTile[];
   amount?: number;
   hp?: number;
@@ -111,13 +117,13 @@ export type BattleCatalog = {
   rulesetVersion: number;
   species: Record<string, {
     name: string;
-    type: string[];
+    type: (string | number)[];
     sprite: string;
     shinySprite: string;
   }>;
   moves: Record<string, {
     name: string;
-    type: string;
+    type: string | number;
     power?: number;
     accuracy?: number;
     cooldown?: number;
@@ -125,7 +131,9 @@ export type BattleCatalog = {
     targetPattern?: string;
     description?: string;
   }>;
-  effects: Record<string, { name?: string; description?: string }>;
+  effects: Record<string, { name?: string; description?: string; type?: string }>;
+  types?: Record<number, { name: string }>;
   abilities: Record<string, { name?: string; description?: string }>;
   heldItems: Record<string, { name?: string; description?: string }>;
+  statuses?: Record<string, { name: string; description: string }>;
 };

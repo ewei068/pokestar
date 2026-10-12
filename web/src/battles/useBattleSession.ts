@@ -107,9 +107,10 @@ export const useBattleSession = (battleId: string, catalog: BattleCatalog) => {
     }
   };
 
+  const playing: PlaybackFrame | null = eventQueue[0] || null;
   return {
     battle, loading, busy, error, notice, selectedMoveId, inspectedPokemonId,
-    playing: eventQueue[0] || null, history,
+    playing, history,
     refresh,
     selectMove: setSelectedMoveId,
     inspectPokemon: setInspectedPokemonId,
@@ -118,4 +119,6 @@ export const useBattleSession = (battleId: string, catalog: BattleCatalog) => {
   };
 };
 
-export type BattleSession = ReturnType<typeof useBattleSession>;
+export type BattleSession = Omit<ReturnType<typeof useBattleSession>, "playing"> & {
+  playing: PlaybackFrame | null;
+};

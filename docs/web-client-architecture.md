@@ -98,6 +98,17 @@ That catalog should affect only presentation; animation completion must never
 decide whether the server accepts a command. Reduced-motion users should get
 an immediate readable result.
 
+The implemented battle screen uses the facing formation on desktop and stacks
+the teams on phones with their front rows toward each other. A participant
+selects a move, previews a primary target's server-supplied geometric footprint
+(including empty tiles) on hover or focus, then clicks a legal target to act.
+Clicking the selected move again exits targeting. On phones, the command tray
+can collapse while the board is inspected. The same board highlights
+`moveStarted.patternTiles` during ordered playback; this executed footprint
+can later drive a VFX renderer without putting targeting rules in the browser.
+The development-only `?previewBattle=1` route uses fixture data for visual
+review and does not submit commands.
+
 Shared typography, colors, spacing, and interaction patterns should emerge
 from the visual guidance and at least a second feature. We can introduce
 tokens as those decisions become concrete. A large design-system module or
@@ -130,8 +141,8 @@ revision handling, commands, and playback in the battle session module. Give
 the board a projected scene rather than the entire HTTP response. Preserve the
 current appearance while visual direction is being developed.
 
-Next, when visual guidance arrives: prototype the battle screen using the same
-session interface. Refine information hierarchy, responsive layout, keyboard
+The first visual guidance has been prototyped and carried into the battle
+screen. Continue to refine information hierarchy, responsive layout, keyboard
 access, reduced motion, and reusable visual tokens from actual screens.
 
 When a second feature arrives: extract truly shared account/navigation/display
