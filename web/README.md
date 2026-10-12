@@ -12,6 +12,12 @@ Discord login, sessions, battle actions, and the display catalog.
 2. Run the bot and its local MongoDB service.
 3. In `web/`, run `npm ci` and `npm run dev`. Vite proxies `/api` to the bot.
 
+For a visual review of the production battle screen without login, open
+`http://localhost:5173/?previewBattle=1` while Vite runs. This development-only
+fixture never submits an action. In a live battle, select a move, choose a
+target to preview all pattern tiles, then press **Use move**. On a narrow
+screen, the command tray has an Expand/Collapse control.
+
 Durable battle starts also need `DURABLE_BATTLES_ENABLED=true`. Keep the
 separate raid flag off until the remaining raid cutover work is complete.
 

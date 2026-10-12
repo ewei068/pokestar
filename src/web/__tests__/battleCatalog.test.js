@@ -11,6 +11,8 @@ describe("battle display catalog", () => {
     }));
     expect(catalog.moves.m84.name).toBeTruthy();
     expect(catalog.moves.m84.execute).toBeUndefined();
+    expect(Object.values(catalog.effects).some((effect) => effect.type === "Buff")).toBe(true);
+    expect(catalog.statuses.Burn.description).toContain("damage");
     expect(JSON.parse(JSON.stringify(catalog))).toEqual(catalog);
   });
 });

@@ -38,6 +38,12 @@ export type BattleEvent = {
   sourcePokemonId?: string | null;
   targetPokemonId?: string;
   moveId?: string;
+  moveType?: string;
+  damageType?: string;
+  targetPattern?: string;
+  primaryTargetId?: string;
+  targetIds?: string[];
+  missedTargetIds?: string[];
   patternTiles?: BattleTile[];
   amount?: number;
   hp?: number;
@@ -125,7 +131,8 @@ export type BattleCatalog = {
     targetPattern?: string;
     description?: string;
   }>;
-  effects: Record<string, { name?: string; description?: string }>;
+  effects: Record<string, { name?: string; description?: string; type?: string }>;
   abilities: Record<string, { name?: string; description?: string }>;
   heldItems: Record<string, { name?: string; description?: string }>;
+  statuses?: Record<string, { name: string; description: string }>;
 };
