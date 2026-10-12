@@ -43,6 +43,11 @@ site shell and future non-battle pages consistent with that direction.
   uses the move; clicking the selected move again exits targeting.
 - The move's executed footprint comes from ordered combat events. A preview
   describes a possible action; playback depicts the accepted action.
+- Move motion follows the action category: physical approaches the primary
+  target, special and status approach its lane at the board center, and self
+  targeting stays put. Tile VFX follow move type and category, reaching every
+  executed pattern tile, even an empty one. The actor returns before result
+  effects. The Normal type is the first example; keep other types extensible.
 - The battle screen reads projected state and calls session commands. It does
   not recreate targeting or damage rules in the browser.
 

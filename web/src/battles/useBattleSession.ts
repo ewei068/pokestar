@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { getBattle, submitAction } from "./api";
 import { isApiError } from "../http";
 import { newPlaybackFrames } from "./playback";
+import { playbackDuration } from "./motion";
 import type { PlaybackFrame } from "./playback";
 import type { BattleAction, BattleCatalog, BattleDisplay, BattleResponse } from "./types";
 
@@ -78,7 +79,9 @@ export const useBattleSession = (battleId: string, catalog: BattleCatalog) => {
 
   useEffect(() => {
     if (eventQueue.length === 0) return;
-    const timer = window.setTimeout(() => setEventQueue((queue) => queue.slice(1)), 550);
+    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches || false;
+    const timer = window.setTimeout(() => setEventQueue((queue) => queue.slice(1)),
+      playbackDuration(eventQueue[0].event, reducedMotion));
     return () => window.clearTimeout(timer);
   }, [eventQueue]);
 

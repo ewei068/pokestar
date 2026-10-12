@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import type { BattleCatalog, BattleTile, BattleView, PokemonView } from "./types";
+import { BattleMotion } from "./BattleMotion";
+import { MOVE_MOTION_DURATION_MS, moveMotion } from "./motion";
+import type { BattleCatalog, BattleEvent, BattleTile, BattleView, PokemonView } from "./types";
 import { typeClass, typeName } from "./typeDisplay";
 
 type Props = {
@@ -12,6 +14,7 @@ type Props = {
   patternTiles: BattleTile[];
   affectedIds: string[];
   playback: boolean;
+  motionEvent?: BattleEvent;
   highlightedId: string | null;
   onChooseTarget: (pokemonId: string) => void;
   onInspect: (pokemonId: string) => void;
@@ -77,11 +80,14 @@ const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern,
 };
 
 export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTargetId,
-  patternTiles, affectedIds, playback, highlightedId, onChooseTarget, onInspect, onHover }: Props) => {
+  patternTiles, affectedIds, playback, motionEvent, highlightedId, onChooseTarget, onInspect, onHover }: Props) => {
+  const boardRef = useRef<HTMLDivElement>(null);
+  const motion = moveMotion(motionEvent, catalog);
   const targetSet = new Set(targetIds);
   const affectedSet = new Set(affectedIds);
   const tileSet = new Set(patternTiles.map((tile) => `${tile.teamName}:${tile.position}`));
-  return <div className="arena-board">
+  return <div className="arena-board" ref={boardRef}
+    style={{ "--move-duration": `${MOVE_MOTION_DURATION_MS}ms` } as CSSProperties}>
     {[...Object.entries(view.teams)]
       .sort(([left], [right]) => Number(ownTeamNames.includes(right)) - Number(ownTeamNames.includes(left)))
       .map(([teamName, dimensions]) => {
@@ -107,20 +113,38 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
               "--vertical-col": col + 1,
               "--vertical-row": own ? row + 1 : dimensions.rows - row,
             } as CSSProperties;
-            return <div className={`arena-cell ${inPattern ? "is-pattern-cell" : ""}`} style={cellStyle} key={position}>
+            return <div className={`arena-cell ${inPattern ? "is-pattern-cell" : ""}`} style={cellStyle}
+              key={position} data-team-name={teamName} data-position={position}>
               {entry ? <PokemonTile pokemon={entry} catalog={catalog}
                 active={entry.id === view.activePokemonId} targetable={targetSet.has(entry.id)}
-                primary={entry.id === primaryTargetId} inPattern={inPattern} playback={playback && inPattern}
+                primary={entry.id === primaryTargetId} inPattern={inPattern}
+                playback={playback && inPattern && !motion?.normalVfx}
                 affected={affectedSet.has(entry.id)} highlighted={entry.id === highlightedId}
                 onChooseTarget={() => onChooseTarget(entry.id)} onInspect={() => onInspect(entry.id)}
                 onHover={onHover} />
                 : <span className={`arena-empty ${inPattern ? "is-affected" : ""} ${
-                  playback && inPattern ? "is-playback" : ""}`} aria-hidden="true" />}
+                  playback && inPattern && !motion?.normalVfx ? "is-playback" : ""}`} aria-hidden="true" />}
+              {inPattern && motion?.normalVfx && <NormalTileVfx kind={motion.kind} />}
             </div>;
           })}
         </div>
       </section>;
     })}
     <span className="arena-versus" aria-hidden="true">VS</span>
+    {motionEvent && <BattleMotion boardRef={boardRef} view={view} catalog={catalog} event={motionEvent} />}
   </div>;
 };
+
+const NormalTileVfx = ({ kind }: { kind: "physical" | "special" | "status" }) =>
+  <svg className={`arena-normal-vfx is-${kind}`} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    {kind === "physical" ? <g className="arena-normal-impact">
+      <path d="M14 28 36 41 M8 55 33 55 M18 82 39 65 M83 18 65 38 M92 51 68 52 M81 82 64 65" />
+      <path d="M28 14 43 39 M64 11 57 35 M87 69 66 59 M39 89 47 68" />
+    </g> : kind === "special" ? <g className="arena-normal-energy">
+      <circle cx="50" cy="50" r="21" /><circle cx="50" cy="50" r="34" />
+      <path d="M51 18 C84 21 91 60 66 75 C43 90 16 66 28 43 C36 29 59 30 65 47" />
+    </g> : <g className="arena-normal-pulse">
+      <circle cx="50" cy="50" r="17" /><circle cx="50" cy="50" r="29" />
+      <path d="M50 11 54 20 50 29 46 20Z M85 50 77 54 69 50 77 46Z M50 88 46 79 50 71 54 79Z M15 50 23 46 31 50 23 54Z" />
+    </g>}
+  </svg>;

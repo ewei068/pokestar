@@ -1,6 +1,7 @@
 /** Development-only stories render the production screen without HTTP or game writes. */
 import { useEffect, useRef, useState } from "react";
 import { BattleScreen } from "../BattleScreen";
+import { playbackDuration } from "../motion";
 import type { PlaybackFrame } from "../playback";
 import type { BattleSession } from "../useBattleSession";
 import { makeBattleStory, storyDefinitions } from "./battleStories";
@@ -18,6 +19,11 @@ export const BattleScreenPreview = () => {
   const [replayKey, setReplayKey] = useState(0);
   const timers = useRef<number[]>([]);
   useEffect(() => () => { timers.current.forEach(window.clearTimeout); }, []);
+  useEffect(() => {
+    if (!story.playing) return;
+    const timer = window.setTimeout(() => setPlaying(null), playbackDuration(story.playing!.event));
+    return () => window.clearTimeout(timer);
+  }, [replayKey]);
 
   const session: BattleSession = {
     battle: story.battle, loading: false, busy: false, error: null, notice,
@@ -30,13 +36,14 @@ export const BattleScreenPreview = () => {
       selectMove(null);
       const text = `${story.battle.view.pokemon[story.battle.view.activePokemonId || ""]?.name || "Pokémon"} used ${
         story.catalog.moves[selectedMoveId || ""]?.name || "a move"}.`;
-      setPlaying({ view: story.battle.view, text, event: { type: "moveStarted", sequence: 0,
+      const event = { type: "moveStarted", sequence: 0,
         pokemonId: story.battle.view.activePokemonId || undefined, moveId: selectedMoveId || undefined,
         primaryTargetId: id, targetIds: preview.affectedPokemonIds,
-        patternTiles: preview.patternTiles } });
+        patternTiles: preview.patternTiles };
+      setPlaying({ view: story.battle.view, text, event });
       setHistory((current) => [...current, text]);
       setNotice("Development story: no action was sent.");
-      timers.current.push(window.setTimeout(() => setPlaying(story.playing), 900));
+      timers.current.push(window.setTimeout(() => setPlaying(story.playing), playbackDuration(event)));
     },
     skipTurn: () => setNotice("Development story: no action was sent."),
   };
