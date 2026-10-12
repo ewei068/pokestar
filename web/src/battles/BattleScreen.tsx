@@ -109,7 +109,8 @@ export const BattleScreen = ({ catalog, session }: {
     <div className="arena-layout"><div className="arena-primary">
       <BattleGrid view={displayView} ownTeamNames={battle.myTeamNames} catalog={catalog}
         targetIds={targetIds} primaryTargetId={primaryTargetId} patternTiles={patternTiles}
-        affectedIds={affectedIds} playback={!!eventFootprint} highlightedId={highlightedPokemonId(event)}
+        affectedIds={affectedIds} playback={!!eventFootprint} motionEvent={event?.type === "moveStarted" ? event : undefined}
+        highlightedId={highlightedPokemonId(event)}
         onChooseTarget={chooseTarget} onInspect={inspect} onHover={setHoveredPokemonId} />
       <div className="arena-event" aria-live="polite"><span aria-hidden="true">✦</span>
         <strong>{playing?.text || (targetPreview ? `Pattern reaches ${targetPreview.affectedPokemonIds.length} Pokémon and ${

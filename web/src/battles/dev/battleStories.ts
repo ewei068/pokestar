@@ -7,6 +7,12 @@ export const storyDefinitions = [
   { id: "effects", title: "Status and effects", description: "Statuses, buffs, debuffs, ability, and item details compete for space." },
   { id: "waiting", title: "Waiting for NPC", description: "The opponent has the turn and actions are unavailable." },
   { id: "playback", title: "Move playback", description: "A resolved area move lights occupied and empty tiles." },
+  { id: "motion-tackle", title: "Tackle", description: "Normal physical single target: charge, strike, return." },
+  { id: "motion-giga-impact", title: "Giga Impact", description: "Normal physical column: one charge, VFX on both tiles." },
+  { id: "motion-hyper-beam", title: "Hyper Beam", description: "Normal special column: move into the target lane, affect both tiles." },
+  { id: "motion-soft-boiled", title: "Soft-Boiled", description: "Normal status single ally: move into the ally's lane." },
+  { id: "motion-sing", title: "Sing", description: "Normal status row: the same neutral VFX reaches occupied and empty tiles." },
+  { id: "motion-recover", title: "Recover", description: "Self target: stay put while the user's tile receives VFX." },
   { id: "completed", title: "Completed result", description: "A finished battle is readable without action controls." },
   { id: "dense", title: "Dense and missing art", description: "Full formations, long names, mixed cues, and an absent sprite." },
 ] as const;
@@ -47,6 +53,18 @@ const baseCatalog: BattleCatalog = {
       targetPattern: "Single", description: "A sudden physical lunge." },
     sunnyday: { name: "Sunny Day", type: "fire", accuracy: 100, damageType: "Other",
       targetPattern: "Single", description: "Bright sunlight fills the field." },
+    m33: { name: "Tackle", type: "normal", power: 55, accuracy: 100, damageType: "Physical",
+      targetPattern: "Single", description: "Charge into one target." },
+    m416: { name: "Giga Impact", type: "normal", power: 160, accuracy: 90, damageType: "Physical",
+      targetPattern: "Column", description: "Charge at a target and its column." },
+    m63: { name: "Hyper Beam", type: "normal", power: 160, accuracy: 90, damageType: "Special",
+      targetPattern: "Column", description: "A powerful beam across a column." },
+    m135: { name: "Soft-Boiled", type: "normal", damageType: "Other",
+      targetPattern: "Single", description: "Heal one ally." },
+    m47: { name: "Sing", type: "normal", accuracy: 75, damageType: "Other",
+      targetPattern: "Row", description: "Put a row of targets to sleep." },
+    m105: { name: "Recover", type: "normal", damageType: "Other",
+      targetPattern: "Single", description: "Heal the user." },
   },
   effects: {
     shield: { name: "Shielded", type: "Buff", description: "Reduces incoming damage." },
@@ -112,6 +130,33 @@ const baseBattle: BattleDisplay = {
   ] },
 };
 
+const motionStories: Record<string, { moveId: string; targetId: string; pattern: "Single" | "Row" | "Column" }> = {
+  "motion-tackle": { moveId: "m33", targetId: `${rival}-94`, pattern: "Single" },
+  "motion-giga-impact": { moveId: "m416", targetId: `${rival}-59`, pattern: "Column" },
+  "motion-hyper-beam": { moveId: "m63", targetId: `${rival}-248`, pattern: "Column" },
+  "motion-soft-boiled": { moveId: "m135", targetId: `${own}-448`, pattern: "Single" },
+  "motion-sing": { moveId: "m47", targetId: `${rival}-350`, pattern: "Row" },
+  "motion-recover": { moveId: "m105", targetId: `${own}-157`, pattern: "Single" },
+};
+
+const motionFootprint = (view: BattleView, targetId: string, pattern: "Single" | "Row" | "Column") => {
+  const target = view.pokemon[targetId];
+  const dimensions = view.teams[target.teamName];
+  const targetRow = Math.floor((target.position - 1) / dimensions.cols);
+  const targetCol = (target.position - 1) % dimensions.cols;
+  const patternTiles = Array.from({ length: dimensions.rows * dimensions.cols }, (_, index) => index + 1)
+    .filter((position) => pattern === "Single" ? position === target.position
+      : pattern === "Row" ? Math.floor((position - 1) / dimensions.cols) === targetRow
+        : (position - 1) % dimensions.cols === targetCol)
+    .map((position) => ({ teamName: target.teamName, position }));
+  const affectedPokemonIds = Object.values(view.pokemon).filter((entry) => patternTiles.some((tile) =>
+    tile.teamName === entry.teamName && tile.position === entry.position)).map((entry) => entry.id);
+  return { primaryTargetPokemonId: targetId, targetPattern: pattern, random: false,
+    patternTiles, affectedPokemonIds,
+    emptyTileTargets: patternTiles.filter((tile) => !Object.values(view.pokemon).some((entry) =>
+      entry.teamName === tile.teamName && entry.position === tile.position)) };
+};
+
 export const makeBattleStory = (requestedId: string | null): BattleStory => {
   const definition = storyDefinitions.find((item) => item.id === requestedId) || storyDefinitions[0];
   const catalog = structuredClone(baseCatalog);
@@ -120,6 +165,25 @@ export const makeBattleStory = (requestedId: string | null): BattleStory => {
     ...definition, catalog, battle, selectedMoveId: null, inspectedPokemonId: null,
     playing: null, history: [],
   };
+
+  const motionStory = motionStories[definition.id];
+  if (motionStory) {
+    const { moveId, targetId, pattern } = motionStory;
+    const move = catalog.moves[moveId];
+    const footprint = motionFootprint(battle.view, targetId, pattern);
+    battle.availableActions = { canSkip: false, moves: [{ moveId, targetPokemonIds: [targetId],
+      targetPreviews: [footprint] }] };
+    battle.isMyTurn = false;
+    const text = `${battle.view.pokemon[battle.view.activePokemonId || ""]?.name || "Pokémon"} used ${move.name}.`;
+    story.playing = { view: battle.view, text, event: {
+      type: "moveStarted", sequence: 0, pokemonId: battle.view.activePokemonId || undefined,
+      moveId, moveType: String(move.type), damageType: move.damageType,
+      primaryTargetId: targetId, targetIds: footprint.affectedPokemonIds,
+      patternTiles: footprint.patternTiles,
+    } };
+    story.history = [text];
+    return story;
+  }
 
   switch (definition.id) {
     case "area-target":

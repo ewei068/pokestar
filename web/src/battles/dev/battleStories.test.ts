@@ -46,6 +46,26 @@ describe("battle UI stories", () => {
     assert.equal(makeBattleStory("dense").battle.view.pokemon["Star Team-143"].type1, "normal");
   });
 
+  it("covers the six Normal motion cases with engine-shaped footprints", () => {
+    const expected = [
+      ["motion-tackle", "m33", [1]],
+      ["motion-giga-impact", "m416", [2, 6]],
+      ["motion-hyper-beam", "m63", [3, 7]],
+      ["motion-soft-boiled", "m135", [2]],
+      ["motion-sing", "m47", [5, 6, 7, 8]],
+      ["motion-recover", "m105", [1]],
+    ] as const;
+    for (const [id, moveId, positions] of expected) {
+      const story = makeBattleStory(id);
+      assert.equal(story.playing?.event.moveId, moveId);
+      assert.deepEqual(story.playing?.event.patternTiles?.map((tile) => tile.position), positions);
+      assert.equal(story.playing?.event.moveType, "normal");
+    }
+    assert.equal(makeBattleStory("motion-recover").playing?.event.primaryTargetId,
+      makeBattleStory("motion-recover").playing?.event.pokemonId);
+    assert.equal(makeBattleStory("motion-sing").playing?.event.patternTiles?.length, 4);
+  });
+
   it("returns fresh fixtures and falls back to the ready story", () => {
     const first = makeBattleStory("ready");
     first.battle.view.pokemon["Star Team-157"].hp = 0;

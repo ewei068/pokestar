@@ -52,4 +52,19 @@ describe("battle controls", () => {
     assert.deepEqual(chosen, ["Rival Team-94"]);
     assert.deepEqual(inspected, ["Star Team-157"]);
   });
+
+  it("places Normal VFX on occupied and empty executed tiles", () => {
+    Object.defineProperty(dom.window, "matchMedia", { configurable: true,
+      value: () => ({ matches: false }) });
+    const { battle, catalog, playing } = makeBattleStory("motion-giga-impact");
+    const page = render(createElement(BattleGrid, {
+      view: battle.view, ownTeamNames: battle.myTeamNames, catalog,
+      targetIds: [], primaryTargetId: playing?.event.primaryTargetId || null,
+      patternTiles: playing?.event.patternTiles || [], affectedIds: playing?.event.targetIds || [],
+      playback: true, motionEvent: playing?.event, highlightedId: null,
+      onChooseTarget: () => {}, onInspect: () => {}, onHover: () => {},
+    }));
+    assert.equal(page.container.querySelectorAll(".arena-normal-vfx.is-physical").length, 2);
+    assert.ok(page.container.querySelector('[data-team-name="Rival Team"][data-position="6"] .arena-normal-vfx'));
+  });
 });
