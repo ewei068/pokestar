@@ -64,7 +64,7 @@ describe("battle controls", () => {
       playback: true, motionEvent: playing?.event, highlightedId: null,
       onChooseTarget: () => {}, onInspect: () => {}, onHover: () => {},
     }));
-    assert.equal(page.container.querySelectorAll(".arena-normal-vfx.is-physical").length, 2);
-    assert.ok(page.container.querySelector('[data-team-name="Rival Team"][data-position="6"] .arena-normal-vfx'));
+    assert.equal(page.container.querySelectorAll(".arena-tile-vfx.is-physical").length, 2);
+    assert.ok(page.container.querySelector('[data-team-name="Rival Team"][data-position="6"] .arena-tile-vfx'));
   });
 });

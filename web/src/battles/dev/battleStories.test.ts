@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { makeBattleStory, storyDefinitions } from "./battleStories";
+import { readVfxLabSelection, vfxLabKinds, vfxLabPatterns, vfxLabTypes, vfxLabUrl } from "./vfxLab";
 
 describe("battle UI stories", () => {
   it("provides stable, internally consistent scenarios", () => {
@@ -71,5 +72,21 @@ describe("battle UI stories", () => {
     first.battle.view.pokemon["Star Team-157"].hp = 0;
     assert.equal(makeBattleStory("ready").battle.view.pokemon["Star Team-157"].hp, 168);
     assert.equal(makeBattleStory("unknown").id, "ready");
+  });
+
+  it("builds shareable lab scenarios across the full type/category/area matrix", () => {
+    for (const type of vfxLabTypes) for (const kind of vfxLabKinds) for (const pattern of vfxLabPatterns) {
+      const selection = { type, kind, pattern };
+      assert.deepEqual(readVfxLabSelection(new URLSearchParams(vfxLabUrl(selection).slice(1))), selection);
+      const story = makeBattleStory("vfx", selection);
+      assert.equal(story.playing?.event.moveType, type);
+      assert.ok(story.playing?.event.patternTiles?.length);
+      assert.equal(story.playing?.event.targetPattern?.toLowerCase(), pattern);
+      assert.ok(story.battle.availableActions.moves[0].targetPreviews?.[0].emptyTileTargets.every((tile) =>
+        story.playing?.event.patternTiles?.some((item) => item.teamName === tile.teamName &&
+          item.position === tile.position)));
+    }
+    assert.deepEqual(readVfxLabSelection(new URLSearchParams("type=bogus&kind=bogus&pattern=bogus")),
+      { type: "fire", kind: "physical", pattern: "column" });
   });
 });

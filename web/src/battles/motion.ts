@@ -1,11 +1,12 @@
-import { typeName } from "./typeDisplay";
+import { resolveVfxType } from "./vfx/types";
+import type { VfxKind, VfxType } from "./vfx/types";
 import type { BattleCatalog, BattleEvent } from "./types";
 
 export const MOVE_MOTION_DURATION_MS = 1500;
 export const DEFAULT_EVENT_DURATION_MS = 550;
 
-export type MotionKind = "physical" | "special" | "status";
-export type MoveMotion = { kind: MotionKind; normalVfx: boolean; selfTarget: boolean };
+export type MotionKind = VfxKind;
+export type MoveMotion = { kind: MotionKind; vfxType: VfxType | null; selfTarget: boolean };
 
 /** Move category controls travel; move type selects the tile effect. */
 export const moveMotion = (event: BattleEvent | undefined, catalog: BattleCatalog): MoveMotion | null => {
@@ -15,8 +16,8 @@ export const moveMotion = (event: BattleEvent | undefined, catalog: BattleCatalo
   const kind: MotionKind = damageType === "Physical" ? "physical"
     : damageType === "Special" ? "special" : "status";
   const moveType = event.moveType ?? move?.type;
-  return { kind, normalVfx: moveType !== null && moveType !== undefined &&
-    typeName(moveType, catalog).toLowerCase() === "normal",
+  return { kind, vfxType: moveType === null || moveType === undefined ? null
+    : resolveVfxType(moveType, catalog),
     selfTarget: !!event.pokemonId && event.pokemonId === event.primaryTargetId };
 };
 

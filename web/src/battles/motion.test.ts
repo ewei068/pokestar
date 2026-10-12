@@ -12,22 +12,22 @@ const event = (moveId: string, primaryTargetId = "Rival Team-94"): BattleEvent =
 describe("move motion", () => {
   it("chooses travel by damage category and Normal VFX by move type", () => {
     assert.deepEqual(moveMotion(event("m33"), catalog),
-      { kind: "physical", normalVfx: true, selfTarget: false });
+      { kind: "physical", vfxType: "normal", selfTarget: false });
     assert.deepEqual(moveMotion(event("m63"), catalog),
-      { kind: "special", normalVfx: true, selfTarget: false });
+      { kind: "special", vfxType: "normal", selfTarget: false });
     assert.deepEqual(moveMotion(event("m47"), catalog),
-      { kind: "status", normalVfx: true, selfTarget: false });
+      { kind: "status", vfxType: "normal", selfTarget: false });
     assert.deepEqual(moveMotion(event("m105", "Star Team-157"), catalog),
-      { kind: "status", normalVfx: true, selfTarget: true });
+      { kind: "status", vfxType: "normal", selfTarget: true });
     assert.deepEqual(moveMotion(event("flamethrower"), catalog),
-      { kind: "special", normalVfx: false, selfTarget: false });
-    assert.equal(moveMotion({ type: "moveStarted", sequence: 0, damageType: "Physical" }, catalog)?.normalVfx,
-      false);
+      { kind: "special", vfxType: "fire", selfTarget: false });
+    assert.equal(moveMotion({ type: "moveStarted", sequence: 0, damageType: "Physical" }, catalog)?.vfxType,
+      null);
   });
 
   it("uses the executed category and type when a move changes in battle", () => {
     assert.deepEqual(moveMotion({ ...event("flamethrower"), damageType: "Physical", moveType: "Normal" }, catalog),
-      { kind: "physical", normalVfx: true, selfTarget: false });
+      { kind: "physical", vfxType: "normal", selfTarget: false });
     assert.equal(moveMotion({ type: "hpChanged", sequence: 1 }, catalog), null);
   });
 

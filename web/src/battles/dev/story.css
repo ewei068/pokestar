@@ -5,13 +5,24 @@
 .battle-story-toolbar > div { display: flex; flex-direction: column; gap: 2px; }
 .battle-story-toolbar strong { font-size: .82rem; }
 .battle-story-toolbar span, .battle-story-toolbar p { margin: 0; color: #5b6c79; font-size: .7rem; }
-.battle-story-toolbar nav { display: flex; flex-wrap: wrap; gap: 4px; }
+.battle-story-toolbar nav { display: flex; flex-wrap: wrap; gap: 6px 12px; width: 100%; }
+.battle-story-nav-group { display: flex; align-items: flex-start; gap: 5px; flex-wrap: wrap; }
+.battle-story-nav-group > strong { padding: 5px 0; white-space: nowrap; }
+.battle-story-nav-group > span { display: flex; flex-wrap: wrap; gap: 4px; }
 .battle-story-toolbar a, .battle-story-toolbar button { padding: 4px 7px; border: 1px solid #80959e;
   background: #fffdf5; color: #24465b; font-size: .68rem; font-weight: 750; text-decoration: none; }
 .battle-story-toolbar a[aria-current="page"] { border-color: #b77b3a; background: #ffe6a8; }
 .battle-story-toolbar button { cursor: pointer; }
+.battle-vfx-lab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; width: 100%;
+  margin: 0; padding: 5px 8px 8px; border: 1px solid #9fb4ba; }
+.battle-vfx-lab legend { padding: 0 4px; font-size: .7rem; font-weight: 800; }
+.battle-vfx-lab label { display: flex; align-items: center; gap: 4px; font-size: .68rem; font-weight: 750; }
+.battle-vfx-lab select { min-width: 94px; padding: 4px; border: 1px solid #80959e; background: #fffdf5;
+  color: #24465b; font: inherit; text-transform: capitalize; }
+.battle-vfx-lab small { color: #5b6c79; font-size: .66rem; }
 @media (max-width: 640px) {
   .battle-story-toolbar { padding: 7px 8px; }
   .battle-story-toolbar nav { flex-wrap: nowrap; width: 100%; overflow-x: auto; padding-bottom: 2px; }
+  .battle-story-nav-group { flex: none; }.battle-story-nav-group > span { flex-wrap: nowrap; }
   .battle-story-toolbar a { flex: none; }
 }
