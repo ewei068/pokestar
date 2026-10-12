@@ -1,5 +1,3 @@
-import type { BattleAction, BattleCatalog, BattleResponse, BattleSummary } from "./types";
-
 const apiOrigin = import.meta.env.VITE_API_ORIGIN || "";
 
 class ApiError extends Error {
@@ -8,7 +6,7 @@ class ApiError extends Error {
   }
 }
 
-const request = async <T>(path: string, options: RequestInit = {}): Promise<T> => {
+export const request = async <T>(path: string, options: RequestInit = {}): Promise<T> => {
   const response = await fetch(`${apiOrigin}/api${path}`, {
     ...options,
     credentials: "include",
@@ -34,20 +32,4 @@ export const loginUrl = (): string => {
 };
 
 export const getMe = () => request<{ discordUserId: string }>("/me");
-export const getCatalog = () => request<BattleCatalog>("/catalog");
-export const listBattles = async () =>
-  (await request<{ battles: BattleSummary[] }>("/battles")).battles;
-export const getBattle = async (battleId: string, after?: string): Promise<BattleResponse | null> =>
-  (await request<BattleResponse | void>(`/battles/${encodeURIComponent(battleId)}${
-    after === undefined ? "" : `?after=${encodeURIComponent(after)}`
-  }`)) || null;
-export const submitAction = (
-  battleId: string,
-  expectedRevision: number,
-  action: BattleAction,
-) => request<BattleResponse>(`/battles/${encodeURIComponent(battleId)}/actions`, {
-  method: "POST",
-  body: JSON.stringify({ expectedRevision, requestId: crypto.randomUUID(), action }),
-});
-
 export const logout = () => request<void>("/auth/logout", { method: "POST" });

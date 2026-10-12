@@ -1,8 +1,9 @@
 import { useState } from "react";
-import type { BattleCatalog, BattleResponse, PokemonView } from "./types";
+import type { BattleCatalog, BattleView, PokemonView } from "./types";
 
 type Props = {
-  battle: BattleResponse;
+  view: BattleView;
+  ownTeamNames: string[];
   catalog: BattleCatalog;
   targetIds: string[];
   highlightedId: string | null;
@@ -57,11 +58,11 @@ const PokemonTile = ({ pokemon, catalog, active, own, targetable, highlighted, o
   );
 };
 
-export const BattleGrid = ({ battle, catalog, targetIds, highlightedId, onTarget, onInspect }: Props) => (
+export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, highlightedId, onTarget, onInspect }: Props) => (
   <div className="battle-arena">
-    {Object.entries(battle.view.teams).map(([teamName, dimensions]) => {
-      const own = battle.myTeamNames.includes(teamName);
-      const pokemonByPosition = new Map(Object.values(battle.view.pokemon)
+    {Object.entries(view.teams).map(([teamName, dimensions]) => {
+      const own = ownTeamNames.includes(teamName);
+      const pokemonByPosition = new Map(Object.values(view.pokemon)
         .filter((pokemon) => pokemon.teamName === teamName)
         .map((pokemon) => [pokemon.position, pokemon]));
       return (
@@ -78,7 +79,7 @@ export const BattleGrid = ({ battle, catalog, targetIds, highlightedId, onTarget
                   key={pokemon.id}
                   pokemon={pokemon}
                   catalog={catalog}
-                  active={pokemon.id === battle.view.activePokemonId}
+                  active={pokemon.id === view.activePokemonId}
                   own={own}
                   targetable={targetIds.includes(pokemon.id)}
                   highlighted={pokemon.id === highlightedId}
