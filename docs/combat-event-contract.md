@@ -8,7 +8,7 @@ Each event has a zero-based `sequence` within that action. Events contain IDs an
 | --- | --- | --- |
 | `actionStarted` | `pokemonId`, `action` | The active Pokémon began the accepted action. |
 | `actionBlocked` | `pokemonId`, `moveId` | Status or a rule event prevented the attempted move after the turn was consumed. |
-| `moveStarted` | `pokemonId`, `moveId`, `moveType`, `damageType`, `targetPattern`, `primaryTargetId`, `targetIds`, `missedTargetIds` | The engine resolved actual targets for this move execution. A triggered or repeated move can emit another `moveStarted`. |
+| `moveStarted` | `pokemonId`, `moveId`, `moveType`, `damageType`, `targetPattern`, `primaryTargetId`, `targetIds`, `patternTiles`, `missedTargetIds` | The engine resolved actual targets and the geometric tile footprint for this execution. `patternTiles` includes empty positions; for a random move it contains only the chosen position. A triggered or repeated move can emit another `moveStarted`. |
 | `targetMissed` | `pokemonId`, `targetPokemonId`, `moveId` | This target was marked missed. Some moves can still have an effect on a missed target. |
 | `hpChanged` | `pokemonId`, `sourcePokemonId`, `previousHp`, `hp`, `amount` | HP changed; `amount` is signed. |
 | `shieldChanged` | `pokemonId`, `sourcePokemonId`, `shield`, `amount` | A shield absorbed damage. |
@@ -19,3 +19,5 @@ Each event has a zero-based `sequence` within that action. Events contain IDs an
 | `turnStarted`, `phaseStarted`, `battleEnded` | Turn number and active Pokémon, or winner where relevant | The battle advanced to a new turn, phase, or result. |
 
 The recorder is deliberately separate from `BattleEventHandler`: rule listeners can mutate battle objects, while combat outcomes must be safe to serialize. Existing content can still make changes outside the instrumented engine methods, so clients must always reconcile with `snapshot`. Before web animation ships, the remaining move and ability paths should be audited for direct mutations and covered with focused event tests.
+
+The participant's `availableActions.moves[*].targetPokemonIds` remains the list of legal primary targets. The additive `targetPreviews` array has one entry per primary target: `patternTiles` covers the geometric pattern (including empty cells), `affectedPokemonIds` lists currently hittable occupants, and `emptyTileTargets` lists the empty pattern cells separately. Each tile uses `{ teamName, position }` with the engine's one-based position. For random moves, `random: true` means the preview is a set of possible occupied tiles; `moveStarted.patternTiles` carries the resolved choice. Previews teach the pattern, not guaranteed damage or secondary effects.

@@ -42,6 +42,20 @@ describe("BattleWebService", () => {
     for (const move of active.availableActions.moves) {
       expect(activePokemon.moveIds[move.moveId]).toBeDefined();
       expect(move.targetPokemonIds.length).toBeGreaterThan(0);
+      expect(move.targetPreviews.map((preview) => preview.primaryTargetPokemonId))
+        .toEqual(move.targetPokemonIds);
+      for (const preview of move.targetPreviews) {
+        const emptyTiles = preview.patternTiles.filter((tile) =>
+          !Object.values(active.view.pokemon).some((pokemon) =>
+            pokemon.teamName === tile.teamName && pokemon.position === tile.position));
+        expect(preview.emptyTileTargets).toEqual(emptyTiles);
+        expect(preview.patternTiles).toEqual(expect.arrayContaining(
+          preview.affectedPokemonIds.map((id) => ({
+            teamName: active.view.pokemon[id].teamName,
+            position: active.view.pokemon[id].position,
+          })),
+        ));
+      }
     }
     expect(other.isMyTurn).toBe(false);
     expect(other.availableActions).toEqual({ canSkip: false, moves: [] });
