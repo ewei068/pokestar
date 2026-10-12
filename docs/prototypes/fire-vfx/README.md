@@ -8,6 +8,8 @@ VFX lab with `?previewBattle=1&story=vfx&type=fire&kind=special&pattern=all&vari
 while running `cd web && npm run dev`. Use the floating arrows or left/right keys
 to compare the current SVG with three particle behaviors:
 
+![Flame bloom motion preview](bloom-motion.gif)
+
 | Variant | Still at about 650 ms |
 | --- | --- |
 | Current SVG | ![Current SVG](original.png) |
