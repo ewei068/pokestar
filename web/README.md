@@ -13,11 +13,20 @@ Discord login, sessions, battle actions, and the display catalog.
 3. In `web/`, run `npm ci` and `npm run dev`. Vite proxies `/api` to the bot.
 
 For a visual review of the production battle screen without login, open
-`http://localhost:5173/?previewBattle=1` while Vite runs. This development-only
-fixture never submits an action. In a live battle, select a move, hover a target
-to preview all pattern tiles, then click it to use the move. Click the selected
-move again to cancel. On a narrow
-screen, the command tray has an Expand/Collapse control.
+`http://localhost:5173/?previewBattle=1` while Vite runs. The story bar has
+stable links for ready, area targeting, status and effects, NPC waiting, move
+playback, completed, and dense/missing-art states. For example,
+`http://localhost:5173/?previewBattle=1&story=playback` opens the event story
+with a Replay action control. Stories use local display fixtures and never
+submit server actions. In a live battle, select a move, hover a target to
+preview all pattern tiles, then click it to use the move. Click the selected
+move again to cancel. On a narrow screen, the command tray can collapse.
+
+The agent-facing UI guidance is in `docs/web-ui-style-guide.md`, with a pointer
+from `web/AGENTS.md`. Story data lives in `src/battles/dev/battleStories.ts`;
+add scenarios there when a UI state needs repeatable review. Component tests
+exercise interactions through React Testing Library. Story tests check fixture
+contracts rather than recording markup or pixel snapshots.
 
 Durable battle starts also need `DURABLE_BATTLES_ENABLED=true`. Keep the
 separate raid flag off until the remaining raid cutover work is complete.

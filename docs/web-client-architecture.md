@@ -106,12 +106,14 @@ Clicking the selected move again exits targeting. On phones, the command tray
 can collapse while the board is inspected. The same board highlights
 `moveStarted.patternTiles` during ordered playback; this executed footprint
 can later drive a VFX renderer without putting targeting rules in the browser.
-The development-only `?previewBattle=1` route uses fixture data for visual
-review and does not submit commands.
+The development-only `?previewBattle=1&story=...` route uses named fixture
+scenarios for visual review and does not submit commands. Story data checks
+guard the display contract, while component tests cover user interactions.
 
-Shared typography, colors, spacing, and interaction patterns should emerge
-from the visual guidance and at least a second feature. We can introduce
-tokens as those decisions become concrete. A large design-system module or
+The agent-facing style guide records current visual and interaction rules.
+Shared typography, colors, spacing, and components should emerge from this
+guidance and at least a second feature. Extract tokens and reusable components
+when their semantics are repeated and stable. A large design-system module or
 canvas dependency now would add interface without useful behavior.
 
 ## Data and asset ownership
