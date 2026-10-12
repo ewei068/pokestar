@@ -499,9 +499,10 @@ class BattlePokemon {
       moveId,
       moveType: moveInstance.type,
       damageType: moveInstance.damageType,
-      targetPattern: moveInstance.targetPattern,
+      targetPattern: this.getMovePattern(moveInstance),
       primaryTargetId: primaryTarget.id,
       targetIds: allTargets.map((target) => target.id),
+      patternTiles: this.getMoveFootprint(moveInstance, primaryTarget, allTargets).patternTiles,
       missedTargetIds: missedTargets.map((target) => target.id),
     });
     for (const target of missedTargets) {
@@ -965,6 +966,57 @@ class BattlePokemon {
     }
 
     return pattern;
+  }
+
+  /**
+   * Geometric pattern tiles include empty positions. Random previews show every
+   * possible occupied tile; an executed move supplies its resolved targets.
+   * Neither preview promises that a target will be hit or damaged.
+   * @param {MoveInstance} moveInstance
+   * @param {BattlePokemon} primaryTarget
+   * @param {BattlePokemon[]=} resolvedTargets
+   */
+  getMoveFootprint(moveInstance, primaryTarget, resolvedTargets = null) {
+    const targetParty = this.battle.parties[primaryTarget.teamName];
+    const targetPattern = this.getMovePattern(moveInstance);
+    const random = targetPattern === targetPatterns.RANDOM;
+    const possibleTargets = random
+      ? (resolvedTargets || targetParty.pokemons.filter((pokemon) =>
+        pokemon && this.battle.isPokemonHittable(pokemon, moveInstance.id)))
+      : null;
+    const indices = random
+      ? possibleTargets.map((pokemon) => pokemon.position - 1)
+      : getPatternTargetIndices(targetParty, targetPattern, primaryTarget.position);
+    const patternTiles = indices.map((index) => ({
+      teamName: primaryTarget.teamName,
+      position: index + 1,
+    }));
+    return {
+      targetPattern,
+      random,
+      patternTiles,
+      affectedPokemonIds: resolvedTargets
+        ? resolvedTargets.map((pokemon) => pokemon.id)
+        : indices.map((index) => targetParty.pokemons[index])
+          .filter((pokemon) => pokemon &&
+            this.battle.isPokemonHittable(pokemon, moveInstance.id))
+          .map((pokemon) => pokemon.id),
+      emptyTileTargets: indices.filter((index) => !targetParty.pokemons[index])
+        .map((index) => ({ teamName: primaryTarget.teamName, position: index + 1 })),
+    };
+  }
+
+  /**
+   * @param {MoveIdEnum} moveId
+   * @param {BattlePokemon} primaryTarget
+   */
+  getMoveTargetPreview(moveId, primaryTarget) {
+    const moveInstance = MoveInstance.fromMoveId({
+      source: this,
+      primaryTarget,
+      moveId,
+    });
+    return this.getMoveFootprint(moveInstance, primaryTarget);
   }
 
   /**
