@@ -5,13 +5,13 @@ tile effects clearer and richer than the current SVG matrix?
 
 These are throwaway development stories on the existing VFX lab. Run
 `cd web && npm run dev`, then open the links below. The floating arrows or the
-left/right keys compare the existing SVG with three behaviors for each study.
+left/right keys compare the existing SVG with each study's alternatives.
 The `pattern` control lets every variant run on one tile or a larger footprint,
 including empty tiles.
 
 | Study | Review URL | Variants |
 | --- | --- | --- |
-| Normal Physical | `?previewBattle=1&story=vfx&type=normal&kind=physical&pattern=all&variant=impact` | Current SVG, impact arcs, crossing strikes, pressure rings |
+| Normal Physical | `?previewBattle=1&story=vfx&type=normal&kind=physical&pattern=all&variant=impact` | Current SVG, impact arcs, pixel geometry, clean crescents, generated pixel sprite, crossing strikes, pressure rings |
 | Fairy Status | `?previewBattle=1&story=vfx&type=fairy&kind=status&pattern=all&variant=halo` | Current SVG, mote halo, gathering spiral, ribbon veil |
 
 ## Captures
@@ -20,6 +20,9 @@ including empty tiles.
 | --- | --- |
 | Current SVG | ![Normal SVG](normal-physical-original.png) |
 | Impact arcs | ![Impact arcs](normal-physical-impact.png) |
+| Pixel geometry | ![Pixel geometry](normal-physical-pixel.png) |
+| Clean crescents | ![Clean crescents](normal-physical-graphic.png) |
+| Generated pixel sprite | ![Generated pixel sprite](normal-physical-sprite.png) |
 | Crossing strikes | ![Crossing strikes](normal-physical-cross.png) |
 | Pressure rings | ![Pressure rings](normal-physical-ripple.png) |
 
@@ -38,6 +41,18 @@ The Normal impact variant now draws two staggered pulses, each with two or three
 partial jagged arcs spanning 60–120 degrees. Radius, rotation, timing, and arc
 shape vary by tile seed. The older crossing and ripple variants still use the
 independently generated streak at `media/vfx/experiments/normal-impact-streak.png`.
+
+The three newer Normal variants isolate different approaches to removing the
+hand-drawn feel. **Pixel geometry** draws three clean arcs on a 24-pixel canvas
+and scales it without smoothing. **Clean crescents** uses smooth, even-width
+canvas arcs and a faint inner pressure ring. **Generated pixel sprite** uses an
+original transparent shock-ring image downsampled to 64 pixels; the canvas
+changes its timing, size, and rotation per tile. The source prompt asked for
+three disconnected, chunky ivory-gray pixel crescents with a hollow center,
+few fragments, no glow, and no fine spikes; the user's impact reference was
+used only for composition. The resulting project asset is
+`media/vfx/experiments/normal-impact-pixel-generated.png`. These alternatives
+share the same two-pulse window to make visual comparison easier.
 
 Fairy uses the existing higher-detail center mote at
 `media/vfx/experiments/fairy-status-mote.png` plus two new low-resolution,

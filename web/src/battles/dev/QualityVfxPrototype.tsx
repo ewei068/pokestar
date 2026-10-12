@@ -2,19 +2,24 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import impactUrl from "../../../../media/vfx/experiments/normal-impact-streak.png";
+import pixelImpactUrl from "../../../../media/vfx/experiments/normal-impact-pixel-generated.png";
 import fairyUrl from "../../../../media/vfx/experiments/fairy-status-mote.png";
 import fairyGlintUrl from "../../../../media/vfx/experiments/fairy-status-glint-small.png";
 import fairyPearlUrl from "../../../../media/vfx/experiments/fairy-status-pearl-small.png";
 
 export const qualityVfxVariants = {
-  "normal-physical": ["original", "impact", "cross", "ripple"],
+  "normal-physical": ["original", "impact", "pixel", "graphic", "sprite", "cross", "ripple"],
   "fairy-status": ["original", "halo", "spiral", "veil"],
 } as const;
 export type QualityVfxStudy = keyof typeof qualityVfxVariants;
-export type QualityVfxVariant = "original" | "impact" | "cross" | "ripple" | "halo" | "spiral" | "veil";
+export type QualityVfxVariant = "original" | "impact" | "pixel" | "graphic" | "sprite" |
+  "cross" | "ripple" | "halo" | "spiral" | "veil";
 export const qualityVfxNames: Record<QualityVfxVariant, string> = {
   original: "Current SVG",
   impact: "Impact arcs",
+  pixel: "Pixel geometry",
+  graphic: "Clean crescents",
+  sprite: "Generated pixel sprite",
   cross: "Crossing strikes",
   ripple: "Pressure rings",
   halo: "Mote halo",
@@ -104,7 +109,105 @@ const drawImpactArc = (ctx: CanvasRenderingContext2D, tile: Tile, start: number,
   ctx.restore();
 };
 
+/** Low-resolution ring segments, scaled with nearest-neighbor sampling. */
+const drawPixelImpact = (ctx: CanvasRenderingContext2D, tile: Tile, ms: number) => {
+  const small = document.createElement("canvas");
+  small.width = small.height = 24;
+  const pixel = small.getContext("2d");
+  if (!pixel) return;
+  const seed = tile.seed;
+  for (let pulse = 0; pulse < 2; pulse++) {
+    const age = (ms - 40 - pulse * 215) / 385;
+    if (age < 0 || age > 1) continue;
+    const radius = 4.5 + age * 5;
+    const rotation = random(seed + pulse * 53) * Math.PI * 2;
+    for (let index = 0; index < 3; index++) {
+      const key = seed + pulse * 103 + index * 43;
+      const start = rotation + index * Math.PI * 2 / 3;
+      const sweep = (74 + random(key + 7) * 22) * Math.PI / 180;
+      pixel.beginPath();
+      pixel.arc(12, 12, radius + random(key + 13), start, start + sweep);
+      pixel.strokeStyle = "#465565";
+      pixel.lineWidth = 3;
+      pixel.stroke();
+      pixel.beginPath();
+      pixel.arc(12, 12, radius + random(key + 13), start, start + sweep);
+      pixel.strokeStyle = index === 1 ? "#d7e4ed" : "#fff9ed";
+      pixel.lineWidth = 2;
+      pixel.stroke();
+    }
+    pixel.fillStyle = pulse ? "#d7e4ed" : "#fff9ed";
+    for (let index = 0; index < 5; index++) {
+      const angle = rotation + index * Math.PI * 2 / 5;
+      const fragmentRadius = radius + 3 + random(seed + index * 17 + pulse) * 2;
+      pixel.fillRect(Math.round(12 + Math.cos(angle) * fragmentRadius),
+        Math.round(12 + Math.sin(angle) * fragmentRadius), 1, 1);
+    }
+  }
+  ctx.save();
+  ctx.globalAlpha = clamp(.9 - ms / 950);
+  ctx.imageSmoothingEnabled = false;
+  const size = tile.radius * 2.3;
+  ctx.drawImage(small, tile.x - size / 2, tile.y - size / 2, size, size * .82);
+  ctx.restore();
+};
+
+/** Smooth, deliberately simple arcs, without texture or uneven edges. */
+const drawGraphicImpact = (ctx: CanvasRenderingContext2D, tile: Tile, ms: number) => {
+  for (let pulse = 0; pulse < 2; pulse++) {
+    const age = (ms - 35 - pulse * 215) / 385;
+    if (age < 0 || age > 1) continue;
+    const radius = tile.radius * (.32 + age * .64);
+    const rotation = random(tile.seed + pulse * 61) * Math.PI * 2;
+    const opacity = fade(age) * (pulse ? .75 : .95);
+    ctx.save();
+    ctx.translate(tile.x, tile.y);
+    ctx.scale(1, .8);
+    ctx.rotate(rotation);
+    ctx.globalAlpha = opacity;
+    for (let index = 0; index < 3; index++) {
+      const key = tile.seed + pulse * 101 + index * 37;
+      const start = index * Math.PI * 2 / 3;
+      const end = start + (78 + random(key + 3) * 18) * Math.PI / 180;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * (.91 + random(key + 7) * .15), start, end);
+      ctx.strokeStyle = "#4c5964";
+      ctx.lineWidth = Math.max(3, tile.radius * .2);
+      ctx.lineCap = "butt";
+      ctx.stroke();
+      ctx.strokeStyle = index === 1 ? "#d9e3e9" : "#fff9eb";
+      ctx.lineWidth = Math.max(2, tile.radius * .14);
+      ctx.stroke();
+    }
+    ctx.restore();
+    drawRing(ctx, tile, tile.radius * (.18 + age * .55), opacity * .32,
+      "#fff8e8", Math.max(1, tile.radius * .055));
+  }
+};
+
+const drawSpriteImpact = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
+  tile: Tile, ms: number) => {
+  for (let pulse = 0; pulse < 2; pulse++) {
+    const age = (ms - 35 - pulse * 220) / 380;
+    if (age < 0 || age > 1) continue;
+    const size = tile.radius * (1.25 + age * 1.08);
+    ctx.save();
+    ctx.translate(tile.x, tile.y);
+    ctx.scale(1, .82);
+    ctx.rotate((random(tile.seed + pulse * 71) - .5) * .7);
+    ctx.globalAlpha = fade(age) * (pulse ? .8 : .95);
+    ctx.imageSmoothingEnabled = false;
+    ctx.shadowColor = "#435262";
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 2;
+    ctx.drawImage(image, -size / 2, -size / 2, size, size);
+    ctx.restore();
+  }
+};
+
 const drawNormalPhysical = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
+  sprite: HTMLImageElement,
   tile: Tile, ms: number, variant: QualityVfxVariant) => {
   const seed = tile.seed;
   const r = tile.radius;
@@ -130,6 +233,12 @@ const drawNormalPhysical = (ctx: CanvasRenderingContext2D, image: HTMLImageEleme
           fade(arcAge) * (pulse ? .76 : .92), key);
       }
     }
+  } else if (variant === "pixel") {
+    drawPixelImpact(ctx, tile, ms);
+  } else if (variant === "graphic") {
+    drawGraphicImpact(ctx, tile, ms);
+  } else if (variant === "sprite") {
+    drawSpriteImpact(ctx, sprite, tile, ms);
   } else if (variant === "cross") {
     const base = -.5 + (random(seed + 11) - .5) * .22;
     for (let index = 0; index < 2; index++) {
@@ -297,7 +406,7 @@ export const QualityVfxPrototype = ({ study, variant, replayKey }: {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const imageUrls = study === "normal-physical" ? [impactUrl] :
+    const imageUrls = study === "normal-physical" ? [impactUrl, pixelImpactUrl] :
       [fairyUrl, fairyGlintUrl, fairyPearlUrl];
     const images = imageUrls.map((url) => { const image = new Image(); image.src = url; return image; });
     let frame = 0;
@@ -333,7 +442,7 @@ export const QualityVfxPrototype = ({ study, variant, replayKey }: {
         tiles.forEach((tile) => {
           const ms = effectMs - random(tile.seed + 3) * 65;
           if (ms < 0) return;
-          if (study === "normal-physical") drawNormalPhysical(ctx, images[0], tile, ms, variant);
+          if (study === "normal-physical") drawNormalPhysical(ctx, images[0], images[1], tile, ms, variant);
           else drawFairyStatus(ctx, { main: images[0], glint: images[1], pearl: images[2] }, tile, ms, variant);
         });
       }
