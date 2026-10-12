@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prototype": "vite --open '/?prototypeBattle=1'",
     "build": "tsc --noEmit && vite build",
     "test": "tsx --test 'src/**/*.test.ts'"
   },
