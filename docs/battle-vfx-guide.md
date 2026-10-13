@@ -35,7 +35,9 @@ matrix](prototypes/vfx-matrix/README.md) now covers all 54 standard
 type/category combinations. The [Poison and Fighting second pass](prototypes/vfx-matrix/second-pass.md)
 replaces six of the first-pass candidates; the
 [third pass](prototypes/vfx-matrix/third-pass.md) responds to feedback on five
-of those effects with simpler pixel motifs and different motion. Reuse the principles below, then
+of those effects with simpler pixel motifs and different motion. The
+[fourth pass](prototypes/vfx-matrix/fourth-pass.md) refines their scale, cuts,
+and motion. Reuse the principles below, then
 review each revised effect on the battle board before choosing its final
 treatment.
 
@@ -84,6 +86,11 @@ treatment.
   drawn frames first; animate internal details rather than moving an unchanged
   PNG through the whole effect. Preserve the category-specific silhouette and
   timing when simplifying the art.
+- Shape language should follow the material. A cut needs sharp, tapered ends
+  and a wider center; a punch can use quick scale change and a small impact
+  shake; a splash should originate at the point where it contacts the tile.
+  Inspect early and late frames, since a single peak still can hide awkward
+  motion or unwanted residue.
 - Layer code-driven rings, glows, trails, and particles around a small number
   of authored textures. The Normal study shows that clean pressure circles
   can add density without demanding a more elaborate sprite.
@@ -113,6 +120,6 @@ so a battle page loads the effects it needs as the web client grows.
 
 Review the finished production effect with real event playback, including
 reconnect/skip-to-latest behavior, before retiring its development variant.
-Five Poison and Fighting third-pass studies await review; the other 45
+Five Poison and Fighting fourth-pass studies await review; the other 45
 combinations outside the three focused studies still use first-pass art.
 Result effects and sound remain open for separate review.
