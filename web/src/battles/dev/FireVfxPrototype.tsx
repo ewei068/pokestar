@@ -6,7 +6,7 @@ import emberCoalUrl from "../../../../media/vfx/experiments/fire-ember-coal.png"
 import emberFleckUrl from "../../../../media/vfx/experiments/fire-ember-fleck.png";
 import emberForkUrl from "../../../../media/vfx/experiments/fire-ember-fork.png";
 
-export const fireVfxVariants = ["original", "bloom", "column", "burst"] as const;
+export const fireVfxVariants = ["original", "column", "bloom", "burst"] as const;
 export type FireVfxVariant = typeof fireVfxVariants[number];
 
 export const fireVfxVariantName: Record<FireVfxVariant, string> = {
@@ -18,7 +18,7 @@ export const fireVfxVariantName: Record<FireVfxVariant, string> = {
 
 export const readFireVfxVariant = (params: URLSearchParams): FireVfxVariant => {
   const value = params.get("variant");
-  return fireVfxVariants.find((variant) => variant === value) || "bloom";
+  return fireVfxVariants.find((variant) => variant === value) || "column";
 };
 
 type Tile = { x: number; y: number; radius: number; seed: number };
@@ -87,6 +87,29 @@ const drawEmbers = (ctx: CanvasRenderingContext2D, textures: FireTextures, tile:
   }
 };
 
+/** One long-lived tailed ember gives each tile a clear center amid smaller particles. */
+const drawMainEmber = (ctx: CanvasRenderingContext2D, textures: FireTextures,
+  tile: Tile, localMs: number, duration: number, column: boolean) => {
+  const seed = tile.seed;
+  const age = clamp(localMs / duration);
+  const emberSize = tile.radius * (column ? 1.68 + random(seed + 61) * .16 :
+    1.1 + random(seed + 61) * .32) * (1 - age * .13);
+  const emberX = tile.x + (random(seed + 67) - .5) * tile.radius * (column ? .14 : .3);
+  const emberY = tile.y + tile.radius * (column ? .16 : .09) - age * tile.radius * .14;
+  const flip = random(seed + 69) < .5 ? -1 : 1;
+  ctx.save();
+  ctx.translate(emberX, emberY);
+  ctx.rotate(column ? -Math.PI / 4 + (random(seed + 71) - .5) * .1 :
+    (random(seed + 71) - .5) * .2);
+  if (!column) ctx.scale(flip, 1);
+  ctx.globalAlpha = Math.min(1, age * 12) * Math.pow(1 - age, .42) * .95;
+  ctx.drawImage(textures.embers[1], -emberSize / 2, -emberSize / 2, emberSize, emberSize);
+  const coreSize = emberSize * .38;
+  ctx.drawImage(textures.embers[0], -coreSize / 2 - emberSize * .12,
+    -coreSize / 2 + emberSize * .13, coreSize, coreSize);
+  ctx.restore();
+};
+
 const drawTile = (ctx: CanvasRenderingContext2D, textures: FireTextures,
   tile: Tile, ms: number, variant: Exclude<FireVfxVariant, "original">) => {
   const seed = tile.seed;
@@ -112,36 +135,22 @@ const drawTile = (ctx: CanvasRenderingContext2D, textures: FireTextures,
         tile.y + Math.sin(angle) * distance * .55 + tile.radius * .2 - age * tile.radius * .33,
         size * .6, size, Math.cos(angle) * .4, fade(age) * (.57 + random(seed + index * 97 + 37) * .26));
     }
-    // A large, tailed ember anchors each tile and outlives its surrounding flames.
-    const emberAge = localMs / (760 - offset);
-    const emberSize = tile.radius * (1.1 + random(seed + 61) * .32) * (1 - emberAge * .13);
-    const emberX = tile.x + (random(seed + 67) - .5) * tile.radius * .3;
-    const emberY = tile.y + tile.radius * .09 - emberAge * tile.radius * .14;
-    const flip = random(seed + 69) < .5 ? -1 : 1;
-    ctx.save();
-    ctx.translate(emberX, emberY);
-    ctx.rotate((random(seed + 71) - .5) * .2);
-    ctx.scale(flip, 1);
-    ctx.globalAlpha = Math.min(1, emberAge * 12) * Math.pow(1 - emberAge, .42) * .95;
-    ctx.drawImage(textures.embers[1], -emberSize / 2, -emberSize / 2, emberSize, emberSize);
-    const coreSize = emberSize * .38;
-    ctx.drawImage(textures.embers[0], -coreSize / 2 - emberSize * .12,
-      -coreSize / 2 + emberSize * .13, coreSize, coreSize);
-    ctx.restore();
+    drawMainEmber(ctx, textures, tile, localMs, 760 - offset, false);
     drawEmbers(ctx, textures, tile, localMs, 10 + Math.floor(random(seed + 73) * 7), false, seed);
   } else if (variant === "column") {
     drawGlow(ctx, { ...tile, y: tile.y + tile.radius * .25 }, time, .5);
-    const count = 6 + Math.floor(random(seed + 11) * 4);
+    const count = 5 + Math.floor(random(seed + 11) * 3);
     for (let index = 0; index < count; index++) {
       const birth = index * 55 + random(seed + index * 97 + 13) * 38;
       const age = (localMs - birth) / 450;
       if (age < 0 || age > 1) continue;
       const sway = Math.sin(age * 6 + index * 1.8 + random(seed + 17) * 3) * tile.radius * .12;
-      const size = tile.radius * (.68 + random(seed + index * 9) * .38);
+      const size = tile.radius * (.55 + random(seed + index * 9) * .3);
       drawFlame(ctx, image, tile.x + sway + (random(seed + index * 3) - .5) * tile.radius * .35,
         tile.y + tile.radius * .42 - age * tile.radius * 1.05,
-        size * .62, size, sway / tile.radius * .7, fade(age) * .75);
+        size * .62, size, sway / tile.radius * .7, fade(age) * .67);
     }
+    drawMainEmber(ctx, textures, tile, localMs, 760 - offset, true);
     drawEmbers(ctx, textures, tile, localMs, 12, false, seed + 101);
   } else {
     drawGlow(ctx, tile, clamp((localMs - 50) / 500), .95);

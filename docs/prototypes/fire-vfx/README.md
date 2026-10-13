@@ -4,9 +4,15 @@ Question: can a generated source texture and a small code-driven particle render
 produce a better tile effect than the current moving SVG silhouette?
 
 This is a throwaway development story, not a production effect. Open the existing
-VFX lab with `?previewBattle=1&story=vfx&type=fire&kind=special&pattern=all&variant=bloom`
+VFX lab with `?previewBattle=1&story=vfx&type=fire&kind=special&pattern=all&variant=column`
 while running `cd web && npm run dev`. Use the floating arrows or left/right keys
 to compare the current SVG with three particle behaviors:
+
+![Selected rising column motion preview](fire-column-motion.gif)
+
+The selected direction is **Rising column** with one dominant, long-lived
+tailed ember at its center. Smaller flame shapes and embers rise around it.
+The other variants remain for comparison:
 
 ![Flame bloom motion preview](bloom-motion.gif)
 
@@ -22,8 +28,10 @@ empty tiles), and shares the move's 1.5-second playback interval. The three new
 variants use the generated transparent flame source at
 `media/vfx/experiments/fire-special-flame-source.png` and three small generated
 ember sprites (`fire-ember-coal.png`, `fire-ember-fleck.png`, and
-`fire-ember-fork.png`). The bloom has one larger tailed ember with a bright core
-at its base that lasts for the whole effect. Smaller embers have individually
+`fire-ember-fork.png`). The bloom and selected column each have one larger
+tailed ember with a bright core at its base that lasts for the whole effect.
+The column gives that ember more scale and reduces the supporting flames.
+Smaller embers have individually
 seeded birth times, lifetimes, directions, sizes, rotations, and sprite
 selections. Each tile's seed comes from its team and position, so tiles vary even
 within the same action and replaying the story keeps each tile's appearance.
@@ -34,9 +42,9 @@ The mobile layout was also checked with the column variant:
 
 ![Mobile rising column](mobile-column.png)
 
-The next decision is which behavior and visual scale to keep, or whether a baked
-sprite sheet is preferable. Once chosen, rewrite that behavior as the production
-Fire Special renderer and remove the prototype switcher and unused variants.
+The direction is ready to be rewritten as the production Fire Special renderer.
+Keep this study for comparison until real event playback has been reviewed.
+The shared workflow is in the [battle VFX creation guide](../../battle-vfx-guide.md).
 
 Before production, the move actor and tile effects need one playback clock. The
 prototype currently aligns a canvas timeline to a CSS actor animation by fixed

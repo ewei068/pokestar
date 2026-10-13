@@ -11,7 +11,7 @@ including empty tiles.
 
 | Study | Review URL | Variants |
 | --- | --- | --- |
-| Normal Physical | `?previewBattle=1&story=vfx&type=normal&kind=physical&pattern=all&variant=impact` | Current SVG, impact arcs, pixel geometry, clean crescents, generated pixel sprite, crossing strikes, pressure rings |
+| Normal Physical | `?previewBattle=1&story=vfx&type=normal&kind=physical&pattern=all&variant=sprite` | Current SVG, pixel sprite + circles, pressure circles, impact arcs, pixel geometry, clean crescents, crossing strikes |
 | Fairy Status | `?previewBattle=1&story=vfx&type=fairy&kind=status&pattern=all&variant=halo` | Current SVG, mote halo, gathering spiral, ribbon veil |
 
 ## Captures
@@ -22,9 +22,11 @@ including empty tiles.
 | Impact arcs | ![Impact arcs](normal-physical-impact.png) |
 | Pixel geometry | ![Pixel geometry](normal-physical-pixel.png) |
 | Clean crescents | ![Clean crescents](normal-physical-graphic.png) |
-| Generated pixel sprite | ![Generated pixel sprite](normal-physical-sprite.png) |
+| Pixel sprite + circles | ![Pixel sprite and pressure circles](normal-physical-sprite.png) |
 | Crossing strikes | ![Crossing strikes](normal-physical-cross.png) |
-| Pressure rings | ![Pressure rings](normal-physical-ripple.png) |
+| Pressure circles | ![Pressure circles](normal-physical-ripple.png) |
+
+![Selected Normal sprite and circles motion](normal-sprite-rings-motion.gif)
 
 ![Normal impact motion](normal-impact-motion.gif)
 
@@ -39,8 +41,8 @@ including empty tiles.
 
 The Normal impact variant now draws two staggered pulses, each with two or three
 partial jagged arcs spanning 60–120 degrees. Radius, rotation, timing, and arc
-shape vary by tile seed. The older crossing and ripple variants still use the
-independently generated streak at `media/vfx/experiments/normal-impact-streak.png`.
+shape vary by tile seed. The older crossing variant still uses the independently
+generated streak at `media/vfx/experiments/normal-impact-streak.png`.
 
 The three newer Normal variants isolate different approaches to removing the
 hand-drawn feel. **Pixel geometry** draws three clean arcs on a 24-pixel canvas
@@ -51,8 +53,10 @@ changes its timing, size, and rotation per tile. The source prompt asked for
 three disconnected, chunky ivory-gray pixel crescents with a hollow center,
 few fragments, no glow, and no fine spikes; the user's impact reference was
 used only for composition. The resulting project asset is
-`media/vfx/experiments/normal-impact-pixel-generated.png`. These alternatives
-share the same two-pulse window to make visual comparison easier.
+`media/vfx/experiments/normal-impact-pixel-generated.png`. The selected study
+now layers three expanding pressure circles behind that sprite. The circles
+alone remain available as the `ripple` variant. These alternatives share the
+same two-pulse window to make visual comparison easier.
 
 Fairy uses the existing higher-detail center mote at
 `media/vfx/experiments/fairy-status-mote.png` plus two new low-resolution,
@@ -67,9 +71,8 @@ uses two staggered expanding impact images for Giga Impact, reuses that sequence
 for Double-Edge, and combines actor motion with two target-side wisps for Body
 Slam. These studies use their own art and geometry.
 
-The Normal study tests whether a short, sharp pulse reads as physical without
-comic-book symbols. The Fairy study tests whether the status effect reads as
-magical without implying damage or a specific buff. These are questions for
-review, not final art decisions. The selected behaviors should later be
-rewritten into the production renderer with a shared actor/VFX clock. The
-animation guidance document comes after these studies are reviewed.
+The selected Normal study uses the sprite and circles for a short, sharp
+physical pulse; circles alone remain a fallback. Fairy still tests whether a
+status effect reads as magical without implying damage or a specific buff.
+Production effects should use a shared actor/VFX clock. The current guidance
+is in the [battle VFX creation guide](../../battle-vfx-guide.md).

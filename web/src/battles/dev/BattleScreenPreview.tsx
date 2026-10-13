@@ -26,7 +26,8 @@ const studyFor = (selection: VfxLabSelection): VfxStudy | null => {
   if (selection.type === "fairy" && selection.kind === "status") return "fairy-status";
   return null;
 };
-const defaultVariant = (study: VfxStudy) => study === "fire-special" ? "bloom" : qualityVfxVariants[study][1];
+const defaultVariant = (study: VfxStudy) => study === "fire-special" ? "column" :
+  study === "normal-physical" ? "sprite" : "halo";
 const readVariant = (study: VfxStudy | null, params: URLSearchParams) => !study ? "original"
   : study === "fire-special" ? readFireVfxVariant(params) : readQualityVfxVariant(study, params);
 

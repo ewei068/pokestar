@@ -8,7 +8,7 @@ import fairyGlintUrl from "../../../../media/vfx/experiments/fairy-status-glint-
 import fairyPearlUrl from "../../../../media/vfx/experiments/fairy-status-pearl-small.png";
 
 export const qualityVfxVariants = {
-  "normal-physical": ["original", "impact", "pixel", "graphic", "sprite", "cross", "ripple"],
+  "normal-physical": ["original", "sprite", "ripple", "impact", "pixel", "graphic", "cross"],
   "fairy-status": ["original", "halo", "spiral", "veil"],
 } as const;
 export type QualityVfxStudy = keyof typeof qualityVfxVariants;
@@ -19,9 +19,9 @@ export const qualityVfxNames: Record<QualityVfxVariant, string> = {
   impact: "Impact arcs",
   pixel: "Pixel geometry",
   graphic: "Clean crescents",
-  sprite: "Generated pixel sprite",
+  sprite: "Pixel sprite + circles",
   cross: "Crossing strikes",
-  ripple: "Pressure rings",
+  ripple: "Pressure circles",
   halo: "Mote halo",
   spiral: "Gathering spiral",
   veil: "Ribbon veil",
@@ -29,7 +29,8 @@ export const qualityVfxNames: Record<QualityVfxVariant, string> = {
 export const readQualityVfxVariant = (study: QualityVfxStudy, params: URLSearchParams): QualityVfxVariant => {
   const value = params.get("variant");
   const variants = qualityVfxVariants[study] as readonly string[];
-  return (variants.find((variant) => variant === value) || variants[1]) as QualityVfxVariant;
+  return (variants.find((variant) => variant === value) ||
+    (study === "normal-physical" ? "sprite" : "halo")) as QualityVfxVariant;
 };
 
 type Tile = { x: number; y: number; radius: number; seed: number };
@@ -73,6 +74,22 @@ const drawRing = (ctx: CanvasRenderingContext2D, tile: Tile, radius: number,
   ctx.ellipse(tile.x, tile.y, radius, radius * squash, 0, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
+};
+
+/** Concentric pressure fronts can stand alone or sit behind the impact sprite. */
+const drawPressureCircles = (ctx: CanvasRenderingContext2D, tile: Tile,
+  ms: number, count: number) => {
+  for (let index = 0; index < count; index++) {
+    const key = tile.seed + index * 73;
+    const age = (ms - index * 92 - random(key + 3) * 24) / 435;
+    if (age < 0 || age > 1) continue;
+    const radius = tile.radius * (.16 + age * .8 + random(key + 7) * .06);
+    const opacity = fade(age) * (index === 0 ? .9 : .74);
+    drawRing(ctx, tile, radius, opacity * .7, "#536575",
+      Math.max(2, tile.radius * .12), 1);
+    drawRing(ctx, tile, radius, opacity, index % 2 ? "#dce8e9" : "#fff9e9",
+      Math.max(1.2, tile.radius * .068), 1);
+  }
 };
 
 const drawImpactArc = (ctx: CanvasRenderingContext2D, tile: Tile, start: number,
@@ -187,6 +204,7 @@ const drawGraphicImpact = (ctx: CanvasRenderingContext2D, tile: Tile, ms: number
 
 const drawSpriteImpact = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
   tile: Tile, ms: number) => {
+  drawPressureCircles(ctx, tile, ms, 3);
   for (let pulse = 0; pulse < 2; pulse++) {
     const age = (ms - 35 - pulse * 220) / 380;
     if (age < 0 || age > 1) continue;
@@ -254,19 +272,7 @@ const drawNormalPhysical = (ctx: CanvasRenderingContext2D, image: HTMLImageEleme
     if (age >= 0 && age <= 1) drawRing(ctx, tile, r * (.24 + age * .65),
       fade(age) * .35, "#fff6db", Math.max(1, r * .04));
   } else {
-    for (let index = 0; index < 3; index++) {
-      const age = (ms - index * 105) / 430;
-      if (age < 0 || age > 1) continue;
-      drawRing(ctx, tile, r * (.15 + age * .95), fade(age) * (.7 - index * .13),
-        index === 0 ? "#fff8e8" : "#b7a994", Math.max(1, r * (.07 - index * .013)), .6 + index * .09);
-    }
-    for (let index = 0; index < 5; index++) {
-      const key = seed + index * 109;
-      const age = (ms - 75 - random(key + 5) * 100) / 350;
-      if (age < 0 || age > 1) continue;
-      const angle = index / 5 * Math.PI * 2 + random(key + 11) * .45;
-      drawStreak(ctx, image, tile, angle, r * (.25 + age * .55), r * .36, fade(age) * .5);
-    }
+    drawPressureCircles(ctx, tile, ms, 4);
   }
 };
 
