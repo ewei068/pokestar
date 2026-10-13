@@ -52,7 +52,7 @@ export const rockSpecial:Draw=(ctx,ms,seed,c)=>{
   for(let i=0;i<6;i++){
     const s=seed+i*47,u=age(ms,20+i*17,600);if(!live(u))continue;
     const a=i*TAU/6+random(s)*.2,collapse=ease((u-.46)/.3),r=(.64+random(s+2)*.2)*(1-collapse);
-    const x=Math.cos(a)*r,y=Math.sin(a)*r*.65-Math.sin(collapse*Math.PI)*.28;
+    const x=Math.cos(a)*r,y=Math.sin(a)*r*.65-Math.sin(collapse*Math.PI)*.28+Math.sin(ms*.018+i*1.4)*.085*(1-collapse);
     const size=(.3+random(s+3)*.22)*(1-ease((u-.73)/.27));
     halo(ctx,x,y,size*.8,'#c3b1ff',envelope(u)*.23);
     part(ctx,'rock',c,x,y,size,a*.25+u*.3,envelope(u),i);

@@ -24,3 +24,15 @@ code-authored in the development renderer.
 The optional Lavender Town URL supplied in feedback was inspected. It contains
 a repeated PicMix watermark; it was not copied into the renderer. Ghost Status
 keeps the project's original spirit silhouette and its existing deformation.
+
+## Dragon refinement, 2026-10-13
+
+`dragon-head-simple.png` replaces the high-detail head in the review renderer.
+Generated with the built-in image tool; original file:
+`exec-40768361-97ef-4564-ac11-af82e4ad4a5b.png`.
+
+Brief: one tiny, right-facing, open-mouth blue-violet dragon head; emulate a
+24×24 logical pixel grid with five flat colors, a bold snout, one swept-back
+horn, a small eye/fang, short neck, and true transparency. No scales, texture,
+glow, rings, or particles. Code rears the head and emits independently timed
+voice arcs from its mouth. The previous detailed head remains for history.

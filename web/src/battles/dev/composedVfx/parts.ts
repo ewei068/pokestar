@@ -2,7 +2,7 @@
 import { random, clamp, ease } from '../matrixVfxKit';
 import type { Colors } from '../matrixVfxKit';
 import splashUrl from "../../../../../media/vfx/components/water-splash.png";
-import dragonUrl from '../../../../../media/vfx/components/dragon-head.png';
+import dragonUrl from '../../../../../media/vfx/components/dragon-head-simple.png';
 import emberUrl from '../../../../../media/vfx/experiments/fire-ember-fork.png';
 import fleckUrl from '../../../../../media/vfx/experiments/fire-ember-fleck.png';
 import coalUrl from '../../../../../media/vfx/experiments/fire-ember-coal.png';

@@ -118,9 +118,12 @@ export const ghostStatus:Draw=(ctx,ms,seed,c)=>{
 };
 export const darkPhysical:Draw=(ctx,ms,seed,c)=>{
   for(let i=0;i<12;i++) {
-    const s=seed+i*47,angle=(random(s)-.5)*.52,offset:Point=[(random(s+1)-.5)*.5,(random(s+2)-.5)*1.0];
-    slash(ctx,ms,10+random(s+4)*410,angle,{...c,main:'#575070',light:'#b49ebc'},
-      .036+random(s+3)*.025,offset,.48+random(s+5)*.8);
+    const s=seed+i*47,u=age(ms,10+random(s+4)*410,250);if(!live(u))continue;
+    const length=.48+random(s+5)*.8,width=.015+random(s+3)*.01;
+    ctx.save();ctx.translate((random(s+1)-.5)*.5,(random(s+2)-.5));ctx.rotate((random(s)-.5)*.10);
+    const line=(p:number):Point=>[(-.95+1.9*p)*length,0];
+    ribbon(ctx,line,u*1.8,.8,width,c.dark,envelope(u));
+    ribbon(ctx,line,u*1.8,.8,width*.32,'#d2bfdc',envelope(u));ctx.restore();
   }
   debris(ctx,ms,260,seed,c,'shard',13,[0,.1],.82);
 };
@@ -196,22 +199,29 @@ export const dragonSpecial:Draw=(ctx,ms,seed,c)=>{
     const u=age(ms,70+i*27,270);if(!live(u))continue;const a=ms*.02+i*2.4,r=.2+u*.64;
     part(ctx,'shard',{...c,light:'#bcf0ff'},Math.cos(a)*r,.63-u*1.3+Math.sin(a)*.1,.065+random(seed+i)*.05,a,envelope(u),i);
   }
-  for(let i=0;i<7;i++) {
-    const v=age(ms,145+i*48,175);if(!live(v))continue;
-    const dir=i%2?1:-1,x=dir*(.12+v*.46);
-    path(ctx,[[0,.55],[x*.45,.5],[x*.6,.61],[x,.52]],'#9aeaff',.025,envelope(v));
-    spark(ctx,x,.52,.035,'#e0faff',envelope(v));
+  // Ground arcs discharge from the funnel foot, with larger blue sparks and a rotating rim.
+  for(let i=0;i<12;i++) {
+    const v=age(ms,100+i*38,200);if(!live(v))continue;
+    const dir=i%2?1:-1,x=dir*(.12+v*(.75+random(seed+i)*.25));
+    const points:Point[]=[[0,.55],[x*.35,.4],[x*.5,.65],[x*.7,.48],[x,.56]];
+    path(ctx,points,'#508af0',.065,envelope(v));path(ctx,points,'#c2faff',.025,envelope(v));
+    spark(ctx,x,.56,.065+random(seed+i+12)*.045,'#c2faff',envelope(v));
   }
+  const ground=age(ms,95,540);
+  if(live(ground))ring(ctx,0,.57,.15+Math.sin(ground*Math.PI)*.48,'#78cfff',.036,envelope(ground)*.8,.28);
 
 };
 export const dragonStatus:Draw=(ctx,ms,_seed,c)=>{
-  const u=age(ms,10,700);if(live(u)) {
-    const rear=ease((u-.08)/.43);
-    texture(ctx,'dragon',-.13,.2-rear*.3,1.57,.52-rear*.85,envelope(u));
-  }
+  const u=age(ms,10,700);if(!live(u))return;
+  const rear=ease((u-.08)/.43),angle=.4-rear*.6;
+  // Head and voice share a local coordinate frame: the roar always leaves the open mouth.
+  ctx.save();ctx.translate(-.19,.14-rear*.2);ctx.rotate(angle);
+  texture(ctx,'dragon',0,0,1.45,0,envelope(u));
+  const mouth:Point=[.36,.24];
   for(let j=0;j<3;j++) {
     const v=age(ms,295+j*100,255);if(!live(v))continue;
-    const curve=(p:number):Point=>{const a=-.95+p*1.35,r=.12+ease(v)*.89;return [.14+Math.cos(a)*r,-.12+Math.sin(a)*r*.8];};
+    const curve=(p:number):Point=>{const a=-.66+p*1.32,r=.04+ease(v)*.69;return [mouth[0]+Math.cos(a)*r,mouth[1]+Math.sin(a)*r*.8];};
     ribbon(ctx,curve,1,1,.045,c.main,envelope(v));ribbon(ctx,curve,1,1,.016,c.light,envelope(v));
   }
+  ctx.restore();
 };

@@ -29,6 +29,8 @@ The effects remain in development review until the user requests promotion.
    explain the material: droplets separate from a collapsing crest, fragments
    leave a landing rock, feathers leave the wing's outer edge. Finish when
    those causes and their visible consequences line up in both time and space.
+   Attach emissions to an animated local point: a wing tip, open mouth, or
+   beam foot. Effects that move or rotate must carry that origin with them.
 5. **Review the whole effect beside the references.** Inspect the complete
    0–760 ms sequence, with regular playback plus timeline scrubbing or a
    complete sampled filmstrip. Check desktop and phone scale, occupied and
@@ -79,6 +81,10 @@ splash; Status spreads a pool while bubbles rise at different times.
   can stay planted. Water curls, collapses, and sheds droplets. Electricity
   changes channels in short discrete bursts. Gas changes its silhouette and
   density. Fire can have one broad body with smaller foreground embers.
+- **Match contact to the source.** A broad beam needs a broad local impact,
+  while a small slash needs a narrow trace. A background flame should leave
+  room for foreground embers through scale and opacity. Check these relations
+  in motion before increasing particle count.
 - **Use layers purposefully.** Draw atmosphere first, the focal object next,
   and foreground particles last. Pressure circles suit impacts, stomps, and
   roars; other materials can communicate their own force without circles.

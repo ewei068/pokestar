@@ -92,10 +92,11 @@ const drawEmbers = (ctx: CanvasRenderingContext2D, textures: FireTextures, tile:
 const drawMainEmber = (ctx: CanvasRenderingContext2D, textures: FireTextures,
   tile: Tile, localMs: number, duration: number, column: boolean) => {
   if (column) {
-    const age=clamp(localMs/duration), size=tile.radius*1.9;
-    ctx.save();ctx.globalAlpha=Math.min(1,age*10)*Math.min(1,(1-age)*4)*.84;
+    const age=clamp(localMs/duration), size=tile.radius*1.6;
+    ctx.save();ctx.globalAlpha=Math.min(1,age*10)*Math.min(1,(1-age)*4)*.53;
     ctx.imageSmoothingEnabled=false;
     const image=textures.body;
+    ctx.beginPath();ctx.rect(tile.x-size,tile.y-size,size*2,size+tile.radius*.29);ctx.clip();
     // Independently deform narrow bands near the tongues; the opaque body anchors the column.
     for(let band=0;band<16;band++) {
       const sourceY=band*image.naturalHeight/16;

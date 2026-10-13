@@ -42,3 +42,26 @@ backgrounds, alternate seeds, and Fighting/Poison references.
 Aesthetic approval belongs to the user. These checks do not promote the matrix
 into live battle playback. Server-driven integration, reconnect/skip behavior,
 SFX, and resulting damage/status animations remain separate work.
+
+## Follow-up review, 2026-10-13
+
+Saved the user's next full review in `../review-2026-10-13-composed.json`.
+Ten cells changed: Normal Physical, Flying Physical/Status, Rock Special,
+Fire Special/Status, Grass Special, Dragon Special/Status, and Dark Physical.
+The gallery v10 carries forward 44 approvals and resets only these ten cells;
+all written notes remain available.
+
+- Normal: three independently timed 60–90° cropped crescents over pressure rings.
+- Flying: lower contact and feather emission; Rock: vertical bob before convergence.
+- Fire: smaller translucent background body clipped at the ground, and denser
+  sequential status flames using one unbranched sprite.
+- Grass/Dragon Special: larger local contact fields, spray, and blue ground arcs.
+- Dragon Status: simpler generated head; head and mouth emissions share a transform.
+- Dark: narrow straight horizontal cuts with varied length, timing, and placement.
+- Ghost Status retains the approved original sprite: the suggested external
+  image contained a repeated watermark. The optional substitution is unfulfilled.
+
+Re-captured and inspected the complete desktop/phone sequences for all ten
+changed effects; re-ran the 4,212-frame deterministic/endpoint audit with no
+new failures. Current type filmstrips show this follow-up; full-board captures
+above document the first pass's layout and integration checks.

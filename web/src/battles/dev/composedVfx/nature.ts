@@ -10,7 +10,7 @@ const wing=(ctx:Ctx,c:Colors,x:number,y:number,size:number,angle:number,side:num
 export const flyingPhysical:Draw=(ctx,ms,seed,c)=>{
   const u=age(ms,10,500);if(live(u)){
     const strike=ease((u-.12)/.36);
-    wing(ctx,c,-.89,-.56,1,-.12+strike*1.37,1,envelope(u));
+    wing(ctx,c,-.89,-.42,1,-.12+strike*1.37,1,envelope(u));
   }
   ctx.save();ctx.translate(.2,.15);shock(ctx,ms,205,c,.72,.55);ctx.restore();
   debris(ctx,ms,230,seed,c,'feather',11,[.2,.15],.65);
@@ -36,7 +36,7 @@ export const flyingStatus:Draw=(ctx,ms,seed,c)=>{
     wing(ctx,c,side*.11,.25,.68,angle,side,envelope(u));
     const x=side*(.11+.68*(1.02*Math.cos(angle)+.81*Math.sin(angle)));
     const y=.25+.68*(1.02*Math.sin(angle)-.81*Math.cos(angle));
-    debris(ctx,ms,205,seed+(side+1)*71,c,'feather',6,[x,y],.35);
+    debris(ctx,ms,205,seed+(side+1)*71,c,'feather',6,[x,y+.2],.35);
   }
 };
 
@@ -108,12 +108,20 @@ export const grassSpecial:Draw=(ctx,ms,seed,c)=>{
     const a=i*2.4+v*5,r=.22+focus*.54;
     spark(ctx,Math.cos(a)*r,.31-v*1.34,.045+random(seed+i)*.025,i%2?c.light:'#a3de56',envelope(v));
   }
-  const contact=age(ms,115,510);
+  // The broad beam hits a ground-level bloom; expanding fronts and spray carry its scale.
+  const contact=age(ms,100,560);
   if(live(contact)) {
-    oval(ctx,0,.31,.12+Math.sin(contact*Math.PI)*.42,.065,c.light,envelope(contact)*.8);
-    for(let i=0;i<13;i++) {
-      const v=age(ms,145+i*23,230);if(!live(v))continue;const a=i*2.4;
-      spark(ctx,Math.cos(a)*v*.75,.31-Math.sin(v*Math.PI)*.23+Math.sin(a)*v*.12,.045,c.light,envelope(v));
+    oval(ctx,0,.31,.22+Math.sin(contact*Math.PI)*.62,.13,c.light,envelope(contact)*.9);
+    for(let front=0;front<3;front++) {
+      const v=age(ms,110+front*100,330);if(!live(v))continue;
+      ring(ctx,0,.31,.15+ease(v)*.96,c.main,.075,envelope(v)*.8,.35);
+      ring(ctx,0,.31,.15+ease(v)*.96,'#f4ffc8',.027,envelope(v),.35);
+    }
+    for(let i=0;i<26;i++) {
+      const key=seed+i*67,v=age(ms,115+random(key)*260,265);if(!live(v))continue;
+      const a=i*2.4,x=Math.cos(a)*v*(.75+random(key+1)*.55);
+      const y=.31-Math.sin(v*Math.PI)*(.22+random(key+2)*.48)+Math.sin(a)*v*.22;
+      spark(ctx,x,y,.045+random(key+3)*.045,i%3?c.light:'#b3ee61',envelope(v));
     }
   }
 

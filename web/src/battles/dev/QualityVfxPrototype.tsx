@@ -205,15 +205,19 @@ const drawGraphicImpact = (ctx: CanvasRenderingContext2D, tile: Tile, ms: number
 const drawSpriteImpact = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
   tile: Tile, ms: number) => {
   drawPressureCircles(ctx, tile, ms, 3);
-  for (let pulse = 0; pulse < 2; pulse++) for (let piece = 0; piece < 2; piece++) {
-    const key=tile.seed+pulse*71+piece*137;
-    const age=(ms-35-pulse*220-piece*48)/310;
+  // Three small 60–90 degree segments share the pressure-ring center.
+  for (let piece = 0; piece < 3; piece++) {
+    const key=tile.seed+piece*137;
+    const age=(ms-45-piece*42)/380;
     if(age<0||age>1)continue;
-    const size=tile.radius*(1.0+age*.75+random(key)*.17);
+    const size=tile.radius*(1.7+age*.45+random(key)*.13);
+    const halfArc=(60+random(key+5)*30)*Math.PI/360;
     ctx.save();ctx.translate(tile.x,tile.y);ctx.scale(1,.85);
-    ctx.rotate(piece*Math.PI+(random(key+2)-.5)*.65);
+    ctx.rotate(piece*Math.PI*2/3+(random(key+2)-.5)*.28);
+    ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,size,Math.PI-halfArc,Math.PI+halfArc);ctx.closePath();ctx.clip();
     ctx.globalAlpha=fade(age)*.9;ctx.imageSmoothingEnabled=false;
-    ctx.drawImage(image,-size/2,-size/2,size,size);ctx.restore();
+    // The source crescent curves around a point right of its image center.
+    ctx.drawImage(image,-size*.65,-size*.52,size,size);ctx.restore();
   }
 };
 

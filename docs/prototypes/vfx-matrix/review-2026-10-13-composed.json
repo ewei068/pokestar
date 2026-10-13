@@ -1,0 +1,326 @@
+[
+  {
+    "type": "normal",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "I think this is the right direction, but the impact effect should probably be smaller and also maybe only take up 60-90 degrees and have 3 of them, similar to the old effect's size and angle"
+  },
+  {
+    "type": "normal",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "normal",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "fighting",
+    "kind": "physical",
+    "status": "approved",
+    "notes": "Still one of my favorite effects"
+  },
+  {
+    "type": "fighting",
+    "kind": "special",
+    "status": "approved",
+    "notes": "Also one of my favorite effects"
+  },
+  {
+    "type": "fighting",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "flying",
+    "kind": "physical",
+    "status": "approved",
+    "notes": "This looks good, maybe have the wing hit a little more downward so the strike is centered on the impact area"
+  },
+  {
+    "type": "flying",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "flying",
+    "kind": "status",
+    "status": "approved",
+    "notes": "Looks good now, but I think the feather particles should appear a little more downward closer to where the wing is"
+  },
+  {
+    "type": "poison",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "poison",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "poison",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ground",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ground",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ground",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "rock",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "rock",
+    "kind": "special",
+    "status": "approved",
+    "notes": "This looks very good, probably my favorite one of everything you've done\n\nNEW FEEDBACK: if you're able to make the rocks slightly hover up/down (similar to rock status animation) before they start being thrown to the center, that would improve the \"special mystical floating rocks\" impression"
+  },
+  {
+    "type": "rock",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "bug",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "bug",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "bug",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ghost",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ghost",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ghost",
+    "kind": "status",
+    "status": "approved",
+    "notes": "This looks very good and is one of my favorites. If you're able to use the ghost sprite from lavendar town https://img1.picmix.com/output/stamp/normal/1/8/5/7/2607581_a6a53.png and keep its slightly wavy motion, that would be ideal. But OK if not\n\nNEW FEEDBACK: were you able to use this sprite?"
+  },
+  {
+    "type": "steel",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "steel",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "steel",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "fire",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "fire",
+    "kind": "special",
+    "status": "needs-work",
+    "notes": "Almost how I want it. Let's make a few adjustments -- make the big ember slightly smaller and more transparent so it's less of the focus. Also, slice the bottom part of the big ember so it looks like the flame is coming off the ground"
+  },
+  {
+    "type": "fire",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "Good direction, I think there needs to be more small embers closer together, and only one type of small ember since there's a weird branching looking ember now"
+  },
+  {
+    "type": "water",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "water",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "water",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "grass",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "grass",
+    "kind": "special",
+    "status": "needs-work",
+    "notes": "This is in the right direction, but the effect around the impact area should look bigger and more \"impactful\". A huge beam of light in the sky just hit the area, and the impact should match that scale"
+  },
+  {
+    "type": "grass",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "electric",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "electric",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "electric",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "psychic",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "psychic",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "psychic",
+    "kind": "status",
+    "status": "approved",
+    "notes": "This looks very good and is one of my favorites"
+  },
+  {
+    "type": "ice",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ice",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ice",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "dragon",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "dragon",
+    "kind": "special",
+    "status": "approved",
+    "notes": "I think this looks a little better now, but the effects you added at the base of the twister are still kind of weak. Maybe you could amp it up a bit?"
+  },
+  {
+    "type": "dragon",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "Now this is too high-fidelity, I'm hoping you could strike a balance between the two dragons, maybe closer to the end of the more abstract lower fidelity version? Also, the mouth should be pointing towards and facing where the howl lines are coming from"
+  },
+  {
+    "type": "dark",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Looks better -- I still think the cuts need be thinner. They should also be more horizontal and completely straight if possible"
+  },
+  {
+    "type": "dark",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "dark",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "fairy",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "fairy",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "fairy",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  }
+]

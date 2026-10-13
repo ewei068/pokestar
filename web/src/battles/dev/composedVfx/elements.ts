@@ -21,10 +21,10 @@ export const firePhysical:Draw=(ctx,ms,seed,c)=>{
 };
 export const fireStatus:Draw=(ctx,ms,seed,_c)=>{
   // Burn-like sequence: each flame stays at its x position and rises/falls on its own beat.
-  for(let i=0;i<6;i++) {
-    const u=age(ms,25+i*68+random(seed+i)*24,285);if(!live(u))continue;
-    const x=-.65+i*.26,y=.28-Math.sin(u*Math.PI)*.19;
-    texture(ctx,i%2?'ember':'fleck',x,y,.42+Math.sin(u*Math.PI)*.12,0,envelope(u));
+  for(let i=0;i<10;i++) {
+    const u=age(ms,25+i*42+random(seed+i)*15,265);if(!live(u))continue;
+    const x=-.65+i*.145,y=.28-Math.sin(u*Math.PI)*.19;
+    texture(ctx,'fleck',x,y,.36+Math.sin(u*Math.PI)*.10,0,envelope(u));
   }
 };
 
