@@ -168,6 +168,7 @@ The [quality pass](prototypes/vfx-matrix/quality-pass.md) replaces 37
 first-pass combinations with distinct sequences, and the
 [polish pass](prototypes/vfx-matrix/polish-pass.md) adds material-specific
 secondary motion to those 37. The other 17 combinations remain unchanged;
-the focused studies remain separate. Review the revised candidates before
-promotion.
+the focused studies remain separate. The [full art pass](prototypes/vfx-matrix/final-art-pass.md)
+adds generated focal subjects to 45 cells while preserving nine focused or
+approved effects. Review every new candidate at battle size before promotion.
 Result effects and sound remain open for separate review.

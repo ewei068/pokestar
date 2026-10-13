@@ -51,25 +51,24 @@
       <span id="progress" aria-live="polite"></span>
       <button id="play" type="button">Pause previews</button>
       <button id="export" type="button">Export review notes</button>
-      <label>Show <select id="filter"><option value="all">All effects</option><option value="revised">37 polished candidates</option><option value="unreviewed">Unreviewed</option><option value="needs-work">Needs work</option><option value="approved">Looks good</option></select></label>
+      <label>Show <select id="filter"><option value="all">All effects</option><option value="revised">45 new art candidates</option><option value="unreviewed">Unreviewed</option><option value="needs-work">Needs work</option><option value="approved">Looks good</option></select></label>
     </div>
   </header>
   <main>
-    <p class="note">The 37 distinct tile sequences now have another pass of material detail, secondary motion, and foreground accents. Earlier focused effects are unchanged. Previous marks carry over for unchanged effects; the 37 polished candidates are ready for review. Notes stay in this browser until exported.</p>
+    <p class="note">Forty-five effects now use new type-specific focal art with timed reveals and supporting motion. The six Poison/Fighting studies and three approved focused effects keep their current look. Earlier feedback remains visible on changed cards; unchanged marks carry forward. Notes stay in this browser until exported.</p>
     <div id="grid" class="grid"></div>
   </main>
   <script>
     const types = ["normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost", "steel", "fire", "water", "grass", "electric", "psychic", "ice", "dragon", "dark", "fairy"];
     const kinds = ["physical", "special", "status"];
-    const revised = new Set([
-      ...["flying","ground","rock","bug","ghost","steel","fire","water","grass","electric","psychic","ice","dark","fairy"].map((type) => `${type}-physical`),
-      ...["flying","ground","rock","ghost","water","grass","electric","psychic","dragon","fairy"].map((type) => `${type}-special`),
-      ...["normal","flying","rock","bug","ghost","steel","fire","grass","electric","psychic","ice","dragon","dark"].map((type) => `${type}-status`),
-    ]);
-    const key = "pokestar-vfx-review-v6";
+    const preserved = new Set(["normal-physical", "fire-special", "fairy-status",
+      ...["physical", "special", "status"].flatMap((kind) => ["fighting", "poison"].map((type) => `${type}-${kind}`))]);
+    const revised = new Set(types.flatMap((type) => kinds.map((kind) => `${type}-${kind}`))
+      .filter((id) => !preserved.has(id)));
+    const key = "pokestar-vfx-review-v7";
     let previous = {};
     let reviews = {};
-    try { previous = JSON.parse(localStorage.getItem("pokestar-vfx-review-v5") || "{}"); } catch { previous = {}; }
+    try { previous = JSON.parse(localStorage.getItem("pokestar-vfx-review-v6") || "{}"); } catch { previous = {}; }
     try {
       const saved = localStorage.getItem(key);
       reviews = saved ? JSON.parse(saved) : Object.fromEntries(Object.entries(previous).filter(([id]) => !revised.has(id)));
@@ -77,8 +76,8 @@
     const grid = document.getElementById("grid");
     const filter = document.getElementById("filter");
     const specialVariant = (type, kind) => type === "normal" && kind === "physical" ? "sprite" :
-      type === "fairy" && kind === "status" ? "halo" : type === "fire" && kind === "special" ? "column" : "study";
-    const label = (type, kind) => revised.has(`${type}-${kind}`) ? "polish-pass candidate" :
+      type === "fairy" && kind === "status" ? "halo" : type === "fire" && kind === "special" ? "column" : "final";
+    const label = (type, kind) => revised.has(`${type}-${kind}`) ? "new art candidate" :
       type === "normal" && kind === "physical" || type === "fairy" && kind === "status" ? "approved study" :
       type === "fighting" || type === "poison" ? "focused study" : "earlier candidate";
     const save = () => { localStorage.setItem(key, JSON.stringify(reviews)); update(); };
@@ -187,13 +186,15 @@
     update();
   </script>
   <script type="module">
-    import { drawMatrixTile } from "./src/battles/dev/matrixVfxArt.ts";
+    import { drawFinalMatrixTile, loadFinalMatrixArt } from "./src/battles/dev/finalMatrixVfx.ts";
     import { createFireReviewRenderer } from "./src/battles/dev/FireVfxPrototype.tsx";
     import { createQualityReviewRenderer } from "./src/battles/dev/QualityVfxPrototype.tsx";
 
     const fire = createFireReviewRenderer();
     const normal = createQualityReviewRenderer("normal-physical");
     const fairy = createQualityReviewRenderer("fairy-status");
+    await Promise.allSettled(["normal","flying","ground","rock","bug","ghost","steel","fire",
+      "water","grass","electric","psychic","ice","dragon","dark","fairy"].map(loadFinalMatrixArt));
     const entries = [];
     const visible = new Set();
     const random = (seed) => { const value = Math.sin(seed * 127.1 + 311.7) * 43758.5453; return value - Math.floor(value); };
@@ -246,7 +247,7 @@
           normal(entry.ctx, tile, ms - random(tile.seed + 3) * 65);
         else if (entry.type === "fairy" && entry.kind === "status")
           fairy(entry.ctx, tile, ms - random(tile.seed + 3) * 65);
-        else drawMatrixTile(entry.ctx, entry.type, entry.kind,
+        else drawFinalMatrixTile(entry.ctx, entry.type, entry.kind,
           tile, ms - random(tile.seed + 3) * 65);
       }
     }

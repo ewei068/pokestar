@@ -21,8 +21,8 @@ import "./story.css";
 const requestedStory = new URLSearchParams(window.location.search).get("story");
 const initialLabSelection = readVfxLabSelection(new URLSearchParams(window.location.search));
 type VfxStudy = "fire-special" | QualityVfxStudy | "matrix";
-const matrixVariants = ["original", "study"] as const;
-const matrixNames = { original: "Current SVG", study: "First-pass effect" };
+const matrixVariants = ["original", "study", "final"] as const;
+const matrixNames = { original: "Current SVG", study: "Earlier candidate", final: "Finished art candidate" };
 const studyFor = (selection: VfxLabSelection): VfxStudy => {
   if (selection.type === "fire" && selection.kind === "special") return "fire-special";
   if (selection.kind === "physical" && (selection.type === "normal" ||
@@ -31,10 +31,11 @@ const studyFor = (selection: VfxLabSelection): VfxStudy => {
   return "matrix";
 };
 const defaultVariant = (study: VfxStudy) => study === "fire-special" ? "column" :
-  study === "normal-physical" ? "sprite" : study === "fairy-status" ? "halo" : "study";
+  study === "normal-physical" ? "sprite" : study === "fairy-status" ? "halo" : "final";
 const readVariant = (study: VfxStudy | null, params: URLSearchParams) => !study ? "original"
   : study === "fire-special" ? readFireVfxVariant(params) : study === "matrix" ?
-    (params.get("variant") === "original" ? "original" : "study") : readQualityVfxVariant(study, params);
+    (params.get("variant") === "original" ? "original" :
+      params.get("variant") === "study" ? "study" : "final") : readQualityVfxVariant(study, params);
 
 export const BattleScreenPreview = () => {
   const [labSelection, setLabSelection] = useState(initialLabSelection);
@@ -148,10 +149,10 @@ export const BattleScreenPreview = () => {
     {(activeStudy === "normal-physical" || activeStudy === "fairy-status") && studyVariant !== "original" &&
       <QualityVfxPrototype key={`${studyVariant}-${replayKey}`} study={activeStudy}
         variant={studyVariant as Exclude<QualityVfxVariant, "original">} replayKey={replayKey} />}
-    {activeStudy === "matrix" && studyVariant === "study" && <MatrixVfxPrototype
+    {activeStudy === "matrix" && (studyVariant === "study" || studyVariant === "final") && <MatrixVfxPrototype
       key={`${labSelection.type}-${labSelection.kind}-${replayKey}`}
       type={standardVfxTypes.find((type) => type === labSelection.type) || "normal"}
-      kind={labSelection.kind} replayKey={replayKey} />}
+      kind={labSelection.kind} variant={studyVariant} replayKey={replayKey} />}
     {activeStudy && <VfxStudySwitcher title={`${labSelection.type} ${labSelection.kind} prototype`}
       variants={activeStudy === "fire-special" ? fireVfxVariants :
         activeStudy === "matrix" ? matrixVariants : qualityVfxVariants[activeStudy]}
