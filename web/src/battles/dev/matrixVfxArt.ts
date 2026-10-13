@@ -1,7 +1,10 @@
-/** Development-only first pass for the remaining type/category tile effects. */
+/** Development-only tile resolver: focused studies, quality pass, then approved first-pass cells. */
 import { vfxPalette } from "../vfx/types";
 import type { VfxKind, VfxType } from "../vfx/types";
 import { drawFocusedTile } from "./focusedMatrixVfx";
+import { drawPhysicalTile } from "./matrixPhysicalVfx";
+import { drawSpecialTile } from "./matrixSpecialVfx";
+import { drawStatusTile } from "./matrixStatusVfx";
 
 export type MatrixTile = { x: number; y: number; radius: number; seed: number };
 type Palette = typeof vfxPalette[VfxType];
@@ -244,6 +247,10 @@ export const drawMatrixTile = (ctx: CanvasRenderingContext2D,
   if (ms < 0 || ms > 760) return;
   if (drawFocusedTile(ctx, type, kind, tile, ms)) return;
   const palette = vfxPalette[type];
+  const drawn = kind === "physical" ? drawPhysicalTile(ctx,type,tile,ms,palette) :
+    kind === "special" ? drawSpecialTile(ctx,type,tile,ms,palette) :
+      drawStatusTile(ctx,type,tile,ms,palette);
+  if (drawn) return;
   if (kind === "physical") physical(ctx,type,palette,tile,ms);
   else if (kind === "special") special(ctx,type,palette,tile,ms);
   else status(ctx,type,palette,tile,ms);

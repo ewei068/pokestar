@@ -12,9 +12,15 @@ which now has a smaller center ember and lower ember origins. Unknown, Shadow,
 and Stellar use Normal as the visual fallback. No live battle rendering changed.
 
 The [second-pass Poison, Fighting, and Fire changes](second-pass.md) follow the
-[October 12 review notes](review-2026-10-12.json). Compare those seven in the
-[temporary animated grid](../../../web/vfx-review.html); the contact sheets
-below record the original breadth pass and have not been regenerated.
+[October 12 review notes](review-2026-10-12.json). The
+[animated grid](../../../web/vfx-review.html) now shows the latest candidate
+for each combination; the contact sheets below record the original breadth
+pass and have not been regenerated.
+
+The [quality pass](quality-pass.md) now gives 37 combinations distinct
+choreography based on the later review notes. Its own early/mid/late sheets
+show the new candidates; the original sheets below remain a record of the
+first pass.
 
 ## Contact sheets
 
