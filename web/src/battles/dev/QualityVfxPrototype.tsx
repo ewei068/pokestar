@@ -401,6 +401,18 @@ const drawFairyStatus = (ctx: CanvasRenderingContext2D, sprites: FairySprites,
   drawFairyOutwardMotes(ctx, sprites, tile, ms, variant === "halo" ? 18 : 14);
 };
 
+/** Reuse the approved tile studies in the temporary review gallery. */
+export const createQualityReviewRenderer = (study: QualityVfxStudy) => {
+  const urls = study === "normal-physical" ? [impactUrl, pixelImpactUrl] :
+    [fairyUrl, fairyGlintUrl, fairyPearlUrl];
+  const images = urls.map((url) => { const image = new Image(); image.src = url; return image; });
+  return (ctx: CanvasRenderingContext2D, tile: Tile, ms: number) => {
+    if (!images.every((image) => image.complete && image.naturalWidth > 0)) return;
+    if (study === "normal-physical") drawNormalPhysical(ctx, images[0], images[1], tile, ms, "sprite");
+    else drawFairyStatus(ctx, { main: images[0], glint: images[1], pearl: images[2] }, tile, ms, "halo");
+  };
+};
+
 export const QualityVfxPrototype = ({ study, variant, replayKey }: {
   study: QualityVfxStudy; variant: Exclude<QualityVfxVariant, "original">; replayKey: number;
 }) => {

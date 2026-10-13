@@ -8,8 +8,13 @@ and Status tile effect. The 18 × 3 matrix is available in the existing VFX lab:
 Change **Type**, **Action**, and **Area** in the toolbar. The floating control
 compares the new effect with the current SVG. Normal Physical and Fairy Status
 use their approved focused studies; Fire Special uses its rising-column study,
-which is awaiting review of foreground embers. Unknown, Shadow, and Stellar use
-Normal as the visual fallback. No live battle rendering changed.
+which now has a smaller center ember and lower ember origins. Unknown, Shadow,
+and Stellar use Normal as the visual fallback. No live battle rendering changed.
+
+The [second-pass Poison, Fighting, and Fire changes](second-pass.md) follow the
+[October 12 review notes](review-2026-10-12.json). Compare those seven in the
+[temporary animated grid](../../../web/vfx-review.html); the contact sheets
+below record the original breadth pass and have not been regenerated.
 
 ## Contact sheets
 

@@ -92,10 +92,10 @@ const drawMainEmber = (ctx: CanvasRenderingContext2D, textures: FireTextures,
   tile: Tile, localMs: number, duration: number, column: boolean) => {
   const seed = tile.seed;
   const age = clamp(localMs / duration);
-  const emberSize = tile.radius * (column ? 1.68 + random(seed + 61) * .16 :
+  const emberSize = tile.radius * (column ? 1.27 + random(seed + 61) * .12 :
     1.1 + random(seed + 61) * .32) * (1 - age * .13);
   const emberX = tile.x + (random(seed + 67) - .5) * tile.radius * (column ? .14 : .3);
-  const emberY = tile.y + tile.radius * (column ? .16 : .09) - age * tile.radius * .14;
+  const emberY = tile.y + tile.radius * (column ? .28 : .09) - age * tile.radius * .18;
   const flip = random(seed + 69) < .5 ? -1 : 1;
   ctx.save();
   ctx.translate(emberX, emberY);
@@ -121,8 +121,8 @@ const drawForegroundEmbers = (ctx: CanvasRenderingContext2D, textures: FireTextu
     if (age < 0 || age > 1) continue;
     const x = tile.x + (random(key + 11) - .5) * tile.radius * .52 +
       (random(key + 13) - .5) * tile.radius * .62 * age;
-    const y = tile.y + tile.radius * .38 - age * tile.radius *
-      (.65 + random(key + 17) * .55);
+    const y = tile.y + tile.radius * .7 - age * tile.radius *
+      (.95 + random(key + 17) * .58);
     const size = tile.radius * (.23 + random(key + 19) * .17) * (1 - age * .24);
     const sprite = textures.embers[Math.floor(random(key + 23) * textures.embers.length)];
     ctx.save();
@@ -175,7 +175,7 @@ const drawTile = (ctx: CanvasRenderingContext2D, textures: FireTextures,
       const sway = Math.sin(age * 6 + index * 1.8 + random(seed + 17) * 3) * tile.radius * .12;
       const size = tile.radius * (.55 + random(seed + index * 9) * .3);
       drawFlame(ctx, image, tile.x + sway + (random(seed + index * 3) - .5) * tile.radius * .35,
-        tile.y + tile.radius * .42 - age * tile.radius * 1.05,
+        tile.y + tile.radius * .62 - age * tile.radius * 1.16,
         size * .62, size, sway / tile.radius * .7, fade(age) * .67);
     }
     drawMainEmber(ctx, textures, tile, localMs, 760 - offset, true);
@@ -195,6 +195,20 @@ const drawTile = (ctx: CanvasRenderingContext2D, textures: FireTextures,
     }
     drawEmbers(ctx, textures, tile, localMs, 18 + Math.floor(random(seed + 73) * 9), true, seed + 203);
   }
+};
+
+/** Reuse the focused column study in the temporary review gallery. */
+export const createFireReviewRenderer = () => {
+  const imageFor = (url: string) => { const image = new Image(); image.src = url; return image; };
+  const textures: FireTextures = {
+    flame: imageFor(flameUrl),
+    embers: [emberCoalUrl, emberFleckUrl, emberForkUrl].map(imageFor),
+  };
+  return (ctx: CanvasRenderingContext2D, tile: Tile, ms: number) => {
+    if ([textures.flame, ...textures.embers].every((image) => image.complete && image.naturalWidth > 0)) {
+      drawTile(ctx, textures, tile, ms, "column");
+    }
+  };
 };
 
 export const FireVfxPrototype = ({ variant, replayKey }: {

@@ -21,9 +21,9 @@ These are first-pass visual motifs for feedback, grouped by type:
 | Type | Physical | Special | Status |
 | --- | --- | --- | --- |
 | Normal | Pixel impact and pressure circles | Concentric energy swirl | Soft pulse and compass marks |
-| Fighting | Crossing strikes | Focused aura ring | Guarded focus ring |
+| Fighting | Fist strike and pressure rings | Incoming aura sphere | Converging fist guard |
 | Flying | Sweeping air cuts | Cyclone | Drifting feathers and breeze |
-| Poison | Splatter drops | Bubbling field | Suspended miasma bubbles |
+| Poison | Crossed slashes and bubbles | Incoming sludge orb and drips | Spreading toxic pool and rising bubbles |
 | Ground | Cracked earth | Rising dust bands | Tremor ripples |
 | Rock | Flying shards | Stone pillars | Faceted stone halo |
 | Bug | Pincer cuts | Winged swarm | Cocoon and motes |

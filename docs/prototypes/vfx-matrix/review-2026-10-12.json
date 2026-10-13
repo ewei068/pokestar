@@ -1,0 +1,326 @@
+[
+  {
+    "type": "normal",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "normal",
+    "kind": "special",
+    "status": "approved",
+    "notes": "Looks good, maybe more spiral-y and arcane-y would be ideal"
+  },
+  {
+    "type": "normal",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "Looks just ike speecial"
+  },
+  {
+    "type": "fighting",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Try one large central punch and impact with pressure rings"
+  },
+  {
+    "type": "fighting",
+    "kind": "special",
+    "status": "needs-work",
+    "notes": "I want a sphere look, similar to aura sphere or focus blast. I recognize this may look a little strange, I think it's OK to give tiles directional animations (animation stays on tile, but VFX comes from direction of the using Pokemon)"
+  },
+  {
+    "type": "fighting",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "Maybe something like two fists converging to create a \"block\" posture"
+  },
+  {
+    "type": "flying",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Maybe a wing slamming down followed by a small burst of tiny feathers"
+  },
+  {
+    "type": "flying",
+    "kind": "special",
+    "status": "needs-work",
+    "notes": "A big directional gust of wind with small feather particles"
+  },
+  {
+    "type": "flying",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "How about two wings moving upwards in an arc like an angels wings"
+  },
+  {
+    "type": "poison",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Maybe a cross with poison bubble particles like cross-poison"
+  },
+  {
+    "type": "poison",
+    "kind": "special",
+    "status": "needs-work",
+    "notes": "We should do a big poisonous ball creating an impact with poison particles or drips, like sludge bomb"
+  },
+  {
+    "type": "poison",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "One big poison circle on the ground with poison bubbles or drips, like Toxic"
+  },
+  {
+    "type": "ground",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Keep the pressure rings, but let's do a large crack with concentric impact like Earthquake"
+  },
+  {
+    "type": "ground",
+    "kind": "special",
+    "status": "needs-work",
+    "notes": "No pressure rings needed but this is going in the right direction. I want to see some ground eruptions of dirt and mud going upwards, sort of like Earth Power"
+  },
+  {
+    "type": "ground",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "rock",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "I want to see a bunch of rocks of various sizes falling, bouncing, and breaking like Rock Slide"
+  },
+  {
+    "type": "rock",
+    "kind": "special",
+    "status": "needs-work",
+    "notes": "Maybe start with some big rocks with mystic outlines of various large sizes in a somewhat random ring shape, hangs in the air for a second, then impacts in a light arc on the center, like Ancient Power"
+  },
+  {
+    "type": "rock",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "Put some floating rocks around the target, like Stealth Rock"
+  },
+  {
+    "type": "bug",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Similar to poison, maybe two green slashes like X-Scissor"
+  },
+  {
+    "type": "bug",
+    "kind": "special",
+    "status": "approved",
+    "notes": "Not really sure what to do here, maybe just make sure the coloring and graphics distinguish it from Grass"
+  },
+  {
+    "type": "bug",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "Maybe put a big stretchy web around the target like Sticky Web"
+  },
+  {
+    "type": "ghost",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Make a foggy haze appear over the opponent that gets cut and dispersed by one large purple slash"
+  },
+  {
+    "type": "ghost",
+    "kind": "special",
+    "status": "needs-work",
+    "notes": "Have a bunch of purple ghostly particles appear and converge on a central ball, making the ball bigger (like shadow ball) until it explodes"
+  },
+  {
+    "type": "ghost",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "A special thing, if you can find the sprite for the Gen 1 \"Curse\" in the lavender town tower, make the curse fade in, move up/down a bit, then fade out, over the target"
+  },
+  {
+    "type": "steel",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Similar to rock slide, make a bunch of big metal beams or objects fall onto the target, except they stay stuck to the ground to emphasize their weight"
+  },
+  {
+    "type": "steel",
+    "kind": "special",
+    "status": "approved",
+    "notes": "Not sure what to do here since steel special is pretty rare, so this is fine for now"
+  },
+  {
+    "type": "steel",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "A big metal shield should appear over the target, then glimmer/shine if possible"
+  },
+  {
+    "type": "fire",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "A big molten orb or rock should crash onto the target and leave impacting embers towards the bottom"
+  },
+  {
+    "type": "fire",
+    "kind": "special",
+    "status": "approved",
+    "notes": "Looks good, but could you make it so the embers start from the bottom too and the central flame is smaller?"
+  },
+  {
+    "type": "fire",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "Maybe some horizontally moving smaller embers towards the bottom, like Will-o-wisp"
+  },
+  {
+    "type": "water",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Maybe a similar impact animation as normal phys, but with bubble particles coming out of the center"
+  },
+  {
+    "type": "water",
+    "kind": "special",
+    "status": "needs-work",
+    "notes": "The enemy should look like it's being hit by a big wave that fades in, rises, crashes down, then fades out, from the perspective of being centered right in front of the wave"
+  },
+  {
+    "type": "water",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "grass",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Many directional leaves should rapidly fly through the target, like Razor Leaf"
+  },
+  {
+    "type": "grass",
+    "kind": "special",
+    "status": "needs-work",
+    "notes": "A giant bright green/yellow vertical beam should appear by fading in wide, then shrinking before disappearing, along with some bright swirling particles, like solar beam"
+  },
+  {
+    "type": "grass",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "Grass particles should swirl and drop down on the target, like spore or sleep powder"
+  },
+  {
+    "type": "electric",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Similar to normal, we can have pressure rings with impact effects, except make the impact effects have a lightning theme with maybe very small bolts coming out of the center"
+  },
+  {
+    "type": "electric",
+    "kind": "special",
+    "status": "needs-work",
+    "notes": "Lightning bolts should crash down on the target like Thunder or Thunderbolt"
+  },
+  {
+    "type": "electric",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "Concentric shock effects should surround the target with different radii, like Thunder Wave"
+  },
+  {
+    "type": "psychic",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Have a brain being split open by a pink slash, or if it can split, just have imagery of a brain being impacted by something physical like a pink slash"
+  },
+  {
+    "type": "psychic",
+    "kind": "special",
+    "status": "needs-work",
+    "notes": "Have a bunch of faded wavy concentric effects, like Psychic"
+  },
+  {
+    "type": "psychic",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "I honestly think the Special effect without the swirling eyes would look good here: One big eye in the center with pressure rings"
+  },
+  {
+    "type": "ice",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Ice shards or snow should crash down on the opponent, like Avalanche"
+  },
+  {
+    "type": "ice",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ice",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "An ice cube should appear to freeze the target"
+  },
+  {
+    "type": "dragon",
+    "kind": "physical",
+    "status": "approved",
+    "notes": "Looks good, should look similar to a dragon foot stomp with impact, kind of like fighting's punch"
+  },
+  {
+    "type": "dragon",
+    "kind": "special",
+    "status": "needs-work",
+    "notes": "Dragon type attacks are a bit abstract. Maybe a stormy twister with blue accents and particles."
+  },
+  {
+    "type": "dragon",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "A draconic head should rear its head and let out a roar (using pressure rings)"
+  },
+  {
+    "type": "dark",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Create a bunch of dark slashes around the area of various sizes"
+  },
+  {
+    "type": "dark",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "dark",
+    "kind": "status",
+    "status": "needs-work",
+    "notes": "Various of layers of dark fogs should fade in/out while moving horizontally, obscuring the target"
+  },
+  {
+    "type": "fairy",
+    "kind": "physical",
+    "status": "needs-work",
+    "notes": "Needs some more indication that it's \"physical\" but I like the idea of sharp stars"
+  },
+  {
+    "type": "fairy",
+    "kind": "special",
+    "status": "needs-work",
+    "notes": "Make this more swirling and curvy, should appear like the opponent is getting hit with some sort of magic"
+  },
+  {
+    "type": "fairy",
+    "kind": "status",
+    "status": "unreviewed",
+    "notes": ""
+  }
+]
