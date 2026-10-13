@@ -24,17 +24,17 @@ still render the authoritative state without animation.
 
 ## Current visual direction
 
-| Combination | Current study direction | What to preserve |
+| Combination | Review status | What to preserve |
 | --- | --- | --- |
-| Normal Physical | [Generated pixel impact sprite over dense pressure circles](prototypes/vfx-quality/normal-sprite-rings-motion.gif) | Two short pulses; a compact hollow impact silhouette; three expanding circles behind it. [Circles alone](prototypes/vfx-quality/normal-physical-ripple.png) remain the simpler fallback if the sprite feels busy on dense boards. |
-| Fire Special | [Rising column with one dominant tailed ember](prototypes/fire-vfx/fire-column-motion.gif) | One bright center anchor lasts longer than the smaller upward flames and embers. The small particles vary in birth, direction, and sprite. |
-| Fairy Status | [Soft halo and staggered motes](prototypes/vfx-quality/fairy-status-halo.png), promising but still under review | Small, simple glints and pearls emit outward at different times; occasional larger accents give detail without making every tiny particle ornate. The halo, spiral, and veil still need a final production choice. |
+| Normal Physical | **Approved:** [generated pixel impact sprite over dense pressure circles](prototypes/vfx-quality/normal-sprite-rings-motion.gif) | Two short pulses; a compact hollow impact silhouette; three expanding circles behind it. [Circles alone](prototypes/vfx-quality/normal-physical-ripple.png) remain the simpler fallback if the sprite feels busy on dense boards. |
+| Fire Special | **Reviewing foreground embers:** [rising column with one dominant tailed ember](prototypes/fire-vfx/fire-column-motion.gif) | One bright center anchor lasts longer than the smaller upward flames. Draw the small embers **after** the main ember so they cross its face in the foreground; vary their birth, path, and sprite. |
+| Fairy Status | **Approved:** [soft halo and staggered motes](prototypes/vfx-quality/fairy-status-halo.png) | Small, simple glints and pearls emit outward at different times; occasional larger accents give detail without making every tiny particle ornate. |
 
-Normal and Fire have selected study directions; Fairy remains a candidate.
-These are **development studies**, not production renderers. The remaining
-type/category combinations in the matrix are exploratory. Reuse the principles
-below, then review each effect on the battle board before choosing its final
-treatment.
+These are **development studies**, not production renderers. A [first-pass
+matrix](prototypes/vfx-matrix/README.md) now covers all 54 standard
+type/category combinations. The 51 combinations outside these focused studies
+remain unapproved. Reuse the principles below, then review each effect on the
+battle board before choosing its final treatment.
 
 ## Build one tile effect
 
@@ -52,6 +52,8 @@ treatment.
 3. **Choreograph on one shared clock.** Give each layer a birth time, lifetime,
    path, scale, rotation, and fade. A restrained main element plus staggered
    supporting elements reads better than moving one static image as a block.
+   Draw background glow and rings first, the main texture next, and foreground
+   sparks last when they should visibly pass over the anchor.
    Keep the VFX inside the actor's effect window. Production timing must come
    from the same playback clock as actor travel, not a copied millisecond
    offset from a CSS animation.
@@ -77,6 +79,10 @@ treatment.
 - Layer code-driven rings, glows, trails, and particles around a small number
   of authored textures. The Normal study shows that clean pressure circles
   can add density without demanding a more elaborate sprite.
+- For broad matrix coverage, start with one clear silhouette per type and
+  category-specific choreography. The first-pass matrix uses Physical bursts,
+  Special fields, and Status halos. Treat this as a review scaffold: replace
+  icon-like cells with authored textures or bespoke motion where needed.
 - Canvas is sufficient for these lightweight studies. A whole game engine is
   not required to animate a few tile layers. Use a sprite sheet or an authored
   VFX tool when frame-specific shapes outperform transformed stills. Consider
@@ -99,5 +105,5 @@ so a battle page loads the effects it needs as the web client grows.
 
 Review the finished production effect with real event playback, including
 reconnect/skip-to-latest behavior, before retiring its development variant.
-The Fairy treatment, the remaining type/category matrix, result effects, and
-sound remain open for separate review.
+The 51 first-pass combinations outside the focused studies, result effects,
+and sound remain open for separate review.

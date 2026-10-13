@@ -110,6 +110,34 @@ const drawMainEmber = (ctx: CanvasRenderingContext2D, textures: FireTextures,
   ctx.restore();
 };
 
+/** Column sparks cross the large ember's face before drifting upward. */
+const drawForegroundEmbers = (ctx: CanvasRenderingContext2D, textures: FireTextures,
+  tile: Tile, ms: number) => {
+  for (let index = 0; index < 14; index++) {
+    const key = tile.seed + index * 107;
+    const birth = 55 + index * 29 + random(key + 3) * 45;
+    const life = 250 + random(key + 7) * 190;
+    const age = (ms - birth) / life;
+    if (age < 0 || age > 1) continue;
+    const x = tile.x + (random(key + 11) - .5) * tile.radius * .52 +
+      (random(key + 13) - .5) * tile.radius * .62 * age;
+    const y = tile.y + tile.radius * .38 - age * tile.radius *
+      (.65 + random(key + 17) * .55);
+    const size = tile.radius * (.23 + random(key + 19) * .17) * (1 - age * .24);
+    const sprite = textures.embers[Math.floor(random(key + 23) * textures.embers.length)];
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(-.35 + (random(key + 29) - .5) * .85);
+    ctx.globalAlpha = Math.min(1, age * 8) * Math.pow(1 - age, .64);
+    ctx.drawImage(sprite, -size / 2, -size / 2, size, size);
+    ctx.fillStyle = "#fff4b1";
+    ctx.beginPath();
+    ctx.arc(0, 0, Math.max(1, size * .09), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+};
+
 const drawTile = (ctx: CanvasRenderingContext2D, textures: FireTextures,
   tile: Tile, ms: number, variant: Exclude<FireVfxVariant, "original">) => {
   const seed = tile.seed;
@@ -151,7 +179,7 @@ const drawTile = (ctx: CanvasRenderingContext2D, textures: FireTextures,
         size * .62, size, sway / tile.radius * .7, fade(age) * .67);
     }
     drawMainEmber(ctx, textures, tile, localMs, 760 - offset, true);
-    drawEmbers(ctx, textures, tile, localMs, 12, false, seed + 101);
+    drawForegroundEmbers(ctx, textures, tile, localMs);
   } else {
     drawGlow(ctx, tile, clamp((localMs - 50) / 500), .95);
     const count = 3 + Math.floor(random(seed + 11) * 3);
