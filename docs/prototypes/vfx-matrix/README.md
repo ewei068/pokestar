@@ -22,6 +22,10 @@ choreography based on the later review notes. Its own early/mid/late sheets
 show the new candidates; the original sheets below remain a record of the
 first pass.
 
+The [polish pass](polish-pass.md) adds material-specific details and secondary
+motion to all 37 quality-pass candidates. Its contact sheets show the revised
+early, midpoint, and late frames. The review grid presents this latest pass.
+
 ## Contact sheets
 
 Each image shows one affected tile at about 700 ms into playback, at its
