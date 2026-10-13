@@ -33,7 +33,9 @@ still render the authoritative state without animation.
 These are **development studies**, not production renderers. A [first-pass
 matrix](prototypes/vfx-matrix/README.md) now covers all 54 standard
 type/category combinations. The [Poison and Fighting second pass](prototypes/vfx-matrix/second-pass.md)
-replaces six of the first-pass candidates. Reuse the principles below, then
+replaces six of the first-pass candidates; the
+[third pass](prototypes/vfx-matrix/third-pass.md) responds to feedback on five
+of those effects with simpler pixel motifs and different motion. Reuse the principles below, then
 review each revised effect on the battle board before choosing its final
 treatment.
 
@@ -77,6 +79,11 @@ treatment.
   low-resolution grid and nearest-neighbor scaling. Smooth arcs can be useful
   for pressure waves; irregular, thin, hand-drawn lines have been harder to
   read on this board.
+- Generated raster art can carry too much natural texture even after downscaling.
+  For icon-like fists and energy orbs, author a tiny graphic motif or a few
+  drawn frames first; animate internal details rather than moving an unchanged
+  PNG through the whole effect. Preserve the category-specific silhouette and
+  timing when simplifying the art.
 - Layer code-driven rings, glows, trails, and particles around a small number
   of authored textures. The Normal study shows that clean pressure circles
   can add density without demanding a more elaborate sprite.
@@ -106,6 +113,6 @@ so a battle page loads the effects it needs as the web client grows.
 
 Review the finished production effect with real event playback, including
 reconnect/skip-to-latest behavior, before retiring its development variant.
-The Poison and Fighting second-pass studies await review; the other 45
+Five Poison and Fighting third-pass studies await review; the other 45
 combinations outside the three focused studies still use first-pass art.
 Result effects and sound remain open for separate review.
