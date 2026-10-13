@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Battle VFX review · 54 effects</title>
   <style>
+    dialog { color: #edf2fa; background: #172233; border: 1px solid #526174; border-radius: 10px; max-width: 96vw; width: 750px; padding: 22px; }
+    dialog::backdrop { background: #000b; }
+    dialog h2 { font-size: 18px; }
+    .close-inspector { float: right; }
+    .compare-tiles { display: flex; justify-content: space-around; gap: 14px; flex-wrap: wrap; margin: 28px 0; }
+    .compare-tiles figure { margin: 0; min-width: 104px; }
+    .compare-tiles figcaption { font-size: 12px; margin-bottom: 8px; }
+    .timeline-label { display: flex; gap: 12px; align-items: center; margin-top: 20px; }
+    #inspect-timeline { flex: 1; }
+    .content > button { margin-top: 6px; }
     :root { color-scheme: dark; font: 14px/1.4 system-ui, sans-serif; background: #111827; color: #edf2fa; }
     * { box-sizing: border-box; }
     [hidden] { display: none !important; }
@@ -51,36 +61,40 @@
       <span id="progress" aria-live="polite"></span>
       <button id="play" type="button">Pause previews</button>
       <button id="export" type="button">Export review notes</button>
-      <label>Show <select id="filter"><option value="all">All effects</option><option value="revised">45 new art candidates</option><option value="unreviewed">Unreviewed</option><option value="needs-work">Needs work</option><option value="approved">Looks good</option></select></label>
+      <label>Show <select id="filter"><option value="all">All effects</option><option value="revised">28 feedback revisions</option><option value="unreviewed">Unreviewed</option><option value="needs-work">Needs work</option><option value="approved">Looks good</option></select></label>
     </div>
   </header>
   <main>
-    <p class="note">Forty-five effects now use new type-specific focal art with timed reveals and supporting motion. The six Poison/Fighting studies and three approved focused effects keep their current look. Earlier feedback remains visible on changed cards; unchanged marks carry forward. Notes stay in this browser until exported.</p>
+    <p class="note">Recovered all 54 reviews. Twenty-eight effects have feedback revisions; unchanged approvals carry forward. Each effect uses independently animated components, evolving shapes, and material-specific particles. Use Compare motion to see any effect beside Fighting and Poison at the same time and size. Your highlighted favorites retain their reviewed choreography. Earlier feedback remains visible on changed cards; unchanged marks carry forward. Notes stay in this browser until exported.</p>
     <div id="grid" class="grid"></div>
   </main>
-  <script>
+  <script type="module">
+    import recovered from "../docs/prototypes/vfx-matrix/review-2026-10-12-composed.json";
     const types = ["normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost", "steel", "fire", "water", "grass", "electric", "psychic", "ice", "dragon", "dark", "fairy"];
     const kinds = ["physical", "special", "status"];
-    const preserved = new Set(["normal-physical", "fire-special", "fairy-status",
-      ...["physical", "special", "status"].flatMap((kind) => ["fighting", "poison"].map((type) => `${type}-${kind}`))]);
-    const revised = new Set(types.flatMap((type) => kinds.map((kind) => `${type}-${kind}`))
-      .filter((id) => !preserved.has(id)));
-    const key = "pokestar-vfx-review-v7";
-    let previous = {};
+    const preserved = new Set(["fighting-physical","fighting-special","rock-special","ghost-status","psychic-status"]);
+    const revised = new Set(recovered.filter(row => row.notes && !preserved.has(`${row.type}-${row.kind}`)).map(row => `${row.type}-${row.kind}`));
+    const key = "pokestar-vfx-review-v9";
+    let previous = Object.fromEntries(recovered.map(row => [`${row.type}-${row.kind}`,{status:row.status,notes:row.notes}]));
+    const migrate = () => Object.fromEntries(Object.entries(previous).map(([id, row]) => [id, revised.has(id) ? {status:"unreviewed", notes:row.notes || ""} : row]));
     let reviews = {};
-    try { previous = JSON.parse(localStorage.getItem("pokestar-vfx-review-v6") || "{}"); } catch { previous = {}; }
+    try { previous = {...previous, ...JSON.parse(localStorage.getItem("pokestar-vfx-review-v8") || "{}")}; } catch { /* The recovered file remains available. */ }
     try {
       const saved = localStorage.getItem(key);
-      reviews = saved ? JSON.parse(saved) : Object.fromEntries(Object.entries(previous).filter(([id]) => !revised.has(id)));
-    } catch { reviews = {}; }
+      reviews = saved ? JSON.parse(saved) : migrate();
+    } catch { reviews = migrate(); }
     const grid = document.getElementById("grid");
     const filter = document.getElementById("filter");
     const specialVariant = (type, kind) => type === "normal" && kind === "physical" ? "sprite" :
       type === "fairy" && kind === "status" ? "halo" : type === "fire" && kind === "special" ? "column" : "final";
-    const label = (type, kind) => revised.has(`${type}-${kind}`) ? "new art candidate" :
+    const label = (type, kind) => revised.has(`${type}-${kind}`) ? "feedback revision" :
       type === "normal" && kind === "physical" || type === "fairy" && kind === "status" ? "approved study" :
-      type === "fighting" || type === "poison" ? "focused study" : "earlier candidate";
-    const save = () => { localStorage.setItem(key, JSON.stringify(reviews)); update(); };
+      type === "fighting" || type === "poison" ? "focused study" : "approved composition";
+    const save = () => {
+      try { localStorage.setItem(key, JSON.stringify(reviews)); }
+      catch { document.getElementById("progress").title="Browser storage is unavailable. Use Export to copy your notes before closing."; }
+      update();
+    };
     function update() {
       const marked = Object.values(reviews).filter((entry) => entry.status && entry.status !== "unreviewed").length;
       document.getElementById("progress").textContent = `${marked} of 54 marked`;
@@ -170,34 +184,41 @@
       }
     }
     filter.addEventListener("change", update);
+    const exportDialog = document.createElement("dialog");
+    exportDialog.innerHTML = '<form method="dialog"><button>Close</button></form><h2>Your review JSON</h2><p>If the download does not work in this browser, copy the text below. Your notes remain saved in this page.</p><textarea aria-label="Exported review JSON" readonly style="width:100%;height:50vh"></textarea><button type="button" id="copy-review">Copy JSON</button><a class="live-link" id="download-review">Download JSON</a>';
+    document.body.append(exportDialog);
+    exportDialog.querySelector('#copy-review').addEventListener('click', async () => {
+      const field=exportDialog.querySelector('textarea');field.focus();field.select();
+      try { await navigator.clipboard.writeText(field.value);exportDialog.querySelector('#copy-review').textContent='Copied'; }
+      catch { exportDialog.querySelector('#copy-review').textContent='Text selected — press Copy'; }
+    });
+    let exportUrl;
     document.getElementById("export").addEventListener("click", () => {
       const rows = types.flatMap((type) => kinds.map((kind) => {
         const id = `${type}-${kind}`;
         return { type, kind, status: reviews[id]?.status || "unreviewed", notes: reviews[id]?.notes || "" };
       }));
-      const blob = new Blob([JSON.stringify(rows, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = "pokestar-vfx-review.json";
-      anchor.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      const json=JSON.stringify(rows,null,2);
+      exportDialog.querySelector('textarea').value=json;
+      if(exportUrl) URL.revokeObjectURL(exportUrl);
+      exportUrl=URL.createObjectURL(new Blob([json],{type:'application/json'}));
+      const anchor=exportDialog.querySelector('#download-review');
+      anchor.href=exportUrl;anchor.download='pokestar-vfx-review.json';
+      exportDialog.showModal();
+
     });
     update();
+    document.dispatchEvent(new Event("vfx-cards-ready"));
   </script>
   <script type="module">
+    import { installVfxInspector } from "./src/battles/dev/vfxReviewInspector.ts";
     import { drawFinalMatrixTile, loadFinalMatrixArt } from "./src/battles/dev/finalMatrixVfx.ts";
-    import { createFireReviewRenderer } from "./src/battles/dev/FireVfxPrototype.tsx";
-    import { createQualityReviewRenderer } from "./src/battles/dev/QualityVfxPrototype.tsx";
 
-    const fire = createFireReviewRenderer();
-    const normal = createQualityReviewRenderer("normal-physical");
-    const fairy = createQualityReviewRenderer("fairy-status");
-    await Promise.allSettled(["normal","flying","ground","rock","bug","ghost","steel","fire",
-      "water","grass","electric","psychic","ice","dragon","dark","fairy"].map(loadFinalMatrixArt));
+    if (!document.querySelector("article")) await new Promise(resolve => document.addEventListener("vfx-cards-ready", resolve, {once:true}));
+    await loadFinalMatrixArt("normal");
+    installVfxInspector();
     const entries = [];
     const visible = new Set();
-    const random = (seed) => { const value = Math.sin(seed * 127.1 + 311.7) * 43758.5453; return value - Math.floor(value); };
     const observer = new IntersectionObserver((changes) => {
       for (const change of changes) {
         if (change.isIntersecting) visible.add(change.target);
@@ -223,9 +244,8 @@
       playing = value;
       playButton.textContent = value ? "Pause previews" : "Play previews";
       for (const entry of entries) {
-        entry.image.src = value ? "./vfx-review-thumbs/base.png" :
-          `./vfx-review-thumbs/${entry.kind}-${entry.type}.png`;
-        entry.canvas.hidden = !value;
+        entry.image.src = "./vfx-review-thumbs/base.png";
+        entry.canvas.hidden = false;
       }
     };
     playButton.addEventListener("click", () => setPlaying(!playing));
@@ -235,20 +255,14 @@
     let lastFrame = 0;
     function render(now) {
       requestAnimationFrame(render);
-      if (!playing || document.hidden || now - lastFrame < 32) return;
+      if (document.hidden || now - lastFrame < 32) return;
       lastFrame = now;
-      const ms = (now - started) % 1050 - 120;
+      const ms = playing ? (now - started) % 1050 - 120 : 325;
       for (const entry of entries) {
         if (!visible.has(entry.card) || entry.card.hidden) continue;
         entry.ctx.clearRect(0, 0, 200, 100);
         if (ms < 0 || ms > 760) continue;
-        if (entry.type === "fire" && entry.kind === "special") fire(entry.ctx, tile, ms);
-        else if (entry.type === "normal" && entry.kind === "physical")
-          normal(entry.ctx, tile, ms - random(tile.seed + 3) * 65);
-        else if (entry.type === "fairy" && entry.kind === "status")
-          fairy(entry.ctx, tile, ms - random(tile.seed + 3) * 65);
-        else drawFinalMatrixTile(entry.ctx, entry.type, entry.kind,
-          tile, ms - random(tile.seed + 3) * 65);
+        drawFinalMatrixTile(entry.ctx, entry.type, entry.kind, tile, ms);
       }
     }
     requestAnimationFrame(render);

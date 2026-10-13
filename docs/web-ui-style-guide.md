@@ -38,6 +38,7 @@ site shell and future non-battle pages consistent with that direction.
 - Desktop formations put the participant on the left and opponent on the
   right. Their front rows face the center. On phones, the opponent is above
   the participant and both front rows face the gap between them.
+- Center the Pokémon sprite horizontally in its card. Keep type cues to its left and status/effect cues to its right when space permits; narrow cards place cues below it. Keep full status text accessible when using a short label. Occupied-tile VFX anchor to the sprite, with the cell center as the empty-tile fallback.
 - A selected move highlights legal primary targets. Hover or focus shows the
   full server-supplied pattern, including empty tiles. Clicking a legal target
   uses the move; clicking the selected move again exits targeting.

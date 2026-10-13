@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import impactUrl from "../../../../media/vfx/experiments/normal-impact-streak.png";
-import pixelImpactUrl from "../../../../media/vfx/experiments/normal-impact-pixel-generated.png";
+import pixelImpactUrl from "../../../../media/vfx/components/normal-impact-crescent.png";
 import fairyUrl from "../../../../media/vfx/experiments/fairy-status-mote.png";
 import fairyGlintUrl from "../../../../media/vfx/experiments/fairy-status-glint-small.png";
 import fairyPearlUrl from "../../../../media/vfx/experiments/fairy-status-pearl-small.png";
@@ -205,22 +205,15 @@ const drawGraphicImpact = (ctx: CanvasRenderingContext2D, tile: Tile, ms: number
 const drawSpriteImpact = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
   tile: Tile, ms: number) => {
   drawPressureCircles(ctx, tile, ms, 3);
-  for (let pulse = 0; pulse < 2; pulse++) {
-    const age = (ms - 35 - pulse * 220) / 380;
-    if (age < 0 || age > 1) continue;
-    const size = tile.radius * (1.25 + age * 1.08);
-    ctx.save();
-    ctx.translate(tile.x, tile.y);
-    ctx.scale(1, .82);
-    ctx.rotate((random(tile.seed + pulse * 71) - .5) * .7);
-    ctx.globalAlpha = fade(age) * (pulse ? .8 : .95);
-    ctx.imageSmoothingEnabled = false;
-    ctx.shadowColor = "#435262";
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 1;
-    ctx.shadowOffsetY = 2;
-    ctx.drawImage(image, -size / 2, -size / 2, size, size);
-    ctx.restore();
+  for (let pulse = 0; pulse < 2; pulse++) for (let piece = 0; piece < 2; piece++) {
+    const key=tile.seed+pulse*71+piece*137;
+    const age=(ms-35-pulse*220-piece*48)/310;
+    if(age<0||age>1)continue;
+    const size=tile.radius*(1.0+age*.75+random(key)*.17);
+    ctx.save();ctx.translate(tile.x,tile.y);ctx.scale(1,.85);
+    ctx.rotate(piece*Math.PI+(random(key+2)-.5)*.65);
+    ctx.globalAlpha=fade(age)*.9;ctx.imageSmoothingEnabled=false;
+    ctx.drawImage(image,-size/2,-size/2,size,size);ctx.restore();
   }
 };
 
@@ -406,11 +399,12 @@ export const createQualityReviewRenderer = (study: QualityVfxStudy) => {
   const urls = study === "normal-physical" ? [impactUrl, pixelImpactUrl] :
     [fairyUrl, fairyGlintUrl, fairyPearlUrl];
   const images = urls.map((url) => { const image = new Image(); image.src = url; return image; });
-  return (ctx: CanvasRenderingContext2D, tile: Tile, ms: number) => {
+  const render = (ctx: CanvasRenderingContext2D, tile: Tile, ms: number) => {
     if (!images.every((image) => image.complete && image.naturalWidth > 0)) return;
     if (study === "normal-physical") drawNormalPhysical(ctx, images[0], images[1], tile, ms, "sprite");
     else drawFairyStatus(ctx, { main: images[0], glint: images[1], pearl: images[2] }, tile, ms, "halo");
   };
+  return Object.assign(render, { ready: Promise.all(images.map(image => image.decode())) });
 };
 
 export const QualityVfxPrototype = ({ study, variant, replayKey }: {
@@ -420,7 +414,7 @@ export const QualityVfxPrototype = ({ study, variant, replayKey }: {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => setBoard(document.querySelector<HTMLElement>(".arena-board")), [replayKey]);
   useEffect(() => {
-    if (!board || !canvasRef.current) return;
+    if (!board || !canvasRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -439,8 +433,9 @@ export const QualityVfxPrototype = ({ study, variant, replayKey }: {
       ctx.imageSmoothingEnabled = false;
       tiles = [...board.querySelectorAll<HTMLElement>(".arena-cell.is-pattern-cell")].map((cell) => {
         const cellRect = cell.getBoundingClientRect();
-        return { x: cellRect.left + cellRect.width / 2 - rect.left,
-          y: cellRect.top + cellRect.height / 2 - rect.top,
+          const anchor = cell.querySelector<HTMLElement>(".arena-sprite")?.getBoundingClientRect() || cellRect;
+        return { x: anchor.left + anchor.width / 2 - rect.left,
+          y: anchor.top + anchor.height / 2 - rect.top,
           radius: Math.min(cellRect.width * .36, cellRect.height * .52),
           seed: tileSeed(cell.dataset.teamName || "", cell.dataset.position || "") };
       });

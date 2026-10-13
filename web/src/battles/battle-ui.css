@@ -46,7 +46,7 @@
 .arena-front-mobile { display: none; }
 .arena-grid { display: grid; grid-template-columns: repeat(var(--rows), minmax(0, 1fr));
   grid-template-rows: repeat(var(--cols), minmax(65px, 1fr)); gap: 5px; }
-.arena-cell { position: relative; min-width: 0; min-height: 0; grid-column: var(--face-col); grid-row: var(--face-row); }
+.arena-cell { container: arena-cell / inline-size; position: relative; min-width: 0; min-height: 0; grid-column: var(--face-col); grid-row: var(--face-row); }
 .arena-sprite.is-moving-source { opacity: 0; }
 .arena-motion-actor { position: absolute; z-index: 7; display: grid; place-items: center;
   pointer-events: none; animation: arena-actor-travel var(--move-duration) ease-in-out both;
@@ -113,18 +113,22 @@
   justify-content: space-between; gap: 3px; }
 .arena-mon-head strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .63rem; }
 .arena-mon-head small { flex: none; color: var(--arena-soft); font-size: .55rem; }
-.arena-mon-main { min-height: 30px; }
+.arena-mon-main { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); min-height: 35px; }
+.arena-type-cues { min-width: 0; justify-self: start; }
+.arena-mon-main > .arena-sprite { grid-column: 2; justify-self: center; }
+.arena-mon-cues { justify-self: end; max-width: 100%; }
 .arena-sprite { display: grid; place-items: center; width: 41px; height: 35px; font-size: 1rem; }
 .arena-sprite img { width: 39px; height: 34px; object-fit: contain; image-rendering: pixelated; }
 .arena-mon-cues { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; min-width: 0; }
 .arena-type-dots { display: flex; gap: 2px; }
 .arena-type-dot { display: inline-block; flex: none; width: 10px; height: 10px; border: 1px solid #465465;
   border-radius: 50%; background: #8b9ca6; }
+.arena-status-short { display: none; }
 .arena-status-cue { padding: 1px 3px; background: #e77d61; color: #fff;
   font-size: .47rem; font-weight: 900; line-height: 1.1; text-transform: uppercase; }
 .arena-effect-count { padding: 1px 3px; border: 1px solid #8aa4c9; background: #d8e5fb;
   color: #345c8b; font-size: .47rem; font-weight: 900; line-height: 1.1; }
-.arena-effect-counters { display: flex; gap: 2px; }
+.arena-effect-counters { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 2px; }
 .arena-effect-count.is-buff { color: #315d8c; background: #d9eafa; }
 .arena-effect-count.is-debuff { color: #8b4a2e; background: #f7e0ce; border-color: #d6a784; }
 .arena-mon-bars { display: flex; flex-direction: column; gap: 2px; }
@@ -271,4 +275,16 @@
   .arena-mon.is-event-highlighted, .arena-mon.is-playback, .arena-empty.is-playback { animation: none; }
   .arena-sprite.is-moving-source { opacity: 1; }
   .arena-motion-actor, .arena-tile-vfx { display: none; }
+}
+
+/* Information takes precedence over keeping three columns on narrow cards. */
+@container arena-cell (max-width: 100px) {
+  .arena-mon-main { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); row-gap: 2px; }
+  .arena-mon-main > .arena-sprite { grid-column: 1 / -1; grid-row: 1; }
+  .arena-type-cues { grid-column: 1; grid-row: 2; }
+  .arena-mon-cues { grid-column: 2; grid-row: 2; }
+  .arena-type-dots { flex-wrap: wrap; }
+  .arena-status-full { display: none; }
+  .arena-status-short { display: inline; }
+  .arena-status-cue { max-width: 100%; overflow-wrap: anywhere; }
 }

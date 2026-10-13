@@ -1,6 +1,7 @@
 /** Throwaway Fire Special study: three particle behaviors on the existing battle board. */
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import bodyUrl from "../../../../media/vfx/components/fire-body.png";
 import flameUrl from "../../../../media/vfx/experiments/fire-special-flame-source.png";
 import emberCoalUrl from "../../../../media/vfx/experiments/fire-ember-coal.png";
 import emberFleckUrl from "../../../../media/vfx/experiments/fire-ember-fleck.png";
@@ -22,7 +23,7 @@ export const readFireVfxVariant = (params: URLSearchParams): FireVfxVariant => {
 };
 
 type Tile = { x: number; y: number; radius: number; seed: number };
-type FireTextures = { flame: HTMLImageElement; embers: HTMLImageElement[] };
+type FireTextures = { body: HTMLImageElement; flame: HTMLImageElement; embers: HTMLImageElement[] };
 const tileSeed = (teamName: string, position: string) => {
   // The same action/tile pair should keep its look even if the target list changes order.
   let hash = 2166136261;
@@ -90,6 +91,21 @@ const drawEmbers = (ctx: CanvasRenderingContext2D, textures: FireTextures, tile:
 /** One long-lived tailed ember gives each tile a clear center amid smaller particles. */
 const drawMainEmber = (ctx: CanvasRenderingContext2D, textures: FireTextures,
   tile: Tile, localMs: number, duration: number, column: boolean) => {
+  if (column) {
+    const age=clamp(localMs/duration), size=tile.radius*1.9;
+    ctx.save();ctx.globalAlpha=Math.min(1,age*10)*Math.min(1,(1-age)*4)*.84;
+    ctx.imageSmoothingEnabled=false;
+    const image=textures.body;
+    // Independently deform narrow bands near the tongues; the opaque body anchors the column.
+    for(let band=0;band<16;band++) {
+      const sourceY=band*image.naturalHeight/16;
+      const sway=Math.sin(localMs*.013+band*.48)*tile.radius*.026*(1-band/16);
+      const stretch=1+Math.sin(localMs*.012+band*.2)*.025;
+      ctx.drawImage(image,0,sourceY,image.naturalWidth,image.naturalHeight/16,
+        tile.x-size/2+sway,tile.y-size*.49+band*size/16*stretch,size,size/16*stretch+1);
+    }
+    ctx.restore();return;
+  }
   const seed = tile.seed;
   const age = clamp(localMs / duration);
   const emberSize = tile.radius * (column ? 1.27 + random(seed + 61) * .12 :
@@ -201,14 +217,15 @@ const drawTile = (ctx: CanvasRenderingContext2D, textures: FireTextures,
 export const createFireReviewRenderer = () => {
   const imageFor = (url: string) => { const image = new Image(); image.src = url; return image; };
   const textures: FireTextures = {
-    flame: imageFor(flameUrl),
+    body: imageFor(bodyUrl), flame: imageFor(flameUrl),
     embers: [emberCoalUrl, emberFleckUrl, emberForkUrl].map(imageFor),
   };
-  return (ctx: CanvasRenderingContext2D, tile: Tile, ms: number) => {
-    if ([textures.flame, ...textures.embers].every((image) => image.complete && image.naturalWidth > 0)) {
+  const render = (ctx: CanvasRenderingContext2D, tile: Tile, ms: number) => {
+    if ([textures.body, textures.flame, ...textures.embers].every((image) => image.complete && image.naturalWidth > 0)) {
       drawTile(ctx, textures, tile, ms, "column");
     }
   };
+  return Object.assign(render, { ready: Promise.all([textures.body, textures.flame, ...textures.embers].map(image => image.decode())) });
 };
 
 export const FireVfxPrototype = ({ variant, replayKey }: {
@@ -219,7 +236,7 @@ export const FireVfxPrototype = ({ variant, replayKey }: {
   useEffect(() => setBoard(document.querySelector<HTMLElement>(".arena-board")), [replayKey]);
 
   useEffect(() => {
-    if (!board || !canvasRef.current) return;
+    if (!board || !canvasRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -229,7 +246,7 @@ export const FireVfxPrototype = ({ variant, replayKey }: {
       return image;
     };
     const textures: FireTextures = {
-      flame: imageFor(flameUrl),
+      body: imageFor(bodyUrl), flame: imageFor(flameUrl),
       embers: [emberCoalUrl, emberFleckUrl, emberForkUrl].map(imageFor),
     };
     let frame = 0;
@@ -245,8 +262,9 @@ export const FireVfxPrototype = ({ variant, replayKey }: {
       tiles = [...board.querySelectorAll<HTMLElement>(".arena-cell.is-pattern-cell")]
         .map((cell) => {
           const rect = cell.getBoundingClientRect();
-          return { x: rect.left + rect.width / 2 - boardRect.left,
-            y: rect.top + rect.height / 2 - boardRect.top,
+          const anchor = cell.querySelector<HTMLElement>(".arena-sprite")?.getBoundingClientRect() || rect;
+          return { x: anchor.left + anchor.width / 2 - boardRect.left,
+            y: anchor.top + anchor.height / 2 - boardRect.top,
             radius: Math.min(rect.width * .36, rect.height * .52),
             seed: tileSeed(cell.dataset.teamName || "", cell.dataset.position || "") };
         });
@@ -262,7 +280,7 @@ export const FireVfxPrototype = ({ variant, replayKey }: {
       const height = canvas.height / Math.min(window.devicePixelRatio || 1, 2);
       ctx.clearRect(0, 0, width, height);
       const effectMs = elapsed - 405;
-      const images = [textures.flame, ...textures.embers];
+      const images = [textures.body, textures.flame, ...textures.embers];
       if (images.every((image) => image.complete && image.naturalWidth > 0) &&
         effectMs >= 0 && effectMs <= 760) {
         tiles.forEach((tile) => drawTile(ctx, textures, tile, effectMs, variant));

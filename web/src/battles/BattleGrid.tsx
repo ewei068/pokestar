@@ -22,6 +22,8 @@ type Props = {
   onHover: (pokemonId: string | null) => void;
 };
 
+const statusAbbreviations: Record<string, string> = { Burn: "BRN", Poison: "PSN", Toxic: "TOX", BadPoison: "TOX", Sleep: "SLP", Freeze: "FRZ", Paralysis: "PAR" };
+
 const percent = (value: number, max = 100) => Math.max(0, Math.min(100, value / Math.max(1, max) * 100));
 
 const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern, affected, playback,
@@ -58,13 +60,15 @@ const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern,
     aria-label={`${pokemon.name}, ${pokemon.hp} of ${pokemon.maxHp} HP, ${Math.round(pokemon.combatReadiness)} percent combat readiness${
       targetable ? ", use selected move" : ", inspect"}`}>
     <span className="arena-mon-head"><strong>{pokemon.name}</strong><small>Lv {pokemon.level}</small></span>
-    <span className="arena-mon-main"><span className="arena-sprite">{
+    <span className="arena-mon-main"><span className="arena-type-cues"><span className="arena-type-dots">{[pokemon.type1, pokemon.type2].filter((type) => type !== null && type !== undefined)
+        .map((type) => <i className={`arena-type-dot ${typeClass(type, catalog)}`} key={type} title={typeName(type, catalog)} />)}</span></span><span className="arena-sprite">{
       sprite && !imageFailed ? <img src={sprite} alt="" loading="lazy" onError={() => setImageFailed(true)} />
         : <span aria-hidden="true">?</span>
     }</span><span className="arena-mon-cues">
-      <span className="arena-type-dots">{[pokemon.type1, pokemon.type2].filter((type) => type !== null && type !== undefined)
-        .map((type) => <i className={`arena-type-dot ${typeClass(type, catalog)}`} key={type} title={typeName(type, catalog)} />)}</span>
-      {pokemon.status?.statusId && <span className="arena-status-cue">{pokemon.status.statusId}</span>}
+      {pokemon.status?.statusId && <span className="arena-status-cue" title={pokemon.status.statusId} aria-label={pokemon.status.statusId}>
+        <span className="arena-status-full">{pokemon.status.statusId}</span>
+        <span className="arena-status-short" aria-hidden="true">{statusAbbreviations[pokemon.status.statusId] || pokemon.status.statusId.slice(0, 3)}</span>
+      </span>}
       <span className="arena-effect-counters">
         {buffs > 0 && <span className="arena-effect-count is-buff" title={`${buffs} buffs`}>↑{buffs}</span>}
         {debuffs > 0 && <span className="arena-effect-count is-debuff" title={`${debuffs} debuffs`}>↓{debuffs}</span>}

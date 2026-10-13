@@ -23,7 +23,7 @@ export const MatrixVfxPrototype = ({ type, kind, variant, replayKey }: {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => setBoard(document.querySelector<HTMLElement>(".arena-board")), [replayKey]);
   useEffect(() => {
-    if (!board || !canvasRef.current) return;
+    if (!board || !canvasRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -42,9 +42,10 @@ export const MatrixVfxPrototype = ({ type, kind, variant, replayKey }: {
       ctx.setTransform(density, 0, 0, density, 0, 0);
       tiles = [...board.querySelectorAll<HTMLElement>(".arena-cell.is-pattern-cell")].map((cell) => {
         const cellRect = cell.getBoundingClientRect();
+        const anchor = cell.querySelector<HTMLElement>(".arena-sprite")?.getBoundingClientRect() || cellRect;
         const compact = cellRect.width < 100;
-        return { x: cellRect.left + cellRect.width / 2 - rect.left,
-          y: cellRect.top + cellRect.height / 2 - rect.top,
+        return { x: anchor.left + anchor.width / 2 - rect.left,
+          y: anchor.top + anchor.height / 2 - rect.top,
           radius: Math.min(cellRect.width * (compact ? .29 : .36),
             cellRect.height * (compact ? .43 : .52)),
           seed: tileSeed(cell.dataset.teamName || "", cell.dataset.position || ""), origin };
@@ -64,7 +65,7 @@ export const MatrixVfxPrototype = ({ type, kind, variant, replayKey }: {
         const effectMs = elapsed - 405;
         if (effectMs >= 0 && effectMs <= 760) tiles.forEach((tile) =>
           (variant === "final" ? drawFinalMatrixTile : drawMatrixTile)(ctx,type,kind,tile,
-            effectMs - random(tile.seed + 3) * (variant === "final" ? 115 : 65)));
+            variant === "final" ? effectMs : effectMs - random(tile.seed + 3) * 65));
         if (elapsed < 1500) frame = requestAnimationFrame(render);
       };
       frame = requestAnimationFrame(render);
