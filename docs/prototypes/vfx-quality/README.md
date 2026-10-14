@@ -72,7 +72,7 @@ for Double-Edge, and combines actor motion with two target-side wisps for Body
 Slam. These studies use their own art and geometry.
 
 The selected Normal study uses the sprite and circles for a short, sharp
-physical pulse; circles alone remain a fallback. Fairy still tests whether a
-status effect reads as magical without implying damage or a specific buff.
+physical pulse; circles alone remain a fallback. The Fairy mote halo has also
+been approved as a magical status effect without implying damage or a specific buff.
 Production effects should use a shared actor/VFX clock. The current guidance
 is in the [battle VFX creation guide](../../battle-vfx-guide.md).

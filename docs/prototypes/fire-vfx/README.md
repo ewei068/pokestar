@@ -12,6 +12,8 @@ to compare the current SVG with three particle behaviors:
 
 The selected direction is **Rising column** with one dominant, long-lived
 tailed ember at its center. Smaller flame shapes and embers rise around it.
+The small embers are now drawn over the main ember, beginning near its bright
+core and drifting through the foreground.
 The other variants remain for comparison:
 
 ![Flame bloom motion preview](bloom-motion.gif)

@@ -15,21 +15,26 @@ import type { FireVfxVariant } from "./FireVfxPrototype";
 import { QualityVfxPrototype, qualityVfxNames, qualityVfxVariants, readQualityVfxVariant } from "./QualityVfxPrototype";
 import type { QualityVfxStudy, QualityVfxVariant } from "./QualityVfxPrototype";
 import { VfxStudySwitcher } from "./VfxStudySwitcher";
+import { MatrixVfxPrototype } from "./MatrixVfxPrototype";
 import "./story.css";
 
 const requestedStory = new URLSearchParams(window.location.search).get("story");
 const initialLabSelection = readVfxLabSelection(new URLSearchParams(window.location.search));
-type VfxStudy = "fire-special" | QualityVfxStudy;
-const studyFor = (selection: VfxLabSelection): VfxStudy | null => {
+type VfxStudy = "fire-special" | QualityVfxStudy | "matrix";
+const matrixVariants = ["original", "study"] as const;
+const matrixNames = { original: "Current SVG", study: "First-pass effect" };
+const studyFor = (selection: VfxLabSelection): VfxStudy => {
   if (selection.type === "fire" && selection.kind === "special") return "fire-special";
-  if (selection.type === "normal" && selection.kind === "physical") return "normal-physical";
+  if (selection.kind === "physical" && (selection.type === "normal" ||
+    !standardVfxTypes.some((type) => type === selection.type))) return "normal-physical";
   if (selection.type === "fairy" && selection.kind === "status") return "fairy-status";
-  return null;
+  return "matrix";
 };
 const defaultVariant = (study: VfxStudy) => study === "fire-special" ? "column" :
-  study === "normal-physical" ? "sprite" : "halo";
+  study === "normal-physical" ? "sprite" : study === "fairy-status" ? "halo" : "study";
 const readVariant = (study: VfxStudy | null, params: URLSearchParams) => !study ? "original"
-  : study === "fire-special" ? readFireVfxVariant(params) : readQualityVfxVariant(study, params);
+  : study === "fire-special" ? readFireVfxVariant(params) : study === "matrix" ?
+    (params.get("variant") === "original" ? "original" : "study") : readQualityVfxVariant(study, params);
 
 export const BattleScreenPreview = () => {
   const [labSelection, setLabSelection] = useState(initialLabSelection);
@@ -129,7 +134,7 @@ export const BattleScreenPreview = () => {
         </select></label>
         {!standardVfxTypes.some((type) => type === labSelection.type) &&
           <small>Uses Normal VFX until this type receives its own art.</small>}
-        {activeStudy && <small>{activeStudy.replace("-", " ")} quality study · use the floating arrows to compare variants.</small>}
+        {activeStudy && <small>Tile VFX study · use the floating arrows to compare variants.</small>}
       </fieldset>}
       {story.playing && <button type="button" onClick={() => {
         setPlaying(story.playing);
@@ -143,9 +148,15 @@ export const BattleScreenPreview = () => {
     {(activeStudy === "normal-physical" || activeStudy === "fairy-status") && studyVariant !== "original" &&
       <QualityVfxPrototype key={`${studyVariant}-${replayKey}`} study={activeStudy}
         variant={studyVariant as Exclude<QualityVfxVariant, "original">} replayKey={replayKey} />}
-    {activeStudy && <VfxStudySwitcher title={`${activeStudy.replace("-", " ")} prototype`}
-      variants={activeStudy === "fire-special" ? fireVfxVariants : qualityVfxVariants[activeStudy]}
-      names={activeStudy === "fire-special" ? fireVfxVariantName : qualityVfxNames}
+    {activeStudy === "matrix" && studyVariant === "study" && <MatrixVfxPrototype
+      key={`${labSelection.type}-${labSelection.kind}-${replayKey}`}
+      type={standardVfxTypes.find((type) => type === labSelection.type) || "normal"}
+      kind={labSelection.kind} replayKey={replayKey} />}
+    {activeStudy && <VfxStudySwitcher title={`${labSelection.type} ${labSelection.kind} prototype`}
+      variants={activeStudy === "fire-special" ? fireVfxVariants :
+        activeStudy === "matrix" ? matrixVariants : qualityVfxVariants[activeStudy]}
+      names={activeStudy === "fire-special" ? fireVfxVariantName :
+        activeStudy === "matrix" ? matrixNames : qualityVfxNames}
       variant={studyVariant} onChange={changeStudyVariant} />}
   </div>;
 };

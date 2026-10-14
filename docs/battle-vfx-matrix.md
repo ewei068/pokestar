@@ -6,6 +6,9 @@ the selection so a specific combination can be shared. The six named Normal
 move stories remain available under **Move examples**.
 The [creation guide](battle-vfx-guide.md) records the current quality direction
 and the workflow for future effects.
+The [full matrix contact sheets](prototypes/vfx-matrix/README.md) show the
+development-only first pass for all 54 combinations. The table below names
+their starting motifs; it does not imply that every cell is art-approved.
 
 Travel is category-driven and identical across types: Physical approaches the
 primary target; Special and Status approach its lane; self-targeting stays put.
