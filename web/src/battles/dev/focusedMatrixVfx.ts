@@ -1,23 +1,10 @@
-/** Second-pass Poison and Fighting tile studies. All times are relative to the tile VFX window. */
-import fistUrl from "../../../../media/vfx/experiments/fighting-fist-pixel.png";
-import auraUrl from "../../../../media/vfx/experiments/fighting-aura-orb-pixel.png";
-import poisonUrl from "../../../../media/vfx/experiments/poison-orb-pixel.png";
+/** Focused Poison and Fighting tile studies. All times are relative to the tile VFX window. */
 import type { MatrixTile } from "./matrixVfxArt";
 import type { VfxKind, VfxType } from "../vfx/types";
+import { drawPixelMotif } from "./pixelMotifs";
 
 type Point = { x: number; y: number };
 export type FocusTile = MatrixTile & { origin?: Point };
-type Sprites = { fist: HTMLImageElement; aura: HTMLImageElement; poison: HTMLImageElement };
-
-let sprites: Sprites | null = null;
-const getSprites = (): Sprites => {
-  if (!sprites) {
-    const image = (url: string) => { const value = new Image(); value.src = url; return value; };
-    sprites = { fist: image(fistUrl), aura: image(auraUrl), poison: image(poisonUrl) };
-  }
-  return sprites;
-};
-const ready = (image: HTMLImageElement) => image.complete && image.naturalWidth > 0;
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
 const ease = (value: number) => 1 - Math.pow(1 - clamp(value), 3);
 const fade = (value: number) => Math.sin(Math.PI * clamp(value));
@@ -30,18 +17,6 @@ const approach = (tile: FocusTile) => {
   const dy = tile.y - (tile.origin?.y ?? tile.y);
   const length = Math.hypot(dx, dy) || 1;
   return { x: dx / length, y: dy / length };
-};
-const sprite = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
-  x: number, y: number, size: number, alpha: number, angle = 0, flip = false) => {
-  if (!ready(image) || alpha <= 0) return;
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(angle);
-  if (flip) ctx.scale(-1, 1);
-  ctx.globalAlpha = clamp(alpha);
-  ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(image, -size / 2, -size / 2, size, size);
-  ctx.restore();
 };
 const pressureRing = (ctx: CanvasRenderingContext2D, tile: FocusTile,
   age: number, color: string, dark: string, size = 1) => {
@@ -107,7 +82,7 @@ const auraSparks = (ctx: CanvasRenderingContext2D, tile: FocusTile, ms: number) 
 };
 
 const fightingPhysical = (ctx: CanvasRenderingContext2D, tile: FocusTile,
-  ms: number, images: Sprites) => {
+  ms: number) => {
   const direction = approach(tile);
   const arrival = ease((ms - 20) / 155);
   const retreat = ease((ms - 380) / 180);
@@ -116,13 +91,13 @@ const fightingPhysical = (ctx: CanvasRenderingContext2D, tile: FocusTile,
   const y = tile.y - direction.y * distance;
   for (let i = 0; i < 3; i++) pressureRing(ctx, tile, (ms - 145 - i * 90) / 380,
     "#ffe4bc", "#a53d43", 1 + i * .11);
-  sprite(ctx, images.fist, x, y, tile.radius * (1.36 + arrival * .46),
+  drawPixelMotif(ctx, "fist", x, y, tile.radius * (1.36 + arrival * .46),
     Math.min(1, ms / 55) * (1 - ease((ms - 450) / 240)),
-    Math.atan2(direction.y, direction.x) * .35);
+    ms, Math.atan2(direction.y, direction.x) * .18);
 };
 
 const fightingSpecial = (ctx: CanvasRenderingContext2D, tile: FocusTile,
-  ms: number, images: Sprites) => {
+  ms: number) => {
   const direction = approach(tile);
   const arrival = ease((ms - 15) / 290);
   const impact = ease((ms - 270) / 180);
@@ -132,31 +107,42 @@ const fightingSpecial = (ctx: CanvasRenderingContext2D, tile: FocusTile,
   glow.addColorStop(0, "#e8fff7"); glow.addColorStop(.45, "#48d6eb"); glow.addColorStop(1, "transparent");
   ctx.fillStyle = glow; ctx.fillRect(tile.x - tile.radius * 1.15, tile.y - tile.radius * 1.15,
     tile.radius * 2.3, tile.radius * 2.3); ctx.restore();
-  sprite(ctx, images.aura, tile.x - direction.x * distance, tile.y - direction.y * distance,
-    tile.radius * (1.15 + impact * .85), Math.min(1, ms / 100) * (1 - ease((ms - 550) / 210)),
-    ms / 1900);
+  drawPixelMotif(ctx, "aura", tile.x - direction.x * distance, tile.y - direction.y * distance,
+    tile.radius * (1.15 + impact * .85), Math.min(1, ms / 100) * (1 - ease((ms - 550) / 210)), ms);
   for (let i = 0; i < 2; i++) pressureRing(ctx, tile, (ms - 290 - i * 105) / 420,
     "#d7fffa", "#315e93", .93 + i * .1);
   auraSparks(ctx, tile, ms);
 };
 
 const fightingStatus = (ctx: CanvasRenderingContext2D, tile: FocusTile,
-  ms: number, images: Sprites) => {
-  const arrival = ease((ms - 40) / 240);
+  ms: number) => {
+  const arrival = ease((ms - 40) / 260);
   const opacity = Math.min(1, ms / 80) * (1 - ease((ms - 555) / 190));
-  const separation = tile.radius * (1.15 - arrival * .74);
-  const y = tile.y + tile.radius * (.1 - arrival * .18);
-  sprite(ctx, images.fist, tile.x - separation, y, tile.radius * 1.04, opacity, -.22, true);
-  sprite(ctx, images.fist, tile.x + separation, y, tile.radius * 1.04, opacity, .22);
-  // A compact braced field appears only after both fists meet.
+  const spread = tile.radius * (1.12 - arrival * .5);
+  const top = tile.y - tile.radius * (.52 + arrival * .12);
+  // Crossed forearms read as a defensive guard, with both knuckles upright.
+  ctx.save();
+  ctx.globalAlpha = opacity;
+  ctx.lineCap = "square";
+  for (const side of [-1, 1]) {
+    const fistX = tile.x + side * spread;
+    const cuffX = tile.x - side * tile.radius * .63;
+    const cuffY = tile.y + tile.radius * .86;
+    ctx.beginPath(); ctx.moveTo(cuffX, cuffY); ctx.lineTo(fistX, top + tile.radius * .28);
+    ctx.lineWidth = Math.max(7, tile.radius * .3); ctx.strokeStyle = "#642d38"; ctx.stroke();
+    ctx.lineWidth = Math.max(4, tile.radius * .18); ctx.strokeStyle = "#c3434a"; ctx.stroke();
+    ctx.lineWidth = Math.max(2, tile.radius * .055); ctx.strokeStyle = "#ffb584"; ctx.stroke();
+  }
+  ctx.restore();
+  drawPixelMotif(ctx, "fist", tile.x - spread, top, tile.radius * 1.04, opacity, ms, -.08);
+  drawPixelMotif(ctx, "fist", tile.x + spread, top, tile.radius * 1.04, opacity, ms, .08, true);
   if (ms > 235) {
     const age = (ms - 235) / 500;
     ctx.save(); ctx.globalAlpha = fade(age) * .72;
     ctx.strokeStyle = "#ffe3ad"; ctx.lineWidth = Math.max(2, tile.radius * .075);
     ctx.beginPath();
-    ctx.moveTo(tile.x - tile.radius * .45, tile.y + tile.radius * .28);
-    ctx.quadraticCurveTo(tile.x, tile.y - tile.radius * .38, tile.x + tile.radius * .45,
-      tile.y + tile.radius * .28); ctx.stroke(); ctx.restore();
+    ctx.arc(tile.x, tile.y, tile.radius * (.42 + age * .27), Math.PI * 1.08, Math.PI * 1.92);
+    ctx.stroke(); ctx.restore();
     pressureRing(ctx, tile, (ms - 245) / 480, "#ffedc7", "#a64d43", .66);
   }
 };
@@ -172,14 +158,10 @@ const poisonSlash = (ctx: CanvasRenderingContext2D, tile: FocusTile,
   ctx.globalAlpha = fade(age) * .95;
   const top = -r * .81;
   const bottom = top + r * 1.67 * sweep;
-  ctx.beginPath();
-  ctx.moveTo(-r * .7, top);
-  ctx.quadraticCurveTo(r * .45, -r * .18, r * .62, bottom);
-  ctx.quadraticCurveTo(r * .16, bottom - r * .12, -r * .7, top);
-  ctx.fillStyle = "#4b246a"; ctx.fill();
-  ctx.strokeStyle = "#e57bdf"; ctx.lineWidth = Math.max(2, r * .095);
-  ctx.beginPath(); ctx.moveTo(-r * .62, top + r * .06);
-  ctx.quadraticCurveTo(r * .12, -r * .15, r * .5, bottom - r * .12); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-r * .7, top);
+  ctx.quadraticCurveTo(r * .12, -r * .15, r * .56, bottom);
+  ctx.lineWidth = Math.max(2, r * .095); ctx.strokeStyle = "#4b246a"; ctx.stroke();
+  ctx.lineWidth = Math.max(1, r * .043); ctx.strokeStyle = "#e57bdf"; ctx.stroke();
   ctx.restore();
 };
 
@@ -190,14 +172,13 @@ const poisonPhysical = (ctx: CanvasRenderingContext2D, tile: FocusTile, ms: numb
 };
 
 const poisonSpecial = (ctx: CanvasRenderingContext2D, tile: FocusTile,
-  ms: number, images: Sprites) => {
-  const direction = approach(tile);
+  ms: number) => {
   const arrival = ease((ms - 10) / 280);
   const burst = ease((ms - 310) / 220);
   const distance = tile.radius * 1.22 * (1 - arrival);
-  sprite(ctx, images.poison, tile.x - direction.x * distance, tile.y - direction.y * distance,
+  drawPixelMotif(ctx, "poison", tile.x, tile.y - distance,
     tile.radius * (1.45 + burst * .32),
-    Math.min(1, ms / 100) * (1 - ease((ms - 360) / 220)), ms / 2800);
+    Math.min(1, ms / 100) * (1 - ease((ms - 360) / 220)), ms);
   for (let i = 0; i < 2; i++) pressureRing(ctx, tile, (ms - 330 - i * 100) / 370,
     "#df9ff0", "#5b2778", .86 + i * .13);
   poisonBubbles(ctx, tile, ms - 170, 17, true);
@@ -236,13 +217,12 @@ const poisonStatus = (ctx: CanvasRenderingContext2D, tile: FocusTile, ms: number
 export const drawFocusedTile = (ctx: CanvasRenderingContext2D,
   type: VfxType, kind: VfxKind, tile: FocusTile, ms: number): boolean => {
   if (type !== "poison" && type !== "fighting") return false;
-  const images = getSprites();
   if (type === "fighting") {
-    if (kind === "physical") fightingPhysical(ctx, tile, ms, images);
-    else if (kind === "special") fightingSpecial(ctx, tile, ms, images);
-    else fightingStatus(ctx, tile, ms, images);
+    if (kind === "physical") fightingPhysical(ctx, tile, ms);
+    else if (kind === "special") fightingSpecial(ctx, tile, ms);
+    else fightingStatus(ctx, tile, ms);
   } else if (kind === "physical") poisonPhysical(ctx, tile, ms);
-  else if (kind === "special") poisonSpecial(ctx, tile, ms, images);
+  else if (kind === "special") poisonSpecial(ctx, tile, ms);
   else poisonStatus(ctx, tile, ms);
   return true;
 };
