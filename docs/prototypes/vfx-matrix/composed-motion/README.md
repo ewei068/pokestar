@@ -91,3 +91,8 @@ Gallery v12 preserves other approvals and reopens only Normal Physical.
 Desktop and phone filmstrips were inspected through the full sequence; build,
 deterministic drawing, and clean-endpoint checks passed. Visual approval of this
 new motion is pending.
+
+Follow-up tuning: reduced the starting arc size and radial travel, softened the
+initial outward acceleration, and extended each arc from 220 to 290 ms with a
+later fade. Re-inspected desktop/phone sequences; build and the focused Normal
+rendering audit passed (234 sampled frames, deterministic output, clean ends).
