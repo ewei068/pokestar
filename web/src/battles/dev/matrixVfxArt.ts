@@ -1,6 +1,7 @@
 /** Development-only first pass for the remaining type/category tile effects. */
 import { vfxPalette } from "../vfx/types";
 import type { VfxKind, VfxType } from "../vfx/types";
+import { drawFocusedTile } from "./focusedMatrixVfx";
 
 export type MatrixTile = { x: number; y: number; radius: number; seed: number };
 type Palette = typeof vfxPalette[VfxType];
@@ -241,6 +242,7 @@ const status = (ctx: CanvasRenderingContext2D, type: VfxType,
 export const drawMatrixTile = (ctx: CanvasRenderingContext2D,
   type: VfxType, kind: VfxKind, tile: MatrixTile, ms: number) => {
   if (ms < 0 || ms > 760) return;
+  if (drawFocusedTile(ctx, type, kind, tile, ms)) return;
   const palette = vfxPalette[type];
   if (kind === "physical") physical(ctx,type,palette,tile,ms);
   else if (kind === "special") special(ctx,type,palette,tile,ms);

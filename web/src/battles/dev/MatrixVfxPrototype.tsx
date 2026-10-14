@@ -31,6 +31,9 @@ export const MatrixVfxPrototype = ({ type, kind, replayKey }: {
     let disposed = false;
     const measure = () => {
       const rect = board.getBoundingClientRect();
+      const actorRect = board.querySelector<HTMLElement>(".arena-mon.is-active")?.getBoundingClientRect();
+      const origin = actorRect ? { x: actorRect.left + actorRect.width / 2 - rect.left,
+        y: actorRect.top + actorRect.height / 2 - rect.top } : undefined;
       const density = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(rect.width * density);
       canvas.height = Math.round(rect.height * density);
@@ -42,7 +45,7 @@ export const MatrixVfxPrototype = ({ type, kind, replayKey }: {
           y: cellRect.top + cellRect.height / 2 - rect.top,
           radius: Math.min(cellRect.width * (compact ? .29 : .36),
             cellRect.height * (compact ? .43 : .52)),
-          seed: tileSeed(cell.dataset.teamName || "", cell.dataset.position || "") };
+          seed: tileSeed(cell.dataset.teamName || "", cell.dataset.position || ""), origin };
       });
     };
     const observer = new ResizeObserver(measure);
