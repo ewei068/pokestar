@@ -10,12 +10,26 @@ import { readVfxLabSelection, vfxLabKinds, vfxLabPatterns, vfxLabTypes, vfxLabUr
 import type { VfxLabSelection, VfxLabType, VfxLabPattern } from "./vfxLab";
 import { standardVfxTypes } from "../vfx/types";
 import type { VfxKind } from "../vfx/types";
-import { FireVfxPrototype, FireVfxSwitcher, readFireVfxVariant } from "./FireVfxPrototype";
+import { FireVfxPrototype, fireVfxVariants, fireVfxVariantName, readFireVfxVariant } from "./FireVfxPrototype";
 import type { FireVfxVariant } from "./FireVfxPrototype";
+import { QualityVfxPrototype, qualityVfxNames, qualityVfxVariants, readQualityVfxVariant } from "./QualityVfxPrototype";
+import type { QualityVfxStudy, QualityVfxVariant } from "./QualityVfxPrototype";
+import { VfxStudySwitcher } from "./VfxStudySwitcher";
 import "./story.css";
 
 const requestedStory = new URLSearchParams(window.location.search).get("story");
 const initialLabSelection = readVfxLabSelection(new URLSearchParams(window.location.search));
+type VfxStudy = "fire-special" | QualityVfxStudy;
+const studyFor = (selection: VfxLabSelection): VfxStudy | null => {
+  if (selection.type === "fire" && selection.kind === "special") return "fire-special";
+  if (selection.type === "normal" && selection.kind === "physical") return "normal-physical";
+  if (selection.type === "fairy" && selection.kind === "status") return "fairy-status";
+  return null;
+};
+const defaultVariant = (study: VfxStudy) => study === "fire-special" ? "column" :
+  study === "normal-physical" ? "sprite" : "halo";
+const readVariant = (study: VfxStudy | null, params: URLSearchParams) => !study ? "original"
+  : study === "fire-special" ? readFireVfxVariant(params) : readQualityVfxVariant(study, params);
 
 export const BattleScreenPreview = () => {
   const [labSelection, setLabSelection] = useState(initialLabSelection);
@@ -26,7 +40,9 @@ export const BattleScreenPreview = () => {
   const [notice, setNotice] = useState<string | null>(null);
   const [history, setHistory] = useState<string[]>(story.history);
   const [replayKey, setReplayKey] = useState(0);
-  const [fireVariant, setFireVariant] = useState(() => readFireVfxVariant(new URLSearchParams(window.location.search)));
+  const [studyVariant, setStudyVariant] = useState<string>(() => readVariant(studyFor(initialLabSelection),
+    new URLSearchParams(window.location.search)));
+  const activeStudy = story.id === "vfx" ? studyFor(labSelection) : null;
   const timers = useRef<number[]>([]);
   useEffect(() => () => { timers.current.forEach(window.clearTimeout); }, []);
   useEffect(() => {
@@ -47,14 +63,16 @@ export const BattleScreenPreview = () => {
     setHistory(nextStory.history);
     setNotice(null);
     setReplayKey((current) => current + 1);
+    const nextStudy = studyFor(next);
+    const nextVariant = nextStudy === activeStudy ? studyVariant : nextStudy ? defaultVariant(nextStudy) : "original";
+    setStudyVariant(nextVariant);
     const params = new URLSearchParams(vfxLabUrl(next).slice(1));
-    if (next.type === "fire" && next.kind === "special") params.set("variant", fireVariant);
+    if (nextStudy) params.set("variant", nextVariant);
     window.history.replaceState(null, "", `?${params.toString()}`);
   };
 
-  const firePilot = story.id === "vfx" && labSelection.type === "fire" && labSelection.kind === "special";
-  const changeFireVariant = (next: FireVfxVariant) => {
-    setFireVariant(next);
+  const changeStudyVariant = (next: string) => {
+    setStudyVariant(next);
     setPlaying(story.playing);
     setReplayKey((current) => current + 1);
     const params = new URLSearchParams(window.location.search);
@@ -85,7 +103,7 @@ export const BattleScreenPreview = () => {
     skipTurn: () => setNotice("Development story: no action was sent."),
   };
 
-  return <div className={`battle-story-page ${firePilot && fireVariant !== "original" ? "is-fire-pilot" : ""}`}>
+  return <div className={`battle-story-page ${activeStudy && studyVariant !== "original" ? "is-vfx-study" : ""}`}>
     <section className="battle-story-toolbar" aria-label="Battle story controls">
       <div><strong>Battle UI stories</strong><span>Development data · no server actions</span></div>
       <nav aria-label="Story scenarios">{storyGroups.map((group) =>
@@ -111,7 +129,7 @@ export const BattleScreenPreview = () => {
         </select></label>
         {!standardVfxTypes.some((type) => type === labSelection.type) &&
           <small>Uses Normal VFX until this type receives its own art.</small>}
-        {firePilot && <small>Fire Special particle study · use the floating arrows to compare variants.</small>}
+        {activeStudy && <small>{activeStudy.replace("-", " ")} quality study · use the floating arrows to compare variants.</small>}
       </fieldset>}
       {story.playing && <button type="button" onClick={() => {
         setPlaying(story.playing);
@@ -119,8 +137,15 @@ export const BattleScreenPreview = () => {
       }}>Replay action</button>}
     </section>
     <BattleScreen key={`${story.id}-${replayKey}`} catalog={story.catalog} session={session} />
-    {firePilot && fireVariant !== "original" &&
-      <FireVfxPrototype key={`${fireVariant}-${replayKey}`} variant={fireVariant} replayKey={replayKey} />}
-    {firePilot && <FireVfxSwitcher variant={fireVariant} onChange={changeFireVariant} />}
+    {activeStudy === "fire-special" && studyVariant !== "original" &&
+      <FireVfxPrototype key={`${studyVariant}-${replayKey}`} variant={studyVariant as Exclude<FireVfxVariant, "original">}
+        replayKey={replayKey} />}
+    {(activeStudy === "normal-physical" || activeStudy === "fairy-status") && studyVariant !== "original" &&
+      <QualityVfxPrototype key={`${studyVariant}-${replayKey}`} study={activeStudy}
+        variant={studyVariant as Exclude<QualityVfxVariant, "original">} replayKey={replayKey} />}
+    {activeStudy && <VfxStudySwitcher title={`${activeStudy.replace("-", " ")} prototype`}
+      variants={activeStudy === "fire-special" ? fireVfxVariants : qualityVfxVariants[activeStudy]}
+      names={activeStudy === "fire-special" ? fireVfxVariantName : qualityVfxNames}
+      variant={studyVariant} onChange={changeStudyVariant} />}
   </div>;
 };
