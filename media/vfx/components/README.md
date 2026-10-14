@@ -36,3 +36,12 @@ Brief: one tiny, right-facing, open-mouth blue-violet dragon head; emulate a
 horn, a small eye/fang, short neck, and true transparency. No scales, texture,
 glow, rings, or particles. Code rears the head and emits independently timed
 voice arcs from its mouth. The previous detailed head remains for history.
+
+## Supplied Ghost sprite, 2026-10-13
+
+`ghost-user-sprite.png` is the user's final 401×461 PNG, copied unchanged from
+`codex-clipboard-6d21a37e-f4f6-4fb0-a519-0ffc38d02340.png`. It has true
+transparent pixels and replaces the original spirit in Ghost Status. No image
+generation or pixel edits were applied to this file. The renderer preserves its
+aspect ratio and applies the existing band ripple, bob, fog, and particles.
+The earlier checkerboard extraction was rejected and is not used.

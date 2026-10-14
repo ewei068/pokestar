@@ -65,3 +65,16 @@ Re-captured and inspected the complete desktop/phone sequences for all ten
 changed effects; re-ran the 4,212-frame deterministic/endpoint audit with no
 new failures. Current type filmstrips show this follow-up; full-board captures
 above document the first pass's layout and integration checks.
+
+## Final approval and polish
+
+`../review-2026-10-13-approved.json` preserves the final export verbatim. The
+user explicitly approved every effect; this supersedes the stale unreviewed
+Rock Special dropdown in the export. Gallery v11 carries all 54 approvals.
+
+Final adjustments: shorter/smaller Normal impact arcs with seeded radial and
+angular variation; Flying contact uses more feathers without rings; Fire body,
+embers, and glow share a ground anchor; Grass pressure rings draw behind the
+beam without changing size or position. Ghost Status now uses the user's clean
+transparent PNG directly, retaining its wavy motion. The optional sprite
+substitution noted above is now fulfilled.

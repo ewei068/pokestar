@@ -38,6 +38,8 @@ const random = (seed: number) => {
 };
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
 const fade = (value: number) => Math.sin(Math.PI * clamp(value));
+// Shared contact plane for the cropped body, flame emission, and glow.
+const columnBase = .29;
 
 const drawFlame = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
   x: number, y: number, width: number, height: number, angle: number, alpha: number) => {
@@ -96,7 +98,7 @@ const drawMainEmber = (ctx: CanvasRenderingContext2D, textures: FireTextures,
     ctx.save();ctx.globalAlpha=Math.min(1,age*10)*Math.min(1,(1-age)*4)*.53;
     ctx.imageSmoothingEnabled=false;
     const image=textures.body;
-    ctx.beginPath();ctx.rect(tile.x-size,tile.y-size,size*2,size+tile.radius*.29);ctx.clip();
+    ctx.beginPath();ctx.rect(tile.x-size,tile.y-size,size*2,size+tile.radius*columnBase);ctx.clip();
     // Independently deform narrow bands near the tongues; the opaque body anchors the column.
     for(let band=0;band<16;band++) {
       const sourceY=band*image.naturalHeight/16;
@@ -138,7 +140,7 @@ const drawForegroundEmbers = (ctx: CanvasRenderingContext2D, textures: FireTextu
     if (age < 0 || age > 1) continue;
     const x = tile.x + (random(key + 11) - .5) * tile.radius * .52 +
       (random(key + 13) - .5) * tile.radius * .62 * age;
-    const y = tile.y + tile.radius * .7 - age * tile.radius *
+    const y = tile.y + tile.radius * columnBase - age * tile.radius *
       (.95 + random(key + 17) * .58);
     const size = tile.radius * (.23 + random(key + 19) * .17) * (1 - age * .24);
     const sprite = textures.embers[Math.floor(random(key + 23) * textures.embers.length)];
@@ -183,7 +185,7 @@ const drawTile = (ctx: CanvasRenderingContext2D, textures: FireTextures,
     drawMainEmber(ctx, textures, tile, localMs, 760 - offset, false);
     drawEmbers(ctx, textures, tile, localMs, 10 + Math.floor(random(seed + 73) * 7), false, seed);
   } else if (variant === "column") {
-    drawGlow(ctx, { ...tile, y: tile.y + tile.radius * .25 }, time, .5);
+    drawGlow(ctx, { ...tile, y: tile.y + tile.radius * columnBase }, time, .5);
     const count = 5 + Math.floor(random(seed + 11) * 3);
     for (let index = 0; index < count; index++) {
       const birth = index * 55 + random(seed + index * 97 + 13) * 38;
@@ -192,7 +194,7 @@ const drawTile = (ctx: CanvasRenderingContext2D, textures: FireTextures,
       const sway = Math.sin(age * 6 + index * 1.8 + random(seed + 17) * 3) * tile.radius * .12;
       const size = tile.radius * (.55 + random(seed + index * 9) * .3);
       drawFlame(ctx, image, tile.x + sway + (random(seed + index * 3) - .5) * tile.radius * .35,
-        tile.y + tile.radius * .62 - age * tile.radius * 1.16,
+        tile.y + tile.radius * columnBase - age * tile.radius * 1.16,
         size * .62, size, sway / tile.radius * .7, fade(age) * .67);
     }
     drawMainEmber(ctx, textures, tile, localMs, 760 - offset, true);

@@ -112,7 +112,7 @@ export const ghostStatus:Draw=(ctx,ms,seed,c)=>{
   for(let band=0;band<12;band++){
     const y=-.67+band*.11,offset=Math.sin(ms*.012+band*.6)*(.012+Math.max(0,band-6)*.007);
     ctx.save();ctx.beginPath();ctx.rect(-1,y,2,.115);ctx.clip();
-    part(ctx,'ghost',c,offset,bob,1.16,0,a);ctx.restore();
+    texture(ctx,'ghost',offset,bob,1.16,0,a);ctx.restore();
   }
   for(let i=0;i<6;i++){const v=age(ms,200+i*52,250);if(live(v))oval(ctx,(random(seed+i)-.5)*.7,.36-v*.75,.022,.045,c.light,envelope(v)*.6);}
 };

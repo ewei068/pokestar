@@ -1,6 +1,7 @@
 /** Material parts, never complete effect compositions. Units are one tile radius. */
 import { random, clamp, ease } from '../matrixVfxKit';
 import type { Colors } from '../matrixVfxKit';
+import ghostUrl from '../../../../../media/vfx/components/ghost-user-sprite.png';
 import splashUrl from "../../../../../media/vfx/components/water-splash.png";
 import dragonUrl from '../../../../../media/vfx/components/dragon-head-simple.png';
 import emberUrl from '../../../../../media/vfx/experiments/fire-ember-fork.png';
@@ -143,12 +144,12 @@ export const part=(ctx:Ctx,kind:Part,c:Colors,x:number,y:number,size:number,rota
 };
 const textures=new Map<string,HTMLImageElement>();
 let loading:Promise<void>|undefined;
-export const loadParts=()=> loading ??= Promise.all(Object.entries({splash:splashUrl,dragon:dragonUrl,ember:emberUrl,fleck:fleckUrl,coal:coalUrl,star:starUrl}).map(async([key,url])=>{
+export const loadParts=()=> loading ??= Promise.all(Object.entries({ghost:ghostUrl,splash:splashUrl,dragon:dragonUrl,ember:emberUrl,fleck:fleckUrl,coal:coalUrl,star:starUrl}).map(async([key,url])=>{
   const img=new Image();img.src=url;await img.decode();textures.set(key,img);
 })).then(()=>undefined);
-export const texture=(ctx:Ctx,name:'splash'|'dragon'|'ember'|'fleck'|'coal'|'star',x:number,y:number,size:number,angle:number,a:number)=>{
+export const texture=(ctx:Ctx,name:'ghost'|'splash'|'dragon'|'ember'|'fleck'|'coal'|'star',x:number,y:number,size:number,angle:number,a:number)=>{
   const image=textures.get(name);if(!image)return;
-  withAlpha(ctx,a,()=>{ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.imageSmoothingEnabled=false;ctx.drawImage(image,-size/2,-size/2,size,size);ctx.restore();});
+  withAlpha(ctx,a,()=>{ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.imageSmoothingEnabled=false;const width=name==='ghost'?size*image.naturalWidth/image.naturalHeight:size;ctx.drawImage(image,-width/2,-size/2,width,size);ctx.restore();});
 };
 /** Emitted fragments have independent birth, spin, ballistic arc, and lifetime. */
 export const debris=(ctx:Ctx,ms:number,birth:number,seed:number,c:Colors,kind:Part,count=10,origin:Point=[0,.2],power=1)=>{

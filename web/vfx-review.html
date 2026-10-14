@@ -61,24 +61,23 @@
       <span id="progress" aria-live="polite"></span>
       <button id="play" type="button">Pause previews</button>
       <button id="export" type="button">Export review notes</button>
-      <label>Show <select id="filter"><option value="all">All effects</option><option value="revised">10 feedback revisions</option><option value="unreviewed">Unreviewed</option><option value="needs-work">Needs work</option><option value="approved">Looks good</option></select></label>
+      <label>Show <select id="filter"><option value="all">All effects</option><option value="revised">5 final adjustments</option><option value="unreviewed">Unreviewed</option><option value="needs-work">Needs work</option><option value="approved">Looks good</option></select></label>
     </div>
   </header>
   <main>
-    <p class="note">Latest review saved in the repository. Ten effects have new feedback revisions; unchanged approvals carry forward. Each effect uses independently animated components, evolving shapes, and material-specific particles. Use Compare motion to see any effect beside Fighting and Poison at the same time and size. Your highlighted favorites retain their reviewed choreography. Earlier feedback remains visible on changed cards; unchanged marks carry forward. Notes stay in this browser until exported.</p>
+    <p class="note">All 54 effects are approved. Five final adjustments cover the small feedback notes and the supplied Ghost sprite. Each effect uses independently animated components, evolving shapes, and material-specific particles. Use Compare motion to see any effect beside Fighting and Poison at the same time and size. Your highlighted favorites retain their reviewed choreography. Earlier feedback remains visible on changed cards; unchanged marks carry forward. Notes stay in this browser until exported.</p>
     <div id="grid" class="grid"></div>
   </main>
   <script type="module">
-    import recovered from "../docs/prototypes/vfx-matrix/review-2026-10-13-composed.json";
+    import recovered from "../docs/prototypes/vfx-matrix/review-2026-10-13-approved.json";
     const types = ["normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost", "steel", "fire", "water", "grass", "electric", "psychic", "ice", "dragon", "dark", "fairy"];
     const kinds = ["physical", "special", "status"];
-    const revised = new Set(["normal-physical","flying-physical","flying-status","rock-special",
-      "fire-special","fire-status","grass-special","dragon-special","dragon-status","dark-physical"]);
-    const key = "pokestar-vfx-review-v10";
-    let previous = Object.fromEntries(recovered.map(row => [`${row.type}-${row.kind}`,{status:row.status,notes:row.notes}]));
-    const migrate = () => Object.fromEntries(Object.entries(previous).map(([id, row]) => [id, revised.has(id) ? {status:"unreviewed", notes:row.notes || ""} : row]));
+    const revised = new Set(["normal-physical","flying-physical","fire-special","grass-special","ghost-status"]);
+    const key = "pokestar-vfx-review-v11";
+    // The user explicitly approved everything; the exported Rock Special dropdown was stale.
+    const previous = Object.fromEntries(recovered.map(row => [`${row.type}-${row.kind}`,{status:"approved",notes:row.notes}]));
+    const migrate = () => structuredClone(previous);
     let reviews = {};
-    try { previous = {...previous, ...JSON.parse(localStorage.getItem("pokestar-vfx-review-v9") || "{}")}; } catch { /* The recovered file remains available. */ }
     try {
       const saved = localStorage.getItem(key);
       reviews = saved ? JSON.parse(saved) : migrate();
@@ -87,7 +86,7 @@
     const filter = document.getElementById("filter");
     const specialVariant = (type, kind) => type === "normal" && kind === "physical" ? "sprite" :
       type === "fairy" && kind === "status" ? "halo" : type === "fire" && kind === "special" ? "column" : "final";
-    const label = (type, kind) => revised.has(`${type}-${kind}`) ? "feedback revision" :
+    const label = (type, kind) => revised.has(`${type}-${kind}`) ? "final adjustment" :
       type === "normal" && kind === "physical" || type === "fairy" && kind === "status" ? "approved study" :
       type === "fighting" || type === "poison" ? "focused study" : "approved composition";
     const save = () => {

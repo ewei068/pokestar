@@ -208,12 +208,12 @@ const drawSpriteImpact = (ctx: CanvasRenderingContext2D, image: HTMLImageElement
   // Three small 60–90 degree segments share the pressure-ring center.
   for (let piece = 0; piece < 3; piece++) {
     const key=tile.seed+piece*137;
-    const age=(ms-45-piece*42)/380;
+    const age=(ms-35-piece*32)/285;
     if(age<0||age>1)continue;
-    const size=tile.radius*(1.7+age*.45+random(key)*.13);
+    const size=tile.radius*(1.48+age*.30+random(key)*.18);
     const halfArc=(60+random(key+5)*30)*Math.PI/360;
     ctx.save();ctx.translate(tile.x,tile.y);ctx.scale(1,.85);
-    ctx.rotate(piece*Math.PI*2/3+(random(key+2)-.5)*.28);
+    ctx.rotate(piece*Math.PI*2/3+(random(key+2)-.5)*.5);
     ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,size,Math.PI-halfArc,Math.PI+halfArc);ctx.closePath();ctx.clip();
     ctx.globalAlpha=fade(age)*.9;ctx.imageSmoothingEnabled=false;
     // The source crescent curves around a point right of its image center.

@@ -1,4 +1,4 @@
-import {age,live,envelope,ease,random,TAU,withAlpha,path,oval,ring,shock,spark,part,debris,ribbon,slash,clamp} from './parts';
+import {age,live,envelope,ease,random,TAU,withAlpha,path,oval,ring,spark,part,debris,ribbon,slash,clamp} from './parts';
 import type {Draw,Point,Ctx} from './parts';
 import type {Colors} from '../matrixVfxKit';
 
@@ -12,8 +12,7 @@ export const flyingPhysical:Draw=(ctx,ms,seed,c)=>{
     const strike=ease((u-.12)/.36);
     wing(ctx,c,-.89,-.42,1,-.12+strike*1.37,1,envelope(u));
   }
-  ctx.save();ctx.translate(.2,.15);shock(ctx,ms,205,c,.72,.55);ctx.restore();
-  debris(ctx,ms,230,seed,c,'feather',11,[.2,.15],.65);
+  debris(ctx,ms,205,seed,c,'feather',17,[.2,.15],.65);
 };
 export const flyingSpecial:Draw=(ctx,ms,seed,c)=>{
   // Curved air sheets sweep left-to-right; feathers get entrained in the same flow.
@@ -98,6 +97,12 @@ export const grassPhysical:Draw=(ctx,ms,seed,c)=>{
 export const grassSpecial:Draw=(ctx,ms,seed,c)=>{
   const u=age(ms,30,670);if(!live(u))return;
   const focus=1-ease((u-.22)/.76),width=.03+.69*focus;
+  // Ground pressure sits behind the column; contact spray stays in front.
+  for(let front=0;front<3;front++) {
+    const v=age(ms,110+front*100,330);if(!live(v))continue;
+    ring(ctx,0,.31,.15+ease(v)*.96,c.main,.075,envelope(v)*.8,.35);
+    ring(ctx,0,.31,.15+ease(v)*.96,'#f4ffc8',.027,envelope(v),.35);
+  }
   // A bright column contracts; individual helical sparks continue after its center closes.
   withAlpha(ctx,envelope(u)*.88,()=>{
     const g=ctx.createLinearGradient(-width,0,width,0);g.addColorStop(0,'transparent');g.addColorStop(.25,'#78c95e');g.addColorStop(.43,'#eaffaf');g.addColorStop(.5,'#ffffee');g.addColorStop(.57,'#eaffaf');g.addColorStop(.75,'#78c95e');g.addColorStop(1,'transparent');
@@ -112,11 +117,6 @@ export const grassSpecial:Draw=(ctx,ms,seed,c)=>{
   const contact=age(ms,100,560);
   if(live(contact)) {
     oval(ctx,0,.31,.22+Math.sin(contact*Math.PI)*.62,.13,c.light,envelope(contact)*.9);
-    for(let front=0;front<3;front++) {
-      const v=age(ms,110+front*100,330);if(!live(v))continue;
-      ring(ctx,0,.31,.15+ease(v)*.96,c.main,.075,envelope(v)*.8,.35);
-      ring(ctx,0,.31,.15+ease(v)*.96,'#f4ffc8',.027,envelope(v),.35);
-    }
     for(let i=0;i<26;i++) {
       const key=seed+i*67,v=age(ms,115+random(key)*260,265);if(!live(v))continue;
       const a=i*2.4,x=Math.cos(a)*v*(.75+random(key+1)*.55);
