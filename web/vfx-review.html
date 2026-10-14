@@ -55,7 +55,7 @@
     </div>
   </header>
   <main>
-    <p class="note">Five Poison and Fighting effects have new pixel motifs or adjusted choreography. The other effects are unchanged. Previous marks carry over for unchanged effects; the five revised effects are ready for a fresh review. Notes stay in this browser until exported.</p>
+    <p class="note">Five Poison and Fighting effects have adjusted motion, proportions, or shapes from the latest review. The other effects are unchanged. Previous marks carry over for unchanged effects; the five revised effects are ready for a fresh review. Notes stay in this browser until exported.</p>
     <div id="grid" class="grid"></div>
   </main>
   <script>
@@ -63,10 +63,10 @@
     const kinds = ["physical", "special", "status"];
     const revised = new Set(["fighting-physical", "fighting-special", "fighting-status",
       "poison-physical", "poison-special"]);
-    const key = "pokestar-vfx-review-v3";
+    const key = "pokestar-vfx-review-v4";
     let previous = {};
     let reviews = {};
-    try { previous = JSON.parse(localStorage.getItem("pokestar-vfx-review-v2") || "{}"); } catch { previous = {}; }
+    try { previous = JSON.parse(localStorage.getItem("pokestar-vfx-review-v3") || "{}"); } catch { previous = {}; }
     try {
       const saved = localStorage.getItem(key);
       reviews = saved ? JSON.parse(saved) : Object.fromEntries(Object.entries(previous).filter(([id]) => !revised.has(id)));
@@ -75,7 +75,7 @@
     const filter = document.getElementById("filter");
     const specialVariant = (type, kind) => type === "normal" && kind === "physical" ? "sprite" :
       type === "fairy" && kind === "status" ? "halo" : type === "fire" && kind === "special" ? "column" : "study";
-    const label = (type, kind) => revised.has(`${type}-${kind}`) ? "third-pass candidate" :
+    const label = (type, kind) => revised.has(`${type}-${kind}`) ? "fourth-pass candidate" :
       type === "normal" && kind === "physical" || type === "fairy" && kind === "status" ? "approved study" : "first pass";
     const save = () => { localStorage.setItem(key, JSON.stringify(reviews)); update(); };
     function update() {

@@ -16,14 +16,12 @@ const makeFist = () => {
     ctx.fillStyle = color;
     ctx.fillRect(x, y, w, h);
   };
-  // Three square knuckles, a tucked thumb, and a short cuff read as icon art at tile size.
+  // Three square knuckles and a tucked thumb read as an isolated icon at tile size.
   block("#632331", 4, 2, 12, 2);
   block("#632331", 2, 4, 16, 9);
   block("#632331", 4, 13, 12, 3);
-  block("#632331", 8, 16, 6, 4);
   block("#bd3541", 3, 5, 14, 7);
   block("#bd3541", 5, 12, 10, 3);
-  block("#bd3541", 9, 15, 4, 4);
   block("#ed6556", 4, 4, 12, 7);
   block("#faab76", 4, 5, 3, 4);
   block("#faab76", 8, 4, 4, 5);
@@ -36,7 +34,6 @@ const makeFist = () => {
   block("#632331", 15, 10, 4, 2);
   block("#d74b48", 15, 11, 3, 2);
   block("#faab76", 14, 10, 3, 1);
-  block("#632331", 7, 16, 1, 3);
   return canvas;
 };
 
@@ -61,11 +58,6 @@ const makeOrb = (kind: "aura" | "poison", frame: number) => {
       (x - 15) ** 2 + (y - 13 + frame % 3) ** 2 < 3)) color = colors[0];
     ctx.fillStyle = color;
     ctx.fillRect(x, y, 1, 1);
-  }
-  if (kind === "poison") {
-    ctx.fillStyle = colors[1];
-    ctx.fillRect(11, 20, 2, 2 + frame % 3);
-    ctx.fillRect(16, 19, 1, 2 + (frame + 2) % 3);
   }
   return canvas;
 };

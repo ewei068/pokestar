@@ -49,7 +49,7 @@ const bubble = (ctx: CanvasRenderingContext2D, x: number, y: number,
   ctx.restore();
 };
 const poisonBubbles = (ctx: CanvasRenderingContext2D, tile: FocusTile,
-  ms: number, count: number, outward: boolean) => {
+  ms: number, count: number, outward: boolean, originY = 0) => {
   for (let i = 0; i < count; i++) {
     const seed = tile.seed + i * 109;
     const birth = 70 + i * (outward ? 28 : 45) + random(seed + 3) * 55;
@@ -59,7 +59,8 @@ const poisonBubbles = (ctx: CanvasRenderingContext2D, tile: FocusTile,
     const distance = tile.radius * (outward ? .16 + age * (.55 + random(seed + 13) * .45) :
       .25 + random(seed + 13) * .72);
     const x = tile.x + Math.cos(angle) * distance;
-    const y = tile.y + (outward ? Math.sin(angle) * distance * .65 : tile.radius * .43 - age * tile.radius * 1.22);
+    const y = tile.y + (outward ? tile.radius * originY + Math.sin(angle) * distance * .65 :
+      tile.radius * .43 - age * tile.radius * 1.22);
     const radius = tile.radius * (.055 + random(seed + 17) * .09) * (1 - age * .26);
     bubble(ctx, x, y, radius, fade(age) * .95);
   }
@@ -83,17 +84,14 @@ const auraSparks = (ctx: CanvasRenderingContext2D, tile: FocusTile, ms: number) 
 
 const fightingPhysical = (ctx: CanvasRenderingContext2D, tile: FocusTile,
   ms: number) => {
-  const direction = approach(tile);
-  const arrival = ease((ms - 20) / 155);
-  const retreat = ease((ms - 380) / 180);
-  const distance = tile.radius * (.95 * (1 - arrival) + .22 * retreat);
-  const x = tile.x - direction.x * distance;
-  const y = tile.y - direction.y * distance;
-  for (let i = 0; i < 3; i++) pressureRing(ctx, tile, (ms - 145 - i * 90) / 380,
+  const focus = ease((ms - 20) / 160);
+  const shake = fade((ms - 160) / 170) * tile.radius * .035;
+  const x = tile.x + Math.sin(ms * .32) * shake;
+  const y = tile.y + Math.cos(ms * .41) * shake * .65;
+  for (let i = 0; i < 3; i++) pressureRing(ctx, tile, (ms - 170 - i * 90) / 380,
     "#ffe4bc", "#a53d43", 1 + i * .11);
-  drawPixelMotif(ctx, "fist", x, y, tile.radius * (1.36 + arrival * .46),
-    Math.min(1, ms / 55) * (1 - ease((ms - 450) / 240)),
-    ms, Math.atan2(direction.y, direction.x) * .18);
+  drawPixelMotif(ctx, "fist", x, y, tile.radius * (2.2 - focus * 1.04),
+    (.24 + focus * .76) * (1 - ease((ms - 450) / 240)), ms);
 };
 
 const fightingSpecial = (ctx: CanvasRenderingContext2D, tile: FocusTile,
@@ -108,9 +106,9 @@ const fightingSpecial = (ctx: CanvasRenderingContext2D, tile: FocusTile,
   ctx.fillStyle = glow; ctx.fillRect(tile.x - tile.radius * 1.15, tile.y - tile.radius * 1.15,
     tile.radius * 2.3, tile.radius * 2.3); ctx.restore();
   drawPixelMotif(ctx, "aura", tile.x - direction.x * distance, tile.y - direction.y * distance,
-    tile.radius * (1.15 + impact * .85), Math.min(1, ms / 100) * (1 - ease((ms - 550) / 210)), ms);
+    tile.radius * (1.12 + impact * .38), Math.min(1, ms / 100) * (1 - ease((ms - 550) / 210)), ms);
   for (let i = 0; i < 2; i++) pressureRing(ctx, tile, (ms - 290 - i * 105) / 420,
-    "#d7fffa", "#315e93", .93 + i * .1);
+    "#d7fffa", "#315e93", 1.07 + i * .1);
   auraSparks(ctx, tile, ms);
 };
 
@@ -118,24 +116,13 @@ const fightingStatus = (ctx: CanvasRenderingContext2D, tile: FocusTile,
   ms: number) => {
   const arrival = ease((ms - 40) / 260);
   const opacity = Math.min(1, ms / 80) * (1 - ease((ms - 555) / 190));
-  const spread = tile.radius * (1.12 - arrival * .5);
-  const top = tile.y - tile.radius * (.52 + arrival * .12);
-  // Crossed forearms read as a defensive guard, with both knuckles upright.
-  ctx.save();
-  ctx.globalAlpha = opacity;
-  ctx.lineCap = "square";
+  // Upright fists cross from opposite sides and briefly hold a compact guard.
   for (const side of [-1, 1]) {
-    const fistX = tile.x + side * spread;
-    const cuffX = tile.x - side * tile.radius * .63;
-    const cuffY = tile.y + tile.radius * .86;
-    ctx.beginPath(); ctx.moveTo(cuffX, cuffY); ctx.lineTo(fistX, top + tile.radius * .28);
-    ctx.lineWidth = Math.max(7, tile.radius * .3); ctx.strokeStyle = "#642d38"; ctx.stroke();
-    ctx.lineWidth = Math.max(4, tile.radius * .18); ctx.strokeStyle = "#c3434a"; ctx.stroke();
-    ctx.lineWidth = Math.max(2, tile.radius * .055); ctx.strokeStyle = "#ffb584"; ctx.stroke();
+    const x = tile.x + side * tile.radius * (.97 - arrival * 1.38);
+    const y = tile.y + tile.radius * (.28 - arrival * .42 + side * .1);
+    drawPixelMotif(ctx, "fist", x, y, tile.radius * 1.02, opacity, ms,
+      side * (.12 + arrival * .18), side > 0);
   }
-  ctx.restore();
-  drawPixelMotif(ctx, "fist", tile.x - spread, top, tile.radius * 1.04, opacity, ms, -.08);
-  drawPixelMotif(ctx, "fist", tile.x + spread, top, tile.radius * 1.04, opacity, ms, .08, true);
   if (ms > 235) {
     const age = (ms - 235) / 500;
     ctx.save(); ctx.globalAlpha = fade(age) * .72;
@@ -156,12 +143,28 @@ const poisonSlash = (ctx: CanvasRenderingContext2D, tile: FocusTile,
   const sign = mirrored ? -1 : 1;
   ctx.save(); ctx.translate(tile.x, tile.y); ctx.scale(sign, 1);
   ctx.globalAlpha = fade(age) * .95;
-  const top = -r * .81;
-  const bottom = top + r * 1.67 * sweep;
-  ctx.beginPath(); ctx.moveTo(-r * .7, top);
-  ctx.quadraticCurveTo(r * .12, -r * .15, r * .56, bottom);
-  ctx.lineWidth = Math.max(2, r * .095); ctx.strokeStyle = "#4b246a"; ctx.stroke();
-  ctx.lineWidth = Math.max(1, r * .043); ctx.strokeStyle = "#e57bdf"; ctx.stroke();
+  const cut = (halfWidth: number, color: string) => {
+    const edge = (side: number, reverse: boolean) => {
+      for (let i = 0; i <= 12; i++) {
+        const u = reverse ? 1 - i / 12 : i / 12;
+        const t = u * sweep;
+        const x = (1 - t) ** 2 * -.7 + 2 * (1 - t) * t * .12 + t * t * .56;
+        const y = (1 - t) ** 2 * -.81 + 2 * (1 - t) * t * -.15 + t * t * .86;
+        const dx = 2 * (1 - t) * .82 + 2 * t * .44;
+        const dy = 2 * (1 - t) * .66 + 2 * t * 1.01;
+        const length = Math.hypot(dx, dy);
+        const width = halfWidth * Math.sin(Math.PI * u);
+        const px = r * (x + side * -dy / length * width);
+        const py = r * (y + side * dx / length * width);
+        if (!reverse && i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+    };
+    ctx.beginPath(); edge(1, false); edge(-1, true); ctx.closePath();
+    ctx.fillStyle = color; ctx.fill();
+  };
+  cut(.12, "#4b246a");
+  cut(.065, "#e57bdf");
   ctx.restore();
 };
 
@@ -181,18 +184,7 @@ const poisonSpecial = (ctx: CanvasRenderingContext2D, tile: FocusTile,
     Math.min(1, ms / 100) * (1 - ease((ms - 360) / 220)), ms);
   for (let i = 0; i < 2; i++) pressureRing(ctx, tile, (ms - 330 - i * 100) / 370,
     "#df9ff0", "#5b2778", .86 + i * .13);
-  poisonBubbles(ctx, tile, ms - 170, 17, true);
-  for (let i = 0; i < 6; i++) {
-    const seed = tile.seed + i * 83;
-    const age = (ms - 355 - random(seed + 3) * 90) / 330;
-    if (age < 0 || age > 1) continue;
-    const x = tile.x + (random(seed + 5) - .5) * tile.radius * 1.25;
-    const y = tile.y - tile.radius * .07 + age * tile.radius * (.6 + random(seed + 7) * .5);
-    ctx.save(); ctx.globalAlpha = fade(age) * .85;
-    ctx.fillStyle = "#8d49ae";
-    ctx.beginPath(); ctx.ellipse(x, y, tile.radius * .045, tile.radius * .12, 0, 0, Math.PI * 2);
-    ctx.fill(); ctx.restore();
-  }
+  poisonBubbles(ctx, tile, ms - 170, 17, true, .48);
 };
 
 const poisonStatus = (ctx: CanvasRenderingContext2D, tile: FocusTile, ms: number) => {
