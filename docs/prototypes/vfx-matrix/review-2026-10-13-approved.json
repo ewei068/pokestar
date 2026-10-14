@@ -1,0 +1,326 @@
+[
+  {
+    "type": "normal",
+    "kind": "physical",
+    "status": "approved",
+    "notes": "Looks good, maybe the impact lines should be very slighly closer to the center, smaller, and last a little less long to make it look like a quick impact. I also think there should be some slight randomness to the distance from center and rotational position"
+  },
+  {
+    "type": "normal",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "normal",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "fighting",
+    "kind": "physical",
+    "status": "approved",
+    "notes": "Still one of my favorite effects"
+  },
+  {
+    "type": "fighting",
+    "kind": "special",
+    "status": "approved",
+    "notes": "Also one of my favorite effects"
+  },
+  {
+    "type": "fighting",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "flying",
+    "kind": "physical",
+    "status": "approved",
+    "notes": "I honestly think we don't need the impact rings, maybe just slightly more feathers on impact"
+  },
+  {
+    "type": "flying",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "flying",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "poison",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "poison",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "poison",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ground",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ground",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ground",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "rock",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "rock",
+    "kind": "special",
+    "status": "unreviewed",
+    "notes": "Definitely my favorite"
+  },
+  {
+    "type": "rock",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "bug",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "bug",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "bug",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ghost",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ghost",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ghost",
+    "kind": "status",
+    "status": "approved",
+    "notes": "This looks very good and is one of my favorites. If you're able to use the ghost sprite from lavendar town https://img1.picmix.com/output/stamp/normal/1/8/5/7/2607581_a6a53.png and keep its slightly wavy motion, that would be ideal. But OK if not\n\nNEW FEEDBACK: were you able to use this sprite?"
+  },
+  {
+    "type": "steel",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "steel",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "steel",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "fire",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "fire",
+    "kind": "special",
+    "status": "approved",
+    "notes": "Looks good, but the embers come from too far low now. The small embers should probably come from the base of the big ember, and the glow position should adjust accordingly"
+  },
+  {
+    "type": "fire",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "water",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "water",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "water",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "grass",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "grass",
+    "kind": "special",
+    "status": "approved",
+    "notes": "Looks good now, I wonder if the pressure rings could be located z-index behind the main beam (don't change actual size or position), that way it doesn't look like the rings clip the beam"
+  },
+  {
+    "type": "grass",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "electric",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "electric",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "electric",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "psychic",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "psychic",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "psychic",
+    "kind": "status",
+    "status": "approved",
+    "notes": "This looks very good and is one of my favorites"
+  },
+  {
+    "type": "ice",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ice",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "ice",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "dragon",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "dragon",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "dragon",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "dark",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "dark",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "dark",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "fairy",
+    "kind": "physical",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "fairy",
+    "kind": "special",
+    "status": "approved",
+    "notes": ""
+  },
+  {
+    "type": "fairy",
+    "kind": "status",
+    "status": "approved",
+    "notes": ""
+  }
+]

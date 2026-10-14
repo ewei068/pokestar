@@ -1,174 +1,139 @@
-# Battle VFX creation guide
+# Battle tile VFX guide
 
-Status: working guidance, 2026-10-12. Use this when creating or promoting a tile
-effect. The [web UI style guide](web-ui-style-guide.md) governs the surrounding
-battle screen; the [VFX matrix](battle-vfx-matrix.md) records the first-pass
-motifs for all type/category combinations. This guide records the animation
-decisions learned from the Fire, Normal, Fairy, Fighting, Poison, and full
-matrix studies.
+Use this workflow when creating or revising an effect. The quality reference is
+**the running animation at battle size**. The current review entry is
+`web/vfx-review.html`; its Compare motion control synchronizes a selected cell
+with Fighting and Poison, supports phone size, and exposes the whole timeline.
+The effects remain in development review until the user requests promotion.
 
-## What an effect communicates
+## Make an effect
 
-The server's accepted combat event supplies the action and its resolved tile
-footprint. Animate **every tile in that footprint**, including empty tiles.
-The move's category controls the actor's travel, independently of its type:
-Physical approaches the primary target; Special and Status move into the
-target's lane; a self-targeting move leaves the actor in place. The sequence is
-actor approach → tile VFX → actor return → result effects. Damage numbers,
-faints, status changes, and sound are a later pass.
+1. **Read the latest feedback and choose a reference.** Start with the affected
+   cell's notes and the examples below. Review the reference's entire sequence.
+   Finish this step with a concrete subject, action, contact point, and release
+   for this type/category. Physical implies contact; Special projects a force
+   or changes the environment; Status establishes a field or influence.
+2. **Describe the choreography before making art.** Write a short sequence such
+   as “stones gather → hang → converge in arcs → break at the center.” Identify
+   independently timed pieces and the material behavior of each. Finish when
+   you can describe what visibly changes at entry, peak, and release.
+3. **Choose the smallest useful art ingredients.** Use generated art for a
+   flame body, splash, impact crescent, or recognizable creature part. Use
+   authored pixel frames for changing orbs and small bold silhouettes. Use
+   canvas geometry for growing cuts, waves, fields, rings, and electrical
+   branches. Finish when each ingredient is readable at its intended display
+   size and has an explicit animation role.
+4. **Animate the parts on one clock.** Give each piece a birth, lifetime,
+   trajectory, and release. Change the focal shape through frames, articulation,
+   deformation, growth, or a material transition. Supporting parts should
+   explain the material: droplets separate from a collapsing crest, fragments
+   leave a landing rock, feathers leave the wing's outer edge. Finish when
+   those causes and their visible consequences line up in both time and space.
+   Attach emissions to an animated local point: a wing tip, open mouth, or
+   beam foot. Effects that move or rotate must carry that origin with them.
+5. **Review the whole effect beside the references.** Inspect the complete
+   0–760 ms sequence, with regular playback plus timeline scrubbing or a
+   complete sampled filmstrip. Check desktop and phone scale, occupied and
+   empty tiles, and multiple affected tiles. Fix gaps you can see before
+   asking for the user's review. Finish this step for **every changed cell**;
+   a good peak frame, a successful build, or a populated matrix does not
+   establish animation quality.
+6. **Preserve review evidence.** Save feedback, the changed-cell list, source
+   art briefs, and visual evidence. Carry notes forward and reset approval
+   only on revised cells. Report any unresolved visual or technical issue
+   explicitly. User approval and live-playback validation are separate steps.
 
-Resolve art in this order: a move-specific animation, when one exists; the
-move's type and Physical/Special/Status template; then Normal for unknown,
-Shadow, Stellar, or future types. The effect uses event data rather than
-calculating targets or damage in the browser. A missing or stale event can
-still render the authoritative state without animation.
+## Examples the user highlighted
 
-## Current visual direction
+The [recovered review](prototypes/vfx-matrix/review-2026-10-12-composed.json)
+contains all 54 selections and the user's exact written feedback. Its favorite
+examples illustrate different solutions; they are not one template to recolor.
 
-| Combination | Review status | What to preserve |
+| Reference | How it works | What to reuse |
 | --- | --- | --- |
-| Normal Physical | **Approved:** [generated pixel impact sprite over dense pressure circles](prototypes/vfx-quality/normal-sprite-rings-motion.gif) | Two short pulses; a compact hollow impact silhouette; three expanding circles behind it. [Circles alone](prototypes/vfx-quality/normal-physical-ripple.png) remain the simpler fallback if the sprite feels busy on dense boards. |
-| Fire Special | **Second-pass candidate:** [rising column with one dominant tailed ember](prototypes/fire-vfx/fire-column-motion.gif) | The October 12 review approved the direction and requested a smaller center flame with bottom-up embers. Draw the small embers **after** the main ember so they cross its face in the foreground; vary their birth, path, and sprite. |
-| Fairy Status | **Approved:** [soft halo and staggered motes](prototypes/vfx-quality/fairy-status-halo.png) | Small, simple glints and pearls emit outward at different times; occasional larger accents give detail without making every tiny particle ornate. |
+| **Rock Special — strongest favorite** | Several faceted stones appear at different positions, hover, curve toward a shared focus, then yield to pressure and fragments. | Choreograph independent objects around a common event. Let size, depth, path, and timing vary while preserving the central beat. See `composedVfx/minerals.ts`, `rockSpecial`. |
+| **Fighting Physical** | A small pixel fist rapidly comes into focus, settles with a brief shake, and triggers delayed pressure circles. | A simple recognizable ingredient can carry the contact beat. Shape detail is subordinate to timing, scale, and the follow-through. See `focusedMatrixVfx.ts`, `fightingPhysical`. |
+| **Fighting Special** | An orb arrives, its internal pixel frames keep changing, and pressure arcs and sparks expand independently. | Animate the material inside a focal object as well as its position. See `pixelMotifs.ts` and `focusedMatrixVfx.ts`. |
+| **Ghost Status** | A small spirit ripples in independently displaced bands while surrounding fog lobes drift and fade on separate lifetimes. | Combine a readable subject with restrained deformation and atmosphere. Preserve the sprite's identity; movement need not be violent to be effective. See `composedVfx/arcane.ts`, `ghostStatus`. |
+| **Psychic Status** | An eye opens, the pupil scans, rings follow at staggered times, and the eye closes. | Clean geometry with meaningful internal motion can be as effective as generated art. See `composedVfx/arcane.ts`, `psychicStatus`. |
 
-These are **development studies**, not production renderers. A [first-pass
-matrix](prototypes/vfx-matrix/README.md) now covers all 54 standard
-type/category combinations. The [Poison and Fighting second pass](prototypes/vfx-matrix/second-pass.md)
-replaces six of the first-pass candidates; the
-[third pass](prototypes/vfx-matrix/third-pass.md) responds to feedback on five
-of those effects with simpler pixel motifs and different motion. The
-[fourth pass](prototypes/vfx-matrix/fourth-pass.md) refines their scale, cuts,
-and motion. Reuse the principles below, then
-review each revised effect on the battle board before choosing its final
-treatment.
+Poison remains a useful complementary reference: Physical grows two tapered
+cuts with separate bubbles; Special changes an orb's internal frames before a
+splash; Status spreads a pool while bubbles rise at different times.
 
-## Matrix quality bar
+## Art and motion rules
 
-Give every combination a **visual subject and a verb**, not merely the type's
-icon with a different particle speed. Physical effects should show contact,
-weight, cuts, or a strike. Special effects should show a projected force or
-environmental change with a beginning, a peak, and a release. Status effects
-should show a field, ward, bind, or other lasting influence without borrowing
-the Special effect's impact beat. A type can share its palette and a few small
-marks across categories, but its three silhouettes and motion paths must be
-recognizable separately at the actual tile size.
+- **Compose moving ingredients.** A complete effect illustration translated,
+  scaled, and faded as one dominant layer is insufficient. Keep generated
+  images small in responsibility and combine them with authored motion.
+- **Budget detail for the display size.** Main subjects can use a deliberate
+  24–40 px visual grid. Small particles need fewer shapes and colors. Flat
+  tones and clear edges read better here than textured illustration reduced
+  to a few pixels. Inspect at actual size before adding detail.
+- **Make cuts narrow and long.** Grow and clear their tapered tails; vary
+  length, angle, offset, and timing where the brief calls for multiple cuts.
+  Avoid leaving a wide almond shape suspended at the center.
+- **Place contact deliberately.** Land falling objects where their pressure,
+  spray, or debris originates. Foot-level effects use a small offset below
+  the sprite; impact effects center on it. Anchor an occupied tile to its
+  sprite bounds and an empty tile to its cell bounds.
+- **Respect the material.** Stone falls, bounces, and fractures. Heavy metal
+  can stay planted. Water curls, collapses, and sheds droplets. Electricity
+  changes channels in short discrete bursts. Gas changes its silhouette and
+  density. Fire can have one broad body with smaller foreground embers.
+- **Match contact to the source.** A broad beam needs a broad local impact,
+  while a small slash needs a narrow trace. A background flame should leave
+  room for foreground embers through scale and opacity. Check these relations
+  in motion before increasing particle count.
+- **Use layers purposefully.** Draw atmosphere first, the focal object next,
+  and foreground particles last. Pressure circles suit impacts, stomps, and
+  roars; other materials can communicate their own force without circles.
+- **Preserve category identity.** A type's palette and ingredients may be
+  shared, but its Physical, Special, and Status sequences need distinct
+  subjects or behavior. Status can be beneficial and should not always read
+  as damage.
+- **Vary tiles reproducibly.** Derive random values from event identity, stable
+  tile identity, and particle index. Vary emitted parts' birth, direction,
+  size, sprite, and path. Replaying a seed should reproduce the sequence;
+  neighboring affected tiles should have variation.
+- **End cleanly.** Fit the entire local sequence into the tile effect window.
+  A per-tile delay must shorten the remaining lifetime or adjust the shared
+  schedule; it must not chop off the release. Nothing remains after completion.
 
-Build the focal shape first, then supporting motion. Use a deliberate 16–32 px
-grid for an icon-like focal sprite, or clean geometric curves when a wave,
-shield, gust, or ring needs smooth motion. Keep the focal shape bolder and more
-detailed than small particles. A static sprite that only translates and fades
-is insufficient for a large focal element: change its shape, frame, scale,
-pose, or reveal over time. Use generated art when the effect benefits from
-painted detail, but inspect it at battle scale; realistic texture downscaled
-into pixel art has repeatedly looked pasted on.
+## Generated asset brief
 
-Put a visible start, peak, and release within the tile's 760 ms window. A
-typical study spends roughly 0–180 ms on entry, 180–450 ms at peak/contact,
-and 450–760 ms dispersing, though the silhouette determines exact timing.
-Layer from back to front: atmosphere/field, main subject, then sparks, debris,
-or glints. Use force rings only when they express a shock, stomp, punch, roar,
-or similar pressure; they should not be the default background for every
-effect. A slash should taper to sharp ends, falling matter should land or
-bounce, and particles should originate where the visible contact happens.
+Specify **one component**, its final visible size, palette, silhouette, pixel
+grid, transparency, and how code will animate it. Keep surrounding rings,
+particles, background, and scene composition out of a component request.
+Inspect the generated result at tile size, then revise the art or choreography
+if it fails there. Asset generation alone never completes an effect.
 
-Preserve approved cells while expanding the matrix. Treat new cells as review
-candidates and keep them isolated from production playback. In the review
-grid, show the latest animated candidate and carry forward feedback only for
-unchanged cells. Reset the mark for every revised cell so an earlier approval
-does not silently certify a different animation.
+The [component asset notes](../media/vfx/components/README.md) record the
+current prompts, sources, and uses. Historical `review-atlas` images are
+superseded concept art and are not inputs to the current renderer.
 
-After the focal subject reads clearly, add secondary motion that explains its
-material rather than sprinkling the same generic particles over every type.
-Give debris a source and a direction, let liquid produce droplets or foam,
-let electricity branch briefly, and let a polished surface catch one moving
-highlight. Draw atmosphere behind the subject and small accents in front.
-Stagger secondary elements with a deterministic per-tile seed; their variation
-should enrich the loop without hiding the main silhouette or battle data.
+## Runtime and validation boundaries
 
-## Build one tile effect
+The server supplies accepted actions and all resolved footprint tiles,
+including empty ones. The category controls actor motion independently of
+type: Physical approaches its target; Special and Status approach the target's
+lane; self-targeting leaves the actor in place. Sequence actor approach → tile
+VFX → actor return → resulting effects. Damage numbers, faints, and sound are
+separate work.
 
-1. **Brief the silhouette.** Name the type and category, the feeling on a
-   single tile, the main visual anchor, and the supporting shapes. Decide how
-   the effect reads over both an occupied card and an empty striped tile.
-   Finish this step when a still image at actual tile size is recognizable.
-2. **Author a few transparent textures.** Use generated or painted art for
-   details that benefit from it: a flame, impact, mote, shard, or trail. Give
-   the largest element most of the detail. Make small particles simpler and
-   lower resolution. Trim transparent margins, clean stray pixels and rough
-   edges, and inspect the asset against the battle's light backgrounds. Keep
-   the final asset in `media/vfx/` with its source prompt or art brief in the
-   study notes. A generated still supplies art; it does not supply motion.
-3. **Choreograph on one shared clock.** Give each layer a birth time, lifetime,
-   path, scale, rotation, and fade. A restrained main element plus staggered
-   supporting elements reads better than moving one static image as a block.
-   Draw background glow and rings first, the main texture next, and foreground
-   sparks last when they should visibly pass over the anchor.
-   Keep the VFX inside the actor's effect window. Production timing must come
-   from the same playback clock as actor travel, not a copied millisecond
-   offset from a CSS animation.
-4. **Vary each tile reproducibly.** Seed the action from a stable event identity
-   and derive child seeds from the tile's stable team/position and each
-   particle's index. Vary birth, angle, radius, sprite choice, size, and a
-   small amount of rotation. Keep the dominant silhouette consistent. Replaying
-   one event should reproduce it; different affected tiles should differ.
-5. **Review motion in context.** Use the development VFX lab for single-target
-   and multi-tile patterns, including empty tiles. Capture early, peak, and
-   late frames and one full loop. Check desktop, a typical phone, and a narrow
-   phone; replay on light/striped cells and over Pokémon sprites. Check the
-   reduced-motion path and make sure readable event text remains available.
-   Promote an effect when its category and type read clearly at real size,
-   the footprint is correct, and the animation does not obscure battle data.
+Keep the battle session, event queue, and action authority outside the renderer.
+Future resolution order is custom move → type/category → Normal for unknown,
+Shadow, Stellar, or future types. Development review does not promote the
+matrix into live battles. Promotion requires asset readiness, a shared playback
+clock, reduced-motion behavior, multi-tile playback, and reconnect/skip checks.
 
-## Art and tooling decisions
+Use unit tests for state and timing contracts, and browser checks for rendering,
+layout, deterministic seeds, asset loading, clean endpoints, and visual review.
+Record what was actually inspected. Frame capture and tests support judgment;
+they do not grant aesthetic approval automatically.
 
-- Keep the core shape clear at tile size. Pixel edges should use a deliberate
-  low-resolution grid and nearest-neighbor scaling. Smooth arcs can be useful
-  for pressure waves; irregular, thin, hand-drawn lines have been harder to
-  read on this board.
-- Generated raster art can carry too much natural texture even after downscaling.
-  For icon-like fists and energy orbs, author a tiny graphic motif or a few
-  drawn frames first; animate internal details rather than moving an unchanged
-  PNG through the whole effect. Preserve the category-specific silhouette and
-  timing when simplifying the art.
-- Shape language should follow the material. A cut needs sharp, tapered ends
-  and a wider center; a punch can use quick scale change and a small impact
-  shake; a splash should originate at the point where it contacts the tile.
-  Inspect early and late frames, since a single peak still can hide awkward
-  motion or unwanted residue.
-- Layer code-driven rings, glows, trails, and particles around a small number
-  of authored textures. The Normal study shows that clean pressure circles
-  can add density without demanding a more elaborate sprite.
-- For broad matrix coverage, start with one clear silhouette per type and
-  category-specific choreography. The first-pass matrix uses Physical bursts,
-  Special fields, and Status halos. Treat this as a review scaffold: replace
-  icon-like cells with authored textures or bespoke motion where needed.
-- Canvas is sufficient for these lightweight studies. A whole game engine is
-  not required to animate a few tile layers. Use a sprite sheet or an authored
-  VFX tool when frame-specific shapes outperform transformed stills. Consider
-  a dedicated runtime only if effect count or compositing cost makes the
-  present canvas approach unwieldy. See [local tool research](local-vfx-tools-research.md)
-  for Aseprite, Effekseer, Phaser, and other options.
-- Use external games as choreography references and create project-owned art.
-  Record source, license, prompt, cleanup, and exported dimensions for each
-  texture so the asset can be revised later.
-
-## Production handoff
-
-The current Fire and quality prototypes render only in development stories.
-When promoting a chosen effect, keep the battle session's event queue and
-targeting authority intact. Add a presentation-level resolver for custom move
-animation → type/category template → Normal fallback. Give actor motion and
-tile effects one playback clock, and pass resolved event tiles and a stable
-event seed into the renderer. Keep static type data and assets tree-shakeable
-so a battle page loads the effects it needs as the web client grows.
-
-Review the finished production effect with real event playback, including
-reconnect/skip-to-latest behavior, before retiring its development variant.
-The [quality pass](prototypes/vfx-matrix/quality-pass.md) replaces 37
-first-pass combinations with distinct sequences, and the
-[polish pass](prototypes/vfx-matrix/polish-pass.md) adds material-specific
-secondary motion to those 37. The other 17 combinations remain unchanged;
-the focused studies remain separate. The [full art pass](prototypes/vfx-matrix/final-art-pass.md)
-adds generated focal subjects to 45 cells while preserving nine focused or
-approved effects. Review every new candidate at battle size before promotion.
-Result effects and sound remain open for separate review.
+If greater fidelity becomes necessary, first add authored frame sequences or
+richer material deformation to the relevant component. Consider shaders,
+Effekseer, or another runtime only when a demonstrated effect needs capabilities
+the current canvas composition cannot provide. The renderer boundary supports
+that later choice.
