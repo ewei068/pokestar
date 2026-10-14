@@ -96,3 +96,7 @@ Follow-up tuning: reduced the starting arc size and radial travel, softened the
 initial outward acceleration, and extended each arc from 220 to 290 ms with a
 later fade. Re-inspected desktop/phone sequences; build and the focused Normal
 rendering audit passed (234 sampled frames, deterministic output, clean ends).
+
+A further timing-only adjustment extends the arc lifetime to 360 ms, slowing
+travel and fade proportionally. Radius, growth, and pressure rings are unchanged.
+Desktop/phone sequence inspection, build, and the focused rendering audit pass.

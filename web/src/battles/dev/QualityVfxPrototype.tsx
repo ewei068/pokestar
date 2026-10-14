@@ -208,7 +208,7 @@ const drawSpriteImpact = (ctx: CanvasRenderingContext2D, image: HTMLImageElement
   // A radial burst: compact at contact, then each segment shoots outward and grows.
   for (let piece = 0; piece < 3; piece++) {
     const key=tile.seed+piece*137;
-    const age=(ms-25-piece*18-random(key+7)*12)/290;
+    const age=(ms-25-piece*18-random(key+7)*12)/360;
     if(age<0||age>1)continue;
     const travel=1-Math.pow(1-age,1.7);
     const distance=tile.radius*(.015+travel*(.32+random(key+3)*.12));
