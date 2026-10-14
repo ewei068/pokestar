@@ -78,3 +78,16 @@ embers, and glow share a ground anchor; Grass pressure rings draw behind the
 beam without changing size or position. Ghost Status now uses the user's clean
 transparent PNG directly, retaining its wavy motion. The optional sprite
 substitution noted above is now fulfilled.
+
+## Normal Physical radial-motion revision
+
+The user approved the rest of the matrix and requested another Normal Physical
+motion pass. Three small arc ingredients now start near the target center,
+translate outward rapidly while growing, and clear after a 220 ms lifetime.
+Short radial traces reinforce the direction. Birth, angle, scale, and travel
+vary deterministically by tile. The pressure circles are unchanged.
+
+Gallery v12 preserves other approvals and reopens only Normal Physical.
+Desktop and phone filmstrips were inspected through the full sequence; build,
+deterministic drawing, and clean-endpoint checks passed. Visual approval of this
+new motion is pending.

@@ -205,18 +205,28 @@ const drawGraphicImpact = (ctx: CanvasRenderingContext2D, tile: Tile, ms: number
 const drawSpriteImpact = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
   tile: Tile, ms: number) => {
   drawPressureCircles(ctx, tile, ms, 3);
-  // Three small 60–90 degree segments share the pressure-ring center.
+  // A radial burst: compact at contact, then each segment shoots outward and grows.
   for (let piece = 0; piece < 3; piece++) {
     const key=tile.seed+piece*137;
-    const age=(ms-35-piece*32)/285;
+    const age=(ms-25-piece*18-random(key+7)*12)/220;
     if(age<0||age>1)continue;
-    const size=tile.radius*(1.48+age*.30+random(key)*.18);
+    const travel=1-Math.pow(1-age,2);
+    const distance=tile.radius*(.035+travel*(.48+random(key+3)*.17));
+    const size=tile.radius*(.36+travel*(1.02+random(key)*.16));
     const halfArc=(60+random(key+5)*30)*Math.PI/360;
     ctx.save();ctx.translate(tile.x,tile.y);ctx.scale(1,.85);
     ctx.rotate(piece*Math.PI*2/3+(random(key+2)-.5)*.5);
+    // Radial traces follow the arc tips; their tails clear as the burst leaves the center.
+    ctx.globalAlpha=Math.min(1,age*12)*Math.pow(1-age,1.1)*.8;
+    ctx.strokeStyle="#d8e9f3";ctx.lineWidth=Math.max(.7,tile.radius*.022);
+    for(const angle of [-halfArc*.7,0,halfArc*.7]) {
+      const head=distance+size*.25,tail=Math.max(.035*tile.radius,head-tile.radius*.2*Math.sin(age*Math.PI));
+      ctx.beginPath();ctx.moveTo(-Math.cos(angle)*tail,Math.sin(angle)*tail);
+      ctx.lineTo(-Math.cos(angle)*head,Math.sin(angle)*head);ctx.stroke();
+    }
+    ctx.translate(-distance,0);
     ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,size,Math.PI-halfArc,Math.PI+halfArc);ctx.closePath();ctx.clip();
-    ctx.globalAlpha=fade(age)*.9;ctx.imageSmoothingEnabled=false;
-    // The source crescent curves around a point right of its image center.
+    ctx.globalAlpha=Math.min(1,age*14)*Math.min(1,(1-age)/.4)*.95;ctx.imageSmoothingEnabled=false;
     ctx.drawImage(image,-size*.65,-size*.52,size,size);ctx.restore();
   }
 };
