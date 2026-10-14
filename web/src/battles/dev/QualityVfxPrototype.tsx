@@ -1,11 +1,14 @@
+import { tileEffectRecipes } from './recipes/index';
+import { vfxArtwork } from './recipes/artwork';
+import { qualityRecipes } from './recipes/quality';
 /** Throwaway Normal Physical and Fairy Status studies on the existing battle board. */
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import impactUrl from "../../../../media/vfx/experiments/normal-impact-streak.png";
-import pixelImpactUrl from "../../../../media/vfx/components/normal-impact-crescent.png";
-import fairyUrl from "../../../../media/vfx/experiments/fairy-status-mote.png";
-import fairyGlintUrl from "../../../../media/vfx/experiments/fairy-status-glint-small.png";
-import fairyPearlUrl from "../../../../media/vfx/experiments/fairy-status-pearl-small.png";
+const impactUrl = vfxArtwork.impact;
+const pixelImpactUrl = vfxArtwork.pixelImpact;
+const fairyUrl = vfxArtwork.fairy;
+const fairyGlintUrl = vfxArtwork.fairyGlint;
+const fairyPearlUrl = vfxArtwork.fairyPearl;
 
 export const qualityVfxVariants = {
   "normal-physical": ["original", "sprite", "ripple", "impact", "pixel", "graphic", "cross"],
@@ -79,16 +82,17 @@ const drawRing = (ctx: CanvasRenderingContext2D, tile: Tile, radius: number,
 /** Concentric pressure fronts can stand alone or sit behind the impact sprite. */
 const drawPressureCircles = (ctx: CanvasRenderingContext2D, tile: Tile,
   ms: number, count: number) => {
+  const recipe = qualityRecipes.pressureCircles;
   for (let index = 0; index < count; index++) {
     const key = tile.seed + index * 73;
-    const age = (ms - index * 92 - random(key + 3) * 24) / 435;
+    const age = (ms - index * recipe.staggerMs - random(key + 3) * recipe.birthJitterMs) / recipe.lifetimeMs;
     if (age < 0 || age > 1) continue;
-    const radius = tile.radius * (.16 + age * .8 + random(key + 7) * .06);
-    const opacity = fade(age) * (index === 0 ? .9 : .74);
-    drawRing(ctx, tile, radius, opacity * .7, "#536575",
-      Math.max(2, tile.radius * .12), 1);
-    drawRing(ctx, tile, radius, opacity, index % 2 ? "#dce8e9" : "#fff9e9",
-      Math.max(1.2, tile.radius * .068), 1);
+    const radius = tile.radius * (recipe.startRadius + age * recipe.growth + random(key + 7) * recipe.radiusJitter);
+    const opacity = fade(age) * (index === 0 ? recipe.firstOpacity : recipe.laterOpacity);
+    drawRing(ctx, tile, radius, opacity * .7, recipe.outlineColor,
+      Math.max(2, tile.radius * recipe.outlineWidth), 1);
+    drawRing(ctx, tile, radius, opacity, index % 2 ? recipe.oddColor : recipe.evenColor,
+      Math.max(1.2, tile.radius * recipe.innerWidth), 1);
   }
 };
 
@@ -204,20 +208,21 @@ const drawGraphicImpact = (ctx: CanvasRenderingContext2D, tile: Tile, ms: number
 
 const drawSpriteImpact = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
   tile: Tile, ms: number) => {
-  drawPressureCircles(ctx, tile, ms, 3);
+  const recipe = tileEffectRecipes["normal-physical"];
+  drawPressureCircles(ctx, tile, ms, recipe.pressureCount);
   // A radial burst: compact at contact, then each segment shoots outward and grows.
-  for (let piece = 0; piece < 3; piece++) {
+  for (let piece = 0; piece < recipe.arcCount; piece++) {
     const key=tile.seed+piece*137;
-    const age=(ms-25-piece*18-random(key+7)*12)/360;
+    const age=(ms-recipe.startMs-piece*recipe.staggerMs-random(key+7)*recipe.birthJitterMs)/recipe.lifetimeMs;
     if(age<0||age>1)continue;
-    const travel=1-Math.pow(1-age,1.7);
-    const distance=tile.radius*(.015+travel*(.32+random(key+3)*.12));
-    const size=tile.radius*(.22+travel*(1.02+random(key)*.16));
-    const halfArc=(60+random(key+5)*30)*Math.PI/360;
-    ctx.save();ctx.translate(tile.x,tile.y);ctx.scale(1,.85);
-    ctx.rotate(piece*Math.PI*2/3+(random(key+2)-.5)*.5);
+    const travel=1-Math.pow(1-age,recipe.travelEasePower);
+    const distance=tile.radius*(recipe.startRadius+travel*(recipe.travel+random(key+3)*recipe.travelJitter));
+    const size=tile.radius*(recipe.startSize+travel*(recipe.growth+random(key)*recipe.growthJitter));
+    const halfArc=(recipe.minArcDegrees+random(key+5)*recipe.arcDegreesJitter)*Math.PI/360;
+    ctx.save();ctx.translate(tile.x,tile.y);ctx.scale(1,recipe.aspect);
+    ctx.rotate(piece*Math.PI*2/recipe.arcCount+(random(key+2)-.5)*recipe.angleJitter);
     // Radial traces follow the arc tips; their tails clear as the burst leaves the center.
-    ctx.globalAlpha=Math.min(1,age*12)*Math.pow(1-age,.75)*.8;
+    ctx.globalAlpha=Math.min(1,age*12)*Math.pow(1-age,recipe.traceFadePower)*recipe.traceOpacity;
     ctx.strokeStyle="#d8e9f3";ctx.lineWidth=Math.max(.7,tile.radius*.022);
     for(const angle of [-halfArc*.7,0,halfArc*.7]) {
       const head=distance+size*.25,tail=Math.max(.035*tile.radius,head-tile.radius*.2*Math.sin(age*Math.PI));
@@ -226,7 +231,7 @@ const drawSpriteImpact = (ctx: CanvasRenderingContext2D, image: HTMLImageElement
     }
     ctx.translate(-distance,0);
     ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,size,Math.PI-halfArc,Math.PI+halfArc);ctx.closePath();ctx.clip();
-    ctx.globalAlpha=Math.min(1,age*14)*Math.min(1,(1-age)/.32)*.95;ctx.imageSmoothingEnabled=false;
+    ctx.globalAlpha=Math.min(1,age*recipe.fadeInSpeed)*Math.min(1,(1-age)/recipe.fadeOutPortion)*recipe.opacity;ctx.imageSmoothingEnabled=false;
     ctx.drawImage(image,-size*.65,-size*.52,size,size);ctx.restore();
   }
 };
@@ -308,36 +313,38 @@ const drawFairyGlow = (ctx: CanvasRenderingContext2D, tile: Tile, time: number) 
 type FairySprites = { main: HTMLImageElement; glint: HTMLImageElement; pearl: HTMLImageElement };
 const drawFairyOutwardMotes = (ctx: CanvasRenderingContext2D, sprites: FairySprites,
   tile: Tile, ms: number, count: number) => {
+  const recipe = qualityRecipes.outwardMotes;
   for (let index = 0; index < count; index++) {
     const key = tile.seed + index * 131;
-    const birth = 15 + index * 30 + random(key + 3) * 36;
-    const life = 160 + random(key + 7) * 175;
+    const birth = recipe.startMs + index * recipe.staggerMs + random(key + 3) * recipe.birthJitterMs;
+    const life = recipe.lifetimeMs + random(key + 7) * recipe.lifetimeJitterMs;
     const age = (ms - birth) / life;
     if (age < 0 || age > 1) continue;
     const angle = random(key + 11) * Math.PI * 2;
-    const radius = tile.radius * (.13 + age * (.48 + random(key + 17) * .48));
+    const radius = tile.radius * (recipe.startRadius + age * (recipe.travel + random(key + 17) * recipe.travelJitter));
     const sprite = index % 6 === 0 ? sprites.main : index % 2 ? sprites.glint : sprites.pearl;
-    const size = tile.radius * (index % 6 === 0 ? .3 : .15 + random(key + 23) * .12);
+    const size = tile.radius * (index % 6 === 0 ? recipe.mainSize : recipe.smallSize + random(key + 23) * recipe.smallSizeJitter);
     drawMote(ctx, sprite, tile.x + Math.cos(angle) * radius,
       tile.y + Math.sin(angle) * radius * .75 - age * tile.radius * .12,
       size, (random(key + 29) - .5) * .7 + age * .35,
-      Math.min(1, age * 9) * Math.pow(1 - age, .65) * .88);
+      Math.min(1, age * 9) * Math.pow(1 - age, .65) * recipe.opacity);
   }
 };
 
 const drawFairyStatus = (ctx: CanvasRenderingContext2D, sprites: FairySprites,
   tile: Tile, ms: number, variant: QualityVfxVariant) => {
+  const recipe = tileEffectRecipes["fairy-status"];
   const seed = tile.seed;
   const r = tile.radius;
-  drawFairyGlow(ctx, tile, ms / 760);
+  drawFairyGlow(ctx, tile, ms / recipe.glowDurationMs);
   if (variant === "halo") {
-    for (let pulse = 0; pulse < 2; pulse++) {
-      const age = (ms - pulse * 290) / (pulse ? 430 : 520);
+    for (let pulse = 0; pulse < recipe.pulseCount; pulse++) {
+      const age = (ms - pulse * recipe.pulseStaggerMs) / (pulse ? recipe.laterPulseLifetimeMs : recipe.firstPulseLifetimeMs);
       if (age < 0 || age > 1) continue;
-      drawRing(ctx, tile, r * (.22 + age * .65), fade(age) * (pulse ? .58 : .75),
-        "#f4b7f2", Math.max(1.5, r * .055), .7);
-      drawRing(ctx, tile, r * (.14 + age * .47), fade(age) * .42,
-        "#bbf7ff", Math.max(1, r * .03), .7);
+      drawRing(ctx, tile, r * (recipe.startRadius + age * recipe.radiusGrowth), fade(age) * (pulse ? recipe.laterPulseOpacity : recipe.firstPulseOpacity),
+        "#f4b7f2", Math.max(1.5, r * .055), recipe.ringAspect);
+      drawRing(ctx, tile, r * (recipe.innerRadius + age * recipe.innerGrowth), fade(age) * recipe.innerOpacity,
+        "#bbf7ff", Math.max(1, r * .03), recipe.ringAspect);
     }
   } else if (variant === "spiral") {
     const curveAge = ms / 700;
@@ -377,7 +384,7 @@ const drawFairyStatus = (ctx: CanvasRenderingContext2D, sprites: FairySprites,
     if (age >= 0 && age <= 1) drawMote(ctx, sprites.main, tile.x, tile.y - age * r * .2,
       r * (.62 + age * .36), age * .6, fade(age) * .9);
   } else {
-    const progress = clamp(ms / 760);
+    const progress = clamp(ms / recipe.glowDurationMs);
     for (let index = 0; index < 3; index++) {
       const phase = index * 2.1 + random(seed + 17) * .7;
       const sway = Math.sin(progress * Math.PI * 2 + phase) * r * .19;
@@ -405,7 +412,7 @@ const drawFairyStatus = (ctx: CanvasRenderingContext2D, sprites: FairySprites,
         age * .7, fade(age) * .8);
     }
   }
-  drawFairyOutwardMotes(ctx, sprites, tile, ms, variant === "halo" ? 18 : 14);
+  drawFairyOutwardMotes(ctx, sprites, tile, ms, variant === "halo" ? recipe.moteCount : recipe.alternateMoteCount);
 };
 
 /** Reuse the approved tile studies in the temporary review gallery. */

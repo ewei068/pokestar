@@ -1,11 +1,15 @@
+import { tileEffectRecipes } from './recipes/index';
+import { sharedRecipes } from './recipes/shared';
+import { vfxArtwork } from './recipes/artwork';
+import { fireRecipes } from './recipes/fire';
 /** Throwaway Fire Special study: three particle behaviors on the existing battle board. */
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import bodyUrl from "../../../../media/vfx/components/fire-body.png";
-import flameUrl from "../../../../media/vfx/experiments/fire-special-flame-source.png";
-import emberCoalUrl from "../../../../media/vfx/experiments/fire-ember-coal.png";
-import emberFleckUrl from "../../../../media/vfx/experiments/fire-ember-fleck.png";
-import emberForkUrl from "../../../../media/vfx/experiments/fire-ember-fork.png";
+const bodyUrl = vfxArtwork.body;
+const flameUrl = vfxArtwork.flame;
+const emberCoalUrl = vfxArtwork.coal;
+const emberFleckUrl = vfxArtwork.fleck;
+const emberForkUrl = vfxArtwork.ember;
 
 export const fireVfxVariants = ["original", "column", "bloom", "burst"] as const;
 export type FireVfxVariant = typeof fireVfxVariants[number];
@@ -39,7 +43,7 @@ const random = (seed: number) => {
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
 const fade = (value: number) => Math.sin(Math.PI * clamp(value));
 // Shared contact plane for the cropped body, flame emission, and glow.
-const columnBase = .29;
+const columnBase = sharedRecipes.fireColumn.baseY;
 
 const drawFlame = (ctx: CanvasRenderingContext2D, image: HTMLImageElement,
   x: number, y: number, width: number, height: number, angle: number, alpha: number) => {
@@ -93,19 +97,20 @@ const drawEmbers = (ctx: CanvasRenderingContext2D, textures: FireTextures, tile:
 /** One long-lived tailed ember gives each tile a clear center amid smaller particles. */
 const drawMainEmber = (ctx: CanvasRenderingContext2D, textures: FireTextures,
   tile: Tile, localMs: number, duration: number, column: boolean) => {
+  const recipe = fireRecipes.columnBody;
   if (column) {
-    const age=clamp(localMs/duration), size=tile.radius*1.6;
-    ctx.save();ctx.globalAlpha=Math.min(1,age*10)*Math.min(1,(1-age)*4)*.53;
+    const age=clamp(localMs/duration), size=tile.radius*recipe.bodySize;
+    ctx.save();ctx.globalAlpha=Math.min(1,age*recipe.fadeInSpeed)*Math.min(1,(1-age)*recipe.fadeOutSpeed)*recipe.opacity;
     ctx.imageSmoothingEnabled=false;
     const image=textures.body;
     ctx.beginPath();ctx.rect(tile.x-size,tile.y-size,size*2,size+tile.radius*columnBase);ctx.clip();
     // Independently deform narrow bands near the tongues; the opaque body anchors the column.
-    for(let band=0;band<16;band++) {
-      const sourceY=band*image.naturalHeight/16;
-      const sway=Math.sin(localMs*.013+band*.48)*tile.radius*.026*(1-band/16);
-      const stretch=1+Math.sin(localMs*.012+band*.2)*.025;
-      ctx.drawImage(image,0,sourceY,image.naturalWidth,image.naturalHeight/16,
-        tile.x-size/2+sway,tile.y-size*.49+band*size/16*stretch,size,size/16*stretch+1);
+    for(let band=0;band<recipe.bandCount;band++) {
+      const sourceY=band*image.naturalHeight/recipe.bandCount;
+      const sway=Math.sin(localMs*recipe.swaySpeed+band*recipe.swayPhase)*tile.radius*recipe.swayStrength*(1-band/recipe.bandCount);
+      const stretch=1+Math.sin(localMs*recipe.stretchSpeed+band*recipe.stretchPhase)*recipe.stretchStrength;
+      ctx.drawImage(image,0,sourceY,image.naturalWidth,image.naturalHeight/recipe.bandCount,
+        tile.x-size/2+sway,tile.y-size*.49+band*size/recipe.bandCount*stretch,size,size/recipe.bandCount*stretch+1);
     }
     ctx.restore();return;
   }
@@ -132,17 +137,18 @@ const drawMainEmber = (ctx: CanvasRenderingContext2D, textures: FireTextures,
 /** Column sparks cross the large ember's face before drifting upward. */
 const drawForegroundEmbers = (ctx: CanvasRenderingContext2D, textures: FireTextures,
   tile: Tile, ms: number) => {
-  for (let index = 0; index < 14; index++) {
+  const recipe = fireRecipes.foregroundEmbers;
+  for (let index = 0; index < recipe.count; index++) {
     const key = tile.seed + index * 107;
-    const birth = 55 + index * 29 + random(key + 3) * 45;
-    const life = 250 + random(key + 7) * 190;
+    const birth = recipe.startMs + index * recipe.staggerMs + random(key + 3) * recipe.birthJitterMs;
+    const life = recipe.lifetimeMs + random(key + 7) * recipe.lifetimeJitterMs;
     const age = (ms - birth) / life;
     if (age < 0 || age > 1) continue;
-    const x = tile.x + (random(key + 11) - .5) * tile.radius * .52 +
-      (random(key + 13) - .5) * tile.radius * .62 * age;
+    const x = tile.x + (random(key + 11) - .5) * tile.radius * recipe.spread +
+      (random(key + 13) - .5) * tile.radius * recipe.drift * age;
     const y = tile.y + tile.radius * columnBase - age * tile.radius *
-      (.95 + random(key + 17) * .58);
-    const size = tile.radius * (.23 + random(key + 19) * .17) * (1 - age * .24);
+      (recipe.rise + random(key + 17) * recipe.riseJitter);
+    const size = tile.radius * (recipe.size + random(key + 19) * recipe.sizeJitter) * (1 - age * .24);
     const sprite = textures.embers[Math.floor(random(key + 23) * textures.embers.length)];
     ctx.save();
     ctx.translate(x, y);
@@ -159,12 +165,13 @@ const drawForegroundEmbers = (ctx: CanvasRenderingContext2D, textures: FireTextu
 
 const drawTile = (ctx: CanvasRenderingContext2D, textures: FireTextures,
   tile: Tile, ms: number, variant: Exclude<FireVfxVariant, "original">) => {
+  const recipe = tileEffectRecipes["fire-special"];
   const seed = tile.seed;
   const image = textures.flame;
-  const offset = random(seed + 3) * 105;
+  const offset = random(seed + 3) * recipe.birthJitterMs;
   const localMs = ms - offset;
   if (localMs < 0) return;
-  const time = clamp(localMs / (760 - offset));
+  const time = clamp(localMs / (recipe.tileDurationMs - offset));
   if (variant === "bloom") {
     drawGlow(ctx, tile, time, .5 + random(seed + 5) * .35);
     const flameCount = 4 + Math.floor(random(seed + 11) * 4);
@@ -182,22 +189,22 @@ const drawTile = (ctx: CanvasRenderingContext2D, textures: FireTextures,
         tile.y + Math.sin(angle) * distance * .55 + tile.radius * .2 - age * tile.radius * .33,
         size * .6, size, Math.cos(angle) * .4, fade(age) * (.57 + random(seed + index * 97 + 37) * .26));
     }
-    drawMainEmber(ctx, textures, tile, localMs, 760 - offset, false);
+    drawMainEmber(ctx, textures, tile, localMs, recipe.tileDurationMs - offset, false);
     drawEmbers(ctx, textures, tile, localMs, 10 + Math.floor(random(seed + 73) * 7), false, seed);
   } else if (variant === "column") {
-    drawGlow(ctx, { ...tile, y: tile.y + tile.radius * columnBase }, time, .5);
-    const count = 5 + Math.floor(random(seed + 11) * 3);
+    drawGlow(ctx, { ...tile, y: tile.y + tile.radius * columnBase }, time, recipe.glowStrength);
+    const count = recipe.flameCount + Math.floor(random(seed + 11) * recipe.flameCountJitter);
     for (let index = 0; index < count; index++) {
-      const birth = index * 55 + random(seed + index * 97 + 13) * 38;
-      const age = (localMs - birth) / 450;
+      const birth = index * recipe.flameStaggerMs + random(seed + index * 97 + 13) * recipe.flameBirthJitterMs;
+      const age = (localMs - birth) / recipe.flameLifetimeMs;
       if (age < 0 || age > 1) continue;
       const sway = Math.sin(age * 6 + index * 1.8 + random(seed + 17) * 3) * tile.radius * .12;
-      const size = tile.radius * (.55 + random(seed + index * 9) * .3);
-      drawFlame(ctx, image, tile.x + sway + (random(seed + index * 3) - .5) * tile.radius * .35,
-        tile.y + tile.radius * columnBase - age * tile.radius * 1.16,
-        size * .62, size, sway / tile.radius * .7, fade(age) * .67);
+      const size = tile.radius * (recipe.flameSize + random(seed + index * 9) * recipe.flameSizeJitter);
+      drawFlame(ctx, image, tile.x + sway + (random(seed + index * 3) - .5) * tile.radius * recipe.flameSpread,
+        tile.y + tile.radius * columnBase - age * tile.radius * recipe.flameRise,
+        size * .62, size, sway / tile.radius * .7, fade(age) * recipe.flameOpacity);
     }
-    drawMainEmber(ctx, textures, tile, localMs, 760 - offset, true);
+    drawMainEmber(ctx, textures, tile, localMs, recipe.tileDurationMs - offset, true);
     drawForegroundEmbers(ctx, textures, tile, localMs);
   } else {
     drawGlow(ctx, tile, clamp((localMs - 50) / 500), .95);

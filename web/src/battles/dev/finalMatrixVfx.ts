@@ -1,3 +1,4 @@
+import { sharedRecipes } from './recipes/shared';
 /** Review-only compositions. Each cell owns its choreography; no complete-effect image layer. */
 import type { VfxKind, VfxType } from '../vfx/types';
 import { vfxPalette } from '../vfx/types';
@@ -38,7 +39,8 @@ export const loadFinalMatrixArt = (_type: VfxType): Promise<void> => {
   return Promise.all([loadParts(), ...Object.values(established).map(render => render.ready)]).then(() => undefined);
 };
 export const drawFinalMatrixTile = (ctx:CanvasRenderingContext2D,type:VfxType,kind:VfxKind,tile:MatrixTile,ms:number) => {
-  if(ms<=0||ms>=760)return;
+  const playback = sharedRecipes.tilePlayback;
+  if(ms<=0||ms>=playback.durationMs)return;
   if(drawFocusedTile(ctx,type,kind,tile,ms))return;
   const preserved=established?.[`${type}-${kind}`];
   if(preserved){preserved(ctx,tile,ms);return;}
@@ -46,10 +48,10 @@ export const drawFinalMatrixTile = (ctx:CanvasRenderingContext2D,type:VfxType,ki
   if(!draw)throw new Error(`The focused ${type}/${kind} study must be resolved by the review host`);
   ctx.save();ctx.translate(tile.x,tile.y);ctx.scale(tile.radius,tile.radius);
   // A final release envelope protects against truncating long-lived supporting particles.
-  ctx.globalAlpha*=clamp((760-ms)/65);
+  ctx.globalAlpha*=clamp((playback.durationMs-ms)/playback.finalFadeMs);
   // Stable small framing variation applies even to quiet fields without emitted particles.
-  const scale=.94+random(tile.seed+913)*.1;
-  ctx.translate((random(tile.seed+917)-.5)*.065,(random(tile.seed+919)-.5)*.05);
+  const scale=playback.scale+random(tile.seed+913)*playback.scaleJitter;
+  ctx.translate((random(tile.seed+917)-.5)*playback.jitterX,(random(tile.seed+919)-.5)*playback.jitterY);
   ctx.scale(scale,scale);
-  draw(ctx,ms*(.975+random(tile.seed+923)*.05),tile.seed,vfxPalette[type]);ctx.restore();
+  draw(ctx,ms*(playback.clockScale+random(tile.seed+923)*playback.clockJitter),tile.seed,vfxPalette[type]);ctx.restore();
 };

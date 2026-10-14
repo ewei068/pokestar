@@ -1,0 +1,106 @@
+{
+  "baseline": "http://127.0.0.1:5174",
+  "candidate": "http://127.0.0.1:5173",
+  "sampling": "every 4 ms plus fractional and boundary timestamps; six size/seed/background/DPR scenarios",
+  "samples": 64800,
+  "effects": 54,
+  "errors": [],
+  "results": [
+    {
+      "type": "normal",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "fighting",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "flying",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "poison",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "ground",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "rock",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "bug",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "ghost",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "steel",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "fire",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "water",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "grass",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "electric",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "psychic",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "ice",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "dragon",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "dark",
+      "samples": 3600,
+      "failures": []
+    },
+    {
+      "type": "fairy",
+      "samples": 3600,
+      "failures": []
+    }
+  ],
+  "baselineCommit": "1514fedd93deb5119bc60a8981b550940c530f58",
+  "webTests": {
+    "passed": 24,
+    "failed": 0
+  },
+  "build": "TypeScript and Vite passed"
+}
