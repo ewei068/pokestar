@@ -1,4 +1,4 @@
-/** Development-only canvas study for every combination outside the three focused studies. */
+/** Development-only canvas study for the complete type/category matrix. */
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { VfxKind, VfxType } from "../vfx/types";

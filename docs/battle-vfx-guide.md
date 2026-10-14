@@ -1,10 +1,11 @@
 # Battle VFX creation guide
 
-Status: working draft, 2026-10-12. Use this when creating or promoting a tile
+Status: working guidance, 2026-10-12. Use this when creating or promoting a tile
 effect. The [web UI style guide](web-ui-style-guide.md) governs the surrounding
 battle screen; the [VFX matrix](battle-vfx-matrix.md) records the first-pass
 motifs for all type/category combinations. This guide records the animation
-decisions learned from the Fire, Normal, and Fairy quality studies.
+decisions learned from the Fire, Normal, Fairy, Fighting, Poison, and full
+matrix studies.
 
 ## What an effect communicates
 
@@ -40,6 +41,41 @@ of those effects with simpler pixel motifs and different motion. The
 and motion. Reuse the principles below, then
 review each revised effect on the battle board before choosing its final
 treatment.
+
+## Matrix quality bar
+
+Give every combination a **visual subject and a verb**, not merely the type's
+icon with a different particle speed. Physical effects should show contact,
+weight, cuts, or a strike. Special effects should show a projected force or
+environmental change with a beginning, a peak, and a release. Status effects
+should show a field, ward, bind, or other lasting influence without borrowing
+the Special effect's impact beat. A type can share its palette and a few small
+marks across categories, but its three silhouettes and motion paths must be
+recognizable separately at the actual tile size.
+
+Build the focal shape first, then supporting motion. Use a deliberate 16–32 px
+grid for an icon-like focal sprite, or clean geometric curves when a wave,
+shield, gust, or ring needs smooth motion. Keep the focal shape bolder and more
+detailed than small particles. A static sprite that only translates and fades
+is insufficient for a large focal element: change its shape, frame, scale,
+pose, or reveal over time. Use generated art when the effect benefits from
+painted detail, but inspect it at battle scale; realistic texture downscaled
+into pixel art has repeatedly looked pasted on.
+
+Put a visible start, peak, and release within the tile's 760 ms window. A
+typical study spends roughly 0–180 ms on entry, 180–450 ms at peak/contact,
+and 450–760 ms dispersing, though the silhouette determines exact timing.
+Layer from back to front: atmosphere/field, main subject, then sparks, debris,
+or glints. Use force rings only when they express a shock, stomp, punch, roar,
+or similar pressure; they should not be the default background for every
+effect. A slash should taper to sharp ends, falling matter should land or
+bounce, and particles should originate where the visible contact happens.
+
+Preserve approved cells while expanding the matrix. Treat new cells as review
+candidates and keep them isolated from production playback. In the review
+grid, show the latest animated candidate and carry forward feedback only for
+unchanged cells. Reset the mark for every revised cell so an earlier approval
+does not silently certify a different animation.
 
 ## Build one tile effect
 
@@ -120,6 +156,8 @@ so a battle page loads the effects it needs as the web client grows.
 
 Review the finished production effect with real event playback, including
 reconnect/skip-to-latest behavior, before retiring its development variant.
-Five Poison and Fighting fourth-pass studies await review; the other 45
-combinations outside the three focused studies still use first-pass art.
+The [quality pass](prototypes/vfx-matrix/quality-pass.md) replaces 37
+first-pass combinations with distinct sequences. Eight approved first-pass
+combinations remain unchanged; the focused studies remain separate. Review
+the 37 new candidates before promotion.
 Result effects and sound remain open for separate review.
