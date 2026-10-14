@@ -100,6 +100,25 @@ splash; Status spreads a pool while bubbles rise at different times.
   A per-tile delay must shorten the remaining lifetime or adjust the shared
   schedule; it must not chop off the release. Nothing remains after completion.
 
+## Store and extend approved effects
+
+The approved renderer is preserved at Git commit
+`1514fedd93deb5119bc60a8981b550940c530f58`. Its settings now live in typed
+[recipe files](../web/src/battles/dev/recipes/README.md). Start with the 54-entry
+catalog in `recipes/index.ts`, then follow the effect's settings record. The
+renderers consume that catalog; artwork imports are in `recipes/artwork.ts`.
+
+Edit existing timing, counts, movement, growth, deformation, fades, and material
+choices there. Keep new fields descriptive and document their units. Geometry,
+choreography formulas, draw order, and deterministic seeding stay in rendering
+code. Expose new settings when adding a new behavior instead of recreating the
+entire drawing program in configuration.
+
+For a pure refactor, use the same-browser pixel comparison against the saved
+baseline before declaring appearance preserved. Intentional changes still use
+the visual review workflow above. A tuning UI remains P1; per-move overrides and
+live-battle promotion are separate follow-ups.
+
 ## Generated asset brief
 
 Specify **one component**, its final visible size, palette, silhouette, pixel

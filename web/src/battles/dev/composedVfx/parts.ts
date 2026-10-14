@@ -1,13 +1,8 @@
+import { sharedRecipes } from '../recipes/shared';
+import { vfxArtwork } from '../recipes/artwork';
 /** Material parts, never complete effect compositions. Units are one tile radius. */
 import { random, clamp, ease } from '../matrixVfxKit';
 import type { Colors } from '../matrixVfxKit';
-import ghostUrl from '../../../../../media/vfx/components/ghost-user-sprite.png';
-import splashUrl from "../../../../../media/vfx/components/water-splash.png";
-import dragonUrl from '../../../../../media/vfx/components/dragon-head-simple.png';
-import emberUrl from '../../../../../media/vfx/experiments/fire-ember-fork.png';
-import fleckUrl from '../../../../../media/vfx/experiments/fire-ember-fleck.png';
-import coalUrl from '../../../../../media/vfx/experiments/fire-ember-coal.png';
-import starUrl from '../../../../../media/vfx/experiments/fairy-status-glint-small.png';
 export { random, clamp, ease };
 export type Ctx = CanvasRenderingContext2D;
 export type Point = [number, number];
@@ -15,7 +10,7 @@ export type Draw = (ctx: Ctx, ms: number, seed: number, c: Colors) => void;
 export const TAU = Math.PI * 2;
 export const age = (ms: number, birth: number, duration: number) => (ms - birth) / duration;
 export const live = (u: number) => u > 0 && u < 1;
-export const envelope = (u: number) => live(u) ? Math.min(1, u * 7, (1 - u) * 4) : 0;
+export const envelope = (u: number) => live(u) ? Math.min(1, u * sharedRecipes.opacityEnvelope.fadeInSpeed, (1 - u) * sharedRecipes.opacityEnvelope.fadeOutSpeed) : 0;
 export const sin = (u: number) => Math.sin(clamp(u) * Math.PI);
 export const withAlpha = (ctx: Ctx, a: number, draw: () => void) => {
   if (a <= 0) return;
@@ -62,24 +57,32 @@ export const ribbon = (ctx: Ctx, curve: (u:number)=>Point, head: number, length:
   withAlpha(ctx,a,()=>poly(ctx,edge,color));
 };
 export const slash = (ctx:Ctx,ms:number,birth:number,angle:number,c:Colors,width=.12,offset:Point=[0,0],length=1)=>{
-  const u=age(ms,birth,280);if(!live(u))return;
+  const u=age(ms,birth,sharedRecipes.slash.lifetimeMs);if(!live(u))return;
   ctx.save();ctx.translate(...offset);ctx.rotate(angle);ctx.scale(length,1);
   const curve=(p:number):Point=>[-.9+1.8*p, -.32+1.3*p-.85*p*p];
-  ribbon(ctx,curve,u*1.8,.8,width,c.dark,envelope(u));
-  ribbon(ctx,curve,u*1.8,.8,width*.6,c.main,envelope(u));
-  ribbon(ctx,curve,u*1.8,.8,width*.18,c.light,envelope(u));ctx.restore();
+  ribbon(ctx,curve,u*sharedRecipes.slash.headSpeed,sharedRecipes.slash.tail,width,c.dark,envelope(u));
+  ribbon(ctx,curve,u*sharedRecipes.slash.headSpeed,sharedRecipes.slash.tail,width*sharedRecipes.slash.fillWidth,c.main,envelope(u));
+  ribbon(ctx,curve,u*sharedRecipes.slash.headSpeed,sharedRecipes.slash.tail,width*sharedRecipes.slash.highlightWidth,c.light,envelope(u));ctx.restore();
 };
 export const shock = (ctx:Ctx,ms:number,birth:number,c:Colors,size=1,aspect=.8)=>{
-  for(let i=0;i<3;i++) {const u=age(ms,birth+i*57,320);if(!live(u))continue;
-    const r=(.15+ease(u)*.88)*size;
-    ring(ctx,0,.13,r,c.dark,.065*(1-u),envelope(u)*.8,aspect);
-    ring(ctx,0,.13,r,c.light,.026*(1-u),envelope(u),aspect);
+  const recipe = sharedRecipes.pressure;
+  for(let i=0;i<recipe.count;i++) {const u=age(ms,birth+i*recipe.staggerMs,recipe.lifetimeMs);if(!live(u))continue;
+    const r=(recipe.startRadius+ease(u)*recipe.growth)*size;
+    ring(ctx,0,recipe.y,r,c.dark,recipe.outlineWidth*(1-u),envelope(u)*recipe.opacity,aspect);
+    ring(ctx,0,recipe.y,r,c.light,recipe.highlightWidth*(1-u),envelope(u),aspect);
   }
 };
 export const spark=(ctx:Ctx,x:number,y:number,s:number,color:string,a=1,angle=0)=>{
   withAlpha(ctx,a,()=>{ctx.save();ctx.translate(x,y);ctx.rotate(angle);
     poly(ctx,[[0,-s],[s*.19,-s*.18],[s,0],[s*.19,s*.18],[0,s],[-s*.19,s*.18],[-s,0],[-s*.19,-s*.18]],color);ctx.restore();});
 };
+const ghostUrl = vfxArtwork.ghost;
+const splashUrl = vfxArtwork.splash;
+const dragonUrl = vfxArtwork.dragon;
+const emberUrl = vfxArtwork.ember;
+const fleckUrl = vfxArtwork.fleck;
+const coalUrl = vfxArtwork.coal;
+const starUrl = vfxArtwork.star;
 
 export type Part = 'wing'|'rock'|'shard'|'leaf'|'feather'|'metal'|'scale'|'petal'|'claw'|'brain'|'head'|'ghost';
 const cache=new Map<string,HTMLCanvasElement>();
@@ -147,17 +150,19 @@ let loading:Promise<void>|undefined;
 export const loadParts=()=> loading ??= Promise.all(Object.entries({ghost:ghostUrl,splash:splashUrl,dragon:dragonUrl,ember:emberUrl,fleck:fleckUrl,coal:coalUrl,star:starUrl}).map(async([key,url])=>{
   const img=new Image();img.src=url;await img.decode();textures.set(key,img);
 })).then(()=>undefined);
-export const texture=(ctx:Ctx,name:'ghost'|'splash'|'dragon'|'ember'|'fleck'|'coal'|'star',x:number,y:number,size:number,angle:number,a:number)=>{
+export type TextureName = 'ghost'|'splash'|'dragon'|'ember'|'fleck'|'coal'|'star';
+export const texture=(ctx:Ctx,name:TextureName,x:number,y:number,size:number,angle:number,a:number)=>{
   const image=textures.get(name);if(!image)return;
   withAlpha(ctx,a,()=>{ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.imageSmoothingEnabled=false;const width=name==='ghost'?size*image.naturalWidth/image.naturalHeight:size;ctx.drawImage(image,-width/2,-size/2,width,size);ctx.restore();});
 };
 /** Emitted fragments have independent birth, spin, ballistic arc, and lifetime. */
 export const debris=(ctx:Ctx,ms:number,birth:number,seed:number,c:Colors,kind:Part,count=10,origin:Point=[0,.2],power=1)=>{
+  const recipe = sharedRecipes.debris;
   for(let i=0;i<count;i++){
-    const s=seed+i*83,u=age(ms,birth+random(s)*90,290+random(s+2)*150);if(!live(u))continue;
-    const vx=(random(s+3)-.5)*2.2*power, vy=-.5-random(s+4)*.95;
-    part(ctx,kind,c,origin[0]+vx*u,origin[1]+vy*u+u*u*.8,
-      (.06+random(s+5)*.15)*(1-u*.4),random(s+6)*6+u*(random(s+7)-.5)*7,envelope(u),i);
+    const s=seed+i*83,u=age(ms,birth+random(s)*recipe.birthJitterMs,recipe.lifetimeMs+random(s+2)*recipe.lifetimeJitterMs);if(!live(u))continue;
+    const vx=(random(s+3)-.5)*recipe.spread*power, vy=-recipe.rise-random(s+4)*recipe.riseJitter;
+    part(ctx,kind,c,origin[0]+vx*u,origin[1]+vy*u+u*u*recipe.gravity,
+      (recipe.size+random(s+5)*recipe.sizeJitter)*(1-u*.4),random(s+6)*6+u*(random(s+7)-.5)*7,envelope(u),i);
   }
 };
 /** Eight authored material frames: the edge and interior both evolve, as in the aura reference. */

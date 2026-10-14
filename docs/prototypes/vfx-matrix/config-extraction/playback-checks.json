@@ -1,0 +1,33 @@
+{
+  "paths": [
+    {
+      "type": "normal",
+      "kind": "physical",
+      "variant": "sprite",
+      "painted": true
+    },
+    {
+      "type": "fire",
+      "kind": "special",
+      "variant": "column",
+      "painted": true
+    },
+    {
+      "type": "fairy",
+      "kind": "status",
+      "variant": "halo",
+      "painted": true
+    },
+    {
+      "type": "rock",
+      "kind": "special",
+      "variant": "final",
+      "painted": true
+    }
+  ],
+  "calibration": {
+    "equalBefore": true,
+    "detectsChange": true
+  },
+  "errors": []
+}
