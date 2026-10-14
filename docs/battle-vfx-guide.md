@@ -77,6 +77,14 @@ grid, show the latest animated candidate and carry forward feedback only for
 unchanged cells. Reset the mark for every revised cell so an earlier approval
 does not silently certify a different animation.
 
+After the focal subject reads clearly, add secondary motion that explains its
+material rather than sprinkling the same generic particles over every type.
+Give debris a source and a direction, let liquid produce droplets or foam,
+let electricity branch briefly, and let a polished surface catch one moving
+highlight. Draw atmosphere behind the subject and small accents in front.
+Stagger secondary elements with a deterministic per-tile seed; their variation
+should enrich the loop without hiding the main silhouette or battle data.
+
 ## Build one tile effect
 
 1. **Brief the silhouette.** Name the type and category, the feeling on a
@@ -157,7 +165,9 @@ so a battle page loads the effects it needs as the web client grows.
 Review the finished production effect with real event playback, including
 reconnect/skip-to-latest behavior, before retiring its development variant.
 The [quality pass](prototypes/vfx-matrix/quality-pass.md) replaces 37
-first-pass combinations with distinct sequences. Eight approved first-pass
-combinations remain unchanged; the focused studies remain separate. Review
-the 37 new candidates before promotion.
+first-pass combinations with distinct sequences, and the
+[polish pass](prototypes/vfx-matrix/polish-pass.md) adds material-specific
+secondary motion to those 37. The other 17 combinations remain unchanged;
+the focused studies remain separate. Review the revised candidates before
+promotion.
 Result effects and sound remain open for separate review.

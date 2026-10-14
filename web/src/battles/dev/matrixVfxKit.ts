@@ -57,6 +57,13 @@ export const stroke = (ctx: CanvasRenderingContext2D, points: number[],
   ctx.stroke(); ctx.restore();
 };
 
+export const glint = (ctx: CanvasRenderingContext2D, x: number, y: number,
+  radius: number, color: string, alpha: number) => {
+  stroke(ctx,[x-radius,y,x+radius,y],Math.max(1,radius*.15),color,alpha);
+  stroke(ctx,[x,y-radius,x,y+radius],Math.max(1,radius*.15),color,alpha);
+  disk(ctx,x,y,Math.max(1,radius*.13),color,alpha);
+};
+
 export const glow = (ctx: CanvasRenderingContext2D, x: number, y: number,
   radius: number, color: string, alpha: number) => {
   if (alpha <= 0) return;

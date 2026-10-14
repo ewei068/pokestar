@@ -5,6 +5,9 @@ import { drawFocusedTile } from "./focusedMatrixVfx";
 import { drawPhysicalTile } from "./matrixPhysicalVfx";
 import { drawSpecialTile } from "./matrixSpecialVfx";
 import { drawStatusTile } from "./matrixStatusVfx";
+import { polishPhysicalTile } from "./matrixPhysicalPolish";
+import { polishSpecialTile } from "./matrixSpecialPolish";
+import { polishStatusTile } from "./matrixStatusPolish";
 
 export type MatrixTile = { x: number; y: number; radius: number; seed: number };
 type Palette = typeof vfxPalette[VfxType];
@@ -247,10 +250,16 @@ export const drawMatrixTile = (ctx: CanvasRenderingContext2D,
   if (ms < 0 || ms > 760) return;
   if (drawFocusedTile(ctx, type, kind, tile, ms)) return;
   const palette = vfxPalette[type];
+  const polish = kind === "physical" ? polishPhysicalTile :
+    kind === "special" ? polishSpecialTile : polishStatusTile;
+  polish(ctx,type,tile,ms,palette,"back");
   const drawn = kind === "physical" ? drawPhysicalTile(ctx,type,tile,ms,palette) :
     kind === "special" ? drawSpecialTile(ctx,type,tile,ms,palette) :
       drawStatusTile(ctx,type,tile,ms,palette);
-  if (drawn) return;
+  if (drawn) {
+    polish(ctx,type,tile,ms,palette,"front");
+    return;
+  }
   if (kind === "physical") physical(ctx,type,palette,tile,ms);
   else if (kind === "special") special(ctx,type,palette,tile,ms);
   else status(ctx,type,palette,tile,ms);
