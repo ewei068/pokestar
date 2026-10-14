@@ -24,7 +24,12 @@ first pass.
 
 The [polish pass](polish-pass.md) adds material-specific details and secondary
 motion to all 37 quality-pass candidates. Its contact sheets show the revised
-early, midpoint, and late frames. The review grid presents this latest pass.
+early, midpoint, and late frames.
+
+The [full art pass](final-art-pass.md) adds generated focal art and timed
+reveals to 45 cells. The six focused Poison/Fighting cells and three approved
+studies remain. This is the latest version shown in the review grid; the
+earlier pass sheets remain as comparison records.
 
 ## Contact sheets
 
