@@ -64,7 +64,10 @@ describe("battle controls", () => {
       playback: true, motionEvent: playing?.event, highlightedId: null,
       onChooseTarget: () => {}, onInspect: () => {}, onHover: () => {},
     }));
-    assert.equal(page.container.querySelectorAll(".arena-tile-vfx.is-physical").length, 2);
-    assert.ok(page.container.querySelector('[data-team-name="Rival Team"][data-position="6"] .arena-tile-vfx'));
+    const canvas = page.container.querySelector('.arena-board-vfx[data-vfx-type="normal"][data-vfx-kind="physical"]');
+    assert.ok(canvas);
+    const tiles = JSON.parse(canvas.getAttribute('data-vfx-targets') || '[]');
+    assert.equal(tiles.length, 2);
+    assert.ok(tiles.some((tile: {teamName: string; position: number}) => tile.teamName === 'Rival Team' && tile.position === 6));
   });
 });

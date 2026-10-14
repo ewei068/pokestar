@@ -2,7 +2,8 @@ import { resolveVfxType } from "./vfx/types";
 import type { VfxKind, VfxType } from "./vfx/types";
 import type { BattleCatalog, BattleEvent } from "./types";
 
-export const MOVE_MOTION_DURATION_MS = 1500;
+import { MOVE_TOTAL_MS } from "./vfx/timing";
+export const MOVE_MOTION_DURATION_MS = MOVE_TOTAL_MS;
 export const DEFAULT_EVENT_DURATION_MS = 550;
 
 export type MotionKind = VfxKind;

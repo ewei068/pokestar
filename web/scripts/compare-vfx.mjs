@@ -9,7 +9,7 @@ try {
   const page = await browser.newPage();
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto(`${candidate}/vfx-review.html`);
+  await page.goto(`${candidate}/?previewBattle=1&story=vfx&type=normal&kind=physical&pattern=all`);
   await page.evaluate(async ({ baseline, candidate }) => {
     // The two local servers share one canvas. Decode both sources with CORS enabled.
     const NativeImage = window.Image;
@@ -17,10 +17,11 @@ try {
       constructor(...args) { super(...args); this.crossOrigin = 'anonymous'; }
     };
     const before = await import(`${baseline}/src/battles/dev/finalMatrixVfx.ts`);
-    const after = await import(`${candidate}/src/battles/dev/finalMatrixVfx.ts`);
+    const renderer = await import(`${candidate}/src/battles/vfx/renderTile.ts`);
+    const after = { loadFinalMatrixArt: renderer.loadTileVfxArt, drawFinalMatrixTile: renderer.drawTileVfx };
     await Promise.all([before.loadFinalMatrixArt('normal'), after.loadFinalMatrixArt('normal')]);
-    const base = new Image(); base.src = `${candidate}/vfx-review-thumbs/base.png`; await base.decode();
-    const phone = new Image(); phone.src = `${candidate}/vfx-review-thumbs/base-phone.png`; await phone.decode();
+    const base = new Image(); base.src = `${baseline}/vfx-review-thumbs/base.png`; await base.decode();
+    const phone = new Image(); phone.src = `${baseline}/vfx-review-thumbs/base-phone.png`; await phone.decode();
     window.comparison = { before, after, base, phone };
   }, { baseline, candidate });
   const types = await page.evaluate(async () => (await import('/src/battles/vfx/types.ts')).standardVfxTypes);

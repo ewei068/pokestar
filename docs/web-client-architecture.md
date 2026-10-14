@@ -111,12 +111,17 @@ three-phase sequence: actor travel, VFX on every pattern tile, and actor return.
 Physical actions stop short of their primary target; special and status actions
 move into that target's lane at the board center. Self-targeted actions remain
 in place. Travel depends on the action category, while tile VFX depends on the
-move type and category. The 18 standard types each have three SVG tile effects;
+move type and category. The 18 standard types each have three configured canvas
+compositions, shared by live battles and development stories;
 Unknown, Shadow, Stellar, and future type names resolve to Normal VFX until
 they receive art. Resulting damage,
 status, and faint animations remain a later layer over subsequent combat
-events. Motion timing belongs to the playback session; the board owns only
-presentation geometry. Reduced-motion playback shows the static footprint.
+events. The session preserves event order and waits for shared artwork readiness.
+The actor and board canvas share one epoch: approach 420 ms, effect 760 ms,
+return 320 ms. `vfx/recipes/` holds editable settings; `renderTile.ts` owns
+choreography; `BoardVfx` owns presentation geometry and frame cancellation.
+Reduced-motion playback shows the static footprint. See the
+[battle VFX guide](battle-vfx-guide.md) for authoring and verification.
 The development-only `?previewBattle=1&story=...` route uses named fixture
 scenarios for visual review and does not submit commands. Story data checks
 guard the display contract, while component tests cover user interactions.
@@ -161,7 +166,7 @@ access, reduced motion, and reusable visual tokens from actual screens.
 When a second feature arrives: extract truly shared account/navigation/display
 patterns and decide whether routing, cross-feature caching, or separate
 catalog chunks earn their complexity. When measurements or experience demand
-it: consider push updates, canvas effects, and stronger offline/reconnect
+it: consider push updates, richer effect materials, and stronger offline/reconnect
 behavior behind existing seams.
 
 ## Decisions left open
@@ -170,7 +175,8 @@ behavior behind existing seams.
 - Whether other bot workflows are synchronous commands, multi-step drafts, or
   real-time views; design their server projections once a workflow is chosen.
 - Route library, cross-feature cache, and asset CDN strategy.
-- Whether rich animation needs canvas, and how custom VFX are authored.
+- How custom move VFX are authored and whether a future effect needs shaders
+  or a dedicated runtime beyond the current canvas renderer.
 - PvP information reveal rules beyond the current participant projection.
 
 The deletion test for today's battle session is useful: removing it would put
