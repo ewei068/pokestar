@@ -1,10 +1,11 @@
 # Battle tile VFX guide
 
-Use this workflow when creating or revising an effect. The quality reference is
-**the running animation at battle size**. The current review entry is
-`web/vfx-review.html`; its Compare motion control synchronizes a selected cell
-with Fighting and Poison, supports phone size, and exposes the whole timeline.
-The effects remain in development review until the user requests promotion.
+Status: the 54-effect alpha matrix is approved and integrated into battle
+playback. Rendering code and typed recipes live in `web/src/battles/vfx/`.
+Use this workflow for intentional revisions and new effects. The quality
+reference is the running animation at battle size. The retained development
+lab (`?previewBattle=1&story=vfx&type=normal&kind=physical&pattern=all`) renders
+the same production screen, actor motion, and tile renderer as live battles.
 
 ## Make an effect
 
@@ -45,15 +46,16 @@ The effects remain in development review until the user requests promotion.
 
 ## Examples the user highlighted
 
-The [recovered review](prototypes/vfx-matrix/review-2026-10-12-composed.json)
-contains all 54 selections and the user's exact written feedback. Its favorite
+The [approval record](verification/vfx-alpha/approval.json) preserves the
+final exported feedback. The user subsequently approved the final Normal
+Physical motion revisions as well. Its favorite
 examples illustrate different solutions; they are not one template to recolor.
 
 | Reference | How it works | What to reuse |
 | --- | --- | --- |
 | **Rock Special — strongest favorite** | Several faceted stones appear at different positions, hover, curve toward a shared focus, then yield to pressure and fragments. | Choreograph independent objects around a common event. Let size, depth, path, and timing vary while preserving the central beat. See `composedVfx/minerals.ts`, `rockSpecial`. |
-| **Fighting Physical** | A small pixel fist rapidly comes into focus, settles with a brief shake, and triggers delayed pressure circles. | A simple recognizable ingredient can carry the contact beat. Shape detail is subordinate to timing, scale, and the follow-through. See `focusedMatrixVfx.ts`, `fightingPhysical`. |
-| **Fighting Special** | An orb arrives, its internal pixel frames keep changing, and pressure arcs and sparks expand independently. | Animate the material inside a focal object as well as its position. See `pixelMotifs.ts` and `focusedMatrixVfx.ts`. |
+| **Fighting Physical** | A small pixel fist rapidly comes into focus, settles with a brief shake, and triggers delayed pressure circles. | A simple recognizable ingredient can carry the contact beat. Shape detail is subordinate to timing, scale, and the follow-through. See `focused.ts`, `fightingPhysical`. |
+| **Fighting Special** | An orb arrives, its internal pixel frames keep changing, and pressure arcs and sparks expand independently. | Animate the material inside a focal object as well as its position. See `pixelMotifs.ts` and `focused.ts`. |
 | **Ghost Status** | A small spirit ripples in independently displaced bands while surrounding fog lobes drift and fade on separate lifetimes. | Combine a readable subject with restrained deformation and atmosphere. Preserve the sprite's identity; movement need not be violent to be effective. See `composedVfx/arcane.ts`, `ghostStatus`. |
 | **Psychic Status** | An eye opens, the pupil scans, rings follow at staggered times, and the eye closes. | Clean geometry with meaningful internal motion can be as effective as generated art. See `composedVfx/arcane.ts`, `psychicStatus`. |
 
@@ -104,7 +106,7 @@ splash; Status spreads a pool while bubbles rise at different times.
 
 The approved renderer is preserved at Git commit
 `1514fedd93deb5119bc60a8981b550940c530f58`. Its settings now live in typed
-[recipe files](../web/src/battles/dev/recipes/README.md). Start with the 54-entry
+[recipe files](../web/src/battles/vfx/recipes/README.md). Start with the 54-entry
 catalog in `recipes/index.ts`, then follow the effect's settings record. The
 renderers consume that catalog; artwork imports are in `recipes/artwork.ts`.
 
@@ -116,8 +118,8 @@ entire drawing program in configuration.
 
 For a pure refactor, use the same-browser pixel comparison against the saved
 baseline before declaring appearance preserved. Intentional changes still use
-the visual review workflow above. A tuning UI remains P1; per-move overrides and
-live-battle promotion are separate follow-ups.
+the visual review workflow above. A tuning UI remains P1; per-move overrides
+remain a follow-up. Live battles already use these approved recipes.
 
 ## Generated asset brief
 
@@ -128,8 +130,8 @@ Inspect the generated result at tile size, then revise the art or choreography
 if it fails there. Asset generation alone never completes an effect.
 
 The [component asset notes](../media/vfx/components/README.md) record the
-current prompts, sources, and uses. Historical `review-atlas` images are
-superseded concept art and are not inputs to the current renderer.
+current prompts, sources, and uses. Superseded concept art and review captures were removed; the approved baseline
+commit preserves them for recovery.
 
 ## Runtime and validation boundaries
 
@@ -140,16 +142,25 @@ lane; self-targeting leaves the actor in place. Sequence actor approach → tile
 VFX → actor return → resulting effects. Damage numbers, faints, and sound are
 separate work.
 
-Keep the battle session, event queue, and action authority outside the renderer.
-Future resolution order is custom move → type/category → Normal for unknown,
-Shadow, Stellar, or future types. Development review does not promote the
-matrix into live battles. Promotion requires asset readiness, a shared playback
-clock, reduced-motion behavior, multi-tile playback, and reconnect/skip checks.
+The battle session owns server communication and event order. `BoardVfx` owns
+one board canvas and reads sprite/cell anchors. `renderTile.ts` composes the
+chosen recipe at a supplied time and tile seed; it does not own battle rules.
+Actor and VFX playback share an epoch and `vfx/timing.ts`: approach 420 ms →
+tile effects 760 ms → return 320 ms. The next event advances after 1500 ms.
+Image readiness is shared by the session and screen; failed artwork cannot
+permanently stop the battle. Reduced motion skips animation. Unmounting or
+changing events cancels frame work, actor motion, and observers.
 
-Use unit tests for state and timing contracts, and browser checks for rendering,
-layout, deterministic seeds, asset loading, clean endpoints, and visual review.
-Record what was actually inspected. Frame capture and tests support judgment;
-they do not grant aesthetic approval automatically.
+Unknown, Shadow, Stellar, and future types use Normal. Per-move custom recipes
+remain a follow-up, with intended resolution custom move → type/category →
+Normal. Damage numbers, faint/status results, and sound remain separate work.
+
+Use unit tests for targeting, event order, timing, and seed contracts. Use browser
+checks for actual canvas output, artwork readiness, responsive anchors, empty
+tiles, reduced motion, and cancellation. The [verification records](verification/vfx-alpha/README.md)
+include comparison against the preserved baseline at identical clocks and seeds.
+Pixel comparisons support appearance preservation; intentional visual changes
+still need review through the workflow above.
 
 If greater fidelity becomes necessary, first add authored frame sequences or
 richer material deformation to the relevant component. Consider shaders,

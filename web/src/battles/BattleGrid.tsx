@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { BattleMotion } from "./BattleMotion";
 import { MOVE_MOTION_DURATION_MS, moveMotion } from "./motion";
-import { TileVfx } from "./vfx/TileVfx";
+import { BoardVfx } from "./vfx/BoardVfx";
+import { useVfxAssets } from "./vfx/useVfxAssets";
 import type { BattleCatalog, BattleEvent, BattleTile, BattleView, PokemonView } from "./types";
 import { typeClass, typeName } from "./typeDisplay";
 
@@ -87,6 +88,10 @@ const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern,
 export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTargetId,
   patternTiles, affectedIds, playback, motionEvent, highlightedId, onChooseTarget, onInspect, onHover }: Props) => {
   const boardRef = useRef<HTMLDivElement>(null);
+  const assetsReady = useVfxAssets();
+  const reducedMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const [startedAt, setStartedAt] = useState<number | null>(null);
+  useLayoutEffect(() => { setStartedAt(motionEvent && assetsReady ? performance.now() : null); }, [motionEvent, assetsReady]);
   const motion = moveMotion(motionEvent, catalog);
   const targetSet = new Set(targetIds);
   const affectedSet = new Set(affectedIds);
@@ -129,13 +134,14 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
                 onHover={onHover} />
                 : <span className={`arena-empty ${inPattern ? "is-affected" : ""} ${
                   playback && inPattern && !motion?.vfxType ? "is-playback" : ""}`} aria-hidden="true" />}
-              {inPattern && motion?.vfxType && <TileVfx type={motion.vfxType} kind={motion.kind} />}
             </div>;
           })}
         </div>
       </section>;
     })}
     <span className="arena-versus" aria-hidden="true">VS</span>
-    {motionEvent && <BattleMotion boardRef={boardRef} view={view} catalog={catalog} event={motionEvent} />}
+    {motionEvent && !reducedMotion && startedAt !== null && <BattleMotion boardRef={boardRef} view={view} catalog={catalog} event={motionEvent} startedAt={startedAt} />}
+    {motionEvent && !reducedMotion && motion?.vfxType && startedAt !== null && <BoardVfx boardRef={boardRef}
+      event={motionEvent} view={view} tiles={patternTiles} type={motion.vfxType} kind={motion.kind} startedAt={startedAt} />}
   </div>;
 };

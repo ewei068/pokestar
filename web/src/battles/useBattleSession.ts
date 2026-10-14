@@ -1,3 +1,4 @@
+import { useVfxAssets } from "./vfx/useVfxAssets";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getBattle, submitAction } from "./api";
 import { isApiError } from "../http";
@@ -21,6 +22,7 @@ const toDisplay = (response: BattleResponse): BattleDisplay => ({
 
 /** Owns transport, action submission, and playback timing. Renderers consume its plain state. */
 export const useBattleSession = (battleId: string, catalog: BattleCatalog) => {
+  const assetsReady = useVfxAssets();
   const [battle, setBattle] = useState<BattleDisplay | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -80,10 +82,11 @@ export const useBattleSession = (battleId: string, catalog: BattleCatalog) => {
   useEffect(() => {
     if (eventQueue.length === 0) return;
     const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches || false;
+    if (eventQueue[0].event.type === "moveStarted" && !reducedMotion && !assetsReady) return;
     const timer = window.setTimeout(() => setEventQueue((queue) => queue.slice(1)),
       playbackDuration(eventQueue[0].event, reducedMotion));
     return () => window.clearTimeout(timer);
-  }, [eventQueue]);
+  }, [eventQueue, assetsReady]);
 
   const act = async (action: BattleAction) => {
     if (!battle || busy || eventQueue.length > 0 || battle.rulesetVersion !== catalog.rulesetVersion) return;
