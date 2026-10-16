@@ -5,7 +5,7 @@ import { resultAnimationConfig } from "./results/config";
 import { BattleGrid } from "./BattleGrid";
 import { BattleInspector } from "./BattleInspector";
 import type { InspectDetail } from "./BattleInspector";
-import { highlightedPokemonId } from "./eventText";
+import { highlightedPokemonId } from "./eventPresentation";
 import { MovePanel } from "./MovePanel";
 import { moveEventFootprint, targetPreviewFor } from "./presentation";
 import type { BattleCatalog, BattleView } from "./types";

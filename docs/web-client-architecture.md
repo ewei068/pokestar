@@ -120,8 +120,12 @@ ordered frames and canonical action reconciliation; `useBattlePlayback` owns
 timing, reached log entries and cancellation, shared by HTTP and stories.
 The latest authoritative state is retained separately from the playing view.
 HP stays unchanged until its announcement finishes; fainting follows its own
-event. Unknown consequences reconcile before the next action. The log groups
-only reached events, and completion notices cannot reveal future outcomes.
+event. Unknown consequences reconcile before the next action. The virtualized log retains all reached session entries and preserves reading
+position as new entries arrive. Compatible adjacent observations can share
+presentation stages, while faint/phase/action boundaries preserve order.
+State differences drive damage, healing and faint reactions. Client copy and
+presentation semantics live in `eventPresentation.ts`; completion notices
+cannot reveal future outcomes.
 See [battle result playback](battle-result-playback.md) for settings and stories.
 The session preserves event order and waits for shared artwork readiness.
 The actor and board canvas share one epoch: approach 420 ms, effect 760 ms,

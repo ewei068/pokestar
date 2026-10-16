@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import { ResultReactions } from "./results/ResultReactions";
 import { EventAnnouncement } from "./results/EventAnnouncement";
 import type { PlaybackFrame } from "./playback";
 import { BattleMotion } from "./BattleMotion";
@@ -64,7 +65,7 @@ const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern,
     onClick={targetable ? onChooseTarget : onInspect}
     onMouseEnter={() => onHover(pokemon.id)} onMouseLeave={() => onHover(null)}
     onFocus={() => onHover(pokemon.id)} onBlur={() => onHover(null)}
-    aria-label={`${pokemon.name}, ${pokemon.hp} of ${pokemon.maxHp} HP, ${Math.round(pokemon.combatReadiness)} percent combat readiness${
+    aria-label={`${pokemon.name}, ${pokemon.hp} of ${pokemon.maxHp} HP, ${Math.round(pokemon.combatReadiness)} percent combat readiness${pokemon.isFainted ? ", fainted" : ""}${
       targetable ? ", use selected move" : ", inspect"}`}>
     <span className="arena-mon-head"><strong>{pokemon.name}</strong><small>Lv {pokemon.level}</small></span>
     <span className="arena-mon-main"><span className="arena-type-cues"><span className="arena-type-dots">{[pokemon.type1, pokemon.type2].filter((type) => type !== null && type !== undefined)
@@ -146,7 +147,9 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
         </div>
       </section>;
     })}
-    {resultFrame?.stage === "event" && resultFrame.cue && <EventAnnouncement key={resultFrame.id}
+    {resultFrame?.stage === "event" && resultFrame.announcements.map(announcement => <EventAnnouncement key={announcement.id}
+      boardRef={boardRef} announcement={announcement} view={view} reducedMotion={!!reducedMotion} />)}
+    {resultFrame?.stage === "transition" && <ResultReactions key={resultFrame.id}
       boardRef={boardRef} frame={resultFrame} view={view} reducedMotion={!!reducedMotion} />}
     <span className="arena-versus" aria-hidden="true">VS</span>
     {motionEvent && !reducedMotion && startedAt !== null && <BattleMotion boardRef={boardRef} view={view} catalog={catalog} event={motionEvent} startedAt={startedAt} />}

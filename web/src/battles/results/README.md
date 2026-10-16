@@ -12,7 +12,13 @@ required: edit settings and replay the relevant story.
 - `transition`: meter, cue and faint/revival durations, plus easing. The longest
   supported transition in a view change determines the wait before advancing.
 - `reducedMotion`: short readable event interval and immediate state changes.
-- `history`: the maximum number of reached narration entries retained locally.
+- `log`: virtual viewport height and near-bottom follow threshold. History has no
+  entry cap. Rows are measured dynamically by Virtua and created lazily.
+- `reactions`: damage flash/recoil/rays, healing glow/particle births, and faint
+  drop/fade. Distances are CSS pixels, angles in drawing code are radians, and
+  durations are milliseconds. Keep durations positive, counts integer, and
+  particle births within the transition. Reactions contribute to the transition
+  deadline, so increasing their duration cannot advance playback early.
 
 Move approach/VFX/return settings remain in `../vfx/`; a move's label accompanies
 that existing sequence and adds no extra pause. Silent structural events have
@@ -34,14 +40,40 @@ visibility or motion-preference changes resynchronize to the latest canonical st
 cannot advance another frame. The browser clock has a finite configured deadline
 for each stage; custom treatments must stay within their stage's timing.
 
-`events.ts` selects a label/subject/tone and applies known observations.
+`../eventPresentation.ts` is the client presentation catalog: full narration,
+short labels, subjects, tones and batch keys are defined together. `events.ts`
+applies known observations without generating copy.
 `transitions.ts` compares views. `EventAnnouncement.tsx` measures the sprite
 anchor, falls back to board center, and animates the label. CSS animates meter
 width, fainted appearance and cue/weather emphasis when the destination view
 is rendered. The state duration is shared with the playback clock. Values in
 text/ARIA reflect the destination when that transition starts; the visual bar
-interpolates to it. `BattleLog.tsx` groups reached narration by action, newest
-action first and chronological within each action.
+interpolates to it. `ResultReactions.tsx` derives damage/healing/faint treatments from the same view
+differences, including canonical reconciliation. It cancels sprite animations
+and removes its particles on stage change, skip or unmount. Random-looking
+particle placement/timing is seeded by frame, Pokémon and particle identity.
+Fainted sprites stay hidden while their readable card remains.
+
+`BattleLog.tsx` presents chronological history with action headings. Its Virtua
+list mounts only visible rows plus overscan, handles wrapped text, follows new
+entries near the bottom, and preserves position while reading older entries.
+Latest returns to live follow. There is no session entry cap; history storage is
+still linear in entries, and opening a battle still starts a new local log.
+
+## Batching
+
+Only consecutive compatible observations within one action revision share a
+stage. HP and readiness use separate gain/loss keys; HP also keeps sources
+separate. Effect/status batches require matching IDs and operation. Misses
+require the same attacker/move. Shield damage can batch too. Each subject must
+be present and distinct: repeated hits remain individually visible. Every other
+event, including silent move completion, is a barrier. Never pull events across
+a faint, revival, move, phase or action boundary.
+
+A batch displays all labels on the preceding view, appends each narration in
+server order, then applies the supplied observations in that same order to form
+one destination view. Its transitions run together. More aggressive grouping
+would require explicit causality/independence information.
 
 ## Stories
 
@@ -56,7 +88,11 @@ Open `?previewBattle=1&story=<id>`:
 | `result-announcement`, `result-missing-target` | Central text and missing-subject fallback |
 | `result-weather`, `result-readiness` | Explicit observed state changes |
 | `result-reconcile` | HP, readiness, effect duration and weather differences without events |
-| `result-sequence` | Move VFX → damage text → HP drain → faint text → faint transition → canonical next turn |
+| `result-sequence` | Move VFX → damage text → HP drain → faint text → drop/fade → canonical next turn |
+| `result-batch-damage`, `result-batch-heal` | Concurrent labels, reactions and bars on three Pokémon |
+| `result-batch-readiness`, `result-batch-effects`, `result-batch-misses` | Grouped numeric, matching effect/status and miss observations |
+| `result-batch-faint` | Fainting prevents batching across dependent results |
+| `result-long-log` | 20,000 wrapped entries, follow/scroll behavior, and Simulate another result |
 
 Review full playback at desktop and phone sizes. Check the old values remain
 visible through announcements, no future results enter the log, transitions
@@ -74,10 +110,10 @@ result presentation.
 - A custom event visual can replace the generic announcement at its rendering
   seam. State-difference animations belong in the transition stage so they also
   work during canonical reconciliation, without duplicate reactions.
-- Batched AOE presentation needs explicit independence/causality information.
-  Keep server event order; fainting and triggered effects are ordering barriers.
+- Grouping beyond consecutive compatible observations needs explicit
+  independence/causality information. Keep server event order and barriers.
 - A future semantic report such as `moveProtected` can drive Discord logging,
   client narration and a custom treatment from one occurrence. Introduce that
   report for a concrete behavior; do not create a second parallel event bus.
-- Fine-grained shield visuals, hit markers, position/transform transitions,
+- Fine-grained shield visuals, richer hit markers, position/transform transitions,
   historical logs after reconnect, interactive tuning and SFX remain follow-ups.

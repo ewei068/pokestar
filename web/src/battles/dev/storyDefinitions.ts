@@ -30,6 +30,15 @@ export const storyGroups = [
     { id: "result-reconcile", title: "View differences", description: "Canonical reconciliation animates HP, readiness and effect-duration changes without events." },
     { id: "result-sequence", title: "Move → HP → faint", description: "Full ordered playback through the next turn, without revealing results early." },
   ] },
+  { title: "Batches and log", stories: [
+    { id: "result-batch-damage", title: "AOE damage", description: "Three simultaneous damage labels, impacts and HP transitions." },
+    { id: "result-batch-heal", title: "Group healing", description: "Three healing pulses and independently emitted plus particles." },
+    { id: "result-batch-readiness", title: "Group readiness", description: "Three readiness boosts share an announcement and transition stage." },
+    { id: "result-batch-effects", title: "Group effects/status", description: "Matching buffs/statuses are gained and lost in distinct batches." },
+    { id: "result-batch-misses", title: "Group misses", description: "Each defender receives its own simultaneous Miss label." },
+    { id: "result-batch-faint", title: "Faint barriers", description: "Fainting preserves order between targets instead of batching across it." },
+    { id: "result-long-log", title: "20,000-entry log", description: "Variable-height virtualized history; read older entries without being pulled to new results." },
+  ] },
   { title: "Effects", stories: [
     { id: "vfx", title: "VFX lab", description: "Browse every type and action category, then replay an area pattern." },
   ] },

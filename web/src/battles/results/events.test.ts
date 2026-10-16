@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { applyEventView, eventCue } from './events';
+import { applyEventView } from './events';
+import { presentEvent } from '../eventPresentation';
 import { viewChanges, transitionDuration } from './transitions';
 import { makeBattleStory } from '../dev/battleStories';
 
@@ -20,10 +21,10 @@ describe('result observations', () => {
   });
   it('places misses on the defender, uses central announcements for weather, and narrates missing subjects', () => {
     const { battle, catalog } = makeBattleStory('ready');
-    assert.equal(eventCue({ type: 'targetMissed', sequence: 0, pokemonId: 'Star Team-157', targetPokemonId: 'Rival Team-94' }, battle.view, catalog)?.subjectId, 'Rival Team-94');
-    assert.equal(eventCue({ type: 'weatherChanged', sequence: 0, weatherId: 'Rain' }, battle.view, catalog)?.subjectId, null);
-    assert.match(eventCue({ type: 'hpChanged', sequence: 0, pokemonId: 'missing', amount: -5 }, battle.view, catalog)!.label, /A Pokémon lost 5 HP/);
-    assert.equal(eventCue({ type: 'moveCompleted', sequence: 0 }, battle.view, catalog), null);
+    assert.equal(presentEvent({ type: 'targetMissed', sequence: 0, pokemonId: 'Star Team-157', targetPokemonId: 'Rival Team-94' }, battle.view, catalog)?.cue.subjectId, 'Rival Team-94');
+    assert.equal(presentEvent({ type: 'weatherChanged', sequence: 0, weatherId: 'Rain' }, battle.view, catalog)?.cue.subjectId, null);
+    assert.match(presentEvent({ type: 'hpChanged', sequence: 0, pokemonId: 'missing', amount: -5 }, battle.view, catalog)!.cue.label, /A Pokémon lost 5 HP/);
+    assert.equal(presentEvent({ type: 'moveCompleted', sequence: 0 }, battle.view, catalog), null);
   });
   it('applies visible status, effect, movement and readiness observations without mutating input', () => {
     const { battle } = makeBattleStory('ready');
