@@ -11,7 +11,7 @@ import type { BattleCatalog, BattleDisplay, BattleEvent, BattleResponse, BattleV
 export type Announcement = { id: string; event: BattleEvent; text: string; cue: EventCue };
 export type PlaybackFrame = {
   id: string; revision: number; stage: 'event' | 'transition';
-  event: BattleEvent; view: BattleView; announcements: Announcement[];
+  event: BattleEvent; view: BattleView; previousView: BattleView; announcements: Announcement[];
   changes: ViewChanges; durationMs: number;
 };
 export type BattleLogEntry = { id: string; revision: number; turn: number; text: string };
@@ -25,7 +25,7 @@ const newPlaybackFrames = (previous: BattleDisplay, response: BattleResponse, ca
   const transition = (next: BattleView, event: BattleEvent, revision: number, id: string) => {
     if (JSON.stringify(view) === JSON.stringify(next)) return;
     const changes = viewChanges(view, next);
-    frames.push({ id, revision, stage: 'transition', event, view: next, changes,
+    frames.push({ id, revision, stage: 'transition', event, view: next, previousView: view, changes,
       announcements: [], durationMs: transitionDuration(changes) });
     view = next;
   };
@@ -45,9 +45,10 @@ const newPlaybackFrames = (previous: BattleDisplay, response: BattleResponse, ca
       if (announcements.length) {
         const changes = viewChanges(view, destination);
         // Text and observed state start together; the next event waits for both.
-        frames.push({ id, revision: update.revision, stage: 'event', event, view: destination,
+        frames.push({ id, revision: update.revision, stage: 'event', event, view: destination, previousView: view,
           announcements, changes, durationMs: Math.max(transitionDuration(changes),
-            event.type === 'moveStarted' ? MOVE_MOTION_DURATION_MS : config.text.durationMs) });
+            event.type === 'moveStarted' ? MOVE_MOTION_DURATION_MS : config.text.durationMs,
+            events.some(item => item.type === 'targetMissed') ? config.reactions.miss.durationMs : 0) });
         view = destination;
       } else transition(destination, event, update.revision, `${id}:transition`);
     });

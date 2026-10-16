@@ -49,7 +49,7 @@ export const BattleInspector = ({ pokemon, moveId, detail, catalog, onOpenDetail
           return <button type="button" key={id} className={`is-effect is-${category.toLowerCase()}`}
             onClick={() => onOpenDetail({ category, name: effect?.name || id,
               description: `${effect?.description || "Active battle effect."}${state.duration === undefined ? "" : ` ${state.duration} turns remain.`}` })}>
-            ✧ {effect?.name || id}{state.duration === undefined ? "" : ` · ${state.duration}`}</button>;
+            {category === "Buff" ? "↑" : category === "Debuff" ? "↓" : "✧"} {effect?.name || id}{state.duration === undefined ? "" : ` · ${state.duration}`}</button>;
         })}
         {pokemon.abilityId && <button type="button" className="is-ability"
           onClick={() => onOpenDetail({ category: "Ability",

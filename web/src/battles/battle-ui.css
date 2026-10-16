@@ -99,8 +99,8 @@
 .arena-effect-count { padding: 1px 3px; border: 1px solid #8aa4c9; background: #d8e5fb;
   color: #345c8b; font-size: .47rem; font-weight: 900; line-height: 1.1; }
 .arena-effect-counters { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 2px; }
-.arena-effect-count.is-buff { color: #315d8c; background: #d9eafa; }
-.arena-effect-count.is-debuff { color: #8b4a2e; background: #f7e0ce; border-color: #d6a784; }
+.arena-effect-count.is-buff { color: var(--arena-buff-color, #b64343); background: var(--arena-buff-background, #fbe0dd); border-color: var(--arena-buff-border, #d6a09b); }
+.arena-effect-count.is-debuff { color: var(--arena-debuff-color, #315d8c); background: var(--arena-debuff-background, #d9eafa); border-color: var(--arena-debuff-border, #96b5d7); }
 .arena-mon-bars { display: flex; flex-direction: column; gap: 2px; }
 .arena-stat-line { font-size: .65rem; font-weight: 800; line-height: 1; }
 .arena-stat-line small { min-width: 40px; color: var(--arena-soft); font-size: .52rem; text-align: right; }
@@ -177,8 +177,8 @@
 .arena-inspector-tags button { padding: 3px 5px; border: 1px solid #b1c0bc;
   background: #e7ece5; font-size: .58rem; font-weight: 760; cursor: pointer; }
 .arena-inspector-tags .is-status { color: #8b352c; background: #f7d4ca; border-color: #e79d8b; text-transform: uppercase; }
-.arena-inspector-tags .is-buff { color: #315d8c; background: #d9eafa; border-color: #96b5d7; }
-.arena-inspector-tags .is-debuff { color: #8b4a2e; background: #f7e0ce; border-color: #d6a784; }
+.arena-inspector-tags .is-buff { color: var(--arena-buff-color, #b64343); background: var(--arena-buff-background, #fbe0dd); border-color: var(--arena-buff-border, #d6a09b); }
+.arena-inspector-tags .is-debuff { color: var(--arena-debuff-color, #315d8c); background: var(--arena-debuff-background, #d9eafa); border-color: var(--arena-debuff-border, #96b5d7); }
 .arena-inspector-tags .is-ability { color: #6d4c87; background: #eadff2; border-color: #bea9d0; }
 .arena-inspector-tags .is-item { color: #7e621f; background: #fbebba; border-color: #d8bd75; }
 .arena-detail-page { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
@@ -273,3 +273,8 @@
   .arena-status-short { display: inline; }
   .arena-status-cue { max-width: 100%; overflow-wrap: anywhere; }
 }
+
+/* Local result ingredients; text stays above these layers. */
+.arena-reaction.is-miss i { width: 8px; height: 22px; border-left: 2px solid; border-radius: 50%; }
+.arena-reaction .arena-effect-chevron { background: currentColor; clip-path: polygon(50% 0, 100% 42%, 100% 75%, 50% 33%, 0 75%, 0 42%); }
+.arena-reaction .arena-effect-ring { border: 2px solid currentColor; border-radius: 50%; }

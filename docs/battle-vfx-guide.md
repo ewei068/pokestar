@@ -149,7 +149,11 @@ chosen recipe at a supplied time and tile seed; it does not own battle rules.
 Actor and VFX playback share an epoch and `vfx/timing.ts`: approach 420 ms →
 tile effects 760 ms → return 320 ms. A move event advances after 1500 ms;
 subsequent result announcements and view transitions use the result playback
-settings.
+settings. Status application also reuses these Status tile recipes in place:
+`results/StatusVfx.tsx` passes zero approach delay to `BoardVfx`, with no actor
+motion. It shares the 760 ms tile lifetime and waits for the same asset readiness.
+The status-to-type mapping and clearing/effect/miss reaction settings live in
+`results/config.ts`; do not copy tile recipes into the result renderer.
 Image readiness is shared by the session and screen; failed artwork cannot
 permanently stop the battle. Reduced motion skips animation. Unmounting or
 changing events cancels frame work, actor motion, and observers.
@@ -157,7 +161,7 @@ changing events cancels frame work, actor motion, and observers.
 Unknown, Shadow, Stellar, and future types use Normal. Per-move custom recipes
 remain a follow-up, with intended resolution custom move → type/category →
 Normal. Result text and basic HP/readiness/faint/status transitions are
-implemented in `battles/results/`; richer custom treatments and sound remain
+implemented in `battles/results/`, along with miss, status and effect reactions; sound and further custom treatments remain
 follow-ups.
 
 Use unit tests for targeting, event order, timing, and seed contracts. Use browser

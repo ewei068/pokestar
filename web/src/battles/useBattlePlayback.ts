@@ -10,7 +10,7 @@ export const useBattlePlayback = (catalog: BattleCatalog, initial?: BattleRespon
   const assetsReady = useVfxAssets();
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false);
   const frame = state.queue[0] || null;
-  const waitingForArt = frame?.stage === 'event' && frame.event.type === 'moveStarted' && !reducedMotion && !assetsReady;
+  const waitingForArt = !!frame && (frame.event.type === 'moveStarted' || frame.changes.statuses.some(change => !change.removed)) && !reducedMotion && !assetsReady;
   useEffect(() => {
     const media = window.matchMedia?.('(prefers-reduced-motion: reduce)');
     const change = () => { setReducedMotion(media?.matches || false); dispatch({ type: 'skip' }); };

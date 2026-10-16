@@ -14,10 +14,11 @@ required: edit settings and replay the relevant story.
 - `reducedMotion`: short readable event interval and immediate state changes.
 - `log`: virtual viewport height and near-bottom follow threshold. History has no
   entry cap. Rows are measured dynamically by Virtua and created lazily.
-- `reactions`: damage flash/recoil/rays, healing glow/particle births, and faint
-  drop/fade. Distances are CSS pixels, angles in drawing code are radians, and
+- `reactions`: damage flash/recoil/rays, healing glow/particle births, faint
+  drop/fade, miss sidesteps/trails, status recipe mapping/clearing rings, and
+  effect chevrons/pulses. Distances are CSS pixels, angles in drawing code are radians, and
   durations are milliseconds. Keep durations positive, counts integer, and
-  particle births within the transition. Reactions contribute to the transition
+  particle births within the transition (stagger × last index + fade-in must fit). Reactions contribute to the transition
   deadline, so increasing their duration cannot advance playback early.
 
 Move approach/VFX/return settings remain in `../vfx/`; a move's label accompanies
@@ -57,6 +58,27 @@ and removes its particles on stage change, skip or unmount. Random-looking
 particle placement/timing is seeded by frame, Pokémon and particle identity.
 Fainted sprites stay hidden while their readable card remains.
 
+`StatusVfx.tsx` groups newly applied statuses by type and reuses `BoardVfx` with
+zero approach delay. Burn → Fire, Paralysis → Electric, Freeze → Ice,
+Poison/Badly Poison → Poison, Sleep → Psychic. Unknown statuses use Normal.
+These are the existing approved Status recipes, with no actor movement. Their
+760 ms lifetime is shared with `vfx/timing.ts`; recipe art and choreography stay
+in `vfx/recipes/`. Cures use a short clearing ring. Status identity changes and
+effect additions/removals are view differences, so canonical reconciliation
+uses the same visuals. Duration ticks and same-ID refreshes do not replay them.
+
+Misses are event-only sidesteps with short trails: no damage or view patch is
+invented. `effectDirection.ts` uses catalog categories: Buff gain/Debuff removal
+rise in red, Debuff gain/Buff removal fall in blue. Neutral/unknown effects use
+gold expanding rings on application and contracting rings on removal. Shared
+`effectColors` settings feed both animation ingredients and CSS variables for
+board counters and inspector tags. Labels and up/down symbols preserve meaning
+without relying on color.
+
+Frames retain a reference to their preceding view while artwork is pending;
+text, badges, state and the playback timer begin together when assets settle.
+Asset failure remains non-blocking. Reduced motion renders no canvas/reactions.
+
 `BattleLog.tsx` presents chronological history with action headings. Its Virtua
 list mounts only visible rows plus overscan, handles wrapped text, follows new
 entries near the bottom, and preserves position while reading older entries.
@@ -88,6 +110,11 @@ Open `?previewBattle=1&story=<id>`:
 | `result-damage`, `result-heal` | Floating text alongside HP interpolation |
 | `result-shield` | Shield damage followed by effect removal |
 | `result-status` | Applied status, buff, and cure; badge changes |
+| `result-miss`, `result-batch-misses` | One or several defenders sidestep/return with independent trails |
+| `result-status-burn`, `result-status-paralysis`, `result-status-freeze` | Fire/Electric/Ice Status recipes in place, then cure |
+| `result-status-poison`, `result-status-toxic`, `result-status-sleep` | Poison/Poison/Psychic Status recipes in place, then cure |
+| `result-effect-buff`, `result-effect-debuff`, `result-effect-neutral` | Application/removal directions, colors and neutral pulses |
+| `result-reaction-reconcile` | Status/effect reactions for canonical differences without events |
 | `result-revive` | Revival text, HP restoration and appearance |
 | `result-announcement`, `result-missing-target` | Central text and missing-subject fallback |
 | `result-weather`, `result-readiness` | Explicit observed state changes |
@@ -119,5 +146,5 @@ result presentation.
 - A future semantic report such as `moveProtected` can drive Discord logging,
   client narration and a custom treatment from one occurrence. Introduce that
   report for a concrete behavior; do not create a second parallel event bus.
-- Fine-grained shield visuals, richer hit markers, position/transform transitions,
+- Fine-grained shield visuals, position/transform transitions,
   historical logs after reconnect, interactive tuning and SFX remain follow-ups.

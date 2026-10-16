@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import { StatusVfx } from "./results/StatusVfx";
 import { ResultReactions } from "./results/ResultReactions";
 import { EventAnnouncement } from "./results/EventAnnouncement";
 import type { PlaybackFrame } from "./playback";
@@ -28,7 +29,7 @@ type Props = {
   onHover: (pokemonId: string | null) => void;
 };
 
-const statusAbbreviations: Record<string, string> = { Burn: "BRN", Poison: "PSN", Toxic: "TOX", BadPoison: "TOX", Sleep: "SLP", Freeze: "FRZ", Paralysis: "PAR" };
+const statusAbbreviations: Record<string, string> = { Burn: "BRN", Poison: "PSN", Toxic: "TOX", BadPoison: "TOX", "Badly Poison": "TOX", Sleep: "SLP", Freeze: "FRZ", Paralysis: "PAR" };
 
 const percent = (value: number, max = 100) => Math.max(0, Math.min(100, value / Math.max(1, max) * 100));
 
@@ -149,8 +150,10 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
     })}
     {resultFrame?.stage === "event" && resultFrame.announcements.map(announcement => <EventAnnouncement key={announcement.id}
       boardRef={boardRef} announcement={announcement} view={view} reducedMotion={!!reducedMotion} />)}
-    {resultFrame && <ResultReactions key={resultFrame.id}
-      boardRef={boardRef} frame={resultFrame} view={view} reducedMotion={!!reducedMotion} />}
+    {resultFrame && <ResultReactions key={`${resultFrame.id}:reactions`}
+      boardRef={boardRef} frame={resultFrame} view={view} catalog={catalog} reducedMotion={!!reducedMotion} />}
+    {resultFrame && !reducedMotion && assetsReady && <StatusVfx key={`${resultFrame.id}:status`}
+      boardRef={boardRef} frame={resultFrame} view={view} />}
     <span className="arena-versus" aria-hidden="true">VS</span>
     {motionEvent && !reducedMotion && startedAt !== null && <BattleMotion boardRef={boardRef} view={view} catalog={catalog} event={motionEvent} startedAt={startedAt} />}
     {motionEvent && !reducedMotion && motion?.vfxType && startedAt !== null && <BoardVfx boardRef={boardRef}

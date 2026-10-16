@@ -23,7 +23,8 @@ site shell and future non-battle pages consistent with that direction.
 - **Compact density.** Let related facts share a panel. Check long names, many
   effects, empty cells, and narrow screens before increasing panel size.
 - **Semantic cues.** Give status, buff, debuff, ability, and item distinct
-  labels or shapes. Use the same cue in the board and inspector. Color supports
+  labels or shapes. Buff counters/tags use red and upward symbols; debuffs use
+  blue and downward symbols, consistent with result reactions. Use the same cue in the board and inspector. Color supports
   the cue; it is not the only way to read it.
 - **Responsive interaction.** Keep the battle board visible while actions are
   chosen. On phones, the command tray can collapse. Hover information must

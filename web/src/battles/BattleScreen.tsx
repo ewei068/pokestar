@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { CSSProperties } from "react";
 import { transitionDuration } from "./results/transitions";
 import { BattleLog } from "./results/BattleLog";
-import { resultAnimationConfig } from "./results/config";
+import { effectColors, resultAnimationConfig } from "./results/config";
 import { BattleGrid } from "./BattleGrid";
 import { BattleInspector } from "./BattleInspector";
 import type { InspectDetail } from "./BattleInspector";
@@ -52,7 +52,7 @@ export const BattleScreen = ({ catalog, session }: {
   </main></div>;
 
   const versionMatches = battle.rulesetVersion === catalog.rulesetVersion;
-  const displayView = playing ? playing.view : battle.view;
+  const displayView = playing ? (waitingForArt ? playing.previousView : playing.view) : battle.view;
   const selected = battle.availableActions.moves.find((option) => option.moveId === selectedMoveId);
   const canChoose = !busy && !playing && versionMatches && battle.status === "active";
   const targetIds = canChoose ? selected?.targetPokemonIds || [] : [];
@@ -99,6 +99,9 @@ export const BattleScreen = ({ catalog, session }: {
     data-playback-event={playing?.event.type || ""} style={{
     "--state-duration": `${!reducedMotion && playing ? transitionDuration(playing.changes) : 0}ms`,
     "--state-easing": resultAnimationConfig.transition.easing,
+    ...Object.fromEntries(Object.entries(effectColors).flatMap(([kind, colors]) => [
+      [`--arena-${kind}-color`, colors.main], [`--arena-${kind}-background`, colors.light], [`--arena-${kind}-border`, colors.border],
+    ])),
   } as CSSProperties}><main className="page-shell arena-page">
     <div className="arena-toolbar"><a className="back-link" href={import.meta.env.BASE_URL}>← Battles</a>
       <span>Battle {battle.battleId.slice(0, 8)} · Revision {playing?.revision ?? battle.revision}</span></div>

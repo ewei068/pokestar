@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
 import type { PlaybackFrame } from '../playback';
-import type { BattleView } from '../types';
+import type { BattleCatalog, BattleView } from '../types';
 import { resultAnimationConfig as config } from './config';
+import { effectDirection } from './effectDirection';
 
 // Presentation-only variation: stable per frame, Pokémon and particle, independent of battle RNG.
 const variation = (identity: string, channel: number) => {
@@ -12,8 +13,8 @@ const variation = (identity: string, channel: number) => {
 };
 
 /** Reactions belong to state differences, so canonical reconciliation gets them too. */
-export const ResultReactions = ({ boardRef, frame, view, reducedMotion }: {
-  boardRef: RefObject<HTMLDivElement>; frame: PlaybackFrame; view: BattleView; reducedMotion: boolean;
+export const ResultReactions = ({ boardRef, frame, view, catalog, reducedMotion }: {
+  boardRef: RefObject<HTMLDivElement>; frame: PlaybackFrame; view: BattleView; catalog: BattleCatalog; reducedMotion: boolean;
 }) => {
   const layerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -38,6 +39,63 @@ export const ResultReactions = ({ boardRef, frame, view, reducedMotion }: {
       layer.append(container); return container;
     };
     const fainting = new Set(frame.changes.fainted);
+    for (const announcement of frame.announcements) {
+      if (announcement.event.type !== 'targetMissed' || !announcement.cue.subjectId) continue;
+      const sprite = resolve(announcement.cue.subjectId); if (!sprite) continue;
+      const settings = config.reactions.miss;
+      const attacker = announcement.event.pokemonId && resolve(announcement.event.pokemonId);
+      const direction = attacker && attacker.getBoundingClientRect().left > sprite.getBoundingClientRect().left ? -1 : 1;
+      const distance = direction * settings.distancePx, marker = mark(sprite, 'miss');
+      animate(sprite, [{ transform: 'translateX(0)', opacity: 1 },
+        { transform: `translateX(${distance}px)`, opacity: settings.opacity, offset: .3 },
+        { transform: `translateX(${distance}px)`, opacity: settings.opacity, offset: .5 },
+        { transform: 'translateX(0)', opacity: 1 }], settings.durationMs);
+      for (let index = 0; index < settings.trailCount; index++) {
+        const trail = document.createElement('i'); marker.append(trail);
+        trail.style.borderColor = settings.color;
+        const x = -direction * index * settings.trailStepPx;
+        animate(trail, [{ opacity: 0, transform: `translateX(${x}px) scaleY(.5)` },
+          { opacity: .7 - index * .15, offset: .2 },
+          { opacity: 0, transform: `translateX(${x - distance}px) scaleY(1)` }], settings.durationMs);
+      }
+    }
+    for (const change of frame.changes.effects) {
+      const sprite = resolve(change.pokemonId); if (!sprite || fainting.has(change.pokemonId)) continue;
+      const settings = config.reactions.effect;
+      const direction = effectDirection(change.effectId, change.removed, catalog);
+      const marker = mark(sprite, `effect is-${direction}${change.removed ? ' is-removed' : ''}`);
+      marker.dataset.effectId = change.effectId;
+      marker.style.color = settings.colors[direction].main;
+      if (direction === 'neutral') {
+        for (let index = 0; index < 2; index++) {
+          const ring = document.createElement('i'); ring.className = 'arena-effect-ring'; marker.append(ring);
+          ring.style.width = ring.style.height = `${settings.neutralRadiusPx * 2}px`;
+          const start = change.removed ? 1 : .3, end = change.removed ? .2 : 1.3;
+          animate(ring, [{ opacity: 0, transform: `translate(-50%, -50%) scale(${start})` },
+            { opacity: 0, offset: index * .16 }, { opacity: .75, offset: .2 + index * .16 },
+            { opacity: 0, transform: `translate(-50%, -50%) scale(${end})` }], settings.durationMs);
+        }
+      } else for (let index = 0; index < settings.count; index++) {
+        const arrow = document.createElement('i'); arrow.className = 'arena-effect-chevron'; marker.append(arrow);
+        arrow.style.width = `${settings.sizePx}px`; arrow.style.height = `${settings.sizePx}px`;
+        const x = ((index % 3) - 1) * settings.spreadPx / 2;
+        const sign = direction === 'buff' ? -1 : 1, birth = index * settings.staggerMs / settings.durationMs;
+        const pose = (y: number, scale: number) => `translate(${x}px, ${y}px) rotate(${direction === 'buff' ? 0 : 180}deg) scale(${scale})`;
+        animate(arrow, [{ opacity: 0, transform: pose(-sign * settings.travelPx * .65, .5) },
+          { opacity: 0, transform: pose(-sign * settings.travelPx * .65, .5), offset: birth }, { opacity: .95, offset: birth + .12 },
+          { opacity: 0, transform: pose(sign * settings.travelPx, 1), offset: Math.min(1, birth + .65) },
+          { opacity: 0 }], settings.durationMs);
+      }
+    }
+    for (const change of frame.changes.statuses) {
+      if (!change.removed) continue;
+      const sprite = resolve(change.pokemonId); if (!sprite) continue;
+      const settings = config.reactions.status, marker = mark(sprite, 'status-clear');
+      const ring = document.createElement('i'); ring.className = 'arena-effect-ring'; marker.append(ring);
+      Object.assign(ring.style, { width: `${settings.clearRadiusPx * 2}px`, height: `${settings.clearRadiusPx * 2}px`, color: settings.clearColor });
+      animate(ring, [{ opacity: 0, transform: 'translate(-50%, -50%) scale(.3)' },
+        { opacity: .9, offset: .2 }, { opacity: 0, transform: 'translate(-50%, -50%) scale(1.3)' }], settings.clearMs);
+    }
     for (const id of frame.changes.damaged) {
       const sprite = resolve(id); if (!sprite || fainting.has(id)) continue;
       const settings = config.reactions.damage, r = settings.recoilPx;
@@ -86,6 +144,6 @@ export const ResultReactions = ({ boardRef, frame, view, reducedMotion }: {
         { opacity: .7, offset: .35 }, { opacity: 0, transform: `translateY(${settings.dropPx}px) scale(${settings.endScale})` }], settings.durationMs);
     }
     return () => { animations.forEach(animation => animation.cancel()); layer.replaceChildren(); };
-  }, [boardRef, frame.id, view, reducedMotion]);
+  }, [boardRef, frame.id, view, catalog, reducedMotion]);
   return <div ref={layerRef} className="arena-result-reactions" aria-hidden="true" />;
 };
