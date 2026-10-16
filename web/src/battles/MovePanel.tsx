@@ -5,6 +5,7 @@ type Props = {
   view: BattleDisplay["view"];
   availableActions: BattleDisplay["availableActions"];
   isMyTurn: boolean;
+  playback?: boolean;
   catalog: BattleCatalog;
   selectedMoveId: string | null;
   preview: TargetPreview | null;
@@ -20,13 +21,13 @@ const moveKind = (damageType?: string) => damageType === "Physical" ? "⚔ PHY"
   : damageType === "Special" ? "✦ SPEC" : "◌ STATUS";
 
 export const MovePanel = ({ view, availableActions, isMyTurn, catalog, selectedMoveId,
-  preview, busy, collapsed, onToggleCollapsed, onSelectMove,
+  preview, busy, playback, collapsed, onToggleCollapsed, onSelectMove,
   onHoverMove, onSkip }: Props) => {
   const active = view.activePokemonId ? view.pokemon[view.activePokemonId] : null;
   const moves = active?.moveIds || {};
   return <section className={`arena-commands ${collapsed ? "is-collapsed" : ""} ${isMyTurn ? "" : "is-waiting"}`} aria-label="Battle actions">
-    <div className="arena-commands-heading"><div><h2>Choose an action</h2>
-      <span>{isMyTurn ? `${active?.name || "Pokémon"}'s turn` : "Waiting for another turn"}</span></div>
+    <div className="arena-commands-heading"><div><h2>{playback ? "Battle playback" : "Choose an action"}</h2>
+      <span>{playback ? "Playing battle events…" : isMyTurn ? `${active?.name || "Pokémon"}'s turn` : "Waiting for another turn"}</span></div>
       <button type="button" className="arena-collapse" aria-expanded={!collapsed}
         aria-controls="arena-command-body" onClick={onToggleCollapsed}>
         {collapsed ? "↑ Expand" : "↓ Collapse"}
@@ -50,7 +51,7 @@ export const MovePanel = ({ view, availableActions, isMyTurn, catalog, selectedM
         })}
       </div> : <p className="arena-muted">{isMyTurn ? "No usable moves this turn." : "You can inspect the board while the battle continues."}</p>}
       <div className="arena-command-foot"><span aria-live="polite">{
-        preview
+        playback ? "Actions unlock when playback finishes" : preview
           ? `${preview.affectedPokemonIds.length} possible Pokémon · ${preview.emptyTileTargets.length} empty tiles${preview.random ? " · random result" : ""} · Click to use`
           : selectedMoveId ? "Click a highlighted target to use; click the move again to cancel"
             : "Select a move to see targets"

@@ -30,6 +30,18 @@ export const eventText = (
       return `${name} returned to battle.`;
     case "statusApplied":
       return `${name} is now ${event.statusId || "affected"}.`;
+    case "statusRemoved":
+      return `${name} recovered from ${event.statusId || "its status"}.`;
+    case "shieldChanged":
+      return `${name} lost ${Math.abs(event.amount || 0)} shield.`;
+    case "pokemonMoved":
+      return `${name} moved to position ${event.position}.`;
+    case "pokemonTransformed":
+      return `${name} transformed into ${catalog.species[event.speciesId || ""]?.name || "another Pokémon"}.`;
+    case "weatherChanged":
+      return event.weatherId ? `${event.weatherId} ${event.previousWeatherId === event.weatherId ? "intensified" : "began"}.` : "The weather cleared.";
+    case "combatReadinessChanged":
+      return `${name} ${Number(event.amount) < 0 ? "lost" : "gained"} ${Math.round(Math.abs(event.amount || 0))}% readiness.`;
     case "effectApplied":
       return `${name} gained ${catalog.effects[event.effectId || ""]?.name || event.effectId || "an effect"}.`;
     case "effectRemoved":

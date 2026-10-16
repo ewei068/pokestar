@@ -715,6 +715,7 @@ class Battle {
    * @returns {boolean}
    */
   createWeather(weatherId, source) {
+    const previousWeatherId = this.weather.weatherId;
     // calculate turns = 10 + number of non-fainted Pokemon
     const duration =
       10 +
@@ -730,13 +731,14 @@ class Battle {
       if (this.weather.duration < duration) {
         this.weather.duration = duration;
         this.weather.source = source;
+        this.recordCombatEvent({
+          type: "weatherChanged", previousWeatherId, weatherId, duration,
+        });
         this.addToLog(`The weather intensified!`);
         return true;
       }
       return false;
     }
-
-    // TODO: extend/clear weather events? should this be done?
 
     // apply weather
     this.weather = {
@@ -744,6 +746,9 @@ class Battle {
       duration,
       source,
     };
+    this.recordCombatEvent({
+      type: "weatherChanged", previousWeatherId, weatherId, duration,
+    });
     switch (weatherId) {
       case weatherConditions.SUN:
         this.addToLog(`The sunlight turned harsh!`);
@@ -767,6 +772,7 @@ class Battle {
   }
 
   clearWeather() {
+    const previousWeatherId = this.weather.weatherId;
     if (this.weather.weatherId) {
       this.addToLog(`The weather cleared up!`);
     }
@@ -775,6 +781,11 @@ class Battle {
       duration: 0,
       source: null,
     };
+    if (previousWeatherId) {
+      this.recordCombatEvent({
+        type: "weatherChanged", previousWeatherId, weatherId: null, duration: 0,
+      });
+    }
   }
 
   tickWeather() {

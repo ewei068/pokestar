@@ -1,6 +1,6 @@
-import type { PlaybackFrame } from "../playback";
-import type { BattleCatalog, BattleDisplay } from "../types";
+import type { BattleCatalog, BattleDisplay, BattleEvent, BattleView } from "../types";
 import { baseBattle, baseCatalog, enemyTargets, makePokemon, own, previews, rival } from "./baseBattleFixture";
+import { makeResultStory } from "./resultStories";
 import { storyFootprint } from "./storyFootprint";
 import { storyDefinitions } from "./storyDefinitions";
 import { defaultVfxLabSelection, makeVfxLabStory } from "./vfxLab";
@@ -15,7 +15,8 @@ export type BattleStory = {
   battle: BattleDisplay;
   selectedMoveId: string | null;
   inspectedPokemonId: string | null;
-  playing: PlaybackFrame | null;
+  playing: { event: BattleEvent; view: BattleView; text: string | null } | null;
+  sequence?: { events: BattleEvent[]; finalView: BattleView };
   history: string[];
 };
 
@@ -38,6 +39,8 @@ export const makeBattleStory = (requestedId: string | null,
     playing: null, history: [],
   };
 
+  if (definition.id.startsWith("result-")) return makeResultStory(story);
+
   if (definition.id === "vfx") return makeVfxLabStory(story, labSelection);
 
   const motionStory = motionStories[definition.id];
@@ -55,7 +58,6 @@ export const makeBattleStory = (requestedId: string | null,
       primaryTargetId: targetId, targetIds: footprint.affectedPokemonIds,
       patternTiles: footprint.patternTiles,
     } };
-    story.history = [text];
     return story;
   }
 
@@ -87,7 +89,6 @@ export const makeBattleStory = (requestedId: string | null,
         primaryTargetId: footprint.primaryTargetPokemonId,
         targetIds: footprint.affectedPokemonIds, patternTiles: footprint.patternTiles,
       } };
-      story.history = [text];
       break;
     }
     case "completed":

@@ -139,21 +139,26 @@ The server supplies accepted actions and all resolved footprint tiles,
 including empty ones. The category controls actor motion independently of
 type: Physical approaches its target; Special and Status approach the target's
 lane; self-targeting leaves the actor in place. Sequence actor approach → tile
-VFX → actor return → resulting effects. Damage numbers, faints, and sound are
-separate work.
+VFX → actor return → resulting effects. Floating result text and basic state
+transitions now follow this sequence; sound and richer result treatments remain separate work. See
+[battle result playback](battle-result-playback.md).
 
 The battle session owns server communication and event order. `BoardVfx` owns
 one board canvas and reads sprite/cell anchors. `renderTile.ts` composes the
 chosen recipe at a supplied time and tile seed; it does not own battle rules.
 Actor and VFX playback share an epoch and `vfx/timing.ts`: approach 420 ms →
-tile effects 760 ms → return 320 ms. The next event advances after 1500 ms.
+tile effects 760 ms → return 320 ms. A move event advances after 1500 ms;
+subsequent result announcements and view transitions use the result playback
+settings.
 Image readiness is shared by the session and screen; failed artwork cannot
 permanently stop the battle. Reduced motion skips animation. Unmounting or
 changing events cancels frame work, actor motion, and observers.
 
 Unknown, Shadow, Stellar, and future types use Normal. Per-move custom recipes
 remain a follow-up, with intended resolution custom move → type/category →
-Normal. Damage numbers, faint/status results, and sound remain separate work.
+Normal. Result text and basic HP/readiness/faint/status transitions are
+implemented in `battles/results/`; richer custom treatments and sound remain
+follow-ups.
 
 Use unit tests for targeting, event order, timing, and seed contracts. Use browser
 checks for actual canvas output, artwork readiness, responsive anchors, empty

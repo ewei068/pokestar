@@ -1,5 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import { EventAnnouncement } from "./results/EventAnnouncement";
+import type { PlaybackFrame } from "./playback";
 import { BattleMotion } from "./BattleMotion";
 import { MOVE_MOTION_DURATION_MS, moveMotion } from "./motion";
 import { BoardVfx } from "./vfx/BoardVfx";
@@ -17,6 +19,8 @@ type Props = {
   affectedIds: string[];
   playback: boolean;
   motionEvent?: BattleEvent;
+  resultFrame?: PlaybackFrame;
+  reducedMotion?: boolean;
   highlightedId: string | null;
   onChooseTarget: (pokemonId: string) => void;
   onInspect: (pokemonId: string) => void;
@@ -28,7 +32,7 @@ const statusAbbreviations: Record<string, string> = { Burn: "BRN", Poison: "PSN"
 const percent = (value: number, max = 100) => Math.max(0, Math.min(100, value / Math.max(1, max) * 100));
 
 const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern, affected, playback,
-  highlighted, onChooseTarget, onInspect, onHover }: {
+  highlighted, stateChanging, onChooseTarget, onInspect, onHover }: {
   pokemon: PokemonView;
   catalog: BattleCatalog;
   active: boolean;
@@ -38,6 +42,7 @@ const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern,
   affected: boolean;
   playback: boolean;
   highlighted: boolean;
+  stateChanging: boolean;
   onChooseTarget: () => void;
   onInspect: () => void;
   onHover: (id: string | null) => void;
@@ -54,6 +59,7 @@ const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern,
     targetable ? "is-targetable" : ""} ${primary ? "is-primary" : ""} ${
     inPattern ? "is-in-pattern" : ""} ${affected ? "is-affected" : ""} ${
     highlighted ? "is-event-highlighted" : ""} ${playback ? "is-playback" : ""} ${
+    stateChanging ? "is-state-changing" : ""} ${
     pokemon.isFainted ? "is-fainted" : ""}`}
     onClick={targetable ? onChooseTarget : onInspect}
     onMouseEnter={() => onHover(pokemon.id)} onMouseLeave={() => onHover(null)}
@@ -86,15 +92,16 @@ const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern,
 };
 
 export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTargetId,
-  patternTiles, affectedIds, playback, motionEvent, highlightedId, onChooseTarget, onInspect, onHover }: Props) => {
+  patternTiles, affectedIds, playback, motionEvent, resultFrame, reducedMotion: prefersReducedMotion, highlightedId, onChooseTarget, onInspect, onHover }: Props) => {
   const boardRef = useRef<HTMLDivElement>(null);
   const assetsReady = useVfxAssets();
-  const reducedMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const reducedMotion = prefersReducedMotion ?? (typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
   const [startedAt, setStartedAt] = useState<number | null>(null);
   useLayoutEffect(() => { setStartedAt(motionEvent && assetsReady ? performance.now() : null); }, [motionEvent, assetsReady]);
   const motion = moveMotion(motionEvent, catalog);
   const targetSet = new Set(targetIds);
   const affectedSet = new Set(affectedIds);
+  const changedIds = new Set(resultFrame?.stage === "transition" ? [...resultFrame.changes.cues] : []);
   const tileSet = new Set(patternTiles.map((tile) => `${tile.teamName}:${tile.position}`));
   return <div className="arena-board" ref={boardRef}
     style={{ "--move-duration": `${MOVE_MOTION_DURATION_MS}ms` } as CSSProperties}>
@@ -128,7 +135,7 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
               {entry ? <PokemonTile pokemon={entry} catalog={catalog}
                 active={entry.id === view.activePokemonId} targetable={targetSet.has(entry.id)}
                 primary={entry.id === primaryTargetId} inPattern={inPattern}
-                playback={playback && inPattern && !motion?.vfxType}
+                playback={playback && inPattern && !motion?.vfxType} stateChanging={changedIds.has(entry.id)}
                 affected={affectedSet.has(entry.id)} highlighted={entry.id === highlightedId}
                 onChooseTarget={() => onChooseTarget(entry.id)} onInspect={() => onInspect(entry.id)}
                 onHover={onHover} />
@@ -139,6 +146,8 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
         </div>
       </section>;
     })}
+    {resultFrame?.stage === "event" && resultFrame.cue && <EventAnnouncement key={resultFrame.id}
+      boardRef={boardRef} frame={resultFrame} view={view} reducedMotion={!!reducedMotion} />}
     <span className="arena-versus" aria-hidden="true">VS</span>
     {motionEvent && !reducedMotion && startedAt !== null && <BattleMotion boardRef={boardRef} view={view} catalog={catalog} event={motionEvent} startedAt={startedAt} />}
     {motionEvent && !reducedMotion && motion?.vfxType && startedAt !== null && <BoardVfx boardRef={boardRef}

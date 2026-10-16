@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { motionDestination, moveMotion, playbackDuration, MOVE_MOTION_DURATION_MS } from "./motion";
+import { motionDestination, moveMotion } from "./motion";
 import type { BattleEvent } from "./types";
 import { makeBattleStory } from "./dev/battleStories";
 
@@ -43,9 +43,4 @@ describe("move motion", () => {
     assert.deepEqual(motionDestination("status", start, target, board, size, true), { x: 110, y: 45 });
   });
 
-  it("holds move playback for the full sequence, with a shorter reduced-motion frame", () => {
-    assert.equal(playbackDuration(event("m33")), MOVE_MOTION_DURATION_MS);
-    assert.equal(playbackDuration(event("m33"), true), 550);
-    assert.equal(playbackDuration({ type: "hpChanged", sequence: 1 }), 550);
-  });
 });

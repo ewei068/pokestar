@@ -38,7 +38,7 @@ export type BattleEvent = {
   sourcePokemonId?: string | null;
   targetPokemonId?: string;
   moveId?: string;
-  moveType?: string;
+  moveType?: string | number;
   damageType?: string;
   targetPattern?: string;
   primaryTargetId?: string;
@@ -47,9 +47,22 @@ export type BattleEvent = {
   patternTiles?: BattleTile[];
   amount?: number;
   hp?: number;
+  previousHp?: number;
+  shield?: number;
+  duration?: number;
+  turn?: number;
+  turns?: number;
+  teamName?: string;
+  position?: number;
+  previousSpeciesId?: string;
+  speciesId?: string;
+  weatherId?: string | null;
+  previousWeatherId?: string | null;
+  combatReadiness?: number;
+  previousCombatReadiness?: number;
   statusId?: string;
   effectId?: string;
-  winner?: string;
+  winner?: string | null;
 };
 
 export type BattleTile = { teamName: string; position: number };
