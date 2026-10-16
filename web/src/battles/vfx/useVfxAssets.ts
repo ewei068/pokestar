@@ -10,10 +10,14 @@ export const prepareVfxAssets = () => preparation ??= import('./renderTile').the
 export const useVfxAssets = () => {
   const [ready, setReady] = useState(() => settled || !supported());
   useEffect(() => {
-    if (!supported()) return;
     let disposed = false;
-    void prepareVfxAssets().then(() => { if (!disposed) setReady(true); });
-    return () => { disposed = true; };
+    const sync = () => {
+      setReady(settled || !supported());
+      if (supported()) void prepareVfxAssets().then(() => { if (!disposed) setReady(true); });
+    };
+    const media = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    sync(); media?.addEventListener?.('change', sync);
+    return () => { disposed = true; media?.removeEventListener?.('change', sync); };
   }, []);
   return ready;
 };

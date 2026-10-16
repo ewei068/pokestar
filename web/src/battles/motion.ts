@@ -4,7 +4,6 @@ import type { BattleCatalog, BattleEvent } from "./types";
 
 import { MOVE_TOTAL_MS } from "./vfx/timing";
 export const MOVE_MOTION_DURATION_MS = MOVE_TOTAL_MS;
-export const DEFAULT_EVENT_DURATION_MS = 550;
 
 export type MotionKind = VfxKind;
 export type MoveMotion = { kind: MotionKind; vfxType: VfxType | null; selfTarget: boolean };
@@ -21,9 +20,6 @@ export const moveMotion = (event: BattleEvent | undefined, catalog: BattleCatalo
     : resolveVfxType(moveType, catalog),
     selfTarget: !!event.pokemonId && event.pokemonId === event.primaryTargetId };
 };
-
-export const playbackDuration = (event: BattleEvent, reducedMotion = false): number =>
-  event.type === "moveStarted" && !reducedMotion ? MOVE_MOTION_DURATION_MS : DEFAULT_EVENT_DURATION_MS;
 
 type Point = { x: number; y: number };
 

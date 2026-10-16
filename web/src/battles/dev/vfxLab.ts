@@ -51,7 +51,7 @@ export const makeVfxLabStory = (story: BattleStory, selection: VfxLabSelection):
     primaryTargetId: targetId, targetIds: footprint.affectedPokemonIds,
     patternTiles: footprint.patternTiles,
   } };
-  story.history = [text];
+
   story.description = `${name} · ${selection.pattern} footprint · ${footprint.patternTiles.length} tiles`;
   return story;
 };

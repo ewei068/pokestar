@@ -71,3 +71,40 @@ describe("battle controls", () => {
     assert.ok(tiles.some((tile: {teamName: string; position: number}) => tile.teamName === 'Rival Team' && tile.position === 6));
   });
 });
+
+// Event overlays use production grid geometry; state ordering is covered at the playback seam.
+describe('result presentation', () => {
+  it('announces damage at its Pokémon while the grid still shows pre-event HP', async () => {
+    const { emptyPlayback, reducePlayback } = await import('./playback');
+    const story = makeBattleStory('result-damage');
+    const initial = { ...story.battle, found: true as const, stateId: '17', updates: [] };
+    const after = { ...initial, revision: 18, stateId: '18', view: story.sequence!.finalView,
+      updates: [{ revision: 18, action: { action: 'skipTurn' as const }, events: story.sequence!.events, log: [] }] };
+    let state = reducePlayback(emptyPlayback(), { type: 'receive', response: initial, catalog: story.catalog });
+    state = reducePlayback(state, { type: 'receive', response: after, catalog: story.catalog });
+    const frame = state.queue[0];
+    const page = render(createElement(BattleGrid, {
+      view: frame.view, ownTeamNames: story.battle.myTeamNames, catalog: story.catalog,
+      targetIds: [], primaryTargetId: null, patternTiles: [], affectedIds: [], playback: false,
+      highlightedId: null, resultFrame: frame,
+      onChooseTarget: () => {}, onInspect: () => {}, onHover: () => {},
+    }));
+    assert.equal(page.getByRole('status').textContent, '−42 HP');
+    assert.ok(page.getByRole('button', { name: /Gengar, 115 of 175 HP/ }));
+  });
+
+  it('groups reached log entries and offers a working playback escape', async () => {
+    const { BattleLog } = await import('./results/BattleLog');
+    let skipped = false;
+    const page = render(createElement(BattleLog, { entries: [
+      { id: 'a', revision: 18, turn: 12, text: 'Typhlosion used Tackle.' },
+      { id: 'b', revision: 18, turn: 12, text: 'Gengar lost 42 HP.' },
+      { id: 'c', revision: 19, turn: 13, text: 'Arcanine skipped its turn.' },
+    ], playing: true, onSkip: () => { skipped = true; } }));
+    assert.deepEqual([...page.container.querySelectorAll('li')].map(item => item.textContent), [
+      'Arcanine skipped its turn.', 'Typhlosion used Tackle.', 'Gengar lost 42 HP.',
+    ]);
+    await userEvent.setup({ document: dom.window.document }).click(page.getByRole('button', { name: 'Skip animations' }));
+    assert.equal(skipped, true);
+  });
+});

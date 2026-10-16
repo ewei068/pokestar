@@ -6,6 +6,42 @@ const {
 } = require("../../../__testing__/utils/battle");
 
 describe("Battle action outcomes", () => {
+  it("observes weather set, refresh and clear in action order", () => {
+    const { battle } = createMockBattle({ autoStart: true, enableReplay: true });
+    battle.registerListenerFunction({ eventName: battleEventEnum.AFTER_SKIP_TURN, callback: () => {
+      battle.createWeather("Rain", battle.activePokemon);
+      battle.weather.duration = 1;
+      battle.createWeather("Rain", battle.activePokemon);
+      battle.clearWeather();
+    } });
+    const outcome = battle.performAction({ action: "skipTurn" });
+    const changes = outcome.events.filter(event => event.type === "weatherChanged");
+    expect(changes).toHaveLength(3);
+    expect(changes.map(event => [event.weatherId, event.previousWeatherId])).toEqual([
+      ["Rain", null], ["Rain", "Rain"], [null, "Rain"],
+    ]);
+    expect(changes[0].duration).toBeGreaterThan(1);
+    expect(changes[2].duration).toBe(0);
+    expect(outcome.snapshot.weather.weatherId).toBe(null);
+  });
+
+  it("observes actual capped readiness boosts and drains, including suppressed rule callbacks", () => {
+    const { battle } = createMockBattle({ autoStart: true, enableReplay: true });
+    const pokemon = battle.activePokemon;
+    battle.registerListenerFunction({ eventName: battleEventEnum.AFTER_SKIP_TURN, callback: () => {
+      pokemon.combatReadiness = 95;
+      pokemon.boostCombatReadiness(pokemon, 20, false);
+      pokemon.boostCombatReadiness(pokemon, 20, false); // No change at the cap.
+      pokemon.reduceCombatReadiness(pokemon, 150);
+    } });
+    const outcome = battle.performAction({ action: "skipTurn" });
+    expect(outcome.events.filter(event => event.type === "combatReadinessChanged")).toEqual([
+      expect.objectContaining({ pokemonId: pokemon.id, sourcePokemonId: pokemon.id,
+        previousCombatReadiness: 95, combatReadiness: 100, amount: 5 }),
+      expect.objectContaining({ previousCombatReadiness: 100, combatReadiness: 0, amount: -100 }),
+    ]);
+  });
+
   it("rejects actions before the battle starts", () => {
     const { battle } = createMockBattle({ enableReplay: true });
     const before = battle.takeSnapshot();

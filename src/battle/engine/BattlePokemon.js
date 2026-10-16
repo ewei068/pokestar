@@ -1754,6 +1754,14 @@ class BattlePokemon {
       )} combat readiness!`,
     );
 
+    if (combatReadinessGained !== 0) {
+      this.battle.recordCombatEvent({
+        type: "combatReadinessChanged", pokemonId: this.id,
+        sourcePokemonId: source?.id ?? null, previousCombatReadiness: oldCombatReadiness,
+        combatReadiness: this.combatReadiness, amount: combatReadinessGained,
+      });
+    }
+
     if (combatReadinessGained > 0 && triggerEvents) {
       const eventArgs = {
         target: this,
@@ -1780,6 +1788,13 @@ class BattlePokemon {
     const oldCombatReadiness = this.combatReadiness;
     this.combatReadiness = Math.max(0, this.combatReadiness - amount);
     const combatReadinessLost = oldCombatReadiness - this.combatReadiness;
+    if (combatReadinessLost !== 0) {
+      this.battle.recordCombatEvent({
+        type: "combatReadinessChanged", pokemonId: this.id,
+        sourcePokemonId: source?.id ?? null, previousCombatReadiness: oldCombatReadiness,
+        combatReadiness: this.combatReadiness, amount: -combatReadinessLost,
+      });
+    }
     this.battle.addToLog(
       `${this.name} lost ${Math.round(combatReadinessLost)} combat readiness!`,
     );

@@ -1,0 +1,10 @@
+{
+  "mockedHttp": true,
+  "playerAndNpcActionViews": true,
+  "artworkWait": true,
+  "logTiming": true,
+  "reconnectWithoutReplay": true,
+  "visibilityCancellation": true,
+  "motionPreferenceChange": true,
+  "errors": []
+}
