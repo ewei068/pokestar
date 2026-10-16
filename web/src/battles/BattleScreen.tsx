@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { CSSProperties } from "react";
+import { transitionDuration } from "./results/transitions";
 import { BattleLog } from "./results/BattleLog";
 import { resultAnimationConfig } from "./results/config";
 import { BattleGrid } from "./BattleGrid";
@@ -96,14 +97,14 @@ export const BattleScreen = ({ catalog, session }: {
 
   return <div className="battle-surface" data-playback-stage={playing?.stage || "idle"}
     data-playback-event={playing?.event.type || ""} style={{
-    "--state-duration": `${!reducedMotion && playing?.stage === "transition" ? playing.durationMs : 0}ms`,
+    "--state-duration": `${!reducedMotion && playing ? transitionDuration(playing.changes) : 0}ms`,
     "--state-easing": resultAnimationConfig.transition.easing,
   } as CSSProperties}><main className="page-shell arena-page">
     <div className="arena-toolbar"><a className="back-link" href={import.meta.env.BASE_URL}>← Battles</a>
       <span>Battle {battle.battleId.slice(0, 8)} · Revision {playing?.revision ?? battle.revision}</span></div>
     <div className="arena-title"><div><small>{battle.mode.type || "Battle"} · TURN {displayView.turn}</small>
       <h1>{ownNames.join(" & ") || "Your team"} <em>vs</em> {rivalNames.join(" & ") || "Opponents"}</h1></div>
-      {displayView.weather?.weatherId && <div className={`arena-weather ${playing?.stage === "transition" && playing.changes.weather ? "is-state-changing" : ""}`} title="Battle weather">
+      {displayView.weather?.weatherId && <div className={`arena-weather ${playing?.changes.weather ? "is-state-changing" : ""}`} title="Battle weather">
         {weatherIcon[displayView.weather.weatherId] || "◌"}
         <span>{displayView.weather.weatherId}<small>{displayView.weather.duration} turns</small></span></div>}
     </div>

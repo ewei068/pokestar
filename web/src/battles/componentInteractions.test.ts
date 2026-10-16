@@ -80,7 +80,7 @@ describe("battle controls", () => {
 
 // Event overlays use production grid geometry; state ordering is covered at the playback seam.
 describe('result presentation', () => {
-  it('announces damage at its Pokémon while the grid still shows pre-event HP', async () => {
+  it('announces damage at its Pokémon alongside the updated HP and reaction layer', async () => {
     const { emptyPlayback, reducePlayback } = await import('./playback');
     const story = makeBattleStory('result-damage');
     const initial = { ...story.battle, found: true as const, stateId: '17', updates: [] };
@@ -96,7 +96,8 @@ describe('result presentation', () => {
       onChooseTarget: () => {}, onInspect: () => {}, onHover: () => {},
     }));
     assert.equal(page.getByRole('status').textContent, '−42 HP');
-    assert.ok(page.getByRole('button', { name: /Gengar, 115 of 175 HP/ }));
+    assert.ok(page.container.querySelector('.arena-result-reactions'));
+    assert.ok(page.getByRole('button', { name: /Gengar, 73 of 175 HP/ }));
   });
 
   it('exposes the virtual history viewport and a working playback escape', async () => {

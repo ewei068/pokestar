@@ -9,8 +9,8 @@ reconciles with the canonical view for each action revision.
 ```text
 HTTP response → latest authoritative battle (commands/cursors)
   → unseen action revisions → ordered presentation frames
-    → event text or move VFX using the preceding view
-    → supplied state change, animated from the preceding view
+    → event text + supplied state change start together (move VFX still precede results)
+    → wait for the longest text/state animation
     → next event
     → canonical reconciliation and next-turn announcement
 ```
@@ -50,7 +50,7 @@ Reduced motion preserves observation order with short text and instant changes.
 ## Batches, reactions and virtual history
 
 Consecutive compatible events on distinct present Pokémon share an announcement
-stage and one destination-view transition. HP/readiness gains and losses stay
+stage with a concurrent destination-view transition. HP/readiness gains and losses stay
 separate; matching effects/statuses require the same ID and operation. Misses
 and shield loss can batch. Repeated hits on the same Pokémon remain separate.
 Any other event is a barrier, including faint, revival, move completion and phase

@@ -41,11 +41,15 @@ const newPlaybackFrames = (previous: BattleDisplay, response: BattleResponse, ca
         const presentation = presentEvent(item, view, catalog);
         return presentation ? [{ id: `${response.battleId}:${update.revision}:${item.sequence}`, event: item, ...presentation }] : [];
       });
-      if (announcements.length) frames.push({ id, revision: update.revision, stage: 'event', event, view,
-        announcements, changes: viewChanges(view, view),
-        durationMs: event.type === 'moveStarted' ? MOVE_MOTION_DURATION_MS : config.text.durationMs });
       const destination = events.reduce(applyEventView, view);
-      transition(destination, event, update.revision, `${id}:transition`);
+      if (announcements.length) {
+        const changes = viewChanges(view, destination);
+        // Text and observed state start together; the next event waits for both.
+        frames.push({ id, revision: update.revision, stage: 'event', event, view: destination,
+          announcements, changes, durationMs: Math.max(transitionDuration(changes),
+            event.type === 'moveStarted' ? MOVE_MOTION_DURATION_MS : config.text.durationMs) });
+        view = destination;
+      } else transition(destination, event, update.revision, `${id}:transition`);
     });
     transition(canonical, { type: 'reconciled', sequence: -1 }, update.revision,
       `${response.battleId}:${update.revision}:reconcile`);

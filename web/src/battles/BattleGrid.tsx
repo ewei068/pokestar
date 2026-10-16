@@ -102,7 +102,7 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
   const motion = moveMotion(motionEvent, catalog);
   const targetSet = new Set(targetIds);
   const affectedSet = new Set(affectedIds);
-  const changedIds = new Set(resultFrame?.stage === "transition" ? [...resultFrame.changes.cues] : []);
+  const changedIds = new Set(resultFrame?.changes.cues || []);
   const tileSet = new Set(patternTiles.map((tile) => `${tile.teamName}:${tile.position}`));
   return <div className="arena-board" ref={boardRef}
     style={{ "--move-duration": `${MOVE_MOTION_DURATION_MS}ms` } as CSSProperties}>
@@ -149,7 +149,7 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
     })}
     {resultFrame?.stage === "event" && resultFrame.announcements.map(announcement => <EventAnnouncement key={announcement.id}
       boardRef={boardRef} announcement={announcement} view={view} reducedMotion={!!reducedMotion} />)}
-    {resultFrame?.stage === "transition" && <ResultReactions key={resultFrame.id}
+    {resultFrame && <ResultReactions key={resultFrame.id}
       boardRef={boardRef} frame={resultFrame} view={view} reducedMotion={!!reducedMotion} />}
     <span className="arena-versus" aria-hidden="true">VS</span>
     {motionEvent && !reducedMotion && startedAt !== null && <BattleMotion boardRef={boardRef} view={view} catalog={catalog} event={motionEvent} startedAt={startedAt} />}

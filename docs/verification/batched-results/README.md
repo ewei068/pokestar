@@ -28,3 +28,13 @@ Simulate another result to exercise scrolling with arriving events.
 
 The client history is uncapped within a session; memory grows with entries.
 Virtualization bounds DOM work. Durable/reconnect history remains separate.
+
+## Concurrent text and state timing
+
+`concurrent.json` records the subsequent pacing change: labels, supplied state
+changes and reactions now start in the same event frame. Six full browser loops
+(damage, batched healing and move/damage/faint at 1280 and 390 pixels) confirm
+updated HP alongside text and running reactions, the existing 420 ms meter
+duration, fainting held until after the damage frame, final cleanup and no
+overflow/page errors. All 39 tests and the production build pass. The playback
+deadline is the maximum text/move and transition duration, not their sum.

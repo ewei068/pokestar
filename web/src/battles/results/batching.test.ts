@@ -41,7 +41,7 @@ describe('result batches', () => {
       assert.deepEqual(batches.flat(), events);
     }
   });
-  it('shows all labels on old state, transitions together, and logs each occurrence once in server order', () => {
+  it('starts all labels and state changes together, and logs each occurrence once in server order', () => {
     const story = makeBattleStory('result-batch-damage');
     const initial = { ...story.battle, found: true as const, stateId: 's17', updates: [] };
     let state = reducePlayback(emptyPlayback(), { type: 'receive', response: initial, catalog });
@@ -49,16 +49,15 @@ describe('result batches', () => {
       view: story.sequence!.finalView, updates: [{ revision: 18, action: { action: 'skipTurn' }, events: story.sequence!.events, log: [] }] } });
     const frame = state.queue[0];
     assert.equal(frame.announcements.length, 3);
-    assert.equal(frame.view.pokemon['Rival Team-94'].hp, 115);
+    assert.equal(frame.view.pokemon['Rival Team-94'].hp, 85);
+    assert.equal(frame.changes.damaged.length, 3);
     state = reducePlayback(state, { type: 'begin', id: frame.id });
     state = reducePlayback(state, { type: 'begin', id: frame.id });
     assert.deepEqual(state.history.map(item => item.text), [
       'Gengar lost 30 HP.', 'Arcanine lost 30 HP.', 'Milotic lost 30 HP.',
     ]);
-    state = reducePlayback(state, { type: 'advance', id: frame.id });
-    assert.equal(state.queue[0].stage, 'transition');
-    assert.equal(state.queue[0].changes.damaged.length, 3);
-    assert.equal(state.queue[0].view.pokemon['Rival Team-94'].hp, 85);
+    assert.equal(frame.stage, 'event');
+    assert.ok(frame.durationMs >= 820);
   });
   it('retains all reached entries beyond the previous cap and does not rescan history for deduplication', () => {
     const story = makeBattleStory('result-damage');

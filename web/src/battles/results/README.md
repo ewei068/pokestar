@@ -27,7 +27,10 @@ no announcement delay.
 ## Responsibilities
 
 `../playback.ts` plans each revision from the preceding canonical view. It emits
-an event stage (old view), then a transition stage (destination view). Only
+an event stage containing both the labels and destination view. Observed state
+changes and text start together; its deadline is the longer of the text/move
+lifetime and state transition. A transition-only stage handles silent changes
+and canonical reconciliation. Only
 supplied observations update fields; `applyEventView` never calculates battle
 rules. At the action boundary, the canonical view supplies any missing changes.
 A final `turnStarted` is announced after this reconciliation. Revisions, rather
@@ -70,9 +73,10 @@ be present and distinct: repeated hits remain individually visible. Every other
 event, including silent move completion, is a barrier. Never pull events across
 a faint, revival, move, phase or action boundary.
 
-A batch displays all labels on the preceding view, appends each narration in
-server order, then applies the supplied observations in that same order to form
-one destination view. Its transitions run together. More aggressive grouping
+A batch computes labels from the preceding view, appends each narration in
+server order, and applies the supplied observations in that same order to form
+one destination view. Labels and transitions start together; the next batch
+waits until both finish. More aggressive grouping
 would require explicit causality/independence information.
 
 ## Stories
@@ -81,21 +85,21 @@ Open `?previewBattle=1&story=<id>`:
 
 | Story | Covers |
 | --- | --- |
-| `result-damage`, `result-heal` | Floating text then HP interpolation |
+| `result-damage`, `result-heal` | Floating text alongside HP interpolation |
 | `result-shield` | Shield damage followed by effect removal |
 | `result-status` | Applied status, buff, and cure; badge changes |
 | `result-revive` | Revival text, HP restoration and appearance |
 | `result-announcement`, `result-missing-target` | Central text and missing-subject fallback |
 | `result-weather`, `result-readiness` | Explicit observed state changes |
 | `result-reconcile` | HP, readiness, effect duration and weather differences without events |
-| `result-sequence` | Move VFX → damage text → HP drain → faint text → drop/fade → canonical next turn |
+| `result-sequence` | Move VFX → damage text + HP drain → faint text + drop/fade → canonical next turn |
 | `result-batch-damage`, `result-batch-heal` | Concurrent labels, reactions and bars on three Pokémon |
 | `result-batch-readiness`, `result-batch-effects`, `result-batch-misses` | Grouped numeric, matching effect/status and miss observations |
 | `result-batch-faint` | Fainting prevents batching across dependent results |
 | `result-long-log` | 20,000 wrapped entries, follow/scroll behavior, and Simulate another result |
 
-Review full playback at desktop and phone sizes. Check the old values remain
-visible through announcements, no future results enter the log, transitions
+Review full playback at desktop and phone sizes. Check observed values update as their labels appear, no future results enter
+the log, transitions
 settle before subsequent events, and skip/reduced motion leave no visual work.
 Use pure playback tests for ordering, immutability, reconciliation and incoming
 updates; use component tests for labels/controls and browser checks for actual
@@ -108,7 +112,7 @@ result presentation.
   optional observed-state patch. Unknown observations currently settle through
   canonical reconciliation. Do not transmit engine objects or unprojected data.
 - A custom event visual can replace the generic announcement at its rendering
-  seam. State-difference animations belong in the transition stage so they also
+  seam. State-difference animations belong to the frame’s view changes so they also
   work during canonical reconciliation, without duplicate reactions.
 - Grouping beyond consecutive compatible observations needs explicit
   independence/causality information. Keep server event order and barriers.
