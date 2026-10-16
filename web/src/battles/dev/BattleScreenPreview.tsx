@@ -1,5 +1,5 @@
 /** Development-only stories render the production screen without HTTP or game writes. */
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BattleScreen } from "../BattleScreen";
 import { useBattlePlayback } from "../useBattlePlayback";
 import type { BattleSession } from "../useBattleSession";
@@ -33,12 +33,15 @@ const StoryScreen = ({ story }: { story: BattleStory }) => {
       view: story.sequence?.finalView || story.battle.view,
       updates: [{ revision, action: { action: "skipTurn" }, events, log: [] }] });
   }, [story, playback.receive]);
+  const seedHistory = useMemo(() => story.history.map((text, index) => ({ id: `story:${index}`,
+    revision: story.id === 'result-long-log' ? Math.floor(index / 8) + 1 : story.battle.revision,
+    turn: story.id === 'result-long-log' ? Math.floor(index / 8) + 1 : story.battle.view.turn, text })), [story]);
+  const history = useMemo(() => [...seedHistory, ...playback.history], [seedHistory, playback.history]);
   const battle = playback.battle!;
   const session: BattleSession = {
     battle, loading: false, busy: false, error: null, notice,
     selectedMoveId, inspectedPokemonId, playing: playback.playing,
-    history: [...story.history.map((text, index) => ({ id: `story:${index}`, revision: story.battle.revision,
-      turn: story.battle.view.turn, text })), ...playback.history],
+    history,
     skipPlayback: playback.skipPlayback, waitingForArt: playback.waitingForArt, reducedMotion: playback.reducedMotion,
     refresh: async () => {}, selectMove, inspectPokemon,
     targetPokemon: id => {
@@ -57,7 +60,23 @@ const StoryScreen = ({ story }: { story: BattleStory }) => {
     },
     skipTurn: () => setNotice("Development story: no action was sent."),
   };
-  return <BattleScreen catalog={story.catalog} session={session} />;
+  const appendResult = () => {
+    const revision = battle.revision + 1, view = structuredClone(battle.view);
+    const events = ['Rival Team-94', 'Rival Team-59', 'Rival Team-350'].map((pokemonId, sequence) => {
+      const previousHp = view.pokemon[pokemonId].hp;
+      view.pokemon[pokemonId].hp = Math.max(0, previousHp - 1);
+      return { type: 'hpChanged', sequence, pokemonId, previousHp, hp: view.pokemon[pokemonId].hp,
+        amount: view.pokemon[pokemonId].hp - previousHp };
+    });
+    playback.receive({ ...responseFor(story), revision, stateId: `story:${revision}`, view,
+      updates: [{ revision, action: { action: 'skipTurn' }, events, log: [] }] });
+  };
+  return <>
+    {story.id === 'result-long-log' && <div className="battle-story-toolbar">
+      <button type="button" disabled={!!playback.playing} onClick={appendResult}>Simulate another result</button>
+    </div>}
+    <BattleScreen catalog={story.catalog} session={session} />
+  </>;
 };
 
 export const BattleScreenPreview = () => {

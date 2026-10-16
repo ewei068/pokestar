@@ -12,6 +12,12 @@ Object.defineProperty(globalThis, "document", { configurable: true, value: dom.w
 Object.defineProperty(globalThis, "navigator", { configurable: true, value: dom.window.navigator });
 Object.defineProperty(globalThis, "HTMLElement", { configurable: true, value: dom.window.HTMLElement });
 
+// Layout and virtualization behavior are checked in a real browser.
+Object.defineProperty(globalThis, "ResizeObserver", { configurable: true, value: class {
+  observe() {} unobserve() {} disconnect() {}
+} });
+Object.defineProperty(dom.window, "ResizeObserver", { configurable: true, value: globalThis.ResizeObserver });
+Object.defineProperty(dom.window.HTMLElement.prototype, "scrollTo", { configurable: true, value() {} });
 const { cleanup, render } = await import("@testing-library/react");
 const userEvent = (await import("@testing-library/user-event")).default;
 afterEach(cleanup);
@@ -74,7 +80,7 @@ describe("battle controls", () => {
 
 // Event overlays use production grid geometry; state ordering is covered at the playback seam.
 describe('result presentation', () => {
-  it('announces damage at its Pokémon while the grid still shows pre-event HP', async () => {
+  it('announces damage at its Pokémon alongside the updated HP and reaction layer', async () => {
     const { emptyPlayback, reducePlayback } = await import('./playback');
     const story = makeBattleStory('result-damage');
     const initial = { ...story.battle, found: true as const, stateId: '17', updates: [] };
@@ -90,10 +96,11 @@ describe('result presentation', () => {
       onChooseTarget: () => {}, onInspect: () => {}, onHover: () => {},
     }));
     assert.equal(page.getByRole('status').textContent, '−42 HP');
-    assert.ok(page.getByRole('button', { name: /Gengar, 115 of 175 HP/ }));
+    assert.ok(page.container.querySelector('.arena-result-reactions'));
+    assert.ok(page.getByRole('button', { name: /Gengar, 73 of 175 HP/ }));
   });
 
-  it('groups reached log entries and offers a working playback escape', async () => {
+  it('exposes the virtual history viewport and a working playback escape', async () => {
     const { BattleLog } = await import('./results/BattleLog');
     let skipped = false;
     const page = render(createElement(BattleLog, { entries: [
@@ -101,9 +108,8 @@ describe('result presentation', () => {
       { id: 'b', revision: 18, turn: 12, text: 'Gengar lost 42 HP.' },
       { id: 'c', revision: 19, turn: 13, text: 'Arcanine skipped its turn.' },
     ], playing: true, onSkip: () => { skipped = true; } }));
-    assert.deepEqual([...page.container.querySelectorAll('li')].map(item => item.textContent), [
-      'Arcanine skipped its turn.', 'Typhlosion used Tackle.', 'Gengar lost 42 HP.',
-    ]);
+    assert.ok(page.getByText('3 entries'));
+    assert.ok(page.getByRole('list', { name: 'Event history' }));
     await userEvent.setup({ document: dom.window.document }).click(page.getByRole('button', { name: 'Skip animations' }));
     assert.equal(skipped, true);
   });

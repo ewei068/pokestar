@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { emptyPlayback, frameDuration, reducePlayback } from './playback';
 import type { PlaybackState } from './playback';
+import { resultAnimationConfig as config } from './results/config';
 import { makeBattleStory } from './dev/battleStories';
 import type { BattleResponse } from './types';
 
@@ -22,7 +23,7 @@ describe('battle playback', () => {
     assert.equal(state.history.length, 0);
   });
 
-  it('holds prior HP through the move and damage text, then transitions HP before fainting', () => {
+  it('holds prior HP through the move, then starts damage text and HP together before fainting', () => {
     let state = receive(receive(emptyPlayback(), initial), next);
     assert.equal(state.battle?.view.pokemon[subject].isFainted, true); // Latest state is already received.
     assert.equal(state.queue[0].event.type, 'moveStarted'); // Silent action marker adds no delay.
@@ -32,15 +33,14 @@ describe('battle playback', () => {
     assert.deepEqual(state.history.map(entry => entry.text), ['Typhlosion used Tackle.']);
     state = advance(state);
     assert.equal(state.queue[0].event.type, 'hpChanged');
-    assert.equal(state.queue[0].view.pokemon[subject].hp, 115);
-    state = advance(state);
-    assert.equal(state.queue[0].stage, 'transition');
+    assert.equal(state.queue[0].stage, 'event');
+    assert.equal(state.queue[0].announcements.length, 1);
     assert.equal(state.queue[0].view.pokemon[subject].hp, 0);
+    assert.deepEqual(state.queue[0].changes.damaged, [subject]);
+    assert.equal(state.queue[0].durationMs, Math.max(config.text.durationMs, config.transition.meterMs, config.reactions.damage.durationMs));
     assert.equal(state.queue[0].view.pokemon[subject].isFainted, false);
     state = advance(state);
     assert.equal(state.queue[0].event.type, 'pokemonFainted');
-    assert.equal(state.queue[0].view.pokemon[subject].isFainted, false);
-    state = advance(state);
     assert.equal(state.queue[0].view.pokemon[subject].isFainted, true);
     assert.deepEqual(state.queue[0].changes.fainted, [subject]);
     // The latest view and original fixture remain immutable.
@@ -102,7 +102,7 @@ describe('battle playback', () => {
     ] };
     const state = receive(receive(emptyPlayback(), initial), batch);
     const npcDamage = state.queue.find(frame => frame.revision === 19 && frame.stage === 'event');
-    assert.equal(npcDamage?.view.pokemon[actor].hp, 168);
+    assert.equal(npcDamage?.view.pokemon[actor].hp, 160);
     assert.equal(npcDamage?.view.pokemon[subject].isFainted, true);
     assert.equal(state.queue[0].view.pokemon[subject].hp, 115);
     assert.equal(state.queue[state.queue.length - 1].view.pokemon[actor].hp, 160);

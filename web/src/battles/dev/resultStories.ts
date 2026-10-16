@@ -44,6 +44,62 @@ export const makeResultStory = (story: BattleStory): BattleStory => {
       finalView.pokemon[target].hp = 70; finalView.pokemon[ally].combatReadiness = 95;
       finalView.pokemon[ally].effectIds.shield = { duration: 1 };
       finalView.weather.duration = 2; break;
+    case 'result-batch-damage':
+    case 'result-batch-faint': {
+      const targets = [target, `${rival}-59`, `${rival}-350`];
+      for (const id of targets) {
+        const hp = story.id === 'result-batch-faint' ? 0 : initial.pokemon[id].hp - 30;
+        events.push({ type: 'hpChanged', pokemonId: id, sourcePokemonId: actor,
+          previousHp: initial.pokemon[id].hp, hp, amount: hp - initial.pokemon[id].hp });
+        finalView.pokemon[id].hp = hp;
+        // A faint is an ordering barrier; later targets must wait for it.
+        if (story.id === 'result-batch-faint') {
+          events.push({ type: 'pokemonFainted', pokemonId: id, sourcePokemonId: actor });
+          finalView.pokemon[id].isFainted = true;
+        }
+      }
+      break;
+    }
+    case 'result-batch-heal':
+    case 'result-batch-readiness':
+    case 'result-batch-effects':
+    case 'result-batch-misses': {
+      const ids = [ally, `${own}-149`, `${own}-282`];
+      for (const id of ids) {
+        if (story.id === 'result-batch-heal') {
+          const hp = Math.min(initial.pokemon[id].maxHp, initial.pokemon[id].hp + 20);
+          events.push({ type: 'hpChanged', pokemonId: id, sourcePokemonId: actor, hp, amount: hp - initial.pokemon[id].hp });
+          finalView.pokemon[id].hp = hp;
+        } else if (story.id === 'result-batch-readiness') {
+          const combatReadiness = initial.pokemon[id].combatReadiness + 20;
+          events.push({ type: 'combatReadinessChanged', pokemonId: id, combatReadiness, amount: 20 });
+          finalView.pokemon[id].combatReadiness = combatReadiness;
+        } else if (story.id === 'result-batch-effects') {
+          events.push({ type: 'effectApplied', pokemonId: id, effectId: 'focus', duration: 3 });
+          finalView.pokemon[id].effectIds.focus = { duration: 3 };
+        } else {
+          events.push({ type: 'targetMissed', pokemonId: actor, targetPokemonId: id, moveId: 'm47' });
+        }
+      }
+      if (story.id === 'result-batch-effects') {
+        for (const id of ids) {
+          events.push({ type: 'effectRemoved', pokemonId: id, effectId: 'focus' });
+          delete finalView.pokemon[id].effectIds.focus;
+        }
+        for (const id of ids) events.push({ type: 'statusApplied', pokemonId: id, statusId: 'Sleep' });
+        for (const id of ids) events.push({ type: 'statusRemoved', pokemonId: id, statusId: 'Sleep' });
+        for (const id of ids) finalView.pokemon[id].status = { statusId: null, turns: 0 };
+      }
+      break;
+    }
+    case 'result-long-log': {
+      story.battle.revision = 2500;
+      story.history = Array.from({ length: 20000 }, (_, index) =>
+        `Event ${index + 1}: ${index % 7 === 0 ? 'A long event describing several different Pokémon and their status effects, deliberately wrapping on narrow screens to exercise dynamic row measurement.' : 'Typhlosion used Tackle.'}`);
+      events.push({ type: 'hpChanged', pokemonId: target, hp: 73, amount: -42 });
+      finalView.pokemon[target].hp = 73;
+      break;
+    }
     case 'result-sequence':
       events.push({ type: 'actionStarted', pokemonId: actor, action: 'useMove' },
         { type: 'moveStarted', pokemonId: actor, moveId: 'm33', moveType: 'normal', damageType: 'Physical',

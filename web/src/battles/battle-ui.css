@@ -53,6 +53,11 @@
 .arena-motion-actor img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
 .arena-board-vfx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 6;
   pointer-events: none; image-rendering: pixelated; }
+.arena-result-reactions { position: absolute; inset: 0; z-index: 8; pointer-events: none; }
+.arena-reaction { position: absolute; width: 0; height: 0; }
+.arena-reaction i { position: absolute; display: block; filter: drop-shadow(0 1px 1px #25354b); }
+.arena-reaction.is-heal i { background: currentColor; clip-path: polygon(35% 0,65% 0,65% 35%,100% 35%,100% 65%,65% 65%,65% 100%,35% 100%,35% 65%,0 65%,0 35%,35% 35%); }
+.arena-mon.is-fainted .arena-sprite { opacity: 0; }
 .arena-empty { display: block; width: 100%; height: 100%; min-height: 65px;
   border: 1px dashed #83a597; background: #ffffff48; }
 .arena-empty.is-affected { border: 2px dashed #d86c48;
@@ -182,12 +187,13 @@
 .arena-detail-page h3 { margin: 0; font-size: 1rem; }
 .arena-inspector-back { padding: 2px 6px; border: 1px solid #9eafad; background: #fff8dd;
   font-size: .64rem; font-weight: 850; }
-.arena-log-groups { max-height: 240px; overflow: auto; }
-.arena-log-action + .arena-log-action { margin-top: 10px; }
-.arena-log-action h3 { display: flex; gap: 8px; margin: 0 0 4px; color: #38566a; font-size: .65rem; }
-.arena-log-action h3 span { color: #76818a; font-weight: 500; }
-.arena-history ol { margin: 0; padding-left: 0; list-style: none; }
-.arena-history li { padding: 4px 2px; border-top: 1px solid #d6dfd9; color: #526173; font-size: .68rem; }
+.arena-log-list { overscroll-behavior: contain; overflow-anchor: none; }
+.arena-log-controls { display: flex; gap: 6px; }
+.arena-history h2 small { color: #76818a; font-size: .6rem; font-weight: 500; }
+.arena-log-entry { padding: 0 2px; }
+.arena-log-entry h3 { display: flex; gap: 8px; margin: 0; padding: 9px 0 4px; color: #38566a; font-size: .65rem; }
+.arena-log-entry h3 span { color: #76818a; font-weight: 500; }
+.arena-log-entry p { margin: 0; padding: 4px 0; border-top: 1px solid #d6dfd9; color: #526173; font-size: .68rem; overflow-wrap: anywhere; }
 .arena-muted { margin: 0; color: var(--arena-soft); font-size: .69rem; line-height: 1.4; }
 .arena-readiness { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 15px;
   min-height: 64px; padding: 8px 12px; border: 2px solid var(--arena-line); background: var(--arena-paper); }
@@ -253,7 +259,7 @@
   .arena-weather.is-state-changing, .arena-mon.is-state-changing .arena-mon-cues { animation: none; }
   .arena-mon.is-event-highlighted, .arena-mon.is-playback, .arena-empty.is-playback { animation: none; }
   .arena-sprite.is-moving-source { opacity: 1; }
-  .arena-motion-actor, .arena-board-vfx { display: none; }
+  .arena-motion-actor, .arena-board-vfx, .arena-result-reactions { display: none; }
 }
 
 /* Information takes precedence over keeping three columns on narrow cards. */

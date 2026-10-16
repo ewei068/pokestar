@@ -1,13 +1,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { RefObject } from 'react';
-import type { PlaybackFrame } from '../playback';
+import type { Announcement } from '../playback';
 import type { BattleView } from '../types';
 import { resultAnimationConfig as config } from './config';
 
 type Anchor = { x: number; y: number; central: boolean; width: number };
 /** Text is a generic event presentation; custom event treatments can replace it here. */
-export const EventAnnouncement = ({ boardRef, frame, view, reducedMotion }: {
-  boardRef: RefObject<HTMLDivElement>; frame: PlaybackFrame; view: BattleView; reducedMotion: boolean;
+export const EventAnnouncement = ({ boardRef, announcement, view, reducedMotion }: {
+  boardRef: RefObject<HTMLDivElement>; announcement: Announcement; view: BattleView; reducedMotion: boolean;
 }) => {
   const [anchor, setAnchor] = useState<Anchor | null>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
@@ -15,7 +15,7 @@ export const EventAnnouncement = ({ boardRef, frame, view, reducedMotion }: {
     const board = boardRef.current; if (!board) return;
     const measure = () => {
       const bounds = board.getBoundingClientRect();
-      const pokemon = frame.cue?.subjectId ? view.pokemon[frame.cue.subjectId] : undefined;
+      const pokemon = announcement.cue.subjectId ? view.pokemon[announcement.cue.subjectId] : undefined;
       const cell = pokemon && Array.from(board.querySelectorAll<HTMLElement>('.arena-cell')).find(item =>
         item.dataset.teamName === pokemon.teamName && Number(item.dataset.position) === pokemon.position);
       const sprite = cell?.querySelector('.arena-sprite')?.getBoundingClientRect();
@@ -31,7 +31,7 @@ export const EventAnnouncement = ({ boardRef, frame, view, reducedMotion }: {
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure);
     observer?.observe(board);
     return () => { window.removeEventListener('resize', measure); observer?.disconnect(); };
-  }, [boardRef, frame.id, frame.cue?.subjectId, view]);
+  }, [boardRef, announcement.id, announcement.cue.subjectId, view]);
   useLayoutEffect(() => {
     const label = labelRef.current; if (!label?.animate || !anchor || reducedMotion) return;
     const text = config.text;
@@ -42,12 +42,12 @@ export const EventAnnouncement = ({ boardRef, frame, view, reducedMotion }: {
       { opacity: 0, transform: `translateY(-${text.risePx}px) scale(1)`, offset: 1 },
     ], { duration: text.durationMs, easing: text.easing, fill: 'both' });
     return () => animation.cancel();
-  }, [frame.id, anchor?.central, reducedMotion, !!anchor]);
-  if (!frame.cue || !anchor) return null;
-  const label = anchor.central ? frame.text : frame.cue.label;
-  return <div className={`arena-announcement ${anchor.central ? 'is-central' : 'is-anchored'} is-${frame.cue.tone}`}
+  }, [announcement.id, anchor?.central, reducedMotion, !!anchor]);
+  if (!announcement.cue || !anchor) return null;
+  const label = anchor.central ? announcement.text : announcement.cue.label;
+  return <div className={`arena-announcement ${anchor.central ? 'is-central' : 'is-anchored'} is-${announcement.cue.tone}`}
     style={{ left: anchor.x, top: anchor.y, width: anchor.width, fontSize: anchor.central ? config.text.centralFontSizePx : config.text.fontSizePx }}
-    role="status" aria-label={frame.text || undefined} data-event-type={frame.event.type} data-event-id={frame.id}>
+    role="status" aria-label={announcement.text || undefined} data-event-type={announcement.event.type} data-event-id={announcement.id}>
     <span ref={labelRef}>{label}</span>
   </div>;
 };

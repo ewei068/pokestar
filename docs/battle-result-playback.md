@@ -9,8 +9,8 @@ reconciles with the canonical view for each action revision.
 ```text
 HTTP response → latest authoritative battle (commands/cursors)
   → unseen action revisions → ordered presentation frames
-    → event text or move VFX using the preceding view
-    → supplied state change, animated from the preceding view
+    → event text + supplied state change start together (move VFX still precede results)
+    → wait for the longest text/state animation
     → next event
     → canonical reconciliation and next-turn announcement
 ```
@@ -47,6 +47,42 @@ settles the latest authoritative view. Changing motion preferences also settles
 playback. Skipped future narration is not added.
 Reduced motion preserves observation order with short text and instant changes.
 
+## Batches, reactions and virtual history
+
+Consecutive compatible events on distinct present Pokémon share an announcement
+stage with a concurrent destination-view transition. HP/readiness gains and losses stay
+separate; matching effects/statuses require the same ID and operation. Misses
+and shield loss can batch. Repeated hits on the same Pokémon remain separate.
+Any other event is a barrier, including faint, revival, move completion and phase
+changes; action revisions are never crossed. Each narration remains an
+individual log entry in server order.
+
+State differences now drive three small configurable reactions: damage flashes,
+recoil and short rays; healing glow and staggered plus particles; fainting drops
+and fades the sprite, leaving its card readable. Canonical reconciliation uses
+the same reactions. Skip, reduced motion and unmount dispose all transient work.
+No generated artwork or approved move VFX recipes were changed.
+
+The log is uncapped for the current session. A [Virtua](https://github.com/inokawa/virtua)
+list lazily renders visible rows and overscan, with dynamic height measurement
+for wrapping. Chronological entries carry action headings. Near the bottom it
+follows incoming entries; scrolling back pauses following, and Latest resumes
+it. Virtualization bounds DOM work, not total history memory. Historical logs
+after reconnect are still a separate server/client feature.
+
+## Copy ownership
+
+`web/src/battles/eventPresentation.ts` consolidates the former narration and
+floating-label switches. An event definition supplies narration, short label,
+subject, tone and batching key. Templates use IDs/values and display catalog
+names; the server sends no UI strings or markup for this presentation.
+
+A future Discord formatter can consume the same semantic events with its own
+wording. Shared template data could be extracted into a neutral package if both
+surfaces need it. A future `battle.report` would unify reporting occurrences
+and legacy Discord logs; ordinary manual combat events can already use this
+client catalog. Neither step requires moving rendering into the server.
+
 ## Additional observations
 
 These are additive observations; battle rules, RNG and snapshots are unchanged.
@@ -65,9 +101,11 @@ other routine changes continue to reconcile without separate announcements.
 
 The [result settings and extension guide](../web/src/battles/results/README.md)
 records editable parameters, units, stories, responsibilities and extension
-seams. [Verification records](verification/event-results/README.md) cover unit,
+seams. [Initial verification](verification/event-results/README.md) and
+[batch/log verification](verification/batched-results/README.md) cover unit,
 component and browser checks. These result settings are separate from the
 approved [move VFX recipes](battle-vfx-guide.md).
 
-Custom event visuals, causality-aware AOE batching, semantic reports that also
-produce Discord logs, richer difference animations and SFX remain follow-ups.
+Shield/miss/status-specific visuals, batching across intervening events, semantic
+reports that also produce Discord logs, richer difference animations and SFX
+remain follow-ups.

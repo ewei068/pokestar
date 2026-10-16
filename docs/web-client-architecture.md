@@ -114,14 +114,18 @@ in place. Travel depends on the action category, while tile VFX depends on the
 move type and category. The 18 standard types each have three configured canvas
 compositions, shared by live battles and development stories;
 Unknown, Shadow, Stellar, and future type names resolve to Normal VFX until
-they receive art. Result events now display floating or central text, then apply
-supplied state observations and animate view differences. `playback.ts` owns
+they receive art. Result events display floating or central text alongside
+supplied state observations and animated view differences. `playback.ts` owns
 ordered frames and canonical action reconciliation; `useBattlePlayback` owns
 timing, reached log entries and cancellation, shared by HTTP and stories.
 The latest authoritative state is retained separately from the playing view.
-HP stays unchanged until its announcement finishes; fainting follows its own
-event. Unknown consequences reconcile before the next action. The log groups
-only reached events, and completion notices cannot reveal future outcomes.
+HP begins changing as its announcement appears; the next event waits for both
+text and state animations to finish. Fainting follows its own event. Unknown consequences reconcile before the next action. The virtualized log retains all reached session entries and preserves reading
+position as new entries arrive. Compatible adjacent observations can share
+presentation stages, while faint/phase/action boundaries preserve order.
+State differences drive damage, healing and faint reactions. Client copy and
+presentation semantics live in `eventPresentation.ts`; completion notices
+cannot reveal future outcomes.
 See [battle result playback](battle-result-playback.md) for settings and stories.
 The session preserves event order and waits for shared artwork readiness.
 The actor and board canvas share one epoch: approach 420 ms, effect 760 ms,
