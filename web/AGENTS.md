@@ -4,6 +4,9 @@ When changing a web screen, its CSS, or a development story, read
 [`docs/web-ui-style-guide.md`](../docs/web-ui-style-guide.md). It defines the
 current visual direction, interaction rules, and review scenarios for Pokestar.
 
+For battlefield layout, floating HUDs, sprite anchoring or event labels, also
+read [`docs/arena-design-guide.md`](../docs/arena-design-guide.md).
+
 When creating or promoting battle tile VFX, read
 [`docs/battle-vfx-guide.md`](../docs/battle-vfx-guide.md) for the art,
 timing, variation, and review workflow.

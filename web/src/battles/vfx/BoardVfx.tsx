@@ -1,3 +1,4 @@
+import { measureArena } from '../arena/geometry';
 import { useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
 import { MOVE_APPROACH_MS, TILE_EFFECT_MS } from './timing';
@@ -25,23 +26,15 @@ export const BoardVfx = ({ boardRef, event, view, tiles, type, kind, startedAt, 
     const ctx = canvas.getContext('2d'); if (!ctx) return;
     let frame = 0, disposed = false, placements: VfxTile[] = [], density = 1;
     const measure = () => {
-      const rect = board.getBoundingClientRect();
+      const geometry = measureArena(board), rect = geometry.bounds;
       density = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(rect.width * density); canvas.height = Math.round(rect.height * density);
       ctx.setTransform(density, 0, 0, density, 0, 0); ctx.imageSmoothingEnabled = false;
-      const cells = Array.from(board.querySelectorAll<HTMLElement>('.arena-cell'));
       const actor = event.pokemonId ? view.pokemon[event.pokemonId] : undefined;
-      const source = cells.find(cell => cell.dataset.teamName === actor?.teamName && Number(cell.dataset.position) === actor?.position)
-        ?.querySelector('.arena-sprite')?.getBoundingClientRect();
-      const origin = source ? { x: source.left + source.width / 2 - rect.left, y: source.top + source.height / 2 - rect.top } : undefined;
+      const origin = geometry.at(actor)?.center;
       placements = tiles.flatMap(tile => {
-        const cell = cells.find(cell => cell.dataset.teamName === tile.teamName && Number(cell.dataset.position) === tile.position);
-        if (!cell) return [];
-        const box = cell.getBoundingClientRect(), anchor = cell.querySelector('.arena-sprite')?.getBoundingClientRect() || box;
-        const compact = box.width < 100;
-        return [{ x: anchor.left + anchor.width / 2 - rect.left, y: anchor.top + anchor.height / 2 - rect.top,
-          radius: Math.min(box.width * (compact ? .29 : .36), box.height * (compact ? .43 : .52)),
-          seed: tileVfxSeed(event, tile), origin }];
+        const placement = geometry.at(tile);
+        return placement ? [{ ...placement.center, radius: placement.radius, seed: tileVfxSeed(event, tile), origin }] : [];
       });
     };
     const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);

@@ -4,6 +4,9 @@
 battle screen use the same playback module and renderers. No tuning panel is
 required: edit settings and replay the relevant story.
 
+Floating labels follow the [arena design guide](../../../../docs/arena-design-guide.md).
+Their anchors share `../arena/geometry.ts` with movement and tile VFX.
+
 ## Settings
 
 - `text`: lifetime, rise distance, entry scale, fade fractions, easing, font sizes,

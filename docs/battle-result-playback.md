@@ -66,10 +66,12 @@ place; cures use a clearing ring. Buff gains send red chevrons upward with red l
 chevrons downward, and neutral gains pulse gold. Effect loss has text/state
 updates without VFX or badge pulses. Miss events sidestep and return with short trails. Damage
 flashes/recoils, healing emits plus particles, and fainting drops/fades the
-sprite while leaving its card readable. Duration ticks do not replay
+sprite while leaving its floating HUD readable. Duration ticks do not replay
 status/effect gain/loss reactions. Canonical reconciliation uses
 the same reactions. Skip, reduced motion and unmount dispose all transient work.
-No generated artwork or approved move VFX recipes were changed.
+Field labels use the outlined text and square central banner defined in the
+[arena design guide](arena-design-guide.md). Geometry is shared with movement
+and tile VFX. No generated artwork or approved move VFX recipes were changed.
 
 The log is uncapped for the current session. A [Virtua](https://github.com/inokawa/virtua)
 list lazily renders visible rows and overscan, with dynamic height measurement
