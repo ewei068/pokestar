@@ -44,6 +44,8 @@ const eventNames = Object.freeze({
   DURABLE_BATTLE_MOVE: "durableMove",
   DURABLE_BATTLE_TARGET: "durableTarget",
   DURABLE_BATTLE_SKIP: "durableSkip",
+  DURABLE_BATTLE_CONFIRM: "durableConfirm",
+  DURABLE_BATTLE_INFO: "durableInfo",
   BANNER_SCROLL: "bannerScroll",
   BANNER_BUTTON: "bannerButton",
   BANNER_GACHA: "bannerGacha",
@@ -303,6 +305,16 @@ const eventConfig = {
   },
   [eventNames.DURABLE_BATTLE_TARGET]: {
     name: "Continue Battle Target",
+    execute: "durableBattle.js",
+    directory: "battle",
+  },
+  [eventNames.DURABLE_BATTLE_CONFIRM]: {
+    name: "Continue Battle Confirm",
+    execute: "durableBattle.js",
+    directory: "battle",
+  },
+  [eventNames.DURABLE_BATTLE_INFO]: {
+    name: "Continue Battle Info",
     execute: "durableBattle.js",
     directory: "battle",
   },
