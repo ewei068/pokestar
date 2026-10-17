@@ -13,6 +13,7 @@ import type { VfxLabSelection, VfxLabType, VfxLabPattern } from "./vfxLab";
 import { standardVfxTypes } from "../vfx/types";
 import type { VfxKind } from "../vfx/types";
 import "./story.css";
+import { ArenaPrototype, arenaPrototypeEnabled } from "./arena-prototype/ArenaPrototype";
 
 const requestedStory = new URLSearchParams(window.location.search).get("story");
 const initialLabSelection = readVfxLabSelection(new URLSearchParams(window.location.search));
@@ -88,12 +89,21 @@ export const BattleScreenPreview = () => {
     setLabSelection(next);
     setStory(makeBattleStory("vfx", next));
     setReplayKey(current => current + 1);
-    window.history.replaceState(null, "", vfxLabUrl(next));
+    const url = new URL(vfxLabUrl(next), window.location.href);
+    if (arenaPrototypeEnabled) {
+      url.searchParams.set('arenaPrototype', '1');
+      url.searchParams.set('variant', new URLSearchParams(window.location.search).get('variant') || 'A');
+    }
+    window.history.replaceState(null, "", url);
   };
 
-  return <div className="battle-story-page">
+  const content = <div className="battle-story-page">
     <section className="battle-story-toolbar" aria-label="Battle story controls">
       <div><strong>Battle UI stories</strong><span>Development data · no server actions</span></div>
+      {arenaPrototypeEnabled && <label className="arena-prototype-scenario">Scenario <select aria-label="Arena prototype scenario" value={story.id} onChange={event => {
+        const url = new URL(window.location.href); url.searchParams.set('story', event.target.value); window.location.assign(url.href);
+      }}>{storyGroups.map(group => <optgroup key={group.title} label={group.title}>{group.stories.map(definition =>
+        <option key={definition.id} value={definition.id}>{definition.title}</option>)}</optgroup>)}</select></label>}
       <nav aria-label="Story scenarios">{storyGroups.map((group) =>
         <div className="battle-story-nav-group" key={group.title}><strong>{group.title}</strong>
           <span>{group.stories.map((definition) =>
@@ -125,4 +135,5 @@ export const BattleScreenPreview = () => {
     </section>
     <StoryScreen key={`${story.id}-${replayKey}`} story={story} />
   </div>;
+  return arenaPrototypeEnabled ? <ArenaPrototype>{content}</ArenaPrototype> : content;
 };
