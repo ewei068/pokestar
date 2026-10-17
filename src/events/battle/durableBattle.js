@@ -4,7 +4,10 @@ const {
   renderBattleList,
   renderBattle,
   renderTargetSelection,
+  renderBattleInfo,
 } = require("../../battle/discord/durableBattleMessages");
+
+const { getTrainerFromId } = require("../../services/trainer");
 
 const durableBattle = async (interaction, data) => {
   const service = await getDurableBattleService();
@@ -20,6 +23,18 @@ const durableBattle = async (interaction, data) => {
     case eventNames.DURABLE_BATTLE_REFRESH:
       send = await renderBattle(service, data.b, userId);
       break;
+    case eventNames.DURABLE_BATTLE_INFO:
+      send = await renderBattleInfo(
+        service,
+        data.b,
+        userId,
+        data.r,
+        data.t,
+        data.i,
+        interaction.message,
+      );
+      if (send.err) return send;
+      break;
     case eventNames.DURABLE_BATTLE_MOVE:
       send = await renderTargetSelection(
         service,
@@ -30,15 +45,49 @@ const durableBattle = async (interaction, data) => {
       );
       break;
     case eventNames.DURABLE_BATTLE_SKIP:
-    case eventNames.DURABLE_BATTLE_TARGET: {
-      const action =
-        data.eventName === eventNames.DURABLE_BATTLE_SKIP
-          ? { action: "skipTurn" }
-          : {
-              action: "useMove",
-              moveId: data.m,
-              targetPokemonId: interaction.values[0],
-            };
+    case eventNames.DURABLE_BATTLE_TARGET:
+    case eventNames.DURABLE_BATTLE_CONFIRM: {
+      let action = { action: "skipTurn" };
+      if (data.eventName !== eventNames.DURABLE_BATTLE_SKIP) {
+        const current = await service.get({ battleId: data.b, userId });
+        if (
+          !current.found ||
+          current.revision !== data.r ||
+          current.status !== "active"
+        ) {
+          send = await renderBattle(service, data.b, userId);
+          break;
+        }
+        const source = current.view.pokemon[current.view.activePokemonId];
+        // New IDs carry revision-scoped ordinals; accept move IDs on older messages too.
+        const moveId =
+          typeof data.m === "number"
+            ? Object.keys(source?.moveIds || {})[data.m]
+            : data.m;
+        const targetId =
+          data.eventName === eventNames.DURABLE_BATTLE_CONFIRM
+            ? Object.keys(current.view.pokemon)[data.t]
+            : interaction.values[0];
+        if (!moveId || !targetId) {
+          send = await renderBattle(service, data.b, userId);
+          break;
+        }
+        if (data.eventName === eventNames.DURABLE_BATTLE_TARGET) {
+          const { data: trainer } = await getTrainerFromId(userId);
+          if (trainer?.settings?.showTargetIndicator !== false) {
+            send = await renderTargetSelection(
+              service,
+              data.b,
+              userId,
+              data.r,
+              moveId,
+              targetId,
+            );
+            break;
+          }
+        }
+        action = { action: "useMove", moveId, targetPokemonId: targetId };
+      }
       const outcome = await service.act({
         battleId: data.b,
         userId,
