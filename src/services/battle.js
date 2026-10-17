@@ -364,13 +364,32 @@ const processBattleCompletionRewards = async (battle, { strict = false } = {}) =
 /**
  * @param {Battle} battle
  * @param {string} stateId
+ * @param {object|null=} context
  */
-const getStartTurnSend = async (battle, stateId) => {
+const getStartTurnSend = async (battle, stateId, context = null) => {
   // clip log to last 20 lines
   if (battle.log.length > 20) {
     battle.log = battle.log.slice(battle.log.length - 20);
   }
   let content = battle.log.join("\n");
+  if (context?.durable) {
+    const { record } = context;
+    content = [
+      context.rejection
+        ? `Action was not accepted (${context.rejection}). Refreshed to the current battle.`
+        : null,
+      record.completionStatus === "failed"
+        ? "Reward processing needs manual review. Your battle result is saved."
+        : null,
+      record.completionStatus === "processing"
+        ? "Battle rewards are being processed."
+        : null,
+      record.completionSummary?.slice(0, 300),
+      (record.actions.at(-1)?.log || []).slice(-8).join("\n").slice(0, 1500),
+    ]
+      .filter(Boolean)
+      .join("\n");
+  }
 
   // get current user, or first other user if NPC
   let activeUserId = battle.activePokemon.userId;
@@ -394,10 +413,20 @@ const getStartTurnSend = async (battle, stateId) => {
 
   battle.clearLog();
   const components = [];
-  if (!battle.ended) {
+  const readOnly =
+    context?.durable &&
+    (context.record.status !== "active" ||
+      battle.activePokemon?.userId !== context.userId);
+  if (readOnly && !battle.ended) {
+    components.push(
+      buildBattleInfoActionRow(battle, stateId, { refreshOnly: true }),
+    );
+  } else if (!battle.ended) {
     // TODO: stop button?
     if (!battle.autoData.isAutoMode) {
-      const infoRow = buildBattleInfoActionRow(battle, stateId, {});
+      const infoRow = buildBattleInfoActionRow(battle, stateId, {
+        showAutoBattle: !context?.durable,
+      });
       components.push(infoRow);
 
       // check if active pokemon can move
@@ -413,15 +442,20 @@ const getStartTurnSend = async (battle, stateId) => {
       }
     }
   } else {
-    content += await processBattleCompletionRewards(battle);
-
-    // re-add log to content
-    content += `\n${battle.log.join("\n")}`;
+    if (!context?.durable) {
+      content += await processBattleCompletionRewards(battle);
+      // Legacy completion may add rewards to its local log. Durable completion is claimed by the service.
+      content += `\n${battle.log.join("\n")}`;
+    }
 
     // if state has an NPC id, add a replay button
-    const state = getState(stateId);
+    const state = context?.state || getState(stateId);
     if (state && state.endBattleComponents) {
       components.push(...state.endBattleComponents);
+    } else if (context?.durable) {
+      components.push(
+        buildBattleInfoActionRow(battle, stateId, { refreshOnly: true }),
+      );
     } else {
       deleteState(stateId);
     }
@@ -754,7 +788,7 @@ const buildPveSend = async ({
         mode: { type: "pve", npcId: state.npcId, difficulty: state.difficulty },
       });
       state.durableBattleId = started.battleId;
-      battleSend = await renderBattle(durableService, started.battleId, user.id);
+      battleSend = await renderBattle(durableService, started.battleId, user.id, { stateId });
     } else {
       battle.start();
       state.battle = battle;
@@ -974,7 +1008,7 @@ const buildDungeonSend = async ({
         },
       });
       state.durableBattleId = started.battleId;
-      battleSend = await renderBattle(durableService, started.battleId, user.id);
+      battleSend = await renderBattle(durableService, started.battleId, user.id, { stateId });
     } else {
       battle.start();
       state.battle = battle;
@@ -1152,7 +1186,7 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
       mode: { type: "tower", stage: towerStage },
     });
     state.durableBattleId = started.battleId;
-    battleSend = await renderBattle(durableService, started.battleId, user.id);
+    battleSend = await renderBattle(durableService, started.battleId, user.id, { stateId });
   } else {
     battle.start();
     state.battle = battle;

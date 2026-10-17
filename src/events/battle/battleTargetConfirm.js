@@ -4,7 +4,11 @@
  *
  * battleTargetSelect.js Gets the relevant data for the target selection for the user and calculates the results of the choice.
  */
-const { getState } = require("../../services/state");
+const {
+  loadBattleContext,
+  refreshBattleIfStale,
+  submitBattleAction,
+} = require("../../battle/discord/battleContext");
 const { getStartTurnSend } = require("../../services/battle");
 const {
   getCurrentTargetting,
@@ -35,13 +39,17 @@ const getMoveAndTargetIds = (state) => {
  */
 const battleTargetSelect = async (interaction, data) => {
   // get state
-  const state = getState(data.stateId);
+  const context = await loadBattleContext(data, interaction);
+  const state = context?.state;
   if (!state) {
     await interaction.update({
       components: [],
     });
     return { err: "This interaction has expired." };
   }
+
+  if (await refreshBattleIfStale(context, interaction))
+    return { skipInteractionRewards: true };
 
   // get battle
   const { battle } = state;
@@ -65,17 +73,16 @@ const battleTargetSelect = async (interaction, data) => {
     return { err };
   }
 
-  // use move on target
-  // TODO: do something with result?
-  battle.performAction({
+  const next = await submitBattleAction(context, interaction, {
     action: "useMove",
     moveId,
     targetPokemonId: targetId,
   });
-
-  const send = await getStartTurnSend(battle, data.stateId);
+  if (!next) return { err: "Battle unavailable." };
+  const send = await getStartTurnSend(next.battle, next.stateId, next);
   clearCurrentTargetting(state);
   await interaction.update(send);
+  return { skipInteractionRewards: context.durable };
 };
 
 module.exports = battleTargetSelect;

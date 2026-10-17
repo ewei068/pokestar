@@ -53,6 +53,6 @@ describe("PvE durable start", () => {
     });
     expect(state.durableBattleId).toBe("pve-1");
     expect(state.battle).toBeUndefined();
-    expect(renderBattle).toHaveBeenCalledWith(service, "pve-1", trainer.trainer.userId);
+    expect(renderBattle).toHaveBeenCalledWith(service, "pve-1", trainer.trainer.userId, { stateId: "menu" });
   });
 });

@@ -5,7 +5,11 @@
  * battleTargetSelect.js Gets the relevant data for the target selection for the user and calculates the results of the choice.
  */
 const { ButtonStyle, ActionRowBuilder } = require("discord.js");
-const { getState } = require("../../services/state");
+const {
+  loadBattleContext,
+  refreshBattleIfStale,
+  submitBattleAction,
+} = require("../../battle/discord/battleContext");
 const { getStartTurnSend } = require("../../services/battle");
 const { logger } = require("../../log");
 const { stageNames } = require("../../config/stageConfig");
@@ -45,13 +49,18 @@ const getMoveAndTargetIds = (interaction, data) => {
  */
 const battleTargetSelect = async (interaction, data) => {
   // get state
-  const state = getState(data.stateId);
+  const context = await loadBattleContext(data, interaction);
+  const state = context?.state;
   if (!state) {
     await interaction.update({
       components: [],
     });
     return { err: "This interaction has expired." };
   }
+
+  if (await refreshBattleIfStale(context, interaction))
+    return { skipInteractionRewards: true };
+  const { stateId } = context;
 
   // get battle
   const { battle } = /** @type {{ battle: Battle }} */ (state);
@@ -77,41 +86,39 @@ const battleTargetSelect = async (interaction, data) => {
 
   // if skip turn, skip turn
   if (data.skipTurn || trainer?.settings?.showTargetIndicator === false) {
-    if (data.skipTurn) {
-      // if npc turn. have npc use move
-      if (battle.isNpc(battle.activePokemon.userId)) {
-        const npc = state.npcs[battle.activePokemon.userId];
-        if (!npc) {
-          logger.error(`No NPC found for user ${battle.activePokemon.userId}`);
-          battle.performAction({ action: "skipTurn" });
-        }
-        npc.action(battle);
-      } else {
+    let next = context;
+    if (
+      data.skipTurn &&
+      !context.durable &&
+      battle.isNpc(battle.activePokemon.userId)
+    ) {
+      const npc = state.npcs[battle.activePokemon.userId];
+      if (!npc) {
+        logger.error(`No NPC found for user ${battle.activePokemon.userId}`);
         battle.performAction({ action: "skipTurn" });
-      }
-      // TODO: setting to disable target confirmation
+      } else npc.action(battle);
     } else {
-      const { moveId, targetId, err } = getMoveAndTargetIds(interaction, data);
-      if (err) {
-        return { err };
+      let action = { action: "skipTurn" };
+      if (!data.skipTurn) {
+        const { moveId, targetId, err } = getMoveAndTargetIds(
+          interaction,
+          data,
+        );
+        if (err) return { err };
+        action = { action: "useMove", moveId, targetPokemonId: targetId };
       }
-
-      // use move on target
-      // TODO: do something with result?
-      battle.performAction({
-        action: "useMove",
-        moveId,
-        targetPokemonId: targetId,
-      });
+      next = await submitBattleAction(context, interaction, action);
+      if (!next) return { err: "Battle unavailable." };
     }
-    const send = await getStartTurnSend(battle, data.stateId);
+    const send = await getStartTurnSend(next.battle, next.stateId, next);
 
     const end = Date.now();
     if (process.env.STAGE === stageNames.ALPHA) {
       logger.info(`Execution time: ${end - start} ms`);
     }
 
-    return await interaction.update(send);
+    await interaction.update(send);
+    return { skipInteractionRewards: context.durable };
   }
 
   const { moveId, targetId, err } = getMoveAndTargetIds(interaction, data);
@@ -122,7 +129,7 @@ const battleTargetSelect = async (interaction, data) => {
   // find valid targets for move
   const targets = battle.getEligibleTargets(battle.activePokemon, moveId);
   // if no targets, return error
-  if (targets.length === 0) {
+  if (!targets.some((target) => target.id === targetId)) {
     return { err: "No eligible targets! Choose another move." };
   }
 
@@ -141,7 +148,7 @@ const battleTargetSelect = async (interaction, data) => {
     battle,
     targets,
     moveId,
-    data.stateId,
+    stateId,
     targetId,
   );
 
@@ -150,7 +157,7 @@ const battleTargetSelect = async (interaction, data) => {
     "Confirm",
     "⚔️",
     {
-      stateId: data.stateId,
+      stateId,
     },
     ButtonStyle.Success,
     false,
@@ -182,6 +189,7 @@ const battleTargetSelect = async (interaction, data) => {
       // @ts-ignore
       .concat(confirmButtonActionRow),
   });
+  return { skipInteractionRewards: context.durable };
 };
 
 module.exports = battleTargetSelect;
