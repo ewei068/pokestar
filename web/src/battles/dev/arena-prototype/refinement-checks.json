@@ -1,0 +1,800 @@
+{
+  "results": [
+    {
+      "width": 1440,
+      "height": 1000,
+      "overflow": false,
+      "boardHeight": 574,
+      "radius": "0px",
+      "border": "2px",
+      "backgroundSize": "auto, cover",
+      "mons": [
+        {
+          "name": "Typhlosion of the Endless Horizon",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 0.9999995845300599,
+          "meterBorder": "1px",
+          "footError": -0.0017741521199354793,
+          "centerError": -0.0079345703125,
+          "headGap": 20.15787124633789
+        },
+        {
+          "name": "Lucario",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 0.9999995845300599,
+          "meterBorder": "1px",
+          "footError": -0.0017751057942518855,
+          "centerError": -0.0078125,
+          "headGap": 26.278966585795104
+        },
+        {
+          "name": "Dragonite",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": -0.00201416015625,
+          "centerError": -0.007568359375,
+          "headGap": 13.27142333984375
+        },
+        {
+          "name": "Gardevoir",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": -0.00201416015625,
+          "centerError": -0.0079345703125,
+          "headGap": 18.62738037109375
+        },
+        {
+          "name": "Lapras",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 0.9999995845300599,
+          "meterBorder": "1px",
+          "footError": -0.0020189285278320312,
+          "centerError": -0.0078125,
+          "headGap": 23.983311653137207
+        },
+        {
+          "name": "Umbreon",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 0.9999995845300599,
+          "meterBorder": "1px",
+          "footError": -0.0022656122843613957,
+          "centerError": -0.0078125,
+          "headGap": 35.46012051900226
+        },
+        {
+          "name": "Snorlax",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": -0.00225830078125,
+          "centerError": -0.008056640625,
+          "headGap": 23.21795654296875
+        },
+        {
+          "name": "Gengar",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 0.9999995845300599,
+          "meterBorder": "1px",
+          "footError": -0.0022646586100449895,
+          "centerError": -0.008056640625,
+          "headGap": 31.63443628946942
+        },
+        {
+          "name": "Arcanine",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 0.9999995845300599,
+          "meterBorder": "1px",
+          "footError": -0.002262751261412177,
+          "centerError": -0.0078125,
+          "headGap": 21.68765672047931
+        },
+        {
+          "name": "Tyranitar with a Remarkably Long Name",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": -0.00177001953125,
+          "centerError": -0.0079345703125,
+          "headGap": 16.33221435546875
+        },
+        {
+          "name": "Roserade",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": -0.00177001953125,
+          "centerError": -0.0079345703125,
+          "headGap": 30.10467529296875
+        },
+        {
+          "name": "Typhlosion",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 0.9999995845300599,
+          "meterBorder": "1px",
+          "footError": -0.0017741521199354793,
+          "centerError": -0.0079345703125,
+          "headGap": 20.15787124633789
+        },
+        {
+          "name": "Lapras",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": -0.00201416015625,
+          "centerError": -0.0078125,
+          "headGap": 23.98333740234375
+        },
+        {
+          "name": "Snorlax",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": -0.00225830078125,
+          "centerError": -0.008056640625,
+          "headGap": 23.21795654296875
+        }
+      ],
+      "highlight": {
+        "platform": "brightness(1.2) drop-shadow(rgb(255, 244, 199) 0px 0px 2px)",
+        "sprite": "brightness(1.18) drop-shadow(rgb(255, 244, 199) 0px 0px 1px) drop-shadow(rgb(255, 244, 199) 0px 0px 2px)"
+      }
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "overflow": false,
+      "boardHeight": 492.0625,
+      "radius": "0px",
+      "border": "2px",
+      "backgroundSize": "auto, cover",
+      "mons": [
+        {
+          "name": "Typhlosion of the Endless Horizon",
+          "ratio": 0.7,
+          "platformRatio": 2.0004320204711235,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.0022606282552146695,
+          "centerError": -0.007914225260435614,
+          "headGap": 11.812957763671875
+        },
+        {
+          "name": "Lucario",
+          "ratio": 0.7,
+          "platformRatio": 2.0004320204711235,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.0022606282552146695,
+          "centerError": -0.0078125,
+          "headGap": 16.95488484700519
+        },
+        {
+          "name": "Dragonite",
+          "ratio": 0.7,
+          "platformRatio": 2.0004320204711235,
+          "imageRatio": 1.0000004945874819,
+          "meterBorder": "1px",
+          "footError": 0.0020295211792245027,
+          "centerError": -0.0076090494791856145,
+          "headGap": 6.028084119160951
+        },
+        {
+          "name": "Gardevoir",
+          "ratio": 0.7,
+          "platformRatio": 2.0004320204711235,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.002026660156275284,
+          "centerError": -0.007914225260435614,
+          "headGap": 10.527242024739621
+        },
+        {
+          "name": "Lapras",
+          "ratio": 0.7,
+          "platformRatio": 2.0004320204711235,
+          "imageRatio": 1.0000004945874819,
+          "meterBorder": "1px",
+          "footError": 0.002031428527857315,
+          "centerError": -0.0078125,
+          "headGap": 15.026453971862793
+        },
+        {
+          "name": "Umbreon",
+          "ratio": 0.7,
+          "platformRatio": 2.0004320204711235,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.0018232096354608984,
+          "centerError": -0.0078125,
+          "headGap": 24.667338053385436
+        },
+        {
+          "name": "Snorlax",
+          "ratio": 0.7,
+          "platformRatio": 2.0004320204711235,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.001823209635404055,
+          "centerError": -0.008015950520828596,
+          "headGap": 14.38348388671875
+        },
+        {
+          "name": "Gengar",
+          "ratio": 0.7,
+          "platformRatio": 2.0004320204711235,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.0018232096354608984,
+          "centerError": -0.008015950520814386,
+          "headGap": 21.453633626302064
+        },
+        {
+          "name": "Arcanine",
+          "ratio": 0.7,
+          "platformRatio": 2.0004320204711235,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.0018232096354608984,
+          "centerError": -0.0078125,
+          "headGap": 13.098002115885436
+        },
+        {
+          "name": "Tyranitar with a Remarkably Long Name",
+          "ratio": 0.7,
+          "platformRatio": 2.0004320204711235,
+          "imageRatio": 1.0000004945874819,
+          "meterBorder": "1px",
+          "footError": 0.0022332895914587425,
+          "centerError": -0.007914225260435614,
+          "headGap": 8.599250157674192
+        },
+        {
+          "name": "Roserade",
+          "ratio": 0.7,
+          "platformRatio": 2.0004320204711235,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.002230110677146513,
+          "centerError": -0.007914225260435614,
+          "headGap": 20.16855875651038
+        },
+        {
+          "name": "Typhlosion",
+          "ratio": 0.7,
+          "platformRatio": 2.0004320204711235,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.0022606282552146695,
+          "centerError": -0.007914225260378771,
+          "headGap": 11.812957763671875
+        },
+        {
+          "name": "Lapras",
+          "ratio": 0.7,
+          "platformRatio": 2.0004320204711235,
+          "imageRatio": 1.0000004945874819,
+          "meterBorder": "1px",
+          "footError": 0.002031428527857315,
+          "centerError": -0.0078125,
+          "headGap": 15.026453971862793
+        },
+        {
+          "name": "Snorlax",
+          "ratio": 0.7,
+          "platformRatio": 2.0004320204711235,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.001823209635404055,
+          "centerError": -0.008015950520871229,
+          "headGap": 14.38348388671875
+        }
+      ],
+      "highlight": {
+        "platform": "brightness(1.2) drop-shadow(rgb(255, 244, 199) 0px 0px 2px)",
+        "sprite": "brightness(1.18) drop-shadow(rgb(255, 244, 199) 0px 0px 1px) drop-shadow(rgb(255, 244, 199) 0px 0px 2px)"
+      }
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "boardHeight": 574,
+      "radius": "0px",
+      "border": "2px",
+      "backgroundSize": "auto, cover",
+      "mons": [
+        {
+          "name": "Typhlosion of the Endless Horizon",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 0.9999995845300599,
+          "meterBorder": "1px",
+          "footError": -0.0017741521199354793,
+          "centerError": -0.0079345703125,
+          "headGap": 20.15787124633789
+        },
+        {
+          "name": "Lucario",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 0.9999995845300599,
+          "meterBorder": "1px",
+          "footError": -0.0017751057942518855,
+          "centerError": -0.0078125,
+          "headGap": 26.278966585795104
+        },
+        {
+          "name": "Dragonite",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": -0.00201416015625,
+          "centerError": -0.007568359375,
+          "headGap": 13.27142333984375
+        },
+        {
+          "name": "Gardevoir",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": -0.00201416015625,
+          "centerError": -0.0079345703125,
+          "headGap": 18.62738037109375
+        },
+        {
+          "name": "Lapras",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 0.9999995845300599,
+          "meterBorder": "1px",
+          "footError": -0.0020189285278320312,
+          "centerError": -0.0078125,
+          "headGap": 23.983311653137207
+        },
+        {
+          "name": "Umbreon",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 0.9999995845300599,
+          "meterBorder": "1px",
+          "footError": -0.0022656122843613957,
+          "centerError": -0.0078125,
+          "headGap": 35.46012051900226
+        },
+        {
+          "name": "Snorlax",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": -0.00225830078125,
+          "centerError": -0.008056640625,
+          "headGap": 23.21795654296875
+        },
+        {
+          "name": "Gengar",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 0.9999995845300599,
+          "meterBorder": "1px",
+          "footError": -0.0022646586100449895,
+          "centerError": -0.008056640625,
+          "headGap": 31.63443628946942
+        },
+        {
+          "name": "Arcanine",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 0.9999995845300599,
+          "meterBorder": "1px",
+          "footError": -0.002262751261412177,
+          "centerError": -0.0078125,
+          "headGap": 21.68765672047931
+        },
+        {
+          "name": "Tyranitar with a Remarkably Long Name",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": -0.00177001953125,
+          "centerError": -0.0079345703125,
+          "headGap": 16.33221435546875
+        },
+        {
+          "name": "Roserade",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": -0.00177001953125,
+          "centerError": -0.0079345703125,
+          "headGap": 30.10467529296875
+        },
+        {
+          "name": "Typhlosion",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 0.9999995845300599,
+          "meterBorder": "1px",
+          "footError": -0.0017741521199354793,
+          "centerError": -0.0079345703125,
+          "headGap": 20.15787124633789
+        },
+        {
+          "name": "Lapras",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": -0.00201416015625,
+          "centerError": -0.0078125,
+          "headGap": 23.98333740234375
+        },
+        {
+          "name": "Snorlax",
+          "ratio": 0.7000366255646441,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": -0.00225830078125,
+          "centerError": -0.008056640625,
+          "headGap": 23.21795654296875
+        }
+      ],
+      "highlight": {
+        "platform": "brightness(1.2) drop-shadow(rgb(255, 244, 199) 0px 0px 2px)",
+        "sprite": "brightness(1.18) drop-shadow(rgb(255, 244, 199) 0px 0px 1px) drop-shadow(rgb(255, 244, 199) 0px 0px 2px)"
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "boardHeight": 470,
+      "radius": "0px",
+      "border": "2px",
+      "backgroundSize": "auto, cover",
+      "mons": [
+        {
+          "name": "Typhlosion of the Endless Horizon",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1.0000006231613279,
+          "meterBorder": "1px",
+          "footError": 0.009851137796999865,
+          "centerError": -0.00008835395176731708,
+          "headGap": 7.107204437255859
+        },
+        {
+          "name": "Lucario",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1.0000005539211803,
+          "meterBorder": "1px",
+          "footError": 0.009852091471316271,
+          "centerError": 0,
+          "headGap": 11.698348681132018
+        },
+        {
+          "name": "Dragonite",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 0.99999916911915,
+          "meterBorder": "1px",
+          "footError": 0.009701728820800781,
+          "centerError": 0.00018024444580078125,
+          "headGap": 1.9419679641723633
+        },
+        {
+          "name": "Gardevoir",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 0.9999994460794334,
+          "meterBorder": "1px",
+          "footError": 0.009700775146484375,
+          "centerError": -0.00010172526043561447,
+          "headGap": 5.959221839904785
+        },
+        {
+          "name": "Lapras",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.00970458984375,
+          "centerError": 0,
+          "headGap": 9.97650146484375
+        },
+        {
+          "name": "Umbreon",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.009501139322878771,
+          "centerError": 0,
+          "headGap": 18.58469645182288
+        },
+        {
+          "name": "Snorlax",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1.0000002769604368,
+          "meterBorder": "1px",
+          "footError": 0.009501139322878771,
+          "centerError": -0.0001804033915107084,
+          "headGap": 9.40240478515625
+        },
+        {
+          "name": "Gengar",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 0.9999999307598908,
+          "meterBorder": "1px",
+          "footError": 0.009501139322935614,
+          "centerError": -0.0001862049102783203,
+          "headGap": 15.715230305989564
+        },
+        {
+          "name": "Arcanine",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.009501139322935614,
+          "centerError": 0,
+          "headGap": 8.254618326822936
+        },
+        {
+          "name": "Tyranitar with a Remarkably Long Name",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 0.9999997230395632,
+          "meterBorder": "1px",
+          "footError": 0.009877522786439386,
+          "centerError": -0.00009417533874511719,
+          "headGap": 4.237742106119811
+        },
+        {
+          "name": "Roserade",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.009877522786439386,
+          "centerError": -0.00010172526043561447,
+          "headGap": 14.56782023111981
+        },
+        {
+          "name": "Typhlosion",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1.0000001384802184,
+          "meterBorder": "1px",
+          "footError": 0.009877522786439386,
+          "centerError": -0.0000902414321899414,
+          "headGap": 7.107208251953125
+        },
+        {
+          "name": "Lapras",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 0.9999997230396399,
+          "meterBorder": "1px",
+          "footError": 0.009702205657958984,
+          "centerError": 0,
+          "headGap": 9.976488590240479
+        },
+        {
+          "name": "Snorlax",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.009501139322935614,
+          "centerError": -0.00017293294268938553,
+          "headGap": 9.40240478515625
+        }
+      ],
+      "highlight": {
+        "platform": "brightness(1.2) drop-shadow(rgb(255, 244, 199) 0px 0px 2px)",
+        "sprite": "brightness(1.18) drop-shadow(rgb(255, 244, 199) 0px 0px 1px) drop-shadow(rgb(255, 244, 199) 0px 0px 2px)"
+      }
+    },
+    {
+      "width": 320,
+      "height": 667,
+      "overflow": false,
+      "boardHeight": 470,
+      "radius": "0px",
+      "border": "2px",
+      "backgroundSize": "auto, cover",
+      "mons": [
+        {
+          "name": "Typhlosion of the Endless Horizon",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1.0000006924014755,
+          "meterBorder": "1px",
+          "footError": 0.009851137796999865,
+          "centerError": -0.0000883340835571289,
+          "headGap": 7.107204437255859
+        },
+        {
+          "name": "Lucario",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1.0000005539211803,
+          "meterBorder": "1px",
+          "footError": 0.009852091471316271,
+          "centerError": 0,
+          "headGap": 11.698348681132018
+        },
+        {
+          "name": "Dragonite",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 0.9999994460794334,
+          "meterBorder": "1px",
+          "footError": 0.009701728820800781,
+          "centerError": 0.00018819173178030724,
+          "headGap": 1.9419679641723633
+        },
+        {
+          "name": "Gardevoir",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 0.99999916911915,
+          "meterBorder": "1px",
+          "footError": 0.009700775146484375,
+          "centerError": -0.00009417533874511719,
+          "headGap": 5.959221839904785
+        },
+        {
+          "name": "Lapras",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.00970458984375,
+          "centerError": 0,
+          "headGap": 9.97650146484375
+        },
+        {
+          "name": "Umbreon",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.009501139322878771,
+          "centerError": 0,
+          "headGap": 18.58469645182288
+        },
+        {
+          "name": "Snorlax",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.009501139322878771,
+          "centerError": -0.00018819173178030724,
+          "headGap": 9.40240478515625
+        },
+        {
+          "name": "Gengar",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 0.9999999307598908,
+          "meterBorder": "1px",
+          "footError": 0.009501139322935614,
+          "centerError": -0.0001862049102783203,
+          "headGap": 15.715230305989564
+        },
+        {
+          "name": "Arcanine",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.009501139322935614,
+          "centerError": 0,
+          "headGap": 8.254618326822936
+        },
+        {
+          "name": "Tyranitar with a Remarkably Long Name",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1,
+          "meterBorder": "1px",
+          "footError": 0.009877522786439386,
+          "centerError": -0.00008646647134469276,
+          "headGap": 4.237742106119811
+        },
+        {
+          "name": "Roserade",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 0.9999997230395632,
+          "meterBorder": "1px",
+          "footError": 0.009877522786439386,
+          "centerError": -0.00009417533874511719,
+          "headGap": 14.56782023111981
+        },
+        {
+          "name": "Typhlosion",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1.0000001384802184,
+          "meterBorder": "1px",
+          "footError": 0.009877522786439386,
+          "centerError": -0.0000902414321899414,
+          "headGap": 7.107208251953125
+        },
+        {
+          "name": "Lapras",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 0.9999994460794334,
+          "meterBorder": "1px",
+          "footError": 0.009699821472167969,
+          "centerError": 0,
+          "headGap": 9.976475715637207
+        },
+        {
+          "name": "Snorlax",
+          "ratio": 0.7000976880494952,
+          "platformRatio": 2,
+          "imageRatio": 1.0000002769604368,
+          "meterBorder": "1px",
+          "footError": 0.009501139322935614,
+          "centerError": -0.0001804033915391301,
+          "headGap": 9.40240478515625
+        }
+      ],
+      "highlight": {
+        "platform": "brightness(1.2) drop-shadow(rgb(255, 244, 199) 0px 0px 2px)",
+        "sprite": "brightness(1.18) drop-shadow(rgb(255, 244, 199) 0px 0px 1px) drop-shadow(rgb(255, 244, 199) 0px 0px 2px)"
+      }
+    },
+    {
+      "width": 1440,
+      "story": "result-sequence",
+      "settled": true
+    },
+    {
+      "width": 1440,
+      "story": "result-status-paralysis",
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-sequence",
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-status-paralysis",
+      "settled": true
+    }
+  ],
+  "errors": []
+}

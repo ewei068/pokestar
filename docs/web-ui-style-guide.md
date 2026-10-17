@@ -18,7 +18,8 @@ site shell and future non-battle pages consistent with that direction.
   an explicit inspect path on touch devices. Preserve readable text alongside
   icons and color.
 - **Game character.** Use Pokémon sprites, type colors, HP and readiness bars,
-  strong panel edges, and a small number of warm accents. Keep body text easy
+  strong panel edges, square corners, light offset shadows, and a small number
+  of warm accents. Keep body text easy
   to scan; reserve decorative treatment for headings, badges, and key events.
 - **Compact density.** Let related facts share a panel. Check long names, many
   effects, empty cells, and narrow screens before increasing panel size.

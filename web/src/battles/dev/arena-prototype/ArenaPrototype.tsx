@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import './arena-prototype.css';
+import './sprite-anchors.css';
 
 const variants = [
   { key: 'A', name: 'Floating HUD', description: 'Name + type above the bars. Status and effects beside the sprite.' },

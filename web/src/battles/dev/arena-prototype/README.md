@@ -21,20 +21,31 @@ reachable only through the existing development-only story entry.
 The live battle remains unchanged. This uses the production board, interaction
 callbacks, playback queue and renderers, with dev fixtures and CSS experiments.
 The logical rectangular rows/columns and responsive facing remain intact.
-Sprites use larger boxes (96 px desktop, 80 px phone); full names, actual HP/
+Visual units contain-fit a 7:10 rectangle into each allocated slot, so
+platforms, sprite canvases and spacing keep their proportions. Full names, actual HP/
 readiness values, types and effect details remain accessible through the
 existing hover/focus inspector. Platform rings carry active/target/area cues,
 including affected empty slots. No server writes occur in the stories.
 
-`grass-platform.png` is a new generated transparent ingredient. Brief: one
-muted tan/olive oval ground patch, classic handheld pixel art, simple silhouette,
-no characters/scenery/UI/backdrop, designed for roughly 100 CSS px display.
-The quiet field background is authored CSS so it can fit variable formations.
+The generated platform has been replaced by `pokemon-grass-base.png`, an
+existing transparent Pokémon battle-base asset from the Essentials collection.
+`battle-background.webp` is the ArtStation image supplied for this review.
+See [asset sources](ASSETS.md). The background uses centered `cover` cropping
+under a dim overlay; neither background nor platform is stretched.
+
+The native 256:128 platform canvas retains its alpha margins. Sprite foot
+anchors use measured nontransparent bounds of the fixture's original 96×96
+PNGs: their visible horizontal centers and feet align to the platform center.
+`sprite-anchors.css` applies the same offsets to stationary and moving images,
+leaving the source pixels unchanged. Slot container units cap growth on either
+axis and leave the other axis padded. HUD text stays readable rather than
+scaling below its minimum font sizes. Hover/focus highlights affect both
+platform and Pokémon. Bars have 1 px borders and no padded outer frame.
 
 This branch is review material, not a design decision. After a layout is
 chosen, rewrite/promote the winning presentation, optimize the platform asset,
 consolidate current repeated anchor measurement into an arena geometry module,
-and update the style guide. Preserve the other candidates on this prototype
+and generalize asset anchor metadata in the art pipeline. Preserve the other candidates on this prototype
 branch; avoid leaving them in the final production implementation.
 
 ## Prototype checks
@@ -50,3 +61,14 @@ slot's spare space. The inspector keeps full values/names accessible.
 Production type checking/build pass, and the production main JS/CSS chunks
 retain their preceding hashes and sizes. No prototype unit tests were added.
 Screenshots are comparison material; selection/approval is pending.
+
+## Floating HUD refinement
+
+`refinement-checks.json` records five viewport layouts (320–1440 px) and four
+complete result/status playback loops after feedback. Checked fixed visual-unit,
+platform and sprite aspect ratios, foot/center alignment within 0.6 CSS px,
+heads clear of the HUD, thin bar borders, square arena corners, center/cover
+background, and hover/focus highlights. No overflow or page errors. The phone
+arena is 470 px tall, down from 692 px in the original prototype (about 32%).
+Mobile review controls were also compacted so they don't consume the recovered
+space. These are prototype checks, not user visual approval.

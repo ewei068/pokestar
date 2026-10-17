@@ -1,0 +1,14 @@
+/* Prototype fixture art anchors, measured from nontransparent bounds of the source 96x96 PNGs.
+ * Preserve original pixels; apply the same offset to stationary and moving sprite images. */
+.arena-prototype:not([data-variant="C"]) :is(.arena-sprite, .arena-motion-actor) img[src$="/157.png"] { translate: -0.521% 0.542%; }
+.arena-prototype:not([data-variant="C"]) :is(.arena-sprite, .arena-motion-actor) img[src$="/448.png"] { translate: 0.0% 3.667%; }
+.arena-prototype:not([data-variant="C"]) :is(.arena-sprite, .arena-motion-actor) img[src$="/149.png"] { translate: -2.083% -3.625%; }
+.arena-prototype:not([data-variant="C"]) :is(.arena-sprite, .arena-motion-actor) img[src$="/282.png"] { translate: -0.521% -0.5%; }
+.arena-prototype:not([data-variant="C"]) :is(.arena-sprite, .arena-motion-actor) img[src$="/131.png"] { translate: -3.125% 2.625%; }
+.arena-prototype:not([data-variant="C"]) :is(.arena-sprite, .arena-motion-actor) img[src$="/197.png"] { translate: 0.0% 10.958%; }
+.arena-prototype:not([data-variant="C"]) :is(.arena-sprite, .arena-motion-actor) img[src$="/94.png"] { translate: 2.083% 7.833%; }
+.arena-prototype:not([data-variant="C"]) :is(.arena-sprite, .arena-motion-actor) img[src$="/59.png"] { translate: 0.0% 1.583%; }
+.arena-prototype:not([data-variant="C"]) :is(.arena-sprite, .arena-motion-actor) img[src$="/248.png"] { translate: -0.521% -2.583%; }
+.arena-prototype:not([data-variant="C"]) :is(.arena-sprite, .arena-motion-actor) img[src$="/407.png"] { translate: -0.521% 6.792%; }
+.arena-prototype:not([data-variant="C"]) :is(.arena-sprite, .arena-motion-actor) img[src$="/350.png"] { translate: 0.0% -2.583%; }
+.arena-prototype:not([data-variant="C"]) :is(.arena-sprite, .arena-motion-actor) img[src$="/143.png"] { translate: -1.042% 1.583%; }
