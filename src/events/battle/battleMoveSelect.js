@@ -11,7 +11,10 @@ const {
   buildSelectBattleTargetRow,
 } = require("../../components/selectBattleTargetRow");
 const { buildBattleEmbed } = require("../../embeds/battleEmbeds");
-const { getState } = require("../../services/state");
+const {
+  loadBattleContext,
+  refreshBattleIfStale,
+} = require("../../battle/discord/battleContext");
 const { getTrainer } = require("../../services/trainer");
 const { getUserSelectedDevice } = require("../../utils/trainerUtils");
 
@@ -22,13 +25,18 @@ const { getUserSelectedDevice } = require("../../utils/trainerUtils");
  */
 const battleMoveSelect = async (interaction, data) => {
   // get state
-  const state = getState(data.stateId);
+  const context = await loadBattleContext(data, interaction);
+  const state = context?.state;
   if (!state) {
     await interaction.update({
       components: [],
     });
     return { err: "This interaction has expired." };
   }
+
+  if (await refreshBattleIfStale(context, interaction))
+    return { skipInteractionRewards: true };
+  const { stateId } = context;
 
   // get battle
   const { battle } = state;
@@ -73,7 +81,7 @@ const battleMoveSelect = async (interaction, data) => {
     battle,
     targets,
     moveId,
-    data.stateId
+    stateId,
   );
 
   // TODO: change if position of menu changes
@@ -84,7 +92,7 @@ const battleMoveSelect = async (interaction, data) => {
 
   // pop move select menu and set default move
   interaction.message.components.pop();
-  const moveSelectMenu = buildSelectBattleMoveRow(battle, data.stateId, moveId);
+  const moveSelectMenu = buildSelectBattleMoveRow(battle, stateId, moveId);
 
   // pop first embed
   interaction.message.embeds.shift();
@@ -104,6 +112,7 @@ const battleMoveSelect = async (interaction, data) => {
       .concat(moveSelectMenu)
       .concat(targetSelectMenu),
   });
+  return { skipInteractionRewards: context.durable };
 };
 
 module.exports = battleMoveSelect;

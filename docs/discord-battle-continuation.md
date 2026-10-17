@@ -32,16 +32,41 @@ Confirmed moves and Next Turn submit through `BattleService`, with the Discord
 interaction ID as the idempotent request ID. NPC turns still resolve automatically
 as agreed for the shared battle lifecycle. The final state is the primary output.
 
-Menus carry battle ID and observed revision. Target/confirmation metadata uses
-revision-scoped move/target ordinals to fit Discord's 100-character custom-ID
-limit. Check the current revision **before** resolving those ordinals. Retain
-compatibility with older target menus that carry a move ID. The service remains
-authoritative for participation, turn ownership, legality and stale actions.
+The existing `battleMoveSelect`, `battleTargetSelect`, `battleTargetConfirm`
+and `battleInfo` handlers call `loadBattleContext` before using battle state.
+For durable battles, the loader checks participant access through the service,
+reads the current Mongo record and restores the engine on every interaction.
+The synchronous global `getState` API stays unchanged for other bot features.
+
+The existing component `stateId` carries a compact battle ID and observed
+revision. UUIDs are encoded as bytes to keep the original JSON component IDs
+within Discord's 100-character limit. Move and target menu values remain the
+original IDs. UI selections are recovered from the current message's selected
+menu defaults, so confirmation survives a restart and selections cannot leak
+between two messages showing the same battle revision.
+
+Only transient UI/mode context is cached locally; a cached battle snapshot is
+never authoritative. The loader returns a hydrated battle to the existing
+handler. Confirmed actions call `submitBattleAction`, which uses the shared
+service's revision check and interaction-ID deduplication, then reloads the
+record. The service remains authoritative for participation, turn ownership,
+legality and stale actions. Controls without a durable identity retain the
+original in-memory behavior while the feature flag is disabled.
 
 A stale selection/confirmation renders the current battle; a rejected submitted
 action also explains the rejection. Old messages may stay stale until pressed
 or refreshed. Completed and expired battles are read-only during their retention
-window. New durable component events award no per-click experience or money.
+window. Durable interactions suppress the original event handlers' per-click
+experience and money; completion rewards belong to the service and are never
+processed again by the Discord renderer.
+
+`getStartTurnSend` is the shared renderer for both paths. The continuation module
+only lists battles and opens this renderer. The old `durableMove`, `durableTarget`,
+`durableConfirm`, `durableSkip`, `durableRefresh` and `durableInfo` event names
+remain registered solely for messages posted before consolidation: pressing one
+refreshes into the existing controls and asks the player to select again. They
+do not execute the old action. `durablePick` and `durablePage` still serve the
+continuation list.
 
 The `DURABLE_BATTLES_ENABLED` flag controls the cutover in supported live battle
 starts (including PvE, PvP, dungeons and tower). Raids have a separate flag and
@@ -54,13 +79,20 @@ spends Dream Cards and mutates an in-memory battle; routing a durable message
 there would bypass the shared state. It needs a durable command covering the
 payment and action sequence. The current adapter omits that control, as before
 this UI repair. Track this explicitly rather than treating the Discord port as
-complete. Mode-specific result/replay controls also need a parity audit against
-the original battle messages.
+complete. Original mode-specific result/replay controls are preserved when their
+local menu context is still available. Reconstructing those controls after a
+restart remains follow-up work; the battle itself can still be continued.
 
 ## Verification
 
-`durableBattleMessages.test.js` checks hidden IDs, same-message selectors, selected
-values/icons, mobile formatting, component limits and read authorization.
-`events/battle/__tests__/durableBattle.test.js` exercises move → target preview →
-confirmation through the actual adapter and service, instant-action preferences,
-old-menu compatibility, stale confirmation safety and info-tab preservation.
+`battle/discord/__tests__/durableBattleMessages.test.js` checks the continuation
+entry point, original event names, hidden IDs, mobile formatting, component
+limits, pagination and authorization.
+`events/battle/__tests__/battleSession.test.js` exercises the original handlers
+through the real service and an in-memory Mongo collection double: move → target
+preview → confirmation, restart recovery, stale web/Discord controls, independent
+message selections, instant-action settings, info tabs, legacy fallback, expiry
+and once-only completion. `events/battle/__tests__/durableBattle.test.js` checks
+that deprecated controls refresh without submitting actions.
+`handlers/__tests__/battleInteractionRewards.test.js` checks that durable clicks
+suppress per-click rewards while legacy clicks retain their configured rewards.

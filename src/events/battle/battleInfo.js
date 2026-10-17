@@ -6,7 +6,10 @@
  *
  * battleInfo.js Grabs the battle info from the current state and updates the embeds with the relevant information.
  */
-const { getState } = require("../../services/state");
+const {
+  loadBattleContext,
+  refreshBattleIfStale,
+} = require("../../battle/discord/battleContext");
 
 const {
   buildBattleInfoActionRow,
@@ -22,11 +25,12 @@ const { logger } = require("../../log");
  * Grabs the battle info from the current state and updates the embeds with the relevant information.
  * @param {*} interaction the interaction from the trainer.
  * @param {*} data get the data from the interaction.
- * @returns
+ * @returns {Promise<object|undefined>}
  */
 const battleInfo = async (interaction, data) => {
   // get state
-  const state = getState(data.stateId);
+  const context = await loadBattleContext(data, interaction);
+  const state = context?.state;
   if (!state) {
     await interaction.update({
       components: [],
@@ -34,12 +38,20 @@ const battleInfo = async (interaction, data) => {
     return { err: "This interaction has expired." };
   }
 
+  if (await refreshBattleIfStale(context, interaction))
+    return { skipInteractionRewards: true };
+  const { stateId } = context;
+
   // get battle
   const { battle } = state;
   if (!battle) {
     return { err: "No battle data." };
   }
   const pokemon = battle.activePokemon;
+  if (context.durable && data.tab === "refresh") {
+    await interaction.update(await getStartTurnSend(battle, stateId, context));
+    return { skipInteractionRewards: context.durable };
+  }
 
   // if npc turn, anyone in battle can press buttons
   if (battle.isNpc(battle.activePokemon.userId)) {
@@ -87,14 +99,16 @@ const battleInfo = async (interaction, data) => {
       logger.info(battle);
     }
     // refresh battle display
-    await interaction.update(await getStartTurnSend(battle, data.stateId));
-    return;
+    await interaction.update(await getStartTurnSend(battle, stateId, context));
+    return { skipInteractionRewards: context.durable };
   } else if (tab === "auto") {
     // toggle auto mode
+    if (context.durable)
+      return { err: "Auto battle is not yet available for continued battles." };
     battle.autoData.isAutoMode = true;
     return await startAuto({
       battle,
-      stateId: data.stateId,
+      stateId,
       interaction,
       user: interaction.user,
     });
@@ -103,9 +117,10 @@ const battleInfo = async (interaction, data) => {
   }
 
   // rebuild component
-  const infoRow = buildBattleInfoActionRow(battle, data.stateId, {
+  const infoRow = buildBattleInfoActionRow(battle, stateId, {
     currentTab: tab,
     currentTeamIndex: nextTeamIndex,
+    showAutoBattle: !context.durable,
   });
   interaction.message.components[0] = infoRow;
 
@@ -113,6 +128,7 @@ const battleInfo = async (interaction, data) => {
     embeds: interaction.message.embeds,
     components: interaction.message.components,
   });
+  return { skipInteractionRewards: context.durable };
 };
 
 module.exports = battleInfo;

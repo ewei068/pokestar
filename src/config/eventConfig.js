@@ -40,6 +40,8 @@ const eventNames = Object.freeze({
   BATTLE_TARGET_CONFIRM: "battleTargetConfirm",
   DURABLE_BATTLE_PICK: "durablePick",
   DURABLE_BATTLE_PAGE: "durablePage",
+  // Deprecated action IDs: refresh already-posted messages into the BATTLE_* UI.
+  // New battle controls use the existing BATTLE_* handlers for both storage paths.
   DURABLE_BATTLE_REFRESH: "durableRefresh",
   DURABLE_BATTLE_MOVE: "durableMove",
   DURABLE_BATTLE_TARGET: "durableTarget",

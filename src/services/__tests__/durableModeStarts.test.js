@@ -64,6 +64,7 @@ describe("dungeon durable start", () => {
       service,
       "dungeon-1",
       trainer.trainer.userId,
+      { stateId: "menu" },
     );
   });
 });
