@@ -1,4 +1,6 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { measureArena } from "./arena/geometry";
+import { PokemonSprite } from "./arena/PokemonSprite";
+import { useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties, RefObject } from "react";
 import { MOVE_APPROACH_MS, TILE_EFFECT_MS, MOVE_TOTAL_MS } from "./vfx/timing";
 import { motionDestination, moveMotion } from "./motion";
@@ -15,13 +17,11 @@ export const BattleMotion = ({ boardRef, view, catalog, event, startedAt }: {
   startedAt: number;
 }) => {
   const [placement, setPlacement] = useState<Placement | null>(null);
-  const [imageFailed, setImageFailed] = useState(false);
   const actorRef = useRef<HTMLDivElement>(null);
   const motion = moveMotion(event, catalog);
   const source = event.pokemonId ? view.pokemon[event.pokemonId] : undefined;
   const species = source ? catalog.species[source.speciesId] : undefined;
   const sprite = source?.shiny ? species?.shinySprite : species?.sprite;
-  useEffect(() => setImageFailed(false), [sprite]);
 
   useLayoutEffect(() => {
     if (!source || !motion || motion.selfTarget) {
@@ -35,20 +35,12 @@ export const BattleMotion = ({ boardRef, view, catalog, event, startedAt }: {
       return;
     }
     const measure = () => {
-      const cells = Array.from(board.querySelectorAll<HTMLElement>(".arena-cell"));
-      const sourceCell = cells.find((cell) => cell.dataset.teamName === source.teamName &&
-        Number(cell.dataset.position) === source.position);
-      const targetCell = cells.find((cell) => cell.dataset.teamName === target.teamName &&
-        Number(cell.dataset.position) === target.position);
-      const sourceSprite = sourceCell?.querySelector<HTMLElement>(".arena-sprite");
-      if (!sourceSprite || !targetCell) { setPlacement(null); return; }
-      const boardBox = board.getBoundingClientRect();
-      const sourceBox = sourceSprite.getBoundingClientRect();
-      const targetBox = targetCell.getBoundingClientRect();
-      const targetSpriteBox = targetCell.querySelector<HTMLElement>(".arena-sprite")?.getBoundingClientRect() || targetBox;
-      const start = { x: sourceBox.left + sourceBox.width / 2, y: sourceBox.top + sourceBox.height / 2 };
-      const targetCenter = { x: targetSpriteBox.left + targetSpriteBox.width / 2, y: targetSpriteBox.top + targetSpriteBox.height / 2 };
-      const boardCenter = { x: boardBox.left + boardBox.width / 2, y: boardBox.top + boardBox.height / 2 };
+      const geometry = measureArena(board);
+      const from = geometry.at(source), to = geometry.at(target);
+      if (!from?.sprite || !to) { setPlacement(null); return; }
+      const boardBox = geometry.bounds, sourceBox = from.anchor, targetBox = to.rect;
+      const start = from.center, targetCenter = to.center;
+      const boardCenter = { x: boardBox.width / 2, y: boardBox.height / 2 };
       const stacked = window.matchMedia?.("(max-width: 640px)").matches || false;
       const destination = motionDestination(motion.kind, start, targetCenter, boardCenter,
         { width: targetBox.width, height: targetBox.height }, stacked);
@@ -64,9 +56,8 @@ export const BattleMotion = ({ boardRef, view, catalog, event, startedAt }: {
   useLayoutEffect(() => {
     const actor = actorRef.current;
     if (!actor || !source || !placement) return;
-    const sourceCell = Array.from(boardRef.current?.querySelectorAll<HTMLElement>(".arena-cell") || [])
-      .find((cell) => cell.dataset.teamName === source.teamName && Number(cell.dataset.position) === source.position);
-    const sourceSprite = sourceCell?.querySelector<HTMLElement>(".arena-sprite");
+    const board = boardRef.current;
+    const sourceSprite = board ? measureArena(board).at(source)?.sprite : null;
     sourceSprite?.classList.add("is-moving-source");
     return () => sourceSprite?.classList.remove("is-moving-source");
   }, [boardRef, placement, source]);
@@ -89,6 +80,6 @@ export const BattleMotion = ({ boardRef, view, catalog, event, startedAt }: {
   const style = { left: placement.left, top: placement.top, width: placement.width,
     height: placement.height, "--travel-x": `${placement.dx}px`, "--travel-y": `${placement.dy}px` } as CSSProperties;
   return <div ref={actorRef} className={`arena-motion-actor is-${motion.kind}`} style={style} aria-hidden="true">
-    {sprite && !imageFailed ? <img src={sprite} alt="" onError={() => setImageFailed(true)} /> : <span>?</span>}
+    <PokemonSprite src={sprite} />
   </div>;
 };

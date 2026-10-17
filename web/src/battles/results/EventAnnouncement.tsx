@@ -1,3 +1,4 @@
+import { measureArena } from '../arena/geometry';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { RefObject } from 'react';
 import type { Announcement } from '../playback';
@@ -14,18 +15,16 @@ export const EventAnnouncement = ({ boardRef, announcement, view, reducedMotion 
   useEffect(() => {
     const board = boardRef.current; if (!board) return;
     const measure = () => {
-      const bounds = board.getBoundingClientRect();
+      const geometry = measureArena(board), bounds = geometry.bounds;
       const pokemon = announcement.cue.subjectId ? view.pokemon[announcement.cue.subjectId] : undefined;
-      const cell = pokemon && Array.from(board.querySelectorAll<HTMLElement>('.arena-cell')).find(item =>
-        item.dataset.teamName === pokemon.teamName && Number(item.dataset.position) === pokemon.position);
-      const sprite = cell?.querySelector('.arena-sprite')?.getBoundingClientRect();
-      const central = !sprite;
-      const x = sprite ? sprite.left + sprite.width / 2 - bounds.left : bounds.width / 2;
+      const placement = geometry.at(pokemon);
+      const central = !placement?.sprite;
+      const x = central ? bounds.width / 2 : placement.center.x;
       const available = Math.max(0, Math.min(x, bounds.width - x) - config.text.edgePaddingPx) * 2;
       const width = Math.min(config.text.maxWidthPx, available,
-        central ? bounds.width : (cell?.clientWidth || bounds.width) + config.text.targetOverhangPx);
+        central ? bounds.width : (placement?.cell.clientWidth || bounds.width) + config.text.targetOverhangPx);
       setAnchor({ central, width, x,
-        y: sprite ? sprite.top + sprite.height / 2 - bounds.top : bounds.height / 2 });
+        y: central ? bounds.height / 2 : placement.center.y });
     };
     measure(); window.addEventListener('resize', measure);
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure);

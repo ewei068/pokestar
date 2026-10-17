@@ -29,7 +29,7 @@ commit us to a full bot migration or a visual design before those needs exist.
 | Battle feature | A list page or a battle page for a battle ID | Its display catalog, listing, battle session, and screens |
 | Battle session | Current authoritative state, playback frame, legal choices, status, and commands | Polling, revision/state IDs, stale responses, event queue, and action submission |
 | Battle screen | Display model plus user callbacks | Layout, inspection, action controls, accessible feedback |
-| Battle board | Projected scene plus selection/inspection callbacks | Today's DOM/CSS grid and tile details |
+| Battle board | Projected scene plus selection/inspection callbacks | Continuous DOM field, floating HUDs and shared visual anchors |
 
 The important seam is between the **battle session** and the **battle screen**.
 The screen should not know how an action reaches the server, how often to poll,
@@ -43,6 +43,12 @@ names, display catalog, highlights, and callbacks. DOM is the only adapter
 today. A formal renderer registry would be a hypothetical seam with one
 adapter, so it is deliberately deferred. If canvas becomes useful, implement a
 second adapter to this scene interface and keep action authority in the session.
+
+The production field uses `battles/arena/geometry.ts` to resolve occupied sprite
+anchors and empty tile centers for movement, VFX, reactions and text. Stationary
+and traveling sprites share `PokemonSprite` and cached alpha-bound placement;
+this stays inside presentation and does not add asset metadata to the API.
+The [arena design guide](arena-design-guide.md) defines layout and visual rules.
 
 The battle feature owns its catalog and pages. The site shell should not fetch
 Pokémon data merely to show another future feature. Shared transport belongs

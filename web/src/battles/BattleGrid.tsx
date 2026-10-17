@@ -1,5 +1,6 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import { PokemonSprite } from "./arena/PokemonSprite";
 import { StatusVfx } from "./results/StatusVfx";
 import { ResultReactions } from "./results/ResultReactions";
 import { EventAnnouncement } from "./results/EventAnnouncement";
@@ -49,10 +50,8 @@ const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern,
   onInspect: () => void;
   onHover: (id: string | null) => void;
 }) => {
-  const [imageFailed, setImageFailed] = useState(false);
   const species = catalog.species[pokemon.speciesId];
   const sprite = pokemon.shiny ? species?.shinySprite : species?.sprite;
-  useEffect(() => setImageFailed(false), [sprite]);
   const effectIds = Object.keys(pokemon.effectIds || {});
   const buffs = effectIds.filter((id) => catalog.effects[id]?.type === "Buff").length;
   const debuffs = effectIds.filter((id) => catalog.effects[id]?.type === "Debuff").length;
@@ -69,11 +68,10 @@ const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern,
     aria-label={`${pokemon.name}, ${pokemon.hp} of ${pokemon.maxHp} HP, ${Math.round(pokemon.combatReadiness)} percent combat readiness${pokemon.isFainted ? ", fainted" : ""}${
       targetable ? ", use selected move" : ", inspect"}`}>
     <span className="arena-mon-head"><strong>{pokemon.name}</strong><small>Lv {pokemon.level}</small></span>
-    <span className="arena-mon-main"><span className="arena-type-cues"><span className="arena-type-dots">{[pokemon.type1, pokemon.type2].filter((type) => type !== null && type !== undefined)
-        .map((type) => <i className={`arena-type-dot ${typeClass(type, catalog)}`} key={type} title={typeName(type, catalog)} />)}</span></span><span className="arena-sprite">{
-      sprite && !imageFailed ? <img src={sprite} alt="" loading="lazy" onError={() => setImageFailed(true)} />
-        : <span aria-hidden="true">?</span>
-    }</span><span className="arena-mon-cues">
+    <span className="arena-type-cues"><span className="arena-type-dots">{[pokemon.type1, pokemon.type2].filter((type) => type !== null && type !== undefined)
+        .map((type) => <span className={`arena-type-dot ${typeClass(type, catalog)}`} key={type}>{typeName(type, catalog)}</span>)}</span></span>
+    <span className="arena-sprite"><PokemonSprite src={sprite} /></span>
+    <span className="arena-mon-cues">
       {pokemon.status?.statusId && <span className="arena-status-cue" title={pokemon.status.statusId} aria-label={pokemon.status.statusId}>
         <span className="arena-status-full">{pokemon.status.statusId}</span>
         <span className="arena-status-short" aria-hidden="true">{statusAbbreviations[pokemon.status.statusId] || pokemon.status.statusId.slice(0, 3)}</span>
@@ -83,7 +81,7 @@ const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern,
         {debuffs > 0 && <span className="arena-effect-count is-debuff" title={`${debuffs} debuffs`}>↓{debuffs}</span>}
         {otherEffects > 0 && <span className="arena-effect-count" title={`${otherEffects} other effects`}>✧{otherEffects}</span>}
       </span>
-    </span></span>
+    </span>
     <span className="arena-mon-bars"><span className="arena-stat-line"><span aria-hidden="true">♥</span>
       <span className="arena-meter arena-hp"><i style={{ width: `${percent(pokemon.hp, pokemon.maxHp)}%` }} /></span>
       <small>{pokemon.hp}/{pokemon.maxHp}</small></span>
@@ -154,7 +152,6 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
       boardRef={boardRef} frame={resultFrame} view={view} catalog={catalog} reducedMotion={!!reducedMotion} />}
     {resultFrame && !reducedMotion && assetsReady && <StatusVfx key={`${resultFrame.id}:status`}
       boardRef={boardRef} frame={resultFrame} view={view} />}
-    <span className="arena-versus" aria-hidden="true">VS</span>
     {motionEvent && !reducedMotion && startedAt !== null && <BattleMotion boardRef={boardRef} view={view} catalog={catalog} event={motionEvent} startedAt={startedAt} />}
     {motionEvent && !reducedMotion && motion?.vfxType && startedAt !== null && <BoardVfx boardRef={boardRef}
       event={motionEvent} view={view} tiles={patternTiles} type={motion.vfxType} kind={motion.kind} startedAt={startedAt} />}

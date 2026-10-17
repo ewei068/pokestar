@@ -1,3 +1,4 @@
+import { measureArena } from '../arena/geometry';
 import { useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
 import type { PlaybackFrame } from '../playback';
@@ -24,18 +25,14 @@ export const ResultReactions = ({ boardRef, frame, view, catalog, reducedMotion 
     const animate = (element: HTMLElement, frames: Keyframe[], duration: number) => {
       if (element.animate) animations.push(element.animate(frames, { duration, fill: 'both', easing: 'ease-out' }));
     };
-    const cells = Array.from(board.querySelectorAll<HTMLElement>('.arena-cell'));
-    const resolve = (id: string) => {
-      const pokemon = view.pokemon[id]; if (!pokemon) return null;
-      return cells.find(cell => cell.dataset.teamName === pokemon.teamName && Number(cell.dataset.position) === pokemon.position)
-        ?.querySelector<HTMLElement>('.arena-sprite') || null;
-    };
+    const geometry = measureArena(board);
+    const resolve = (id: string) => geometry.at(view.pokemon[id])?.sprite || null;
     const mark = (sprite: HTMLElement, kind: string) => {
-      const bounds = board.getBoundingClientRect(), box = sprite.getBoundingClientRect();
+      const point = geometry.point(sprite);
       const container = document.createElement('div');
       container.className = `arena-reaction is-${kind}`;
-      container.style.left = `${box.left + box.width / 2 - bounds.left}px`;
-      container.style.top = `${box.top + box.height / 2 - bounds.top}px`;
+      container.style.left = `${point.x}px`;
+      container.style.top = `${point.y}px`;
       layer.append(container); return container;
     };
     const fainting = new Set(frame.changes.fainted);
