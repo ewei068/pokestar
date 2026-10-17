@@ -225,6 +225,24 @@ describe("durable Discord battle actions", () => {
     expect(moves.embeds).toHaveLength(2);
     expect(moves.embeds[0]).toBe(preview.embeds[0]);
     expect(moves.components.slice(1)).toEqual(preview.components.slice(1));
+    const changedMove = await interact(
+      moves,
+      eventNames.DURABLE_BATTLE_MOVE,
+      userId,
+      [moveId],
+    );
+    expect(changedMove.embeds[1]).toBe(moves.embeds[1]);
+    const changedTarget = await interact(
+      changedMove,
+      eventNames.DURABLE_BATTLE_TARGET,
+      userId,
+      [targetId],
+    );
+    expect(changedTarget.embeds[1]).toBe(moves.embeds[1]);
+    expect(
+      controlFor(changedTarget, eventNames.DURABLE_BATTLE_CONFIRM),
+    ).toBeDefined();
+
     const hidden = await renderBattleInfo(
       service,
       battleId,

@@ -42,6 +42,8 @@ const durableBattle = async (interaction, data) => {
         userId,
         data.r,
         interaction.values[0],
+        null,
+        interaction.message,
       );
       break;
     case eventNames.DURABLE_BATTLE_SKIP:
@@ -82,6 +84,7 @@ const durableBattle = async (interaction, data) => {
               data.r,
               moveId,
               targetId,
+              interaction.message,
             );
             break;
           }

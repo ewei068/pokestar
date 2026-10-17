@@ -237,14 +237,39 @@ const renderBattle = async (service, battleId, userId, selection = {}) => {
   };
 };
 
-const renderTargetSelection = (
+const renderTargetSelection = async (
   service,
   battleId,
   userId,
   revision,
   moveId,
   targetId = null,
-) => renderBattle(service, battleId, userId, { revision, moveId, targetId });
+  message = null,
+) => {
+  const send = await renderBattle(service, battleId, userId, {
+    revision,
+    moveId,
+    targetId,
+  });
+  const [oldRow] = message?.components || [];
+  const oldButton = oldRow?.components?.[0];
+  const newButton = send.components[0]?.components?.[0];
+  const oldId = oldButton?.customId || oldButton?.data?.custom_id;
+  const newId = newButton?.customId || newButton?.data?.custom_id;
+  const previous = oldId ? JSON.parse(oldId) : null;
+  const latest = newId ? JSON.parse(newId) : null;
+  if (
+    previous?.eventName === eventNames.DURABLE_BATTLE_INFO &&
+    latest?.eventName === eventNames.DURABLE_BATTLE_INFO &&
+    previous.b === latest.b &&
+    previous.r === latest.r &&
+    latest.r === revision
+  ) {
+    send.embeds.push(...message.embeds.slice(1, 2));
+    send.components[0] = oldRow;
+  }
+  return send;
+};
 
 /**
  * Info tabs preserve the move, target, preview and confirmation on the message.
