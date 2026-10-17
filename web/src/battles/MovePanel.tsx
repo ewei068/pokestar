@@ -10,6 +10,7 @@ type Props = {
   selectedMoveId: string | null;
   preview: TargetPreview | null;
   busy: boolean;
+  submitting?: boolean;
   collapsed: boolean;
   onToggleCollapsed: () => void;
   onSelectMove: (moveId: string | null) => void;
@@ -21,7 +22,7 @@ const moveKind = (damageType?: string) => damageType === "Physical" ? "⚔ PHY"
   : damageType === "Special" ? "✦ SPEC" : "◌ STATUS";
 
 export const MovePanel = ({ view, availableActions, isMyTurn, catalog, selectedMoveId,
-  preview, busy, playback, collapsed, onToggleCollapsed, onSelectMove,
+  preview, busy, submitting, playback, collapsed, onToggleCollapsed, onSelectMove,
   onHoverMove, onSkip }: Props) => {
   const active = view.activePokemonId ? view.pokemon[view.activePokemonId] : null;
   const moves = active?.moveIds || {};
@@ -51,7 +52,7 @@ export const MovePanel = ({ view, availableActions, isMyTurn, catalog, selectedM
         })}
       </div> : <p className="arena-muted">{isMyTurn ? "No usable moves this turn." : "You can inspect the board while the battle continues."}</p>}
       <div className="arena-command-foot"><span aria-live="polite">{
-        playback ? "Actions unlock when playback finishes" : preview
+        submitting ? "Resolving this turn…" : playback ? "Actions unlock when playback finishes" : preview
           ? `${preview.affectedPokemonIds.length} possible Pokémon · ${preview.emptyTileTargets.length} empty tiles${preview.random ? " · random result" : ""} · Click to use`
           : selectedMoveId ? "Click a highlighted target to use; click the move again to cancel"
             : "Select a move to see targets"

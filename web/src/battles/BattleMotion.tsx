@@ -9,8 +9,9 @@ import type { BattleCatalog, BattleEvent, BattleView } from "./types";
 type Placement = { left: number; top: number; width: number; height: number; dx: number; dy: number };
 
 /** A visual copy travels above the grid while its original sprite stays in its tile. */
-export const BattleMotion = ({ boardRef, view, catalog, event, startedAt }: {
+export const BattleMotion = ({ boardRef, ownTeamNames, view, catalog, event, startedAt }: {
   boardRef: RefObject<HTMLDivElement>;
+  ownTeamNames: string[];
   view: BattleView;
   catalog: BattleCatalog;
   event: BattleEvent;
@@ -80,6 +81,6 @@ export const BattleMotion = ({ boardRef, view, catalog, event, startedAt }: {
   const style = { left: placement.left, top: placement.top, width: placement.width,
     height: placement.height, "--travel-x": `${placement.dx}px`, "--travel-y": `${placement.dy}px` } as CSSProperties;
   return <div ref={actorRef} className={`arena-motion-actor is-${motion.kind}`} style={style} aria-hidden="true">
-    <PokemonSprite src={sprite} />
+    <PokemonSprite src={sprite} flipped={ownTeamNames.includes(source.teamName)} />
   </div>;
 };

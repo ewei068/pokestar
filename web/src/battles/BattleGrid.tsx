@@ -34,10 +34,11 @@ const statusAbbreviations: Record<string, string> = { Burn: "BRN", Poison: "PSN"
 
 const percent = (value: number, max = 100) => Math.max(0, Math.min(100, value / Math.max(1, max) * 100));
 
-const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern, affected, playback,
+const PokemonTile = ({ pokemon, catalog, own, active, targetable, primary, inPattern, affected, playback,
   highlighted, stateChanging, onChooseTarget, onInspect, onHover }: {
   pokemon: PokemonView;
   catalog: BattleCatalog;
+  own: boolean;
   active: boolean;
   targetable: boolean;
   primary: boolean;
@@ -65,12 +66,13 @@ const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern,
     onClick={targetable ? onChooseTarget : onInspect}
     onMouseEnter={() => onHover(pokemon.id)} onMouseLeave={() => onHover(null)}
     onFocus={() => onHover(pokemon.id)} onBlur={() => onHover(null)}
-    aria-label={`${pokemon.name}, ${pokemon.hp} of ${pokemon.maxHp} HP, ${Math.round(pokemon.combatReadiness)} percent combat readiness${pokemon.isFainted ? ", fainted" : ""}${
+    aria-current={active ? "true" : undefined}
+    aria-label={`${pokemon.name}, ${pokemon.hp} of ${pokemon.maxHp} HP, ${Math.round(pokemon.combatReadiness)} percent combat readiness${active ? ", current turn" : ""}${pokemon.isFainted ? ", fainted" : ""}${
       targetable ? ", use selected move" : ", inspect"}`}>
     <span className="arena-mon-head"><strong>{pokemon.name}</strong><small>Lv {pokemon.level}</small></span>
     <span className="arena-type-cues"><span className="arena-type-dots">{[pokemon.type1, pokemon.type2].filter((type) => type !== null && type !== undefined)
         .map((type) => <span className={`arena-type-dot ${typeClass(type, catalog)}`} key={type}>{typeName(type, catalog)}</span>)}</span></span>
-    <span className="arena-sprite"><PokemonSprite src={sprite} /></span>
+    <span className="arena-sprite"><PokemonSprite src={sprite} flipped={own} /></span>
     <span className="arena-mon-cues">
       {pokemon.status?.statusId && <span className="arena-status-cue" title={pokemon.status.statusId} aria-label={pokemon.status.statusId}>
         <span className="arena-status-full">{pokemon.status.statusId}</span>
@@ -82,6 +84,7 @@ const PokemonTile = ({ pokemon, catalog, active, targetable, primary, inPattern,
         {otherEffects > 0 && <span className="arena-effect-count" title={`${otherEffects} other effects`}>✧{otherEffects}</span>}
       </span>
     </span>
+    {active && <span className="arena-turn-marker" aria-hidden="true">▶ TURN</span>}
     <span className="arena-mon-bars"><span className="arena-stat-line"><span aria-hidden="true">♥</span>
       <span className="arena-meter arena-hp"><i style={{ width: `${percent(pokemon.hp, pokemon.maxHp)}%` }} /></span>
       <small>{pokemon.hp}/{pokemon.maxHp}</small></span>
@@ -103,7 +106,7 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
   const affectedSet = new Set(affectedIds);
   const changedIds = new Set(resultFrame?.changes.cues || []);
   const tileSet = new Set(patternTiles.map((tile) => `${tile.teamName}:${tile.position}`));
-  return <div className="arena-board" ref={boardRef}
+  return <div className={`arena-board ${targetIds.length ? "is-targeting" : ""}`} ref={boardRef}
     style={{ "--move-duration": `${MOVE_MOTION_DURATION_MS}ms` } as CSSProperties}>
     {[...Object.entries(view.teams)]
       .sort(([left], [right]) => Number(ownTeamNames.includes(right)) - Number(ownTeamNames.includes(left)))
@@ -132,7 +135,7 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
             } as CSSProperties;
             return <div className={`arena-cell ${inPattern ? "is-pattern-cell" : ""}`} style={cellStyle}
               key={position} data-team-name={teamName} data-position={position}>
-              {entry ? <PokemonTile pokemon={entry} catalog={catalog}
+              {entry ? <PokemonTile pokemon={entry} catalog={catalog} own={own}
                 active={entry.id === view.activePokemonId} targetable={targetSet.has(entry.id)}
                 primary={entry.id === primaryTargetId} inPattern={inPattern}
                 playback={playback && inPattern && !motion?.vfxType} stateChanging={changedIds.has(entry.id)}
@@ -152,7 +155,7 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
       boardRef={boardRef} frame={resultFrame} view={view} catalog={catalog} reducedMotion={!!reducedMotion} />}
     {resultFrame && !reducedMotion && assetsReady && <StatusVfx key={`${resultFrame.id}:status`}
       boardRef={boardRef} frame={resultFrame} view={view} />}
-    {motionEvent && !reducedMotion && startedAt !== null && <BattleMotion boardRef={boardRef} view={view} catalog={catalog} event={motionEvent} startedAt={startedAt} />}
+    {motionEvent && !reducedMotion && startedAt !== null && <BattleMotion boardRef={boardRef} ownTeamNames={ownTeamNames} view={view} catalog={catalog} event={motionEvent} startedAt={startedAt} />}
     {motionEvent && !reducedMotion && motion?.vfxType && startedAt !== null && <BoardVfx boardRef={boardRef}
       event={motionEvent} view={view} tiles={patternTiles} type={motion.vfxType} kind={motion.kind} startedAt={startedAt} />}
   </div>;

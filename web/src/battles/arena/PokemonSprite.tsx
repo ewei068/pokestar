@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { cachedSpriteOffset, loadSpriteOffset } from './spriteLayout';
 
 /** The stationary Pokémon and moving actor share cached, source-specific foot placement. */
-export const PokemonSprite = ({ src }: { src?: string }) => {
+export const PokemonSprite = ({ src, flipped = false }: { src?: string; flipped?: boolean }) => {
   const [placement, setPlacement] = useState(() => ({ src, offset: cachedSpriteOffset(src || '') }));
   const [failed, setFailed] = useState<string | null>(null);
   useEffect(() => {
@@ -12,6 +12,6 @@ export const PokemonSprite = ({ src }: { src?: string }) => {
   }, [src]);
   if (!src || failed === src) return <span aria-hidden="true">?</span>;
   const offset = placement.src === src ? placement.offset : cachedSpriteOffset(src);
-  return <img src={src} alt="" loading="lazy" style={{ translate: `${offset.x}% ${offset.y}%` }}
+  return <img src={src} alt="" loading="lazy" style={{ scale: flipped ? '-1 1' : undefined, translate: `${flipped ? -offset.x : offset.x}% ${offset.y}%` }}
     onError={() => setFailed(src)} />;
 };
