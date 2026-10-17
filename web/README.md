@@ -31,6 +31,70 @@ contracts rather than recording markup or pixel snapshots.
 Durable battle starts also need `DURABLE_BATTLES_ENABLED=true`. Keep the
 separate raid flag off until the remaining raid cutover work is complete.
 
+## Local HTTPS and phone testing (macOS)
+
+The phone and Mac use one HTTPS origin. Vite forwards `/api` to Node on loopback;
+Node does not need a second LAN listener. A local certificate is trusted by your
+own devices, and does not require a public hostname or router port forwarding.
+
+1. Install [mkcert](https://github.com/FiloSottile/mkcert) with `brew install mkcert`,
+   then run `mkcert -install` in your terminal. macOS may request your administrator
+   password to install the development CA in its trust store.
+2. From `web/`, generate a server certificate for localhost and your current
+   Wi-Fi IP (replace `192.168.4.29` below with `ipconfig getifaddr en0`):
+
+   ```sh
+   mkdir -p .certs
+   mkcert -cert-file .certs/dev-cert.pem -key-file .certs/dev-key.pem localhost 127.0.0.1 ::1 192.168.4.29
+   chmod 600 .certs/dev-key.pem
+   ```
+
+3. Copy `web/.env.example` to `web/.env.local`, and set:
+
+   ```dotenv
+   WEB_DEV_HOST=192.168.4.29
+   WEB_DEV_API_TARGET=http://127.0.0.1:3000
+   WEB_DEV_TLS_CERT=.certs/dev-cert.pem
+   WEB_DEV_TLS_KEY=.certs/dev-key.pem
+   ```
+
+   Paths are relative to `web/`. Both TLS settings are required for HTTPS; leaving
+   both empty retains HTTP development. Keep `VITE_API_ORIGIN` unset. Port 5173
+   is fixed by default and startup fails if occupied, so callbacks cannot silently
+   move to a different port. Stop old Vite instances before restarting.
+4. In the bot's root `.env`, set:
+
+   ```dotenv
+   HTTP_HOST=127.0.0.1
+   WEB_SITE_ORIGIN=https://192.168.4.29:5173
+   WEB_DISCORD_REDIRECT_URI=https://192.168.4.29:5173/api/auth/discord/callback
+   ```
+
+   Keep the existing Discord credentials and enable flags. Restart the bot to
+   apply environment changes. `HTTP_HOST` is optional; leaving it unset preserves
+   the existing Express binding for production/webhook deployments.
+5. In the Discord application's OAuth2 redirects, add the exact HTTPS callback
+   above. Keep existing localhost redirects. Start Vite with `npm run dev` in
+   `web/` and sign in through `https://192.168.4.29:5173/` on the Mac.
+6. To use an iPhone, transfer **only the public CA certificate**. For convenient
+   AirDrop handling, convert it to a `.cer` file on the Mac:
+
+   ```sh
+   openssl x509 -in "$(mkcert -CAROOT)/rootCA.pem" -outform DER -out /tmp/pokestar-local-ca.cer
+   open -R /tmp/pokestar-local-ca.cer
+   ```
+
+   AirDrop that file to the phone. Install its downloaded profile in Settings,
+   then enable it under **General → About → Certificate Trust Settings**. See
+   [Apple's certificate trust instructions](https://support.apple.com/en-us/102390).
+   Open the same HTTPS address on the phone while connected to the same Wi-Fi.
+   Never transfer `rootCA-key.pem` or the server's `dev-key.pem`.
+
+The certificate directory and local env file are ignored by Git. Server TLS paths
+and keys are not exposed as frontend environment variables. If the Mac's IP
+changes, regenerate the server certificate with the new IP and update the host,
+backend origins and Discord redirect. A router DHCP reservation avoids that churn.
+
 ## Static build
 
 Run `npm run build` in `web/`. The `dist/` directory can be published on
