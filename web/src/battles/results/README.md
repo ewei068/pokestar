@@ -31,9 +31,10 @@ no announcement delay.
 an event stage containing both the labels and destination view. Observed state
 changes and text start together; its deadline is the longer of the text/move
 lifetime and state transition. A transition-only stage handles silent changes
-and canonical reconciliation. Only
-supplied observations update fields; `applyEventView` never calculates battle
-rules. At the action boundary, the canonical view supplies any missing changes.
+and canonical reconciliation. Supplied observations update fields;
+`moveStarted` also projects the engine’s readiness spend as 0 for its actor. It does not infer damage or other move
+consequences. At the action boundary, the canonical view supplies any missing
+changes.
 A final `turnStarted` is announced after this reconciliation. Revisions, rather
 than turn numbers, distinguish action boundaries and phases.
 
@@ -64,13 +65,13 @@ Poison/Badly Poison → Poison, Sleep → Psychic. Unknown statuses use Normal.
 These are the existing approved Status recipes, with no actor movement. Their
 760 ms lifetime is shared with `vfx/timing.ts`; recipe art and choreography stay
 in `vfx/recipes/`. Cures use a short clearing ring. Status identity changes and
-effect additions/removals are view differences, so canonical reconciliation
-uses the same visuals. Duration ticks and same-ID refreshes do not replay them.
+effect additions are view differences, so canonical reconciliation uses the
+same visuals. Effect removal updates state and text without VFX or badge pulse. Duration ticks and same-ID refreshes do not replay them.
 
 Misses are event-only sidesteps with short trails: no damage or view patch is
-invented. `effectDirection.ts` uses catalog categories: Buff gain/Debuff removal
-rise in red, Debuff gain/Buff removal fall in blue. Neutral/unknown effects use
-gold expanding rings on application and contracting rings on removal. Shared
+invented. `effectDirection.ts` uses catalog categories: Buff gains rise in red (including
+the floating label), Debuff gains fall in blue. Neutral/unknown effect gains
+use gold expanding rings. Removals do not play particles or badge pulses. Shared
 `effectColors` settings feed both animation ingredients and CSS variables for
 board counters and inspector tags. Labels and up/down symbols preserve meaning
 without relying on color.
@@ -113,7 +114,7 @@ Open `?previewBattle=1&story=<id>`:
 | `result-miss`, `result-batch-misses` | One or several defenders sidestep/return with independent trails |
 | `result-status-burn`, `result-status-paralysis`, `result-status-freeze` | Fire/Electric/Ice Status recipes in place, then cure |
 | `result-status-poison`, `result-status-toxic`, `result-status-sleep` | Poison/Poison/Psychic Status recipes in place, then cure |
-| `result-effect-buff`, `result-effect-debuff`, `result-effect-neutral` | Application/removal directions, colors and neutral pulses |
+| `result-effect-buff`, `result-effect-debuff`, `result-effect-neutral` | Gain-only directions/colors/pulses; removal remains text/state only |
 | `result-reaction-reconcile` | Status/effect reactions for canonical differences without events |
 | `result-revive` | Revival text, HP restoration and appearance |
 | `result-announcement`, `result-missing-target` | Central text and missing-subject fallback |

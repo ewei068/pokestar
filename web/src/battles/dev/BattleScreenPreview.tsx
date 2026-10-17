@@ -1,6 +1,7 @@
 /** Development-only stories render the production screen without HTTP or game writes. */
 import { useEffect, useMemo, useState } from "react";
 import { BattleScreen } from "../BattleScreen";
+import { applyEventView } from '../results/events';
 import { useBattlePlayback } from "../useBattlePlayback";
 import type { BattleSession } from "../useBattleSession";
 import type { BattleResponse } from "../types";
@@ -30,7 +31,7 @@ const StoryScreen = ({ story }: { story: BattleStory }) => {
     if (!story.sequence && !story.playing) return;
     const revision = story.battle.revision + 1;
     playback.receive({ ...responseFor(story), revision, stateId: `story:${revision}`,
-      view: story.sequence?.finalView || story.battle.view,
+      view: story.sequence?.finalView || (story.playing ? applyEventView(story.battle.view, story.playing.event) : story.battle.view),
       updates: [{ revision, action: { action: "skipTurn" }, events, log: [] }] });
   }, [story, playback.receive]);
   const seedHistory = useMemo(() => story.history.map((text, index) => ({ id: `story:${index}`,

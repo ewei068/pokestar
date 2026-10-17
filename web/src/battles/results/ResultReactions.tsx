@@ -60,17 +60,18 @@ export const ResultReactions = ({ boardRef, frame, view, catalog, reducedMotion 
       }
     }
     for (const change of frame.changes.effects) {
+      if (change.removed) continue;
       const sprite = resolve(change.pokemonId); if (!sprite || fainting.has(change.pokemonId)) continue;
       const settings = config.reactions.effect;
-      const direction = effectDirection(change.effectId, change.removed, catalog);
-      const marker = mark(sprite, `effect is-${direction}${change.removed ? ' is-removed' : ''}`);
+      const direction = effectDirection(change.effectId, catalog);
+      const marker = mark(sprite, `effect is-${direction}`);
       marker.dataset.effectId = change.effectId;
       marker.style.color = settings.colors[direction].main;
       if (direction === 'neutral') {
         for (let index = 0; index < 2; index++) {
           const ring = document.createElement('i'); ring.className = 'arena-effect-ring'; marker.append(ring);
           ring.style.width = ring.style.height = `${settings.neutralRadiusPx * 2}px`;
-          const start = change.removed ? 1 : .3, end = change.removed ? .2 : 1.3;
+          const start = .3, end = 1.3;
           animate(ring, [{ opacity: 0, transform: `translate(-50%, -50%) scale(${start})` },
             { opacity: 0, offset: index * .16 }, { opacity: .75, offset: .2 + index * .16 },
             { opacity: 0, transform: `translate(-50%, -50%) scale(${end})` }], settings.durationMs);

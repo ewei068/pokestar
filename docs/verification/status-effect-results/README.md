@@ -26,7 +26,7 @@ Review with `?previewBattle=1&story=` followed by `result-miss`,
 `result-effect-buff`, `result-effect-debuff`, `result-effect-neutral`,
 `result-reaction-reconcile`, `result-batch-effects`, or `result-batch-misses`.
 
-## Deliberate behavior
+## Original behavior (superseded for effect removal below)
 
 Status application maps Burn/Freeze/Paralysis/Poison/Badly Poison/Sleep to
 Fire/Ice/Electric/Poison/Poison/Psychic Status move recipes, without approach or
@@ -40,3 +40,17 @@ same-ID application still updates text and badges through existing playback.
 
 Screenshots and checks are implementation evidence; user visual approval is
 still separate. No new art assets or server contracts were introduced.
+
+## Follow-up refinements
+
+The subsequent review requested gain-only effect VFX and move readiness timing.
+`refinements.json` records eight browser checks: all three effect categories at
+1280/390 widths, plus a complete move/damage/faint sequence and a single move.
+Buff chevrons and their floating label both resolve to `rgb(182, 67, 67)`.
+Effect removal keeps narration/state but has no particles or badge pulse.
+The actor displays 0 readiness at move start, then follows canonical next-turn
+readiness (30 in the sequence fixture); the single-move fixture stays at 0.
+No page errors. The earlier captures preserve the initial visual pass.
+
+47 unit/component tests and the production build pass after these refinements.
+The gain-only policy supersedes the inverse-removal cues described above.

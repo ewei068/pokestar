@@ -22,7 +22,10 @@ revision, sequence and stage; a new polling result cannot restart its timer.
 
 HP observations use their absolute `hp` field. Reaching zero HP does not mark a
 Pokémon fainted until `pokemonFainted` is presented. Status/effect changes update
-only the fields supplied. Missing consequences (stat modifiers, cooldowns,
+only the fields supplied. `moveStarted` projects its actor’s combat readiness
+to 0 immediately, matching the engine’s move-use reset; subsequent supplied
+readiness observations and canonical turn preparation remain authoritative.
+Missing consequences (stat modifiers, cooldowns,
 routine readiness advancement and duration ticks) arrive through reconciliation.
 The final canonical view remains authoritative even if observations are missing.
 No per-event or per-action snapshots were added to persistence.
@@ -59,9 +62,9 @@ individual log entry in server order.
 
 State differences drive configurable damage, healing, faint, status and effect
 reactions. Status application reuses the matching type’s Status move recipe in
-place; cures use a clearing ring. Buff gains/debuff removal send red chevrons
-upward, debuff gains/buff removal send blue chevrons downward, and neutral
-effects pulse gold. Miss events sidestep and return with short trails. Damage
+place; cures use a clearing ring. Buff gains send red chevrons upward with red labels, debuff gains send blue
+chevrons downward, and neutral gains pulse gold. Effect loss has text/state
+updates without VFX or badge pulses. Miss events sidestep and return with short trails. Damage
 flashes/recoils, healing emits plus particles, and fainting drops/fades the
 sprite while leaving its card readable. Duration ticks do not replay
 status/effect gain/loss reactions. Canonical reconciliation uses
@@ -99,7 +102,7 @@ All events also carry the existing per-action `sequence`.
 | `weatherChanged` | `previousWeatherId`, `weatherId`, `duration` | Set/replacement, refresh and clearing, including expiry; null ID means cleared. |
 | `combatReadinessChanged` | `pokemonId`, nullable `sourcePokemonId`, `previousCombatReadiness`, `combatReadiness`, signed actual `amount` | Explicit boost/drain after clamping; no event when unchanged. Independent of whether rules callbacks are enabled. |
 
-Natural readiness progression, action readiness reset, weather countdown and
+Natural readiness progression, weather countdown and
 other routine changes continue to reconcile without separate announcements.
 
 ## Configuration, verification and follow-ups

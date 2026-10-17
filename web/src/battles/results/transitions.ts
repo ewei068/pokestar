@@ -11,7 +11,7 @@ export const viewChanges = (before: BattleView, after: BattleView): ViewChanges 
     if (next.hp < previous.hp) changes.damaged.push(id);
     if (next.hp > previous.hp) changes.healed.push(id);
     if (previous.hp !== next.hp || previous.maxHp !== next.maxHp || previous.combatReadiness !== next.combatReadiness) changes.meters.push(id);
-    if (JSON.stringify(previous.status) !== JSON.stringify(next.status) || JSON.stringify(previous.effectIds) !== JSON.stringify(next.effectIds)) changes.cues.push(id);
+    if (JSON.stringify(previous.status) !== JSON.stringify(next.status) || Object.entries(next.effectIds).some(([id, state]) => JSON.stringify(previous.effectIds[id]) !== JSON.stringify(state))) changes.cues.push(id);
     const beforeStatus = previous.status?.statusId, afterStatus = next.status?.statusId;
     if (beforeStatus !== afterStatus) {
       if (beforeStatus) changes.statuses.push({ pokemonId: id, statusId: beforeStatus, removed: true });
@@ -29,7 +29,7 @@ export const viewChanges = (before: BattleView, after: BattleView): ViewChanges 
 export const transitionDuration = (changes: ViewChanges) => Math.max(
   changes.statuses.some(change => !change.removed) ? config.reactions.status.durationMs : 0,
   changes.statuses.some(change => change.removed) ? config.reactions.status.clearMs : 0,
-  changes.effects.length ? config.reactions.effect.durationMs : 0,
+  changes.effects.some(change => !change.removed) ? config.reactions.effect.durationMs : 0,
   changes.damaged.length ? config.reactions.damage.durationMs : 0,
   changes.healed.length ? config.reactions.heal.durationMs : 0,
   changes.fainted.length ? config.reactions.faint.durationMs : 0,

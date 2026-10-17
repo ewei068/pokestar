@@ -38,9 +38,9 @@ export const storyGroups = [
     { id: "result-status-poison", title: "Poison", description: "Poison Status VFX on the target, then cure." },
     { id: "result-status-toxic", title: "Badly poisoned", description: "Badly Poison reuses Poison Status VFX." },
     { id: "result-status-sleep", title: "Sleep", description: "Psychic Status VFX represents the sleep influence." },
-    { id: "result-effect-buff", title: "Buff gain/loss", description: "Red rising chevrons on gain, blue falling chevrons on loss." },
-    { id: "result-effect-debuff", title: "Debuff gain/loss", description: "Blue falling chevrons on gain, red rising chevrons on removal." },
-    { id: "result-effect-neutral", title: "Neutral effect", description: "Gold rings expand on application and contract on removal." },
+    { id: "result-effect-buff", title: "Buff gain/loss", description: "Red rising chevrons and label on gain; text only on loss." },
+    { id: "result-effect-debuff", title: "Debuff gain/loss", description: "Blue falling chevrons on gain; text only on removal." },
+    { id: "result-effect-neutral", title: "Neutral effect", description: "Gold rings expand on application; text only on removal." },
     { id: "result-reaction-reconcile", title: "Reconciled reactions", description: "Status/effect changes without events use the same reactions; duration ticks do not replay them." },
   ] },
   { title: "Batches and log", stories: [

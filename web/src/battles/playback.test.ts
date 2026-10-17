@@ -28,6 +28,8 @@ describe('battle playback', () => {
     assert.equal(state.battle?.view.pokemon[subject].isFainted, true); // Latest state is already received.
     assert.equal(state.queue[0].event.type, 'moveStarted'); // Silent action marker adds no delay.
     assert.equal(state.queue[0].view.pokemon[subject].hp, 115);
+    assert.equal(state.queue[0].view.pokemon['Star Team-157'].combatReadiness, 0);
+    assert.equal(state.queue[0].previousView.pokemon['Star Team-157'].combatReadiness, 100);
     assert.equal(state.history.length, 0);
     state = reducePlayback(state, { type: 'begin', id: state.queue[0].id });
     assert.deepEqual(state.history.map(entry => entry.text), ['Typhlosion used Tackle.']);
@@ -52,6 +54,7 @@ describe('battle playback', () => {
     while (state.queue[0].event.type !== 'turnStarted') state = advance(state);
     assert.deepEqual(state.queue[0].view, next.view);
     assert.equal(state.queue[0].view.activePokemonId, 'Rival Team-59');
+    assert.equal(state.queue[0].view.pokemon['Star Team-157'].combatReadiness, 30);
     while (state.queue.length) state = advance(state);
     assert.deepEqual(state.battle?.view, next.view);
   });

@@ -34,14 +34,19 @@ describe('status and effect reactions', () => {
     assert.equal(changes.cues.length, 2);
     assert.equal(transitionDuration(changes), config.transition.cueMs);
   });
-  it('reverses the consequence for removals and handles uncategorized effects neutrally', () => {
+  it('uses catalog categories for gains and handles uncategorized effects neutrally', () => {
     const { catalog } = makeBattleStory('ready');
-    assert.equal(effectDirection('focus', false, catalog), 'buff');
-    assert.equal(effectDirection('focus', true, catalog), 'debuff');
-    assert.equal(effectDirection('weakness', false, catalog), 'debuff');
-    assert.equal(effectDirection('weakness', true, catalog), 'buff');
-    assert.equal(effectDirection('unknown', false, catalog), 'neutral');
-    assert.equal(effectDirection('unknown', true, catalog), 'neutral');
+    assert.equal(effectDirection('focus', catalog), 'buff');
+    assert.equal(effectDirection('weakness', catalog), 'debuff');
+    assert.equal(effectDirection('unknown', catalog), 'neutral');
+  });
+  it('updates lost effects without adding a reaction or badge pulse deadline', () => {
+    const { battle } = makeBattleStory('ready'), after = structuredClone(battle.view);
+    delete after.pokemon['Star Team-448'].effectIds.shield;
+    const changes = viewChanges(battle.view, after);
+    assert.equal(changes.effects[0].removed, true);
+    assert.deepEqual(changes.cues, []);
+    assert.equal(transitionDuration(changes), 0);
   });
   it('maps every engine status to a reusable Status recipe', () => {
     assert.deepEqual(['Burn', 'Freeze', 'Paralysis', 'Poison', 'Sleep', 'Badly Poison']
