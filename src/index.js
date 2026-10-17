@@ -415,7 +415,7 @@ const startHttpServer = async () => {
     const { createMongoBattleApi } = require("./web/createMongoBattleApi");
     app.use("/api", await createMongoBattleApi());
   }
-  app.listen(PORT);
+  app.listen(PORT, process.env.HTTP_HOST || undefined);
   logger.info(`Express App listening on port ${PORT}`);
 };
 
