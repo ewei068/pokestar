@@ -129,7 +129,7 @@ export const BattleScreen = ({ catalog, session }: {
     </div><aside className="arena-sidebar">
       <MovePanel view={displayView} availableActions={battle.availableActions} isMyTurn={!playing && battle.isMyTurn} playback={!!playing}
         catalog={catalog} selectedMoveId={selectedMoveId}
-        preview={targetPreview} busy={!canChoose} collapsed={trayCollapsed}
+        preview={targetPreview} busy={!canChoose} submitting={busy} collapsed={trayCollapsed}
         onToggleCollapsed={() => setTrayCollapsed((current) => !current)}
         onSelectMove={chooseMove} onHoverMove={setHoveredMoveId} onSkip={skipTurn} />
       <BattleInspector pokemon={inspected} moveId={inspectorMoveId} detail={detail}

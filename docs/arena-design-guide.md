@@ -15,6 +15,10 @@ uses that layout without a prototype flag.
 - On desktop, the participant is left and the rival right; front rows face the
   center. On phones, rival is above participant and front rows face the gap.
   Preserve engine row/column identity when changing the visual orientation.
+  Ownership comes from the viewer’s `myTeamNames`, never engine team order or
+  the active actor. Mirror only the viewer’s sprite art horizontally, including
+  moving copies. Reverse the alpha-bound horizontal offset when mirroring so
+  the visible center remains on the platform; keep HUDs and VFX unmirrored.
 - Distribute extra width between slots. Each slot contains a proportional
   **7:10 visual unit**, capped by its available width and height. The platform
   preserves its **2:1 source canvas** (visible oval roughly 4:1). The square
@@ -38,7 +42,11 @@ uses that layout without a prototype flag.
 - Highlight both the platform and sprite on hover or keyboard focus. Use an oval
   focus ring. Active actor, legal targets, primary target and preview footprint
   need distinct cues. Empty tiles retain quiet platforms and become visible
-  when part of the target pattern. Do not move the entire tile on hover.
+  when part of the target pattern. The active actor has a strong gold ring and
+  a visible TURN marker (plus `aria-current`). Legal targets have bright cyan
+  rings. While targeting, dim non-target sprites/platforms except the active
+  actor; keep their HUD readable, inspection available and fainted sprites
+  hidden. Do not move the entire tile on hover.
 - Pokémon remain focusable buttons with touch inspection and the existing
   legal-target action path. Do not make canvas or decorative art intercept input.
 
@@ -52,6 +60,11 @@ uses that layout without a prototype flag.
   reaction marker, tile VFX and moving actor use the shared `arena/geometry`
   measurement. Occupied tiles anchor at the sprite container center; empty
   tiles use the cell center. Do not add species-specific CSS anchors.
+- Submission feedback belongs in the existing command tray’s live text. Do not
+  insert a temporary resolving banner above the arena: that shifts the board
+  while the HTTP request is pending. Errors and persistent notices may still
+  use page messages. Check submission through the HTTP/session path, since
+  development stories do not exercise its pending state.
 - Visual changes do not change event order, action authority or the playback
   clock. Result text and state changes start together, and the next event waits
   for their animations. Honor reduced motion and playback cancellation.

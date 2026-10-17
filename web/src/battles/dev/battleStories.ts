@@ -66,6 +66,11 @@ export const makeBattleStory = (requestedId: string | null,
       story.selectedMoveId = "eruption";
       story.inspectedPokemonId = enemyTargets[0];
       break;
+    case "opponent-perspective":
+      battle.myTeamNames = [rival];
+      battle.isMyTurn = false;
+      battle.availableActions = { canSkip: false, moves: [] };
+      break;
     case "effects":
       battle.view.pokemon[`${own}-448`].effectIds = {
         shield: { duration: 2 }, focus: { duration: 1 }, weakness: { duration: 3 },

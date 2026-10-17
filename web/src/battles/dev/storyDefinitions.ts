@@ -3,6 +3,7 @@ export const storyGroups = [
   { title: "Battle states", stories: [
     { id: "ready", title: "Ready to act", description: "An ordinary turn with two dense formations." },
     { id: "area-target", title: "Area target", description: "Eruption is selected; hover a rival to inspect its full footprint." },
+    { id: "opponent-perspective", title: "Other participant", description: "The second participant owns the left/bottom team and its mirrored sprites." },
     { id: "effects", title: "Status and effects", description: "Statuses, buffs, debuffs, ability, and item details compete for space." },
     { id: "waiting", title: "Waiting for NPC", description: "The opponent has the turn and actions are unavailable." },
     { id: "playback", title: "Move playback", description: "A resolved area move lights occupied and empty tiles." },

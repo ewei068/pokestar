@@ -179,7 +179,8 @@
 .arena-team { border: 0; padding: 0; background: none; min-width: 0; }
 .arena-team-heading { margin: 0 0 7px; padding: 0; background: none;
   color: #f1f2d6; text-shadow: 0 1px 2px #172e23; }
-.arena-team-heading h2 { font-size: 10px; }
+.arena-team-heading h2 { font-size: 10px; padding-left: 5px; border-left: 3px solid #b5eaff; }
+.arena-team.is-enemy .arena-team-heading h2 { border-color: #ffc2ac; }
 .arena-team-heading span { font-size: 7px; }
 .arena-grid { gap: 5px 8px; grid-template-rows: repeat(var(--cols), var(--field-slot-height)); }
 .arena-cell { container-type: size; display: grid; place-items: center; min-height: 0; height: var(--field-slot-height); width: min(100%, 112px); justify-self: center; }
@@ -203,10 +204,19 @@
 .arena-mon:focus-visible .arena-sprite img { filter: brightness(1.18) drop-shadow(0 0 1px #fff4c7) drop-shadow(0 0 2px #fff4c7); }
 .arena-mon:hover::after,
 .arena-mon:focus-visible::after { border-color: #fff4c7; }
-.arena-mon.is-active::after { border-color: #fff1a0; box-shadow: 0 0 0 2px #ad8827aa; }
-.arena-mon.is-targetable::after { border: 1px dashed #fff0c1; }
+.arena-mon.is-active::after { border: 3px solid #ffdf65;
+  box-shadow: 0 0 0 2px #563d1e, 0 0 9px 2px #ffe287aa; }
+.arena-turn-marker { position: absolute; z-index: 4; left: 50%; bottom: 0; transform: translateX(-50%);
+  padding: 1px 4px; border: 1px solid #ffdf65; background: #563d1e; color: #fff2b4;
+  font-size: 7px; line-height: 9px; font-weight: 900; white-space: nowrap; }
+.arena-board.is-targeting .arena-mon:not(.is-targetable):not(.is-active):not(.is-fainted) .arena-sprite { opacity: .4; }
+.arena-board.is-targeting .arena-mon:not(.is-targetable):not(.is-active)::before { opacity: .4; }
+.arena-mon.is-targetable::after { border: 2px solid #b8f8ff;
+  box-shadow: 0 0 0 2px #277d8f, 0 0 8px 1px #a5f4ff88; }
+.arena-mon.is-targetable::before { filter: brightness(1.2); }
 .arena-mon.is-in-pattern::after,
 .arena-mon.is-affected::after { border-color: #fff0a2; background: #eea34466; box-shadow: 0 0 0 2px #ab5623bb; }
+.arena-mon.is-targetable.is-in-pattern::after { border-color: #b8f8ff; }
 .arena-mon.is-primary { outline: none; }
 .arena-mon.is-primary::after { border-color: #fff0d3; box-shadow: 0 0 0 3px #c24c35; }
 .arena-mon.is-event-highlighted { animation: none; }

@@ -59,6 +59,36 @@ describe("battle controls", () => {
     assert.deepEqual(inspected, ["Star Team-157"]);
   });
 
+  it("keeps resolving feedback inside the existing command tray", () => {
+    const { battle, catalog } = makeBattleStory("ready");
+    const page = render(createElement(MovePanel, {
+      view: battle.view, availableActions: battle.availableActions, isMyTurn: true,
+      catalog, selectedMoveId: "eruption", preview: null, busy: true, submitting: true,
+      collapsed: false, onToggleCollapsed() {}, onSelectMove() {}, onHoverMove() {}, onSkip() {},
+    }));
+    assert.equal(page.container.querySelector('.arena-command-foot [aria-live]')?.textContent?.trim(), 'Resolving this turn…');
+    assert.equal(page.getByRole('button', { name: /Eruption/ }).hasAttribute('disabled'), true);
+  });
+
+  it("marks the current turn and mirrors only the viewing participant's team", () => {
+    const { battle, catalog } = makeBattleStory("ready");
+    const page = render(createElement(BattleGrid, {
+      view: battle.view, ownTeamNames: ["Rival Team"], catalog,
+      targetIds: ["Star Team-157"], primaryTargetId: null, patternTiles: [], affectedIds: [],
+      playback: false, highlightedId: null,
+      onChooseTarget() {}, onInspect() {}, onHover() {},
+    }));
+    const teams = page.container.querySelectorAll('.arena-team');
+    assert.equal(teams[0].getAttribute('aria-label'), 'Rival Team formation');
+    const ownImage = page.getByRole('button', { name: /^Gengar,/ }).querySelector('img')!;
+    const rival = page.getByRole('button', { name: /^Typhlosion,/ });
+    assert.equal(ownImage.style.scale, '-1 1');
+    assert.notEqual(rival.querySelector('img')!.style.scale, '-1 1');
+    assert.equal(rival.getAttribute('aria-current'), 'true');
+    assert.ok(page.container.querySelector('.arena-board.is-targeting'));
+    assert.equal(page.container.querySelectorAll('.arena-turn-marker').length, 1);
+  });
+
   it("places Normal VFX on occupied and empty executed tiles", () => {
     Object.defineProperty(dom.window, "matchMedia", { configurable: true,
       value: () => ({ matches: false }) });

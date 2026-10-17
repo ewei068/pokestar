@@ -59,7 +59,7 @@ export const useBattleSession = (battleId: string, catalog: BattleCatalog) => {
   const act = async (action: BattleAction) => {
     if (!battle || busy || playing !== null || battle.rulesetVersion !== catalog.rulesetVersion) return;
     setBusy(true);
-    setNotice("Resolving this turn…");
+    setNotice(null);
     try {
       const response = await submitAction(battleId, battle.revision, action);
       applyResponse(response);

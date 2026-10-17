@@ -45,3 +45,11 @@ stable hostname, and a GCP reserved external IP pointing at the VM.
 
 Run `npm test` for client unit tests. Browser validation and production
 deployment are separate gates.
+
+With Vite running, `node scripts/check-battle-action-layout.mjs` checks the real
+HTTP/session action path with mocked API responses at desktop and phone widths.
+It verifies that pending/resolved submission does not shift the arena or scroll
+the viewport. This requires Playwright; if it is supplied by an external CLI,
+set `PLAYWRIGHT_MODULE` to that installation's Playwright module directory.
+`WEB_TEST_ORIGIN` overrides the default `http://127.0.0.1:5173` dev server.
+The test makes no real battle writes and does not test OAuth.
