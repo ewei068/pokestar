@@ -1,7 +1,7 @@
 import type { BattleCatalog, BattleEvent, BattleView } from './types';
 
-export type EventCue = { label: string; subjectId: string | null; tone: 'neutral' | 'damage' | 'heal' | 'status' };
-type Context = { event: BattleEvent; name: string; target: string; move: string; effect: string; species: string };
+export type EventCue = { label: string; subjectId: string | null; tone: 'neutral' | 'damage' | 'heal' | 'status' | 'buff' | 'debuff' };
+type Context = { event: BattleEvent; name: string; target: string; move: string; effect: string; effectType?: string; species: string };
 type Copy = string | ((context: Context) => string);
 type Definition = {
   narration: Copy; label?: Copy; subject?: 'pokemon' | 'target' | 'field';
@@ -33,7 +33,7 @@ export const eventPresentationCatalog: Record<string, Definition> = {
   statusRemoved: { narration: ({ name, event }) => `${name} recovered from ${event.statusId || 'its status'}.`,
     label: ({ event }) => `${event.statusId || 'Status'} cured`, tone: 'heal', batch: event => event.statusId || null },
   effectApplied: { narration: ({ name, effect }) => `${name} gained ${effect}.`, label: ({ effect }) => effect,
-    tone: 'status', batch: event => event.effectId || null },
+    tone: ({ effectType }) => effectType === 'Buff' ? 'buff' : effectType === 'Debuff' ? 'debuff' : 'neutral', batch: event => event.effectId || null },
   effectRemoved: { narration: ({ name, effect }) => `${name} lost ${effect}.`, label: ({ effect }) => `${effect} ended`,
     batch: event => event.effectId || null },
   combatReadinessChanged: { narration: ({ name, event }) => `${name} ${Number(event.amount) < 0 ? 'lost' : 'gained'} ${Math.round(amount(event))}% readiness.`,
@@ -62,6 +62,7 @@ export const presentEvent = (event: BattleEvent, view: BattleView, catalog: Batt
   const pokemonName = (id?: string) => (id && view.pokemon[id]?.name) || 'A Pokémon';
   const context: Context = { event, name: pokemonName(event.pokemonId), target: pokemonName(event.targetPokemonId),
     move: catalog.moves[event.moveId || '']?.name || 'a move',
+    effectType: catalog.effects[event.effectId || '']?.type,
     effect: catalog.effects[event.effectId || '']?.name || event.effectId || 'an effect',
     species: catalog.species[event.speciesId || '']?.name || 'another Pokémon' };
   const resolve = (copy: Copy) => typeof copy === 'function' ? copy(context) : copy;

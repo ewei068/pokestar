@@ -8,6 +8,31 @@ export const makeResultStory = (story: BattleStory): BattleStory => {
   let finalView = structuredClone(initial);
   const events: Omit<BattleEvent, 'sequence'>[] = [];
   switch (story.id) {
+    case 'result-miss':
+      events.push({ type: 'targetMissed', pokemonId: actor, targetPokemonId: target, moveId: 'm33' }); break;
+    case 'result-status-burn':
+    case 'result-status-paralysis':
+    case 'result-status-freeze':
+    case 'result-status-poison':
+    case 'result-status-toxic':
+    case 'result-status-sleep': {
+      const statusId = ({ burn: 'Burn', paralysis: 'Paralysis', freeze: 'Freeze', poison: 'Poison', toxic: 'Badly Poison', sleep: 'Sleep' })[story.id.split('-').pop()!]!;
+      events.push({ type: 'statusApplied', pokemonId: target, statusId }, { type: 'statusRemoved', pokemonId: target, statusId });
+      finalView.pokemon[target].status = { statusId: null, turns: 0 }; break;
+    }
+    case 'result-effect-buff':
+    case 'result-effect-debuff':
+    case 'result-effect-neutral': {
+      const effectId = story.id === 'result-effect-buff' ? 'focus' : story.id === 'result-effect-debuff' ? 'weakness' : 'neutral-study';
+      story.catalog.effects['neutral-study'] = { name: 'Marked', type: 'Other', description: 'A neutral battle marker.' };
+      delete initial.pokemon[ally].effectIds[effectId]; delete finalView.pokemon[ally].effectIds[effectId];
+      events.push({ type: 'effectApplied', pokemonId: ally, effectId, duration: 3 }, { type: 'effectRemoved', pokemonId: ally, effectId });
+      story.inspectedPokemonId = ally; break;
+    }
+    case 'result-reaction-reconcile':
+      finalView.pokemon[target].status = { statusId: 'Paralysis', turns: 2 };
+      finalView.pokemon[ally].effectIds.focus = { duration: 3 };
+      finalView.pokemon[`${own}-149`].effectIds.weakness = { duration: 2 }; break;
     case 'result-damage':
       events.push({ type: 'hpChanged', pokemonId: target, sourcePokemonId: actor, previousHp: 115, hp: 73, amount: -42 });
       finalView.pokemon[target].hp = 73; break;

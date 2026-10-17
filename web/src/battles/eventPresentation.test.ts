@@ -31,6 +31,12 @@ describe("battle event text", () => {
     assert.equal(highlightedPokemonId({ type: "targetMissed", sequence: 2,
       pokemonId: "p1", targetPokemonId: "p2" }), "p2");
   });
+  it("uses the matching semantic tone for buff and debuff labels", () => {
+    for (const [type, tone] of [["Buff", "buff"], ["Debuff", "debuff"], ["Neutral", "neutral"]]) {
+      assert.equal(presentEvent({ type: "effectApplied", sequence: 0, pokemonId: "p1", effectId: "focus" },
+        view, { ...catalog, effects: { focus: { type } } })?.cue.tone, tone);
+    }
+  });
   it("resolves short copy and narration from the same catalog context", () => {
     const result = presentEvent({ type: "effectApplied", sequence: 0, pokemonId: "p1", effectId: "focus" },
       view, { ...catalog, effects: { focus: { name: "Focus" } } });

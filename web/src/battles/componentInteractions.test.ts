@@ -113,4 +113,25 @@ describe('result presentation', () => {
     await userEvent.setup({ document: dom.window.document }).click(page.getByRole('button', { name: 'Skip animations' }));
     assert.equal(skipped, true);
   });
+
+  it('reuses a status canvas in place and removes both reaction renderers on completion', async () => {
+    const { emptyPlayback, reducePlayback } = await import('./playback');
+    const story = makeBattleStory('result-status-burn');
+    const initial = { ...story.battle, found: true as const, stateId: '17', updates: [] };
+    let state = reducePlayback(emptyPlayback(), { type: 'receive', response: initial, catalog: story.catalog });
+    state = reducePlayback(state, { type: 'receive', catalog: story.catalog, response: {
+      ...initial, revision: 18, stateId: '18', view: story.sequence!.finalView,
+      updates: [{ revision: 18, action: { action: 'skipTurn' }, events: story.sequence!.events, log: [] }],
+    } });
+    const frame = state.queue[0];
+    assert.equal(frame.previousView.pokemon['Rival Team-94'].status.statusId, undefined);
+    const props = { view: frame.view, catalog: story.catalog, ownTeamNames: story.battle.myTeamNames,
+      targetIds: [], primaryTargetId: null, patternTiles: [], affectedIds: [], playback: false,
+      highlightedId: null, onChooseTarget() {}, onInspect() {}, onHover() {} };
+    const page = render(createElement(BattleGrid, { ...props, resultFrame: frame }));
+    assert.ok(page.container.querySelector('.arena-board-vfx[data-vfx-type="fire"][data-vfx-kind="status"]'));
+    assert.equal(page.container.querySelector('.arena-motion-actor'), null);
+    page.rerender(createElement(BattleGrid, { ...props, view: story.sequence!.finalView }));
+    assert.equal(page.container.querySelector('.arena-result-reactions,.arena-board-vfx,.arena-announcement'), null);
+  });
 });

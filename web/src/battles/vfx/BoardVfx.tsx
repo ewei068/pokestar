@@ -12,10 +12,10 @@ export const tileVfxSeed = (event: BattleEvent, tile: BattleTile) => {
   return hash >>> 0;
 };
 
-/** A single canvas draws every executed tile against the shared move clock. */
-export const BoardVfx = ({ boardRef, event, view, tiles, type, kind, startedAt }: {
+/** A canvas draws a recipe on anchored tiles; moves include approach, status reactions start immediately. */
+export const BoardVfx = ({ boardRef, event, view, tiles, type, kind, startedAt, delayMs = MOVE_APPROACH_MS }: {
   boardRef: RefObject<HTMLDivElement>; event: BattleEvent; view: BattleView; tiles: BattleTile[];
-  type: VfxType; kind: VfxKind; startedAt: number;
+  type: VfxType; kind: VfxKind; startedAt: number; delayMs?: number;
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -50,7 +50,7 @@ export const BoardVfx = ({ boardRef, event, view, tiles, type, kind, startedAt }
     const render = (now: number) => {
       if (disposed) return;
       ctx.clearRect(0, 0, canvas.width / density, canvas.height / density);
-      const ms = now - startedAt - MOVE_APPROACH_MS;
+      const ms = now - startedAt - delayMs;
       if (ms > 0 && ms < TILE_EFFECT_MS) placements.forEach(tile => drawTileVfx(ctx, type, kind, tile, ms));
       if (ms < TILE_EFFECT_MS) frame = requestAnimationFrame(render);
     };
@@ -59,7 +59,7 @@ export const BoardVfx = ({ boardRef, event, view, tiles, type, kind, startedAt }
       drawTileVfx = renderer.drawTileVfx; frame = requestAnimationFrame(render);
     });
     return () => { disposed = true; cancelAnimationFrame(frame); observer?.disconnect(); window.removeEventListener('resize', measure); };
-  }, [boardRef, event, view, tiles, type, kind, startedAt]);
+  }, [boardRef, event, view, tiles, type, kind, startedAt, delayMs]);
   return <canvas ref={canvasRef} className="arena-board-vfx" data-vfx-type={type} data-vfx-kind={kind}
     data-vfx-targets={JSON.stringify(tiles)} aria-hidden="true" />;
 };

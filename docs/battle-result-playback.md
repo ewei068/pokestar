@@ -22,7 +22,10 @@ revision, sequence and stage; a new polling result cannot restart its timer.
 
 HP observations use their absolute `hp` field. Reaching zero HP does not mark a
 Pokémon fainted until `pokemonFainted` is presented. Status/effect changes update
-only the fields supplied. Missing consequences (stat modifiers, cooldowns,
+only the fields supplied. `moveStarted` projects its actor’s combat readiness
+to 0 immediately, matching the engine’s move-use reset; subsequent supplied
+readiness observations and canonical turn preparation remain authoritative.
+Missing consequences (stat modifiers, cooldowns,
 routine readiness advancement and duration ticks) arrive through reconciliation.
 The final canonical view remains authoritative even if observations are missing.
 No per-event or per-action snapshots were added to persistence.
@@ -57,9 +60,14 @@ Any other event is a barrier, including faint, revival, move completion and phas
 changes; action revisions are never crossed. Each narration remains an
 individual log entry in server order.
 
-State differences now drive three small configurable reactions: damage flashes,
-recoil and short rays; healing glow and staggered plus particles; fainting drops
-and fades the sprite, leaving its card readable. Canonical reconciliation uses
+State differences drive configurable damage, healing, faint, status and effect
+reactions. Status application reuses the matching type’s Status move recipe in
+place; cures use a clearing ring. Buff gains send red chevrons upward with red labels, debuff gains send blue
+chevrons downward, and neutral gains pulse gold. Effect loss has text/state
+updates without VFX or badge pulses. Miss events sidestep and return with short trails. Damage
+flashes/recoils, healing emits plus particles, and fainting drops/fades the
+sprite while leaving its card readable. Duration ticks do not replay
+status/effect gain/loss reactions. Canonical reconciliation uses
 the same reactions. Skip, reduced motion and unmount dispose all transient work.
 No generated artwork or approved move VFX recipes were changed.
 
@@ -94,7 +102,7 @@ All events also carry the existing per-action `sequence`.
 | `weatherChanged` | `previousWeatherId`, `weatherId`, `duration` | Set/replacement, refresh and clearing, including expiry; null ID means cleared. |
 | `combatReadinessChanged` | `pokemonId`, nullable `sourcePokemonId`, `previousCombatReadiness`, `combatReadiness`, signed actual `amount` | Explicit boost/drain after clamping; no event when unchanged. Independent of whether rules callbacks are enabled. |
 
-Natural readiness progression, action readiness reset, weather countdown and
+Natural readiness progression, weather countdown and
 other routine changes continue to reconcile without separate announcements.
 
 ## Configuration, verification and follow-ups
@@ -102,10 +110,11 @@ other routine changes continue to reconcile without separate announcements.
 The [result settings and extension guide](../web/src/battles/results/README.md)
 records editable parameters, units, stories, responsibilities and extension
 seams. [Initial verification](verification/event-results/README.md) and
-[batch/log verification](verification/batched-results/README.md) cover unit,
+[batch/log verification](verification/batched-results/README.md) and
+[status/effect verification](verification/status-effect-results/README.md) cover unit,
 component and browser checks. These result settings are separate from the
 approved [move VFX recipes](battle-vfx-guide.md).
 
-Shield/miss/status-specific visuals, batching across intervening events, semantic
+Shield-specific visuals, batching across intervening events, semantic
 reports that also produce Discord logs, richer difference animations and SFX
 remain follow-ups.

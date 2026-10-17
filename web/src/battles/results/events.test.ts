@@ -13,6 +13,14 @@ describe('result observations', () => {
     assert.equal(next.pokemon['Rival Team-94'].isFainted, false);
     assert.equal(view.pokemon['Rival Team-94'].hp, 115);
   });
+  it('spends the actor readiness when a move starts and preserves later supplied changes', () => {
+    const { battle } = makeBattleStory('ready'), view = battle.view, id = 'Star Team-157';
+    const next = applyEventView(view, { type: 'moveStarted', sequence: 0, pokemonId: id, moveId: 'm33' });
+    assert.equal(next.pokemon[id].combatReadiness, 0);
+    assert.equal(view.pokemon[id].combatReadiness, 100);
+    assert.equal(next.pokemon['Rival Team-94'], view.pokemon['Rival Team-94']);
+    assert.equal(applyEventView(next, { type: 'combatReadinessChanged', sequence: 1, pokemonId: id, combatReadiness: 15 }).pokemon[id].combatReadiness, 15);
+  });
   it('does not invent missing state, rule consequences, or departed Pokémon', () => {
     const { battle } = makeBattleStory('ready'), view = battle.view;
     assert.equal(applyEventView(view, { type: 'unknown', sequence: 0 }), view);

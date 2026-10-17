@@ -1,6 +1,6 @@
 import type { BattleEvent, BattleView, PokemonView } from '../types';
 
-/** Apply supplied observations only. Missing rule consequences wait for reconciliation. */
+/** Apply supplied observations and the move-use readiness reset. Other consequences wait for reconciliation. */
 export const applyEventView = (view: BattleView, event: BattleEvent): BattleView => {
   if (event.type === 'weatherChanged') return { ...view, weather: { weatherId: event.weatherId ?? null, duration: event.duration ?? 0 } };
   if (event.type === 'battleEnded') return { ...view, ended: true, winner: event.winner ?? null };
@@ -9,6 +9,8 @@ export const applyEventView = (view: BattleView, event: BattleEvent): BattleView
   if (!pokemon) return view;
   let patch: Partial<PokemonView>;
   switch (event.type) {
+    // The engine spends readiness before emitting moveStarted, independently of move outcomes.
+    case 'moveStarted': patch = { combatReadiness: 0 }; break;
     case 'hpChanged': if (event.hp === undefined) return view; patch = { hp: event.hp }; break;
     case 'pokemonFainted': patch = { hp: 0, isFainted: true }; break;
     case 'pokemonRevived': if (event.hp === undefined) return view; patch = { hp: event.hp, isFainted: false }; break;
