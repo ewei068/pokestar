@@ -83,6 +83,15 @@ const loadBattleContext = async (data, interaction, serviceOverride = null) => {
     currentMoveId: null,
     currentTargetId: null,
   };
+  const auto = await service.getAutoAvailability(
+    record,
+    state.battle,
+    interaction.user.id,
+  );
+  Object.assign(state.battle.autoData, {
+    shouldShowAutoBattle: auto.visible,
+    canAuto: auto.enabled,
+  });
   // Selections belong to this message, not another message showing the same revision.
   state.currentMoveId =
     data.moveId ||
@@ -115,8 +124,11 @@ const loadBattleContext = async (data, interaction, serviceOverride = null) => {
  */
 const refreshBattleIfStale = async (context, interaction) => {
   if (
-    !context.durable ||
-    (!context.stale && context.record.status === "active")
+    (!context.durable && !context.battle.autoData.isAutoMode) ||
+    (context.durable &&
+      !context.stale &&
+      context.record.status === "active" &&
+      !context.record.autoCommit)
   )
     return false;
   // Resolve lazily: battle.js also uses the continuation renderer when starting a battle.

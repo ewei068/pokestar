@@ -2,21 +2,35 @@ const { randomUUID } = require("crypto");
 const { restoreBattle } = require("../persistence/battleRecord");
 const { chooseNpcAction } = require("../../utils/battleUtils");
 const { logger } = require("../../log");
+const { simulateAutoBattle } = require("./simulateAutoBattle");
 
 /**
  * Surface-neutral battle reads and actions. Authorization belongs here, not
  * in Discord component handlers or a future HTTP route.
  */
 class BattleService {
-  constructor(store, {
-    maxNpcActions = 300,
-    npcAction = chooseNpcAction,
-    onCompleted = null,
-  } = {}) {
+  constructor(
+    store,
+    {
+      maxNpcActions = 300,
+      npcAction = chooseNpcAction,
+      onCompleted = null,
+      autoEligibility = null,
+      autoCharge = null,
+      autoAction = chooseNpcAction,
+      maxAutoActions = 300,
+      yieldAuto,
+    } = {},
+  ) {
     this.store = store;
     this.maxNpcActions = maxNpcActions;
     this.npcAction = npcAction;
     this.onCompleted = onCompleted;
+    this.autoEligibility = autoEligibility;
+    this.autoCharge = autoCharge;
+    this.autoAction = autoAction;
+    this.maxAutoActions = maxAutoActions;
+    this.yieldAuto = yieldAuto;
   }
 
   /**
@@ -72,9 +86,10 @@ class BattleService {
     if (record.completionStatus === "pending") {
       await this.settleCompletion(battleId);
     }
-    const latest = record.completionStatus === "pending"
-      ? await this.store.get(battleId)
-      : record;
+    const latest =
+      record.completionStatus === "pending"
+        ? await this.store.get(battleId)
+        : record;
     return {
       found: true,
       battleId,
@@ -119,10 +134,128 @@ class BattleService {
     };
   }
 
+  /**
+   * Live account capability, shared by Discord and future web Auto controls.
+   * @param {object} record
+   * @param {Battle} battle
+   * @param {string} userId
+   */
+  async getAutoAvailability(record, battle, userId) {
+    const cost = battle.autoData.autoBattleCost;
+    const unavailable = (reason) => ({
+      visible: false,
+      enabled: false,
+      cost,
+      reason,
+    });
+    if (!record.participantIds.includes(userId))
+      return unavailable("battle_not_found");
+    if (record.status !== "active" || battle.ended)
+      return unavailable("battle_inactive");
+    if (record.autoCommit) return unavailable("auto_in_progress");
+    // Never take control of another human's Pokémon, including cooperative modes.
+    if (battle.isPvp || record.participantIds.length !== 1)
+      return unavailable("auto_unsupported");
+    if (battle.activePokemon?.userId !== userId)
+      return unavailable("wrong_actor");
+    if (
+      !this.autoEligibility ||
+      !this.autoCharge ||
+      !Number.isFinite(cost) ||
+      cost < 0
+    )
+      return unavailable("auto_unavailable");
+    return { ...(await this.autoEligibility({ userId, cost })), cost };
+  }
+
+  /**
+   * Simulate privately; take a short revision-checked claim only to charge/commit.
+   * @param {{battleId: string, userId: string, expectedRevision: number, requestId: string}} options
+   */
+  async auto({ battleId, userId, expectedRevision, requestId }) {
+    if (!requestId || !Number.isInteger(expectedRevision))
+      throw new Error("Auto requires requestId and expectedRevision");
+    const record = await this.store.get(battleId);
+    if (!record || !record.participantIds.includes(userId))
+      return { accepted: false, reason: "battle_not_found" };
+    if (record.autoResult?.requestId === requestId) {
+      if (
+        record.autoResult.userId !== userId ||
+        record.autoResult.baseRevision !== expectedRevision
+      )
+        return this.store.rejected("request_id_conflict", record);
+      await this.settleCompletion(battleId);
+      return { accepted: true, duplicate: true };
+    }
+    if (record.revision !== expectedRevision)
+      return this.store.rejected("stale_revision", record);
+    if (record.autoCommit)
+      return this.store.rejected("auto_in_progress", record);
+    const battle = restoreBattle(record);
+    const availability = await this.getAutoAvailability(record, battle, userId);
+    if (!availability.enabled)
+      return this.store.rejected(availability.reason, record);
+
+    const simulation = await simulateAutoBattle(battle, {
+      chooseAction: this.autoAction,
+      maxActions: this.maxAutoActions,
+      yieldControl: this.yieldAuto,
+    });
+    if (!simulation.completed)
+      return this.store.rejected(
+        simulation.reason,
+        await this.store.get(battleId),
+      );
+    const claim = {
+      claimId: randomUUID(),
+      requestId,
+      userId,
+      cost: availability.cost,
+    };
+    if (!(await this.store.claimAuto(battleId, expectedRevision, claim))) {
+      const latest = await this.store.get(battleId);
+      if (
+        latest.autoResult?.requestId === requestId &&
+        latest.autoResult.userId === userId
+      )
+        return { accepted: true, duplicate: true };
+      return this.store.rejected(
+        latest.autoCommit ? "auto_in_progress" : "stale_revision",
+        latest,
+      );
+    }
+    try {
+      const payment = await this.autoCharge({ userId, cost: claim.cost });
+      if (!payment.paid) {
+        await this.store.releaseAuto(battleId, claim.claimId);
+        return this.store.rejected(
+          payment.reason || "auto_payment_failed",
+          await this.store.get(battleId),
+        );
+      }
+      await this.store.finishAuto(
+        battleId,
+        expectedRevision,
+        claim,
+        simulation,
+      );
+    } catch (error) {
+      // A payment timeout may have debited money. Never release/retry an uncertain charge.
+      logger.error(`Battle ${battleId} Auto requires review: ${error}`);
+      await this.store.failAuto(battleId, claim.claimId, error);
+      return this.store.rejected(
+        "auto_requires_review",
+        await this.store.get(battleId),
+      );
+    }
+    await this.settleCompletion(battleId);
+    return { accepted: true, duplicate: false };
+  }
+
   async settleCompletion(battleId) {
     if (!this.onCompleted) return;
     const claimId = randomUUID();
-    if (!await this.store.claimCompletion(battleId, claimId)) return;
+    if (!(await this.store.claimCompletion(battleId, claimId))) return;
     try {
       const record = await this.store.get(battleId);
       const summary = await this.onCompleted(restoreBattle(record), record);
@@ -138,7 +271,7 @@ class BattleService {
   async advanceNpcs(battleId) {
     for (let count = 0; count < this.maxNpcActions; count += 1) {
       const record = await this.store.get(battleId);
-      if (record.status !== "active") return record;
+      if (record.status !== "active" || record.autoCommit) return record;
       const battle = restoreBattle(record);
       const actorUserId = battle.activePokemon?.userId;
       if (!actorUserId || !battle.isNpc(actorUserId)) return record;
@@ -150,7 +283,12 @@ class BattleService {
         requestId: `npc:${record.revision}`,
         action: this.npcAction(battle),
       });
-      if (!result.accepted && !["stale_revision", "request_id_conflict"].includes(result.reason)) {
+      if (!result.accepted && result.reason === "auto_in_progress")
+        return this.store.get(battleId);
+      if (
+        !result.accepted &&
+        !["stale_revision", "request_id_conflict"].includes(result.reason)
+      ) {
         throw new Error(`NPC action rejected: ${result.reason}`);
       }
     }

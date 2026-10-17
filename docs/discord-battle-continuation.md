@@ -72,14 +72,57 @@ The `DURABLE_BATTLES_ENABLED` flag controls the cutover in supported live battle
 starts (including PvE, PvP, dungeons and tower). Raids have a separate flag and
 completion constraints; continuation lists battles created through the service.
 
+## Auto battle
+
+Auto uses the existing info-row button and `battleInfo` event. Each durable read
+checks the trainer's current Darkrai unlock and Dream Card balance through
+`BattleService.getAutoAvailability`; battle-start eligibility flags are not used
+as current account state. The cost remains the battle's stored cost. Auto is
+limited to a single human participant's non-PvP battle and their active turn.
+
+Discord acknowledges the interaction before calculation and edits the message
+once with the final result. The Instant Auto user setting and paced timer loop
+are removed; older stored setting values are ignored. The shared service can
+support a future web Auto command, but no HTTP route or web Auto button is added.
+
+`BattleService.auto` follows this order:
+
+1. Validate participant, observed revision, current turn and account eligibility.
+2. Replay and simulate privately, yielding to the event loop every five actions,
+   with a 300-action limit. No gameplay or currency writes occur during this step.
+3. Atomically claim finalization only if the revision still matches, the battle
+   is active, no other Auto owns the claim, and the inactivity/mode deadline has
+   not passed. A manual action may win during calculation; then Auto is discarded
+   without charge. Ordinary action writes also check for this claim atomically.
+4. Conditionally decrement the current trainer's Dream Cards with `$inc`, checking
+   the current unlock and sufficient balance. A known payment rejection releases
+   the claim and discards the simulation; gameplay revision, actions and view are
+   unchanged.
+5. Under that same claim, append all generated actions/events with consecutive
+   revisions and save the completed view in one battle-document update. Completed
+   request metadata deduplicates retries, including after a restart.
+6. Use the existing completion claim to record Auto quest usage and grant mode
+   rewards once. Rendering the result does not repeat these effects.
+
+The finalization claim covers only payment and the final write, not calculation.
+Its acquisition is the deadline acceptance point: a claim accepted before expiry
+can finish payment afterward. While claimed, Discord offers Refresh only and web
+legal actions are empty. Claims do not expire automatically: a crash, ambiguous
+payment error, or failed final write after payment requires manual reconciliation.
+The saved `autoCommit` identifies the user, cost, request, original revision and
+claim time, with an error when available. Inspect payment before deciding whether
+to refund or complete/release an interrupted claim; blindly releasing and retrying
+could charge twice. A known rejection leaves no claim. After successful commit,
+`autoResult` retains the accepted request metadata and completion owns recovery.
+
+The flag-off legacy in-memory Auto path retains its existing upfront payment and
+in-memory execution. It now also yields and sends one final update, and local
+controls cannot mutate that battle while Auto is running. Durable guarantees
+above require `DURABLE_BATTLES_ENABLED=true`.
+
 ## Remaining parity work
 
-Paid Auto battle is still missing from the durable adapter. Its legacy handler
-spends Dream Cards and mutates an in-memory battle; routing a durable message
-there would bypass the shared state. It needs a durable command covering the
-payment and action sequence. The current adapter omits that control, as before
-this UI repair. Track this explicitly rather than treating the Discord port as
-complete. Original mode-specific result/replay controls are preserved when their
+Original mode-specific result/replay controls are preserved when their
 local menu context is still available. Reconstructing those controls after a
 restart remains follow-up work; the battle itself can still be continued.
 
@@ -96,3 +139,12 @@ and once-only completion. `events/battle/__tests__/durableBattle.test.js` checks
 that deprecated controls refresh without submitting actions.
 `handlers/__tests__/battleInteractionRewards.test.js` checks that durable clicks
 suppress per-click rewards while legacy clicks retain their configured rewards.
+
+`battle/service/__tests__/AutoBattle.test.js` covers private simulation, concurrent
+manual/Auto writes, conditional payment rejection, expiry, bounded execution,
+multi-turn replay and interrupted payment/finalization claims across restarts.
+`events/battle/__tests__/autoBattleDiscord.test.js` checks current eligibility,
+acknowledgement before calculation/payment, and one final reply. Service tests
+also check the conditional currency query and production completion wiring.
+These are unit tests with collection doubles; real MongoDB/Discord validation
+remains a deployment gate.

@@ -102,10 +102,33 @@ const battleInfo = async (interaction, data) => {
     await interaction.update(await getStartTurnSend(battle, stateId, context));
     return { skipInteractionRewards: context.durable };
   } else if (tab === "auto") {
-    // toggle auto mode
-    if (context.durable)
-      return { err: "Auto battle is not yet available for continued battles." };
-    battle.autoData.isAutoMode = true;
+    if (context.durable) {
+      await interaction.deferUpdate();
+      const outcome = await context.service.auto({
+        battleId: context.record._id,
+        userId: interaction.user.id,
+        expectedRevision: context.expectedRevision,
+        requestId: interaction.id,
+      });
+      const latest = await loadBattleContext(
+        { stateId },
+        interaction,
+        context.service,
+      );
+      if (!latest) {
+        await interaction.editReply({
+          content: "Battle unavailable.",
+          embeds: [],
+          components: [],
+        });
+        return { skipInteractionRewards: true };
+      }
+      latest.rejection = outcome.accepted ? null : outcome.reason;
+      await interaction.editReply(
+        await getStartTurnSend(latest.battle, latest.stateId, latest),
+      );
+      return { skipInteractionRewards: true };
+    }
     return await startAuto({
       battle,
       stateId,
@@ -120,7 +143,6 @@ const battleInfo = async (interaction, data) => {
   const infoRow = buildBattleInfoActionRow(battle, stateId, {
     currentTab: tab,
     currentTeamIndex: nextTeamIndex,
-    showAutoBattle: !context.durable,
   });
   interaction.message.components[0] = infoRow;
 

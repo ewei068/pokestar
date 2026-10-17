@@ -10,9 +10,9 @@
  * battle.js Handles all battle interactions from the user at a base level down to creating the teams.
  */
 // eslint-disable-next-line no-unused-vars
-const { MessageComponentInteraction, Message } = require("discord.js");
+const { MessageComponentInteraction } = require("discord.js");
 const { Battle } = require("../battle/engine/Battle");
-const { getOrSetDefault, errorlessAsync } = require("../utils/utils");
+const { getOrSetDefault } = require("../utils/utils");
 const {
   buildBattleEmbed,
   buildPveListEmbed,
@@ -72,6 +72,7 @@ const {
   isDurableBattleEnabled,
 } = require("./durableBattle");
 const { renderBattle } = require("../battle/discord/durableBattleMessages");
+const { yieldToEventLoop } = require("../battle/service/simulateAutoBattle");
 
 /**
  * @param {Trainer} trainer
@@ -374,10 +375,14 @@ const getStartTurnSend = async (battle, stateId, context = null) => {
   let content = battle.log.join("\n");
   if (context?.durable) {
     const { record } = context;
+    const autoMessage = record.autoCommit?.error
+      ? "Auto payment or finalization needs manual review. Your previous battle state is saved."
+      : "Auto is finalizing. Refresh shortly for the result.";
     content = [
       context.rejection
         ? `Action was not accepted (${context.rejection}). Refreshed to the current battle.`
         : null,
+      record.autoCommit ? autoMessage : null,
       record.completionStatus === "failed"
         ? "Reward processing needs manual review. Your battle result is saved."
         : null,
@@ -416,6 +421,7 @@ const getStartTurnSend = async (battle, stateId, context = null) => {
   const readOnly =
     context?.durable &&
     (context.record.status !== "active" ||
+      context.record.autoCommit ||
       battle.activePokemon?.userId !== context.userId);
   if (readOnly && !battle.ended) {
     components.push(
@@ -424,9 +430,7 @@ const getStartTurnSend = async (battle, stateId, context = null) => {
   } else if (!battle.ended) {
     // TODO: stop button?
     if (!battle.autoData.isAutoMode) {
-      const infoRow = buildBattleInfoActionRow(battle, stateId, {
-        showAutoBattle: !context?.durable,
-      });
+      const infoRow = buildBattleInfoActionRow(battle, stateId, {});
       components.push(infoRow);
 
       // check if active pokemon can move
@@ -468,90 +472,26 @@ const getStartTurnSend = async (battle, stateId, context = null) => {
   };
 };
 
-/**
- * @param {Battle} battle
- * @param {string} stateId
- * @param {MessageComponentInteraction} interaction
- */
+// Feature-flagged legacy battles also show one final update; no paced timer loop.
 const instantAutoBattle = async (battle, stateId, interaction) => {
   await interaction.deferUpdate();
-  for (let i = 0; i < 300; i += 1) {
-    for (let retry = 0; retry < 3; retry += 1) {
-      try {
-        if (battle.ended || !battle.autoData.isAutoMode) {
-          const componentToSend = await getStartTurnSend(battle, stateId);
-          return await interaction.editReply(componentToSend);
-        }
-        npcTurnAction(battle);
-        continue;
-      } catch (err) {
-        logger.error(`Failed to instant auto turn: ${err}`);
-        logger.error(battle.log?.join?.("\n"));
-      }
-      logger.error("Failed to instant auto turn after 3 retries");
-      return;
-    }
-  }
-  logger.error("Failed to instant auto complete after 300 turns");
-};
-
-/**
- * @param {Battle} battle
- * @param {string} stateId
- * @param {object} options
- * @param {MessageComponentInteraction=} options.interaction
- * @param {Message=} options.messageRef
- * @param {number=} options.retry
- * @param {number=} options.totalTurns
- */
-const nextAutoTurn = async (
-  battle,
-  stateId,
-  { messageRef, interaction, retry = 0, totalTurns = 0 },
-) => {
-  if (totalTurns > 300) {
-    logger.error("Auto turn timed out");
-    return;
-  }
-  if (battle.ended || !battle.autoData.isAutoMode) {
-    return;
-  }
-  let newMessageRef;
   try {
-    npcTurnAction(battle);
-    const componentToSend = await getStartTurnSend(battle, stateId);
-    if (interaction) {
-      newMessageRef = await interaction.update(componentToSend);
-    } else if (messageRef) {
-      newMessageRef = await messageRef.edit(componentToSend);
-    } else {
-      logger.error("No interaction or message ref provided");
-      return;
+    for (let i = 0; i < 300 && !battle.ended; i += 1) {
+      if (i % 5 === 0) await yieldToEventLoop();
+      npcTurnAction(battle);
     }
-  } catch (err) {
-    logger.error(`Failed to send auto turn: ${err}`);
-    logger.error(battle.log?.join?.("\n"));
-    if (retry < 3) {
-      return await nextAutoTurn(battle, stateId, {
-        messageRef,
-        interaction,
-        retry: retry + 1,
-        totalTurns,
-      });
+    if (!battle.ended) {
+      battle.autoData.isAutoMode = false;
+      await interaction.editReply(await getStartTurnSend(battle, stateId));
+      return {
+        err: "Auto reached its turn limit. Continue the battle manually.",
+      };
     }
-    logger.error("Failed to send auto turn after 3 retries");
-    return;
+    await interaction.editReply(await getStartTurnSend(battle, stateId));
+    return null;
+  } finally {
+    battle.autoData.isAutoMode = false;
   }
-
-  return await setTimeout(
-    async () =>
-      await nextAutoTurn(battle, stateId, {
-        // @ts-ignore
-        messageRef: newMessageRef,
-        totalTurns: totalTurns + 1,
-      }),
-    1000,
-  );
 };
 
 /**
@@ -587,16 +527,8 @@ const startAuto = async ({ battle, stateId, interaction, user }) => {
     npcId: battle.npcId,
   });
 
-  if (trainer.settings.instantAutoBattle) {
-    await instantAutoBattle(battle, stateId, interaction);
-    return;
-  }
-
-  errorlessAsync(() =>
-    nextAutoTurn(battle, stateId, {
-      interaction,
-    }),
-  );
+  battle.autoData.isAutoMode = true;
+  return instantAutoBattle(battle, stateId, interaction);
 };
 
 const buildPveSend = async ({
@@ -1294,7 +1226,6 @@ module.exports = {
   processDurableBattleCompletion,
   applyDurableTowerCompletion,
   getStartTurnSend,
-  nextAutoTurn,
   startAuto,
   buildPveSend,
   buildDungeonSend,

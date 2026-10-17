@@ -4,7 +4,8 @@ class MemoryBattleCollection {
   }
 
   async insertOne(document) {
-    if (this.documents.has(document._id)) throw new Error("duplicate battle ID");
+    if (this.documents.has(document._id))
+      throw new Error("duplicate battle ID");
     this.documents.set(document._id, structuredClone(document));
     return { insertedId: document._id };
   }
@@ -29,21 +30,29 @@ class MemoryBattleCollection {
 
   async updateOne(filter, update) {
     const document = this.documents.get(filter._id);
-    if (
-      !document ||
-      (filter.revision !== undefined && document.revision !== filter.revision) ||
-      document.status !== filter.status ||
-      (filter.completionStatus !== undefined &&
-        document.completionStatus !== filter.completionStatus) ||
-      (filter.completionClaimId !== undefined &&
-        document.completionClaimId !== filter.completionClaimId) ||
-      (filter.expiresAt?.$lte && document.expiresAt > filter.expiresAt.$lte)
-    ) {
-      return { modifiedCount: 0 };
+    const matches =
+      document &&
+      Object.entries(filter).every(([key, expected]) => {
+        const actual = key
+          .split(".")
+          .reduce((value, part) => value?.[part], document);
+        if (expected && typeof expected === "object") {
+          if ("$lte" in expected) return actual <= expected.$lte;
+          if ("$gt" in expected) return actual > expected.$gt;
+        }
+        return expected === null ? actual == null : actual === expected;
+      });
+    if (!matches) return { modifiedCount: 0 };
+    for (const [key, value] of Object.entries(update.$set || {})) {
+      const parts = key.split(".");
+      const target = parts
+        .slice(0, -1)
+        .reduce((parent, part) => parent[part], document);
+      target[parts.at(-1)] = structuredClone(value);
     }
-    Object.assign(document, structuredClone(update.$set));
     if (update.$push?.actions) {
-      document.actions.push(structuredClone(update.$push.actions));
+      const addition = update.$push.actions;
+      document.actions.push(...structuredClone(addition.$each || [addition]));
     }
     return { modifiedCount: 1 };
   }

@@ -58,7 +58,7 @@ const projectSnapshot = (snapshot, ownTeams) => ({
 
 const availableActions = (record, battle, userId) => {
   const pokemon = battle.activePokemon;
-  if (record.status !== "active" || !pokemon || pokemon.userId !== userId) {
+  if (record.status !== "active" || record.autoCommit || !pokemon || pokemon.userId !== userId) {
     return { canSkip: false, moves: [] };
   }
   if (!pokemon.canMove()) return { canSkip: true, moves: [] };

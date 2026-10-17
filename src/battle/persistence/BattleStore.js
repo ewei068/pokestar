@@ -81,6 +81,7 @@ class BattleStore {
     const record = await this.collection.findOne({ _id: battleId });
     if (
       record?.status === "active" &&
+      !record.autoCommit &&
       record.expiresAt &&
       record.expiresAt <= this.now()
     ) {
@@ -89,6 +90,7 @@ class BattleStore {
         {
           _id: battleId,
           status: "active",
+          autoCommit: null,
           expiresAt: { $lte: now },
         },
         {
@@ -96,9 +98,7 @@ class BattleStore {
             status: "expired",
             closedAt: now,
             updatedAt: now,
-            resultExpiresAt: new Date(
-              now.getTime() + record.resultRetentionMs,
-            ),
+            resultExpiresAt: new Date(now.getTime() + record.resultRetentionMs),
           },
         },
       );
@@ -155,6 +155,7 @@ class BattleStore {
         record,
       );
     }
+    if (record.autoCommit) return this.rejected("auto_in_progress", record);
     if (record.expiresAt && record.expiresAt <= this.now()) {
       return this.rejected("battle_expired", record);
     }
@@ -182,7 +183,13 @@ class BattleStore {
       log: outcome.log,
     };
     const result = await this.collection.updateOne(
-      { _id: battleId, revision: record.revision, status: "active" },
+      {
+        _id: battleId,
+        revision: record.revision,
+        status: "active",
+        autoCommit: null,
+        expiresAt: { $gt: now },
+      },
       {
         $set: {
           revision: nextRevision,
@@ -201,7 +208,9 @@ class BattleStore {
     );
     if (result.modifiedCount !== 1) {
       const latest = await this.get(battleId);
-      const committed = latest.actions.find((entry) => entry.requestId === requestId);
+      const committed = latest.actions.find(
+        (entry) => entry.requestId === requestId,
+      );
       if (committed) {
         if (
           committed.actorUserId !== actorUserId ||
@@ -217,7 +226,10 @@ class BattleStore {
           view: latest.view,
         };
       }
-      return this.rejected("stale_revision", latest);
+      return this.rejected(
+        latest.autoCommit ? "auto_in_progress" : "stale_revision",
+        latest,
+      );
     }
     return {
       accepted: true,
@@ -226,6 +238,99 @@ class BattleStore {
       revision: nextRevision,
       view: outcome.snapshot,
     };
+  }
+
+  /**
+   * Claim only the payment/final-write phase, after the private simulation.
+   * @param {string} battleId
+   * @param {number} expectedRevision
+   * @param {object} claim
+   */
+  async claimAuto(battleId, expectedRevision, claim) {
+    const now = this.now();
+    const result = await this.collection.updateOne(
+      {
+        _id: battleId,
+        revision: expectedRevision,
+        status: "active",
+        autoCommit: null,
+        expiresAt: { $gt: now },
+      },
+      { $set: { autoCommit: { ...claim, claimedAt: now }, updatedAt: now } },
+    );
+    return result.modifiedCount === 1;
+  }
+
+  /**
+   * Known payment rejection releases the claim without changing gameplay.
+   * @param {string} battleId
+   * @param {string} claimId
+   */
+  async releaseAuto(battleId, claimId) {
+    const result = await this.collection.updateOne(
+      { _id: battleId, status: "active", "autoCommit.claimId": claimId },
+      { $set: { autoCommit: null, updatedAt: this.now() } },
+    );
+    if (result.modifiedCount !== 1) throw new Error("Lost Auto payment claim");
+  }
+
+  /**
+   * Ambiguous payment/write failure: keep the claim for manual reconciliation.
+   * @param {string} battleId
+   * @param {string} claimId
+   * @param {*} error
+   */
+  async failAuto(battleId, claimId, error) {
+    await this.collection.updateOne(
+      { _id: battleId, status: "active", "autoCommit.claimId": claimId },
+      { $set: { "autoCommit.error": String(error), updatedAt: this.now() } },
+    );
+  }
+
+  /**
+   * Commit the complete replay batch under the same claim that authorized payment.
+   * @param {string} battleId
+   * @param {number} expectedRevision
+   * @param {object} claim
+   * @param {object} simulation
+   */
+  async finishAuto(battleId, expectedRevision, claim, simulation) {
+    const now = this.now();
+    const actions = simulation.actions.map((entry, index) => ({
+      ...entry,
+      revision: expectedRevision + index + 1,
+      requestId: `auto:${claim.requestId}:${index}`,
+    }));
+    const result = await this.collection.updateOne(
+      {
+        _id: battleId,
+        status: "active",
+        revision: expectedRevision,
+        "autoCommit.claimId": claim.claimId,
+      },
+      {
+        $set: {
+          revision: expectedRevision + actions.length,
+          status: "completed",
+          view: simulation.view,
+          updatedAt: now,
+          completedAt: now,
+          expiresAt: null,
+          resultExpiresAt: null,
+          completionStatus: "pending",
+          autoCommit: null,
+          autoResult: {
+            requestId: claim.requestId,
+            userId: claim.userId,
+            cost: claim.cost,
+            baseRevision: expectedRevision,
+          },
+        },
+        $push: { actions: { $each: actions } },
+      },
+    );
+    if (result.modifiedCount !== 1)
+      throw new Error("Lost Auto finalization claim after payment");
   }
 
   /**
@@ -248,7 +353,11 @@ class BattleStore {
     return result.modifiedCount === 1;
   }
 
-  async finishCompletion(battleId, claimId, { summary = null, error = null } = {}) {
+  async finishCompletion(
+    battleId,
+    claimId,
+    { summary = null, error = null } = {},
+  ) {
     const record = await this.get(battleId);
     const now = this.now();
     const result = await this.collection.updateOne(
