@@ -1,6 +1,6 @@
 # Web battler feasibility
 
-Status: exploratory design, 2026-10-10. This records the agreed direction and the remaining decisions; it is not an implementation specification.
+Status: historical exploratory design, 2026-10-10. This records the initial direction and options; it is not the current implementation specification. Start with [the effort overview](efforts/web-battler.md), which separates accepted decisions, implemented behavior and remaining proposals. The event names and runtime choices below are exploratory; current contracts and authoring guidance are linked from the overview.
 
 ## Product shape
 

@@ -1,7 +1,9 @@
 # Web battler client plan
 
-Status: implementation in progress. The first release uses React, TypeScript,
-Vite, CSS Grid, and Pokémon icons. Combat remains authoritative on the server.
+Status: the client is implemented in the open review stack: React, TypeScript,
+Vite, a DOM battlefield with Pokémon sprites, and canvas tile VFX. Combat remains
+authoritative on the server. See [the effort overview](efforts/web-battler.md) for
+current verification and release gates.
 
 ## Browser contract
 
@@ -51,14 +53,16 @@ parameters or send the unprojected `BattleService` result to the browser.
 - Keep battle state, animation queue, and renderer separate. CSS/DOM can serve
   the initial UI; a canvas renderer can consume the same view and events later.
 
-## Stored action size
+## Stored action size (historical measurements)
 
-The accepted command is small. A measured 6-versus-6 sample attack produced
+Before per-action views were removed, a measured 6-versus-6 sample attack produced
 an 11,854-byte BSON update: 112 bytes for the `action` field, 860 bytes for
 `events`, 157 bytes for `log`, and 10,643 bytes for the full resulting `view`
 (field measurements include their own BSON wrappers). A synthetic battle with
 100 accepted skips occupied 1,127,333 bytes as a single stored document.
-These are examples, not a bound for raids or unusually long battles.
+These describe the older snapshot-heavy format, not current action sizes or a
+bound for raids or unusually long battles. Current records have not been
+re-benchmarked here.
 
 The immutable initial setup contains full generated party data, so edits to a
 user's collection do not change an ongoing battle. Replay recomputes derived
@@ -92,5 +96,8 @@ before this branch is deployed with durable starts enabled.
 The `web/` client is a static Vite build. It lists ongoing battles, displays
 the current board with sprites, exposes legal attacks and skip, polls for
 remote actions, and plays new combat events as a brief text/tile sequence.
-The first load opens at current state without replaying old actions. Build and
-unit tests are available now; browser behavior has not yet been validated.
+The first load opens at current state without replaying old actions. Named
+stories and mocked-HTTP browser flows have retained verification in
+[the verification directory](verification/); current UI also includes configured
+move/result VFX and a virtualized session log. Authenticated production behavior
+and real MongoDB concurrency remain separate cutover gates.

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { CSSProperties } from "react";
+import type { CSSProperties, MouseEvent } from "react";
 import { transitionDuration } from "./results/transitions";
 import { BattleLog } from "./results/BattleLog";
 import { effectColors, resultAnimationConfig } from "./results/config";
@@ -11,6 +11,7 @@ import { MovePanel } from "./MovePanel";
 import { moveEventFootprint, targetPreviewFor } from "./presentation";
 import type { BattleCatalog, BattleView } from "./types";
 import type { BattleSession } from "./useBattleSession";
+import type { BattleAudio } from "./audio/useBattleAudio";
 import "./battle-ui.css";
 
 const ReadinessRail = ({ view, catalog, ownTeams }: {
@@ -30,9 +31,10 @@ const ReadinessRail = ({ view, catalog, ownTeams }: {
     })}</div>
 </section>;
 
-export const BattleScreen = ({ catalog, session }: {
+export const BattleScreen = ({ catalog, session, audio }: {
   catalog: BattleCatalog;
   session: BattleSession;
+  audio?: BattleAudio;
 }) => {
   const {
     battle, loading, busy, error, notice, selectedMoveId, inspectedPokemonId,
@@ -43,9 +45,14 @@ export const BattleScreen = ({ catalog, session }: {
   const [inspectorFocus, setInspectorFocus] = useState<"pokemon" | "move">("pokemon");
   const [detail, setDetail] = useState<InspectDetail | null>(null);
   const [trayCollapsed, setTrayCollapsed] = useState(false);
+  const playInteraction = (event: MouseEvent<HTMLDivElement>) => {
+    const target = event.target as Element;
+    if (target.closest?.("button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), summary"))
+      void audio?.playSelect();
+  };
 
   if (loading && !battle) return <div className="battle-surface"><main className="page-shell"><p>Loading battle…</p></main></div>;
-  if (!battle) return <div className="battle-surface"><main className="page-shell">
+  if (!battle) return <div className="battle-surface" onClickCapture={playInteraction}><main className="page-shell">
     <a className="back-link" href={import.meta.env.BASE_URL}>← Battles</a>
     <p role="alert">{error || "Battle unavailable."}</p>
     <button type="button" onClick={() => { void refresh(); }}>Retry</button>
@@ -94,8 +101,8 @@ export const BattleScreen = ({ catalog, session }: {
     inspectPokemon(id);
     targetPokemon(id);
   };
-
-  return <div className="battle-surface" data-playback-stage={playing?.stage || "idle"}
+  return <div className="battle-surface" onClickCapture={playInteraction}
+    data-playback-stage={playing?.stage || "idle"}
     data-playback-event={playing?.event.type || ""} style={{
     "--state-duration": `${!reducedMotion && playing ? transitionDuration(playing.changes) : 0}ms`,
     "--state-easing": resultAnimationConfig.transition.easing,
@@ -104,7 +111,15 @@ export const BattleScreen = ({ catalog, session }: {
     ])),
   } as CSSProperties}><main className="page-shell arena-page">
     <div className="arena-toolbar"><a className="back-link" href={import.meta.env.BASE_URL}>← Battles</a>
-      <span>Battle {battle.battleId.slice(0, 8)} · Revision {playing?.revision ?? battle.revision}</span></div>
+      <span>Battle {battle.battleId.slice(0, 8)} · Revision {playing?.revision ?? battle.revision}</span>
+      {audio?.available && <div className="arena-sound-controls" aria-label="Sound effects">
+        <strong>SFX</strong>
+        <label>Volume <input aria-label="SFX volume" type="range" min="0" max="1" step="0.05"
+          value={audio.volume} onChange={(event) => audio.setVolume(Number(event.target.value))} /></label>
+        <label><input type="checkbox" checked={audio.muted}
+          onChange={(event) => audio.setMuted(event.target.checked)} />Mute</label>
+      </div>}</div>
+    {audio?.error && <p role="alert" className="error">{audio.error}</p>}
     <div className="arena-title"><div><small>{battle.mode.type || "Battle"} · TURN {displayView.turn}</small>
       <h1>{ownNames.join(" & ") || "Your team"} <em>vs</em> {rivalNames.join(" & ") || "Opponents"}</h1></div>
       {displayView.weather?.weatherId && <div className={`arena-weather ${playing?.changes.weather ? "is-state-changing" : ""}`} title="Battle weather">
@@ -124,7 +139,7 @@ export const BattleScreen = ({ catalog, session }: {
         resultFrame={waitingForArt ? undefined : playing || undefined} reducedMotion={reducedMotion}
         highlightedId={highlightedPokemonId(event)}
         onChooseTarget={chooseTarget} onInspect={inspect} onHover={setHoveredPokemonId} />
-      <BattleLog entries={history} playing={!!playing} onSkip={skipPlayback} />
+      <BattleLog entries={history} playing={!!playing} onSkip={() => { audio?.stopAll(); skipPlayback(); }} />
       <ReadinessRail view={displayView} catalog={catalog} ownTeams={battle.myTeamNames} />
     </div><aside className="arena-sidebar">
       <MovePanel view={displayView} availableActions={battle.availableActions} isMyTurn={!playing && battle.isMyTurn} playback={!!playing}

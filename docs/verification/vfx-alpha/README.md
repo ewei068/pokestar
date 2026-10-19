@@ -39,4 +39,7 @@ Current alpha assets total roughly 2.9 MB of PNGs, loaded once when battle
 presentation prepares its VFX. The renderer is a separate lazy JS chunk.
 Per-effect loading and lossless asset optimization are follow-ups for slower
 connections. New resulting effects (damage numbers, faint/status animation)
-and SFX are outside this alpha.
+and SFX are outside this alpha. Result effects have since been implemented; see
+[their current contract](../../battle-result-playback.md). The measurements and
+checks above describe this historical attack-alpha milestone, not a current
+whole-project test count.

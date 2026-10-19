@@ -62,6 +62,7 @@ own devices, and does not require a public hostname or router port forwarding.
    both empty retains HTTP development. Keep `VITE_API_ORIGIN` unset. Port 5173
    is fixed by default and startup fails if occupied, so callbacks cannot silently
    move to a different port. Stop old Vite instances before restarting.
+
 4. In the bot's root `.env`, set:
 
    ```dotenv
@@ -73,6 +74,7 @@ own devices, and does not require a public hostname or router port forwarding.
    Keep the existing Discord credentials and enable flags. Restart the bot to
    apply environment changes. `HTTP_HOST` is optional; leaving it unset preserves
    the existing Express binding for production/webhook deployments.
+
 5. In the Discord application's OAuth2 redirects, add the exact HTTPS callback
    above. Keep existing localhost redirects. Start Vite with `npm run dev` in
    `web/` and sign in through `https://192.168.4.29:5173/` on the Mac.

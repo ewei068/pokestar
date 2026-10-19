@@ -95,14 +95,11 @@ client catalog. Neither step requires moving rendering into the server.
 
 ## Additional observations
 
-These are additive observations; battle rules, RNG and snapshots are unchanged.
-Old stored actions remain valid and reconcile changes absent from their events.
-All events also carry the existing per-action `sequence`.
-
-| Event | Metadata | Emission |
-| --- | --- | --- |
-| `weatherChanged` | `previousWeatherId`, `weatherId`, `duration` | Set/replacement, refresh and clearing, including expiry; null ID means cleared. |
-| `combatReadinessChanged` | `pokemonId`, nullable `sourcePokemonId`, `previousCombatReadiness`, `combatReadiness`, signed actual `amount` | Explicit boost/drain after clamping; no event when unchanged. Independent of whether rules callbacks are enabled. |
+Weather and explicit readiness changes are additive observations; battle rules,
+RNG and snapshots are unchanged. Their event metadata and emission semantics
+live in the [combat outcome contract](combat-event-contract.md). Old stored
+actions remain valid and reconcile changes absent from their events. All events
+carry the per-action `sequence`.
 
 Natural readiness progression, weather countdown and
 other routine changes continue to reconcile without separate announcements.
@@ -117,6 +114,17 @@ seams. [Initial verification](verification/event-results/README.md) and
 component and browser checks. These result settings are separate from the
 approved [move VFX recipes](battle-vfx-guide.md).
 
+The local audio study auditions
+six engine status applications and stat-raise/stat-lower cues. The real battle
+screen also consumes reached playback frames through `useBattleAudio`, leaving
+HTTP and action authority in the session. Its
+[sound config](../web/src/battles/audio/soundConfig.ts) maps all 54 move cells
+and selected result events to local sources and timing. One move cue covers
+the action; distinct result cues may overlap; repeat hits of one kind in a
+batch share a cue. Sound waits for VFX art readiness, starts after the move
+approach or with its result reaction, and stops on skip or hidden tab. Cure
+and effect removal remain quiet.
+
 Shield-specific visuals, batching across intervening events, semantic
-reports that also produce Discord logs, richer difference animations and SFX
+reports that also produce Discord logs, richer difference animations and production SFX
 remain follow-ups.

@@ -1,6 +1,7 @@
 import type { BattleCatalog, BattleDisplay, BattleEvent, BattleView } from "../types";
 import { baseBattle, baseCatalog, enemyTargets, makePokemon, own, previews, rival } from "./baseBattleFixture";
 import { makeResultStory } from "./resultStories";
+import { isAudioStory, makeAudioStory } from "./audioStories";
 import { storyFootprint } from "./storyFootprint";
 import { storyDefinitions } from "./storyDefinitions";
 import { defaultVfxLabSelection, makeVfxLabStory } from "./vfxLab";
@@ -40,6 +41,8 @@ export const makeBattleStory = (requestedId: string | null,
   };
 
   if (definition.id.startsWith("result-")) return makeResultStory(story);
+
+  if (isAudioStory(definition.id)) return makeAudioStory(story);
 
   if (definition.id === "vfx") return makeVfxLabStory(story, labSelection);
 

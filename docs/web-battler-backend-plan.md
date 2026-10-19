@@ -1,6 +1,6 @@
 # Web battler backend implementation plan
 
-Status: active plan. This run covers the engine, durable battle service, and Discord continuation. Discord OAuth, HTTP battle routes, and the web UI follow later.
+Status: historical backend implementation plan with current cutover gates. The engine, durable service, Discord continuation, OAuth/API and web client are now implemented in the review stack. Start with [the effort overview](efforts/web-battler.md) for current milestones and verification; the early stack and production gates below remain useful.
 
 ## Current review stack
 
@@ -32,7 +32,7 @@ Each branch builds on the preceding branch. Open a reviewable PR after its unit 
 
 ## Validation
 
-- Use Jest unit tests and the existing full Jest suite for this run. Do not build or exercise the web UI yet.
+- Backend changes use Jest unit tests and the full backend suite. The original backend-only run has ended; client changes follow the [web UI guide](web-ui-style-guide.md) and use client tests, builds and appropriate browser checks.
 - Each PR must exercise behavior at its boundary: invalid actions do not mutate state; replay matches after restart; one of two concurrent actions wins; duplicate completion does not duplicate rewards; both Discord and resumed actions use the same battle ID.
 - A unit test recreates `BattleService` and `BattleStore` over the same stored collection, then lists, reads, and submits another action on the original battle ID. It validates process-independent service state but is not a real MongoDB restart test.
 - MongoDB integration and browser tests remain later gates before production deployment. Unit tests alone cannot establish real database atomicity, OAuth behavior, CORS, or browser animation.

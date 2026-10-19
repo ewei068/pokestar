@@ -169,12 +169,11 @@ links must keep working or redirect when that happens.
 
 ## Incremental implementation
 
-Now: make the shell own login state and host the battle feature; let the battle
-feature select its list/detail page and load its catalog only for battle detail.
-Place battle transport decisions,
-revision handling, commands, and playback in the battle session module. Give
-the board a projected scene rather than the entire HTTP response. Preserve the
-current appearance while visual direction is being developed.
+Implemented: the shell owns login state and hosts the battle feature; the
+feature selects its list/detail page and loads its catalog for battle detail.
+Transport, revision handling and commands live in the battle session; ordered
+playback has its own reducer/hook. The board receives a projected scene. Current
+status and future milestones live in [the effort overview](efforts/web-battler.md).
 
 The first visual guidance has been prototyped and carried into the battle
 screen. Continue to refine information hierarchy, responsive layout, keyboard

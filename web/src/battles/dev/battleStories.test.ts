@@ -67,6 +67,27 @@ describe("battle UI stories", () => {
     assert.equal(makeBattleStory("motion-sing").playing?.event.patternTiles?.length, 4);
   });
 
+  it("builds audio studies with move, result, and faint barriers", () => {
+    const rock = makeBattleStory("audio-rock-slide");
+    assert.equal(rock.sequence?.events[0].type, "moveStarted");
+    assert.equal(rock.sequence?.events[0].moveType, "rock");
+    assert.ok(rock.sequence?.events[0].patternTiles?.length);
+    assert.equal(rock.sequence?.events.filter((event) => event.type === "hpChanged").length, 2);
+
+    const beam = makeBattleStory("audio-hyper-beam");
+    assert.deepEqual(beam.sequence?.events.map((event) => event.type), ["moveStarted", "hpChanged"]);
+
+    const tackle = makeBattleStory("audio-tackle");
+    assert.deepEqual(tackle.sequence?.events.map((event) => event.type),
+      ["moveStarted", "hpChanged", "pokemonFainted"]);
+    assert.equal(tackle.sequence?.finalView.pokemon["Rival Team-94"].isFainted, true);
+
+    const recover = makeBattleStory("audio-recover");
+    assert.deepEqual(recover.sequence?.events.map((event) => event.type), ["moveStarted", "hpChanged"]);
+    assert.ok(recover.sequence?.finalView.pokemon["Star Team-157"].hp! >
+      recover.battle.view.pokemon["Star Team-157"].hp);
+  });
+
   it("returns fresh fixtures and falls back to the ready story", () => {
     const first = makeBattleStory("ready");
     first.battle.view.pokemon["Star Team-157"].hp = 0;
