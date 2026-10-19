@@ -1,6 +1,6 @@
 # Battle music and site audio settings
 
-Status: local implementation in `codex/battle-sfx`, 2026-10-18. This document records accepted behavior and replaceable sample assets. Listening quality and real-phone behavior have not been approved.
+Status: draft [#170](https://github.com/ewei068/pokestar/pull/170) on `codex/battle-music`, stacked on SFX [#169](https://github.com/ewei068/pokestar/pull/169), 2026-10-18. This document records accepted behavior.
 
 ## Accepted behavior
 

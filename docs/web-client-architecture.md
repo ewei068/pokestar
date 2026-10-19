@@ -22,14 +22,14 @@ commit us to a full bot migration or a visual design before those needs exist.
 
 ## Module map
 
-| Module | Interface to its caller | Implementation hidden behind it |
-| --- | --- | --- |
-| Site shell | Authenticated identity, current location, and a feature page | Login/logout, top navigation, loading/error states, and route selection |
-| HTTP transport | Authenticated request and typed error | API origin, credentials, JSON, 204, CORS/session details |
-| Battle feature | A list page or a battle page for a battle ID | Its display catalog, listing, battle session, and screens |
+| Module         | Interface to its caller                                                          | Implementation hidden behind it                                                  |
+| -------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Site shell     | Authenticated identity, current location, and a feature page                     | Login/logout, top navigation, loading/error states, and route selection          |
+| HTTP transport | Authenticated request and typed error                                            | API origin, credentials, JSON, 204, CORS/session details                         |
+| Battle feature | A list page or a battle page for a battle ID                                     | Its display catalog, listing, battle session, and screens                        |
 | Battle session | Current authoritative state, playback frame, legal choices, status, and commands | Polling, revision/state IDs, stale responses, event queue, and action submission |
-| Battle screen | Display model plus user callbacks | Layout, inspection, action controls, accessible feedback |
-| Battle board | Projected scene plus selection/inspection callbacks | Continuous DOM field, floating HUDs and shared visual anchors |
+| Battle screen  | Display model plus user callbacks                                                | Layout, inspection, action controls, accessible feedback                         |
+| Battle board   | Projected scene plus selection/inspection callbacks                              | Continuous DOM field, floating HUDs and shared visual anchors                    |
 
 The important seam is between the **battle session** and the **battle screen**.
 The screen should not know how an action reaches the server, how often to poll,
@@ -59,7 +59,7 @@ The site shell now owns browser-local audio preferences and a Settings menu.
 Battles consume those preferences for separate music and SFX gain; music playback
 remains battle-scoped. The server projects a public `presentation.musicThemeId`
 from its encounter configuration or a battle override, while the static client
-maps that theme to licensed audio files. The browser never receives the raw
+maps that theme to audio files. The browser never receives the raw
 durable mode record to choose a track. See [battle music and settings](battle-music-plan.md)
 for selection, playback and listening review.
 
