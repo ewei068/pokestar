@@ -72,7 +72,8 @@ export const reducePlayback = (state: PlaybackState, action: PlaybackAction): Pl
     const battle: BattleDisplay = {
       battleId: response.battleId, rulesetVersion: response.rulesetVersion,
       revision: response.revision, status: response.status, completionStatus: response.completionStatus,
-      mode: response.mode, myTeamNames: response.myTeamNames, isMyTurn: response.isMyTurn,
+      mode: response.mode, presentation: response.presentation,
+      myTeamNames: response.myTeamNames, isMyTurn: response.isMyTurn,
       view: response.view, availableActions: response.availableActions,
     };
     if (!previous || previous.battleId !== battle.battleId || previous.rulesetVersion !== battle.rulesetVersion)

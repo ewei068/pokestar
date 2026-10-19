@@ -55,6 +55,14 @@ Pokémon data merely to show another future feature. Shared transport belongs
 outside the feature; feature-specific endpoints and types belong inside it.
 Cross-feature state should be shared only when two real features need it.
 
+The site shell now owns browser-local audio preferences and a Settings menu.
+Battles consume those preferences for separate music and SFX gain; music playback
+remains battle-scoped. The server projects a public `presentation.musicThemeId`
+from its encounter configuration or a battle override, while the static client
+maps that theme to licensed audio files. The browser never receives the raw
+durable mode record to choose a track. See [battle music and settings](battle-music-plan.md)
+for selection, playback and listening review.
+
 ## Battle session interface and invariants
 
 The session exposes a current response-derived display state, one playback

@@ -10,7 +10,6 @@ const result = (filename: string, gain = 1): SoundClip => ({
 });
 
 export const soundConfig = {
-  enabled: Boolean(import.meta.env?.DEV),
   moves: {
     normal: { physical: move("normal", "physical", 0.25, 420), special: move("normal", "special", 0.65, 420), status: move("normal", "status", 0.7, 420) },
     fighting: { physical: move("fighting", "physical", 0.5, 420), special: move("fighting", "special", 1.55, 420), status: move("fighting", "status", 0.7, 420) },

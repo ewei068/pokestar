@@ -3,6 +3,8 @@
   padding: 9px 18px; border-bottom: 2px solid #819ba1; background: #f9f8eb;
   color: #24394d; font-family: system-ui, sans-serif; }
 .battle-story-toolbar > div { display: flex; flex-direction: column; gap: 2px; }
+.battle-story-toolbar > .battle-story-settings { flex-direction: row; margin-left: auto; }
+.battle-story-toolbar .settings-panel p, .battle-story-toolbar .settings-panel span { color: inherit; font-size: inherit; }
 .battle-story-toolbar strong { font-size: .82rem; }
 .battle-story-toolbar span, .battle-story-toolbar p { margin: 0; color: #5b6c79; font-size: .7rem; }
 .battle-story-toolbar nav { display: flex; flex-wrap: wrap; gap: 6px 12px; width: 100%; }

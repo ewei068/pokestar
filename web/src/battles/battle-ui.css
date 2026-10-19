@@ -14,12 +14,10 @@
 .arena-toolbar { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; align-items: center;
   margin-bottom: 13px; color: #627488; font-size: .7rem; font-weight: 750; }
 .arena-toolbar .back-link { color: #315c7f; }
-.arena-sound-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 7px;
-  padding: 4px 6px; border: 1px solid #8299a4; background: #fffdf5; }
-.arena-sound-controls strong { color: #304d63; font-size: .64rem; }
-.arena-sound-controls label { display: flex; align-items: center; gap: 3px;
-  color: #43566b; font-size: .62rem; white-space: nowrap; }
-.arena-sound-controls input[type="range"] { width: 78px; }
+.arena-music-control { display: flex; align-items: center; gap: 7px; max-width: min(100%, 300px); }
+.arena-music-control span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arena-music-control button { flex: none; padding: 5px 8px; border: 1px solid #8299a4;
+  background: #fffdf5; font-size: .68rem; font-weight: 750; }
 .arena-title { display: flex; justify-content: space-between; align-items: center; gap: 14px;
   margin-bottom: 16px; }
 .arena-title small { color: #4e6881; font-size: .7rem; font-weight: 900; letter-spacing: .1em;

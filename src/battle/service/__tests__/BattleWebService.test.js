@@ -26,7 +26,7 @@ describe("BattleWebService", () => {
     const service = new BattleService(new BattleStore(new MemoryBattleCollection()));
     const web = new BattleWebService(service);
     const { battle, user1, user2 } = makeBattle();
-    await service.start({ battle, mode: { type: "pvp", secret: "server-only" } });
+    await service.start({ battle, mode: { type: "pvp", secret: "server-only", musicThemeId: "trainer-volo" } });
 
     const { userId: activeUser } = battle.activePokemon;
     const otherUser = activeUser === user1 ? user2 : user1;
@@ -64,6 +64,7 @@ describe("BattleWebService", () => {
     expect(opponent.heldItemId).toBeUndefined();
     expect(opponent.allStatData).toBeUndefined();
     expect(active.mode).toEqual({ type: "pvp" });
+    expect(active.presentation).toEqual({ musicThemeId: "trainer-volo" });
     expect(active.myTeamNames).toContain(activePokemon.teamName);
     expect(active.view.teams.Team1).toEqual({ rows: 3, cols: 4 });
     expect(Object.values(active.view.pokemon).some((pokemon) => pokemon.shiny)).toBe(true);

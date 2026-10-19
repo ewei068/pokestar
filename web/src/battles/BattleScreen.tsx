@@ -12,6 +12,7 @@ import { moveEventFootprint, targetPreviewFor } from "./presentation";
 import type { BattleCatalog, BattleView } from "./types";
 import type { BattleSession } from "./useBattleSession";
 import type { BattleAudio } from "./audio/useBattleAudio";
+import type { BattleMusic } from "./audio/useBattleMusic";
 import "./battle-ui.css";
 
 const ReadinessRail = ({ view, catalog, ownTeams }: {
@@ -31,10 +32,11 @@ const ReadinessRail = ({ view, catalog, ownTeams }: {
     })}</div>
 </section>;
 
-export const BattleScreen = ({ catalog, session, audio }: {
+export const BattleScreen = ({ catalog, session, audio, music }: {
   catalog: BattleCatalog;
   session: BattleSession;
   audio?: BattleAudio;
+  music?: BattleMusic;
 }) => {
   const {
     battle, loading, busy, error, notice, selectedMoveId, inspectedPokemonId,
@@ -112,14 +114,13 @@ export const BattleScreen = ({ catalog, session, audio }: {
   } as CSSProperties}><main className="page-shell arena-page">
     <div className="arena-toolbar"><a className="back-link" href={import.meta.env.BASE_URL}>← Battles</a>
       <span>Battle {battle.battleId.slice(0, 8)} · Revision {playing?.revision ?? battle.revision}</span>
-      {audio?.available && <div className="arena-sound-controls" aria-label="Sound effects">
-        <strong>SFX</strong>
-        <label>Volume <input aria-label="SFX volume" type="range" min="0" max="1" step="0.05"
-          value={audio.volume} onChange={(event) => audio.setVolume(Number(event.target.value))} /></label>
-        <label><input type="checkbox" checked={audio.muted}
-          onChange={(event) => audio.setMuted(event.target.checked)} />Mute</label>
+      {music?.showControls && music.trackTitle && <div className="arena-music-control">
+        <span title={music.trackTitle}>♫ {music.trackTitle}</span>
+        <button type="button" onClick={() => { void music.toggle(); }}>
+          {music.playing ? "Pause music" : "Play music"}</button>
       </div>}</div>
     {audio?.error && <p role="alert" className="error">{audio.error}</p>}
+    {music?.error && <p role="alert" className="error">{music.error}</p>}
     <div className="arena-title"><div><small>{battle.mode.type || "Battle"} · TURN {displayView.turn}</small>
       <h1>{ownNames.join(" & ") || "Your team"} <em>vs</em> {rivalNames.join(" & ") || "Opponents"}</h1></div>
       {displayView.weather?.weatherId && <div className={`arena-weather ${playing?.changes.weather ? "is-state-changing" : ""}`} title="Battle weather">

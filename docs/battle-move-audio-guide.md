@@ -21,6 +21,6 @@ The first study's provisional fits illustrate why each cue needs its own attack 
 
 ## Review and preserve each matrix cell
 
-For each type × Physical/Special/Status cell, watch and listen to a complete action in the actual battle screen. Check (1) silence during approach, (2) attack/contact alignment, (3) whether the sustain and tail fit the effect and return, (4) one-cue readability for area moves, and (5) repeated-play comfort at desktop and phone volume. Record approval and any excerpt/delay adjustment. The final study review approved all 54 comparison cells after six replacements; its exact settings are preserved in the [review record](verification/move-audio-study/README.md).
+For each type × Physical/Special/Status cell, watch and listen to a complete action in the actual battle screen. Check (1) silence during approach, (2) attack/contact alignment, (3) whether the sustain and tail fit the effect and return, (4) one-cue readability for area moves, and (5) repeated-play comfort at desktop and phone volume. Record approval and any excerpt/delay adjustment. The final study review approved all 54 comparison cells after six replacements; its exact settings are preserved in the [review record](verification/move-audio-study/final-feedback.json).
 
 The temporary review story has been retired. Its playback settings remain exploration data for designing custom cues. The approved VFX recipes and shared playback architecture remain authoritative.

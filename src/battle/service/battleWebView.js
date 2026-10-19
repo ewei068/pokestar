@@ -3,6 +3,7 @@ const {
   restoreBattle,
 } = require("../persistence/battleRecord");
 const { battleStateId } = require("./battleStateCursor");
+const { battleMusicThemeId } = require("./battleMusic");
 
 const participantTeams = (record, userId) => new Set(
   record.setup.trainers
@@ -103,6 +104,7 @@ const projectBattleRecord = (record, userId, sinceRevision = null) => {
     status: record.status,
     completionStatus: record.completionStatus,
     mode: { type: record.mode.type },
+    presentation: { musicThemeId: battleMusicThemeId(record) },
     updatedAt: record.updatedAt,
     expiresAt: record.expiresAt,
     resultExpiresAt: record.resultExpiresAt,

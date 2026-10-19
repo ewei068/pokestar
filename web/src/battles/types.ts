@@ -99,6 +99,7 @@ export type BattleResponse = {
   status: string;
   completionStatus: string;
   mode: { type?: string };
+  presentation?: { musicThemeId: string | null };
   myTeamNames: string[];
   isMyTurn: boolean;
   view: BattleView;
@@ -115,7 +116,7 @@ export type BattleResponse = {
 /** The participant projection the screen needs; transport metadata stays in the session. */
 export type BattleDisplay = Pick<BattleResponse,
   "battleId" | "rulesetVersion" | "revision" | "status" | "completionStatus" |
-  "mode" | "myTeamNames" | "isMyTurn" | "view" | "availableActions">;
+  "mode" | "presentation" | "myTeamNames" | "isMyTurn" | "view" | "availableActions">;
 
 export type BattleSummary = {
   battleId: string;

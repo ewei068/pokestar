@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { BattleFeature } from "./battles/BattleFeature";
 import { getMe, isApiError, loginUrl, logout } from "./http";
+import { AudioSettingsProvider, SettingsMenu } from "./settings/AudioSettings";
 
-export const App = () => {
+const AppContent = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "login" | "error">("loading");
   useEffect(() => {
@@ -16,10 +17,11 @@ export const App = () => {
     <div className="app">
       <header className="site-header"><a href={import.meta.env.BASE_URL} className="brand">
         <span className="brand-mark" aria-hidden="true">✦</span> Pokestar <span>Battles</span></a>
+        <div className="site-controls"><SettingsMenu />
         {state === "ready" && <div className="account"><span>Discord {userId}</span>
           <button type="button" onClick={() => {
             void logout().then(() => window.location.reload());
-          }}>Sign out</button></div>}
+          }}>Sign out</button></div>}</div>
       </header>
       {state === "loading" && <main className="page-shell"><p>Loading Pokestar…</p></main>}
       {state === "login" && <main className="page-shell login-panel">
@@ -33,3 +35,5 @@ export const App = () => {
     </div>
   );
 };
+
+export const App = () => <AudioSettingsProvider><AppContent /></AudioSettingsProvider>;

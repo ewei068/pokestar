@@ -10,6 +10,12 @@ export const storyGroups = [
     { id: "completed", title: "Completed result", description: "A finished battle is readable without action controls." },
     { id: "dense", title: "Dense and missing art", description: "Full formations, long names, mixed cues, and an absent sprite." },
   ] },
+  { title: "Battle music", stories: [
+    { id: "music-default", title: "Default music", description: "One of the default battle tracks is chosen on each page load and loops." },
+    { id: "music-trainer", title: "Trainer theme", description: "Cynthia's trainer theme." },
+    { id: "music-raid", title: "Raid theme", description: "The Armored Mewtwo raid theme." },
+    { id: "music-dungeon", title: "Dungeon theme", description: "One track from the shared dungeon pool." },
+  ] },
   { title: "Move examples", stories: [
     { id: "motion-tackle", title: "Tackle", description: "Normal physical single target: charge, strike, return." },
     { id: "motion-giga-impact", title: "Giga Impact", description: "Normal physical column: one charge, VFX on both tiles." },

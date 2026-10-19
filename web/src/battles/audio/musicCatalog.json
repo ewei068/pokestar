@@ -1,0 +1,38 @@
+{
+  "defaultVolume": 0.6,
+  "tracks": {
+    "default-battle-1": { "title": "Default Battle 1", "file": "default-battle-1.mp3" },
+    "default-battle-2": { "title": "Default Battle 2", "file": "default-battle-2.mp3" },
+    "default-battle-3": { "title": "Default Battle 3", "file": "default-battle-3.mp3" },
+    "default-battle-4": { "title": "Default Battle 4", "file": "default-battle-4.mp3" },
+    "default-battle-5": { "title": "Default Battle 5", "file": "default-battle-5.mp3" },
+    "dungeon-1": { "title": "Dungeon Battle 1", "file": "battle-dungeon-1.mp3" },
+    "dungeon-2": { "title": "Dungeon Battle 2", "file": "battle-dungeon-2.mp3" },
+    "dungeon-3": { "title": "Dungeon Battle 3", "file": "battle-dungeon-3.mp3" },
+    "dungeon-4": { "title": "Dungeon Battle 4", "file": "battle-dungeon-4.mp3" },
+    "dungeon-5": { "title": "Dungeon Battle 5", "file": "battle-dungeon-5.mp3" },
+    "dungeon-6": { "title": "Dungeon Battle 6", "file": "battle-dungeon-6.mp3" },
+    "trainer-blue": { "title": "Blue", "file": "battle-blue.mp3" },
+    "trainer-red": { "title": "Red", "file": "battle-red.mp3" },
+    "trainer-gold": { "title": "Gold", "file": "battle-gold.mp3" },
+    "trainer-steven": { "title": "Steven", "file": "battle-steven.mp3" },
+    "trainer-cynthia": { "title": "Cynthia", "file": "battle-cynthia.mp3" },
+    "trainer-frontier": { "title": "Frontier", "file": "battle-frontier.mp3" },
+    "raid-mewtwo": { "title": "Mewtwo", "file": "raid-mewtwo.mp3" },
+    "raid-lugia": { "title": "Lugia", "file": "raid-lugia.mp3" },
+    "raid-kyogre-groudon": { "title": "Kyogre and Groudon", "file": "raid-kyogre-groudon.mp3" }
+  },
+  "themes": {
+    "default": ["default-battle-1", "default-battle-2", "default-battle-3", "default-battle-4", "default-battle-5"],
+    "dungeon": ["dungeon-1", "dungeon-2", "dungeon-3", "dungeon-4", "dungeon-5", "dungeon-6"],
+    "trainer-blue": ["trainer-blue"],
+    "trainer-red": ["trainer-red"],
+    "trainer-gold": ["trainer-gold"],
+    "trainer-steven": ["trainer-steven"],
+    "trainer-cynthia": ["trainer-cynthia"],
+    "trainer-frontier": ["trainer-frontier"],
+    "raid-mewtwo": ["raid-mewtwo"],
+    "raid-lugia": ["raid-lugia"],
+    "raid-kyogre-groudon": ["raid-kyogre-groudon"]
+  }
+}

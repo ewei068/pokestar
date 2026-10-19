@@ -1,6 +1,8 @@
 /** Development-only stories render the production screen without HTTP or game writes. */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BattleScreen } from "../BattleScreen";
+import { useBattleMusic } from "../audio/useBattleMusic";
+import { SettingsMenu } from "../../settings/AudioSettings";
 import { applyEventView } from '../results/events';
 import { useBattlePlayback } from "../useBattlePlayback";
 import type { BattleSession } from "../useBattleSession";
@@ -30,6 +32,7 @@ const StoryScreen = ({ story, studyPlaying, generation, excerptStart, playCue }:
   playCue: (cue: StudyCue, offset: number, delayMs: number, maxSeconds?: number) => () => void;
 }) => {
   const playback = useBattlePlayback(story.catalog, responseFor(story));
+  const music = useBattleMusic(story.id, story.battle.presentation?.musicThemeId, { autoPlay: false });
   const [selectedMoveId, selectMove] = useState(story.selectedMoveId);
   const [inspectedPokemonId, inspectPokemon] = useState(story.inspectedPokemonId);
   const [notice, setNotice] = useState<string | null>(null);
@@ -96,7 +99,7 @@ const StoryScreen = ({ story, studyPlaying, generation, excerptStart, playCue }:
     {story.id === 'result-long-log' && <div className="battle-story-toolbar">
       <button type="button" disabled={!!playback.playing} onClick={appendResult}>Simulate another result</button>
     </div>}
-    <BattleScreen catalog={story.catalog} session={session} />
+    <BattleScreen catalog={story.catalog} session={session} music={music} />
   </>;
 };
 
@@ -133,6 +136,7 @@ export const BattleScreenPreview = () => {
   return <div className="battle-story-page">
     <section className="battle-story-toolbar" aria-label="Battle story controls">
       <div><strong>Battle UI stories</strong><span>Development data · no server actions</span></div>
+      {story.id.startsWith("music-") && <div className="battle-story-settings"><SettingsMenu /></div>}
       <nav aria-label="Story scenarios">{storyGroups.map((group) =>
         <div className="battle-story-nav-group" key={group.title}><strong>{group.title}</strong>
           <span>{group.stories.map((definition) =>

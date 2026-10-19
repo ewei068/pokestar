@@ -23,6 +23,22 @@ a { color: inherit; }
 .brand span:last-child { color: #a7b8d7; font-weight: 500; }
 .brand-mark { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%;
   color: #152339; background: #f7d978; }
+.site-controls { display: flex; align-items: center; gap: .75rem; }
+.settings-menu { position: relative; z-index: 30; }
+.settings-menu > summary { display: flex; align-items: center; gap: .35rem; padding: .5rem .65rem;
+  border: 1px solid #53627f; border-radius: .6rem; color: #eef3ff; cursor: pointer; list-style: none; }
+.settings-menu > summary::-webkit-details-marker { display: none; }
+.settings-menu > summary:hover, .settings-menu[open] > summary { background: #273a5a; }
+.settings-panel { position: absolute; top: calc(100% + .6rem); right: 0; width: min(330px, calc(100vw - 24px));
+  padding: 1rem; border: 1px solid #728aa6; border-radius: .75rem; color: #e8f0ff;
+  background: #192941; box-shadow: 0 12px 30px #07102088; }
+.settings-panel h2 { margin-bottom: .7rem; }
+.settings-panel h3 { margin: .9rem 0 .5rem; font-size: .83rem; }
+.settings-switch { display: flex; align-items: center; gap: .45rem; font-size: .85rem; }
+.settings-level { display: grid; grid-template-columns: 1fr auto; gap: .25rem .6rem;
+  margin-top: .65rem; font-size: .82rem; }
+.settings-level input { grid-column: 1; width: 100%; accent-color: #9fe4fb; }
+.settings-level span { grid-column: 2; grid-row: 2; color: #bdd0e8; }
 .account { display: flex; align-items: center; gap: 1rem; color: #b7c3db; font-size: .85rem; }
 .account button { padding: .5rem .75rem; color: #eef3ff; border: 1px solid #53627f;
   border-radius: .6rem; background: transparent; }
@@ -65,6 +81,7 @@ h2 { font-size: 1rem; margin-bottom: .65rem; }
 @media (max-width: 540px) {
   .site-header { min-height: 60px; }
   .brand { font-size: 1rem; }
+  .settings-menu > summary span:last-child { display: none; }
   .account span { display: none; }
   .page-shell { width: min(100% - 20px, 1200px); padding-top: 22px; }
 }

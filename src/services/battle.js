@@ -124,7 +124,10 @@ const getCanUserAutoBattle = async (user, cost) => {
  * @param {{ strict?: boolean }=} options
  * @returns {Promise<string>}
  */
-const processBattleCompletionRewards = async (battle, { strict = false } = {}) => {
+const processBattleCompletionRewards = async (
+  battle,
+  { strict = false } = {},
+) => {
   if (strict && (battle.winCallback || battle.loseCallback)) {
     throw new Error("Callback-backed completion needs a durable mode handler");
   }
@@ -171,7 +174,8 @@ const processBattleCompletionRewards = async (battle, { strict = false } = {}) =
           // eslint-disable-next-line prefer-const
           let { data: trainer, err } = await getTrainer(user);
           if (err) {
-            if (strict) throw new Error(`Failed to get trainer ${user.id}: ${err}`);
+            if (strict)
+              throw new Error(`Failed to get trainer ${user.id}: ${err}`);
             logger.warn(
               // @ts-ignore
               `Failed to get trainer for user ${user.id} after battle`,
@@ -220,7 +224,9 @@ const processBattleCompletionRewards = async (battle, { strict = false } = {}) =
 
             if (updateErr) {
               if (strict) {
-                throw new Error(`Failed to update trainer ${user.id}: ${updateErr}`);
+                throw new Error(
+                  `Failed to update trainer ${user.id}: ${updateErr}`,
+                );
               }
               logger.warn(
                 // @ts-ignore
@@ -256,7 +262,11 @@ const processBattleCompletionRewards = async (battle, { strict = false } = {}) =
           }
 
           // @ts-ignore
-          const trainerReward = await addExpAndMoney(user, expReward, moneyReward);
+          const trainerReward = await addExpAndMoney(
+            user,
+            expReward,
+            moneyReward,
+          );
           if (strict && trainerReward.err) {
             throw new Error(`Failed to grant trainer rewards to ${user.id}`);
           }
@@ -288,7 +298,9 @@ const processBattleCompletionRewards = async (battle, { strict = false } = {}) =
             );
             if (trainResult.err) {
               if (strict) {
-                throw new Error(`Failed to grant Pokemon rewards to ${pokemon.id}`);
+                throw new Error(
+                  `Failed to grant Pokemon rewards to ${pokemon.id}`,
+                );
               }
               continue;
             }
@@ -720,7 +732,12 @@ const buildPveSend = async ({
         mode: { type: "pve", npcId: state.npcId, difficulty: state.difficulty },
       });
       state.durableBattleId = started.battleId;
-      battleSend = await renderBattle(durableService, started.battleId, user.id, { stateId });
+      battleSend = await renderBattle(
+        durableService,
+        started.battleId,
+        user.id,
+        { stateId },
+      );
     } else {
       battle.start();
       state.battle = battle;
@@ -940,7 +957,12 @@ const buildDungeonSend = async ({
         },
       });
       state.durableBattleId = started.battleId;
-      battleSend = await renderBattle(durableService, started.battleId, user.id, { stateId });
+      battleSend = await renderBattle(
+        durableService,
+        started.battleId,
+        user.id,
+        { stateId },
+      );
     } else {
       battle.start();
       state.battle = battle;
@@ -1023,13 +1045,15 @@ const applyDurableTowerCompletion = async (battle, mode) => {
   for (const userId of battle.teams[battle.winner].userIds) {
     const user = battle.users[userId];
     const { data: trainer, err } = await getTrainer(user);
-    if (err || !trainer) throw new Error(`Failed to get tower trainer ${userId}`);
+    if (err || !trainer)
+      throw new Error(`Failed to get tower trainer ${userId}`);
     if (trainer.lastTowerStage + 1 !== mode.stage) {
       throw new Error(`Tower stage changed for ${userId}`);
     }
     trainer.lastTowerStage = mode.stage;
     const update = await updateTrainer(trainer);
-    if (update.err) throw new Error(`Failed to advance tower trainer ${userId}`);
+    if (update.err)
+      throw new Error(`Failed to advance tower trainer ${userId}`);
   }
   battle.rewards = { ...towerData.rewards };
 };
@@ -1118,7 +1142,9 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
       mode: { type: "tower", stage: towerStage },
     });
     state.durableBattleId = started.battleId;
-    battleSend = await renderBattle(durableService, started.battleId, user.id, { stateId });
+    battleSend = await renderBattle(durableService, started.battleId, user.id, {
+      stateId,
+    });
   } else {
     battle.start();
     state.battle = battle;

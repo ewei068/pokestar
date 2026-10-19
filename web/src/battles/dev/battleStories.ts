@@ -46,6 +46,15 @@ export const makeBattleStory = (requestedId: string | null,
 
   if (definition.id === "vfx") return makeVfxLabStory(story, labSelection);
 
+  if (definition.id.startsWith("music-")) {
+    const themes: Record<string, string | null> = {
+      "music-default": null, "music-trainer": "trainer-cynthia",
+      "music-raid": "raid-mewtwo", "music-dungeon": "dungeon",
+    };
+    battle.presentation = { musicThemeId: themes[definition.id] };
+    return story;
+  }
+
   const motionStory = motionStories[definition.id];
   if (motionStory) {
     const { moveId, targetId, pattern } = motionStory;
