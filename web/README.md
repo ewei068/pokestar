@@ -119,3 +119,12 @@ the viewport. This requires Playwright; if it is supplied by an external CLI,
 set `PLAYWRIGHT_MODULE` to that installation's Playwright module directory.
 `WEB_TEST_ORIGIN` overrides the default `http://127.0.0.1:5173` dev server.
 The test makes no real battle writes and does not test OAuth.
+
+## Pokémon cries
+
+`public/audio/cries` holds every PokeAPI Pokémon and form's `latest` cry as
+mono MP3, named by PokeAPI ID. Run `npm run download-cries` only when PokeAPI
+adds Pokémon; it skips existing files (`--force` re-encodes them, adding their
+full size to Git history). It needs `ffmpeg` on `PATH` or in `FFMPEG`. Custom
+species must be mapped to a real cry in `src/battles/audio/crySpecies.json`;
+`npm test` fails when a configured species has no cry.
