@@ -1,7 +1,20 @@
 import type { VfxKind, VfxType } from "../vfx/types";
+import crySpecies from "./crySpecies.json";
 
 export type SoundClip = { src: string; offsetSeconds: number; delayMs: number; gain?: number };
 const audio = (filename: string) => `${import.meta.env?.BASE_URL || "/"}audio/${filename}`;
+
+const FIRST_CUSTOM_SPECIES_ID = 20000;
+const crySpeciesIds: Record<string, string> = crySpecies;
+
+/** Custom species borrow an explicitly mapped real cry; unmapped custom species stay silent. */
+export const crySpeciesId = (speciesId: string): string | null => crySpeciesIds[speciesId]
+  ?? (/^\d+$/.test(speciesId) && Number(speciesId) < FIRST_CUSTOM_SPECIES_ID ? speciesId : null);
+
+const cry = (speciesId: string): SoundClip | null => {
+  const id = crySpeciesId(speciesId);
+  return id ? { src: audio(`cries/${id}.mp3`), offsetSeconds: 0, delayMs: 0, gain: 0.6 } : null;
+};
 const move = (type: VfxType, kind: VfxKind, offsetSeconds: number, delayMs: number): SoundClip => ({
   src: audio(`matrix-${type}-${kind}.mp3`), offsetSeconds, delayMs,
 });
@@ -41,7 +54,9 @@ export const soundConfig = {
     "status-sleep": result("status-sleep.m4a"),
     "stat-up": result("stat-up.wav", 1.8), "stat-down": result("stat-down.wav", 1.8),
   },
+  cry,
+  cryMaxSeconds: 3,
 };
 
 export type ResultSoundKey = keyof typeof soundConfig.results;
-export type SoundKey = `move:${VfxType}:${VfxKind}` | ResultSoundKey | "select";
+export type SoundKey = `move:${VfxType}:${VfxKind}` | ResultSoundKey | "select" | `cry:${string}`;

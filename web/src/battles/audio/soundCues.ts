@@ -27,6 +27,12 @@ const resultKey = (event: BattleEvent, catalog: BattleCatalog): ResultSoundKey |
 export const soundsForFrame = (frame: PlaybackFrame, catalog: BattleCatalog,
   reducedMotion = false): FrameSound[] => {
   if (frame.stage !== "event") return [];
+  if (frame.event.type === "turnStarted") {
+    const speciesId = frame.view.pokemon[frame.event.pokemonId || ""]?.speciesId;
+    const clip = speciesId ? soundConfig.cry(speciesId) : null;
+    // A cry may ring past the short turn announcement rather than being cut off.
+    return clip ? [{ key: `cry:${speciesId}`, clip, delayMs: 0, maxSeconds: soundConfig.cryMaxSeconds }] : [];
+  }
   if (frame.event.type === "moveStarted") {
     const motion = moveMotion(frame.event, catalog);
     if (!motion) return [];

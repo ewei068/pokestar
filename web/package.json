@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "test": "node scripts/test.mjs"
+    "test": "node scripts/test.mjs",
+    "download-cries": "node scripts/download-cries.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

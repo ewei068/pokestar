@@ -49,4 +49,24 @@ describe("real battle sound mapping", () => {
       assert.deepEqual(frames.flatMap(frame => soundsForFrame(frame, catalog).map(cue => cue.key)), expected, storyId);
     }
   });
+
+  it("plays the active Pokémon's cry when its turn begins", () => {
+    const { frames, catalog } = framesFor("result-sequence");
+    assert.deepEqual(frames.flatMap(frame => soundsForFrame(frame, catalog).map(cue => cue.key)),
+      ["move:normal:physical", "hit", "faint", "cry:59"]);
+    const turn = frames.find(frame => frame.event.type === "turnStarted")!;
+    const [cry] = soundsForFrame(turn, catalog);
+    assert.match(cry.clip.src, /audio\/cries\/59\.mp3$/);
+    assert.equal(cry.maxSeconds, 3);
+  });
+
+  it("borrows the mapped base cry for custom species and stays silent when unmapped", () => {
+    const { frames, catalog } = framesFor("result-sequence");
+    const turn = frames.find(frame => frame.event.type === "turnStarted")!;
+    const withSpecies = (speciesId: string) => ({ ...turn, view: { ...turn.view, pokemon: { ...turn.view.pokemon,
+      [turn.event.pokemonId!]: { ...turn.view.pokemon[turn.event.pokemonId!], speciesId } } } });
+    assert.deepEqual(soundsForFrame(withSpecies("20149"), catalog).map(cue => cue.clip.src.split("/").pop()), ["149.mp3"]);
+    assert.deepEqual(soundsForFrame(withSpecies("20999"), catalog), []);
+    assert.deepEqual(soundsForFrame({ ...turn, event: { ...turn.event, pokemonId: "missing" } }, catalog), []);
+  });
 });

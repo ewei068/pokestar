@@ -12,6 +12,8 @@ export const useBattleAudio = () => {
   const player = useRef<SoundPlayer | null>(null);
   const readyRef = useRef(false);
   const warmedRef = useRef(false);
+  const speciesRef = useRef<string[]>([]);
+  const warmedCriesRef = useRef(new Set<string>());
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
 
@@ -31,6 +33,13 @@ export const useBattleAudio = () => {
     return () => document.removeEventListener("visibilitychange", hidden);
   }, []);
 
+  const warmCries = useCallback(() => {
+    const clips = speciesRef.current.flatMap(speciesId => soundConfig.cry(speciesId) ?? [])
+      .filter(clip => !warmedCriesRef.current.has(clip.src));
+    clips.forEach(clip => warmedCriesRef.current.add(clip.src));
+    if (clips.length) void player.current?.warm(clips);
+  }, []);
+
   const enable = useCallback(async () => {
     if (!player.current) return false;
     try {
@@ -45,12 +54,18 @@ export const useBattleAudio = () => {
           ...Object.values(soundConfig.moves).flatMap(row => Object.values(row))];
         void player.current.warm(clips);
       }
+      warmCries();
       return true;
     } catch {
       setError("SFX could not start. Tap a battle control to retry.");
       return false;
     }
-  }, []);
+  }, [warmCries]);
+
+  const setBattleSpecies = useCallback((speciesIds: string[]) => {
+    speciesRef.current = speciesIds;
+    if (readyRef.current) warmCries();
+  }, [warmCries]);
 
   const playSelect = useCallback(async () => {
     if (settingsRef.current.muted || settingsRef.current.sfxVolume === 0 || !await enable()) return;
@@ -69,7 +84,7 @@ export const useBattleAudio = () => {
   }, []);
 
   const stopAll = useCallback(() => player.current?.stopAll(), []);
-  return { error, playSelect, playFrame, stopAll };
+  return { error, playSelect, playFrame, stopAll, setBattleSpecies };
 };
 
 export type BattleAudio = ReturnType<typeof useBattleAudio>;

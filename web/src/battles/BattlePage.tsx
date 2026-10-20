@@ -12,6 +12,11 @@ export const BattlePage = ({ battleId, catalog }: { battleId: string; catalog: B
     ? session.battle.presentation?.musicThemeId ?? null
     : undefined;
   const music = useBattleMusic(battleId, musicThemeId);
+  const speciesKey = [...new Set(Object.values(session.battle?.view.pokemon ?? {})
+    .map(pokemon => pokemon.speciesId))].sort().join(",");
+  useEffect(() => {
+    audio.setBattleSpecies(speciesKey ? speciesKey.split(",") : []);
+  }, [speciesKey, audio.setBattleSpecies]);
   useEffect(() => {
     if (!session.playing || session.waitingForArt) return;
     // StrictMode's effect probe cancels this timer before it can duplicate a cue.
