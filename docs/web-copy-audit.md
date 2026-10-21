@@ -237,6 +237,7 @@ No backend rules, persistence or catalog descriptions changed in this follow-up.
 
 On **2026-10-20, America/Los_Angeles**, the copy work moved to
 `codex/web-battle-copy`, based on the unchanged #171 head `653c2e7`.
+The changes are published in draft [#172](https://github.com/ewei068/pokestar/pull/172).
 Web tests (**83 tests, 21 suites**), backend tests (**831 tests, 28 suites**),
 the production web build, targeted lint of `src/web/battleCatalog.js`, and all
 **75** approved narration/label source comparisons passed again. The original

@@ -1,7 +1,7 @@
 # Pokestar web battler
 
 Last full code audit: **2026-10-17, America/Los_Angeles** (2026-10-18 UTC). Local music/settings implementation and verification: **2026-10-18**. Local real-battle audio preview added **2026-10-18**. Pokémon cries added **2026-10-19**. Copy research, source comparison and local copy update: **2026-10-19**. Copy publishing and documentation check: **2026-10-20**.
-Checkout: `codex/web-battle-copy`, based on `codex/battle-cries` ([#171](https://github.com/ewei068/pokestar/pull/171)), based on `codex/battle-music` ([#170](https://github.com/ewei068/pokestar/pull/170)), based on `codex/battle-sfx` ([#169](https://github.com/ewei068/pokestar/pull/169)), based on `codex/restore-auto-battle` ([#166](https://github.com/ewei068/pokestar/pull/166)).
+Checkout: `codex/web-battle-copy` ([#172](https://github.com/ewei068/pokestar/pull/172)), based on `codex/battle-cries` ([#171](https://github.com/ewei068/pokestar/pull/171)), based on `codex/battle-music` ([#170](https://github.com/ewei068/pokestar/pull/170)), based on `codex/battle-sfx` ([#169](https://github.com/ewei068/pokestar/pull/169)), based on `codex/restore-auto-battle` ([#166](https://github.com/ewei068/pokestar/pull/166)).
 This is the effort's maintained entry point. Detailed contracts and authoring
 rules stay in the linked documents; update those at their source.
 
@@ -14,7 +14,7 @@ same durable server-owned battle. Keep room for other bot features to gain web
 interfaces without migrating those features now.
 
 **Current continuation stage:** the approved copy review is applied on
-`codex/web-battle-copy`, prepared as a focused PR above #171.
+draft [#172](https://github.com/ewei068/pokestar/pull/172), based on #171.
 The user returned all 104 review rows approved, with 15 replacement drafts.
 The original [review export and application notes](../verification/web-copy/README.md)
 are preserved in the repository. The pass adopts shorter prompts, removes
@@ -194,7 +194,7 @@ are not independent alternatives to the current renderer.
 | Battle SFX                                                             | [#169](https://github.com/ewei068/pokestar/pull/169) adds move/result/UI sounds with volume and mute, stacked on #166.                                                                                                                                                                                                                                                                                       |
 | Battle music and audio settings                                        | [#170](https://github.com/ewei068/pokestar/pull/170) adds page-visit battle music, encounter themes and site Settings with separate Music/SFX sliders, stacked on #169.                                                                                                                                                                                                                                      |
 | Pokémon cries                                                          | [#171](https://github.com/ewei068/pokestar/pull/171) plays each Pokémon's PokeAPI cry when its turn begins, with all 1,351 cries committed and an explicit custom-species map, stacked on #170. |
-| Approved copy and voice                                                | `codex/web-battle-copy` applies the author's 104-row copy review and records accepted examples, small feature-owned copy helpers and source ownership, based on #171. |
+| Approved copy and voice                                                | [#172](https://github.com/ewei068/pokestar/pull/172) applies the author's 104-row copy review and records accepted examples, small feature-owned copy helpers and source ownership, based on #171. |
 
 Related pre-existing backlog: [data separation #16](https://github.com/ewei068/pokestar/issues/16),
 [Mongo optimization #14](https://github.com/ewei068/pokestar/issues/14),
