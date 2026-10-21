@@ -80,7 +80,7 @@ export const useBattleMusic = (
       if (autoPlay && document.visibilityState === "hidden") pauseForHidden();
       else setPlaying(context.current?.state === "running");
     };
-    const onError = () => { setPlaying(false); setError("This music track could not load."); };
+    const onError = () => { setPlaying(false); setError("Couldn't load this music track."); };
     const recover = () => { if (document.visibilityState !== "hidden") void start(); };
     const onVisibility = () => {
       if (document.visibilityState === "hidden") pauseForHidden();

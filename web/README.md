@@ -22,8 +22,15 @@ submit server actions. In a live battle, select a move, hover a target to
 preview all pattern tiles, then click it to use the move. Click the selected
 move again to cancel. On a narrow screen, the command tray can collapse.
 
-The agent-facing UI guidance is in `docs/web-ui-style-guide.md`, with a pointer
-from `web/AGENTS.md`. Story data lives in `src/battles/dev/battleStories.ts`;
+Start web-battler work with the [effort overview](../docs/efforts/web-battler.md).
+The [UI guide](../docs/web-ui-style-guide.md) owns visual direction and
+[copy voice](../docs/web-ui-style-guide.md#copy-voice), including the author's
+approved examples and game-style battle narration. Repeated battle interface
+wording lives in `src/battles/copy.ts`; event narration and short cues live in
+`src/battles/eventPresentation.ts`. The
+[architecture guide](../docs/web-client-architecture.md) explains these boundaries.
+`web/AGENTS.md` points agents to the guidance when editing screens or copy.
+Story data lives in `src/battles/dev/battleStories.ts`;
 add scenarios there when a UI state needs repeatable review. Component tests
 exercise interactions through React Testing Library. Story tests check fixture
 contracts rather than recording markup or pixel snapshots.

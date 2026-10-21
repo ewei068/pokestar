@@ -30,6 +30,7 @@ commit us to a full bot migration or a visual design before those needs exist.
 | Battle session | Current authoritative state, playback frame, legal choices, status, and commands | Polling, revision/state IDs, stale responses, event queue, and action submission |
 | Battle screen  | Display model plus user callbacks                                                | Layout, inspection, action controls, accessible feedback                         |
 | Battle board   | Projected scene plus selection/inspection callbacks                              | Continuous DOM field, floating HUDs and shared visual anchors                    |
+| Battle UI copy | Named messages and typed text formatters                                         | Repeated interface wording and English targeting/duration phrasing              |
 
 The important seam is between the **battle session** and the **battle screen**.
 The screen should not know how an action reaches the server, how often to poll,
@@ -54,6 +55,17 @@ The battle feature owns its catalog and pages. The site shell should not fetch
 Pokémon data merely to show another future feature. Shared transport belongs
 outside the feature; feature-specific endpoints and types belong inside it.
 Cross-feature state should be shared only when two real features need it.
+
+Battle interface copy under coordinated review lives in
+`web/src/battles/copy.ts`, including shared session/audio errors and small typed
+formatters for targeting instructions and remaining turns. Callers use ordinary
+TypeScript properties and functions. There is no app-wide translation key
+registry or custom interpolation/plural runtime. Keep event narration and its
+short cues with presentation semantics in `eventPresentation.ts`, and shared
+move/effect/ability/item descriptions at their server definitions. This keeps
+wording changes local without coupling the shell to battle data. Revisit
+localization tooling when a specific language and translation workflow are
+in scope; current English conditionals are not a general localization system.
 
 The site shell now owns browser-local audio preferences and a Settings menu.
 Battles consume those preferences for separate music and SFX gain; music playback

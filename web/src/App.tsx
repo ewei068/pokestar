@@ -25,12 +25,12 @@ const AppContent = () => {
       </header>
       {state === "loading" && <main className="page-shell"><p>Loading Pokestar…</p></main>}
       {state === "login" && <main className="page-shell login-panel">
-        <p className="eyebrow">Welcome to the arena</p><h1>Continue your battle</h1>
-        <p>Sign in with Discord to see and play the battles you joined.</p>
+        <h1>Continue your battle</h1>
+        <p>Sign in with Discord to play Pokestar.</p>
         <a className="primary-button" href={loginUrl()}>Sign in with Discord</a>
       </main>}
       {state === "error" && <main className="page-shell"><p role="alert" className="error">
-        Could not connect to the Pokestar battle service. Refresh to retry.</p></main>}
+        Couldn't connect to Pokestar. Refresh the page to try again.</p></main>}
       {state === "ready" && <BattleFeature />}
     </div>
   );

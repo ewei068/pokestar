@@ -1,7 +1,7 @@
 # Pokestar web battler
 
-Last full code audit: **2026-10-17, America/Los_Angeles** (2026-10-18 UTC). Local music/settings implementation and verification: **2026-10-18**. Local real-battle audio preview added **2026-10-18**. Pokémon cries added **2026-10-19**.
-Checkout: `codex/battle-cries` ([#171](https://github.com/ewei068/pokestar/pull/171)), based on `codex/battle-music` ([#170](https://github.com/ewei068/pokestar/pull/170)), based on `codex/battle-sfx` ([#169](https://github.com/ewei068/pokestar/pull/169)), based on `codex/restore-auto-battle` ([#166](https://github.com/ewei068/pokestar/pull/166)).
+Last full code audit: **2026-10-17, America/Los_Angeles** (2026-10-18 UTC). Local music/settings implementation and verification: **2026-10-18**. Local real-battle audio preview added **2026-10-18**. Pokémon cries added **2026-10-19**. Copy research, source comparison and local copy update: **2026-10-19**. Copy publishing and documentation check: **2026-10-20**.
+Checkout: `codex/web-battle-copy`, based on `codex/battle-cries` ([#171](https://github.com/ewei068/pokestar/pull/171)), based on `codex/battle-music` ([#170](https://github.com/ewei068/pokestar/pull/170)), based on `codex/battle-sfx` ([#169](https://github.com/ewei068/pokestar/pull/169)), based on `codex/restore-auto-battle` ([#166](https://github.com/ewei068/pokestar/pull/166)).
 This is the effort's maintained entry point. Detailed contracts and authoring
 rules stay in the linked documents; update those at their source.
 
@@ -13,7 +13,45 @@ actions with clear ordered visual feedback. Discord and web operate on the
 same durable server-owned battle. Keep room for other bot features to gain web
 interfaces without migrating those features now.
 
-**Current continuation stage:** review the local music/settings implementation on a real phone. The catalog now has five default tracks plus dungeon, trainer and raid themes; a per-battle theme override is also available. Real battle pages attempt autoplay without playback controls, retry startup on ordinary input and page return, pause while hidden, and automatically resume on return. Recovery handles suspended Web Audio independently of the media player and preserves the chosen track. Full-page navigation remains in place. Story previews remain manual with Play/Pause. Site Settings owns master mute and separate Music and Sound effects sliders. Seven simulated recovery tests and the production build pass; real-device autoplay and interruption recovery remain unverified. [Music behavior and remaining review](../battle-music-plan.md) and the [music catalog](../../web/src/battles/audio/musicCatalog.json) are the current references. This work is in draft [#170](https://github.com/ewei068/pokestar/pull/170), stacked on the SFX draft [#169](https://github.com/ewei068/pokestar/pull/169). Turn-start Pokémon cries are in draft [#171](https://github.com/ewei068/pokestar/pull/171), stacked on #170; the user judged them working well locally, and phone listening remains open. The prior [SFX handoff](../handoffs/2026-10-17-web-battler-sfx.md) is an old snapshot.
+**Current continuation stage:** the approved copy review is applied on
+`codex/web-battle-copy`, prepared as a focused PR above #171.
+The user returned all 104 review rows approved, with 15 replacement drafts.
+The original [review export and application notes](../verification/web-copy/README.md)
+are preserved in the repository. The pass adopts shorter prompts, removes
+redundant finished-battle help and target counts, and applies the user's reload,
+duration, phase and audio wording. A small battle-owned `copy.ts` shares UI
+messages and typed formatters; event narration and server catalog ownership
+remain in place. [Architecture](../web-client-architecture.md) and
+[voice guidance](../web-ui-style-guide.md#copy-voice) record the implementation.
+The temporary review editor in `/tmp/pokestar-copy-review/editor/` remains a
+historical review snapshot; its source mappings must be checked before reuse.
+
+The user chose to match the existing server voice and to try to use the Pokémon
+games' exact wording for equivalent battle events and flavor. Sign-in/list,
+action prompts, notices and errors use direct player language; status/cure and
+weather narration use familiar battle phrases. Finished and waiting battles
+no longer prompt the player to choose a move. Full narration remains separate
+from short floating cues, and unknown event causes remain general. The
+[copy comparison](../web-copy-audit.md) records the implementation and checks;
+[research](../web-copy-research.md) retains the earlier sourced advice. Accepted
+voice direction lives in the [UI style guide](../web-ui-style-guide.md#copy-voice).
+Approval covers the reviewed copy and documented contextual adjustments;
+production cutover and exact wording across every generation remain distinct.
+
+Phone audio review remains open. The catalog has five default tracks plus
+dungeon, trainer and raid themes and a per-battle override. Real battle pages
+attempt autoplay without playback controls, retry on input and page return,
+pause while hidden, and resume on return; stories retain manual Play/Pause.
+Site Settings owns master mute and separate Music and Sound effects sliders.
+Simulated recovery tests and the build passed previously; real-device autoplay,
+interruption recovery and listening remain unverified. See the
+[music behavior/review](../battle-music-plan.md) and
+[catalog](../../web/src/battles/audio/musicCatalog.json). Turn-start cries are in
+draft [#171](https://github.com/ewei068/pokestar/pull/171), stacked on music
+[#170](https://github.com/ewei068/pokestar/pull/170) and SFX
+[#169](https://github.com/ewei068/pokestar/pull/169); the user judged cries working
+well locally. The prior [SFX handoff](../handoffs/2026-10-17-web-battler-sfx.md)
+is an old snapshot.
 
 ### User-accepted decisions
 
@@ -58,6 +96,11 @@ are distinct from implementation defaults and future suggestions.
   results without charge. A confirmed debit failure also discards the result.
 - Use stacked PRs for review; earlier PRs need not be approved before starting
   the next. Visual work proceeds iteratively with user guidance.
+- Match web copy to the user's existing server voice. The accepted direction
+  and source ownership are in the [UI style guide](../web-ui-style-guide.md#copy-voice);
+  battle flavor should try to match the games' exact wording when the event
+  and Pokestar's mechanics support it. Server copy written from memory is a
+  voice reference, not a verified transcript. No generation was specified.
 
 ## Current state and evidence
 
@@ -66,6 +109,21 @@ GitHub inspection during this audit found the implementation stack still open,
 including drafts #164–#166 and audio drafts #169–#170. Prototype #160 is closed. No production deployment,
 flag state, credentials, live database topology or domain/IP provisioning was
 verified here.
+
+Continuation check on **2026-10-19** confirmed local HEAD `653c2e7` on
+`codex/battle-cries` and GitHub drafts #171 → #170 → #169 → #166 still open,
+with the documented base/head chain. This was a targeted source/copy inspection,
+not another full code audit or test run. Pre-existing untracked research,
+design material and scratch notes remain outside this phase's changes.
+
+Publishing check on **2026-10-20** confirmed #171 remains an open draft and
+its remote head matches the copy review's base, `653c2e7`. The copy branch keeps
+that parent unchanged. Web tests (**83/21 suites**), backend tests (**831/28
+suites**), the web production build and targeted JavaScript lint passed again.
+All **75** reviewed narration/label cases match the approval export, the export
+is unchanged, and **102** relative documentation links resolve. Earlier browser
+evidence remains recorded below; this publishing check did not repeat browser
+review or production acceptance.
 
 | Area                   | Current implementation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Evidence / limits                                                                                                                                                                                                                                                          |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -78,6 +136,15 @@ verified here.
 | Auto                   | Shared bounded background simulation; revision/deadline claim; conditional debit; atomic replay-batch commit; existing completion claim                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | #166 unit tests cover races, failures and retries. Uncertain payment/final-write claims require manual review. Flag-off legacy Auto keeps upfront payment.                                                                                                                 |
 | SFX                    | Four representative move stories and nine status/stat-gain stories remain; real battle playback uses a separate sound map and Web Audio player. The 54-cell review is archived. The Vite-development gate has been removed locally. Draft #171: a `turnStarted` frame plays the active Pokémon's cry (gain 0.6, allowed to ring up to 3 s past the 820 ms announcement); all 1,351 PokeAPI Pokémon/form cries (26 MB of MP3) live in `web/public/audio/cries`, so new species need only a `crySpecies.json` entry when custom; `npm --prefix web run download-cries` fetches cries PokeAPI adds later; each battle's cries are warmed after audio unlocks. | [Move timing guide](../battle-move-audio-guide.md), [final review](../verification/move-audio-study/feedback-final.json), [sound config](../../web/src/battles/audio/soundConfig.ts). Earlier SFX feedback was favorable; production and real-phone listening remain open. |
 | Music and settings     | Draft #170: five default battle tracks, a six-track dungeon pool, named trainer and raid themes, a streaming music player, site Settings, separate volume sliders and SFX preference migration.                                                                                                                                                                                                                                                                                                                                                                                                                                                            | [Music behavior/review](../battle-music-plan.md). Backend/web tests and build passed; browser preview showed controls and persistence. No subjective listening approval or real-phone audio test.                                                                          |
+
+Local copy update (2026-10-19): the web suite passes **83 tests in 21 suites**;
+the backend suite passes **831 tests in 28 suites**; the production web build
+passes. Targeted JavaScript lint and browser copy/layout review are recorded
+in the [copy verification](../web-copy-audit.md#verification). The approved-review
+follow-up also passes the web suite/build, checks 75 reviewed narration/label
+source cases against the returned drafts, and passes mocked-HTTP browser checks
+at 1440/390/320 px plus ally-healing instructions/submission at 1440/390 px.
+See the [applied review](../web-copy-audit.md#approved-review-implementation).
 
 Latest checks at the #170 commit (2026-10-19): `npx jest` 831 tests in 28
 suites, `npm --prefix web test` 75 passed, and the web build passed. At #171 (2026-10-19): `npm --prefix web test` 80 passed and the web
@@ -105,6 +172,7 @@ original 2026-10-17 audit checks, on #166 plus a formatting-only diff to
 | Combat and presentation                 | [Event contract](../combat-event-contract.md): event metadata, targeting footprints, weather/readiness. [Result playback](../battle-result-playback.md) and [result extension notes](../../web/src/battles/results/README.md): observations, reconciliation, timing, batching, copy and log ownership.                                                                                      |
 | Battle music and audio settings         | [Music behavior and review](../battle-music-plan.md): accepted page-visit selection, theme projection, site settings and remaining listening checks.                                                                                                                                                                                                                                        |
 | Visual design                           | [UI style guide](../web-ui-style-guide.md) and [arena guide](../arena-design-guide.md): current accepted direction and review scenarios. Raw [design brief](../design/spec.md), [prototype feedback](../design/prototype-feedback.md) and images are user-supplied context currently **untracked** in this checkout.                                                                        |
+| Copy and voice                          | [UI style guide](../web-ui-style-guide.md#copy-voice): accepted server/game-voice direction and source ownership. [Copy comparison](../web-copy-audit.md): inspected examples, current locations, implemented rewrites and verification. [Copy research](../web-copy-research.md): sourced advice and proposed workflow, not additional accepted policy. |
 | VFX changes                             | [VFX guide](../battle-vfx-guide.md): complete-loop quality bar, highlighted examples, ingredient/choreography workflow and verification. [Recipe guide](../../web/src/battles/vfx/recipes/README.md): editable settings versus rendering code. [Art notes](../../media/vfx/components/README.md) and [arena provenance](../../web/src/battles/arena/assets/README.md): asset roles/sources. |
 | Historical alternatives                 | [Feasibility](../web-battler-feasibility.md) and [VFX tool research](../battle-vfx-workflow-research.md): initial options and dated research. They do not supersede current contracts; tool prices/capabilities need rechecking before use. The research file is currently untracked.                                                                                                       |
 
@@ -125,7 +193,8 @@ are not independent alternatives to the current renderer.
 | Discord parity and Auto                                                | [#164](https://github.com/ewei068/pokestar/pull/164) restores appearance; [#165](https://github.com/ewei068/pokestar/pull/165) consolidates original handlers; [#166](https://github.com/ewei068/pokestar/pull/166) restores Auto, based on #165.                                                                                                                                                            |
 | Battle SFX                                                             | [#169](https://github.com/ewei068/pokestar/pull/169) adds move/result/UI sounds with volume and mute, stacked on #166.                                                                                                                                                                                                                                                                                       |
 | Battle music and audio settings                                        | [#170](https://github.com/ewei068/pokestar/pull/170) adds page-visit battle music, encounter themes and site Settings with separate Music/SFX sliders, stacked on #169.                                                                                                                                                                                                                                      |
-| Pokémon cries                                                          | [#171](https://github.com/ewei068/pokestar/pull/171) plays each Pokémon's PokeAPI cry when its turn begins, with all 1,351 cries committed and an explicit custom-species map, stacked on #170. Current branch.                                                                                                                                                                                              |     |
+| Pokémon cries                                                          | [#171](https://github.com/ewei068/pokestar/pull/171) plays each Pokémon's PokeAPI cry when its turn begins, with all 1,351 cries committed and an explicit custom-species map, stacked on #170. |
+| Approved copy and voice                                                | `codex/web-battle-copy` applies the author's 104-row copy review and records accepted examples, small feature-owned copy helpers and source ownership, based on #171. |
 
 Related pre-existing backlog: [data separation #16](https://github.com/ewei068/pokestar/issues/16),
 [Mongo optimization #14](https://github.com/ewei068/pokestar/issues/14),
@@ -136,6 +205,18 @@ dedicated SFX issue was identified; SFX direction is recorded in the
 [move audio guide](../battle-move-audio-guide.md) and #169.
 
 ## Limitations, open decisions and next milestones
+
+### Copy phase continuity
+
+- The approved review is applied on the copy branch and retained in the verification
+  record. Check any future review snapshot against the current source before
+  applying it. No specific generation's wording is prescribed.
+- The reference corpus mixes older server writing and newer web-related code;
+  a server file path alone does not establish human authorship. Shared catalog
+  descriptions already appear on both interfaces.
+- Some detailed server narration has no equivalent semantic event metadata
+  (for example, `actionBlocked` has no reason). Keep unknown causes general;
+  richer reporting is separate from the wording pass.
 
 ### Required before production cutover
 
@@ -166,8 +247,10 @@ dedicated SFX issue was identified; SFX direction is recorded in the
 - Long-battle replay/BSON profiling and VFX per-effect loading/lossless asset
   optimization. Current action entries omit snapshots, but replay remains linear
   and the single Mongo document still has a finite size limit.
-- A broader semantic report/copy system shared with Discord. Current client copy
-  is centralized in `eventPresentation.ts`; server combat events remain semantic.
+- A broader semantic report/copy system shared with Discord. Client event copy
+  lives in `eventPresentation.ts`, repeated battle UI wording in `copy.ts`, and
+  server combat events remain semantic. Revisit app-wide localization when a
+  specific language and translation workflow are in scope.
 
 ## Verified lessons and maintenance
 
@@ -180,7 +263,10 @@ canonical state from presented state and reconcile at action boundaries.
 `ce-compound`'s durability gate was applied during this audit. No separate
 solution note was created because these lessons are already explicit in the
 continuation, VFX, architecture and playback guides; another copy would add
-maintenance drift. Put a future genuinely missing verified lesson through that
+maintenance drift. The same gate was checked for the copy phase on 2026-10-20:
+the voice guide, architecture and approved review already preserve the decisions
+and reasoning. General and web README pointers lead to those sources. Put a
+future genuinely missing verified lesson through that
 gate rather than turning an untested proposal into policy.
 
 At meaningful milestones update this entry point's status, evidence, accepted

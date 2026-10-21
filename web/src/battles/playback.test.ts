@@ -32,7 +32,7 @@ describe('battle playback', () => {
     assert.equal(state.queue[0].previousView.pokemon['Star Team-157'].combatReadiness, 100);
     assert.equal(state.history.length, 0);
     state = reducePlayback(state, { type: 'begin', id: state.queue[0].id });
-    assert.deepEqual(state.history.map(entry => entry.text), ['Typhlosion used Tackle.']);
+    assert.deepEqual(state.history.map(entry => entry.text), ['Typhlosion used Tackle!']);
     state = advance(state);
     assert.equal(state.queue[0].event.type, 'hpChanged');
     assert.equal(state.queue[0].stage, 'event');

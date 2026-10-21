@@ -45,8 +45,8 @@ export const baseCatalog: BattleCatalog = {
   abilities: { blaze: { name: "Blaze", description: "Strengthens Fire moves when HP is low." } },
   heldItems: { charcoal: { name: "Charcoal", description: "Strengthens Fire moves." } },
   statuses: {
-    Burn: { name: "Burn", description: "Takes damage when status ticks and deals less attack damage." },
-    Poison: { name: "Poison", description: "Takes damage when status ticks." },
+    Burn: { name: "Burn", description: "Takes damage at the end of its turn and deals less damage with attacks." },
+    Poison: { name: "Poison", description: "Takes damage at the end of its turn." },
   },
 };
 

@@ -8,22 +8,22 @@ const { statusConditions } = require("../config/battleConfig");
 
 const statusDisplay = {
   [statusConditions.BURN]: {
-    name: "Burn", description: "Takes damage when status ticks and deals less attack damage.",
+    name: "Burn", description: "Takes damage at the end of its turn and deals less damage with attacks.",
   },
   [statusConditions.FREEZE]: {
-    name: "Freeze", description: "May prevent a move. The chance to thaw rises with each turn.",
+    name: "Freeze", description: "May be unable to move. Its chance of thawing out increases each turn.",
   },
   [statusConditions.PARALYSIS]: {
-    name: "Paralysis", description: "Speed is reduced and each move has a chance to be blocked.",
+    name: "Paralysis", description: "Lowers Speed and may stop it from moving.",
   },
   [statusConditions.POISON]: {
-    name: "Poison", description: "Takes damage when status ticks.",
+    name: "Poison", description: "Takes damage at the end of its turn.",
   },
   [statusConditions.SLEEP]: {
-    name: "Sleep", description: "May prevent a move. The chance to wake rises with each turn.",
+    name: "Sleep", description: "May be unable to move. Its chance of waking up increases each turn.",
   },
   [statusConditions.BADLY_POISON]: {
-    name: "Badly Poison", description: "Takes increasing damage when status ticks.",
+    name: "Badly Poison", description: "Takes increasing damage at the end of each of its turns.",
   },
 };
 

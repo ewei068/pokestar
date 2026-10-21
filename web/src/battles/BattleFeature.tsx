@@ -14,7 +14,7 @@ const BattleDetail = ({ battleId }: { battleId: string }) => {
   }, []);
 
   if (error) return <main className="page-shell"><p role="alert" className="error">
-    Could not load battle display data. Refresh to retry.</p></main>;
+    Couldn't load the battle details. Refresh the page to try again.</p></main>;
   if (!catalog) return <main className="page-shell"><p>Loading battles…</p></main>;
   return <BattlePage battleId={battleId} catalog={catalog} />;
 };

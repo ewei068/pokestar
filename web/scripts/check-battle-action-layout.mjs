@@ -48,10 +48,10 @@ try {
     });
     await target.click();
     try {
-      await page.locator('.arena-command-foot').getByText('Resolving this turn…', { exact: true }).waitFor();
+      await page.locator('.arena-command-foot').getByText('Waiting for the result…', { exact: true }).waitFor();
       await page.waitForTimeout(250);
     } finally { release(); }
-    await page.locator('.arena-command-foot').getByText('Resolving this turn…', { exact: true }).waitFor({ state: 'hidden' });
+    await page.locator('.arena-command-foot').getByText('Waiting for the result…', { exact: true }).waitFor({ state: 'hidden' });
     await page.waitForTimeout(150);
     const samples = await page.evaluate(() => { window.sampleLayout = false; return window.layoutSamples; });
     assert.equal(submitted, 1);

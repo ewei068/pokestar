@@ -1,5 +1,6 @@
 import type { BattleCatalog, BattleDisplay, TargetPreview } from "./types";
 import { typeClass, typeName } from "./typeDisplay";
+import { battleCopy } from "./copy";
 
 type Props = {
   view: BattleDisplay["view"];
@@ -27,8 +28,10 @@ export const MovePanel = ({ view, availableActions, isMyTurn, catalog, selectedM
   const active = view.activePokemonId ? view.pokemon[view.activePokemonId] : null;
   const moves = active?.moveIds || {};
   return <section className={`arena-commands ${collapsed ? "is-collapsed" : ""} ${isMyTurn ? "" : "is-waiting"}`} aria-label="Battle actions">
-    <div className="arena-commands-heading"><div><h2>{playback ? "Battle playback" : "Choose an action"}</h2>
-      <span>{playback ? "Playing battle events…" : isMyTurn ? `${active?.name || "Pokémon"}'s turn` : "Waiting for another turn"}</span></div>
+    <div className="arena-commands-heading"><div><h2>{playback ? "Battle in progress" : view.ended ? "Battle finished"
+      : isMyTurn ? `What will ${active?.name || "your Pokémon"} do?` : "Waiting for the next turn"}</h2>
+      <span>{playback ? "Catching up with the battle…" : view.ended ? ""
+        : isMyTurn ? "Your turn" : `${active?.name || "Pokémon"}'s turn`}</span></div>
       <button type="button" className="arena-collapse" aria-expanded={!collapsed}
         aria-controls="arena-command-body" onClick={onToggleCollapsed}>
         {collapsed ? "↑ Expand" : "↓ Collapse"}
@@ -50,12 +53,14 @@ export const MovePanel = ({ view, availableActions, isMyTurn, catalog, selectedM
               <small>{state.cooldown > 0 ? `CD ${state.cooldown}` : state.disabledCounter > 0 ? "DISABLED" : moveKind(move?.damageType)}</small></span>
           </button>;
         })}
-      </div> : <p className="arena-muted">{isMyTurn ? "No usable moves this turn." : "You can inspect the board while the battle continues."}</p>}
+      </div> : !view.ended && <p className="arena-muted">{isMyTurn ? "No usable moves this turn."
+        : "You can inspect the board while the battle continues."}</p>}
       <div className="arena-command-foot"><span aria-live="polite">{
-        submitting ? "Resolving this turn…" : playback ? "Actions unlock when playback finishes" : preview
-          ? `${preview.affectedPokemonIds.length} possible Pokémon · ${preview.emptyTileTargets.length} empty tiles${preview.random ? " · random result" : ""} · Click to use`
-          : selectedMoveId ? "Click a highlighted target to use; click the move again to cancel"
-            : "Select a move to see targets"
+        submitting ? "Waiting for the result…" : playback ? "Wait for the battle to catch up."
+          : view.ended ? "Choose a Pokémon to inspect it." : !isMyTurn ? "You can choose a move when it's your turn." : preview
+          ? battleCopy.chooseTarget
+          : selectedMoveId ? battleCopy.targetInstruction(catalog.moves[selectedMoveId]?.damageType)
+            : "Choose a move to see its targets"
       }</span><div>
         <button type="button" className="arena-skip" disabled={!availableActions.canSkip || busy} onClick={onSkip}>↷ Skip</button>
       </div></div>

@@ -5,6 +5,7 @@ import type { BattleCatalog } from "../types";
 import { SoundPlayer } from "./SoundPlayer";
 import { soundConfig } from "./soundConfig";
 import { soundsForFrame } from "./soundCues";
+import { battleCopy } from "../copy";
 
 export const useBattleAudio = () => {
   const { settings } = useAudioSettings();
@@ -57,7 +58,7 @@ export const useBattleAudio = () => {
       warmCries();
       return true;
     } catch {
-      setError("SFX could not start. Tap a battle control to retry.");
+      setError(battleCopy.sfxStartFailed);
       return false;
     }
   }, [warmCries]);
@@ -71,14 +72,14 @@ export const useBattleAudio = () => {
     if (settingsRef.current.muted || settingsRef.current.sfxVolume === 0 || !await enable()) return;
     const played = await player.current?.play({ clip: soundConfig.select, delayMs: 0,
       maxSeconds: 1.5 });
-    if (played === false) setError("A local sound file is missing. Run the audio setup script.");
+    if (played === false) setError(battleCopy.sfxPlaybackFailed);
   }, [enable]);
 
   const playFrame = useCallback((frame: PlaybackFrame, catalog: BattleCatalog, reducedMotion: boolean) => {
     if (!readyRef.current || settingsRef.current.muted || settingsRef.current.sfxVolume === 0 || !player.current) return;
     for (const sound of soundsForFrame(frame, catalog, reducedMotion)) {
       void player.current.play(sound).then(played => {
-        if (played === false) setError("A local sound file is missing. Run the audio setup script.");
+        if (played === false) setError(battleCopy.sfxPlaybackFailed);
       });
     }
   }, []);

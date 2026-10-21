@@ -1,5 +1,6 @@
 import type { BattleCatalog, PokemonView } from "./types";
 import { typeClass, typeName } from "./typeDisplay";
+import { battleCopy } from "./copy";
 
 export type InspectDetail = { category: string; name: string; description: string };
 
@@ -48,7 +49,7 @@ export const BattleInspector = ({ pokemon, moveId, detail, catalog, onOpenDetail
           const category = effect?.type || "Effect";
           return <button type="button" key={id} className={`is-effect is-${category.toLowerCase()}`}
             onClick={() => onOpenDetail({ category, name: effect?.name || id,
-              description: `${effect?.description || "Active battle effect."}${state.duration === undefined ? "" : ` ${state.duration} turns remain.`}` })}>
+              description: `${effect?.description || "Active battle effect."}${state.duration === undefined ? "" : ` ${battleCopy.turnsLeft(state.duration)}`}` })}>
             {category === "Buff" ? "↑" : category === "Debuff" ? "↓" : "✧"} {effect?.name || id}{state.duration === undefined ? "" : ` · ${state.duration}`}</button>;
         })}
         {pokemon.abilityId && <button type="button" className="is-ability"

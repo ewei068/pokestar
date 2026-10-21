@@ -54,7 +54,7 @@ describe('result batches', () => {
     state = reducePlayback(state, { type: 'begin', id: frame.id });
     state = reducePlayback(state, { type: 'begin', id: frame.id });
     assert.deepEqual(state.history.map(item => item.text), [
-      'Gengar lost 30 HP.', 'Arcanine lost 30 HP.', 'Milotic lost 30 HP.',
+      'Gengar took 30 damage!', 'Arcanine took 30 damage!', 'Milotic took 30 damage!',
     ]);
     assert.equal(frame.stage, 'event');
     assert.ok(frame.durationMs >= 820);

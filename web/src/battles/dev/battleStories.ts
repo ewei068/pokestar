@@ -63,7 +63,7 @@ export const makeBattleStory = (requestedId: string | null,
     battle.availableActions = { canSkip: false, moves: [{ moveId, targetPokemonIds: [targetId],
       targetPreviews: [footprint] }] };
     battle.isMyTurn = false;
-    const text = `${battle.view.pokemon[battle.view.activePokemonId || ""]?.name || "Pokémon"} used ${move.name}.`;
+    const text = `${battle.view.pokemon[battle.view.activePokemonId || ""]?.name || "Pokémon"} used ${move.name}!`;
     story.playing = { view: battle.view, text, event: {
       type: "moveStarted", sequence: 0, pokemonId: battle.view.activePokemonId || undefined,
       moveId, moveType: String(move.type), damageType: move.damageType,
@@ -94,13 +94,13 @@ export const makeBattleStory = (requestedId: string | null,
       battle.isMyTurn = false;
       battle.view.activePokemonId = `${rival}-94`;
       battle.availableActions = { canSkip: false, moves: [] };
-      story.history = ["Typhlosion used Flamethrower.", "Gengar is preparing its turn."];
+      story.history = ["Typhlosion used Flamethrower!", "It's Gengar's turn!"];
       break;
     case "playback": {
       battle.isMyTurn = false;
       battle.availableActions = { canSkip: false, moves: [] };
       const footprint = previews(battle.view, enemyTargets, true)[0];
-      const text = "Typhlosion used Eruption.";
+      const text = "Typhlosion used Eruption!";
       story.playing = { view: battle.view, text, event: {
         type: "moveStarted", sequence: 0, pokemonId: `${own}-157`, moveId: "eruption",
         primaryTargetId: footprint.primaryTargetPokemonId,
@@ -120,7 +120,7 @@ export const makeBattleStory = (requestedId: string | null,
         entry.hp = 0;
         entry.isFainted = true;
       });
-      story.history = ["The rival team fainted.", `${own} won the battle.`];
+      story.history = ["The rival team fainted!", `${own} won the battle!`];
       break;
     case "dense": {
       battle.view.pokemon[`${own}-157`].name = "Typhlosion of the Endless Horizon";

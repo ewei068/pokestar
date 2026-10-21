@@ -8,6 +8,7 @@ import { BattleInspector } from "./BattleInspector";
 import type { InspectDetail } from "./BattleInspector";
 import { highlightedPokemonId } from "./eventPresentation";
 import { MovePanel } from "./MovePanel";
+import { battleCopy } from "./copy";
 import { moveEventFootprint, targetPreviewFor } from "./presentation";
 import type { BattleCatalog, BattleView } from "./types";
 import type { BattleSession } from "./useBattleSession";
@@ -125,12 +126,12 @@ export const BattleScreen = ({ catalog, session, audio, music }: {
       <h1>{ownNames.join(" & ") || "Your team"} <em>vs</em> {rivalNames.join(" & ") || "Opponents"}</h1></div>
       {displayView.weather?.weatherId && <div className={`arena-weather ${playing?.changes.weather ? "is-state-changing" : ""}`} title="Battle weather">
         {weatherIcon[displayView.weather.weatherId] || "◌"}
-        <span>{displayView.weather.weatherId}<small>{displayView.weather.duration} turns</small></span></div>}
+        <span>{displayView.weather.weatherId}<small>{displayView.weather.duration} {displayView.weather.duration === 1 ? "turn" : "turns"}</small></span></div>}
     </div>
-    {displayView.ended && <p className="notice">{displayView.winner ? `${displayView.winner} won.` : "The battle ended in a draw."} This result is read-only.</p>}
-    {!playing && battle.completionStatus === "processing" && <p className="notice">Battle rewards are being processed.</p>}
-    {!playing && battle.completionStatus === "failed" && <p className="notice">Reward processing needs review. The battle result is saved.</p>}
-    {!versionMatches && <p role="alert" className="error">Battle display data changed. Reload the page before acting.</p>}
+    {displayView.ended && <p className="notice">{displayView.winner ? `${displayView.winner} won the battle!` : "The battle ended in a draw."} {battleCopy.battleEnded}</p>}
+    {!playing && battle.completionStatus === "processing" && <p className="notice">{battleCopy.rewardsPending}</p>}
+    {!playing && battle.completionStatus === "failed" && <p className="notice">{battleCopy.rewardsFailed}</p>}
+    {!versionMatches && <p role="alert" className="error">{battleCopy.battleOutdated}</p>}
     {error && <p role="alert" className="error">{error}</p>}
     {notice && <p role="status" className="notice">{notice}</p>}
     <div className="arena-layout"><div className="arena-primary">

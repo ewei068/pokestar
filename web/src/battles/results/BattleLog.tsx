@@ -3,6 +3,7 @@ import { VList } from 'virtua';
 import type { VListHandle } from 'virtua';
 import type { BattleLogEntry } from '../playback';
 import { resultAnimationConfig as config } from './config';
+import { battleCopy } from '../copy';
 
 /** Full session history, with only the viewport and a small overscan mounted. */
 export const BattleLog = ({ entries, playing, onSkip }: { entries: BattleLogEntry[]; playing: boolean; onSkip: () => void }) => {
@@ -17,11 +18,11 @@ export const BattleLog = ({ entries, playing, onSkip }: { entries: BattleLogEntr
     if (follow.current && entries.length) list.current?.scrollToIndex(entries.length - 1, { align: 'end' });
   }, [entries.length]);
   return <section className="arena-history" aria-label="Battle log">
-    <div className="arena-section-heading"><h2>Battle log <small>{entries.length} entries</small></h2>
+    <div className="arena-section-heading"><h2>Battle log <small>{entries.length} {entries.length === 1 ? 'entry' : 'entries'}</small></h2>
       <div className="arena-log-controls">{!following && <button type="button" className="arena-skip" onClick={latest}>Latest</button>}
         {playing && <button type="button" className="arena-skip" onClick={onSkip}>Skip animations</button>}</div>
     </div>
-    {entries.length === 0 ? <p className="arena-muted">New actions will appear here.</p> :
+    {entries.length === 0 ? <p className="arena-muted">{battleCopy.logEmpty}</p> :
       <VList ref={list} data={entries} className="arena-log-list" style={{ height: config.log.viewportPx }}
         role="list" aria-label="Event history" tabIndex={0}
         onResize={() => {

@@ -4,6 +4,10 @@ When changing a web screen, its CSS, or a development story, read
 [`docs/web-ui-style-guide.md`](../docs/web-ui-style-guide.md). It defines the
 current visual direction, interaction rules, and review scenarios for Pokestar.
 
+For interface copy, battle narration or error wording, read its
+[Copy voice](../docs/web-ui-style-guide.md#copy-voice) section and linked approved
+review before editing. It owns the author's voice and copy source boundaries.
+
 For battlefield layout, floating HUDs, sprite anchoring or event labels, also
 read [`docs/arena-design-guide.md`](../docs/arena-design-guide.md).
 

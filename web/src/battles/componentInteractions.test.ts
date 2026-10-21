@@ -66,7 +66,7 @@ describe("battle controls", () => {
       catalog, selectedMoveId: "eruption", preview: null, busy: true, submitting: true,
       collapsed: false, onToggleCollapsed() {}, onSelectMove() {}, onHoverMove() {}, onSkip() {},
     }));
-    assert.equal(page.container.querySelector('.arena-command-foot [aria-live]')?.textContent?.trim(), 'Resolving this turn…');
+    assert.equal(page.container.querySelector('.arena-command-foot [aria-live]')?.textContent?.trim(), 'Waiting for the result…');
     assert.equal(page.getByRole('button', { name: /Eruption/ }).hasAttribute('disabled'), true);
   });
 
@@ -134,8 +134,8 @@ describe('result presentation', () => {
     const { BattleLog } = await import('./results/BattleLog');
     let skipped = false;
     const page = render(createElement(BattleLog, { entries: [
-      { id: 'a', revision: 18, turn: 12, text: 'Typhlosion used Tackle.' },
-      { id: 'b', revision: 18, turn: 12, text: 'Gengar lost 42 HP.' },
+      { id: 'a', revision: 18, turn: 12, text: 'Typhlosion used Tackle!' },
+      { id: 'b', revision: 18, turn: 12, text: 'Gengar took 42 damage!' },
       { id: 'c', revision: 19, turn: 13, text: 'Arcanine skipped its turn.' },
     ], playing: true, onSkip: () => { skipped = true; } }));
     assert.ok(page.getByText('3 entries'));

@@ -56,6 +56,64 @@ site shell and future non-battle pages consistent with that direction.
 - The battle screen reads projected state and calls session commands. It does
   not recreate targeting or damage rules in the browser.
 
+## Copy voice
+
+Accepted direction, **2026-10-19**: match the user's existing server voice.
+Use direct instructions and short, energetic battle announcements, with calmer
+wording for errors. For battle events and flavor, try to match the Pokémon
+games' exact wording when the event and Pokestar's mechanics support it. The
+server copy was written from memory, so it is a voice reference rather than a
+verified transcript. Check wording when exact accuracy matters; no particular
+generation is required. Keep names and capitalization readable on the web.
+
+Use status-specific phrases such as “was burned!”, “was frozen solid!”, and
+“woke up!” rather than inserting status IDs into generic sentences. Keep
+Pokestar-specific mechanics, numbers, and conditions explicit even where the
+games have no equivalent line. An event without a failure reason must not
+claim paralysis, sleep, immunity, or another specific cause. Full log narration
+can carry the game phrasing; floating cues stay short enough to read in the
+existing animation time. The [copy comparison](web-copy-audit.md) records the
+implemented pass, source references, and verification limits.
+
+Use the existing tutorial and battle narration as references. For example,
+`src/config/helpConfig.js` gives practical advice (“Put tanky Pokemon in the
+front”), while `src/battle/engine/BattlePokemon.js` announces concrete results
+(“took … damage!” and “was burned!”). Match the appropriate kind of writing:
+announcements need not sound like controls or connection errors. Preserve game
+terms and established facts when changing their wording.
+
+The user's [approved copy review](verification/web-copy/approved-copy.json)
+also supplies concrete style examples. Favor short prompts such as “Choose a
+target”, “New phase!”, and “1 turn left.” Remove redundant help text when the
+remaining controls already explain the action. Target hints omit affected-count,
+empty-tile and random-result summaries; the board still shows the target pattern.
+Keep exact HP/readiness values in result narration and meters. Error messages
+can lead with the recovery action, as in “Reload the page; your session has
+expired.” The accepted “SFX could not start.” shows that familiar game
+abbreviations are appropriate here; a generic plain-language rule must not
+erase the user's word choices.
+
+Use the approved “attack” instruction for Physical/Special moves and neutral
+“use this move” wording for status, healing and unknown categories. Shortening
+copy must still describe the actual action and state. In particular, pending
+and failed rewards are different states even when the player needs only a
+short message: “Awarding battle rewards…” while pending, and the explicitly
+confirmed “Couldn't award battle rewards.” on failure. If an action request's
+outcome is uncertain, ask the player to check the battle before retrying;
+the message must preserve that uncertainty.
+
+Shared battle interface messages and typed formatters live in
+`web/src/battles/copy.ts`. Keep one-off site-shell text with the shell. Ordinary
+TypeScript properties/functions handle the current English copy; add to the
+feature module when wording repeats or needs coordinated editing. Defer an
+app-wide localization key scheme and message-format runtime until translation
+work is concrete. Narration and short floating labels remain in
+`web/src/battles/eventPresentation.ts`; the
+[playback contract](battle-result-playback.md) owns event semantics and timing.
+Move, effect, ability, and held-item descriptions are projected from shared
+server definitions by `src/web/battleCatalog.js`. Edit shared descriptions at
+their source rather than creating competing web versions.
+
 ## Review a UI change
 
 1. Open the relevant named development stories and the live screen when the

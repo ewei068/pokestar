@@ -2,6 +2,7 @@ import { useBattlePlayback } from "./useBattlePlayback";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getBattle, submitAction } from "./api";
 import { isApiError } from "../http";
+import { battleCopy } from "./copy";
 import type { BattleAction, BattleCatalog, BattleResponse } from "./types";
 
 /** Owns transport, action submission, and playback timing. Renderers consume its plain state. */
@@ -35,9 +36,9 @@ export const useBattleSession = (battleId: string, catalog: BattleCatalog) => {
       if (response) applyResponse(response);
       setError(null);
     } catch (cause) {
-      setError(isApiError(cause, 404) ? "This battle is unavailable or has expired."
-        : isApiError(cause, 401) ? "Your session expired. Reload to sign in."
-        : "Could not load the battle. Try again shortly.");
+      setError(isApiError(cause, 404) ? "This battle isn't available. It may have expired."
+        : isApiError(cause, 401) ? battleCopy.sessionExpired
+        : "Couldn't load the battle. Try again in a moment.");
     } finally {
       setLoading(false);
     }
@@ -63,12 +64,12 @@ export const useBattleSession = (battleId: string, catalog: BattleCatalog) => {
     try {
       const response = await submitAction(battleId, battle.revision, action);
       applyResponse(response);
-      setNotice(response.accepted ? null : "The battle changed before your action. Showing the latest state.");
+      setNotice(response.accepted ? null : "The battle changed before your action went through. Here's the latest.");
       setError(null);
     } catch (cause) {
       setNotice(null);
-      setError(isApiError(cause, 401) ? "Your session expired. Reload to sign in."
-        : "Your action was not submitted. Refresh and try again.");
+      setError(isApiError(cause, 401) ? battleCopy.sessionExpired
+        : "Couldn't confirm your action. Refresh the page to check the battle before trying again.");
     } finally {
       setBusy(false);
     }
