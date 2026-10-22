@@ -4,6 +4,9 @@ Implemented locally **2026-10-21, America/Los_Angeles** from the user's nine
 browser comments. The user accepted the local UI on **2026-10-22**. This records
 implementation and checks separately from publication and production acceptance.
 
+Published with the mobile follow-up in
+[#173](https://github.com/ewei068/pokestar/pull/173), based on the copy PR.
+
 | Comment | Implemented response |
 | --- | --- |
 | 1 | Replace the italic serif `vs` with a compact bold `VS`. |

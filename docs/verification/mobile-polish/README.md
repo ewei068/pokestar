@@ -5,6 +5,11 @@ mobile/browser comments. This extends the first widescreen batch. The user
 accepted the local UI and requested a new PR on the same date; production
 deployment remains separate.
 
+Published in [#173](https://github.com/ewei068/pokestar/pull/173), based on the
+copy PR. The publishing pass repeated 95 web and 835 backend tests, build and
+targeted lint. Full Compound Engineering review found no actionable issue
+(run `20261022-093030-10c2ba2d`); its adversarial pass was local, not cross-model.
+
 - Project a solo trainer's saved username, or “You” for the viewer's solo team.
   Several trainers keep the team name; missing names fall back to it. Headings,
   inspection and winner narration use these labels. Canonical team keys and

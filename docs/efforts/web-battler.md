@@ -1,7 +1,7 @@
 # Pokestar web battler
 
 Last full code audit: **2026-10-17, America/Los_Angeles** (2026-10-18 UTC). Local music/settings implementation and verification: **2026-10-18**. Local real-battle audio preview added **2026-10-18**. Pokémon cries added **2026-10-19**. Copy research, source comparison and local copy update: **2026-10-19**. Copy publishing and documentation check: **2026-10-20**.
-Checkout: `codex/web-battle-polish`, based on `codex/web-battle-copy` ([#172](https://github.com/ewei068/pokestar/pull/172)), based on `codex/battle-cries` ([#171](https://github.com/ewei068/pokestar/pull/171)), based on `codex/battle-music` ([#170](https://github.com/ewei068/pokestar/pull/170)), based on `codex/battle-sfx` ([#169](https://github.com/ewei068/pokestar/pull/169)), based on `codex/restore-auto-battle` ([#166](https://github.com/ewei068/pokestar/pull/166)).
+Checkout: `codex/web-battle-polish` ([#173](https://github.com/ewei068/pokestar/pull/173)), based on `codex/web-battle-copy` ([#172](https://github.com/ewei068/pokestar/pull/172)), based on `codex/battle-cries` ([#171](https://github.com/ewei068/pokestar/pull/171)), based on `codex/battle-music` ([#170](https://github.com/ewei068/pokestar/pull/170)), based on `codex/battle-sfx` ([#169](https://github.com/ewei068/pokestar/pull/169)), based on `codex/restore-auto-battle` ([#166](https://github.com/ewei068/pokestar/pull/166)).
 This is the effort's maintained entry point. Detailed contracts and authoring
 rules stay in the linked documents; update those at their source.
 
@@ -14,9 +14,12 @@ same durable server-owned battle. Keep room for other bot features to gain web
 interfaces without migrating those features now.
 
 **Current continuation stage:** the user accepted the local desktop/mobile
-annotation polish on **2026-10-22** and requested publication in a new PR above
-the copy branch. Publishing verification passes 95 web tests, 835 backend tests,
-the production build and targeted JavaScript lint. Backend restart/live
+annotation polish on **2026-10-22**, now published in
+[#173](https://github.com/ewei068/pokestar/pull/173) above the copy branch.
+Publishing verification passes 95 web tests, 835 backend tests,
+the production build and targeted JavaScript lint. Full Compound Engineering
+review returned no findings (run `20261022-093030-10c2ba2d`); no different-provider
+review ran. Backend restart/live
 forced-skip and trainer-name checks, physical-device input/audio checks and
 production cutover remain open.
 
@@ -228,6 +231,7 @@ are not independent alternatives to the current renderer.
 | Battle music and audio settings                                        | [#170](https://github.com/ewei068/pokestar/pull/170) adds page-visit battle music, encounter themes and site Settings with separate Music/SFX sliders, stacked on #169.                                                                                                                                                                                                                                      |
 | Pokémon cries                                                          | [#171](https://github.com/ewei068/pokestar/pull/171) plays each Pokémon's PokeAPI cry when its turn begins, with all 1,351 cries committed and an explicit custom-species map, stacked on #170. |
 | Approved copy and voice                                                | [#172](https://github.com/ewei068/pokestar/pull/172) applies the author's 104-row copy review and records accepted examples, small feature-owned copy helpers and source ownership, based on #171. |
+| Accepted annotation polish                                             | [#173](https://github.com/ewei068/pokestar/pull/173), based on #172, applies the desktop/mobile feedback, repeat-tap confirmation, trainer/status labels and durable forced skips. Local UI accepted; runtime/device gates remain in the verification records. |
 
 Related pre-existing backlog: [data separation #16](https://github.com/ewei068/pokestar/issues/16),
 [Mongo optimization #14](https://github.com/ewei068/pokestar/issues/14),
