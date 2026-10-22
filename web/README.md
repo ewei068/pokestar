@@ -18,9 +18,12 @@ stable links for ready, area targeting, status and effects, NPC waiting, move
 playback, completed, and dense/missing-art states. For example,
 `http://localhost:5173/?previewBattle=1&story=playback` opens the event story
 with a Replay action control. Stories use local display fixtures and never
-submit server actions. In a live battle, select a move, hover a target to
-preview all pattern tiles, then click it to use the move. Click the selected
-move again to cancel. On a narrow screen, the command tray can collapse.
+submit server actions. In a live battle, select a move and hover or focus a
+target to preview all pattern tiles. Mouse and keyboard activation use it
+directly. Touch and pen taps preview first; Confirm or a second tap on the same
+primary target uses the move. Tapping another target updates the preview.
+Cancel returns to inspection. On narrow screens, targeting uses floating
+controls beside the collapse/expand arrow.
 
 Start web-battler work with the [effort overview](../docs/efforts/web-battler.md).
 The [UI guide](../docs/web-ui-style-guide.md) owns visual direction and
@@ -34,6 +37,12 @@ Story data lives in `src/battles/dev/battleStories.ts`;
 add scenarios there when a UI state needs repeatable review. Component tests
 exercise interactions through React Testing Library. Story tests check fixture
 contracts rather than recording markup or pixel snapshots.
+
+The accepted [desktop annotation batch](../docs/verification/widescreen-polish/README.md)
+and [mobile follow-up](../docs/verification/mobile-polish/README.md) retain the
+behavior checks and remaining live-device/backend verification. Restart the
+bot/backend and reload the page to load new trainer labels and forced-skip
+progression; Vite hot reload alone updates only the client.
 
 Durable battle starts also need `DURABLE_BATTLES_ENABLED=true`. Keep the
 separate raid flag off until the remaining raid cutover work is complete.

@@ -9,29 +9,13 @@ import type { InspectDetail } from "./BattleInspector";
 import { highlightedPokemonId } from "./eventPresentation";
 import { MovePanel } from "./MovePanel";
 import { battleCopy } from "./copy";
-import { moveEventFootprint, targetPreviewFor } from "./presentation";
-import type { BattleCatalog, BattleView } from "./types";
+import { moveEventFootprint, targetPreviewFor, teamDisplayName } from "./presentation";
+import { useTargetConfirmation } from "./useTargetConfirmation";
+import type { BattleCatalog } from "./types";
 import type { BattleSession } from "./useBattleSession";
 import type { BattleAudio } from "./audio/useBattleAudio";
 import type { BattleMusic } from "./audio/useBattleMusic";
 import "./battle-ui.css";
-
-const ReadinessRail = ({ view, catalog, ownTeams }: {
-  view: BattleView; catalog: BattleCatalog; ownTeams: string[];
-}) => <section className="arena-readiness" aria-label="Combat readiness">
-  <div><strong>⚡ Combat readiness</strong><small>Speed also affects turn order</small></div>
-  <div className="arena-readiness-line">{Object.values(view.pokemon)
-    .filter((entry) => !entry.isFainted)
-    .sort((a, b) => b.combatReadiness - a.combatReadiness)
-    .slice(0, 12).map((entry) => {
-      const species = catalog.species[entry.speciesId];
-      const sprite = entry.shiny ? species?.shinySprite : species?.sprite;
-      return <span className={ownTeams.includes(entry.teamName) ? "is-own" : "is-enemy"} key={entry.id}
-        title={`${entry.name}: ${Math.round(entry.combatReadiness)}% readiness`}>
-        {sprite ? <img src={sprite} alt="" loading="lazy" /> : <span aria-hidden="true">⚡</span>}
-        <small>{Math.round(entry.combatReadiness)}</small></span>;
-    })}</div>
-</section>;
 
 export const BattleScreen = ({ catalog, session, audio, music }: {
   catalog: BattleCatalog;
@@ -48,6 +32,14 @@ export const BattleScreen = ({ catalog, session, audio, music }: {
   const [inspectorFocus, setInspectorFocus] = useState<"pokemon" | "move">("pokemon");
   const [detail, setDetail] = useState<InspectDetail | null>(null);
   const [trayCollapsed, setTrayCollapsed] = useState(false);
+  const versionMatches = battle?.rulesetVersion === catalog.rulesetVersion;
+  const selected = battle?.availableActions.moves.find((option) => option.moveId === selectedMoveId);
+  const canChoose = !!battle && battle.isMyTurn && !busy && !playing && versionMatches && battle.status === "active";
+  const targetIds = canChoose ? selected?.targetPokemonIds || [] : [];
+  const targetingScope = canChoose && selected ? JSON.stringify([
+    battle.battleId, battle.revision, battle.view.activePokemonId, selectedMoveId,
+  ]) : null;
+  const confirmation = useTargetConfirmation(targetingScope, targetIds, targetPokemon);
   const playInteraction = (event: MouseEvent<HTMLDivElement>) => {
     const target = event.target as Element;
     if (target.closest?.("button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), summary"))
@@ -61,12 +53,8 @@ export const BattleScreen = ({ catalog, session, audio, music }: {
     <button type="button" onClick={() => { void refresh(); }}>Retry</button>
   </main></div>;
 
-  const versionMatches = battle.rulesetVersion === catalog.rulesetVersion;
   const displayView = playing ? (waitingForArt ? playing.previousView : playing.view) : battle.view;
-  const selected = battle.availableActions.moves.find((option) => option.moveId === selectedMoveId);
-  const canChoose = !busy && !playing && versionMatches && battle.status === "active";
-  const targetIds = canChoose ? selected?.targetPokemonIds || [] : [];
-  const previewId = hoveredPokemonId && targetIds.includes(hoveredPokemonId) ? hoveredPokemonId : null;
+  const previewId = confirmation.pendingTargetId || (hoveredPokemonId && targetIds.includes(hoveredPokemonId) ? hoveredPokemonId : null);
   const targetPreview = canChoose ? targetPreviewFor(displayView, selected, previewId) : null;
   const event = playing?.stage === "event" && !waitingForArt ? playing.event : undefined;
   const eventFootprint = moveEventFootprint(displayView, event);
@@ -85,7 +73,9 @@ export const BattleScreen = ({ catalog, session, audio, music }: {
   const weatherIcon: Record<string, string> = { Sun: "☀", Rain: "☂", Sandstorm: "◌", Hail: "❄" };
 
   const chooseMove = (moveId: string | null) => {
+    confirmation.clear();
     setHoveredPokemonId(null);
+    setHoveredMoveId(null);
     setDetail(null);
     setInspectorFocus(moveId ? "move" : "pokemon");
     selectMove(moveId);
@@ -96,13 +86,13 @@ export const BattleScreen = ({ catalog, session, audio, music }: {
     setInspectorFocus("pokemon");
     inspectPokemon(id);
   };
-  const chooseTarget = (id: string) => {
+  const chooseTarget = (id: string, pointerType: string) => {
     if (!canChoose || !targetIds.includes(id)) return;
     setHoveredMoveId(null);
     setDetail(null);
     setInspectorFocus("pokemon");
     inspectPokemon(id);
-    targetPokemon(id);
+    confirmation.choose(id, pointerType);
   };
   return <div className="battle-surface" onClickCapture={playInteraction}
     data-playback-stage={playing?.stage || "idle"}
@@ -114,7 +104,7 @@ export const BattleScreen = ({ catalog, session, audio, music }: {
     ])),
   } as CSSProperties}><main className="page-shell arena-page">
     <div className="arena-toolbar"><a className="back-link" href={import.meta.env.BASE_URL}>← Battles</a>
-      <span>Battle {battle.battleId.slice(0, 8)} · Revision {playing?.revision ?? battle.revision}</span>
+      <span className="arena-debug">Debug · Battle {battle.battleId.slice(0, 8)} · Revision {playing?.revision ?? battle.revision}</span>
       {music?.showControls && music.trackTitle && <div className="arena-music-control">
         <span title={music.trackTitle}>♫ {music.trackTitle}</span>
         <button type="button" onClick={() => { void music.toggle(); }}>
@@ -123,12 +113,12 @@ export const BattleScreen = ({ catalog, session, audio, music }: {
     {audio?.error && <p role="alert" className="error">{audio.error}</p>}
     {music?.error && <p role="alert" className="error">{music.error}</p>}
     <div className="arena-title"><div><small>{battle.mode.type || "Battle"} · TURN {displayView.turn}</small>
-      <h1>{ownNames.join(" & ") || "Your team"} <em>vs</em> {rivalNames.join(" & ") || "Opponents"}</h1></div>
+      <h1>{ownNames.map(name => teamDisplayName(displayView, name)).join(" & ") || "Your team"} <span className="arena-versus">VS</span> {rivalNames.map(name => teamDisplayName(displayView, name)).join(" & ") || "Opponents"}</h1></div>
       {displayView.weather?.weatherId && <div className={`arena-weather ${playing?.changes.weather ? "is-state-changing" : ""}`} title="Battle weather">
         {weatherIcon[displayView.weather.weatherId] || "◌"}
         <span>{displayView.weather.weatherId}<small>{displayView.weather.duration} {displayView.weather.duration === 1 ? "turn" : "turns"}</small></span></div>}
     </div>
-    {displayView.ended && <p className="notice">{displayView.winner ? `${displayView.winner} won the battle!` : "The battle ended in a draw."} {battleCopy.battleEnded}</p>}
+    {displayView.ended && <p className="notice">{displayView.winner ? `${teamDisplayName(displayView, displayView.winner)} won the battle!` : "The battle ended in a draw."} {battleCopy.battleEnded}</p>}
     {!playing && battle.completionStatus === "processing" && <p className="notice">{battleCopy.rewardsPending}</p>}
     {!playing && battle.completionStatus === "failed" && <p className="notice">{battleCopy.rewardsFailed}</p>}
     {!versionMatches && <p role="alert" className="error">{battleCopy.battleOutdated}</p>}
@@ -142,14 +132,15 @@ export const BattleScreen = ({ catalog, session, audio, music }: {
         highlightedId={highlightedPokemonId(event)}
         onChooseTarget={chooseTarget} onInspect={inspect} onHover={setHoveredPokemonId} />
       <BattleLog entries={history} playing={!!playing} onSkip={() => { audio?.stopAll(); skipPlayback(); }} />
-      <ReadinessRail view={displayView} catalog={catalog} ownTeams={battle.myTeamNames} />
     </div><aside className="arena-sidebar">
       <MovePanel view={displayView} availableActions={battle.availableActions} isMyTurn={!playing && battle.isMyTurn} playback={!!playing}
         catalog={catalog} selectedMoveId={selectedMoveId}
         preview={targetPreview} busy={!canChoose} submitting={busy} collapsed={trayCollapsed}
         onToggleCollapsed={() => setTrayCollapsed((current) => !current)}
+        confirming={!!confirmation.pendingTargetId} onConfirm={confirmation.confirm}
         onSelectMove={chooseMove} onHoverMove={setHoveredMoveId} onSkip={skipTurn} />
       <BattleInspector pokemon={inspected} moveId={inspectorMoveId} detail={detail}
+        teamLabel={inspected ? teamDisplayName(displayView, inspected.teamName) : undefined}
         catalog={catalog} onOpenDetail={(next) => { setHoveredMoveId(null); setDetail(next); }}
         onBack={() => setDetail(null)} />
     </aside></div>

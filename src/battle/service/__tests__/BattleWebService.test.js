@@ -66,10 +66,28 @@ describe("BattleWebService", () => {
     expect(active.mode).toEqual({ type: "pvp" });
     expect(active.presentation).toEqual({ musicThemeId: "trainer-volo" });
     expect(active.myTeamNames).toContain(activePokemon.teamName);
-    expect(active.view.teams.Team1).toEqual({ rows: 3, cols: 4 });
+    expect(active.view.teams.Team1).toEqual({ rows: 3, cols: 4,
+      displayName: activeUser === user1 ? "You" : "TestTrainer" });
+    expect(active.view.teams.Team2.displayName).toBe(activeUser === user2 ? "You" : "TestTrainer");
+    expect(other.view.teams[activePokemon.teamName].displayName).toBe("TestTrainer");
     expect(Object.values(active.view.pokemon).some((pokemon) => pokemon.shiny)).toBe(true);
     expect(await web.get({ battleId: battle.id, userId: "stranger" })).toEqual({ found: false });
     expect(await web.listActive("stranger")).toEqual([]);
+  });
+
+  it("keeps the team name for teams with several trainers and falls back when a name is absent", async () => {
+    const service = new BattleService(new BattleStore(new MemoryBattleCollection()));
+    const web = new BattleWebService(service);
+    const { battle, user1, user2 } = makeBattle();
+    const teammate = createMockTrainer({ username: "Teammate", party: createMockPokemonParty({ size: 1 }) });
+    battle.addTrainer(teammate.trainer, teammate.party.pokemons, "Team1");
+    battle.users[user2].username = " ";
+    await service.start({ battle });
+    const projected = await web.get({ battleId: battle.id, userId: user1 });
+    expect(projected.view.teams.Team1.displayName).toBe("Team1");
+    expect(projected.view.teams.Team2.displayName).toBe("Team2");
+    expect(Object.keys(projected.view.teams.Team1).sort()).toEqual(["cols", "displayName", "rows"]);
+    expect(Object.values(projected.view.pokemon).every(pokemon => ["Team1", "Team2"].includes(pokemon.teamName))).toBe(true);
   });
 
   it("projects ordered action updates and the latest state on a stale submission", async () => {
@@ -118,7 +136,7 @@ describe("BattleWebService", () => {
     })).toEqual({ accepted: false, reason: "battle_not_found" });
   });
 
-  it("returns no body or replay work when the state ID is unchanged", async () => {
+  it.each([false, true])("returns no body or replay work when the state ID is unchanged (legacy: %s)", async (legacy) => {
     const service = new BattleService(new BattleStore(new MemoryBattleCollection()));
     const web = new BattleWebService(service);
     const { battle } = makeBattle();
@@ -128,6 +146,11 @@ describe("BattleWebService", () => {
       battleId: battle.id, userId, expectedRevision: 0,
       requestId: "first", action: { action: "skipTurn" },
     });
+    if (legacy) {
+      delete service.store.collection.documents.get(battle.id).needsAutomaticTurn;
+      await web.get({ battleId: battle.id, userId, afterStateId: first.stateId });
+      expect((await service.store.get(battle.id)).needsAutomaticTurn).toBe(false);
+    }
     const replay = jest.spyOn(Battle.prototype, "performAction");
     try {
       expect(await web.get({

@@ -37,7 +37,8 @@ uses that layout without a prototype flag.
   numeric values. Status abbreviations and effect counts sit beside the sprite
   and may overlap its allocated space. Full details remain in the inspector.
 - HUDs must fit the slot with long names, dual types and many effects. Preserve
-  level on narrow screens. Keep meter borders to one CSS pixel. Buffs use red
+  the full three-digit level on narrow screens; reserve its width before the
+  meters. Keep meter borders to one CSS pixel. Buffs use red
   and ↑, debuffs blue and ↓, and neutral effects a distinct symbol.
 - Highlight both the platform and sprite on hover or keyboard focus. Use an oval
   focus ring. Active actor, legal targets, primary target and preview footprint
@@ -49,6 +50,26 @@ uses that layout without a prototype flag.
   hidden. Do not move the entire tile on hover.
 - Pokémon remain focusable buttons with touch inspection and the existing
   legal-target action path. Do not make canvas or decorative art intercept input.
+- Keep team names, without redundant YOU/RIVAL/front-direction labels. Readiness
+  remains on individual Pokémon and in inspection; omit the separate sorted rail.
+- Display a solo trainer's name, or “You” for the viewer's solo team, throughout
+  headings, inspection and winner text. Several trainers retain the team name.
+  Display labels never replace canonical team keys in targeting or geometry.
+- Selecting a move replaces the move list with Cancel. Touch and pen targets
+  confirm with Confirm or a second tap on the same primary target after showing
+  the server footprint, including empty tiles;
+  mouse and keyboard targets act directly. At widths up to 640 px, targeting
+  uses floating Confirm/Cancel controls and a collapse arrow with no enclosing
+  panel. Keep at least 44 px control height and an accessible expand path.
+- The inspector places a clickable three-letter status badge beside the name,
+  ability and held item in separate named rows near the identity, and effects
+  below the meters. Effect detail duration has its own clock-marked turn count.
+  Move inspection puts type beside the title, then category, power, accuracy and
+  cooldown with icons before the description. Target geometry stays on the board
+  and remains reachable by move focus/selection and touch targeting.
+- Use the shared `StatusLabel` for board cues and inspect buttons: TOX/PSN are
+  purple, PAR yellow, BRN red, SLP gray and FRZ ice blue. Always show the
+  abbreviation, retain the full accessible name, and avoid nested board buttons.
 
 ## Events and motion
 

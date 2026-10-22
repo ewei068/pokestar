@@ -16,15 +16,18 @@ const participantTeams = (record, userId) => new Set(
  * Opponent moves, ability, held item, and private stat modifiers stay server-side.
  * @param {object} snapshot
  * @param {Set<string>} ownTeams
+ * @param {Record<string, string>} teamNames
  */
-const projectSnapshot = (snapshot, ownTeams) => ({
+const projectSnapshot = (snapshot, ownTeams, teamNames) => ({
   battleId: snapshot.battleId,
   ended: snapshot.ended,
   winner: snapshot.winner,
   turn: snapshot.turn,
   activePokemonId: snapshot.activePokemonId,
   weather: snapshot.weather,
-  teams: snapshot.teams,
+  teams: Object.fromEntries(Object.entries(snapshot.teams).map(([name, dimensions]) => [
+    name, { ...dimensions, displayName: teamNames[name] || name },
+  ])),
   pokemon: Object.fromEntries(
     Object.entries(snapshot.pokemon).map(([id, pokemon]) => [
       id,
@@ -86,6 +89,12 @@ const availableActions = (record, battle, userId) => {
 
 const projectBattleRecord = (record, userId, sinceRevision = null) => {
   const ownTeams = participantTeams(record, userId);
+  const teamNames = Object.fromEntries(record.setup.teams.map(({ name }) => {
+    const trainers = record.setup.trainers.filter((trainer) => trainer.teamName === name);
+    const trainer = trainers.length === 1 ? trainers[0] : null;
+    const username = typeof trainer?.profile.username === "string" ? trainer.profile.username.trim() : "";
+    return [name, trainer?.userId === userId ? "You" : username || name];
+  }));
   let firstRevision = sinceRevision;
   if (firstRevision !== null && firstRevision > record.revision) firstRevision = 0;
   const replayedViews = new Map();
@@ -110,7 +119,7 @@ const projectBattleRecord = (record, userId, sinceRevision = null) => {
     resultExpiresAt: record.resultExpiresAt,
     myTeamNames: [...ownTeams],
     isMyTurn: record.status === "active" && battle.activePokemon?.userId === userId,
-    view: projectSnapshot(record.view, ownTeams),
+    view: projectSnapshot(record.view, ownTeams, teamNames),
     availableActions: availableActions(record, battle, userId),
     updates: firstRevision === null ? [] : record.actions
       .filter((entry) => entry.revision > firstRevision)
@@ -120,7 +129,7 @@ const projectBattleRecord = (record, userId, sinceRevision = null) => {
         events: entry.events,
         log: entry.log,
         ...(entry.revision < record.revision ? {
-          view: projectSnapshot(replayedViews.get(entry.revision), ownTeams),
+          view: projectSnapshot(replayedViews.get(entry.revision), ownTeams, teamNames),
         } : {}),
       })),
   };

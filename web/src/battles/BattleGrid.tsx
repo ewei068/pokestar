@@ -11,6 +11,8 @@ import { BoardVfx } from "./vfx/BoardVfx";
 import { useVfxAssets } from "./vfx/useVfxAssets";
 import type { BattleCatalog, BattleEvent, BattleTile, BattleView, PokemonView } from "./types";
 import { typeClass, typeName } from "./typeDisplay";
+import { StatusLabel } from "./StatusLabel";
+import { teamDisplayName } from "./presentation";
 
 type Props = {
   view: BattleView;
@@ -25,12 +27,10 @@ type Props = {
   resultFrame?: PlaybackFrame;
   reducedMotion?: boolean;
   highlightedId: string | null;
-  onChooseTarget: (pokemonId: string) => void;
+  onChooseTarget: (pokemonId: string, pointerType: string) => void;
   onInspect: (pokemonId: string) => void;
   onHover: (pokemonId: string | null) => void;
 };
-
-const statusAbbreviations: Record<string, string> = { Burn: "BRN", Poison: "PSN", Toxic: "TOX", BadPoison: "TOX", "Badly Poison": "TOX", Sleep: "SLP", Freeze: "FRZ", Paralysis: "PAR" };
 
 const percent = (value: number, max = 100) => Math.max(0, Math.min(100, value / Math.max(1, max) * 100));
 
@@ -47,10 +47,11 @@ const PokemonTile = ({ pokemon, catalog, own, active, targetable, primary, inPat
   playback: boolean;
   highlighted: boolean;
   stateChanging: boolean;
-  onChooseTarget: () => void;
+  onChooseTarget: (pointerType: string) => void;
   onInspect: () => void;
   onHover: (id: string | null) => void;
 }) => {
+  const pointerType = useRef("mouse");
   const species = catalog.species[pokemon.speciesId];
   const sprite = pokemon.shiny ? species?.shinySprite : species?.sprite;
   const effectIds = Object.keys(pokemon.effectIds || {});
@@ -63,21 +64,19 @@ const PokemonTile = ({ pokemon, catalog, own, active, targetable, primary, inPat
     highlighted ? "is-event-highlighted" : ""} ${playback ? "is-playback" : ""} ${
     stateChanging ? "is-state-changing" : ""} ${
     pokemon.isFainted ? "is-fainted" : ""}`}
-    onClick={targetable ? onChooseTarget : onInspect}
+    onPointerDown={event => { pointerType.current = event.pointerType; }}
+    onClick={event => targetable ? onChooseTarget(event.detail === 0 ? "keyboard" : pointerType.current) : onInspect()}
     onMouseEnter={() => onHover(pokemon.id)} onMouseLeave={() => onHover(null)}
     onFocus={() => onHover(pokemon.id)} onBlur={() => onHover(null)}
     aria-current={active ? "true" : undefined}
     aria-label={`${pokemon.name}, ${pokemon.hp} of ${pokemon.maxHp} HP, ${Math.round(pokemon.combatReadiness)} percent combat readiness${active ? ", current turn" : ""}${pokemon.isFainted ? ", fainted" : ""}${
-      targetable ? ", use selected move" : ", inspect"}`}>
+      targetable ? ", use selected move" : ", inspect"}${pokemon.status?.statusId ? `, ${pokemon.status.statusId}` : ""}`}>
     <span className="arena-mon-head"><strong>{pokemon.name}</strong><small>Lv {pokemon.level}</small></span>
     <span className="arena-type-cues"><span className="arena-type-dots">{[pokemon.type1, pokemon.type2].filter((type) => type !== null && type !== undefined)
         .map((type) => <span className={`arena-type-dot ${typeClass(type, catalog)}`} key={type}>{typeName(type, catalog)}</span>)}</span></span>
     <span className="arena-sprite"><PokemonSprite src={sprite} flipped={own} /></span>
     <span className="arena-mon-cues">
-      {pokemon.status?.statusId && <span className="arena-status-cue" title={pokemon.status.statusId} aria-label={pokemon.status.statusId}>
-        <span className="arena-status-full">{pokemon.status.statusId}</span>
-        <span className="arena-status-short" aria-hidden="true">{statusAbbreviations[pokemon.status.statusId] || pokemon.status.statusId.slice(0, 3)}</span>
-      </span>}
+      {pokemon.status?.statusId && <StatusLabel className="arena-status-cue" statusId={pokemon.status.statusId} />}
       <span className="arena-effect-counters">
         {buffs > 0 && <span className="arena-effect-count is-buff" title={`${buffs} buffs`}>↑{buffs}</span>}
         {debuffs > 0 && <span className="arena-effect-count is-debuff" title={`${debuffs} debuffs`}>↓{debuffs}</span>}
@@ -116,10 +115,8 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
         .filter((entry) => entry.teamName === teamName)
         .map((entry) => [entry.position, entry]));
       return <section className={`arena-team ${own ? "is-own" : "is-enemy"}`} key={teamName}
-        aria-label={`${teamName} formation`}>
-        <div className="arena-team-heading"><h2>{teamName}</h2>
-          <span className="arena-front-desktop">{own ? "YOU · FRONT →" : "← FRONT · RIVAL"}</span>
-          <span className="arena-front-mobile">{own ? "FRONT ↑ · YOU" : "RIVAL · FRONT ↓"}</span></div>
+        aria-label={`${teamDisplayName(view, teamName)} formation`}>
+        <div className="arena-team-heading"><h2>{teamDisplayName(view, teamName)}</h2></div>
         <div className="arena-grid" style={{ "--rows": dimensions.rows, "--cols": dimensions.cols } as CSSProperties}>
           {Array.from({ length: dimensions.rows * dimensions.cols }, (_, index) => {
             const row = Math.floor(index / dimensions.cols);
@@ -140,7 +137,7 @@ export const BattleGrid = ({ view, ownTeamNames, catalog, targetIds, primaryTarg
                 primary={entry.id === primaryTargetId} inPattern={inPattern}
                 playback={playback && inPattern && !motion?.vfxType} stateChanging={changedIds.has(entry.id)}
                 affected={affectedSet.has(entry.id)} highlighted={entry.id === highlightedId}
-                onChooseTarget={() => onChooseTarget(entry.id)} onInspect={() => onInspect(entry.id)}
+                onChooseTarget={pointerType => onChooseTarget(entry.id, pointerType)} onInspect={() => onInspect(entry.id)}
                 onHover={onHover} />
                 : <span className={`arena-empty ${inPattern ? "is-affected" : ""} ${
                   playback && inPattern && !motion?.vfxType ? "is-playback" : ""}`} aria-hidden="true" />}

@@ -6,6 +6,12 @@ A new accepted submission appends `{ revision, requestId, actorUserId, action, e
 
 The record stores one latest view for quick reads and replay verification. Intermediate playback views are computed during replay; older records that contain per-action views remain readable. See [the client contract](web-battler-client-plan.md).
 
+`needsAutomaticTurn` is internal metadata written with creation/action revisions,
+outside the replayed view. It lets authorized reads resume interrupted NPC or
+forced-skip progression even when the browser cursor matches. Older records are
+checked once and cached as settled under a revision check; see the
+[shared service](shared-battle-service.md) for progression and recovery behavior.
+
 The record also contains participant IDs for active-battle listing, mode context, status, timestamps, and a ruleset version. Recovery currently requires the same manually maintained `BATTLE_RULESET_VERSION`. Incompatible records are rejected; this code does not delete them. The store sets a 24-hour inactivity expiry, capped by an optional mode deadline, and refreshes it after accepted actions. Successfully processed and expired results are readable for seven days by default; callers may set both durations when starting a battle. Expiration marks a battle closed without running completion effects.
 
 Completion callbacks are rejected during capture. Phase callbacks are accepted only when that trainer has a generated phase queue in the setup. Dungeon parties can be generated before the first turn, stored in this queue, and consumed by the engine on phase transitions. Recovery replays the same transitions without recreating the dungeon NPC or invoking its callback. Other modes still need durable mode handlers for completion effects before their live starts can use this store.

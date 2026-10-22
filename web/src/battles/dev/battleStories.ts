@@ -123,8 +123,15 @@ export const makeBattleStory = (requestedId: string | null,
       story.history = ["The rival team fainted!", `${own} won the battle!`];
       break;
     case "dense": {
+      battle.view.teams[own].displayName = "You";
+      battle.view.teams[rival].displayName = "Palmer";
+      battle.view.pokemon[`${rival}-350`].status = { statusId: "Paralysis", turns: 2 };
       battle.view.pokemon[`${own}-157`].name = "Typhlosion of the Endless Horizon";
+      battle.view.pokemon[`${own}-157`].level = 100;
+      battle.view.pokemon[`${own}-157`].status = { statusId: "Badly Poison", turns: 2 };
+      battle.view.pokemon[`${own}-157`].effectIds = { shield: { duration: 2 } };
       battle.view.pokemon[`${rival}-248`].name = "Tyranitar with a Remarkably Long Name";
+      battle.view.pokemon[`${rival}-248`].level = 123;
       for (const [id, team, position] of [
         ["143", own, 7], ["350", own, 8], ["157", rival, 6],
         ["131", rival, 7], ["143", rival, 8],

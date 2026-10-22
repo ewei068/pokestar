@@ -12,8 +12,8 @@ export const battleCopy = {
 
   targetInstruction: (damageType?: string) =>
     damageType === "Physical" || damageType === "Special"
-      ? "Choose a highlighted Pokemon to attack. Select the move again to cancel."
-      : "Choose a highlighted Pokemon to use this move. Select the move again to cancel.",
+      ? "Choose a highlighted Pokemon to attack. Cancel to inspect the board."
+      : "Choose a highlighted Pokemon to use this move. Cancel to inspect the board.",
 
   turnsLeft: (turns: number) => `${turns} ${turns === 1 ? "turn" : "turns"} left.`,
 };

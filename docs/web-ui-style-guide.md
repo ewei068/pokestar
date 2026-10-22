@@ -43,8 +43,13 @@ site shell and future non-battle pages consistent with that direction.
   [arena design guide](arena-design-guide.md). It owns sprite/platform anchors,
   field backgrounds, labels, meters, target rings and event-copy appearance.
 - A selected move highlights legal primary targets. Hover or focus shows the
-  full server-supplied pattern, including empty tiles. Clicking a legal target
-  uses the move; clicking the selected move again exits targeting.
+  full server-supplied pattern, including empty tiles. Mouse clicks and keyboard
+  activation use a legal target directly. Touch and pen taps pin the pattern
+  and confirm with Confirm or a second tap on the same primary target; tapping
+  a different target updates that preview. Cancel exits
+  targeting and restores inspection. The selected move replaces the move list
+  with Cancel and, when a target is staged, Confirm. At floating-tray widths,
+  show those controls and a collapse arrow without the panel background.
 - The move's executed footprint comes from ordered combat events. A preview
   describes a possible action; playback depicts the accepted action.
 - Move motion follows the action category: physical approaches the primary

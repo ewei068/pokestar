@@ -26,7 +26,7 @@ export type BattleView = {
   turn: number;
   activePokemonId: string | null;
   weather: { weatherId?: string | null; duration: number };
-  teams: Record<string, { rows: number; cols: number }>;
+  teams: Record<string, { rows: number; cols: number; displayName?: string }>;
   pokemon: Record<string, PokemonView>;
 };
 

@@ -1,7 +1,8 @@
 import type { BattleCatalog, BattleEvent, BattleView } from './types';
+import { teamDisplayName } from './presentation';
 
 export type EventCue = { label: string; subjectId: string | null; tone: 'neutral' | 'damage' | 'heal' | 'status' | 'buff' | 'debuff' };
-type Context = { event: BattleEvent; name: string; target: string; move: string; effect: string; effectType?: string; species: string };
+type Context = { event: BattleEvent; name: string; target: string; move: string; effect: string; effectType?: string; species: string; winner: string };
 type Copy = string | ((context: Context) => string);
 type Definition = {
   narration: Copy; label?: Copy; subject?: 'pokemon' | 'target' | 'field';
@@ -65,7 +66,7 @@ export const eventPresentationCatalog: Record<string, Definition> = {
     return weatherPhrases[event.weatherId]?.started || `${event.weatherId} began.`;
   }, subject: 'field' },
   phaseStarted: { narration: 'New phase!', subject: 'field' },
-  battleEnded: { narration: ({ event }) => event.winner ? `${event.winner} won the battle!` : 'The battle ended.', subject: 'field' },
+  battleEnded: { narration: ({ event, winner }) => event.winner ? `${winner} won the battle!` : 'The battle ended.', subject: 'field' },
 };
 
 export const highlightedPokemonId = (event?: BattleEvent): string | null => {
@@ -83,6 +84,7 @@ export const presentEvent = (event: BattleEvent, view: BattleView, catalog: Batt
   if (!definition) return null;
   const pokemonName = (id?: string) => (id && view.pokemon[id]?.name) || 'A Pokémon';
   const context: Context = { event, name: pokemonName(event.pokemonId), target: pokemonName(event.targetPokemonId),
+    winner: event.winner ? teamDisplayName(view, event.winner) : '',
     move: catalog.moves[event.moveId || '']?.name || 'a move',
     effectType: catalog.effects[event.effectId || '']?.type,
     effect: catalog.effects[event.effectId || '']?.name || event.effectId || 'an effect',

@@ -23,6 +23,13 @@ const view: BattleView = {
 };
 
 describe("battle event text", () => {
+  it('uses the projected trainer name for the winner while keeping the event team key', () => {
+    const event = { type: 'battleEnded', sequence: 0, winner: 'NPC' };
+    assert.equal(presentEvent(event, { ...view, teams: { NPC: { rows: 3, cols: 4, displayName: 'Palmer' } } }, catalog)?.text,
+      'Palmer won the battle!');
+    assert.equal(event.winner, 'NPC');
+    assert.equal(presentEvent(event, view, catalog)?.text, 'NPC won the battle!');
+  });
   it("uses the resolved event order and display catalog", () => {
     assert.equal(presentEvent({ type: "moveStarted", sequence: 0, pokemonId: "p1", moveId: "m1" },
       view, catalog)?.text, "Bulbasaur used Tackle!");

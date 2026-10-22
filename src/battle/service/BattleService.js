@@ -51,7 +51,7 @@ class BattleService {
       modeDeadlineAt,
       resultRetentionMs,
     });
-    await this.advanceNpcs(record._id);
+    await this.advanceAutomaticTurns(record._id);
     await this.settleCompletion(record._id);
     const latest = await this.store.get(record._id);
     return {
@@ -83,13 +83,15 @@ class BattleService {
     if (record.resultExpiresAt && record.resultExpiresAt <= this.store.now()) {
       return { found: false };
     }
-    if (record.completionStatus === "pending") {
+    const progressed = record.status === "active" && record.needsAutomaticTurn !== false
+      ? await this.advanceAutomaticTurns(battleId) : record;
+    if (progressed.completionStatus === "pending") {
       await this.settleCompletion(battleId);
     }
     const latest =
-      record.completionStatus === "pending"
+      progressed.completionStatus === "pending"
         ? await this.store.get(battleId)
-        : record;
+        : progressed;
     return {
       found: true,
       battleId,
@@ -119,7 +121,7 @@ class BattleService {
     });
     if (!result.accepted) return result;
 
-    await this.advanceNpcs(battleId);
+    await this.advanceAutomaticTurns(battleId);
     await this.settleCompletion(battleId);
     const latest = await this.store.get(battleId);
     return {
@@ -268,20 +270,27 @@ class BattleService {
     }
   }
 
-  async advanceNpcs(battleId) {
+  async advanceAutomaticTurns(battleId) {
     for (let count = 0; count < this.maxNpcActions; count += 1) {
       const record = await this.store.get(battleId);
       if (record.status !== "active" || record.autoCommit) return record;
       const battle = restoreBattle(record);
       const actorUserId = battle.activePokemon?.userId;
-      if (!actorUserId || !battle.isNpc(actorUserId)) return record;
+      if (!actorUserId) return record;
+      const isNpc = battle.isNpc(actorUserId);
+      if (!isNpc && battle.activePokemon.canMove()) {
+        if (record.needsAutomaticTurn !== false) {
+          await this.store.markAutomaticTurnsSettled(battleId, record.revision);
+        }
+        return record;
+      }
 
       const result = await this.store.submit({
         battleId,
         actorUserId,
         expectedRevision: record.revision,
-        requestId: `npc:${record.revision}`,
-        action: this.npcAction(battle),
+        requestId: `${isNpc ? "npc" : "forced-skip"}:${record.revision}`,
+        action: isNpc ? this.npcAction(battle) : { action: "skipTurn" },
       });
       if (!result.accepted && result.reason === "auto_in_progress")
         return this.store.get(battleId);
@@ -289,10 +298,10 @@ class BattleService {
         !result.accepted &&
         !["stale_revision", "request_id_conflict"].includes(result.reason)
       ) {
-        throw new Error(`NPC action rejected: ${result.reason}`);
+        throw new Error(`Automatic battle action rejected: ${result.reason}`);
       }
     }
-    throw new Error(`NPC progression exceeded ${this.maxNpcActions} actions`);
+    throw new Error(`Automatic battle progression exceeded ${this.maxNpcActions} actions`);
   }
 }
 

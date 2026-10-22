@@ -15,6 +15,9 @@ const sameAction = (left, right) => {
 const DEFAULT_IDLE_TIMEOUT_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_RESULT_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
 
+const needsAutomaticTurn = (battle) => Boolean(!battle.ended && battle.activePokemon &&
+  (battle.isNpc(battle.activePokemon.userId) || !battle.activePokemon.canMove()));
+
 const getExpiry = (now, idleTimeoutMs, modeDeadlineAt) => {
   const idleExpiry = new Date(now.getTime() + idleTimeoutMs);
   return modeDeadlineAt && modeDeadlineAt < idleExpiry
@@ -64,6 +67,7 @@ class BattleStore {
       setup,
       actions: [],
       view: battle.takeSnapshot(),
+      needsAutomaticTurn: needsAutomaticTurn(battle),
       createdAt: now,
       updatedAt: now,
       expiresAt: getExpiry(now, idleTimeoutMs, modeDeadlineAt),
@@ -113,6 +117,13 @@ class BattleStore {
       .toArray();
     return records.filter(
       (record) => !record.expiresAt || record.expiresAt > this.now(),
+    );
+  }
+
+  async markAutomaticTurnsSettled(battleId, revision) {
+    await this.collection.updateOne(
+      { _id: battleId, revision, status: "active" },
+      { $set: { needsAutomaticTurn: false } },
     );
   }
 
@@ -195,6 +206,7 @@ class BattleStore {
           revision: nextRevision,
           status: battle.ended ? "completed" : "active",
           view: outcome.snapshot,
+          needsAutomaticTurn: needsAutomaticTurn(battle),
           updatedAt: now,
           expiresAt: battle.ended
             ? null
@@ -313,6 +325,7 @@ class BattleStore {
           revision: expectedRevision + actions.length,
           status: "completed",
           view: simulation.view,
+          needsAutomaticTurn: false,
           updatedAt: now,
           completedAt: now,
           expiresAt: null,

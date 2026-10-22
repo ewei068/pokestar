@@ -28,6 +28,11 @@ The projection includes grid dimensions, sprite selection (`speciesId` and
 participant's own team. It withholds opponent moves, ability, held item, and
 private stat modifiers. More detailed PvP reveal rules can be added later.
 Discord continues to use its existing battle renderer.
+Each projected team's dimensions also carry a `displayName`: a solo trainer's
+saved username, “You” for the viewer's solo team, or the team name for several
+trainers or missing names. Current and intermediate views use the same labels;
+canonical team keys and Pokémon `teamName` stay unchanged. The client falls
+back to that key when an older backend omits the optional label.
 
 The HTTP adapter must derive the Discord user ID from the authenticated session
 and pass it to `BattleWebService`; it must not accept a user ID from request

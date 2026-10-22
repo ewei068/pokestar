@@ -82,6 +82,10 @@ frame at a time, recent readable events, loading/busy/error/notice states, and
 commands to select a move, inspect a Pokémon, choose a legal target, skip, and
 refresh. The screen may render these states but must not calculate whether an
 action is legal. The server-supplied `availableActions` is authoritative.
+The screen's `useTargetConfirmation` holds a touch/pen preview before calling
+the existing session command. Its scope includes battle, revision, actor and
+move; unavailable actions or playback invalidate it. Confirmation does not
+alter server targeting rules or the session's submission authority.
 
 Its interface also includes behavior, not just TypeScript fields:
 
@@ -127,9 +131,12 @@ an immediate readable result.
 The implemented battle screen uses the facing formation on desktop and stacks
 the teams on phones with their front rows toward each other. A participant
 selects a move, previews a primary target's server-supplied geometric footprint
-(including empty tiles) on hover or focus, then clicks a legal target to act.
-Clicking the selected move again exits targeting. On phones, the command tray
-can collapse while the board is inspected. The same board highlights
+(including empty tiles) on hover or focus. Mouse and keyboard activation act
+directly; touch and pen pin the preview until Confirm or another tap on the same
+primary target. Tapping a different target changes the preview. Cancel replaces the move
+list during selection and restores inspection. On phones, targeting uses only
+floating Confirm/Cancel buttons and a collapse/expand arrow; ordinary move
+choice retains the collapsible tray. The same board highlights
 `moveStarted.patternTiles` during ordered playback; this executed footprint
 drives VFX without putting targeting rules in the browser.
 The motion renderer uses the executed `moveStarted` event for a

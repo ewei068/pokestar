@@ -1,7 +1,7 @@
 # Pokestar web battler
 
 Last full code audit: **2026-10-17, America/Los_Angeles** (2026-10-18 UTC). Local music/settings implementation and verification: **2026-10-18**. Local real-battle audio preview added **2026-10-18**. Pokémon cries added **2026-10-19**. Copy research, source comparison and local copy update: **2026-10-19**. Copy publishing and documentation check: **2026-10-20**.
-Checkout: `codex/web-battle-copy` ([#172](https://github.com/ewei068/pokestar/pull/172)), based on `codex/battle-cries` ([#171](https://github.com/ewei068/pokestar/pull/171)), based on `codex/battle-music` ([#170](https://github.com/ewei068/pokestar/pull/170)), based on `codex/battle-sfx` ([#169](https://github.com/ewei068/pokestar/pull/169)), based on `codex/restore-auto-battle` ([#166](https://github.com/ewei068/pokestar/pull/166)).
+Checkout: `codex/web-battle-polish`, based on `codex/web-battle-copy` ([#172](https://github.com/ewei068/pokestar/pull/172)), based on `codex/battle-cries` ([#171](https://github.com/ewei068/pokestar/pull/171)), based on `codex/battle-music` ([#170](https://github.com/ewei068/pokestar/pull/170)), based on `codex/battle-sfx` ([#169](https://github.com/ewei068/pokestar/pull/169)), based on `codex/restore-auto-battle` ([#166](https://github.com/ewei068/pokestar/pull/166)).
 This is the effort's maintained entry point. Detailed contracts and authoring
 rules stay in the linked documents; update those at their source.
 
@@ -13,7 +13,14 @@ actions with clear ordered visual feedback. Discord and web operate on the
 same durable server-owned battle. Keep room for other bot features to gain web
 interfaces without migrating those features now.
 
-**Current continuation stage:** the approved copy review is applied on
+**Current continuation stage:** the user accepted the local desktop/mobile
+annotation polish on **2026-10-22** and requested publication in a new PR above
+the copy branch. Publishing verification passes 95 web tests, 835 backend tests,
+the production build and targeted JavaScript lint. Backend restart/live
+forced-skip and trainer-name checks, physical-device input/audio checks and
+production cutover remain open.
+
+The approved copy review is applied on
 draft [#172](https://github.com/ewei068/pokestar/pull/172), based on #171.
 The user returned all 104 review rows approved, with 15 replacement drafts.
 The original [review export and application notes](../verification/web-copy/README.md)
@@ -37,6 +44,32 @@ from short floating cues, and unknown event causes remain general. The
 voice direction lives in the [UI style guide](../web-ui-style-guide.md#copy-voice).
 Approval covers the reviewed copy and documented contextual adjustments;
 production cutover and exact wording across every generation remain distinct.
+
+The first native-annotation UI polish batch is implemented locally on
+**2026-10-21**. It simplifies the battle heading and formation labels, fixes
+three-digit levels, removes the readiness rail, and reorganizes Pokémon/move
+inspection. Forced participant skips now use durable server progression.
+The [nine-comment implementation and verification record](../verification/widescreen-polish/README.md)
+separates checked behavior and the user's local UI acceptance from the pending
+backend restart/live forced-skip check.
+
+The second annotation batch is implemented locally on **2026-10-22**: solo
+trainer display names, explicit Cancel during move selection, compact phone
+targeting controls, touch/pen target confirmation, and shared colored status
+abbreviations. The [mobile feedback verification](../verification/mobile-polish/README.md)
+records 95 web and 835 backend tests, responsive browser checks, and the running
+backend's pending restart for trainer names. The user accepted the local UI;
+physical touch-device acceptance remains separate.
+The same-day follow-up allows a second tap on the staged primary target to use
+the move; tapping a different target still changes the preview.
+
+Feedback workflow research on **2026-10-20** compares narrated recordings,
+native Codex annotations/voice, selective transcript/frame retrieval and
+instrumented capture tools. The [research and proposed pilot](../ui-feedback-tools-research.md)
+recommend annotations for static polish and short media evidence for motion,
+audio and phone behavior. Native annotations supplied both accepted batches
+above. Recording extraction and external-tool pilots remain proposals; no
+capture integration was installed and no recording was analyzed.
 
 Phone audio review remains open. The catalog has five default tracks plus
 dungeon, trainer and raid themes and a per-battle override. Real battle pages
@@ -265,8 +298,11 @@ solution note was created because these lessons are already explicit in the
 continuation, VFX, architecture and playback guides; another copy would add
 maintenance drift. The same gate was checked for the copy phase on 2026-10-20:
 the voice guide, architecture and approved review already preserve the decisions
-and reasoning. General and web README pointers lead to those sources. Put a
-future genuinely missing verified lesson through that
+and reasoning. The 2026-10-22 polish wrap-up also passed that gate without a new
+solution note: the shared-service contract explains why matching cursors must
+still resume automatic turns, and the architecture/arena guides preserve target
+confirmation and display-name boundaries. General and web README pointers lead
+to those sources. Put a future genuinely missing verified lesson through that
 gate rather than turning an untested proposal into policy.
 
 At meaningful milestones update this entry point's status, evidence, accepted

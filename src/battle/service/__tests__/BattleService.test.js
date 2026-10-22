@@ -8,6 +8,9 @@ const {
 } = require("../../../__testing__/mocks/battleCollection");
 const { BattleStore } = require("../../persistence/BattleStore");
 const { BattleService } = require("../BattleService");
+const { restoreBattle } = require("../../persistence/battleRecord");
+const { battleStateId } = require("../battleStateCursor");
+const { BattleWebService } = require("../BattleWebService");
 
 const makeService = (options = {}) => {
   const store = new BattleStore(new MemoryBattleCollection());
@@ -15,6 +18,39 @@ const makeService = (options = {}) => {
 };
 
 describe("BattleService", () => {
+  it.each(["act", "read"])("persists forced skips through %s until a player can choose again", async (entry) => {
+    const { service, store } = makeService({ npcAction: () => ({ action: "skipTurn" }) });
+    const party = createMockPokemonParty({ size: 1 });
+    party.pokemons[0].moveIds = ["m182"];
+    const { battle } = createMockBattle({ team1Party: party,
+      team2Party: createMockPokemonParty({ size: 1 }) });
+    const started = await service.start({ battle });
+    const { userId } = battle.activePokemon;
+    const request = { battleId: battle.id, expectedRevision: started.revision,
+      requestId: "protect", action: { action: "useMove", moveId: "m182",
+        targetPokemonId: battle.activePokemon.id } };
+    if (entry === "act") {
+      expect((await service.act({ ...request, userId })).accepted).toBe(true);
+    } else {
+      await store.submit({ ...request, actorUserId: userId });
+      expect((await store.get(battle.id)).needsAutomaticTurn).toBe(true);
+      await store.markAutomaticTurnsSettled(battle.id, started.revision);
+      expect((await store.get(battle.id)).needsAutomaticTurn).toBe(true);
+      const afterStateId = battleStateId(await store.get(battle.id));
+      const web = new BattleWebService(service);
+      await Promise.all([web.get({ battleId: battle.id, userId, afterStateId }),
+        web.get({ battleId: battle.id, userId, afterStateId })]);
+    }
+    const record = await store.get(battle.id);
+    expect(record.needsAutomaticTurn).toBe(false);
+    const forced = record.actions.filter(action => action.actorUserId === userId && action.action.action === "skipTurn");
+    expect(forced.length).toBeGreaterThan(0);
+    expect(new Set(record.actions.map(action => action.revision)).size).toBe(record.actions.length);
+    const restored = restoreBattle(record);
+    expect(restored.activePokemon.userId).toBe(userId);
+    expect(restored.activePokemon.canMove()).toBe(true);
+  });
+
   const finishOneHitBattle = async (service) => {
     const { battle, team2 } = createMockBattle({
       team1Party: createMockPokemonParty({ size: 1 }),
