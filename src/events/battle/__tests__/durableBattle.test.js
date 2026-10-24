@@ -20,16 +20,23 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
-describe("old durable controls", () => {
-  it("does not replace a public battle picker when another trainer presses it", async () => {
-    getDurableBattleService.mockClear();
-    const interaction = { user: { id: "other" }, update: jest.fn() };
-    const result = await durableBattle(interaction, { eventName: eventNames.DURABLE_BATTLE_PAGE, u: "owner", p: 1 });
-    expect(result.err).toContain("/continue-battle");
-    expect(interaction.update).not.toHaveBeenCalled();
-    expect(getDurableBattleService).not.toHaveBeenCalled();
-  });
-  it("upgrades posted controls to the existing battle UI without executing their old selection", async () => {
+describe("continue-battle controls", () => {
+  it.each([eventNames.DURABLE_BATTLE_PICK, eventNames.DURABLE_BATTLE_PAGE])(
+    "does not replace another trainer's battle list for %s",
+    async (eventName) => {
+      getDurableBattleService.mockClear();
+      const interaction = { user: { id: "other" }, update: jest.fn() };
+      const result = await durableBattle(interaction, {
+        eventName,
+        u: "owner",
+        p: 1,
+      });
+      expect(result.err).toContain("/continue-battle");
+      expect(interaction.update).not.toHaveBeenCalled();
+      expect(getDurableBattleService).not.toHaveBeenCalled();
+    },
+  );
+  it("opens the selected battle with the existing battle controls", async () => {
     const service = new BattleService(
       new BattleStore(new MemoryBattleCollection()),
     );
@@ -38,25 +45,58 @@ describe("old durable controls", () => {
     await service.start({ battle });
     const userId = battle.userIds.find((id) => !battle.isNpc(id));
     const act = jest.spyOn(service, "act");
-    for (const name of [
-      eventNames.DURABLE_BATTLE_MOVE,
-      eventNames.DURABLE_BATTLE_TARGET,
-      eventNames.DURABLE_BATTLE_CONFIRM,
-      eventNames.DURABLE_BATTLE_INFO,
-      eventNames.DURABLE_BATTLE_SKIP,
-    ]) {
-      const interaction = {
-        user: { id: userId },
-        values: ["old-selection"],
-        update: jest.fn(),
-      };
-      await durableBattle(interaction, { eventName: name, b: battle.id, r: 0 });
-      const send = interaction.update.mock.calls[0][0];
-      expect(send.content).toContain("Battle controls updated");
-      expect(
-        JSON.parse(send.components[1].components[0].data.custom_id).eventName,
-      ).toBe(eventNames.BATTLE_MOVE_SELECT);
-    }
+    const interaction = {
+      user: { id: userId },
+      values: [battle.id],
+      update: jest.fn(),
+    };
+    const result = await durableBattle(interaction, {
+      eventName: eventNames.DURABLE_BATTLE_PICK,
+      u: userId,
+    });
+    expect(result).toBeNull();
+    const send = interaction.update.mock.calls[0][0];
+    expect(send.embeds).not.toHaveLength(0);
+    expect(
+      JSON.parse(send.components[1].components[0].data.custom_id).eventName,
+    ).toBe(eventNames.BATTLE_MOVE_SELECT);
     expect(act).not.toHaveBeenCalled();
+  });
+  it("renders the requested page with controls owned by the same trainer", async () => {
+    const service = {
+      listActive: jest.fn().mockResolvedValue(
+        Array.from({ length: 26 }, (_, index) => ({
+          battleId: `battle-${index}`,
+          updatedAt: 26 - index,
+          mode: { type: "PvE" },
+          view: { turn: 1, teams: {} },
+        })),
+      ),
+    };
+    getDurableBattleService.mockResolvedValue(service);
+    const interaction = { user: { id: "owner" }, update: jest.fn() };
+    const result = await durableBattle(interaction, {
+      eventName: eventNames.DURABLE_BATTLE_PAGE,
+      u: "owner",
+      p: 1,
+    });
+    expect(result).toBeNull();
+    expect(service.listActive).toHaveBeenCalledWith("owner");
+    const send = interaction.update.mock.calls[0][0];
+    expect(send.content).toBe("Your ongoing battles (26) · Page 2/2");
+    const picker = send.components[0].components[0].toJSON();
+    expect(picker.options.map((option) => option.value)).toEqual(["battle-25"]);
+    expect(JSON.parse(picker.custom_id)).toEqual({
+      eventName: eventNames.DURABLE_BATTLE_PICK,
+      u: "owner",
+    });
+    const buttons = send.components[1].components.map((button) => button.toJSON());
+    expect(JSON.parse(buttons[0].custom_id)).toEqual({
+      eventName: eventNames.DURABLE_BATTLE_PAGE,
+      p: 0,
+      u: "owner",
+    });
+    expect(buttons[0].disabled).toBe(false);
+    expect(buttons[1].disabled).toBe(true);
   });
 });

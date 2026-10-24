@@ -58,8 +58,7 @@ const battleTargetSelect = async (interaction, data) => {
     return { err: "This interaction has expired." };
   }
 
-  if (await refreshBattleIfStale(context, interaction))
-    return { skipInteractionRewards: true };
+  if (await refreshBattleIfStale(context, interaction)) return;
   const { stateId } = context;
 
   // get battle
@@ -118,7 +117,7 @@ const battleTargetSelect = async (interaction, data) => {
     }
 
     await interaction.update(send);
-    return { skipInteractionRewards: context.durable };
+    return;
   }
 
   const { moveId, targetId, err } = getMoveAndTargetIds(interaction, data);
@@ -189,7 +188,6 @@ const battleTargetSelect = async (interaction, data) => {
       // @ts-ignore
       .concat(confirmButtonActionRow),
   });
-  return { skipInteractionRewards: context.durable };
 };
 
 module.exports = battleTargetSelect;
