@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { listBattles } from "./api";
+import { battleCopy } from "./copy";
 import type { BattleSummary } from "./types";
 
 export const BattleList = () => {
@@ -10,9 +11,9 @@ export const BattleList = () => {
   }, []);
   return (
     <main className="page-shell">
-      <div className="list-intro"><p className="eyebrow">Your arena</p><h1>Ongoing battles</h1>
-        <p>Continue a battle started in Discord. Actions here and in Discord share the same state.</p></div>
-      {error && <p role="alert" className="error">Could not load your battles. Refresh to retry.</p>}
+      <div className="list-intro"><h1>Ongoing battles</h1>
+        <p>{battleCopy.listIntro}</p></div>
+      {error && <p role="alert" className="error">Couldn't load your battles. Refresh the page to try again.</p>}
       {!error && battles === null && <p className="quiet">Loading battles…</p>}
       {battles?.length === 0 && <div className="empty-state"><h2>No ongoing battles</h2>
         <p>Start one in Discord, then return here to continue it.</p></div>}

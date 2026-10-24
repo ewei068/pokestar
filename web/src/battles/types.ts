@@ -26,7 +26,7 @@ export type BattleView = {
   turn: number;
   activePokemonId: string | null;
   weather: { weatherId?: string | null; duration: number };
-  teams: Record<string, { rows: number; cols: number }>;
+  teams: Record<string, { rows: number; cols: number; displayName?: string }>;
   pokemon: Record<string, PokemonView>;
 };
 
@@ -38,7 +38,7 @@ export type BattleEvent = {
   sourcePokemonId?: string | null;
   targetPokemonId?: string;
   moveId?: string;
-  moveType?: string;
+  moveType?: string | number;
   damageType?: string;
   targetPattern?: string;
   primaryTargetId?: string;
@@ -47,9 +47,22 @@ export type BattleEvent = {
   patternTiles?: BattleTile[];
   amount?: number;
   hp?: number;
+  previousHp?: number;
+  shield?: number;
+  duration?: number;
+  turn?: number;
+  turns?: number;
+  teamName?: string;
+  position?: number;
+  previousSpeciesId?: string;
+  speciesId?: string;
+  weatherId?: string | null;
+  previousWeatherId?: string | null;
+  combatReadiness?: number;
+  previousCombatReadiness?: number;
   statusId?: string;
   effectId?: string;
-  winner?: string;
+  winner?: string | null;
 };
 
 export type BattleTile = { teamName: string; position: number };
@@ -86,6 +99,7 @@ export type BattleResponse = {
   status: string;
   completionStatus: string;
   mode: { type?: string };
+  presentation?: { musicThemeId: string | null };
   myTeamNames: string[];
   isMyTurn: boolean;
   view: BattleView;
@@ -102,7 +116,7 @@ export type BattleResponse = {
 /** The participant projection the screen needs; transport metadata stays in the session. */
 export type BattleDisplay = Pick<BattleResponse,
   "battleId" | "rulesetVersion" | "revision" | "status" | "completionStatus" |
-  "mode" | "myTeamNames" | "isMyTurn" | "view" | "availableActions">;
+  "mode" | "presentation" | "myTeamNames" | "isMyTurn" | "view" | "availableActions">;
 
 export type BattleSummary = {
   battleId: string;

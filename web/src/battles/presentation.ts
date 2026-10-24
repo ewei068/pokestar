@@ -2,6 +2,9 @@ import type { BattleDisplay, BattleEvent, BattleTile, BattleView, TargetPreview 
 
 type MoveChoice = BattleDisplay["availableActions"]["moves"][number];
 
+export const teamDisplayName = (view: BattleView, teamName: string): string =>
+  view.teams[teamName]?.displayName || teamName;
+
 /** The server owns targeting. A single-tile fallback keeps older API versions usable. */
 export const targetPreviewFor = (
   view: BattleView,
