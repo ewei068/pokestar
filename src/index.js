@@ -366,7 +366,7 @@ const app = express();
 app.use(express.json());
 const PORT = 3000;
 
-app.options("*", cors(corsOptions)); // preflight OPTIONS; put before other routes
+app.options("/vote", cors(corsOptions));
 
 app.post("/vote", async (req, res) => {
   try {
@@ -409,5 +409,17 @@ app.post("/vote", async (req, res) => {
   }
 });
 
-app.listen(PORT);
-logger.info(`Express App listening on port ${PORT}`);
+const startHttpServer = async () => {
+  if (process.env.WEB_BATTLER_ENABLED === "true") {
+    // eslint-disable-next-line global-require
+    const { createMongoBattleApi } = require("./web/createMongoBattleApi");
+    app.use("/api", await createMongoBattleApi());
+  }
+  app.listen(PORT, process.env.HTTP_HOST || undefined);
+  logger.info(`Express App listening on port ${PORT}`);
+};
+
+startHttpServer().catch((error) => {
+  logger.error("Express App could not start", error);
+  process.exitCode = 1;
+});
