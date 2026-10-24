@@ -194,6 +194,28 @@ static hosting needs no path fallback. Choose a route library and URL scheme
 when navigation grows beyond the battle list and detail view. Existing battle
 links must keep working or redirect when that happens.
 
+The shell's `auth/useAuth.ts` owns identity loading, sign-in/sign-out requests
+and recoverable errors. `LoginScreen` renders fixed copy from `loginState.ts`;
+provider descriptions and arbitrary URL text never become user-facing errors.
+Starting sign-in requests a JSON authorization URL before navigating, so network
+and API failures remain recoverable in the app. Direct visits to the login API
+still redirect normally. Auth HTTP requests and Discord exchanges have bounded
+timeouts.
+
+The callback validates its state cookie before trusting either a code or a
+cancellation. It redirects to the validated original battle URL with a short
+allowlisted error code, or to the configured site base path when state cannot
+be trusted. Success adds a temporary completion marker: a subsequent `/me` 401
+can then explain a missing session cookie instead of silently showing Sign in.
+The shell removes outcome markers while retaining the battle query. Retry starts
+a fresh sign-in, except connection errors recheck identity and sign-out errors
+retry sign-out. Successful sign-in navigation keeps its control locked to prevent
+a second request replacing the OAuth state cookie; a cached browser page return
+unlocks it for retry. Hosted subpaths require the same `WEB_BASE_PATH` in the static
+build and backend configuration. See the
+[login recovery verification](verification/login-recovery/README.md) for cases
+checked and live-provider limits.
+
 ## Incremental implementation
 
 Implemented: the shell owns login state and hosts the battle feature; the

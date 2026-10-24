@@ -29,6 +29,7 @@ const createMongoBattleApi = async (config = process.env) => {
     battleService,
     sessionStore,
     siteOrigin,
+    sitePath: config.WEB_BASE_PATH || "/",
     clientId: config.CLIENT_ID,
     clientSecret: config.DISCORD_CLIENT_SECRET,
     redirectUri,

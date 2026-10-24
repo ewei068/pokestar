@@ -3,9 +3,21 @@ const { randomBytes, timingSafeEqual } = require("crypto");
 const OAUTH_STATE_LIFETIME_MS = 10 * 60 * 1000;
 const API_BASE = "https://discord.com/api/v10";
 
+class DiscordOAuthError extends Error {
+  constructor(code, message) {
+    super(message);
+    this.code = code;
+  }
+}
+
 const safeReturnPath = (value) => {
   if (typeof value !== "string" || !value.startsWith("/") ||
       value.startsWith("//") || value.includes("\\") || value.length > 500) {
+    return "/";
+  }
+  try {
+    if (new URL(value, "https://pokestar.invalid").origin !== "https://pokestar.invalid") return "/";
+  } catch {
     return "/";
   }
   return value;
@@ -66,13 +78,19 @@ const exchangeDiscordCode = async ({
       code,
       redirect_uri: redirectUri,
     }),
+    signal: AbortSignal.timeout(15000),
   });
-  if (!tokenResponse.ok) throw new Error("Discord token exchange failed");
+  if (!tokenResponse.ok) {
+    const error = await tokenResponse.json().catch(() => ({}));
+    throw new DiscordOAuthError(error.error === "invalid_grant" ? "code_expired" : "discord_unavailable",
+      "Discord token exchange failed");
+  }
   const token = await tokenResponse.json();
   if (!token.access_token) throw new Error("Discord token response missing access token");
 
   const userResponse = await fetchImpl(`${API_BASE}/users/@me`, {
     headers: { Authorization: `Bearer ${token.access_token}` },
+    signal: AbortSignal.timeout(15000),
   });
   if (!userResponse.ok) throw new Error("Discord user lookup failed");
   const user = await userResponse.json();
@@ -89,4 +107,5 @@ module.exports = {
   validState,
   authorizationUrl,
   exchangeDiscordCode,
+  DiscordOAuthError,
 };

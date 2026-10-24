@@ -118,7 +118,9 @@ backend origins and Discord redirect. A router DHCP reservation avoids that chur
 Run `npm run build` in `web/`. The `dist/` directory can be published on
 GitHub Pages. Set `VITE_API_ORIGIN=https://api.example.com` at build time for
 the HTTPS API. For a GitHub Pages project URL with a repository path, also set
-`WEB_BASE_PATH=/repository-name/`; a custom subdomain can keep `/`.
+`WEB_BASE_PATH=/repository-name/` for both the static build and the backend;
+the backend uses it for login recovery/default redirects. A custom subdomain
+can keep `/`.
 
 The battle ID is in a query parameter (`?battle=...`), so direct links work on
 static hosts without a route rewrite. The site and API should use subdomains
@@ -127,6 +129,15 @@ stable hostname, and a GCP reserved external IP pointing at the VM.
 
 Run `npm test` for client unit tests. Browser validation and production
 deployment are separate gates.
+
+Login failures use recoverable app screens for cancellation, expired/incomplete
+callbacks, Discord/API/session failures, blocked session cookies and failed
+sign-out. Retry keeps the intended battle link. The
+[login recovery record](../docs/verification/login-recovery/README.md) documents
+coverage and the checks requiring a restarted backend and real Discord flow.
+Deploy or restart the updated API before publishing this client: its sign-in
+button requires JSON login initiation. The updated API still supports direct
+login redirects from older clients.
 
 With Vite running, `node scripts/check-battle-action-layout.mjs` checks the real
 HTTP/session action path with mocked API responses at desktop and phone widths.

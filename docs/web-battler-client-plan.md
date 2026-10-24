@@ -94,6 +94,15 @@ sets an HTTP-only session, `GET /api/me` checks it, and `/api/battles` plus
 revision, request ID, and action. Sessions are opaque tokens stored by hash in
 MongoDB with a TTL. The API returns no unprojected battle records.
 
+Login initiation also supports JSON negotiation so the app can recover from
+startup failures. Callback failures return to a fixed-copy recovery screen;
+successful callbacks verify that the browser retained its session. The
+[architecture guide](web-client-architecture.md#data-and-asset-ownership) owns
+the state/redirect and retry boundaries, and the
+[login recovery record](verification/login-recovery/README.md) lists checked
+cases. Configure `WEB_BASE_PATH` on both the backend and static build for a
+hosted subpath.
+
 The battle snapshot format now includes `shiny` and team grid dimensions.
 `BATTLE_RULESET_VERSION` is 2; version 1 records must be completed or cleared
 before this branch is deployed with durable starts enabled.

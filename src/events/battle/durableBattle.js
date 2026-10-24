@@ -7,6 +7,9 @@ const {
 
 // Picker/page events belong to /continue-battle. Old durable action IDs only upgrade the UI.
 const durableBattle = async (interaction, data) => {
+  if (data.u && data.u !== interaction.user.id) {
+    return { err: "This battle list belongs to another trainer. Use /continue-battle to open your own." };
+  }
   const service = await getDurableBattleService();
   const userId = interaction.user.id;
   let send;

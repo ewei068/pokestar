@@ -2,7 +2,11 @@
 
 `/continue-battle` lists the player's ongoing durable battles with pagination;
 selecting one renders its current state. An optional battle ID opens it directly.
-Slash replies are private, and the legacy message command sends it by DM.
+Both the slash and legacy message command reply in the invoking channel.
+There is no persistence or interaction requirement for a DM. New picker and
+pagination controls carry the requesting trainer's ID; another trainer gets a
+private explanation and cannot replace that list. Opening a battle still checks
+participant access, and its existing controls keep their turn/legality checks.
 
 ## Preserve the Discord interface
 

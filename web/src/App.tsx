@@ -1,37 +1,23 @@
-import { useEffect, useState } from "react";
 import { BattleFeature } from "./battles/BattleFeature";
-import { getMe, isApiError, loginUrl, logout } from "./http";
 import { AudioSettingsProvider, SettingsMenu } from "./settings/AudioSettings";
+import { LoginScreen } from "./auth/LoginScreen";
+import { useAuth } from "./auth/useAuth";
 
 const AppContent = () => {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [state, setState] = useState<"loading" | "ready" | "login" | "error">("loading");
-  useEffect(() => {
-    getMe().then((me) => {
-      setUserId(me.discordUserId);
-      setState("ready");
-    }).catch((error) => setState(isApiError(error, 401) ? "login" : "error"));
-  }, []);
+  const { state, pending, retry, signOut } = useAuth();
 
   return (
     <div className="app">
       <header className="site-header"><a href={import.meta.env.BASE_URL} className="brand">
         <span className="brand-mark" aria-hidden="true">✦</span> Pokestar <span>Battles</span></a>
         <div className="site-controls"><SettingsMenu />
-        {state === "ready" && <div className="account"><span>Discord {userId}</span>
-          <button type="button" onClick={() => {
-            void logout().then(() => window.location.reload());
-          }}>Sign out</button></div>}</div>
+        {state.kind === "ready" && <div className="account"><span>Discord {state.userId}</span>
+          <button type="button" disabled={!!pending} onClick={() => { void signOut(); }}>
+            {pending === "logout" ? "Signing out…" : "Sign out"}</button></div>}</div>
       </header>
-      {state === "loading" && <main className="page-shell"><p>Loading Pokestar…</p></main>}
-      {state === "login" && <main className="page-shell login-panel">
-        <h1>Continue your battle</h1>
-        <p>Sign in with Discord to play Pokestar.</p>
-        <a className="primary-button" href={loginUrl()}>Sign in with Discord</a>
-      </main>}
-      {state === "error" && <main className="page-shell"><p role="alert" className="error">
-        Couldn't connect to Pokestar. Refresh the page to try again.</p></main>}
-      {state === "ready" && <BattleFeature />}
+      {state.kind === "loading" && <main className="page-shell"><p role="status">Loading Pokestar…</p></main>}
+      {state.kind === "login" && <LoginScreen error={state.error} pending={pending} onRetry={retry} homeHref={import.meta.env.BASE_URL} />}
+      {state.kind === "ready" && <BattleFeature />}
     </div>
   );
 };

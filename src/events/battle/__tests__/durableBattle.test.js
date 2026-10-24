@@ -21,6 +21,14 @@ afterEach(() => {
 });
 
 describe("old durable controls", () => {
+  it("does not replace a public battle picker when another trainer presses it", async () => {
+    getDurableBattleService.mockClear();
+    const interaction = { user: { id: "other" }, update: jest.fn() };
+    const result = await durableBattle(interaction, { eventName: eventNames.DURABLE_BATTLE_PAGE, u: "owner", p: 1 });
+    expect(result.err).toContain("/continue-battle");
+    expect(interaction.update).not.toHaveBeenCalled();
+    expect(getDurableBattleService).not.toHaveBeenCalled();
+  });
   it("upgrades posted controls to the existing battle UI without executing their old selection", async () => {
     const service = new BattleService(
       new BattleStore(new MemoryBattleCollection()),

@@ -1,7 +1,7 @@
 # Pokestar web battler
 
 Last full code audit: **2026-10-17, America/Los_Angeles** (2026-10-18 UTC). Local music/settings implementation and verification: **2026-10-18**. Local real-battle audio preview added **2026-10-18**. Pokémon cries added **2026-10-19**. Copy research, source comparison and local copy update: **2026-10-19**. Copy publishing and documentation check: **2026-10-20**.
-Checkout: `codex/web-battle-polish` ([#173](https://github.com/ewei068/pokestar/pull/173)), based on `codex/web-battle-copy` ([#172](https://github.com/ewei068/pokestar/pull/172)), based on `codex/battle-cries` ([#171](https://github.com/ewei068/pokestar/pull/171)), based on `codex/battle-music` ([#170](https://github.com/ewei068/pokestar/pull/170)), based on `codex/battle-sfx` ([#169](https://github.com/ewei068/pokestar/pull/169)), based on `codex/restore-auto-battle` ([#166](https://github.com/ewei068/pokestar/pull/166)).
+Checkout: `codex/battle-login-errors` (local continuation, no PR yet), based on `codex/web-battle-polish` ([#173](https://github.com/ewei068/pokestar/pull/173)), based on `codex/web-battle-copy` ([#172](https://github.com/ewei068/pokestar/pull/172)), based on `codex/battle-cries` ([#171](https://github.com/ewei068/pokestar/pull/171)), based on `codex/battle-music` ([#170](https://github.com/ewei068/pokestar/pull/170)), based on `codex/battle-sfx` ([#169](https://github.com/ewei068/pokestar/pull/169)), based on `codex/restore-auto-battle` ([#166](https://github.com/ewei068/pokestar/pull/166)).
 This is the effort's maintained entry point. Detailed contracts and authoring
 rules stay in the linked documents; update those at their source.
 
@@ -13,7 +13,18 @@ actions with clear ordered visual feedback. Discord and web operate on the
 same durable server-owned battle. Keep room for other bot features to gain web
 interfaces without migrating those features now.
 
-**Current continuation stage:** the user accepted the local desktop/mobile
+**Current continuation stage:** same-channel Discord continuation and recoverable
+login screens were implemented on **2026-10-22** and accepted locally by the
+user on **2026-10-23**, above #173. The
+[login recovery record](../verification/login-recovery/README.md) distinguishes
+automated/browser checks from the pending backend restart and real OAuth/Discord
+checks. Publishing verification passes **863 backend tests**, **105 web tests**,
+the production build, scoped lint and 71 relative documentation links. Full
+Compound Engineering review (`20261023-205434-9e1b634f`) found one navigation
+race; the fix and its failing-before/passing-after regression passed focused
+follow-up review. No different-provider review or runtime restart has run.
+
+The user accepted the local desktop/mobile
 annotation polish on **2026-10-22**, now published in
 [#173](https://github.com/ewei068/pokestar/pull/173) above the copy branch.
 Publishing verification passes 95 web tests, 835 backend tests,
@@ -306,7 +317,10 @@ and reasoning. The 2026-10-22 polish wrap-up also passed that gate without a new
 solution note: the shared-service contract explains why matching cursors must
 still resume automatic turns, and the architecture/arena guides preserve target
 confirmation and display-name boundaries. General and web README pointers lead
-to those sources. Put a future genuinely missing verified lesson through that
+to those sources. The 2026-10-23 login/channel wrap-up also needs no separate
+solution note: the continuation contract records picker ownership, the client
+architecture explains callback trust and cookie recovery, and tests preserve
+the return-path and browser-compatibility regressions. Put a future genuinely missing verified lesson through that
 gate rather than turning an untested proposal into policy.
 
 At meaningful milestones update this entry point's status, evidence, accepted

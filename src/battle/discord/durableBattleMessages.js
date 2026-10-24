@@ -26,7 +26,7 @@ const renderBattleList = async (service, userId, page = 0) => {
     (currentPage + 1) * PAGE_SIZE,
   );
   const picker = new StringSelectMenuBuilder()
-    .setCustomId(componentId(eventNames.DURABLE_BATTLE_PICK))
+    .setCustomId(componentId(eventNames.DURABLE_BATTLE_PICK, { u: userId }))
     .setPlaceholder("Choose a battle")
     .addOptions(
       visible.map((battle) => ({
@@ -43,14 +43,14 @@ const renderBattleList = async (service, userId, page = 0) => {
       new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId(
-            componentId(eventNames.DURABLE_BATTLE_PAGE, { p: currentPage - 1 }),
+            componentId(eventNames.DURABLE_BATTLE_PAGE, { p: currentPage - 1, u: userId }),
           )
           .setLabel("Previous")
           .setStyle(ButtonStyle.Secondary)
           .setDisabled(currentPage === 0),
         new ButtonBuilder()
           .setCustomId(
-            componentId(eventNames.DURABLE_BATTLE_PAGE, { p: currentPage + 1 }),
+            componentId(eventNames.DURABLE_BATTLE_PAGE, { p: currentPage + 1, u: userId }),
           )
           .setLabel("Next")
           .setStyle(ButtonStyle.Secondary)

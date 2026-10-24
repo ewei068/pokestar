@@ -75,13 +75,23 @@ describe("Discord continuation entry points", () => {
         })),
       ),
     };
-    const first = await renderBattleList(service, "user", 0);
-    const second = await renderBattleList(service, "user", 1);
+    const userId = "12345678901234567890";
+    const first = await renderBattleList(service, userId, 0);
+    const second = await renderBattleList(service, userId, 1);
     expect(first.components[0].components[0].options).toHaveLength(25);
     expect(second.components[0].components[0].options).toHaveLength(2);
     expect(second.components[0].components[0].options[0].data.description).toBe(
       "Player vs NPC",
     );
     expect(second.content).toContain("Page 2/2");
+    for (const send of [first, second]) {
+      for (const row of send.components) {
+        for (const component of row.components) {
+          const id = component.toJSON().custom_id;
+          expect(JSON.parse(id).u).toBe(userId);
+          expect(id.length).toBeLessThanOrEqual(100);
+        }
+      }
+    }
   });
 });

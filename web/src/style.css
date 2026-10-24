@@ -56,6 +56,15 @@ h2 { font-size: 1rem; margin-bottom: .65rem; }
   background: #9fe4fb; color: #102033; font-weight: 800; text-decoration: none; }
 .login-panel { max-width: 700px; padding-top: 90px; }
 .login-panel p:not(.eyebrow) { color: #b8c7de; line-height: 1.6; }
+.login-card { padding: clamp(22px, 5vw, 38px); border: 1px solid #52627d; background: #17243a; }
+.login-card h1 { font-size: clamp(1.6rem, 4vw, 2.35rem); overflow-wrap: anywhere; }
+.login-symbol { display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: 22px;
+  color: #102033; background: #9fe4fb; font-size: 1.5rem; font-weight: 900; }
+.login-card.has-error .login-symbol { background: #f7d978; }
+.login-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; margin-top: 26px; }
+.login-actions .primary-button { border: 0; min-height: 44px; }
+.login-actions .primary-button:disabled { opacity: .65; }
+.login-back { color: #b8c7de; font-size: .9rem; }
 .list-intro { margin: 28px 0 32px; }
 .list-intro > p:last-child { color: #b8c7de; max-width: 650px; line-height: 1.55; }
 .battle-list { display: grid; gap: .8rem; max-width: 780px; }
