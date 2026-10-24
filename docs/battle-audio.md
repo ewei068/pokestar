@@ -1,6 +1,6 @@
 # Battle music and site audio settings
 
-Status: draft [#170](https://github.com/ewei068/pokestar/pull/170) on `codex/battle-music`, stacked on SFX [#169](https://github.com/ewei068/pokestar/pull/169), 2026-10-18. This document records accepted behavior.
+Status: implemented in the [consolidated presentation PR](https://github.com/ewei068/pokestar/pull/179). This document records accepted behavior; listening and physical-device gates remain below.
 
 ## Accepted behavior
 

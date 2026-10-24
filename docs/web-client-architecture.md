@@ -72,7 +72,7 @@ Battles consume those preferences for separate music and SFX gain; music playbac
 remains battle-scoped. The server projects a public `presentation.musicThemeId`
 from its encounter configuration or a battle override, while the static client
 maps that theme to audio files. The browser never receives the raw
-durable mode record to choose a track. See [battle music and settings](battle-music-plan.md)
+durable mode record to choose a track. See [battle music and settings](battle-audio.md)
 for selection, playback and listening review.
 
 ## Battle session interface and invariants
@@ -187,6 +187,16 @@ future collection feature may reuse species display data, but should not force
 the entire battle catalog into the site shell or main JS bundle. Split and
 cache catalogs once measured load time or a second feature makes that useful.
 
+The catalog is a maintained transport boundary, not a temporary second copy of
+configuration. Server definitions remain authoritative; `battleCatalog.js`
+selects serializable display fields and the running ruleset version. Status
+names/descriptions live in shared `statusConditionConfig`, available to bot
+consumers as well. A future shared package could contain pure schemas, IDs or
+display definitions after separating them from executable registries. It would
+complement the endpoint: a package frozen into a static build cannot by itself
+identify the configuration of the running server. Revisit catalog splitting or
+shared packaging when another consumer or measured load cost supplies a need.
+
 The static site can be hosted separately from the API. The API's stable
 hostname, cookie policy, allowed site origin, and OAuth callback are
 deployment configuration. Browser URLs currently use a query parameter so
@@ -249,3 +259,27 @@ polling, revision ordering, stale action handling, and playback back into each
 screen. Removing a generic future-feature registry would delete complexity
 without moving meaningful behavior elsewhere. We build the former and defer
 the latter.
+
+## Replaceable library boundaries
+
+Cookies use Express's `response.cookie` and the standard
+[`cookie-parser`](https://expressjs.com/en/resources/middleware/cookie-parser/)
+middleware. Opaque sessions remain hashed in MongoDB; the small Discord-only
+OAuth adapter still owns state checks, account lookup and recovery mapping.
+[Passport OAuth2](https://www.passportjs.org/packages/passport-oauth2/) and
+[`express-session`](https://expressjs.com/en/resources/middleware/session/)
+with a persistent store are migration options before adding another provider,
+refresh-token management or account linking. A migration must preserve safe
+return paths, origin checks, session revocation and the existing recovery
+contract. The current choice limits the change scope; it is not a claim that
+custom authentication is inherently safer.
+
+For audio, [Howler](https://github.com/goldfire/howler.js) could replace loading,
+caching, unlock and playback wrappers at `SoundPlayer` and music boundaries.
+Contact timing, cancellation and physical-device behavior still need acceptance.
+[Anime.js](https://animejs.com/documentation/) is an option for DOM/WAAPI tween
+and timeline plumbing. [PixiJS](https://pixijs.com/8.x/guides/getting-started/intro)
+is a larger renderer option if measured particle cost warrants GPU rendering.
+Keep server-event reconciliation, cue mapping, target footprints and approved
+recipe data above these adapters. These are future evaluation candidates, not
+approved migrations or alternatives already verified against the 54 effects.

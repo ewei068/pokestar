@@ -60,16 +60,14 @@ original in-memory behavior while the feature flag is disabled.
 A stale selection/confirmation renders the current battle; a rejected submitted
 action also explains the rejection. Old messages may stay stale until pressed
 or refreshed. Completed and expired battles are read-only during their retention
-window. Durable interactions suppress the original event handlers' per-click
-experience and money; completion rewards belong to the service and are never
-processed again by the Discord renderer.
+window. Successful Discord interactions retain their configured per-click
+experience and money, including stale actions that only refresh the controls.
+Error responses do not grant interaction rewards. Completion rewards are a
+separate service-owned effect and are never processed again by the renderer.
 
 `getStartTurnSend` is the shared renderer for both paths. The continuation module
-only lists battles and opens this renderer. The old `durableMove`, `durableTarget`,
-`durableConfirm`, `durableSkip`, `durableRefresh` and `durableInfo` event names
-remain registered solely for messages posted before consolidation: pressing one
-refreshes into the existing controls and asks the player to select again. They
-do not execute the old action. `durablePick` and `durablePage` still serve the
+only lists battles and opens this renderer. The unshipped experimental durable action event names were removed during
+review. `durablePick` and `durablePage` still serve the
 continuation list.
 
 The `DURABLE_BATTLES_ENABLED` flag controls the cutover in supported live battle
@@ -140,9 +138,10 @@ through the real service and an in-memory Mongo collection double: move → targ
 preview → confirmation, restart recovery, stale web/Discord controls, independent
 message selections, instant-action settings, info tabs, legacy fallback, expiry
 and once-only completion. `events/battle/__tests__/durableBattle.test.js` checks
-that deprecated controls refresh without submitting actions.
-`handlers/__tests__/battleInteractionRewards.test.js` checks that durable clicks
-suppress per-click rewards while legacy clicks retain their configured rewards.
+picker/page ownership, selected-battle rendering and pagination.
+`handlers/__tests__/battleInteractionRewards.test.js` checks that successful
+battle clicks retain configured rewards while error responses do not. The
+existing-handler tests cover current, stale and legacy battle paths.
 
 `battle/service/__tests__/AutoBattle.test.js` covers private simulation, concurrent
 manual/Auto writes, conditional payment rejection, expiry, bounded execution,
