@@ -1,15 +1,12 @@
-import type { PlaybackFrame } from "../playback";
-import type { BattleCatalog, BattleDisplay, BattleView, PokemonView, TargetPreview } from "../types";
-
-export const storyDefinitions = [
-  { id: "ready", title: "Ready to act", description: "An ordinary turn with two dense formations." },
-  { id: "area-target", title: "Area target", description: "Eruption is selected; hover a rival to inspect its full footprint." },
-  { id: "effects", title: "Status and effects", description: "Statuses, buffs, debuffs, ability, and item details compete for space." },
-  { id: "waiting", title: "Waiting for NPC", description: "The opponent has the turn and actions are unavailable." },
-  { id: "playback", title: "Move playback", description: "A resolved area move lights occupied and empty tiles." },
-  { id: "completed", title: "Completed result", description: "A finished battle is readable without action controls." },
-  { id: "dense", title: "Dense and missing art", description: "Full formations, long names, mixed cues, and an absent sprite." },
-] as const;
+import type { BattleCatalog, BattleDisplay, BattleEvent, BattleView } from "../types";
+import { baseBattle, baseCatalog, enemyTargets, makePokemon, own, previews, rival } from "./baseBattleFixture";
+import { makeResultStory } from "./resultStories";
+import { isAudioStory, makeAudioStory } from "./audioStories";
+import { storyFootprint } from "./storyFootprint";
+import { storyDefinitions } from "./storyDefinitions";
+import { defaultVfxLabSelection, makeVfxLabStory } from "./vfxLab";
+import type { VfxLabSelection } from "./vfxLab";
+export { storyDefinitions } from "./storyDefinitions";
 
 export type BattleStory = {
   id: string;
@@ -19,100 +16,22 @@ export type BattleStory = {
   battle: BattleDisplay;
   selectedMoveId: string | null;
   inspectedPokemonId: string | null;
-  playing: PlaybackFrame | null;
+  playing: { event: BattleEvent; view: BattleView; text: string | null } | null;
+  sequence?: { events: BattleEvent[]; finalView: BattleView };
   history: string[];
 };
 
-const own = "Star Team";
-const rival = "Rival Team";
-const sprite = (id: string) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
-const speciesRows: [string, string, string, string?][] = [
-  ["157", "Typhlosion", "fire"], ["448", "Lucario", "fighting", "steel"],
-  ["149", "Dragonite", "dragon", "flying"], ["282", "Gardevoir", "psychic", "fairy"],
-  ["131", "Lapras", "water", "ice"], ["197", "Umbreon", "dark"],
-  ["94", "Gengar", "ghost", "poison"], ["59", "Arcanine", "fire"],
-  ["248", "Tyranitar", "rock", "dark"], ["407", "Roserade", "grass", "poison"],
-  ["350", "Milotic", "water"], ["143", "Snorlax", "normal"],
-];
-const baseCatalog: BattleCatalog = {
-  rulesetVersion: 2,
-  species: Object.fromEntries(speciesRows.map(([id, name, first, second]) => [id,
-    { name, type: [first, second].filter((type): type is string => !!type), sprite: sprite(id), shinySprite: sprite(id) }])),
-  moves: {
-    flamethrower: { name: "Flamethrower", type: "fire", power: 90, accuracy: 100, damageType: "Special",
-      targetPattern: "Single", description: "A stream of fire that can burn the target." },
-    eruption: { name: "Eruption", type: "fire", power: 150, accuracy: 100, damageType: "Special",
-      targetPattern: "All", description: "A volcanic burst across the enemy area." },
-    quickattack: { name: "Quick Attack", type: "normal", power: 40, accuracy: 100, damageType: "Physical",
-      targetPattern: "Single", description: "A sudden physical lunge." },
-    sunnyday: { name: "Sunny Day", type: "fire", accuracy: 100, damageType: "Other",
-      targetPattern: "Single", description: "Bright sunlight fills the field." },
-  },
-  effects: {
-    shield: { name: "Shielded", type: "Buff", description: "Reduces incoming damage." },
-    focus: { name: "Focused", type: "Buff", description: "Improves the next attack." },
-    weakness: { name: "Weakened", type: "Debuff", description: "Deals less damage." },
-  },
-  abilities: { blaze: { name: "Blaze", description: "Strengthens Fire moves when HP is low." } },
-  heldItems: { charcoal: { name: "Charcoal", description: "Strengthens Fire moves." } },
-  statuses: {
-    Burn: { name: "Burn", description: "Takes damage when status ticks and deals less attack damage." },
-    Poison: { name: "Poison", description: "Takes damage when status ticks." },
-  },
+const motionStories: Record<string, { moveId: string; targetId: string; pattern: "Single" | "Row" | "Column" }> = {
+  "motion-tackle": { moveId: "m33", targetId: `${rival}-94`, pattern: "Single" },
+  "motion-giga-impact": { moveId: "m416", targetId: `${rival}-59`, pattern: "Column" },
+  "motion-hyper-beam": { moveId: "m63", targetId: `${rival}-248`, pattern: "Column" },
+  "motion-soft-boiled": { moveId: "m135", targetId: `${own}-448`, pattern: "Single" },
+  "motion-sing": { moveId: "m47", targetId: `${rival}-350`, pattern: "Row" },
+  "motion-recover": { moveId: "m105", targetId: `${own}-157`, pattern: "Single" },
 };
 
-const makePokemon = (id: string, teamName: string, position: number, hp: number,
-  maxHp: number, readiness: number, extra: Partial<PokemonView> = {}): PokemonView => {
-  const species = baseCatalog.species[id];
-  return { id: `${teamName}-${id}`, speciesId: id, name: species.name, shiny: false,
-    hp, maxHp, level: 55, isFainted: hp === 0, combatReadiness: readiness,
-    position, teamName, type1: species.type[0], type2: species.type[1], status: {}, effectIds: {}, ...extra };
-};
-const members = [
-  makePokemon("157", own, 1, 168, 204, 100, { abilityId: "blaze", heldItemId: "charcoal", moveIds: {
-    flamethrower: { cooldown: 0, disabledCounter: 0 }, eruption: { cooldown: 0, disabledCounter: 0 },
-    quickattack: { cooldown: 0, disabledCounter: 0 }, sunnyday: { cooldown: 0, disabledCounter: 0 } } }),
-  makePokemon("448", own, 2, 126, 180, 72, { effectIds: { shield: { duration: 2 } } }),
-  makePokemon("149", own, 3, 190, 220, 61), makePokemon("282", own, 4, 151, 190, 46),
-  makePokemon("131", own, 5, 82, 205, 35, { status: { statusId: "Burn", turns: 2 } }),
-  makePokemon("197", own, 6, 176, 188, 28),
-  makePokemon("94", rival, 1, 115, 175, 89), makePokemon("59", rival, 2, 176, 202, 78),
-  makePokemon("248", rival, 3, 224, 244, 59), makePokemon("407", rival, 4, 91, 160, 54),
-  makePokemon("350", rival, 5, 178, 220, 42),
-];
-const pokemon = Object.fromEntries(members.map((entry) => [entry.id, entry]));
-const enemyTargets = members.filter((entry) => entry.teamName === rival).map((entry) => entry.id);
-
-const previews = (view: BattleView, ids: string[], area: boolean): TargetPreview[] => ids.map((id) => {
-  const target = view.pokemon[id];
-  const dimensions = view.teams[target.teamName];
-  const patternTiles = area ? Array.from({ length: dimensions.rows * dimensions.cols }, (_, index) =>
-    ({ teamName: target.teamName, position: index + 1 }))
-    : [{ teamName: target.teamName, position: target.position }];
-  return { primaryTargetPokemonId: id, targetPattern: area ? "All" : "Single", random: false,
-    patternTiles, affectedPokemonIds: area ? ids : [id],
-    emptyTileTargets: patternTiles.filter((tile) => !Object.values(view.pokemon).some((entry) =>
-      entry.teamName === tile.teamName && entry.position === tile.position)) };
-});
-
-const baseView: BattleView = {
-  battleId: "preview-battle", ended: false, winner: null, turn: 12,
-  activePokemonId: `${own}-157`, weather: { weatherId: "Sun", duration: 3 },
-  teams: { [own]: { rows: 2, cols: 4 }, [rival]: { rows: 2, cols: 4 } }, pokemon,
-};
-const baseBattle: BattleDisplay = {
-  battleId: "preview-battle", rulesetVersion: 2, revision: 17, status: "active", completionStatus: "none",
-  mode: { type: "Trainer battle" }, myTeamNames: [own], isMyTurn: true, view: baseView,
-  availableActions: { canSkip: true, moves: [
-    { moveId: "flamethrower", targetPokemonIds: enemyTargets, targetPreviews: previews(baseView, enemyTargets, false) },
-    { moveId: "eruption", targetPokemonIds: enemyTargets, targetPreviews: previews(baseView, enemyTargets, true) },
-    { moveId: "quickattack", targetPokemonIds: enemyTargets, targetPreviews: previews(baseView, enemyTargets, false) },
-    { moveId: "sunnyday", targetPokemonIds: [`${own}-157`],
-      targetPreviews: previews(baseView, [`${own}-157`], false) },
-  ] },
-};
-
-export const makeBattleStory = (requestedId: string | null): BattleStory => {
+export const makeBattleStory = (requestedId: string | null,
+  labSelection: VfxLabSelection = defaultVfxLabSelection): BattleStory => {
   const definition = storyDefinitions.find((item) => item.id === requestedId) || storyDefinitions[0];
   const catalog = structuredClone(baseCatalog);
   const battle = structuredClone(baseBattle);
@@ -121,10 +40,48 @@ export const makeBattleStory = (requestedId: string | null): BattleStory => {
     playing: null, history: [],
   };
 
+  if (definition.id.startsWith("result-")) return makeResultStory(story);
+
+  if (isAudioStory(definition.id)) return makeAudioStory(story);
+
+  if (definition.id === "vfx") return makeVfxLabStory(story, labSelection);
+
+  if (definition.id.startsWith("music-")) {
+    const themes: Record<string, string | null> = {
+      "music-default": null, "music-trainer": "trainer-cynthia",
+      "music-raid": "raid-mewtwo", "music-dungeon": "dungeon",
+    };
+    battle.presentation = { musicThemeId: themes[definition.id] };
+    return story;
+  }
+
+  const motionStory = motionStories[definition.id];
+  if (motionStory) {
+    const { moveId, targetId, pattern } = motionStory;
+    const move = catalog.moves[moveId];
+    const footprint = storyFootprint(battle.view, targetId, pattern);
+    battle.availableActions = { canSkip: false, moves: [{ moveId, targetPokemonIds: [targetId],
+      targetPreviews: [footprint] }] };
+    battle.isMyTurn = false;
+    const text = `${battle.view.pokemon[battle.view.activePokemonId || ""]?.name || "Pokémon"} used ${move.name}!`;
+    story.playing = { view: battle.view, text, event: {
+      type: "moveStarted", sequence: 0, pokemonId: battle.view.activePokemonId || undefined,
+      moveId, moveType: String(move.type), damageType: move.damageType,
+      primaryTargetId: targetId, targetIds: footprint.affectedPokemonIds,
+      patternTiles: footprint.patternTiles,
+    } };
+    return story;
+  }
+
   switch (definition.id) {
     case "area-target":
       story.selectedMoveId = "eruption";
       story.inspectedPokemonId = enemyTargets[0];
+      break;
+    case "opponent-perspective":
+      battle.myTeamNames = [rival];
+      battle.isMyTurn = false;
+      battle.availableActions = { canSkip: false, moves: [] };
       break;
     case "effects":
       battle.view.pokemon[`${own}-448`].effectIds = {
@@ -137,19 +94,18 @@ export const makeBattleStory = (requestedId: string | null): BattleStory => {
       battle.isMyTurn = false;
       battle.view.activePokemonId = `${rival}-94`;
       battle.availableActions = { canSkip: false, moves: [] };
-      story.history = ["Typhlosion used Flamethrower.", "Gengar is preparing its turn."];
+      story.history = ["Typhlosion used Flamethrower!", "It's Gengar's turn!"];
       break;
     case "playback": {
       battle.isMyTurn = false;
       battle.availableActions = { canSkip: false, moves: [] };
       const footprint = previews(battle.view, enemyTargets, true)[0];
-      const text = "Typhlosion used Eruption.";
+      const text = "Typhlosion used Eruption!";
       story.playing = { view: battle.view, text, event: {
         type: "moveStarted", sequence: 0, pokemonId: `${own}-157`, moveId: "eruption",
         primaryTargetId: footprint.primaryTargetPokemonId,
         targetIds: footprint.affectedPokemonIds, patternTiles: footprint.patternTiles,
       } };
-      story.history = [text];
       break;
     }
     case "completed":
@@ -164,11 +120,18 @@ export const makeBattleStory = (requestedId: string | null): BattleStory => {
         entry.hp = 0;
         entry.isFainted = true;
       });
-      story.history = ["The rival team fainted.", `${own} won the battle.`];
+      story.history = ["The rival team fainted!", `${own} won the battle!`];
       break;
     case "dense": {
+      battle.view.teams[own].displayName = "You";
+      battle.view.teams[rival].displayName = "Palmer";
+      battle.view.pokemon[`${rival}-350`].status = { statusId: "Paralysis", turns: 2 };
       battle.view.pokemon[`${own}-157`].name = "Typhlosion of the Endless Horizon";
+      battle.view.pokemon[`${own}-157`].level = 100;
+      battle.view.pokemon[`${own}-157`].status = { statusId: "Badly Poison", turns: 2 };
+      battle.view.pokemon[`${own}-157`].effectIds = { shield: { duration: 2 } };
       battle.view.pokemon[`${rival}-248`].name = "Tyranitar with a Remarkably Long Name";
+      battle.view.pokemon[`${rival}-248`].level = 123;
       for (const [id, team, position] of [
         ["143", own, 7], ["350", own, 8], ["157", rival, 6],
         ["131", rival, 7], ["143", rival, 8],

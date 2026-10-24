@@ -1,0 +1,546 @@
+{
+  "version": 1,
+  "exportedAt": "2026-10-19T02:43:53.392Z",
+  "cells": [
+    {
+      "type": "normal",
+      "kind": "physical",
+      "candidate": "Tackle",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.25,
+      "delayMs": 420
+    },
+    {
+      "type": "normal",
+      "kind": "special",
+      "candidate": "Hyper Beam",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.65,
+      "delayMs": 420
+    },
+    {
+      "type": "normal",
+      "kind": "status",
+      "candidate": "Recover",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.7,
+      "delayMs": 420
+    },
+    {
+      "type": "fighting",
+      "kind": "physical",
+      "candidate": "Close Combat",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.5,
+      "delayMs": 420
+    },
+    {
+      "type": "fighting",
+      "kind": "special",
+      "candidate": "Aura Sphere",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 1.55,
+      "delayMs": 420
+    },
+    {
+      "type": "fighting",
+      "kind": "status",
+      "candidate": "Counter",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.7,
+      "delayMs": 420
+    },
+    {
+      "type": "flying",
+      "kind": "physical",
+      "candidate": "Brave Bird",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.9,
+      "delayMs": 420
+    },
+    {
+      "type": "flying",
+      "kind": "special",
+      "candidate": "Hurricane",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.8,
+      "delayMs": 420
+    },
+    {
+      "type": "flying",
+      "kind": "status",
+      "candidate": "Roost",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "I adjusted the \"start after\" for this move",
+      "offset": 0,
+      "delayMs": 500
+    },
+    {
+      "type": "poison",
+      "kind": "physical",
+      "candidate": "Poison Jab",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0,
+      "delayMs": 420
+    },
+    {
+      "type": "poison",
+      "kind": "special",
+      "candidate": "Sludge Bomb",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.45,
+      "delayMs": 420
+    },
+    {
+      "type": "poison",
+      "kind": "status",
+      "candidate": "Toxic",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.15,
+      "delayMs": 420
+    },
+    {
+      "type": "ground",
+      "kind": "physical",
+      "candidate": "Earthquake",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.7,
+      "delayMs": 420
+    },
+    {
+      "type": "ground",
+      "kind": "special",
+      "candidate": "Earth Power",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 1.05,
+      "delayMs": 420
+    },
+    {
+      "type": "ground",
+      "kind": "status",
+      "candidate": "Sandstorm",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.15,
+      "delayMs": 420
+    },
+    {
+      "type": "rock",
+      "kind": "physical",
+      "candidate": "Rock Slide",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.55,
+      "delayMs": 550
+    },
+    {
+      "type": "rock",
+      "kind": "special",
+      "candidate": "Ancient Power",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "I adjusted the timing here",
+      "offset": 1.2,
+      "delayMs": 420
+    },
+    {
+      "type": "rock",
+      "kind": "status",
+      "candidate": "Stealth Rock",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "I've adjusted the timing here",
+      "offset": 0.6,
+      "delayMs": 420
+    },
+    {
+      "type": "bug",
+      "kind": "physical",
+      "candidate": "X Scissor",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0,
+      "delayMs": 420
+    },
+    {
+      "type": "bug",
+      "kind": "special",
+      "candidate": "Bug Buzz",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "I've adjusted the timing here",
+      "offset": 1,
+      "delayMs": 420
+    },
+    {
+      "type": "bug",
+      "kind": "status",
+      "candidate": "String Shot",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.5,
+      "delayMs": 420
+    },
+    {
+      "type": "ghost",
+      "kind": "physical",
+      "candidate": "Shadow Punch",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.05,
+      "delayMs": 420
+    },
+    {
+      "type": "ghost",
+      "kind": "special",
+      "candidate": "Shadow Ball",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "I've adjusted the timing here",
+      "offset": 0,
+      "delayMs": 420
+    },
+    {
+      "type": "ghost",
+      "kind": "status",
+      "candidate": "Confuse Ray",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 1.65,
+      "delayMs": 420
+    },
+    {
+      "type": "steel",
+      "kind": "physical",
+      "candidate": "Iron Head",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 1,
+      "delayMs": 420
+    },
+    {
+      "type": "steel",
+      "kind": "special",
+      "candidate": "Flash Cannon",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0,
+      "delayMs": 420
+    },
+    {
+      "type": "steel",
+      "kind": "status",
+      "candidate": "Iron Defense",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "I've adjusted the timing here",
+      "offset": 1,
+      "delayMs": 420
+    },
+    {
+      "type": "fire",
+      "kind": "physical",
+      "candidate": "Fire Punch",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.1,
+      "delayMs": 420
+    },
+    {
+      "type": "fire",
+      "kind": "special",
+      "candidate": "Flamethrower",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.7,
+      "delayMs": 420
+    },
+    {
+      "type": "fire",
+      "kind": "status",
+      "candidate": "Will O Wisp",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0,
+      "delayMs": 420
+    },
+    {
+      "type": "water",
+      "kind": "physical",
+      "candidate": "Aqua Tail",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0,
+      "delayMs": 420
+    },
+    {
+      "type": "water",
+      "kind": "special",
+      "candidate": "Hydro Pump",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 1.5,
+      "delayMs": 420
+    },
+    {
+      "type": "water",
+      "kind": "status",
+      "candidate": "Aqua Ring",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0,
+      "delayMs": 420
+    },
+    {
+      "type": "grass",
+      "kind": "physical",
+      "candidate": "Leaf Blade",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.35,
+      "delayMs": 420
+    },
+    {
+      "type": "grass",
+      "kind": "special",
+      "candidate": "Solar Beam",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 2.4,
+      "delayMs": 420
+    },
+    {
+      "type": "grass",
+      "kind": "status",
+      "candidate": "Spore",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "I adjusted the start after here",
+      "offset": 0,
+      "delayMs": 570
+    },
+    {
+      "type": "electric",
+      "kind": "physical",
+      "candidate": "Thunder Punch",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.05,
+      "delayMs": 420
+    },
+    {
+      "type": "electric",
+      "kind": "special",
+      "candidate": "Thunderbolt",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "I've adjusted timing here",
+      "offset": 0,
+      "delayMs": 420
+    },
+    {
+      "type": "electric",
+      "kind": "status",
+      "candidate": "Thunder Wave",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.55,
+      "delayMs": 420
+    },
+    {
+      "type": "psychic",
+      "kind": "physical",
+      "candidate": "Zen Headbutt",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "I've adjusted timing here",
+      "offset": 1,
+      "delayMs": 420
+    },
+    {
+      "type": "psychic",
+      "kind": "special",
+      "candidate": "Psychic",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.45,
+      "delayMs": 420
+    },
+    {
+      "type": "psychic",
+      "kind": "status",
+      "candidate": "Calm Mind",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0,
+      "delayMs": 420
+    },
+    {
+      "type": "ice",
+      "kind": "physical",
+      "candidate": "Ice Punch",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.2,
+      "delayMs": 420
+    },
+    {
+      "type": "ice",
+      "kind": "special",
+      "candidate": "Ice Beam",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.25,
+      "delayMs": 420
+    },
+    {
+      "type": "ice",
+      "kind": "status",
+      "candidate": "Mist",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0,
+      "delayMs": 420
+    },
+    {
+      "type": "dragon",
+      "kind": "physical",
+      "candidate": "Dragon Claw",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "I've adjusted timing here",
+      "offset": 0,
+      "delayMs": 420
+    },
+    {
+      "type": "dragon",
+      "kind": "special",
+      "candidate": "Dragon Pulse",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 1.55,
+      "delayMs": 420
+    },
+    {
+      "type": "dragon",
+      "kind": "status",
+      "candidate": "Dragon Dance",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0,
+      "delayMs": 420
+    },
+    {
+      "type": "dark",
+      "kind": "physical",
+      "candidate": "Night Slash",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.5,
+      "delayMs": 420
+    },
+    {
+      "type": "dark",
+      "kind": "special",
+      "candidate": "Dark Pulse",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.05,
+      "delayMs": 420
+    },
+    {
+      "type": "dark",
+      "kind": "status",
+      "candidate": "Nasty Plot",
+      "candidateGeneration": 5,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.4,
+      "delayMs": 420
+    },
+    {
+      "type": "fairy",
+      "kind": "physical",
+      "candidate": "Play Rough",
+      "candidateGeneration": 6,
+      "verdict": "approved",
+      "note": "",
+      "offset": 1.55,
+      "delayMs": 420
+    },
+    {
+      "type": "fairy",
+      "kind": "special",
+      "candidate": "Moonblast",
+      "candidateGeneration": 6,
+      "verdict": "approved",
+      "note": "",
+      "offset": 1.15,
+      "delayMs": 420
+    },
+    {
+      "type": "fairy",
+      "kind": "status",
+      "candidate": "Misty Terrain",
+      "candidateGeneration": 6,
+      "verdict": "approved",
+      "note": "",
+      "offset": 0.35,
+      "delayMs": 420
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import { BattleFeature } from "./battles/BattleFeature";
+import { AudioSettingsProvider, SettingsMenu } from "./settings/AudioSettings";
 import { LoginScreen } from "./auth/LoginScreen";
 import { useAuth } from "./auth/useAuth";
 
@@ -9,7 +10,7 @@ const AppContent = () => {
     <div className="app">
       <header className="site-header"><a href={import.meta.env.BASE_URL} className="brand">
         <span className="brand-mark" aria-hidden="true">✦</span> Pokestar <span>Battles</span></a>
-        <div className="site-controls">
+        <div className="site-controls"><SettingsMenu />
         {state.kind === "ready" && <div className="account"><span>Discord {state.userId}</span>
           <button type="button" disabled={!!pending} onClick={() => { void signOut(); }}>
             {pending === "logout" ? "Signing out…" : "Sign out"}</button></div>}</div>
@@ -21,4 +22,4 @@ const AppContent = () => {
   );
 };
 
-export const App = AppContent;
+export const App = () => <AudioSettingsProvider><AppContent /></AudioSettingsProvider>;

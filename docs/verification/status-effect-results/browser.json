@@ -1,0 +1,478 @@
+{
+  "results": [
+    {
+      "width": 1280,
+      "story": "result-miss",
+      "announcements": 1,
+      "reactions": [
+        "arena-reaction is-miss"
+      ],
+      "canvases": [],
+      "moving": 0,
+      "liveSprites": 1,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "result-status-burn",
+      "announcements": 1,
+      "reactions": [],
+      "canvases": [
+        {
+          "type": "fire",
+          "kind": "status",
+          "targets": [
+            {
+              "teamName": "Rival Team",
+              "position": 1
+            }
+          ],
+          "pixels": 81
+        }
+      ],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "result-status-paralysis",
+      "announcements": 1,
+      "reactions": [],
+      "canvases": [
+        {
+          "type": "electric",
+          "kind": "status",
+          "targets": [
+            {
+              "teamName": "Rival Team",
+              "position": 1
+            }
+          ],
+          "pixels": 571
+        }
+      ],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "result-status-freeze",
+      "announcements": 1,
+      "reactions": [],
+      "canvases": [
+        {
+          "type": "ice",
+          "kind": "status",
+          "targets": [
+            {
+              "teamName": "Rival Team",
+              "position": 1
+            }
+          ],
+          "pixels": 1931
+        }
+      ],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "result-status-poison",
+      "announcements": 1,
+      "reactions": [],
+      "canvases": [
+        {
+          "type": "poison",
+          "kind": "status",
+          "targets": [
+            {
+              "teamName": "Rival Team",
+              "position": 1
+            }
+          ],
+          "pixels": 1203
+        }
+      ],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "result-status-toxic",
+      "announcements": 1,
+      "reactions": [],
+      "canvases": [
+        {
+          "type": "poison",
+          "kind": "status",
+          "targets": [
+            {
+              "teamName": "Rival Team",
+              "position": 1
+            }
+          ],
+          "pixels": 1193
+        }
+      ],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "result-status-sleep",
+      "announcements": 1,
+      "reactions": [],
+      "canvases": [
+        {
+          "type": "psychic",
+          "kind": "status",
+          "targets": [
+            {
+              "teamName": "Rival Team",
+              "position": 1
+            }
+          ],
+          "pixels": 938
+        }
+      ],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "result-effect-buff",
+      "announcements": 1,
+      "reactions": [
+        "arena-reaction is-effect is-buff"
+      ],
+      "canvases": [],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "result-effect-debuff",
+      "announcements": 1,
+      "reactions": [
+        "arena-reaction is-effect is-debuff"
+      ],
+      "canvases": [],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "result-effect-neutral",
+      "announcements": 1,
+      "reactions": [
+        "arena-reaction is-effect is-neutral"
+      ],
+      "canvases": [],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "result-reaction-reconcile",
+      "announcements": 0,
+      "reactions": [
+        "arena-reaction is-effect is-buff",
+        "arena-reaction is-effect is-debuff"
+      ],
+      "canvases": [
+        {
+          "type": "electric",
+          "kind": "status",
+          "targets": [
+            {
+              "teamName": "Rival Team",
+              "position": 1
+            }
+          ],
+          "pixels": 594
+        }
+      ],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "result-batch-effects",
+      "announcements": 3,
+      "reactions": [
+        "arena-reaction is-effect is-buff",
+        "arena-reaction is-effect is-buff",
+        "arena-reaction is-effect is-buff"
+      ],
+      "canvases": [],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "result-batch-misses",
+      "announcements": 3,
+      "reactions": [
+        "arena-reaction is-miss",
+        "arena-reaction is-miss",
+        "arena-reaction is-miss"
+      ],
+      "canvases": [],
+      "moving": 0,
+      "liveSprites": 3,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-miss",
+      "announcements": 1,
+      "reactions": [
+        "arena-reaction is-miss"
+      ],
+      "canvases": [],
+      "moving": 0,
+      "liveSprites": 1,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-status-burn",
+      "announcements": 1,
+      "reactions": [],
+      "canvases": [
+        {
+          "type": "fire",
+          "kind": "status",
+          "targets": [
+            {
+              "teamName": "Rival Team",
+              "position": 1
+            }
+          ],
+          "pixels": 27
+        }
+      ],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-status-paralysis",
+      "announcements": 1,
+      "reactions": [],
+      "canvases": [
+        {
+          "type": "electric",
+          "kind": "status",
+          "targets": [
+            {
+              "teamName": "Rival Team",
+              "position": 1
+            }
+          ],
+          "pixels": 241
+        }
+      ],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-status-freeze",
+      "announcements": 1,
+      "reactions": [],
+      "canvases": [
+        {
+          "type": "ice",
+          "kind": "status",
+          "targets": [
+            {
+              "teamName": "Rival Team",
+              "position": 1
+            }
+          ],
+          "pixels": 610
+        }
+      ],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-status-poison",
+      "announcements": 1,
+      "reactions": [],
+      "canvases": [
+        {
+          "type": "poison",
+          "kind": "status",
+          "targets": [
+            {
+              "teamName": "Rival Team",
+              "position": 1
+            }
+          ],
+          "pixels": 419
+        }
+      ],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-status-toxic",
+      "announcements": 1,
+      "reactions": [],
+      "canvases": [
+        {
+          "type": "poison",
+          "kind": "status",
+          "targets": [
+            {
+              "teamName": "Rival Team",
+              "position": 1
+            }
+          ],
+          "pixels": 468
+        }
+      ],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-status-sleep",
+      "announcements": 1,
+      "reactions": [],
+      "canvases": [
+        {
+          "type": "psychic",
+          "kind": "status",
+          "targets": [
+            {
+              "teamName": "Rival Team",
+              "position": 1
+            }
+          ],
+          "pixels": 313
+        }
+      ],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-effect-buff",
+      "announcements": 1,
+      "reactions": [
+        "arena-reaction is-effect is-buff"
+      ],
+      "canvases": [],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-effect-debuff",
+      "announcements": 1,
+      "reactions": [
+        "arena-reaction is-effect is-debuff"
+      ],
+      "canvases": [],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-effect-neutral",
+      "announcements": 1,
+      "reactions": [
+        "arena-reaction is-effect is-neutral"
+      ],
+      "canvases": [],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-reaction-reconcile",
+      "announcements": 0,
+      "reactions": [
+        "arena-reaction is-effect is-buff",
+        "arena-reaction is-effect is-debuff"
+      ],
+      "canvases": [
+        {
+          "type": "electric",
+          "kind": "status",
+          "targets": [
+            {
+              "teamName": "Rival Team",
+              "position": 1
+            }
+          ],
+          "pixels": 245
+        }
+      ],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-batch-effects",
+      "announcements": 3,
+      "reactions": [
+        "arena-reaction is-effect is-buff",
+        "arena-reaction is-effect is-buff",
+        "arena-reaction is-effect is-buff"
+      ],
+      "canvases": [],
+      "moving": 0,
+      "liveSprites": 0,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-batch-misses",
+      "announcements": 3,
+      "reactions": [
+        "arena-reaction is-miss",
+        "arena-reaction is-miss",
+        "arena-reaction is-miss"
+      ],
+      "canvases": [],
+      "moving": 0,
+      "liveSprites": 3,
+      "settled": true
+    }
+  ],
+  "reducedMotion": true,
+  "skipCleanup": true,
+  "errors": [],
+  "refinementRechecks": 6,
+  "delayedArtwork": {
+    "previousStateHeld": true,
+    "textAndStateBeginTogether": true
+  }
+}

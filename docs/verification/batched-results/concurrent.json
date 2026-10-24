@@ -1,0 +1,71 @@
+{
+  "results": [
+    {
+      "width": 1280,
+      "story": "result-damage",
+      "stage": "event",
+      "label": "−42 HP",
+      "pokemon": "Gengar, 73 of 175 HP, 89 percent combat readiness, inspect",
+      "reactions": 1,
+      "stateDuration": "420ms",
+      "active": 1,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "result-batch-heal",
+      "stage": "event",
+      "label": "+20 HP",
+      "pokemon": "Gengar, 115 of 175 HP, 89 percent combat readiness, inspect",
+      "reactions": 3,
+      "stateDuration": "420ms",
+      "active": 3,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "result-sequence",
+      "stage": "event",
+      "label": "−115 HP",
+      "pokemon": "Gengar, 0 of 175 HP, 89 percent combat readiness, inspect",
+      "reactions": 1,
+      "stateDuration": "420ms",
+      "active": 1,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-damage",
+      "stage": "event",
+      "label": "−42 HP",
+      "pokemon": "Gengar, 73 of 175 HP, 89 percent combat readiness, inspect",
+      "reactions": 1,
+      "stateDuration": "420ms",
+      "active": 1,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-batch-heal",
+      "stage": "event",
+      "label": "+20 HP",
+      "pokemon": "Gengar, 115 of 175 HP, 89 percent combat readiness, inspect",
+      "reactions": 3,
+      "stateDuration": "420ms",
+      "active": 3,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "result-sequence",
+      "stage": "event",
+      "label": "−115 HP",
+      "pokemon": "Gengar, 0 of 175 HP, 89 percent combat readiness, inspect",
+      "reactions": 1,
+      "stateDuration": "420ms",
+      "active": 1,
+      "settled": true
+    }
+  ],
+  "errors": []
+}

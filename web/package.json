@@ -6,11 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "test": "node scripts/test.mjs"
+    "test": "node scripts/test.mjs",
+    "download-cries": "node scripts/download-cries.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "virtua": "^0.53.5"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",

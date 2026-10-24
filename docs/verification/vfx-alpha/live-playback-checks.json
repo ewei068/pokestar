@@ -1,0 +1,85 @@
+{
+  "stories": [
+    {
+      "width": 390,
+      "type": "normal",
+      "kind": "physical",
+      "painted": true,
+      "targets": 8
+    },
+    {
+      "width": 390,
+      "type": "fire",
+      "kind": "special",
+      "painted": true,
+      "targets": 8
+    },
+    {
+      "width": 390,
+      "type": "fairy",
+      "kind": "status",
+      "painted": true,
+      "targets": 8
+    },
+    {
+      "width": 390,
+      "type": "rock",
+      "kind": "special",
+      "painted": true,
+      "targets": 8
+    },
+    {
+      "width": 1280,
+      "type": "normal",
+      "kind": "physical",
+      "painted": true,
+      "targets": 8
+    },
+    {
+      "width": 1280,
+      "type": "fire",
+      "kind": "special",
+      "painted": true,
+      "targets": 8
+    },
+    {
+      "width": 1280,
+      "type": "fairy",
+      "kind": "status",
+      "painted": true,
+      "targets": 8
+    },
+    {
+      "width": 1280,
+      "type": "rock",
+      "kind": "special",
+      "painted": true,
+      "targets": 8
+    }
+  ],
+  "selfTarget": {
+    "actor": 0,
+    "canvas": 1
+  },
+  "reduced": {
+    "canvas": 0,
+    "actor": 0
+  },
+  "submitted": true,
+  "waitsForArt": true,
+  "live": {
+    "painted": true,
+    "targets": 2
+  },
+  "npcPlayed": true,
+  "cleaned": {
+    "canvas": 0,
+    "actor": 0,
+    "hiddenSources": 0
+  },
+  "reconnect": {
+    "canvas": 0,
+    "actor": 0
+  },
+  "errors": []
+}
