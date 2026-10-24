@@ -1,8 +1,9 @@
 # Login recovery and channel continuation
 
 Local implementation and verification: **2026-10-22** on
-`codex/battle-login-errors`, based on annotation polish #173. No new PR,
-deployment or running-backend restart is part of this verification.
+`codex/battle-login-errors`, based on annotation polish #173. Published on
+**2026-10-23** in [PR #174](https://github.com/ewei068/pokestar/pull/174).
+No deployment or running-backend restart is part of this verification.
 
 The [Discord continuation contract](../../discord-battle-continuation.md) and
 [client architecture](../../web-client-architecture.md) own the behavior.
