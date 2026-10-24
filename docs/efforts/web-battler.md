@@ -1,105 +1,41 @@
 # Pokestar web battler
 
-Last full code audit: **2026-10-17, America/Los_Angeles** (2026-10-18 UTC). Local music/settings implementation and verification: **2026-10-18**. Local real-battle audio preview added **2026-10-18**. Pokémon cries added **2026-10-19**. Copy research, source comparison and local copy update: **2026-10-19**. Copy publishing and documentation check: **2026-10-20**.
-Checkout: `codex/battle-login-errors` ([#174](https://github.com/ewei068/pokestar/pull/174)), based on `codex/web-battle-polish` ([#173](https://github.com/ewei068/pokestar/pull/173)), based on `codex/web-battle-copy` ([#172](https://github.com/ewei068/pokestar/pull/172)), based on `codex/battle-cries` ([#171](https://github.com/ewei068/pokestar/pull/171)), based on `codex/battle-music` ([#170](https://github.com/ewei068/pokestar/pull/170)), based on `codex/battle-sfx` ([#169](https://github.com/ewei068/pokestar/pull/169)), based on `codex/restore-auto-battle` ([#166](https://github.com/ewei068/pokestar/pull/166)).
-This is the effort's maintained entry point. Detailed contracts and authoring
-rules stay in the linked documents; update those at their source.
+Status: consolidated for review on **2026-10-23, America/Los_Angeles**. The
+implementation is open for review, with production cutover gates still open.
+This is the maintained entry point; update contracts at their linked source.
+
+## Review stack
+
+Review and merge from bottom to top. Each PR targets the preceding branch;
+the server foundation targets `main`.
+
+| Order | PR | Review boundary |
+| --- | --- | --- |
+| 1 | [#175](https://github.com/ewei068/pokestar/pull/175) | Durable engine/service, participant projection, Discord continuation, modes, rewards and Auto |
+| 2 | [#176](https://github.com/ewei068/pokestar/pull/176) | Discord OAuth, sessions, authenticated HTTP API, catalog and server setup |
+| 3 | [#177](https://github.com/ewei068/pokestar/pull/177) | Static app shell, client login integration and recoverable authentication screens |
+| 4 | [#178](https://github.com/ewei068/pokestar/pull/178) | Battle list, conditional polling, target selection and revision-checked actions |
+| 5 | [#179](https://github.com/ewei068/pokestar/pull/179) | Accepted arena, ordered result playback, VFX, copy, sound, music and cries |
+| 6 | `codex/web-battler-docs` | Remove temporary effort documents, retain contracts and evidence, repair references |
+
+The API follows the server foundation because it consumes the durable service
+and participant projection. The client integration layer uses the existing
+pre-animation UI; the presentation layer carries its accepted visual and audio
+replacement. The music test that reads client files belongs to that final layer.
+
+The presentation tip's Git tree exactly matches original tip
+`ef4377af008914b22b256d368262104a49a66802`; the final layer changes documentation
+only. The original stack, including its experimental branches, remains
+recoverable through the pushed tag
+[`archive/web-battler-pre-restack-2026-10-23`](https://github.com/ewei068/pokestar/tree/archive/web-battler-pre-restack-2026-10-23).
+Superseded PRs are historical review records; use the stack above for current work.
 
 ## Goal and scope
 
-Give participants a lightweight static website for signing in with Discord,
-finding their ongoing battles, inspecting a readable battlefield, and taking
-actions with clear ordered visual feedback. Discord and web operate on the
-same durable server-owned battle. Keep room for other bot features to gain web
-interfaces without migrating those features now.
-
-**Current continuation stage:** same-channel Discord continuation and recoverable
-login screens were implemented on **2026-10-22** and accepted locally by the
-user on **2026-10-23**, now published in
-[#174](https://github.com/ewei068/pokestar/pull/174) above #173. The
-[login recovery record](../verification/login-recovery/README.md) distinguishes
-automated/browser checks from the pending backend restart and real OAuth/Discord
-checks. Publishing verification passes **863 backend tests**, **105 web tests**,
-the production build, scoped lint and 71 relative documentation links. Full
-Compound Engineering review (`20261023-205434-9e1b634f`) found one navigation
-race; the fix and its failing-before/passing-after regression passed focused
-follow-up review. No different-provider review or runtime restart has run.
-
-The user accepted the local desktop/mobile
-annotation polish on **2026-10-22**, now published in
-[#173](https://github.com/ewei068/pokestar/pull/173) above the copy branch.
-Publishing verification passes 95 web tests, 835 backend tests,
-the production build and targeted JavaScript lint. Full Compound Engineering
-review returned no findings (run `20261022-093030-10c2ba2d`); no different-provider
-review ran. Backend restart/live
-forced-skip and trainer-name checks, physical-device input/audio checks and
-production cutover remain open.
-
-The approved copy review is applied on
-draft [#172](https://github.com/ewei068/pokestar/pull/172), based on #171.
-The user returned all 104 review rows approved, with 15 replacement drafts.
-The original [review export and application notes](../verification/web-copy/README.md)
-are preserved in the repository. The pass adopts shorter prompts, removes
-redundant finished-battle help and target counts, and applies the user's reload,
-duration, phase and audio wording. A small battle-owned `copy.ts` shares UI
-messages and typed formatters; event narration and server catalog ownership
-remain in place. [Architecture](../web-client-architecture.md) and
-[voice guidance](../web-ui-style-guide.md#copy-voice) record the implementation.
-The temporary review editor in `/tmp/pokestar-copy-review/editor/` remains a
-historical review snapshot; its source mappings must be checked before reuse.
-
-The user chose to match the existing server voice and to try to use the Pokémon
-games' exact wording for equivalent battle events and flavor. Sign-in/list,
-action prompts, notices and errors use direct player language; status/cure and
-weather narration use familiar battle phrases. Finished and waiting battles
-no longer prompt the player to choose a move. Full narration remains separate
-from short floating cues, and unknown event causes remain general. The
-[copy comparison](../web-copy-audit.md) records the implementation and checks;
-[research](../web-copy-research.md) retains the earlier sourced advice. Accepted
-voice direction lives in the [UI style guide](../web-ui-style-guide.md#copy-voice).
-Approval covers the reviewed copy and documented contextual adjustments;
-production cutover and exact wording across every generation remain distinct.
-
-The first native-annotation UI polish batch is implemented locally on
-**2026-10-21**. It simplifies the battle heading and formation labels, fixes
-three-digit levels, removes the readiness rail, and reorganizes Pokémon/move
-inspection. Forced participant skips now use durable server progression.
-The [nine-comment implementation and verification record](../verification/widescreen-polish/README.md)
-separates checked behavior and the user's local UI acceptance from the pending
-backend restart/live forced-skip check.
-
-The second annotation batch is implemented locally on **2026-10-22**: solo
-trainer display names, explicit Cancel during move selection, compact phone
-targeting controls, touch/pen target confirmation, and shared colored status
-abbreviations. The [mobile feedback verification](../verification/mobile-polish/README.md)
-records 95 web and 835 backend tests, responsive browser checks, and the running
-backend's pending restart for trainer names. The user accepted the local UI;
-physical touch-device acceptance remains separate.
-The same-day follow-up allows a second tap on the staged primary target to use
-the move; tapping a different target still changes the preview.
-
-Feedback workflow research on **2026-10-20** compares narrated recordings,
-native Codex annotations/voice, selective transcript/frame retrieval and
-instrumented capture tools. The [research and proposed pilot](../ui-feedback-tools-research.md)
-recommend annotations for static polish and short media evidence for motion,
-audio and phone behavior. Native annotations supplied both accepted batches
-above. Recording extraction and external-tool pilots remain proposals; no
-capture integration was installed and no recording was analyzed.
-
-Phone audio review remains open. The catalog has five default tracks plus
-dungeon, trainer and raid themes and a per-battle override. Real battle pages
-attempt autoplay without playback controls, retry on input and page return,
-pause while hidden, and resume on return; stories retain manual Play/Pause.
-Site Settings owns master mute and separate Music and Sound effects sliders.
-Simulated recovery tests and the build passed previously; real-device autoplay,
-interruption recovery and listening remain unverified. See the
-[music behavior/review](../battle-music-plan.md) and
-[catalog](../../web/src/battles/audio/musicCatalog.json). Turn-start cries are in
-draft [#171](https://github.com/ewei068/pokestar/pull/171), stacked on music
-[#170](https://github.com/ewei068/pokestar/pull/170) and SFX
-[#169](https://github.com/ewei068/pokestar/pull/169); the user judged cries working
-well locally. The prior [SFX handoff](../handoffs/2026-10-17-web-battler-sfx.md)
-is an old snapshot.
+Give participants a static website for signing in with Discord, finding ongoing
+battles, inspecting the battlefield and taking actions with ordered visual
+feedback. Discord and web share one durable, server-owned battle. Other bot
+features remain outside this effort.
 
 ### User-accepted decisions
 
@@ -150,126 +86,61 @@ are distinct from implementation defaults and future suggestions.
   and Pokestar's mechanics support it. Server copy written from memory is a
   voice reference, not a verified transcript. No generation was specified.
 
-## Current state and evidence
+## Verification and acceptance
 
-**Implemented in this checkout/open PR stack does not mean merged or deployed.**
-GitHub inspection during this audit found the implementation stack still open,
-including drafts #164–#166 and audio drafts #169–#170. Prototype #160 is closed. No production deployment,
-flag state, credentials, live database topology or domain/IP provisioning was
-verified here.
+Local restack verification on **2026-10-23**:
 
-Continuation check on **2026-10-19** confirmed local HEAD `653c2e7` on
-`codex/battle-cries` and GitHub drafts #171 → #170 → #169 → #166 still open,
-with the documented base/head chain. This was a targeted source/copy inspection,
-not another full code audit or test run. Pre-existing untracked research,
-design material and scratch notes remain outside this phase's changes.
+| Boundary | Observed result |
+| --- | --- |
+| Server foundation | 832 Jest tests / 26 suites passed |
+| Server API | 860 Jest tests / 29 suites passed |
+| Client login/shell | 10 web tests passed; TypeScript and production build passed; lockfile dry-run passed |
+| Client battle integration | 25 web tests / 8 suites passed; TypeScript and production build passed |
+| Full implementation | 863 Jest tests / 30 suites and 105 web tests / 23 suites passed; TypeScript and production build passed |
+| Preservation | Exact Git-tree equality between the presentation layer and original tip; final cleanup is documentation only |
 
-Publishing check on **2026-10-20** confirmed #171 remains an open draft and
-its remote head matches the copy review's base, `653c2e7`. The copy branch keeps
-that parent unchanged. Web tests (**83/21 suites**), backend tests (**831/28
-suites**), the web production build and targeted JavaScript lint passed again.
-All **75** reviewed narration/label cases match the approval export, the export
-is unchanged, and **102** relative documentation links resolve. Earlier browser
-evidence remains recorded below; this publishing check did not repeat browser
-review or production acceptance.
+These checks verify the stack boundaries and preserve the existing implementation.
+They do not repeat browser, provider, real-database or physical-device acceptance.
+The web build retains non-fatal Virtua/Rollup annotation warnings; tests retain
+existing EventEmitter and static-rendering warnings.
 
-| Area                   | Current implementation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Evidence / limits                                                                                                                                                                                                                                                          |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Engine and persistence | Accepted actions, ordered scalar events, immutable generated setup, action replay, revisions, expiry/retention and completion claims                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Backend unit tests and snapshot replay checks; real Mongo/restart/concurrent reward gates remain open.                                                                                                                                                                     |
-| Shared surfaces        | Participant-authorized service, NPC progression, Discord continuation and existing Discord handlers loading fresh Mongo state                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | #165 tests cover restart/cache loss, stale web/Discord messages and independent selections. Paid Auto is added by #166.                                                                                                                                                    |
-| API and static client  | Express Discord OAuth/session/API, safe participant projections, catalog, conditional state-ID polling                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Unit tests and retained mocked-HTTP browser evidence. The user reported successful local login/real battles and phone viewing; those reports are not a production acceptance run.                                                                                          |
-| Presentation           | Session/playback/screen separation, proportional DOM arena, floating HUD, targeting/inspection, mirrored own team, collapsible tray                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Current guides plus named stories; layout integration test uses mocked HTTP.                                                                                                                                                                                               |
-| Move VFX               | Approved canvas compositions, individual art ingredients, deterministic tile variation and typed editable recipes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | [Alpha evidence](../verification/vfx-alpha/README.md): historical same-browser pixel equality and full-loop checks, with their original sample scope.                                                                                                                      |
-| Results and history    | Ordered playing view, concurrent text/state transitions, damage/heal/faint/miss/status/effect-gain reactions, safe batches and Virtua log                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | [Result](../verification/event-results/README.md), [batch/log](../verification/batched-results/README.md) and [status/effect](../verification/status-effect-results/README.md) records; historical counts, not today's suite totals.                                       |
-| Auto                   | Shared bounded background simulation; revision/deadline claim; conditional debit; atomic replay-batch commit; existing completion claim                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | #166 unit tests cover races, failures and retries. Uncertain payment/final-write claims require manual review. Flag-off legacy Auto keeps upfront payment.                                                                                                                 |
-| SFX                    | Four representative move stories and nine status/stat-gain stories remain; real battle playback uses a separate sound map and Web Audio player. The 54-cell review is archived. The Vite-development gate has been removed locally. Draft #171: a `turnStarted` frame plays the active Pokémon's cry (gain 0.6, allowed to ring up to 3 s past the 820 ms announcement); all 1,351 PokeAPI Pokémon/form cries (26 MB of MP3) live in `web/public/audio/cries`, so new species need only a `crySpecies.json` entry when custom; `npm --prefix web run download-cries` fetches cries PokeAPI adds later; each battle's cries are warmed after audio unlocks. | [Move timing guide](../battle-move-audio-guide.md), [final review](../verification/move-audio-study/feedback-final.json), [sound config](../../web/src/battles/audio/soundConfig.ts). Earlier SFX feedback was favorable; production and real-phone listening remain open. |
-| Music and settings     | Draft #170: five default battle tracks, a six-track dungeon pool, named trainer and raid themes, a streaming music player, site Settings, separate volume sliders and SFX preference migration.                                                                                                                                                                                                                                                                                                                                                                                                                                                            | [Music behavior/review](../battle-music-plan.md). Backend/web tests and build passed; browser preview showed controls and persistence. No subjective listening approval or real-phone audio test.                                                                          |
+Earlier acceptance remains scoped to its recorded evidence: the user approved
+the 54-effect alpha, the copy review, the desktop/mobile annotation polish and
+local login recovery screens. Cries worked well in the user's local listening.
+Keep these records because their approvals and unverified cases cannot be
+reconstructed from code:
 
-Local copy update (2026-10-19): the web suite passes **83 tests in 21 suites**;
-the backend suite passes **831 tests in 28 suites**; the production web build
-passes. Targeted JavaScript lint and browser copy/layout review are recorded
-in the [copy verification](../web-copy-audit.md#verification). The approved-review
-follow-up also passes the web suite/build, checks 75 reviewed narration/label
-source cases against the returned drafts, and passes mocked-HTTP browser checks
-at 1440/390/320 px plus ally-healing instructions/submission at 1440/390 px.
-See the [applied review](../web-copy-audit.md#approved-review-implementation).
+- [Attack VFX alpha](../verification/vfx-alpha/README.md) and its immutable baseline comparisons.
+- [Ordered results](../verification/event-results/README.md), [batching/log](../verification/batched-results/README.md), and [status/effect reactions](../verification/status-effect-results/README.md).
+- [Approved copy](../verification/web-copy/README.md), including the original 104-row approval export and contextual adjustments.
+- [Desktop annotation polish](../verification/widescreen-polish/README.md) and [mobile targeting/status polish](../verification/mobile-polish/README.md).
+- [Login/channel recovery](../verification/login-recovery/README.md), including API-first rollout and pending real OAuth/Discord checks.
+- [Move-audio listening feedback](../verification/move-audio-study/feedback-final.json); these were comparison references, not proof of phone audio behavior.
 
-Latest checks at the #170 commit (2026-10-19): `npx jest` 831 tests in 28
-suites, `npm --prefix web test` 75 passed, and the web build passed. At #171 (2026-10-19): `npm --prefix web test` 80 passed and the web
-build passed; the user listened locally, but cries are untested on a phone. The
-original 2026-10-17 audit checks, on #166 plus a formatting-only diff to
-`src/services/battle.js` (now committed in #170):
+No deployment, production flag change, credential mutation, battle clearing,
+runtime restart or live battle action is part of this restack.
 
-- `npx jest --runInBand --silent`: **828 tests, 27 suites passed**.
-- `npm --prefix web test`: **52 tests, 14 suites passed**.
-- `npm --prefix web run build`: **passed**, including TypeScript checking.
-  Virtua/Rollup PURE-annotation warnings remain non-fatal. Main JS was about
-  68.6 kB gzip; these measurements are a snapshot, not a budget or SLA.
-- No browser, live OAuth, real Mongo or production action was run for this audit.
-  Prior browser artifacts explicitly separate stories/mocked HTTP from live
-  server verification. The preceding Auto implementation also passed ESLint.
+## Authoritative guides
 
-## Read the authoritative document for the task
+| Task | Source |
+| --- | --- |
+| System seams and module ownership | [Client architecture](../web-client-architecture.md), [durability ADR](../adr/0001-share-durable-battles-across-surfaces.md), [ordered-event ADR](../adr/0002-return-ordered-combat-events-with-battle-state.md) |
+| Persistence, service and completion | [Durable records](../durable-battle-records.md), [shared service](../shared-battle-service.md), [completion boundary](../battle-completion-boundary.md) |
+| HTTP/browser contract and setup | [Browser/API contract](../battle-web-contract.md), [web README](../../web/README.md), `.env.in` and `web/.env.example`; read templates, not secrets |
+| Discord behavior and Auto | [Continuation contract](../discord-battle-continuation.md) |
+| Combat events and playback | [Event contract](../combat-event-contract.md), [result playback](../battle-result-playback.md), [result extension notes](../../web/src/battles/results/README.md) |
+| Visual design and copy | [UI and copy guide](../web-ui-style-guide.md), [arena guide](../arena-design-guide.md) |
+| VFX authoring and asset provenance | [VFX guide](../battle-vfx-guide.md), [recipe guide](../../web/src/battles/vfx/recipes/README.md), [art notes](../../media/vfx/components/README.md), [arena sources](../../web/src/battles/arena/assets/README.md) |
+| Audio behavior and timing | [Music/settings](../battle-audio.md), [move timing](../battle-move-audio-guide.md) |
 
-| Task                                    | Read / what it owns                                                                                                                                                                                                                                                                                                                                                                         |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Overall system and extension seams      | [Web client architecture](../web-client-architecture.md): shell, feature/session/screen/board responsibilities, catalog and future routing/rendering decisions. [ADRs](../adr/0001-share-durable-battles-across-surfaces.md) and [event ADR](../adr/0002-return-ordered-combat-events-with-battle-state.md): shared durable identity and ordered outcomes.                                  |
-| Backend lifecycle and deployment gates  | [Backend plan](../web-battler-backend-plan.md), [durable record contract](../durable-battle-records.md), [shared service](../shared-battle-service.md), [completion boundary](../battle-completion-boundary.md).                                                                                                                                                                            |
-| API data, storage size and client setup | [Client plan](../web-battler-client-plan.md): current projected responses, catalog and conditional polling; its old BSON numbers are explicitly historical. [Web README](../../web/README.md): env variable names, commands, static hosting, local HTTPS/iPhone trust and mocked-HTTP layout check. Read templates, not local secrets.                                                      |
-| Discord behavior and Auto               | [Continuation contract](../discord-battle-continuation.md): original controls, compact locators, live reads, Auto finalization/payment and recovery boundaries.                                                                                                                                                                                                                             |
-| Combat and presentation                 | [Event contract](../combat-event-contract.md): event metadata, targeting footprints, weather/readiness. [Result playback](../battle-result-playback.md) and [result extension notes](../../web/src/battles/results/README.md): observations, reconciliation, timing, batching, copy and log ownership.                                                                                      |
-| Battle music and audio settings         | [Music behavior and review](../battle-music-plan.md): accepted page-visit selection, theme projection, site settings and remaining listening checks.                                                                                                                                                                                                                                        |
-| Visual design                           | [UI style guide](../web-ui-style-guide.md) and [arena guide](../arena-design-guide.md): current accepted direction and review scenarios. Raw [design brief](../design/spec.md), [prototype feedback](../design/prototype-feedback.md) and images are user-supplied context currently **untracked** in this checkout.                                                                        |
-| Copy and voice                          | [UI style guide](../web-ui-style-guide.md#copy-voice): accepted server/game-voice direction and source ownership. [Copy comparison](../web-copy-audit.md): inspected examples, current locations, implemented rewrites and verification. [Copy research](../web-copy-research.md): sourced advice and proposed workflow, not additional accepted policy. |
-| VFX changes                             | [VFX guide](../battle-vfx-guide.md): complete-loop quality bar, highlighted examples, ingredient/choreography workflow and verification. [Recipe guide](../../web/src/battles/vfx/recipes/README.md): editable settings versus rendering code. [Art notes](../../media/vfx/components/README.md) and [arena provenance](../../web/src/battles/arena/assets/README.md): asset roles/sources. |
-| Historical alternatives                 | [Feasibility](../web-battler-feasibility.md) and [VFX tool research](../battle-vfx-workflow-research.md): initial options and dated research. They do not supersede current contracts; tool prices/capabilities need rechecking before use. The research file is currently untracked.                                                                                                       |
-
-## Milestones and review references
-
-PR state below was checked during this audit. Follow the actual base/head chain
-when reviewing or merging; many intermediate VFX experiments remain open and
-are not independent alternatives to the current renderer.
-
-| Milestone                                                              | Review references                                                                                                                                                                                                                                                                                                                                                                                            |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Engine, events, durability, modes                                      | [#116](https://github.com/ewei068/pokestar/pull/116) through [#131](https://github.com/ewei068/pokestar/pull/131); individual links and purposes are in the backend plan. [#132](https://github.com/ewei068/pokestar/pull/132) verifies service recreation.                                                                                                                                                  |
-| Browser projection, OAuth/API, static client, conditional updates      | [#133](https://github.com/ewei068/pokestar/pull/133), [#134](https://github.com/ewei068/pokestar/pull/134), [#135](https://github.com/ewei068/pokestar/pull/135), [#136](https://github.com/ewei068/pokestar/pull/136).                                                                                                                                                                                      |
-| Session seam, footprints, UI and stories                               | [#137](https://github.com/ewei068/pokestar/pull/137), [#139](https://github.com/ewei068/pokestar/pull/139), [#140](https://github.com/ewei068/pokestar/pull/140), [#141](https://github.com/ewei068/pokestar/pull/141).                                                                                                                                                                                      |
-| Move matrix, accepted composition, recipe extraction and alpha cleanup | Initial [#142](https://github.com/ewei068/pokestar/pull/142)/[#143](https://github.com/ewei068/pokestar/pull/143); final composition [#153](https://github.com/ewei068/pokestar/pull/153); configuration [#155](https://github.com/ewei068/pokestar/pull/155), integration [#156](https://github.com/ewei068/pokestar/pull/156). Approved pre-refactor baseline: `1514fedd93deb5119bc60a8981b550940c530f58`. |
-| Result sequencing, batches/log and reactions                           | [#157](https://github.com/ewei068/pokestar/pull/157), [#158](https://github.com/ewei068/pokestar/pull/158), [#159](https://github.com/ewei068/pokestar/pull/159).                                                                                                                                                                                                                                            |
-| Arena and local development                                            | Prototype [#160](https://github.com/ewei068/pokestar/pull/160) is closed; production [#161](https://github.com/ewei068/pokestar/pull/161), targeting/facing/jump [#162](https://github.com/ewei068/pokestar/pull/162), local HTTPS [#163](https://github.com/ewei068/pokestar/pull/163).                                                                                                                     |
-| Discord parity and Auto                                                | [#164](https://github.com/ewei068/pokestar/pull/164) restores appearance; [#165](https://github.com/ewei068/pokestar/pull/165) consolidates original handlers; [#166](https://github.com/ewei068/pokestar/pull/166) restores Auto, based on #165.                                                                                                                                                            |
-| Battle SFX                                                             | [#169](https://github.com/ewei068/pokestar/pull/169) adds move/result/UI sounds with volume and mute, stacked on #166.                                                                                                                                                                                                                                                                                       |
-| Battle music and audio settings                                        | [#170](https://github.com/ewei068/pokestar/pull/170) adds page-visit battle music, encounter themes and site Settings with separate Music/SFX sliders, stacked on #169.                                                                                                                                                                                                                                      |
-| Pokémon cries                                                          | [#171](https://github.com/ewei068/pokestar/pull/171) plays each Pokémon's PokeAPI cry when its turn begins, with all 1,351 cries committed and an explicit custom-species map, stacked on #170. |
-| Approved copy and voice                                                | [#172](https://github.com/ewei068/pokestar/pull/172) applies the author's 104-row copy review and records accepted examples, small feature-owned copy helpers and source ownership, based on #171. |
-| Accepted annotation polish                                             | [#173](https://github.com/ewei068/pokestar/pull/173), based on #172, applies the desktop/mobile feedback, repeat-tap confirmation, trainer/status labels and durable forced skips. Local UI accepted; runtime/device gates remain in the verification records. |
-| Channel continuation and login recovery | [#174](https://github.com/ewei068/pokestar/pull/174), based on #173, restores same-channel continuation and adds recoverable login/cookie/network/sign-out screens. Local UI accepted; API-first rollout and live-provider/device checks remain in the verification record. |
-
-Related pre-existing backlog: [data separation #16](https://github.com/ewei068/pokestar/issues/16),
-[Mongo optimization #14](https://github.com/ewei068/pokestar/issues/14),
-[target handling #44](https://github.com/ewei068/pokestar/issues/44) and
-[documentation #13](https://github.com/ewei068/pokestar/issues/13). These are
-related issues, not evidence that the effort's release gates are resolved. No
-dedicated SFX issue was identified; SFX direction is recorded in the
-[move audio guide](../battle-move-audio-guide.md) and #169.
-
-## Limitations, open decisions and next milestones
-
-### Copy phase continuity
-
-- The approved review is applied on the copy branch and retained in the verification
-  record. Check any future review snapshot against the current source before
-  applying it. No specific generation's wording is prescribed.
-- The reference corpus mixes older server writing and newer web-related code;
-  a server file path alone does not establish human authorship. Shared catalog
-  descriptions already appear on both interfaces.
-- Some detailed server narration has no equivalent semantic event metadata
-  (for example, `actionBlocked` has no reason). Keep unknown causes general;
-  richer reporting is separate from the wording pass.
+## Remaining work
 
 ### Required before production cutover
 
+- Keep `DURABLE_BATTLES_ENABLED`, `DURABLE_RAIDS_ENABLED` and
+  `WEB_BATTLER_ENABLED` off in production until their rollout checks are accepted.
+  Durable PvE/PvP, dungeon and tower starts use the first flag; raids require
+  both durable flags. `/continue-battle` is registered in every stage.
 - Real Mongo/index/restart and authenticated cross-surface acceptance checks,
   including mode completion, current Discord UI and Auto. Earlier local Mongo
   topology observations and the user's production description are not current
@@ -281,6 +152,9 @@ dedicated SFX issue was identified; SFX direction is recorded in the
   Drain/reconcile claims before rolling back to code that does not honor them.
 - Verify deployment flags, ruleset compatibility, hosting/domain/static IP,
   HTTPS/OAuth origins. No deploy, production flag change, credential mutation or battle clearing is part of the current continuation.
+- Run real OAuth/Discord recovery and physical touch/pen/audio checks,
+  including autoplay, interruptions and resume. Responsive browser views and
+  mocked media/input tests do not establish physical-device acceptance.
 
 ### Preserve flexibility / deferred until needed
 
@@ -302,30 +176,30 @@ dedicated SFX issue was identified; SFX direction is recorded in the
   server combat events remain semantic. Revisit app-wide localization when a
   specific language and translation workflow are in scope.
 
-## Verified lessons and maintenance
+## Repository maintenance
 
-The durable lessons already live in their authoritative guides: preserve the
-Discord presentation while changing authority/storage; treat current account
-capability separately from replayable state; compose independently animated
-VFX ingredients and review every complete loop at real tile size; separate
-canonical state from presented state and reconcile at action boundaries.
+The cleanup layer removes the superseded backend plan, feasibility study,
+copy audit/research, feedback-tool research and dated SFX handoff. The client
+plan becomes the browser/API contract; the music plan becomes the audio behavior
+guide. Their current contracts, cutover gates and copy verification survive in
+the sources above. Approval exports, browser evidence, runtime assets and their
+editable recipes remain tracked. Untracked research, design and scratch files
+are user work and remain untouched.
 
-`ce-compound`'s durability gate was applied during this audit. No separate
-solution note was created because these lessons are already explicit in the
-continuation, VFX, architecture and playback guides; another copy would add
-maintenance drift. The same gate was checked for the copy phase on 2026-10-20:
-the voice guide, architecture and approved review already preserve the decisions
-and reasoning. The 2026-10-22 polish wrap-up also passed that gate without a new
-solution note: the shared-service contract explains why matching cursors must
-still resume automatic turns, and the architecture/arena guides preserve target
-confirmation and display-name boundaries. General and web README pointers lead
-to those sources. The 2026-10-23 login/channel wrap-up also needs no separate
-solution note: the continuation contract records picker ownership, the client
-architecture explains callback trust and cookie recovery, and tests preserve
-the return-path and browser-compatibility regressions. Put a future genuinely missing verified lesson through that
-gate rather than turning an untested proposal into policy.
+After the replacement stack is published and verified, close the superseded
+PRs and delete their local/remote branches. Keep replacement branches until
+merged and keep the archive tag for historical VFX comparisons. The unrelated
+agent-setup PR and other worktrees are outside this cleanup.
 
-At meaningful milestones update this entry point's status, evidence, accepted
-versus proposed decisions, review links and next focus. Update detailed contracts
-in place. Preserve immutable dated handoffs as snapshots, rather than using them
-as mutable plans. The root `AGENTS.md` points future web-battler work here.
+Follow-ups for a separate repository change:
+
+- Add web tests and a production build to GitHub CI; the existing workflow runs
+  only backend Jest. Local web validation above is not a required remote check.
+- Review static asset caching/hosting before public rollout: checked-in audio
+  is 37,455,478 bytes and music is 56,094,812 bytes before HTTP compression.
+  Music streams per visit; these totals are not the initial page transfer.
+- Refresh the older public tutorial independently; its early feature-status
+  claims predate this effort. Review related backlog [#16](https://github.com/ewei068/pokestar/issues/16), [#14](https://github.com/ewei068/pokestar/issues/14), [#44](https://github.com/ewei068/pokestar/issues/44) and [#13](https://github.com/ewei068/pokestar/issues/13) before closing anything.
+
+Deleting obsolete files and branches does not shrink historical Git objects.
+History rewriting and unrelated branch/worktree removal are outside this task.

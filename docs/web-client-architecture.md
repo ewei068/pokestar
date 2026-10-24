@@ -72,7 +72,7 @@ Battles consume those preferences for separate music and SFX gain; music playbac
 remains battle-scoped. The server projects a public `presentation.musicThemeId`
 from its encounter configuration or a battle override, while the static client
 maps that theme to audio files. The browser never receives the raw
-durable mode record to choose a track. See [battle music and settings](battle-music-plan.md)
+durable mode record to choose a track. See [battle music and settings](battle-audio.md)
 for selection, playback and listening review.
 
 ## Battle session interface and invariants

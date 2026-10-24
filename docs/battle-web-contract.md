@@ -1,9 +1,6 @@
-# Web battler client plan
+# Web battle browser and API contract
 
-Status: the client is implemented in the open review stack: React, TypeScript,
-Vite, a DOM battlefield with Pokémon sprites, and canvas tile VFX. Combat remains
-authoritative on the server. See [the effort overview](efforts/web-battler.md) for
-current verification and release gates.
+Status: implemented in the review stack. See [the effort overview](efforts/web-battler.md) for verification and production cutover gates.
 
 ## Browser contract
 
@@ -58,16 +55,7 @@ parameters or send the unprojected `BattleService` result to the browser.
 - Keep battle state, animation queue, and renderer separate. CSS/DOM can serve
   the initial UI; a canvas renderer can consume the same view and events later.
 
-## Stored action size (historical measurements)
-
-Before per-action views were removed, a measured 6-versus-6 sample attack produced
-an 11,854-byte BSON update: 112 bytes for the `action` field, 860 bytes for
-`events`, 157 bytes for `log`, and 10,643 bytes for the full resulting `view`
-(field measurements include their own BSON wrappers). A synthetic battle with
-100 accepted skips occupied 1,127,333 bytes as a single stored document.
-These describe the older snapshot-heavy format, not current action sizes or a
-bound for raids or unusually long battles. Current records have not been
-re-benchmarked here.
+## Replay and storage
 
 The immutable initial setup contains full generated party data, so edits to a
 user's collection do not change an ongoing battle. Replay recomputes derived
@@ -77,14 +65,9 @@ command, ordered events, and log, without a full view. Existing records with
 older per-action views remain readable; those old fields are not removed by
 this change. Measure long battles before considering true engine checkpoints.
 
-## Next implementation steps
+## HTTP and deployment boundaries
 
-1. Test Discord OAuth, cookie/CORS behavior, icon loading, and the battle board
-   in a real browser with a configured local or staging API.
-2. Finish the backend's reward-recovery and real-MongoDB cutover gates before
-   enabling durable starts in production.
-
-The Express API now mounts only when `WEB_BATTLER_ENABLED=true`. Configure
+The Express API mounts only when `WEB_BATTLER_ENABLED=true`. Configure
 `WEB_SITE_ORIGIN`, `WEB_DISCORD_REDIRECT_URI`, `CLIENT_ID`, and
 `DISCORD_CLIENT_SECRET`; register the exact callback URL in Discord's developer
 portal. `GET /api/auth/discord/login` starts login, `/api/auth/discord/callback`
