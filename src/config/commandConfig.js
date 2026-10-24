@@ -75,6 +75,7 @@ const commandCategoryConfigRaw = {
     commands: [
       "pvp",
       "pve",
+      "continue-battle",
       "dungeons",
       "battletower",
       "raid",
@@ -877,6 +878,21 @@ const commandConfigRaw = {
         optional: true,
         variable: false,
         enum: ["veryEasy", "easy", "medium", "hard", "veryHard"],
+      },
+    },
+    stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],
+  },
+  "continue-battle": {
+    name: "Continue Battle",
+    aliases: ["continue-battle"],
+    description: "Resume one of your ongoing battles",
+    execute: "continueBattle.js",
+    args: {
+      battleid: {
+        type: "string",
+        description: "Battle ID to open directly",
+        optional: true,
+        variable: false,
       },
     },
     stages: [stageNames.ALPHA, stageNames.BETA, stageNames.PROD],

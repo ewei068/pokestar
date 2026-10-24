@@ -38,6 +38,16 @@ const eventNames = Object.freeze({
   BATTLE_MOVE_SELECT: "battleMoveSelect",
   BATTLE_TARGET_SELECT: "battleTargetSelect",
   BATTLE_TARGET_CONFIRM: "battleTargetConfirm",
+  DURABLE_BATTLE_PICK: "durablePick",
+  DURABLE_BATTLE_PAGE: "durablePage",
+  // Deprecated action IDs: refresh already-posted messages into the BATTLE_* UI.
+  // New battle controls use the existing BATTLE_* handlers for both storage paths.
+  DURABLE_BATTLE_REFRESH: "durableRefresh",
+  DURABLE_BATTLE_MOVE: "durableMove",
+  DURABLE_BATTLE_TARGET: "durableTarget",
+  DURABLE_BATTLE_SKIP: "durableSkip",
+  DURABLE_BATTLE_CONFIRM: "durableConfirm",
+  DURABLE_BATTLE_INFO: "durableInfo",
   BANNER_SCROLL: "bannerScroll",
   BANNER_BUTTON: "bannerButton",
   BANNER_GACHA: "bannerGacha",
@@ -274,6 +284,46 @@ const eventConfig = {
     directory: "battle",
     exp: 10,
     money: 25,
+  },
+  [eventNames.DURABLE_BATTLE_PICK]: {
+    name: "Continue Battle Pick",
+    execute: "durableBattle.js",
+    directory: "battle",
+  },
+  [eventNames.DURABLE_BATTLE_PAGE]: {
+    name: "Continue Battle Page",
+    execute: "durableBattle.js",
+    directory: "battle",
+  },
+  [eventNames.DURABLE_BATTLE_REFRESH]: {
+    name: "Continue Battle Refresh",
+    execute: "durableBattle.js",
+    directory: "battle",
+  },
+  [eventNames.DURABLE_BATTLE_MOVE]: {
+    name: "Continue Battle Move",
+    execute: "durableBattle.js",
+    directory: "battle",
+  },
+  [eventNames.DURABLE_BATTLE_TARGET]: {
+    name: "Continue Battle Target",
+    execute: "durableBattle.js",
+    directory: "battle",
+  },
+  [eventNames.DURABLE_BATTLE_CONFIRM]: {
+    name: "Continue Battle Confirm",
+    execute: "durableBattle.js",
+    directory: "battle",
+  },
+  [eventNames.DURABLE_BATTLE_INFO]: {
+    name: "Continue Battle Info",
+    execute: "durableBattle.js",
+    directory: "battle",
+  },
+  [eventNames.DURABLE_BATTLE_SKIP]: {
+    name: "Continue Battle Skip",
+    execute: "durableBattle.js",
+    directory: "battle",
   },
   [eventNames.BANNER_SCROLL]: {
     name: "Gacha Scroll",

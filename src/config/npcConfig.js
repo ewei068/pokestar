@@ -633,6 +633,7 @@ const npcConfig = Object.freeze({
   },
   [npcs.BLUE]: {
     name: "Blue",
+    musicThemeId: "trainer-blue",
     sprite:
       "https://archives.bulbagarden.net/media/upload/f/f4/Spr_B2W2_Blue.png",
     emoji: "<:blue:1117871380172648600>",
@@ -684,6 +685,7 @@ const npcConfig = Object.freeze({
   },
   [npcs.RED]: {
     name: "Red",
+    musicThemeId: "trainer-red",
     sprite: "https://www.serebii.net/heartgoldsoulsilver/gym/red.png",
     emoji: "<:red:1117871509185249280>",
     catchphrase: "...!",
@@ -706,6 +708,7 @@ const npcConfig = Object.freeze({
   },
   [npcs.GOLD]: {
     name: "Gold",
+    musicThemeId: "trainer-gold",
     sprite:
       "https://archives.bulbagarden.net/media/upload/a/a5/Spr_HGSS_Ethan.png",
     emoji: "<:gold:1125493190900854784>",
@@ -743,6 +746,7 @@ const npcConfig = Object.freeze({
   },
   [npcs.STEVEN]: {
     name: "Champion Steven",
+    musicThemeId: "trainer-steven",
     sprite:
       "https://archives.bulbagarden.net/media/upload/a/ad/Spr_RS_Steven.png",
     emoji: "<:steven:1135329417015595050>",
@@ -780,6 +784,7 @@ const npcConfig = Object.freeze({
   },
   [npcs.CYNTHIA]: {
     name: "Cynthia",
+    musicThemeId: "trainer-cynthia",
     sprite:
       "https://archives.bulbagarden.net/media/upload/d/d2/Spr_Pt_Cynthia.png",
     emoji: "<:cynthia:1376227295408164955>",
@@ -833,6 +838,7 @@ const npcConfig = Object.freeze({
   },
   [npcs.PALMER]: {
     name: "Tower Tycoon Palmer",
+    musicThemeId: "trainer-frontier",
     sprite:
       "https://archives.bulbagarden.net/media/upload/f/f4/Spr_DP_Palmer.png",
     emoji: "<:palmer:1119396349604020294>",
@@ -1356,6 +1362,7 @@ const dungeons = Object.freeze({
 const dungeonConfig = Object.freeze({
   [dungeons.MOUNT_CORONET]: {
     name: "Mount Coronet",
+    musicThemeId: "dungeon",
     displayName: "[Event] Mount Coronet",
     sprite: "https://pbs.twimg.com/media/GPezGJhW4AArdKo.png",
     emoji: "🏔️",
@@ -1674,6 +1681,7 @@ const dungeonConfig = Object.freeze({
   },
   [dungeons.MIND_TEMPLE]: {
     name: "Mind Temple",
+    musicThemeId: "dungeon",
     sprite:
       "https://archives.bulbagarden.net/media/upload/thumb/1/17/LA_Temple_of_Sinnoh.png/500px-LA_Temple_of_Sinnoh.png",
     emoji: "🏛️",
@@ -1983,6 +1991,7 @@ const dungeonConfig = Object.freeze({
   },
   [dungeons.SOUL_CAVE]: {
     name: "Soul Cave",
+    musicThemeId: "dungeon",
     sprite:
       "https://archives.bulbagarden.net/media/upload/0/06/Echo_Cave_RTDX.png",
     emoji: "⛰",
@@ -2292,6 +2301,7 @@ const dungeonConfig = Object.freeze({
   },
   [dungeons.SPIRIT_ALTAR]: {
     name: "Spirit Altar",
+    musicThemeId: "dungeon",
     sprite:
       "https://static.wikia.nocookie.net/victoryroad/images/a/ab/Altar_of_the_Moone_TCG.png/revision/latest?cb=20190329010127",
     emoji: "⛩️",
@@ -2601,6 +2611,7 @@ const dungeonConfig = Object.freeze({
   },
   [dungeons.NEW_ISLAND]: {
     name: "New Island",
+    musicThemeId: "dungeon",
     sprite:
       "https://e0.pxfuel.com/wallpapers/343/331/desktop-wallpaper-pokemon-the-movie-mewtwo-strikes-back-anime-board-pokemon-the-first-movie-mewtwo-strikes-back.jpg",
     emoji: "🏝️",
@@ -3239,6 +3250,7 @@ const BASE_STAR_PIECE = 1;
 /**
  * @typedef {object} RaidConfigData
  * @property {string} name
+ * @property {string=} musicThemeId
  * @property {string} sprite
  * @property {string} emoji
  * @property {string} description
@@ -3265,6 +3277,7 @@ const BASE_STAR_PIECE = 1;
 const raidConfigRaw = {
   [raids.ARMORED_MEWTWO]: {
     name: "Armored Mewtwo",
+    musicThemeId: "raid-mewtwo",
     sprite:
       "https://s.aficionados.com.br/imagens/pokemon-go-niantic-anuncia-mewtwo-com-armadura-para-o-jogo_f.jpg",
     emoji: "<:armoredmewtwo:1117130461282578535>",
@@ -3321,6 +3334,7 @@ const raidConfigRaw = {
   },
   [raids.SHADOW_LUGIA]: {
     name: "Shadow Lugia",
+    musicThemeId: "raid-lugia",
     sprite:
       "https://64.media.tumblr.com/2a40c996ae00cefd2be5b5de74da8fef/236f6aa7b1a334ea-15/s1280x1920/f11d75a0e478800f90a9db168ff540d5c4f4eea4.png",
     emoji: "<:shadowlugia:1127311851278061608>",
@@ -3377,6 +3391,7 @@ const raidConfigRaw = {
   },
   [raids.TEAM_AQUAS_KYOGRE]: {
     name: "Team Aqua's Kyogre",
+    musicThemeId: "raid-kyogre-groudon",
     sprite:
       "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/0eb0f155-e353-4cbc-882d-ea2e9025c5b5/ddpquze-b5fde401-6114-4449-a367-2afbe9e44e3d.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzBlYjBmMTU1LWUzNTMtNGNiYy04ODJkLWVhMmU5MDI1YzViNVwvZGRwcXV6ZS1iNWZkZTQwMS02MTE0LTQ0NDktYTM2Ny0yYWZiZTllNDRlM2QuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.UK1oWJ2GLAK3RckFzCEMnUHqavpOsdCext5VmqrIKlY",
     emoji: "<:aquakyogre:1325287152979939348>",
@@ -3438,6 +3453,7 @@ const raidConfigRaw = {
   },
   [raids.TEAM_MAGMAS_GROUDON]: {
     name: "Team Magma's Groudon",
+    musicThemeId: "raid-kyogre-groudon",
     sprite:
       "https://preview.redd.it/6p9bnciaj3461.png?auto=webp&s=c249420a2c8dfae4e1dd649d74688531cc7d9a88",
     emoji: "<:magmagroudon:1325287156268404878>",

@@ -240,6 +240,12 @@ class BattlePokemon {
     }
 
     this.battle.addToLog(`${oldName} transformed into ${this.name}!`);
+    this.battle.recordCombatEvent({
+      type: "pokemonTransformed",
+      pokemonId: this.id,
+      previousSpeciesId: beforeSpeciesId,
+      speciesId: this.speciesId,
+    });
 
     this.battle.emitEvent(battleEventEnum.AFTER_TRANSFORM, {
       target: this,
@@ -308,6 +314,7 @@ class BattlePokemon {
     const moveData = getMove(moveId);
     if (
       !moveData ||
+      !this.moveIds[moveId] ||
       this.moveIds[moveId].cooldown > 0 ||
       this.moveIds[moveId].disabledCounter
     ) {
@@ -390,7 +397,14 @@ class BattlePokemon {
     }
 
     // check if pokemon can use move make sure pokemon is alive
-    canUseMove = !!(canUseMove && !this.isFainted);
+    canUseMove = !!(canUseMove && !this.isFainted && this.moveIds[moveId]);
+    if (!canUseMove) {
+      this.battle.recordCombatEvent({
+        type: "actionBlocked",
+        pokemonId: this.id,
+        moveId,
+      });
+    }
 
     const moveOptions = {
       source: this,
@@ -479,6 +493,26 @@ class BattlePokemon {
       moveId,
       moveInstance,
     };
+    this.battle.recordCombatEvent({
+      type: "moveStarted",
+      pokemonId: this.id,
+      moveId,
+      moveType: moveInstance.type,
+      damageType: moveInstance.damageType,
+      targetPattern: this.getMovePattern(moveInstance),
+      primaryTargetId: primaryTarget.id,
+      targetIds: allTargets.map((target) => target.id),
+      patternTiles: this.getMoveFootprint(moveInstance, primaryTarget, allTargets).patternTiles,
+      missedTargetIds: missedTargets.map((target) => target.id),
+    });
+    for (const target of missedTargets) {
+      this.battle.recordCombatEvent({
+        type: "targetMissed",
+        pokemonId: this.id,
+        targetPokemonId: target.id,
+        moveId,
+      });
+    }
     this.battle.eventHandler.emit(
       battleEventEnum.BEFORE_MOVE_EXECUTE,
       executeEventArgs,
@@ -505,6 +539,11 @@ class BattlePokemon {
       );
     }
     this.executeMoveInstance(moveInstance);
+    this.battle.recordCombatEvent({
+      type: "moveCompleted",
+      pokemonId: this.id,
+      moveId,
+    });
 
     return {
       allTargets,
@@ -930,6 +969,57 @@ class BattlePokemon {
   }
 
   /**
+   * Geometric pattern tiles include empty positions. Random previews show every
+   * possible occupied tile; an executed move supplies its resolved targets.
+   * Neither preview promises that a target will be hit or damaged.
+   * @param {MoveInstance} moveInstance
+   * @param {BattlePokemon} primaryTarget
+   * @param {BattlePokemon[]=} resolvedTargets
+   */
+  getMoveFootprint(moveInstance, primaryTarget, resolvedTargets = null) {
+    const targetParty = this.battle.parties[primaryTarget.teamName];
+    const targetPattern = this.getMovePattern(moveInstance);
+    const random = targetPattern === targetPatterns.RANDOM;
+    const possibleTargets = random
+      ? (resolvedTargets || targetParty.pokemons.filter((pokemon) =>
+        pokemon && this.battle.isPokemonHittable(pokemon, moveInstance.id)))
+      : null;
+    const indices = random
+      ? possibleTargets.map((pokemon) => pokemon.position - 1)
+      : getPatternTargetIndices(targetParty, targetPattern, primaryTarget.position);
+    const patternTiles = indices.map((index) => ({
+      teamName: primaryTarget.teamName,
+      position: index + 1,
+    }));
+    return {
+      targetPattern,
+      random,
+      patternTiles,
+      affectedPokemonIds: resolvedTargets
+        ? resolvedTargets.map((pokemon) => pokemon.id)
+        : indices.map((index) => targetParty.pokemons[index])
+          .filter((pokemon) => pokemon &&
+            this.battle.isPokemonHittable(pokemon, moveInstance.id))
+          .map((pokemon) => pokemon.id),
+      emptyTileTargets: indices.filter((index) => !targetParty.pokemons[index])
+        .map((index) => ({ teamName: primaryTarget.teamName, position: index + 1 })),
+    };
+  }
+
+  /**
+   * @param {MoveIdEnum} moveId
+   * @param {BattlePokemon} primaryTarget
+   */
+  getMoveTargetPreview(moveId, primaryTarget) {
+    const moveInstance = MoveInstance.fromMoveId({
+      source: this,
+      primaryTarget,
+      moveId,
+    });
+    return this.getMoveFootprint(moveInstance, primaryTarget);
+  }
+
+  /**
    * Not to be used for exact targetting, only util for now
    * TODO: use move itself?
    * @param {MoveIdEnum} moveId
@@ -1136,6 +1226,12 @@ class BattlePokemon {
     // add to new position
     newParty.pokemons[newIndex] = this;
     this.position = newPosition;
+    this.battle.recordCombatEvent({
+      type: "pokemonMoved",
+      pokemonId: this.id,
+      teamName: this.teamName,
+      position: newPosition,
+    });
 
     this.battle.addToLog(
       `${this.name} switched to position to ${newPosition}!`,
@@ -1238,6 +1334,13 @@ class BattlePokemon {
     if (shieldData && shieldData.args && shieldData.args.shield) {
       const shieldDamage = Math.min(damage, shieldData.args.shield);
       shieldData.args.shield -= shieldDamage;
+      this.battle.recordCombatEvent({
+        type: "shieldChanged",
+        pokemonId: this.id,
+        sourcePokemonId: source?.id ?? null,
+        amount: -shieldDamage,
+        shield: shieldData.args.shield,
+      });
 
       this.battle.addToLog(
         `${this.name} took ${shieldDamage} shield damage! (${shieldData.args.shield} left)`,
@@ -1268,6 +1371,16 @@ class BattlePokemon {
     }
     this.hp = Math.max(0, this.hp - damage);
     const damageTaken = oldHp - this.hp;
+    if (damageTaken > 0) {
+      this.battle.recordCombatEvent({
+        type: "hpChanged",
+        pokemonId: this.id,
+        sourcePokemonId: source?.id ?? null,
+        previousHp: oldHp,
+        hp: this.hp,
+        amount: -damageTaken,
+      });
+    }
     this.battle.addToLog(`${this.name} took ${damageTaken} damage!`);
     if (this.hp <= 0) {
       this.hp = 0;
@@ -1331,6 +1444,11 @@ class BattlePokemon {
 
     this.hp = 0;
     this.isFainted = true;
+    this.battle.recordCombatEvent({
+      type: "pokemonFainted",
+      pokemonId: this.id,
+      sourcePokemonId: source?.id ?? null,
+    });
     this.disableHeldItem();
     this.battle.addToLog(`${this.name} fainted!`);
 
@@ -1358,6 +1476,12 @@ class BattlePokemon {
 
     this.hp = Math.min(this.maxHp, reviveHp);
     this.isFainted = false;
+    this.battle.recordCombatEvent({
+      type: "pokemonRevived",
+      pokemonId: this.id,
+      sourcePokemonId: source?.id ?? null,
+      hp: this.hp,
+    });
     this.battle.addToLog(`${this.name} was revived!`);
 
     // re-add ability and held item
@@ -1574,6 +1698,14 @@ class BattlePokemon {
     this.hp = Math.min(this.maxHp, this.hp + heal);
     const healTaken = this.hp - oldHp;
     if (healTaken > 0) {
+      this.battle.recordCombatEvent({
+        type: "hpChanged",
+        pokemonId: this.id,
+        sourcePokemonId: source?.id ?? null,
+        previousHp: oldHp,
+        hp: this.hp,
+        amount: healTaken,
+      });
       this.battle.addToLog(`${this.name} healed ${healTaken} HP!`);
     }
     return healTaken;
@@ -1622,6 +1754,14 @@ class BattlePokemon {
       )} combat readiness!`,
     );
 
+    if (combatReadinessGained !== 0) {
+      this.battle.recordCombatEvent({
+        type: "combatReadinessChanged", pokemonId: this.id,
+        sourcePokemonId: source?.id ?? null, previousCombatReadiness: oldCombatReadiness,
+        combatReadiness: this.combatReadiness, amount: combatReadinessGained,
+      });
+    }
+
     if (combatReadinessGained > 0 && triggerEvents) {
       const eventArgs = {
         target: this,
@@ -1648,6 +1788,13 @@ class BattlePokemon {
     const oldCombatReadiness = this.combatReadiness;
     this.combatReadiness = Math.max(0, this.combatReadiness - amount);
     const combatReadinessLost = oldCombatReadiness - this.combatReadiness;
+    if (combatReadinessLost !== 0) {
+      this.battle.recordCombatEvent({
+        type: "combatReadinessChanged", pokemonId: this.id,
+        sourcePokemonId: source?.id ?? null, previousCombatReadiness: oldCombatReadiness,
+        combatReadiness: this.combatReadiness, amount: -combatReadinessLost,
+      });
+    }
     this.battle.addToLog(
       `${this.name} lost ${Math.round(combatReadinessLost)} combat readiness!`,
     );
@@ -1749,6 +1896,13 @@ class BattlePokemon {
     }
 
     if (this.effectIds[effectId] !== undefined) {
+      this.battle.recordCombatEvent({
+        type: "effectApplied",
+        pokemonId: this.id,
+        sourcePokemonId: source?.id ?? null,
+        effectId,
+        duration: this.effectIds[effectId].duration,
+      });
       // trigger after add effect events
       const afterAddArgs = {
         target: this,
@@ -1859,6 +2013,11 @@ class BattlePokemon {
     }
 
     delete this.effectIds[effectId];
+    this.battle.recordCombatEvent({
+      type: "effectRemoved",
+      pokemonId: this.id,
+      effectId,
+    });
     return true;
   }
 
@@ -2017,6 +2176,12 @@ class BattlePokemon {
     }
 
     if (statusApplied) {
+      this.battle.recordCombatEvent({
+        type: "statusApplied",
+        pokemonId: this.id,
+        sourcePokemonId: source?.id ?? null,
+        statusId,
+      });
       const afterStatusArgs = {
         target: this,
         source,
@@ -2103,10 +2268,16 @@ class BattlePokemon {
         break;
     }
 
+    const removedStatusId = this.status.statusId;
     this.status = {
       statusId: null,
       turns: 0,
     };
+    this.battle.recordCombatEvent({
+      type: "statusRemoved",
+      pokemonId: this.id,
+      statusId: removedStatusId,
+    });
 
     return true;
   }
