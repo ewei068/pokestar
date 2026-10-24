@@ -102,6 +102,16 @@ Local restack verification on **2026-10-23**:
 | Preservation | Exact Git-tree equality between the presentation layer and original tip; final cleanup is documentation only |
 | Remote checks | All six replacement PRs passed GitHub Jest and notification checks before retirement of the old stack; web checks remain local |
 
+The final GitHub-native-stack check found no actionable review feedback, failing
+checks or stale managed branches. All six PRs report `MERGEABLE` / `CLEAN`;
+each proposed merge tree equals its reviewed head tree, and every upper base
+points to the preceding reviewed head. GitHub chains synthetic merge commits
+through the stack. The current `ce-babysit-pr` helper expects a direct branch
+parent, so it reports `base_ref_blocker: race` on upper layers despite matching
+refs. Its automatic certification remains limited; the direct ref/tree check
+above is separate evidence, not a changed or suppressed helper result. No
+branch update, rebase, merge or code change was made to quiet that detector.
+
 These checks verify the stack boundaries and preserve the existing implementation.
 They do not repeat browser, provider, real-database or physical-device acceptance.
 The web build retains non-fatal Virtua/Rollup annotation warnings; tests retain
