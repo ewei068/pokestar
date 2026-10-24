@@ -6,6 +6,11 @@
  *
  * pvpAccept.js Builds the battle with the given users after the second user accepts the battle.
  */
+const {
+  getDurableBattleService,
+  isDurableBattleEnabled,
+} = require("../../services/durableBattle");
+const { renderBattle } = require("../../battle/discord/durableBattleMessages");
 const { getStartTurnSend } = require("../../services/battle");
 const { validatePartyForBattle } = require("../../services/party");
 const { getState } = require("../../services/state");
@@ -37,6 +42,30 @@ const pvpAccept = async (interaction, data) => {
     return { err: "You can't accept your own battle!" };
   }
 
+  if (!isDurableBattleEnabled()) {
+    const { battle } = state;
+    if (!battle) return { err: "No battle data." };
+    if (!battle.hasStarted) {
+      const trainer = await getTrainer(interaction.user);
+      if (trainer.err) return { err: trainer.err };
+      const validate = await validatePartyForBattle(trainer.data);
+      if (validate.err) return { err: validate.err };
+      battle.addTeam("Team2", false);
+      battle.addTrainer(trainer.data, validate.data, "Team2");
+      battle.start();
+    }
+    await interaction.update(await getStartTurnSend(battle, data.stateId));
+    return null;
+  }
+
+  const service = await getDurableBattleService();
+  if (state.durableBattleId) {
+    await interaction.update(
+      await renderBattle(service, state.durableBattleId, interaction.user.id),
+    );
+    return null;
+  }
+
   // get trainer
   const trainer = await getTrainer(interaction.user);
   if (trainer.err) {
@@ -55,15 +84,15 @@ const pvpAccept = async (interaction, data) => {
     return { err: "No battle data." };
   }
 
-  if (!battle.hasStarted) {
-    battle.addTeam("Team2", false);
-    battle.addTrainer(trainer.data, validate.data, "Team2");
+  battle.addTeam("Team2", false);
+  battle.addTrainer(trainer.data, validate.data, "Team2");
+  const started = await service.start({ battle, mode: { type: "pvp" } });
+  state.durableBattleId = started.battleId;
+  state.battle = null;
 
-    // start battle
-    battle.start();
-  }
-
-  await interaction.update(await getStartTurnSend(battle, data.stateId));
+  await interaction.update(
+    await renderBattle(service, state.durableBattleId, interaction.user.id),
+  );
 };
 
 module.exports = pvpAccept;

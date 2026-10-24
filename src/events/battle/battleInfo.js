@@ -6,7 +6,10 @@
  *
  * battleInfo.js Grabs the battle info from the current state and updates the embeds with the relevant information.
  */
-const { getState } = require("../../services/state");
+const {
+  loadBattleContext,
+  refreshBattleIfStale,
+} = require("../../battle/discord/battleContext");
 
 const {
   buildBattleInfoActionRow,
@@ -22,11 +25,12 @@ const { logger } = require("../../log");
  * Grabs the battle info from the current state and updates the embeds with the relevant information.
  * @param {*} interaction the interaction from the trainer.
  * @param {*} data get the data from the interaction.
- * @returns
+ * @returns {Promise<object|undefined>}
  */
 const battleInfo = async (interaction, data) => {
   // get state
-  const state = getState(data.stateId);
+  const context = await loadBattleContext(data, interaction);
+  const state = context?.state;
   if (!state) {
     await interaction.update({
       components: [],
@@ -34,12 +38,19 @@ const battleInfo = async (interaction, data) => {
     return { err: "This interaction has expired." };
   }
 
+  if (await refreshBattleIfStale(context, interaction)) return;
+  const { stateId } = context;
+
   // get battle
   const { battle } = state;
   if (!battle) {
     return { err: "No battle data." };
   }
   const pokemon = battle.activePokemon;
+  if (context.durable && data.tab === "refresh") {
+    await interaction.update(await getStartTurnSend(battle, stateId, context));
+    return;
+  }
 
   // if npc turn, anyone in battle can press buttons
   if (battle.isNpc(battle.activePokemon.userId)) {
@@ -87,14 +98,39 @@ const battleInfo = async (interaction, data) => {
       logger.info(battle);
     }
     // refresh battle display
-    await interaction.update(await getStartTurnSend(battle, data.stateId));
+    await interaction.update(await getStartTurnSend(battle, stateId, context));
     return;
   } else if (tab === "auto") {
-    // toggle auto mode
-    battle.autoData.isAutoMode = true;
+    if (context.durable) {
+      await interaction.deferUpdate();
+      const outcome = await context.service.auto({
+        battleId: context.record._id,
+        userId: interaction.user.id,
+        expectedRevision: context.expectedRevision,
+        requestId: interaction.id,
+      });
+      const latest = await loadBattleContext(
+        { stateId },
+        interaction,
+        context.service,
+      );
+      if (!latest) {
+        await interaction.editReply({
+          content: "Battle unavailable.",
+          embeds: [],
+          components: [],
+        });
+        return;
+      }
+      latest.rejection = outcome.accepted ? null : outcome.reason;
+      await interaction.editReply(
+        await getStartTurnSend(latest.battle, latest.stateId, latest),
+      );
+      return;
+    }
     return await startAuto({
       battle,
-      stateId: data.stateId,
+      stateId,
       interaction,
       user: interaction.user,
     });
@@ -103,7 +139,7 @@ const battleInfo = async (interaction, data) => {
   }
 
   // rebuild component
-  const infoRow = buildBattleInfoActionRow(battle, data.stateId, {
+  const infoRow = buildBattleInfoActionRow(battle, stateId, {
     currentTab: tab,
     currentTeamIndex: nextTeamIndex,
   });

@@ -15,7 +15,6 @@ const { battleEventEnum, heldItemIdEnum } = require("../../enums/battleEnums");
 const { getMove } = require("../data/moveRegistry");
 const { BattleEventHandler } = require("./events");
 const { BattlePokemon } = require("./BattlePokemon");
-const { logger } = require("../../log");
 
 const MAX_CR = 100;
 
@@ -112,7 +111,7 @@ class Battle {
       autoBattleCost,
       shouldShowAutoBattle,
       enableReplay,
-      id,
+      id: this.id,
 
       // TODO: handle win/lose callbacks
     };
@@ -121,6 +120,8 @@ class Battle {
     this.rng = seedrandom(this.id);
     /** @type {ActionPayload[]} */
     this.actions = [];
+    /** @type {Array<object> | null} */
+    this.actionEvents = null;
 
     // initial
     this.baseMoney = 100;
@@ -149,6 +150,10 @@ class Battle {
     // map pokemonId to pokemon
     /** @type {Record<string, BattlePokemon>} */
     this.allPokemon = {};
+    /** @type {Record<string, Array<{ pokemons: any[], rows: number, cols: number }>>} */
+    this.phaseQueues = {};
+    /** @type {Record<string, number>} */
+    this.phaseIndices = {};
     /**
      * @type {{
      *  weatherId?: WeatherConditionEnum,
@@ -270,6 +275,19 @@ class Battle {
     };
   }
 
+  /**
+   * Persistable phase parties for a trainer, generated before the battle starts.
+   * @param {string} userId
+   * @param {Array<{ pokemons: any[], rows: number, cols: number }>} phases
+   */
+  setPhaseQueue(userId, phases) {
+    if (this.hasStarted) {
+      throw new Error("Set battle phases before starting");
+    }
+    this.phaseQueues[userId] = JSON.parse(JSON.stringify(phases));
+    this.phaseIndices[userId] = 0;
+  }
+
   cloneAndReset() {
     const newBattle = new Battle(this.initialParams);
     for (const [teamName, team] of Object.entries(this.teams)) {
@@ -288,6 +306,9 @@ class Battle {
         firstParty.rows,
         firstParty.cols,
       );
+    }
+    for (const [userId, phases] of Object.entries(this.phaseQueues)) {
+      newBattle.setPhaseQueue(userId, phases);
     }
     return newBattle;
   }
@@ -377,8 +398,12 @@ class Battle {
   }
 
   start() {
+    if (this.hasStarted) {
+      this.recordCombatEvent({ type: "phaseStarted" });
+    }
     this.log.push("The battle begins!");
     this.turn = 0;
+    this.winner = null;
     this.hasStarted = true;
 
     // sort all pokemon by speed descending
@@ -417,6 +442,11 @@ class Battle {
 
     // begin turn
     this.eventHandler.emit(battleEventEnum.TURN_BEGIN);
+    this.recordCombatEvent({
+      type: "turnStarted",
+      turn: this.turn,
+      pokemonId: this.activePokemon.id,
+    });
 
     // log
     const userIsNpc = this.isNpc(this.activePokemon.userId);
@@ -496,10 +526,22 @@ class Battle {
       let nextPhase = false;
       for (const userId of this.teams[loser].userIds) {
         const user = this.users[userId];
-        if (user.nextPhase !== undefined) {
-          const userNextPhase = user.nextPhase(this);
+        const phases = this.phaseQueues[userId];
+        if (phases !== undefined || user.nextPhase !== undefined) {
+          const phaseIndex = this.phaseIndices[userId] || 0;
+          const queuedPhase = phases?.[phaseIndex];
+          const userNextPhase =
+            phases !== undefined
+              ? queuedPhase && {
+                  trainer: { userId },
+                  ...JSON.parse(JSON.stringify(queuedPhase)),
+                }
+              : user.nextPhase(this);
           if (!userNextPhase) {
             continue;
+          }
+          if (phases !== undefined) {
+            this.phaseIndices[userId] = phaseIndex + 1;
           }
           const { trainer, pokemons, rows, cols } = userNextPhase;
 
@@ -530,6 +572,7 @@ class Battle {
       this.addToLog("**The battle has ended in a draw!**");
     }
     this.ended = true;
+    this.recordCombatEvent({ type: "battleEnded", winner: this.winner });
 
     // if winner is npc, no rewards
     if (this.teams[this.winner] && this.teams[this.winner].isNpc) {
@@ -592,16 +635,45 @@ class Battle {
   }
 
   /**
+   * Records a serializable observation, separate from the mutable rules event bus.
+   * @param {object} event
+   */
+  recordCombatEvent(event) {
+    if (this.actionEvents) {
+      this.actionEvents.push({ sequence: this.actionEvents.length, ...event });
+    }
+  }
+
+  /**
    * @typedef {{ action: "skipTurn" } |
    *  { action: "useMove", moveId: MoveIdEnum, targetPokemonId: string }
    * } ActionPayload
    */
 
-  /** @param {ActionPayload} payload */
+  /**
+   * @param {ActionPayload} payload
+   * @returns {{ accepted: boolean, reason?: string, log?: string[], events?: object[], snapshot: ReturnType<Battle['takeSnapshot']> }}
+   */
   performAction(payload) {
+    if (!this.hasStarted || this.ended || !this.activePokemon) {
+      return {
+        accepted: false,
+        reason: "battle_inactive",
+        events: [],
+        snapshot: this.takeSnapshot(),
+      };
+    }
+
+    const previousLog = this.log;
     this.clearLog();
+    this.actionEvents = [];
+    this.recordCombatEvent({
+      type: "actionStarted",
+      pokemonId: this.activePokemon.id,
+      action: payload?.action ?? null,
+    });
     let success = false;
-    switch (payload.action) {
+    switch (payload?.action) {
       case "skipTurn":
         success = this.activePokemon.skipTurn();
         break;
@@ -612,18 +684,29 @@ class Battle {
         );
         break;
       default:
-        // @ts-ignore
-        logger.error(`Unknown action: ${payload.action}`);
         break;
     }
-    if (success) {
-      this.logAction(payload);
-    } else {
-      logger.error(`Failed to perform action: ${payload.action}`);
-      this.logAction({ action: "skipTurn" });
-      this.activePokemon.skipTurn();
+    if (!success) {
+      this.log = previousLog;
+      this.actionEvents = null;
+      return {
+        accepted: false,
+        reason: "invalid_action",
+        events: [],
+        snapshot: this.takeSnapshot(),
+      };
     }
+
+    this.logAction({ ...payload });
     this.nextTurn();
+    const events = this.actionEvents;
+    this.actionEvents = null;
+    return {
+      accepted: true,
+      log: [...this.log],
+      events,
+      snapshot: this.takeSnapshot(),
+    };
   }
 
   /**
@@ -632,6 +715,7 @@ class Battle {
    * @returns {boolean}
    */
   createWeather(weatherId, source) {
+    const previousWeatherId = this.weather.weatherId;
     // calculate turns = 10 + number of non-fainted Pokemon
     const duration =
       10 +
@@ -647,13 +731,14 @@ class Battle {
       if (this.weather.duration < duration) {
         this.weather.duration = duration;
         this.weather.source = source;
+        this.recordCombatEvent({
+          type: "weatherChanged", previousWeatherId, weatherId, duration,
+        });
         this.addToLog(`The weather intensified!`);
         return true;
       }
       return false;
     }
-
-    // TODO: extend/clear weather events? should this be done?
 
     // apply weather
     this.weather = {
@@ -661,6 +746,9 @@ class Battle {
       duration,
       source,
     };
+    this.recordCombatEvent({
+      type: "weatherChanged", previousWeatherId, weatherId, duration,
+    });
     switch (weatherId) {
       case weatherConditions.SUN:
         this.addToLog(`The sunlight turned harsh!`);
@@ -684,6 +772,7 @@ class Battle {
   }
 
   clearWeather() {
+    const previousWeatherId = this.weather.weatherId;
     if (this.weather.weatherId) {
       this.addToLog(`The weather cleared up!`);
     }
@@ -692,6 +781,11 @@ class Battle {
       duration: 0,
       source: null,
     };
+    if (previousWeatherId) {
+      this.recordCombatEvent({
+        type: "weatherChanged", previousWeatherId, weatherId: null, duration: 0,
+      });
+    }
   }
 
   tickWeather() {
@@ -1037,6 +1131,7 @@ class Battle {
         id: pokemon.id,
         speciesId: pokemon.speciesId,
         name: pokemon.name,
+        shiny: pokemon.shiny,
         hp: pokemon.hp,
         maxHp: pokemon.maxHp,
         level: pokemon.level,
@@ -1069,12 +1164,22 @@ class Battle {
       };
     }
     return {
+      battleId: this.id,
+      hasStarted: this.hasStarted,
+      ended: this.ended,
+      winner: this.winner,
       turn: this.turn,
       activePokemonId: this.activePokemon?.id ?? null,
       weather: {
         weatherId: this.weather.weatherId,
         duration: this.weather.duration,
       },
+      teams: Object.fromEntries(
+        Object.entries(this.parties).map(([teamName, party]) => [
+          teamName,
+          { rows: party.rows, cols: party.cols },
+        ]),
+      ),
       pokemon: pokemonSnapshots,
     };
   }
