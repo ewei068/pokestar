@@ -1,6 +1,7 @@
 # Pokestar web battler
 
-Status: consolidated for review on **2026-10-23, America/Los_Angeles**. The
+Status: consolidated on **2026-10-23**; review feedback applied on
+**2026-10-24, America/Los_Angeles**. The
 implementation is open for review, with production cutover gates still open.
 This is the maintained entry point; update contracts at their linked source.
 
@@ -23,9 +24,10 @@ and participant projection. The client integration layer uses the existing
 pre-animation UI; the presentation layer carries its accepted visual and audio
 replacement. The music test that reads client files belongs to that final layer.
 
-The presentation tip's Git tree exactly matches original tip
-`ef4377af008914b22b256d368262104a49a66802`; the final layer changes documentation
-only. The original stack, including its experimental branches, remains
+At the restack checkpoint, presentation commit `8c92b49` exactly matched original
+tip `ef4377af008914b22b256d368262104a49a66802`. The later review fixes below
+intentionally change that implementation; the final layer still changes
+documentation only. The original stack, including its experimental branches, remains
 recoverable through the pushed tag
 [`archive/web-battler-pre-restack-2026-10-23`](https://github.com/ewei068/pokestar/tree/archive/web-battler-pre-restack-2026-10-23).
 The 53 superseded PRs were closed as historical review records; use
@@ -88,6 +90,40 @@ are distinct from implementation defaults and future suggestions.
   and Pokestar's mechanics support it. Server copy written from memory is a
   voice reference, not a verified transcript. No generation was specified.
 
+## Review feedback — 2026-10-24
+
+Nine comments across #175, #176 and #179 were investigated. The implementation
+changes are on their owning PRs and propagated upward with forward merges;
+published history was preserved.
+
+- Removed six unshipped durable action IDs and their compatibility handler.
+  `/continue-battle` retains its picker and pagination events.
+- Restored configured Discord interaction rewards for successful current,
+  stale and legacy clicks. Explicit errors still skip these rewards; service
+  completion rewards and Auto payment claims remain separate.
+- Replaced manual cookie parsing/serialization with `cookie-parser` and
+  Express cookies. HTTPS host-only names, flags, lifetimes, revocation and
+  callback recovery are preserved; malformed/JSON cookie values are rejected.
+- Moved status display metadata to shared server configuration. The catalog
+  selects display fields from it, allowing reuse in the bot without exposing
+  future internal fields.
+- Added a production-build module check against battle stories, test source
+  and current test-only runtime packages. Both emitted JS chunks were audited:
+  112 modules, zero development/test modules. A reachable story injected as a
+  negative control was rejected. `public/` media remains separate static output.
+
+The [architecture guide](../web-client-architecture.md) records why the catalog
+remains a useful transport boundary, which OAuth/session libraries could replace
+the current adapter, and future Howler/Anime.js/PixiJS seams. The
+[arena source notes](../../web/src/battles/arena/assets/README.md) distinguish
+imported feature assets from verbatim `public/` assets. These discussion answers
+do not authorize an auth or rendering migration.
+
+Verification: server foundation **836 tests / 26 suites**, API **874 / 29**,
+combined implementation **877 / 30**, web **105 / 23**, TypeScript and production
+build passed. Targeted JavaScript lint and whitespace checks passed. Existing
+non-fatal warnings remain. No real-provider/database/device checks were repeated.
+
 ## Verification and acceptance
 
 Local restack verification on **2026-10-23**:
@@ -102,7 +138,7 @@ Local restack verification on **2026-10-23**:
 | Preservation | Exact Git-tree equality between the presentation layer and original tip; final cleanup is documentation only |
 | Remote checks | All six replacement PRs passed GitHub Jest and notification checks before retirement of the old stack; web checks remain local |
 
-The final GitHub-native-stack check found no actionable review feedback, failing
+The 2026-10-23 restack GitHub-native check found no actionable review feedback, failing
 checks or stale managed branches. All six PRs report `MERGEABLE` / `CLEAN`;
 each proposed merge tree equals its reviewed head tree, and every upper base
 points to the preceding reviewed head. GitHub chains synthetic merge commits
