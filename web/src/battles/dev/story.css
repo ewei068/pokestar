@@ -1,0 +1,17 @@
+.battle-story-page { min-height: 100vh; background: #e8eee8; }
+.battle-story-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;
+  padding: 9px 18px; border-bottom: 2px solid #819ba1; background: #f9f8eb;
+  color: #24394d; font-family: system-ui, sans-serif; }
+.battle-story-toolbar > div { display: flex; flex-direction: column; gap: 2px; }
+.battle-story-toolbar strong { font-size: .82rem; }
+.battle-story-toolbar span, .battle-story-toolbar p { margin: 0; color: #5b6c79; font-size: .7rem; }
+.battle-story-toolbar nav { display: flex; flex-wrap: wrap; gap: 4px; }
+.battle-story-toolbar a, .battle-story-toolbar button { padding: 4px 7px; border: 1px solid #80959e;
+  background: #fffdf5; color: #24465b; font-size: .68rem; font-weight: 750; text-decoration: none; }
+.battle-story-toolbar a[aria-current="page"] { border-color: #b77b3a; background: #ffe6a8; }
+.battle-story-toolbar button { cursor: pointer; }
+@media (max-width: 640px) {
+  .battle-story-toolbar { padding: 7px 8px; }
+  .battle-story-toolbar nav { flex-wrap: nowrap; width: 100%; overflow-x: auto; padding-bottom: 2px; }
+  .battle-story-toolbar a { flex: none; }
+}
