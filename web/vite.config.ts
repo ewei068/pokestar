@@ -12,7 +12,18 @@ export default defineConfig(({ mode, command }) => {
     throw new Error("Set both WEB_DEV_TLS_CERT and WEB_DEV_TLS_KEY for local HTTPS.");
   }
   return {
-    plugins: [react()],
+    plugins: [react(), {
+      name: "production-module-boundary",
+      apply: "build",
+      generateBundle(_options, bundle) {
+        const modules = Object.values(bundle).flatMap(output =>
+          output.type === "chunk" ? Object.keys(output.modules) : []);
+        const developmentModule = modules.find(id =>
+          /\/src\/battles\/dev\/|\.(?:test|spec)\.[jt]sx?(?:\?|$)|\/node_modules\/(?:@testing-library|jsdom|tsx|typescript)(?:\/|$)/
+            .test(id.replaceAll("\\", "/")));
+        if (developmentModule) this.error(`Development module included in production output: ${developmentModule}`);
+      },
+    }],
     base: env.WEB_BASE_PATH || "/",
     server: {
       host: env.WEB_DEV_HOST || "localhost",

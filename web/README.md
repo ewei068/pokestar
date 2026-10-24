@@ -115,6 +115,20 @@ backend origins and Discord redirect. A router DHCP reservation avoids that chur
 
 ## Static build
 
+Production builds remove the `import.meta.env.DEV` story entry point in
+`src/main.tsx`. The Vite `production-module-boundary` build hook checks every
+emitted JavaScript chunk's module graph and rejects battle development fixtures,
+test modules and the current test-only runtime packages. Listing a package in
+`devDependencies` alone does not guarantee that an import stays out of a bundle.
+Type checking can inspect development/test source without shipping that source.
+
+Files under `public/` are a separate case: Vite copies them into `dist/` as
+standalone static files. The audio/music catalogs use those stable URLs; copying
+them does not embed the recordings in JavaScript or download every track on
+initial page load. Arena images and VFX ingredients instead use imported assets
+with hashed URLs. The development stories and their controls remain available
+through `npm run dev`.
+
 Run `npm run build` in `web/`. The `dist/` directory can be published on
 GitHub Pages. Set `VITE_API_ORIGIN=https://api.example.com` at build time for
 the HTTPS API. For a GitHub Pages project URL with a repository path, also set
