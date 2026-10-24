@@ -16,7 +16,7 @@ the server foundation targets `main`.
 | 3 | [#177](https://github.com/ewei068/pokestar/pull/177) | Static app shell, client login integration and recoverable authentication screens |
 | 4 | [#178](https://github.com/ewei068/pokestar/pull/178) | Battle list, conditional polling, target selection and revision-checked actions |
 | 5 | [#179](https://github.com/ewei068/pokestar/pull/179) | Accepted arena, ordered result playback, VFX, copy, sound, music and cries |
-| 6 | `codex/web-battler-docs` | Remove temporary effort documents, retain contracts and evidence, repair references |
+| 6 | [#181](https://github.com/ewei068/pokestar/pull/181) | Remove temporary effort documents, retain contracts and evidence, repair references |
 
 The API follows the server foundation because it consumes the durable service
 and participant projection. The client integration layer uses the existing
@@ -28,7 +28,9 @@ The presentation tip's Git tree exactly matches original tip
 only. The original stack, including its experimental branches, remains
 recoverable through the pushed tag
 [`archive/web-battler-pre-restack-2026-10-23`](https://github.com/ewei068/pokestar/tree/archive/web-battler-pre-restack-2026-10-23).
-Superseded PRs are historical review records; use the stack above for current work.
+The 53 superseded PRs were closed as historical review records; use
+the stack above for current work. The UI and arena side prototypes have their
+own `archive/web-battler-*-prototype-2026-10-23` tags.
 
 ## Goal and scope
 
@@ -98,6 +100,7 @@ Local restack verification on **2026-10-23**:
 | Client battle integration | 25 web tests / 8 suites passed; TypeScript and production build passed |
 | Full implementation | 863 Jest tests / 30 suites and 105 web tests / 23 suites passed; TypeScript and production build passed |
 | Preservation | Exact Git-tree equality between the presentation layer and original tip; final cleanup is documentation only |
+| Remote checks | All six replacement PRs passed GitHub Jest and notification checks before retirement of the old stack; web checks remain local |
 
 These checks verify the stack boundaries and preserve the existing implementation.
 They do not repeat browser, provider, real-database or physical-device acceptance.
@@ -186,10 +189,12 @@ the sources above. Approval exports, browser evidence, runtime assets and their
 editable recipes remain tracked. Untracked research, design and scratch files
 are user work and remain untouched.
 
-After the replacement stack is published and verified, close the superseded
-PRs and delete their local/remote branches. Keep replacement branches until
-merged and keep the archive tag for historical VFX comparisons. The unrelated
-agent-setup PR and other worktrees are outside this cleanup.
+The 53 superseded PRs are closed and their 54 local/remote branches (including
+the already-closed arena prototype) are deleted. Their heads were unchanged
+and no old review threads or change-request reviews remained unresolved. The
+six replacement branches remain for review. Keep them until merged and retain
+the archive tags for historical VFX comparisons. The unrelated agent-setup PR
+and other worktrees are outside this cleanup.
 
 Follow-ups for a separate repository change:
 
