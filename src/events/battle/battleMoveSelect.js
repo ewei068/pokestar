@@ -34,8 +34,7 @@ const battleMoveSelect = async (interaction, data) => {
     return { err: "This interaction has expired." };
   }
 
-  if (await refreshBattleIfStale(context, interaction))
-    return { skipInteractionRewards: true };
+  if (await refreshBattleIfStale(context, interaction)) return;
   const { stateId } = context;
 
   // get battle
@@ -112,7 +111,6 @@ const battleMoveSelect = async (interaction, data) => {
       .concat(moveSelectMenu)
       .concat(targetSelectMenu),
   });
-  return { skipInteractionRewards: context.durable };
 };
 
 module.exports = battleMoveSelect;

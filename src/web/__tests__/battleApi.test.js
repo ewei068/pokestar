@@ -1,6 +1,6 @@
 const express = require("express");
 const { createBattleApi } = require("../battleApi");
-const { WebSessionStore } = require("../sessionStore");
+const { WebSessionStore, SESSION_LIFETIME_MS } = require("../sessionStore");
 const { DiscordOAuthError, OAUTH_STATE_LIFETIME_MS } = require("../discordOAuth");
 
 const siteOrigin = "http://localhost:5173";
@@ -16,7 +16,7 @@ const makeSessionStore = () => {
   });
 };
 
-const startApi = async ({ sitePath = "/" } = {}) => {
+const startApi = async ({ sitePath = "/", redirectUri: callbackUri = redirectUri } = {}) => {
   const battleService = {
     listActive: jest.fn().mockResolvedValue([{ battleId: "battle-1", revision: 1 }]),
     get: jest.fn().mockResolvedValue({ found: true, revision: 1 }),
@@ -33,7 +33,7 @@ const startApi = async ({ sitePath = "/" } = {}) => {
     sitePath,
     clientId: "client-id",
     clientSecret: "private-secret",
-    redirectUri,
+    redirectUri: callbackUri,
     exchangeCode,
     catalog: {
       rulesetVersion: 2,
@@ -59,18 +59,35 @@ const beginLogin = async (url, returnTo = "/?battle=battle-1") => {
     cookie: cookieFrom(response, "pokestar_oauth_state") };
 };
 
-const login = async (url) => {
+const login = async (url, { secure = false } = {}) => {
   const start = await fetch(`${url}/api/auth/discord/login?returnTo=%2Fbattle%3Fid%3Dbattle-1`, {
     redirect: "manual",
   });
   const authorization = new URL(start.headers.get("location"));
-  const stateCookie = cookieFrom(start, "pokestar_oauth_state");
+  const prefix = secure ? "__Host-" : "";
+  const stateCookie = cookieFrom(start, `${prefix}pokestar_oauth_state`);
   const callback = await fetch(
     `${url}/api/auth/discord/callback?state=${authorization.searchParams.get("state")}&code=auth-code`,
     { redirect: "manual", headers: { Cookie: stateCookie } },
   );
-  return { authorization, callback, sessionCookie: cookieFrom(callback, "pokestar_session") };
+  return { authorization, start, callback, sessionCookie: cookieFrom(callback, `${prefix}pokestar_session`) };
 };
+
+const expectCookie = (response, name, maxAgeMs, secure) => {
+  const cookie = response.headers.getSetCookie().find(value => value.startsWith(`${name}=`));
+  expect(cookie).toBeDefined();
+  expect(cookie).toContain("; Path=/");
+  expect(cookie).toContain("; HttpOnly");
+  expect(cookie).toContain("; SameSite=Lax");
+  expect(cookie).toContain(`; Max-Age=${Math.floor(maxAgeMs / 1000)};`);
+  expect(cookie.includes("; Secure")).toBe(secure);
+  expect(cookie).not.toMatch(/; Domain=/i);
+  const expires = cookie.match(/; Expires=([^;]+)/)[1];
+  expect(Math.abs(Date.parse(expires) - Date.now() - maxAgeMs)).toBeLessThan(5000);
+};
+
+const encodeCookieValue = (cookie) => cookie.replace(/=./, value =>
+  `=%${value.charCodeAt(1).toString(16)}`);
 
 describe("web battle API", () => {
   let api;
@@ -79,6 +96,61 @@ describe("web battle API", () => {
     api.server.closeAllConnections();
     await new Promise((resolve) => { api.server.close(resolve); });
   });
+
+  it.each([false, true])("preserves cookie flags, lifetimes and clearing (secure: %s)", async (secure) => {
+    const configured = await startApi({
+      redirectUri: secure ? "https://api.example/api/auth/discord/callback" : redirectUri,
+    });
+    try {
+      const { start, callback, sessionCookie } = await login(configured.url, { secure });
+      const prefix = secure ? "__Host-" : "";
+      expect(sessionCookie).toMatch(new RegExp(`^${prefix}pokestar_session=`));
+      expectCookie(start, `${prefix}pokestar_oauth_state`, OAUTH_STATE_LIFETIME_MS, secure);
+      expectCookie(callback, `${prefix}pokestar_oauth_state`, 0, secure);
+      expectCookie(callback, `${prefix}pokestar_session`, SESSION_LIFETIME_MS, secure);
+      const logout = await fetch(`${configured.url}/api/auth/logout`, {
+        method: "POST",
+        headers: { Origin: siteOrigin, Cookie: sessionCookie },
+      });
+      expect(logout.status).toBe(204);
+      expectCookie(logout, `${prefix}pokestar_session`, 0, secure);
+      const me = await fetch(`${configured.url}/api/me`, { headers: { Cookie: sessionCookie } });
+      expect(me.status).toBe(401);
+    } finally {
+      configured.server.closeAllConnections();
+      await new Promise(resolve => { configured.server.close(resolve); });
+    }
+  });
+
+  it("decodes encoded OAuth and session cookies among unrelated cookies", async () => {
+    const { state, cookie } = await beginLogin(api.url);
+    const callback = await fetch(`${api.url}/api/auth/discord/callback?state=${state}&code=auth-code`, {
+      redirect: "manual",
+      headers: { Cookie: `unrelated=value; ${encodeCookieValue(cookie)}; ignored=other` },
+    });
+    const sessionCookie = cookieFrom(callback, "pokestar_session");
+    expect(sessionCookie).toBeTruthy();
+    const me = await fetch(`${api.url}/api/me`, {
+      headers: { Cookie: `unrelated=value; ${encodeCookieValue(sessionCookie)}` },
+    });
+    expect(me.status).toBe(200);
+    expect(await me.json()).toEqual({ discordUserId: "123456789" });
+  });
+
+  it.each(["%E0%A4%A", "j:%7B%22id%22%3A%22attacker%22%7D", "j:%5B%22attacker%22%5D", "j:null", "j:42"])(
+    "rejects malformed or JSON cookie values without throwing: %s", async (value) => {
+      const me = await fetch(`${api.url}/api/me`, {
+        headers: { Cookie: `pokestar_session=${value}` },
+      });
+      expect(me.status).toBe(401);
+      const callback = await fetch(`${api.url}/api/auth/discord/callback?state=forged&code=code`, {
+        redirect: "manual",
+        headers: { Cookie: `pokestar_oauth_state=${value}` },
+      });
+      expect(new URL(callback.headers.get("location")).searchParams.get("authError")).toBe("invalid_state");
+      expect(api.exchangeCode).not.toHaveBeenCalled();
+    },
+  );
 
   it("uses Discord OAuth and a persisted opaque session for battle routes", async () => {
     const unauthenticated = await fetch(`${api.url}/api/battles`);

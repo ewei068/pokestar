@@ -1,5 +1,12 @@
 # Arena asset sources
 
+These images belong to the arena feature and are imported from its CSS. Vite
+includes referenced assets in its build graph, assigns hashed URLs and rewrites
+the hosting base path. An imported file under repository `media/` would receive
+the same treatment; this location keeps the two arena sources beside their owner.
+`web/public/` instead copies files verbatim with stable names, as needed by the
+runtime audio catalogs. See [Vite's asset guide](https://vite.dev/guide/assets.html).
+
 ## Grass base
 
 - File: `grass-base.png`, copied unchanged; RGBA PNG, 256×128.

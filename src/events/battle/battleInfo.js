@@ -38,8 +38,7 @@ const battleInfo = async (interaction, data) => {
     return { err: "This interaction has expired." };
   }
 
-  if (await refreshBattleIfStale(context, interaction))
-    return { skipInteractionRewards: true };
+  if (await refreshBattleIfStale(context, interaction)) return;
   const { stateId } = context;
 
   // get battle
@@ -50,7 +49,7 @@ const battleInfo = async (interaction, data) => {
   const pokemon = battle.activePokemon;
   if (context.durable && data.tab === "refresh") {
     await interaction.update(await getStartTurnSend(battle, stateId, context));
-    return { skipInteractionRewards: context.durable };
+    return;
   }
 
   // if npc turn, anyone in battle can press buttons
@@ -100,7 +99,7 @@ const battleInfo = async (interaction, data) => {
     }
     // refresh battle display
     await interaction.update(await getStartTurnSend(battle, stateId, context));
-    return { skipInteractionRewards: context.durable };
+    return;
   } else if (tab === "auto") {
     if (context.durable) {
       await interaction.deferUpdate();
@@ -121,13 +120,13 @@ const battleInfo = async (interaction, data) => {
           embeds: [],
           components: [],
         });
-        return { skipInteractionRewards: true };
+        return;
       }
       latest.rejection = outcome.accepted ? null : outcome.reason;
       await interaction.editReply(
         await getStartTurnSend(latest.battle, latest.stateId, latest),
       );
-      return { skipInteractionRewards: true };
+      return;
     }
     return await startAuto({
       battle,
@@ -150,7 +149,6 @@ const battleInfo = async (interaction, data) => {
     embeds: interaction.message.embeds,
     components: interaction.message.components,
   });
-  return { skipInteractionRewards: context.durable };
 };
 
 module.exports = battleInfo;

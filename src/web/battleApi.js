@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const compression = require("compression");
+const cookieParser = require("cookie-parser");
 const {
   OAUTH_STATE_LIFETIME_MS,
   newState,
@@ -13,22 +14,14 @@ const {
 const { SESSION_LIFETIME_MS } = require("./sessionStore");
 const { logger } = require("../log");
 
-const cookieValue = (request, name) => {
-  const cookies = request.headers.cookie?.split(";") || [];
-  const entry = cookies.find((cookie) => cookie.trim().startsWith(`${name}=`));
-  return entry?.trim().slice(name.length + 1) || null;
-};
-
 const setCookie = (response, name, value, maxAgeMs, secure) => {
-  const parts = [
-    `${name}=${value}`,
-    "Path=/",
-    "HttpOnly",
-    "SameSite=Lax",
-    `Max-Age=${Math.floor(maxAgeMs / 1000)}`,
-  ];
-  if (secure) parts.push("Secure");
-  response.append("Set-Cookie", parts.join("; "));
+  response.cookie(name, value, {
+    path: "/",
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: maxAgeMs,
+    secure,
+  });
 };
 
 const asyncRoute = (handler) => (request, response, next) => {
@@ -82,6 +75,7 @@ const createBattleApi = ({
 
   router.use(cors({ origin: siteOrigin, credentials: true }));
   router.use(compression());
+  router.use(cookieParser());
   router.use((request, response, next) => {
     response.set("Cache-Control", "no-store");
     next();
@@ -102,7 +96,7 @@ const createBattleApi = ({
   });
 
   router.get("/auth/discord/callback", asyncRoute(async (request, response) => {
-    const returnTo = validState(cookieValue(request, stateCookie), request.query.state);
+    const returnTo = validState(request.cookies[stateCookie], request.query.state);
     setCookie(response, stateCookie, "", 0, secureCookies);
     if (!returnTo) {
       signInError(response, "invalid_state");
@@ -140,7 +134,7 @@ const createBattleApi = ({
   }));
 
   const requireSession = asyncRoute(async (request, response, next) => {
-    const session = await sessionStore.get(cookieValue(request, sessionCookie));
+    const session = await sessionStore.get(request.cookies[sessionCookie]);
     if (!session) {
       response.status(401).json({ error: "login_required" });
       return;
@@ -161,7 +155,7 @@ const createBattleApi = ({
   });
   router.post("/auth/logout", requireSiteOrigin, requireSession,
     asyncRoute(async (request, response) => {
-      await sessionStore.delete(cookieValue(request, sessionCookie));
+      await sessionStore.delete(request.cookies[sessionCookie]);
       setCookie(response, sessionCookie, "", 0, secureCookies);
       response.status(204).end();
     }));
