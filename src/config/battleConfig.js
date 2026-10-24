@@ -247,6 +247,33 @@ const statusConditions = {
   BADLY_POISON: "Badly Poison",
 };
 
+const statusConditionConfig = {
+  [statusConditions.BURN]: {
+    name: "Burn",
+    description: "Takes damage at the end of its turn and deals less damage with attacks.",
+  },
+  [statusConditions.FREEZE]: {
+    name: "Freeze",
+    description: "May be unable to move. Its chance of thawing out increases each turn.",
+  },
+  [statusConditions.PARALYSIS]: {
+    name: "Paralysis",
+    description: "Lowers Speed and may stop it from moving.",
+  },
+  [statusConditions.POISON]: {
+    name: "Poison",
+    description: "Takes damage at the end of its turn.",
+  },
+  [statusConditions.SLEEP]: {
+    name: "Sleep",
+    description: "May be unable to move. Its chance of waking up increases each turn.",
+  },
+  [statusConditions.BADLY_POISON]: {
+    name: "Badly Poison",
+    description: "Takes increasing damage at the end of each of its turns.",
+  },
+};
+
 // unique weather conditions
 /** @typedef {Enum<weatherConditions>} WeatherConditionEnum */
 const weatherConditions = {
@@ -16384,6 +16411,7 @@ module.exports = {
   effectConfig,
   effectTypes,
   statusConditions,
+  statusConditionConfig,
   weatherConditions,
   calculateDamage,
   abilityConfig,
