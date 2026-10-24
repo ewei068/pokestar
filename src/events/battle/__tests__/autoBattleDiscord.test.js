@@ -93,8 +93,7 @@ it("shows current eligibility despite false stored flags, defers before simulati
     expect(interaction.editReply).not.toHaveBeenCalled();
     return { paid: true };
   });
-  const result = await battleInfo(interaction, JSON.parse(auto.data.custom_id));
-  expect(result).toEqual({ skipInteractionRewards: true });
+  await battleInfo(interaction, JSON.parse(auto.data.custom_id));
   expect(interaction.update).not.toHaveBeenCalled();
   expect(interaction.editReply).toHaveBeenCalledTimes(1);
   expect(interaction.editReply.mock.calls[0][0].content).toContain(

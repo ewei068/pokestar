@@ -48,8 +48,7 @@ const battleTargetSelect = async (interaction, data) => {
     return { err: "This interaction has expired." };
   }
 
-  if (await refreshBattleIfStale(context, interaction))
-    return { skipInteractionRewards: true };
+  if (await refreshBattleIfStale(context, interaction)) return;
 
   // get battle
   const { battle } = state;
@@ -82,7 +81,6 @@ const battleTargetSelect = async (interaction, data) => {
   const send = await getStartTurnSend(next.battle, next.stateId, next);
   clearCurrentTargetting(state);
   await interaction.update(send);
-  return { skipInteractionRewards: context.durable };
 };
 
 module.exports = battleTargetSelect;

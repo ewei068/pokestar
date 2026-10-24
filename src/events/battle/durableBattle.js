@@ -5,7 +5,7 @@ const {
   renderBattle,
 } = require("../../battle/discord/durableBattleMessages");
 
-// Picker/page events belong to /continue-battle. Old durable action IDs only upgrade the UI.
+// Picker/page events belong to /continue-battle.
 const durableBattle = async (interaction, data) => {
   if (data.u && data.u !== interaction.user.id) {
     return { err: "This battle list belongs to another trainer. Use /continue-battle to open your own." };
@@ -15,12 +15,8 @@ const durableBattle = async (interaction, data) => {
   let send;
   if (data.eventName === eventNames.DURABLE_BATTLE_PICK) {
     send = await renderBattle(service, interaction.values[0], userId);
-  } else if (data.eventName === eventNames.DURABLE_BATTLE_PAGE) {
-    send = await renderBattleList(service, userId, data.p);
   } else {
-    send = await renderBattle(service, data.b, userId);
-    if (send.embeds?.length)
-      send.content = `Battle controls updated. Choose your action again.\n${send.content}`;
+    send = await renderBattleList(service, userId, data.p);
   }
   await interaction.update(send);
   return null;

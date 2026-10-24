@@ -69,7 +69,6 @@ const interact = async (
     ...extra,
   });
   expect(result?.err).toBeUndefined();
-  expect(result?.skipInteractionRewards).toBe(true);
   return { ...send, ...interaction.update.mock.calls[0][0] };
 };
 const prepare = async () => {

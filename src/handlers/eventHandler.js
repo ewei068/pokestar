@@ -76,12 +76,8 @@ const handleEvent = async (interaction, client) => {
 
     // TODO: Deact to define exp and money?
     // add exp & money if possible
-    let exp = data.dSID ? 5 : eventConfig[eventName]?.exp || 0;
-    let money = data.dSID ? 10 : eventConfig[eventName]?.money || 0;
-    if (res?.skipInteractionRewards) {
-      exp = 0;
-      money = 0;
-    }
+    const exp = data.dSID ? 5 : eventConfig[eventName]?.exp || 0;
+    const money = data.dSID ? 10 : eventConfig[eventName]?.money || 0;
     if (exp > 0 || money > 0) {
       const { level, err } = await addExpAndMoney(interaction.user, exp, money);
       if (level && !err) {
