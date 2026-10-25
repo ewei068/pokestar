@@ -32,6 +32,32 @@ const AuthPage = () => {
 };
 
 describe("sign-in recovery", () => {
+  it("keeps the battle link and blocks repeated sign-in attempts until the rate limit resets", async () => {
+    dom.reconfigure({ url: "https://pokestar.example/?battle=battle-1" });
+    let starts = 0;
+    const now = Date.now;
+    let clock = now();
+    Date.now = () => clock;
+    globalThis.fetch = async input => {
+      if (String(input).endsWith("/me")) return json({ error: "login_required" }, 401);
+      starts++;
+      assert.match(String(input), /returnTo=%2F%3Fbattle%3Dbattle-1/);
+      return new Response(JSON.stringify({ error: "rate_limited" }), { status: 429, headers: { "Retry-After": "10" } });
+    };
+    try {
+      const page = render(createElement(AuthPage));
+      const user = userEvent.setup({ document: dom.window.document });
+      await user.click(await page.findByRole("button", { name: "Sign in with Discord" }));
+      await page.findByRole("heading", { name: "Please wait before signing in again" });
+      await user.click(page.getByRole("button", { name: "Try again" }));
+      assert.equal(starts, 1);
+      assert.equal(dom.window.location.search, "?battle=battle-1");
+      clock += 10000;
+      await user.click(page.getByRole("button", { name: "Try again" }));
+      assert.equal(starts, 2);
+    } finally { Date.now = now; }
+  });
+
   it("keeps sign-in locked during navigation and allows retry after a cached page return", async () => {
     const navigations: string[] = [];
     const location = { search: "", assign: (url: string) => { navigations.push(url); } };

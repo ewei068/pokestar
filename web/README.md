@@ -115,6 +115,47 @@ backend origins and Discord redirect. A router DHCP reservation avoids that chur
 
 ## Static build
 
+### Runtime and HTTP limits
+
+`.nvmrc` pins **Node 24.22.1** for local compatibility testing; its bundled npm
+is 11.19.1. Run `nvm install && nvm use`, then `npm ci` at the repo root and
+`npm ci --prefix web`. CI runs backend tests, client tests and the client build
+on that version and temporarily on Node 18.20.4 for comparison. Node 18 is EOL;
+the comparison lane is not a production recommendation. Production Node 24
+promotion still requires the real MongoDB/VM checks in the
+[maintenance record](../docs/verification/runtime-rate-limits-2026-10-24.md).
+
+API quotas use independent one-minute, in-memory buckets in one HTTP process:
+
+| Traffic | Budget | Key |
+| --- | --- | --- |
+| All `/api` requests | 1,200 | Client IP |
+| Login initiation | 40 | Client IP |
+| OAuth callback | 40 | Client IP, separate from login |
+| Battle list/detail reads, including HEAD | 240 | Authenticated Discord user |
+| Battle actions, including invalid submissions | 60 | Authenticated Discord user |
+
+OPTIONS is exempt; `/vote` is outside these browser quotas. Logout uses only
+the general ceiling. Sessions and tabs for one Discord user share their battle
+quota; users behind the same NAT have separate battle quotas. A 429 returns
+`{"error":"rate_limited"}`, `Retry-After`, standard rate-limit headers and
+`Cache-Control: no-store`. The allowed web origin can read `Retry-After`.
+The client pauses battle polling during cooldown and never automatically retries
+an action. Each process aggregates denied counts by bucket in its log once per
+minute while denials occur, without request URLs, identities or credentials.
+Restarting resets quotas. Multiple HTTP processes require a shared limiter store.
+
+Trusting forwarding headers is **off by default**. For one local TLS reverse
+proxy, set `HTTP_HOST=127.0.0.1` and `HTTP_TRUST_LOOPBACK_PROXY=true` only after
+verifying that proxy replaces incoming forwarding headers with the actual peer
+address. Keep Node port 3000 and Mongo private. Do not use unrestricted proxy
+trust or a guessed proxy-hop count. Set request body, connection and timeout
+limits at the proxy too: the global JSON parser runs before route limiting.
+Cloudflare proxying would change this topology and needs a separate client-IP
+trust review; start with DNS-only records.
+
+### Build and publish
+
 Production builds remove the `import.meta.env.DEV` story entry point in
 `src/main.tsx`. The Vite `production-module-boundary` build hook checks every
 emitted JavaScript chunk's module graph and rejects battle development fixtures,

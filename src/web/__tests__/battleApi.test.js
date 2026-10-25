@@ -217,6 +217,25 @@ describe("web battle API", () => {
     });
   });
 
+  it("rejects array-shaped query values before battle work or OAuth exchange", async () => {
+    const { sessionCookie } = await login(api.url);
+    api.exchangeCode.mockClear();
+    for (const query of ["after=one&after=two", "after[]=one", "after[bad]=one"]) {
+      const response = await fetch(`${api.url}/api/battles/battle-1?${query}`, {
+        headers: { Cookie: sessionCookie },
+      });
+      expect(response.status).toBe(400);
+      expect(await response.json()).toEqual({ error: "invalid_state_id" });
+    }
+    expect(api.battleService.get).not.toHaveBeenCalled();
+    const { state, cookie } = await beginLogin(api.url);
+    const response = await fetch(`${api.url}/api/auth/discord/callback?state=${state}&code=one&code=two`, {
+      redirect: "manual", headers: { Cookie: cookie },
+    });
+    expect(new URL(response.headers.get("location")).searchParams.get("authError")).toBe("invalid_callback");
+    expect(api.exchangeCode).not.toHaveBeenCalled();
+  });
+
   it("starts sign-in without navigating away when JSON is requested", async () => {
     const response = await fetch(`${api.url}/api/auth/discord/login?returnTo=%2F%3Fbattle%3Dbattle-1`,
       { headers: { Accept: "application/json" } });

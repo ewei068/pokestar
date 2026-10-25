@@ -13,6 +13,7 @@ const {
 } = require("./discordOAuth");
 const { SESSION_LIFETIME_MS } = require("./sessionStore");
 const { logger } = require("../log");
+const { createApiRateLimits } = require("./rateLimits");
 
 const setCookie = (response, name, value, maxAgeMs, secure) => {
   response.cookie(name, value, {
@@ -49,6 +50,7 @@ const validAction = (action) => {
  * @param {string} options.redirectUri Registered Discord callback URI
  * @param {Function=} options.exchangeCode Injectable Discord exchange
  * @param {object=} options.catalog Display-only Pokémon and move metadata
+ * @param {object=} options.rateLimits Independent API quota middleware
  */
 const createBattleApi = ({
   battleService,
@@ -60,6 +62,7 @@ const createBattleApi = ({
   redirectUri,
   exchangeCode = exchangeDiscordCode,
   catalog = null,
+  rateLimits = createApiRateLimits(),
 }) => {
   const router = express.Router();
   const siteHome = new URL(sitePath, siteOrigin);
@@ -73,13 +76,14 @@ const createBattleApi = ({
     response.redirect(destination.toString());
   };
 
-  router.use(cors({ origin: siteOrigin, credentials: true }));
+  router.use(cors({ origin: siteOrigin, credentials: true, exposedHeaders: ["Retry-After"] }));
   router.use(compression());
   router.use(cookieParser());
   router.use((request, response, next) => {
     response.set("Cache-Control", "no-store");
     next();
   });
+  router.use(rateLimits.general);
 
   if (catalog) {
     router.get("/catalog", (request, response) => {
@@ -87,7 +91,7 @@ const createBattleApi = ({
     });
   }
 
-  router.get("/auth/discord/login", (request, response) => {
+  router.get("/auth/discord/login", rateLimits.login, (request, response) => {
     const state = newState(request.query.returnTo ?? siteHome.pathname);
     setCookie(response, stateCookie, encodeState(state), OAUTH_STATE_LIFETIME_MS, secureCookies);
     const url = authorizationUrl({ clientId, redirectUri, state: state.nonce });
@@ -95,7 +99,7 @@ const createBattleApi = ({
     else response.redirect(url);
   });
 
-  router.get("/auth/discord/callback", asyncRoute(async (request, response) => {
+  router.get("/auth/discord/callback", rateLimits.callback, asyncRoute(async (request, response) => {
     const returnTo = validState(request.cookies[stateCookie], request.query.state);
     setCookie(response, stateCookie, "", 0, secureCookies);
     if (!returnTo) {
@@ -160,11 +164,11 @@ const createBattleApi = ({
       response.status(204).end();
     }));
 
-  router.get("/battles", requireSession, asyncRoute(async (request, response) => {
+  router.get("/battles", requireSession, rateLimits.reads, asyncRoute(async (request, response) => {
     const battles = await battleService.listActive(request.discordUserId);
     response.json({ battles });
   }));
-  router.get("/battles/:battleId", requireSession,
+  router.get("/battles/:battleId", requireSession, rateLimits.reads,
     asyncRoute(async (request, response) => {
       const { after } = request.query;
       if (after !== undefined &&
@@ -180,7 +184,7 @@ const createBattleApi = ({
       if (result.unchanged) response.status(204).end();
       else response.status(result.found ? 200 : 404).json(result);
     }));
-  router.post("/battles/:battleId/actions", requireSiteOrigin, requireSession,
+  router.post("/battles/:battleId/actions", requireSiteOrigin, requireSession, rateLimits.actions,
     asyncRoute(async (request, response) => {
       const { expectedRevision, requestId, action } = request.body || {};
       if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0 ||

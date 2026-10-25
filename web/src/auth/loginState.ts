@@ -1,4 +1,5 @@
 export const loginErrors = {
+  rate_limited: { title: "Please wait before signing in again", message: "Too many sign-in attempts. Give it a moment, then try again. Your battle link is still here." },
   cancelled: { title: "Sign-in cancelled", message: "You cancelled Discord sign-in. You can try again whenever you're ready." },
   invalid_state: { title: "Sign-in couldn't be verified", message: "That link may have expired or opened in a different browser. Start again here, then finish sign-in in the same browser." },
   invalid_callback: { title: "This sign-in link is incomplete", message: "Discord didn't return a complete sign-in. Start again from Pokestar." },

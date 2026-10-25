@@ -9,6 +9,7 @@ const { default: axios } = require("axios");
 const microstats = require("microstats");
 const v8 = require("v8");
 const { createVoteWebhook } = require("./web/voteWebhook");
+const { configureHttpProxy } = require("./web/rateLimits");
 const {
   runMessageCommand,
   runSlashCommand,
@@ -364,6 +365,7 @@ client.login(token);
 
 // setup express vote listener
 const app = express();
+configureHttpProxy(app);
 app.use(express.json());
 const PORT = 3000;
 
