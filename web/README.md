@@ -185,6 +185,48 @@ stable hostname, and a GCP reserved external IP pointing at the VM.
 Run `npm test` for client unit tests. Browser validation and production
 deployment are separate gates.
 
+### Manual GitHub Pages deployment
+
+`.github/workflows/deploy-web.yml` adds **Deploy web battler** to Actions after
+the stack merges into the default branch (`main`). It runs only through **Run
+workflow**, and only the default branch can publish. Pushes and PRs never deploy.
+The build tests/typechecks the client before uploading only `web/dist`; a separate
+deployment job receives Pages write/OIDC permissions. Actions are pinned to
+reviewed commit SHAs, and concurrent publishing runs are serialized.
+
+No domain values are required to merge the workflow. Before the first deployment:
+
+1. In **Settings → Pages**, choose **GitHub Actions** as the build/deployment
+   source. Configure and verify the website custom domain (for example
+   `play.example.com`), its DNS, and **Enforce HTTPS** there. For an Actions
+   deployment, Pages settings own the custom domain; no `CNAME` file or domain
+   secret is needed in the artifact.
+2. In **Settings → Secrets and variables → Actions → Variables**, add repository
+   variable **`VITE_API_ORIGIN`**, for example `https://api.example.com`.
+   Use an HTTPS origin without a path or trailing slash. This value is public
+   and embedded in the JavaScript bundle. Never put the Discord client secret,
+   bot token or database credentials in frontend variables. No PAT or cloud
+   credentials are needed; deployment uses GitHub's built-in token and OIDC.
+3. On the backend, configure `WEB_SITE_ORIGIN` as the actual site origin and
+   `WEB_BASE_PATH` as the site's base path. Register the exact
+   `WEB_DISCORD_REDIRECT_URI` in Discord and serve the API over HTTPS. Use sibling
+   custom-domain subdomains for reliable session cookies; a `github.io` site and
+   an unrelated API hostname do not satisfy the current cookie design.
+4. In **Settings → Environments → github-pages**, permit deployments from the
+   default branch only. Optional required reviewers provide another release
+   approval step. Complete the effort's backend/runtime/provider acceptance
+   checks before publishing the working client.
+5. Open **Actions → Deploy web battler → Run workflow**, choose `main`, and run
+   it. The deployment job links to the published site. Another branch is skipped.
+
+The workflow reads Pages' configured base path automatically: `/pokestar/` for
+the default project URL, or `/` for a root custom domain. No `WEB_BASE_PATH`
+repository variable is needed. Missing/invalid `VITE_API_ORIGIN` fails before
+building; a missing Pages setup fails at the configuration step. Changing the
+API hostname or website domain requires another manual build/deploy so the
+bundled API origin and asset paths match. API deployment, DNS and GCP static-IP
+provisioning remain separate.
+
 Login failures use recoverable app screens for cancellation, expired/incomplete
 callbacks, Discord/API/session failures, blocked session cookies and failed
 sign-out. Retry keeps the intended battle link. The

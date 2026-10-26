@@ -150,6 +150,18 @@ records passing local checks, remaining dependency advisories and the unverified
 Mongo/VM/proxy/provider promotion gates. Production configuration is unchanged;
 this does not establish production readiness.
 
+Manual Pages deployment on **2026-10-25**: the new top deployment/readiness
+layer includes `.github/workflows/deploy-web.yml`. Once merged to `main`,
+**Deploy web battler** runs only by manual dispatch on the default branch;
+repository variable `VITE_API_ORIGIN` supplies the public HTTPS API origin.
+Pages settings supply the site domain/base path. The [setup steps](../../web/README.md#manual-github-pages-deployment)
+cover Pages/variables, HTTPS/DNS and matching backend OAuth configuration.
+Creating the workflow does not enable Pages, change DNS or publish a site.
+Local checks passed: actionlint, public API-origin acceptance/rejection cases,
+116 client tests, and production builds for `/` and `/pokestar/` with the
+configured API origin embedded. Independent workflow/security review found no
+actionable issues. A real Pages deployment was not run.
+
 Local restack verification on **2026-10-23**:
 
 | Boundary | Observed result |
