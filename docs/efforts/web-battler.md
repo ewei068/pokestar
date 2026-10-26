@@ -18,6 +18,7 @@ the server foundation targets `main`.
 | 4 | [#178](https://github.com/ewei068/pokestar/pull/178) | Battle list, conditional polling, target selection and revision-checked actions |
 | 5 | [#179](https://github.com/ewei068/pokestar/pull/179) | Accepted arena, ordered result playback, VFX, copy, sound, music and cries |
 | 6 | [#181](https://github.com/ewei068/pokestar/pull/181) | Remove temporary effort documents, retain contracts and evidence, repair references |
+| 7 | [#182](https://github.com/ewei068/pokestar/pull/182) | HTTP hardening, Node 24 compatibility and manually triggered Pages deployment |
 
 The API follows the server foundation because it consumes the durable service
 and participant projection. The client integration layer uses the existing
