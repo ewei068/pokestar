@@ -1,0 +1,153 @@
+{
+  "scenarios": [
+    {
+      "width": 1280,
+      "story": "damage",
+      "stages": [
+        "anchored text and intermediate HP bar widths verified"
+      ],
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "heal",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "shield",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "announcement",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "revive",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "status",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "missing-target",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "weather",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "readiness",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "reconcile",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "story": "sequence",
+      "stages": [
+        "move: full HP, alive, no future log",
+        "damage text: old HP",
+        "HP transition: zero HP, still alive",
+        "faint text: not yet faded"
+      ],
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "heal",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "damage",
+      "stages": [
+        "anchored text and intermediate HP bar widths verified"
+      ],
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "shield",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "announcement",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "revive",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "status",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "missing-target",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "weather",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "readiness",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "reconcile",
+      "stages": [],
+      "settled": true
+    },
+    {
+      "width": 390,
+      "story": "sequence",
+      "stages": [
+        "move: full HP, alive, no future log",
+        "damage text: old HP",
+        "HP transition: zero HP, still alive",
+        "faint text: not yet faded"
+      ],
+      "settled": true
+    }
+  ],
+  "reducedMotion": true,
+  "cancellation": true,
+  "errors": []
+}

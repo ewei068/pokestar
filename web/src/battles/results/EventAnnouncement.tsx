@@ -1,0 +1,52 @@
+import { measureArena } from '../arena/geometry';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import type { RefObject } from 'react';
+import type { Announcement } from '../playback';
+import type { BattleView } from '../types';
+import { resultAnimationConfig as config } from './config';
+
+type Anchor = { x: number; y: number; central: boolean; width: number };
+/** Text is a generic event presentation; custom event treatments can replace it here. */
+export const EventAnnouncement = ({ boardRef, announcement, view, reducedMotion }: {
+  boardRef: RefObject<HTMLDivElement>; announcement: Announcement; view: BattleView; reducedMotion: boolean;
+}) => {
+  const [anchor, setAnchor] = useState<Anchor | null>(null);
+  const labelRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const board = boardRef.current; if (!board) return;
+    const measure = () => {
+      const geometry = measureArena(board), bounds = geometry.bounds;
+      const pokemon = announcement.cue.subjectId ? view.pokemon[announcement.cue.subjectId] : undefined;
+      const placement = geometry.at(pokemon);
+      const central = !placement?.sprite;
+      const x = central ? bounds.width / 2 : placement.center.x;
+      const available = Math.max(0, Math.min(x, bounds.width - x) - config.text.edgePaddingPx) * 2;
+      const width = Math.min(config.text.maxWidthPx, available,
+        central ? bounds.width : (placement?.cell.clientWidth || bounds.width) + config.text.targetOverhangPx);
+      setAnchor({ central, width, x,
+        y: central ? bounds.height / 2 : placement.center.y });
+    };
+    measure(); window.addEventListener('resize', measure);
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure);
+    observer?.observe(board);
+    return () => { window.removeEventListener('resize', measure); observer?.disconnect(); };
+  }, [boardRef, announcement.id, announcement.cue.subjectId, view]);
+  useLayoutEffect(() => {
+    const label = labelRef.current; if (!label?.animate || !anchor || reducedMotion) return;
+    const text = config.text;
+    const animation = label.animate([
+      { opacity: 0, transform: `translateY(0) scale(${text.startScale})`, offset: 0 },
+      { opacity: 1, transform: `translateY(-${text.entryRisePx}px) scale(1)`, offset: text.fadeInEnd },
+      { opacity: 1, offset: text.fadeStart },
+      { opacity: 0, transform: `translateY(-${text.risePx}px) scale(1)`, offset: 1 },
+    ], { duration: text.durationMs, easing: text.easing, fill: 'both' });
+    return () => animation.cancel();
+  }, [announcement.id, anchor?.central, reducedMotion, !!anchor]);
+  if (!announcement.cue || !anchor) return null;
+  const label = anchor.central ? announcement.text : announcement.cue.label;
+  return <div className={`arena-announcement ${anchor.central ? 'is-central' : 'is-anchored'} is-${announcement.cue.tone}`}
+    style={{ left: anchor.x, top: anchor.y, width: anchor.width, fontSize: anchor.central ? config.text.centralFontSizePx : config.text.fontSizePx }}
+    role="status" aria-label={announcement.text || undefined} data-event-type={announcement.event.type} data-event-id={announcement.id}>
+    <span ref={labelRef}>{label}</span>
+  </div>;
+};

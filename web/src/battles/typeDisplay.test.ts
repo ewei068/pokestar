@@ -68,6 +68,6 @@ describe("facing battle formations", () => {
       onChooseTarget: () => {}, onInspect: () => {}, onHover: () => {},
     }));
     assert.match(html, /arena-type-normal/);
-    assert.match(html, /title="Normal"/);
+    assert.match(html, /arena-type-normal">Normal<\/span>/);
   });
 });

@@ -439,6 +439,15 @@ Also see [Discord's Privacy Policy](https://discord.com/privacy).
 
 Thank you for playing Pokestar!
 
+## Development
+
+For current web-battler status, accepted decisions and release gates, start with
+the [effort overview](docs/efforts/web-battler.md). The [web README](web/README.md)
+covers local setup and verification; the [architecture guide](docs/web-client-architecture.md)
+describes module ownership. The [UI and copy guide](docs/web-ui-style-guide.md)
+records the accepted visual direction and writing voice, including examples from
+the [approved copy review](docs/verification/web-copy/README.md).
+
 ## Credits
 
 - Emojis & Sprites:

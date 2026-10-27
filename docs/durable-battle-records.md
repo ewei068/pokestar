@@ -1,0 +1,25 @@
+# Durable battle records
+
+`BattleStore` writes one MongoDB document per battle in `battles`. The document ID is the engine's RNG seed and stable battle ID. `captureBattleSetup` stores the generated starting parties before `battle.start()`, along with the constructor parameters and team/user metadata. Recovery creates a fresh engine and replays the accepted action list. It compares the resulting snapshot with the stored view and fails loudly if they differ.
+
+A new accepted submission appends `{ revision, requestId, actorUserId, action, events, log }` (without a per-action view) and advances the document revision through a single conditional `updateOne` on the prior revision. Two submissions based on the same revision cannot both commit. A retry with the same request ID and action returns the committed update; a reused request ID with different content is rejected. Stale, invalid, expired, or wrong-actor submissions return the current revision and view. The application service must still authenticate the caller and decide whether NPC actions are permitted.
+
+The record stores one latest view for quick reads and replay verification. Intermediate playback views are computed during replay; older records that contain per-action views remain readable. See [the client contract](web-battler-client-plan.md).
+
+`needsAutomaticTurn` is internal metadata written with creation/action revisions,
+outside the replayed view. It lets authorized reads resume interrupted NPC or
+forced-skip progression even when the browser cursor matches. Older records are
+checked once and cached as settled under a revision check; see the
+[shared service](shared-battle-service.md) for progression and recovery behavior.
+
+The record also contains participant IDs for active-battle listing, mode context, status, timestamps, and a ruleset version. Recovery currently requires the same manually maintained `BATTLE_RULESET_VERSION`. Incompatible records are rejected; this code does not delete them. The store sets a 24-hour inactivity expiry, capped by an optional mode deadline, and refreshes it after accepted actions. Successfully processed and expired results are readable for seven days by default; callers may set both durations when starting a battle. Expiration marks a battle closed without running completion effects.
+
+Completion callbacks are rejected during capture. Phase callbacks are accepted only when that trainer has a generated phase queue in the setup. Dungeon parties can be generated before the first turn, stored in this queue, and consumed by the engine on phase transitions. Recovery replays the same transitions without recreating the dungeon NPC or invoking its callback. Other modes still need durable mode handlers for completion effects before their live starts can use this store.
+
+Earlier investigation observed a standalone local MongoDB 6.0.18 server; that version/topology was not re-probed during the 2026-10-17 documentation pass. The user described production as another local server on the bot machine, but production topology has not been verified. Reward processing must not assume transactions until that check is complete; making completion writes idempotent remains a cutover follow-up.
+
+When a battle ends, its record marks completion `pending`. The shared service claims it with one conditional document update, invokes the strict completion handler, and records either `applied` or `failed`. A duplicate action or another reader cannot claim the same completion. Reading a pending result after a restart can trigger the handler. A crash during `processing` or a `failed` handler requires manual reconciliation, because the legacy trainer/Pokémon/quest writes do not yet carry per-battle idempotency keys. These records are retained instead of being removed by the result TTL; successful completions get their read-only retention period after processing. This is a coordination boundary, not atomic or exactly-once rewards.
+
+Auto adds a short revision-checked payment/finalization claim and commits its generated action batch only after a successful conditional debit. A known payment rejection discards the batch. Ambiguous payment/final-write failures retain the claim for manual review; see [the Auto contract](discord-battle-continuation.md#auto-battle) for recovery boundaries.
+
+The Jest tests use an isolated in-memory collection to prove the compare-and-swap and replay behavior. MongoDB integration, indexes on a real collection, and recovery across a process restart remain deployment gates.

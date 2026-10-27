@@ -1,52 +1,33 @@
+import { useBattlePlayback } from "./useBattlePlayback";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getBattle, submitAction } from "./api";
 import { isApiError } from "../http";
-import { newPlaybackFrames } from "./playback";
-import type { PlaybackFrame } from "./playback";
-import type { BattleAction, BattleCatalog, BattleDisplay, BattleResponse } from "./types";
-
-const toDisplay = (response: BattleResponse): BattleDisplay => ({
-  battleId: response.battleId,
-  rulesetVersion: response.rulesetVersion,
-  revision: response.revision,
-  status: response.status,
-  completionStatus: response.completionStatus,
-  mode: response.mode,
-  myTeamNames: response.myTeamNames,
-  isMyTurn: response.isMyTurn,
-  view: response.view,
-  availableActions: response.availableActions,
-});
+import { battleCopy } from "./copy";
+import type { BattleAction, BattleCatalog, BattleResponse } from "./types";
 
 /** Owns transport, action submission, and playback timing. Renderers consume its plain state. */
 export const useBattleSession = (battleId: string, catalog: BattleCatalog) => {
-  const [battle, setBattle] = useState<BattleDisplay | null>(null);
+  const playback = useBattlePlayback(catalog);
+  const { battle, playing } = playback;
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [selectedMoveId, setSelectedMoveId] = useState<string | null>(null);
   const [inspectedPokemonId, setInspectedPokemonId] = useState<string | null>(null);
-  const [eventQueue, setEventQueue] = useState<PlaybackFrame[]>([]);
-  const [history, setHistory] = useState<string[]>([]);
   const revisionRef = useRef<number | null>(null);
   const stateIdRef = useRef<string | null>(null);
 
   const applyResponse = useCallback((response: BattleResponse) => {
     if (revisionRef.current !== null && response.revision < revisionRef.current) return;
     const previousRevision = revisionRef.current;
-    const queued = newPlaybackFrames(previousRevision, response, catalog);
     revisionRef.current = response.revision;
     stateIdRef.current = response.stateId;
-    setBattle(toDisplay(response));
+    playback.receive(response);
     if (previousRevision === null || response.revision > previousRevision) {
       setSelectedMoveId(null);
     }
-    if (queued.length > 0) {
-      setEventQueue((current) => [...current, ...queued]);
-      setHistory((current) => [...current, ...queued.flatMap((item) => item.text ? [item.text] : [])].slice(-20));
-    }
-  }, [catalog]);
+  }, [playback.receive]);
 
   const refresh = useCallback(async () => {
     if (document.visibilityState === "hidden") return;
@@ -55,9 +36,9 @@ export const useBattleSession = (battleId: string, catalog: BattleCatalog) => {
       if (response) applyResponse(response);
       setError(null);
     } catch (cause) {
-      setError(isApiError(cause, 404) ? "This battle is unavailable or has expired."
-        : isApiError(cause, 401) ? "Your session expired. Reload to sign in."
-        : "Could not load the battle. Try again shortly.");
+      setError(isApiError(cause, 404) ? "This battle isn't available. It may have expired."
+        : isApiError(cause, 401) ? battleCopy.sessionExpired
+        : "Couldn't load the battle. Try again in a moment.");
     } finally {
       setLoading(false);
     }
@@ -76,25 +57,19 @@ export const useBattleSession = (battleId: string, catalog: BattleCatalog) => {
     };
   }, [refresh]);
 
-  useEffect(() => {
-    if (eventQueue.length === 0) return;
-    const timer = window.setTimeout(() => setEventQueue((queue) => queue.slice(1)), 550);
-    return () => window.clearTimeout(timer);
-  }, [eventQueue]);
-
   const act = async (action: BattleAction) => {
-    if (!battle || busy || eventQueue.length > 0 || battle.rulesetVersion !== catalog.rulesetVersion) return;
+    if (!battle || busy || playing !== null || battle.rulesetVersion !== catalog.rulesetVersion) return;
     setBusy(true);
-    setNotice("Resolving this turn…");
+    setNotice(null);
     try {
       const response = await submitAction(battleId, battle.revision, action);
       applyResponse(response);
-      setNotice(response.accepted ? null : "The battle changed before your action. Showing the latest state.");
+      setNotice(response.accepted ? null : "The battle changed before your action went through. Here's the latest.");
       setError(null);
     } catch (cause) {
       setNotice(null);
-      setError(isApiError(cause, 401) ? "Your session expired. Reload to sign in."
-        : "Your action was not submitted. Refresh and try again.");
+      setError(isApiError(cause, 401) ? battleCopy.sessionExpired
+        : "Couldn't confirm your action. Refresh the page to check the battle before trying again.");
     } finally {
       setBusy(false);
     }
@@ -107,10 +82,10 @@ export const useBattleSession = (battleId: string, catalog: BattleCatalog) => {
     }
   };
 
-  const playing: PlaybackFrame | null = eventQueue[0] || null;
   return {
     battle, loading, busy, error, notice, selectedMoveId, inspectedPokemonId,
-    playing, history,
+    playing, history: playback.history, skipPlayback: playback.skipPlayback,
+    waitingForArt: playback.waitingForArt, reducedMotion: playback.reducedMotion,
     refresh,
     selectMove: setSelectedMoveId,
     inspectPokemon: setInspectedPokemonId,
@@ -119,6 +94,4 @@ export const useBattleSession = (battleId: string, catalog: BattleCatalog) => {
   };
 };
 
-export type BattleSession = Omit<ReturnType<typeof useBattleSession>, "playing"> & {
-  playing: PlaybackFrame | null;
-};
+export type BattleSession = ReturnType<typeof useBattleSession>;

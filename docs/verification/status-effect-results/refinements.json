@@ -1,0 +1,57 @@
+{
+  "results": [
+    {
+      "width": 1280,
+      "kind": "buff",
+      "color": "rgb(182, 67, 67)",
+      "label": "rgb(182, 67, 67)",
+      "removalTextOnly": true
+    },
+    {
+      "width": 1280,
+      "kind": "debuff",
+      "color": "rgb(49, 93, 140)",
+      "label": "rgb(49, 93, 140)",
+      "removalTextOnly": true
+    },
+    {
+      "width": 1280,
+      "kind": "neutral",
+      "color": "rgb(155, 118, 40)",
+      "label": "rgba(37, 68, 94, 0.91)",
+      "removalTextOnly": true
+    },
+    {
+      "width": 390,
+      "kind": "buff",
+      "color": "rgb(182, 67, 67)",
+      "label": "rgb(182, 67, 67)",
+      "removalTextOnly": true
+    },
+    {
+      "width": 390,
+      "kind": "debuff",
+      "color": "rgb(49, 93, 140)",
+      "label": "rgb(49, 93, 140)",
+      "removalTextOnly": true
+    },
+    {
+      "width": 390,
+      "kind": "neutral",
+      "color": "rgb(155, 118, 40)",
+      "label": "rgba(37, 68, 94, 0.91)",
+      "removalTextOnly": true
+    },
+    {
+      "story": "result-sequence",
+      "moveReadiness": 0,
+      "canonicalReadiness": 30
+    },
+    {
+      "story": "motion-tackle",
+      "moveReadiness": 0,
+      "canonicalReadiness": 0
+    }
+  ],
+  "errors": []
+}

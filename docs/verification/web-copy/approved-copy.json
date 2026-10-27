@@ -1,0 +1,1950 @@
+{
+  "reviewId": "pokestar-copy-8408acbc34cd3e5a",
+  "base": "653c2e7cd6c245d3641947d80cf4c39e5580368a",
+  "updatedAt": 1792465462138,
+  "rows": [
+    {
+      "id": "6d952e945c42d29d",
+      "before": "Welcome to the arena",
+      "current": "",
+      "sources": [
+        {
+          "path": "web/src/App.tsx",
+          "variant": "eyebrow"
+        }
+      ],
+      "draft": "",
+      "approved": true
+    },
+    {
+      "id": "19fc649fb38b9e51",
+      "before": "Sign in with Discord to see and play the battles you joined.",
+      "current": "Sign in with Discord to continue your battles.",
+      "sources": [
+        {
+          "path": "web/src/App.tsx"
+        }
+      ],
+      "draft": "Sign in with Discord to play Pokestar.",
+      "approved": true
+    },
+    {
+      "id": "15a38658195ba529",
+      "before": "Could not connect to the Pokestar battle service. Refresh to retry.",
+      "current": "Couldn't connect to Pokestar. Refresh the page to try again.",
+      "sources": [
+        {
+          "path": "web/src/App.tsx"
+        }
+      ],
+      "draft": "Couldn't connect to Pokestar. Refresh the page to try again.",
+      "approved": true
+    },
+    {
+      "id": "5d81eecc5ba6e40c",
+      "before": "Your arena",
+      "current": "",
+      "sources": [
+        {
+          "path": "web/src/battles/BattleList.tsx",
+          "variant": "eyebrow"
+        }
+      ],
+      "draft": "",
+      "approved": true
+    },
+    {
+      "id": "74a1f5b678fcd358",
+      "before": "Continue a battle started in Discord. Actions here and in Discord share the same state.",
+      "current": "Continue a battle from Discord. You can play here or in Discord.",
+      "sources": [
+        {
+          "path": "web/src/battles/BattleList.tsx"
+        }
+      ],
+      "draft": "Start a battle on Discord to continue it here.",
+      "approved": true
+    },
+    {
+      "id": "5ac09ad58656fd10",
+      "before": "Could not load your battles. Refresh to retry.",
+      "current": "Couldn't load your battles. Refresh the page to try again.",
+      "sources": [
+        {
+          "path": "web/src/battles/BattleList.tsx"
+        }
+      ],
+      "draft": "Couldn't load your battles. Refresh the page to try again.",
+      "approved": true
+    },
+    {
+      "id": "66ee6d8d3d48096e",
+      "before": "Could not load battle display data. Refresh to retry.",
+      "current": "Couldn't load the battle details. Refresh the page to try again.",
+      "sources": [
+        {
+          "path": "web/src/battles/BattleFeature.tsx"
+        }
+      ],
+      "draft": "Couldn't load the battle details. Refresh the page to try again.",
+      "approved": true
+    },
+    {
+      "id": "e3d20b4bd53482de",
+      "before": "Battle playback",
+      "current": "Battle in progress",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx",
+          "variant": "playback heading"
+        }
+      ],
+      "draft": "Battle in progress",
+      "approved": true
+    },
+    {
+      "id": "a3f04a79792974ee",
+      "before": "Choose an action",
+      "current": "What will {Pokémon} do?",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx",
+          "variant": "active heading"
+        }
+      ],
+      "draft": "What will {Pokémon} do?",
+      "approved": true
+    },
+    {
+      "id": "3e956fb1778df616",
+      "before": "Choose an action",
+      "current": "Battle finished",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx",
+          "variant": "finished heading"
+        }
+      ],
+      "draft": "Battle finished",
+      "approved": true
+    },
+    {
+      "id": "73f52055185e8145",
+      "before": "Choose an action",
+      "current": "Waiting for the next turn",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx",
+          "variant": "waiting heading"
+        }
+      ],
+      "draft": "Waiting for the next turn",
+      "approved": true
+    },
+    {
+      "id": "7ba1e31dc0885808",
+      "before": "Playing battle events…",
+      "current": "Catching up with the battle…",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx"
+        }
+      ],
+      "draft": "Catching up with the battle…",
+      "approved": true
+    },
+    {
+      "id": "6e0beaf357a8ee2b",
+      "before": "{Pokémon}'s turn",
+      "current": "Your turn",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx",
+          "variant": "own-turn subheading"
+        }
+      ],
+      "draft": "Your turn",
+      "approved": true
+    },
+    {
+      "id": "a67bf592d9b76f04",
+      "before": "Waiting for another turn",
+      "current": "{Pokémon}'s turn",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx",
+          "variant": "other-turn subheading"
+        }
+      ],
+      "draft": "{Pokémon}'s turn",
+      "approved": true
+    },
+    {
+      "id": "60af7542b0dde0f2",
+      "before": "You can inspect the board while the battle continues.",
+      "current": "You can still inspect the board.",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx",
+          "variant": "finished body"
+        }
+      ],
+      "draft": "",
+      "approved": true
+    },
+    {
+      "id": "d1394bda4b91fb32",
+      "before": "Resolving this turn…",
+      "current": "Waiting for the result…",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx"
+        }
+      ],
+      "draft": "Waiting for the result…",
+      "approved": true
+    },
+    {
+      "id": "6d2189636d02f96b",
+      "before": "Actions unlock when playback finishes",
+      "current": "Wait for the battle to catch up.",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx"
+        }
+      ],
+      "draft": "Wait for the battle to catch up.",
+      "approved": true
+    },
+    {
+      "id": "42a8574abe24a7d6",
+      "before": "Select a move to see targets",
+      "current": "Choose a Pokémon to inspect it.",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx",
+          "variant": "finished prompt"
+        }
+      ],
+      "draft": "Choose a Pokémon to inspect it.",
+      "approved": true
+    },
+    {
+      "id": "b3894a29365ea004",
+      "before": "Select a move to see targets",
+      "current": "You can choose a move when it's your turn.",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx",
+          "variant": "waiting prompt"
+        }
+      ],
+      "draft": "You can choose a move when it's your turn.",
+      "approved": true
+    },
+    {
+      "id": "847e8274b81551c3",
+      "before": "Click a highlighted target to use; click the move again to cancel",
+      "current": "Choose a highlighted target to use this move. Select the move again to cancel.",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx"
+        }
+      ],
+      "draft": "Choose a highlighted Pokemon to attack. Select the move again to cancel.",
+      "approved": true
+    },
+    {
+      "id": "6d4c470c50541689",
+      "before": "Select a move to see targets",
+      "current": "Choose a move to see its targets",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx",
+          "variant": "active prompt"
+        }
+      ],
+      "draft": "Choose a move to see its targets",
+      "approved": true
+    },
+    {
+      "id": "472d7cd665294a54",
+      "before": "{count} possible Pokémon · {emptyCount} empty tiles · Click to use",
+      "current": "{count} possible Pokémon · {emptyCount} empty tiles · Choose a target",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx",
+          "variant": "plural target preview"
+        }
+      ],
+      "draft": "Choose a target",
+      "approved": true
+    },
+    {
+      "id": "77d7184eed326ce7",
+      "before": "{count} possible Pokémon · 1 empty tiles · Click to use",
+      "current": "{count} possible Pokémon · 1 empty tile · Choose a target",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx",
+          "variant": "singular target preview"
+        }
+      ],
+      "draft": "Choose a target",
+      "approved": true
+    },
+    {
+      "id": "767349ab2f2d8d51",
+      "before": "{count} possible Pokémon · {emptyCount} empty tiles · random result · Click to use",
+      "current": "{count} possible Pokémon · {emptyCount} empty tiles · random result · Choose a target",
+      "sources": [
+        {
+          "path": "web/src/battles/MovePanel.tsx",
+          "variant": "random target preview"
+        }
+      ],
+      "draft": "Choose a target",
+      "approved": true
+    },
+    {
+      "id": "350b9e7e89e980e7",
+      "before": "{winner} won.",
+      "current": "{winner} won the battle!",
+      "sources": [
+        {
+          "path": "web/src/battles/BattleScreen.tsx"
+        }
+      ],
+      "draft": "{winner} won the battle!",
+      "approved": true
+    },
+    {
+      "id": "aac7b4a97ba48cb2",
+      "before": "This result is read-only.",
+      "current": "No more moves can be made.",
+      "sources": [
+        {
+          "path": "web/src/battles/BattleScreen.tsx"
+        }
+      ],
+      "draft": "The battle has ended.",
+      "approved": true
+    },
+    {
+      "id": "7201282d752121b9",
+      "before": "Battle rewards are being processed.",
+      "current": "Awarding battle rewards…",
+      "sources": [
+        {
+          "path": "web/src/battles/BattleScreen.tsx"
+        }
+      ],
+      "draft": "Awarding battle rewards…",
+      "approved": true
+    },
+    {
+      "id": "181f10d33a13e324",
+      "before": "Reward processing needs review. The battle result is saved.",
+      "current": "The battle result is saved, but the rewards need review.",
+      "sources": [
+        {
+          "path": "web/src/battles/BattleScreen.tsx"
+        }
+      ],
+      "draft": "Awarding battle rewards…",
+      "approved": true
+    },
+    {
+      "id": "e3cfef7b2a53365b",
+      "before": "Battle display data changed. Reload the page before acting.",
+      "current": "Battle details have changed. Reload the page before taking your turn.",
+      "sources": [
+        {
+          "path": "web/src/battles/BattleScreen.tsx"
+        }
+      ],
+      "draft": "Reload the page; battle is out-of-date.",
+      "approved": true
+    },
+    {
+      "id": "05a23f985cdb6b01",
+      "before": "1 turns",
+      "current": "1 turn",
+      "sources": [
+        {
+          "path": "web/src/battles/BattleScreen.tsx",
+          "variant": "weather duration"
+        }
+      ],
+      "draft": "1 turn",
+      "approved": true
+    },
+    {
+      "id": "e0c0a901b6ef9fab",
+      "before": "1 turns remain.",
+      "current": "1 turn remains.",
+      "sources": [
+        {
+          "path": "web/src/battles/BattleInspector.tsx"
+        }
+      ],
+      "draft": "1 turn left.",
+      "approved": true
+    },
+    {
+      "id": "d5e8ba5bd493d631",
+      "before": "1 entries",
+      "current": "1 entry",
+      "sources": [
+        {
+          "path": "web/src/battles/results/BattleLog.tsx"
+        }
+      ],
+      "draft": "1 entry",
+      "approved": true
+    },
+    {
+      "id": "04f1f0101bb71587",
+      "before": "New actions will appear here.",
+      "current": "No battle updates recorded here.",
+      "sources": [
+        {
+          "path": "web/src/battles/results/BattleLog.tsx"
+        }
+      ],
+      "draft": "No battle updates yet.",
+      "approved": true
+    },
+    {
+      "id": "0125aa85a4379b3b",
+      "before": "This battle is unavailable or has expired.",
+      "current": "This battle isn't available. It may have expired.",
+      "sources": [
+        {
+          "path": "web/src/battles/useBattleSession.ts"
+        }
+      ],
+      "draft": "This battle isn't available. It may have expired.",
+      "approved": true
+    },
+    {
+      "id": "c5106e55d33af311",
+      "before": "Your session expired. Reload to sign in.",
+      "current": "Your session has expired. Reload the page to sign in again.",
+      "sources": [
+        {
+          "path": "web/src/battles/useBattleSession.ts"
+        }
+      ],
+      "draft": "Reload the page; your session has expired.",
+      "approved": true
+    },
+    {
+      "id": "684ac42a496e4e35",
+      "before": "Could not load the battle. Try again shortly.",
+      "current": "Couldn't load the battle. Try again in a moment.",
+      "sources": [
+        {
+          "path": "web/src/battles/useBattleSession.ts"
+        }
+      ],
+      "draft": "Couldn't load the battle. Try again in a moment.",
+      "approved": true
+    },
+    {
+      "id": "87bbf7a43e2b4b00",
+      "before": "The battle changed before your action. Showing the latest state.",
+      "current": "The battle changed before your action went through. Here's the latest.",
+      "sources": [
+        {
+          "path": "web/src/battles/useBattleSession.ts"
+        }
+      ],
+      "draft": "The battle changed before your action went through. Here's the latest.",
+      "approved": true
+    },
+    {
+      "id": "5d0e4795942824ae",
+      "before": "Your action was not submitted. Refresh and try again.",
+      "current": "Couldn't confirm your action. Refresh the page to check the battle before trying again.",
+      "sources": [
+        {
+          "path": "web/src/battles/useBattleSession.ts"
+        }
+      ],
+      "draft": "Couldn't confirm your action. Refresh the page to check the battle before trying again.",
+      "approved": true
+    },
+    {
+      "id": "002ce184b4b81a88",
+      "before": "SFX could not start. Tap a battle control to retry.",
+      "current": "Couldn't start sound effects. Try a battle control again.",
+      "sources": [
+        {
+          "path": "web/src/battles/audio/useBattleAudio.ts"
+        }
+      ],
+      "draft": "SFX could not start.",
+      "approved": true
+    },
+    {
+      "id": "61f75de93d0700fe",
+      "before": "A local sound file is missing. Run the audio setup script.",
+      "current": "Couldn't play a battle sound.",
+      "sources": [
+        {
+          "path": "web/src/battles/audio/useBattleAudio.ts"
+        }
+      ],
+      "draft": "Couldn't play a battle sound.",
+      "approved": true
+    },
+    {
+      "id": "606048aa36af45ed",
+      "before": "This music track could not load.",
+      "current": "Couldn't load this music track.",
+      "sources": [
+        {
+          "path": "web/src/battles/audio/useBattleMusic.ts"
+        }
+      ],
+      "draft": "Couldn't load this music track.",
+      "approved": true
+    },
+    {
+      "id": "1bad373746acb767",
+      "before": "{Pokémon}'s turn began.",
+      "current": "It's {Pokémon}'s turn!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "turnStarted",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "It's {Pokémon}'s turn!",
+      "approved": true
+    },
+    {
+      "id": "2ed7fd80f1fe5c38",
+      "before": "Turn began",
+      "current": "Turn started",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "turnStarted",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "Turn started",
+      "approved": true
+    },
+    {
+      "id": "939ceef34fc7d7ec",
+      "before": "{Pokémon} used {move}.",
+      "current": "{Pokémon} used {move}!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "moveStarted",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} used {move}!",
+      "approved": true
+    },
+    {
+      "id": "04a60ef7ef550c19",
+      "before": "{Pokémon} could not use its move.",
+      "current": "{Pokémon} couldn't use its move!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "actionBlocked",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} couldn't use its move!",
+      "approved": true
+    },
+    {
+      "id": "3707caccf7db01f2",
+      "before": "{target} avoided the attack.",
+      "current": "{target} avoided the attack!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "targetMissed",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{target} avoided the attack!",
+      "approved": true
+    },
+    {
+      "id": "a5110ea1e758b316",
+      "before": "{Pokémon} lost {amount} shield.",
+      "current": "{Pokémon} took {amount} shield damage!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "shieldChanged",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} took {amount} shield damage!",
+      "approved": true
+    },
+    {
+      "id": "b606aa4e17d5db6e",
+      "before": "{Pokémon} fainted.",
+      "current": "{Pokémon} fainted!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "pokemonFainted",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} fainted!",
+      "approved": true
+    },
+    {
+      "id": "2e5029aa80761e3f",
+      "before": "{Pokémon} returned to battle.",
+      "current": "{Pokémon} was revived!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "pokemonRevived",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} was revived!",
+      "approved": true
+    },
+    {
+      "id": "da80ca57f85e0fa9",
+      "before": "{Pokémon} gained {effect}.",
+      "current": "{Pokémon} gained {effect}!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "effectApplied",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} gained {effect}!",
+      "approved": true
+    },
+    {
+      "id": "d29b90d7d8a4d34b",
+      "before": "{Pokémon} lost {effect}.",
+      "current": "{Pokémon} lost {effect}!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "effectRemoved",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} lost {effect}!",
+      "approved": true
+    },
+    {
+      "id": "29e5a1cfcb6d92a3",
+      "before": "{Pokémon} moved to position {position}.",
+      "current": "{Pokémon} moved to position {position}!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "pokemonMoved",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} moved to position {position}!",
+      "approved": true
+    },
+    {
+      "id": "f7c551a89f3515db",
+      "before": "{Pokémon} transformed into {species}.",
+      "current": "{Pokémon} transformed into {species}!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "pokemonTransformed",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} transformed into {species}!",
+      "approved": true
+    },
+    {
+      "id": "5d0fd499c4acb0b5",
+      "before": "A new battle phase began.",
+      "current": "The battle enters a new phase!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "phaseStarted",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "phaseStarted",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "New phase!",
+      "approved": true
+    },
+    {
+      "id": "a92e83271df2e70b",
+      "before": "{winner} won the battle.",
+      "current": "{winner} won the battle!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "battleEnded",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "battleEnded",
+            "sequence": 0,
+            "pokemonId": "p",
+            "targetPokemonId": "q",
+            "moveId": "m",
+            "effectId": "e",
+            "speciesId": "s",
+            "action": "skipTurn",
+            "amount": -42,
+            "position": 3,
+            "winner": "{winner}"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "{winner} won the battle!",
+      "approved": true
+    },
+    {
+      "id": "98e3a4b72db2a238",
+      "before": "{Pokémon} lost {amount} HP.",
+      "current": "{Pokémon} took {amount} damage!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "hpChanged",
+            "sequence": 0,
+            "pokemonId": "p",
+            "amount": -42
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} took {amount} damage!",
+      "approved": true
+    },
+    {
+      "id": "82445dbd621cea8e",
+      "before": "{Pokémon} gained {amount} HP.",
+      "current": "{Pokémon} healed {amount} HP!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "hpChanged",
+            "sequence": 0,
+            "pokemonId": "p",
+            "amount": 42
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} healed {amount} HP!",
+      "approved": true
+    },
+    {
+      "id": "074f81f0d8beb2aa",
+      "before": "{Pokémon} lost {amount}% readiness.",
+      "current": "{Pokémon} lost {amount}% combat readiness!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "combatReadinessChanged",
+            "sequence": 0,
+            "pokemonId": "p",
+            "amount": -42
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} lost {amount}% combat readiness!",
+      "approved": true
+    },
+    {
+      "id": "2e6cb12634d7fc59",
+      "before": "{Pokémon} gained {amount}% readiness.",
+      "current": "{Pokémon} gained {amount}% combat readiness!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "combatReadinessChanged",
+            "sequence": 0,
+            "pokemonId": "p",
+            "amount": 42
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} gained {amount}% combat readiness!",
+      "approved": true
+    },
+    {
+      "id": "4dba9ff018c8c0a0",
+      "before": "{Pokémon} is now Burn.",
+      "current": "{Pokémon} was burned!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusApplied",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Burn"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} was burned!",
+      "approved": true
+    },
+    {
+      "id": "19e69edf25fa7b95",
+      "before": "Burn",
+      "current": "Burned",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusApplied",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Burn"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "Burned",
+      "approved": true
+    },
+    {
+      "id": "ddea24c7bcbda21a",
+      "before": "{Pokémon} is now Freeze.",
+      "current": "{Pokémon} was frozen solid!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusApplied",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Freeze"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} was frozen solid!",
+      "approved": true
+    },
+    {
+      "id": "40aeec36fb4616aa",
+      "before": "Freeze",
+      "current": "Frozen",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusApplied",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Freeze"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "Frozen",
+      "approved": true
+    },
+    {
+      "id": "bc146872bd800869",
+      "before": "{Pokémon} is now Paralysis.",
+      "current": "{Pokémon} is paralyzed! It may be unable to move!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusApplied",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Paralysis"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} is paralyzed! It may be unable to move!",
+      "approved": true
+    },
+    {
+      "id": "461897282109f036",
+      "before": "Paralysis",
+      "current": "Paralyzed",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusApplied",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Paralysis"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "Paralyzed",
+      "approved": true
+    },
+    {
+      "id": "9caa9d70e6d0a183",
+      "before": "{Pokémon} is now Poison.",
+      "current": "{Pokémon} was poisoned!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusApplied",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Poison"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} was poisoned!",
+      "approved": true
+    },
+    {
+      "id": "546905874fb90d57",
+      "before": "Poison",
+      "current": "Poisoned",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusApplied",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Poison"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "Poisoned",
+      "approved": true
+    },
+    {
+      "id": "cd37a8365fe09166",
+      "before": "{Pokémon} is now Badly Poison.",
+      "current": "{Pokémon} was badly poisoned!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusApplied",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Badly Poison"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} was badly poisoned!",
+      "approved": true
+    },
+    {
+      "id": "71401443f13df67c",
+      "before": "Badly Poison",
+      "current": "Badly poisoned",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusApplied",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Badly Poison"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "Badly poisoned",
+      "approved": true
+    },
+    {
+      "id": "bd2ada369bbb47c0",
+      "before": "{Pokémon} is now Sleep.",
+      "current": "{Pokémon} fell asleep!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusApplied",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Sleep"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} fell asleep!",
+      "approved": true
+    },
+    {
+      "id": "7d2f0b16a34f2891",
+      "before": "Sleep",
+      "current": "Asleep",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusApplied",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Sleep"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "Asleep",
+      "approved": true
+    },
+    {
+      "id": "b433646e74b962ea",
+      "before": "{Pokémon} is now {status}.",
+      "current": "{Pokémon} was affected by {status}!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusApplied",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "{status}"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} was affected by {status}!",
+      "approved": true
+    },
+    {
+      "id": "f8e356f73d816e25",
+      "before": "{Pokémon} is now affected.",
+      "current": "{Pokémon} was affected by a status condition!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusApplied",
+            "sequence": 0,
+            "pokemonId": "p"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} was affected by a status condition!",
+      "approved": true
+    },
+    {
+      "id": "95de7df57e65946d",
+      "before": "{Pokémon} recovered from Burn.",
+      "current": "{Pokémon} was cured of its burn!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusRemoved",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Burn"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} was cured of its burn!",
+      "approved": true
+    },
+    {
+      "id": "adf8d89605b1fb72",
+      "before": "{Pokémon} recovered from Freeze.",
+      "current": "{Pokémon} thawed out!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusRemoved",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Freeze"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} thawed out!",
+      "approved": true
+    },
+    {
+      "id": "50d0e3b47c44b7b9",
+      "before": "Freeze cured",
+      "current": "Thawed out",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusRemoved",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Freeze"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "Thawed out",
+      "approved": true
+    },
+    {
+      "id": "5e9ee16a35bd2411",
+      "before": "{Pokémon} recovered from Paralysis.",
+      "current": "{Pokémon} was cured of its paralysis!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusRemoved",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Paralysis"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} was cured of its paralysis!",
+      "approved": true
+    },
+    {
+      "id": "7dce8ffe77b043cd",
+      "before": "{Pokémon} recovered from Poison.",
+      "current": "{Pokémon} was cured of its poison!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusRemoved",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Poison"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} was cured of its poison!",
+      "approved": true
+    },
+    {
+      "id": "4831233f8c3512c0",
+      "before": "{Pokémon} recovered from Badly Poison.",
+      "current": "{Pokémon} was cured of its poison!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusRemoved",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Badly Poison"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} was cured of its poison!",
+      "approved": true
+    },
+    {
+      "id": "c0472f2752174660",
+      "before": "Badly Poison cured",
+      "current": "Poison cured",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusRemoved",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Badly Poison"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "Poison cured",
+      "approved": true
+    },
+    {
+      "id": "53b6f975e573cff0",
+      "before": "{Pokémon} recovered from Sleep.",
+      "current": "{Pokémon} woke up!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusRemoved",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Sleep"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} woke up!",
+      "approved": true
+    },
+    {
+      "id": "7c4d3581d471adfc",
+      "before": "Sleep cured",
+      "current": "Woke up",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusRemoved",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "Sleep"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "Woke up",
+      "approved": true
+    },
+    {
+      "id": "10a9e7b99f7ba1d3",
+      "before": "{Pokémon} recovered from {status}.",
+      "current": "{Pokémon} recovered from {status}!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusRemoved",
+            "sequence": 0,
+            "pokemonId": "p",
+            "statusId": "{status}"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} recovered from {status}!",
+      "approved": true
+    },
+    {
+      "id": "920053bbd99d1112",
+      "before": "{Pokémon} recovered from its status.",
+      "current": "{Pokémon} recovered from its status condition!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "statusRemoved",
+            "sequence": 0,
+            "pokemonId": "p"
+          },
+          "part": "text"
+        }
+      ],
+      "draft": "{Pokémon} recovered from its status condition!",
+      "approved": true
+    },
+    {
+      "id": "31142d30c8da4ebb",
+      "before": "Sun began.",
+      "current": "The sunlight turned harsh!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Sun"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Sun"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "The sunlight turned harsh!",
+      "approved": true
+    },
+    {
+      "id": "7084f237f3475a75",
+      "before": "Sun intensified.",
+      "current": "The weather intensified!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Sun",
+            "previousWeatherId": "Sun"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Sun",
+            "previousWeatherId": "Sun"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "The weather intensified!",
+      "approved": true
+    },
+    {
+      "id": "d93146cb8c3b2a6d",
+      "before": "The weather cleared.",
+      "current": "The sunlight faded.",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "previousWeatherId": "Sun"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "previousWeatherId": "Sun"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "The sunlight faded.",
+      "approved": true
+    },
+    {
+      "id": "4f482b482043956c",
+      "before": "Rain began.",
+      "current": "It started to rain!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Rain"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Rain"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "It started to rain!",
+      "approved": true
+    },
+    {
+      "id": "4426a6b5c533ac2a",
+      "before": "Rain intensified.",
+      "current": "The weather intensified!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Rain",
+            "previousWeatherId": "Rain"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Rain",
+            "previousWeatherId": "Rain"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "The weather intensified!",
+      "approved": true
+    },
+    {
+      "id": "7ca6d90f513c435a",
+      "before": "The weather cleared.",
+      "current": "The rain stopped.",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "previousWeatherId": "Rain"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "previousWeatherId": "Rain"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "The rain stopped.",
+      "approved": true
+    },
+    {
+      "id": "c535c16de71572bb",
+      "before": "Sandstorm began.",
+      "current": "A sandstorm kicked up!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Sandstorm"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Sandstorm"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "A sandstorm kicked up!",
+      "approved": true
+    },
+    {
+      "id": "17aafd11049f8455",
+      "before": "Sandstorm intensified.",
+      "current": "The weather intensified!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Sandstorm",
+            "previousWeatherId": "Sandstorm"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Sandstorm",
+            "previousWeatherId": "Sandstorm"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "The weather intensified!",
+      "approved": true
+    },
+    {
+      "id": "8123931ce95e579e",
+      "before": "The weather cleared.",
+      "current": "The sandstorm subsided.",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "previousWeatherId": "Sandstorm"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "previousWeatherId": "Sandstorm"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "The sandstorm subsided.",
+      "approved": true
+    },
+    {
+      "id": "714c8e4b2c2c4d34",
+      "before": "Hail began.",
+      "current": "It started to hail!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Hail"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Hail"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "It started to hail!",
+      "approved": true
+    },
+    {
+      "id": "e27f6dcc8fa1ad8b",
+      "before": "Hail intensified.",
+      "current": "The weather intensified!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Hail",
+            "previousWeatherId": "Hail"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "Hail",
+            "previousWeatherId": "Hail"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "The weather intensified!",
+      "approved": true
+    },
+    {
+      "id": "c7271cc82fdb8a62",
+      "before": "The weather cleared.",
+      "current": "The hail stopped.",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "previousWeatherId": "Hail"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "previousWeatherId": "Hail"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "The hail stopped.",
+      "approved": true
+    },
+    {
+      "id": "94310e5a95dca484",
+      "before": "{weather} intensified.",
+      "current": "The weather intensified!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "{weather}",
+            "previousWeatherId": "{weather}"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "weatherId": "{weather}",
+            "previousWeatherId": "{weather}"
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "The weather intensified!",
+      "approved": true
+    },
+    {
+      "id": "b378c5674840cd3e",
+      "before": "The weather cleared.",
+      "current": "The weather cleared up!",
+      "sources": [
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "previousWeatherId": "{weather}"
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0,
+            "previousWeatherId": "{weather}"
+          },
+          "part": "label"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0
+          },
+          "part": "text"
+        },
+        {
+          "path": "web/src/battles/eventPresentation.ts",
+          "event": {
+            "type": "weatherChanged",
+            "sequence": 0
+          },
+          "part": "label"
+        }
+      ],
+      "draft": "The weather cleared up!",
+      "approved": true
+    },
+    {
+      "id": "3b27b069ca0dbd74",
+      "before": "Takes damage when status ticks and deals less attack damage.",
+      "current": "Takes damage at the end of its turn and deals less damage with attacks.",
+      "sources": [
+        {
+          "path": "src/web/battleCatalog.js",
+          "status": "[statusConditions.BURN]",
+          "part": "description"
+        }
+      ],
+      "draft": "Takes damage at the end of its turn and deals less damage with attacks.",
+      "approved": true
+    },
+    {
+      "id": "e2abcb32c38ffb9f",
+      "before": "May prevent a move. The chance to thaw rises with each turn.",
+      "current": "May be unable to move. Its chance of thawing out increases each turn.",
+      "sources": [
+        {
+          "path": "src/web/battleCatalog.js",
+          "status": "[statusConditions.FREEZE]",
+          "part": "description"
+        }
+      ],
+      "draft": "May be unable to move. Its chance of thawing out increases each turn.",
+      "approved": true
+    },
+    {
+      "id": "662433c5c0c69abc",
+      "before": "Speed is reduced and each move has a chance to be blocked.",
+      "current": "Lowers Speed and may stop it from moving.",
+      "sources": [
+        {
+          "path": "src/web/battleCatalog.js",
+          "status": "[statusConditions.PARALYSIS]",
+          "part": "description"
+        }
+      ],
+      "draft": "Lowers Speed and may stop it from moving.",
+      "approved": true
+    },
+    {
+      "id": "498604105e6b98e1",
+      "before": "Takes damage when status ticks.",
+      "current": "Takes damage at the end of its turn.",
+      "sources": [
+        {
+          "path": "src/web/battleCatalog.js",
+          "status": "[statusConditions.POISON]",
+          "part": "description"
+        }
+      ],
+      "draft": "Takes damage at the end of its turn.",
+      "approved": true
+    },
+    {
+      "id": "05f2735a8be40f66",
+      "before": "May prevent a move. The chance to wake rises with each turn.",
+      "current": "May be unable to move. Its chance of waking up increases each turn.",
+      "sources": [
+        {
+          "path": "src/web/battleCatalog.js",
+          "status": "[statusConditions.SLEEP]",
+          "part": "description"
+        }
+      ],
+      "draft": "May be unable to move. Its chance of waking up increases each turn.",
+      "approved": true
+    },
+    {
+      "id": "e0ec9a9424b412fd",
+      "before": "Takes increasing damage when status ticks.",
+      "current": "Takes increasing damage at the end of each of its turns.",
+      "sources": [
+        {
+          "path": "src/web/battleCatalog.js",
+          "status": "[statusConditions.BADLY_POISON]",
+          "part": "description"
+        }
+      ],
+      "draft": "Takes increasing damage at the end of each of its turns.",
+      "approved": true
+    }
+  ]
+}
