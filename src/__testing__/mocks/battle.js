@@ -10,8 +10,9 @@ const createMockBattle = ({
   team2Name = "Team2",
   level = null,
   autoStart = false,
+  enableReplay = false,
 } = {}) => {
-  const battle = new Battle({ level });
+  const battle = new Battle({ level, enableReplay });
 
   battle.addTeam(team1Name, false);
   battle.addTeam(team2Name, true);

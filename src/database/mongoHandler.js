@@ -228,6 +228,7 @@ class QueryBuilder {
 }
 
 module.exports = {
+  getCollection,
   insertDocument,
   updateDocument,
   updateDocuments,

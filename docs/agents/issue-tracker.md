@@ -1,50 +1,52 @@
 # Issue tracker: GitHub
 
-Issues and specs for this repo live as GitHub issues. Use the `gh` CLI for all operations.
+Use GitHub Issues on `ewei068/pokestar` through an available connector or the
+authenticated `gh` CLI. Search all relevant issues before creating one; the
+optional `agent` label must not restrict the default search.
 
-## Agent workflow label
+## Ticket contract
 
-The repo's older issues are unlabeled feature ideas. Every issue an engineering skill creates carries the `agent` label, which keeps agent-workflow issues filterable as their own set: `label:agent` lists them, `-label:agent` lists everything else. Add `--label agent` to every `gh issue create`, alongside any triage or wayfinder labels, and scope list queries with `--label agent` unless the task is about the older issues.
+Each actionable ticket states the outcome/problem, current evidence, scope,
+acceptance criteria, dependencies and verification. Link maintained plans and
+contracts instead of maintaining a second copy of their full specification.
+Use [triage labels](triage-labels.md) when they help identify the next action.
+Compound Engineering does not require a special label taxonomy.
 
-## Conventions
+- Read: `gh issue view <number> --json number,title,body,labels,comments`.
+- Search: `gh issue list --state all --search "<topic>"`.
+- Create: `gh issue create --title "<title>" --body-file <markdown-file>`.
+- Resolve: link the implementation and verification, then close as completed.
+- Retire stale or declined work as not planned, with the reason recorded.
 
-- **Create an issue**: `gh issue create --title "..." --body "..." --label agent`. Use a heredoc for multi-line bodies.
-- **Read an issue**: `gh issue view <number> --json number,title,body,labels,comments`.
-- **List issues**: `gh issue list --state open --label agent --json number,title,body,labels,comments --jq '[.[] | {number, title, body, labels: [.labels[].name], comments: [.comments[].body]}]'` with further `--label` and `--state` filters as needed.
-- **Make an issue a sub-issue of a parent**: `gh issue create --parent <parent> ...`, or `gh issue edit <parent> --add-sub-issue <child>` afterwards (`gh` 2.94+). Older `gh`: `gh api --method POST repos/<owner>/<repo>/issues/<parent>/sub_issues -F sub_issue_id=<child-db-id>` (database id, as in **Blocking** below). Without sub-issues, put `Part of #<parent>` at the top of the child body.
-- **Comment on an issue**: `gh issue comment <number> --body "..."`
-- **Apply / remove labels**: `gh issue edit <number> --add-label "..."` / `--remove-label "..."`
-- **Close**: `gh issue close <number> --comment "..."`
-
-Infer the repo from `git remote -v`; `gh` does this automatically when run inside a clone.
-
-## Pull requests as a triage surface
-
-**PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests; `/triage` reads this flag.)_
-
-When set to `yes`, PRs run through the same labels and states as issues, using the `gh pr` equivalents:
-
-- **Read a PR**: `gh pr view <number> --comments` and `gh pr diff <number>` for the diff.
-- **List external PRs for triage**: `gh api --paginate 'repos/{owner}/{repo}/pulls?state=open' --jq '.[] | select(.author_association | IN("OWNER","MEMBER","COLLABORATOR") | not) | {number, title, author: .user.login, author_association, labels: [.labels[].name]}'`.
-- **Comment / label / close**: `gh pr comment`, `gh pr edit --add-label`/`--remove-label`, `gh pr close`.
-
-GitHub shares one number space across issues and PRs, so a bare `#42` may be either: resolve with `gh pr view 42` and fall back to `gh issue view 42`.
-
-## When a skill says "publish to the issue tracker"
-
-Create a GitHub issue with the `agent` label.
-
-## When a skill says "fetch the relevant ticket"
-
-Read it as in **Read an issue** above.
+Publishing or messaging follows the user's authorization. A document mentioning
+an issue tracker is not a standing instruction to create tickets automatically.
+PRs are implementation/review artifacts; ordinary backlog triage concerns issues.
 
 ## Wayfinding operations
 
-Used by `/wayfinder`. The **map** is a single issue with **child** issues as tickets.
+Use this optional path only when the user chooses Wayfinder for an effort whose
+unresolved decisions span sessions. A map tracks decisions; ordinary execution
+tickets do not need this protocol.
 
-- **Map**: a single issue labelled `wayfinder:map`, holding the Notes / Decisions-so-far / Fog body. `gh issue create --label agent --label wayfinder:map`.
-- **Child ticket**: an issue linked to the map as a GitHub sub-issue (see **Make an issue a sub-issue of a parent**). Where sub-issues aren't enabled, add the child to a task list in the map body and put `Part of #<map>` at the top of the child body. Labels: `wayfinder:<type>` (`research`/`prototype`/`grilling`/`task`). Once claimed, the ticket is assigned to the driving dev.
-- **Blocking**: GitHub's **native issue dependencies**, the canonical, UI-visible representation. Add an edge with `gh api --method POST repos/<owner>/<repo>/issues/<child>/dependencies/blocked_by -F issue_id=<blocker-db-id>`, where `<blocker-db-id>` is the blocker's numeric **database id** (`gh api repos/<owner>/<repo>/issues/<n> --jq .id`, _not_ the `#number` or `node_id`). GitHub reports `issue_dependencies_summary.blocked_by` (open blockers only, the live gate). Where dependencies aren't available, fall back to a `Blocked by: #<n>, #<n>` line at the top of the child body. A ticket is unblocked when every blocker is closed.
-- **Frontier query**: list the map's open children (`gh issue list --state open`, scoped to the map's sub-issues / task list), drop any with an open blocker (`issue_dependencies_summary.blocked_by > 0`, or an open issue in the `Blocked by` line) or an assignee; first in map order wins.
-- **Claim**: `gh issue edit <n> --add-assignee @me`, the session's first write.
-- **Resolve**: `gh issue comment <n> --body "<answer>"`, then `gh issue close <n>`, then append a context pointer (gist + link) to the map's Decisions-so-far.
+- **Map:** one issue labelled `wayfinder:map`. Its Notes identify the destination
+  and the selected workflow; Decisions-so-far links to resolved child decisions.
+- **Child:** a native GitHub sub-issue of the map. Use `wayfinder:research`,
+  `wayfinder:prototype`, `wayfinder:grilling` or `wayfinder:task` for its type.
+  Create missing labels only when starting an authorized map. `task` means
+  direct resolution of a decision unless the map explicitly includes execution.
+- **Parent link:** use GitHub's sub-issue UI/API. The REST operation is
+  `POST /repos/{owner}/{repo}/issues/{parent}/sub_issues`, with the child's
+  numeric database ID as `sub_issue_id`. If unavailable, maintain a parent task
+  list and a `Part of #<parent>` line on each child.
+- **Blocking:** use native issue dependencies. Add a blocker with
+  `POST /repos/{owner}/{repo}/issues/{child}/dependencies/blocked_by`, passing
+  the blocker's database ID as `issue_id`. If unavailable, use `Blocked by: #N`
+  lines. A ticket is unblocked when all blockers are closed.
+- **Frontier:** read the map's open children in map order; exclude assigned
+  children and those with open blockers. Claim the first eligible child by
+  assigning the driving developer before changing its resolution.
+- **Resolve:** record the answer in a comment, close the child, and add a brief
+  linked context pointer to Decisions-so-far. Use titles as the visible links.
+
+When decisions are settled, hand the map's results to CE planning or execution.
+Keep the decision in its child ticket and link it from any implementation plan.

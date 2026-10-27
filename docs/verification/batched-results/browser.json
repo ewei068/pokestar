@@ -1,0 +1,90 @@
+{
+  "results": [
+    {
+      "width": 1280,
+      "name": "damage",
+      "announced": 3,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "name": "heal",
+      "announced": 3,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "name": "readiness",
+      "announced": 3,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "name": "effects",
+      "announced": 3,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "name": "misses",
+      "announced": 3,
+      "settled": true
+    },
+    {
+      "width": 1280,
+      "name": "faint",
+      "announced": 1,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "name": "damage",
+      "announced": 3,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "name": "heal",
+      "announced": 3,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "name": "readiness",
+      "announced": 3,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "name": "effects",
+      "announced": 3,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "name": "misses",
+      "announced": 3,
+      "settled": true
+    },
+    {
+      "width": 390,
+      "name": "faint",
+      "announced": 1,
+      "settled": true
+    }
+  ],
+  "virtualLog": {
+    "seedEntries": 20000,
+    "mountedRows": 16,
+    "oldestReachable": true,
+    "readingPositionPreserved": true,
+    "followLatest": true,
+    "mountedRowsAfterAppend": 15,
+    "entriesAfterAppend": 20007,
+    "incomingResultsPreserveReading": true,
+    "followingSurvivesAppendAndResize": true
+  },
+  "reducedMotion": true,
+  "skipCleanup": true,
+  "errors": []
+}

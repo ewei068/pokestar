@@ -6,4 +6,4 @@ alwaysApply: false
 
 # Deact
 
-Deact is the project's React-inspired UI layer for Discord messages. Its API differs from React in ways that break code written from React habits (every element takes `ref` first, every hook takes `ref` last, elements return objects rather than JSX). Read the `deact` skill at `.cursor/skills/deact/SKILL.md` before writing or changing elements, hooks, callbacks, or modals.
+Deact is the project's React-inspired UI layer for Discord messages. Its API differs from React in ways that break code written from React habits (every element takes `ref` first, every hook takes `ref` last, elements return objects rather than JSX). Read the `deact` skill at `.agents/skills/deact/SKILL.md` before writing or changing elements, hooks, callbacks, or modals.

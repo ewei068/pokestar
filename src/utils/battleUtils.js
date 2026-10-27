@@ -827,7 +827,7 @@ const calculateTurnHeuristic = (
 /**
  * @param {Battle} battle
  */
-const npcTurnAction = (battle) => {
+const chooseNpcAction = (battle) => {
   const { activePokemon } = battle;
   /* steps:
         if cant move, skip turn
@@ -845,8 +845,7 @@ const npcTurnAction = (battle) => {
 
   // if cant move, skip turn
   if (!activePokemon.canMove()) {
-    battle.performAction({ action: "skipTurn" });
-    return;
+    return { action: "skipTurn" };
   }
 
   // get all moves filtered by those with eligible targets and usable
@@ -867,8 +866,7 @@ const npcTurnAction = (battle) => {
 
   // if for some reason no moves exist, skip turn
   if (Object.keys(validMoveIdsToTargets).length === 0) {
-    battle.performAction({ action: "skipTurn" });
-    return;
+    return { action: "skipTurn" };
   }
 
   // for all considered moves, get the best move
@@ -903,14 +901,15 @@ const npcTurnAction = (battle) => {
     }
   }
 
-  // use move
-  battle.performAction({
+  return {
     action: "useMove",
     // @ts-ignore
     moveId: bestMoveId,
     targetPokemonId: bestTarget.id,
-  });
+  };
 };
+
+const npcTurnAction = (battle) => battle.performAction(chooseNpcAction(battle));
 
 module.exports = {
   buildPartyString,
@@ -930,5 +929,6 @@ module.exports = {
   getMoveIdHasTag,
   getEffectIdHasTag,
   npcTurnAction,
+  chooseNpcAction,
   getTowerStageFromId,
 };

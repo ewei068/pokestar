@@ -126,6 +126,11 @@ Listener rules:
 
 ## Battle Flow
 
+Durable battle orchestration, persistence and Discord/web continuation are
+documented through [the web-battler entry point](../../docs/efforts/web-battler.md).
+When adding engine behavior, check its snapshot/replay and ordered-event
+contracts as well as the data examples here.
+
 1. **Battle Creation**: Teams and Pokemon are added to the battle
 2. **Battle Start**: Initial abilities and items are applied
 3. **Turn Cycle**:

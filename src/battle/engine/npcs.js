@@ -125,7 +125,15 @@ class DungeonNPC extends NPC {
     if (phase === undefined) {
       return;
     }
-    this.initializeParty(phase.rows, phase.cols);
+    this.party = this.createPhaseParty(phase);
+  }
+
+  createPhaseParty(phase) {
+    const party = {
+      rows: phase.rows,
+      cols: phase.cols,
+      pokemons: Array(phase.rows * phase.cols).fill(null),
+    };
 
     // generate party
     for (const pokemonData of phase.pokemons) {
@@ -137,8 +145,15 @@ class DungeonNPC extends NPC {
       // give random id
       // @ts-ignore
       pokemon._id = uuidv4();
-      this.party.pokemons[pokemonData.position - 1] = pokemon;
+      party.pokemons[pokemonData.position - 1] = pokemon;
     }
+    return party;
+  }
+
+  getRemainingPhaseParties() {
+    return this.phases
+      .slice(this.phaseNumber + 1)
+      .map((phase) => this.createPhaseParty(phase));
   }
 
   // eslint-disable-next-line no-unused-vars

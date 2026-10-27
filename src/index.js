@@ -8,6 +8,8 @@ const cors = require("cors");
 const { default: axios } = require("axios");
 const microstats = require("microstats");
 const v8 = require("v8");
+const { createVoteWebhook } = require("./web/voteWebhook");
+const { configureHttpProxy } = require("./web/rateLimits");
 const {
   runMessageCommand,
   runSlashCommand,
@@ -363,51 +365,25 @@ client.login(token);
 
 // setup express vote listener
 const app = express();
+configureHttpProxy(app);
 app.use(express.json());
 const PORT = 3000;
 
-app.options("*", cors(corsOptions)); // preflight OPTIONS; put before other routes
+app.options("/vote", cors(corsOptions));
 
-app.post("/vote", async (req, res) => {
-  try {
-    let success = false;
-    if (req.header("Authorization") === process.env.DBL_SECRET) {
-      const user = req.body;
-      logger.info(`Received DBL vote from ${user.id}`);
-      const { err } = await addVote(user);
-      if (!err) {
-        success = true;
-      }
-      /* } else if (req.header("Authorization") === process.env.BOTLIST_SECRET) {
-                const user = {
-                    id: req.body.user,
-                }
-                logger.info(`Received BOTLIST vote from ${user.id}`);
-                const { data, err } = await addVote(user);
-                if (!err) {
-                    success = true;
-                } */
-    } else if (req.header("Authorization") === process.env.TOPGG_SECRET) {
-      const user = {
-        id: req.body.user,
-      };
-      logger.info(`Received TOP.GG vote from ${user.id}`);
-      const { err } = await addVote(user, 2);
-      if (!err) {
-        success = true;
-      }
-    }
+app.post("/vote", createVoteWebhook({ addVote, logger }));
 
-    if (success) {
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(500);
-    }
-  } catch (error) {
-    logger.error(error);
-    res.sendStatus(500);
+const startHttpServer = async () => {
+  if (process.env.WEB_BATTLER_ENABLED === "true") {
+    // eslint-disable-next-line global-require
+    const { createMongoBattleApi } = require("./web/createMongoBattleApi");
+    app.use("/api", await createMongoBattleApi());
   }
-});
+  app.listen(PORT, process.env.HTTP_HOST || undefined);
+  logger.info(`Express App listening on port ${PORT}`);
+};
 
-app.listen(PORT);
-logger.info(`Express App listening on port ${PORT}`);
+startHttpServer().catch((error) => {
+  logger.error("Express App could not start", error);
+  process.exitCode = 1;
+});

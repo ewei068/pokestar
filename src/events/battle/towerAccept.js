@@ -27,7 +27,9 @@ const towerAccept = async (interaction, data) => {
     return { err: onAcceptRes.err };
   }
 
-  await interaction.update(await getStartTurnSend(state.battle, data.stateId));
+  await interaction.update(
+    onAcceptRes.send || await getStartTurnSend(state.battle, data.stateId),
+  );
 };
 
 module.exports = towerAccept;

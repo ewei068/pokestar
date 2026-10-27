@@ -6,4 +6,4 @@ alwaysApply: false
 
 # Tests
 
-Read the `write-tests` skill at `.cursor/skills/write-tests/SKILL.md` before writing tests; it lists the shared mocks, battle utilities, and custom matchers to reuse. When you add a matcher or utility to `src/__testing__/`, update that skill in the same change.
+Read the `write-tests` skill at `.agents/skills/write-tests/SKILL.md` before writing tests; it lists the shared mocks, battle utilities, and custom matchers to reuse. When you add a matcher or utility to `src/__testing__/`, update that skill in the same change.

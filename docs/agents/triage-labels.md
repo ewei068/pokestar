@@ -1,15 +1,19 @@
-# Triage Labels
+# Triage labels
 
-The skills speak in terms of five canonical triage roles. This file maps those roles to the actual label strings used in this repo's issue tracker.
+These are repository conventions, independent of the installed skill provider.
+Use labels that help the current work; an issue need not have every category.
 
-| Label in mattpocock/skills | Label in our tracker | Meaning                                  |
-| -------------------------- | -------------------- | ---------------------------------------- |
-| `needs-triage`             | `needs-triage`       | Maintainer needs to evaluate this issue  |
-| `needs-info`               | `needs-info`         | Waiting on reporter for more information |
-| `ready-for-agent`          | `ready-for-agent`    | Fully specified, ready for an AFK agent  |
-| `ready-for-human`          | `ready-for-human`    | Requires human implementation            |
-| `wontfix`                  | `wontfix`            | Will not be actioned                     |
+| Label | Meaning |
+| --- | --- |
+| `bug`, `enhancement`, `documentation` | Kind of work |
+| `needs-triage` | Scope or priority needs a maintainer decision |
+| `needs-info` | A specific unanswered question blocks progress |
+| `ready-for-agent` | Outcome, scope, dependencies and verification are clear enough to execute |
+| `ready-for-human` | The next action requires human judgment or access; explain it in the issue |
+| `agent` | Optional provenance: created or managed through an agent workflow |
+| `wontfix` | Intentionally declined work |
 
-When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the corresponding label string from this table.
-
-Edit the "Label in our tracker" column to match whatever vocabulary you actually use.
+Remove conflicting readiness/waiting labels when the next action changes.
+Assigning a ticket coordinates ownership; it does not authorize deployment or
+other actions beyond the user's request. Search all issues before creating one.
+Wayfinder labels are optional and described in [issue conventions](issue-tracker.md).

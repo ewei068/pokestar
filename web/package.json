@@ -1,0 +1,31 @@
+{
+  "name": "pokestar-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "test": "node scripts/test.mjs",
+    "download-cries": "node scripts/download-cries.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "virtua": "^0.53.5"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^18.19.130",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "jsdom": "^26.1.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.4.5",
+    "vite": "^6.0.0"
+  }
+}
