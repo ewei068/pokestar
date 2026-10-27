@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { getMe, isApiError, logout, startLogin } from "../http";
+import { getMe, isApiError, logout, rateLimitDeadline, startLogin } from "../http";
 import { readLoginResult } from "./loginState";
 
 type AuthState = { kind: "loading" } | { kind: "ready"; userId: string } | { kind: "login"; error: string | null };
@@ -11,6 +11,7 @@ export const useAuth = () => {
   const [pending, setPending] = useState<"login" | "logout" | null>(null);
   const version = useRef(0);
   const busy = useRef(false);
+  const retryAt = useRef(0);
 
   useEffect(() => {
     const onPageReturn = (event: PageTransitionEvent) => {
@@ -44,15 +45,17 @@ export const useAuth = () => {
   }, [attempt, result]);
 
   const signIn = async () => {
-    if (busy.current) return;
+    if (busy.current || Date.now() < retryAt.current) return;
     busy.current = true;
     setPending("login");
     const current = ++version.current;
     try {
       const url = await startLogin();
       if (version.current === current) window.location.assign(url);
-    } catch {
-      if (version.current === current) setState({ kind: "login", error: "start_failed" });
+    } catch (error) {
+      const deadline = rateLimitDeadline(error);
+      if (deadline !== null) retryAt.current = deadline;
+      if (version.current === current) setState({ kind: "login", error: deadline !== null ? "rate_limited" : "start_failed" });
       busy.current = false;
       if (version.current === current) setPending(null);
     }

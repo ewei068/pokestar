@@ -18,6 +18,7 @@ the server foundation targets `main`.
 | 4 | [#178](https://github.com/ewei068/pokestar/pull/178) | Battle list, conditional polling, target selection and revision-checked actions |
 | 5 | [#179](https://github.com/ewei068/pokestar/pull/179) | Accepted arena, ordered result playback, VFX, copy, sound, music and cries |
 | 6 | [#181](https://github.com/ewei068/pokestar/pull/181) | Remove temporary effort documents, retain contracts and evidence, repair references |
+| 7 | [#182](https://github.com/ewei068/pokestar/pull/182) | HTTP hardening, Node 24 compatibility and manually triggered Pages deployment |
 
 The API follows the server foundation because it consumes the durable service
 and participant projection. The client integration layer uses the existing
@@ -45,6 +46,9 @@ features remain outside this effort.
 
 These come from the project conversation, including later corrections; they
 are distinct from implementation defaults and future suggestions.
+
+- Initial rollout is intentionally silent: omit Discord-to-web battle links while
+  verifying the hosting/login setup. Their absence is not a rollout blocker.
 
 - Static React/TypeScript/Vite client; backend owns identity, rules and durable
   state. The current implementation ships a display catalog, not the bot/engine
@@ -126,6 +130,39 @@ non-fatal warnings remain. No real-provider/database/device checks were repeated
 
 ## Verification and acceptance
 
+Production-readiness review on **2026-10-24**: **not ready for public cutover**.
+The [readiness report](../verification/production-readiness-2026-10-24.md) records
+fresh passing backend (877 / 30), client (105 / 23), root/subpath build checks,
+and the remaining security and deployment gates. New findings include backend
+dependency/runtime maintenance, conditional fail-open vote authentication on
+the shared listener, missing HTTP rate limits, absent Discord-to-web battle
+links, and slow-request/startup recovery gaps. Same-site HTTPS domains are
+required by the current cookie design. Existing reward/Auto reconciliation and
+real Mongo/OAuth/cross-surface checks remain blocking. Runtime code and production
+configuration were not changed; the report includes a proposed Pages/GCP rollout
+sequence, not evidence of deployment.
+
+Maintenance implementation on **2026-10-25** follows the
+[accepted plan](../plans/2026-10-24-web-battler-runtime-and-rate-limits.md).
+Vote authentication now fails closed. The HTTP package batch, Node 24.22.1
+compatibility/CI lane, route quotas and browser cooldown/cancellation are
+implemented locally. The [maintenance verification record](../verification/runtime-rate-limits-2026-10-24.md)
+records passing local checks, remaining dependency advisories and the unverified
+Mongo/VM/proxy/provider promotion gates. Production configuration is unchanged;
+this does not establish production readiness.
+
+Manual Pages deployment on **2026-10-25**: the new top deployment/readiness
+layer includes `.github/workflows/deploy-web.yml`. Once merged to `main`,
+**Deploy web battler** runs only by manual dispatch on the default branch;
+repository variable `VITE_API_ORIGIN` supplies the public HTTPS API origin.
+Pages settings supply the site domain/base path. The [setup steps](../../web/README.md#manual-github-pages-deployment)
+cover Pages/variables, HTTPS/DNS and matching backend OAuth configuration.
+Creating the workflow does not enable Pages, change DNS or publish a site.
+Local checks passed: actionlint, public API-origin acceptance/rejection cases,
+116 client tests, and production builds for `/` and `/pokestar/` with the
+configured API origin embedded. Independent workflow/security review found no
+actionable issues. A real Pages deployment was not run.
+
 Local restack verification on **2026-10-23**:
 
 | Boundary | Observed result |
@@ -186,6 +223,12 @@ runtime restart or live battle action is part of this restack.
 
 ### Required before production cutover
 
+- Complete the real-environment promotion checks in the
+  [maintenance record](../verification/runtime-rate-limits-2026-10-24.md).
+  Node 24 passes locally; legacy Mongo driver support and actual VM/proxy
+  compatibility remain unverified. Remaining serious dependency exposures need
+  explicit assessment or a separate verified update before public cutover.
+
 - Keep `DURABLE_BATTLES_ENABLED`, `DURABLE_RAIDS_ENABLED` and
   `WEB_BATTLER_ENABLED` off in production until their rollout checks are accepted.
   Durable PvE/PvP, dungeon and tower starts use the first flag; raids require
@@ -244,8 +287,8 @@ and other worktrees are outside this cleanup.
 
 Follow-ups for a separate repository change:
 
-- Add web tests and a production build to GitHub CI; the existing workflow runs
-  only backend Jest. Local web validation above is not a required remote check.
+- Run the updated backend/client test and production-build CI matrix remotely;
+  the new Node 24 and temporary Node 18 lanes are locally verified only so far.
 - Review static asset caching/hosting before public rollout: checked-in audio
   is 37,455,478 bytes and music is 56,094,812 bytes before HTTP compression.
   Music streams per visit; these totals are not the initial page transfer.

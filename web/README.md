@@ -115,6 +115,47 @@ backend origins and Discord redirect. A router DHCP reservation avoids that chur
 
 ## Static build
 
+### Runtime and HTTP limits
+
+`.nvmrc` pins **Node 24.22.1** for local compatibility testing; its bundled npm
+is 11.19.1. Run `nvm install && nvm use`, then `npm ci` at the repo root and
+`npm ci --prefix web`. CI runs backend tests, client tests and the client build
+on that version and temporarily on Node 18.20.4 for comparison. Node 18 is EOL;
+the comparison lane is not a production recommendation. Production Node 24
+promotion still requires the real MongoDB/VM checks in the
+[maintenance record](../docs/verification/runtime-rate-limits-2026-10-24.md).
+
+API quotas use independent one-minute, in-memory buckets in one HTTP process:
+
+| Traffic | Budget | Key |
+| --- | --- | --- |
+| All `/api` requests | 1,200 | Client IP |
+| Login initiation | 40 | Client IP |
+| OAuth callback | 40 | Client IP, separate from login |
+| Battle list/detail reads, including HEAD | 240 | Authenticated Discord user |
+| Battle actions, including invalid submissions | 60 | Authenticated Discord user |
+
+OPTIONS is exempt; `/vote` is outside these browser quotas. Logout uses only
+the general ceiling. Sessions and tabs for one Discord user share their battle
+quota; users behind the same NAT have separate battle quotas. A 429 returns
+`{"error":"rate_limited"}`, `Retry-After`, standard rate-limit headers and
+`Cache-Control: no-store`. The allowed web origin can read `Retry-After`.
+The client pauses battle polling during cooldown and never automatically retries
+an action. Each process aggregates denied counts by bucket in its log once per
+minute while denials occur, without request URLs, identities or credentials.
+Restarting resets quotas. Multiple HTTP processes require a shared limiter store.
+
+Trusting forwarding headers is **off by default**. For one local TLS reverse
+proxy, set `HTTP_HOST=127.0.0.1` and `HTTP_TRUST_LOOPBACK_PROXY=true` only after
+verifying that proxy replaces incoming forwarding headers with the actual peer
+address. Keep Node port 3000 and Mongo private. Do not use unrestricted proxy
+trust or a guessed proxy-hop count. Set request body, connection and timeout
+limits at the proxy too: the global JSON parser runs before route limiting.
+Cloudflare proxying would change this topology and needs a separate client-IP
+trust review; start with DNS-only records.
+
+### Build and publish
+
 Production builds remove the `import.meta.env.DEV` story entry point in
 `src/main.tsx`. The Vite `production-module-boundary` build hook checks every
 emitted JavaScript chunk's module graph and rejects battle development fixtures,
@@ -143,6 +184,48 @@ stable hostname, and a GCP reserved external IP pointing at the VM.
 
 Run `npm test` for client unit tests. Browser validation and production
 deployment are separate gates.
+
+### Manual GitHub Pages deployment
+
+`.github/workflows/deploy-web.yml` adds **Deploy web battler** to Actions after
+the stack merges into the default branch (`main`). It runs only through **Run
+workflow**, and only the default branch can publish. Pushes and PRs never deploy.
+The build tests/typechecks the client before uploading only `web/dist`; a separate
+deployment job receives Pages write/OIDC permissions. Actions are pinned to
+reviewed commit SHAs, and concurrent publishing runs are serialized.
+
+No domain values are required to merge the workflow. Before the first deployment:
+
+1. In **Settings → Pages**, choose **GitHub Actions** as the build/deployment
+   source. Configure and verify the website custom domain (for example
+   `play.example.com`), its DNS, and **Enforce HTTPS** there. For an Actions
+   deployment, Pages settings own the custom domain; no `CNAME` file or domain
+   secret is needed in the artifact.
+2. In **Settings → Secrets and variables → Actions → Variables**, add repository
+   variable **`VITE_API_ORIGIN`**, for example `https://api.example.com`.
+   Use an HTTPS origin without a path or trailing slash. This value is public
+   and embedded in the JavaScript bundle. Never put the Discord client secret,
+   bot token or database credentials in frontend variables. No PAT or cloud
+   credentials are needed; deployment uses GitHub's built-in token and OIDC.
+3. On the backend, configure `WEB_SITE_ORIGIN` as the actual site origin and
+   `WEB_BASE_PATH` as the site's base path. Register the exact
+   `WEB_DISCORD_REDIRECT_URI` in Discord and serve the API over HTTPS. Use sibling
+   custom-domain subdomains for reliable session cookies; a `github.io` site and
+   an unrelated API hostname do not satisfy the current cookie design.
+4. In **Settings → Environments → github-pages**, permit deployments from the
+   default branch only. Optional required reviewers provide another release
+   approval step. Complete the effort's backend/runtime/provider acceptance
+   checks before publishing the working client.
+5. Open **Actions → Deploy web battler → Run workflow**, choose `main`, and run
+   it. The deployment job links to the published site. Another branch is skipped.
+
+The workflow reads Pages' configured base path automatically: `/pokestar/` for
+the default project URL, or `/` for a root custom domain. No `WEB_BASE_PATH`
+repository variable is needed. Missing/invalid `VITE_API_ORIGIN` fails before
+building; a missing Pages setup fails at the configuration step. Changing the
+API hostname or website domain requires another manual build/deploy so the
+bundled API origin and asset paths match. API deployment, DNS and GCP static-IP
+provisioning remain separate.
 
 Login failures use recoverable app screens for cancellation, expired/incomplete
 callbacks, Discord/API/session failures, blocked session cookies and failed
