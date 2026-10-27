@@ -1,14 +1,16 @@
 # Pokestar web battler
 
-Status: consolidated on **2026-10-23**; review feedback applied on
-**2026-10-24, America/Los_Angeles**. The
-implementation is open for review, with production cutover gates still open.
+Status: implementation landed on `main`; initial deployment working on
+**2026-10-26, America/Los_Angeles**. The user reports the live flow works;
+fresh Pages/API/runtime checks are recorded below. Broader battle acceptance,
+reboot recovery and security maintenance remain open.
 This is the maintained entry point; update contracts at their linked source.
 
 ## Review stack
 
-Review and merge from bottom to top. Each PR targets the preceding branch;
-the server foundation targets `main`.
+Historical review boundaries, ordered from the server foundation upward.
+The deployed `main` contains the implementation; new deployment and maintenance
+work should branch from current `main` rather than extend the old stack.
 
 | Order | PR | Review boundary |
 | --- | --- | --- |
@@ -163,6 +165,25 @@ Local checks passed: actionlint, public API-origin acceptance/rejection cases,
 configured API origin embedded. Independent workflow/security review found no
 actionable issues. A real Pages deployment was not run.
 
+Production VM proxy setup on **2026-10-26, America/Los_Angeles**:
+`api.pokestar.games` now points to the existing reserved GCP IP and serves a
+valid Let's Encrypt certificate with automatic renewal. Nginx replaces
+forwarding headers, redirects the API hostname to HTTPS and returns 404 for
+raw-IP HTTP requests. TLS, renewal, header-spoofing and normal access-log
+checks passed. The [VM HTTPS record](../verification/vm-https-2026-10-26.md)
+records configuration backups, startup diagnoses and final wrap-up checks.
+The user resolved the stopped MongoDB issue and enabled the web API, then
+reported everything working. Fresh checks found Pages 200, signed-out API 401
+with correct CORS, Node 24.22.1 online and Node/MongoDB bound only to loopback.
+Web and durable battles are enabled; durable raids remain off. PM2's current
+230 MiB threshold replaces the old 160 MiB setting that caused repeated restarts.
+MongoDB is active but disabled at boot, and no PM2 systemd startup unit was
+listed. Prioritize reboot persistence and a maintenance-window recovery check;
+the updated [runbook](../../runbook.md) also covers backups, HTTPS, Pages,
+environment flags and troubleshooting. This confirms the initial setup, not
+every mode/provider/device or reward-recovery case. No production configuration
+was changed during the documentation wrap-up.
+
 Local restack verification on **2026-10-23**:
 
 | Boundary | Observed result |
@@ -221,16 +242,19 @@ runtime restart or live battle action is part of this restack.
 
 ## Remaining work
 
-### Required before production cutover
+### Required before broader rollout / remaining deployment work
 
 - Complete the real-environment promotion checks in the
   [maintenance record](../verification/runtime-rate-limits-2026-10-24.md).
-  Node 24 passes locally; legacy Mongo driver support and actual VM/proxy
-  compatibility remain unverified. Remaining serious dependency exposures need
+  Node 24 is now running on the VM; initial Pages/API/proxy checks and the user's
+  live flow passed. Formal legacy Mongo driver support and comprehensive
+  restart/mode checks remain unverified. Remaining serious dependency exposures need
   explicit assessment or a separate verified update before public cutover.
 
-- Keep `DURABLE_BATTLES_ENABLED`, `DURABLE_RAIDS_ENABLED` and
-  `WEB_BATTLER_ENABLED` off in production until their rollout checks are accepted.
+- Initial production testing now has `DURABLE_BATTLES_ENABLED` and
+  `WEB_BATTLER_ENABLED` enabled. Keep `DURABLE_RAIDS_ENABLED` off until its
+  separate checks are accepted. Verify MongoDB/PM2 boot persistence, backups
+  and memory headroom before depending on unattended restart recovery.
   Durable PvE/PvP, dungeon and tower starts use the first flag; raids require
   both durable flags. `/continue-battle` is registered in every stage.
 - Real Mongo/index/restart and authenticated cross-surface acceptance checks,
@@ -242,8 +266,10 @@ runtime restart or live battle action is part of this restack.
   provide atomic exactly-once rewards across documents.
 - Payment/finalization claim recovery: retain and reconcile uncertain Auto claims.
   Drain/reconcile claims before rolling back to code that does not honor them.
-- Verify deployment flags, ruleset compatibility, hosting/domain/static IP,
-  HTTPS/OAuth origins. No deploy, production flag change, credential mutation or battle clearing is part of the current continuation.
+- Retain verified hosting/domain/static IP and HTTPS/origin configuration.
+  Recheck flags and ruleset compatibility for future deployments. No deploy,
+  production flag change, credential mutation or battle clearing is part of
+  this documentation wrap-up.
 - Run real OAuth/Discord recovery and physical touch/pen/audio checks,
   including autoplay, interruptions and resume. Responsive browser views and
   mocked media/input tests do not establish physical-device acceptance.

@@ -5,6 +5,15 @@
 - Stretch: Ability slots
 - mass release page
 
+## 1.5.0 Web Battler (10/26/2026)
+
+- Added a web battler for initial testing, with Discord sign-in and shared battle state
+- Supported battles can survive bot restarts and resume with `/continue-battle`
+- Added animated battle playback, move effects, Pokémon cries and battle music, with separate volume controls
+- Improved recovery when switching between Discord and web, reconnecting or submitting an outdated battle action
+- Auto-battling shows its final result without playing every turn
+- Hardened vote authentication and added web API rate limits
+
 ### 1.4.4.1 Gen 4 Wrap-up Rate-up (10/31)
 
 - Add a rate-up banner for the new Pokemon released during the Gen 4 wrap-up event

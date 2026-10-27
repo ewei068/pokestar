@@ -3,6 +3,10 @@
 The web app is a static React/Vite client. Express on the bot host handles
 Discord login, sessions, battle actions, and the display catalog.
 
+Production operations for `play.pokestar.games` and `api.pokestar.games` are in
+the [deployment runbook](../runbook.md), including Node/NVM, MongoDB/PM2 startup,
+HTTPS, Pages publishing and the missing-API-flag CORS diagnosis.
+
 ## Local development
 
 1. Set the bot environment values from `.env.in`, including
@@ -121,8 +125,10 @@ backend origins and Discord redirect. A router DHCP reservation avoids that chur
 is 11.19.1. Run `nvm install && nvm use`, then `npm ci` at the repo root and
 `npm ci --prefix web`. CI runs backend tests, client tests and the client build
 on that version and temporarily on Node 18.20.4 for comparison. Node 18 is EOL;
-the comparison lane is not a production recommendation. Production Node 24
-promotion still requires the real MongoDB/VM checks in the
+the comparison lane is not a production recommendation. Node 24 is now running
+on the VM; the [deployment record](../docs/verification/vm-https-2026-10-26.md)
+records initial live checks. Broader MongoDB/mode/restart checks and formal
+driver support remain open in the
 [maintenance record](../docs/verification/runtime-rate-limits-2026-10-24.md).
 
 API quotas use independent one-minute, in-memory buckets in one HTTP process:
