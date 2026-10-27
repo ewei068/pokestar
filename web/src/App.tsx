@@ -1,3 +1,4 @@
+import { BattleFeature } from "./battles/BattleFeature";
 import { LoginScreen } from "./auth/LoginScreen";
 import { useAuth } from "./auth/useAuth";
 
@@ -15,7 +16,7 @@ const AppContent = () => {
       </header>
       {state.kind === "loading" && <main className="page-shell"><p role="status">Loading Pokestar…</p></main>}
       {state.kind === "login" && <LoginScreen error={state.error} pending={pending} onRetry={retry} homeHref={import.meta.env.BASE_URL} />}
-      {state.kind === "ready" && <main className="page-shell"><h1>Signed in</h1><p>Your Discord account is connected. Battle browsing is added in the next layer.</p></main>}
+      {state.kind === "ready" && <BattleFeature />}
     </div>
   );
 };
