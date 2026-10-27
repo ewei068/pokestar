@@ -44,15 +44,16 @@ The following controls were checked against the installed CE **3.31.1** on
 - Reuse verification for an unchanged tree. Rerun checks affected by subsequent
   edits; repeat broad checks when those edits or unresolved failures warrant it.
 
-Optional CE settings belong in `.compound-engineering/config.local.yaml` for
-personal checkout defaults, or tracked `config.yaml` for agreed repo defaults:
+The tracked `.compound-engineering/config.yaml` disables the automatic standing
+post-PR watch, optional PR concept teaching and explainer archival. Review depth
+and cross-model selection retain CE's defaults. Personal checkout overrides
+belong in `.compound-engineering/config.local.yaml`.
+
+One optional setting, separate from the active repository defaults:
 
 ```yaml
-# Examples, not active repository settings.
+# Optional personal override, not active repository configuration.
 cross_model_review_mode: off
-auto_babysit: false
-pr_teaching_section: false
-pr_teaching_archive: false
 ```
 
 Cross-model `off` removes the automatic provider peer, while retaining local

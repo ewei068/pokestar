@@ -1,0 +1,4 @@
+# Routine publishing defaults; request a watch or teaching explicitly when useful.
+auto_babysit: false
+pr_teaching_section: false
+pr_teaching_archive: false
