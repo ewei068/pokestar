@@ -35,8 +35,10 @@ Two contextual accuracy details are recorded separately from the raw export:
   “Couldn't award battle rewards.” for a confirmed failure. The user explicitly
   confirmed this failure wording in follow-up on 2026-10-19.
 
-Verification after applying the review is recorded in the
-[copy audit](../../web-copy-audit.md#approved-review-implementation). The 75
+After applying the review, 83 web tests / 21 suites and the TypeScript/production
+build passed. Mocked-HTTP browser checks passed at 1440, 390 and 320 px, including
+neutral healing instructions and an unchanged ally-target submission at 1440/390 px.
+The 75
 narration/short-label source cases represented in this export were also rendered
 through `presentEvent` and matched against their approved drafts, including
 “New phase!”. Browser verification uses mocked HTTP and production components;

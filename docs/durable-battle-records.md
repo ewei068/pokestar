@@ -4,7 +4,7 @@
 
 A new accepted submission appends `{ revision, requestId, actorUserId, action, events, log }` (without a per-action view) and advances the document revision through a single conditional `updateOne` on the prior revision. Two submissions based on the same revision cannot both commit. A retry with the same request ID and action returns the committed update; a reused request ID with different content is rejected. Stale, invalid, expired, or wrong-actor submissions return the current revision and view. The application service must still authenticate the caller and decide whether NPC actions are permitted.
 
-The record stores one latest view for quick reads and replay verification. Intermediate playback views are computed during replay; older records that contain per-action views remain readable. See [the client contract](web-battler-client-plan.md).
+The record stores one latest view for quick reads and replay verification. Intermediate playback views are computed during replay; older records that contain per-action views remain readable. See [the client contract](battle-web-contract.md).
 
 `needsAutomaticTurn` is internal metadata written with creation/action revisions,
 outside the replayed view. It lets authorized reads resume interrupted NPC or

@@ -77,8 +77,8 @@ Pokestar-specific mechanics, numbers, and conditions explicit even where the
 games have no equivalent line. An event without a failure reason must not
 claim paralysis, sleep, immunity, or another specific cause. Full log narration
 can carry the game phrasing; floating cues stay short enough to read in the
-existing animation time. The [copy comparison](web-copy-audit.md) records the
-implemented pass, source references, and verification limits.
+existing animation time. The [approved copy record](verification/web-copy/README.md) preserves the
+implemented choices and verification limits.
 
 Use the existing tutorial and battle narration as references. For example,
 `src/config/helpConfig.js` gives practical advice (“Put tanky Pokemon in the
