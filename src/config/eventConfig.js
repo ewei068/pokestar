@@ -38,6 +38,8 @@ const eventNames = Object.freeze({
   BATTLE_MOVE_SELECT: "battleMoveSelect",
   BATTLE_TARGET_SELECT: "battleTargetSelect",
   BATTLE_TARGET_CONFIRM: "battleTargetConfirm",
+  DURABLE_BATTLE_PICK: "durablePick",
+  DURABLE_BATTLE_PAGE: "durablePage",
   BANNER_SCROLL: "bannerScroll",
   BANNER_BUTTON: "bannerButton",
   BANNER_GACHA: "bannerGacha",
@@ -274,6 +276,16 @@ const eventConfig = {
     directory: "battle",
     exp: 10,
     money: 25,
+  },
+  [eventNames.DURABLE_BATTLE_PICK]: {
+    name: "Continue Battle Pick",
+    execute: "durableBattle.js",
+    directory: "battle",
+  },
+  [eventNames.DURABLE_BATTLE_PAGE]: {
+    name: "Continue Battle Page",
+    execute: "durableBattle.js",
+    directory: "battle",
   },
   [eventNames.BANNER_SCROLL]: {
     name: "Gacha Scroll",

@@ -14,12 +14,19 @@ const { emojis } = require("../enums/emojis");
  * @param {object} options
  * @param {string=} options.currentTab the name of the current selection
  * @param {number=} options.currentTeamIndex the index of the current team
- * @returns ActionRowBuilder
+ * @param {boolean=} options.showAutoBattle
+ * @param {boolean=} options.refreshOnly
+ * @returns {import("discord.js").ActionRowBuilder}
  */
 const buildBattleInfoActionRow = (
   battle,
   stateId,
-  { currentTab, currentTeamIndex = -1 }
+  {
+    currentTab,
+    currentTeamIndex = -1,
+    showAutoBattle = true,
+    refreshOnly = false,
+  },
 ) => {
   const infoRowData = {
     stateId,
@@ -66,7 +73,7 @@ const buildBattleInfoActionRow = (
   }
 
   // TODO: put the auto button in a different row??
-  if (battle.autoData.shouldShowAutoBattle) {
+  if (showAutoBattle && battle.autoData.shouldShowAutoBattle) {
     buttonConfigs.push({
       label: `x${battle.autoData.autoBattleCost} Auto`,
       disabled: !battle.autoData.canAuto,
@@ -89,7 +96,12 @@ const buildBattleInfoActionRow = (
     },
   });
 
-  const infoRow = buildButtonActionRow(buttonConfigs, eventNames.BATTLE_INFO);
+  const infoRow = buildButtonActionRow(
+    refreshOnly
+      ? buttonConfigs.filter((config) => config.data.tab === "refresh")
+      : buttonConfigs,
+    eventNames.BATTLE_INFO,
+  );
   return infoRow;
 };
 

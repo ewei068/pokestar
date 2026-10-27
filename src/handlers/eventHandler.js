@@ -83,7 +83,7 @@ const handleEvent = async (interaction, client) => {
       if (level && !err) {
         await attemptToReply(
           interaction,
-          `You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`
+          `You leveled up to level ${level}! Use \`/levelrewards\` to claim you level rewards.`,
         );
       }
     }

@@ -23,6 +23,7 @@ const createMockTrainer = ({
         id: trainerUserId,
         username,
         discriminator: "0",
+        isNpc,
       },
       isNpc,
     },

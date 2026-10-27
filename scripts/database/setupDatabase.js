@@ -24,9 +24,10 @@ const createIndices = async (dbo, collectionName, collection) => {
   }
   for (const index of collection.indexes) {
     try {
+      const { key, ...options } = index;
       await dbo
         .collection(collectionName)
-        .createIndex(index.key, { unique: index.unique });
+        .createIndex(key, options);
       logger.info(`Index created for collection ${collectionName}`);
     } catch (error) {
       logger.error(`Error creating index for collection ${collectionName}`);

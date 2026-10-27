@@ -10,9 +10,9 @@
  * battle.js Handles all battle interactions from the user at a base level down to creating the teams.
  */
 // eslint-disable-next-line no-unused-vars
-const { MessageComponentInteraction, Message } = require("discord.js");
+const { MessageComponentInteraction } = require("discord.js");
 const { Battle } = require("../battle/engine/Battle");
-const { getOrSetDefault, errorlessAsync } = require("../utils/utils");
+const { getOrSetDefault } = require("../utils/utils");
 const {
   buildBattleEmbed,
   buildPveListEmbed,
@@ -67,6 +67,12 @@ const {
 const { heldItemIdEnum } = require("../enums/battleEnums");
 const { emojis } = require("../enums/emojis");
 const { trainerEventEnum } = require("../enums/gameEnums");
+const {
+  getDurableBattleService,
+  isDurableBattleEnabled,
+} = require("./durableBattle");
+const { renderBattle } = require("../battle/discord/durableBattleMessages");
+const { yieldToEventLoop } = require("../battle/service/simulateAutoBattle");
 
 /**
  * @param {Trainer} trainer
@@ -112,15 +118,295 @@ const getCanUserAutoBattle = async (user, cost) => {
 };
 
 /**
+ * Applies battle completion effects and returns the reward summary.
+ * Call once for a completed battle.
+ * @param {Battle} battle
+ * @param {{ strict?: boolean }=} options
+ * @returns {Promise<string>}
+ */
+const processBattleCompletionRewards = async (
+  battle,
+  { strict = false } = {},
+) => {
+  if (strict && (battle.winCallback || battle.loseCallback)) {
+    throw new Error("Callback-backed completion needs a durable mode handler");
+  }
+  let content = "";
+  // if game ended, add rewards to trainers and pokemon
+  // for non-NPC teams, for all trainers, add rewards
+  try {
+    // if winner is NPC, no rewards
+    if (battle.winner && !battle.teams[battle.winner].isNpc) {
+      if (battle.rewardString) {
+        content += `\n${battle.rewardString}`;
+      }
+      const rewardRecipients = [];
+      content += `\n**The following Pokemon leveled up:**`;
+      for (const teamName in battle.teams) {
+        const team = battle.teams[teamName];
+        if (team.isNpc) {
+          continue;
+        }
+
+        const moneyReward =
+          teamName === battle.winner
+            ? battle.moneyReward
+            : Math.floor(battle.moneyReward / 2);
+        const expReward =
+          teamName === battle.winner
+            ? battle.expReward
+            : Math.floor(battle.expReward / 2);
+        const pokemonExpReward =
+          teamName === battle.winner
+            ? battle.pokemonExpReward
+            : Math.floor(battle.pokemonExpReward / 2);
+
+        // TODO: optimize this it makes too many db calls
+        for (const userId of team.userIds) {
+          const user = battle.users[userId];
+          // trigger battle win callback
+          if (battle.winCallback) {
+            await battle.winCallback(battle, user);
+          }
+
+          // get trainer
+          // @ts-ignore
+          // eslint-disable-next-line prefer-const
+          let { data: trainer, err } = await getTrainer(user);
+          if (err) {
+            if (strict)
+              throw new Error(`Failed to get trainer ${user.id}: ${err}`);
+            logger.warn(
+              // @ts-ignore
+              `Failed to get trainer for user ${user.id} after battle`,
+            );
+            continue;
+          }
+
+          // add trainer rewards
+          const defeatedDifficultiesToday =
+            trainer.defeatedNPCsToday[battle.npcId];
+          const defeatedDifficulties = trainer.defeatedNPCs[battle.npcId];
+          const allRewards = {};
+          let modified = false;
+          // add battle rewards
+          if (battle.rewards) {
+            addRewards(trainer, battle.rewards, allRewards);
+            modified = true;
+          }
+          // add daily rewards
+          if (
+            battle.dailyRewards &&
+            (!defeatedDifficultiesToday ||
+              !defeatedDifficultiesToday.includes(battle.difficulty))
+          ) {
+            addRewards(trainer, battle.dailyRewards, allRewards);
+            getOrSetDefault(trainer.defeatedNPCsToday, battle.npcId, []).push(
+              battle.difficulty,
+            );
+            modified = true;
+          }
+          // add to defeated difficulties if not already there
+          if (
+            !defeatedDifficulties ||
+            !defeatedDifficulties.includes(battle.difficulty)
+          ) {
+            getOrSetDefault(trainer.defeatedNPCs, battle.npcId, []).push(
+              battle.difficulty,
+            );
+            modified = true;
+          }
+
+          // attempt to add rewards
+          if (modified) {
+            const { data: newTrainer, err: updateErr } =
+              await updateTrainer(trainer);
+
+            if (updateErr) {
+              if (strict) {
+                throw new Error(
+                  `Failed to update trainer ${user.id}: ${updateErr}`,
+                );
+              }
+              logger.warn(
+                // @ts-ignore
+                `Failed to update daily trainer for user ${user.id} after battle`,
+              );
+              continue;
+            } else {
+              trainer = newTrainer;
+              // this is kinda hacky there may be a better way to do this
+              rewardRecipients.push({
+                username: user.username,
+                rewards: allRewards,
+              });
+            }
+          }
+
+          // this feels hacky; don't emit event for raids since it handles it differently
+          if (battle.npcId && battle.npcType && battle.npcType !== "raid") {
+            const eventRes = await emitTrainerEvent(
+              trainerEventEnum.DEFEATED_NPC,
+              {
+                trainer,
+                npcId: battle.npcId,
+                difficulty: battle.difficulty,
+                type: battle.npcType,
+              },
+            );
+            if (!eventRes.err && eventRes.data) {
+              trainer = eventRes.data;
+            } else if (strict) {
+              throw new Error(`Failed to emit NPC victory for ${user.id}`);
+            }
+          }
+
+          // @ts-ignore
+          const trainerReward = await addExpAndMoney(
+            user,
+            expReward,
+            moneyReward,
+          );
+          if (strict && trainerReward.err) {
+            throw new Error(`Failed to grant trainer rewards to ${user.id}`);
+          }
+
+          const levelUps = [];
+          // add pokemon rewards
+          for (const pokemon of Object.values(battle.allPokemon).filter(
+            (p) => p.originalUserId === trainer.userId,
+          )) {
+            // get db pokemon
+            const dbPokemon = await getPokemon(trainer, pokemon.id);
+            if (dbPokemon.err) {
+              if (strict) {
+                throw new Error(`Failed to get Pokemon ${pokemon.id}`);
+              }
+              logger.warn(`Failed to get pokemon ${pokemon.id} after battle`);
+              continue;
+            }
+
+            const oldLevel = dbPokemon.data.level;
+            const thisPokemonExpReward =
+              pokemon.originalHeldItemId === heldItemIdEnum.LUCKY_EGG
+                ? pokemonExpReward * 2
+                : pokemonExpReward;
+            const trainResult = await addPokemonExpAndEVs(
+              trainer,
+              dbPokemon.data,
+              thisPokemonExpReward,
+            );
+            if (trainResult.err) {
+              if (strict) {
+                throw new Error(
+                  `Failed to grant Pokemon rewards to ${pokemon.id}`,
+                );
+              }
+              continue;
+            }
+            const newLevel = trainResult.data.level;
+
+            if (newLevel > oldLevel) {
+              levelUps.push({
+                pokemonName: dbPokemon.data.name,
+                oldLevel,
+                newLevel,
+              });
+            }
+          }
+          if (levelUps.length > 0) {
+            content += `\n${user.username}'s Pokemon: ${levelUps
+              .map((l) => `${l.pokemonName} (${l.oldLevel} -> ${l.newLevel})`)
+              .join(", ")}`;
+          }
+        }
+
+        if (rewardRecipients.length > 0) {
+          content += `\n**${rewardRecipients
+            .map((r) => r.username)
+            .join(", ")} received rewards for their victory:**\n`;
+          content += getFlattenedRewardsString(
+            rewardRecipients[0].rewards,
+            false,
+          );
+        }
+      }
+    } else if (battle.loseCallback) {
+      await battle.loseCallback(battle);
+    }
+  } catch (err) {
+    if (strict) throw err;
+    logger.error(`Failed to add battle rewards: ${err}`);
+  }
+
+  // TODO: optimize and batch this. I'm lazy
+  const promises = [];
+  for (const user of Object.values(battle.users)) {
+    if (!battle.isNpc(user.id)) {
+      const recordParticipation = async () => {
+        const { data: trainer, err: getTrainerErr } = await getTrainer(user);
+        if (getTrainerErr) {
+          if (strict) throw new Error(`Failed to get trainer ${user.id}`);
+          return;
+        }
+        const participation = await emitTrainerEvent(
+          trainerEventEnum.PARTICIPATED_IN_BATTLE,
+          {
+            trainer,
+            type: battle.isPvp ? "pvp" : battle.npcType || "other",
+          },
+        );
+        if (strict && participation.err) {
+          throw new Error(`Failed to record participation for ${user.id}`);
+        }
+      };
+      if (strict) {
+        await recordParticipation();
+      } else {
+        promises.push(recordParticipation());
+      }
+    }
+  }
+  if (!strict) {
+    await Promise.allSettled(promises);
+  }
+
+  return content;
+};
+
+/**
  * @param {Battle} battle
  * @param {string} stateId
+ * @param {object|null=} context
  */
-const getStartTurnSend = async (battle, stateId) => {
+const getStartTurnSend = async (battle, stateId, context = null) => {
   // clip log to last 20 lines
   if (battle.log.length > 20) {
     battle.log = battle.log.slice(battle.log.length - 20);
   }
   let content = battle.log.join("\n");
+  if (context?.durable) {
+    const { record } = context;
+    const autoMessage = record.autoCommit?.error
+      ? "Auto payment or finalization needs manual review. Your previous battle state is saved."
+      : "Auto is finalizing. Refresh shortly for the result.";
+    content = [
+      context.rejection
+        ? `Action was not accepted (${context.rejection}). Refreshed to the current battle.`
+        : null,
+      record.autoCommit ? autoMessage : null,
+      record.completionStatus === "failed"
+        ? "Reward processing needs manual review. Your battle result is saved."
+        : null,
+      record.completionStatus === "processing"
+        ? "Battle rewards are being processed."
+        : null,
+      record.completionSummary?.slice(0, 300),
+      (record.actions.at(-1)?.log || []).slice(-8).join("\n").slice(0, 1500),
+    ]
+      .filter(Boolean)
+      .join("\n");
+  }
 
   // get current user, or first other user if NPC
   let activeUserId = battle.activePokemon.userId;
@@ -144,7 +430,16 @@ const getStartTurnSend = async (battle, stateId) => {
 
   battle.clearLog();
   const components = [];
-  if (!battle.ended) {
+  const readOnly =
+    context?.durable &&
+    (context.record.status !== "active" ||
+      context.record.autoCommit ||
+      battle.activePokemon?.userId !== context.userId);
+  if (readOnly && !battle.ended) {
+    components.push(
+      buildBattleInfoActionRow(battle, stateId, { refreshOnly: true }),
+    );
+  } else if (!battle.ended) {
     // TODO: stop button?
     if (!battle.autoData.isAutoMode) {
       const infoRow = buildBattleInfoActionRow(battle, stateId, {});
@@ -163,216 +458,20 @@ const getStartTurnSend = async (battle, stateId) => {
       }
     }
   } else {
-    // if game ended, add rewards to trainers and pokemon
-    // for non-NPC teams, for all trainers, add rewards
-    try {
-      // if winner is NPC, no rewards
-      if (!battle.teams[battle.winner].isNpc) {
-        if (battle.rewardString) {
-          content += `\n${battle.rewardString}`;
-        }
-        const rewardRecipients = [];
-        content += `\n**The following Pokemon leveled up:**`;
-        for (const teamName in battle.teams) {
-          const team = battle.teams[teamName];
-          if (team.isNpc) {
-            continue;
-          }
-
-          const moneyReward =
-            teamName === battle.winner
-              ? battle.moneyReward
-              : Math.floor(battle.moneyReward / 2);
-          const expReward =
-            teamName === battle.winner
-              ? battle.expReward
-              : Math.floor(battle.expReward / 2);
-          const pokemonExpReward =
-            teamName === battle.winner
-              ? battle.pokemonExpReward
-              : Math.floor(battle.pokemonExpReward / 2);
-
-          // TODO: optimize this it makes too many db calls
-          for (const userId of team.userIds) {
-            const user = battle.users[userId];
-            // trigger battle win callback
-            if (battle.winCallback) {
-              await battle.winCallback(battle, user);
-            }
-
-            // get trainer
-            // @ts-ignore
-            // eslint-disable-next-line prefer-const
-            let { data: trainer, err } = await getTrainer(user);
-            if (err) {
-              logger.warn(
-                // @ts-ignore
-                `Failed to get trainer for user ${user.id} after battle`,
-              );
-              continue;
-            }
-
-            // add trainer rewards
-            const defeatedDifficultiesToday =
-              trainer.defeatedNPCsToday[battle.npcId];
-            const defeatedDifficulties = trainer.defeatedNPCs[battle.npcId];
-            const allRewards = {};
-            let modified = false;
-            // add battle rewards
-            if (battle.rewards) {
-              addRewards(trainer, battle.rewards, allRewards);
-              modified = true;
-            }
-            // add daily rewards
-            if (
-              battle.dailyRewards &&
-              (!defeatedDifficultiesToday ||
-                !defeatedDifficultiesToday.includes(battle.difficulty))
-            ) {
-              addRewards(trainer, battle.dailyRewards, allRewards);
-              getOrSetDefault(trainer.defeatedNPCsToday, battle.npcId, []).push(
-                battle.difficulty,
-              );
-              modified = true;
-            }
-            // add to defeated difficulties if not already there
-            if (
-              !defeatedDifficulties ||
-              !defeatedDifficulties.includes(battle.difficulty)
-            ) {
-              getOrSetDefault(trainer.defeatedNPCs, battle.npcId, []).push(
-                battle.difficulty,
-              );
-              modified = true;
-            }
-
-            // attempt to add rewards
-            if (modified) {
-              const { data: newTrainer, err: updateErr } =
-                await updateTrainer(trainer);
-
-              if (updateErr) {
-                logger.warn(
-                  // @ts-ignore
-                  `Failed to update daily trainer for user ${user.id} after battle`,
-                );
-                continue;
-              } else {
-                trainer = newTrainer;
-                // this is kinda hacky there may be a better way to do this
-                rewardRecipients.push({
-                  username: user.username,
-                  rewards: allRewards,
-                });
-              }
-            }
-
-            // this feels hacky; don't emit event for raids since it handles it differently
-            if (battle.npcId && battle.npcType && battle.npcType !== "raid") {
-              const eventRes = await emitTrainerEvent(
-                trainerEventEnum.DEFEATED_NPC,
-                {
-                  trainer,
-                  npcId: battle.npcId,
-                  difficulty: battle.difficulty,
-                  type: battle.npcType,
-                },
-              );
-              if (!eventRes.err && eventRes.data) {
-                trainer = eventRes.data;
-              }
-            }
-
-            // @ts-ignore
-            await addExpAndMoney(user, expReward, moneyReward);
-
-            const levelUps = [];
-            // add pokemon rewards
-            for (const pokemon of Object.values(battle.allPokemon).filter(
-              (p) => p.originalUserId === trainer.userId,
-            )) {
-              // get db pokemon
-              const dbPokemon = await getPokemon(trainer, pokemon.id);
-              if (dbPokemon.err) {
-                logger.warn(`Failed to get pokemon ${pokemon.id} after battle`);
-                continue;
-              }
-
-              const oldLevel = dbPokemon.data.level;
-              const thisPokemonExpReward =
-                pokemon.originalHeldItemId === heldItemIdEnum.LUCKY_EGG
-                  ? pokemonExpReward * 2
-                  : pokemonExpReward;
-              const trainResult = await addPokemonExpAndEVs(
-                trainer,
-                dbPokemon.data,
-                thisPokemonExpReward,
-              );
-              if (trainResult.err) {
-                continue;
-              }
-              const newLevel = trainResult.data.level;
-
-              if (newLevel > oldLevel) {
-                levelUps.push({
-                  pokemonName: dbPokemon.data.name,
-                  oldLevel,
-                  newLevel,
-                });
-              }
-            }
-            if (levelUps.length > 0) {
-              content += `\n${user.username}'s Pokemon: ${levelUps
-                .map((l) => `${l.pokemonName} (${l.oldLevel} -> ${l.newLevel})`)
-                .join(", ")}`;
-            }
-          }
-
-          if (rewardRecipients.length > 0) {
-            content += `\n**${rewardRecipients
-              .map((r) => r.username)
-              .join(", ")} received rewards for their victory:**\n`;
-            content += getFlattenedRewardsString(
-              rewardRecipients[0].rewards,
-              false,
-            );
-          }
-        }
-      } else if (battle.loseCallback) {
-        await battle.loseCallback(battle);
-      }
-    } catch (err) {
-      logger.error(`Failed to add battle rewards: ${err}`);
+    if (!context?.durable) {
+      content += await processBattleCompletionRewards(battle);
+      // Legacy completion may add rewards to its local log. Durable completion is claimed by the service.
+      content += `\n${battle.log.join("\n")}`;
     }
-
-    // TODO: optimize and batch this. I'm lazy
-    const promises = [];
-    for (const user of Object.values(battle.users)) {
-      if (!battle.isNpc(user.id)) {
-        promises.push(
-          (async () => {
-            const { data: trainer, err: getTrainerErr } =
-              await getTrainer(user);
-            if (getTrainerErr) {
-              return;
-            }
-            await emitTrainerEvent(trainerEventEnum.PARTICIPATED_IN_BATTLE, {
-              trainer,
-              type: battle.isPvp ? "pvp" : battle.npcType || "other",
-            });
-          })(),
-        );
-      }
-    }
-    await Promise.allSettled(promises);
-
-    // re-add log to content
-    content += `\n${battle.log.join("\n")}`;
 
     // if state has an NPC id, add a replay button
-    const state = getState(stateId);
+    const state = context?.state || getState(stateId);
     if (state && state.endBattleComponents) {
       components.push(...state.endBattleComponents);
+    } else if (context?.durable) {
+      components.push(
+        buildBattleInfoActionRow(battle, stateId, { refreshOnly: true }),
+      );
     } else {
       deleteState(stateId);
     }
@@ -385,90 +484,26 @@ const getStartTurnSend = async (battle, stateId) => {
   };
 };
 
-/**
- * @param {Battle} battle
- * @param {string} stateId
- * @param {MessageComponentInteraction} interaction
- */
+// Feature-flagged legacy battles also show one final update; no paced timer loop.
 const instantAutoBattle = async (battle, stateId, interaction) => {
   await interaction.deferUpdate();
-  for (let i = 0; i < 300; i += 1) {
-    for (let retry = 0; retry < 3; retry += 1) {
-      try {
-        if (battle.ended || !battle.autoData.isAutoMode) {
-          const componentToSend = await getStartTurnSend(battle, stateId);
-          return await interaction.editReply(componentToSend);
-        }
-        npcTurnAction(battle);
-        continue;
-      } catch (err) {
-        logger.error(`Failed to instant auto turn: ${err}`);
-        logger.error(battle.log?.join?.("\n"));
-      }
-      logger.error("Failed to instant auto turn after 3 retries");
-      return;
-    }
-  }
-  logger.error("Failed to instant auto complete after 300 turns");
-};
-
-/**
- * @param {Battle} battle
- * @param {string} stateId
- * @param {object} options
- * @param {MessageComponentInteraction=} options.interaction
- * @param {Message=} options.messageRef
- * @param {number=} options.retry
- * @param {number=} options.totalTurns
- */
-const nextAutoTurn = async (
-  battle,
-  stateId,
-  { messageRef, interaction, retry = 0, totalTurns = 0 },
-) => {
-  if (totalTurns > 300) {
-    logger.error("Auto turn timed out");
-    return;
-  }
-  if (battle.ended || !battle.autoData.isAutoMode) {
-    return;
-  }
-  let newMessageRef;
   try {
-    npcTurnAction(battle);
-    const componentToSend = await getStartTurnSend(battle, stateId);
-    if (interaction) {
-      newMessageRef = await interaction.update(componentToSend);
-    } else if (messageRef) {
-      newMessageRef = await messageRef.edit(componentToSend);
-    } else {
-      logger.error("No interaction or message ref provided");
-      return;
+    for (let i = 0; i < 300 && !battle.ended; i += 1) {
+      if (i % 5 === 0) await yieldToEventLoop();
+      npcTurnAction(battle);
     }
-  } catch (err) {
-    logger.error(`Failed to send auto turn: ${err}`);
-    logger.error(battle.log?.join?.("\n"));
-    if (retry < 3) {
-      return await nextAutoTurn(battle, stateId, {
-        messageRef,
-        interaction,
-        retry: retry + 1,
-        totalTurns,
-      });
+    if (!battle.ended) {
+      battle.autoData.isAutoMode = false;
+      await interaction.editReply(await getStartTurnSend(battle, stateId));
+      return {
+        err: "Auto reached its turn limit. Continue the battle manually.",
+      };
     }
-    logger.error("Failed to send auto turn after 3 retries");
-    return;
+    await interaction.editReply(await getStartTurnSend(battle, stateId));
+    return null;
+  } finally {
+    battle.autoData.isAutoMode = false;
   }
-
-  return await setTimeout(
-    async () =>
-      await nextAutoTurn(battle, stateId, {
-        // @ts-ignore
-        messageRef: newMessageRef,
-        totalTurns: totalTurns + 1,
-      }),
-    1000,
-  );
 };
 
 /**
@@ -504,16 +539,8 @@ const startAuto = async ({ battle, stateId, interaction, user }) => {
     npcId: battle.npcId,
   });
 
-  if (trainer.settings.instantAutoBattle) {
-    await instantAutoBattle(battle, stateId, interaction);
-    return;
-  }
-
-  errorlessAsync(() =>
-    nextAutoTurn(battle, stateId, {
-      interaction,
-    }),
-  );
+  battle.autoData.isAutoMode = true;
+  return instantAutoBattle(battle, stateId, interaction);
 };
 
 const buildPveSend = async ({
@@ -697,9 +724,25 @@ const buildPveSend = async ({
     battle.addTeam("Player", false);
     battle.addTrainer(newTrainerResult.data, validate.data, "Player");
 
-    // start battle and add to state
-    battle.start();
-    state.battle = battle;
+    let battleSend;
+    if (isDurableBattleEnabled()) {
+      const durableService = await getDurableBattleService();
+      const started = await durableService.start({
+        battle,
+        mode: { type: "pve", npcId: state.npcId, difficulty: state.difficulty },
+      });
+      state.durableBattleId = started.battleId;
+      battleSend = await renderBattle(
+        durableService,
+        started.battleId,
+        user.id,
+        { stateId },
+      );
+    } else {
+      battle.start();
+      state.battle = battle;
+      battleSend = await getStartTurnSend(battle, stateId);
+    }
 
     // add a replay button to state for later
     // build difficulty row
@@ -737,7 +780,7 @@ const buildPveSend = async ({
     state.endBattleComponents = [difficultyRow, returnRow];
 
     return {
-      send: await getStartTurnSend(battle, stateId),
+      send: battleSend,
       err: null,
     };
   }
@@ -900,10 +943,31 @@ const buildDungeonSend = async ({
     );
     battle.addTeam("Player", false);
     battle.addTrainer(newTrainerResult.data, validate.data, "Player");
+    battle.setPhaseQueue(npc.userId, npc.getRemainingPhaseParties());
 
-    // start battle and add to state
-    battle.start();
-    state.battle = battle;
+    let battleSend;
+    if (isDurableBattleEnabled()) {
+      const durableService = await getDurableBattleService();
+      const started = await durableService.start({
+        battle,
+        mode: {
+          type: "dungeon",
+          dungeonId: state.dungeonId,
+          difficulty: state.difficulty,
+        },
+      });
+      state.durableBattleId = started.battleId;
+      battleSend = await renderBattle(
+        durableService,
+        started.battleId,
+        user.id,
+        { stateId },
+      );
+    } else {
+      battle.start();
+      state.battle = battle;
+      battleSend = await getStartTurnSend(battle, stateId);
+    }
 
     // add a replay button to state for later
     // build difficulty row
@@ -925,7 +989,7 @@ const buildDungeonSend = async ({
     state.endBattleComponents = [difficultyRow];
 
     return {
-      send: await getStartTurnSend(battle, stateId),
+      send: battleSend,
       err: null,
     };
   }
@@ -965,6 +1029,40 @@ const towerWinCallback = async (battle, user) => {
   battle.rewards = {
     ...battleTowerData.rewards,
   };
+};
+
+/**
+ * Reapply tower progression from stored mode data, without a battle callback.
+ * @param {Battle} battle
+ * @param {{ stage: number }} mode
+ */
+const applyDurableTowerCompletion = async (battle, mode) => {
+  if (!battle.winner || battle.teams[battle.winner].isNpc) return;
+  const towerData = battleTowerConfig[mode.stage];
+  if (!towerData || getIdFromTowerStage(mode.stage) !== battle.npcId) {
+    throw new Error(`Invalid stored tower stage ${mode.stage}`);
+  }
+  for (const userId of battle.teams[battle.winner].userIds) {
+    const user = battle.users[userId];
+    const { data: trainer, err } = await getTrainer(user);
+    if (err || !trainer)
+      throw new Error(`Failed to get tower trainer ${userId}`);
+    if (trainer.lastTowerStage + 1 !== mode.stage) {
+      throw new Error(`Tower stage changed for ${userId}`);
+    }
+    trainer.lastTowerStage = mode.stage;
+    const update = await updateTrainer(trainer);
+    if (update.err)
+      throw new Error(`Failed to advance tower trainer ${userId}`);
+  }
+  battle.rewards = { ...towerData.rewards };
+};
+
+const processDurableBattleCompletion = async (battle, record) => {
+  if (record.mode.type === "tower") {
+    await applyDurableTowerCompletion(battle, record.mode);
+  }
+  return processBattleCompletionRewards(battle, { strict: true });
 };
 
 const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
@@ -1014,11 +1112,12 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
     difficultyConfig[battleTowerData.difficulty].rewardMultipliers;
   const autoBattleCost =
     difficultyConfig[battleTowerData.difficulty].autoBattleCost + 2;
+  const durable = isDurableBattleEnabled();
   const battle = new Battle({
     ...rewardMultipliers,
     npcId: getIdFromTowerStage(towerStage),
     difficulty: battleTowerData.difficulty,
-    winCallback: towerWinCallback,
+    winCallback: durable ? null : towerWinCallback,
     canAuto: !getCanTrainerAutoBattle(trainer.data, autoBattleCost).err,
     autoBattleCost,
     shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(trainer.data).err,
@@ -1035,9 +1134,21 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
   battle.addTeam("Player", false);
   battle.addTrainer(trainer.data, validate.data, "Player");
 
-  // start battle and add to state
-  battle.start();
-  state.battle = battle;
+  let battleSend = null;
+  if (durable) {
+    const durableService = await getDurableBattleService();
+    const started = await durableService.start({
+      battle,
+      mode: { type: "tower", stage: towerStage },
+    });
+    state.durableBattleId = started.battleId;
+    battleSend = await renderBattle(durableService, started.battleId, user.id, {
+      stateId,
+    });
+  } else {
+    battle.start();
+    state.battle = battle;
+  }
 
   // build return button
   const returnData = {
@@ -1058,7 +1169,7 @@ const onBattleTowerAccept = async ({ stateId = null, user = null } = {}) => {
   );
   state.endBattleComponents = [returnRow];
 
-  return { err: null };
+  return { err: null, send: battleSend };
 };
 
 /**
@@ -1137,8 +1248,10 @@ module.exports = {
   getDoesTrainerHaveAutoBattle,
   getCanTrainerAutoBattle,
   getCanUserAutoBattle,
+  processBattleCompletionRewards,
+  processDurableBattleCompletion,
+  applyDurableTowerCompletion,
   getStartTurnSend,
-  nextAutoTurn,
   startAuto,
   buildPveSend,
   buildDungeonSend,
