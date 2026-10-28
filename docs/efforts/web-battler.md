@@ -244,6 +244,14 @@ runtime restart or live battle action is part of this restack.
 
 ### Required before broader rollout / remaining deployment work
 
+The October 2026 backlog reset tracks the remaining work in four scoped issues:
+[reboot recovery and backups](https://github.com/ewei068/pokestar/issues/184),
+[real-environment acceptance](https://github.com/ewei068/pokestar/issues/185),
+[reward/Auto claim recovery](https://github.com/ewei068/pokestar/issues/186), and
+[dependency exposures](https://github.com/ewei068/pokestar/issues/187).
+These tickets track outcomes and acceptance criteria; the contracts and evidence
+below remain authoritative. No new production verification is implied.
+
 - Complete the real-environment promotion checks in the
   [maintenance record](../verification/runtime-rate-limits-2026-10-24.md).
   Node 24 is now running on the VM; initial Pages/API/proxy checks and the user's
@@ -307,19 +315,23 @@ are user work and remain untouched.
 The 53 superseded PRs are closed and their 54 local/remote branches (including
 the already-closed arena prototype) are deleted. Their heads were unchanged
 and no old review threads or change-request reviews remained unresolved. The
-six replacement branches remain for review. Keep them until merged and retain
-the archive tags for historical VFX comparisons. The unrelated agent-setup PR
-and other worktrees are outside this cleanup.
+replacement implementation PRs have since merged to `main`; the archive tags
+retain historical VFX comparisons. Agent-setup PR #125 is refreshed separately
+for the deployed Discord/web architecture and current workflow conventions.
 
 Follow-ups for a separate repository change:
 
-- Run the updated backend/client test and production-build CI matrix remotely;
-  the new Node 24 and temporary Node 18 lanes are locally verified only so far.
+- Remote CI now passed the backend/client test and production-build matrix on
+  `0870de6`: [Tests run](https://github.com/ewei068/pokestar/actions/runs/40455100597),
+  Node 24.22.1 and temporary Node 18.20.4. This supersedes the earlier local-only
+  CI status; it does not establish real-provider/device or recovery acceptance.
 - Review static asset caching/hosting before public rollout: checked-in audio
   is 37,455,478 bytes and music is 56,094,812 bytes before HTTP compression.
   Music streams per visit; these totals are not the initial page transfer.
 - Refresh the older public tutorial independently; its early feature-status
-  claims predate this effort. Review related backlog [#16](https://github.com/ewei068/pokestar/issues/16), [#14](https://github.com/ewei068/pokestar/issues/14), [#44](https://github.com/ewei068/pokestar/issues/44) and [#13](https://github.com/ewei068/pokestar/issues/13) before closing anything.
+  claims predate this effort. The maintainer retired all 16 pre-existing issues
+  as stale on 2026-10-26, including #16, #14, #44 and #13. Their closure is not
+  evidence that their requests were implemented.
 
 Deleting obsolete files and branches does not shrink historical Git objects.
 History rewriting and unrelated branch/worktree removal are outside this task.
