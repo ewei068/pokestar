@@ -2,6 +2,8 @@
 
 These are repository conventions, independent of the installed skill provider.
 Use labels that help the current work; an issue need not have every category.
+Priority lives in the GitHub Project's single-select field, using
+[the priority rubric](prioritization.md), rather than a second set of labels.
 
 | Label | Meaning |
 | --- | --- |
