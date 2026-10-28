@@ -12,6 +12,21 @@ contracts instead of maintaining a second copy of their full specification.
 Use [triage labels](triage-labels.md) when they help identify the next action.
 Compound Engineering does not require a special label taxonomy.
 
+The [Pokestar Project](https://github.com/users/ewei068/projects/3) provides the
+[Open issues table](https://github.com/users/ewei068/projects/3/views/2), filtered
+to `repo:ewei068/pokestar is:issue is:open` and sorted by **Priority** ascending.
+It displays Title, Assignees, Labels and Priority. Add `label:bug` or another
+label to the view's filter to narrow the queue; preserve the base repository,
+issue and open-state filters when saving a shared view.
+
+Use [the priority rubric](prioritization.md) when triaging or selecting work.
+Keep untriaged issues visible. Readiness labels and assignment remain separate
+from priority. A saved view filters items already in the Project, so existing
+issues need an initial import and future issues need auto-add enabled. GitHub's
+built-in auto-add workflow should target `ewei068/pokestar` with `is:issue is:open`;
+it does not backfill existing issues. Linking a repository alone does not add
+its issues. When creating or reopening work, verify that it appears in the queue.
+
 - Read: `gh issue view <number> --json number,title,body,labels,comments`.
 - Search: `gh issue list --state all --search "<topic>"`.
 - Create: `gh issue create --title "<title>" --body-file <markdown-file>`.
