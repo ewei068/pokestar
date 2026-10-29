@@ -2,20 +2,38 @@
 
 Reviewed **2026-10-28, America/Los_Angeles**. All **129 entries** have maintainer-approved bot and web priorities. The inventory includes overlapping journeys, variants, mechanics, enabling systems, server administration and operator/developer functions.
 
-## Product requirements and evidence
+## Purpose and evidence
 
-The [web interface PRD](pokestar-web-interface-prd.md) defines product requirements, the current default for bot/web priority parity, explicit surface exceptions and a proposed rule for dependencies. Catching, managing, training and battling Pokémon form the critical loop, supported by learning, settings and reliable progression.
+This is the maintained inventory of Pokestar's current journeys, mechanics and
+supporting functions, with reviewed priorities. Planning to expand the web
+battler into an interface for the Discord bot prompted this inventory. It is
+input to a future PRD; defining that product, its release scope or its
+implementation sequence is separate work.
 
-- [Approved source catalog](user-journeys/catalog.json): exact ratings, stable IDs, outcomes, rationale, sources, dependencies and maintainer notes. Previous values remain under `preReview`.
-- [Preserved decision export](user-journeys/decisions.json) and [review summary](user-journeys/review-summary.md): all 129 approvals, 44 changed priority pairs, notes and provenance.
-- [Coverage audit](user-journeys/coverage.md) and [machine ledger](user-journeys/coverage.json): static command/event/component reconciliation and complete data-definition/source inventories.
-- [Web effort overview](efforts/web-battler.md): current implementation and verification; reviewed requirements are not evidence of implementation.
-- [Ticket priority rubric](agents/prioritization.md): journey importance informs, but does not automatically set, work-item priority.
+Bot descriptions document the source behavior as of **2026-10-28**, commit
+`f2fc1f70cdd4abacf70f26201d601abb78c264cb`. Web ratings record relative importance
+for later planning, not a claim that those journeys already exist on web. The
+existing web access and battle functions are included and identified separately.
 
-The temporary review has been incorporated and its local HTML, server, screenshots,
-test data and task helpers removed. The uploaded export is preserved unchanged.
-Numeric ratings and notes are maintainer decisions; rationale text is an editorial
-explanation, with its origin recorded in the source catalog.
+- This document owns the maintained descriptions, IDs, priorities, rationale,
+  dependencies, entry points and review notes. Update it when behavior or a
+  prioritization decision changes.
+- [Coverage audit](user-journeys/coverage.md): the historical scan method and
+  command, event, component and mechanic-family mappings used to check omissions.
+- [Original decision export](user-journeys/decisions.json): the unchanged review
+  snapshot of all 129 approvals and notes. Keep it as provenance, not a second
+  catalog to edit. It uses catalog version `2026-10-28-deep-scan-v1`; its SHA-256
+  is `6ab574104d8bf0d6c3f0e2d03d77250f9454148356c87895760ea0c71f01994e`.
+- [Web effort overview](efforts/web-battler.md): existing implementation,
+  verification and known limitations.
+- [Ticket priority rubric](agents/prioritization.md): how journey importance
+  informs work-item urgency.
+
+All 129 priority pairs were approved; 44 changed during the review. Priority
+values and review notes are maintainer decisions. Rationale is editorial
+interpretation. Descriptions summarize the supported flow; known limitations
+are called out where source support falls short of the stated outcome. Static
+inspection does not establish production acceptance or measure usage.
 
 ## Priority guide
 
@@ -27,9 +45,35 @@ explanation, with its origin recorded in the source catalog.
 | P3 | Very-low-priority reference or diagnostic convenience. |
 | Outside scope | No current commitment on that surface; this is not P3. |
 
-Equivalent production-facing bot/web journeys normally have matching priority for now. Preserve explicit reviewed exceptions rather than enforcing parity retroactively. Dependencies need a separate account of required supporting behavior, ownership and delivery order; see the [PRD dependency policy](pokestar-web-interface-prd.md#dependencies-and-required-supporting-behavior).
+Catching, managing, training and battling Pokémon form the critical loop.
+Learning, settings, resource handling and progression also have reviewed P0
+entries. Importance is distinct from measured frequency; this scan collected
+no usage telemetry.
 
-J63 remains P1/P1 as reviewed. Its maintainer note proposes P0 replenishment and a separate P1/P2 inspection flow; the split is unresolved. J124 remains bot P1 / web outside scope. Retaining accepted vote credit is required supporting behavior even while web promotion/claims remain P2.
+Equivalent production-facing bot/web journeys normally have matching priority
+for now. This is a provisional guideline. Keep explicit exceptions when a flow
+is invalid on one surface or works materially differently. Examples include
+raids (bot P0 / web P2), voting and claims (bot P0 / web P2), and spawn
+configuration (bot P0 / web outside scope). Discord layout and indicator
+preferences are outside web scope; web targeting itself remains P0 under J93.
+The reviewed values below take precedence over a general parity assumption.
+
+### Dependencies and unresolved prioritization
+
+Dependencies describe existing prerequisites or supporting behavior, not an
+automatic rule for assigning priority. Parent links group overlapping outcomes;
+they are not a complete dependency graph. When planning work, identify which
+part of a dependency is needed and whether it already exists in the shared
+backend. A related screen, acquisition flow and stored benefit can have
+different priorities. No dependency-priority propagation policy is settled here.
+
+| Case | Reviewed ratings and current relationship | Question for later planning |
+| --- | --- | --- |
+| Voting and retained credit | J33 is bot P0 / web P2; provider ingestion J124 is bot P1 / web outside scope. Provider callbacks store vote credit separately from the claim UI. | How should work that preserves accepted credit be prioritized independently of promoting voting or offering web claims? Do not infer a new rating for J124. |
+| Mythical acquisition and owned benefits | Celebi/Jirachi unlocks J78/J81 are P2; owned bonuses J79/J82 are P0. | Which supporting behavior is needed for an existing owner without building the full acquisition flow on web? |
+| Auto and learning | Auto J32 and Darkrai unlock J87 are P1; the current unlock requires 25 tutorial completions. | How would a different web learning flow count toward that existing gate? |
+| Jirachi prerequisites | J81 requires raid-earned Star Pieces and Pokémon with another original owner; web raids are P2. | Which prerequisites can be satisfied through existing Discord progress when a web journey is scoped? |
+| Dream Cards | Combined replenishment/inspection J63 remains P1/P1. The maintainer suggests P0 replenishment and P1/P2 inspection in the note below. | Should these be separate entries, and what is the final inspection rating? The approved aggregate remains unchanged. |
 
 ## Reviewed totals
 
@@ -41,7 +85,7 @@ J63 remains P1/P1 as reviewed. Its maintainer note proposes P0 replenishment and
 | P3 | 4 | 1 |
 | Outside scope | 12 | 23 |
 
-Counts include overlapping parents, variants and systems; they do not represent independent screens, features or release commitments. The current product scope is production-facing. Retained developer/operator audit rows do not imply public tooling requirements.
+Counts include overlapping parents, variants and systems; they do not represent independent screens, features or release commitments. The prioritization focuses on production-facing behavior. Developer/operator functions remain in the inventory for coverage; their presence does not imply public tooling requirements.
 
 ## Journey and function inventory
 
@@ -292,6 +336,7 @@ Counts include overlapping parents, variants and systems; they do not represent 
 
 a new player can learn what to do and how to progress.
 
+- Entry points: `/tutorial`, tutorial stages and rewards.
 - Category: Learning; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Some learning system is required; exact tutorial parity is undecided.
@@ -303,6 +348,7 @@ a new player can learn what to do and how to progress.
 
 collect the available daily grant and see its contents.
 
+- Entry points: `/daily`.
 - Category: Trainer & economy; type: Journey.
 - Bot: **P1**; web: **P1**; maintainer approved.
 - Rationale: Important but players can go without.
@@ -314,6 +360,7 @@ collect the available daily grant and see its contents.
 
 browse banners, choose a Pokéball, roll and inspect the result.
 
+- Entry points: `/gacha`, banner interactions.
 - Category: Collecting; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Core game mechanic.
@@ -325,6 +372,7 @@ browse banners, choose a Pokéball, roll and inspect the result.
 
 filter or sort the collection and inspect a Pokémon's stats, moves and progression.
 
+- Entry points: `/list`, `/info`, collection interactions.
 - Category: Collection & research; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Core game mechanic.
@@ -336,6 +384,7 @@ filter or sort the collection and inspect a Pokémon's stats, moves and progress
 
 choose Pokémon, arrange positions and manage party presets.
 
+- Entry points: `/party` command family, party manager.
 - Category: Party; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Core game mechanic; the sample included saving and loading a party.
@@ -347,6 +396,7 @@ choose Pokémon, arrange positions and manage party presets.
 
 choose a Pokémon and location and receive EXP and EV gains.
 
+- Entry points: `/train`.
 - Category: Progression; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Core game mechanic.
@@ -358,6 +408,7 @@ choose a Pokémon and location and receive EXP and EV gains.
 
 inspect a Pokémon's equipment and upgrade it to improve its stats.
 
+- Entry points: `/equipment`, upgrade interactions.
 - Category: Equipment & items; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Core game mechanic.
@@ -369,6 +420,7 @@ inspect a Pokémon's equipment and upgrade it to improve its stats.
 
 choose an opponent and difficulty, fight and receive applicable rewards.
 
+- Entry points: `/pve`, battle interactions.
 - Category: Battle modes; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Core game mechanic.
@@ -380,6 +432,7 @@ choose an opponent and difficulty, fight and receive applicable rewards.
 
 find an ongoing battle and continue its current state after leaving or switching surfaces.
 
+- Entry points: `/continue-battle`, existing web battle list.
 - Category: Battle continuity; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Core game mechanic.
@@ -391,6 +444,7 @@ find an ongoing battle and continue its current state after leaving or switching
 
 issue or accept a challenge, take turns and reach a result.
 
+- Entry points: `/pvp`, challenge and battle interactions.
 - Category: Multiplayer; type: Journey.
 - Bot: **P1**; web: **P1**; maintainer approved.
 - Rationale: Important but players can go without.
@@ -402,6 +456,7 @@ issue or accept a challenge, take turns and reach a result.
 
 select a raid, battle and receive applicable rewards.
 
+- Entry points: `/raid`, raid interactions.
 - Category: Raids; type: Journey.
 - Bot: **P0**; web: **P2**; maintainer approved.
 - Rationale: Participating in a raid in one's server is critical; web has no server context.
@@ -413,6 +468,7 @@ select a raid, battle and receive applicable rewards.
 
 find an objective, check progress, meet its requirements and claim rewards.
 
+- Entry points: `/quest`, daily and achievement quest interactions.
 - Category: Quests; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Core game mechanic.
@@ -424,6 +480,7 @@ find an objective, check progress, meet its requirements and claim rewards.
 
 browse the Pokémart, choose item and quantity, buy and receive the purchase.
 
+- Entry points: `/pokemart`, `/buy`, shop interactions.
 - Category: Trainer & economy; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Core game mechanic.
@@ -435,6 +492,7 @@ browse the Pokémart, choose item and quantity, buy and receive the purchase.
 
 prepare an offer, review the exchange and complete the trade.
 
+- Entry points: `/trade` command family, trade confirmation interactions.
 - Category: Multiplayer; type: Journey.
 - Bot: **P1**; web: **P1**; maintainer approved.
 - Rationale: Important but players can go without.
@@ -446,6 +504,7 @@ prepare an offer, review the exchange and complete the trade.
 
 choose a leaderboard category and scope and inspect rankings.
 
+- Entry points: `/leaderboard`.
 - Category: Social & discovery; type: Journey.
 - Bot: **P2**; web: **P2**; maintainer approved.
 - Rationale: Low priority.
@@ -457,6 +516,7 @@ choose a leaderboard category and scope and inspect rankings.
 
 an authorized server manager changes spawn mode and adds or removes channels.
 
+- Entry points: `/spawn` command family, spawn manager.
 - Category: Server administration; type: Journey.
 - Bot: **P0**; web: **Outside scope**; maintainer approved.
 - Rationale: Critical server management function, bot only.
@@ -468,6 +528,7 @@ an authorized server manager changes spawn mode and adds or removes channels.
 
 view level, currency and collection summary; inspect another trainer's profile where privacy allows.
 
+- Entry points: `/trainerinfo`.
 - Category: Trainer & economy; type: Journey.
 - Bot: **P1**; web: **P1**; maintainer approved.
 - Rationale: Useful progress overview; core actions remain possible without a dedicated card.
@@ -479,6 +540,7 @@ view level, currency and collection summary; inspect another trainer's profile w
 
 see currency, Pokéballs, materials and consumables available to spend.
 
+- Entry points: `/backpack`.
 - Category: Trainer & economy; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Players need to see resources available for core purchases, training and collection.
@@ -490,6 +552,7 @@ see currency, Pokéballs, materials and consumables available to spend.
 
 collect the rewards unlocked by trainer progression.
 
+- Entry points: `/levelrewards`.
 - Category: Trainer & economy; type: Journey.
 - Bot: **P1**; web: **P1**; maintainer approved.
 - Rationale: Important progression reward source, but play can continue through other sources.
@@ -501,6 +564,7 @@ collect the rewards unlocked by trainer progression.
 
 browse the Pokédex to understand species, base stats and moves.
 
+- Entry points: `/pokedex`.
 - Category: Collection & research; type: Journey.
 - Bot: **P1**; web: **P1**; maintainer approved.
 - Rationale: Supports informed team building; owned-Pokémon inspection already covers the essential flow.
@@ -513,6 +577,7 @@ browse the Pokédex to understand species, base stats and moves.
 
 meet requirements, choose a valid evolution and confirm the change.
 
+- Entry points: `/evolve`, evolution selection and confirmation.
 - Category: Progression; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Evolution is a primary route for strengthening and completing a collection.
@@ -524,6 +589,7 @@ meet requirements, choose a valid evolution and confirm the change.
 
 choose an available form and pay its cost.
 
+- Entry points: `/form`, form selection.
 - Category: Progression; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Form changes are part of the maintainer’s critical Pokémon management and progression scope.
@@ -535,6 +601,7 @@ choose an available form and pay its cost.
 
 give, swap or remove a Pokémon's held item.
 
+- Entry points: `/helditem`.
 - Category: Equipment & items; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Players need to equip and recover owned items for normal team preparation.
@@ -546,6 +613,7 @@ give, swap or remove a Pokémon's held item.
 
 choose a nature and spend a mint to apply it.
 
+- Entry points: `/nature`, nature confirmation.
 - Category: Progression; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Nature changes are part of the maintainer’s critical Pokémon build management scope.
@@ -557,6 +625,7 @@ choose a nature and spend a mint to apply it.
 
 choose unwanted Pokémon and release them for currency, freeing collection capacity.
 
+- Entry points: `/release`, collection release interactions.
 - Category: Collection & research; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: A full collection blocks further acquisition; releasing is a core capacity escape route.
@@ -568,6 +637,7 @@ choose unwanted Pokémon and release them for currency, freeing collection capac
 
 filter or sort equipment and swap equipment between Pokémon.
 
+- Entry points: `/equipmentlist`, `/equipmentswap`.
 - Category: Equipment & items; type: Journey.
 - Bot: **P1**; web: **P1**; maintainer approved.
 - Rationale: Important optimization and reuse; basic equipment upgrades can work without transfers.
@@ -580,6 +650,7 @@ filter or sort equipment and swap equipment between Pokémon.
 
 choose an equipment stat slot, review the cost and reroll it.
 
+- Entry points: `/equipment`, equipment slot and reroll interactions.
 - Category: Equipment & items; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Equipment stat rerolls are included in critical equipment progression.
@@ -591,6 +662,7 @@ choose an equipment stat slot, review the cost and reroll it.
 
 see location levels and buy location improvements that support training or storage.
 
+- Entry points: `/locations`, `/pokemart`; location configuration.
 - Category: Progression; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Locations unlock specialized training and storage, supporting confirmed core journeys.
@@ -603,6 +675,7 @@ see location levels and buy location improvements that support training or stora
 
 choose a recipe and spend money and materials to receive an item.
 
+- Entry points: `/craft`.
 - Category: Equipment & items; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Crafting is included in the critical game mechanics scope.
@@ -614,6 +687,7 @@ choose a recipe and spend money and materials to receive an item.
 
 select a dungeon and defeat it to earn equipment upgrade materials.
 
+- Entry points: `/dungeons`, dungeon acceptance and battle interactions.
 - Category: Battle modes; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Dungeons supply upgrade materials for the confirmed P0 equipment progression loop.
@@ -625,6 +699,7 @@ select a dungeon and defeat it to earn equipment upgrade materials.
 
 progress through tower battles and receive applicable rewards.
 
+- Entry points: `/battletower`, tower interactions.
 - Category: Battle modes; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Battle Tower is included in the critical battle and progression scope.
@@ -636,6 +711,7 @@ progress through tower battles and receive applicable rewards.
 
 resolve an eligible battle automatically using the available entitlement and resources.
 
+- Entry points: Battle Auto interactions, `/mythic darkrai`; shared completion and Auto contracts.
 - Category: Battle continuity; type: Journey.
 - Bot: **P1**; web: **P1**; maintainer approved.
 - Rationale: Time-saving battle convenience; manual completion remains available.
@@ -648,6 +724,7 @@ resolve an eligible battle automatically using the available entitlement and res
 
 visit an external voting site and claim the resulting rewards.
 
+- Entry points: `/vote`, vote rewards interaction.
 - Category: Social & discovery; type: Journey.
 - Bot: **P0**; web: **P2**; maintainer approved.
 - Rationale: Voting is P0 for the bot because it drives bot growth; the reviewed web voting/claim flow remains P2.
@@ -660,6 +737,7 @@ visit an external voting site and claim the resulting rewards.
 
 respond to a server's wild encounter and catch the Pokémon.
 
+- Entry points: Spawn service, wild Pokémon button; not a slash command.
 - Category: Collecting; type: Journey.
 - Bot: **P1**; web: **Outside scope**; maintainer approved.
 - Rationale: Important server engagement mechanic; the current web scope has no server encounter context.
@@ -671,6 +749,7 @@ respond to a server's wild encounter and catch the Pokémon.
 
 inspect available settings and save preferences, including profile privacy.
 
+- Entry points: `/settings`, settings configuration.
 - Category: Preferences; type: Journey.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: The maintainer considers personal settings critical; individual surface-specific controls retain their explicit exceptions.
@@ -683,6 +762,7 @@ inspect available settings and save preferences, including profile privacy.
 
 discover available commands or find instructions for a specific command.
 
+- Entry points: `/help`.
 - Category: Learning; type: Journey.
 - Bot: **P1**; web: **P1**; maintainer approved.
 - Rationale: Useful contextual help; P0 onboarding is a separate outcome and need not copy command help.
@@ -694,6 +774,7 @@ discover available commands or find instructions for a specific command.
 
 browse event information.
 
+- Entry points: `/events`.
 - Category: Social & discovery; type: Journey.
 - Bot: **P2**; web: **P2**; maintainer approved.
 - Rationale: Useful discovery of limited content but not required to access core actions.
@@ -705,6 +786,7 @@ browse event information.
 
 inspect recent game changes.
 
+- Entry points: `/changelog`.
 - Category: Social & discovery; type: Journey.
 - Bot: **P3**; web: **P3**; maintainer approved.
 - Rationale: Reference reading that can remain available elsewhere.
@@ -716,6 +798,7 @@ inspect recent game changes.
 
 obtain the invite link to add Pokestar to a Discord server.
 
+- Entry points: `/invite`.
 - Category: Server administration; type: Journey.
 - Bot: **P0**; web: **Outside scope**; maintainer approved.
 - Rationale: Inviting the bot is critical for the bot surface and outside the current web scope.
@@ -727,6 +810,7 @@ obtain the invite link to add Pokestar to a Discord server.
 
 view and modify the player's Mew.
 
+- Entry points: `/mythic mew`, Mew interactions.
 - Category: Mythical Pokémon; type: Journey.
 - Bot: **P1**; web: **P1**; maintainer approved.
 - Rationale: Meaningful specialized team building once Mew is unlocked.
@@ -738,6 +822,7 @@ view and modify the player's Mew.
 
 view Celebi and activate its time powers.
 
+- Entry points: `/mythic celebi`, time travel interaction.
 - Category: Mythical Pokémon; type: Journey.
 - Bot: **P2**; web: **P2**; maintainer approved.
 - Rationale: Celebi’s recurring powers are lower-priority specialized content on both surfaces.
@@ -749,6 +834,7 @@ view Celebi and activate its time powers.
 
 inspect Deoxys and choose its form.
 
+- Entry points: `/mythic deoxys`, form selection.
 - Category: Mythical Pokémon; type: Journey.
 - Bot: **P2**; web: **P2**; maintainer approved.
 - Rationale: Deoxys form customization is lower-priority specialized content on both surfaces.
@@ -760,6 +846,7 @@ inspect Deoxys and choose its form.
 
 choose a wish, select a target where needed and confirm its resource cost.
 
+- Entry points: `/mythic jirachi`, wish interactions.
 - Category: Mythical Pokémon; type: Journey.
 - Bot: **P2**; web: **P2**; maintainer approved.
 - Rationale: Jirachi wishes are lower-priority specialized content; their reviewed prerequisite and benefit distinctions remain explicit.
@@ -773,6 +860,7 @@ choose a wish, select a target where needed and confirm its resource cost.
 
 understand Darkrai's Auto-related capabilities and resources.
 
+- Entry points: `/mythic darkrai`.
 - Category: Mythical Pokémon; type: Journey.
 - Bot: **P2**; web: **P2**; maintainer approved.
 - Rationale: The dedicated Darkrai/Auto information flow is lower priority than Auto use or unlocking Darkrai.
@@ -784,6 +872,7 @@ understand Darkrai's Auto-related capabilities and resources.
 
 change Arceus's form/type or create a Pokémon or item through its available powers.
 
+- Entry points: `/mythic arceus`, Arceus interactions.
 - Category: Mythical Pokémon; type: Journey.
 - Bot: **P2**; web: **P2**; maintainer approved.
 - Rationale: Arceus’s dedicated powers flow is lower-priority late-game content.
@@ -977,8 +1066,8 @@ Successful configured commands and interactions award trainer EXP/currency, leve
 
 - Category: Trainer & economy; type: Mechanic.
 - Bot: **P0**; web: **P0**; maintainer approved.
-- Rationale: Core economy and trainer progression must survive a surface change.
-- Source / scope notes: Discord rewards depend on interaction routing. Web currently does not imply parity for every future command; decide equivalent web actions during porting.
+- Rationale: Trainer EXP and currency are part of normal gameplay progression.
+- Source / scope notes: Discord rewards depend on interaction routing; the current web battle implementation does not establish equivalent rewards for other bot actions.
 - Sources: [src/handlers/commandHandler.js:305](../src/handlers/commandHandler.js), [src/handlers/eventHandler.js:1](../src/handlers/eventHandler.js), [src/services/trainer.js:336](../src/services/trainer.js).
 
 <a id="j62"></a>
@@ -989,7 +1078,7 @@ On trainer refresh, reset daily claims, shop quotas, NPC rewards, Mythical power
 
 - Category: Trainer & economy; type: System.
 - Bot: **P0**; web: **P0**; maintainer approved.
-- Rationale: Time-based progression limits and eligibility must remain consistent.
+- Rationale: Timed allowances govern recurring progression and eligibility.
 - Sources: [src/services/trainer.js:91](../src/services/trainer.js), [src/config/trainerConfig.js:138](../src/config/trainerConfig.js).
 
 <a id="j63"></a>
@@ -1078,7 +1167,7 @@ Add/remove money and eligible Pokémon, inspect both offers, and enforce level/q
 - Bot: **P1**; web: **P1**; maintainer approved.
 - Rationale: Essential preparation and safeguards for trading.
 - Parent: J14.
-- Source / scope notes: The current configuration documents level 40, at most 10 Pokémon and 25,000 currency; confirm current rules when implementing.
+- Source / scope notes: At the source snapshot, trading uses level 40 eligibility, at most 10 Pokémon and 25,000 currency.
 - Sources: [src/commands/social/tradeAdd.js:1](../src/commands/social/tradeAdd.js), [src/commands/social/tradeRemove.js:1](../src/commands/social/tradeRemove.js), [src/services/trade.js:637](../src/services/trade.js).
 
 <a id="j70"></a>
@@ -1091,7 +1180,7 @@ Switch leaderboard scope across the six configured ranking categories.
 - Bot: **P2**; web: **P2**; maintainer approved.
 - Rationale: Keeps the confirmed low priority of competitive standings.
 - Parent: J15.
-- Source / scope notes: Global rankings fit current web scope; a server-specific view would require a server-context decision.
+- Source / scope notes: The bot exposes global and server views. The reviewed web priority does not settle a server-context design.
 - Sources: [src/elements/social/Leaderboard.js:1](../src/elements/social/Leaderboard.js), [src/config/socialConfig.js:37](../src/config/socialConfig.js).
 
 <a id="j71"></a>
@@ -1201,7 +1290,7 @@ Apply Celebi ownership bonuses to Pokémon EXP and daily money/material rewards.
 
 - Category: Mythical Pokémon; type: Mechanic.
 - Bot: **P0**; web: **P0**; maintainer approved.
-- Rationale: Existing Celebi owners must receive their earned EXP and daily reward bonuses in the applicable core flows.
+- Rationale: Owned Celebi bonuses affect EXP and daily rewards in core flows.
 - Parent: J41.
 - Sources: [src/services/pokemon.js:575](../src/services/pokemon.js), [src/services/gacha.js:68](../src/services/gacha.js).
 
@@ -1239,7 +1328,7 @@ Apply the configured shiny-chance bonuses in acquisition and raid reward generat
 
 - Category: Mythical Pokémon; type: Mechanic.
 - Bot: **P0**; web: **P0**; maintainer approved.
-- Rationale: Existing Jirachi owners must receive their earned shiny bonuses in applicable acquisition and raid reward flows.
+- Rationale: Owned Jirachi bonuses affect shiny odds in acquisition and raid rewards.
 - Parent: J43.
 - Sources: [src/services/gacha.js:187](../src/services/gacha.js), [src/services/raid.js:236](../src/services/raid.js).
 
@@ -1303,7 +1392,7 @@ Complete at least 25 tutorial stages and obtain Darkrai to unlock Auto access.
 
 - Category: Mythical Pokémon; type: Variant.
 - Bot: **P1**; web: **P1**; maintainer approved.
-- Rationale: Dependency of the reviewed P1 Auto flow; the web learning design must account for this unlock gate.
+- Rationale: Darkrai access enables the reviewed P1 Auto flow; the current gate depends on tutorial completions.
 - Parent: J44.
 - Dependencies: J01.
 - Sources: [src/services/mythic.js:761](../src/services/mythic.js).
@@ -1391,7 +1480,7 @@ Pass the active Pokémon’s turn, or use Next Turn on a legacy NPC turn.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: A reachable manual battle action, including handling unusable moves.
 - Parent: J08.
-- Source / scope notes: Durable NPC turns advance automatically; legacy Discord requires a Next Turn action. Web should preserve player skip without copying legacy NPC clicking.
+- Source / scope notes: Durable NPC turns advance automatically; legacy Discord requires a Next Turn action. Player skip is separate from legacy NPC turn advancement.
 - Sources: [src/components/battleNextTurnRow.js:1](../src/components/battleNextTurnRow.js), [src/battle/engine/Battle.js:657](../src/battle/engine/Battle.js).
 
 <a id="j95"></a>
@@ -1438,7 +1527,7 @@ Create, tick, replace, negate and clear supported weather conditions.
 
 - Category: Battle mechanics; type: Mechanic.
 - Bot: **P0**; web: **P0**; maintainer approved.
-- Rationale: Existing move/ability semantics must remain correct during normal battles.
+- Rationale: Weather and its suppression affect normal move and ability resolution.
 - Parent: J08.
 - Sources: [src/battle/engine/Battle.js:717](../src/battle/engine/Battle.js), [src/battle/engine/Battle.js:864](../src/battle/engine/Battle.js).
 
@@ -1462,7 +1551,7 @@ Activate abilities and held items, including consumption, suppression, triggered
 
 - Category: Battle mechanics; type: Mechanic.
 - Bot: **P0**; web: **P0**; maintainer approved.
-- Rationale: Owned build choices must affect existing battles correctly.
+- Rationale: Abilities and held items are part of owned builds and normal battle resolution.
 - Parent: J08.
 - Sources: [src/battle/engine/BattlePokemon.js:1492](../src/battle/engine/BattlePokemon.js), [src/battle/engine/BattlePokemon.js:1519](../src/battle/engine/BattlePokemon.js), [src/battle/data/initialize.js:1](../src/battle/data/initialize.js).
 
@@ -1474,9 +1563,9 @@ Resolve footprint patterns, redirection/taunts, forced repositioning, move copyi
 
 - Category: Battle mechanics; type: Mechanic.
 - Bot: **P0**; web: **P0**; maintainer approved.
-- Rationale: Registered combat content shares the engine; specialized behavior cannot disappear during a surface port.
+- Rationale: Special moves, positioning and transformations are implemented combat mechanics in the shared engine.
 - Parent: J08.
-- Source / scope notes: These are move-driven mechanics, not claims that the player has standalone switch/copy/transform buttons. Definition-level coverage is retained in coverage.json.
+- Source / scope notes: These are move-driven mechanics; there are no standalone player switch/copy/transform buttons implied by this row. Data families are mapped in the coverage audit.
 - Sources: [src/battle/engine/BattlePokemon.js:1187](../src/battle/engine/BattlePokemon.js), [src/battle/engine/BattlePokemon.js:209](../src/battle/engine/BattlePokemon.js), [src/battle/data/moves.js:1](../src/battle/data/moves.js).
 
 <a id="j102"></a>
@@ -1530,12 +1619,12 @@ Follow the configured support-server link when the player needs help beyond buil
 
 ### J106 — Handle expired interactions and request cooldowns
 
-Explain expired UI or rejected actions and let the player reopen/refresh the supported journey.
+Interaction handlers check stored UI state and route errors or expiry responses; the bot also applies a per-user request cooldown.
 
 - Category: Battle continuity; type: System.
 - Bot: **P0**; web: **P0**; maintainer approved.
 - Rationale: Core flows need a usable recovery path; current bot handling varies by handler.
-- Source / scope notes: Current bot rate limiting can silently drop interactions. This documents the function and desired outcome, not evidence that all error paths currently meet that outcome.
+- Source / scope notes: Bot cooldowns can silently drop interactions. Error/expiry handling varies by handler; a consistent explanation and recovery path is not established.
 - Sources: [src/services/state.js:1](../src/services/state.js), [src/services/bot/rateLimit.js:1](../src/services/bot/rateLimit.js), [src/handlers/eventHandler.js:1](../src/handlers/eventHandler.js).
 
 <a id="j107"></a>
@@ -1765,7 +1854,7 @@ Run existing development/data/asset scripts and one-off migrations when maintain
 - Category: Developer tools; type: Developer.
 - Bot: **P2**; web: **Outside scope**; maintainer approved.
 - Rationale: Repository maintenance capabilities are accounted for, not proposed as public web tools.
-- Source / scope notes: The coverage ledger lists every script, including historical migrations, image tools and statistics exports. Presence does not establish safe modern execution.
+- Source / scope notes: The scan included development scripts, historical migrations, image tools and statistics exports under scripts/. These are maintenance functions, not additional player journeys; presence does not establish safe modern execution.
 - Sources: [scripts/dev/find-missing-pokemon.js:1](../scripts/dev/find-missing-pokemon.js), [scripts/fetchPokeApiData.js:1](../scripts/fetchPokeApiData.js), [scripts/database/migrations/calculatePokemonStats.js:1](../scripts/database/migrations/calculatePokemonStats.js).
 
 <a id="j127"></a>
@@ -1809,4 +1898,4 @@ Retain original/current owner, unique ID, custom species/forms, growth curve, na
 
 The decision export matches all 129 stable IDs, titles and catalog version; all entries are approved and their priority values and notes are incorporated without change. Source links and references are checked. The prior scan reconciled 65 command definitions (61 handlers), 58 event definitions (57 handlers), 33 Deact elements and the data-definition tables across 319 JavaScript files plus three Python development utilities.
 
-Static coverage does not prove live behavior, usage frequency or correct implementation. Detailed acceptance and remaining product decisions are in the [PRD](pokestar-web-interface-prd.md). No runtime bot code, production state or GitHub priorities changed during this documentation work.
+Static coverage does not prove live behavior, usage frequency or correct implementation. A future PRD can use this inventory and its unresolved questions to define web scope and acceptance criteria. No runtime bot code, production state or GitHub priorities changed during this documentation work.

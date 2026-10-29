@@ -1,20 +1,18 @@
 # Journey coverage audit
 
-Source snapshot: **2026-10-28**; commit `f2fc1f70cdd4abacf70f26201d601abb78c264cb` (plus the current documentation edits).
+Source snapshot: **2026-10-28**; commit `f2fc1f70cdd4abacf70f26201d601abb78c264cb`.
 
-Priority statements in this audit describe the initial scan before maintainer
-review. All 129 entries were subsequently approved, with 44 changed priority
-pairs. Use the [review summary](review-summary.md), [current catalog](catalog.json)
-and [PRD](../pokestar-web-interface-prd.md) for the accepted ratings and current
-product guidance. Source coverage below remains the historical scan evidence.
+This is a historical static scan, retained to make omissions easier to check.
+The [maintained catalog](../user-journeys.md) owns current descriptions and
+reviewed priorities. This audit defines no web product requirements.
 
 ## Method and limits
 
-Parsed all 319 non-test JavaScript files under `src/` and `scripts/` without executing bot code, loading credentials, connecting to Discord or MongoDB, or invoking operator scripts. Traced registered commands, legacy component handlers, Deact callbacks, service branches, game-event listeners, timers and data/configuration tables. Selected service/engine bodies were inspected to establish outcomes and prerequisites. The machine ledger retains every source path/hash and every mapped command, event, component and definition key.
+Parsed all 319 non-test JavaScript files under `src/` and `scripts/` without executing bot code, loading credentials, connecting to Discord or MongoDB, or invoking operator scripts. Traced registered commands, legacy component handlers, Deact callbacks, service branches, game-event listeners, timers and data/configuration tables. Selected service/engine bodies were inspected to establish outcomes and prerequisites. The tables below preserve entry-point and mechanic-family mappings. Individual source hashes and configuration keys are omitted: the snapshot commit retains the code, and duplicating its data would create another large inventory to maintain.
 
 This establishes static source coverage of known entry points and mechanic families. It does not prove every branch is reachable in production, every mechanic is bug-free, runtime flag values, or usage frequency. Enum IDs are not counted as implemented moves/abilities. Raw definition counts can include overrides/aliases and are not runtime registry totals. Each species/move/item is a data variant under its mapped journey, rather than a separate porting workflow.
 
-The priority review includes parent journeys and their variants, mechanics, enabling systems and operator/developer functions. They overlap intentionally: do not sum them as independent product features. The initial proposals were provisional until the subsequent maintainer review linked above.
+The priority review includes parent journeys and their variants, mechanics, enabling systems and operator/developer functions. They overlap intentionally: do not sum them as independent product features. All 129 entries were subsequently reviewed; the initial priority proposals are not a separate maintained reference.
 
 ## Coverage totals
 
@@ -30,7 +28,7 @@ The priority review includes parent journeys and their variants, mechanics, enab
 
 - At scan time, the user’s first 16 ratings were preserved and 113 additional entries were proposed. The subsequent review covers all 129.
 - Jirachi unlock requires raid-earned Star Pieces and at least three Pokémon with another original owner. Its web use can depend on Discord-earned progress while web raids remain P2.
-- Darkrai unlock depends on 25 completed tutorial stages. Replacing the web tutorial must account for access to Auto; exact tutorial parity remains undecided.
+- Darkrai unlock depends on 25 completed tutorial stages. Learning-flow equivalence and its effect on Auto access remain questions for future web planning.
 - Deoxys depends on tower floor 20; Mew on New Island; Celebi on level plus Ilex Shrine; Arceus on collection/Mythical prerequisites.
 - Raid storage uses owner/instance identity rather than guild identity. The accepted bot/web priority difference reflects server participation context; no guild-keyed raid implementation is assumed.
 - Locations affect training, EV reduction, storage and unlocks. Passive timed replenishment applies to Dream Cards; locations are not an independent passive-money system.
@@ -42,6 +40,8 @@ The priority review includes parent journeys and their variants, mechanics, enab
 - Commented event dungeons/banners/tutorial copy are historical source, not proof of current playable content. Static AST extraction excludes comments.
 
 ## Commands
+
+Definitions are keyed by the IDs in [command configuration](../../src/config/commandConfig.js). Group children are listed by their configuration ID (for example, `darkrai` is the `/mythic darkrai` subcommand). Aliases and argument rules remain in that source. Stage configuration describes availability in code, not observed deployment.
 
 | Definition | Stage configuration | Handler or group | Journey IDs |
 | --- | --- | --- | --- |
@@ -176,7 +176,7 @@ The priority review includes parent journeys and their variants, mechanics, enab
 
 ## Mechanics and content variants
 
-Complete keys and source lines are retained in [coverage.json](coverage.json). These are static declaration counts, not production acceptance or deduplicated runtime registry totals.
+These are historical static declaration counts, not production acceptance or deduplicated runtime registry totals. Follow the source tables for individual definitions.
 
 | Source table | Definitions | Journey IDs |
 | --- | --- | --- |
@@ -235,10 +235,57 @@ Complete keys and source lines are retained in [coverage.json](coverage.json). T
 | `src/config/helpConfig.js` / `tutorialConfig` | 12 | J01 |
 | `src/config/socialConfig.js` / `voteConfig` | 2 | J33 |
 
+## Deact component coverage
+
+Components are implementation entry points, not additional journeys. Shared
+controls can map to several outcomes.
+
+| Component | Journey IDs |
+| --- | --- |
+| [src/elements/foundation/IdConfigSelectMenu.js](../../src/elements/foundation/IdConfigSelectMenu.js) | J04, J36, J106 |
+| [src/elements/foundation/ReturnButton.js](../../src/elements/foundation/ReturnButton.js) | J04, J36, J106 |
+| [src/elements/foundation/ScrollButtons.js](../../src/elements/foundation/ScrollButtons.js) | J04, J36, J106 |
+| [src/elements/foundation/YesNoButtons.js](../../src/elements/foundation/YesNoButtons.js) | J04, J36, J106 |
+| [src/elements/gacha/PaginatedRewardsPreview.js](../../src/elements/gacha/PaginatedRewardsPreview.js) | J03, J51 |
+| [src/elements/guild/SpawnManager.js](../../src/elements/guild/SpawnManager.js) | J16 |
+| [src/elements/help/HelpCategory.js](../../src/elements/help/HelpCategory.js) | J36 |
+| [src/elements/help/HelpCategoryList.js](../../src/elements/help/HelpCategoryList.js) | J36 |
+| [src/elements/help/HelpCommand.js](../../src/elements/help/HelpCommand.js) | J36 |
+| [src/elements/party/PartyButtons.js](../../src/elements/party/PartyButtons.js) | J05, J55 |
+| [src/elements/party/PartyManage.js](../../src/elements/party/PartyManage.js) | J05, J55 |
+| [src/elements/pokemon/Arceus.js](../../src/elements/pokemon/Arceus.js) | J45, J88, J89, J90, J91 |
+| [src/elements/pokemon/ChangeForm.js](../../src/elements/pokemon/ChangeForm.js) | J22 |
+| [src/elements/pokemon/ChangeHeldItem.js](../../src/elements/pokemon/ChangeHeldItem.js) | J23 |
+| [src/elements/pokemon/Darkrai.js](../../src/elements/pokemon/Darkrai.js) | J44, J87 |
+| [src/elements/pokemon/FindPokemonFromOption.js](../../src/elements/pokemon/FindPokemonFromOption.js) | J04, J20, J22, J23, J42, J43, J44, J45 |
+| [src/elements/pokemon/FindPokemonFromOptionAndRender.js](../../src/elements/pokemon/FindPokemonFromOptionAndRender.js) | J04, J20, J22, J23, J42, J43, J44, J45 |
+| [src/elements/pokemon/Jirachi.js](../../src/elements/pokemon/Jirachi.js) | J43, J81, J83, J84, J85, J86 |
+| [src/elements/pokemon/PokedexList.js](../../src/elements/pokemon/PokedexList.js) | J20 |
+| [src/elements/pokemon/PokedexPokemon.js](../../src/elements/pokemon/PokedexPokemon.js) | J20 |
+| [src/elements/pokemon/PokemonList.js](../../src/elements/pokemon/PokemonList.js) | J04, J48 |
+| [src/elements/quest/QuestList.js](../../src/elements/quest/QuestList.js) | J12, J56, J57, J58 |
+| [src/elements/quest/QuestStage.js](../../src/elements/quest/QuestStage.js) | J12 |
+| [src/elements/quest/TutorialList.js](../../src/elements/quest/TutorialList.js) | J01 |
+| [src/elements/quest/TutorialStage.js](../../src/elements/quest/TutorialStage.js) | J59 |
+| [src/elements/shop/CraftItem.js](../../src/elements/shop/CraftItem.js) | J29 |
+| [src/elements/shop/CraftList.js](../../src/elements/shop/CraftList.js) | J29 |
+| [src/elements/social/Leaderboard.js](../../src/elements/social/Leaderboard.js) | J15, J70 |
+| [src/elements/trainer/BackpackEntryPoint.js](../../src/elements/trainer/BackpackEntryPoint.js) | J18, J35, J63 |
+| [src/elements/trainer/BackpackList.js](../../src/elements/trainer/BackpackList.js) | J18, J35, J63 |
+| [src/elements/trainer/BackpackListWithSelection.js](../../src/elements/trainer/BackpackListWithSelection.js) | J18, J35, J63 |
+| [src/elements/trainer/SettingsSelection.js](../../src/elements/trainer/SettingsSelection.js) | J18, J35, J63 |
+| [src/elements/trainer/UserSettings.js](../../src/elements/trainer/UserSettings.js) | J18, J35, J63 |
+
 ## Additional development scripts
 
-The three Python development utilities (image resizing, whitespace cropping and emoji printing) were also read and parsed without execution. Their hashes and mappings to J126 are in the ancillaryScripts ledger.
+Three Python asset utilities were parsed without execution and map to J126:
 
-## Source ledger
+- [scripts/dev/crop_whitespace.py](../../scripts/dev/crop_whitespace.py).
+- [scripts/dev/print_pokemon_emojis.py](../../scripts/dev/print_pokemon_emojis.py).
+- [scripts/dev/resize_image.py](../../scripts/dev/resize_image.py).
 
-[coverage.json](coverage.json) contains every scanned file, its role, mapped journey IDs and content hash, including all operator scripts and historical migrations. No test, production action, dependency install or code migration was run for this scan.
+The JavaScript scan also covered operator scripts and historical migrations
+under `scripts/`. No test, production action, dependency installation or code
+migration was run for the scan. Refer to the snapshot commit for individual
+source versions; these tables are coverage evidence rather than a live file
+manifest.
