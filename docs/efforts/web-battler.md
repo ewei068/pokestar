@@ -1,4 +1,14 @@
-# Pokestar web battler
+# Pokestar web interface (originally web battler)
+
+Product direction updated on **2026-10-28, America/Los_Angeles**: expand the
+web battler into a web interface for the Discord bot's critical and highly used
+journeys. The [user journey catalog](../user-journeys.md) now records all 129
+maintainer-reviewed bot/web ratings. The
+[web interface PRD](../pokestar-web-interface-prd.md) formalizes the critical
+game loop, settings, surface exceptions and required supporting behavior;
+its dependency policy is proposed where the maintainer left interpretation open.
+Release scope and implementation sequencing remain future work. The implementation
+and verification below describe the existing battle experience.
 
 Status: implementation landed on `main`; initial deployment working on
 **2026-10-26, America/Los_Angeles**. The user reports the live flow works;
@@ -39,12 +49,16 @@ own `archive/web-battler-*-prototype-2026-10-23` tags.
 
 ## Goal and scope
 
-Give participants a static website for signing in with Discord, finding ongoing
-battles, inspecting the battlefield and taking actions with ordered visual
-feedback. Discord and web share one durable, server-owned battle. Other bot
-features remain outside this effort.
+The original battle delivery gave participants a static website for signing in
+with Discord, finding ongoing battles, inspecting the battlefield and taking
+actions with ordered visual feedback. Discord and web share one durable,
+server-owned battle. Other bot features were outside that delivery; the new
+product direction includes them according to the
+[journey priorities](../user-journeys.md) and
+[product requirements](../pokestar-web-interface-prd.md). This documentation
+milestone does not establish that those features are implemented on web.
 
-### User-accepted decisions
+### User-accepted decisions for the battle delivery
 
 These come from the project conversation, including later corrections; they
 are distinct from implementation defaults and future suggestions.
@@ -288,9 +302,10 @@ below remain authoritative. No new production verification is implied.
   effect runtime: revisit when a concrete effect exceeds current compositions.
 - SSE/WebSockets and proactive Discord message synchronization: revisit based
   on traffic, latency or a feature needing push.
-- Canvas for the whole board, shared UI tokens/components, a larger router/cache
-  or other bot web features: revisit when measured rendering cost or a second
-  real feature supplies evidence. The board is DOM; tile effects already use canvas.
+- Canvas for the whole board, shared UI tokens/components or a larger router/cache:
+  revisit when measured rendering cost or a second real feature supplies evidence.
+  Other bot web features are now in journey prioritization; their implementation
+  remains future work. The board is DOM; tile effects already use canvas.
 - Restore mode-specific result/replay buttons after losing local UI context.
 - Historical log recovery across reconnect; current log is uncapped only within
   a session, and its in-memory entries still grow despite DOM virtualization.

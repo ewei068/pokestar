@@ -42,16 +42,30 @@ work. Otherwise sequence by dependencies and the maintainer's chosen outcome.
 Priority is separate from readiness, ownership and permission to act. A P0 can
 still need investigation; it does not authorize a production change by itself.
 
-There is no accepted journey/story impact catalog yet. Record the rationale and
-mark uncertain journey-impact judgments as provisional; ask for maintainer
-judgment when it changes sequencing. Keep untriaged items visible and avoid
-assigning priorities solely from their titles.
+The [user journey catalog](../user-journeys.md) records all 129 maintainer-reviewed
+ratings and surface exceptions. The
+[web interface PRD](../pokestar-web-interface-prd.md#prioritization-guidelines)
+formalizes the current parity default and a proposed dependency policy. Use the
+approved journey ratings as impact context; do not copy a journey's priority
+directly onto every related ticket.
+
+For supporting work, name the consumer and the minimum behavior it requires.
+Preserving accepted vote credit or applying an owned bonus can be required even
+when promotion, claiming or acquisition UI is lower priority. Do not silently
+promote whole related journeys or treat backend ownership as a reason to ignore
+web players' earned state. Record the dependency rationale and any proposed
+ticket urgency separately from the reviewed journey rating.
+
+Mark uncertain impact judgments as provisional; ask for maintainer judgment
+when they change sequencing. Keep untriaged items visible and avoid assigning
+priorities solely from their titles.
 
 ## Deferred
 
-- [Define and rank user journeys/stories](https://github.com/ewei068/pokestar/issues/188)
-  when the project needs a shared impact reference. This task does not create
-  that catalog or silently classify journeys.
+- Resolve the PRD's open dependency and Dream Card decomposition decisions when
+  scoping concrete work. The journey review is complete; this documentation
+  update does not change the state of the related
+  [journey tracking issue](https://github.com/ewei068/pokestar/issues/188).
 - Add completion-state board lanes only if execution tracking needs them. Reuse
   the same Project items and Priority field; the current scope is an open-issues
   table, not a separate status workflow or completion automation.
