@@ -1,0 +1,1039 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "2026-10-28-deep-scan-v1",
+  "updatedAt": "2026-10-29T00:49:48.084Z",
+  "entries": [
+    {
+      "id": "J01",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Learn to play"
+    },
+    {
+      "id": "J02",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Claim daily rewards"
+    },
+    {
+      "id": "J03",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Obtain Pokémon through gacha"
+    },
+    {
+      "id": "J04",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Find and inspect owned Pokémon"
+    },
+    {
+      "id": "J05",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Prepare a battle party"
+    },
+    {
+      "id": "J06",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Train a Pokémon"
+    },
+    {
+      "id": "J07",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Improve equipment"
+    },
+    {
+      "id": "J08",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Complete an NPC battle"
+    },
+    {
+      "id": "J09",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Resume an unfinished battle"
+    },
+    {
+      "id": "J10",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Battle another player"
+    },
+    {
+      "id": "J11",
+      "botPriority": "P0",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Participate in a raid"
+    },
+    {
+      "id": "J12",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Complete a quest"
+    },
+    {
+      "id": "J13",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Buy supplies"
+    },
+    {
+      "id": "J14",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Trade with another player"
+    },
+    {
+      "id": "J15",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Check competitive standings"
+    },
+    {
+      "id": "J16",
+      "botPriority": "P0",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Configure a server's spawns"
+    },
+    {
+      "id": "J17",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Inspect a trainer profile"
+    },
+    {
+      "id": "J18",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Inspect inventory"
+    },
+    {
+      "id": "J19",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Claim trainer level rewards"
+    },
+    {
+      "id": "J20",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Research a species"
+    },
+    {
+      "id": "J21",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Evolve a Pokémon"
+    },
+    {
+      "id": "J22",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Change a Pokémon's form"
+    },
+    {
+      "id": "J23",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Manage held items"
+    },
+    {
+      "id": "J24",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Change a Pokémon's nature"
+    },
+    {
+      "id": "J25",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Release Pokémon"
+    },
+    {
+      "id": "J26",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Compare and transfer equipment"
+    },
+    {
+      "id": "J27",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Reroll equipment stats"
+    },
+    {
+      "id": "J28",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Inspect and improve owned locations"
+    },
+    {
+      "id": "J29",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Craft an item"
+    },
+    {
+      "id": "J30",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Complete a dungeon"
+    },
+    {
+      "id": "J31",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Climb the Battle Tower"
+    },
+    {
+      "id": "J32",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Use Auto"
+    },
+    {
+      "id": "J33",
+      "botPriority": "P0",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "P0 for the bot since it drives bot growth",
+      "title": "Vote and claim rewards"
+    },
+    {
+      "id": "J34",
+      "botPriority": "P1",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Catch a wild spawn"
+    },
+    {
+      "id": "J35",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "Settings are very critical",
+      "title": "Change personal settings"
+    },
+    {
+      "id": "J36",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Get contextual help"
+    },
+    {
+      "id": "J37",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Discover current events"
+    },
+    {
+      "id": "J38",
+      "botPriority": "P3",
+      "webPriority": "P3",
+      "approved": true,
+      "note": "",
+      "title": "Read update notes"
+    },
+    {
+      "id": "J39",
+      "botPriority": "P0",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Invite the bot"
+    },
+    {
+      "id": "J40",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Customize Mew"
+    },
+    {
+      "id": "J41",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Use Celebi's powers"
+    },
+    {
+      "id": "J42",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Change Deoxys's form"
+    },
+    {
+      "id": "J43",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Make a Jirachi wish"
+    },
+    {
+      "id": "J44",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Inspect Darkrai and Auto access"
+    },
+    {
+      "id": "J45",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Use Arceus's powers"
+    },
+    {
+      "id": "J46",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Create a trainer and receive starting resources"
+    },
+    {
+      "id": "J47",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Lock or unlock a Pokémon"
+    },
+    {
+      "id": "J48",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Release a collection page"
+    },
+    {
+      "id": "J49",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Expand collection capacity"
+    },
+    {
+      "id": "J50",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Receive beginner roll guarantees"
+    },
+    {
+      "id": "J51",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Understand banners, ball odds and pity"
+    },
+    {
+      "id": "J52",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Inspect newly obtained Pokémon and acquisition bonuses"
+    },
+    {
+      "id": "J53",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Automatically fill a party"
+    },
+    {
+      "id": "J54",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Save and load party presets"
+    },
+    {
+      "id": "J55",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Inspect and validate the active formation"
+    },
+    {
+      "id": "J56",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Complete daily quests"
+    },
+    {
+      "id": "J57",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Progress staged achievements"
+    },
+    {
+      "id": "J58",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Claim all available quest rewards"
+    },
+    {
+      "id": "J59",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Claim tutorial rewards and resume the next lesson"
+    },
+    {
+      "id": "J60",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Receive progress reminders and return to the relevant objective"
+    },
+    {
+      "id": "J61",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Earn trainer EXP and currency through play"
+    },
+    {
+      "id": "J62",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Refresh daily, weekly and seasonal allowances"
+    },
+    {
+      "id": "J63",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "I think \"replenish\" is P0 but inspect is probably closer to P1/P2. This is debateable rolled into other auto or inventory related journeys separately, too",
+      "title": "Replenish and inspect Dream Cards"
+    },
+    {
+      "id": "J64",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Earn NPC daily rewards and track defeated difficulties"
+    },
+    {
+      "id": "J65",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Repeat an encounter after its result"
+    },
+    {
+      "id": "J66",
+      "botPriority": "P0",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Host a raid with a Raid Pass"
+    },
+    {
+      "id": "J67",
+      "botPriority": "P0",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Track raid damage, defeat, rewards and expiry"
+    },
+    {
+      "id": "J68",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Decline or cancel a trade"
+    },
+    {
+      "id": "J69",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Build and revise a trade offer"
+    },
+    {
+      "id": "J70",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Compare global and server standings"
+    },
+    {
+      "id": "J71",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Control profile privacy"
+    },
+    {
+      "id": "J72",
+      "botPriority": "P0",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Choose Discord mobile or desktop layout"
+    },
+    {
+      "id": "J73",
+      "botPriority": "P0",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "Out of scope for web for now since web UI doesn't really do target indicators the same way as the bot",
+      "title": "Toggle target confirmation indicators"
+    },
+    {
+      "id": "J74",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Toggle tutorial and quest reminders"
+    },
+    {
+      "id": "J75",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Inspect equipment rules and costs"
+    },
+    {
+      "id": "J76",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Reduce or reset EV allocation"
+    },
+    {
+      "id": "J77",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Unlock and obtain Mew"
+    },
+    {
+      "id": "J78",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Unlock and obtain Celebi"
+    },
+    {
+      "id": "J79",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Receive Celebi EXP and daily reward bonuses"
+    },
+    {
+      "id": "J80",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Unlock and obtain Deoxys"
+    },
+    {
+      "id": "J81",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Unlock and obtain Jirachi"
+    },
+    {
+      "id": "J82",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Receive Jirachi shiny bonuses"
+    },
+    {
+      "id": "J83",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Wish for Power"
+    },
+    {
+      "id": "J84",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Wish for Rebirth"
+    },
+    {
+      "id": "J85",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Wish for Allies"
+    },
+    {
+      "id": "J86",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Wish for Wealth"
+    },
+    {
+      "id": "J87",
+      "botPriority": "P1",
+      "webPriority": "P1",
+      "approved": true,
+      "note": "",
+      "title": "Unlock and obtain Darkrai"
+    },
+    {
+      "id": "J88",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Unlock and obtain Arceus"
+    },
+    {
+      "id": "J89",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Change Arceus type"
+    },
+    {
+      "id": "J90",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Create a chosen Pokémon with Arceus"
+    },
+    {
+      "id": "J91",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Create a chosen item with Arceus"
+    },
+    {
+      "id": "J92",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Choose and use a move"
+    },
+    {
+      "id": "J93",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Select and preview targets and affected tiles"
+    },
+    {
+      "id": "J94",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Skip a turn or advance legacy NPC turns"
+    },
+    {
+      "id": "J95",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Inspect teams, moves and battle state"
+    },
+    {
+      "id": "J96",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Resolve readiness, speed, cooldowns and extra turns"
+    },
+    {
+      "id": "J97",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Resolve status, buffs, debuffs and damage over time"
+    },
+    {
+      "id": "J98",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Resolve weather and its suppression"
+    },
+    {
+      "id": "J99",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Resolve damage, healing, fainting and revival"
+    },
+    {
+      "id": "J100",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Resolve passive abilities and held-item triggers"
+    },
+    {
+      "id": "J101",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Resolve special moves, positioning and transformations"
+    },
+    {
+      "id": "J102",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Receive a saved battle result and progression once"
+    },
+    {
+      "id": "J103",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Reject stale or unauthorized battle actions and recover"
+    },
+    {
+      "id": "J104",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Progress through dungeon phases and tower floors"
+    },
+    {
+      "id": "J105",
+      "botPriority": "P2",
+      "webPriority": "P2",
+      "approved": true,
+      "note": "",
+      "title": "Find support and community help"
+    },
+    {
+      "id": "J106",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Handle expired interactions and request cooldowns"
+    },
+    {
+      "id": "J107",
+      "botPriority": "OUT",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Sign in as the existing Discord trainer"
+    },
+    {
+      "id": "J108",
+      "botPriority": "OUT",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Sign out and recover an expired web session"
+    },
+    {
+      "id": "J109",
+      "botPriority": "P3",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Check bot responsiveness"
+    },
+    {
+      "id": "J110",
+      "botPriority": "P3",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Echo diagnostic text"
+    },
+    {
+      "id": "J111",
+      "botPriority": "OUT",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "Dev-only stuff like this I'm going to say is out of scope for now. I'm going to constrain the scope to production-facing only for the time being",
+      "title": "Grant test Pokémon"
+    },
+    {
+      "id": "J112",
+      "botPriority": "OUT",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Grant test inventory items"
+    },
+    {
+      "id": "J113",
+      "botPriority": "OUT",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Run the test interaction harness"
+    },
+    {
+      "id": "J114",
+      "botPriority": "OUT",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Inspect player and guild records"
+    },
+    {
+      "id": "J115",
+      "botPriority": "OUT",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Reset a player account and collection"
+    },
+    {
+      "id": "J116",
+      "botPriority": "OUT",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Reset quest or level reward progress"
+    },
+    {
+      "id": "J117",
+      "botPriority": "OUT",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Reset a player’s timed allowances"
+    },
+    {
+      "id": "J118",
+      "botPriority": "OUT",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Grant vote reward credit manually"
+    },
+    {
+      "id": "J119",
+      "botPriority": "OUT",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Reset guild configuration"
+    },
+    {
+      "id": "J120",
+      "botPriority": "OUT",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Clear active raids"
+    },
+    {
+      "id": "J121",
+      "botPriority": "P2",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Remove the bot from a server"
+    },
+    {
+      "id": "J122",
+      "botPriority": "P0",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Register commands and initialize storage"
+    },
+    {
+      "id": "J123",
+      "botPriority": "P0",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Schedule wild encounters and expire old raids"
+    },
+    {
+      "id": "J124",
+      "botPriority": "P1",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Receive authenticated external vote credit"
+    },
+    {
+      "id": "J125",
+      "botPriority": "P3",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Report bot presence, directory stats and resource metrics"
+    },
+    {
+      "id": "J126",
+      "botPriority": "P2",
+      "webPriority": "OUT",
+      "approved": true,
+      "note": "",
+      "title": "Maintain species, assets, enums and historical data"
+    },
+    {
+      "id": "J127",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Receive and spend all reward/resource types"
+    },
+    {
+      "id": "J128",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Survive browser closure and compatible backend restart"
+    },
+    {
+      "id": "J129",
+      "botPriority": "P0",
+      "webPriority": "P0",
+      "approved": true,
+      "note": "",
+      "title": "Preserve ownership, rarity, shiny and build identity"
+    }
+  ]
+}
