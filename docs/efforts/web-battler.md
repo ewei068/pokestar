@@ -31,6 +31,12 @@ The [next-session handoff](../handoffs/2026-10-29-web-navigation-foundation.md)
 narrows the next deliverable to navigation, representative responsive screens
 and supporting contract discovery; it includes the next-agent prompt.
 
+Web release work integrates through `codex/web-release`, whose long-running
+draft PR targets `main`. Start new release work branches from that branch and
+target it with their PRs; merge those PRs only after approval. The maintainer
+owns the final release merge into `main`. See the
+[release branch workflow](web-parity.md#release-branch-workflow--2026-10-29).
+
 Status: implementation landed on `main`; initial deployment working on
 **2026-10-26, America/Los_Angeles**. The user reports the live flow works;
 fresh Pages/API/runtime checks are recorded below. Broader battle acceptance,

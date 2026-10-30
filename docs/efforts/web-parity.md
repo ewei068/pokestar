@@ -9,6 +9,23 @@ No runtime behavior was changed by the audit or ticket publication. The
 priorities, G23 split and read-back checks; it supersedes the earlier recommendations
 and review checkpoints retained below.
 
+## Release branch workflow — 2026-10-29
+
+The maintainer selected `codex/web-release` as the long-running integration branch
+for this web release. Its draft PR targets `main` and stays open while the
+approved release work accumulates.
+
+- Create new web-release work branches from the latest `origin/codex/web-release`.
+- Open each feature or design PR with `codex/web-release` as its base, and merge
+  it into that branch only after approval.
+- Keep the release PR in draft while work and acceptance remain incomplete.
+  The maintainer will merge `codex/web-release` into `main` when the release is ready.
+
+This workflow applies to the web release effort; unrelated work keeps its own
+base. Use the current `web-release` issue queue and its acceptance criteria to
+track remaining scope. The branch starts with the approved planning package;
+its existence does not establish feature completion or production acceptance.
+
 ## Phase 2 publication — 2026-10-29
 
 The maintainer approved the complete review and all selected priorities. Created
