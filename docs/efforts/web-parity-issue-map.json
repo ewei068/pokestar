@@ -1,0 +1,1022 @@
+{
+  "date": "2026-10-29",
+  "snapshot": "999c2975f55f00e7",
+  "reviewSha256": "40dcaa49dfaba7efc8530283d47932d02e09221cf6e908fd30d0be088bc90625",
+  "verified": true,
+  "project": "https://github.com/users/ewei068/projects/3",
+  "counts": {
+    "newIssues": 43,
+    "existingIssuesReviewed": 9,
+    "existingWebLabelsUpdated": 8,
+    "webParity": 44,
+    "webRelease": 32,
+    "both": 25,
+    "eligibleJourneys": 106,
+    "excludedJourneys": 23,
+    "priorityDistribution": {
+      "P1": 18,
+      "P0": 17,
+      "P2": 16,
+      "P3": 1
+    }
+  },
+  "issues": {
+    "G02": {
+      "number": 196,
+      "url": "https://github.com/ewei068/pokestar/issues/196",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J02",
+        "J19"
+      ]
+    },
+    "G03": {
+      "number": 197,
+      "url": "https://github.com/ewei068/pokestar/issues/197",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J04",
+        "J129"
+      ]
+    },
+    "G04": {
+      "number": 198,
+      "url": "https://github.com/ewei068/pokestar/issues/198",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J25",
+        "J47",
+        "J48"
+      ]
+    },
+    "G05": {
+      "number": 199,
+      "url": "https://github.com/ewei068/pokestar/issues/199",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J05",
+        "J54",
+        "J55"
+      ]
+    },
+    "G06": {
+      "number": 200,
+      "url": "https://github.com/ewei068/pokestar/issues/200",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J53"
+      ]
+    },
+    "G07": {
+      "number": 201,
+      "url": "https://github.com/ewei068/pokestar/issues/201",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J18"
+      ]
+    },
+    "G08": {
+      "number": 202,
+      "url": "https://github.com/ewei068/pokestar/issues/202",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J13",
+        "J28",
+        "J49"
+      ]
+    },
+    "G09": {
+      "number": 203,
+      "url": "https://github.com/ewei068/pokestar/issues/203",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J03",
+        "J50",
+        "J51",
+        "J52"
+      ]
+    },
+    "G10": {
+      "number": 204,
+      "url": "https://github.com/ewei068/pokestar/issues/204",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J06",
+        "J76"
+      ]
+    },
+    "G11": {
+      "number": 205,
+      "url": "https://github.com/ewei068/pokestar/issues/205",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J21",
+        "J22",
+        "J24"
+      ]
+    },
+    "G12": {
+      "number": 206,
+      "url": "https://github.com/ewei068/pokestar/issues/206",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J07",
+        "J27",
+        "J75"
+      ]
+    },
+    "G13": {
+      "number": 207,
+      "url": "https://github.com/ewei068/pokestar/issues/207",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J26"
+      ]
+    },
+    "G14": {
+      "number": 208,
+      "url": "https://github.com/ewei068/pokestar/issues/208",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J23"
+      ]
+    },
+    "G15": {
+      "number": 209,
+      "url": "https://github.com/ewei068/pokestar/issues/209",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J29"
+      ]
+    },
+    "G16": {
+      "number": 210,
+      "url": "https://github.com/ewei068/pokestar/issues/210",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J08",
+        "J64"
+      ]
+    },
+    "G17": {
+      "number": 211,
+      "url": "https://github.com/ewei068/pokestar/issues/211",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J30",
+        "J104"
+      ]
+    },
+    "G18": {
+      "number": 212,
+      "url": "https://github.com/ewei068/pokestar/issues/212",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J31",
+        "J104"
+      ]
+    },
+    "G19": {
+      "number": 213,
+      "url": "https://github.com/ewei068/pokestar/issues/213",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J65"
+      ]
+    },
+    "G21": {
+      "number": 214,
+      "url": "https://github.com/ewei068/pokestar/issues/214",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J32",
+        "J63"
+      ]
+    },
+    "G22": {
+      "number": 215,
+      "url": "https://github.com/ewei068/pokestar/issues/215",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J12",
+        "J56",
+        "J57",
+        "J58"
+      ]
+    },
+    "G23A": {
+      "number": 216,
+      "url": "https://github.com/ewei068/pokestar/issues/216",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J46"
+      ]
+    },
+    "G23B": {
+      "number": 217,
+      "url": "https://github.com/ewei068/pokestar/issues/217",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J01",
+        "J59"
+      ]
+    },
+    "G24": {
+      "number": 218,
+      "url": "https://github.com/ewei068/pokestar/issues/218",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J36",
+        "J60"
+      ]
+    },
+    "G25": {
+      "number": 219,
+      "url": "https://github.com/ewei068/pokestar/issues/219",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J35",
+        "J71",
+        "J74"
+      ]
+    },
+    "G26": {
+      "number": 220,
+      "url": "https://github.com/ewei068/pokestar/issues/220",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J17"
+      ]
+    },
+    "G27": {
+      "number": 221,
+      "url": "https://github.com/ewei068/pokestar/issues/221",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J20"
+      ]
+    },
+    "G28": {
+      "number": 222,
+      "url": "https://github.com/ewei068/pokestar/issues/222",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J40",
+        "J77"
+      ]
+    },
+    "G29A": {
+      "number": 223,
+      "url": "https://github.com/ewei068/pokestar/issues/223",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J87"
+      ]
+    },
+    "G29B": {
+      "number": 224,
+      "url": "https://github.com/ewei068/pokestar/issues/224",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J44"
+      ]
+    },
+    "G30": {
+      "number": 225,
+      "url": "https://github.com/ewei068/pokestar/issues/225",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J10"
+      ]
+    },
+    "G31": {
+      "number": 226,
+      "url": "https://github.com/ewei068/pokestar/issues/226",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J14",
+        "J68",
+        "J69"
+      ]
+    },
+    "G32": {
+      "number": 227,
+      "url": "https://github.com/ewei068/pokestar/issues/227",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J11",
+        "J66",
+        "J67"
+      ]
+    },
+    "G33": {
+      "number": 228,
+      "url": "https://github.com/ewei068/pokestar/issues/228",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J41",
+        "J78"
+      ]
+    },
+    "G34": {
+      "number": 229,
+      "url": "https://github.com/ewei068/pokestar/issues/229",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J42",
+        "J80"
+      ]
+    },
+    "G35": {
+      "number": 230,
+      "url": "https://github.com/ewei068/pokestar/issues/230",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J43",
+        "J81",
+        "J83",
+        "J84",
+        "J85",
+        "J86"
+      ]
+    },
+    "G36": {
+      "number": 231,
+      "url": "https://github.com/ewei068/pokestar/issues/231",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J45",
+        "J88",
+        "J89",
+        "J90",
+        "J91"
+      ]
+    },
+    "G37": {
+      "number": 232,
+      "url": "https://github.com/ewei068/pokestar/issues/232",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J37",
+        "J38",
+        "J105"
+      ]
+    },
+    "G38": {
+      "number": 233,
+      "url": "https://github.com/ewei068/pokestar/issues/233",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J15",
+        "J70"
+      ]
+    },
+    "G39": {
+      "number": 234,
+      "url": "https://github.com/ewei068/pokestar/issues/234",
+      "labels": [
+        "web-parity"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J33"
+      ]
+    },
+    "G40": {
+      "number": 235,
+      "url": "https://github.com/ewei068/pokestar/issues/235",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J61",
+        "J62",
+        "J79",
+        "J82",
+        "J106",
+        "J127"
+      ]
+    },
+    "G41": {
+      "number": 236,
+      "url": "https://github.com/ewei068/pokestar/issues/236",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J102"
+      ]
+    },
+    "E184": {
+      "number": 184,
+      "url": "https://github.com/ewei068/pokestar/issues/184",
+      "labels": [],
+      "priority": "P3",
+      "journeys": [
+        "J09",
+        "J128"
+      ]
+    },
+    "E185": {
+      "number": 185,
+      "url": "https://github.com/ewei068/pokestar/issues/185",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J107",
+        "J108",
+        "J09",
+        "J92",
+        "J93",
+        "J94",
+        "J95",
+        "J96",
+        "J97",
+        "J98",
+        "J99",
+        "J100",
+        "J101",
+        "J103",
+        "J128"
+      ]
+    },
+    "E186": {
+      "number": 186,
+      "url": "https://github.com/ewei068/pokestar/issues/186",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J102",
+        "J61",
+        "J64",
+        "J67",
+        "J79",
+        "J100",
+        "J127",
+        "J128"
+      ]
+    },
+    "E187": {
+      "number": 187,
+      "url": "https://github.com/ewei068/pokestar/issues/187",
+      "labels": [
+        "web-release"
+      ],
+      "priority": "P2",
+      "journeys": []
+    },
+    "E190": {
+      "number": 190,
+      "url": "https://github.com/ewei068/pokestar/issues/190",
+      "labels": [
+        "web-release"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J93"
+      ]
+    },
+    "E191": {
+      "number": 191,
+      "url": "https://github.com/ewei068/pokestar/issues/191",
+      "labels": [
+        "web-release"
+      ],
+      "priority": "P2",
+      "journeys": [
+        "J09",
+        "J95"
+      ]
+    },
+    "E192": {
+      "number": 192,
+      "url": "https://github.com/ewei068/pokestar/issues/192",
+      "labels": [
+        "web-release"
+      ],
+      "priority": "P1",
+      "journeys": [
+        "J09",
+        "J103",
+        "J106",
+        "J128"
+      ]
+    },
+    "E194": {
+      "number": 194,
+      "url": "https://github.com/ewei068/pokestar/issues/194",
+      "labels": [
+        "web-parity",
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": [
+        "J04",
+        "J18",
+        "J51",
+        "J75",
+        "J95"
+      ]
+    },
+    "E195": {
+      "number": 195,
+      "url": "https://github.com/ewei068/pokestar/issues/195",
+      "labels": [
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": []
+    },
+    "W01": {
+      "number": 237,
+      "url": "https://github.com/ewei068/pokestar/issues/237",
+      "labels": [
+        "web-release"
+      ],
+      "priority": "P0",
+      "journeys": []
+    },
+    "W02": {
+      "number": 238,
+      "url": "https://github.com/ewei068/pokestar/issues/238",
+      "labels": [
+        "web-release"
+      ],
+      "priority": "P1",
+      "journeys": []
+    }
+  },
+  "journeyOwners": {
+    "J01": [
+      "G23B"
+    ],
+    "J02": [
+      "G02"
+    ],
+    "J03": [
+      "G09"
+    ],
+    "J04": [
+      "G03"
+    ],
+    "J05": [
+      "G05"
+    ],
+    "J06": [
+      "G10"
+    ],
+    "J07": [
+      "G12"
+    ],
+    "J08": [
+      "G16"
+    ],
+    "J09": [
+      "E185"
+    ],
+    "J10": [
+      "G30"
+    ],
+    "J11": [
+      "G32"
+    ],
+    "J12": [
+      "G22"
+    ],
+    "J13": [
+      "G08"
+    ],
+    "J14": [
+      "G31"
+    ],
+    "J15": [
+      "G38"
+    ],
+    "J17": [
+      "G26"
+    ],
+    "J18": [
+      "G07"
+    ],
+    "J19": [
+      "G02"
+    ],
+    "J20": [
+      "G27"
+    ],
+    "J21": [
+      "G11"
+    ],
+    "J22": [
+      "G11"
+    ],
+    "J23": [
+      "G14"
+    ],
+    "J24": [
+      "G11"
+    ],
+    "J25": [
+      "G04"
+    ],
+    "J26": [
+      "G13"
+    ],
+    "J27": [
+      "G12"
+    ],
+    "J28": [
+      "G08"
+    ],
+    "J29": [
+      "G15"
+    ],
+    "J30": [
+      "G17"
+    ],
+    "J31": [
+      "G18"
+    ],
+    "J32": [
+      "G21"
+    ],
+    "J33": [
+      "G39"
+    ],
+    "J35": [
+      "G25"
+    ],
+    "J36": [
+      "G24"
+    ],
+    "J37": [
+      "G37"
+    ],
+    "J38": [
+      "G37"
+    ],
+    "J40": [
+      "G28"
+    ],
+    "J41": [
+      "G33"
+    ],
+    "J42": [
+      "G34"
+    ],
+    "J43": [
+      "G35"
+    ],
+    "J44": [
+      "G29B"
+    ],
+    "J45": [
+      "G36"
+    ],
+    "J46": [
+      "G23A"
+    ],
+    "J47": [
+      "G04"
+    ],
+    "J48": [
+      "G04"
+    ],
+    "J49": [
+      "G08"
+    ],
+    "J50": [
+      "G09"
+    ],
+    "J51": [
+      "G09"
+    ],
+    "J52": [
+      "G09"
+    ],
+    "J53": [
+      "G06"
+    ],
+    "J54": [
+      "G05"
+    ],
+    "J55": [
+      "G05"
+    ],
+    "J56": [
+      "G22"
+    ],
+    "J57": [
+      "G22"
+    ],
+    "J58": [
+      "G22"
+    ],
+    "J59": [
+      "G23B"
+    ],
+    "J60": [
+      "G24"
+    ],
+    "J61": [
+      "G40"
+    ],
+    "J62": [
+      "G40"
+    ],
+    "J63": [
+      "G21"
+    ],
+    "J64": [
+      "G16"
+    ],
+    "J65": [
+      "G19"
+    ],
+    "J66": [
+      "G32"
+    ],
+    "J67": [
+      "G32"
+    ],
+    "J68": [
+      "G31"
+    ],
+    "J69": [
+      "G31"
+    ],
+    "J70": [
+      "G38"
+    ],
+    "J71": [
+      "G25"
+    ],
+    "J74": [
+      "G25"
+    ],
+    "J75": [
+      "G12"
+    ],
+    "J76": [
+      "G10"
+    ],
+    "J77": [
+      "G28"
+    ],
+    "J78": [
+      "G33"
+    ],
+    "J79": [
+      "G40",
+      "G02",
+      "G10",
+      "G16",
+      "G17"
+    ],
+    "J80": [
+      "G34"
+    ],
+    "J81": [
+      "G35"
+    ],
+    "J82": [
+      "G40",
+      "G09",
+      "G32"
+    ],
+    "J83": [
+      "G35"
+    ],
+    "J84": [
+      "G35"
+    ],
+    "J85": [
+      "G35"
+    ],
+    "J86": [
+      "G35"
+    ],
+    "J87": [
+      "G29A"
+    ],
+    "J88": [
+      "G36"
+    ],
+    "J89": [
+      "G36"
+    ],
+    "J90": [
+      "G36"
+    ],
+    "J91": [
+      "G36"
+    ],
+    "J92": [
+      "E185"
+    ],
+    "J93": [
+      "E185",
+      "E190"
+    ],
+    "J94": [
+      "E185"
+    ],
+    "J95": [
+      "E185"
+    ],
+    "J96": [
+      "E185"
+    ],
+    "J97": [
+      "E185"
+    ],
+    "J98": [
+      "E185"
+    ],
+    "J99": [
+      "E185"
+    ],
+    "J100": [
+      "E185"
+    ],
+    "J101": [
+      "E185"
+    ],
+    "J102": [
+      "G41",
+      "E186"
+    ],
+    "J103": [
+      "E185"
+    ],
+    "J104": [
+      "G17",
+      "G18"
+    ],
+    "J105": [
+      "G37"
+    ],
+    "J106": [
+      "G40"
+    ],
+    "J107": [
+      "E185"
+    ],
+    "J108": [
+      "E185"
+    ],
+    "J127": [
+      "G40"
+    ],
+    "J128": [
+      "E185"
+    ],
+    "J129": [
+      "G03"
+    ]
+  }
+}
