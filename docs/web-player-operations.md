@@ -4,6 +4,16 @@
 This records existing behavior and the proposed implementation boundary. No live
 MongoDB, provider, concurrency or recovery acceptance was performed.
 
+Follow-up inspection for trainer initialization on 2026-10-30 reconfirmed the
+identity/resource rows below against the current shell head. The existing unique
+`users.userId` index is configured in `src/config/databaseConfig.js`; whether it
+is present in the target database still needs real-environment evidence. Both
+`initTrainer` and `setDefaultFields` assign nested configured defaults by reference;
+preserve independent per-trainer values when changing initialization/refresh.
+Characterize refresh before narrowing its writes, including concurrent money,
+EXP and party changes. The [header/account study](design/trainer-initialization/README.md)
+records proposed display needs, not an implemented projection or an approval.
+
 ## Existing behavior and required changes
 
 | Boundary | Observed source behavior | First-slice direction |

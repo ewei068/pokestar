@@ -27,9 +27,9 @@ learning/rewards (#217, P1) are separate release tickets; Tower, polling and web
 promotion are included. #184 remains outside the cut; #185 is maintainer-owned.
 Navigation and shared-operation design/proof are next. Ticket publication made
 no runtime changes and establishes no new live acceptance.
-The [next-session handoff](../handoffs/2026-10-29-web-navigation-foundation.md)
-narrows the next deliverable to navigation, representative responsive screens
-and supporting contract discovery; it includes the next-agent prompt.
+The [historical navigation handoff](../handoffs/2026-10-29-web-navigation-foundation.md)
+captured that earlier navigation/discovery scope. The first-slice plan and
+checkpoints below govern the current continuation.
 
 On **2026-10-30**, the maintainer selected the Jewel refinement of Dusk Arcade
 as the working visual direction and **Play, Pokémon, Catch, Rewards, More** as
@@ -57,14 +57,29 @@ keyboard navigation, Settings, Back and dense battle targeting with no horizonta
 overflow. Browser battle data came from the named `dense` development fixture
 through a temporary local HTTP server, not live MongoDB or OAuth. One independent
 read-only review found a heading-weight regression, now corrected. No gameplay
-API, reward or persistence behavior was added. Trainer initialization is next
-after shell approval and merge into the release branch.
+API, reward or persistence behavior was added. Trainer initialization is next,
+stacked on the still-open shell PR #242 per the maintainer's later direction.
+Each affected screen needs a small editable desktop/phone preview and maintainer
+design feedback before its first production version, including simple screens.
 
 Web release work integrates through `codex/web-release`, whose long-running
-draft PR targets `main`. Start new release work branches from that branch and
-target it with their PRs; merge those PRs only after approval. The maintainer
-owns the final release merge into `main`. See the
+draft PR targets `main`. Independent work branches from and targets that branch;
+dependent work may stack on an open predecessor and target its feature branch.
+Reconcile/retarget when the parent changes or lands; merge only after approval.
+The maintainer owns the final release merge into `main`. See the
 [release branch workflow](web-parity.md#release-branch-workflow--2026-10-29).
+
+**Trainer design checkpoint · 2026-10-30:** the
+[editable header/account study](../design/trainer-initialization/README.md)
+proposes the first screen change for #216. It uses the production shell CSS with
+fixture identity, money/level/EXP and loading, failure, new-account, id-only,
+long-name and maximum-level states. Browser checks covered all seven states at
+1280/390/320 px, panel scrolling and keyboard/retry behavior. No API requests
+were made. Maintainer design feedback is pending; OAuth, trainer storage and
+the production UI remain unchanged. Source inspection reconfirmed that OAuth
+creates only a session, `/api/me` returns only an ID and trainer refresh writes
+a whole snapshot. Implementation must address those boundaries and carry its
+own persistence and identity review evidence.
 
 Status: implementation landed on `main`; initial deployment working on
 **2026-10-26, America/Los_Angeles**. The user reports the live flow works;
