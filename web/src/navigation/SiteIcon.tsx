@@ -1,4 +1,4 @@
-export const SiteIcon = ({ name }: { name: "play" | "pokemon" | "catch" | "rewards" | "more" | "bag" | "settings" }) => (
+export const SiteIcon = ({ name }: { name: "play" | "pokemon" | "catch" | "rewards" | "more" | "bag" | "settings" | "money" }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"
     strokeLinejoin="round" aria-hidden="true" focusable="false">
     {name === "play" && <><path d="m5 3 14 14-2 2L3 5V3h2Zm14 0L5 17m-2-3 7 7m4-18 7 7" /><path d="m4 20 2-2m12 0 2 2" /></>}
@@ -8,5 +8,6 @@ export const SiteIcon = ({ name }: { name: "play" | "pokemon" | "catch" | "rewar
     {name === "more" && <>{[5, 12, 19].map(cx => <circle key={cx} cx={cx} cy="12" r="1" fill="currentColor" />)}</>}
     {name === "bag" && <><path d="M5 8h14l1 13H4L5 8Zm3 0V6a4 4 0 0 1 8 0v2" /><path d="M8 13h8v5H8z" /></>}
     {name === "settings" && <><path d="m9 3-1 3-3 1-2 3 2 2-1 3 2 3 3-1 2 3h3l1-3 3-1 2-3-2-2 1-3-2-3-3 1-2-3H9Z" /><circle cx="11.5" cy="11.5" r="3" /></>}
+    {name === "money" && <><rect x="2" y="5" width="20" height="14" rx="2" /><circle cx="12" cy="12" r="3" /><path d="M6 10v4m12-4v4" /></>}
   </svg>
 );

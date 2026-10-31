@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { getMe, isApiError, logout, rateLimitDeadline, startLogin } from "../http";
 import { readLoginResult } from "./loginState";
+import type { TrainerProfile } from "../trainer/types";
 
-type AuthState = { kind: "loading" } | { kind: "ready"; userId: string } | { kind: "login"; error: string | null };
+type AuthState = { kind: "loading"; userId?: string } |
+  { kind: "ready"; userId: string; trainer: TrainerProfile | null } | { kind: "login"; error: string | null };
 
 export const useAuth = () => {
   const [result] = useState(() => readLoginResult(window.location.search));
@@ -33,9 +35,9 @@ export const useAuth = () => {
   useEffect(() => {
     const current = ++version.current;
     if (!result.error || attempt > 0) {
-      setState({ kind: "loading" });
+      setState(previous => ({ kind: "loading", userId: previous.kind === "login" ? undefined : previous.userId }));
       getMe().then(me => {
-        if (version.current === current) setState({ kind: "ready", userId: me.discordUserId });
+        if (version.current === current) setState({ kind: "ready", userId: me.discordUserId, trainer: me.trainer });
       }).catch(error => {
         if (version.current === current) setState({ kind: "login", error: isApiError(error, 401)
           ? result.completed ? "cookies" : null : "connection" });
@@ -77,7 +79,8 @@ export const useAuth = () => {
     }
   };
   const retry = () => {
-    if (state.kind === "login" && state.error === "connection") setAttempt(value => value + 1);
+    if (busy.current) return;
+    if ((state.kind === "ready" && !state.trainer) || (state.kind === "login" && state.error === "connection")) setAttempt(value => value + 1);
     else if (state.kind === "login" && state.error === "logout_failed") void signOut();
     else void signIn();
   };

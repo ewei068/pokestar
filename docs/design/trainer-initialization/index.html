@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trainer header review · Pokestar</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../../../web/src/style.css">
+  <link rel="stylesheet" href="study.css">
+  <script src="study.js" defer></script>
+</head>
+<body>
+  <aside class="review-bar" aria-label="Design review controls">
+    <div><strong>Trainer header · design review</strong><span>Example data · nothing is saved</span></div>
+    <label>Scenario <select id="scenario">
+      <option value="returning">Returning trainer</option>
+      <option value="new">New trainer</option>
+      <option value="loading">Loading / setup pending</option>
+      <option value="error">Trainer unavailable</option>
+      <option value="fallback">ID-only session / no profile</option>
+      <option value="long">Long name / large balance</option>
+      <option value="max">Maximum level</option>
+    </select></label>
+    <label class="review-check"><input type="checkbox" id="show-account"> Open account panel</label>
+    <p id="scenario-note"></p>
+  </aside>
+  <div class="app">
+    <a class="skip-link" href="#site-content">Skip to content</a>
+    <header class="site-header">
+      <a href="?state=returning" class="brand" aria-label="Pokestar · Play"><span class="brand-mark" aria-hidden="true">✦</span>Pokestar</a>
+      <div id="trainer-resources" class="trainer-resources"></div>
+      <div class="site-controls">
+        <button class="icon-button" data-destination="Bag" aria-label="Bag" type="button"></button>
+        <details class="account-menu" id="account-menu">
+          <summary aria-label="Trainer account" id="account-summary"></summary>
+          <div class="account-panel" id="account-panel"></div>
+        </details>
+        <button class="icon-button" data-destination="Settings" aria-label="Settings" type="button"></button>
+      </div>
+    </header>
+    <div class="site-layout">
+      <nav class="system-bar" aria-label="Main navigation" id="navigation"></nav>
+      <main class="site-content" id="site-content" tabindex="-1">
+        <div class="page-shell" id="page"></div>
+      </main>
+    </div>
+  </div>
+  <dialog id="study-dialog" aria-labelledby="dialog-title">
+    <form method="dialog"><h2 id="dialog-title"></h2><p id="dialog-copy"></p><button class="primary-button">Back to preview</button></form>
+  </dialog>
+</body>
+</html>

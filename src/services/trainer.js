@@ -4,6 +4,7 @@
  *
  * trainer.js Creates trainers and handles all logic relating to trainers and interactions involving them.
  */
+const { isDeepStrictEqual } = require("node:util");
 const {
   findDocuments,
   insertDocument,
@@ -19,7 +20,11 @@ const {
   levelConfig,
 } = require("../config/trainerConfig");
 const { logger } = require("../log");
-const { formatMoney, setDefaultFields } = require("../utils/utils");
+const {
+  formatMoney,
+  setDefaultFields,
+  getNumIntervalsBetweenDates,
+} = require("../utils/utils");
 const {
   getFlattenedRewardsString,
   getPokeballsString,
@@ -46,85 +51,160 @@ const { drawIterable, drawDiscrete } = require("../utils/gachaUtils");
 */
 
 /**
- *
- * @param {{
- *  id: string,
- *  username?: string,
- * }} user
+ * Trusted acting-user identity from Discord or an authenticated session.
+ * @typedef {Pick<DiscordUser, "id"> & Partial<Pick<DiscordUser, "username" | "discriminator" | "avatar">>} TrainerIdentity
+ */
+
+/**
+ * @param {DefaultFieldConfig<Trainer>} config
+ * @returns {DefaultFieldConfig<Trainer>}
+ */
+const cloneTrainerFieldConfig = (config) =>
+  Object.fromEntries(
+    Object.entries(config).map(([field, entry]) => [
+      field,
+      {
+        ...entry,
+        default: structuredClone(entry.default),
+        ...(entry.config && { config: cloneTrainerFieldConfig(entry.config) }),
+      },
+    ])
+  );
+
+/**
+ * @param {TrainerIdentity} user
  * @returns {Promise<WithId<Trainer>>}
  */
 const initTrainer = async (user) => {
-  const trainer = {
-    userId: user.id,
-    user,
-  };
-
-  for (const field in trainerFields) {
-    if (trainerFields[field].default !== undefined) {
-      trainer[field] = trainerFields[field].default;
+  const trainer = { userId: user.id, user };
+  for (const [field, entry] of Object.entries(trainerFields)) {
+    if (entry.default !== undefined) {
+      trainer[field] = structuredClone(entry.default);
     }
   }
 
-  try {
-    const res = await insertDocument(collectionNames.USERS, trainer);
-    // TODO: fix
-    if (res.insertedCount === 0) {
-      logger.error(`Failed to insert trainer ${user.username}.`);
-      return null;
-    }
-
-    logger.info(`Trainer ${user.username} created at ID ${res.insertedId}.`);
-    // @ts-ignore
-    return trainer;
-  } catch (error) {
-    logger.error(error);
+  const res = await insertDocument(collectionNames.USERS, trainer);
+  if (res.insertedCount === 0) {
+    logger.error(`Failed to insert trainer ${user.id}.`);
     return null;
+  }
+
+  logger.info(`Trainer ${user.id} created at ID ${res.insertedId}.`);
+  return /** @type {WithId<Trainer>} */ ({ ...trainer, _id: res.insertedId });
+};
+
+/**
+ * @param {Record<string, any>} previous
+ * @param {Record<string, any>} next
+ * @param {Record<string, any>} changes
+ * @param {Record<string, any>} filter
+ * @param {string} prefix
+ */
+const collectTrainerFieldChanges = (
+  previous,
+  next,
+  changes,
+  filter,
+  prefix = ""
+) => {
+  for (const [field, value] of Object.entries(next)) {
+    const original = previous[field];
+    if (isDeepStrictEqual(original, value)) {
+      continue;
+    }
+    const path = `${prefix}${field}`;
+    if (
+      original &&
+      value &&
+      Object.getPrototypeOf(original)?.constructor?.name === "Object" &&
+      Object.getPrototypeOf(value)?.constructor?.name === "Object" &&
+      Object.keys(value).length > 0
+    ) {
+      collectTrainerFieldChanges(original, value, changes, filter, `${path}.`);
+    } else {
+      // eslint-disable-next-line no-param-reassign
+      changes[path] = value;
+      // eslint-disable-next-line no-param-reassign
+      filter[path] = original === undefined ? { $exists: false } : original;
+    }
   }
 };
 
 /**
- * Attempts to update trainer fields.
- * @param {WithId<Trainer>} trainer
- * @param {boolean} forceUpdate
+ * @param {WithId<Trainer>} initialTrainer
+ * @param {TrainerIdentity=} user
  * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
  */
-const tryUpdateTrainerFields = async (trainer, forceUpdate = false) => {
-  // attempt to reset time-interval fields
-  const lastCorrectedDate = new Date(trainer.lastCorrected);
-  const newCorrectedDate = new Date();
-  const modified =
-    setDefaultFields(
-      trainer,
-      trainerFields,
-      lastCorrectedDate,
-      newCorrectedDate
-    ) || forceUpdate;
+const tryUpdateTrainerFields = async (initialTrainer, user) => {
+  let trainer = initialTrainer;
+  try {
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const next = { ...trainer };
+      for (const field of Object.keys(trainerFields)) {
+        next[field] = structuredClone(trainer[field]);
+      }
+      if (user) {
+        next.user = structuredClone({ ...next.user, ...user });
+      }
+      const lastCorrectedDate = new Date(trainer.lastCorrected);
+      const newCorrectedDate = new Date();
+      const refreshed = setDefaultFields(
+        next,
+        cloneTrainerFieldConfig(trainerFields),
+        lastCorrectedDate,
+        newCorrectedDate
+      );
+      if (refreshed || !isDeepStrictEqual(trainer.user, next.user)) {
+        next.lastCorrected = newCorrectedDate.getTime();
+      }
+      const changes = {};
+      /** @type {Record<string, any>} */
+      const filter = { userId: trainer.userId };
+      collectTrainerFieldChanges(trainer, next, changes, filter);
+      if (Object.keys(changes).length === 0) {
+        return { data: trainer, err: null };
+      }
 
-  if (modified) {
-    // eslint-disable-next-line no-param-reassign
-    trainer.lastCorrected = newCorrectedDate.getTime();
-    try {
+      filter.lastCorrected =
+        trainer.lastCorrected === undefined
+          ? { $exists: false }
+          : trainer.lastCorrected;
+      // The regeneration callback also reads level and dreamCards, even when
+      // an over-cap balance produces no change in its returned value.
+      if (
+        getNumIntervalsBetweenDates(
+          trainerFields.dreamCards.refreshInterval,
+          newCorrectedDate,
+          lastCorrectedDate
+        ) > 0
+      ) {
+        for (const field of ["level", "dreamCards"]) {
+          filter[field] =
+            trainer[field] === undefined
+              ? { $exists: false }
+              : trainer[field];
+        }
+      }
       const res = await updateDocument(
         collectionNames.USERS,
-        { userId: trainer.userId },
-        { $set: trainer }
+        filter,
+        { $set: changes }
       );
-      if (res.modifiedCount === 0) {
-        logger.error(`Failed to update trainer ${trainer.user.username}.`);
-        return { data: null, err: "Error updating trainer." };
+      const trainers = /** @type {Array<WithId<Trainer>>} */ (
+        await findDocuments(collectionNames.USERS, { userId: trainer.userId })
+      );
+      if (!trainers.length) {
+        break;
       }
-    } catch (error) {
-      logger.error(error);
-      return { data: null, err: "Error updating trainer." };
+      [trainer] = trainers;
+      if (res.matchedCount > 0 || res.modifiedCount > 0) {
+        return { data: trainer, err: null };
+      }
     }
-
-    // re-retrieve trainer to flush pointers
-    // TODO: possibly better way to do this
-    return await getTrainerFromId(trainer.userId);
+  } catch (error) {
+    logger.error(error);
   }
-
-  // @ts-ignore
-  return { data: trainer, err: null };
+  return { data: null, err: "Error updating trainer." };
 };
 
 /**
@@ -142,7 +222,7 @@ const getTrainerFromId = async (userId) => {
       return { data: null, err: "Error finding trainer." };
     }
     const [trainer] = trainers;
-    return await tryUpdateTrainerFields(trainer, false);
+    return await tryUpdateTrainerFields(trainer);
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error finding trainer." };
@@ -150,31 +230,24 @@ const getTrainerFromId = async (userId) => {
 };
 
 /**
- * @param {{
- *  id: string,
- *  username?: string,
- *  discriminator?: string,
- *  avatar?: string,
- * }} discordUser
+ * Initializes only the trusted acting user; omitted profile fields are preserved.
+ * @param {TrainerIdentity} discordUser
  * @param {boolean?} refresh
  * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}
  */
 const getTrainer = async (discordUser, refresh = true) => {
-  // only keep desired fields
-  const tmpUser = {
-    id: discordUser.id,
-    username: discordUser.username,
-    discriminator: discordUser.discriminator,
-    avatar: discordUser.avatar,
-  };
-  const user = tmpUser;
+  const user = /** @type {TrainerIdentity} */ ({ id: discordUser.id });
+  for (const field of ["username", "discriminator", "avatar"]) {
+    if (discordUser[field] !== undefined) {
+      user[field] = discordUser[field];
+    }
+  }
 
   let trainers;
   try {
-    // check if trainer exists
-    trainers =
-      /** @type {Array<import("mongodb").WithId<Trainer>>} */
-      (await findDocuments(collectionNames.USERS, { userId: user.id }));
+    trainers = /** @type {Array<WithId<Trainer>>} */ (
+      await findDocuments(collectionNames.USERS, { userId: user.id })
+    );
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error finding trainer." };
@@ -183,34 +256,34 @@ const getTrainer = async (discordUser, refresh = true) => {
   let trainer;
   if (trainers.length === 0) {
     try {
-      trainer = /** @type {Trainer} */ (await initTrainer(user));
+      trainer = await initTrainer(user);
       if (trainer === null) {
         return { data: null, err: "Error creating trainer." };
       }
     } catch (error) {
-      logger.error(error);
-      return { data: null, err: "Error creating trainer." };
+      if (
+        error.code === 11000 &&
+        (!error.keyPattern || error.keyPattern.userId)
+      ) {
+        try {
+          [trainer] = /** @type {Array<WithId<Trainer>>} */ (
+            await findDocuments(collectionNames.USERS, { userId: user.id })
+          );
+        } catch (readError) {
+          logger.error(readError);
+        }
+      } else {
+        logger.error(error);
+      }
+      if (!trainer) {
+        return { data: null, err: "Error creating trainer." };
+      }
     }
   } else {
     [trainer] = trainers;
   }
 
-  let modified = false;
-
-  if (refresh) {
-    // check to see if trainer.user is up to date
-    if (
-      trainer.user.username !== user.username ||
-      trainer.user.discriminator !== user.discriminator ||
-      trainer.user.avatar !== user.avatar
-    ) {
-      trainer.user = user;
-      modified = true;
-    }
-  }
-
-  // @ts-ignore
-  return await tryUpdateTrainerFields(trainer, modified);
+  return await tryUpdateTrainerFields(trainer, refresh ? user : undefined);
 };
 
 /**

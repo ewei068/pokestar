@@ -76,12 +76,25 @@ empty/error recovery and return paths from objectives to gameplay and claims.
 
 ## Design as features are built
 
-Before implementing a screen, sketch its actual information and consequential
-actions using this language. Review substantial choices such as party editing,
-catch costs and reward claims; straightforward lists and settings can use the
-established patterns directly. Extract only repeated tokens/components that
-these screens demonstrate. Keep pending, failed and unknown outcomes distinct.
-The studies establish direction and navigation, not gameplay or reward rules.
+Before implementing each affected screen in the first playable slice, inspect
+its real data, actions and states, then make a small editable Jewel preview at
+desktop and phone widths. Include relevant loading, empty, error and pending
+states, plus realistic long labels. Present it to the maintainer and wait for
+design feedback/approval before implementing that screen's first production
+version. This includes straightforward lists and settings; an affected section
+is enough. The accepted shell does not need another whole-site review.
+
+Backend discovery and independently useful service work may continue while
+feedback is pending. After implementation, verify the production screen at
+desktop and phone widths. Material departures return for feedback; routine
+implementation choices remain autonomous. Apply this review to profile/resources,
+collection/detail, party/presets, NPC selection and receipts as each is reached.
+This is the maintainer's 2026-10-30 direction, superseding the earlier exception
+for straightforward screens.
+
+Extract only repeated tokens/components these screens demonstrate. Keep pending,
+failed and unknown outcomes distinct. Studies establish presentation, not gameplay
+or reward rules, and remain proposals until reviewed.
 
 ## Design decisions
 

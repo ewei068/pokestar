@@ -27,9 +27,9 @@ learning/rewards (#217, P1) are separate release tickets; Tower, polling and web
 promotion are included. #184 remains outside the cut; #185 is maintainer-owned.
 Navigation and shared-operation design/proof are next. Ticket publication made
 no runtime changes and establishes no new live acceptance.
-The [next-session handoff](../handoffs/2026-10-29-web-navigation-foundation.md)
-narrows the next deliverable to navigation, representative responsive screens
-and supporting contract discovery; it includes the next-agent prompt.
+The [historical navigation handoff](../handoffs/2026-10-29-web-navigation-foundation.md)
+captured that earlier navigation/discovery scope. The first-slice plan and
+checkpoints below govern the current continuation.
 
 On **2026-10-30**, the maintainer selected the Jewel refinement of Dusk Arcade
 as the working visual direction and **Play, Pokémon, Catch, Rewards, More** as
@@ -57,16 +57,60 @@ keyboard navigation, Settings, Back and dense battle targeting with no horizonta
 overflow. Browser battle data came from the named `dense` development fixture
 through a temporary local HTTP server, not live MongoDB or OAuth. One independent
 read-only review found a heading-weight regression, now corrected. No gameplay
-API, reward or persistence behavior was added. Trainer initialization is next
-after shell approval and merge into the release branch.
+API, reward or persistence behavior was added. Trainer initialization is next,
+stacked on the still-open shell PR #242 per the maintainer's later direction.
+Each affected screen needs a small editable desktop/phone preview and maintainer
+design feedback before its first production version, including simple screens.
 
 Web release work integrates through `codex/web-release`, whose long-running
-draft PR targets `main`. Start new release work branches from that branch and
-target it with their PRs; merge those PRs only after approval. The maintainer
-owns the final release merge into `main`. See the
+draft PR targets `main`. Independent work branches from and targets that branch;
+dependent work may stack on an open predecessor and target its feature branch.
+Reconcile/retarget when the parent changes or lands; merge only after approval.
+The maintainer owns the final release merge into `main`. See the
 [release branch workflow](web-parity.md#release-branch-workflow--2026-10-29).
 
-Status: implementation landed on `main`; initial deployment working on
+**Trainer design checkpoint · 2026-10-30 (approved):** the
+[editable header/account study](../design/trainer-initialization/README.md)
+established the first screen change for #216. It uses the production shell CSS with
+fixture identity, money/level/EXP and loading, failure, new-account, id-only,
+long-name and maximum-level states. Browser checks covered all seven states at
+1280/390/320 px, panel scrolling and keyboard/retry behavior. No API requests
+were made by the study. The maintainer approved this design for initialization,
+with browser battle starts awaiting their own design and implementation. At this
+design checkpoint, OAuth created only a session, `/api/me` returned only an ID
+and trainer refresh wrote a whole snapshot. The implementation below supersedes
+those source observations.
+
+**Trainer implementation checkpoint · 2026-10-31:** U2 now initializes the acting
+trainer from a verified OAuth profile or an existing authenticated session ID.
+Concurrent first use recovers the unique-key winner; missing optional profile
+fields preserve saved identity. Configured defaults are copied per trainer,
+and conditional field updates retry lifecycle refresh without overwriting
+concurrent progress. `/api/me` returns a bounded identity/resource projection;
+trainer unavailability keeps the session valid and offers retry and sign out.
+The approved header/account UI shows money, level and EXP, handles missing
+avatars and long names, and gates the Play battle list until the trainer loads.
+The empty list points to Discord `/gacha` and `/party`. Authentication/bootstrap
+grants no gameplay interaction money/EXP or tutorial credit.
+
+Observed locally: 923 backend tests / 34 suites passed; client tests and the
+`/pokestar/` production build passed. Backend checkJs still reports its 498
+baseline diagnostics, with no new diagnostics; it does not pass. A disposable
+real-Mongo check exercised 16 first-use callers, concurrent progress preservation,
+old-session initialization and session/progress persistence across a separate
+Node process. Production-component browser checks covered seven states at
+1280/390/320 px with actual local trainer/session storage and a named battle
+fixture. The [verification record](../verification/trainer-initialization-2026-10-31.md)
+owns commands, counts, review repairs and evidence limits. Live OAuth, Discord
+cross-surface and physical-device acceptance remain unverified. Nothing was
+deployed or merged; shell PR #242 remains open and U2 stacks on its feature branch.
+
+Next is U3 owned collection/detail: review its desktop/phone designs before
+implementation, and prove the durable 5 EXP / 10 money interaction-grant boundary
+before enabling rewarded reads. Party/presets and browser NPC starts follow in
+their own units; this checkpoint adds no browser battle-start flow.
+
+Original battle delivery status: implementation landed on `main`; initial deployment working on
 **2026-10-26, America/Los_Angeles**. The user reports the live flow works;
 fresh Pages/API/runtime checks are recorded below. Broader battle acceptance,
 reboot recovery and security maintenance remain open.

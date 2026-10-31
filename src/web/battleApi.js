@@ -14,6 +14,8 @@ const {
 const { SESSION_LIFETIME_MS } = require("./sessionStore");
 const { logger } = require("../log");
 const { createApiRateLimits } = require("./rateLimits");
+const { getTrainer: getSharedTrainer } = require("../services/trainer");
+const { projectTrainerProfile } = require("./trainerProfile");
 
 const setCookie = (response, name, value, maxAgeMs, secure) => {
   response.cookie(name, value, {
@@ -49,6 +51,7 @@ const validAction = (action) => {
  * @param {string} options.clientSecret Discord OAuth client secret
  * @param {string} options.redirectUri Registered Discord callback URI
  * @param {Function=} options.exchangeCode Injectable Discord exchange
+ * @param {typeof getSharedTrainer=} options.getTrainer Shared acting-user trainer resolution
  * @param {object=} options.catalog Display-only Pokémon and move metadata
  * @param {object=} options.rateLimits Independent API quota middleware
  */
@@ -61,6 +64,7 @@ const createBattleApi = ({
   clientSecret,
   redirectUri,
   exchangeCode = exchangeDiscordCode,
+  getTrainer = getSharedTrainer,
   catalog = null,
   rateLimits = createApiRateLimits(),
 }) => {
@@ -70,6 +74,21 @@ const createBattleApi = ({
   const secureCookies = new URL(redirectUri).protocol === "https:";
   const sessionCookie = secureCookies ? "__Host-pokestar_session" : "pokestar_session";
   const stateCookie = secureCookies ? "__Host-pokestar_oauth_state" : "pokestar_oauth_state";
+  /**
+   * Trainer availability must not invalidate a successful sign-in.
+   * @param {import("../services/trainer").TrainerIdentity} user
+   * @param {boolean} refresh
+   * @returns {Promise<WithId<Trainer> | null>}
+   */
+  const resolveTrainer = async (user, refresh = true) => {
+    try {
+      const result = refresh ? await getTrainer(user) : await getTrainer(user, false);
+      return result.err ? null : result.data || null;
+    } catch (error) {
+      logger.error("Web trainer resolution failed", error);
+      return null;
+    }
+  };
   const signInError = (response, code, returnTo = siteHome.pathname) => {
     const destination = new URL(returnTo, siteOrigin);
     destination.searchParams.set("authError", code);
@@ -130,6 +149,7 @@ const createBattleApi = ({
       signInError(response, "session_failed", returnTo);
       return;
     }
+    await resolveTrainer(user);
     setCookie(response, sessionCookie, session.token, SESSION_LIFETIME_MS, secureCookies);
     const destination = new URL(returnTo, siteOrigin);
     destination.searchParams.delete("authError");
@@ -154,9 +174,13 @@ const createBattleApi = ({
     next();
   };
 
-  router.get("/me", requireSession, (request, response) => {
-    response.json({ discordUserId: request.discordUserId });
-  });
+  router.get("/me", requireSession, asyncRoute(async (request, response) => {
+    const trainer = await resolveTrainer({ id: request.discordUserId }, false);
+    response.json({
+      discordUserId: request.discordUserId,
+      trainer: trainer ? projectTrainerProfile(trainer) : null,
+    });
+  }));
   router.post("/auth/logout", requireSiteOrigin, requireSession,
     asyncRoute(async (request, response) => {
       await sessionStore.delete(request.cookies[sessionCookie]);

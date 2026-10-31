@@ -6,6 +6,13 @@ const { DiscordOAuthError, OAUTH_STATE_LIFETIME_MS } = require("../discordOAuth"
 const siteOrigin = "http://localhost:5173";
 const apiOrigin = "http://localhost:3000";
 const redirectUri = `${apiOrigin}/api/auth/discord/callback`;
+const trainerProfile = {
+  displayName: "Player",
+  avatarUrl: null,
+  level: 1,
+  money: 1000,
+  exp: { current: 0, required: 100 },
+};
 
 const makeSessionStore = () => {
   const sessions = new Map();
@@ -23,6 +30,13 @@ const startApi = async ({ sitePath = "/", redirectUri: callbackUri = redirectUri
     act: jest.fn().mockResolvedValue({ accepted: true, revision: 2 }),
   };
   const exchangeCode = jest.fn().mockResolvedValue({ id: "123456789", username: "Player" });
+  const getTrainer = jest.fn().mockResolvedValue({
+    data: {
+      userId: "123456789", user: { id: "123456789", username: "Player" },
+      level: 1, money: 1000, exp: 0,
+    },
+    err: null,
+  });
   const sessionStore = makeSessionStore();
   const app = express();
   app.use(express.json());
@@ -35,6 +49,7 @@ const startApi = async ({ sitePath = "/", redirectUri: callbackUri = redirectUri
     clientSecret: "private-secret",
     redirectUri: callbackUri,
     exchangeCode,
+    getTrainer,
     catalog: {
       rulesetVersion: 2,
       species: { sample: { description: "x".repeat(2000) } },
@@ -45,7 +60,7 @@ const startApi = async ({ sitePath = "/", redirectUri: callbackUri = redirectUri
     const listener = app.listen(0, () => { resolve(listener); });
   });
   const url = `http://localhost:${server.address().port}`;
-  return { server, url, battleService, exchangeCode, sessionStore };
+  return { server, url, battleService, exchangeCode, getTrainer, sessionStore };
 };
 
 const cookieFrom = (response, name) => {
@@ -134,7 +149,7 @@ describe("web battle API", () => {
       headers: { Cookie: `unrelated=value; ${encodeCookieValue(sessionCookie)}` },
     });
     expect(me.status).toBe(200);
-    expect(await me.json()).toEqual({ discordUserId: "123456789" });
+    expect(await me.json()).toEqual({ discordUserId: "123456789", trainer: trainerProfile });
   });
 
   it.each(["%E0%A4%A", "j:%7B%22id%22%3A%22attacker%22%7D", "j:%5B%22attacker%22%5D", "j:null", "j:42"])(
@@ -174,7 +189,7 @@ describe("web battle API", () => {
     }));
 
     const me = await fetch(`${api.url}/api/me`, { headers: { Cookie: sessionCookie } });
-    expect(await me.json()).toEqual({ discordUserId: "123456789" });
+    expect(await me.json()).toEqual({ discordUserId: "123456789", trainer: trainerProfile });
     const list = await fetch(`${api.url}/api/battles`, { headers: { Cookie: sessionCookie } });
     expect((await list.json()).battles).toHaveLength(1);
     expect(api.battleService.listActive).toHaveBeenCalledWith("123456789");
@@ -214,6 +229,90 @@ describe("web battle API", () => {
       expectedRevision: 1,
       requestId: "request-1",
       action: { action: "skipTurn" },
+    });
+  });
+
+  it("initializes only the verified OAuth user, ignoring browser profile and target IDs", async () => {
+    const trustedUser = { id: "123456789", username: "Trusted", avatar: "trusted-avatar" };
+    api.exchangeCode.mockResolvedValue(trustedUser);
+    const { state, cookie } = await beginLogin(api.url);
+    const callback = await fetch(`${api.url}/api/auth/discord/callback?state=${state}&code=code&userId=forged&username=Forged&avatar=forged`, {
+      redirect: "manual", headers: { Cookie: cookie },
+    });
+    expect(callback.status).toBe(302);
+    expect(api.getTrainer).toHaveBeenCalledTimes(1);
+    expect(api.getTrainer).toHaveBeenCalledWith(trustedUser);
+    const session = await api.sessionStore.get(cookieFrom(callback, "pokestar_session").split("=")[1]);
+    expect(session.userId).toBe(trustedUser.id);
+    expect(api.battleService.act).not.toHaveBeenCalled();
+  });
+
+  it("bootstraps a trainer from an existing session ID without trusting request profile fields", async () => {
+    const session = await api.sessionStore.create("123456789");
+    const response = await fetch(`${api.url}/api/me?userId=forged&id=forged&username=Forged&avatar=forged`, {
+      headers: { Cookie: `pokestar_session=${session.token}` },
+    });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ discordUserId: "123456789", trainer: trainerProfile });
+    expect(api.getTrainer).toHaveBeenCalledTimes(1);
+    expect(api.getTrainer).toHaveBeenCalledWith({ id: "123456789" }, false);
+    expect(api.exchangeCode).not.toHaveBeenCalled();
+  });
+
+  it.each(["result", "throw"])("retains authentication through callback and bootstrap trainer failure (%s), then retries", async (failure) => {
+    if (failure === "throw") api.getTrainer.mockRejectedValue(new Error("private database details"));
+    else api.getTrainer.mockResolvedValue({ data: null, err: "private database details" });
+    const { callback, sessionCookie } = await login(api.url);
+    expect(callback.status).toBe(302);
+    expect(callback.headers.get("location")).toBe(`${siteOrigin}/battle?id=battle-1&authComplete=1`);
+    expect(sessionCookie).toBeTruthy();
+    const unavailable = await fetch(`${api.url}/api/me`, { headers: { Cookie: sessionCookie } });
+    expect(unavailable.status).toBe(200);
+    expect(await unavailable.json()).toEqual({ discordUserId: "123456789", trainer: null });
+    expect(unavailable.headers.get("set-cookie")).toBeNull();
+
+    api.getTrainer.mockResolvedValue({
+      data: { userId: "123456789", user: {}, level: 1, money: 1000, exp: 0 }, err: null,
+    });
+    const retry = await fetch(`${api.url}/api/me`, { headers: { Cookie: sessionCookie } });
+    expect(retry.status).toBe(200);
+    expect(await retry.json()).toEqual({
+      discordUserId: "123456789", trainer: { ...trainerProfile, displayName: "Trainer" },
+    });
+    expect(api.exchangeCode).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    [4, 675, { current: 75, required: 400 }],
+    [100, 500000, null],
+  ])("projects only shell fields and within-level EXP at level %s", async (level, exp, projectedExp) => {
+    const session = await api.sessionStore.create("123456789");
+    api.getTrainer.mockResolvedValue({
+      data: {
+        _id: "private-id", userId: "123456789", user: { username: "  Stored trainer  ", avatar: "hash/../?x" },
+        level, money: 987654, exp, backpack: { private: 42 }, party: ["private-pokemon"],
+        questData: { private: true }, lastCorrected: 1234,
+      }, err: null,
+    });
+    const response = await fetch(`${api.url}/api/me`, { headers: { Cookie: `pokestar_session=${session.token}` } });
+    expect(await response.json()).toEqual({
+      discordUserId: "123456789",
+      trainer: {
+        displayName: "Stored trainer", avatarUrl: "https://cdn.discordapp.com/avatars/123456789/hash%2F..%2F%3Fx.png",
+        level, money: 987654, exp: projectedExp,
+      },
+    });
+  });
+
+  it("uses neutral identity when a stored profile is blank or absent", async () => {
+    const session = await api.sessionStore.create("123456789");
+    api.getTrainer.mockResolvedValue({
+      data: { userId: "123456789", user: { username: "  ", avatar: null }, level: 1, money: 1000, exp: 0 },
+      err: null,
+    });
+    const response = await fetch(`${api.url}/api/me`, { headers: { Cookie: `pokestar_session=${session.token}` } });
+    expect(await response.json()).toEqual({
+      discordUserId: "123456789", trainer: { ...trainerProfile, displayName: "Trainer" },
     });
   });
 

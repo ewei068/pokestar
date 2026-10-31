@@ -20,12 +20,20 @@ bounded PRs, using the selected Jewel presentation and existing battle client.
 **Authority:** Latest maintainer decisions → current release ticket acceptance →
 [UI guide](../web-ui-style-guide.md) and shared battle contracts → this plan.
 Follow the [release branch workflow](../efforts/web-parity.md#release-branch-workflow--2026-10-29).
-Each PR targets `codex/web-release`; merge after approval. The maintainer owns
-release-to-main. This plan is not production-deployment authority.
+Independent work targets `codex/web-release`; dependent work may stack on an
+open predecessor. The maintainer specifically directed keeping shell PR #242
+in review and starting trainer initialization on a separate branch from its
+head, with that PR targeting `codex/web-navigation-foundation`. Record the parent
+dependency; reconcile and retarget if it changes or lands. Merge only after
+approval. The maintainer owns release-to-main. This plan is not deployment authority.
 
-**Execution boundary:** Begin with U1. Later units depend on their listed
-prerequisites and the server-owned interaction-grant boundary below. Do not expand
-this into the entire release backlog or call #235 complete from mocked tests.
+**Execution boundary:** Continue with trusted trainer initialization on the
+existing shell. Later units depend on their listed capabilities and the
+server-owned interaction-grant boundary below, not a predecessor's merge.
+Each touched screen needs an editable desktop/phone design preview and maintainer
+feedback before its first production implementation, including straightforward
+screens. Follow the UI guide's review process. Do not expand this into the entire
+release backlog or call #235 complete from mocked tests.
 
 ---
 
@@ -162,9 +170,11 @@ preserves existing OAuth and battle contracts rather than re-specifying them.
 
 ## Implementation Units
 
-Each unit is one reviewable PR. The following PR waits for its predecessor to
-merge into the release branch before starting; no production deployment is needed
-between units. A deployed client requires its supporting API version first.
+Each unit is one reviewable PR. Dependent units may start from their predecessor's
+current head and target that branch while it remains open; approval and merge
+are not prerequisites for starting. Keep changes out of the parent PR, record
+the dependency and reconcile/retarget as the stack lands. No production deployment
+is needed between units. A deployed client requires its supporting API version first.
 
 ### U1. Jewel shell around existing battles
 
@@ -197,13 +207,23 @@ long labels, fallback fonts, background contrast and no horizontal overflow.
 ### U2. Trusted trainer initialization
 
 **Goal:** Signed-in users have one shared trainer and a usable profile/resource view.
-**Requirements:** R3, R8. **Dependencies:** U1 merged.
+**Requirements:** R3, R8. **Dependencies:** U1 shell available; stack on #242.
 
 **Files:** `src/web/battleApi.js`, `src/web/sessionStore.js`,
 `src/services/trainer.js`, `src/config/trainerConfig.js`,
 `src/web/__tests__/battleApi.test.js`; new
 `src/services/__tests__/trainerInitialization.test.js`; `web/src/http.ts`,
-`web/src/auth/useAuth.ts` and their adjacent test suites.
+`web/src/auth/useAuth.ts` and their adjacent test suites; `web/src/App.tsx`,
+`web/src/navigation/SiteShell.tsx`, `web/src/navigation/SiteShell.test.ts`,
+`web/src/style.css` and the existing `web/src/battles/BattleList.tsx` empty state.
+
+**Design review first:** Review the header money/identity/level display and
+account details with desktop and phone layouts before production UI work. Include
+configured new-trainer values, existing progress, id-only neutral fallback,
+loading and recoverable failure, long names and large balances. Keep the existing
+Play experience; do not add collection or Bag operations in this unit. Use the
+[editable initialization study](../design/trainer-initialization/README.md) as
+the review surface; its data is illustrative until wired to a verified API.
 
 **Approach:** Initialize using the trusted OAuth profile, recover duplicate-key
 creation races and preserve existing profile fields for id-only callers. Existing
@@ -224,12 +244,16 @@ necessary. Use configured defaults, never prototype starter values.
    account setup; a retry recovers an already-created trainer.
 
 **Verification:** Focused service/API tests, real Mongo uniqueness race and
-OAuth sign-in evidence; record any unavailable environment explicitly.
+OAuth sign-in evidence; record any unavailable environment explicitly. Characterize
+the legacy refresh write before narrowing it. Production UI needs client tests/build
+and desktop/390px/320px browser checks against the reviewed design. Auth/bootstrap
+does not award gameplay interaction grants. Use full review for the identity and
+durable-data implementation; this design-only checkpoint needs bounded review.
 
 ### U3. Owned collection and detail
 
 **Goal:** Inspect actual owned Pokémon and reach party preparation.
-**Requirements:** R1–R3, R6, R8. **Dependencies:** U2 merged. Implement and verify
+**Requirements:** R1–R3, R6, R8. **Dependencies:** U2 available. Implement and verify
 the durable grant boundary within this unit before wiring rewarded reads.
 
 **Files:** `src/services/pokemon.js`, new `src/web/playerApi.js`,
@@ -261,7 +285,7 @@ interruption against real persistence before enabling rewarded reads.
 ### U4. Shared party/preset operations and editor
 
 **Goal:** Save formations and swap presets safely from either surface.
-**Requirements:** R4, R6, R8. **Dependencies:** U3 merged, including its verified grant boundary.
+**Requirements:** R4, R6, R8. **Dependencies:** U3 available, including its verified grant boundary.
 
 **Files:** `src/services/party.js`, `src/services/trainer.js`,
 `src/commands/battle/partyLoad.js` and discovered party writers;
@@ -289,7 +313,7 @@ and both-surface save/swap evidence. Update all affected writers before acceptan
 ### U5. Browser NPC start and cross-surface continuation
 
 **Goal:** Start one validated NPC battle and recover it after interruption.
-**Requirements:** R5, R6, R8. **Dependencies:** U4 merged.
+**Requirements:** R5, R6, R8. **Dependencies:** U4 available.
 
 **Files:** `src/services/battle.js`, `src/services/playerOperations.js`,
 `src/battle/service/BattleService.js`, `src/battle/persistence/BattleStore.js`,
@@ -316,7 +340,7 @@ and cross-surface continuation. Mocked durable-start calls are insufficient.
 ### U6. Saved participant receipts and first-slice proof
 
 **Goal:** Inspect the real saved result and progression without re-awarding it.
-**Requirements:** R7, R8. **Dependencies:** U5 merged; coordinate #186 recovery.
+**Requirements:** R7, R8. **Dependencies:** U5 available; coordinate #186 recovery.
 
 **Files:** `src/services/battle.js`, `src/battle/service/BattleService.js`,
 `src/battle/persistence/BattleStore.js`, `src/battle/service/battleWebView.js`,

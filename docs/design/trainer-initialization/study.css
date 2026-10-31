@@ -1,0 +1,93 @@
+/* Study-only additions. Base shell, scenery and navigation come from production. */
+.review-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px;
+  padding: 16px 28px; background: #f0eadb; color: #302b3e; border-bottom: 3px solid #b99b5c; font-size: 13px; }
+.review-bar strong, .review-bar span { display: block; }
+.review-bar span { margin-top: 4px; }
+.review-bar strong { font-size: 15px; }
+.review-bar label { display: flex; align-items: center; gap: 8px; }
+.review-bar select { max-width: 100%; min-height: 36px; padding: 5px; font: inherit; color: #302b3e; background: #fffaf1; border: 1px solid #81738f; }
+.review-check input { width: 18px; height: 18px; accent-color: #53405d; }
+.review-bar p { flex-basis: 100%; margin: 0; line-height: 1.45; }
+.review-bar :focus-visible { outline-color: #5a4378; }
+.review-hidden .review-bar { display: none; }
+.trainer-resources { display: flex; align-items: center; gap: 24px; margin-left: auto; min-width: 0; }
+.money-display { display: flex; align-items: center; gap: 10px; font-variant-numeric: tabular-nums;
+  min-height: 40px; padding: 8px 14px; background: #211b33; border: 1px solid #9f8bac; border-radius: 4px; white-space: nowrap; }
+.money-display svg { width: 22px; height: 22px; color: #f5d98d; }
+.money-label { color: var(--site-soft); font-size: 12px; }
+.money-value { font-size: 16px; }
+.mobile-identity { display: none; }
+.account-menu { flex: none; }
+.account-menu > summary { gap: 10px; }
+.account-mark { flex: none; }
+.account-identity { display: grid; max-width: 190px; gap: 2px; }
+.trainer-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.trainer-level { color: var(--site-soft); font-size: 12px; }
+.account-panel { width: min(320px, calc(100vw - 24px)); right: -56px; padding: 0; overflow: hidden; }
+.profile-heading { display: flex; align-items: center; gap: 12px; padding: 20px; background: var(--site-cap); border-bottom: 1px solid #9c8eb066; }
+.profile-heading div { min-width: 0; }
+.profile-heading h2 { margin: 0 0 4px; font-weight: 400; font-size: 18px; overflow-wrap: anywhere; }
+.profile-heading small { color: var(--site-soft); }
+.profile-heading .account-mark { width: 40px; height: 40px; }
+.profile-details { padding: 18px 20px 20px; }
+.profile-details .exp-heading { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; font-size: 13px; }
+.profile-details progress { appearance: none; width: 100%; height: 8px; border: 1px solid #a095b0; border-radius: 2px; background: #211b33; }
+.profile-details progress::-webkit-progress-bar { background: #211b33; }
+.profile-details progress::-webkit-progress-value { background: #edbe43; }
+.profile-details progress::-moz-progress-bar { background: #edbe43; }
+.profile-details .exp-caption { font-size: 12px; line-height: 1.5; margin: 8px 0 20px; }
+.profile-money { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; border-top: 1px solid #9c8eb066; padding-top: 16px; }
+.profile-id { margin: 18px 0; }
+.account-panel .profile-id span { display: block; font-variant-numeric: tabular-nums; font-size: 13px; }
+.account-panel .signout { margin-top: 4px; }
+.resource-status { margin: 0; color: var(--site-soft); font-size: 13px; }
+.setup-state { max-width: 660px; padding: 28px; }
+.setup-state h2 { font-size: 1.3rem; font-weight: 400; margin-bottom: 12px; }
+.setup-state p { line-height: 1.6; color: var(--site-soft); }
+.setup-state .primary-button { margin-top: 4px; }
+.setup-state.is-error { border-color: #d28e9f; }
+.setup-heading { display: flex; align-items: center; gap: 12px; }
+.setup-heading > span { display: grid; place-items: center; width: 32px; height: 32px;
+  border: 1px solid #a99ab8; color: #f4d78a; background: var(--site-cap); }
+.setup-heading h2 { margin: 0; }
+.setup-state .setup-heading + p { margin-top: 16px; }
+.inline-retry { margin-top: 10px; }
+.profile-details .primary-button { width: 100%; }
+.profile-details .panel-message { margin-bottom: 10px; line-height: 1.5; }
+.profile-details .signout { margin-top: 18px; }
+.first-play-help { margin-top: 20px !important; }
+.first-play-help code { color: #ffecaf; font-size: .9rem; }
+.review-context { margin-top: 26px; color: var(--site-soft); max-width: 560px; font-size: 13px; line-height: 1.6; }
+dialog { max-width: min(440px, calc(100vw - 32px)); padding: 28px; color: var(--site-ink);
+  background: #2b2641; border: 1px solid var(--site-line); border-radius: 6px; box-shadow: 0 8px 40px #171126aa; }
+dialog::backdrop { background: #171126aa; }
+dialog h2 { font-weight: 400; font-size: 22px; }
+dialog p { line-height: 1.6; color: var(--site-soft); }
+@media (max-width: 1000px) and (min-width: 761px) {
+  .site-header { padding-inline: 20px; gap: 12px; }
+  .account-identity { max-width: 130px; }
+  .money-label { display: none; }
+}
+@media (max-width: 760px) {
+  .review-bar { padding: 14px 16px; gap: 10px 16px; }
+  .review-bar > div { flex-basis: 100%; }
+  .review-bar label:first-of-type { flex-wrap: wrap; }
+  .site-header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 12px; padding-bottom: 0; }
+  .site-controls { grid-row: 1; grid-column: 2; }
+  .trainer-resources { grid-row: 2; grid-column: 1 / -1; margin: 0 -16px;
+    padding: 10px 16px; gap: 16px; border-top: 1px solid #9c8eb044; background: #211b3377; }
+  .money-display { padding: 0; background: none; border: 0; gap: 8px; min-height: 24px; }
+  .money-value { font-size: 14px; }
+  .money-label { display: none; }
+  .money-display svg { width: 20px; height: 20px; }
+  .mobile-identity { display: flex; align-items: center; gap: 8px; min-width: 0; margin-left: auto; font-size: 13px; }
+  .mobile-identity .trainer-level { flex: none; }
+  .account-menu { position: static; }
+  .account-panel { top: calc(100% + 8px); right: 12px;
+    max-height: calc(100dvh - var(--review-bar-height, 0px) - 110px - var(--system-bar-height) - 20px); overflow-y: auto; }
+  .resource-status { font-size: 13px; min-height: 24px; display: flex; align-items: center; }
+  .setup-state { padding: 22px; }
+}
+@media (max-width: 360px) {
+  .trainer-resources { margin-inline: -12px; padding-inline: 12px; gap: 12px; }
+}

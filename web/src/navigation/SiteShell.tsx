@@ -10,7 +10,9 @@ export const pageLabels: Record<SitePage, string> = {
   play: "Play", pokemon: "Pokémon", catch: "Catch", rewards: "Rewards", more: "More", bag: "Bag",
 };
 
-export const SiteShell = ({ children, account }: { children: ReactNode | ((route: SiteRoute) => ReactNode); account?: ReactNode }) => {
+export const SiteShell = ({ children, account, resources }: {
+  children: ReactNode | ((route: SiteRoute) => ReactNode); account?: ReactNode; resources?: ReactNode;
+}) => {
   const { route, followLink } = useSiteRoute();
   const content = useRef<HTMLDivElement>(null);
   const previousRoute = useRef(route);
@@ -28,9 +30,10 @@ export const SiteShell = ({ children, account }: { children: ReactNode | ((route
       event.preventDefault();
       content.current?.focus();
     }}>Skip to content</a>
-    <header className="site-header">
+    <header className={`site-header${resources ? " has-trainer" : ""}`}>
       <a href={routeHref(currentUrl, { page: "play", battleId: null })} className="brand" aria-label="Pokestar · Play">
         <span className="brand-mark" aria-hidden="true">✦</span>Pokestar</a>
+      {resources}
       <div className="site-controls">
         <a className="icon-button bag-link" href={routeHref(currentUrl, { page: "bag", battleId: null })}
           aria-label="Bag" aria-current={route.page === "bag" ? "page" : undefined}><SiteIcon name="bag" /></a>

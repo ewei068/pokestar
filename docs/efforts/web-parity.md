@@ -33,9 +33,13 @@ The maintainer selected `codex/web-release` as the long-running integration bran
 for this web release. Its draft PR targets `main` and stays open while the
 approved release work accumulates.
 
-- Create new web-release work branches from the latest `origin/codex/web-release`.
-- Open each feature or design PR with `codex/web-release` as its base, and merge
-  it into that branch only after approval.
+- Create independent web-release work from the latest `origin/codex/web-release`
+  and target that branch. Dependent work may stack on an open predecessor's head
+  and target its feature branch; record the dependency and reconcile/retarget
+  when the parent changes or lands. Do not add the next unit to the parent PR.
+- Merge feature/design PRs only after approval. Starting dependent work does not
+  require a predecessor to merge. On 2026-10-30 the maintainer specifically asked
+  to keep shell PR #242 in review and stack trainer initialization on it.
 - Keep the release PR in draft while work and acceptance remain incomplete.
   The maintainer will merge `codex/web-release` into `main` when the release is ready.
 

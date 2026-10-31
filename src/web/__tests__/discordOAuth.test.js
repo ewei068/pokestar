@@ -12,6 +12,23 @@ describe("Discord authorization exchange", () => {
     for (const [, options] of fetchImpl.mock.calls) expect(options.signal).toBeInstanceOf(AbortSignal);
   });
 
+  it.each(["avatar-hash", null])("retains trusted optional profile fields (avatar: %s) without provider extras", async (avatar) => {
+    const fetchImpl = jest.fn().mockResolvedValueOnce(json({ access_token: "token" }))
+      .mockResolvedValueOnce(json({
+        id: "123", username: "Trainer", avatar, discriminator: "0",
+        email: "private", money: 999999, userId: "forged", global_name: "Other name",
+      }));
+    expect(await exchangeDiscordCode({ ...credentials, fetchImpl })).toEqual({
+      id: "123", username: "Trainer", avatar, discriminator: "0",
+    });
+  });
+
+  it("preserves omitted optional profile fields for shared trainer refresh", async () => {
+    const fetchImpl = jest.fn().mockResolvedValueOnce(json({ access_token: "token" }))
+      .mockResolvedValueOnce(json({ id: "123" }));
+    expect(await exchangeDiscordCode({ ...credentials, fetchImpl })).toEqual({ id: "123" });
+  });
+
   it.each([
     [400, { error: "invalid_grant" }, "code_expired"],
     [401, { error: "invalid_client" }, "discord_unavailable"],

@@ -17,7 +17,9 @@ export const BattleList = () => {
       {error && <p role="alert" className="error">Couldn't load your battles. Refresh the page to try again.</p>}
       {!error && battles === null && <p className="site-panel loading-panel" role="status">Loading battles…</p>}
       {battles?.length === 0 && <div className="empty-state"><h2>No ongoing battles</h2>
-        <p>Start one in Discord, then return here to continue it.</p></div>}
+        <p>Start one in Discord, then return here to continue it.</p>
+        <p className="trainer-first-play-help">New to Pokestar? Use <code>/gacha</code> in Discord to catch Pokémon,
+          then <code>/party</code> to prepare your team.</p></div>}
       {battles && battles.length > 0 && (
         <div className="battle-list">
           {[...battles].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
