@@ -1,20 +1,52 @@
-# Web player operations: first-slice discovery
+# Web player operations: first-slice boundaries
 
 2026-10-30. Bounded source inspection for #235, #216, #197, #199, #210 and #236.
-This records existing behavior and the proposed implementation boundary. No live
-MongoDB, provider, concurrency or recovery acceptance was performed.
+The discovery observations below describe the pre-implementation baseline;
+the dated U2 checkpoint records what has since changed. The original discovery
+performed no live MongoDB, provider, concurrency or recovery acceptance.
 
 Follow-up inspection for trainer initialization on 2026-10-30 reconfirmed the
-identity/resource rows below against the current shell head. The existing unique
+identity/resource rows below against the shell head at that time. The existing unique
 `users.userId` index is configured in `src/config/databaseConfig.js`; whether it
 is present in the target database still needs real-environment evidence. Both
 `initTrainer` and `setDefaultFields` assign nested configured defaults by reference;
 preserve independent per-trainer values when changing initialization/refresh.
 Characterize refresh before narrowing its writes, including concurrent money,
 EXP and party changes. The [header/account study](design/trainer-initialization/README.md)
-records proposed display needs, not an implemented projection or an approval.
+was subsequently approved for the initialization surface. Its fixture checks
+remain distinct from the implementation evidence below.
 
-## Existing behavior and required changes
+## U2 implementation checkpoint · 2026-10-31
+
+Trusted OAuth data initializes or refreshes only the acting trainer; an older
+valid session can initialize a missing trainer from its stored Discord ID without
+another login. Optional profile omissions preserve existing fields, while an
+explicit trusted avatar removal is honored. Shared defaults are copied per
+trainer, and duplicate-key creation races re-read the winner. Lifecycle refresh
+uses conditional field updates with bounded recomputation instead of a stale
+whole-trainer replacement. Inspection through `getTrainerFromId` still cannot
+initialize an arbitrary target.
+
+`/api/me` returns only the acting trainer's display name, avatar URL, level,
+money and within-level EXP alongside the session's Discord ID. Trainer resolution
+failure returns `trainer: null` while preserving authentication; the client can
+retry loading or sign out without another OAuth flow. Neither bootstrap nor
+lifecycle refresh grants gameplay interaction money/EXP or lesson credit. The
+header/account implementation follows the approved study; collection, party,
+Bag operations and browser battle starts remain later units.
+
+The [U2 verification record](verification/trainer-initialization-2026-10-31.md)
+records passing local automated, real-Mongo race/restart and browser checks.
+The disposable database establishes local uniqueness and progress/session
+preservation; it does not establish the target production index, live OAuth,
+Discord cross-surface or physical-device acceptance. Deploy the supporting API
+before this client: an older ID-only `/api/me` response renders the trainer
+unavailable rather than inventing resource values.
+
+## Discovery baseline and required changes · 2026-10-30
+
+The first two rows are historical findings addressed by U2 above. The remaining
+rows continue to guide their owning implementation units.
 
 | Boundary | Observed source behavior | First-slice direction |
 | --- | --- | --- |

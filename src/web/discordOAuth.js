@@ -63,6 +63,15 @@ const authorizationUrl = ({ clientId, redirectUri, state }) => {
   return url.toString();
 };
 
+/**
+ * @param {object} options
+ * @param {string} options.code
+ * @param {string} options.clientId
+ * @param {string} options.clientSecret
+ * @param {string} options.redirectUri
+ * @param {typeof fetch=} options.fetchImpl
+ * @returns {Promise<import("../services/trainer").TrainerIdentity>}
+ */
 const exchangeDiscordCode = async ({
   code, clientId, clientSecret, redirectUri, fetchImpl = fetch,
 }) => {
@@ -97,7 +106,11 @@ const exchangeDiscordCode = async ({
   if (typeof user.id !== "string" || !/^\d+$/.test(user.id)) {
     throw new Error("Discord user response missing ID");
   }
-  return { id: user.id, username: user.username };
+  const identity = /** @type {import("../services/trainer").TrainerIdentity} */ ({ id: user.id });
+  for (const field of ["username", "discriminator", "avatar"]) {
+    if (user[field] !== undefined) identity[field] = user[field];
+  }
+  return identity;
 };
 
 module.exports = {

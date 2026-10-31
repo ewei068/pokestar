@@ -56,7 +56,6 @@ const { drawIterable, drawDiscrete } = require("../utils/gachaUtils");
  */
 
 /**
- * setDefaultFields mutates nested defaults, so each refresh needs its own values.
  * @param {DefaultFieldConfig<Trainer>} config
  * @returns {DefaultFieldConfig<Trainer>}
  */
@@ -95,8 +94,6 @@ const initTrainer = async (user) => {
 };
 
 /**
- * Collect changed paths with their original values for a conditional refresh.
- * Objects recurse so adding a nested default does not replace its siblings.
  * @param {Record<string, any>} previous
  * @param {Record<string, any>} next
  * @param {Record<string, any>} changes
@@ -134,8 +131,6 @@ const collectTrainerFieldChanges = (
 };
 
 /**
- * Repair defaults and interval fields without replacing concurrent player changes.
- * Retry from fresh data when a value used by the refresh has changed.
  * @param {WithId<Trainer>} initialTrainer
  * @param {TrainerIdentity=} user
  * @returns {Promise<{data?: WithId<Trainer>, err?: string}>}

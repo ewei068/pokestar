@@ -3,21 +3,22 @@ import { AudioSettingsProvider } from "./settings/AudioSettings";
 import { LoginScreen } from "./auth/LoginScreen";
 import { useAuth } from "./auth/useAuth";
 import { SiteShell, UnavailablePage } from "./navigation/SiteShell";
+import { TrainerAccount, TrainerResources, TrainerStatus } from "./trainer/TrainerAccount";
 
 const AppContent = () => {
   const { state, pending, retry, signOut } = useAuth();
-  const account = state.kind === "ready" ? <details className="account-menu">
-    <summary aria-label="Trainer account"><span className="account-mark" aria-hidden="true">T</span><span>Trainer</span></summary>
-    <div className="account-panel"><p>Discord <span>{state.userId}</span></p>
-      <button type="button" disabled={!!pending} onClick={() => { void signOut(); }}>
-        {pending === "logout" ? "Signing out…" : "Sign out"}</button></div>
-  </details> : undefined;
+  const trainer = state.kind !== "login" ? {
+    profile: state.kind === "ready" ? state.trainer : null,
+    loading: state.kind === "loading", userId: state.userId,
+  } : null;
+  const account = trainer ? <TrainerAccount {...trainer} pending={pending === "logout"}
+    onRetry={retry} onSignOut={() => { void signOut(); }} /> : undefined;
 
-  return <SiteShell account={account}>{route =>
+  return <SiteShell account={account} resources={trainer ? <TrainerResources {...trainer} /> : undefined}>{route =>
     route.page !== "play" ? <UnavailablePage page={route.page} /> : <>
-      {state.kind === "loading" && <main className="page-shell"><p className="site-panel loading-panel" role="status">Loading Pokestar…</p></main>}
-      {state.kind === "login" && <LoginScreen error={state.error} pending={pending} onRetry={retry} homeHref={import.meta.env.BASE_URL} />}
-      {state.kind === "ready" && <BattleFeature battleId={route.battleId} />}
+      {state.kind === "loading" && <TrainerStatus loading pending={pending === "logout"} onRetry={retry} />}
+      {state.kind === "login" && <LoginScreen error={state.error} pending={pending} onRetry={retry} homeHref={import.meta.env?.BASE_URL || "/"} />}
+      {state.kind === "ready" && (state.trainer ? <BattleFeature battleId={route.battleId} /> : <TrainerStatus loading={false} pending={pending === "logout"} onRetry={retry} />)}
     </>
   }</SiteShell>;
 };

@@ -1,4 +1,5 @@
 import { loginReturnTo } from "./auth/loginState";
+import type { TrainerProfile } from "./trainer/types";
 
 const apiOrigin = import.meta.env?.VITE_API_ORIGIN || "";
 
@@ -61,8 +62,16 @@ export const startLogin = async (): Promise<string> => {
 };
 
 export const getMe = async () => {
-  const me = await request<{ discordUserId: string }>("/me");
+  const me = await request<{ discordUserId: string; trainer?: TrainerProfile | null }>("/me");
   if (typeof me.discordUserId !== "string" || !me.discordUserId) throw new Error("Invalid session response");
-  return me;
+  const trainer = me.trainer ?? null;
+  if (trainer && (typeof trainer.displayName !== "string" || !trainer.displayName ||
+      (trainer.avatarUrl !== null && typeof trainer.avatarUrl !== "string") ||
+      !Number.isInteger(trainer.level) || trainer.level < 1 || !Number.isFinite(trainer.money) ||
+      (trainer.exp !== null && (!Number.isFinite(trainer.exp?.current) ||
+        !Number.isFinite(trainer.exp?.required) || trainer.exp.required <= 0)))) {
+    throw new Error("Invalid trainer response");
+  }
+  return { discordUserId: me.discordUserId, trainer };
 };
 export const logout = () => request<void>("/auth/logout", { method: "POST" });

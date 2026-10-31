@@ -77,6 +77,46 @@ sets an HTTP-only session, `GET /api/me` checks it, and `/api/battles` plus
 revision, request ID, and action. Sessions are opaque tokens stored by hash in
 MongoDB with a TTL. The API returns no unprojected battle records.
 
+### Acting trainer bootstrap
+
+After a verified OAuth exchange, the API creates the session and resolves the
+acting trainer through the shared trainer service using the trusted Discord
+profile. An existing valid session can also initialize a missing trainer from
+its stored Discord ID. Browser parameters never select the trainer to initialize
+or refresh. Missing optional profile fields preserve stored values; an explicit
+avatar removal from a trusted OAuth profile clears the saved avatar.
+
+Authenticated `GET /api/me` returns:
+
+```ts
+{
+  discordUserId: string;
+  trainer: {
+    displayName: string;
+    avatarUrl: string | null;
+    level: number;
+    money: number;
+    exp: { current: number; required: number } | null;
+  } | null;
+}
+```
+
+EXP is progress within the current level and its next-level threshold; `null`
+means maximum level. Missing profile details use a neutral display name/avatar
+fallback. The projection excludes inventory, party, quests and operational state.
+Trainer resolution failure returns HTTP 200 with `trainer: null`, preserving the
+valid session. The client presents a recoverable trainer-loading state, retries
+`/api/me` without another OAuth login and keeps sign out available. An invalid
+or expired session still returns HTTP 401. Authentication, bootstrap and lifecycle
+refresh issue no gameplay interaction grant or tutorial credit.
+
+Deploy the supporting API before the trainer-header client. For compatibility,
+an older ID-only `/api/me` response is treated as an unavailable trainer; the
+client shows retry rather than fabricated balances. The existing session schema
+and battle authorization remain unchanged. Local persistence and browser
+evidence, including remaining provider checks, are in the
+[trainer verification record](verification/trainer-initialization-2026-10-31.md).
+
 Login initiation also supports JSON negotiation so the app can recover from
 startup failures. Callback failures return to a fixed-copy recovery screen;
 successful callbacks verify that the browser retained its session. The

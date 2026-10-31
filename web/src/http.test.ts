@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { afterEach, describe, it } from "node:test";
-import { ApiError, isApiError, rateLimitDeadline, request } from "./http";
+import { ApiError, getMe, isApiError, rateLimitDeadline, request } from "./http";
 
 const originalFetch = globalThis.fetch;
 const originalTimeout = globalThis.setTimeout;
@@ -10,6 +10,18 @@ const limited = (header?: string) => new Response(JSON.stringify({ error: "rate_
 });
 
 describe("HTTP recovery", () => {
+  it("keeps an authenticated session usable when trainer data is unavailable", async () => {
+    globalThis.fetch = async () => new Response(JSON.stringify({ discordUserId: "123" }));
+    assert.deepEqual(await getMe(), { discordUserId: "123", trainer: null });
+  });
+
+  it("rejects a malformed trainer projection rather than displaying invented resources", async () => {
+    globalThis.fetch = async () => new Response(JSON.stringify({ discordUserId: "123", trainer: {
+      displayName: "Leaf", avatarUrl: null, level: 1, money: "1000", exp: { current: 0, required: 100 },
+    } }));
+    await assert.rejects(getMe(), /Invalid trainer response/);
+  });
+
   it("preserves status/code and reads seconds, dates, and a bounded missing/invalid fallback", async () => {
     for (const header of ["7", new Date(Date.now() + 120000).toUTCString(), undefined, "bad", "-2", "Infinity"]) {
       globalThis.fetch = async () => limited(header);

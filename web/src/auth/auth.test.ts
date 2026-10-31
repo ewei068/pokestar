@@ -27,11 +27,49 @@ const AuthPage = () => {
   const auth = useAuth();
   if (auth.state.kind === "loading") return createElement("p", {}, "Loading");
   if (auth.state.kind === "ready") return createElement("div", {}, `Trainer ${auth.state.userId}`,
+    auth.state.trainer ? createElement("span", {}, `Profile ${auth.state.trainer.displayName}`)
+      : createElement("button", { onClick: auth.retry }, "Retry trainer"),
     createElement("button", { onClick: () => { void auth.signOut(); } }, "Sign out"));
   return createElement(LoginScreen, { error: auth.state.error, pending: auth.pending, onRetry: auth.retry, homeHref: "/" });
 };
 
 describe("sign-in recovery", () => {
+  it("keeps trainer retry from superseding a pending sign-out", async () => {
+    const requests: string[] = [];
+    let release: (value: Response) => void = () => {};
+    const signingOut = new Promise<Response>(resolve => { release = resolve; });
+    globalThis.fetch = async input => {
+      requests.push(String(input));
+      return String(input).endsWith("/logout") ? signingOut : json({ discordUserId: "123", trainer: null });
+    };
+    const page = render(createElement(AuthPage));
+    const user = userEvent.setup({ document: dom.window.document });
+    await page.findByText("Trainer 123");
+    await user.click(page.getByRole("button", { name: "Sign out" }));
+    await user.click(page.getByRole("button", { name: "Retry trainer" }));
+    assert.deepEqual(requests, ["/api/me", "/api/auth/logout"]);
+    await act(async () => { release(new Response(null, { status: 204 })); await signingOut; });
+    const signIn = await page.findByRole("button", { name: "Sign in with Discord" });
+    assert.equal(signIn.hasAttribute("disabled"), false);
+  });
+
+  it("retries an unavailable trainer with the same session instead of starting OAuth", async () => {
+    const requests: string[] = [];
+    let reads = 0;
+    globalThis.fetch = async input => {
+      requests.push(String(input));
+      if (!String(input).endsWith("/me")) throw new Error("Unexpected new login");
+      return json({ discordUserId: "123", trainer: ++reads === 1 ? null : {
+        displayName: "Leaf", avatarUrl: null, level: 1, money: 1000, exp: { current: 0, required: 100 },
+      } });
+    };
+    const page = render(createElement(AuthPage));
+    await page.findByText("Trainer 123");
+    await userEvent.setup({ document: dom.window.document }).click(page.getByRole("button", { name: "Retry trainer" }));
+    await page.findByText("Profile Leaf");
+    assert.deepEqual(requests, ["/api/me", "/api/me"]);
+  });
+
   it("keeps the battle link and blocks repeated sign-in attempts until the rate limit resets", async () => {
     dom.reconfigure({ url: "https://pokestar.example/?battle=battle-1" });
     let starts = 0;
