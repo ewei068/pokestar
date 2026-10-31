@@ -1,0 +1,59 @@
+/* Refine original Dusk without adopting the alternate compositions. */
+.choices [aria-pressed=true]{background:#e5e8e0;box-shadow:inset 0 -3px #60704e;border-color:#60704e}
+body:not([data-variant=original]) .game{font-family:"Trebuchet MS","Segoe UI",sans-serif;--ink:#fff4dc;--soft:#ddd8c9;--accent:#f7cf65;--line:#93998c;background:linear-gradient(#14223855,#14223877 45%,#14202bdd),url('battle-background.webp') center top/cover fixed}
+body:not([data-variant=original]) .topbar{background:#17252be8;border-color:#758379;box-shadow:inset 0 -2px #0a1825aa}
+body:not([data-variant=original]) .brand{font-weight:700;letter-spacing:-.7px;color:#ffecaf;text-shadow:1px 2px #142127}
+body:not([data-variant=original]) .crest{background:#f1c851;border-color:#fff1ac;color:#283843;box-shadow:2px 3px #111c24}
+body:not([data-variant=original]) .sidebar{background:#14232bc4;border-color:#8b9c8b55}
+body:not([data-variant=original]) .sidebar nav a,body:not([data-variant=original]) .sidebar nav button{font-weight:600;font-size:15px}
+body:not([data-variant=original]) .sidebar nav [aria-current]{background:#d2aa4c;color:#192d35;border-color:#f9dfa0;box-shadow:inset 0 2px #fff0bb66,0 3px #6c562d;border-radius:4px}
+body:not([data-variant=original]) .side-stamp{display:none}
+body:not([data-variant=original]) h1{font-weight:700;font-size:36px;letter-spacing:-.6px;text-shadow:1px 3px #17312e}
+body:not([data-variant=original]) h2{font-weight:600;letter-spacing:0}
+body:not([data-variant=original]) h3{font-weight:600;letter-spacing:0;font-size:20px}
+body:not([data-variant=original]) .kicker{font-weight:500;letter-spacing:.09em;color:#e1e5d3}
+body:not([data-variant=original]) .field{background:linear-gradient(#15302911,#15302944),url('battle-background.webp') center 57%/cover;border:1px solid #a7b3a1;box-shadow:0 4px #13232b88,inset 0 0 0 3px #b7d2aa33;border-radius:6px}
+body:not([data-variant=original]) .field-label{background:#193e32e8;border-color:#bbce9e}
+body:not([data-variant=original]) .member>strong{font-weight:600;font-size:13px}
+body:not([data-variant=original]) .level{font-family:"Trebuchet MS",sans-serif;font-size:11px}
+body:not([data-variant=original]) .panel{background:#172c32ed;border-color:#839a91;box-shadow:inset 0 2px #b6cebb22,0 4px #102029bb;border-radius:6px}
+body:not([data-variant=original]) .panel-cap{background:#29423ce8;border-color:#7d998377}
+body:not([data-variant=original]) .status{font-weight:500;color:#d4f69c}
+body:not([data-variant=original]) .battle-info p{color:#dedfce}
+body:not([data-variant=original]) .rival-art{border:1px solid #ac97c0;background:radial-gradient(#8c6aaf66,#31274088)}
+body:not([data-variant=original]) .primary{background:repeating-linear-gradient(-45deg,#fff5c411 0 10px,transparent 10px 20px),#edbe43;border-color:#ffe69c;color:#26312e;box-shadow:inset 0 2px #fff4bf88,0 4px #896529;font-weight:600;font-size:14px;border-radius:5px}
+body:not([data-variant=original]) .quiet,body:not([data-variant=original]) .tool{background:#304842;border-color:#9db199;box-shadow:inset 0 2px #e3eec722,0 3px #13282b;color:#fff0d0;font-weight:500}
+body:not([data-variant=original]) .money{background:#13252b;border-color:#8d9d8f;font-weight:600}
+body:not([data-variant=original]) .trainer{font-weight:600}
+body:not([data-variant=original]) .mode{background:#285b92;border:1px solid #96bdd6;box-shadow:inset 0 3px #d0e9ff33,0 4px #122a3f;border-radius:5px}
+body:not([data-variant=original]) .dungeon-mode{background:#3e7544;border-color:#acd08b;box-shadow:inset 0 3px #edffb833,0 4px #183b2b}
+body:not([data-variant=original]) .tower-mode{background:#a44335;border-color:#e4a37c;box-shadow:inset 0 3px #ffe6bd33,0 4px #562b28}
+body:not([data-variant=original]) .mode-text strong{font-size:19px;font-weight:600;letter-spacing:0;text-shadow:0 1px #14253077}
+body:not([data-variant=original]) .mode-text small{font-weight:500;color:#fff0b9;font-size:9px}
+body:not([data-variant=original]) .mode-text>span{font-size:12px;color:#f2ead9}
+body:not([data-variant=original]) .mode-art{background:#102c3022;border-radius:3px}
+body:not([data-variant=original]) .mode-arrow{color:#fff0b7}
+body:not([data-variant=original]) .formation-slot{background:#3d554b;border-color:#8f9f80}
+body:not([data-variant=original]) .empty-slot{background:#142b2a77;border-color:#728b79}
+body:not([data-variant=original]) .fixture-note{color:#e0dfd2}
+/* Same hierarchy, alternate jewel palette; no extra layout changes. */
+body[data-variant=jewel] .game{background:linear-gradient(#26203f55,#26203f77 45%,#211e32dd),url('battle-background.webp') center top/cover fixed}
+body[data-variant=jewel] .topbar{background:#241f37ed;border-color:#8d819e}
+body[data-variant=jewel] .sidebar{background:#211f35c4;border-color:#a79ab955}
+body[data-variant=jewel] .panel{background:#2b2641ed;border-color:#9c8eb0}
+body[data-variant=jewel] .panel-cap{background:#433557e8;border-color:#aa91b777}
+body[data-variant=jewel] .mode{background:#3155a0;border-color:#9cbbeb;box-shadow:inset 0 3px #d0e9ff33,0 4px #20274b}
+body[data-variant=jewel] .dungeon-mode{background:#287563;border-color:#89c9ac;box-shadow:inset 0 3px #c6ffe333,0 4px #163c37}
+body[data-variant=jewel] .tower-mode{background:#793e8b;border-color:#d59de0;box-shadow:inset 0 3px #fbe0ff33,0 4px #3c2449}
+body[data-variant=jewel] .quiet,body[data-variant=jewel] .tool{background:#42374f;border-color:#ab94b8;box-shadow:inset 0 2px #eadcf222,0 3px #241c32}
+body[data-variant=jewel] .money{background:#211b33;border-color:#9f8bac}
+body[data-variant=jewel] .formation-slot{background:#4a3f5c;border-color:#9985a9}
+body[data-variant=jewel] .empty-slot{background:#241b3377;border-color:#897396}
+@media(max-width:760px){body:not([data-variant=original]) .sidebar nav a,body:not([data-variant=original]) .sidebar nav button{font-size:11px}body:not([data-variant=original]) .member>strong{font-size:12px}body:not([data-variant=original]) .mode-text strong{font-size:18px}body:not([data-variant=original]) .title .quiet{font-size:12px}}
+/* Trebuchet's regular weight keeps labels lighter than synthesized semibold. */
+body:not([data-variant=original]) h2,
+body:not([data-variant=original]) h3,
+body:not([data-variant=original]) .mode-text strong,
+body:not([data-variant=original]) .member>strong,
+body:not([data-variant=original]) .sidebar nav a,
+body:not([data-variant=original]) .sidebar nav button{font-weight:400}

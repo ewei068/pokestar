@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { SiteIcon } from "../navigation/SiteIcon";
 import type { ReactNode } from "react";
 
 export type AudioSettings = { sfxVolume: number; musicVolume: number; muted: boolean };
@@ -43,8 +44,13 @@ export const useAudioSettings = () => {
 
 export const SettingsMenu = () => {
   const { settings, setSettings } = useAudioSettings();
-  return <details className="settings-menu">
-    <summary aria-label="Settings"><span aria-hidden="true">⚙</span><span>Settings</span></summary>
+  return <details className="settings-menu" onKeyDown={(event) => {
+    if (event.key === "Escape") {
+      event.currentTarget.open = false;
+      event.currentTarget.querySelector("summary")?.focus();
+    }
+  }}>
+    <summary className="icon-button" aria-label="Settings"><SiteIcon name="settings" /></summary>
     <section className="settings-panel" aria-label="Site settings">
       <h2>Settings</h2>
       <h3>Audio</h3>

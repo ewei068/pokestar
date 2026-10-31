@@ -27,4 +27,4 @@ export const readLoginResult = (search: string) => {
   return { error, completed, cleanSearch: clean ? `?${clean}` : "" };
 };
 
-export const loginReturnTo = (base: string, search: string) => `${base}${readLoginResult(search).cleanSearch}`;
+export const loginReturnTo = (base: string, search: string, hash = "") => `${base}${readLoginResult(search).cleanSearch}${hash}`;

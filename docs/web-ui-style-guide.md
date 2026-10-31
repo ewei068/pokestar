@@ -1,15 +1,87 @@
 # Web UI style guide for agents
 
-Status: working guidance for the Pokestar web client. Apply it when adding or
-changing a screen. The battle UI is the first example; future features may
-refine these rules.
+Status: working guidance for the Pokestar web client, including screens, shell,
+prototypes and development stories. The current broader-site direction is
+**Dusk Arcade / Jewel**, selected on 2026-10-30. Individual screens are designed
+with their real data and actions as their implementation approaches.
 
 ## Aim
 
 Make Pokestar feel like a game that is comfortable to use as a website. Favor
-compact, readable information, clear Pokémon identity, and actions that are
-easy to find. Use the existing battle screen as the visual baseline. Keep the
-site shell and future non-battle pages consistent with that direction.
+readable information, clear Pokémon identity and easy-to-find actions. The
+battle screen established the game presentation; the selected Jewel study
+extends it to the site shell and non-battle pages.
+
+## Shared visual language
+
+Use the [Jewel reference](design/web-navigation/jewel-reference.jpg) and editable
+[Play-page study](design/web-navigation/refined.html) with `?variant=jewel`.
+Serve the study as described in its [README](design/web-navigation/README.md).
+`directions.css` provides its base and `refined.css` the selected treatment.
+These are reference sources, not production components to copy wholesale.
+
+- **Scenery and surfaces.** Let the landscape remain visible around content.
+  Put text-heavy content on dark plum panels with enough opacity for readable
+  text. Pokémon sprites and scenery carry the game character; reserve scenic
+  framing for places where it supports the activity.
+- **Color hierarchy.** Warm gold marks the main action and selected navigation.
+  Sapphire, jade and amethyst distinguish encounter choices. Keep supporting
+  surfaces quiet so those colors remain useful. Color accompanies a label or
+  icon; encounter colors do not imply rarity, success or failure.
+- **Typography.** Use `Trebuchet MS`, then `Segoe UI`, then a sans-serif fallback
+  for the broader shell. Favor regular-weight navigation, panel headings and
+  feature labels; use bold selectively for the page title and main actions.
+  Preserve readable sizes on phones and verify fallback-font wrapping.
+- **Edges and controls.** Fine contrasting borders, restrained inset highlights,
+  short offset shadows and modest corner radii give controls depth. Use subtle
+  diagonal stripes sparingly on primary actions. Keep large body panels calm.
+- **Density.** Group related facts, preserve comfortable touch targets, and use
+  short copy. Details belong beside their action, not in repeated explanatory
+  subtitles. Sprite art may be playful; controls must remain recognizable.
+
+Starting values from the selected study, to extract only where implementation
+shows shared use:
+
+| Role | Reference value |
+| --- | --- |
+| Primary text / secondary text | `#fff4dc` / `#ddd8c9` |
+| Content panel / panel header | `#2b2641ed` / `#433557e8` |
+| Panel border | `#9c8eb0` |
+| Main action / selected navigation | `#edbe43` / `#d2aa4c` |
+| Trainer battle / dungeon / tower | `#3155a0` / `#287563` / `#793e8b` |
+
+These values establish direction, not verified accessibility for every pairing.
+Check contrast over the actual composited background and all control states.
+Keep the current battle board, HUD colors, type badges and effect semantics
+intact. Its paper command/inspection panels and square arena frame remain
+battle-specific; [the arena guide](arena-design-guide.md) owns their composition.
+For that reference, run the web development server and open
+`/?previewBattle=1&story=dense`; source is
+[`battle-ui.css`](../web/src/battles/battle-ui.css). Compare new screens with the
+appropriate rendered reference. The legacy navy top bar is not the shell target.
+
+## Navigation
+
+Accepted 2026-10-30: **Play, Pokémon, Catch, Rewards, More**. Play is the default;
+there is no Home tab. Catch is the player-facing name for acquisition. Keep a
+resource/account bar above the desktop sidebar or phone bottom navigation.
+Bag is an icon near resources; Settings uses a cog with an accessible name.
+Rewards groups daily rewards, quests, achievements, tutorial and level claims;
+exact subtab presentation is refined when those screens are implemented.
+
+Pokémon owns collection, owned detail and party/presets. Play owns encounter
+selection, active battles and saved results. More contains secondary destinations
+such as Shop and Crafting. Preserve direct battle links, browser Back, useful
+empty/error recovery and return paths from objectives to gameplay and claims.
+
+## Design as features are built
+
+Before implementing a screen, sketch its actual information and consequential
+actions using this language. Review substantial choices such as party editing,
+catch costs and reward claims; straightforward lists and settings can use the
+established patterns directly. Extract only repeated tokens/components that
+these screens demonstrate. Keep pending, failed and unknown outcomes distinct.
+The studies establish direction and navigation, not gameplay or reward rules.
 
 ## Design decisions
 

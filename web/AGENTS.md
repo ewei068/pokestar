@@ -1,8 +1,12 @@
 # Web client
 
-When changing a web screen, its CSS, or a development story, read
+When changing browser UI, including the shell, prototypes, CSS or development
+stories, read
 [`docs/web-ui-style-guide.md`](../docs/web-ui-style-guide.md). It defines the
 current visual direction, interaction rules, and review scenarios for Pokestar.
+Use the guide's selected Jewel reference for the shell and non-battle screens;
+use the rendered battle screen for battlefield work. Carry the game presentation
+and existing copy voice into new screens.
 
 For interface copy, battle narration or error wording, read its
 [Copy voice](../docs/web-ui-style-guide.md#copy-voice) section and linked approved

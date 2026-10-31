@@ -1,13 +1,31 @@
 # Web parity: roadmap and session coordination
 
-Updated 2026-10-29, America/Los_Angeles. Current stage: **Phase 2 release cut
-and tickets established; navigation/design and the shared-operation proof are next.**
+Updated 2026-10-30, America/Los_Angeles. Current stage: **Navigation and working
+visual direction selected; bounded operation discovery and first-slice planning.**
 The [coverage audit](web-parity-coverage.md) records the inspected checkout,
 individual assessments, issue reuse, work groups and reconciliation receipt.
 No runtime behavior was changed by the audit or ticket publication. The
 [published issue map](web-parity-tickets.md) records the approved cut, reviewed
 priorities, G23 split and read-back checks; it supersedes the earlier recommendations
 and review checkpoints retained below.
+
+## Current design checkpoint — 2026-10-30
+
+Selected main tabs: Play, Pokémon, Catch, Rewards, More. Play is the default;
+Bag is beside resources and Settings a cog. The maintainer selected Dusk Arcade's
+Jewel refinement as the working direction. The [UI guide](../web-ui-style-guide.md)
+owns the visual/navigation rules and [the studies](../design/web-navigation/README.md)
+retain editable references. Refine individual screens as they approach implementation.
+
+The [operation discovery](../web-player-operations.md) records identity, owned
+reads, party concurrency, NPC-start recovery and participant receipts. These are
+source findings and proposed contracts, not completed #235 runtime proof.
+The maintainer selected constant successful web-interaction rewards rather than
+an operation-specific reward table; finalize trigger scope before enabling grants.
+
+The [first-slice plan](../plans/2026-10-30-1740-feat-web-first-playable-slice-plan.md)
+sequences shell → initialization → collection → party → NPC start → saved receipts.
+The [operation discovery](../web-player-operations.md) records evidence and gates.
 
 ## Release branch workflow — 2026-10-29
 

@@ -31,6 +31,35 @@ The [next-session handoff](../handoffs/2026-10-29-web-navigation-foundation.md)
 narrows the next deliverable to navigation, representative responsive screens
 and supporting contract discovery; it includes the next-agent prompt.
 
+On **2026-10-30**, the maintainer selected the Jewel refinement of Dusk Arcade
+as the working visual direction and **Play, Pokémon, Catch, Rewards, More** as
+main navigation. Bag sits near resources and Settings uses a cog. The
+[UI guide](../web-ui-style-guide.md) owns these rules; the
+[editable studies](../design/web-navigation/README.md) retain the selected
+reference and prior alternatives. Design individual screens near implementation.
+Operation discovery and the first-slice plan follow below; mockups establish no
+new runtime, persistence or reward acceptance.
+
+The [first-slice plan](../plans/2026-10-30-1740-feat-web-first-playable-slice-plan.md)
+sequences shell → initialization → collection → party → NPC start → saved receipts.
+The [operation discovery](../web-player-operations.md) records evidence and gates.
+
+**Shell implementation checkpoint · 2026-10-30:** the Jewel shell now wraps the
+existing client, with desktop sidebar, phone bottom bar, Bag entry and Settings
+cog. Play lists real API battles; Pokémon, Catch, Rewards, More and Bag currently
+show explicit availability messages. URL navigation is reactive and preserves
+legacy battle links, Back and auth return fragments, including `/pokestar/`.
+The phone battle tray clears the system bar; battle typography remains scoped.
+
+Observed locally: all 124 client tests pass; client TypeScript/production build
+passes with a `/pokestar/` base; browser checks cover desktop, 390px and 320px,
+keyboard navigation, Settings, Back and dense battle targeting with no horizontal
+overflow. Browser battle data came from the named `dense` development fixture
+through a temporary local HTTP server, not live MongoDB or OAuth. One independent
+read-only review found a heading-weight regression, now corrected. No gameplay
+API, reward or persistence behavior was added. Trainer initialization is next
+after shell approval and merge into the release branch.
+
 Web release work integrates through `codex/web-release`, whose long-running
 draft PR targets `main`. Start new release work branches from that branch and
 target it with their PRs; merge those PRs only after approval. The maintainer
