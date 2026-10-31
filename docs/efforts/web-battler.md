@@ -4,10 +4,38 @@ Product direction updated on **2026-10-28, America/Los_Angeles**: expand
 the web battler into a web interface for the Discord bot's critical
 and highly used journeys. The [user journey catalog](../user-journeys.md)
 documents current bot journeys and supporting functions, with all 129 reviewed
-bot/web priorities and known dependencies. This milestone supplies an inventory
-for later product planning. A web PRD, release scope and implementation sequence
-remain separate future work. The implementation and verification below describe
-the existing battle experience.
+bot/web priorities and known dependencies. The completed coverage audit now
+assesses that inventory against the current implementation. Detailed navigation,
+service contracts and final implementation sequencing remain future work;
+the approved ticket release cut is recorded below.
+The implementation and verification below describe the existing battle experience.
+
+For expansion planning and cross-session coordination, read the
+[web parity roadmap](web-parity.md) and completed
+[Phase 1 coverage audit](web-parity-coverage.md). All 106 web-eligible P0–P3 IDs
+and 23 exclusions reconcile. The audit records 68 absent, 24 partial and 14
+implemented-but-unverified journeys; it proposes 42 work groups and reuses nine
+open issues already in Pokestar Project 3. Its separate first-release proposal
+has 63 candidate IDs, 40 later IDs and three unresolved onboarding IDs. It
+compares returning-player and new-player releases and recommends a first shared
+collection/party/NPC/progression slice. Those are historical Phase 1 recommendations.
+On **2026-10-29**, the maintainer approved the release cut and priorities;
+the [published ticket map](web-parity-tickets.md) records 43 new issues, eight
+existing issues with reviewed labels, 32 release tickets and 44 parity tickets.
+All 106 eligible journeys have owners. Trainer initialization (#216, P0) and
+learning/rewards (#217, P1) are separate release tickets; Tower, polling and web
+promotion are included. #184 remains outside the cut; #185 is maintainer-owned.
+Navigation and shared-operation design/proof are next. Ticket publication made
+no runtime changes and establishes no new live acceptance.
+The [next-session handoff](../handoffs/2026-10-29-web-navigation-foundation.md)
+narrows the next deliverable to navigation, representative responsive screens
+and supporting contract discovery; it includes the next-agent prompt.
+
+Web release work integrates through `codex/web-release`, whose long-running
+draft PR targets `main`. Start new release work branches from that branch and
+target it with their PRs; merge those PRs only after approval. The maintainer
+owns the final release merge into `main`. See the
+[release branch workflow](web-parity.md#release-branch-workflow--2026-10-29).
 
 Status: implementation landed on `main`; initial deployment working on
 **2026-10-26, America/Los_Angeles**. The user reports the live flow works;
