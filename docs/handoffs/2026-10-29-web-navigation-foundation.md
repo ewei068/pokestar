@@ -28,8 +28,11 @@ direction. See the [UI guide](../web-ui-style-guide.md),
 [operation discovery](../web-player-operations.md), and
 [first-slice plan](../plans/2026-10-30-1740-feat-web-first-playable-slice-plan.md).
 The studies remain standalone fixtures; no production gameplay implementation or
-#235 proof is complete. Current design/planning changes are local in this checkout
-until committed/published. Read the current plan before using the old launch prompt.
+#235 proof is complete. The design/planning changes are preserved on `codex/web-navigation-foundation`.
+The Jewel shell has since been implemented and locally verified; the maintained
+[effort checkpoint](../efforts/web-battler.md) records evidence and limitations.
+Trainer initialization follows shell approval and merge. Read the current plan
+before using the old launch prompt.
 
 ## Where the work stands
 

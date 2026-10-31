@@ -4,8 +4,6 @@ import { BattleList } from "./BattleList";
 import { BattlePage } from "./BattlePage";
 import type { BattleCatalog } from "./types";
 
-const battleId = new URLSearchParams(window.location.search).get("battle");
-
 const BattleDetail = ({ battleId }: { battleId: string }) => {
   const [catalog, setCatalog] = useState<BattleCatalog | null>(null);
   const [error, setError] = useState(false);
@@ -19,4 +17,5 @@ const BattleDetail = ({ battleId }: { battleId: string }) => {
   return <BattlePage battleId={battleId} catalog={catalog} />;
 };
 
-export const BattleFeature = () => battleId ? <BattleDetail battleId={battleId} /> : <BattleList />;
+export const BattleFeature = ({ battleId }: { battleId: string | null }) =>
+  battleId ? <BattleDetail key={battleId} battleId={battleId} /> : <BattleList />;

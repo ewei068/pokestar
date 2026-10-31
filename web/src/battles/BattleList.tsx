@@ -11,10 +11,11 @@ export const BattleList = () => {
   }, []);
   return (
     <main className="page-shell">
-      <div className="list-intro"><h1>Ongoing battles</h1>
-        <p>{battleCopy.listIntro}</p></div>
+      <div className="list-intro"><h1>Play</h1>
+        <section className="list-overview"><h2>Ongoing battles</h2>
+        <p>{battleCopy.listIntro}</p></section></div>
       {error && <p role="alert" className="error">Couldn't load your battles. Refresh the page to try again.</p>}
-      {!error && battles === null && <p className="quiet">Loading battles…</p>}
+      {!error && battles === null && <p className="site-panel loading-panel" role="status">Loading battles…</p>}
       {battles?.length === 0 && <div className="empty-state"><h2>No ongoing battles</h2>
         <p>Start one in Discord, then return here to continue it.</p></div>}
       {battles && battles.length > 0 && (

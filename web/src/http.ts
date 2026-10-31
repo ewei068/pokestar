@@ -52,7 +52,7 @@ export const isApiError = (error: unknown, status: number): boolean =>
   error instanceof ApiError && error.status === status;
 
 export const startLogin = async (): Promise<string> => {
-  const returnTo = loginReturnTo(import.meta.env?.BASE_URL || "/", window.location.search);
+  const returnTo = loginReturnTo(import.meta.env?.BASE_URL || "/", window.location.search, window.location.hash);
   const result = await request<{ authorizationUrl: string }>(`/auth/discord/login?returnTo=${encodeURIComponent(returnTo)}`,
     { headers: { Accept: "application/json" } });
   const url = new URL(result.authorizationUrl);
