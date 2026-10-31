@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pokestar · Dusk explorations</title>
+<link rel="stylesheet" href="directions.css"><link rel="stylesheet" href="dusk.css"><script src="directions.js" defer></script><script src="dusk.js" defer></script>
+</head>
+<body data-theme="arcade" data-variant="neon">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="study" aria-label="Visual comparison">
+  <div><strong>DUSK · ROUND TWO</strong><a href="./directions.html?theme=arcade">Earlier comparison ↗</a></div>
+  <div class="choices" role="group" aria-label="Visual direction">
+    <button data-variant="original" aria-pressed="false">0 <span>Original Dusk</span></button>
+    <button data-variant="neon" aria-pressed="true">1 <span>Neon arena</span></button>
+    <button data-variant="ember" aria-pressed="false">2 <span>Ember expedition</span></button>
+    <button data-variant="moon" aria-pressed="false">3 <span>Moonlit journey</span></button>
+  </div>
+  <p id="direction-note">Electric accents, angular frames and bold encounter cards. A louder arcade direction.</p>
+</aside>
+<div class="game">
+<header class="topbar">
+  <a class="brand" href="#play" aria-label="Pokestar Play"><span class="crest" aria-hidden="true">✦</span>Pokestar</a>
+  <div class="trainer-tools"><span class="money"><span aria-hidden="true">◆</span> 12,480<span class="sr-only"> money</span></span><button class="tool" data-preview="Bag" aria-label="Bag" title="Bag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9h14l1 12H4L5 9ZM8 9V6a4 4 0 0 1 8 0v3M8 14h8v4H8z"/></svg></button><span class="trainer"><span class="avatar" aria-hidden="true">L</span><span>Leaf<small>Lv. 18</small></span></span><button class="tool" data-preview="Settings" aria-label="Settings" title="Settings">⚙</button></div>
+</header>
+<div class="layout">
+<aside class="sidebar"><nav aria-label="Main navigation">
+<a href="#play" aria-current="page"><span aria-hidden="true">⚔</span>Play</a>
+<button data-preview="Pokémon"><span aria-hidden="true">◉</span>Pokémon</button>
+<button data-preview="Catch"><span aria-hidden="true">◎</span>Catch</button>
+<button data-preview="Rewards"><span aria-hidden="true">✦</span>Rewards</button>
+<button data-preview="More"><span aria-hidden="true">•••</span>More</button>
+</nav><div class="side-stamp" aria-hidden="true"><span>✦</span>POKESTAR<br>TRAINER CARD</div></aside>
+<main id="main" tabindex="-1">
+<div class="title"><div><span class="kicker">TRAINER LEAF · LV. 18</span><h1>Play</h1></div><button class="quiet" data-preview="Party editor">Edit party <span aria-hidden="true">↗</span></button></div>
+<section class="field" aria-labelledby="party-title"><div class="field-label"><h2 id="party-title">Your party</h2><span>6 / 6</span></div><div class="party" id="party"></div><div class="field-corner" aria-hidden="true">✦</div></section>
+<div class="play-grid">
+<div class="encounters">
+<section class="continue panel"><div class="panel-cap"><h2>Continue battle</h2><span class="status"><i></i>Your turn</span></div><div class="continue-content"><div class="rival-art" aria-hidden="true"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/94.png" alt="" width="96" height="96"></div><div class="battle-info"><span class="kicker">NPC BATTLE</span><h3>Battle in progress</h3><p>Your party is waiting.</p></div><button class="primary" data-preview="Continue battle">Continue <span aria-hidden="true">▶</span></button></div></section>
+<section class="modes"><h2>Choose a battle</h2><div class="mode-grid">
+<button class="mode trainer-mode" data-preview="Trainer battle"><span class="mode-art" aria-hidden="true"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/448.png" alt="" width="96" height="96"></span><span class="mode-text"><small>NPC</small><strong>Trainer battle</strong><span>Choose an opponent</span></span><span class="mode-arrow" aria-hidden="true">↗</span></button>
+<button class="mode dungeon-mode" data-preview="Dungeons"><span class="mode-art" aria-hidden="true"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/149.png" alt="" width="96" height="96"></span><span class="mode-text"><small>EXPLORE</small><strong>Dungeons</strong><span>Choose a dungeon</span></span><span class="mode-arrow" aria-hidden="true">↗</span></button>
+<button class="mode tower-mode" data-preview="Battle Tower"><span class="mode-art" aria-hidden="true"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/282.png" alt="" width="96" height="96"></span><span class="mode-text"><small>CHALLENGE</small><strong>Battle Tower</strong><span>Continue climbing</span></span><span class="mode-arrow" aria-hidden="true">↗</span></button>
+</div></section>
+</div>
+<aside class="party-panel panel"><div class="panel-cap"><h2>Formation</h2><span class="mini-label">6 / 6</span></div><div class="formation" id="formation"></div><p>Party changes apply to your next battle.</p><button class="quiet" data-preview="Party editor">Edit formation <span aria-hidden="true">↗</span></button></aside>
+</div>
+<p class="fixture-note">Visual study · example trainer and battles · nothing is saved</p>
+</main>
+</div>
+</div>
+<dialog id="preview"><form method="dialog"><span class="kicker">SINGLE-PAGE STUDY</span><h2 id="preview-title"></h2><p>This comparison explores the Play screen. Use the navigation study to review other screens.</p><div class="dialog-actions"><a id="study-link" href="./#play">Open navigation study ↗</a><button class="primary" autofocus>Back to Play</button></div></form></dialog>
+</body>
+</html>

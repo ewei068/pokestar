@@ -31,6 +31,19 @@ The [next-session handoff](../handoffs/2026-10-29-web-navigation-foundation.md)
 narrows the next deliverable to navigation, representative responsive screens
 and supporting contract discovery; it includes the next-agent prompt.
 
+On **2026-10-30**, the maintainer selected the Jewel refinement of Dusk Arcade
+as the working visual direction and **Play, Pokémon, Catch, Rewards, More** as
+main navigation. Bag sits near resources and Settings uses a cog. The
+[UI guide](../web-ui-style-guide.md) owns these rules; the
+[editable studies](../design/web-navigation/README.md) retain the selected
+reference and prior alternatives. Design individual screens near implementation.
+Operation discovery and the first-slice plan follow below; mockups establish no
+new runtime, persistence or reward acceptance.
+
+The [first-slice plan](../plans/2026-10-30-1740-feat-web-first-playable-slice-plan.md)
+sequences shell → initialization → collection → party → NPC start → saved receipts.
+The [operation discovery](../web-player-operations.md) records evidence and gates.
+
 Web release work integrates through `codex/web-release`, whose long-running
 draft PR targets `main`. Start new release work branches from that branch and
 target it with their PRs; merge those PRs only after approval. The maintainer

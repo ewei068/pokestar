@@ -1,0 +1,106 @@
+/* Alternate compositions, scoped to this second-round study. */
+.study{grid-template-columns:180px 1fr}.choices button{min-width:0}.choices span{font-size:12px}.choices [aria-pressed=true]{background:#e4e2f0;box-shadow:inset 0 -3px #63518c;border-color:#63518c}
+body:not([data-variant=original]) .side-stamp{display:none}
+body:not([data-variant=original]) .mode-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+body:not([data-variant=original]) .mode{min-height:180px;flex-direction:column;align-items:stretch;padding:12px;gap:12px}
+body:not([data-variant=original]) .mode-art{width:100%;height:90px;border:0;background:transparent}
+body:not([data-variant=original]) .mode-art img{width:112px;height:112px}
+body:not([data-variant=original]) .mode-arrow{position:absolute;right:12px;bottom:15px}
+body:not([data-variant=original]) .mode-text strong{font-size:16px}
+/* Neon arena: a charcoal arcade cabinet, citrus/cyan edge lights, slash motifs. */
+body[data-variant=neon] .game{--paper:#222638;--ink:#edf4f1;--soft:#b3c0cc;--accent:#d4f879;--line:#687783;background:radial-gradient(ellipse at 80% 15%,#24526366,transparent 50%),repeating-linear-gradient(135deg,#a9dbe105 0 1px,transparent 1px 13px),#151d2a}
+body[data-variant=neon] .topbar{background:#141b28;border-bottom:3px solid #a4d569;box-shadow:0 4px 20px #c2ed7e11}
+body[data-variant=neon] .crest{background:#d4f879;color:#1d3440;border:0;transform:rotate(-8deg);box-shadow:4px 4px #3b929d}
+body[data-variant=neon] .sidebar{background:#182130;border-right:1px solid #364757}
+body[data-variant=neon] .sidebar nav [aria-current]{background:#c4ef7d;color:#162735;border:1px solid #e6ffbc;box-shadow:4px 4px #426e63;border-radius:0;transform:skewY(-3deg)}
+body[data-variant=neon] .title h1{font-size:50px;line-height:1;font-style:italic;letter-spacing:-2px;text-transform:uppercase;color:#e9f6ec;text-shadow:3px 3px #347d86}
+body[data-variant=neon] .kicker{color:#a3c8d1}
+body[data-variant=neon] .field{border:2px solid #6da5a8;border-radius:0;box-shadow:6px 6px #0b1625;background:linear-gradient(100deg,#142e4455,#1c4a4688),url('battle-background.webp') center 57%/cover}
+body[data-variant=neon] .field-label{background:#132737;border-color:#75c6cb;transform:skewX(-8deg);margin-left:-3px;padding-left:18px}
+body[data-variant=neon] .panel{border-radius:0;border-color:#566e7e;box-shadow:5px 5px #0b1625;background:#222e3d}
+body[data-variant=neon] .panel-cap{background:repeating-linear-gradient(135deg,#a9dbe109 0 8px,transparent 8px 16px),#273e4b;border-color:#5a7888}
+body[data-variant=neon] .panel-cap h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+body[data-variant=neon] .primary{background:repeating-linear-gradient(-45deg,#ffffff20 0 10px,transparent 10px 20px),#caf286;border:1px solid #eaffc0;border-radius:0;color:#193138;box-shadow:4px 4px #537c61;font-style:italic;font-size:15px}
+body[data-variant=neon] .quiet,body[data-variant=neon] .tool{background:#253b47;border-radius:0;border-color:#6b8f97;box-shadow:3px 3px #0b1625}
+body[data-variant=neon] .mode{border-radius:0;border:1px solid #6da8b2;background:linear-gradient(150deg,#366b7844,#182b3d 75%);box-shadow:4px 4px #0b1625;border-top:4px solid #6ac3d3}
+body[data-variant=neon] .dungeon-mode{border-top-color:#c8ed7e;background:linear-gradient(150deg,#6b804a55,#25313c 75%)}
+body[data-variant=neon] .tower-mode{border-top-color:#d99ee3;background:linear-gradient(150deg,#82689b55,#272d40 75%)}
+body[data-variant=neon] .mode-art{background:radial-gradient(ellipse,#6de4ed22,transparent 70%);border-bottom:1px solid #7da9ac55}
+body[data-variant=neon] .mode-art img{filter:drop-shadow(0 0 9px #68dce644)}
+body[data-variant=neon] .mode-text small{color:#b6e7e3}
+body[data-variant=neon] .formation-slot{background:#324454;border-color:#587c89}
+/* Ember expedition: warm metal and canvas, heavier illustrated cards. */
+body[data-variant=ember] .game{--ink:#ffedcf;--soft:#d5bda1;--paper:#453b32;--accent:#ffc475;--line:#b68d5d;background:linear-gradient(#2d322ae8,#392d27ec),url('battle-background.webp') center/cover fixed}
+body[data-variant=ember] .topbar{background:#3c3029;border-color:#c49b60;box-shadow:inset 0 -4px #6d4d34,inset 0 3px #a0805244}
+body[data-variant=ember] .brand{color:#ffe5b6}
+body[data-variant=ember] .crest{background:#ce8445;border-color:#f1c782;color:#362e29;box-shadow:3px 3px #201c1c}
+body[data-variant=ember] .sidebar{background:#282d29dd;border-right:2px solid #7a684f}
+body[data-variant=ember] .sidebar nav [aria-current]{background:repeating-linear-gradient(-45deg,#ffffff09 0 5px,transparent 5px 10px),#91613c;border:1px solid #d6ac72;border-radius:2px;box-shadow:inset 0 2px #e6bd7c77,3px 4px #191e1c}
+body[data-variant=ember] h1{font-family:Georgia,serif;font-size:47px;letter-spacing:-1px;color:#ffe8bc}
+body[data-variant=ember] .kicker{color:#d8b781}
+body[data-variant=ember] .field{border:5px solid #8c6948;border-radius:3px;outline:1px solid #c5a16d;box-shadow:0 5px #201f1b;background:linear-gradient(#b98f4233,#483e2977),url('battle-background.webp') center 57%/cover}
+body[data-variant=ember] .field-label{background:#453b2de8;border-color:#d1b67c}
+body[data-variant=ember] .panel{border-color:#9a7c56;background:radial-gradient(#ffe4b309 .8px,transparent .8px),#413b31;background-size:5px 5px;border-radius:3px;box-shadow:4px 5px #1d211c}
+body[data-variant=ember] .panel-cap{background:#655039;border-bottom:3px double #bd9c68;color:#ffe6b9}
+body[data-variant=ember] .primary{background:repeating-linear-gradient(-45deg,#fff2c511 0 7px,transparent 7px 14px),#e7a75a;color:#352c23;border-color:#ffd59a;box-shadow:inset 0 2px #fff3cf88,0 5px #8b512e;border-radius:3px}
+body[data-variant=ember] .quiet,body[data-variant=ember] .tool{background:#5b503d;border-color:#a58a62;box-shadow:inset 0 2px #f4e0a622,0 3px #262820;border-radius:3px;color:#ffedcd}
+body[data-variant=ember] .money{background:#262a23;border-color:#8b7959}
+body[data-variant=ember] .mode{background:linear-gradient(#5b4c35cc,#3b342be8),url('battle-background.webp') 30% 50%/cover;border:2px solid #b18e5b;box-shadow:4px 4px #1d211c;border-radius:3px;min-height:210px}
+body[data-variant=ember] .dungeon-mode{background:linear-gradient(#36504499,#27362fe8),url('battle-background.webp') 70% 80%/cover;border-color:#8d9e72}
+body[data-variant=ember] .tower-mode{background:linear-gradient(#65423caa,#3c2e2ce8),url('battle-background.webp') 10% 10%/cover;border-color:#b28674}
+body[data-variant=ember] .mode-art img{width:128px;height:128px;filter:drop-shadow(2px 4px 0 #24241c88)}
+body[data-variant=ember] .mode-text{padding-top:8px;border-top:1px solid #bda27477}
+body[data-variant=ember] .mode-text strong{font-family:Georgia,serif;font-size:19px}
+body[data-variant=ember] .mode-text small{color:#e8c98f}
+body[data-variant=ember] .formation-slot{background:#606046;border-color:#a29c74}
+/* Moonlit journey: dissolve the field frame, let the scene become the page. */
+body[data-variant=moon] .game{--ink:#f5edff;--soft:#c8c4e0;--paper:#302e4c;--accent:#e4bcf3;--line:#857eaa;background:radial-gradient(ellipse at 73% 15%,#aa9cdb44,transparent 30%),linear-gradient(#26223a88,#191c32f5 72%),url('battle-background.webp') center top/cover fixed}
+body[data-variant=moon] .topbar{background:#211f35dd;border-color:#726384;box-shadow:none}
+body[data-variant=moon] .crest{background:#b99cd9;color:#2e2542;border-color:#e8d4ff;border-radius:50%;box-shadow:0 0 16px #d4b7ee33}
+body[data-variant=moon] .sidebar{background:#211f3599;border-color:#b2a5d333}
+body[data-variant=moon] .sidebar nav [aria-current]{background:linear-gradient(90deg,#af8dba66,#8f84bc22);border:1px solid #bba2cd77;border-radius:0;box-shadow:inset 3px 0 #e7c9e4}
+body[data-variant=moon] main{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:20px 28px;align-content:start;padding-top:34px}
+body[data-variant=moon] .title{grid-column:1/-1;margin:0}
+body[data-variant=moon] h1{font-size:52px;font-family:Georgia,serif;font-weight:500;letter-spacing:-1px;text-shadow:0 2px 12px #211a31}
+body[data-variant=moon] .kicker{color:#ded0eb}
+body[data-variant=moon] .field{grid-column:1;min-height:370px;border:0;border-radius:0;background:transparent;box-shadow:none;margin:0;align-self:stretch;display:flex;flex-direction:column;justify-content:center}
+body[data-variant=moon] .field-label{background:transparent;border:0;padding:8px 0;color:#ebdef7}
+body[data-variant=moon] .field-label h2{font-size:13px;font-family:Georgia,serif}
+body[data-variant=moon] .party{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 8px;padding:12px 0}
+body[data-variant=moon] .sprite-stage{height:110px}
+body[data-variant=moon] .sprite-stage img{width:120px;height:120px;filter:drop-shadow(0 8px 8px #20172ecc)}
+body[data-variant=moon] .sprite-stage:before{background:#b2bfd333;box-shadow:0 0 22px #c8b8eb44;border-bottom-color:#dfc6eb88}
+body[data-variant=moon] .member>strong{font-family:Georgia,serif;font-size:15px;letter-spacing:.01em;font-weight:500}
+body[data-variant=moon] .level{color:#d5d5e8}.type{white-space:nowrap}
+body[data-variant=moon] .field-corner{font-size:26px;color:#f0dcfc;text-shadow:0 0 20px #dfd4f9}
+body[data-variant=moon] .play-grid,body[data-variant=moon] .encounters{display:contents}
+body[data-variant=moon] .continue{grid-column:2;grid-row:2;align-self:center;background:linear-gradient(160deg,#504765e8,#25253de8);border:1px solid #b5a1c0;box-shadow:0 12px 35px #15132666;border-radius:12px}
+body[data-variant=moon] .panel-cap{background:transparent;border-bottom:1px solid #b6a1cf33;padding:16px}
+body[data-variant=moon] .continue-content{flex-wrap:wrap;padding:22px;gap:12px}
+body[data-variant=moon] .rival-art{width:100%;height:100px;background:radial-gradient(ellipse,#c799e333,transparent 70%);border:0}
+body[data-variant=moon] .rival-art img{width:126px;height:126px;filter:drop-shadow(0 0 10px #d5afe355)}
+body[data-variant=moon] .battle-info{text-align:center}
+body[data-variant=moon] .continue .primary{width:100%;margin-top:10px;background:linear-gradient(120deg,#e9c6dd,#b6a7df);color:#322642;border:1px solid #f4dff4;box-shadow:0 4px #645276;border-radius:6px}
+body[data-variant=moon] .modes{grid-column:1/-1;margin:0}
+body[data-variant=moon] .mode-grid{gap:18px}
+body[data-variant=moon] .mode{min-height:138px;flex-direction:row;align-items:center;border:1px solid #9b90b077;background:linear-gradient(135deg,#72618366,#30304999);border-radius:9px;box-shadow:0 7px 18px #16152a44;gap:4px;padding:14px 8px}
+body[data-variant=moon] .mode-art{width:90px;height:90px;flex:none}
+body[data-variant=moon] .mode-art img{width:106px;height:106px}
+body[data-variant=moon] .mode-text strong{font-family:Georgia,serif;font-weight:500;font-size:18px}
+body[data-variant=moon] .mode-text small{color:#e3c5ec;font-size:8px}
+body[data-variant=moon] .mode-text>span{font-size:10px}
+body[data-variant=moon] .mode-arrow{display:none}
+body[data-variant=moon] .party-panel{grid-column:1/-1;display:flex;align-items:center;gap:14px;background:#29293eaa;border:1px solid #877f9a55;box-shadow:none;padding:10px 16px;border-radius:8px}
+body[data-variant=moon] .party-panel .panel-cap{border:0;padding:0;flex-direction:column;align-items:start}
+body[data-variant=moon] .formation{display:flex;gap:10px;padding:0}
+body[data-variant=moon] .formation-row{grid-template-columns:repeat(2,28px);margin:0;gap:3px}
+body[data-variant=moon] .formation-row>span:first-child{grid-column:1/-1;font-size:9px}
+body[data-variant=moon] .formation-slot{height:30px;background:#5f587555;border-color:#9a90ae55}
+body[data-variant=moon] .formation-slot img{width:32px;height:32px}
+body[data-variant=moon] .empty-slot{display:none}
+body[data-variant=moon] .party-panel p{margin:0;flex:1;max-width:220px}
+body[data-variant=moon] .quiet,body[data-variant=moon] .tool{background:#57506b55;border-color:#b3a8c477;box-shadow:none;color:#f4e9fc}
+body[data-variant=moon] .party-panel .quiet{width:auto;margin:0 0 0 auto}
+body[data-variant=moon] .fixture-note{grid-column:1/-1;margin-top:0}
+@media(max-width:1150px){body[data-variant=moon] main{grid-template-columns:minmax(0,1fr) 285px;padding:22px}body[data-variant=moon] .mode{flex-direction:column;align-items:start;gap:8px;padding:12px}body[data-variant=moon] .mode-art{width:100%}body[data-variant=moon] .party-panel p{display:none}body[data-variant=moon] .type{display:none}}
+@media(max-width:760px){.study{grid-template-columns:1fr}.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.choices button{flex-direction:row;align-items:center;gap:7px}.choices span{font-size:11px}body:not([data-variant=original]) .mode-grid{grid-template-columns:1fr}body:not([data-variant=original]) .mode{min-height:106px;flex-direction:row;align-items:center;padding:10px;gap:14px}body:not([data-variant=original]) .mode-art{width:90px;height:82px;flex:none}body:not([data-variant=original]) .mode-art img{width:105px;height:105px}body:not([data-variant=original]) .mode-arrow{position:static;margin-left:auto}body[data-variant=ember] .mode-text{border:0;padding:0}body[data-variant=neon] .title h1{font-size:40px}body[data-variant=moon] main{display:block;padding:22px 14px 100px}body[data-variant=moon] h1{font-size:44px}body[data-variant=moon] .field{min-height:0;margin:22px 0}body[data-variant=moon] .sprite-stage{height:95px}body[data-variant=moon] .sprite-stage img{width:100px;height:100px}body[data-variant=moon] .member>strong{font-size:13px}body[data-variant=moon] .continue{margin-bottom:26px}body[data-variant=moon] .rival-art{width:75px;height:75px}body[data-variant=moon] .rival-art img{width:96px;height:96px}body[data-variant=moon] .battle-info{text-align:left}body[data-variant=moon] .continue-content{padding:14px}body[data-variant=moon] .party-panel{margin-top:22px;display:block}body[data-variant=moon] .party-panel .panel-cap{flex-direction:row;margin-bottom:12px}body[data-variant=moon] .formation{justify-content:space-between;margin:14px 0}body[data-variant=moon] .party-panel .quiet{width:100%}body[data-variant=moon] .fixture-note{margin-top:20px}}

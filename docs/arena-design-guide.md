@@ -8,8 +8,9 @@ uses that layout without a prototype flag.
 ## Field and formations
 
 - Render one continuous battlefield. Teams and occupied cells have no cards,
-  panel backgrounds or rectangular selection borders. The arena frame follows
-  the site's square corners, thin solid border and small offset shadow.
+  panel backgrounds or rectangular selection borders. The arena frame keeps
+  square corners, a thin solid border and a small offset shadow; the broader
+  Jewel shell may use modest corner radii.
 - Use a quiet background, centered and cropped with `cover`. Dim it separately
   so sprites, meters and labels remain readable. Never stretch source art.
 - On desktop, the participant is left and the rival right; front rows face the

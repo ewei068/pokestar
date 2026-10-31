@@ -15,6 +15,22 @@ worktree_path: "/Users/elviswei/.codex/worktrees/d66b/pokestar"
 
 # Next-session handoff: navigation and visual foundation
 
+## Continuation checkpoint — 2026-10-30
+
+The original handoff below is historical. Current work is on
+`codex/web-navigation-foundation`, based on `codex/web-release`; the long-running
+release draft is [PR #240](https://github.com/ewei068/pokestar/pull/240).
+
+Navigation is now Play, Pokémon, Catch, Rewards, More; Bag is a header icon and
+Settings a cog. The maintainer selected Dusk Arcade / Jewel as the working visual
+direction. See the [UI guide](../web-ui-style-guide.md),
+[editable studies](../design/web-navigation/README.md),
+[operation discovery](../web-player-operations.md), and
+[first-slice plan](../plans/2026-10-30-1740-feat-web-first-playable-slice-plan.md).
+The studies remain standalone fixtures; no production gameplay implementation or
+#235 proof is complete. Current design/planning changes are local in this checkout
+until committed/published. Read the current plan before using the old launch prompt.
+
 ## Where the work stands
 
 The user asked to finish the web parity audit, review a release cut, publish the

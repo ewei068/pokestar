@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Pokestar · Web navigation study</title>
+  <link rel="stylesheet" href="./study.css">
+  <script type="module" src="./study.js"></script>
+</head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+  <aside class="review-bar" aria-label="Design review controls">
+    <span><strong>Design study</strong> <span class="review-note">Fixture data · nothing is saved</span></span>
+    <label>Screen <select id="screen"></select></label>
+    <label>Fourth tab <select id="fourth"><option value="rewards">Rewards</option><option value="bag">Bag</option></select></label>
+    <label>State <select id="state"></select></label>
+  </aside>
+  <div id="app"></div>
+  <dialog id="confirm" aria-labelledby="confirm-title"></dialog>
+  <div class="sr-only" id="announcement" role="status" aria-live="polite"></div>
+</body>
+</html>

@@ -11,7 +11,7 @@ the shared battle service.
   [docs/efforts/web-battler.md](docs/efforts/web-battler.md) first. It indexes
   accepted decisions, contracts, verification and remaining work. Update it at
   meaningful milestones, keeping observed results separate from proposals.
-- Browser UI: also read [web/AGENTS.md](web/AGENTS.md) for visual, copy and
+- Browser UI, including navigation studies and prototypes: also read [web/AGENTS.md](web/AGENTS.md) for visual, copy and
   presentation ownership rules.
 - Backend structure: [src/README.md](src/README.md). Engine/data changes:
   [src/battle/README.md](src/battle/README.md).
