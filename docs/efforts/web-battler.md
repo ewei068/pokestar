@@ -110,6 +110,84 @@ implementation, and prove the durable 5 EXP / 10 money interaction-grant boundar
 before enabling rewarded reads. Party/presets and browser NPC starts follow in
 their own units; this checkpoint adds no browser battle-start flow.
 
+**Collection workspace design checkpoint · 2026-10-31 (revised proposal):**
+after maintainer feedback, the [editable study](../design/owned-collection/README.md)
+now combines compact sprite tiles, an arena-style party field and an inspector.
+The same inspection content mounts beside collection, in a responsive sheet or
+on its own page. Phones keep one expanded sheet; Add automatically opens party
+placement. Drag and tap alternatives follow the Discord add/manage helper,
+including swap, move, replacement at six and invalid empty positions at six.
+Filters are outside this review; the study shows bounded pagination rather than
+claiming virtual infinite scrolling. Maintainer feedback is pending on the revised
+screens. No production collection/party UI, player endpoint or reward grant was
+added. Production implementation retains the existing separate stacked units.
+Source discovery records owner-filter, stale refresh and reward atomicity hazards;
+local Mongo transaction support is not assumed. Work remains on
+`codex/web-owned-collection` based on PR #243, preserving both predecessor PRs and
+the pre-existing local HTTPS setup edits.
+
+**Collection refinement · 2026-10-31 (proposed):** the study now offers
+Name (default), Combat power, IV perfection percentage and no-label tile modes.
+Collection pages use complete rows fitted to the available viewport, with paging
+controls visible above the phone dock. The previous 36-entry/five-column orphan
+row is removed from normal pages; saved formation geometry remains unchanged.
+Search and sorting stay in a compact top toolbar, with secondary filters in a
+popover. Inspection adds a clearly marked future Train action and omits
+Move/Remove for existing members; party Manage retains those tap/keyboard paths.
+These refinements await design feedback and change no gameplay or persistence.
+
+**Collection visual polish · 2026-10-31 (proposed):** tighter headers and a
+single-row search/sort/filter toolbar retain viewport paging. SVG chevrons are
+centered and select arrows inset. Tile backgrounds now carry subtle Common,
+Rare, Epic, Legendary and Mythical hues, with a named all-rarities review state.
+The study uses the arena's existing alpha-bound sprite alignment to place feet
+at platform centers. Type badges now use the requested Fighting/Ice/Ground/
+Flying/Dark colors, and Stats marks nature-raised/lowered rows with red/blue and
+plus/minus cues. Move details follow battle inspection's title/type and four
+icon-marked facts. Production implementation must share that move view between
+battle and owned inspection, with host-owned placement and surface styling.
+Study checks covered desktop through 320 px, including neutral natures and a
+repair keeping the pager above the dock during short-phone save warnings.
+Production rendering and service/store architecture remain
+unchanged; the pre-implementation decisions below still apply.
+
+**Collection design approval · 2026-10-31:** the maintainer approved the refined
+workspace, including compact controls, rarity/type colors, nature stat cues and
+battle-style move details. This supersedes the pending design-feedback status
+above. The next step is to settle the two architecture prerequisites below,
+then implement collection/detail (U3) and party editing (U4) in their existing
+review units. Approval establishes design direction, not runtime acceptance.
+
+**Before production collection/party implementation — maintainer-directed:**
+
+- **One path, two callers.** Settle shared backend operation shapes called by
+  Discord and HTTP adapters, including ownership, validation, revision/replay,
+  grants and result projection. Extract domain work from Discord rendering;
+  do not build separate browser implementations of party/training rules. The
+  [operation discovery](../web-player-operations.md) records the current seams.
+- **Central client data stores and freshness.** Design who owns current owned
+  Pokémon, party revision and trainer resources; how collection pages and mounted
+  inspectors share them; and how mutations, response races, focus/reconnect and
+  Discord changes update or invalidate them. Keep temporary selection/sheets
+  separate from server data, and keep frozen/live battle projections in their
+  own session model. Automatic refresh, page-size measurement and cache work
+  must remain outside interaction grants. No store library or freshness policy
+  is selected by this prototype; revisit the [client architecture](../web-client-architecture.md)
+  before production implementation.
+
+**Shared player/data design · 2026-10-31 (proposed, reviewed):** the
+[architecture proposal](../design/owned-collection/architecture.md) recommends
+a shared PlayerService with transactional operation receipts/grants, versioned
+player projections and a TanStack Query cache. It defines immediate party saves,
+replay recovery, revision-based freshness and controlled reusable presentation.
+The runbook's standalone MongoDB needs transaction-capable infrastructure under
+this proposal; that migration is not approved or performed. Relevant legacy
+writers must join the protocol before U3 consumers depend on its revisions.
+A fresh agent's [review](../design/owned-collection/architecture-review.md) found
+three gaps—migration ordering, cross-domain invalidation and legacy event
+rewards—which were repaired. The proposal awaits maintainer review. This pass
+changed documentation only and establishes no new runtime acceptance.
+
 Original battle delivery status: implementation landed on `main`; initial deployment working on
 **2026-10-26, America/Los_Angeles**. The user reports the live flow works;
 fresh Pages/API/runtime checks are recorded below. Broader battle acceptance,
@@ -449,3 +527,20 @@ Follow-ups for a separate repository change:
 
 Deleting obsolete files and branches does not shrink historical Git objects.
 History rewriting and unrelated branch/worktree removal are outside this task.
+
+**Player/data proposal refinement · 2026-10-31 (proposed):** maintainer feedback
+favors configured party geometry, current-state guarded single-document writes
+and a focused migration over a replica-set/global-writer prerequisite. The
+[proposal amendment](../design/owned-collection/architecture.md) recommends
+TanStack Query with direct active-query polling first; push invalidations remain
+optional. Durable grant/replay persistence still needs a concrete small design
+before implementation. The earlier independent review covers the original
+proposal, not this amendment. No runtime changes or new acceptance are claimed.
+
+**Architecture approval · 2026-10-31:** maintainer approved the lighter reliability
+scope and shared-service/client-cache direction. The approved amendment removes
+durable interaction deduplication as an implementation prerequisite, accepts
+documented existing race/partial-write gaps, and specifies pending controls and
+refresh after ambiguous writes without automatic mutation retries. Implementation
+can proceed with shared owned reads/party service paths, then query cache and the
+approved UI. No production implementation or runtime acceptance is claimed here.

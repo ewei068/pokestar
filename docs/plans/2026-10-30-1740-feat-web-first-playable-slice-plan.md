@@ -1,4 +1,5 @@
 ---
+
 artifact_contract: ce-unified-plan/v1
 product_contract_source: ce-plan-bootstrap
 execution: code
@@ -8,6 +9,15 @@ origin: docs/handoffs/2026-10-29-web-navigation-foundation.md
 ---
 
 # Web release foundation and first playable slice
+
+> **2026-10-31 approved scope update:** For collection/party implementation,
+> the [approved architecture amendment](../design/owned-collection/architecture.md)
+> supersedes durable exactly-once participation-grant/replay prerequisites below.
+> Occasional duplicate participation rewards and documented existing concurrency/
+> partial-write gaps are accepted. Use pending controls, no automatic ambiguous
+> mutation retries, and focused conditional writes. No general receipt system or
+> transaction infrastructure is required. Existing battle safeguards remain.
+
 
 ## Goal Capsule
 
