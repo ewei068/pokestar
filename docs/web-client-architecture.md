@@ -1,5 +1,10 @@
 # Web client architecture
 
+The 2026-10-31 [player-data proposal](design/owned-collection/architecture.md)
+defines proposed shared caching and freshness for the approved collection study.
+It has received an independent review and awaits maintainer approval; it is not
+yet the implemented client architecture.
+
 Status: direction for incremental implementation, October 2026. This describes a
 site that can eventually expose more of Pokestar than battles. It does not
 commit us to a full bot migration or a visual design before those needs exist.

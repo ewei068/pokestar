@@ -1,5 +1,10 @@
 # Web player operations: first-slice boundaries
 
+The 2026-10-31 [shared player/data proposal](design/owned-collection/architecture.md)
+develops the operation, transaction and client-freshness contracts for the
+approved collection study. It has received an independent review and awaits
+maintainer approval; its migration recommendations are not implemented.
+
 2026-10-30. Bounded source inspection for #235, #216, #197, #199, #210 and #236.
 The discovery observations below describe the pre-implementation baseline;
 the dated U2 checkpoint records what has since changed. The original discovery
