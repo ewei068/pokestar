@@ -544,3 +544,28 @@ documented existing race/partial-write gaps, and specifies pending controls and
 refresh after ambiguous writes without automatic mutation retries. Implementation
 can proceed with shared owned reads/party service paths, then query cache and the
 approved UI. No production implementation or runtime acceptance is claimed here.
+
+
+**Owned collection/party implementation checkpoint · 2026-11-01:** the approved
+workspace now replaces Pokémon's availability screen. Compact tiles support
+name/CP/IV%/no labels, search, sort, filters and viewport-sized pages. Reusable
+party and Pokémon inspection views share the screen; phones expand one sheet
+at a time. Drag and Manage support placement, swapping and removal, while Add
+opens eligible party positions. Battle and owned inspection share move content.
+Train remains a visibly unavailable future action.
+
+Discord owned reads and single-member party operations now share service paths
+with authenticated `/api/player` routes. Reads derive stats without saving whole
+Pokémon snapshots. Party commands reread current state, validate ownership and
+capacity, and guard a narrow party write against the observed layout. TanStack
+Query owns account-scoped current-player data with visible polling, focus/reconnect
+refresh and mutation reconciliation. Automatic GETs grant nothing; explicit
+successful interactions grant participation rewards best effort. Ambiguous writes
+are never automatically replayed. The approved existing cross-document/legacy
+writer gaps remain; no transaction infrastructure or durable receipts were added.
+
+The [verification record](../verification/owned-collection-2026-11-01.md) records
+local tests, real disposable-Mongo guard checks, browser evidence and review
+repairs. The design is separated in PR #245; implementation targets its branch.
+No merge, deployment, live OAuth/Discord or physical-device acceptance is claimed.
+NPC starts, training, presets and broader legacy-writer migration remain later work.

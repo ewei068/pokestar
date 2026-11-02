@@ -84,5 +84,6 @@ export const useAuth = () => {
     else if (state.kind === "login" && state.error === "logout_failed") void signOut();
     else void signIn();
   };
-  return { state, pending, retry, signOut };
+  const refreshSession = () => { if (!busy.current) setAttempt(value => value + 1); };
+  return { state, pending, retry, signOut, refreshSession };
 };

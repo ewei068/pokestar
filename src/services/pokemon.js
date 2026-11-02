@@ -8,6 +8,7 @@
 const { logger } = require("../log");
 const {
   updateDocument,
+  getCollection,
   deleteDocuments,
   QueryBuilder,
   countDocuments,
@@ -34,6 +35,7 @@ const {
   calculateWorth,
   getAbilityOrder,
   getPokemonOrder,
+  getPokemonIdToIndex,
   getPartyPokemonIds,
   getAvailableForms,
   getFormChangeCost,
@@ -106,58 +108,6 @@ const updatePokemon = async (pokemon) => {
     logger.error(err);
   }
 };
-
-/**
- * @param {string} userId
- * @param {{
- *  page?: number,
- *  pageSize?: number,
- *  filter?: any,
- *  sort?: any,
- *  allowNone?: boolean
- * }} listOptions
- * @returns {Promise<{data: WithId<Pokemon>[]?, lastPage?: boolean, err: string?}>}
- */
-const listPokemons = async (userId, listOptions) => {
-  // listOptions: { page, pageSize, filter, sort, allowNone }
-  const filter = { userId, ...listOptions.filter };
-  const pageSize = listOptions.pageSize || PAGE_SIZE;
-  const page = listOptions.page || 1;
-  const sort = listOptions.sort || null;
-  const allowNone = listOptions.allowNone || false;
-
-  // get pokemon with pagination
-  try {
-    const query = new QueryBuilder(collectionNames.LIST_POKEMON)
-      .setFilter(filter)
-      .setLimit(pageSize)
-      .setPage(page - 1)
-      .setSort(sort);
-
-    const res = await query.find();
-    if (res.length === 0 && !allowNone) {
-      return {
-        data: null,
-        err: "No Pokemon found. Check your filter, or use `/gacha` to catch some Pokemon!",
-      };
-    }
-    if (res.length > pageSize) {
-      res.pop();
-      return { data: res, lastPage: false, err: null };
-    }
-    return { data: res, lastPage: true, err: null };
-  } catch (error) {
-    logger.error(error);
-    return { data: null, err: "Error getting Pokemon." };
-  }
-};
-
-/**
- * @param {Trainer} trainer
- * @param {(Parameters<typeof listPokemons>)[1]} listOptions
- */
-const listPokemonsFromTrainer = async (trainer, listOptions) =>
-  await listPokemons(trainer.userId, listOptions);
 
 /**
  * @param {any} pokemon
@@ -334,37 +284,110 @@ const calculateAndUpdatePokemonStats = async (
 };
 
 /**
+ * Owned records shared by Discord lists and browser projections. Trusted legacy
+ * filters execute in Mongo; derived CP/IV sorting happens after this pure read.
+ * @param {string} userId
+ * @param {Record<string, any>=} filter
+ * @returns {Promise<WithId<Pokemon>[]>}
+ */
+const findOwnedPokemons = async (userId, filter = {}) => {
+  const store = await getCollection(collectionNames.USER_POKEMON);
+  const records = /** @type {WithId<Pokemon>[]} */ (await store.find({ ...filter, userId }).toArray());
+  return records.map((pokemon) => calculatePokemonStats({ ...pokemon }, pokemonConfig[pokemon.speciesId]));
+};
+
+/**
+ * @param {string} userId
+ * @param {{
+ *  page?: number,
+ *  pageSize?: number,
+ *  filter?: any,
+ *  sort?: any,
+ *  allowNone?: boolean
+ * }} listOptions
+ * @returns {Promise<{data: WithId<Pokemon>[]?, lastPage?: boolean, err: string?}>}
+ */
+const listPokemons = async (userId, listOptions) => {
+  // listOptions: { page, pageSize, filter, sort, allowNone }
+  const filter = { ...listOptions.filter, userId };
+  const pageSize = listOptions.pageSize || PAGE_SIZE;
+  const page = listOptions.page || 1;
+  const sort = listOptions.sort || null;
+  const allowNone = listOptions.allowNone || false;
+
+  // get pokemon with pagination
+  try {
+    const records = await findOwnedPokemons(userId, filter);
+    if (sort) {
+      // Keep the trusted Discord query grammar; HTTP compiles its own allowlist.
+      const fields = Object.entries(sort);
+      const pokedexOrder = fields.some(([field]) => field === "pokedexOrder") ? getPokemonIdToIndex() : null;
+      const valueAt = (pokemon, field) => field === "pokedexOrder" ? pokedexOrder[pokemon.speciesId] :
+        field.split(".").reduce((value, key) => value?.[key], pokemon);
+      records.sort((a, b) => {
+        for (const [field, direction] of fields) {
+          const aValue = valueAt(a, field);
+          const bValue = valueAt(b, field);
+          let comparison = 0;
+          if (typeof aValue === "string" && typeof bValue === "string") comparison = aValue.localeCompare(bValue);
+          else if (aValue > bValue) comparison = 1;
+          else if (aValue < bValue) comparison = -1;
+          if (comparison) return comparison * Number(direction);
+        }
+        return a._id.toString().localeCompare(b._id.toString());
+      });
+    }
+    const res = records.slice((page - 1) * pageSize, page * pageSize + 1);
+    if (res.length === 0 && !allowNone) {
+      return {
+        data: null,
+        err: "No Pokemon found. Check your filter, or use `/gacha` to catch some Pokemon!",
+      };
+    }
+    if (res.length > pageSize) {
+      res.pop();
+      return { data: res, lastPage: false, err: null };
+    }
+    return { data: res, lastPage: true, err: null };
+  } catch (error) {
+    logger.error(error);
+    return { data: null, err: "Error getting Pokemon." };
+  }
+};
+
+/**
+ * @param {Trainer} trainer
+ * @param {(Parameters<typeof listPokemons>)[1]} listOptions
+ */
+const listPokemonsFromTrainer = async (trainer, listOptions) =>
+  await listPokemons(trainer.userId, listOptions);
+
+/**
+ * Shared owned lookup for Discord and HTTP. Reads derive current stats without
+ * overwriting a persisted build or owner with an earlier snapshot.
+ * @param {string} userId
+ * @param {string} pokemonId
+ * @returns {Promise<WithId<Pokemon> | null>}
+ */
+const findOwnedPokemon = async (userId, pokemonId) => {
+  if (typeof pokemonId !== "string" || !/^[a-f\d]{24}$/i.test(pokemonId)) return null;
+  const store = await getCollection(collectionNames.USER_POKEMON);
+  const pokemon = /** @type {WithId<Pokemon> | null} */ (await store.findOne({ userId, _id: idFrom(pokemonId) }));
+  return pokemon ? calculatePokemonStats({ ...pokemon }, pokemonConfig[pokemon.speciesId]) : null;
+};
+
+/**
  *
  * @param {string} userId
  * @param {string} pokemonId
  * @returns {Promise<{data: WithId<Pokemon>?, err: string?}>}
  */
 const getPokemonFromUserId = async (userId, pokemonId) => {
-  // find instance of pokemon in trainer's collection
   try {
-    let id = null;
-    try {
-      id = idFrom(pokemonId);
-    } catch (error) {
-      return { data: null, err: "Invalid Pokemon ID." };
-    }
-    const query = new QueryBuilder(collectionNames.USER_POKEMON).setFilter({
-      userId,
-      _id: id,
-    });
-
-    const res = await query.findOne();
-
-    if (!res) {
-      return {
-        data: null,
-        err: "Pokemon not found or Pokemon not owned by you.",
-      };
-    }
-    return await DEPRECATEDcalculateAndUpdatePokemonStats(
-      res,
-      pokemonConfig[res.speciesId]
-    );
+    const pokemon = await findOwnedPokemon(userId, pokemonId);
+    return pokemon ? { data: pokemon, err: null } : {
+      data: null, err: "Pokemon not found or Pokemon not owned by you.",
+    };
   } catch (error) {
     logger.error(error);
     return { data: null, err: "Error getting Pokemon." };
@@ -2277,6 +2300,8 @@ const evolvePokemon = async (pokemon, evolutionSpeciesId) => {
 };
 
 module.exports = {
+  findOwnedPokemon,
+  findOwnedPokemons,
   updatePokemon,
   listPokemons,
   listPokemonsFromTrainer,

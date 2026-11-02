@@ -16,6 +16,8 @@ const { logger } = require("../log");
 const { createApiRateLimits } = require("./rateLimits");
 const { getTrainer: getSharedTrainer } = require("../services/trainer");
 const { projectTrainerProfile } = require("./trainerProfile");
+const { createPlayerApi } = require("./playerApi");
+const { createPlayerService } = require("../services/player");
 
 const setCookie = (response, name, value, maxAgeMs, secure) => {
   response.cookie(name, value, {
@@ -53,6 +55,7 @@ const validAction = (action) => {
  * @param {Function=} options.exchangeCode Injectable Discord exchange
  * @param {typeof getSharedTrainer=} options.getTrainer Shared acting-user trainer resolution
  * @param {object=} options.catalog Display-only Pokémon and move metadata
+ * @param {ReturnType<typeof createPlayerService>=} options.playerService Shared owned-player operations
  * @param {object=} options.rateLimits Independent API quota middleware
  */
 const createBattleApi = ({
@@ -66,6 +69,7 @@ const createBattleApi = ({
   exchangeCode = exchangeDiscordCode,
   getTrainer = getSharedTrainer,
   catalog = null,
+  playerService = createPlayerService(),
   rateLimits = createApiRateLimits(),
 }) => {
   const router = express.Router();
@@ -173,6 +177,8 @@ const createBattleApi = ({
     }
     next();
   };
+
+  router.use("/player", createPlayerApi({ service: playerService, requireSession, requireSiteOrigin, rateLimits }));
 
   router.get("/me", requireSession, asyncRoute(async (request, response) => {
     const trainer = await resolveTrainer({ id: request.discordUserId }, false);

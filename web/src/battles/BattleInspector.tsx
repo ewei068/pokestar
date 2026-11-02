@@ -1,3 +1,4 @@
+import { MoveInspection } from "../components/MoveInspection";
 import type { BattleCatalog, PokemonView } from "./types";
 import { typeClass, typeName } from "./typeDisplay";
 import { StatusLabel } from "./StatusLabel";
@@ -34,18 +35,8 @@ export const BattleInspector = ({ pokemon, moveId, detail, catalog, teamLabel, o
       <div className="arena-inspector-title"><h3>{detail.name}</h3>
         {detail.duration !== undefined && <span className="arena-duration" aria-label="Remaining duration"><ClockIcon />{turns(detail.duration)}</span>}</div>
       <p>{detail.description}</p>
-    </div> : move ? <>
-      <div className="arena-inspector-title"><h3>{move.name || moveId}</h3>
-        <span className={`arena-type-label ${typeClass(move.type, catalog)}`}>{typeName(move.type, catalog)}</span></div>
-      <dl className="arena-inspector-facts" aria-label="Move details">
-        <div><dt><span aria-hidden="true">{move.damageType === "Physical" ? "⚔" : move.damageType === "Special" ? "✦" : "◌"}</span> Category</dt>
-          <dd>{move.damageType === "Physical" || move.damageType === "Special" ? move.damageType : "Status"}</dd></div>
-        <div><dt><span aria-hidden="true">✹</span> Power</dt><dd>{move.power ?? "—"}</dd></div>
-        <div><dt><span aria-hidden="true">◎</span> Accuracy</dt><dd>{move.accuracy ?? "—"}</dd></div>
-        <div><dt><ClockIcon /> Cooldown</dt><dd>{move.cooldown === undefined ? "—" : turns(move.cooldown)}</dd></div>
-      </dl>
-      <p>{move.description || "No description available."}</p>
-    </> : pokemon ? <>
+    </div> : move ? <MoveInspection move={move} fallbackName={moveId || undefined}
+      typeBadge={<span className={`arena-type-label ${typeClass(move.type, catalog)}`}>{typeName(move.type, catalog)}</span>} /> : pokemon ? <>
       <div className="arena-inspector-pokemon">{sprite && <img src={sprite} alt="" loading="lazy" />}
         <div className="arena-inspector-identity"><div className="arena-inspector-title">
           {statusId && <StatusLabel statusId={statusId}
