@@ -5,10 +5,10 @@ import { JSDOM } from "jsdom";
 import { CollectionWorkspace, type CollectionWorkspaceProps } from "./CollectionWorkspace";
 import type { PokemonDetail, Party, PlayerOperation } from "../player/types";
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "https://example.test/" });
-for (const [key, value] of Object.entries({ window: dom.window, document: dom.window.document, navigator: dom.window.navigator, HTMLElement: dom.window.HTMLElement })) Object.defineProperty(globalThis, key, { configurable: true, value });
+for (const [key, value] of Object.entries({ window: dom.window, document: dom.window.document, navigator: dom.window.navigator, HTMLElement: dom.window.HTMLElement, Element: dom.window.Element })) Object.defineProperty(globalThis, key, { configurable: true, value });
 const { render, cleanup, fireEvent } = await import("@testing-library/react");
 afterEach(cleanup);
-const pokemon: PokemonDetail = { id: "new-pokemon", speciesId: "25", speciesName: "Pikachu", name: "Pikachu", level: 25, shiny: false, rarity: "Rare", types: ["Electric"], combatPower: 1234, ivPercent: 90, inParty: false, spriteUrl: null, battleEligible: true, stats: [50,60,40,55,45,80], ivs: [31,31,31,31,31,31], evs: [0,0,0,0,0,0], nature: { name: "Adamant", raisedStat: 1, loweredStat: 3 }, ability: null, heldItem: null, exp: null, moves: [{ id: "tackle", name: "Tackle", type: "Normal", damageType: "Physical", power: 40, accuracy: 100, cooldown: 0, description: "A tackle." }] };
+const pokemon: PokemonDetail = { id: "new-pokemon", speciesId: "25", speciesName: "Pikachu", name: "Pikachu", level: 25, shiny: false, rarity: "Rare", types: ["Electric"], combatPower: 1234, ivPercent: 90, inParty: false, spriteUrl: "/pikachu.png", battleEligible: true, stats: [50,60,40,55,45,80], ivs: [31,31,31,31,31,31], evs: [0,0,0,0,0,0], nature: { name: "Adamant", raisedStat: 1, loweredStat: 3 }, ability: null, heldItem: null, exp: null, moves: [{ id: "tackle", name: "Tackle", type: "Normal", damageType: "Physical", power: 40, accuracy: 100, cooldown: 0, description: "A tackle." }] };
 const member = { ...pokemon, id: "member", name: "Eevee", inParty: true };
 const party: Party = { rows: 2, cols: 2, capacity: 1, slots: [member,null,null,null], targets: { new: [{ kind: "replace" }, { kind: "disabled", reason: "Party full" }, { kind: "disabled", reason: "Party full" }, { kind: "disabled", reason: "Party full" }], member: [{ kind: "disabled" }, { kind: "move" }, { kind: "move" }, { kind: "move" }] } };
 function page(overrides: Partial<CollectionWorkspaceProps> = {}) {
@@ -81,7 +81,9 @@ describe("collection workspace", () => {
     const tile = view.getByRole("button", { name: /^Inspect Pikachu/ });
     const occupied = view.getByRole("button", { name: /Position 1/ });
     Object.defineProperty(document, "elementFromPoint", { configurable: true, value: () => occupied });
-    pointer(tile, "pointerdown", 10, 10); pointer(tile, "pointermove", 80, 80); pointer(tile, "pointerup", 80, 80);
+    pointer(tile, "pointerdown", 10, 10); pointer(tile, "pointermove", 80, 80);
+    assert.equal(view.container.querySelector(".collection-drag-ghost img")?.getAttribute("src"), "/pikachu.png");
+    pointer(tile, "pointerup", 80, 80);
     assert.deepEqual(view.operations[0], { kind: "party.place", pokemonId: pokemon.id, index: 0, expectedOccupant: member.id });
     Object.defineProperty(document, "elementFromPoint", { configurable: true, value: () => view.container.querySelector(".collection-list-panel") });
     pointer(occupied, "pointerdown", 10, 10); pointer(occupied, "pointermove", 80, 80); pointer(occupied, "pointerup", 80, 80);
@@ -106,9 +108,43 @@ describe("collection workspace", () => {
     }
   });
   it("keeps a newly selected detail in loading state instead of claiming it disappeared", () => {
-    const view = page({ pokemon: undefined, detailLoading: true });
-    assert.ok(view.getByText("Loading Pokémon…"));
+    const { stats: _stats, ivs: _ivs, evs: _evs, nature: _nature, moves: _moves, ability: _ability, heldItem: _item, exp: _exp, ...summary } = pokemon;
+    const view = page({ pokemon: undefined, detailLoading: true, collection: { items: [summary], page: 1, pageSize: 20, total: 1, totalPages: 1 } });
+    assert.ok(view.getByRole("heading", { name: "Pikachu" }));
+    assert.ok(view.getByText("Loading details…"));
+    assert.ok(view.getByRole("table"));
     assert.equal(view.queryByText(/may no longer/), null);
   });
 
+});
+
+it("dismisses popovers outside, but keeps internal choices usable", () => {
+  const view = page();
+  fireEvent.click(view.getByRole("button", { name: "Filter" }));
+  fireEvent.pointerDown(view.getByLabelText("Rarity"));
+  assert.ok(view.getByRole("button", { name: "Done" }));
+  fireEvent.pointerDown(document.body);
+  assert.equal(view.queryByRole("button", { name: "Done" }), null);
+  fireEvent.click(view.getByRole("button", { name: "Manage" }));
+  fireEvent.pointerDown(document.body);
+  assert.equal(view.queryByRole("button", { name: "Move / Swap" }), null);
+});
+it("search waits for typing to pause and cancels obsolete input", async () => {
+  const queries: unknown[] = [];
+  const view = page({ onQueryChange: (query) => queries.push(query.search) });
+  fireEvent.change(view.getByLabelText("Search Pokémon"), { target: { value: "pi" } });
+  await new Promise(resolve => setTimeout(resolve, 200));
+  assert.deepEqual(queries, []);
+  fireEvent.change(view.getByLabelText("Search Pokémon"), { target: { value: "pika" } });
+  await new Promise(resolve => setTimeout(resolve, 200));
+  assert.deepEqual(queries, []);
+  await new Promise(resolve => setTimeout(resolve, 200));
+  assert.deepEqual(queries, ["pika"]);
+});
+
+it("does not offer a stale summary after an authoritative missing detail", () => {
+  const view = page({ pokemon: undefined, detailUnavailable: true });
+  assert.equal(view.queryByRole("button", { name: "Add to party" }), null);
+  assert.equal(view.queryByRole("heading", { name: "Pikachu" }), null);
+  assert.ok(view.getByText(/may no longer be in your collection/));
 });

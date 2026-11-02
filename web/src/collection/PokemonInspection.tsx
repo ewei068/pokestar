@@ -1,12 +1,13 @@
 import { useState } from "react";
-import type { PokemonDetail } from "../player/types";
+import type { PokemonDetail, PokemonSummary } from "../player/types";
 import { CollectionArtwork } from "./CollectionArtwork";
 import { MoveInspection } from "../components/MoveInspection";
 
 export const TypeBadge = ({ type }: { type: string }) => <span className="collection-type" data-type={type}>{type}</span>;
-export function PokemonInspection({ pokemon, inParty, pending, onAdd }: {
-  pokemon: PokemonDetail; inParty: boolean; pending: boolean; onAdd: () => void;
+export function PokemonInspection({ pokemon, inParty, pending, onAdd, loading }: {
+  pokemon: PokemonSummary | PokemonDetail; loading?: boolean; inParty: boolean; pending: boolean; onAdd: () => void;
 }) {
+  const detail = "stats" in pokemon ? pokemon : undefined;
   const [tab, setTab] = useState("stats");
   return <div className="collection-inspection">
     <div className="collection-identity"><CollectionArtwork src={pokemon.spriteUrl} />
@@ -15,15 +16,16 @@ export function PokemonInspection({ pokemon, inParty, pending, onAdd }: {
     <div className="collection-inspect-summary"><span>CP {pokemon.combatPower.toLocaleString()}</span><span>IV {pokemon.ivPercent}%</span><span>{inParty ? "In party" : "In collection"}</span></div>
     <div className="collection-inspect-actions">{!inParty && <button className="collection-primary" disabled={pending} onClick={onAdd}>Add to party</button>}
       <button disabled title="Training is coming later.">Train · Later</button></div>
-    {pokemon.exp && <label className="collection-exp">EXP {pokemon.exp.current} / {pokemon.exp.required}<progress value={pokemon.exp.current} max={Math.max(1, pokemon.exp.required)} /></label>}
+    <label className="collection-exp" style={{ visibility: detail?.exp ? "visible" : "hidden" }} aria-hidden={!detail?.exp}>EXP {detail?.exp?.current ?? "—"} / {detail?.exp?.required ?? "—"}<progress value={detail?.exp?.current || 0} max={Math.max(1, detail?.exp?.required || 1)} /></label>
     <div className="collection-inspect-tabs">{["stats", "moves", "about"].map(value => <button key={value} aria-pressed={tab === value} onClick={() => setTab(value)}>{value[0].toUpperCase() + value.slice(1)}</button>)}</div>
-    {tab === "stats" && <div className="collection-inspect-section"><p>Nature: {pokemon.nature.name}</p><table><thead><tr><th>Stat</th><th>Total</th><th>IV</th><th>EV</th></tr></thead><tbody>
+    <p className="collection-detail-status" role="status">{detail ? "" : loading ? "Loading details…" : "Details unavailable. Refresh to try again."}</p>
+    {tab === "stats" && <div className="collection-inspect-section"><p>Nature: {detail?.nature.name || "—"}</p><table><thead><tr><th>Stat</th><th>Total</th><th>IV</th><th>EV</th></tr></thead><tbody>
       {["HP", "Attack", "Defense", "Sp. Atk", "Sp. Def", "Speed"].map((name, i) => {
-        const raised = pokemon.nature.raisedStat === i && pokemon.nature.loweredStat !== i;
-        const lowered = pokemon.nature.loweredStat === i && pokemon.nature.raisedStat !== i;
-        return <tr key={name} className={raised ? "is-raised" : lowered ? "is-lowered" : ""}><th>{name}{raised ? " +" : lowered ? " −" : ""}</th><td>{pokemon.stats[i] ?? "—"}</td><td>{pokemon.ivs[i] ?? "—"}</td><td>{pokemon.evs[i] ?? "—"}</td></tr>;
+        const raised = detail?.nature.raisedStat === i && detail?.nature.loweredStat !== i;
+        const lowered = detail?.nature.loweredStat === i && detail?.nature.raisedStat !== i;
+        return <tr key={name} className={raised ? "is-raised" : lowered ? "is-lowered" : ""}><th>{name}{raised ? " +" : lowered ? " −" : ""}</th><td>{detail?.stats[i] ?? "—"}</td><td>{detail?.ivs[i] ?? "—"}</td><td>{detail?.evs[i] ?? "—"}</td></tr>;
       })}</tbody></table></div>}
-    {tab === "moves" && <div className="collection-inspect-section">{pokemon.moves.map(move => <article key={move.id}><MoveInspection move={move} typeBadge={<TypeBadge type={move.type} />} /></article>)}{!pokemon.moves.length && <p>No moves.</p>}</div>}
-    {tab === "about" && <div className="collection-inspect-section"><h3>Ability · {pokemon.ability?.name || "None"}</h3><p>{pokemon.ability?.description}</p><h3>Held item · {pokemon.heldItem?.name || "None"}</h3><p>{pokemon.heldItem?.description}</p><p>{pokemon.speciesName}</p><small>ID: {pokemon.id}</small></div>}
+    {tab === "moves" && <div className="collection-inspect-section">{(detail?.moves || []).map(move => <article key={move.id}><MoveInspection move={move} typeBadge={<TypeBadge type={move.type} />} /></article>)}{detail && !detail.moves.length && <p>No moves.</p>}</div>}
+    {tab === "about" && <div className="collection-inspect-section"><h3>Ability · {detail ? detail.ability?.name || "None" : "—"}</h3><p>{detail?.ability?.description}</p><h3>Held item · {detail ? detail.heldItem?.name || "None" : "—"}</h3><p>{detail?.heldItem?.description}</p><p>{pokemon.speciesName}</p><small>ID: {pokemon.id}</small></div>}
   </div>;
 }

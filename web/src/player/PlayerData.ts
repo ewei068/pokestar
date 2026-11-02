@@ -91,7 +91,11 @@ export class PlayerData {
       const result = await this.send<PlayerResult>("/player/interactions", { method: "POST", body: JSON.stringify(operation) });
       if (this.closed || epoch !== this.epoch) throw new Error("session_closed");
       await this.client.cancelQueries({ queryKey: this.prefix });
-      await this.client.invalidateQueries({ queryKey: this.prefix, refetchType: "none" });
+      const affected = (operation.kind === "party.place" || operation.kind === "party.remove") ? [this.prefix] : [
+        this.trainer().queryKey,
+        operation.kind === "inspect" ? this.pokemon(operation.pokemonId).queryKey : this.collection(operation.query).queryKey,
+      ];
+      await Promise.all(affected.map(queryKey => this.client.invalidateQueries({ queryKey, refetchType: "none" })));
       if (this.closed || epoch !== this.epoch) throw new Error("session_closed");
       if (result.trainer !== undefined) this.client.setQueryData(this.trainer().queryKey, result.trainer);
       if (operation.kind === "collection" && result.items && result.page !== undefined && result.pageSize !== undefined && result.total !== undefined && result.totalPages !== undefined) {

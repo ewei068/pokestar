@@ -569,3 +569,15 @@ local tests, real disposable-Mongo guard checks, browser evidence and review
 repairs. The design is separated in PR #245; implementation targets its branch.
 No merge, deployment, live OAuth/Discord or physical-device acceptance is claimed.
 NPC starts, training, presets and broader legacy-writer migration remain later work.
+
+
+**Collection interaction refinement · 2026-11-01:** review feedback on PR #246
+removed request-time opacity flashing and unrelated cache invalidation. First
+inspection uses cached summary identity while details load; collection paging
+retains the previous page during requests. Party placement uses the existing
+44px toolbar, avoiding formation movement. Search debounces by 350 ms; menus
+and responsive sheets dismiss on outside pointer input. Filter selects are
+compact, drag previews use the Pokémon sprite, and initial sorting is acquisition
+order (oldest first). One scoped independent review found and repaired a stale
+summary fallback after authoritative 404. Client tests/build and desktop/short
+phone verification are recorded in the existing verification record.

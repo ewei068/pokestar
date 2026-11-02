@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { ApiError } from "../http";
 import { CollectionWorkspace } from "../collection/CollectionWorkspace";
 import { usePlayer } from "./PlayerProvider";
 import type { CollectionQuery, PlayerOperation } from "./types";
 
 const selectionFromUrl = () => new URL(window.location.href).searchParams.get("owned");
-const initialQuery: CollectionQuery = { page: 1, pageSize: 24, search: "", sort: "name", order: "asc" };
+const initialQuery: CollectionQuery = { page: 1, pageSize: 24, search: "", sort: "recent", order: "asc" };
 const operationError = (error: unknown) => {
   if (error instanceof ApiError && error.status < 500) {
     if (error.code === "party_changed") return "Your party changed. Check the refreshed positions and choose again.";
@@ -33,7 +33,7 @@ export const CollectionFeature = () => {
   }, []);
   const mutation = useMutation({ mutationKey: [...data.prefix, "interaction"], mutationFn: (operation: PlayerOperation) => data.perform(operation),
     onError: error => { if (mounted.current) setMessage(operationError(error)); } });
-  const collection = useQuery({ ...data.collection(query), enabled: !mutation.isPending });
+  const collection = useQuery({ ...data.collection(query), placeholderData: keepPreviousData, enabled: !mutation.isPending });
   const party = useQuery({ ...data.party(), enabled: !mutation.isPending });
   const detail = useQuery({ ...data.pokemon(selectedId || ""), enabled: Boolean(selectedId) && !mutation.isPending });
   const perform = (operation: PlayerOperation) => {
@@ -66,7 +66,7 @@ export const CollectionFeature = () => {
   return <main className="page-shell owned-page"><h1>Your Pokémon</h1>
     <CollectionWorkspace collection={collection.data} party={party.data} pokemon={missing ? undefined : detail.data}
       query={query} onQueryChange={queryChange} selectedId={selectedId} onInspect={inspect}
-      onOperation={perform} pending={mutation.isPending} loading={collection.isPending} detailLoading={Boolean(selectedId) && detail.isPending}
+      onOperation={perform} pending={mutation.isPending} loading={collection.isPending || collection.isPlaceholderData} detailUnavailable={missing} detailLoading={Boolean(selectedId) && detail.isPending}
       error={message || readError} onRefresh={() => { setMessage(null); void data.refresh(); }} />
   </main>;
 };

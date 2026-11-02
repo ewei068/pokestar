@@ -65,3 +65,31 @@ participation rewards are best effort and may duplicate across user retries;
 legacy whole-document writers and cross-document partial failures remain possible.
 No transaction infrastructure, durable reward deduplication, schema migration,
 training, presets or browser NPC-start flow was introduced.
+
+
+## Interaction refinement after maintainer review
+
+The follow-up retains collection content during query changes, scopes successful
+read-interaction invalidation to the trainer and requested data, and removes
+pending opacity changes from collection tiles, Manage and Add. An integration
+test with a deliberately held inspection response verifies that tiles, Manage,
+identity and the stat table remain mounted. Summary data renders immediately;
+full detail is fetched separately and reused from the account cache. Confirmed
+404s override cached summaries and suppress Add.
+
+Search waits 350 ms after the last edit. Outside pointer input dismisses Filter,
+Manage, responsive sheets, Settings and the account menu. Placement guidance
+replaces the fixed-height party toolbar; compact filter controls and a sprite
+drag preview replace the earlier oversized selects/text ghost. Initial sort is
+recency ascending (oldest first).
+
+Observed: 156 client tests and the client production build pass. Browser checks
+at 1440×900 and 320×640 confirm automatic search, outside filter/settings dismissal,
+and unchanged formation top coordinates before/after placement (235.5px desktop,
+196px phone), with no phone horizontal overflow. A desktop pointer drag saved
+Pikachu into the empty party position using the temporary Mongo-backed API. No
+browser console errors were recorded. One independent scoped review identified
+the confirmed-404 fallback issue; its repair has a regression test. Backend code
+was unchanged, so the existing backend evidence above was reused.
+
+![Stable phone placement toolbar](owned-collection-2026-11-01/phone-placement-refined.png)

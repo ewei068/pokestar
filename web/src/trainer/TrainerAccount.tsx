@@ -1,3 +1,4 @@
+import { useDismissDetails } from "../components/useDismissDetails";
 import { useState } from "react";
 import { SiteIcon } from "../navigation/SiteIcon";
 import type { TrainerProfile } from "./types";
@@ -29,7 +30,8 @@ export const TrainerAccount = ({ profile, loading, userId, pending, onRetry, onS
   const name = profile?.displayName || "Trainer";
   const avatar = () => <TrainerAvatar key={profile?.avatarUrl || "initial"} name={name} url={profile?.avatarUrl || null} />;
   const level = profile ? `Lv. ${profile.level}` : loading ? "Loading…" : "Signed in";
-  return <details className="account-menu trainer-account" onKeyDown={event => {
+  const menuRef = useDismissDetails();
+  return <details ref={menuRef} className="account-menu trainer-account" onKeyDown={event => {
     if (event.key === "Escape") {
       event.currentTarget.open = false;
       event.currentTarget.querySelector("summary")?.focus();

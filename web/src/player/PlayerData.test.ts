@@ -84,3 +84,12 @@ it("does not send a queued interaction after signing out", async () => {
   assert.equal(requests, 0);
   assert.equal(data.client.getQueryCache().getAll().length, 0);
 });
+it("inspection leaves collection, party and previously inspected details fresh", async () => {
+  const data = new PlayerData("alice", null, () => {});
+  const keys = [data.collection(query).queryKey, data.party().queryKey, data.pokemon("previous").queryKey];
+  for (const key of keys) data.client.setQueryData<unknown>(key, { id: "cached" });
+  globalThis.fetch = async () => json({ discordUserId: "alice", pokemon: { id: "next" } });
+  await data.perform({ kind: "inspect", pokemonId: "next" });
+  for (const key of keys) assert.equal(data.client.getQueryState(key)?.isInvalidated, false);
+  data.dispose();
+});
