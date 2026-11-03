@@ -6,7 +6,7 @@
  */
 const { collectionNames } = require("../config/databaseConfig");
 const { logger } = require("../log");
-const { updateDocument } = require("../database/mongoHandler");
+const { updateDocument, getCollection } = require("../database/mongoHandler");
 const {
   listPokemonsFromTrainer: listPokemons,
   getPokemon,
@@ -133,7 +133,7 @@ const validatePartyLayout = (party) => {
  * @param {number} index
  */
 const canAddOrMovePokemonToParty = (party, pokemonId, index) => {
-  if (index < 0 || index >= party.pokemonIds.length) {
+  if (!Number.isInteger(index) || index < 0 || index >= party.pokemonIds.length) {
     return {
       data: null,
       err: `Invalid position! Must be between 1 and ${party.pokemonIds.length}.`,
@@ -254,6 +254,57 @@ const validatePartyForBattle = async (trainer) => {
   return { data: partyPokemons, err: null };
 };
 
+/**
+ * Apply explicit intent to fresh state. Retry only a failed guard, never an
+ * uncertain write. Legacy callers keep their post-command participation grant.
+ * @param {import("./trainer").TrainerIdentity} user
+ * @param {{kind: string, index: number, pokemonId?: string, expectedOccupant?: string | null}} command
+ * @returns {Promise<{data: null, err: string | null, code?: string}>}
+ */
+const executePartyCommand = async (user, command) => {
+  const failure = (code, err) => ({ data: null, err, code });
+  if (!command || !["party.place", "party.remove"].includes(command.kind) ||
+      !Number.isInteger(command.index) ||
+      (command.kind === "party.place" && (typeof command.pokemonId !== "string" || !/^[a-f\d]{24}$/i.test(command.pokemonId))) ||
+      (command.expectedOccupant !== undefined && command.expectedOccupant !== null &&
+        (typeof command.expectedOccupant !== "string" || !/^[a-f\d]{24}$/i.test(command.expectedOccupant)))) {
+    return failure("invalid_party_command", "Invalid party command.");
+  }
+  // Discord callers without a supplied expectation bind their intent to the
+  // first observed occupant too; a guard retry must not remove a different one.
+  const pokemonId = command.kind === "party.place" ? command.pokemonId.toLowerCase() : undefined;
+  let expected = command.expectedOccupant?.toLowerCase() ?? command.expectedOccupant;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const result = await getTrainer(user, false);
+    if (result.err || !result.data) return failure("trainer_unavailable", result.err || "Trainer unavailable.");
+    const trainer = result.data;
+    const current = trainer.party;
+    if (command.index < 0 || command.index >= current.pokemonIds.length) return failure("invalid_party_command", "Invalid party position.");
+    if (expected === undefined) expected = current.pokemonIds[command.index];
+    if (current.pokemonIds[command.index] !== expected) return failure("party_changed", "That position changed. Refresh your party and try again.");
+    let next;
+    if (command.kind === "party.place") {
+      const candidate = canAddOrMovePokemonToParty(current, pokemonId, command.index);
+      if (candidate.err) return failure("invalid_party_command", candidate.err);
+      next = candidate.data;
+    } else {
+      if (!current.pokemonIds[command.index]) return failure("invalid_party_command", "No Pokemon in that position!");
+      next = { ...current, pokemonIds: current.pokemonIds.map((id, index) => index === command.index ? null : id) };
+    }
+    const invalid = validatePartyLayout(next);
+    if (invalid.err) return failure("invalid_party_command", invalid.err);
+    const ids = next.pokemonIds.filter(Boolean);
+    if (ids.some((id) => !/^[a-f\d]{24}$/i.test(id))) return failure("pokemon_not_owned", "Party contains an unavailable Pokemon.");
+    const store = await getCollection(collectionNames.USER_POKEMON);
+    const owned = await store.find({ userId: trainer.userId, _id: { $in: ids.map(idFrom) } }).toArray();
+    if (owned.length !== ids.length) return failure("pokemon_not_owned", "Party contains an unavailable Pokemon.");
+    const write = await updateDocument(collectionNames.USERS,
+      { userId: trainer.userId, party: current }, { $set: { party: next } });
+    if (write.matchedCount === 1 || write.modifiedCount === 1) return { data: null, err: null };
+  }
+  return failure("party_changed", "Your party changed. Refresh and try again.");
+};
+
 const buildPartyAddSend = async ({
   user = null,
   pokemonId = null,
@@ -299,41 +350,14 @@ const buildPartyAddSend = async ({
     };
   }
 
-  // if pokemon in party, swap pokemon from both indices
-  const existingIndex = partyPokemon.indexOf(pokemon.data._id.toString());
-  if (existingIndex !== -1) {
-    if (existingIndex === index) {
-      return {
-        send: null,
-        err: `${pokemon.data.name} is already in that position!`,
-      };
-    }
-    [partyPokemon[index]] = partyPokemon.splice(
-      existingIndex,
-      1,
-      partyPokemon[index]
-    );
-  } else {
-    // check if party is full
-    if (
-      partyPokemon[index] == null &&
-      partyPokemon.reduce((acc, curr) => acc + (curr ? 1 : 0), 0) >= 6
-    ) {
-      return {
-        send: null,
-        err: `Your party is full! Remove a Pokemon with \`/party remove\``,
-      };
-    }
-
-    // insert pokemon into index
-    partyPokemon[index] = pokemon.data._id.toString();
-  }
-
-  // update trainer
-  const update = await updateParty(trainer.data, trainer.data.party);
-  if (update.err) {
-    return { send: null, err: update.err };
-  }
+  const update = await executePartyCommand(user, {
+    kind: "party.place", pokemonId: pokemon.data._id.toString(), index,
+    expectedOccupant: trainer.data.party.pokemonIds[index],
+  });
+  if (update.err) return { send: null, err: update.err };
+  const refreshed = await getTrainer(user, false);
+  if (refreshed.err) return { send: null, err: refreshed.err };
+  trainer.data.party = refreshed.data.party;
 
   // get party pokemons
   const partyPokemons = await getPartyPokemons(trainer.data);
@@ -360,75 +384,21 @@ const buildPartyAddSend = async ({
  * @param {number} index
  * @returns {Promise<{data: null, err: string?}>}
  */
-const addOrMovePokemonToParty = async (user, pokemonId, index) => {
-  const { data: trainer, err: trainerErr } = await getTrainer(user);
-  if (trainerErr) {
-    return { data: null, err: trainerErr };
-  }
-  const { data: party, err: validateErr } = canAddOrMovePokemonToParty(
-    trainer.party,
-    pokemonId,
-    index
-  );
-  if (validateErr) {
-    return { data: null, err: validateErr };
-  }
-
-  trainer.party = party;
-  const { err: validatePartyErr } = await validateParty(trainer);
-  if (validatePartyErr) {
-    return { data: null, err: validatePartyErr };
-  }
-
-  const update = await updateParty(trainer, trainer.party);
-  if (update.err) {
-    return { data: null, err: update.err };
-  }
-
-  return { data: null, err: null };
-};
+const addOrMovePokemonToParty = async (user, pokemonId, index) =>
+  executePartyCommand(user, { kind: "party.place", pokemonId, index });
 
 /**
  * @param {CompactUser} user
  * @param {number} index
  * @returns {Promise<{data: null, err: string?}>}
  */
-const removePokemonFromParty = async (user, index) => {
-  const { data: trainer, err: trainerErr } = await getTrainer(user);
-  if (trainerErr) {
-    return { data: null, err: trainerErr };
-  }
+const removePokemonFromParty = async (user, index) =>
+  executePartyCommand(user, { kind: "party.remove", index });
 
-  if (index < 0 || index >= trainer.party.pokemonIds.length) {
-    return {
-      data: null,
-      err: `Invalid position! Must be between 1 and ${trainer.party.pokemonIds.length}.`,
-    };
-  }
-
-  if (trainer.party.pokemonIds[index] === null) {
-    return {
-      data: null,
-      err: "No Pokemon in that position!",
-    };
-  }
-
-  trainer.party.pokemonIds[index] = null;
-  const { err: validateErr } = await validateParty(trainer);
-  if (validateErr) {
-    return { data: null, err: validateErr };
-  }
-
-  const update = await updateParty(trainer, trainer.party);
-  if (update.err) {
-    return { data: null, err: update.err };
-  }
-
-  return { data: null, err: null };
-};
 
 module.exports = {
   updateParty,
+  executePartyCommand,
   getPartyPokemons,
   validatePartyForBattle,
   validateParty,

@@ -7,7 +7,7 @@
  * partyRemove.js removes a pokemon from a saved party.
  */
 const { getTrainer } = require("../../services/trainer");
-const { updateParty, getPartyPokemons } = require("../../services/party");
+const { updateParty, getPartyPokemons, executePartyCommand } = require("../../services/party");
 const { buildPartyEmbed } = require("../../embeds/battleEmbeds");
 const { getUserSelectedDevice } = require("../../utils/trainerUtils");
 
@@ -24,6 +24,7 @@ const partyRemove = async (user, option) => {
     return { send: null, err: trainer.err };
   }
   const partyPokemon = trainer.data.party.pokemonIds;
+  let removeIndex = null;
 
   // if option is a number convert to number and use as position
   if (!isNaN(option)) {
@@ -44,7 +45,7 @@ const partyRemove = async (user, option) => {
     }
 
     // remove pokemon from party
-    partyPokemon[index] = null;
+    removeIndex = index;
   } else if (option === "ALL") {
     // remove all pokemon from party
     // get length of party
@@ -62,13 +63,24 @@ const partyRemove = async (user, option) => {
     }
 
     // remove pokemon from party
-    partyPokemon[index] = null;
+    removeIndex = index;
   }
 
   // update trainer
-  const update = await updateParty(trainer.data, trainer.data.party);
+  const update = removeIndex === null
+    ? await updateParty(trainer.data, trainer.data.party)
+    : await executePartyCommand(user, {
+      kind: "party.remove", index: removeIndex,
+      expectedOccupant: partyPokemon[removeIndex],
+    });
   if (update.err) {
     return { send: null, err: update.err };
+  }
+
+  if (removeIndex !== null) {
+    const refreshed = await getTrainer(user, false);
+    if (refreshed.err) return { send: null, err: refreshed.err };
+    trainer.data.party = refreshed.data.party;
   }
 
   // get party pokemons

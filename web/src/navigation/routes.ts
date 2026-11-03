@@ -12,6 +12,7 @@ export const routeHref = (current: URL, route: SiteRoute): string => {
   const url = new URL(current);
   if (route.page === "play" && route.battleId) url.searchParams.set("battle", route.battleId);
   else url.searchParams.delete("battle");
+  if (route.page !== "pokemon") url.searchParams.delete("owned");
   url.hash = route.page;
   return `${url.pathname}${url.search}${url.hash}`;
 };

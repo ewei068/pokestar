@@ -1,3 +1,4 @@
+import { useDismissDetails } from "../components/useDismissDetails";
 import { createContext, useContext, useEffect, useState } from "react";
 import { SiteIcon } from "../navigation/SiteIcon";
 import type { ReactNode } from "react";
@@ -44,7 +45,8 @@ export const useAudioSettings = () => {
 
 export const SettingsMenu = () => {
   const { settings, setSettings } = useAudioSettings();
-  return <details className="settings-menu" onKeyDown={(event) => {
+  const menuRef = useDismissDetails();
+  return <details ref={menuRef} className="settings-menu" onKeyDown={(event) => {
     if (event.key === "Escape") {
       event.currentTarget.open = false;
       event.currentTarget.querySelector("summary")?.focus();
