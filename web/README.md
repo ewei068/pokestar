@@ -117,6 +117,31 @@ and keys are not exposed as frontend environment variables. If the Mac's IP
 changes, regenerate the server certificate with the new IP and update the host,
 backend origins and Discord redirect. A router DHCP reservation avoids that churn.
 
+### Reuse HTTPS settings across worktrees
+
+Keep the certificate pair in the main checkout's ignored `web/.certs/` directory,
+so removing a temporary worktree does not remove the certificates. In that
+checkout's ignored `web/.env.local`, set `WEB_DEV_HOST` and `WEB_DEV_API_TARGET`
+as above and use **absolute** paths for `WEB_DEV_TLS_CERT` and `WEB_DEV_TLS_KEY`.
+Keep the key readable only by your user (`chmod 600`).
+
+For each new worktree, link that shared web environment once, from its root:
+
+```sh
+POKESTAR_MAIN=/absolute/path/to/main/pokestar
+ln -s "$POKESTAR_MAIN/web/.env.local" web/.env.local
+npm run dev --prefix web
+```
+
+If the worktree already has `web/.env.local`, inspect it before replacing it;
+keep a separate file when that worktree needs a different host, proxy or base
+path. Symlinks and certificate paths stay local and ignored by Git. The linked
+file shares web settings, while the backend still reads the worktree's root
+`.env`; its site origin and OAuth callback must match the shared HTTPS address.
+Vite reads `web/.env.local`, not the backend's root `.env`. Restart Vite after
+changing the shared settings. Environment variables supplied on the launch
+command override the file, so ordinary startup needs no inline TLS variables.
+
 ## Static build
 
 ### Runtime and HTTP limits
