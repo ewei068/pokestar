@@ -51,6 +51,18 @@ a regression. Implementation stays in the existing checkout on
 `codex/web-npc-battle-implementation`; predecessor branches remain intact.
 No push, merge, deployment or real OAuth/Discord/device acceptance is claimed.
 
+**Battle theme refinement · 2026-11-02:** battle title, toolbar, commands,
+inspection and history now share the site's Jewel plum surfaces, warm text,
+gold controls and typography. Battlefield geometry, targeting and semantic
+HUD/type/status colors retain their existing presentation. The development
+stories share the shell scenery without reserving space for absent navigation.
+Client tests passed (162 tests, 30 suites), and the production build passed.
+Local browser checks covered dense, waiting, completed and targeting stories,
+plus an HTTP-backed disposable-Mongo battle at desktop, 390px and 320px widths.
+No horizontal overflow was observed; phone targeting retains a transparent
+tray and 44px Cancel control. This was a styling-only change with direct scoped
+review; it adds no backend or physical-device acceptance.
+
 For expansion planning and cross-session coordination, read the
 [web parity roadmap](web-parity.md) and completed
 [Phase 1 coverage audit](web-parity-coverage.md). All 106 web-eligible P0–P3 IDs

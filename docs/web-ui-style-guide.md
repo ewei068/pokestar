@@ -52,9 +52,11 @@ shows shared use:
 
 These values establish direction, not verified accessibility for every pairing.
 Check contrast over the actual composited background and all control states.
-Keep the current battle board, HUD colors, type badges and effect semantics
-intact. Its paper command/inspection panels and square arena frame remain
-battle-specific; [the arena guide](arena-design-guide.md) owns their composition.
+Battle commands, inspection and history use these same plum surfaces, warm text
+and gold controls. This extends the maintainer’s 2026-11-02 theme direction to
+the battle page. Keep the current battle board, HUD colors, type badges and
+effect semantics intact; [the arena guide](arena-design-guide.md) owns their
+composition and square arena frame.
 For that reference, run the web development server and open
 `/?previewBattle=1&story=dense`; source is
 [`battle-ui.css`](../web/src/battles/battle-ui.css). Compare new screens with the

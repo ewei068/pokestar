@@ -6,6 +6,8 @@
   --site-cap: #433557e8;
   --site-line: #9c8eb0;
   --site-gold: #edbe43;
+  --site-scenery: linear-gradient(#26203f55, #26203f77 45%, #211e32dd),
+    url('./battles/arena/assets/battle-background.webp') center top / cover fixed;
   --system-bar-height: 0px;
   color: var(--site-ink);
   background: #211e32;
@@ -24,8 +26,7 @@ h1 { font-size: clamp(1.9rem, 4vw, 2.5rem); letter-spacing: -.025em; margin-bott
 h2 { font-size: 1rem; margin-bottom: .65rem; }
 .settings-panel h2, .list-overview h2, .availability-panel h2, .empty-state h2 { font-weight: 400; }
 
-.app { min-height: 100vh; background: linear-gradient(#26203f55, #26203f77 45%, #211e32dd),
-  url('./battles/arena/assets/battle-background.webp') center top / cover fixed; }
+.app { min-height: 100vh; background: var(--site-scenery); }
 .site-header { position: relative; z-index: 20; display: flex; align-items: center; justify-content: space-between;
   gap: 16px; min-height: 76px; padding: 12px 28px; border-bottom: 1px solid var(--site-line);
   background: #241f37ed; box-shadow: inset 0 -2px #17112688; }
@@ -178,8 +179,8 @@ h2 { font-size: 1rem; margin-bottom: .65rem; }
 .availability-panel p { color: var(--site-soft); line-height: 1.6; margin-bottom: 28px; }
 .back-link { color: #f0ce77; text-decoration: none; font-weight: 700; }
 .back-link:hover { text-decoration: underline; }
-/* Keep the battle's accepted typography and paper surfaces within its owner. */
-.battle-surface { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+/* Battle chrome shares shell typography; arena CSS owns field geometry and cues. */
+.battle-surface { font-family: inherit; }
 
 @media (max-width: 1000px) and (min-width: 761px) {
   .site-header.has-trainer { padding-inline: 20px; gap: 12px; }
