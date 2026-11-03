@@ -211,3 +211,14 @@ describe("BattleWebService", () => {
     expect(expired.updates).toEqual([]);
   });
 });
+
+ test("active NPC summaries allowlist encounter labels without exposing setup or secrets", async () => {
+   const service = new BattleService(new BattleStore(new MemoryBattleCollection()));
+   const web = new BattleWebService(service);
+   const { battle, user1 } = makeBattle();
+   await service.start({ battle, mode: { type: "pve", npcId: "blue", difficulty: "easy", secret: "private" } });
+   const [summary] = await web.listActive(user1);
+   expect(summary.mode).toEqual({ type: "pve", npcId: "blue", difficulty: "easy" });
+   expect(summary).not.toHaveProperty("setup");
+   expect(summary).not.toHaveProperty("view");
+ });

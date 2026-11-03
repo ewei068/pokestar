@@ -12,7 +12,9 @@ class BattleWebService {
     return records.map((record) => ({
       battleId: record._id,
       revision: record.revision,
-      mode: { type: record.mode.type },
+      mode: { type: record.mode.type,
+        ...(record.mode.type === "pve" ? { npcId: record.mode.npcId, difficulty: record.mode.difficulty } : {}),
+      },
       turn: record.view.turn,
       updatedAt: record.updatedAt,
       expiresAt: record.expiresAt,

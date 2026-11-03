@@ -59,7 +59,6 @@ const {
 } = require("../utils/trainerUtils");
 const { getIdFromTowerStage, npcTurnAction } = require("../utils/battleUtils");
 const {
-  BasicNPC,
   DungeonNPC,
   TowerNPC,
   RaidNPC,
@@ -72,6 +71,8 @@ const {
   isDurableBattleEnabled,
 } = require("./durableBattle");
 const { renderBattle } = require("../battle/discord/durableBattleMessages");
+const { buildNpcBattle } = require("./npcBattle");
+
 const { yieldToEventLoop } = require("../battle/service/simulateAutoBattle");
 
 /**
@@ -667,62 +668,11 @@ const buildPveSend = async ({
     send.components.push(returnRow);
     send.content = "";
   } else if (view === "battle") {
-    // validate npc id
-    const npcData = npcConfig[state.npcId];
-    if (npcData === undefined) {
-      return { embed: null, err: `Invalid NPC!` };
-    }
-
-    // validate difficulty
-    const npcDifficultyData = npcData.difficulties[state.difficulty];
-    if (npcDifficultyData === undefined) {
-      return {
-        embed: null,
-        err: `Difficulty doesn't exist for ${npcData.name}!`,
-      };
-    }
-
-    // get trainer
-    const newTrainerResult = await getTrainer(user);
-    if (newTrainerResult.err) {
-      return { embed: null, err: newTrainerResult.err };
-    }
-
-    // validate party
-    const validate = await validatePartyForBattle(newTrainerResult.data);
-    if (validate.err) {
-      return { err: validate.err };
-    }
-
-    // add npc to battle
-    const npc = new BasicNPC(npcData, state.difficulty, state);
-    npc.setPokemon(npcData, state.difficulty);
-    const rewardMultipliers =
-      npcDifficultyData.rewardMultipliers ||
-      difficultyConfig[state.difficulty].rewardMultipliers;
-    const { autoBattleCost } = difficultyConfig[state.difficulty];
-    const battle = new Battle({
-      ...rewardMultipliers,
-      dailyRewards: npcDifficultyData.dailyRewards,
-      npcId: state.npcId,
-      npcType: "pve",
-      difficulty: state.difficulty,
-      canAuto: !getCanTrainerAutoBattle(newTrainerResult.data, autoBattleCost)
-        .err,
-      autoBattleCost,
-      shouldShowAutoBattle: !getDoesTrainerHaveAutoBattle(newTrainerResult.data)
-        .err,
+    const prepared = await buildNpcBattle({
+      user, npcId: state.npcId, difficulty: state.difficulty, state,
     });
-    battle.addTeam("NPC", true);
-    battle.addTrainer(
-      npc,
-      npc.party.pokemons,
-      "NPC",
-      npc.party.rows,
-      npc.party.cols,
-    );
-    battle.addTeam("Player", false);
-    battle.addTrainer(newTrainerResult.data, validate.data, "Player");
+    if (prepared.err) return { err: prepared.err };
+    const battle = prepared.data;
 
     let battleSend;
     if (isDurableBattleEnabled()) {

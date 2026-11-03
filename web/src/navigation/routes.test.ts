@@ -22,3 +22,11 @@ describe("site routes", () => {
     assert.equal(loginReturnTo("/pokestar/", "?authError=cancelled", "#rewards"), "/pokestar/#rewards");
   });
 });
+it("keeps encounter context through party editing and battle links", async () => {
+  const { readPlayRoute, playHref } = await import("./routes");
+  const current = new URL("https://example.test/pokestar/?npc=blue&difficulty=hard&playView=trainers#pokemon");
+  const returning = routeHref(current, { page: "play", battleId: null });
+  assert.deepEqual(readPlayRoute(new URL(returning, current)), { view: "trainers", npcId: "blue", difficulty: "hard" });
+  assert.equal(playHref(current, { view: "continue", npcId: "blue", difficulty: "hard", battleId: "one" }),
+    "/pokestar/?npc=blue&difficulty=hard&playView=continue&battle=one#play");
+});

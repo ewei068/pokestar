@@ -4,6 +4,11 @@ const trainerService = require('../trainer');
 const { getPokemonFromUserId, listPokemons, findOwnedPokemons } = require('../pokemon');
 const { createMockPokemon } = require('../../__testing__/mocks/pokemon');
 const { createPlayerService, parseCollectionQuery } = require('../player');
+const { buildNpcBattle } = require('../npcBattle');
+const { getDurableBattleService } = require('../durableBattle');
+
+jest.mock('../durableBattle', () => ({ isDurableBattleEnabled: () => true, getDurableBattleService: jest.fn() }));
+jest.mock('../npcBattle', () => ({ ...jest.requireActual('../npcBattle'), buildNpcBattle: jest.fn() }));
 
 jest.mock('../trainer', () => ({ getTrainer: jest.fn(), addExpAndMoneyTrainer: jest.fn() }));
 
@@ -98,4 +103,21 @@ test('Discord and HTTP share fresh CP ordering and owner cannot be overridden', 
   expect(discord.lastPage).toBe(false);
   await findOwnedPokemons(actor, { userId: 'attacker' }); // Mock asserts every query owner.
   expect(db.updateDocument).not.toHaveBeenCalled();
+});
+
+test('NPC starts use ordinary durable creation and keep success if participation fails', async () => {
+  /** @type {jest.Mock} */ (buildNpcBattle).mockResolvedValue({ data: { id: 'new-battle' }, err: null });
+  /** @type {jest.Mock} */ (getDurableBattleService).mockResolvedValue({ start: async () => ({ battleId: 'new-battle' }) });
+  mockGrant.mockRejectedValue(new Error('grant unavailable'));
+  const result = await service.interact(actor, { kind: 'npc.start', npcId: 'blue', difficulty: 'easy' });
+  expect(result.battleId).toBe('new-battle');
+  expect(buildNpcBattle).toHaveBeenCalledWith({ user: { id: actor }, npcId: 'blue', difficulty: 'easy', refreshIdentity: false });
+  await expect(service.interact(actor, { kind: 'npc.start', npcId: 'blue', difficulty: 'easy', userId: 'other' })).rejects.toMatchObject({ code: 'invalid_interaction' });
+});
+test('NPC reads normalize trainer progress without a participation grant', async () => {
+  trainer.defeatedNPCsToday = { blue: ['easy'] };
+  const result = await service.npcs(actor);
+  expect(result.npcs.find(npc => npc.id === 'blue').difficulties[0].dailyClaimed).toBe(true);
+  expect(mockGetTrainer).toHaveBeenCalledWith({ id: actor }, false);
+  expect(mockGrant).not.toHaveBeenCalled();
 });
