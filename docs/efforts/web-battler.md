@@ -72,6 +72,15 @@ The [verification record](../verification/shared-web-ui-2026-11-03.md) records
 client checks, responsive battle observations, cross-screen comparisons and the
 CSS cascade/caller repairs found during the scoped review.
 
+**Inspection density refinement · 2026-11-03:** shared `ui-button--inline`
+sizes Back and clickable inspection badges to their text. Move category, power,
+accuracy and cooldown now share one compact row in battle and collection.
+Client tests remain passing (162 tests, 30 suites) and the production build
+passes. Local browser checks confirmed the row fits a 221px desktop inspector
+interior and 320px phone layouts without horizontal overflow; inspection labels
+measured about 20px high and Back about 22px. Existing inspection callbacks and
+shared markup were retained.
+
 For expansion planning and cross-session coordination, read the
 [web parity roadmap](web-parity.md) and completed
 [Phase 1 coverage audit](web-parity-coverage.md). All 106 web-eligible P0–P3 IDs

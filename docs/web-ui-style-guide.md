@@ -56,11 +56,16 @@ Battle commands, inspection and history use these same plum surfaces, warm text
 and gold controls. Shared appearance lives in [`web/src/ui.css`](../web/src/ui.css):
 theme tokens, panels, controls, badges and move facts. Battle, collection and
 Play consume it; feature CSS owns their layout and density. Use `ui-panel`,
-`ui-panel-heading`, `ui-button` (with `--small`, `--icon` or `--primary` modifiers),
+`ui-panel-heading`, `ui-button` (with `--small`, `--inline`, `--icon` or `--primary` modifiers),
 and `ui-badge` rather than recreating their appearance. `ui-controls` opts a form
 or workspace's ordinary inputs/buttons into the same base. Formation and sprite
 buttons explicitly reset that base. Keep primary, disabled, hover and focus
 styling in the shared stylesheet.
+
+Use `ui-button--inline` for text-sized inspection actions, including clickable
+badges and Back. It removes the ordinary control's minimum height while
+retaining its border, hover and focus treatment. Shared move facts use one
+compact row for category, power, accuracy and cooldown.
 
 Use the shared `TypeBadge` for types outside the field and shared badge
 `data-kind` values for ability, item, buff and debuff labels. Move inspection owns

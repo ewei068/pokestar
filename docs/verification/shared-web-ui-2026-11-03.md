@@ -57,3 +57,21 @@ No new CSS-mirroring tests were added. This change alters presentation and
 shared markup, with existing behavior tests and real-browser observations as
 evidence. It changes no backend rules or session logic and does not establish
 physical-device, live-provider or deployment acceptance.
+
+## Inspection density follow-up
+
+Maintainer feedback requested smaller text-sized buttons and a single row of
+move facts. `ui-button--inline` now controls Back, status, ability, held-item and
+effect inspection actions. It keeps the shared hover/focus treatments and
+removes ordinary control minimum height. Move facts use smaller captions,
+tighter spacing and four columns; the old battle-specific two-column overrides
+were removed.
+
+Observed locally: all 162 client tests/30 suites and the production build pass.
+In the dense story, status, ability, item and effect buttons measured 20.3px
+high, and Back measured 21.6px. Ability/Back navigation still worked. The real
+Blue battle's four facts shared one row in a 221px-wide desktop inspector and
+at a 320px viewport. Collection move inspection also retained a single row at
+desktop and 320px widths. Observed document widths matched the phone viewport.
+This styling-only follow-up uses the existing behavior tests and a direct
+scoped diff review; no CSS-mirroring tests were added.
