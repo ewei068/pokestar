@@ -17,10 +17,10 @@ export const BattleLog = ({ entries, playing, onSkip }: { entries: BattleLogEntr
   useLayoutEffect(() => {
     if (follow.current && entries.length) list.current?.scrollToIndex(entries.length - 1, { align: 'end' });
   }, [entries.length]);
-  return <section className="arena-history" aria-label="Battle log">
+  return <section className="ui-panel arena-history" aria-label="Battle log">
     <div className="arena-section-heading"><h2>Battle log <small>{entries.length} {entries.length === 1 ? 'entry' : 'entries'}</small></h2>
-      <div className="arena-log-controls">{!following && <button type="button" className="arena-skip" onClick={latest}>Latest</button>}
-        {playing && <button type="button" className="arena-skip" onClick={onSkip}>Skip animations</button>}</div>
+      <div className="arena-log-controls">{!following && <button type="button" className="ui-button ui-button--small arena-skip" onClick={latest}>Latest</button>}
+        {playing && <button type="button" className="ui-button ui-button--small arena-skip" onClick={onSkip}>Skip animations</button>}</div>
     </div>
     {entries.length === 0 ? <p className="arena-muted">{battleCopy.logEmpty}</p> :
       <VList ref={list} data={entries} className="arena-log-list" style={{ height: config.log.viewportPx }}

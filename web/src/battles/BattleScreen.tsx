@@ -50,7 +50,7 @@ export const BattleScreen = ({ catalog, session, audio, music }: {
   if (!battle) return <div className="battle-surface" onClickCapture={playInteraction}><main className="page-shell">
     <a className="back-link" href={import.meta.env.BASE_URL}>← Battles</a>
     <p role="alert">{error || "Battle unavailable."}</p>
-    <button type="button" onClick={() => { void refresh(); }}>Retry</button>
+    <button type="button" className="ui-button ui-button--small" onClick={() => { void refresh(); }}>Retry</button>
   </main></div>;
 
   const displayView = playing ? (waitingForArt ? playing.previousView : playing.view) : battle.view;
@@ -103,18 +103,18 @@ export const BattleScreen = ({ catalog, session, audio, music }: {
       [`--arena-${kind}-color`, colors.main], [`--arena-${kind}-background`, colors.light], [`--arena-${kind}-border`, colors.border],
     ])),
   } as CSSProperties}><main className="page-shell arena-page">
-    <div className="arena-toolbar"><a className="back-link" href={import.meta.env.BASE_URL}>← Battles</a>
+    <div className="ui-panel arena-toolbar"><a className="back-link" href={import.meta.env.BASE_URL}>← Battles</a>
       <span className="arena-debug">Debug · Battle {battle.battleId.slice(0, 8)} · Revision {playing?.revision ?? battle.revision}</span>
       {music?.showControls && music.trackTitle && <div className="arena-music-control">
         <span title={music.trackTitle}>♫ {music.trackTitle}</span>
-        <button type="button" onClick={() => { void music.toggle(); }}>
+        <button type="button" className="ui-button ui-button--small" onClick={() => { void music.toggle(); }}>
           {music.playing ? "Pause music" : "Play music"}</button>
       </div>}</div>
     {audio?.error && <p role="alert" className="error">{audio.error}</p>}
     {music?.error && <p role="alert" className="error">{music.error}</p>}
-    <div className="arena-title"><div><small>{battle.mode.type || "Battle"} · TURN {displayView.turn}</small>
+    <div className="ui-panel arena-title"><div><small>{battle.mode.type || "Battle"} · TURN {displayView.turn}</small>
       <h1>{ownNames.map(name => teamDisplayName(displayView, name)).join(" & ") || "Your team"} <span className="arena-versus">VS</span> {rivalNames.map(name => teamDisplayName(displayView, name)).join(" & ") || "Opponents"}</h1></div>
-      {displayView.weather?.weatherId && <div className={`arena-weather ${playing?.changes.weather ? "is-state-changing" : ""}`} title="Battle weather">
+      {displayView.weather?.weatherId && <div className={`ui-badge arena-weather ${playing?.changes.weather ? "is-state-changing" : ""}`} title="Battle weather">
         {weatherIcon[displayView.weather.weatherId] || "◌"}
         <span>{displayView.weather.weatherId}<small>{displayView.weather.duration} {displayView.weather.duration === 1 ? "turn" : "turns"}</small></span></div>}
     </div>

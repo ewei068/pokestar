@@ -92,17 +92,17 @@ export function PlayFeature() {
       <button type="button" aria-disabled="true">Dungeons <small>Later</small></button>
       <button type="button" aria-disabled="true">Battle Tower <small>Later</small></button>
     </nav>
-    {readError && <div className="npc-notice" role="alert">Couldn't refresh your battles, trainers or party. <button type="button" className="npc-secondary" onClick={() => { void data.refresh(); }}>Refresh</button></div>}
+    {readError && <div className="npc-notice" role="alert">Couldn't refresh your battles, trainers or party. <button type="button" className="ui-button npc-secondary" onClick={() => { void data.refresh(); }}>Refresh</button></div>}
     {view === null && <p className="npc-empty" role="status">{ongoing.isError ? "Choose Trainer battles or refresh to try again." : "Loading battles…"}</p>}
     {view === "continue" && ongoing.data && <BattleList battles={ongoing.data} npcs={catalog.data || []} />}
     {view === "trainers" && <>
       {selection.npcId && <button ref={mobileBack} type="button" className="npc-mobile-back" onClick={() => update({ ...selection, npcId: null, difficulty: null })}>‹ All trainers</button>}
       {message && <p className="npc-notice" role="alert">{message}</p>}
       {party.data && (members.length === 0 || members.some(member => !member.battleEligible)) && <p className="npc-notice">
-        {members.length === 0 ? "Add a Pokémon to your party to start." : "Your party has a Pokémon that can't battle."} <a className="npc-secondary" href={routeHref(new URL(window.location.href), { page: "pokemon", battleId: null })}>Edit party</a></p>}
+        {members.length === 0 ? "Add a Pokémon to your party to start." : "Your party has a Pokémon that can't battle."} <a className="ui-button npc-secondary" href={routeHref(new URL(window.location.href), { page: "pokemon", battleId: null })}>Edit party</a></p>}
       {catalog.isPending ? <p className="npc-empty" role="status">Loading trainers…</p> : !catalog.data?.length ? <p className="npc-empty">{catalog.isError ? "Couldn't load trainers. Refresh to try again." : "No trainers available."}</p> :
         <div className="npc-encounters">
-          <section className="npc-panel npc-trainers" aria-label="Trainers"><header className="npc-panel-head"><h2>Trainers</h2><small>{catalog.data.length} opponents</small></header>
+          <section className="ui-panel npc-panel npc-trainers" aria-label="Trainers"><header className="ui-panel-heading npc-panel-head"><h2>Trainers</h2><small>{catalog.data.length} opponents</small></header>
             <div className="npc-search"><input type="search" aria-label="Search trainers" placeholder="Search trainers" value={search} onChange={event => setSearch(event.target.value)} /></div>
             <div className="npc-trainer-rows" ref={trainerRows}>{catalog.data.filter(value => `${value.name} ${value.displayName}`.toLowerCase().includes(search.toLowerCase())).map(value =>
               <button type="button" className="npc-trainer-row" key={value.id} aria-pressed={value.id === npc?.id} disabled={mutation.isPending}
@@ -110,7 +110,7 @@ export function PlayFeature() {
                 <CollectionArtwork src={value.spriteUrl} /><span><strong>{value.displayName}</strong><small>Lv. {value.minLevel}–{value.maxLevel}</small></span><span aria-hidden="true">›</span>
               </button>)}{!catalog.data.some(value => `${value.name} ${value.displayName}`.toLowerCase().includes(search.toLowerCase())) && <p className="npc-empty">No matching trainers.</p>}</div>
           </section>
-          {npc && difficulty ? <section className="npc-panel npc-detail" aria-label="Selected trainer"><header className="npc-encounter-header"><div className="npc-portrait"><CollectionArtwork src={npc.spriteUrl} /></div><div><h2>{npc.displayName}</h2><p>“{npc.catchphrase}”</p></div></header>
+          {npc && difficulty ? <section className="ui-panel npc-panel npc-detail" aria-label="Selected trainer"><header className="npc-encounter-header"><div className="npc-portrait"><CollectionArtwork src={npc.spriteUrl} /></div><div><h2>{npc.displayName}</h2><p>“{npc.catchphrase}”</p></div></header>
             <div className="npc-encounter-content"><h3>Difficulty</h3><div className="npc-difficulties" aria-label="Difficulty">{npc.difficulties.map(value => <button type="button" key={value.id} data-difficulty={value.id} aria-pressed={value.id === difficulty.id} disabled={mutation.isPending}
               onClick={() => { setMessage(null); update({ view: "trainers", npcId: npc.id, difficulty: value.id }, true); }}>{value.name}</button>)}</div>
               <div className="npc-facts"><span>{difficulty.count} Pokémon</span><span>Levels {difficulty.minLevel}–{difficulty.maxLevel}</span></div>
@@ -120,13 +120,13 @@ export function PlayFeature() {
                 {difficulty.rewards.map((reward, index) => <div className="npc-reward" key={index}>{reward.icon ? <img src={`${import.meta.env?.BASE_URL || "/"}images/items/${reward.icon}`} alt="" /> : <span aria-hidden="true">◆</span>}<span>{reward.quantity}</span><span>{reward.name}</span></div>)}
               </section>
             </div>
-            <footer className="npc-start-bar"><button ref={partyTrigger} type="button" className="npc-secondary npc-party-trigger" aria-haspopup="dialog" aria-expanded={partyOpen} onClick={() => setPartyOpen(true)}>Your party <small>{party.data ? members.length : "—"}/{party.data?.capacity || 6} ↗</small></button>
+            <footer className="npc-start-bar"><button ref={partyTrigger} type="button" className="ui-button npc-secondary npc-party-trigger" aria-haspopup="dialog" aria-expanded={partyOpen} onClick={() => setPartyOpen(true)}>Your party <small>{party.data ? members.length : "—"}/{party.data?.capacity || 6} ↗</small></button>
               <button type="button" className="primary-button" disabled={!canStart || mutation.isPending} aria-busy={mutation.isPending} onClick={() => {
                 if (mutation.isPending) return;
                 setMessage(null); mutation.mutate({ npcId: npc.id, difficulty: difficulty.id });
               }}>{mutation.isPending ? "Starting battle…" : "Start battle"}<span aria-hidden="true">⚔</span></button></footer>
           </section> : <p className="npc-empty">This trainer is no longer available. Choose another.</p>}
-          <aside className="npc-panel npc-party-preview"><NpcParty party={party.data} /></aside>
+          <aside className="ui-panel npc-panel npc-party-preview"><NpcParty party={party.data} /></aside>
         </div>}
     </>}
     <dialog ref={dialog} className="npc-party-dialog" aria-labelledby="npc-party-title" onClose={closeParty}

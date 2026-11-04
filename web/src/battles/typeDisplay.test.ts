@@ -24,14 +24,14 @@ const view: BattleView = {
 };
 
 describe("live numeric Pokémon types", () => {
-  it("renders a move choice with its type name and class", () => {
+  it("renders a move choice with its type name and shared badge identity", () => {
     const html = renderToStaticMarkup(createElement(MovePanel, {
       view, availableActions: { canSkip: true, moves: [{ moveId: "m1", targetPokemonIds: ["own"] }] },
       isMyTurn: true, catalog, selectedMoveId: null,
       preview: null, busy: false, collapsed: false, onToggleCollapsed: () => {},
       onSelectMove: () => {}, onHoverMove: () => {}, onSkip: () => {},
     }));
-    assert.match(html, /arena-type-fire/);
+    assert.match(html, /data-type="fire"/);
     assert.match(html, />Fire</);
   });
 
@@ -40,7 +40,7 @@ describe("live numeric Pokémon types", () => {
       pokemon: view.pokemon.own, moveId: "m1", detail: null, catalog,
       onOpenDetail: () => {}, onBack: () => {},
     }));
-    assert.match(html, /arena-type-fire/);
+    assert.match(html, /data-type="fire"/);
     assert.match(html, />Fire</);
   });
 });

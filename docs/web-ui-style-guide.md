@@ -53,10 +53,21 @@ shows shared use:
 These values establish direction, not verified accessibility for every pairing.
 Check contrast over the actual composited background and all control states.
 Battle commands, inspection and history use these same plum surfaces, warm text
-and gold controls. This extends the maintainer’s 2026-11-02 theme direction to
-the battle page. Keep the current battle board, HUD colors, type badges and
-effect semantics intact; [the arena guide](arena-design-guide.md) owns their
-composition and square arena frame.
+and gold controls. Shared appearance lives in [`web/src/ui.css`](../web/src/ui.css):
+theme tokens, panels, controls, badges and move facts. Battle, collection and
+Play consume it; feature CSS owns their layout and density. Use `ui-panel`,
+`ui-panel-heading`, `ui-button` (with `--small`, `--icon` or `--primary` modifiers),
+and `ui-badge` rather than recreating their appearance. `ui-controls` opts a form
+or workspace's ordinary inputs/buttons into the same base. Formation and sprite
+buttons explicitly reset that base. Keep primary, disabled, hover and focus
+styling in the shared stylesheet.
+
+Use the shared `TypeBadge` for types outside the field and shared badge
+`data-kind` values for ability, item, buff and debuff labels. Move inspection owns
+its badge and facts instead of taking independently styled badge markup. Update
+these shared sources when the site theme changes. The arena's tiny HUD type
+chips, meters, targeting rings and event cues retain their field-specific
+presentation; [the arena guide](arena-design-guide.md) owns that composition.
 For that reference, run the web development server and open
 `/?previewBattle=1&story=dense`; source is
 [`battle-ui.css`](../web/src/battles/battle-ui.css). Compare new screens with the
@@ -219,10 +230,10 @@ their source rather than creating competing web versions.
    for components and structural contracts for story data. Use browser review
    for layout and motion. Record any untested real-server path in the PR.
 
-## Later, when repetition gives us evidence
+## Shared ownership
 
-Extract shared typography, color, spacing, and motion tokens after another web
-feature reveals repeated values and stable semantics. Extract reusable panel,
-badge, meter, and action components when two screens share behavior and visual
-rules. Keep the current feature CSS and components local until those examples
-exist; this guide records the direction without freezing a design system now.
+Collection, Play and battle now provide the repeated uses for shared panels,
+controls and badges. Extend those primitives when the same visual rule recurs;
+keep feature geometry and interaction state local. Extract further components
+only when existing screens demonstrate a common need. Arena motion and meters
+remain local because their timing and density serve combat presentation.

@@ -1,5 +1,7 @@
+import { Chevron } from "../components/Chevron";
+import { TypeBadge } from "../components/TypeBadge";
 import type { BattleCatalog, BattleDisplay, TargetPreview } from "./types";
-import { typeClass, typeName } from "./typeDisplay";
+import { typeName } from "./typeDisplay";
 import { battleCopy } from "./copy";
 
 type Props = {
@@ -31,33 +33,32 @@ export const MovePanel = ({ view, availableActions, isMyTurn, catalog, selectedM
   const moves = active?.moveIds || {};
   const onlySkip = isMyTurn && availableActions.canSkip && availableActions.moves.length === 0;
   const targeting = isMyTurn && !!selectedMoveId && !view.ended && !playback;
-  return <section className={`arena-commands ${targeting ? "is-targeting" : ""} ${submitting ? "is-submitting" : ""} ${collapsed ? "is-collapsed" : ""} ${isMyTurn ? "" : "is-waiting"}`} aria-label="Battle actions">
+  return <section className={`ui-panel arena-commands ${targeting ? "is-targeting" : ""} ${submitting ? "is-submitting" : ""} ${collapsed ? "is-collapsed" : ""} ${isMyTurn ? "" : "is-waiting"}`} aria-label="Battle actions">
     <div className="arena-commands-heading"><div><h2>{playback ? "Battle in progress" : view.ended ? "Battle finished"
       : isMyTurn ? `What will ${active?.name || "your Pokémon"} do?` : "Waiting for the next turn"}</h2>
       <span>{playback ? "Catching up with the battle…" : view.ended ? ""
         : isMyTurn ? "Your turn" : `${active?.name || "Pokémon"}'s turn`}</span></div>
-      <button type="button" className="arena-collapse" aria-expanded={!collapsed}
+      <button type="button" className="ui-button arena-collapse" aria-expanded={!collapsed}
         aria-label={collapsed ? "Expand battle actions" : "Collapse battle actions"}
         aria-controls="arena-command-body" onClick={onToggleCollapsed}>
-        <span aria-hidden="true">{collapsed ? "↑" : "↓"}</span><span className="arena-collapse-label">{collapsed ? " Expand" : " Collapse"}</span>
+        <Chevron up={collapsed} /><span className="arena-collapse-label">{collapsed ? " Expand" : " Collapse"}</span>
       </button></div>
     <div id="arena-command-body" className="arena-command-body">
       {targeting ? <div className="arena-target-actions">
-        {confirming && <button type="button" className="arena-confirm" disabled={busy} onClick={onConfirm}>Confirm</button>}
-        <button type="button" className="arena-cancel" disabled={busy} onClick={() => onSelectMove(null)}>Cancel</button>
+        {confirming && <button type="button" className="ui-button ui-button--primary arena-confirm" disabled={busy} onClick={onConfirm}>Confirm</button>}
+        <button type="button" className="ui-button arena-cancel" disabled={busy} onClick={() => onSelectMove(null)}>Cancel</button>
       </div> : isMyTurn && Object.keys(moves).length > 0 ? <div className="arena-move-grid">
         {Object.entries(moves).map(([moveId, state]) => {
           const move = catalog.moves[moveId];
           const legal = availableActions.moves.find((option) => option.moveId === moveId);
           return <button type="button" key={moveId}
-            className={`arena-move ${selectedMoveId === moveId ? "is-selected" : ""}`}
+            className={`ui-button arena-move ${selectedMoveId === moveId ? "is-selected" : ""}`}
             disabled={!legal || busy} title={move?.description || ""}
             onClick={() => onSelectMove(selectedMoveId === moveId ? null : moveId)}
             onMouseEnter={() => onHoverMove(moveId)} onMouseLeave={() => onHoverMove(null)}
             onFocus={() => onHoverMove(moveId)} onBlur={() => onHoverMove(null)}>
-            <span className="arena-move-name"><i className={`arena-type-dot ${typeClass(move?.type, catalog)}`} />
-              <strong>{move?.name || moveId}</strong></span>
-            <span className="arena-move-meta"><span className={`arena-type-label ${typeClass(move?.type, catalog)}`}>{move ? typeName(move.type, catalog) : "Move"}</span>
+            <span className="arena-move-name"><strong>{move?.name || moveId}</strong></span>
+            <span className="arena-move-meta"><TypeBadge type={move ? typeName(move.type, catalog) : "Move"} />
               <small>{state.cooldown > 0 ? `CD ${state.cooldown}` : state.disabledCounter > 0 ? "DISABLED" : moveKind(move?.damageType)}</small></span>
           </button>;
         })}
@@ -71,7 +72,7 @@ export const MovePanel = ({ view, availableActions, isMyTurn, catalog, selectedM
           : onlySkip ? "No usable moves this turn." : selectedMoveId ? battleCopy.targetInstruction(catalog.moves[selectedMoveId]?.damageType)
             : "Choose a move to see its targets"
       }</span>{onlySkip && <div>
-        <button type="button" className="arena-skip" disabled={busy} onClick={onSkip}>↷ Skip</button>
+        <button type="button" className="ui-button ui-button--small arena-skip" disabled={busy} onClick={onSkip}>↷ Skip</button>
       </div>}</div>
     </div>
   </section>;

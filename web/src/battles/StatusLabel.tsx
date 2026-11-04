@@ -9,7 +9,7 @@ export const StatusLabel = ({ statusId, className = "", onClick }: {
   onClick?: () => void;
 }) => {
   const abbreviation = abbreviations[statusId] || statusId.slice(0, 3).toUpperCase();
-  const props = { className: `arena-status-label ${className}`, "data-status": abbreviation,
+  const props = { className: `${onClick ? "ui-badge " : ""}arena-status-label ${className}`, "data-status": abbreviation,
     title: statusId, "aria-label": `Status: ${statusId}` };
   return onClick ? <button type="button" {...props} onClick={onClick}>{abbreviation}</button>
     : <span {...props}>{abbreviation}</span>;

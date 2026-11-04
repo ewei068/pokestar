@@ -63,6 +63,15 @@ No horizontal overflow was observed; phone targeting retains a transparent
 tray and 44px Cancel control. This was a styling-only change with direct scoped
 review; it adds no backend or physical-device acceptance.
 
+**Shared UI ownership · 2026-11-03:** ordinary battle controls, panels and
+inspection badges now consume the same theme and primitives as collection and
+Play. `web/src/ui.css` owns their appearance; shared `TypeBadge`, `Chevron` and
+`MoveInspection` remove independent rendering/style sources. Feature CSS keeps
+layout and density, while field HUD chips and combat cues remain arena-owned.
+The [verification record](../verification/shared-web-ui-2026-11-03.md) records
+client checks, responsive battle observations, cross-screen comparisons and the
+CSS cascade/caller repairs found during the scoped review.
+
 For expansion planning and cross-session coordination, read the
 [web parity roadmap](web-parity.md) and completed
 [Phase 1 coverage audit](web-parity-coverage.md). All 106 web-eligible P0–P3 IDs

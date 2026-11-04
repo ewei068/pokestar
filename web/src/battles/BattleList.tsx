@@ -4,8 +4,8 @@ import { playHref, readPlayRoute } from "../navigation/routes";
 import { CollectionArtwork } from "../collection/CollectionArtwork";
 
 export const BattleList = ({ battles, npcs }: { battles: BattleSummary[]; npcs: NpcEncounter[] }) => (
-  <section className="npc-panel npc-continue" aria-label="Ongoing battles">
-    <header className="npc-panel-head"><h2>Ongoing battles</h2><small>{battles.length} {battles.length === 1 ? "battle" : "battles"}</small></header>
+  <section className="ui-panel npc-panel npc-continue" aria-label="Ongoing battles">
+    <header className="ui-panel-heading npc-panel-head"><h2>Ongoing battles</h2><small>{battles.length} {battles.length === 1 ? "battle" : "battles"}</small></header>
     <div className="npc-continue-list">{[...battles].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt)).map(battle => {
       const npc = npcs.find(value => value.id === battle.mode.npcId);
       const difficulty = npc?.difficulties.find(value => value.id === battle.mode.difficulty);
