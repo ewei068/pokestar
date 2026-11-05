@@ -14,6 +14,8 @@ class BattleWebService {
       revision: record.revision,
       mode: { type: record.mode.type,
         ...(record.mode.type === "pve" ? { npcId: record.mode.npcId, difficulty: record.mode.difficulty } : {}),
+        ...(record.mode.type === "dungeon" ? { dungeonId: record.mode.dungeonId, difficulty: record.mode.difficulty } : {}),
+        ...(record.mode.type === "tower" ? { stage: record.mode.stage } : {}),
       },
       turn: record.view.turn,
       updatedAt: record.updatedAt,

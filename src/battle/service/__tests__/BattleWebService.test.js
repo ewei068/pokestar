@@ -222,3 +222,17 @@ describe("BattleWebService", () => {
    expect(summary).not.toHaveProperty("setup");
    expect(summary).not.toHaveProperty("view");
  });
+
+test("active dungeon and tower summaries keep only the fields Continue needs", async () => {
+  const service = new BattleService(new BattleStore(new MemoryBattleCollection()));
+  const web = new BattleWebService(service);
+  const dungeon = makeBattle();
+  const tower = makeBattle();
+  const pvp = makeBattle();
+  await service.start({ battle: dungeon.battle, mode: { type: "dungeon", dungeonId: "mindTemple", difficulty: "hard", rewardString: "Catch Mew!", npcId: "mindTemple" } });
+  await service.start({ battle: tower.battle, mode: { type: "tower", stage: 7, npcId: "battleTowerStage7" } });
+  await service.start({ battle: pvp.battle, mode: { type: "pvp", npcId: "blue", stage: 4 } });
+  expect((await web.listActive(dungeon.user1))[0].mode).toEqual({ type: "dungeon", dungeonId: "mindTemple", difficulty: "hard" });
+  expect((await web.listActive(tower.user1))[0].mode).toEqual({ type: "tower", stage: 7 });
+  expect((await web.listActive(pvp.user1))[0].mode).toEqual({ type: "pvp" });
+});

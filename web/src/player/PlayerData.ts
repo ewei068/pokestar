@@ -2,7 +2,7 @@ import { QueryClient, queryOptions } from "@tanstack/react-query";
 import { ApiError, request } from "../http";
 import type { BattleSummary } from "../battles/types";
 import type { TrainerProfile } from "../trainer/types";
-import type { CollectionPage, CollectionQuery, Party, NpcEncounter, PlayerEnvelope, PlayerOperation, PlayerResult, PokemonDetail } from "./types";
+import type { CollectionPage, CollectionQuery, DungeonEncounter, Party, NpcEncounter, PlayerEnvelope, PlayerOperation, PlayerResult, PokemonDetail, TowerFloor } from "./types";
 
 /** One authenticated account's in-memory server data. Battle sessions remain separate. */
 export class PlayerData {
@@ -77,6 +77,16 @@ export class PlayerData {
   npcs() {
     return queryOptions({ queryKey: [...this.prefix, "npcs"], refetchInterval: 15000,
       queryFn: async ({ signal }) => (await this.read<PlayerEnvelope & { npcs: NpcEncounter[] }>("/player/npcs", signal)).npcs });
+  }
+
+  dungeons() {
+    return queryOptions({ queryKey: [...this.prefix, "dungeons"], refetchInterval: 15000,
+      queryFn: async ({ signal }) => (await this.read<PlayerEnvelope & { dungeons: DungeonEncounter[] }>("/player/dungeons", signal)).dungeons });
+  }
+
+  tower() {
+    return queryOptions({ queryKey: [...this.prefix, "tower"], refetchInterval: 15000,
+      queryFn: async ({ signal }) => this.read<PlayerEnvelope & { floors: TowerFloor[]; lastTowerStage: number }>("/player/tower", signal) });
   }
 
   battles() {

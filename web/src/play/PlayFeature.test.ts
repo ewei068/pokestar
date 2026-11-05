@@ -81,3 +81,25 @@ it("keeps the initial Trainer view when polling discovers another battle", async
   assert.ok(view.getByRole("heading", { name: "Blue" }));
   assert.equal(view.queryByRole("heading", { name: "Ongoing battles" }), null);
 });
+
+it("names a dungeon and a tower floor from their catalogs and keeps a fallback without one", async () => {
+  const battles = [
+    { battleId: "temple", mode: { type: "dungeon", dungeonId: "mindTemple", difficulty: "hard" }, turn: 4, updatedAt: "2026-11-04T12:00:00Z" },
+    { battleId: "floor", mode: { type: "tower", stage: 7 }, turn: 2, updatedAt: "2026-11-03T12:00:00Z" },
+    { battleId: "missing", mode: { type: "dungeon", dungeonId: "gone", difficulty: "hard" }, turn: 1, updatedAt: "2026-11-02T12:00:00Z" },
+    { battleId: "unstaged", mode: { type: "tower" }, turn: 1, updatedAt: "2026-11-01T12:00:00Z" },
+  ];
+  globalThis.fetch = async url => {
+    const path = String(url);
+    if (path.includes("/dungeons")) return json({ dungeons: [{ id: "mindTemple", name: "Mind Temple", displayName: "Mind Temple", difficulties: [{ id: "hard", name: "Hard" }] }] });
+    if (path.includes("/tower")) return json({ floors: [{ stage: 7 }], lastTowerStage: 6 });
+    return read(url, battles);
+  };
+  const view = mount();
+  const links = await view.findAllByRole("link");
+  const names = links.map(link => link.textContent || "");
+  assert.ok(names.some(name => name.includes("Mind Temple") && name.includes("Hard")));
+  assert.ok(names.some(name => name.includes("Battle Tower · Floor 7")));
+  assert.ok(names.some(name => name.includes("Dungeon") && !name.includes("Mind Temple")));
+  assert.ok(names.some(name => name.includes("Battle Tower") && !name.includes("Floor")));
+});

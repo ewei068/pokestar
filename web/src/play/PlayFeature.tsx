@@ -47,6 +47,8 @@ export function PlayFeature() {
     onError: error => { if (mounted.current) setMessage(startError(error)); },
   });
   const catalog = useQuery({ ...data.npcs(), enabled: !mutation.isPending });
+  const dungeons = useQuery({ ...data.dungeons(), enabled: !mutation.isPending });
+  const tower = useQuery({ ...data.tower(), enabled: !mutation.isPending });
   const ongoing = useQuery(data.battles());
   const party = useQuery({ ...data.party(), enabled: !mutation.isPending });
   const view = selection.view === "trainers" ? "trainers" : ongoing.data ? ongoing.data.length ? selection.view || "continue" : "trainers" : selection.view;
@@ -94,7 +96,7 @@ export function PlayFeature() {
     </nav>
     {readError && <div className="npc-notice" role="alert">Couldn't refresh your battles, trainers or party. <button type="button" className="ui-button npc-secondary" onClick={() => { void data.refresh(); }}>Refresh</button></div>}
     {view === null && <p className="npc-empty" role="status">{ongoing.isError ? "Choose Trainer battles or refresh to try again." : "Loading battles…"}</p>}
-    {view === "continue" && ongoing.data && <BattleList battles={ongoing.data} npcs={catalog.data || []} />}
+    {view === "continue" && ongoing.data && <BattleList battles={ongoing.data} npcs={catalog.data || []} dungeons={dungeons.data || []} floors={tower.data?.floors || []} />}
     {view === "trainers" && <>
       {selection.npcId && <button ref={mobileBack} type="button" className="npc-mobile-back" onClick={() => update({ ...selection, npcId: null, difficulty: null })}>‹ All trainers</button>}
       {message && <p className="npc-notice" role="alert">{message}</p>}

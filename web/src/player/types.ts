@@ -33,6 +33,8 @@ export type NpcDifficulty = { id: string; name: string; minLevel: number; maxLev
   species: NpcSpecies[]; dailyClaimed: boolean; rewards: { name: string; quantity: number; icon: string | null }[] };
 export type NpcEncounter = { id: string; name: string; displayName: string; spriteUrl: string | null; catchphrase: string;
   minLevel: number; maxLevel: number; difficulties: NpcDifficulty[] };
+export type DungeonEncounter = { id: string; name: string; displayName: string; difficulties: { id: string; name: string }[] };
+export type TowerFloor = { stage: number };
 export type PlayerOperation = { kind: "npc.start"; npcId: string; difficulty: string } | { kind: "collection"; query: CollectionQuery } |
   { kind: "inspect"; pokemonId: string } |
   { kind: "party.place"; pokemonId: string; index: number; expectedOccupant: string | null } |
