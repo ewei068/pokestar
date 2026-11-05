@@ -81,6 +81,17 @@ interior and 320px phone layouts without horizontal overflow; inspection labels
 measured about 20px high and Back about 22px. Existing inspection callbacks and
 shared markup were retained.
 
+**Dungeon and Battle Tower design · 2026-11-04 (proposal):** the two Play tabs
+still marked Later now have an [editable study](../design/play-modes/README.md)
+for the five live dungeons and 20 tower floors. Dungeon rows use subtitles
+from `dungeonConfig`, and the detail shows one Pokémon strip with bosses
+bordered. The tower opens on the current floor. Only the next floor can start.
+The study shows the levels `TowerNPC` generates and
+records that all 20 Discord floor captions differ. It also proposes Continue
+when that floor is already open. Local study checks covered 1280, 390 and 320 px.
+Maintainer feedback is pending. No production tab, start route or reward
+behavior was added.
+
 For expansion planning and cross-session coordination, read the
 [web parity roadmap](web-parity.md) and completed
 [Phase 1 coverage audit](web-parity-coverage.md). All 106 web-eligible P0–P3 IDs
