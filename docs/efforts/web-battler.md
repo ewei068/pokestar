@@ -10,6 +10,77 @@ service contracts and final implementation sequencing remain future work;
 the approved ticket release cut is recorded below.
 The implementation and verification below describe the existing battle experience.
 
+**NPC selection/start design · 2026-11-02 (approved):** the next #210 journey now
+has an [editable desktop/phone study](../design/npc-battles/README.md) with the
+actual 17-NPC catalog, aggregate level ranges, difficulty hues, horizontal
+species/ace strip, compact daily reward icons, conditional Continue tab,
+current-party preview/pop-outs and start/pending/error states. The maintainer approved
+the design with horizontally scrolling phone tabs, then explicitly simplified starts:
+accidental duplicates are acceptable; disable Start while the request is pending
+and allow another attempt after failure/timeout. The
+[implementation plan](../plans/2026-11-02-1847-feat-npc-battle-start-plan.md)
+now sequences shared ordinary starts, authenticated transport and the production
+workspace. Retained identities/reservations, start conflict/expiry checks,
+Check start, browser-persisted recovery and their specialized tests are removed.
+The earlier independent review of that protocol is historical. Server ownership,
+current-party eligibility and existing combat/completion protections remain.
+No production screen or service was implemented. Discovery found no
+level/daily/active-battle lockout.
+The study reuses collection styling/fixtures; implementation will mount the
+existing PartyView, player cache and battle service/session. Party presets and
+new receipt screens remain separate. One independent review and repair pass,
+responsive browser observations and their limits are recorded with the study.
+Work stays in the existing `d66b` checkout on `codex/web-npc-selection-design`,
+based on pushed collection head `09f1343`; prior PR branches are preserved.
+
+**NPC implementation checkpoint · 2026-11-02:** the approved Play workspace now
+uses shared NPC projections/construction, authenticated ordinary starts and the
+existing party/cache/battle session. Continue appears only with ongoing battles;
+phone tabs scroll, narrow screens use a native party dialog, and encounter rewards
+use the three included public item icons. Start disables while submitting and
+releases after failure/timeout. Accidental duplicate starts remain accepted.
+No reservation, retained-request protocol or client formation-conflict gate was added.
+
+The [verification record](../verification/npc-battles-2026-11-02.md) records passing
+backend 946/38, client 162/30, root/subpath builds and changed-file lint. Backend
+checkJs retains its 498-diagnostic baseline with no additions. Real disposable-Mongo
+and browser checks cover ordinary starts, separate accepted duplicates, restart
+continuation, settled daily rewards, party inspection/navigation and responsive
+layouts. One independent review found a polling-induced tab switch, repaired with
+a regression. Implementation stays in the existing checkout on
+`codex/web-npc-battle-implementation`; predecessor branches remain intact.
+No push, merge, deployment or real OAuth/Discord/device acceptance is claimed.
+
+**Battle theme refinement · 2026-11-02:** battle title, toolbar, commands,
+inspection and history now share the site's Jewel plum surfaces, warm text,
+gold controls and typography. Battlefield geometry, targeting and semantic
+HUD/type/status colors retain their existing presentation. The development
+stories share the shell scenery without reserving space for absent navigation.
+Client tests passed (162 tests, 30 suites), and the production build passed.
+Local browser checks covered dense, waiting, completed and targeting stories,
+plus an HTTP-backed disposable-Mongo battle at desktop, 390px and 320px widths.
+No horizontal overflow was observed; phone targeting retains a transparent
+tray and 44px Cancel control. This was a styling-only change with direct scoped
+review; it adds no backend or physical-device acceptance.
+
+**Shared UI ownership · 2026-11-03:** ordinary battle controls, panels and
+inspection badges now consume the same theme and primitives as collection and
+Play. `web/src/ui.css` owns their appearance; shared `TypeBadge`, `Chevron` and
+`MoveInspection` remove independent rendering/style sources. Feature CSS keeps
+layout and density, while field HUD chips and combat cues remain arena-owned.
+The [verification record](../verification/shared-web-ui-2026-11-03.md) records
+client checks, responsive battle observations, cross-screen comparisons and the
+CSS cascade/caller repairs found during the scoped review.
+
+**Inspection density refinement · 2026-11-03:** shared `ui-button--inline`
+sizes Back and clickable inspection badges to their text. Move category, power,
+accuracy and cooldown now share one compact row in battle and collection.
+Client tests remain passing (162 tests, 30 suites) and the production build
+passes. Local browser checks confirmed the row fits a 221px desktop inspector
+interior and 320px phone layouts without horizontal overflow; inspection labels
+measured about 20px high and Back about 22px. Existing inspection callbacks and
+shared markup were retained.
+
 For expansion planning and cross-session coordination, read the
 [web parity roadmap](web-parity.md) and completed
 [Phase 1 coverage audit](web-parity-coverage.md). All 106 web-eligible P0–P3 IDs

@@ -11,6 +11,8 @@ const { getAbilities } = require("../battle/data/abilityRegistry");
 const { getHeldItems } = require("../battle/data/heldItemRegistry");
 const { getPokemonExpNeeded, getMoveIds } = require("../utils/pokemonUtils");
 const { logger } = require("../log");
+const { projectNpcCatalog, buildNpcBattle } = require("./npcBattle");
+const { getDurableBattleService, isDurableBattleEnabled } = require("./durableBattle");
 
 class PlayerError extends Error {
   /**
@@ -198,6 +200,8 @@ const createPlayerService = () => {
       slots: trainer.party.pokemonIds.map((id) => summaries.get(id) || null), targets: projectPartyTargets(trainer.party) } };
   };
   /** @param {string} userId */
+  const npcs = async (userId) => ({ npcs: projectNpcCatalog(await requireTrainer(userId)) });
+  /** @param {string} userId */
   const profile = async (userId) => ({ trainer: projectTrainerProfile(await requireTrainer(userId)) });
   /**
    * @param {string} userId
@@ -216,6 +220,14 @@ const createPlayerService = () => {
       const command = await executePartyCommand({ id: userId }, { kind: input.kind, pokemonId: input.pokemonId, index: input.index, expectedOccupant: input.expectedOccupant });
       if (command.err) throw new PlayerError(command.code || "invalid_party_command", command.code === "party_changed" ? 409 : 400);
       result = await party(userId);
+    } else if (input.kind === "npc.start" && typeof input.npcId === "string" && typeof input.difficulty === "string" &&
+        Object.keys(input).every((key) => ["kind", "npcId", "difficulty"].includes(key))) {
+      if (!isDurableBattleEnabled()) throw new PlayerError("battle_unavailable", 503);
+      const prepared = await buildNpcBattle({ user: { id: userId }, npcId: input.npcId, difficulty: input.difficulty, refreshIdentity: false });
+      if (prepared.err) throw new PlayerError(prepared.code, prepared.code === "trainer_unavailable" ? 503 : 400);
+      const started = await (await getDurableBattleService()).start({ battle: prepared.data,
+        mode: { type: "pve", npcId: input.npcId, difficulty: input.difficulty } });
+      result = { battleId: started.battleId };
     } else throw new PlayerError("invalid_interaction");
     // Participation rewards are best effort. Never replay a completed command
     // because its grant failed; duplicates across separate requests are accepted.
@@ -225,7 +237,7 @@ const createPlayerService = () => {
     } catch (error) { logger.warn("Player interaction grant failed", error); }
     return { ...result, ...await profile(userId) };
   };
-  return { collection, detail, party, profile, interact };
+  return { collection, detail, party, profile, npcs, interact };
 };
 
 module.exports = { createPlayerService, parseCollectionQuery, projectPokemon, projectPokemonDetail, projectPartyTargets, PlayerError };

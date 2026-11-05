@@ -121,7 +121,7 @@ export type BattleDisplay = Pick<BattleResponse,
 export type BattleSummary = {
   battleId: string;
   revision: number;
-  mode: { type?: string };
+  mode: { type?: string; npcId?: string; difficulty?: string };
   turn: number;
   updatedAt: string;
   expiresAt: string;

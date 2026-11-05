@@ -27,8 +27,13 @@ export type CollectionQuery = {
 };
 export type CollectionPage = { items: PokemonSummary[]; page: number; pageSize: number; total: number; totalPages: number };
 export type PlayerEnvelope = { discordUserId: string; trainer?: TrainerProfile | null };
-export type PlayerResult = PlayerEnvelope & Partial<CollectionPage> & { pokemon?: PokemonDetail; party?: Party };
-export type PlayerOperation = { kind: "collection"; query: CollectionQuery } |
+export type PlayerResult = PlayerEnvelope & Partial<CollectionPage> & { pokemon?: PokemonDetail; party?: Party; battleId?: string };
+export type NpcSpecies = { id: string; name: string; spriteUrl: string | null; ace: boolean };
+export type NpcDifficulty = { id: string; name: string; minLevel: number; maxLevel: number; count: number;
+  species: NpcSpecies[]; dailyClaimed: boolean; rewards: { name: string; quantity: number; icon: string | null }[] };
+export type NpcEncounter = { id: string; name: string; displayName: string; spriteUrl: string | null; catchphrase: string;
+  minLevel: number; maxLevel: number; difficulties: NpcDifficulty[] };
+export type PlayerOperation = { kind: "npc.start"; npcId: string; difficulty: string } | { kind: "collection"; query: CollectionQuery } |
   { kind: "inspect"; pokemonId: string } |
   { kind: "party.place"; pokemonId: string; index: number; expectedOccupant: string | null } |
   { kind: "party.remove"; index: number; expectedOccupant: string };

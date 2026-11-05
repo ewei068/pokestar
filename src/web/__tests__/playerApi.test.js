@@ -5,10 +5,10 @@ let server;
 let url;
 let service;
 beforeEach(async () => {
-  service = { collection: jest.fn().mockResolvedValue({ items: [] }), detail: jest.fn(), party: jest.fn(), profile: jest.fn(), interact: jest.fn().mockResolvedValue({ trainer: {} }) };
+  service = { npcs: jest.fn(), collection: jest.fn().mockResolvedValue({ items: [] }), detail: jest.fn(), party: jest.fn(), profile: jest.fn(), interact: jest.fn().mockResolvedValue({ trainer: {} }) };
   const app = express();
   app.use(express.json());
-  app.use('/api', createBattleApi({ battleService: {}, sessionStore: { get: async (token) => token === 'valid' ? { userId: 'owner' } : null },
+  app.use('/api', createBattleApi({ battleService: { listActive: async () => [{ battleId: "owned-battle" }] }, sessionStore: { get: async (token) => token === 'valid' ? { userId: 'owner' } : null },
     siteOrigin: 'http://localhost:5173', clientId: '', clientSecret: '', redirectUri: 'http://localhost:3000/api/auth/discord/callback', playerService: service }));
   server = await new Promise((resolve) => { const listener = app.listen(0, () => resolve(listener)); });
   url = `http://localhost:${server.address().port}/api/player`;
@@ -30,4 +30,22 @@ test('explicit interaction requires site origin and uses authenticated actor', a
   expect(service.interact).not.toHaveBeenCalled();
   expect((await fetch(`${url}/interactions`, { method: 'POST', headers, body })).status).toBe(200);
   expect(service.interact).toHaveBeenCalledWith('owner', { kind: 'collection', query: {} });
+});
+test('NPC catalog and start use the same authenticated player boundary', async () => {
+  service.npcs = jest.fn().mockResolvedValue({ npcs: [{ id: 'blue' }] });
+  expect((await fetch(`${url}/npcs`)).status).toBe(401);
+  expect((await fetch(`${url}/npcs`, { headers })).status).toBe(200);
+  expect(service.npcs).toHaveBeenCalledWith('owner');
+  expect(service.interact).not.toHaveBeenCalled();
+  const body = JSON.stringify({ kind: 'npc.start', npcId: 'blue', difficulty: 'easy' });
+  expect((await fetch(`${url}/interactions`, { method: 'POST', headers: { ...headers, 'X-Player-Id': 'other' }, body })).status).toBe(409);
+  expect(service.interact).not.toHaveBeenCalled();
+  expect((await fetch(`${url}/interactions`, { method: 'POST', headers, body })).status).toBe(200);
+  expect(service.interact).toHaveBeenCalledWith('owner', { kind: 'npc.start', npcId: 'blue', difficulty: 'easy' });
+});
+
+test('active battles use account-scoped reads with an actor envelope', async () => {
+  const response = await fetch(`${url}/battles`, { headers });
+  expect(await response.json()).toEqual({ discordUserId: 'owner', battles: [{ battleId: 'owned-battle' }] });
+  expect(service.interact).not.toHaveBeenCalled();
 });

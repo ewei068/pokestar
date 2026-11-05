@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { Chevron } from "../components/Chevron";
 import type { CollectionPage, CollectionQuery, Party, PlayerOperation, PokemonDetail } from "../player/types";
 import { PartyView, partyTargets } from "./PartyView";
 import { CollectionArtwork } from "./CollectionArtwork";
@@ -11,7 +12,6 @@ export type CollectionWorkspaceProps = {
   pending: boolean; loading: boolean; detailLoading?: boolean; detailUnavailable?: boolean; error: string | null; onRefresh: () => void;
 };
 const types = ["Normal", "Fire", "Water", "Electric", "Grass", "Ice", "Fighting", "Poison", "Ground", "Flying", "Psychic", "Bug", "Rock", "Ghost", "Dragon", "Dark", "Steel", "Fairy"];
-const Chevron = () => <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" /></svg>;
 
 export function CollectionWorkspace(props: CollectionWorkspaceProps) {
   const { collection, party, pokemon, query, onQueryChange, selectedId, onInspect, onOperation, pending, loading, error, onRefresh } = props;
@@ -139,11 +139,11 @@ export function CollectionWorkspace(props: CollectionWorkspaceProps) {
   const count = party?.slots.filter(Boolean).length || 0;
   const selected = props.detailUnavailable ? undefined : pokemon?.id === selectedId ? pokemon : collection?.items.find(member => member.id === selectedId) || party?.slots.find(member => member?.id === selectedId);
   const dragged = drag && (collection?.items.find(member => member.id === drag.id) || party?.slots.find(member => member?.id === drag.id));
-  return <div ref={workspaceRef} className={`collection-workspace ${pending ? "is-pending" : ""} ${drag ? "is-dragging" : ""}`} onDragStart={event => event.preventDefault()} onKeyDown={event => { if (event.key === "Escape") { cancel(); setFilters(false); setSheet(null); } }} onPointerMove={pointerMove} onPointerUp={event => pointerEnd(event)} onPointerCancel={event => pointerEnd(event, true)}>
+  return <div ref={workspaceRef} className={`ui-controls collection-workspace ${pending ? "is-pending" : ""} ${drag ? "is-dragging" : ""}`} onDragStart={event => event.preventDefault()} onKeyDown={event => { if (event.key === "Escape") { cancel(); setFilters(false); setSheet(null); } }} onPointerMove={pointerMove} onPointerUp={event => pointerEnd(event)} onPointerCancel={event => pointerEnd(event, true)}>
     {error && <div className="collection-notice" role="alert">{error}<button onClick={onRefresh} disabled={pending}>Refresh</button></div>}
     {pending && <div className="collection-status" role="status">Working…</div>}
-    <section className={`collection-panel collection-party-panel ${sheet === "party" ? "is-open" : ""}`} aria-label="Your party">
-      <header><h2>Your party <small>{count} / {party?.capacity ?? "—"}</small></h2><button className="collection-collapse" aria-label="Collapse party" onClick={() => setSheet(null)}><Chevron /></button></header>
+    <section className={`ui-panel collection-panel collection-party-panel ${sheet === "party" ? "is-open" : ""}`} aria-label="Your party">
+      <header className="ui-panel-heading"><h2>Your party <small>{count} / {party?.capacity ?? "—"}</small></h2><button className="collection-collapse" aria-label="Collapse party" onClick={() => setSheet(null)}><Chevron /></button></header>
       <div className={`collection-party-tools ${placingId || mode ? "is-placing" : ""}`}>
         {placingId || mode ? <><span role="status">{placingId ? "Choose an available position." : "Choose a Pokémon in your party."}</span><button onClick={cancel}>Cancel</button></> :
           <><span className="collection-front-direction" /><button className="collection-manage-toggle" disabled={pending || !party} aria-expanded={manage} onClick={() => setManage(!manage)}>Manage <Chevron /></button></>}
@@ -152,8 +152,8 @@ export function CollectionWorkspace(props: CollectionWorkspaceProps) {
       {party ? <PartyView party={party} selectedId={selectedId} placingId={placingId} pending={pending} mode={mode} onSlot={slot} onPointerDown={pointerDown} /> : <p className="collection-state">{loading ? "Loading party…" : "Party unavailable. Refresh to try again."}</p>}
       <p className="collection-party-help">Tap to inspect. Drag to move or swap; drag into your collection to remove.</p>
     </section>
-    <section ref={panelRef} style={{ height: panelHeight }} className="collection-panel collection-list-panel" aria-label="Pokémon collection" data-collection-drop>
-      <header><h2>Collection <small>{collection?.total ?? "—"}</small></h2><label><span className="collection-sr-only">Tile labels</span><select value={label} onChange={event => setLabel(event.target.value)}><option value="name">Names</option><option value="cp">Combat power</option><option value="iv">IV perfection</option><option value="none">No labels</option></select></label></header>
+    <section ref={panelRef} style={{ height: panelHeight }} className="ui-panel collection-panel collection-list-panel" aria-label="Pokémon collection" data-collection-drop>
+      <header className="ui-panel-heading"><h2>Collection <small>{collection?.total ?? "—"}</small></h2><label><span className="collection-sr-only">Tile labels</span><select value={label} onChange={event => setLabel(event.target.value)}><option value="name">Names</option><option value="cp">Combat power</option><option value="iv">IV perfection</option><option value="none">No labels</option></select></label></header>
       <form className="collection-tools" onSubmit={event => { event.preventDefault(); update({ search }); }}>
         <input aria-label="Search Pokémon" placeholder="Search" value={search} onChange={event => setSearch(event.target.value)} />
         <select aria-label="Sort Pokémon" value={query.sort} onChange={event => update({ sort: event.target.value as CollectionQuery["sort"] })}>{["name", "cp", "iv", "recent", "level"].map(value => <option key={value} value={value}>{({ name: "Name", cp: "CP", iv: "IV %", recent: "Recent", level: "Level" } as Record<string, string>)[value]}</option>)}</select>
@@ -174,7 +174,7 @@ export function CollectionWorkspace(props: CollectionWorkspaceProps) {
       </div>
       <footer className="collection-pagination"><button aria-label="Previous page" disabled={loading || pending || query.page <= 1} onClick={() => onQueryChange({ ...query, page: query.page - 1 }, true)}>‹</button><span>Page {collection?.page ?? query.page} / {Math.max(1, collection?.totalPages || 1)}</span><button aria-label="Next page" disabled={loading || pending || !collection || query.page >= collection.totalPages} onClick={() => onQueryChange({ ...query, page: query.page + 1 }, true)}>›</button></footer>
     </section>
-    <section className={`collection-panel collection-inspect-panel ${sheet === "inspect" ? "is-open" : ""}`} aria-label="Pokémon inspection"><header><h2>Inspect</h2><button className="collection-collapse" aria-label="Collapse inspection" onClick={() => setSheet(null)}><Chevron /></button></header>
+    <section className={`ui-panel collection-panel collection-inspect-panel ${sheet === "inspect" ? "is-open" : ""}`} aria-label="Pokémon inspection"><header className="ui-panel-heading"><h2>Inspect</h2><button className="collection-collapse" aria-label="Collapse inspection" onClick={() => setSheet(null)}><Chevron /></button></header>
       <div className="collection-inspect-scroll">{selected ? <PokemonInspection pokemon={selected} loading={props.detailLoading} inParty={party ? party.slots.some(member => member?.id === selected.id) : selected.inParty} pending={pending || !party} onAdd={() => { setPlacingId(selected.id); setMode(null); setSheet("party"); }} /> : <p className="collection-state">{selectedId ? props.detailLoading || loading ? "Loading Pokémon…" : "Pokémon unavailable. It may no longer be in your collection. Refresh to check." : "Choose a Pokémon to inspect."}</p>}</div>
     </section>
     <nav ref={dockRef} className="collection-dock" aria-label="Collection panels"><button aria-expanded={sheet === "party"} onClick={() => setSheet(sheet === "party" ? null : "party")}>Party · {count} / {party?.capacity ?? "—"}<Chevron /></button><button aria-expanded={sheet === "inspect"} onClick={() => setSheet(sheet === "inspect" ? null : "inspect")}>{selected?.name || "Inspect"}<Chevron /></button></nav>

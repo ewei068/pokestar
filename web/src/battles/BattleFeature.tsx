@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { getCatalog } from "./api";
-import { BattleList } from "./BattleList";
+
 import { BattlePage } from "./BattlePage";
 import type { BattleCatalog } from "./types";
 
-const BattleDetail = ({ battleId }: { battleId: string }) => {
+export const BattleFeature = ({ battleId }: { battleId: string }) => {
   const [catalog, setCatalog] = useState<BattleCatalog | null>(null);
   const [error, setError] = useState(false);
   useEffect(() => {
@@ -16,6 +16,3 @@ const BattleDetail = ({ battleId }: { battleId: string }) => {
   if (!catalog) return <main className="page-shell"><p>Loading battles…</p></main>;
   return <BattlePage battleId={battleId} catalog={catalog} />;
 };
-
-export const BattleFeature = ({ battleId }: { battleId: string | null }) =>
-  battleId ? <BattleDetail key={battleId} battleId={battleId} /> : <BattleList />;

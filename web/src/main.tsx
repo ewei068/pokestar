@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { App } from "./App";
 import { AudioSettingsProvider } from "./settings/AudioSettings";
 import "./style.css";
+import "./play/play.css";
 import "./collection/collection.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);

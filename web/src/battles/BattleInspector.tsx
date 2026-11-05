@@ -1,6 +1,7 @@
+import { TypeBadge } from "../components/TypeBadge";
 import { MoveInspection } from "../components/MoveInspection";
 import type { BattleCatalog, PokemonView } from "./types";
-import { typeClass, typeName } from "./typeDisplay";
+import { typeName } from "./typeDisplay";
 import { StatusLabel } from "./StatusLabel";
 
 export type InspectDetail = { category: string; name: string; description: string; duration?: number };
@@ -27,33 +28,33 @@ export const BattleInspector = ({ pokemon, moveId, detail, catalog, teamLabel, o
   const species = pokemon ? catalog.species[pokemon.speciesId] : null;
   const sprite = pokemon?.shiny ? species?.shinySprite : species?.sprite;
   const statusId = pokemon?.status?.statusId;
-  return <section className="arena-inspector" aria-label="Battle inspector">
+  return <section className="ui-panel arena-inspector" aria-label="Battle inspector">
     <div className="arena-section-heading"><h2>Inspect</h2><span aria-hidden="true">ⓘ</span></div>
     {detail ? <div className="arena-detail-page">
-      <button type="button" className="arena-inspector-back" onClick={onBack}>← Back</button>
+      <button type="button" className="ui-button ui-button--inline arena-inspector-back" onClick={onBack}>← Back</button>
       <small>{detail.category}</small>
       <div className="arena-inspector-title"><h3>{detail.name}</h3>
-        {detail.duration !== undefined && <span className="arena-duration" aria-label="Remaining duration"><ClockIcon />{turns(detail.duration)}</span>}</div>
+        {detail.duration !== undefined && <span className="ui-badge arena-duration" aria-label="Remaining duration"><ClockIcon />{turns(detail.duration)}</span>}</div>
       <p>{detail.description}</p>
     </div> : move ? <MoveInspection move={move} fallbackName={moveId || undefined}
-      typeBadge={<span className={`arena-type-label ${typeClass(move.type, catalog)}`}>{typeName(move.type, catalog)}</span>} /> : pokemon ? <>
+      type={typeName(move.type, catalog)} /> : pokemon ? <>
       <div className="arena-inspector-pokemon">{sprite && <img src={sprite} alt="" loading="lazy" />}
         <div className="arena-inspector-identity"><div className="arena-inspector-title">
-          {statusId && <StatusLabel statusId={statusId}
+          {statusId && <StatusLabel statusId={statusId} className="ui-button--inline"
             onClick={() => onOpenDetail({ category: "Status", name: catalog.statuses?.[statusId]?.name || statusId,
               description: catalog.statuses?.[statusId]?.description || "Active battle status." })} />}
           <h3>{pokemon.name}</h3></div><small>Lv {pokemon.level} · {teamLabel || pokemon.teamName}</small>
-          <div className="arena-inspector-types">{[pokemon.type1, pokemon.type2].filter((type) => type !== null && type !== undefined)
-            .map((type) => <span className={`arena-type-label ${typeClass(type, catalog)}`} key={type}>{typeName(type, catalog)}</span>)}</div>
+          <div className="ui-badge-list">{[pokemon.type1, pokemon.type2].filter((type) => type !== null && type !== undefined)
+            .map((type) => <TypeBadge key={type} type={typeName(type, catalog)} />)}</div>
         </div></div>
       {(pokemon.abilityId || pokemon.heldItemId) && <div className="arena-inspector-traits">
-        {pokemon.abilityId && <div><span>Ability</span><button type="button" className="is-ability"
+        {pokemon.abilityId && <div><span>Ability</span><button type="button" className="ui-badge ui-button--inline" data-kind="ability"
           aria-label={`Ability: ${catalog.abilities[pokemon.abilityId]?.name || pokemon.abilityId}`}
           onClick={() => onOpenDetail({ category: "Ability",
             name: catalog.abilities[pokemon.abilityId!]?.name || pokemon.abilityId!,
             description: catalog.abilities[pokemon.abilityId!]?.description || "No description available." })}>
           <span aria-hidden="true">✦</span> {catalog.abilities[pokemon.abilityId]?.name || pokemon.abilityId}</button></div>}
-        {pokemon.heldItemId && <div><span>Held item</span><button type="button" className="is-item"
+        {pokemon.heldItemId && <div><span>Held item</span><button type="button" className="ui-badge ui-button--inline" data-kind="item"
           aria-label={`Held item: ${catalog.heldItems[pokemon.heldItemId]?.name || pokemon.heldItemId}`}
           onClick={() => onOpenDetail({ category: "Held item",
             name: catalog.heldItems[pokemon.heldItemId!]?.name || pokemon.heldItemId!,
@@ -68,7 +69,7 @@ export const BattleInspector = ({ pokemon, moveId, detail, catalog, teamLabel, o
         {Object.entries(pokemon.effectIds || {}).map(([id, state]) => {
           const effect = catalog.effects[id];
           const category = effect?.type || "Effect";
-          return <button type="button" key={id} className={`is-effect is-${category.toLowerCase()}`}
+          return <button type="button" key={id} className="ui-badge ui-button--inline" data-kind={category.toLowerCase()}
             onClick={() => onOpenDetail({ category, name: effect?.name || id,
               description: effect?.description || "Active battle effect.", duration: state.duration })}>
             {category === "Buff" ? "↑" : category === "Debuff" ? "↓" : "✧"} {effect?.name || id}{state.duration === undefined ? "" : ` · ${state.duration}`}</button>;

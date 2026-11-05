@@ -5,11 +5,12 @@ const { PlayerError } = require("../services/player");
  * Mounted after shared session/origin/rate-limit middleware has been configured.
  * @param {object} options
  * @param {ReturnType<import("../services/player").createPlayerService>} options.service
+ * @param {import("../battle/service/BattleWebService").BattleWebService} options.battleService
  * @param {import("express").RequestHandler} options.requireSession
  * @param {import("express").RequestHandler} options.requireSiteOrigin
  * @param {Record<string, import("express").RequestHandler>} options.rateLimits
  */
-const createPlayerApi = ({ service, requireSession, requireSiteOrigin, rateLimits }) => {
+const createPlayerApi = ({ service, battleService, requireSession, requireSiteOrigin, rateLimits }) => {
   const router = express.Router();
   router.use(requireSession);
   // The header is an assertion, never an identity source. It prevents a request
@@ -30,6 +31,8 @@ const createPlayerApi = ({ service, requireSession, requireSiteOrigin, rateLimit
       else next(error);
     }
   };
+  router.get("/npcs", rateLimits.reads, handle((request) => service.npcs(request.discordUserId)));
+  router.get("/battles", rateLimits.reads, handle(async (request) => ({ battles: await battleService.listActive(request.discordUserId) })));
   router.get("/trainer", rateLimits.reads, handle((request) => service.profile(request.discordUserId)));
   router.get("/collection", rateLimits.reads, handle((request) => service.collection(request.discordUserId, request.query)));
   router.get("/pokemon/:id", rateLimits.reads, handle((request) => service.detail(request.discordUserId, request.params.id)));

@@ -105,6 +105,6 @@ not establish that path. Check missing/custom assets and reduced motion when
 changing sprite or animation code.
 
 Keep temporary screenshots and review scripts outside the shipped tree.
-Development stories use the same production board. Shared tokens/components
-remain a later extraction when another feature supplies real repetition, as
-specified in the main web UI guide.
+Development stories use the same production board. Surrounding controls, panels
+and inspection badges use the shared UI stylesheet/components specified in the
+main web UI guide. Keep arena HUD geometry and combat cues local.

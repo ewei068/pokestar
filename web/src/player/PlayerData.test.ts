@@ -93,3 +93,25 @@ it("inspection leaves collection, party and previously inspected details fresh",
   for (const key of keys) assert.equal(data.client.getQueryState(key)?.isInvalidated, false);
   data.dispose();
 });
+it("starts an ordinary NPC battle and invalidates encounter data", async () => {
+  const data = new PlayerData("alice", null, () => {});
+  globalThis.fetch = async (_url, init) => {
+    assert.deepEqual(JSON.parse(String(init?.body)), { kind: "npc.start", npcId: "blue", difficulty: "easy" });
+    return json({ discordUserId: "alice", battleId: "battle-one" });
+  };
+  const result = await data.perform({ kind: "npc.start", npcId: "blue", difficulty: "easy" });
+  assert.equal(result.battleId, "battle-one");
+  data.dispose();
+});
+it("releases a failed start without waiting for background refresh", async () => {
+  const data = new PlayerData("alice", null, () => {});
+  let posts = 0;
+  globalThis.fetch = async (_url, init) => {
+    if (init?.method === "POST") { posts++; throw new TypeError("response lost"); }
+    return new Promise(() => {});
+  };
+  await assert.rejects(data.perform({ kind: "npc.start", npcId: "blue", difficulty: "easy" }));
+  await assert.rejects(data.perform({ kind: "npc.start", npcId: "blue", difficulty: "easy" }));
+  assert.equal(posts, 2);
+  data.dispose();
+});

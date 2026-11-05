@@ -178,7 +178,7 @@ const createBattleApi = ({
     next();
   };
 
-  router.use("/player", createPlayerApi({ service: playerService, requireSession, requireSiteOrigin, rateLimits }));
+  router.use("/player", createPlayerApi({ service: playerService, battleService, requireSession, requireSiteOrigin, rateLimits }));
 
   router.get("/me", requireSession, asyncRoute(async (request, response) => {
     const trainer = await resolveTrainer({ id: request.discordUserId }, false);

@@ -6,6 +6,7 @@ import { useAuth } from "./auth/useAuth";
 import { SiteShell, UnavailablePage } from "./navigation/SiteShell";
 import { TrainerAccount, TrainerResources, TrainerStatus } from "./trainer/TrainerAccount";
 import { PlayerProvider, usePlayer } from "./player/PlayerProvider";
+import { PlayFeature } from "./play/PlayFeature";
 import { CollectionFeature } from "./player/CollectionFeature";
 
 type Auth = ReturnType<typeof useAuth>;
@@ -20,7 +21,7 @@ const ReadyContent = ({ auth }: { auth: Auth }) => {
   return <SiteShell account={account} resources={<TrainerResources {...trainer} />}>{route => {
     if (route.page !== "play" && route.page !== "pokemon") return <UnavailablePage page={route.page} />;
     if (!trainer.profile) return <TrainerStatus loading={trainer.loading} pending={auth.pending === "logout"} onRetry={retry} />;
-    return route.page === "pokemon" ? <CollectionFeature /> : <BattleFeature battleId={route.battleId} />;
+    return route.page === "pokemon" ? <CollectionFeature /> : route.battleId ? <BattleFeature key={route.battleId} battleId={route.battleId} /> : <PlayFeature />;
   }}</SiteShell>;
 };
 
