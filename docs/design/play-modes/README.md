@@ -1,8 +1,8 @@
 # Dungeons and Battle Tower
 
-2026-11-04, America/Los_Angeles. **Proposal, waiting for maintainer feedback.** No production tab, start route or reward behavior was added.
+2026-11-04, America/Los_Angeles. The study was approved and the Play tabs landed on 2026-11-05. This file remains the design record. It is not the production client.
 
-Play already has Continue and Trainer battles. Dungeons and Battle Tower are the two remaining tabs, still marked Later in `web/src/play/PlayFeature.tsx`. This study replaces those placeholders with the live catalogs: five dungeons from `dungeonConfig`, in Discord’s menu order, and 20 tower floors from `battleTowerConfig`.
+Play has Continue, Trainer battles, Dungeons, and Battle Tower. The study uses the live catalogs: five dungeons from `dungeonConfig`, in Discord’s menu order, and 20 tower floors from `battleTowerConfig`.
 
 Open the [editable review](http://127.0.0.1:8130/docs/design/play-modes/). From the repository root, `python3 -m http.server 8130 --bind 127.0.0.1` serves it. The study performs no gameplay writes.
 
@@ -40,11 +40,11 @@ The party shown is the saved party, the same one both modes already validate at 
 | Party | `validatePartyForBattle`: 1–6 unique eligible Pokémon. Empty or ineligible parties cannot start. |
 | Ongoing names | Today’s Continue list can only say “Dungeon” or “Battle Tower” unless the mode id matches a trainer. The names in this study are the proposed list text. |
 
-## Two decisions before implementation
+## Decisions used by the Play tabs
 
-**Floor levels.** Discord prints `battleTowerConfig`’s min and max. `TowerNPC.setPokemon` ignores those fields and generates from the linked NPC difficulty. All 20 floors disagree. Floor 1’s caption is 40–50 while the fight is 42–52; floor 20’s caption is 194–204 while the fight is 100–120. This study shows the generated range so the climb does not look smoother than the battle. It does not propose new levels. Choose whether the web should show the generated range, or the Discord caption, before building the screen.
+**Floor levels.** Discord prints `battleTowerConfig`’s min and max. `TowerNPC.setPokemon` ignores those fields and generates from the linked NPC difficulty. All 20 floors disagree. Floor 1’s caption is 40–50 while the fight is 42–52; floor 20’s caption is 194–204 while the fight is 100–120. Play shows the generated range. The fights were not retuned.
 
-**A floor that is already open.** A second tower start is not the same as a free NPC rematch. Completion advances the tower only when `lastTowerStage + 1` is still that floor, so a later victory can fail to count. The `floor-open` state makes the gold action `Continue floor` instead of starting another. Dungeon rematches do not have that gate, so Start dungeon stays available. This is a proposal, not a new reservation system. The accepted NPC duplicate-start choice does not transfer here.
+**A floor that is already open.** A second tower start is not the same as a free NPC rematch. Completion advances the tower only when `lastTowerStage + 1` is still that floor, so a later victory can fail to count. Play makes the gold action Continue when that floor is already listed, instead of starting another. Dungeon rematches do not have that gate, so Start stays available. This is not a new reservation system. The accepted NPC duplicate-start choice does not transfer here.
 
 Start still disables while its own request is pending, then returns after success, failure or a lost response. No request ids or automatic retries are proposed.
 
@@ -63,8 +63,8 @@ Start still disables while its own request is pending, then returns after succes
 
 ## Evidence
 
-Required now: source-accurate catalogs, desktop and phone layout, and a reviewable proposal before production. Party presets, Auto, equipment, the Mew receipt and saved-result replay stay on their own tickets.
+Party presets, Auto, equipment, the Mew receipt and saved-result replay stay on their own tickets.
 
-Checked locally in the study, not in production. At 1280 px the dungeon list and detail sit together without document overflow, floor 7 offers Start floor 7, and floor 8 is disabled with “Clear floor 7 first.” At 390 and 320 px the selected screen hides the list, the tabs scroll, and the document does not overflow. At 320 px a six-Pokémon phase strip scrolls inside itself, and the action bar meets the bottom navigation. Start becomes “Starting battle…”, marks the button busy, disables the difficulties, then becomes “Open battle.” The open-floor fixture says Continue floor. The party sheet opens. These checks do not approve the design.
+The study checks below are not production acceptance. At 1280 px the dungeon list and detail sit together without document overflow, floor 7 offers Start floor 7, and floor 8 is disabled with “Clear floor 7 first.” At 390 and 320 px the selected screen hides the list, the tabs scroll, and the document does not overflow. At 320 px a six-Pokémon phase strip scrolls inside itself, and the action bar meets the bottom navigation. Start becomes “Starting battle…”, marks the button busy, disables the difficulties, then becomes “Open battle.” The open-floor fixture says Continue floor. The party sheet opens.
 
-Maintainer feedback is still open. This file is the proposal, not an approval.
+Play now serves these tabs. A signed-out browser check on 2026-11-05 could open Play and could not walk a dungeon start, a locked floor, or Continue. Client tests cover those flows. Real MongoDB, Discord OAuth, and a second device were not exercised.

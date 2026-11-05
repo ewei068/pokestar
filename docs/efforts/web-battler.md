@@ -89,8 +89,14 @@ bordered. The tower opens on the current floor. Only the next floor can start.
 The study shows the levels `TowerNPC` generates and
 records that all 20 Discord floor captions differ. It also proposes Continue
 when that floor is already open. Local study checks covered 1280, 390 and 320 px.
-Maintainer feedback is pending. No production tab, start route or reward
-behavior was added.
+That study was the proposal. The production tabs landed on 2026-11-05.
+`GET /player/dungeons` and `GET /player/tower` publish the catalogs and grant
+nothing. `dungeon.start` always creates another battle. `tower.start` returns
+the newest active battle for the next floor, or creates one, and rejects every
+other floor. Continue names a dungeon and a floor from those catalogs. Money
+uses `₽` and the Master Ball uses `master-ball.png`. Opening a finished battle
+still does not grant rewards again. The study checks are not this acceptance.
+Real MongoDB, Discord OAuth, and a second device were not exercised.
 
 For expansion planning and cross-session coordination, read the
 [web parity roadmap](web-parity.md) and completed
