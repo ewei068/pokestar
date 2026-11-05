@@ -6,6 +6,7 @@ The NPC design study also uses these exact files.
 | File | Existing local source |
 | --- | --- |
 | `poke-ball.png` | `extra_data/images/items/poke-ball.png` |
+| `master-ball.png` | `extra_data/images/items/master-ball.png` |
 | `mint.png` | `extra_data/images/items/mint/neutral.png` |
 | `raid-pass.png` | `extra_data/images/items/raid-pass.png` |
 | `mew.png` | `extra_data/images/pokemon/icons/151.png` (menu icon, not the battle sprite) |

@@ -120,4 +120,11 @@ test('NPC reads normalize trainer progress without a participation grant', async
   expect(result.npcs.find(npc => npc.id === 'blue').difficulties[0].dailyClaimed).toBe(true);
   expect(mockGetTrainer).toHaveBeenCalledWith({ id: actor }, false);
   expect(mockGrant).not.toHaveBeenCalled();
+  trainer.lastTowerStage = 6;
+  const dungeons = await service.dungeons(actor);
+  const tower = await service.tower(actor);
+  expect(dungeons.dungeons[0].id).toBe('mindTemple');
+  expect(tower.lastTowerStage).toBe(6);
+  expect(tower.floors).toHaveLength(20);
+  expect(mockGrant).not.toHaveBeenCalled();
 });

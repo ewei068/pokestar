@@ -12,6 +12,7 @@ const { getHeldItems } = require("../battle/data/heldItemRegistry");
 const { getPokemonExpNeeded, getMoveIds } = require("../utils/pokemonUtils");
 const { logger } = require("../log");
 const { projectNpcCatalog, buildNpcBattle } = require("./npcBattle");
+const { projectDungeonCatalog, projectTowerCatalog } = require("./playModes");
 const { getDurableBattleService, isDurableBattleEnabled } = require("./durableBattle");
 
 class PlayerError extends Error {
@@ -201,6 +202,14 @@ const createPlayerService = () => {
   };
   /** @param {string} userId */
   const npcs = async (userId) => ({ npcs: projectNpcCatalog(await requireTrainer(userId)) });
+  const dungeons = async (userId) => {
+    await requireTrainer(userId);
+    return { dungeons: projectDungeonCatalog() };
+  };
+  const tower = async (userId) => {
+    const trainer = await requireTrainer(userId);
+    return { ...projectTowerCatalog(), lastTowerStage: trainer.lastTowerStage };
+  };
   /** @param {string} userId */
   const profile = async (userId) => ({ trainer: projectTrainerProfile(await requireTrainer(userId)) });
   /**
@@ -237,7 +246,7 @@ const createPlayerService = () => {
     } catch (error) { logger.warn("Player interaction grant failed", error); }
     return { ...result, ...await profile(userId) };
   };
-  return { collection, detail, party, profile, npcs, interact };
+  return { collection, detail, party, profile, npcs, dungeons, tower, interact };
 };
 
 module.exports = { createPlayerService, parseCollectionQuery, projectPokemon, projectPokemonDetail, projectPartyTargets, PlayerError };
