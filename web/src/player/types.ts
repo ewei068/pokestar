@@ -33,9 +33,16 @@ export type NpcDifficulty = { id: string; name: string; minLevel: number; maxLev
   species: NpcSpecies[]; dailyClaimed: boolean; rewards: { name: string; quantity: number; icon: string | null }[] };
 export type NpcEncounter = { id: string; name: string; displayName: string; spriteUrl: string | null; catchphrase: string;
   minLevel: number; maxLevel: number; difficulties: NpcDifficulty[] };
-export type DungeonEncounter = { id: string; name: string; displayName: string; difficulties: { id: string; name: string }[] };
-export type TowerFloor = { stage: number };
-export type PlayerOperation = { kind: "npc.start"; npcId: string; difficulty: string } | { kind: "collection"; query: CollectionQuery } |
+export type ModeReward = { kind: "money"; quantity: number; label: string } | { kind: "item"; id: string; name: string; quantity: number; icon: string | null };
+export type ModeSpecies = { id: string; name: string; spriteUrl: string | null; boss: boolean };
+export type DungeonDifficulty = { id: string; name: string; minLevel: number; maxLevel: number; species: ModeSpecies[]; rewards: ModeReward[] };
+export type DungeonEncounter = { id: string; name: string; displayName: string; description: string; spriteUrl: string | null;
+  subtitle: { icon: string; text: string } | null; difficulties: DungeonDifficulty[] };
+export type TowerFloor = { stage: number; npcName: string; spriteUrl: string | null; difficultyName: string;
+  minLevel: number; maxLevel: number; species: ModeSpecies[]; rewards: ModeReward[] };
+export type PlayerOperation = { kind: "npc.start"; npcId: string; difficulty: string }
+  | { kind: "dungeon.start"; dungeonId: string; difficulty: string } | { kind: "tower.start"; stage: number }
+  | { kind: "collection"; query: CollectionQuery } |
   { kind: "inspect"; pokemonId: string } |
   { kind: "party.place"; pokemonId: string; index: number; expectedOccupant: string | null } |
   { kind: "party.remove"; index: number; expectedOccupant: string };
