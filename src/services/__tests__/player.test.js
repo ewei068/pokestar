@@ -6,6 +6,10 @@ const { createMockPokemon } = require('../../__testing__/mocks/pokemon');
 const { createPlayerService, parseCollectionQuery } = require('../player');
 const { buildNpcBattle } = require('../npcBattle');
 const { getDurableBattleService } = require('../durableBattle');
+const { validatePartyForBattle } = require('../party');
+const { createMockTrainer } = require('../../__testing__/mocks/trainer');
+
+jest.mock('../party', () => ({ ...jest.requireActual('../party'), validatePartyForBattle: jest.fn() }));
 
 jest.mock('../durableBattle', () => ({ isDurableBattleEnabled: () => true, getDurableBattleService: jest.fn() }));
 jest.mock('../npcBattle', () => ({ ...jest.requireActual('../npcBattle'), buildNpcBattle: jest.fn() }));
@@ -127,4 +131,31 @@ test('NPC reads normalize trainer progress without a participation grant', async
   expect(tower.lastTowerStage).toBe(6);
   expect(tower.floors).toHaveLength(20);
   expect(mockGrant).not.toHaveBeenCalled();
+});
+
+test('dungeon inserts and tower resumes grant participation, and a rejected floor does not', async () => {
+  const mock = createMockTrainer();
+  mock.trainer.lastTowerStage = 6;
+  mockGetTrainer.mockResolvedValue({ data: mock.trainer });
+  /** @type {jest.Mock} */ (validatePartyForBattle).mockResolvedValue({ data: mock.party.pokemons });
+  const start = jest.fn().mockResolvedValue({ battleId: 'created' });
+  const listActive = jest.fn().mockResolvedValue([]);
+  /** @type {jest.Mock} */ (getDurableBattleService).mockResolvedValue({ start, listActive });
+  mockGrant.mockResolvedValue({ err: null });
+  await expect(service.interact(actor, { kind: 'dungeon.start', dungeonId: 'mindTemple', difficulty: 'medium' })).resolves.toMatchObject({ battleId: 'created' });
+  expect(start).toHaveBeenCalledTimes(1);
+  expect(mockGrant).toHaveBeenCalledWith(mock.trainer, 5, 10);
+  listActive.mockResolvedValue([{ _id: 'floor-7', updatedAt: '2026-11-02T00:00:00.000Z', mode: { type: 'tower', stage: 7 } }]);
+  await expect(service.interact(actor, { kind: 'tower.start', stage: 7 })).resolves.toMatchObject({ battleId: 'floor-7' });
+  expect(start).toHaveBeenCalledTimes(1);
+  expect(mockGrant).toHaveBeenCalledTimes(2);
+  mockGrant.mockRejectedValue(new Error('grant unavailable'));
+  await expect(service.interact(actor, { kind: 'dungeon.start', dungeonId: 'mindTemple', difficulty: 'medium' })).resolves.toMatchObject({ battleId: 'created' });
+  mockGrant.mockClear();
+  await expect(service.interact(actor, { kind: 'tower.start', stage: 8 })).rejects.toMatchObject({ code: 'tower_not_current', status: 400 });
+  await expect(service.interact(actor, { kind: 'dungeon.start', dungeonId: 'missing', difficulty: 'medium' })).rejects.toMatchObject({ code: 'invalid_dungeon' });
+  await expect(service.interact(actor, { kind: 'tower.start', stage: '7' })).rejects.toMatchObject({ code: 'invalid_interaction' });
+  await expect(service.interact(actor, { kind: 'tower.start', stage: 7, userId: 'other' })).rejects.toMatchObject({ code: 'invalid_interaction' });
+  expect(mockGrant).not.toHaveBeenCalled();
+  expect(start).toHaveBeenCalledTimes(2);
 });

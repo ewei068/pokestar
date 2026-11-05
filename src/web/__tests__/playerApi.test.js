@@ -50,6 +50,9 @@ test('NPC catalog and start use the same authenticated player boundary', async (
   expect(service.interact).not.toHaveBeenCalled();
   expect((await fetch(`${url}/interactions`, { method: 'POST', headers, body })).status).toBe(200);
   expect(service.interact).toHaveBeenCalledWith('owner', { kind: 'npc.start', npcId: 'blue', difficulty: 'easy' });
+  const tower = JSON.stringify({ kind: 'tower.start', stage: 7 });
+  expect((await fetch(`${url}/interactions`, { method: 'POST', headers, body: tower })).status).toBe(200);
+  expect(service.interact).toHaveBeenCalledWith('owner', { kind: 'tower.start', stage: 7 });
 });
 
 test('active battles use account-scoped reads with an actor envelope', async () => {

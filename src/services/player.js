@@ -12,7 +12,7 @@ const { getHeldItems } = require("../battle/data/heldItemRegistry");
 const { getPokemonExpNeeded, getMoveIds } = require("../utils/pokemonUtils");
 const { logger } = require("../log");
 const { projectNpcCatalog, buildNpcBattle } = require("./npcBattle");
-const { projectDungeonCatalog, projectTowerCatalog } = require("./playModes");
+const { projectDungeonCatalog, projectTowerCatalog, startDungeon, startTower } = require("./playModes");
 const { getDurableBattleService, isDurableBattleEnabled } = require("./durableBattle");
 
 class PlayerError extends Error {
@@ -236,6 +236,22 @@ const createPlayerService = () => {
       if (prepared.err) throw new PlayerError(prepared.code, prepared.code === "trainer_unavailable" ? 503 : 400);
       const started = await (await getDurableBattleService()).start({ battle: prepared.data,
         mode: { type: "pve", npcId: input.npcId, difficulty: input.difficulty } });
+      result = { battleId: started.battleId };
+    } else if (input.kind === "dungeon.start" && typeof input.dungeonId === "string" && typeof input.difficulty === "string" &&
+        Object.keys(input).every((key) => ["kind", "dungeonId", "difficulty"].includes(key))) {
+      if (!isDurableBattleEnabled()) throw new PlayerError("battle_unavailable", 503);
+      const durable = await getDurableBattleService();
+      const started = await startDungeon({ userId, dungeonId: input.dungeonId, difficulty: input.difficulty, start: (battle) => durable.start(battle) });
+      if (started.err) throw new PlayerError(started.code, started.code === "trainer_unavailable" ? 503 : 400);
+      result = { battleId: started.battleId };
+    } else if (input.kind === "tower.start" && Number.isInteger(input.stage) &&
+        Object.keys(input).every((key) => ["kind", "stage"].includes(key))) {
+      if (!isDurableBattleEnabled()) throw new PlayerError("battle_unavailable", 503);
+      const durable = await getDurableBattleService();
+      const started = await startTower({
+        userId, stage: input.stage, listActive: (id) => durable.listActive(id), start: (battle) => durable.start(battle),
+      });
+      if (started.err) throw new PlayerError(started.code, started.code === "trainer_unavailable" ? 503 : 400);
       result = { battleId: started.battleId };
     } else throw new PlayerError("invalid_interaction");
     // Participation rewards are best effort. Never replay a completed command
