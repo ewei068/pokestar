@@ -50,7 +50,7 @@ export function DungeonPlay({ dungeons, selectedId, difficultyId, pending, canSt
     <section className="ui-panel npc-panel npc-trainers" aria-label="Dungeons"><header className="ui-panel-heading npc-panel-head"><h2>Dungeons</h2><small>{dungeons.length}</small></header>
       <div className="npc-trainer-rows">{dungeons.map(value => <button type="button" className="npc-trainer-row" key={value.id} aria-pressed={value.id === dungeon.id} disabled={pending}
         onClick={() => onSelect(value.id, value.difficulties[0].id)}>
-        <CollectionArtwork src={value.spriteUrl} /><span><strong>{value.displayName}</strong>{value.subtitle && <small className="row-subtitle">{value.subtitle.icon && <img src={itemSrc(value.subtitle.icon)} alt="" />}{value.subtitle.text}</small>}</span><span aria-hidden="true">›</span>
+        <CollectionArtwork src={value.subtitle?.icon ? itemSrc(value.subtitle.icon) : value.spriteUrl} /><span><strong>{value.displayName}</strong>{value.subtitle && <small className="row-subtitle">{value.subtitle.text}</small>}</span><span aria-hidden="true">›</span>
       </button>)}</div>
     </section>
     <section className="ui-panel npc-panel npc-detail" aria-label="Selected dungeon">
