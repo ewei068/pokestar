@@ -68,7 +68,7 @@ const projectDungeonCatalog = () => Object.values(dungeons).filter((id) => dunge
   });
   return {
     id, name: dungeon.name,
-    displayName: (dungeon.displayName || dungeon.name).replaceAll("**", ""),
+    displayName: ("displayName" in dungeon ? dungeon.displayName : dungeon.name).replaceAll("**", ""),
     description: dungeon.description, spriteUrl: dungeon.sprite, subtitle: dungeon.subtitle || null,
     difficulties,
   };

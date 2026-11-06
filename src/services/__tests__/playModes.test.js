@@ -28,12 +28,12 @@ test("dungeon catalog follows the menu order, subtitles, and one boss-first spec
   expect(catalog.at(-1)).toMatchObject({ id: "mountCoronet", subtitle: { icon: "star-piece.png", text: "Event: All Shards" } });
   const altar = catalog.find((dungeon) => dungeon.id === "spiritAltar");
   const difficulty = altar.difficulties[0];
-  expect(difficulty.phases).toBeUndefined();
+  expect("phases" in difficulty).toBe(false);
   expect(difficulty.species.map(({ id, boss }) => ({ id, boss }))).toEqual(flatten(dungeonConfig.spiritAltar));
   expect(difficulty.species.filter((species) => species.boss).map((species) => species.id)).toEqual(
     dungeonConfig.spiritAltar.bosses.map(String));
   expect(new Set(difficulty.species.map((species) => species.id)).size).toBe(difficulty.species.length);
-  expect(altar.rewardString).toBeUndefined();
+  expect("rewardString" in altar).toBe(false);
 });
 
 test("tower catalog shows generated fight levels and reward marks", () => {
