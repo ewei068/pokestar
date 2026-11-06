@@ -93,7 +93,11 @@ That study was the proposal. The production tabs landed on 2026-11-05.
 `GET /player/dungeons` and `GET /player/tower` publish the catalogs and grant
 nothing. `dungeon.start` always creates another battle. `tower.start` returns
 the newest active battle for the next floor, or creates one, and rejects every
-other floor. Continue names a dungeon and a floor from those catalogs. Money
+other floor. Continue names a dungeon and a floor from those catalogs. Each Play tab's URL
+keeps only that tab's open row: trainers keep `npc` and `difficulty`, dungeons
+keep `dungeon` and `difficulty`, the tower keeps `floor`, and Continue keeps
+none. Switching tabs deletes the others, and the phone detail opens only for
+the active tab's own id. Money
 uses `₽` and the Master Ball uses `master-ball.png`. Opening a finished battle
 still does not grant rewards again. The study checks are not this acceptance.
 Real MongoDB, Discord OAuth, and a second device were not exercised.

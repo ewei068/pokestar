@@ -135,7 +135,11 @@ it("opens Mind Temple, falls back from an unknown dungeon, and drops a failed lo
   playFetch({});
   const view = mount();
   fireEvent.click(await view.findByRole("button", { name: "Dungeons" }));
-  assert.equal((await view.findByRole("button", { name: /Mind Temple/ })).getAttribute("aria-pressed"), "true");
+  const temple = await view.findByRole("button", { name: /Mind Temple/ });
+  assert.equal(temple.getAttribute("aria-pressed"), "true");
+  assert.match(temple.querySelector("img")?.getAttribute("src") || "", /knowledge-shard\.png/);
+  assert.equal(temple.querySelector(".row-subtitle img"), null);
+  assert.match(temple.textContent || "", /Knowledge Shards/);
   assert.ok(view.getByRole("heading", { name: "Mind Temple" }));
   cleanup();
   dom.window.history.replaceState(null, "", "/?playView=dungeons&dungeon=missing#play");
@@ -209,6 +213,40 @@ it("keeps a rejected floor definite, a lost start retryable, and an empty party 
   assert.equal((await empty.findByRole("button", { name: /Start battle/ })).hasAttribute("disabled"), true);
   fireEvent.click(empty.getByRole("button", { name: /Continue/ }));
   assert.ok(await empty.findByRole("heading", { name: "Ongoing battles" }));
+});
+
+it("clears another tab's open row so Back returns to the list", async () => {
+  playFetch({});
+  const view = mount();
+  fireEvent.click(await view.findByRole("button", { name: /Blue/ }));
+  await waitFor(() => assert.match(dom.window.location.search, /npc=blue/));
+  assert.match(view.container.querySelector("main")?.className || "", /npc-is-detail/);
+  fireEvent.click(view.getByRole("button", { name: "Dungeons" }));
+  await waitFor(() => assert.equal(new URL(dom.window.location.href).searchParams.get("playView"), "dungeons"));
+  const arrived = new URL(dom.window.location.href).searchParams;
+  assert.equal(arrived.get("npc"), null);
+  assert.equal(arrived.get("difficulty"), null);
+  assert.equal(arrived.get("floor"), null);
+  assert.equal(view.container.querySelector("main")?.classList.contains("npc-is-detail"), false);
+  assert.equal(view.container.querySelector(".npc-mobile-back"), null);
+  fireEvent.click(view.getByRole("button", { name: /Mind Temple/ }));
+  await waitFor(() => assert.equal(new URL(dom.window.location.href).searchParams.get("dungeon"), "mindTemple"));
+  const back = view.container.querySelector<HTMLButtonElement>(".npc-mobile-back");
+  assert.equal(back?.textContent, "‹ All dungeons");
+  fireEvent.click(back!);
+  await waitFor(() => assert.equal(new URL(dom.window.location.href).searchParams.get("dungeon"), null));
+  assert.equal(view.container.querySelector("main")?.classList.contains("npc-is-detail"), false);
+  dom.window.history.replaceState(null, "", "/?playView=tower&npc=blue&floor=7#play");
+  dom.window.dispatchEvent(new dom.window.PopStateEvent("popstate"));
+  await waitFor(() => assert.equal(view.container.querySelector(".npc-mobile-back")?.textContent, "‹ All floors"));
+  fireEvent.click(view.container.querySelector(".npc-mobile-back")!);
+  await waitFor(() => {
+    const params = new URL(dom.window.location.href).searchParams;
+    assert.equal(params.get("floor"), null);
+    assert.equal(params.get("npc"), null);
+    assert.equal(params.get("playView"), "tower");
+  });
+  assert.equal(view.container.querySelector("main")?.classList.contains("npc-is-detail"), false);
 });
 
 it("does not move the inspected dungeon when the battle list changes", async () => {

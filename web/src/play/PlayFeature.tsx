@@ -68,12 +68,15 @@ export function PlayFeature() {
     if (selection.view === null) setSelection(current => ({ ...current, view: ongoing.data.length ? "continue" : "trainers" }));
     else if (selection.view === "continue" && ongoing.data.length === 0) update({ ...selection, view: "trainers" }, true);
   }, [selection, ongoing.data]);
+  const inspecting = (view === "trainers" && Boolean(selection.npcId))
+    || (view === "dungeons" && Boolean(selection.dungeonId))
+    || (view === "tower" && selection.floor != null);
   useEffect(() => {
-    if (selection.npcId && window.matchMedia?.("(max-width:760px)").matches) {
+    if (inspecting && window.matchMedia?.("(max-width:760px)").matches) {
       window.scrollTo(0, 0);
       mobileBack.current?.focus();
     }
-  }, [selection.npcId]);
+  }, [inspecting]);
   useEffect(() => {
     const modal = dialog.current;
     if (partyOpen && modal && !modal.open) modal.showModal();
@@ -92,8 +95,7 @@ export function PlayFeature() {
   }, [npc?.id, view]);
   const closeParty = () => { setPartyOpen(false); partyTrigger.current?.focus(); };
   const readError = catalog.isError || party.isError || ongoing.isError;
-  const tab = (next: "continue" | "trainers" | "dungeons" | "tower") => update({ ...selection, view: next });
-  const inspecting = Boolean(selection.npcId) || (view === "dungeons" && Boolean(selection.dungeonId)) || (view === "tower" && selection.floor != null);
+  const tab = (next: "continue" | "trainers" | "dungeons" | "tower") => update({ view: next });
   return <main className={`page-shell npc-page${inspecting ? " npc-is-detail" : ""}`}>
     <h1 className="npc-page-heading">Play</h1>
     <nav className="npc-tabs" aria-label="Play views" onFocus={event => (event.target as HTMLElement).scrollIntoView?.({ block: "nearest", inline: "nearest" })}>
@@ -106,7 +108,7 @@ export function PlayFeature() {
     {view === null && <p className="npc-empty" role="status">{ongoing.isError ? "Choose Trainer battles or refresh to try again." : "Loading battles…"}</p>}
     {view === "continue" && ongoing.data && <BattleList battles={ongoing.data} npcs={catalog.data || []} dungeons={dungeons.data || []} floors={tower.data?.floors || []} />}
     {view === "trainers" && <>
-      {selection.npcId && <button ref={mobileBack} type="button" className="npc-mobile-back" onClick={() => update({ ...selection, npcId: null, difficulty: null })}>‹ All trainers</button>}
+      {selection.npcId && <button ref={mobileBack} type="button" className="npc-mobile-back" onClick={() => update({ view: "trainers", npcId: null, difficulty: null })}>‹ All trainers</button>}
       {message && <p className="npc-notice" role="alert">{message}</p>}
       {party.data && (members.length === 0 || members.some(member => !member.battleEligible)) && <p className="npc-notice">
         {members.length === 0 ? "Add a Pokémon to your party to start." : "Your party has a Pokémon that can't battle."} <a className="ui-button npc-secondary" href={routeHref(new URL(window.location.href), { page: "pokemon", battleId: null })}>Edit party</a></p>}
@@ -140,7 +142,8 @@ export function PlayFeature() {
         </div>}
     </>}
     {(view === "dungeons" || view === "tower") && <>
-      {inspecting && <button type="button" className="npc-mobile-back" onClick={() => update({ ...selection, dungeonId: null, floor: null })}>‹ All {view === "dungeons" ? "dungeons" : "floors"}</button>}
+      {view === "dungeons" && selection.dungeonId && <button ref={mobileBack} type="button" className="npc-mobile-back" onClick={() => update({ view: "dungeons", dungeonId: null, difficulty: null })}>‹ All dungeons</button>}
+      {view === "tower" && selection.floor != null && <button ref={mobileBack} type="button" className="npc-mobile-back" onClick={() => update({ view: "tower", floor: null })}>‹ All floors</button>}
       {message && <p className="npc-notice" role="alert">{message}</p>}
       {party.data && !partyReady && <p className="npc-notice">{members.length === 0 ? "Add a Pokémon to your party to start." : "Your party has a Pokémon that can't battle."} <a className="ui-button npc-secondary" href={routeHref(new URL(window.location.href), { page: "pokemon", battleId: null })}>Edit party</a></p>}
       {view === "dungeons" && (dungeons.isPending ? <p className="npc-empty" role="status">Loading dungeons…</p> : <DungeonPlay dungeons={dungeons.data || []} selectedId={dungeon?.id || null} difficultyId={selection.difficulty} pending={mutation.isPending} canStart={partyReady}
