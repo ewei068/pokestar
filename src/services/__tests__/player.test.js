@@ -145,7 +145,7 @@ test('dungeon inserts and tower resumes grant participation, and a rejected floo
   await expect(service.interact(actor, { kind: 'dungeon.start', dungeonId: 'mindTemple', difficulty: 'medium' })).resolves.toMatchObject({ battleId: 'created' });
   expect(start).toHaveBeenCalledTimes(1);
   expect(mockGrant).toHaveBeenCalledWith(mock.trainer, 5, 10);
-  listActive.mockResolvedValue([{ _id: 'floor-7', updatedAt: '2026-11-02T00:00:00.000Z', mode: { type: 'tower', stage: 7 } }]);
+  listActive.mockResolvedValue([{ battleId: 'floor-7', updatedAt: '2026-11-02T00:00:00.000Z', mode: { type: 'tower', stage: 7 } }]);
   await expect(service.interact(actor, { kind: 'tower.start', stage: 7 })).resolves.toMatchObject({ battleId: 'floor-7' });
   expect(start).toHaveBeenCalledTimes(1);
   expect(mockGrant).toHaveBeenCalledTimes(2);

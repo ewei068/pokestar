@@ -118,15 +118,17 @@ test("the current tower floor returns the newest active battle and does not inse
   readyParty();
   /** @type {jest.Mock} */ (validatePartyForBattle).mockResolvedValue({ data: null, err: "No Pokemon in party." });
   const records = [
-    { _id: "older", updatedAt: "2026-11-01T00:00:00.000Z", mode: { type: "tower", stage: 7 } },
-    { _id: "newer", updatedAt: "2026-11-02T00:00:00.000Z", mode: { type: "tower", stage: 7 } },
+    { battleId: "older", updatedAt: "2026-11-01T00:00:00.000Z", mode: { type: "tower", stage: 7 } },
+    { battleId: "same-a", updatedAt: "2026-11-02T00:00:00.000Z", mode: { type: "tower", stage: 7 } },
+    { battleId: "same-z", updatedAt: "2026-11-02T00:00:00.000Z", mode: { type: "tower", stage: 7 } },
+    { battleId: "other-floor", updatedAt: "2026-11-03T00:00:00.000Z", mode: { type: "tower", stage: 8 } },
   ];
   const start = jest.fn();
   const result = await startTower({ userId: "trainer", stage: 7, listActive: async () => records, start });
-  expect(result).toMatchObject({ battleId: "newer", err: null });
+  expect(result).toMatchObject({ battleId: "same-z", err: null });
   expect(start).not.toHaveBeenCalled();
   expect(validatePartyForBattle).not.toHaveBeenCalled();
-  expect(records).toHaveLength(2);
+  expect(records).toHaveLength(4);
 });
 
 test("a current tower floor with no battle inserts that floor without daily rewards", async () => {

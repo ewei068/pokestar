@@ -140,14 +140,15 @@ const startDungeon = async ({ userId, dungeonId, difficulty, start }) => {
 
 /**
  * Newer updatedAt wins. An equal time uses the greater battle id.
- * @param {Array<{ _id: string, updatedAt: string | Date, mode?: { type?: string, stage?: number } }>} records
+ * listActive publishes battleId, not the stored _id.
+ * @param {Array<{ battleId: string, updatedAt: string | Date, mode?: { type?: string, stage?: number } }>} records
  * @param {number} stage
  */
 const newestTowerBattle = (records, stage) => records
   .filter((record) => record.mode?.type === "tower" && record.mode.stage === stage)
   .sort((left, right) => {
     const newer = new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime();
-    return newer || String(right._id).localeCompare(String(left._id));
+    return newer || String(right.battleId).localeCompare(String(left.battleId));
   })[0] || null;
 
 /**
@@ -155,7 +156,7 @@ const newestTowerBattle = (records, stage) => records
  * @param {object} options
  * @param {string} options.userId
  * @param {number} options.stage
- * @param {(userId: string) => Promise<Array<{ _id: string, updatedAt: string | Date, mode?: { type?: string, stage?: number } }>>} options.listActive
+ * @param {(userId: string) => Promise<Array<{ battleId: string, updatedAt: string | Date, mode?: { type?: string, stage?: number } }>>} options.listActive
  * @param {(input: { battle: Battle, mode: { type: "tower", stage: number } }) => Promise<{ battleId: string }>} options.start
  */
 const startTower = async ({ userId, stage, listActive, start }) => {
@@ -164,7 +165,7 @@ const startTower = async ({ userId, stage, listActive, start }) => {
   if (!trainer) return rejected("trainer_unavailable", "Trainer unavailable.");
   if (trainer.lastTowerStage + 1 !== stage) return rejected("tower_not_current", "You must complete the previous stage first!");
   const existing = newestTowerBattle(await listActive(userId), stage);
-  if (existing) return { battleId: existing._id, err: null };
+  if (existing) return { battleId: existing.battleId, err: null };
   const party = await validatePartyForBattle(trainer);
   if (party.err) return rejected("invalid_party", party.err);
   const floor = battleTowerConfig[stage];
