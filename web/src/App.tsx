@@ -8,6 +8,7 @@ import { TrainerAccount, TrainerResources, TrainerStatus } from "./trainer/Train
 import { PlayerProvider, usePlayer } from "./player/PlayerProvider";
 import { PlayFeature } from "./play/PlayFeature";
 import { CollectionFeature } from "./player/CollectionFeature";
+import { BagFeature } from "./bag/BagFeature";
 
 type Auth = ReturnType<typeof useAuth>;
 const ReadyContent = ({ auth }: { auth: Auth }) => {
@@ -19,8 +20,9 @@ const ReadyContent = ({ auth }: { auth: Auth }) => {
   const account = <TrainerAccount {...trainer} pending={auth.pending === "logout"} onRetry={retry}
     onSignOut={() => { data.dispose(); void auth.signOut(); }} />;
   return <SiteShell account={account} resources={<TrainerResources {...trainer} />}>{route => {
-    if (route.page !== "play" && route.page !== "pokemon") return <UnavailablePage page={route.page} />;
+    if (route.page !== "play" && route.page !== "pokemon" && route.page !== "bag") return <UnavailablePage page={route.page} />;
     if (!trainer.profile) return <TrainerStatus loading={trainer.loading} pending={auth.pending === "logout"} onRetry={retry} />;
+    if (route.page === "bag") return <BagFeature />;
     return route.page === "pokemon" ? <CollectionFeature /> : route.battleId ? <BattleFeature key={route.battleId} battleId={route.battleId} /> : <PlayFeature />;
   }}</SiteShell>;
 };

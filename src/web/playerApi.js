@@ -34,6 +34,7 @@ const createPlayerApi = ({ service, battleService, requireSession, requireSiteOr
   router.get("/npcs", rateLimits.reads, handle((request) => service.npcs(request.discordUserId)));
   router.get("/dungeons", rateLimits.reads, handle((request) => service.dungeons(request.discordUserId)));
   router.get("/tower", rateLimits.reads, handle((request) => service.tower(request.discordUserId)));
+  router.get("/bag", rateLimits.reads, handle((request) => service.bag(request.discordUserId)));
   router.get("/battles", rateLimits.reads, handle(async (request) => ({ battles: await battleService.listActive(request.discordUserId) })));
   router.get("/trainer", rateLimits.reads, handle((request) => service.profile(request.discordUserId)));
   router.get("/collection", rateLimits.reads, handle((request) => service.collection(request.discordUserId, request.query)));

@@ -26,6 +26,10 @@ export type CollectionQuery = {
   order: "asc" | "desc"; rarity?: string; type?: string; shiny?: boolean; inParty?: boolean; minIv?: number;
 };
 export type CollectionPage = { items: PokemonSummary[]; page: number; pageSize: number; total: number; totalPages: number };
+export type BagItem = {
+  id: string; name: string; description: string; category: string; categoryName: string;
+  quantity: number; icon: string | null;
+};
 export type PlayerEnvelope = { discordUserId: string; trainer?: TrainerProfile | null };
 export type PlayerResult = PlayerEnvelope & Partial<CollectionPage> & { pokemon?: PokemonDetail; party?: Party; battleId?: string };
 export type NpcSpecies = { id: string; name: string; spriteUrl: string | null; ace: boolean };

@@ -4,6 +4,7 @@ const trainerService = require('../trainer');
 const { getPokemonFromUserId, listPokemons, findOwnedPokemons } = require('../pokemon');
 const { createMockPokemon } = require('../../__testing__/mocks/pokemon');
 const { createPlayerService, parseCollectionQuery } = require('../player');
+const { backpackItems } = require('../../config/backpackConfig');
 const { buildNpcBattle } = require('../npcBattle');
 const { getDurableBattleService } = require('../durableBattle');
 const { validatePartyForBattle } = require('../party');
@@ -158,4 +159,26 @@ test('dungeon inserts and tower resumes grant participation, and a rejected floo
   await expect(service.interact(actor, { kind: 'tower.start', stage: 7, userId: 'other' })).rejects.toMatchObject({ code: 'invalid_interaction' });
   expect(mockGrant).not.toHaveBeenCalled();
   expect(start).toHaveBeenCalledTimes(2);
+});
+
+test('bag reads owned rows in catalog order without a participation grant', async () => {
+  trainer.backpack = {
+    0: { 0: 24, 1: 0, stray: 4 },
+    1: { 7: Number.NaN, h1178: 9 },
+    3: { h1178: 1 },
+  };
+  const result = await service.bag(actor);
+  expect(result.items.map((item) => [item.id, item.quantity, item.icon])).toEqual([
+    [backpackItems.POKEBALL, 24, 'poke-ball.png'],
+    [backpackItems.HEAVY_DUTY_BOOTS, 1, 'heavy-duty-boots.png'],
+  ]);
+  expect(result.items[0].name).toBe('Pokeball');
+  expect(result.items[0]).not.toHaveProperty('emoji');
+  expect(result.items[1]).not.toHaveProperty('cost');
+  expect(result).not.toHaveProperty('backpack');
+  expect(mockGrant).not.toHaveBeenCalled();
+
+  delete trainer.backpack;
+  await expect(service.bag(actor)).resolves.toEqual({ items: [] });
+  expect(mockGrant).not.toHaveBeenCalled();
 });

@@ -59,6 +59,24 @@ it("cancels an old party read before installing the command result", async () =>
   assert.deepEqual(data.client.getQueryData(data.party().queryKey), after);
   data.dispose();
 });
+it("reads the bag for the signed-in account and rejects a mismatched actor", async () => {
+  const calls: string[] = [];
+  const data = new PlayerData("alice", null, () => {});
+  globalThis.fetch = async (url, init) => {
+    assert.notEqual(init?.method, "POST");
+    calls.push(String(url));
+    return json({ discordUserId: "alice", items: [{ id: "0", quantity: 24 }] });
+  };
+  assert.deepEqual(await data.client.fetchQuery(data.bag()), [{ id: "0", quantity: 24 }]);
+  assert.match(calls[0], /\/player\/bag$/);
+  data.dispose();
+  let changes = 0;
+  const mismatch = new PlayerData("alice", null, () => { changes++; });
+  globalThis.fetch = async () => json({ discordUserId: "bob", items: [] });
+  await assert.rejects(mismatch.client.fetchQuery(mismatch.bag()), /account_changed/);
+  assert.equal(changes, 1);
+  mismatch.dispose();
+});
 it("background reads never use the granted interaction endpoint", async () => {
   const calls: string[] = [];
   const data = new PlayerData("alice", null, () => {});

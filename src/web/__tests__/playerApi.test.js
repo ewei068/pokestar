@@ -5,7 +5,7 @@ let server;
 let url;
 let service;
 beforeEach(async () => {
-  service = { npcs: jest.fn(), dungeons: jest.fn(), tower: jest.fn(), collection: jest.fn().mockResolvedValue({ items: [] }), detail: jest.fn(), party: jest.fn(), profile: jest.fn(), interact: jest.fn().mockResolvedValue({ trainer: {} }) };
+  service = { npcs: jest.fn(), dungeons: jest.fn(), tower: jest.fn(), bag: jest.fn(), collection: jest.fn().mockResolvedValue({ items: [] }), detail: jest.fn(), party: jest.fn(), profile: jest.fn(), interact: jest.fn().mockResolvedValue({ trainer: {} }) };
   const app = express();
   app.use(express.json());
   app.use('/api', createBattleApi({ battleService: { listActive: async () => [{ battleId: "owned-battle" }] }, sessionStore: { get: async (token) => token === 'valid' ? { userId: 'owner' } : null },
@@ -44,6 +44,11 @@ test('NPC catalog and start use the same authenticated player boundary', async (
   expect(service.dungeons).toHaveBeenCalledWith('owner');
   expect((await fetch(`${url}/tower`, { headers })).status).toBe(200);
   expect(service.tower).toHaveBeenCalledWith('owner');
+  service.bag = jest.fn().mockResolvedValue({ items: [{ id: '0', quantity: 24 }] });
+  expect((await fetch(`${url}/bag`)).status).toBe(401);
+  expect((await fetch(`${url}/bag`, { headers: { ...headers, 'X-Player-Id': 'other' } })).status).toBe(409);
+  expect(await (await fetch(`${url}/bag`, { headers })).json()).toEqual({ discordUserId: 'owner', items: [{ id: '0', quantity: 24 }] });
+  expect(service.bag).toHaveBeenCalledWith('owner');
   expect(service.interact).not.toHaveBeenCalled();
   const body = JSON.stringify({ kind: 'npc.start', npcId: 'blue', difficulty: 'easy' });
   expect((await fetch(`${url}/interactions`, { method: 'POST', headers: { ...headers, 'X-Player-Id': 'other' }, body })).status).toBe(409);

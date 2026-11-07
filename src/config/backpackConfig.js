@@ -63,6 +63,7 @@ const backpackItemConfigRaw = {
   },
   [backpackItems.GREATBALL]: {
     name: "Greatball",
+    icon: "great-ball.png",
     emoji: "<:greatball:1100296107759779840>",
     description:
       "Used to catch better Pokemon! Use the `gacha` command to learn more!",
@@ -70,6 +71,7 @@ const backpackItemConfigRaw = {
   },
   [backpackItems.ULTRABALL]: {
     name: "Ultraball",
+    icon: "ultra-ball.png",
     emoji: "<:ultraball:1100296166555521035>",
     description:
       "Used to catch top-tier Pokemon! Use the `gacha` command to learn more!",
@@ -130,6 +132,7 @@ const backpackItemConfigRaw = {
 /**
  * @typedef {{
  *  name: string,
+ *  icon: string,
  *  emoji: string,
  *  description: string,
  *  category: BackpackCategoryEnum[typeof backpackCategories.HELD_ITEMS],
@@ -141,6 +144,7 @@ const backpackItemConfigRaw = {
 const backpackHeldItemConfig = {
   [heldItemIdEnum.LUM_BERRY]: {
     name: "Lum Berry",
+    icon: "lum-berry.png",
     emoji: "<:lumberry:1342652061484978248>",
     description:
       "Cures the user of any status condition and confusion, consumed after use.",
@@ -158,6 +162,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.SITRUS_BERRY]: {
     name: "Sitrus Berry",
+    icon: "sitrus-berry.png",
     emoji: "<:sitrusberry:1342652062734880863>",
     description:
       "Restores 50% of the user's HP when it falls below 50%, consumed after use.",
@@ -175,6 +180,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.EXP_SHARE]: {
     name: "Exp. Share",
+    icon: "exp-share.png",
     emoji: "<:expshare:1343335843447701594>",
     description:
       "Increases the experience earned by all Pokemon in a battle by 15%, stacking additively.",
@@ -192,6 +198,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.CHOICE_BAND]: {
     name: "Choice Band",
+    icon: "choice-band.png",
     emoji: "<:choiceband:1336571391616614411>",
     description:
       "Increases the user's Attack by 50%. Whenver the user uses a non-basic move, disable its other non-basic moves until a basic move is used.",
@@ -208,6 +215,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.AMULET_COIN]: {
     name: "Amulet Coin",
+    icon: "amulet-coin.png",
     emoji: "<:amuletcoin:1343335842307113000>",
     description:
       "Increases the money earned at the end of battle by 25%, stacking additively.",
@@ -225,6 +233,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.FOCUS_BAND]: {
     name: "Focus Band",
+    icon: "focus-band.png",
     emoji: "<:focusband:1342654744526716938>",
     description:
       "The first time the user would take fatal damage, instead survive with 1 HP and gain a 1 HP shield for 1 turn.",
@@ -242,6 +251,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.LUCKY_EGG]: {
     name: "Lucky Egg",
+    icon: "lucky-egg.png",
     emoji: "<:luckyegg:1343335844433498144>",
     description:
       "Increases the experience in Battle earned by the Pokemon holding this item by 100%.",
@@ -259,6 +269,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.LEFTOVERS]: {
     name: "Leftovers",
+    icon: "leftovers.png",
     emoji: emojis.LEFTOVERS,
     description: "Restores 10% of the user's HP at the end of its turn.",
     category: backpackCategories.HELD_ITEMS,
@@ -274,6 +285,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.WIDE_LENS]: {
     name: "Wide Lens",
+    icon: "wide-lens.png",
     emoji: "<:widelens:1342655292982169662>",
     description: "Increases the user's accuracy by 10%.",
     category: backpackCategories.HELD_ITEMS,
@@ -289,6 +301,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.LIFE_ORB]: {
     name: "Life Orb",
+    icon: "life-orb.png",
     emoji: "<:lifeorb:1342654745906774046>",
     description:
       "Increases the power of the user's moves by 30%, but damages the user by 10% of its max HP after each damaging move.",
@@ -305,6 +318,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.POWER_HERB]: {
     name: "Power Herb",
+    icon: "power-herb.png",
     emoji: "<:powerherb:1343334633424551956>",
     description: "Allows the user to use two-turn moves in one turn.",
     category: backpackCategories.HELD_ITEMS,
@@ -321,6 +335,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.FOCUS_SASH]: {
     name: "Focus Sash",
+    icon: "focus-sash.png",
     emoji: "<:focussash:1342654744526716938>",
     description:
       "The first time taking fatal damage from full health, the user instead survives with 1 HP and gains invulnerability to direct damage for 1 turn.",
@@ -337,6 +352,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.CHOICE_SCARF]: {
     name: "Choice Scarf",
+    icon: "choice-scarf.png",
     emoji: "<:choicescarf:1336571392480514069>",
     description:
       "Increases the user's Speed by 100. Whenver the user uses a non-basic move, disable its other non-basic moves until a basic move is used.",
@@ -353,6 +369,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.CHOICE_SPECS]: {
     name: "Choice Specs",
+    icon: "choice-specs.png",
     emoji: "<:choicespecs:1336571393458049107>",
     description:
       "Increases the user's Special Attack by 50%. Whenver the user uses a non-basic move, disable its other non-basic moves until a basic move is used.",
@@ -369,6 +386,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.EVIOLITE]: {
     name: "Eviolite",
+    icon: "eviolite.png",
     emoji: "<:eviolite:1342652890451546172>",
     description:
       "Increases the user's Defense and Special Defense by 50% if it is an unevolved Pokemon.",
@@ -386,6 +404,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.HEAVY_DUTY_BOOTS]: {
     name: "Heavy-Duty Boots",
+    icon: "heavy-duty-boots.png",
     emoji: "<:heavydutyboots:1342656422562758707>",
     description:
       "Prevents the user from taking damage from hazards like Stealth Rock.",
@@ -403,6 +422,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.TOXIC_ORB]: {
     name: "Toxic Orb",
+    icon: "toxic-orb.png",
     emoji: "<:toxicorb:1342654749169811506>",
     description: "Badly poisons the user at the end of their turn.",
     category: backpackCategories.HELD_ITEMS,
@@ -418,6 +438,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.FLAME_ORB]: {
     name: "Flame Orb",
+    icon: "flame-orb.png",
     emoji: "<:flameorb:1342654741846429778>",
     description: "Burns the user at the end of their turn.",
     category: backpackCategories.HELD_ITEMS,
@@ -433,6 +454,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.EJECT_BUTTON]: {
     name: "Eject Button",
+    icon: "eject-button.png",
     emoji: "<:ejectbutton:1358643223655874690>",
     description:
       "The first time the user takes damage, consume this item to boost the adjacent ally with the lowest combat readiness to max.",
@@ -450,6 +472,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.ROCKY_HELMET]: {
     name: "Rocky Helmet",
+    icon: "rocky-helmet.png",
     emoji: "<:rockyhelmet:1342654748070772746>",
     description:
       "When the user is hit by a damaging move, the move user takes 5% of its max HP as damage.",
@@ -467,6 +490,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.CUSTAP_BERRY]: {
     name: "Custap Berry",
+    icon: "custap-berry.png",
     emoji: "<:custapberry:1358678114938519662>",
     description:
       "When the user drops to 30% or less of its max HP, consume this item to boost the user's combat readiness to 100.",
@@ -483,6 +507,7 @@ const backpackHeldItemConfig = {
   },
   [heldItemIdEnum.SHELL_BELL]: {
     name: "Shell Bell",
+    icon: "shell-bell.png",
     emoji: "<:shellbell:1358678116150542518>",
     description: "When the user deals damage, heal 10% of the damage dealt.",
     category: backpackCategories.HELD_ITEMS,
