@@ -170,7 +170,7 @@ test('bag reads owned rows in catalog order without a participation grant', asyn
   const result = await service.bag(actor);
   expect(result.items.map((item) => [item.id, item.quantity, item.icon])).toEqual([
     [backpackItems.POKEBALL, 24, 'poke-ball.png'],
-    [backpackItems.HEAVY_DUTY_BOOTS, 1, null],
+    [backpackItems.HEAVY_DUTY_BOOTS, 1, 'heavy-duty-boots.png'],
   ]);
   expect(result.items[0].name).toBe('Pokeball');
   expect(result.items[0]).not.toHaveProperty('emoji');
