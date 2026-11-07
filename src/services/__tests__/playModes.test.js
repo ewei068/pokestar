@@ -26,6 +26,7 @@ test("dungeon catalog follows the menu order, subtitles, and one boss-first spec
   expect(catalog.map((dungeon) => dungeon.id)).toEqual(Object.values(dungeons));
   expect(catalog[0]).toMatchObject({ id: "mindTemple", subtitle: { icon: "knowledge-shard.png", text: "Knowledge Shards" } });
   expect(catalog.at(-1)).toMatchObject({ id: "mountCoronet", subtitle: { icon: "star-piece.png", text: "Event: All Shards" } });
+  expect(catalog.find((dungeon) => dungeon.id === "newIsland")?.subtitle).toMatchObject({ icon: "pokemon/mew.png", text: "Catch Mew!" });
   const altar = catalog.find((dungeon) => dungeon.id === "spiritAltar");
   const difficulty = altar.difficulties[0];
   expect("phases" in difficulty).toBe(false);

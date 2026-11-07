@@ -2620,7 +2620,7 @@ const dungeonConfig = Object.freeze({
       "https://e0.pxfuel.com/wallpapers/343/331/desktop-wallpaper-pokemon-the-movie-mewtwo-strikes-back-anime-board-pokemon-the-first-movie-mewtwo-strikes-back.jpg",
     emoji: "🏝️",
     description: `The secret Team Rocket hideout and the birthplace of Mewtwo. Defeat Giovanni, Armored Mewtwo, and his clones to receive the Mythical <:151:1116755839919853670> Mew!`,
-    subtitle: { icon: "mew.png", text: "Catch Mew!" },
+    subtitle: { icon: "pokemon/mew.png", text: "Catch Mew!" },
     bosses: ["25-1", "52-1", "150-1"],
     difficulties: {
       [difficulties.HARD]: {

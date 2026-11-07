@@ -789,7 +789,7 @@ const playModeFixtures = {
       "sprite": "https://e0.pxfuel.com/wallpapers/343/331/desktop-wallpaper-pokemon-the-movie-mewtwo-strikes-back-anime-board-pokemon-the-first-movie-mewtwo-strikes-back.jpg",
       "description": "The secret Team Rocket hideout and the birthplace of Mewtwo. Defeat Giovanni, Armored Mewtwo, and his clones to receive the Mythical Mew!",
       "subtitle": {
-        "icon": "mew.png",
+        "icon": "pokemon/mew.png",
         "text": "Catch Mew!"
       },
       "bosses": [

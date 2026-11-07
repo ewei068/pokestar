@@ -4,7 +4,12 @@ import { playHref, readPlayRoute } from "../navigation/routes";
 import type { BattleSummary } from "../battles/types";
 import type { DungeonEncounter, ModeReward, ModeSpecies, TowerFloor } from "../player/types";
 
-const itemSrc = (icon: string) => `${import.meta.env?.BASE_URL || "/"}images/items/${icon}`;
+const imageSrc = (icon: string) => {
+  const base = import.meta.env?.BASE_URL || "/";
+  return `${base}images/${icon.includes("/") ? icon : `items/${icon}`}`;
+};
+// Epoch-aligned 14-day UTC window. Keep this in step with getFullUTCFortnight and
+// fortnightToUTCTime in src/utils/utils.js, which the Discord tower embed uses.
 const fortnightMs = 86400000 * 14;
 
 export const towerResetLabel = (now = Date.now()) => {
@@ -15,7 +20,7 @@ export const towerResetLabel = (now = Date.now()) => {
 const Rewards = ({ rewards, label }: { rewards: ModeReward[]; label: string }) => (
   <section className="npc-rewards" aria-label={label}><header><h3>{label}</h3></header>
     {rewards.map((reward, index) => <div className="npc-reward" key={index}>
-      {reward.kind === "money" ? <span aria-hidden="true">₽</span> : reward.icon ? <img src={itemSrc(reward.icon)} alt="" /> : <span aria-hidden="true">◆</span>}
+      {reward.kind === "money" ? <span aria-hidden="true">₽</span> : reward.icon ? <img src={imageSrc(reward.icon)} alt="" /> : <span aria-hidden="true">◆</span>}
       <span>{reward.kind === "money" ? reward.label.replace("₽", "") : reward.quantity}</span>
       <span>{reward.kind === "money" ? "Money" : reward.name}</span>
     </div>)}
@@ -50,7 +55,7 @@ export function DungeonPlay({ dungeons, selectedId, difficultyId, pending, canSt
     <section className="ui-panel npc-panel npc-trainers" aria-label="Dungeons"><header className="ui-panel-heading npc-panel-head"><h2>Dungeons</h2><small>{dungeons.length}</small></header>
       <div className="npc-trainer-rows">{dungeons.map(value => <button type="button" className="npc-trainer-row" key={value.id} aria-pressed={value.id === dungeon.id} disabled={pending}
         onClick={() => onSelect(value.id, value.difficulties[0].id)}>
-        <CollectionArtwork src={value.subtitle?.icon ? itemSrc(value.subtitle.icon) : value.spriteUrl} /><span><strong>{value.displayName}</strong>{value.subtitle && <small className="row-subtitle">{value.subtitle.text}</small>}</span><span aria-hidden="true">›</span>
+        <CollectionArtwork src={value.subtitle?.icon ? imageSrc(value.subtitle.icon) : value.spriteUrl} /><span><strong>{value.displayName}</strong>{value.subtitle && <small className="row-subtitle">{value.subtitle.text}</small>}</span><span aria-hidden="true">›</span>
       </button>)}</div>
     </section>
     <section className="ui-panel npc-panel npc-detail" aria-label="Selected dungeon">

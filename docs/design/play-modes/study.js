@@ -67,8 +67,11 @@ function notice() {
   return `<div class="callout ${scenario === 'failed' || scenario === 'invalid-party' ? 'error-state' : ''}" role="${['pending', 'started'].includes(scenario) ? 'status' : 'alert'}"><p>${value[0]}</p>${value[1] ? `<button type="button" class="secondary" data-action="${value[2]}">${value[1]}</button>` : ''}</div>`;
 }
 
+function iconFile(icon) {
+  return `../../../web/public/images/${icon.includes('/') ? icon : `items/${icon}`}`;
+}
 function rewards(items) {
-  const rows = items.map(item => `<div class="reward-item">${item.icon ? picture(`../../../web/public/images/items/${item.icon}`, '', 'item-icon') : `<span class="reward-mark" aria-hidden="true">${item.kind === 'money' ? '▱' : '◆'}</span>`}<span class="reward-count">${item.count.toLocaleString()}</span><span>${escape(item.name)}</span></div>`).join('');
+  const rows = items.map(item => `<div class="reward-item">${item.icon ? picture(iconFile(item.icon), '', 'item-icon') : `<span class="reward-mark" aria-hidden="true">${item.kind === 'money' ? '▱' : '◆'}</span>`}<span class="reward-count">${item.count.toLocaleString()}</span><span>${escape(item.name)}</span></div>`).join('');
   return `<section class="daily-reward" aria-label="Clear reward"><header><h3 class="section-title">Clear reward</h3></header>${rows}</section>`;
 }
 
@@ -131,7 +134,7 @@ function dungeonPanel() {
 function subtitle(dungeon) {
   const label = dungeon.subtitle;
   if (!label) return '';
-  const icon = label.icon ? `<img src="../../../web/public/images/items/${escape(label.icon)}" alt="" class="item-icon">` : '';
+  const icon = label.icon ? `<img src="${escape(iconFile(label.icon))}" alt="" class="item-icon">` : '';
   return `<small class="row-subtitle">${icon}<span>${escape(label.text)}</span></small>`;
 }
 function dungeonRows() {

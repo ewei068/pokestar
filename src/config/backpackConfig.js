@@ -55,6 +55,7 @@ const backpackCategoryConfig = Object.freeze({
 const backpackItemConfigRaw = {
   [backpackItems.POKEBALL]: {
     name: "Pokeball",
+    icon: "poke-ball.png",
     emoji: "<:pokeball:1100296136931156008>",
     description:
       "Used to catch Pokemon! Use the `gacha` command to learn more!",
@@ -76,6 +77,7 @@ const backpackItemConfigRaw = {
   },
   [backpackItems.MASTERBALL]: {
     name: "Masterball",
+    icon: "master-ball.png",
     emoji: "<:masterball:1100296005041262612>",
     description:
       "Used to catch the best Pokemon! Use the `gacha` command to learn more!",
@@ -83,36 +85,42 @@ const backpackItemConfigRaw = {
   },
   [backpackItems.KNOWLEDGE_SHARD]: {
     name: "Knowledge Shard",
+    icon: "knowledge-shard.png",
     emoji: "<:knowledgeshard:1112557606637162537>",
     description: "Used to upgrade equipment!",
     category: backpackCategories.MATERIALS,
   },
   [backpackItems.EMOTION_SHARD]: {
     name: "Emotion Shard",
+    icon: "emotion-shard.png",
     emoji: "<:emotionshard:1112557605517275147>",
     description: "Used to upgrade equipment!",
     category: backpackCategories.MATERIALS,
   },
   [backpackItems.WILLPOWER_SHARD]: {
     name: "Willpower Shard",
+    icon: "willpower-shard.png",
     emoji: "<:willpowershard:1112557603617259540>",
     description: "Used to upgrade equipment!",
     category: backpackCategories.MATERIALS,
   },
   [backpackItems.MINT]: {
     name: "Mint",
+    icon: "mint.png",
     emoji: "<:mint:1119381176398913576>",
     description: "Used to change a Pokemon's nature!",
     category: backpackCategories.MATERIALS,
   },
   [backpackItems.STAR_PIECE]: {
     name: "Star Piece",
+    icon: "star-piece.png",
     emoji: "<:starpiece:1329630164526829709>",
     description: "Obtained from raids; used to make wishes!",
     category: backpackCategories.MATERIALS,
   },
   [backpackItems.RAID_PASS]: {
     name: "Raid Pass",
+    icon: "raid-pass.png",
     emoji: "<:raidpass:1150161526297206824>",
     description: "Used to start a raid!",
     category: backpackCategories.CONSUMABLES,

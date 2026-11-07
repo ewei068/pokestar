@@ -8,16 +8,6 @@ const { getIdFromTowerStage } = require("../utils/battleUtils");
 const { getTrainer } = require("./trainer");
 const { validatePartyForBattle } = require("./party");
 
-const itemIcons = {
-  0: "poke-ball.png",
-  3: "master-ball.png",
-  4: "knowledge-shard.png",
-  5: "emotion-shard.png",
-  6: "willpower-shard.png",
-  7: "mint.png",
-  8: "raid-pass.png",
-};
-
 /**
  * @param {string} id
  * @param {boolean} boss
@@ -34,9 +24,10 @@ const projectRewards = (rewards = {}) => {
   if (rewards.money) rows.push({ kind: "money", quantity: rewards.money, label: formatMoney(rewards.money) });
   for (const category of Object.values(rewards.backpack || {})) {
     for (const [itemId, quantity] of Object.entries(category)) {
+      const item = backpackItemConfig[itemId];
       rows.push({
-        kind: "item", id: itemId, name: backpackItemConfig[itemId].name, quantity,
-        icon: itemIcons[itemId] || null,
+        kind: "item", id: itemId, name: item.name, quantity,
+        icon: "icon" in item ? item.icon : null,
       });
     }
   }
