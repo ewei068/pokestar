@@ -13,6 +13,7 @@ const { getPokemonExpNeeded, getMoveIds } = require("../utils/pokemonUtils");
 const { logger } = require("../log");
 const { projectNpcCatalog, buildNpcBattle } = require("./npcBattle");
 const { projectDungeonCatalog, projectTowerCatalog, startDungeon, startTower } = require("./playModes");
+const { backpackCategoryConfig, backpackItemConfig } = require("../config/backpackConfig");
 const { getDurableBattleService, isDurableBattleEnabled } = require("./durableBattle");
 
 class PlayerError extends Error {
@@ -77,6 +78,34 @@ const parseCollectionQuery = (input = {}) => {
 };
 
 /** @param {string} userId @returns {Promise<WithId<Trainer>>} */
+/**
+ * Owned rows in category order, then catalog order. A quantity counts only in
+ * the item's configured category.
+ * @param {Record<string, any>} trainer
+ */
+const projectBag = (trainer) => {
+  const backpack = trainer.backpack && typeof trainer.backpack === "object" ? trainer.backpack : {};
+  /** @type {Record<string, [string, { name: string, description: string, category: string, icon?: string }][]>} */
+  const byCategory = {};
+  for (const [id, item] of Object.entries(backpackItemConfig)) {
+    (byCategory[item.category] ||= []).push([id, item]);
+  }
+  const items = [];
+  for (const category of Object.keys(backpackCategoryConfig)) {
+    for (const [id, item] of byCategory[category] || []) {
+      const bucket = backpack[category];
+      const quantity = bucket && typeof bucket === "object" ? bucket[id] : undefined;
+      if (!Number.isFinite(quantity) || quantity <= 0) continue;
+      items.push({
+        id, name: item.name, description: item.description, category,
+        categoryName: backpackCategoryConfig[category].name, quantity,
+        icon: Object.prototype.hasOwnProperty.call(item, "icon") ? item.icon : null,
+      });
+    }
+  }
+  return { items };
+};
+
 const requireTrainer = async (userId) => {
   const result = await getTrainer({ id: userId }, false);
   if (result.err || !result.data) throw new PlayerError("trainer_unavailable", 503);
@@ -212,6 +241,8 @@ const createPlayerService = () => {
   };
   /** @param {string} userId */
   const profile = async (userId) => ({ trainer: projectTrainerProfile(await requireTrainer(userId)) });
+  /** @param {string} userId */
+  const bag = async (userId) => projectBag(await requireTrainer(userId));
   /**
    * @param {string} userId
    * @param {Record<string, any>} input
@@ -262,7 +293,7 @@ const createPlayerService = () => {
     } catch (error) { logger.warn("Player interaction grant failed", error); }
     return { ...result, ...await profile(userId) };
   };
-  return { collection, detail, party, profile, npcs, dungeons, tower, interact };
+  return { collection, detail, party, profile, npcs, dungeons, tower, bag, interact };
 };
 
 module.exports = { createPlayerService, parseCollectionQuery, projectPokemon, projectPokemonDetail, projectPartyTargets, PlayerError };
