@@ -1368,6 +1368,7 @@ const dungeonConfig = Object.freeze({
     emoji: "🏔️",
     description:
       "Cyrus and Team Galatic have awoken the Pokemon of Myth! Defend Sinnoh against their threat... and somone else?",
+    subtitle: { icon: "star-piece.png", text: "Event: All Shards" },
     bosses: [
       pokemonIdEnum.DIALGA_ORIGIN,
       pokemonIdEnum.PALKIA_ORIGIN,
@@ -1688,6 +1689,7 @@ const dungeonConfig = Object.freeze({
     description: `An ancient sanctuary of knowledge and wisdom. Defeat its guardians to earn ${
       backpackItemConfig[backpackItems.KNOWLEDGE_SHARD].emoji
     } ${backpackItemConfig[backpackItems.KNOWLEDGE_SHARD].name}s.`,
+    subtitle: { icon: "knowledge-shard.png", text: "Knowledge Shards" },
     bosses: ["20091", "20144"],
     difficulties: {
       [difficulties.MEDIUM]: {
@@ -1998,6 +2000,7 @@ const dungeonConfig = Object.freeze({
     description: `An ancient cavern containing the primordial energy that birthed the souls of all Pokemon. Defeat its dwellers to earn ${
       backpackItemConfig[backpackItems.EMOTION_SHARD].emoji
     } ${backpackItemConfig[backpackItems.EMOTION_SHARD].name}s.`,
+    subtitle: { icon: "emotion-shard.png", text: "Emotion Shards" },
     bosses: ["20101", "20113"],
     difficulties: {
       [difficulties.MEDIUM]: {
@@ -2308,6 +2311,7 @@ const dungeonConfig = Object.freeze({
     description: `An ancient shrine dedicated to the sacred spirits of Pokemon. Defeat its worshippers to earn ${
       backpackItemConfig[backpackItems.WILLPOWER_SHARD].emoji
     } ${backpackItemConfig[backpackItems.WILLPOWER_SHARD].name}s.`,
+    subtitle: { icon: "willpower-shard.png", text: "Willpower Shards" },
     bosses: ["20149", "20150"],
     difficulties: {
       [difficulties.MEDIUM]: {
@@ -2616,6 +2620,7 @@ const dungeonConfig = Object.freeze({
       "https://e0.pxfuel.com/wallpapers/343/331/desktop-wallpaper-pokemon-the-movie-mewtwo-strikes-back-anime-board-pokemon-the-first-movie-mewtwo-strikes-back.jpg",
     emoji: "🏝️",
     description: `The secret Team Rocket hideout and the birthplace of Mewtwo. Defeat Giovanni, Armored Mewtwo, and his clones to receive the Mythical <:151:1116755839919853670> Mew!`,
+    subtitle: { icon: "pokemon/mew.png", text: "Catch Mew!" },
     bosses: ["25-1", "52-1", "150-1"],
     difficulties: {
       [difficulties.HARD]: {

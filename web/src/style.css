@@ -10,7 +10,7 @@
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; }
 button, a { -webkit-tap-highlight-color: transparent; }
-button { font: inherit; cursor: pointer; }
+button { font: inherit; cursor: pointer; color: var(--site-ink); appearance: none; }
 button:disabled { cursor: default; }
 a { color: inherit; }
 h1, h2, p { margin-top: 0; }

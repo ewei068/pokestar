@@ -648,6 +648,7 @@ const buildBattleTowerEmbed = (towerStage, { dreamCardString } = {}) => {
   const npcData = npcConfig[battleTowerData.npcId];
   const npcDifficultyData = npcData.difficulties[battleTowerData.difficulty];
 
+  // Same epoch-aligned fortnight as towerResetLabel in web/src/play/ModeEncounter.tsx.
   const nextFortnight = Math.floor(
     fortnightToUTCTime(getFullUTCFortnight() + 1) / 1000
   );

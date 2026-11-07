@@ -2,7 +2,7 @@ import { QueryClient, queryOptions } from "@tanstack/react-query";
 import { ApiError, request } from "../http";
 import type { BattleSummary } from "../battles/types";
 import type { TrainerProfile } from "../trainer/types";
-import type { CollectionPage, CollectionQuery, Party, NpcEncounter, PlayerEnvelope, PlayerOperation, PlayerResult, PokemonDetail } from "./types";
+import type { CollectionPage, CollectionQuery, DungeonEncounter, Party, NpcEncounter, PlayerEnvelope, PlayerOperation, PlayerResult, PokemonDetail, TowerFloor } from "./types";
 
 /** One authenticated account's in-memory server data. Battle sessions remain separate. */
 export class PlayerData {
@@ -79,6 +79,19 @@ export class PlayerData {
       queryFn: async ({ signal }) => (await this.read<PlayerEnvelope & { npcs: NpcEncounter[] }>("/player/npcs", signal)).npcs });
   }
 
+  dungeons() {
+    return queryOptions({ queryKey: [...this.prefix, "dungeons"], refetchInterval: 15000,
+      queryFn: async ({ signal }) => (await this.read<PlayerEnvelope & { dungeons?: DungeonEncounter[] }>("/player/dungeons", signal)).dungeons || [] });
+  }
+
+  tower() {
+    return queryOptions({ queryKey: [...this.prefix, "tower"], refetchInterval: 15000,
+      queryFn: async ({ signal }) => {
+        const body = await this.read<PlayerEnvelope & { floors?: TowerFloor[]; lastTowerStage?: number }>("/player/tower", signal);
+        return { floors: body.floors || [], lastTowerStage: body.lastTowerStage || 0 };
+      } });
+  }
+
   battles() {
     return queryOptions({ queryKey: [...this.prefix, "battles"], refetchInterval: 15000,
       queryFn: async ({ signal }) => (await this.read<PlayerEnvelope & { battles: BattleSummary[] }>("/player/battles", signal)).battles });
@@ -102,7 +115,8 @@ export class PlayerData {
       const result = await this.send<PlayerResult>("/player/interactions", { method: "POST", body: JSON.stringify(operation) });
       if (this.closed || epoch !== this.epoch) throw new Error("session_closed");
       await this.client.cancelQueries({ queryKey: this.prefix });
-      const affected = (operation.kind === "party.place" || operation.kind === "party.remove" || operation.kind === "npc.start") ? [this.prefix] : [
+      const battleStart = operation.kind === "npc.start" || operation.kind === "dungeon.start" || operation.kind === "tower.start";
+      const affected = (operation.kind === "party.place" || operation.kind === "party.remove" || battleStart) ? [this.prefix] : [
         this.trainer().queryKey,
         operation.kind === "inspect" ? this.pokemon(operation.pokemonId).queryKey : this.collection(operation.query).queryKey,
       ];
@@ -118,7 +132,7 @@ export class PlayerData {
       return result;
     } catch (error) {
       if (!this.closed && epoch === this.epoch) {
-        if (operation.kind === "npc.start") void this.refresh();
+        if (operation.kind === "npc.start" || operation.kind === "dungeon.start" || operation.kind === "tower.start") void this.refresh();
         else await this.refresh();
       }
       throw error;

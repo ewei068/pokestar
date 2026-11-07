@@ -26,7 +26,16 @@ it("keeps encounter context through party editing and battle links", async () =>
   const { readPlayRoute, playHref } = await import("./routes");
   const current = new URL("https://example.test/pokestar/?npc=blue&difficulty=hard&playView=trainers#pokemon");
   const returning = routeHref(current, { page: "play", battleId: null });
-  assert.deepEqual(readPlayRoute(new URL(returning, current)), { view: "trainers", npcId: "blue", difficulty: "hard" });
-  assert.equal(playHref(current, { view: "continue", npcId: "blue", difficulty: "hard", battleId: "one" }),
-    "/pokestar/?npc=blue&difficulty=hard&playView=continue&battle=one#play");
+  assert.deepEqual(readPlayRoute(new URL(returning, current)), { view: "trainers", npcId: "blue", difficulty: "hard", dungeonId: null, floor: null });
+  assert.equal(playHref(current, { view: "continue", npcId: "blue", difficulty: "hard", dungeonId: "mindTemple", floor: 7, battleId: "one" }),
+    "/pokestar/?playView=continue&battle=one#play");
+  assert.deepEqual(readPlayRoute(new URL("https://example.test/?playView=dungeons&npc=blue&difficulty=easy&floor=8&dungeon=mindTemple")),
+    { view: "dungeons", npcId: null, difficulty: "easy", dungeonId: "mindTemple", floor: null });
+  assert.deepEqual(readPlayRoute(new URL("https://example.test/?playView=dungeons&npc=blue&difficulty=easy")),
+    { view: "dungeons", npcId: null, difficulty: null, dungeonId: null, floor: null });
+  assert.equal(readPlayRoute(new URL("https://example.test/?playView=later&dungeon=missing&floor=nope")).view, null);
+  assert.equal(playHref(current, { view: "tower", npcId: "blue", difficulty: "hard", dungeonId: "mindTemple", floor: 7 }),
+    "/pokestar/?playView=tower&floor=7#play");
+  assert.equal(playHref(current, { view: "dungeons", npcId: "blue", difficulty: "hard", dungeonId: null, floor: 7 }),
+    "/pokestar/?playView=dungeons#play");
 });

@@ -1,0 +1,25 @@
+/* Additions for Dungeons and Battle Tower. Shared Play chrome stays in the trainer study. */
+.subnav [data-tab=dungeons]{border-bottom-color:#58a48c}
+.subnav [data-tab=tower]{border-bottom-color:#b781c7}
+.encounter-header[data-mode=dungeon]{background:linear-gradient(120deg,#28756366,transparent)}
+.encounter-header[data-mode=tower]{background:linear-gradient(120deg,#793e8b66,transparent)}
+.dungeon-banner{display:block;padding:0}
+.dungeon-banner.has-art{position:relative;overflow:hidden;background:#161222}
+.dungeon-banner.has-art .dungeon-scene{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:.38;filter:saturate(.85)}
+.dungeon-copy{position:relative;z-index:1;padding:18px 16px 16px}
+.dungeon-banner.has-art .dungeon-copy{display:flex;flex-direction:column;justify-content:flex-end;min-height:132px;padding:28px 16px 22px}
+.dungeon-copy h2{margin:0 0 8px}
+.dungeon-banner.has-art .dungeon-copy h2,.dungeon-banner.has-art .dungeon-copy p{color:#fff4dc;text-shadow:0 1px 2px #120e18}
+.dungeon-banner + .encounter-content{padding-top:16px}
+.trainer-row .row-subtitle{display:flex;align-items:center;gap:6px;margin-top:5px;color:var(--site-soft);font-size:12px}
+.trainer-row .row-subtitle img{width:18px;height:18px;object-fit:contain;image-rendering:pixelated}
+.species-tile.is-boss{border:2px solid #eb9297;background:#7c344133}
+.floor-flag{display:block;margin-top:4px;font-size:11px;font-weight:400;color:#ddd8c9}
+.trainer-row[data-progress=cleared] .floor-flag{color:#b7d7c8}
+.trainer-row[data-progress=locked]{color:#ddd8c9}
+.trainer-row[data-progress=locked] img{opacity:.55}
+.mode-note{padding:8px 12px;color:var(--site-soft);font-size:12px;border-bottom:1px solid #9c8eb044}
+.possible-species{min-width:0}
+.boss-tag{position:absolute;top:2px;left:2px;font-size:9px;line-height:13px;border-radius:2px;padding:1px 4px;color:#ffd9d9;background:#67303c}
+.reward-mark{display:grid;place-items:center;width:32px;height:32px;color:#ffe19a;font-size:16px}
+@media(max-width:760px){.dungeon-banner.has-art .dungeon-copy{min-height:112px;padding:22px 12px 16px}.dungeon-copy{padding:14px 12px 14px}}

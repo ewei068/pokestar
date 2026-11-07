@@ -7,6 +7,8 @@ import { ApiError } from "../http";
 import { playHref, readPlayRoute, routeHref } from "../navigation/routes";
 import type { PlayRoute } from "../navigation/routes";
 import { NpcParty } from "./NpcParty";
+import { DungeonPlay, TowerPlay } from "./ModeEncounter";
+import type { PlayerOperation } from "../player/types";
 
 const navigate = (href: string, replace = false) => {
   window.history[replace ? "replaceState" : "pushState"](null, "", href);
@@ -17,7 +19,7 @@ const startError = (error: unknown) => {
     if (error.status === 401 || error.code === "account_changed") return "Your session changed. Loading your account…";
     if (error.status === 429) return "Too many requests. Wait a moment, then try again.";
     if (error.code === "invalid_party") return "Your party can't battle. Edit your party, then try again.";
-    if (["invalid_npc", "invalid_difficulty"].includes(error.code)) return "This trainer or difficulty is no longer available. Choose another.";
+    if (["invalid_npc", "invalid_difficulty", "invalid_dungeon", "invalid_stage", "tower_not_current"].includes(error.code)) return "That challenge changed. Choose another from the refreshed list.";
   }
   return "Couldn't confirm the start. Your battle may have started. Check Continue or try again.";
 };
@@ -40,31 +42,41 @@ export function PlayFeature() {
     window.addEventListener("hashchange", sync);
     return () => { mounted.current = false; window.removeEventListener("popstate", sync); window.removeEventListener("hashchange", sync); };
   }, []);
-  const update = (next: PlayRoute, replace = false) => navigate(playHref(new URL(window.location.href), next), replace);
+  const update = (next: Partial<PlayRoute>, replace = false) => navigate(playHref(new URL(window.location.href), { ...selection, ...next }), replace);
   const mutation = useMutation({ mutationKey: [...data.prefix, "interaction"],
-    mutationFn: ({ npcId, difficulty }: { npcId: string; difficulty: string }) => data.perform({ kind: "npc.start", npcId, difficulty }),
+    mutationFn: (operation: Extract<PlayerOperation, { kind: "npc.start" | "dungeon.start" | "tower.start" }>) => data.perform(operation),
     onSuccess: result => { if (mounted.current && result.battleId) navigate(playHref(new URL(window.location.href), { ...selection, battleId: result.battleId })); },
     onError: error => { if (mounted.current) setMessage(startError(error)); },
   });
   const catalog = useQuery({ ...data.npcs(), enabled: !mutation.isPending });
+  const dungeons = useQuery({ ...data.dungeons(), enabled: !mutation.isPending });
+  const tower = useQuery({ ...data.tower(), enabled: !mutation.isPending });
   const ongoing = useQuery(data.battles());
   const party = useQuery({ ...data.party(), enabled: !mutation.isPending });
-  const view = selection.view === "trainers" ? "trainers" : ongoing.data ? ongoing.data.length ? selection.view || "continue" : "trainers" : selection.view;
+  const explicit = selection.view === "trainers" || selection.view === "dungeons" || selection.view === "tower";
+  const view = explicit ? selection.view : ongoing.data ? ongoing.data.length ? selection.view || "continue" : "trainers" : selection.view;
   const npc = selection.npcId ? catalog.data?.find(value => value.id === selection.npcId) : catalog.data?.[0];
   const difficulty = npc?.difficulties.find(value => value.id === selection.difficulty) || npc?.difficulties[0];
   const members = party.data?.slots.filter(member => member !== null) || [];
-  const canStart = Boolean(npc && difficulty && party.data && members.length > 0 && members.length <= party.data.capacity && members.every(member => member.battleEligible));
+  const partyReady = Boolean(party.data && members.length > 0 && members.length <= party.data.capacity && members.every(member => member.battleEligible));
+  const canStart = Boolean(npc && difficulty && partyReady);
+  const dungeon = dungeons.data?.find(value => value.id === selection.dungeonId) || dungeons.data?.[0];
+  const towerFloors = tower.data?.floors || [];
+  const towerFloor = towerFloors.find(value => value.stage === selection.floor) || towerFloors.find(value => value.stage === ((tower.data?.lastTowerStage || 0) >= 20 ? 20 : (tower.data?.lastTowerStage || 0) + 1));
   useEffect(() => {
     if (ongoing.data === undefined) return;
     if (selection.view === null) setSelection(current => ({ ...current, view: ongoing.data.length ? "continue" : "trainers" }));
     else if (selection.view === "continue" && ongoing.data.length === 0) update({ ...selection, view: "trainers" }, true);
   }, [selection, ongoing.data]);
+  const inspecting = (view === "trainers" && Boolean(selection.npcId))
+    || (view === "dungeons" && Boolean(selection.dungeonId))
+    || (view === "tower" && selection.floor != null);
   useEffect(() => {
-    if (selection.npcId && window.matchMedia?.("(max-width:760px)").matches) {
+    if (inspecting && window.matchMedia?.("(max-width:760px)").matches) {
       window.scrollTo(0, 0);
       mobileBack.current?.focus();
     }
-  }, [selection.npcId]);
+  }, [inspecting]);
   useEffect(() => {
     const modal = dialog.current;
     if (partyOpen && modal && !modal.open) modal.showModal();
@@ -83,20 +95,20 @@ export function PlayFeature() {
   }, [npc?.id, view]);
   const closeParty = () => { setPartyOpen(false); partyTrigger.current?.focus(); };
   const readError = catalog.isError || party.isError || ongoing.isError;
-  const tab = (next: "continue" | "trainers") => update({ ...selection, view: next });
-  return <main className={`page-shell npc-page${selection.npcId ? " npc-is-detail" : ""}`}>
+  const tab = (next: "continue" | "trainers" | "dungeons" | "tower") => update({ view: next });
+  return <main className={`page-shell npc-page${inspecting ? " npc-is-detail" : ""}`}>
     <h1 className="npc-page-heading">Play</h1>
     <nav className="npc-tabs" aria-label="Play views" onFocus={event => (event.target as HTMLElement).scrollIntoView?.({ block: "nearest", inline: "nearest" })}>
       {Boolean(ongoing.data?.length) && <button type="button" aria-current={view === "continue" ? "page" : undefined} onClick={() => tab("continue")}>Continue <span className="npc-tab-count">{ongoing.data?.length}</span></button>}
       <button type="button" aria-current={view === "trainers" ? "page" : undefined} onClick={() => tab("trainers")}>Trainer battles</button>
-      <button type="button" aria-disabled="true">Dungeons <small>Later</small></button>
-      <button type="button" aria-disabled="true">Battle Tower <small>Later</small></button>
+      <button type="button" aria-current={view === "dungeons" ? "page" : undefined} onClick={() => tab("dungeons")}>Dungeons</button>
+      <button type="button" aria-current={view === "tower" ? "page" : undefined} onClick={() => tab("tower")}>Battle Tower</button>
     </nav>
     {readError && <div className="npc-notice" role="alert">Couldn't refresh your battles, trainers or party. <button type="button" className="ui-button npc-secondary" onClick={() => { void data.refresh(); }}>Refresh</button></div>}
     {view === null && <p className="npc-empty" role="status">{ongoing.isError ? "Choose Trainer battles or refresh to try again." : "Loading battles…"}</p>}
-    {view === "continue" && ongoing.data && <BattleList battles={ongoing.data} npcs={catalog.data || []} />}
+    {view === "continue" && ongoing.data && <BattleList battles={ongoing.data} npcs={catalog.data || []} dungeons={dungeons.data || []} floors={tower.data?.floors || []} />}
     {view === "trainers" && <>
-      {selection.npcId && <button ref={mobileBack} type="button" className="npc-mobile-back" onClick={() => update({ ...selection, npcId: null, difficulty: null })}>‹ All trainers</button>}
+      {selection.npcId && <button ref={mobileBack} type="button" className="npc-mobile-back" onClick={() => update({ view: "trainers", npcId: null, difficulty: null })}>‹ All trainers</button>}
       {message && <p className="npc-notice" role="alert">{message}</p>}
       {party.data && (members.length === 0 || members.some(member => !member.battleEligible)) && <p className="npc-notice">
         {members.length === 0 ? "Add a Pokémon to your party to start." : "Your party has a Pokémon that can't battle."} <a className="ui-button npc-secondary" href={routeHref(new URL(window.location.href), { page: "pokemon", battleId: null })}>Edit party</a></p>}
@@ -123,11 +135,23 @@ export function PlayFeature() {
             <footer className="npc-start-bar"><button ref={partyTrigger} type="button" className="ui-button npc-secondary npc-party-trigger" aria-haspopup="dialog" aria-expanded={partyOpen} onClick={() => setPartyOpen(true)}>Your party <small>{party.data ? members.length : "—"}/{party.data?.capacity || 6} ↗</small></button>
               <button type="button" className="primary-button" disabled={!canStart || mutation.isPending} aria-busy={mutation.isPending} onClick={() => {
                 if (mutation.isPending) return;
-                setMessage(null); mutation.mutate({ npcId: npc.id, difficulty: difficulty.id });
+                setMessage(null); mutation.mutate({ kind: "npc.start", npcId: npc.id, difficulty: difficulty.id });
               }}>{mutation.isPending ? "Starting battle…" : "Start battle"}<span aria-hidden="true">⚔</span></button></footer>
           </section> : <p className="npc-empty">This trainer is no longer available. Choose another.</p>}
           <aside className="ui-panel npc-panel npc-party-preview"><NpcParty party={party.data} /></aside>
         </div>}
+    </>}
+    {(view === "dungeons" || view === "tower") && <>
+      {view === "dungeons" && selection.dungeonId && <button ref={mobileBack} type="button" className="npc-mobile-back" onClick={() => update({ view: "dungeons", dungeonId: null, difficulty: null })}>‹ All dungeons</button>}
+      {view === "tower" && selection.floor != null && <button ref={mobileBack} type="button" className="npc-mobile-back" onClick={() => update({ view: "tower", floor: null })}>‹ All floors</button>}
+      {message && <p className="npc-notice" role="alert">{message}</p>}
+      {party.data && !partyReady && <p className="npc-notice">{members.length === 0 ? "Add a Pokémon to your party to start." : "Your party has a Pokémon that can't battle."} <a className="ui-button npc-secondary" href={routeHref(new URL(window.location.href), { page: "pokemon", battleId: null })}>Edit party</a></p>}
+      {view === "dungeons" && (dungeons.isPending ? <p className="npc-empty" role="status">Loading dungeons…</p> : <DungeonPlay dungeons={dungeons.data || []} selectedId={dungeon?.id || null} difficultyId={selection.difficulty} pending={mutation.isPending} canStart={partyReady}
+        onSelect={(dungeonId, difficulty) => { setMessage(null); update({ ...selection, view: "dungeons", dungeonId, difficulty }); }}
+        onStart={(dungeonId, difficulty) => { setMessage(null); mutation.mutate({ kind: "dungeon.start", dungeonId, difficulty }); }} />)}
+      {view === "tower" && (tower.isPending ? <p className="npc-empty" role="status">Loading Battle Tower…</p> : <TowerPlay floors={tower.data?.floors || []} savedStage={tower.data?.lastTowerStage || 0} selectedStage={towerFloor?.stage || null} battles={ongoing.data || []} pending={mutation.isPending} canStart={partyReady}
+        onSelect={stage => { setMessage(null); update({ ...selection, view: "tower", floor: stage }); }}
+        onStart={stage => { setMessage(null); mutation.mutate({ kind: "tower.start", stage }); }} />)}
     </>}
     <dialog ref={dialog} className="npc-party-dialog" aria-labelledby="npc-party-title" onClose={closeParty}
       onClick={event => { if (event.target !== dialog.current) return; const bounds = event.currentTarget.getBoundingClientRect(); if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) closeParty(); }}>
