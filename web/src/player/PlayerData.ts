@@ -2,7 +2,7 @@ import { QueryClient, queryOptions } from "@tanstack/react-query";
 import { ApiError, request } from "../http";
 import type { BattleSummary } from "../battles/types";
 import type { TrainerProfile } from "../trainer/types";
-import type { CollectionPage, CollectionQuery, DungeonEncounter, Party, NpcEncounter, PlayerEnvelope, PlayerOperation, PlayerResult, PokemonDetail, TowerFloor } from "./types";
+import type { BagItem, CollectionPage, CollectionQuery, DungeonEncounter, Party, NpcEncounter, PlayerEnvelope, PlayerOperation, PlayerResult, PokemonDetail, TowerFloor } from "./types";
 
 /** One authenticated account's in-memory server data. Battle sessions remain separate. */
 export class PlayerData {
@@ -90,6 +90,11 @@ export class PlayerData {
         const body = await this.read<PlayerEnvelope & { floors?: TowerFloor[]; lastTowerStage?: number }>("/player/tower", signal);
         return { floors: body.floors || [], lastTowerStage: body.lastTowerStage || 0 };
       } });
+  }
+
+  bag() {
+    return queryOptions({ queryKey: [...this.prefix, "bag"], refetchInterval: 15000,
+      queryFn: async ({ signal }) => (await this.read<PlayerEnvelope & { items?: BagItem[] }>("/player/bag", signal)).items || [] });
   }
 
   battles() {

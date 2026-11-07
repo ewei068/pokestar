@@ -13,6 +13,7 @@ export const routeHref = (current: URL, route: SiteRoute): string => {
   if (route.page === "play" && route.battleId) url.searchParams.set("battle", route.battleId);
   else url.searchParams.delete("battle");
   if (route.page !== "pokemon") url.searchParams.delete("owned");
+  if (route.page !== "bag") url.searchParams.delete("item");
   url.hash = route.page;
   return `${url.pathname}${url.search}${url.hash}`;
 };
@@ -53,4 +54,11 @@ export const playHref = (current: URL, selection: PlayRoute & { battleId?: strin
     if (value) url.searchParams.set(key, value); else url.searchParams.delete(key);
   }
   return routeHref(url, { page: "play", battleId: selection.battleId || null });
+};
+
+/** `item` stays on Bag only. An empty id clears the selection, including the real id "0". */
+export const bagHref = (current: URL, item: string | null): string => {
+  const url = new URL(current);
+  if (item) url.searchParams.set("item", item); else url.searchParams.delete("item");
+  return routeHref(url, { page: "bag", battleId: null });
 };
