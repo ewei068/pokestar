@@ -29,6 +29,9 @@
 .item-owned { margin: 0 0 12px; font-size: 15px; }
 .item-owned b { font-weight: 400; color: #ffe19a; font-variant-numeric: tabular-nums; }
 .item-description { margin: 0; color: var(--site-soft); line-height: 1.5; }
+.use-bar { margin-top: 16px; }
+.use-bar .primary-button { width: 100%; }
+.use-note { margin: 0 0 12px; padding: 12px; border: 1px solid #bca578; background: #51402ef2; border-radius: 4px; font-size: 13px; line-height: 1.5; }
 .bag-callout { margin: 0 0 14px; padding: 12px 14px; border: 1px solid #bca578; background: #51402ef2; border-radius: 4px; font-size: 13px; line-height: 1.5; }
 .bag-callout p { margin: 0; }
 .bag-secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 10px; padding: 8px 12px; border: 1px solid #a497b6; background: #443650; border-radius: 4px; }

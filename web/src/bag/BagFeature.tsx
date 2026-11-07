@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { bagHref } from "../navigation/routes";
 import { usePlayer } from "../player/PlayerProvider";
 import type { BagItem } from "../player/types";
+import { resolveItemUse } from "./itemUse";
 
 const categories = [
   { id: "all", name: "All" },
@@ -27,6 +28,7 @@ export function BagFeature() {
   const bag = useQuery(data.bag());
   const [itemId, setItemId] = useState(() => new URL(window.location.href).searchParams.get("item"));
   const [category, setCategory] = useState("all");
+  const [usedId, setUsedId] = useState<string | null>(null);
   const [broken, setBroken] = useState<Record<string, boolean>>({});
   const [desktop, setDesktop] = useState(() => window.matchMedia?.("(min-width: 761px)").matches === true);
   useEffect(() => {
@@ -47,16 +49,19 @@ export function BagFeature() {
   const addressed = itemId && visible.some(item => item.id === itemId) ? itemId : null;
   const openId = addressed || (desktop && visible[0] ? visible[0].id : null);
   const open = visible.find(item => item.id === openId) || null;
+  const itemUse = open ? resolveItemUse(open.id, open.category) : null;
   useEffect(() => {
     if (!items || !itemId || items.some(item => item.id === itemId)) return;
+    setUsedId(null);
     navigate(bagHref(new URL(window.location.href), null), true);
   }, [items, itemId]);
   const chooseCategory = (next: string) => {
     setCategory(next);
+    setUsedId(null);
     const stillThere = (items || []).some(item => item.id === itemId && (next === "all" || item.category === next));
     if (itemId && !stillThere) navigate(bagHref(new URL(window.location.href), null), true);
   };
-  const pick = (id: string) => navigate(bagHref(new URL(window.location.href), id));
+  const pick = (id: string) => { setUsedId(null); navigate(bagHref(new URL(window.location.href), id)); };
   if (bag.isPending) return <main className="page-shell bag-page"><h1 className="bag-heading">Bag</h1>
     <section className="ui-panel bag-empty" aria-busy="true"><h2>Loading your bag…</h2></section></main>;
   if (bag.isError && !items) return <main className="page-shell bag-page"><h1 className="bag-heading">Bag</h1>
@@ -77,7 +82,7 @@ export function BagFeature() {
     <div className="bag-filters" role="toolbar" aria-label="Item categories">
       {categories.map(chip => <button type="button" key={chip.id} aria-pressed={category === chip.id} onClick={() => chooseCategory(chip.id)}>{chip.name}</button>)}
     </div>
-    {phoneDetail && <button type="button" className="bag-mobile-back" onClick={() => navigate(bagHref(new URL(window.location.href), null))}>‹ All items</button>}
+    {phoneDetail && <button type="button" className="bag-mobile-back" onClick={() => { setUsedId(null); navigate(bagHref(new URL(window.location.href), null)); }}>‹ All items</button>}
     <div className="bag-layout">
       <section className="ui-panel bag-panel bag-list" aria-label="Owned items">
         <header className="ui-panel-heading bag-list-head"><h2>Items</h2><small>{items.length} owned</small></header>
@@ -93,6 +98,8 @@ export function BagFeature() {
           <div><p className="item-kind">{open.categoryName}</p><h2>{open.name}</h2></div></div>
         <p className="item-owned">Owned <b>{open.quantity.toLocaleString()}</b></p>
         <p className="item-description">{open.description}</p>
+        {itemUse && <div className="use-bar">{usedId === open.id && <p className="use-note" role="status">{itemUse.closed}</p>}
+          <button type="button" className="primary-button" onClick={() => setUsedId(open.id)}>{itemUse.label}</button></div>}
       </div></section>}
     </div>
   </main>;

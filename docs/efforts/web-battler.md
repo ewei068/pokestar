@@ -102,6 +102,17 @@ uses `₽` and the Master Ball uses `master-ball.png`. Opening a finished battle
 still does not grant rewards again. The study checks are not this acceptance.
 Real MongoDB, Discord OAuth, and a second device were not exercised.
 
+**Bag · 2026-11-06:** A signed-in trainer opens Bag from the header. `GET /player/bag`
+returns the owned rows and does not grant experience or money. Desktop keeps the
+list in its own scroller and opens the first row without writing `item`. After a
+pick, `item` stays on Bag; every other page drops it. On a phone, Back sits above
+the item panel, and the browser Back button returns to the list. Use is local:
+balls say Catch, a Mint says Change nature, held items say Equip, and the closed
+line leaves the quantity unchanged. Shards, a Star Piece, and a Raid Pass have no
+Use button. A signed-out trainer still gets the unavailable page. The
+[study](../design/bag/README.md) stays evidence. Catch, nature change, and
+equipping remain #249, #250, and #251.
+
 For expansion planning and cross-session coordination, read the
 [web parity roadmap](web-parity.md) and completed
 [Phase 1 coverage audit](web-parity-coverage.md). All 106 web-eligible P0–P3 IDs
