@@ -3,6 +3,19 @@ import { describe, it } from "node:test";
 import { bagHref, readRoute, routeHref } from "./routes";
 import { loginReturnTo } from "../auth/loginState";
 
+it("keeps upgrades inside an owned Pokemon and clears the subview on site navigation", async () => {
+  const { pokemonUpgradeHref, readPokemonUpgrade } = await import("./routes");
+  const url = new URL("https://example.test/pokestar/?owned=one&campaign=friend#pokemon");
+  assert.equal(pokemonUpgradeHref(url, "one"), "/pokestar/?owned=one&campaign=friend&upgrade=train#pokemon");
+  const training = new URL(pokemonUpgradeHref(url, "one"), url);
+  assert.deepEqual(readPokemonUpgrade(training), { pokemonId: "one", feature: "train" });
+  assert.equal(routeHref(training, { page: "pokemon", battleId: null }), "/pokestar/?owned=one&campaign=friend#pokemon");
+  assert.equal(routeHref(training, { page: "bag", battleId: null }), "/pokestar/?campaign=friend#bag");
+  for (const invalid of ["?upgrade=train#pokemon", "?owned=one&upgrade=nature#pokemon", "?owned=one&upgrade=train#play"]) {
+    assert.equal(readPokemonUpgrade(new URL(invalid, url)), null);
+  }
+});
+
 describe("site routes", () => {
   it("defaults to Play and keeps legacy direct battle links", () => {
     assert.deepEqual(readRoute(new URL("https://example.test/pokestar/")), { page: "play", battleId: null });

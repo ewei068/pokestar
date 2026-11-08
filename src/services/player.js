@@ -15,6 +15,7 @@ const { projectNpcCatalog, buildNpcBattle } = require("./npcBattle");
 const { projectDungeonCatalog, projectTowerCatalog, startDungeon, startTower } = require("./playModes");
 const { backpackCategoryConfig, backpackItemConfig } = require("../config/backpackConfig");
 const { getDurableBattleService, isDurableBattleEnabled } = require("./durableBattle");
+const { TrainingError, getOwnedTrainingContext, trainOwnedPokemon } = require("./training");
 
 class PlayerError extends Error {
   /**
@@ -219,6 +220,62 @@ const createPlayerService = () => {
     if (!pokemon) throw new PlayerError("pokemon_not_found", 404);
     return { pokemon: projectPokemonDetail(pokemon, trainer) };
   };
+  /**
+   * @param {string} userId
+   * @param {string} id
+   */
+  const training = async (userId, id) => {
+    try {
+      const context = await getOwnedTrainingContext({ id: userId }, id);
+      return { pokemon: projectPokemonDetail(context.pokemon, context.trainer), locations: context.locations };
+    } catch (error) {
+      if (error instanceof TrainingError) throw new PlayerError(error.code, error.status);
+      throw error;
+    }
+  };
+  /**
+   * @param {string} userId
+   * @param {string} id
+   * @param {Record<string, unknown>} input
+   */
+  const train = async (userId, id, input) => {
+    if (!input || typeof input !== "object" || Array.isArray(input) ||
+        Object.keys(input).length !== 1 || !Object.prototype.hasOwnProperty.call(input, "locationId") || typeof input.locationId !== "string") {
+      throw new PlayerError("invalid_training_request");
+    }
+    let result;
+    try {
+      result = await trainOwnedPokemon({ id: userId }, id, input.locationId);
+    } catch (error) {
+      if (error instanceof TrainingError) throw new PlayerError(error.code, error.status);
+      throw error;
+    }
+    let context = /** @type {import("./training").OwnedTrainingContext} */ (result);
+    let { warning } = result;
+    if (result.trained) {
+      // This command's policy replaces the generic interaction grant. A saved
+      // Pokemon operation is never replayed when a later effect/read fails.
+      try {
+        // Discord command configuration needs STAGE; load it only for this grant.
+        // eslint-disable-next-line global-require
+        const { commandConfig } = require("../config/commandConfig");
+        const grant = await addExpAndMoneyTrainer(await requireTrainer(userId), commandConfig.train.exp, commandConfig.train.money);
+        if (grant.err) throw new Error(grant.err);
+      } catch (error) {
+        logger.warn("Player training grant failed", error);
+        warning = "Training saved, but participation rewards could not be confirmed. Refresh before training again.";
+      }
+      try {
+        context = await getOwnedTrainingContext({ id: userId }, id);
+      } catch (error) {
+        logger.warn("Player training refresh failed", error);
+        warning = "Training saved, but refreshed state could not be confirmed. Refresh before training again.";
+      }
+    }
+    return { pokemon: projectPokemonDetail(context.pokemon, context.trainer), locations: context.locations,
+      trainer: projectTrainerProfile(context.trainer), trained: result.trained, gains: result.gains,
+      ...(warning ? { warning } : {}) };
+  };
   /** @param {string} userId */
   const party = async (userId) => {
     const trainer = await requireTrainer(userId);
@@ -293,7 +350,7 @@ const createPlayerService = () => {
     } catch (error) { logger.warn("Player interaction grant failed", error); }
     return { ...result, ...await profile(userId) };
   };
-  return { collection, detail, party, profile, npcs, dungeons, tower, bag, interact };
+  return { collection, detail, training, train, party, profile, npcs, dungeons, tower, bag, interact };
 };
 
 module.exports = { createPlayerService, parseCollectionQuery, projectPokemon, projectPokemonDetail, projectPartyTargets, PlayerError };

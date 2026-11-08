@@ -23,6 +23,7 @@ export const useSiteRoute = () => {
     event.preventDefault();
     if (url.href !== window.location.href) window.history.pushState(null, "", url);
     setRoute(readRoute(url));
+    window.dispatchEvent(new window.PopStateEvent("popstate"));
   };
   return { route, followLink };
 };

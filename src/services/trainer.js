@@ -34,6 +34,7 @@ const {
 } = require("../utils/trainerUtils");
 const { getVoteMultiplier } = require("../config/socialConfig");
 const { emitTrainerEventPure } = require("./game/gameEvent");
+const { trainerEventEnum } = require("../enums/gameEnums");
 const {
   voteRewardsProbabilityDistribution,
   voteRewardsConfig,
@@ -727,8 +728,27 @@ const updateTrainer = async (trainer) => {
 const emitTrainerEvent = async (eventName, args) => {
   try {
     const { trainer } = args;
+    const before = eventName === trainerEventEnum.TRAINED_POKEMON ? structuredClone(trainer.questData || {}) : null;
     // @ts-ignore
     await emitTrainerEventPure(eventName, args);
+    if (before) {
+      // Training listeners own quest progress, never a trainer/resource snapshot.
+      const patch = {};
+      const filter = { userId: trainer.userId };
+      for (const [category, entries] of Object.entries(trainer.questData || {})) {
+        for (const [questId, entry] of Object.entries(entries)) {
+          const previous = before[category]?.[questId];
+          if (isDeepStrictEqual(previous, entry)) continue;
+          const path = `questData.${category}.${questId}`;
+          patch[path] = entry;
+          filter[path] = previous === undefined ? { $exists: false } : { $eq: previous };
+        }
+      }
+      if (!Object.keys(patch).length) return { data: trainer, err: null };
+      const saved = await updateDocument(collectionNames.USERS, filter, { $set: patch });
+      if (!saved.modifiedCount) return { data: null, err: "Quest progress changed during training." };
+      return { data: trainer, err: null };
+    }
     return await updateTrainer(trainer);
   } catch (error) {
     logger.error(error);

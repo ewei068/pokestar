@@ -234,10 +234,10 @@ it("names a destination without spending the item or calling the server", async 
   fireEvent.click(await phone.findByRole("button", { name: "Catch" }));
   assert.match(phone.getByRole("status").textContent || "", /This ball stays in your bag/);
   fireEvent.click(phone.getByRole("button", { name: "‹ All items" }));
-  await waitFor(() => assert.equal(phone.queryByRole("status"), null));
+  await waitFor(() => assert.ok(phone.queryByRole("status") === null));
   fireEvent.click(itemRow(phone, "Pokeball"));
   fireEvent.click(phone.getByRole("button", { name: "Catch" }));
   await act(async () => { currentData.client.setQueryData(currentData.bag().queryKey, [mint]); });
-  await waitFor(() => assert.equal(phone.queryByText(/This ball stays in your bag/), null));
+  await waitFor(() => assert.ok(phone.queryByText(/This ball stays in your bag/) === null));
   assert.equal(calls, 1);
 });

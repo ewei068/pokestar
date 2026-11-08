@@ -1,7 +1,7 @@
 const { rateLimit } = require("express-rate-limit");
 const { logger } = require("../log");
 
-const DEFAULT_LIMITS = { general: 1200, login: 40, callback: 40, reads: 240, actions: 60 };
+const DEFAULT_LIMITS = { general: 1200, login: 40, callback: 40, reads: 240, actions: 60, training: 60 };
 
 // Each bucket owns its store. Memory quotas assume one HTTP process; restarting
 // resets them. Use a shared store before adding HTTP workers or instances.
@@ -21,7 +21,7 @@ const createApiRateLimits = ({ limits = {}, windowMs = 60000 } = {}) => {
     }
   };
   return Object.fromEntries(Object.entries(budgets).map(([bucket, limit]) => {
-    const userBucket = bucket === "reads" || bucket === "actions";
+    const userBucket = bucket === "reads" || bucket === "actions" || bucket === "training";
     return [bucket, rateLimit({
       windowMs,
       limit,

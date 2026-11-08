@@ -39,7 +39,7 @@ it("defaults to Continue only when active battles exist and preserves trainer se
   fireEvent.click(view.getByRole("button", { name: "Continue 1" }));
   await view.findByRole("heading", { name: "Ongoing battles" });
   await act(async () => { currentData.client.setQueryData(currentData.battles().queryKey, []); });
-  await waitFor(() => assert.equal(view.queryByRole("button", { name: /^Continue/ }), null));
+  await waitFor(() => assert.ok(view.queryByRole("button", { name: /^Continue/ }) === null));
   assert.ok(view.getByRole("heading", { name: "Blue" }));
 });
 it("disables duplicate Start and allows another attempt after an ambiguous failure", async () => {

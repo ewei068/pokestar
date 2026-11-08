@@ -6,15 +6,14 @@
  *
  * train.js The system for users to train their pokemon. Allows them to train a pokemon at a given location, boosting its exp and ev.
  */
-const { getPokemon, trainPokemon } = require("../../services/pokemon");
-const { getTrainer } = require("../../services/trainer");
+const { trainOwnedPokemon } = require("../../services/training");
 const { locations } = require("../../config/locationConfig");
 const { statConfig } = require("../../config/pokemonConfig");
 const { buildPokemonNameString } = require("../../utils/pokemonUtils");
 
 /**
  * Trains a Pokemon at a given locations, boosting its EXP and EVs.
- * @param {object} user User who initiated the command.
+ * @param {Parameters<typeof trainOwnedPokemon>[0]} user User who initiated the command.
  * @param {string} pokemonId ID of the Pokemon to train.
  * @param {string} location Location to train at.
  * @returns Message indicating the Pokemon's gained EXP and EVs.
@@ -34,29 +33,17 @@ const train = async (user, pokemonId, location) => {
   };
   const locationId = map[location];
 
-  // get trainer
-  const trainer = await getTrainer(user);
-  if (trainer.err) {
-    return { data: null, err: trainer.err };
+  let result;
+  try {
+    result = await trainOwnedPokemon(user, pokemonId, locationId, { stopWhenComplete: false, refreshIdentity: true });
+  } catch (error) {
+    return { data: null, err: error.message };
   }
-
-  // get pokemon
-  const pokemon = await getPokemon(trainer.data, pokemonId);
-  if (pokemon.err) {
-    return { data: null, err: pokemon.err };
-  }
-  const oldLevel = pokemon.data.level;
-
-  // add exp & EVs
-  const res = await trainPokemon(trainer.data, pokemon.data, locationId);
-  if (res.err || !res.data) {
-    return { data: null, err: res.err };
-  }
-  const { exp, evs } = res.data;
+  const { pokemon, previousLevel: oldLevel, gains: { exp, evs } } = result;
 
   // build message
   let message = `Trained **${buildPokemonNameString(
-    pokemon.data
+    pokemon
   )}** and gained 🚀 **${exp} exp**.`;
   if (
     evs[0] !== 0 ||
@@ -66,7 +53,7 @@ const train = async (user, pokemonId, location) => {
     evs[4] !== 0 ||
     evs[5] !== 0
   ) {
-    message += ` ${pokemon.data.name} gained the following EVs:`;
+    message += ` ${pokemon.name} gained the following EVs:`;
     // format evs for all that exist
     for (const ev in evs) {
       if (evs[ev] !== 0) {
@@ -80,10 +67,11 @@ const train = async (user, pokemonId, location) => {
     }
   }
   // check if pokemon leveled up
-  if (pokemon.data.level > oldLevel) {
-    message += ` 🎉 ${pokemon.data.name} leveled up to **level ${pokemon.data.level}**! 🎉`;
+  if (pokemon.level > oldLevel) {
+    message += ` 🎉 ${pokemon.name} leveled up to **level ${pokemon.level}**! 🎉`;
   }
 
+  if (result.warning) message += ` ${result.warning}`;
   return { data: message, err: null };
 };
 

@@ -6,6 +6,7 @@ import "./style.css";
 import "./play/play.css";
 import "./bag/bag.css";
 import "./collection/collection.css";
+import "./upgrades/upgrades.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 if (import.meta.env.DEV && new URLSearchParams(window.location.search).has("previewBattle")) {

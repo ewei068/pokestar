@@ -1,11 +1,12 @@
 const express = require('express');
 const { createBattleApi } = require('../battleApi');
+const { PlayerError } = require('../../services/player');
 
 let server;
 let url;
 let service;
 beforeEach(async () => {
-  service = { npcs: jest.fn(), dungeons: jest.fn(), tower: jest.fn(), bag: jest.fn(), collection: jest.fn().mockResolvedValue({ items: [] }), detail: jest.fn(), party: jest.fn(), profile: jest.fn(), interact: jest.fn().mockResolvedValue({ trainer: {} }) };
+  service = { npcs: jest.fn(), dungeons: jest.fn(), tower: jest.fn(), bag: jest.fn(), collection: jest.fn().mockResolvedValue({ items: [] }), detail: jest.fn(), training: jest.fn().mockResolvedValue({ pokemon: {}, locations: [] }), train: jest.fn().mockResolvedValue({ trained: true, gains: { exp: 35, evs: [0, 0, 0, 0, 0, 0] }, trainer: {}, pokemon: {}, locations: [] }), party: jest.fn(), profile: jest.fn(), interact: jest.fn().mockResolvedValue({ trainer: {} }) };
   const app = express();
   app.use(express.json());
   app.use('/api', createBattleApi({ battleService: { listActive: async () => [{ battleId: "owned-battle" }] }, sessionStore: { get: async (token) => token === 'valid' ? { userId: 'owner' } : null },
@@ -63,5 +64,34 @@ test('NPC catalog and start use the same authenticated player boundary', async (
 test('active battles use account-scoped reads with an actor envelope', async () => {
   const response = await fetch(`${url}/battles`, { headers });
   expect(await response.json()).toEqual({ discordUserId: 'owner', battles: [{ battleId: 'owned-battle' }] });
+  expect(service.interact).not.toHaveBeenCalled();
+});
+
+test('training read and mutation enforce session, actor and origin before operations', async () => {
+  const path = `${url}/pokemon/owned-id`;
+  const body = JSON.stringify({ locationId: '0' });
+  expect((await fetch(`${path}/training`)).status).toBe(401);
+  expect((await fetch(`${path}/training`, { headers: { ...headers, 'X-Player-Id': 'other' } })).status).toBe(409);
+  const context = await fetch(`${path}/training`, { headers });
+  expect(await context.json()).toEqual({ discordUserId: 'owner', pokemon: {}, locations: [] });
+  expect(service.training).toHaveBeenCalledWith('owner', 'owned-id');
+  expect(service.train).not.toHaveBeenCalled();
+  expect((await fetch(`${path}/train`, { method: 'POST', headers: { ...headers, Cookie: '' }, body })).status).toBe(401);
+  expect((await fetch(`${path}/train`, { method: 'POST', headers: { ...headers, 'X-Player-Id': 'other' }, body })).status).toBe(409);
+  expect((await fetch(`${path}/train`, { method: 'POST', headers: { ...headers, Origin: 'https://other.example' }, body })).status).toBe(403);
+  expect(service.train).not.toHaveBeenCalled();
+  const result = await fetch(`${path}/train`, { method: 'POST', headers, body });
+  expect(await result.json()).toEqual({ discordUserId: 'owner', trained: true, gains: { exp: 35, evs: [0, 0, 0, 0, 0, 0] }, trainer: {}, pokemon: {}, locations: [] });
+  expect(service.train).toHaveBeenCalledWith('owner', 'owned-id', { locationId: '0' });
+  expect(service.interact).not.toHaveBeenCalled();
+});
+
+test('training service rejections retain HTTP status without generic interaction grants', async () => {
+  service.train.mockRejectedValueOnce(new PlayerError('invalid_training_request', 400));
+  const response = await fetch(`${url}/pokemon/owned-id/train`, { method: 'POST', headers, body: JSON.stringify({ locationId: '0', exp: 100 }) });
+  expect(response.status).toBe(400);
+  expect(await response.json()).toEqual({ error: 'invalid_training_request' });
+  service.training.mockRejectedValueOnce(new PlayerError('pokemon_not_found', 404));
+  expect((await fetch(`${url}/pokemon/foreign-id/training`, { headers })).status).toBe(404);
   expect(service.interact).not.toHaveBeenCalled();
 });

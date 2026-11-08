@@ -9,12 +9,14 @@ export type CollectionWorkspaceProps = {
   collection: CollectionPage | undefined; party: Party | undefined; pokemon: PokemonDetail | undefined;
   query: CollectionQuery; onQueryChange: (query: CollectionQuery, explicit: boolean) => void;
   selectedId: string | null; onInspect: (id: string) => void; onOperation: (operation: PlayerOperation) => void;
+  onTrain?: (id: string) => void; active?: boolean;
   pending: boolean; loading: boolean; detailLoading?: boolean; detailUnavailable?: boolean; error: string | null; onRefresh: () => void;
 };
 const types = ["Normal", "Fire", "Water", "Electric", "Grass", "Ice", "Fighting", "Poison", "Ground", "Flying", "Psychic", "Bug", "Rock", "Ghost", "Dragon", "Dark", "Steel", "Fairy"];
 
 export function CollectionWorkspace(props: CollectionWorkspaceProps) {
   const { collection, party, pokemon, query, onQueryChange, selectedId, onInspect, onOperation, pending, loading, error, onRefresh } = props;
+  const active = props.active !== false;
   const [sheet, setSheet] = useState<"party" | "inspect" | null>(selectedId ? "inspect" : null);
   const [placingId, setPlacingId] = useState<string | null>(null);
   const [mode, setMode] = useState<"move" | "remove" | null>(null);
@@ -28,6 +30,7 @@ export function CollectionWorkspace(props: CollectionWorkspaceProps) {
   const dockRef = useRef<HTMLElement>(null);
   const [panelHeight, setPanelHeight] = useState<number>();
   useEffect(() => {
+    if (!active) return;
     const resize = () => {
       if (!panelRef.current) return;
       const dock = dockRef.current;
@@ -39,7 +42,7 @@ export function CollectionWorkspace(props: CollectionWorkspaceProps) {
     resize();
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
-  }, [error]);
+  }, [error, active]);
   const callbacks = useRef(props); callbacks.current = props;
   const suppressClick = useRef(false);
   const previousSelection = useRef(selectedId);
@@ -52,6 +55,7 @@ export function CollectionWorkspace(props: CollectionWorkspaceProps) {
   const pointer = useRef<{ id: string; origin: string; startX: number; startY: number; active: boolean } | null>(null);
   const workspaceRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    if (!active) return;
     const dismiss = (event: PointerEvent) => {
       const target = event.target;
       if (!(target instanceof Element)) return;
@@ -63,17 +67,18 @@ export function CollectionWorkspace(props: CollectionWorkspaceProps) {
     };
     document.addEventListener("pointerdown", dismiss);
     return () => document.removeEventListener("pointerdown", dismiss);
-  }, [sheet]);
+  }, [sheet, active]);
   useEffect(() => { setSearch(query.search); }, [query.search]);
   useEffect(() => {
-    if (search === query.search || pending) return;
+    if (!active || search === query.search || pending) return;
     const timer = window.setTimeout(() => {
       const current = callbacks.current;
       current.onQueryChange({ ...current.query, search, page: 1 }, true);
     }, 350);
     return () => window.clearTimeout(timer);
-  }, [search, query.search, pending]);
+  }, [search, query.search, pending, active]);
   useEffect(() => {
+    if (!active) return;
     const grid = gridRef.current;
     if (!grid || typeof ResizeObserver === "undefined") return;
     const resize = () => {
@@ -87,7 +92,7 @@ export function CollectionWorkspace(props: CollectionWorkspaceProps) {
     };
     const observer = new ResizeObserver(resize); observer.observe(grid); resize();
     return () => observer.disconnect();
-  }, [label]);
+  }, [label, active]);
   const cancel = () => { setPlacingId(null); setMode(null); setManage(false); };
   const inspect = (id: string) => { if (pending || suppressClick.current) return; cancel(); setSheet("inspect"); onInspect(id); };
   const place = (id: string, index: number) => {
@@ -175,7 +180,7 @@ export function CollectionWorkspace(props: CollectionWorkspaceProps) {
       <footer className="collection-pagination"><button aria-label="Previous page" disabled={loading || pending || query.page <= 1} onClick={() => onQueryChange({ ...query, page: query.page - 1 }, true)}>‹</button><span>Page {collection?.page ?? query.page} / {Math.max(1, collection?.totalPages || 1)}</span><button aria-label="Next page" disabled={loading || pending || !collection || query.page >= collection.totalPages} onClick={() => onQueryChange({ ...query, page: query.page + 1 }, true)}>›</button></footer>
     </section>
     <section className={`ui-panel collection-panel collection-inspect-panel ${sheet === "inspect" ? "is-open" : ""}`} aria-label="Pokémon inspection"><header className="ui-panel-heading"><h2>Inspect</h2><button className="collection-collapse" aria-label="Collapse inspection" onClick={() => setSheet(null)}><Chevron /></button></header>
-      <div className="collection-inspect-scroll">{selected ? <PokemonInspection pokemon={selected} loading={props.detailLoading} inParty={party ? party.slots.some(member => member?.id === selected.id) : selected.inParty} pending={pending || !party} onAdd={() => { setPlacingId(selected.id); setMode(null); setSheet("party"); }} /> : <p className="collection-state">{selectedId ? props.detailLoading || loading ? "Loading Pokémon…" : "Pokémon unavailable. It may no longer be in your collection. Refresh to check." : "Choose a Pokémon to inspect."}</p>}</div>
+      <div className="collection-inspect-scroll">{selected ? <PokemonInspection pokemon={selected} loading={props.detailLoading} inParty={party ? party.slots.some(member => member?.id === selected.id) : selected.inParty} pending={pending || !party} onAdd={() => { setPlacingId(selected.id); setMode(null); setSheet("party"); }} onTrain={props.onTrain ? () => props.onTrain?.(selected.id) : undefined} /> : <p className="collection-state">{selectedId ? props.detailLoading || loading ? "Loading Pokémon…" : "Pokémon unavailable. It may no longer be in your collection. Refresh to check." : "Choose a Pokémon to inspect."}</p>}</div>
     </section>
     <nav ref={dockRef} className="collection-dock" aria-label="Collection panels"><button aria-expanded={sheet === "party"} onClick={() => setSheet(sheet === "party" ? null : "party")}>Party · {count} / {party?.capacity ?? "—"}<Chevron /></button><button aria-expanded={sheet === "inspect"} onClick={() => setSheet(sheet === "inspect" ? null : "inspect")}>{selected?.name || "Inspect"}<Chevron /></button></nav>
     {drag && <div className="collection-drag-ghost" style={{ left: drag.x, top: drag.y }} aria-label={`Dragging ${dragged?.name || "Pokémon"}`}><CollectionArtwork src={dragged?.spriteUrl || null} /></div>}

@@ -13,8 +13,24 @@ export const routeHref = (current: URL, route: SiteRoute): string => {
   if (route.page === "play" && route.battleId) url.searchParams.set("battle", route.battleId);
   else url.searchParams.delete("battle");
   if (route.page !== "pokemon") url.searchParams.delete("owned");
+  url.searchParams.delete("upgrade");
   if (route.page !== "bag") url.searchParams.delete("item");
   url.hash = route.page;
+  return `${url.pathname}${url.search}${url.hash}`;
+};
+
+export type PokemonUpgradeRoute = { pokemonId: string; feature: "train" };
+
+export const readPokemonUpgrade = (url: URL): PokemonUpgradeRoute | null => {
+  const pokemonId = url.searchParams.get("owned");
+  return readRoute(url).page === "pokemon" && pokemonId && url.searchParams.get("upgrade") === "train"
+    ? { pokemonId, feature: "train" } : null;
+};
+
+export const pokemonUpgradeHref = (current: URL, pokemonId: string): string => {
+  const url = new URL(routeHref(current, { page: "pokemon", battleId: null }), current);
+  url.searchParams.set("owned", pokemonId);
+  url.searchParams.set("upgrade", "train");
   return `${url.pathname}${url.search}${url.hash}`;
 };
 

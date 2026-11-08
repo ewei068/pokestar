@@ -43,12 +43,54 @@ it("keeps collection, Manage and summary identity mounted during a slow inspecti
   const identity = view.getByRole("heading", { name: "Pikachu" });
   const table = view.getByRole("table");
   assert.ok(view.getByText("Loading details…"));
-  assert.equal(view.getByRole("button", { name: /^Inspect Pikachu/ }), tile);
-  assert.equal(view.getByRole("button", { name: "Manage" }), manage);
+  assert.ok(view.getByRole("button", { name: /^Inspect Pikachu/ }) === tile);
+  assert.ok(view.getByRole("button", { name: "Manage" }) === manage);
   await act(async () => finish(json({ pokemon: { ...pokemon, stats: [10,20,30,40,50,60], ivs: [], evs: [],
     nature: { name: "Hardy", raisedStat: null, loweredStat: null }, moves: [], ability: null, heldItem: null, exp: null } })));
-  await waitFor(() => assert.equal(view.queryByText("Loading details…"), null));
-  assert.equal(view.getByRole("heading", { name: "Pikachu" }), identity);
-  assert.equal(view.getByRole("table"), table);
-  assert.equal(view.getByRole("button", { name: /^Inspect Pikachu/ }), tile);
+  await waitFor(() => assert.ok(view.queryByText("Loading details…") === null));
+  assert.ok(view.getByRole("heading", { name: "Pikachu" }) === identity);
+  assert.ok(view.getByRole("table") === table);
+  assert.ok(view.getByRole("button", { name: /^Inspect Pikachu/ }) === tile);
+});
+
+it("returns from training to the same collection controls and inspection", async () => {
+  dom.reconfigure({ url: "https://example.test/?campaign=friend#pokemon" });
+  dom.window.scrollTo = () => {};
+  const detail = { ...pokemon, stats: [10,20,30,40,50,60], ivs: [31,31,31,31,31,31], evs: [0,0,0,0,0,0],
+    nature: { name: "Hardy", raisedStat: null, loweredStat: null }, moves: [], ability: null,
+    heldItem: null, exp: { current: 10, required: 100 } };
+  globalThis.fetch = async (url, init) => {
+    if (String(url).includes("/training")) return json({ pokemon: detail, locations: [
+      { id: "0", name: "Home", emoji: "🏠", level: 0, owned: true, nextGains: { exp: 30, evs: [0,0,0,0,0,0] }, canTrain: true },
+    ] });
+    if (String(url).includes("/pokemon/") || (init?.body && JSON.parse(String(init.body)).kind === "inspect")) return json({ pokemon: detail });
+    if (String(url).includes("/collection") || init?.method === "POST") return json({ items: [pokemon], page: 1, pageSize: 24, total: 1, totalPages: 1 });
+    return json({ party: { rows: 1, cols: 1, capacity: 1, slots: [null], targets: { new: [{ kind: "add" }] } } });
+  };
+  const view = render(createElement(PlayerProvider, { userId: "alice", trainer: null, onAccountChanged() {}, children: createElement(TestFeature) }));
+  fireEvent.click(await view.findByRole("button", { name: /^Inspect Pikachu/ }));
+  await waitFor(() => assert.ok(view.queryByText("Loading details…") === null));
+  const search = view.getByRole("textbox", { name: "Search Pokémon" });
+  fireEvent.change(search, { target: { value: "Pika" } });
+  await new Promise(resolve => setTimeout(resolve, 400));
+  fireEvent.change(view.getByLabelText("Sort Pokémon"), { target: { value: "cp" } });
+  fireEvent.change(view.getByLabelText("Tile labels"), { target: { value: "iv" } });
+  fireEvent.click(view.getByRole("button", { name: "Moves" }));
+  const tile = view.getByRole("button", { name: /^Inspect Pikachu/ });
+  await waitFor(() => assert.equal((view.getByRole("button", { name: "Train" }) as HTMLButtonElement).disabled, false));
+  fireEvent.click(view.getByRole("button", { name: "Train" }));
+  assert.ok(await view.findByRole("heading", { name: "Train" }));
+  assert.equal(new URL(dom.window.location.href).searchParams.get("owned"), "one");
+  assert.equal(new URL(dom.window.location.href).searchParams.get("upgrade"), "train");
+  assert.equal(view.queryByRole("textbox", { name: "Search Pokémon" }), null);
+  assert.equal(tile.isConnected, true);
+  fireEvent.click(view.getByRole("button", { name: "‹ Pokémon" }));
+  await waitFor(() => assert.ok(view.getByRole("textbox", { name: "Search Pokémon" })));
+  assert.ok(view.getByRole("textbox", { name: "Search Pokémon" }) === search);
+  assert.equal((search as HTMLInputElement).value, "Pika");
+  assert.equal((view.getByLabelText("Sort Pokémon") as HTMLSelectElement).value, "cp");
+  assert.equal((view.getByLabelText("Tile labels") as HTMLSelectElement).value, "iv");
+  assert.equal(view.getByRole("button", { name: "Moves" }).getAttribute("aria-pressed"), "true");
+  assert.equal(new URL(dom.window.location.href).searchParams.get("upgrade"), null);
+  assert.equal(new URL(dom.window.location.href).searchParams.get("campaign"), "friend");
 });
