@@ -32,6 +32,15 @@ export type BagItem = {
 };
 export type PlayerEnvelope = { discordUserId: string; trainer?: TrainerProfile | null };
 export type PlayerResult = PlayerEnvelope & Partial<CollectionPage> & { pokemon?: PokemonDetail; party?: Party; battleId?: string };
+export type TrainingGains = { exp: number; evs: number[] };
+export type TrainingLocation = {
+  id: string; name: string; emoji: string; level: number; owned: boolean;
+  nextGains: TrainingGains; canTrain: boolean;
+};
+export type TrainingContext = { pokemon: PokemonDetail; locations: TrainingLocation[] };
+export type TrainingResult = PlayerEnvelope & TrainingContext & {
+  trained: boolean; gains: TrainingGains; warning?: string;
+};
 export type NpcSpecies = { id: string; name: string; spriteUrl: string | null; ace: boolean };
 export type NpcDifficulty = { id: string; name: string; minLevel: number; maxLevel: number; count: number;
   species: NpcSpecies[]; dailyClaimed: boolean; rewards: { name: string; quantity: number; icon: string | null }[] };
