@@ -1,6 +1,6 @@
 # Pokémon training
 
-2026-11-07, America/Los_Angeles. Maintainer-approved training design for [#204](https://github.com/ewei068/pokestar/issues/204), journeys J06 and J76. Editable preview only: no API calls, database or gameplay persistence. Collection view state is retained in its browser history entry for the return journey. Production implementation remains a later step.
+2026-11-07, America/Los_Angeles. Maintainer-approved training design for [#204](https://github.com/ewei068/pokestar/issues/204), journeys J06 and J76. Editable preview only: no API calls, database or gameplay persistence. Collection view state is retained in its browser history entry for the return journey. The production implementation and its acceptance are recorded in [training verification](../../verification/training-2026-11-07.md); this directory remains the independent design reference.
 
 From the repository root, run `python3 -m http.server 8132 --bind 127.0.0.1`, then open the [review](http://127.0.0.1:8132/docs/design/training/).
 

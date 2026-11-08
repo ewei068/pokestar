@@ -10,6 +10,31 @@ service contracts and final implementation sequencing remain future work;
 the approved ticket release cut is recorded below.
 The implementation and verification below describe the existing battle experience.
 
+**Training implementation · 2026-11-08 (local acceptance complete):** #204 now
+has a Pokémon-scoped Train workspace entered from collection inspection. The
+browser waits one second before each operation, keeps one request in flight,
+retains confirmed signed gains when stopped, and pauses on departure, session
+loss or uncertainty. Level 100 completes EXP eligibility; useful EV gains and
+Berry reductions can continue. The upgrade host keeps selection/return context
+separate from Train's state so later upgrade panels can own their own lifetime.
+Only Train is implemented.
+
+Discord and web now share canonical training rules and an owned operation with
+conditional, narrow Pokémon and quest writes. Successful web ticks replace the
+generic participation grant with the configured `/train` grant (15 trainer EXP /
+50 money); reads and completed no-ops grant nothing. The dedicated training quota
+is 60 per account per minute. The existing legacy-writer/cross-document limits
+remain. No new background job, transaction or durable retry receipt was added.
+
+[Training verification](../verification/training-2026-11-07.md) records 991 backend
+tests, 206 client tests, root/subpath builds, real disposable-Mongo/HTTP checks,
+production-bundle browser acceptance and the independent review repair for a
+close-during-request cache race. Backend checkJs retains the same 498 diagnostics,
+with no additions after normalized comparison. No deployment, live Discord/OAuth
+or physical-device acceptance is claimed. Work is on
+`codex/web-training-implementation`; the following study/planning notes describe
+the earlier stage.
+
 **Training design · 2026-11-07 (approved for implementation planning):** the maintainer requested a web-only
 training loop for #204: first `/train`-equivalent request after one second,
 repeated until neither EXP nor EV progress remains, with backend rules unchanged.
