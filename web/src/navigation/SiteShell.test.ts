@@ -23,6 +23,20 @@ const shell = () => createElement(AudioSettingsProvider, { children: createEleme
 }) });
 
 describe("Jewel navigation", () => {
+  it("closes an owned upgrade subview and notifies its URL consumers", async () => {
+    dom.reconfigure({ url: "https://example.test/pokestar/?owned=one&upgrade=train#pokemon" });
+    let changes = 0;
+    const changed = () => { changes++; };
+    dom.window.addEventListener("popstate", changed);
+    try {
+      const page = render(shell());
+      const user = userEvent.setup({ document: dom.window.document });
+      await user.click(page.getByRole("link", { name: "Pokémon" }));
+      assert.equal(dom.window.location.search, "?owned=one");
+      assert.equal(changes, 1);
+      assert.equal(dom.window.location.hash, "#pokemon");
+    } finally { dom.window.removeEventListener("popstate", changed); }
+  });
   it("navigates in place, restores a direct battle with Back, and follows another battle link", async () => {
     const page = render(shell());
     const user = userEvent.setup({ document: dom.window.document });

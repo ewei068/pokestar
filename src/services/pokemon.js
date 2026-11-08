@@ -19,18 +19,14 @@ const { getOrSetDefault, idFrom, formatMoney } = require("../utils/utils");
 const {
   natureConfig,
   pokemonConfig,
-  MAX_TOTAL_EVS,
-  MAX_SINGLE_EVS,
   rarities,
   rarityConfig,
 } = require("../config/pokemonConfig");
 const {
-  expMultiplier,
   MAX_RELEASE,
   MAX_POKEMON,
 } = require("../config/trainerConfig");
 const {
-  getPokemonExpNeeded,
   calculateEffectiveSpeed,
   calculateWorth,
   getAbilityOrder,
@@ -41,6 +37,7 @@ const {
   getFormChangeCost,
 } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
+const { calculateTrainingProgress, getTrainingYield } = require("../utils/trainingUtils");
 const {
   buildSpeciesDexEmbed,
   buildPokemonListEmbed,
@@ -593,82 +590,36 @@ const transformPokemon = (pokemon, targetSpeciesId) => {
  * @param {WithId<Pokemon>} pokemon
  * @param {number} exp
  * @param {StatArray=} evs
- * @returns {Promise<{data: {exp: number, level: number, evs: StatArray}, err: string?}>}
+ * @param {boolean=} guarded Narrow, conditional training write; other progression callers retain their existing writes.
+ * @returns {Promise<{data: {exp: number, level: number, evs: StatArray}?, err: string?}>}
  */
 const addPokemonExpAndEVs = async (
   trainer,
   pokemon,
   exp,
-  evs = [0, 0, 0, 0, 0, 0]
+  evs = [0, 0, 0, 0, 0, 0],
+  guarded = false
 ) => {
-  // get species data
-  const speciesData = pokemonConfig[pokemon.speciesId];
-
-  // add EVs
-  const gainedEvs = /** @type {StatArray} */ ([0, 0, 0, 0, 0, 0]);
-  if (!pokemon.evs) {
-    pokemon.evs = [0, 0, 0, 0, 0, 0];
-  }
-  for (let i = 0; i < 6; i += 1) {
-    const total = pokemon.evs.reduce((a, b) => a + b, 0);
-    // check to see if pokemon has max total EVs
-    if (total >= MAX_TOTAL_EVS && evs[i] > 0) {
-      break;
+  const progress = calculateTrainingProgress(trainer, pokemon, exp, evs);
+  const candidate = calculatePokemonStats({ ...pokemon, exp: progress.exp, evs: progress.evs, level: progress.level }, pokemonConfig[pokemon.speciesId]);
+  const filter = { userId: trainer.userId, _id: idFrom(pokemon._id) };
+  let patch = /** @type {Partial<WithId<Pokemon>>} */ (candidate);
+  if (guarded) {
+    // Guard every observed progression/build input, while unrelated fields remain writable.
+    for (const field of ["exp", "level", "evs", "speciesId", "natureId", "ivs", "equipments"]) {
+      filter[field] = pokemon[field] === undefined ? { $exists: false } : { $eq: pokemon[field] };
     }
-
-    // check to see if pokemon has max single EVs
-    if (pokemon.evs[i] >= MAX_SINGLE_EVS && evs[i] > 0) {
-      pokemon.evs[i] = MAX_SINGLE_EVS;
-      continue;
-    }
-    // check for min evs
-    if (pokemon.evs[i] <= 0 && evs[i] < 0) {
-      pokemon.evs[i] = 0;
-      continue;
-    }
-
-    // new evs to add = min(evs[i], remaining single, remainin total)
-    let newEvs = Math.min(
-      evs[i],
-      MAX_SINGLE_EVS - pokemon.evs[i],
-      MAX_TOTAL_EVS - total
-    );
-    if (pokemon.evs[i] + newEvs < 0) {
-      newEvs = -pokemon.evs[i];
-    }
-    pokemon.evs[i] += newEvs;
-    gainedEvs[i] = newEvs;
+    patch = { exp: candidate.exp, level: candidate.level, evs: candidate.evs,
+      stats: candidate.stats, combatPower: candidate.combatPower, ivTotal: candidate.ivTotal };
   }
 
-  // calculate exp based on trainer level
-  // multiply by 2 if trainer has celebi
-  const mult = trainer.hasCelebi ? 2 : 1;
-  exp = Math.max(Math.floor(exp * expMultiplier(trainer.level) * mult), 1);
-  if (!pokemon.exp) {
-    pokemon.exp = 0;
-  }
-  pokemon.exp += exp;
-
-  // add exp to pokemon
-  while (
-    pokemon.exp >=
-    getPokemonExpNeeded(pokemon.level + 1, speciesData.growthRate)
-  ) {
-    if (pokemon.level >= 100) {
-      break;
-    }
-    pokemon.level += 1;
-  }
-
-  // calculate new stats
-  pokemon = calculatePokemonStats(pokemon, speciesData);
-
+  if (!guarded) Object.assign(pokemon, candidate);
   // update pokemon
   try {
     const res = await updateDocument(
       collectionNames.USER_POKEMON,
-      { userId: trainer.userId, _id: idFrom(pokemon._id) },
-      { $set: pokemon }
+      filter,
+      { $set: patch }
     );
     if (res.modifiedCount === 0) {
       logger.warn(`Failed to update Pokemon ${pokemon._id}.`);
@@ -680,11 +631,8 @@ const addPokemonExpAndEVs = async (
     return { data: null, err: "Error updating Pokemon." };
   }
 
-  const data = {
-    exp,
-    level: pokemon.level,
-    evs: gainedEvs,
-  };
+  Object.assign(pokemon, candidate);
+  const data = { ...progress.gains, level: candidate.level };
 
   return { data, err: null };
 };
@@ -694,43 +642,25 @@ const addPokemonExpAndEVs = async (
  * @param {WithId<Trainer>} trainer
  * @param {WithId<Pokemon>} pokemon
  * @param {LocationEnum} locationId
- * @returns {ReturnType<addPokemonExpAndEVs>}
+ * @returns {Promise<{data: {exp: number, level: number, evs: StatArray}?, err: string?, warning?: string}>}
  */
 const trainPokemon = async (trainer, pokemon, locationId) => {
-  const locationData = locationConfig[locationId];
-
-  // get trainer location level
-  const locationLevel = trainer.locations[locationId];
-
-  let exp = 2;
-  let evs = /** @type {StatArray} */ ([0, 0, 0, 0, 0, 0]);
-  // get exp and evs based on location
-  if (!locationLevel) {
-    // if home (no location), continue
-    if (locationId !== locations.HOME)
-      return {
-        data: null,
-        err: "You don't own that location! View your locations with `/locations`, and buy more at the `/pokemart`!",
-      };
-  } else {
-    const levelConfig = locationData.levelConfig[locationLevel];
-    // get exp and evs based on location
-    exp = levelConfig.exp;
-    evs = levelConfig.evs;
-  }
-
-  // add exp and evs
-  const trainRes = await addPokemonExpAndEVs(trainer, pokemon, exp, evs);
-  if (!trainRes.err && trainRes.data) {
-    await emitTrainerEvent(trainerEventEnum.TRAINED_POKEMON, {
-      trainer,
-      pokemon,
-      exp: trainRes.data.exp,
-      evs: trainRes.data.evs,
+  const config = getTrainingYield(trainer, locationId);
+  if (!config) return { data: null, err: "You don't own that location! View your locations with `/locations`, and buy more at the `/pokemart`!" };
+  // Use the same pure calculation for preview and application, including stored EXP at level 100.
+  const progress = await addPokemonExpAndEVs(trainer, pokemon,
+    config.exp, config.evs, true);
+  if (progress.err || !progress.data) return progress;
+  try {
+    const event = await emitTrainerEvent(trainerEventEnum.TRAINED_POKEMON, {
+      trainer, pokemon, exp: progress.data.exp, evs: progress.data.evs,
     });
+    if (event?.err) return { ...progress, warning: "Training saved, but quest progress could not be confirmed. Refresh before training again." };
+  } catch (error) {
+    logger.error(error);
+    return { ...progress, warning: "Training saved, but quest progress could not be confirmed. Refresh before training again." };
   }
-
-  return trainRes;
+  return progress;
 };
 
 /**

@@ -148,3 +148,27 @@ it("requires explicit loopback binding and trusts only the immediate loopback pe
   expect(trust("127.0.0.1", 1)).toBe(false);
   expect(trust("192.0.2.1", 0)).toBe(false);
 });
+
+it("gives training its own 60/minute account bucket without consuming other actions", async () => {
+  const limits = createApiRateLimits();
+  const app = express();
+  app.use(limits.general);
+  app.use((request, response, next) => { Object.assign(request, { discordUserId: request.get("X-Test-Actor") }); next(); });
+  app.post("/train", limits.training, (request, response) => response.json({ trained: true }));
+  app.post("/action", limits.actions, (request, response) => response.json({ accepted: true }));
+  const server = await new Promise((resolve) => { const listener = app.listen(0, "127.0.0.1", () => resolve(listener)); });
+  const url = `http://127.0.0.1:${server.address().port}`;
+  const post = (path, actor = "owner") => fetch(`${url}${path}`, { method: "POST", headers: { "X-Test-Actor": actor } });
+  try {
+    for (let count = 0; count < 60; count += 1) expect((await post("/train")).status).toBe(200);
+    const denied = await post("/train");
+    expect(denied.status).toBe(429);
+    expect(denied.headers.get("ratelimit")).toContain("training");
+    expect((await post("/train", "another-owner")).status).toBe(200);
+    for (let count = 0; count < 60; count += 1) expect((await post("/action")).status).toBe(200);
+    expect((await post("/action")).status).toBe(429);
+  } finally {
+    server.closeAllConnections();
+    await new Promise((resolve) => { server.close(resolve); });
+  }
+});

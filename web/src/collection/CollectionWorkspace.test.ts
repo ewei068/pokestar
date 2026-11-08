@@ -50,7 +50,7 @@ describe("collection workspace", () => {
     assert.equal(view.queryByRole("button", { name: "Add to party" }), null);
     assert.equal(view.queryByRole("button", { name: "Remove from party" }), null);
     assert.ok(view.getByText("Attack +")); assert.ok(view.getByText("Sp. Atk −"));
-    assert.equal((view.getByRole("button", { name: "Train · Later" }) as HTMLButtonElement).disabled, true);
+    assert.equal((view.getByRole("button", { name: "Train" }) as HTMLButtonElement).disabled, true);
     fireEvent.click(view.getByRole("button", { name: "Moves" }));
     assert.ok(view.getByRole("heading", { name: "Tackle" })); assert.ok(view.getByText("0 turns"));
   });
@@ -148,3 +148,19 @@ it("does not offer a stale summary after an authoritative missing detail", () =>
   assert.equal(view.queryByRole("heading", { name: "Pikachu" }), null);
   assert.ok(view.getByText(/may no longer be in your collection/));
 });
+  it("opens training for the inspected Pokemon through its host callback", () => {
+    const trained: string[] = [];
+    const view = page({ onTrain: id => trained.push(id) });
+    fireEvent.click(view.getByRole("button", { name: "Train" }));
+    assert.deepEqual(trained, [pokemon.id]);
+  });
+  it("does not submit hidden collection searches while an upgrade owns the screen", async () => {
+    const queries: string[] = [];
+    const view = page({ active: false, onQueryChange: query => queries.push(query.search) });
+    fireEvent.change(view.getByLabelText("Search Pokémon"), { target: { value: "Pika" } });
+    await new Promise(resolve => setTimeout(resolve, 400));
+    assert.deepEqual(queries, []);
+    view.rerender(createElement(CollectionWorkspace, { ...view.props, active: true }));
+    await new Promise(resolve => setTimeout(resolve, 400));
+    assert.deepEqual(queries, ["Pika"]);
+  });

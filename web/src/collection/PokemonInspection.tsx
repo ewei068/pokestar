@@ -4,8 +4,8 @@ import { CollectionArtwork } from "./CollectionArtwork";
 import { TypeBadge } from "../components/TypeBadge";
 import { MoveInspection } from "../components/MoveInspection";
 
-export function PokemonInspection({ pokemon, inParty, pending, onAdd, loading }: {
-  pokemon: PokemonSummary | PokemonDetail; loading?: boolean; inParty: boolean; pending: boolean; onAdd: () => void;
+export function PokemonInspection({ pokemon, inParty, pending, onAdd, onTrain, loading }: {
+  pokemon: PokemonSummary | PokemonDetail; loading?: boolean; inParty: boolean; pending: boolean; onAdd: () => void; onTrain?: () => void;
 }) {
   const detail = "stats" in pokemon ? pokemon : undefined;
   const [tab, setTab] = useState("stats");
@@ -15,7 +15,7 @@ export function PokemonInspection({ pokemon, inParty, pending, onAdd, loading }:
         <div className="ui-badge-list">{pokemon.types.map(type => <TypeBadge key={type} type={type} />)}</div></div></div>
     <div className="collection-inspect-summary"><span>CP {pokemon.combatPower.toLocaleString()}</span><span>IV {pokemon.ivPercent}%</span><span>{inParty ? "In party" : "In collection"}</span></div>
     <div className="collection-inspect-actions">{!inParty && <button className="ui-button ui-button--primary collection-primary" disabled={pending} onClick={onAdd}>Add to party</button>}
-      <button disabled title="Training is coming later.">Train · Later</button></div>
+      <button className="collection-train" disabled={pending || !detail || !onTrain} onClick={onTrain}>Train</button></div>
     <label className="collection-exp" style={{ visibility: detail?.exp ? "visible" : "hidden" }} aria-hidden={!detail?.exp}>EXP {detail?.exp?.current ?? "—"} / {detail?.exp?.required ?? "—"}<progress value={detail?.exp?.current || 0} max={Math.max(1, detail?.exp?.required || 1)} /></label>
     <div className="collection-inspect-tabs">{["stats", "moves", "about"].map(value => <button key={value} aria-pressed={tab === value} onClick={() => setTab(value)}>{value[0].toUpperCase() + value.slice(1)}</button>)}</div>
     <p className="collection-detail-status" role="status">{detail ? "" : loading ? "Loading details…" : "Details unavailable. Refresh to try again."}</p>

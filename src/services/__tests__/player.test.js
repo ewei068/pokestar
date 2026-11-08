@@ -1,3 +1,4 @@
+process.env.STAGE ||= "ALPHA";
 const { ObjectId } = require('mongodb');
 const db = require('../../database/mongoHandler');
 const trainerService = require('../trainer');
@@ -181,4 +182,85 @@ test('bag reads owned rows in catalog order without a participation grant', asyn
   delete trainer.backpack;
   await expect(service.bag(actor)).resolves.toEqual({ items: [] });
   expect(mockGrant).not.toHaveBeenCalled();
+});
+
+describe('owned training', () => {
+  const mockUpdate = /** @type {jest.Mock} */ (db.updateDocument);
+  beforeEach(() => {
+    trainer.locations = { 1: 3, 7: 1, 8: 1 };
+    mockUpdate.mockImplementation(async (collection, filter, patch) => {
+      if (collection === 'userPokemon') {
+        const stored = documents.find((pokemon) => pokemon._id.equals(filter._id));
+        Object.assign(stored, patch.$set);
+      }
+      return { modifiedCount: 1 };
+    });
+    mockGrant.mockImplementation(async (record, exp, money) => {
+      trainer.exp += exp;
+      trainer.money += money;
+      return { err: null };
+    });
+  });
+  test('context is a pure owned read with free Home and actual next clamped gains', async () => {
+    documents[0].level = 100;
+    documents[0].evs = [251, 250, 0, 0, 0, 0];
+    const result = await service.training(actor, documents[0]._id.toHexString());
+    expect(result.pokemon.id).toBe(documents[0]._id.toHexString());
+    expect(result.pokemon.exp).toBeNull();
+    expect(result.locations).toHaveLength(9);
+    expect(result.locations[0]).toMatchObject({ id: '0', level: 0, owned: true, canTrain: false, nextGains: { exp: 35 } });
+    expect(result.locations[1]).toMatchObject({ level: 3, owned: true, canTrain: true, nextGains: { exp: 105, evs: [1, 0, 0, 0, 0, 0] } });
+    expect(result.locations[2]).toMatchObject({ owned: false, canTrain: false });
+    expect(result.locations[8]).toMatchObject({ canTrain: true, nextGains: { evs: [-10, -10, 0, 0, 0, 0] } });
+    expect(mockGrant).not.toHaveBeenCalled();
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+  test('accepted training grants only configured train participation and returns fresh projections', async () => {
+    const result = await service.train(actor, documents[0]._id.toHexString(), { locationId: '1' });
+    expect(result).toMatchObject({ trained: true, gains: { exp: 105, evs: [12, 0, 0, 0, 0, 0] }, trainer: { money: 150 }, pokemon: { evs: [12, 0, 0, 0, 0, 0] } });
+    expect(result.warning).toBeUndefined();
+    expect(mockGrant).toHaveBeenCalledTimes(1);
+    expect(mockGrant).toHaveBeenCalledWith(trainer, 15, 50);
+    expect(mockUpdate).toHaveBeenCalledTimes(1);
+  });
+  test('strict payload, ownership, malformed IDs and locations reject without effects', async () => {
+    const id = documents[0]._id.toHexString();
+    for (const input of [null, [], {}, { locationId: 0 }, { locationId: '0', amount: 10 }, { kind: 'train' }]) {
+      await expect(service.train(actor, id, input)).rejects.toMatchObject({ code: 'invalid_training_request' });
+    }
+    for (const locationId of ['2', '9', '50', '__proto__']) {
+      await expect(service.train(actor, id, { locationId })).rejects.toMatchObject({ code: 'invalid_training_location' });
+    }
+    for (const pokemonId of ['malformed', new ObjectId().toHexString()]) {
+      await expect(service.train(actor, pokemonId, { locationId: '0' })).rejects.toMatchObject({ code: 'pokemon_not_found', status: 404 });
+    }
+    documents[0].userId = 'other';
+    await expect(service.training(actor, id)).rejects.toMatchObject({ code: 'pokemon_not_found' });
+    await expect(service.train(actor, id, { locationId: '0' })).rejects.toMatchObject({ code: 'pokemon_not_found' });
+    expect(mockGrant).not.toHaveBeenCalled();
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+  test('completion returns zero gains and profile with no grant, event or write', async () => {
+    documents[0].level = 100;
+    const result = await service.train(actor, documents[0]._id.toHexString(), { locationId: '0' });
+    expect(result).toMatchObject({ trained: false, gains: { exp: 0, evs: [0, 0, 0, 0, 0, 0] }, trainer: { money: 100 } });
+    expect(mockGrant).not.toHaveBeenCalled();
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+  test('grant failure preserves confirmed primary gains, warns and never replays', async () => {
+    mockGrant.mockRejectedValue(new Error('grant uncertain'));
+    const result = await service.train(actor, documents[0]._id.toHexString(), { locationId: '1' });
+    expect(result).toMatchObject({ trained: true, gains: { exp: 105, evs: [12, 0, 0, 0, 0, 0] } });
+    expect(result.warning).toContain('Training saved');
+    expect(mockGrant).toHaveBeenCalledTimes(1);
+    expect(mockUpdate).toHaveBeenCalledTimes(1);
+  });
+  test('post-commit refresh failure still returns confirmed gains with warning', async () => {
+    mockGetTrainer.mockResolvedValueOnce({ data: trainer }).mockResolvedValueOnce({ data: trainer }).mockRejectedValueOnce(new Error('refresh unavailable'));
+    const result = await service.train(actor, documents[0]._id.toHexString(), { locationId: '1' });
+    expect(result).toMatchObject({ trained: true, gains: { exp: 105, evs: [12, 0, 0, 0, 0, 0] } });
+    expect(result.warning).toContain('refreshed state');
+    expect(mockUpdate).toHaveBeenCalledTimes(1);
+    expect(mockGrant).toHaveBeenCalledTimes(1);
+  });
 });

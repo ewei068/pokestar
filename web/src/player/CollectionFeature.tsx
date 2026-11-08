@@ -3,6 +3,9 @@ import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { ApiError } from "../http";
 import { CollectionWorkspace } from "../collection/CollectionWorkspace";
 import { usePlayer } from "./PlayerProvider";
+import { pokemonUpgradeHref, readPokemonUpgrade, routeHref } from "../navigation/routes";
+import { PokemonUpgradeWorkspace } from "../upgrades/PokemonUpgradeWorkspace";
+import { TrainingFeature } from "../upgrades/TrainingFeature";
 import type { CollectionQuery, PlayerOperation } from "./types";
 
 const selectionFromUrl = () => new URL(window.location.href).searchParams.get("owned");
@@ -22,22 +25,52 @@ export const CollectionFeature = () => {
   const data = usePlayer();
   const [query, setQuery] = useState<CollectionQuery>(initialQuery);
   const [selectedId, setSelectedId] = useState<string | null>(selectionFromUrl);
+  const [upgrade, setUpgrade] = useState(() => readPokemonUpgrade(new URL(window.location.href)));
   const [message, setMessage] = useState<string | null>(null);
+  const collectionView = useRef<HTMLDivElement>(null);
+  const returnContext = useRef<{ href: string; focus: HTMLElement | null; scroll: number; panels: number[] } | null>(null);
+  const previousUpgrade = useRef(upgrade);
   const mounted = useRef(true);
   useEffect(() => {
     mounted.current = true;
-    const sync = () => setSelectedId(selectionFromUrl());
+    const sync = () => {
+      setSelectedId(selectionFromUrl());
+      setUpgrade(readPokemonUpgrade(new URL(window.location.href)));
+    };
     window.addEventListener("popstate", sync);
     window.addEventListener("hashchange", sync);
     return () => { mounted.current = false; window.removeEventListener("popstate", sync); window.removeEventListener("hashchange", sync); };
   }, []);
+  useEffect(() => {
+    if (upgrade) {
+      document.querySelector<HTMLElement>(".pokemon-upgrade-workspace h1")?.focus({ preventScroll: true });
+    } else if (previousUpgrade.current && returnContext.current) {
+      const context = returnContext.current;
+      const timer = window.setTimeout(() => {
+        collectionView.current?.querySelectorAll<HTMLElement>(".collection-grid-scroll, .collection-inspect-scroll")
+          .forEach((panel, index) => { panel.scrollTop = context.panels[index] || 0; });
+        if (context.focus?.isConnected) context.focus.focus({ preventScroll: true });
+        window.scrollTo(0, context.scroll);
+      }, 0);
+      previousUpgrade.current = upgrade;
+      return () => window.clearTimeout(timer);
+    }
+    previousUpgrade.current = upgrade;
+  }, [upgrade]);
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("upgrade") && !readPokemonUpgrade(url)) {
+      url.searchParams.delete("upgrade");
+      window.history.replaceState(window.history.state, "", url);
+    }
+  }, [upgrade]);
   const mutation = useMutation({ mutationKey: [...data.prefix, "interaction"], mutationFn: (operation: PlayerOperation) => data.perform(operation),
     onError: error => { if (mounted.current) setMessage(operationError(error)); } });
-  const collection = useQuery({ ...data.collection(query), placeholderData: keepPreviousData, enabled: !mutation.isPending });
-  const party = useQuery({ ...data.party(), enabled: !mutation.isPending });
-  const detail = useQuery({ ...data.pokemon(selectedId || ""), enabled: Boolean(selectedId) && !mutation.isPending });
+  const collection = useQuery({ ...data.collection(query), placeholderData: keepPreviousData, enabled: !upgrade && !mutation.isPending });
+  const party = useQuery({ ...data.party(), enabled: !upgrade && !mutation.isPending });
+  const detail = useQuery({ ...data.pokemon(selectedId || ""), enabled: !upgrade && Boolean(selectedId) && !mutation.isPending });
   const perform = (operation: PlayerOperation) => {
-    if (mutation.isPending) return;
+    if (upgrade || mutation.isPending) return;
     setMessage(null);
     mutation.mutate(operation);
   };
@@ -60,13 +93,37 @@ export const CollectionFeature = () => {
     }
     if (!fresh(data.pokemon(id).queryKey)) perform({ kind: "inspect", pokemonId: id });
   };
+  const train = (id: string) => {
+    if (mutation.isPending) return;
+    const focus = document.activeElement instanceof HTMLElement && collectionView.current?.contains(document.activeElement)
+      ? document.activeElement : collectionView.current?.querySelector<HTMLElement>(".collection-train") || null;
+    returnContext.current = { href: `${window.location.pathname}${window.location.search}${window.location.hash}`,
+      focus, scroll: window.scrollY,
+      panels: [...collectionView.current!.querySelectorAll<HTMLElement>(".collection-grid-scroll, .collection-inspect-scroll")].map(panel => panel.scrollTop) };
+    window.history.pushState({ ...window.history.state, pokemonUpgradeFrom: returnContext.current.href }, "",
+      pokemonUpgradeHref(new URL(window.location.href), id));
+    window.dispatchEvent(new window.PopStateEvent("popstate"));
+    window.scrollTo(0, 0);
+  };
+  const closeUpgrade = () => {
+    if (returnContext.current && window.history.state?.pokemonUpgradeFrom === returnContext.current.href) window.history.back();
+    else {
+      window.history.replaceState(window.history.state, "", routeHref(new URL(window.location.href), { page: "pokemon", battleId: null }));
+      window.dispatchEvent(new window.PopStateEvent("popstate"));
+    }
+  };
   const missing = detail.error instanceof ApiError && detail.error.status === 404;
   const readError = missing ? "This Pokémon is no longer in your collection." :
     collection.isError || party.isError || (selectedId && detail.isError) ? "Couldn't refresh your Pokémon. Try again when you're connected." : null;
-  return <main className="page-shell owned-page"><h1>Your Pokémon</h1>
+  return <main className="page-shell owned-page">
+    <div ref={collectionView} hidden={Boolean(upgrade)}><h1>Your Pokémon</h1>
     <CollectionWorkspace collection={collection.data} party={party.data} pokemon={missing ? undefined : detail.data}
       query={query} onQueryChange={queryChange} selectedId={selectedId} onInspect={inspect}
+      onTrain={train} active={!upgrade}
       onOperation={perform} pending={mutation.isPending} loading={collection.isPending || collection.isPlaceholderData} detailUnavailable={missing} detailLoading={Boolean(selectedId) && detail.isPending}
-      error={message || readError} onRefresh={() => { setMessage(null); void data.refresh(); }} />
+      error={message || readError} onRefresh={() => { setMessage(null); void data.refresh(); }} /></div>
+    {upgrade && <PokemonUpgradeWorkspace pokemonId={upgrade.pokemonId} title="Train" onBack={closeUpgrade}>
+      <TrainingFeature pokemonId={upgrade.pokemonId} />
+    </PokemonUpgradeWorkspace>}
   </main>;
 };

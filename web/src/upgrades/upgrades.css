@@ -1,0 +1,90 @@
+.pokemon-upgrade-workspace { max-width: 1120px; margin: 0 auto; }
+.upgrade-back { margin-bottom: 10px; }
+.pokemon-upgrade-workspace h1 { font-size: 28px; margin: 0 0 16px; }
+.training-layout { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 16px; align-items: start; }
+.training-locations, .training-pokemon { min-width: 0; }
+.training-locations { overflow: hidden; }
+.training-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 12px; min-height: 44px; }
+.training-panel-heading h2 { margin: 0; font-size: 15px; font-weight: 400; }
+.training-panel-heading small { font-size: 11px; color: var(--site-soft); }
+.training-location-list { max-height: calc(100dvh - 272px); overflow-y: auto; padding: 5px; scrollbar-width: thin; }
+.training-location { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 61px; padding: 9px; background: transparent; border: 1px solid transparent; border-radius: 4px; text-align: left; }
+.training-location:hover:not(:disabled) { background: var(--site-cap); }
+.training-location[aria-pressed="true"] { background: var(--site-control-hover); border-color: var(--site-accent); box-shadow: inset 3px 0 var(--site-gold); }
+.training-location:disabled { cursor: default; }
+.training-location:disabled:not([aria-pressed="true"]) { opacity: .5; }
+.training-location-icon { font-size: 22px; width: 30px; flex: none; text-align: center; }
+.training-location-name { flex: 1; min-width: 0; font-size: 14px; }
+.training-location-name span, .training-location-name small { display: block; }
+.training-location-name small { font-size: 11px; color: var(--site-soft); margin-top: 4px; }
+.training-location-level { font-size: 11px; color: var(--site-accent); flex: none; }
+.training-location-foot { padding: 10px 12px; margin: 0; border-top: 1px solid var(--site-rule); color: var(--site-soft); font-size: 12px; }
+.training-pokemon { padding: 16px; }
+.training-identity { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.training-identity > img, .training-identity > .collection-art-fallback { width: 80px; height: 80px; object-fit: contain; image-rendering: pixelated; flex: none; }
+.training-identity > div { min-width: 0; }
+.training-identity h2 { font-size: 23px; font-weight: 400; margin: 0 0 6px; overflow-wrap: anywhere; }
+.training-identity p { font-size: 12px; color: var(--site-soft); margin: 0 0 8px; }
+.training-exp { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; margin-bottom: 16px; }
+.training-exp span { color: var(--site-soft); font-variant-numeric: tabular-nums; }
+.training-exp progress { width: 100%; height: 8px; accent-color: #71bbb2; }
+.training-mobile-location { display: none; }
+.training-mobile-location select { appearance: none; -webkit-appearance: none; padding-right: 38px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23fff4dc' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px 14px; }
+.training-location-summary { border: 1px solid var(--site-rule); border-radius: 4px; background: #211b3377; padding: 12px; margin-bottom: 14px; }
+.training-location-summary h3 { font-size: 15px; font-weight: 400; margin: 0 0 7px; }
+.training-location-summary p { font-size: 12px; color: var(--site-soft); line-height: 1.5; margin: 0; }
+.training-next-gains { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 9px; }
+.training-gain { border: 1px solid #83bda888; background: #35594c66; padding: 4px 7px; border-radius: 3px; color: #c2efca; font-size: 12px; }
+.training-gain.is-reducing { border-color: #8bbadb88; background: #315b7866; color: #cee8ff; }
+.training-gain.is-capped { border-color: var(--site-rule); background: transparent; color: var(--site-soft); }
+.training-ev-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 14px 0 6px; }
+.training-ev-heading h3 { font-size: 14px; font-weight: 400; margin: 0; }
+.training-ev-heading small { font-size: 11px; color: var(--site-soft); text-align: right; }
+.training-evs { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+.training-evs th { text-align: left; font-weight: 400; }
+.training-evs thead th { color: var(--site-soft); font-size: 11px; }
+.training-evs td, .training-evs th { padding: 6px 0; border-bottom: 1px solid var(--site-rule); }
+.training-evs td, .training-evs thead th:nth-last-child(-n+2) { text-align: right; }
+.training-evs td:last-child { width: 60px; color: #c2efca; }
+.training-evs td.is-reducing { color: #cee8ff; }
+.training-evs .is-affected th { color: var(--site-accent); }
+.training-ev-meter { width: 38%; padding-inline: 14px !important; }
+.training-ev-meter progress { display: block; width: 100%; height: 5px; accent-color: #8f80b8; }
+.training-controls { border-top: 1px solid var(--site-rule); margin-top: 14px; padding-top: 14px; }
+.training-action { display: flex; align-items: center; gap: 12px; }
+.training-toggle { min-width: 128px; }
+.training-action p { font-size: 13px; line-height: 1.45; margin: 0; }
+.training-totals { display: flex; flex-wrap: wrap; gap: 7px 16px; margin-top: 12px; font-size: 12px; color: var(--site-soft); }
+.training-totals strong { font-weight: 400; color: var(--site-ink); }
+.training-notice { background: #51402ef2; border: 1px solid #bca578; border-radius: 4px; padding: 12px; margin-bottom: 14px; font-size: 13px; line-height: 1.5; }
+.training-notice p { margin: 0; }
+.training-notice button { margin-top: 10px; }
+.training-state { padding: 24px; }
+.training-state h2 { font-size: 20px; font-weight: 400; }
+.training-state p { color: var(--site-soft); line-height: 1.6; font-size: 14px; }
+.training-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@media (min-width: 761px) and (max-width: 1000px) {
+  .training-layout { grid-template-columns: 215px minmax(0, 1fr); }
+  .training-pokemon { padding: 12px; }
+  .training-identity { gap: 6px; }
+  .training-identity h2 { font-size: 21px; }
+  .training-identity > img, .training-identity > .collection-art-fallback { width: 64px; height: 64px; }
+}
+@media (max-width: 760px) {
+  .pokemon-upgrade-workspace h1 { font-size: 25px; margin-bottom: 12px; }
+  .training-layout { display: block; }
+  .training-locations { display: none; }
+  .training-mobile-location { display: block; margin-bottom: 12px; }
+  .training-mobile-location label { display: block; font-size: 12px; color: var(--site-soft); margin-bottom: 6px; }
+  .training-mobile-location select { width: 100%; font-size: 14px; }
+  .training-pokemon { padding: 12px 12px 100px; }
+  .training-identity { gap: 8px; margin-bottom: 12px; }
+  .training-identity h2 { font-size: 21px; }
+  .training-identity > img, .training-identity > .collection-art-fallback { width: 64px; height: 64px; }
+  .training-location-summary { padding: 10px; margin-bottom: 12px; }
+  .training-ev-meter { width: 28%; padding-inline: 8px !important; }
+  .training-controls { position: fixed; left: 12px; right: 12px; bottom: var(--system-bar-height); padding: 12px; margin: 0; background: var(--site-panel-solid); border: 1px solid var(--site-line); border-radius: 4px 4px 0 0; box-shadow: 0 -5px 12px #17112666; z-index: 24; }
+  .training-toggle { min-width: 105px; }
+  .training-action { gap: 10px; }
+  .training-action p { font-size: 12px; }
+}
