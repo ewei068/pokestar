@@ -10,7 +10,9 @@ service contracts and final implementation sequencing remain future work;
 the approved ticket release cut is recorded below.
 The implementation and verification below describe the existing battle experience.
 
-**Training implementation · 2026-11-08 (local acceptance complete):** #204 now
+**Training implementation · 2026-11-08 (local acceptance complete):** published as
+[PR #259](https://github.com/ewei068/pokestar/pull/259), stacked on the bag
+[PR #257](https://github.com/ewei068/pokestar/pull/257). #204 now
 has a Pokémon-scoped Train workspace entered from collection inspection. The
 browser waits one second before each operation, keeps one request in flight,
 retains confirmed signed gains when stopped, and pauses on departure, session
