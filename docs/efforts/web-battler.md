@@ -10,6 +10,39 @@ service contracts and final implementation sequencing remain future work;
 the approved ticket release cut is recorded below.
 The implementation and verification below describe the existing battle experience.
 
+**Training design · 2026-11-07 (approved for implementation planning):** the maintainer requested a web-only
+training loop for #204: first `/train`-equivalent request after one second,
+repeated until neither EXP nor EV progress remains, with backend rules unchanged.
+The [editable study](../design/training/README.md) covers desktop/phone location
+selection, EXP/EV gains, Train/Stop, caps, Berry reduction and recovery states.
+It proposes one in-flight request, no catch-up bursts and pause on departure.
+The maintainer confirmed that level 100 counts as EXP complete (the backend
+still stores EXP there) and Berry reductions count as EV progress. No production
+screen, training endpoint or gameplay acceptance is established. Work is on
+`codex/web-training-design`, separate from the bag PR; nature and equipment remain
+their own later journeys.
+Local fixture review covered all 18 states at four desktop/phone widths, followed
+by first-tick, Stop/in-flight completion, cap/reduction and recovery checks.
+Phone controls were repaired to sit above navigation. These are study observations,
+not API acceptance. The study records the current 60-actions/minute quota and
+per-command trainer gains as constraints for eventual implementation.
+Maintainer refinement removes the Pokémon picker and idle/stopped copy; training
+is entered from an inspected Pokémon and returns to the invoking collection.
+The footer keeps only total EXP/EV gains. Berry copy is shorter; Home describes
+its maximum EXP when upgraded. The study now reuses the existing collection
+preview and offers an unframed review link; the maintainer confirmed annotation
+works there. The final select repair reserves a 12 px chevron inset. The upgrade
+host must later support Held item, Equipment, Nature and other tabs, with only
+Train implemented now.
+
+The [training implementation plan](../plans/2026-11-07-2134-feat-web-pokemon-training-plan.md)
+sequences canonical rules/scoped persistence, authenticated training transport,
+account-safe loop/data and the extensible upgrade host. One independent combined
+document review returned no findings. The maintainer confirmed each successful web training tick uses the bot train
+participation grant (15 trainer EXP / 50 money), replacing the generic web 5/10
+grant for this operation. The planning blocker is resolved. No runtime implementation or new
+production verification is claimed.
+
 **NPC selection/start design · 2026-11-02 (approved):** the next #210 journey now
 has an [editable desktop/phone study](../design/npc-battles/README.md) with the
 actual 17-NPC catalog, aggregate level ranges, difficulty hues, horizontal
