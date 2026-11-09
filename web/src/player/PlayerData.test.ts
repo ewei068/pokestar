@@ -5,7 +5,7 @@ import type { PokemonDetail } from "./types";
 
 const originalFetch = globalThis.fetch;
 afterEach(() => { globalThis.fetch = originalFetch; });
-const json = (data: unknown) => new Response(JSON.stringify(data), { headers: { "Content-Type": "application/json" } });
+const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
 const pokemonFixture: PokemonDetail = {
   id: "one", speciesId: "25", speciesName: "Pikachu", name: "Pikachu", level: 20,
   shiny: false, rarity: "Rare", types: ["Electric"], combatPower: 123, ivPercent: 90,
@@ -309,19 +309,19 @@ it("build mutations use domain routes and reconcile Bag/detail while leaving unr
   const data = new PlayerData("alice", null, () => {}); t.after(() => data.dispose());
   const pokemon = { ...pokemonFixture, nature: { ...pokemonFixture.nature, id: "0" }, heldItemId: null };
   const context = { pokemon, natures: [], heldItems: [], mintQuantity: 3, mintCost: 1 };
-  data.client.setQueryData(data.bag().queryKey, [{ id: "7", quantity: 3 }]);
+  data.client.setQueryData(data.bag().queryKey, [{ id: "7", quantity: 3, name: "Mint", description: "Changes nature.", category: "1", categoryName: "Materials", icon: null }]);
   data.client.setQueryData(data.npcs().queryKey, []);
   globalThis.fetch = async (url, init) => {
     if (init?.method !== "POST") return json({ discordUserId: "alice", ...context });
     assert.match(String(url), /\/pokemon\/one\/nature$/);
     assert.deepEqual(JSON.parse(String(init.body)), { natureId: "3", expectedNatureId: "0" });
-    return json({ discordUserId: "alice", ...context, pokemon: { ...pokemon, nature: { ...pokemon.nature, id: "3", name: "Adamant" } }, mintQuantity: 2, items: [{ id: "7", quantity: 2 }], changed: true });
+    return json({ discordUserId: "alice", ...context, pokemon: { ...pokemon, nature: { ...pokemon.nature, id: "3", name: "Adamant" } }, mintQuantity: 2, items: [{ id: "7", quantity: 2, name: "Mint", description: "Changes nature.", category: "1", categoryName: "Materials", icon: null }], changed: true });
   };
   await data.client.fetchQuery(data.build("one"));
   const result = await data.changeNature("one", "3", "0");
   assert.equal(result.mintQuantity, 2);
   assert.equal(data.client.getQueryData<PokemonDetail>(data.pokemon("one").queryKey)?.nature.name, "Adamant");
-  assert.deepEqual(data.client.getQueryData(data.bag().queryKey), [{ id: "7", quantity: 2 }]);
+  assert.deepEqual(data.client.getQueryData(data.bag().queryKey), [{ id: "7", quantity: 2, name: "Mint", description: "Changes nature.", category: "1", categoryName: "Materials", icon: null }]);
   assert.equal(data.client.getQueryState(data.npcs().queryKey)?.isInvalidated, false);
 });
 
@@ -351,10 +351,41 @@ it("a departed build request settles into invalidation without installing old fe
   await new Promise(resolve => setTimeout(resolve, 0));
   await assert.rejects(data.train("one", "0"), /interaction_pending/);
   current = false;
-  data.client.setQueryData(data.bag().queryKey, [{ id: "h211", quantity: 2 }]);
+  data.client.setQueryData(data.bag().queryKey, [{ id: "h211", quantity: 2, name: "Leftovers", description: "Restores HP.", category: "3", categoryName: "Held Items", icon: null }]);
   finish(json({ discordUserId: "alice", pokemon: pokemonFixture, natures: [], heldItems: [], mintQuantity: 3, mintCost: 1, items: [], changed: true }));
   await assert.rejects(change, /context_closed/);
   assert.equal(data.client.getQueryState(data.bag().queryKey)?.isInvalidated, true);
   assert.equal(data.client.getQueryData(data.pokemon("one").queryKey), undefined);
   assert.equal(data.needsBuildRefresh, false);
+});
+
+it("a definitive removed-target rejection does not lock changes to other Pokemon", async t => {
+  const data = new PlayerData("alice", null, () => {}); t.after(() => data.dispose());
+  globalThis.fetch = async () => json({ error: "pokemon_not_found" }, 404);
+  await assert.rejects(data.changeNature("removed", "3", "0"));
+  assert.equal(data.needsBuildRefresh, false);
+  let submitted = false;
+  globalThis.fetch = async () => { submitted = true; return json({ discordUserId: "alice", pokemon: pokemonFixture,
+    natures: [], heldItems: [], mintQuantity: 2, mintCost: 1, items: [], changed: true }); };
+  await data.changeNature("owned", "3", "0");
+  assert.equal(submitted, true);
+});
+
+it("explicit refresh reconciles an uncertain target that was subsequently removed", async t => {
+  const data = new PlayerData("alice", null, () => {}); t.after(() => data.dispose());
+  globalThis.fetch = async () => { throw new TypeError("response lost"); };
+  await assert.rejects(data.changeNature("removed", "3", "0"));
+  assert.equal(data.needsBuildRefresh, true);
+  let posts = 0;
+  globalThis.fetch = async (url, options) => {
+    if (options?.method === "POST") posts += 1;
+    if (String(url).includes("/removed/")) return json({ error: "pokemon_not_found" }, 404);
+    if (String(url).endsWith("/bag")) return json({ discordUserId: "alice", items: [] });
+    return json({ discordUserId: "alice", pokemon: pokemonFixture, natures: [], heldItems: [], mintQuantity: 2, mintCost: 1, items: [], changed: true });
+  };
+  await data.refreshBuild("owned");
+  assert.equal(data.needsBuildRefresh, false);
+  assert.equal(posts, 0);
+  await data.changeNature("owned", "3", "0");
+  assert.equal(posts, 1);
 });

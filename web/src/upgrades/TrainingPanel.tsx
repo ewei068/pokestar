@@ -9,7 +9,7 @@ const reduction = (id: string) => id === "7" || id === "8";
 const locationPurpose = (location: TrainingLocation) => location.id === "0" ? "EXP"
   : reduction(location.id) ? "Reduce all EVs" : `${statNames[Number(location.id) - 1]} EVs`;
 
-export function TrainingPanel({ context, locationId, onLocationChange, onToggle, running, pending,
+export function TrainingPanel({ context, locationId, onLocationChange, onToggle, running, pending, interactionPending = false,
   totals, error, onRefresh, loading, refreshing }: TrainingPanelProps) {
   const selected = context?.locations.find(location => location.id === locationId);
   const busy = running || pending;
@@ -22,7 +22,7 @@ export function TrainingPanel({ context, locationId, onLocationChange, onToggle,
   const next = selected?.nextGains;
   const evTotals = totals.evs.map((value, index) => value ? `${signed(value)} ${statNames[index]}` : "")
     .filter(Boolean).join(", ") || "0";
-  const canStart = Boolean(selected?.owned && selected.canTrain && !error && !refreshing);
+  const canStart = Boolean(selected?.owned && selected.canTrain && !error && !refreshing && !interactionPending);
   return <>
     {error && <div className="training-notice" role="alert"><p>{error}</p>
       <button className="ui-button" onClick={onRefresh} disabled={busy || refreshing}>Refresh Pokémon</button></div>}

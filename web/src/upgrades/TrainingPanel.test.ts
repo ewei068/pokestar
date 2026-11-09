@@ -65,3 +65,10 @@ it("keeps Home zero selectable and Berry copy and negative gains concise", () =>
   assert.ok(berry.getByText("−10 Attack EV"));
   assert.equal(berry.queryByText(/down to zero/), null);
 });
+it("blocks a new Train during another interaction while keeping own Stop available", () => {
+  const view = page({ interactionPending: true });
+  assert.equal((view.getByRole("button", { name: "Train" }) as HTMLButtonElement).disabled, true);
+  view.unmount();
+  const running = page({ interactionPending: true, running: true, pending: true });
+  assert.equal((running.getByRole("button", { name: "Stop" }) as HTMLButtonElement).disabled, false);
+});

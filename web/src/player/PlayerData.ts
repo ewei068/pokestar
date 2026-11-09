@@ -170,7 +170,10 @@ export class PlayerData {
     const ids = [...new Set([id, ...(this.uncertainBuildId ? [this.uncertainBuildId] : [])])];
     await Promise.all(ids.map(value => this.client.cancelQueries({ queryKey: this.build(value).queryKey })));
     if (this.closed || epoch !== this.epoch || !isCurrent()) return;
-    await Promise.all([...ids.map(value => this.client.fetchQuery({ ...this.build(value), staleTime: 0 })),
+    await Promise.all([...ids.map(value => this.client.fetchQuery({ ...this.build(value), staleTime: 0 }).catch(error => {
+        // Absence is an authoritative read too; the missing target stays unavailable in its query.
+        if (!(error instanceof ApiError && error.status === 404)) throw error;
+      })),
       this.client.fetchQuery({ ...this.bag(), staleTime: 0 })]);
     if (!this.closed && epoch === this.epoch && isCurrent()) this.uncertainBuildId = null;
   }
@@ -216,7 +219,8 @@ export class PlayerData {
       if (result.trainer !== undefined) this.client.setQueryData(this.trainer().queryKey, result.trainer);
       return result;
     } catch (error) {
-      if (submitted && !responseKnown && !this.closed && epoch === this.epoch) this.uncertainBuildId = id;
+      if (submitted && !responseKnown && !this.closed && epoch === this.epoch
+        && (!(error instanceof ApiError) || error.status >= 500)) this.uncertainBuildId = id;
       throw error;
     } finally {
       if (submitted && !this.closed && epoch === this.epoch) {

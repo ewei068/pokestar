@@ -19,18 +19,19 @@ export const routeHref = (current: URL, route: SiteRoute): string => {
   return `${url.pathname}${url.search}${url.hash}`;
 };
 
-export type PokemonUpgradeRoute = { pokemonId: string; feature: "train" };
+export type PokemonUpgradeRoute = { pokemonId: string; feature: "train" | "build" };
 
 export const readPokemonUpgrade = (url: URL): PokemonUpgradeRoute | null => {
   const pokemonId = url.searchParams.get("owned");
-  return readRoute(url).page === "pokemon" && pokemonId && url.searchParams.get("upgrade") === "train"
-    ? { pokemonId, feature: "train" } : null;
+  const feature = url.searchParams.get("upgrade");
+  return readRoute(url).page === "pokemon" && pokemonId && (feature === "train" || feature === "build")
+    ? { pokemonId, feature } : null;
 };
 
-export const pokemonUpgradeHref = (current: URL, pokemonId: string): string => {
+export const pokemonUpgradeHref = (current: URL, pokemonId: string, feature: PokemonUpgradeRoute["feature"] = "train"): string => {
   const url = new URL(routeHref(current, { page: "pokemon", battleId: null }), current);
   url.searchParams.set("owned", pokemonId);
-  url.searchParams.set("upgrade", "train");
+  url.searchParams.set("upgrade", feature);
   return `${url.pathname}${url.search}${url.hash}`;
 };
 

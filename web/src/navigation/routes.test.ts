@@ -16,6 +16,17 @@ it("keeps upgrades inside an owned Pokemon and clears the subview on site naviga
   }
 });
 
+it("routes Item & nature for either hosting path while preserving unrelated context", async () => {
+  const { pokemonUpgradeHref, readPokemonUpgrade } = await import("./routes");
+  for (const path of ["/", "/pokestar/"]) {
+    const current = new URL(`https://example.test${path}?owned=one&campaign=friend&upgrade=train#pokemon`);
+    const next = new URL(pokemonUpgradeHref(current, "one", "build"), current);
+    assert.deepEqual(readPokemonUpgrade(next), { pokemonId: "one", feature: "build" });
+    assert.equal(next.pathname, path);
+    assert.equal(next.searchParams.get("campaign"), "friend");
+  }
+});
+
 describe("site routes", () => {
   it("defaults to Play and keeps legacy direct battle links", () => {
     assert.deepEqual(readRoute(new URL("https://example.test/pokestar/")), { page: "play", battleId: null });

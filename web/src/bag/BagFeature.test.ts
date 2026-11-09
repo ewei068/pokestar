@@ -37,7 +37,7 @@ let currentData: ReturnType<typeof usePlayer>;
 function Harness() {
   const data = usePlayer();
   currentData = data;
-  data.client.setDefaultOptions({ queries: { ...data.client.getDefaultOptions().queries, gcTime: 0 } });
+  data.client.setDefaultOptions({ queries: { ...data.client.getDefaultOptions().queries, gcTime: 0 }, mutations: { gcTime: Infinity } });
   return createElement(BagFeature);
 }
 const mount = () => render(createElement(PlayerProvider, { userId: "alice", trainer, onAccountChanged() {}, children: createElement(Harness) }));
@@ -211,15 +211,8 @@ it("names a destination without spending the item or calling the server", async 
   await waitFor(() => assert.equal(new URL(dom.window.location.href).searchParams.get("item"), "7"));
   assert.equal(view.queryByText(/This ball stays in your bag/), null);
   assert.ok(view.getByRole("button", { name: "Change nature" }));
-  fireEvent.click(view.getByRole("button", { name: "Change nature" }));
-  assert.match(view.getByRole("status").textContent || "", /This Mint stays in your bag/);
-  assert.equal(calls, before);
   fireEvent.click(itemRow(view, "Heavy-Duty Boots"));
   await waitFor(() => assert.ok(view.getByRole("button", { name: "Equip" })));
-  assert.equal(view.queryByText(/This Mint stays in your bag/), null);
-  fireEvent.click(view.getByRole("button", { name: "Equip" }));
-  assert.match(view.getByRole("status").textContent || "", /This item stays in your bag/);
-  assert.equal(calls, before);
   fireEvent.click(itemRow(view, "Knowledge Shard"));
   await waitFor(() => assert.ok(view.getByRole("heading", { name: "Knowledge Shard" })));
   assert.equal(view.queryByRole("button", { name: "Catch" }), null);
@@ -240,4 +233,103 @@ it("names a destination without spending the item or calling the server", async 
   await act(async () => { currentData.client.setQueryData(currentData.bag().queryKey, [mint]); });
   await waitFor(() => assert.ok(phone.queryByText(/This ball stays in your bag/) === null));
   assert.equal(calls, 1);
+});
+
+const pika = { id: "a".repeat(24), speciesId: "25", speciesName: "Pikachu", name: "Pikachu", level: 41,
+  shiny: false, rarity: "common", types: ["Electric"], combatPower: 500, ivPercent: 80, inParty: true, spriteUrl: null, battleEligible: true,
+  stats: [105, 75, 55, 63, 63, 121], ivs: [20,20,20,20,20,20], evs: [0,0,0,0,0,0], nature: { id: "1", name: "Timid", raisedStat: 5, loweredStat: 1 },
+  heldItemId: null, heldItem: null, moves: [], ability: null, exp: null };
+const build = { pokemon: pika, natures: [{ id: "1", name: "Timid", raisedStat: 5, loweredStat: 1, stats: pika.stats },
+  { id: "2", name: "Jolly", raisedStat: 5, loweredStat: 3, stats: [105,84,55,57,63,121] }], heldItems: [bootsUse], mintQuantity: 2, mintCost: 1 };
+const party = { rows: 2, cols: 3, capacity: 6, slots: [pika,null,null,null,null,null], targets: {} };
+
+it("confirms a Bag equip once, retains the depleted detail, and keeps empty party positions inert", async () => {
+  setDesktop(false);
+  dom.window.history.replaceState(null, "", "/pokestar/?item=h1178#bag");
+  let posts = 0;
+  let finish!: (response: Response) => void;
+  globalThis.fetch = async (url, options) => {
+    if (options?.method === "POST") { posts += 1; return await new Promise<Response>(resolve => { finish = resolve; }); }
+    if (String(url).endsWith("/party")) return json({ party });
+    if (String(url).endsWith("/build")) return json(build);
+    return json({ items: [bootsUse] });
+  };
+  const view = mount();
+  const trigger = await view.findByRole("button", { name: "Equip" });
+  fireEvent.click(trigger);
+  const slot = await view.findByRole("button", { name: "Position 1, Pikachu" });
+  assert.equal(view.getByRole("button", { name: "Position 2, empty" }).getAttribute("aria-disabled"), "true");
+  assert.equal(view.container.querySelector(".collection-drag-handle"), null);
+  fireEvent.click(slot);
+  await view.findByRole("button", { name: "Equip item" });
+  assert.equal(posts, 0);
+  fireEvent.click(view.getByRole("button", { name: "Back" }));
+  await waitFor(() => assert.equal(view.getByRole("button", { name: "Position 1, Pikachu" }).getAttribute("aria-disabled"), "false"));
+  fireEvent.click(view.getByRole("button", { name: "Position 1, Pikachu" }));
+  await waitFor(() => assert.equal(view.getByRole("button", { name: "Equip item" }).hasAttribute("disabled"), false));
+  const confirm = view.getByRole("button", { name: "Equip item" });
+  fireEvent.click(confirm);
+  fireEvent.click(confirm);
+  await waitFor(() => assert.equal(posts, 1));
+  await act(async () => { currentData.client.setQueryData(currentData.bag().queryKey, []); });
+  assert.ok(view.queryByRole("dialog"));
+  assert.equal(new URL(dom.window.location.href).searchParams.get("item"), "h1178");
+  await act(async () => finish(json({ ...build, pokemon: { ...pika, heldItemId: bootsUse.id, heldItem: bootsUse }, items: [], changed: true, trainer })));
+  fireEvent.click(await view.findByRole("button", { name: "Done" }));
+  assert.ok(view.getByRole("heading", { name: "Heavy-Duty Boots" }));
+  assert.match(view.container.querySelector(".item-owned")?.textContent || "", /Owned: 0/);
+  assert.equal(view.getByRole("button", { name: "Equip" }).hasAttribute("disabled"), true);
+  assert.equal(view.container.querySelectorAll("button.item-row").length, 0);
+  assert.equal(new URL(dom.window.location.href).searchParams.get("item"), "h1178");
+});
+
+it("previews nature in the Bag, cancels without a write, and changes only after confirmation", async () => {
+  setDesktop(true);
+  let body: unknown;
+  globalThis.fetch = async (url, options) => {
+    if (options?.method === "POST") { body = JSON.parse(String(options.body)); return json({ ...build, pokemon: { ...pika, nature: build.natures[1] }, mintQuantity: 1, items: [{ ...mint, quantity: 1 }], changed: true, trainer }); }
+    if (String(url).endsWith("/party")) return json({ party });
+    if (String(url).endsWith("/build")) return json(build);
+    return json({ items: [mint] });
+  };
+  const view = mount();
+  fireEvent.click(await view.findByRole("button", { name: "Change nature" }));
+  await waitFor(() => assert.equal(view.getByRole("button", { name: "Position 1, Pikachu" }).getAttribute("aria-disabled"), "false"));
+  fireEvent.click(view.getByRole("button", { name: "Position 1, Pikachu" }));
+  fireEvent.change(await view.findByLabelText("New nature"), { target: { value: "2" } });
+  assert.ok(view.getByText("+9"));
+  assert.ok(view.getByText("Uses 1 Mint"));
+  assert.ok(view.getByText(/Owned: 2/));
+  assert.equal(body, undefined);
+  fireEvent.click(view.getByRole("button", { name: "Close" }));
+  fireEvent.click(view.getByRole("button", { name: "Change nature" }));
+  await waitFor(() => assert.equal(view.getByRole("button", { name: "Position 1, Pikachu" }).getAttribute("aria-disabled"), "false"));
+  fireEvent.click(view.getByRole("button", { name: "Position 1, Pikachu" }));
+  const selector = await view.findByLabelText("New nature");
+  assert.equal((selector as HTMLSelectElement).value, "");
+  fireEvent.change(selector, { target: { value: "2" } });
+  fireEvent.click(view.getAllByRole("button", { name: "Change nature" }).at(-1)!);
+  assert.ok(await view.findByRole("button", { name: "Done" }));
+  assert.deepEqual(body, { natureId: "2", expectedNatureId: "1" });
+});
+
+it("retains a last-copy result from the desktop default selection without adding an item URL", async () => {
+  setDesktop(true);
+  globalThis.fetch = async (url, options) => {
+    if (options?.method === "POST") return json({ ...build, pokemon: { ...pika, heldItemId: bootsUse.id, heldItem: bootsUse }, items: [], changed: true });
+    if (String(url).endsWith("/party")) return json({ party });
+    if (String(url).endsWith("/build")) return json(build);
+    return json({ items: [bootsUse] });
+  };
+  const view = mount();
+  fireEvent.click(await view.findByRole("button", { name: "Equip" }));
+  fireEvent.click(await view.findByRole("button", { name: "Position 1, Pikachu" }));
+  const confirm = await view.findByRole("button", { name: "Equip item" });
+  await waitFor(() => assert.equal(confirm.hasAttribute("disabled"), false));
+  fireEvent.click(confirm);
+  fireEvent.click(await view.findByRole("button", { name: "Done" }));
+  assert.ok(view.getByRole("heading", { name: "Heavy-Duty Boots" }));
+  assert.match(view.container.querySelector(".item-owned")?.textContent || "", /Owned: 0/);
+  assert.equal(view.container.querySelectorAll("button.item-row").length, 0);
+  assert.equal(new URL(dom.window.location.href).searchParams.get("item"), null);
 });
