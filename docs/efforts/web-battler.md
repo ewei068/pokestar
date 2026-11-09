@@ -10,6 +10,23 @@ service contracts and final implementation sequencing remain future work;
 the approved ticket release cut is recorded below.
 The implementation and verification below describe the existing battle experience.
 
+**Nature and held-item design · 2026-11-08 (approved for planning):** maintainer
+requested one combined configuration tab beside Train, plus a Bag Mint/held-item
+action that opens the active party and then a confirmation. The
+[design study notes](../design/nature-held-items/README.md) record the brief,
+editable local prototype, source mechanics and accepted inventory/reliability
+constraints. The maintainer accepted the general design with refinements:
+Configure applies held-item selection and its Change nature button directly;
+Bag retains confirmation. Repeated quantity panels and the nature cost subtitle
+were removed. Mint cost stays beside its action; held-item confirmation retains
+the current/new item comparison. Revised fixture checks covered direct actions,
+Bag confirmation and desktop/phone layouts. Final feedback removes the
+confirmation return footer and standardizes quantity labels to `Owned: {number}`.
+The [implementation plan](../plans/2026-11-08-1812-feat-web-nature-held-items-plan.md)
+uses the existing narrow guarded-write/compensation approach and accepted gaps,
+without a new atomicity/recovery system. No production operation or runtime
+acceptance is claimed.
+
 **Training implementation · 2026-11-08 (local acceptance complete):** published as
 [PR #259](https://github.com/ewei068/pokestar/pull/259), stacked on the bag
 [PR #257](https://github.com/ewei068/pokestar/pull/257). #204 now

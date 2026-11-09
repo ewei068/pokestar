@@ -122,3 +122,6 @@ __debug__
 
 # Personal Compound Engineering defaults
 .compound-engineering/*.local.yaml
+
+# Local Compound Engineering previews
+.context/compound-engineering/
