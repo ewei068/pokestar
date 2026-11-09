@@ -6,7 +6,7 @@ let server;
 let url;
 let service;
 beforeEach(async () => {
-  service = { npcs: jest.fn(), dungeons: jest.fn(), tower: jest.fn(), bag: jest.fn(), collection: jest.fn().mockResolvedValue({ items: [] }), detail: jest.fn(), training: jest.fn().mockResolvedValue({ pokemon: {}, locations: [] }), train: jest.fn().mockResolvedValue({ trained: true, gains: { exp: 35, evs: [0, 0, 0, 0, 0, 0] }, trainer: {}, pokemon: {}, locations: [] }), party: jest.fn(), profile: jest.fn(), interact: jest.fn().mockResolvedValue({ trainer: {} }) };
+  service = { build: jest.fn(), changeNature: jest.fn(), changeHeldItem: jest.fn(), npcs: jest.fn(), dungeons: jest.fn(), tower: jest.fn(), bag: jest.fn(), collection: jest.fn().mockResolvedValue({ items: [] }), detail: jest.fn(), training: jest.fn().mockResolvedValue({ pokemon: {}, locations: [] }), train: jest.fn().mockResolvedValue({ trained: true, gains: { exp: 35, evs: [0, 0, 0, 0, 0, 0] }, trainer: {}, pokemon: {}, locations: [] }), party: jest.fn(), profile: jest.fn(), interact: jest.fn().mockResolvedValue({ trainer: {} }) };
   const app = express();
   app.use(express.json());
   app.use('/api', createBattleApi({ battleService: { listActive: async () => [{ battleId: "owned-battle" }] }, sessionStore: { get: async (token) => token === 'valid' ? { userId: 'owner' } : null },
@@ -93,5 +93,25 @@ test('training service rejections retain HTTP status without generic interaction
   expect(await response.json()).toEqual({ error: 'invalid_training_request' });
   service.training.mockRejectedValueOnce(new PlayerError('pokemon_not_found', 404));
   expect((await fetch(`${url}/pokemon/foreign-id/training`, { headers })).status).toBe(404);
+  expect(service.interact).not.toHaveBeenCalled();
+});
+
+
+test('build read and domain mutations inherit session, actor and origin enforcement', async () => {
+  service.build = jest.fn().mockResolvedValue({ pokemon: {}, natures: [], heldItems: [], mintQuantity: 3 });
+  service.changeNature = jest.fn().mockResolvedValue({ changed: true });
+  service.changeHeldItem = jest.fn().mockResolvedValue({ changed: false });
+  const path = `${url}/pokemon/one`;
+  expect((await fetch(`${path}/build`)).status).toBe(401);
+  expect((await fetch(`${path}/build`, { headers: { ...headers, 'X-Player-Id': 'other' } })).status).toBe(409);
+  expect((await fetch(`${path}/build`, { headers })).status).toBe(200);
+  expect(service.build).toHaveBeenCalledWith('owner', 'one');
+  for (const [action, body] of [['nature', { natureId: '3', expectedNatureId: '1' }], ['held-item', { heldItemId: null, expectedHeldItemId: 'h197' }]]) {
+    expect((await fetch(`${path}/${action}`, { method: 'POST', headers: { ...headers, Cookie: '' }, body: JSON.stringify(body) })).status).toBe(401);
+    expect((await fetch(`${path}/${action}`, { method: 'POST', headers: { ...headers, Origin: 'https://other.example' }, body: JSON.stringify(body) })).status).toBe(403);
+    expect((await fetch(`${path}/${action}`, { method: 'POST', headers, body: JSON.stringify(body) })).status).toBe(200);
+  }
+  expect(service.changeNature).toHaveBeenCalledWith('owner', 'one', { natureId: '3', expectedNatureId: '1' });
+  expect(service.changeHeldItem).toHaveBeenCalledWith('owner', 'one', { heldItemId: null, expectedHeldItemId: 'h197' });
   expect(service.interact).not.toHaveBeenCalled();
 });
