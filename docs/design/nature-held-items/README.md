@@ -220,4 +220,6 @@ with Discord; the web layer composes their display data and participation policy
 passing suites/builds, real disposable Mongo/HTTP and production-browser checks,
 two repaired review findings, the remaining checkJs baseline and accepted
 reliability limits. The earlier sections above describe fixture-only study work.
-Publishing and deployment have not been performed.
+Published as [PR #261](https://github.com/ewei068/pokestar/pull/261), stacked on
+training [PR #259](https://github.com/ewei068/pokestar/pull/259). No deployment
+has been performed.

@@ -23,8 +23,11 @@ standalone-Mongo/HTTP checks and production-browser acceptance through 320×480.
 One independent review found two client lifecycle defects, both repaired with
 regressions and affected checks. Backend checkJs still fails with 478 existing
 diagnostics, down from 498, with zero additions after normalized comparison.
-Existing cross-document/legacy-writer gaps remain accepted. Changes are local;
-no publishing, deployment or live Discord/OAuth acceptance is claimed.
+Existing cross-document/legacy-writer gaps remain accepted. Published as
+[PR #261](https://github.com/ewei068/pokestar/pull/261), stacked on training
+[PR #259](https://github.com/ewei068/pokestar/pull/259). Equipment management in
+the same Pokémon workspace is the next requested journey. No deployment or live
+Discord/OAuth acceptance is claimed.
 
 **Nature and held-item design · 2026-11-08 (approved for planning):** maintainer
 requested one combined configuration tab beside Train, plus a Bag Mint/held-item

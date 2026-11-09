@@ -120,5 +120,10 @@ review pipeline was run.
 Cross-document crashes, ambiguous outcomes, refused compensation and legacy
 writers can still leave partial state, as explicitly accepted. No transactions,
 receipts, recovery worker, mutex or general writer migration were introduced.
-No deployment, publishing, live Discord/OAuth, physical-device or process-crash
-acceptance is claimed. Discord compatibility is covered by mocked adapter tests.
+Published as [PR #261](https://github.com/ewei068/pokestar/pull/261), stacked on
+training [PR #259](https://github.com/ewei068/pokestar/pull/259). No deployment,
+live Discord/OAuth, physical-device or process-crash acceptance is claimed. Discord compatibility is covered by mocked adapter tests.
+
+Disposable acceptance processes were stopped and their temporary MongoDB data
+and root bundle copy removed after verification. Logs, harness scripts and the
+editable ignored design study remain machine-local.
