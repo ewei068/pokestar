@@ -2,7 +2,7 @@ import { QueryClient, queryOptions } from "@tanstack/react-query";
 import { ApiError, request } from "../http";
 import type { BattleSummary } from "../battles/types";
 import type { TrainerProfile } from "../trainer/types";
-import type { BagItem, CollectionPage, CollectionQuery, DungeonEncounter, Party, NpcEncounter, PlayerEnvelope, PlayerOperation, PlayerResult, PokemonDetail, PokemonSummary, TrainingContext, TrainingResult, TowerFloor } from "./types";
+import type { BagItem, CollectionPage, CollectionQuery, DungeonEncounter, Party, NpcEncounter, PlayerEnvelope, PlayerOperation, PlayerResult, PokemonDetail, PokemonSummary, PokemonBuildContext, PokemonBuildResult, TrainingContext, TrainingResult, TowerFloor } from "./types";
 
 /** One authenticated account's in-memory server data. Battle sessions remain separate. */
 export class PlayerData {
@@ -14,6 +14,8 @@ export class PlayerData {
   private epoch = 0;
   private closed = false;
   private busy = false;
+  private uncertainBuildId: string | null = null;
+  get needsBuildRefresh() { return this.uncertainBuildId !== null; }
   readonly prefix: readonly string[];
 
   constructor(readonly userId: string, private initialTrainer: TrainerProfile | null, private onAccountChanged: () => void) {
@@ -149,6 +151,80 @@ export class PlayerData {
           await Promise.all(affected.map(queryKey => this.client.invalidateQueries({ queryKey })));
         }
       }
+    }
+  }
+
+  build(id: string, isCurrent: () => boolean = () => true) {
+    return queryOptions({ queryKey: [...this.prefix, "build", id], retry: false, refetchInterval: 15000,
+      queryFn: async ({ signal }): Promise<PokemonBuildContext> => {
+        const result = await this.read<PokemonBuildContext & PlayerEnvelope>(`/player/pokemon/${encodeURIComponent(id)}/build`, signal);
+        if (!isCurrent()) throw new Error("context_closed");
+        this.client.setQueryData(this.pokemon(id).queryKey, result.pokemon);
+        return result;
+      } });
+  }
+
+  async refreshBuild(id: string, isCurrent: () => boolean = () => true) {
+    if (this.closed) return;
+    const epoch = this.epoch;
+    const ids = [...new Set([id, ...(this.uncertainBuildId ? [this.uncertainBuildId] : [])])];
+    await Promise.all(ids.map(value => this.client.cancelQueries({ queryKey: this.build(value).queryKey })));
+    if (this.closed || epoch !== this.epoch || !isCurrent()) return;
+    await Promise.all([...ids.map(value => this.client.fetchQuery({ ...this.build(value), staleTime: 0 })),
+      this.client.fetchQuery({ ...this.bag(), staleTime: 0 })]);
+    if (!this.closed && epoch === this.epoch && isCurrent()) this.uncertainBuildId = null;
+  }
+
+  changeNature(id: string, natureId: string, expectedNatureId: string, isCurrent: () => boolean = () => true) {
+    return this.changeBuild(id, "nature", { natureId, expectedNatureId }, isCurrent);
+  }
+
+  changeHeldItem(id: string, heldItemId: string | null, expectedHeldItemId: string | null, isCurrent: () => boolean = () => true) {
+    return this.changeBuild(id, "held-item", { heldItemId, expectedHeldItemId }, isCurrent);
+  }
+
+  private async changeBuild(id: string, action: "nature" | "held-item", input: object,
+    isCurrent: () => boolean): Promise<PokemonBuildResult> {
+    if (this.closed) throw new Error("session_closed");
+    if (this.busy) throw new Error("interaction_pending");
+    if (this.needsBuildRefresh) throw new Error("build_refresh_required");
+    this.busy = true;
+    const epoch = this.epoch;
+    let submitted = false;
+    let responseKnown = false;
+    const affected = [this.trainer().queryKey, this.pokemon(id).queryKey, this.build(id).queryKey,
+      this.training(id).queryKey, this.bag().queryKey, [...this.prefix, "collection"], this.party().queryKey];
+    const check = () => {
+      if (this.closed || epoch !== this.epoch) throw new Error("session_closed");
+      if (!isCurrent()) throw new Error("context_closed");
+    };
+    try {
+      await Promise.all(affected.map(queryKey => this.client.cancelQueries({ queryKey })));
+      check();
+      submitted = true;
+      const result = await this.send<PokemonBuildResult>(`/player/pokemon/${encodeURIComponent(id)}/${action}`, {
+        method: "POST", body: JSON.stringify(input),
+      });
+      responseKnown = true;
+      if (result.warning) this.uncertainBuildId = id;
+      check();
+      await Promise.all(affected.map(queryKey => this.client.cancelQueries({ queryKey })));
+      check();
+      this.client.setQueryData(this.pokemon(id).queryKey, result.pokemon);
+      this.client.setQueryData(this.build(id).queryKey, result);
+      this.client.setQueryData(this.bag().queryKey, result.items);
+      if (result.trainer !== undefined) this.client.setQueryData(this.trainer().queryKey, result.trainer);
+      return result;
+    } catch (error) {
+      if (submitted && !responseKnown && !this.closed && epoch === this.epoch) this.uncertainBuildId = id;
+      throw error;
+    } finally {
+      if (submitted && !this.closed && epoch === this.epoch) {
+        await Promise.all(affected.map(queryKey => this.client.cancelQueries({ queryKey })));
+        if (!this.closed && epoch === this.epoch) await Promise.all(affected.map(queryKey =>
+          this.client.invalidateQueries({ queryKey, refetchType: "none" })));
+      }
+      this.busy = false;
     }
   }
 

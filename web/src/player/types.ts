@@ -11,9 +11,10 @@ export type OwnedMove = {
 };
 export type PokemonDetail = PokemonSummary & {
   stats: number[]; ivs: number[]; evs: number[];
-  nature: { name: string; raisedStat: number | null; loweredStat: number | null };
+  nature: { id?: string; name: string; raisedStat: number | null; loweredStat: number | null };
   moves: OwnedMove[]; ability: { name: string; description: string } | null;
   heldItem: { name: string; description: string } | null;
+  heldItemId?: string | null;
   exp: { current: number; required: number } | null;
 };
 export type PartyTarget = { kind: "add" | "replace" | "swap" | "move" | "disabled"; reason?: string };
@@ -41,6 +42,12 @@ export type TrainingContext = { pokemon: PokemonDetail; locations: TrainingLocat
 export type TrainingResult = PlayerEnvelope & TrainingContext & {
   trained: boolean; gains: TrainingGains; warning?: string;
 };
+export type NatureChoice = { id: string; name: string; raisedStat: number | null; loweredStat: number | null; stats: number[] };
+export type PokemonBuildContext = {
+  pokemon: PokemonDetail & { nature: PokemonDetail["nature"] & { id: string }; heldItemId: string | null };
+  natures: NatureChoice[]; heldItems: BagItem[]; mintQuantity: number; mintCost: number;
+};
+export type PokemonBuildResult = PlayerEnvelope & PokemonBuildContext & { changed: boolean; items: BagItem[]; warning?: string };
 export type NpcSpecies = { id: string; name: string; spriteUrl: string | null; ace: boolean };
 export type NpcDifficulty = { id: string; name: string; minLevel: number; maxLevel: number; count: number;
   species: NpcSpecies[]; dailyClaimed: boolean; rewards: { name: string; quantity: number; icon: string | null }[] };
