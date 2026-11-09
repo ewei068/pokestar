@@ -13,10 +13,10 @@ for (const [key, value] of Object.entries({ window: dom.window, document: dom.wi
   Object.defineProperty(globalThis, key, { configurable: true, value });
 }
 Object.defineProperty(document, "visibilityState", { configurable: true, value: "visible" });
-// Tests run on Node 24; the project's Node 18 types expose the older timer API.
-const enableTimers = (t: TestContext, apis: ("setTimeout" | "Date")[] = ["setTimeout"]) => {
-  const timers = t.mock.timers as unknown as { enable(options: { apis: ("setTimeout" | "Date")[] }): void };
-  timers.enable({ apis });
+// CI compares Node 18's array API with Node 24's options API.
+const enableTimers = (t: TestContext) => {
+  const timers = t.mock.timers as unknown as { enable(options: { apis: ["setTimeout"] } | ["setTimeout"]): void };
+  timers.enable(Number(process.versions.node.split(".")[0]) < 20 ? ["setTimeout"] : { apis: ["setTimeout"] });
 };
 const { renderHook, cleanup, act } = await import("@testing-library/react");
 afterEach(() => { cleanup(); Object.defineProperty(document, "visibilityState", { configurable: true, value: "visible" }); });
@@ -116,7 +116,9 @@ it("pauses on hidden/offline without resuming and ignores an unmounted result", 
 });
 
 it("pauses unknown outcomes, refreshes without invented gains, and honors Retry-After", async t => {
-  enableTimers(t, ["setTimeout", "Date"]);
+  enableTimers(t);
+  let now = 0;
+  t.mock.method(Date, "now", () => now);
   let calls = 0;
   let refreshes = 0;
   const hook = renderHook(() => useTrainingLoop({ context, train: async () => {
@@ -131,9 +133,9 @@ it("pauses unknown outcomes, refreshes without invented gains, and honors Retry-
   await act(async () => { t.mock.timers.tick(1000); await flush(); });
   assert.equal(calls, 2);
   act(() => hook.result.current.toggle());
-  await act(async () => { t.mock.timers.tick(59999); await flush(); });
+  await act(async () => { now += 59999; t.mock.timers.tick(59999); await flush(); });
   assert.equal(calls, 2);
-  await act(async () => { t.mock.timers.tick(1); await flush(); });
+  await act(async () => { now += 1; t.mock.timers.tick(1); await flush(); });
   act(() => hook.result.current.toggle());
   await act(async () => { t.mock.timers.tick(1000); await flush(); });
   assert.equal(calls, 3);

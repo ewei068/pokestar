@@ -1,0 +1,43 @@
+.pokemon-upgrade-tabs { display: flex; gap: 8px; margin: 0 0 18px; }
+.pokemon-upgrade-tabs [aria-selected="true"] { border-color: var(--site-gold); color: var(--site-gold); }
+.item-nature { min-width: 0; }
+.build-identity { display: flex; gap: 12px; align-items: center; padding: 12px 16px; margin: 0 0 16px; }
+.build-identity > img, .build-identity > .collection-art-fallback { width: 72px; height: 72px; object-fit: contain; image-rendering: pixelated; flex: none; }
+.build-identity h2, .build-card h2, .build-card h3, .nature-editor h3 { margin: 0; }
+.build-identity > div { min-width: 0; }
+.build-identity h2 { font-size: 23px; font-weight: 400; overflow-wrap: anywhere; }
+.build-identity p { font-size: 12px; color: var(--site-soft); margin: 5px 0 9px; }
+.build-card h2 { font-size: 16px; font-weight: 400; }
+.build-card h3, .nature-editor h3 { font-size: 20px; font-weight: 400; overflow-wrap: anywhere; }
+.item-nature-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.build-card { min-width: 0; overflow: hidden; }
+.build-card .ui-panel-heading { padding: 13px 16px; }
+.build-card-body { padding: 16px; }
+.build-current-label { font-size: 12px; color: var(--site-soft); margin: 0 0 6px; }
+.build-effect { font-size: 13px; color: var(--site-soft); margin: 8px 0 20px; line-height: 1.5; overflow-wrap: anywhere; }
+.build-field { font-size: 13px; display: block; margin: 0 0 7px; }
+.item-nature select, .nature-editor select { width: 100%; min-width: 0; max-width: 100%; }
+.item-nature select, .nature-editor select { appearance: none; padding-right: 38px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23fff4dc' stroke-width='1.8'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px; font-size: 14px; }
+.build-actions { display: flex; gap: 9px; border-top: 1px solid var(--site-rule); padding-top: 16px; margin-top: 16px; }
+.build-actions > .ui-button--primary { flex: 1; }
+.build-cost { font-size: 13px; display: flex; justify-content: space-between; gap: 10px; margin: 18px 0 0; align-items: center; }
+.build-cost small { color: var(--site-soft); }
+.nature-stats { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 12px; font-variant-numeric: tabular-nums; }
+.nature-stats th, .nature-stats td { padding: 8px 5px; border-bottom: 1px solid var(--site-rule); }
+.nature-stats th { text-align: left; font-weight: normal; }
+.nature-stats td, .nature-stats thead th:not(:first-child) { text-align: right; }
+.nature-stats .is-changed { background: #edbe4308; }
+.nature-stats small { white-space: nowrap; }
+.nature-stats .is-raised { color: #ffb4a4; }
+.nature-stats .is-lowered { color: #b8d8ff; }
+.build-state, .build-notice { padding: 16px; }
+.build-notice { margin-bottom: 16px; border: 1px solid #c49b75; border-radius: 6px; background: #362940; }
+.build-notice p { margin-top: 0; }
+@media (max-width: 760px) {
+  .item-nature-layout { grid-template-columns: 1fr; gap: 14px; }
+  .build-identity { gap: 8px; padding: 10px; }
+  .build-card-body { padding: 14px; }
+  .build-identity h2 { font-size: 21px; }
+  .build-identity > img, .build-identity > .collection-art-fallback { width: 64px; height: 64px;  }
+  .nature-stats th, .nature-stats td { padding: 8px 3px; }
+}

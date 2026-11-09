@@ -51,6 +51,21 @@ progression; Vite hot reload alone updates only the client.
 Durable battle starts also need `DURABLE_BATTLES_ENABLED=true`. Keep the
 separate raid flag off until the remaining raid cutover work is complete.
 
+## Pokémon item and nature changes
+
+From an inspected Pokémon, open Train and use the **Item & nature** tab. Held
+selection/removal applies directly; selecting a nature previews all six stats,
+and Change nature uses one Mint. Bag Mint/Equip instead opens the active party
+and asks for confirmation. An uncertain result requires an explicit refresh;
+the client never resends the change automatically.
+
+The API provides `GET /api/player/pokemon/:id/build`,
+`POST /api/player/pokemon/:id/nature` and
+`POST /api/player/pokemon/:id/held-item`. These use the authenticated actor and
+existing read/action quotas; the backend owns previews, stock and persistence.
+See [local acceptance](../docs/verification/nature-held-items-2026-11-08.md) for
+verification and the existing cross-document reliability limits.
+
 ## Local HTTPS and phone testing (macOS)
 
 The phone and Mac use one HTTPS origin. Vite forwards `/api` to Node on loopback;

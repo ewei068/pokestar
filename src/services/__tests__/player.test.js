@@ -11,12 +11,19 @@ const { getDurableBattleService } = require('../durableBattle');
 const { validatePartyForBattle } = require('../party');
 const { createMockTrainer } = require('../../__testing__/mocks/trainer');
 
+const nature = jest.mocked(require('../pokemonNature').changePokemonNature);
+  const held = jest.mocked(require('../pokemon').changeHeldItem);
+  const remove = jest.mocked(require('../pokemon').removeHeldItem);
+
 jest.mock('../party', () => ({ ...jest.requireActual('../party'), validatePartyForBattle: jest.fn() }));
 
 jest.mock('../durableBattle', () => ({ isDurableBattleEnabled: () => true, getDurableBattleService: jest.fn() }));
 jest.mock('../npcBattle', () => ({ ...jest.requireActual('../npcBattle'), buildNpcBattle: jest.fn() }));
 
 jest.mock('../trainer', () => ({ getTrainer: jest.fn(), addExpAndMoneyTrainer: jest.fn() }));
+jest.mock('../pokemonNature', () => ({ ...jest.requireActual('../pokemonNature'), changePokemonNature: jest.fn() }));
+jest.mock('../pokemon', () => ({ ...jest.requireActual('../pokemon'), changeHeldItem: jest.fn(), removeHeldItem: jest.fn() }));
+
 
 const mockGetTrainer = /** @type {jest.Mock} */ (trainerService.getTrainer);
 const mockGetCollection = /** @type {jest.Mock} */ (db.getCollection);
@@ -86,7 +93,7 @@ test('pure reads do not grant; successful explicit reads grant once without retr
 test('detail projects nature/moves/ability and excludes private ownership data', async () => {
   documents[0].moveIds = []; // Stored catches inherit the species moves, as battles do.
   const result = await service.detail(actor, documents[0]._id.toHexString());
-  expect(result.pokemon.nature).toEqual({ name: 'Lonely', raisedStat: 1, loweredStat: 2 });
+  expect(result.pokemon.nature).toEqual({ id: '1', name: 'Lonely', raisedStat: 1, loweredStat: 2 });
   expect(result.pokemon.moves).toHaveLength(4);
   expect(result.pokemon.moves[0]).toHaveProperty('description');
   expect(result.pokemon).not.toHaveProperty('userId');
@@ -263,4 +270,42 @@ describe('owned training', () => {
     expect(mockUpdate).toHaveBeenCalledTimes(1);
     expect(mockGrant).toHaveBeenCalledTimes(1);
   });
+});
+
+
+test('build composes domain previews and owned inventory without grants or private documents', async () => {
+  trainer.backpack = { 1: { 7: 3 }, 3: { h197: 1 } };
+  const result = await service.build(actor, documents[0]._id.toHexString());
+  expect(result.natures).toHaveLength(25);
+  expect(result.pokemon.nature.id).toBe(String(documents[0].natureId));
+  expect(result.mintQuantity).toBe(3);
+  expect(result.heldItems.map(item => item.id)).toEqual(['h197']);
+  expect(result).not.toHaveProperty('backpack');
+  expect(result.pokemon).not.toHaveProperty('userId');
+  expect(mockGrant).not.toHaveBeenCalled();
+});
+
+test('domain mutation grants only changed operations, rejects injected fields and preserves saved results on grant failure', async () => {
+  const id = documents[0]._id.toHexString();
+  nature.mockResolvedValue({ data: { trainer, pokemon: documents[0], changed: true } });
+  mockGrant.mockResolvedValue({ err: null });
+  const changed = await service.changeNature(actor, id, { natureId: '3', expectedNatureId: '1' });
+  expect(changed.changed).toBe(true);
+  expect(nature).toHaveBeenCalledWith({ id: actor }, id, '3', '1');
+  expect(mockGrant).toHaveBeenCalledWith(trainer, 10, 25);
+  mockGrant.mockClear();
+  held.mockResolvedValue({ data: { trainer, pokemon: documents[0], changed: false } });
+  await service.changeHeldItem(actor, id, { heldItemId: 'h197', expectedHeldItemId: null });
+  expect(mockGrant).not.toHaveBeenCalled();
+  remove.mockResolvedValue({ data: { trainer, pokemon: documents[0], changed: true } });
+  mockGrant.mockRejectedValue(new Error('grant unavailable'));
+  const result = await service.changeHeldItem(actor, id, { heldItemId: null, expectedHeldItemId: 'h197' });
+  expect(result.changed).toBe(true);
+  expect(result.warning).toMatch(/saved/i);
+  expect(mockGrant).toHaveBeenCalledWith(trainer, 5, 10);
+  expect(remove).toHaveBeenCalledTimes(1);
+  await expect(service.changeNature(actor, id, { natureId: '3', expectedNatureId: '1', userId: 'other' })).rejects.toMatchObject({ status: 400 });
+  await expect(service.changeHeldItem(actor, id, { heldItemId: 'h197' })).rejects.toMatchObject({ status: 400 });
+  nature.mockResolvedValue({ err: 'changed', code: 'nature_changed', status: 409 });
+  await expect(service.changeNature(actor, id, { natureId: '3', expectedNatureId: '1' })).rejects.toMatchObject({ code: 'nature_changed', status: 409 });
 });

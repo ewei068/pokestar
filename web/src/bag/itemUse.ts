@@ -1,10 +1,10 @@
 export type ItemUseAction = "catch" | "change-nature" | "equip";
-export type ItemUse = { action: ItemUseAction; label: string; closed: string };
+export type ItemUse = { action: ItemUseAction; label: string; closed?: string };
 
 const actions: Record<ItemUseAction, ItemUse> = {
   catch: { action: "catch", label: "Catch", closed: "Catch isn't on the web yet. This ball stays in your bag." },
-  "change-nature": { action: "change-nature", label: "Change nature", closed: "Nature changes aren't on the web yet. This Mint stays in your bag." },
-  equip: { action: "equip", label: "Equip", closed: "Equipping isn't on the web yet. This item stays in your bag." },
+  "change-nature": { action: "change-nature", label: "Change nature" },
+  equip: { action: "equip", label: "Equip" },
 };
 
 const categoryUse: Record<string, ItemUseAction> = { "0": "catch", "3": "equip" };

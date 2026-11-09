@@ -10,6 +10,42 @@ service contracts and final implementation sequencing remain future work;
 the approved ticket release cut is recorded below.
 The implementation and verification below describe the existing battle experience.
 
+**Nature and held-item implementation · 2026-11-08 (local acceptance complete):**
+The approved combined tab is now **Item & nature** beside Train. Held-item
+selection/removal and the nature button apply directly; Bag Mint/Equip opens the
+active party and then confirmation. Nature rules live in `pokemonNature`, held
+transfers extend `pokemon`, and web projections compose those domain operations.
+There is no page-specific configuration service or new atomicity framework.
+
+[Implementation acceptance](../verification/nature-held-items-2026-11-08.md)
+records 1,022 backend tests, 223 client tests, root/subpath builds, real
+standalone-Mongo/HTTP checks and production-browser acceptance through 320×480.
+One independent review found two client lifecycle defects, both repaired with
+regressions and affected checks. Backend checkJs still fails with 478 existing
+diagnostics, down from 498, with zero additions after normalized comparison.
+Existing cross-document/legacy-writer gaps remain accepted. Published as
+[PR #261](https://github.com/ewei068/pokestar/pull/261), stacked on training
+[PR #259](https://github.com/ewei068/pokestar/pull/259). Equipment management in
+the same Pokémon workspace is the next requested journey. No deployment or live
+Discord/OAuth acceptance is claimed.
+
+**Nature and held-item design · 2026-11-08 (approved for planning):** maintainer
+requested one combined configuration tab beside Train, plus a Bag Mint/held-item
+action that opens the active party and then a confirmation. The
+[design study notes](../design/nature-held-items/README.md) record the brief,
+editable local prototype, source mechanics and accepted inventory/reliability
+constraints. The maintainer accepted the general design with refinements:
+Configure applies held-item selection and its Change nature button directly;
+Bag retains confirmation. Repeated quantity panels and the nature cost subtitle
+were removed. Mint cost stays beside its action; held-item confirmation retains
+the current/new item comparison. Revised fixture checks covered direct actions,
+Bag confirmation and desktop/phone layouts. Final feedback removes the
+confirmation return footer and standardizes quantity labels to `Owned: {number}`.
+The [implementation plan](../plans/2026-11-08-1812-feat-web-nature-held-items-plan.md)
+uses the existing narrow guarded-write/compensation approach and accepted gaps,
+without a new atomicity/recovery system. No production operation or runtime
+acceptance is claimed.
+
 **Training implementation · 2026-11-08 (local acceptance complete):** published as
 [PR #259](https://github.com/ewei068/pokestar/pull/259), stacked on the bag
 [PR #257](https://github.com/ewei068/pokestar/pull/257). #204 now
@@ -19,7 +55,7 @@ retains confirmed signed gains when stopped, and pauses on departure, session
 loss or uncertainty. Level 100 completes EXP eligibility; useful EV gains and
 Berry reductions can continue. The upgrade host keeps selection/return context
 separate from Train's state so later upgrade panels can own their own lifetime.
-Only Train is implemented.
+At that checkpoint, only Train was implemented.
 
 Discord and web now share canonical training rules and an owned operation with
 conditional, narrow Pokémon and quest writes. Successful web ticks replace the

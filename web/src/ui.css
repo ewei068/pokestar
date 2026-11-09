@@ -48,7 +48,7 @@
 :where(.ui-button, .primary-button, .icon-button) {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
 }
-.ui-button, .primary-button, .icon-button, .ui-controls button {
+.ui-button, .primary-button, .icon-button, .ui-controls :where(button) {
   font-size: var(--site-font-control); font-weight: 400; color: var(--site-ink);
 }
 :focus-visible { outline: 2px solid var(--site-accent); outline-offset: 3px; }

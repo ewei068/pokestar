@@ -7,6 +7,7 @@ export type TrainingPanelProps = {
   onToggle: () => void;
   running: boolean;
   pending: boolean;
+  interactionPending?: boolean;
   totals: TrainingGains;
   error: string | null;
   onRefresh: () => void;

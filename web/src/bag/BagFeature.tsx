@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { bagHref } from "../navigation/routes";
 import { usePlayer } from "../player/PlayerProvider";
 import type { BagItem } from "../player/types";
+import { BagPokemonUse } from "./BagPokemonUse";
 import { resolveItemUse } from "./itemUse";
 
 const categories = [
@@ -28,6 +29,8 @@ export function BagFeature() {
   const bag = useQuery(data.bag());
   const [itemId, setItemId] = useState(() => new URL(window.location.href).searchParams.get("item"));
   const [category, setCategory] = useState("all");
+  const [flowItem, setFlowItem] = useState<BagItem | null>(null);
+  const [selectedSnapshot, setSelectedSnapshot] = useState<BagItem | null>(null);
   const [usedId, setUsedId] = useState<string | null>(null);
   const [broken, setBroken] = useState<Record<string, boolean>>({});
   const [desktop, setDesktop] = useState(() => window.matchMedia?.("(min-width: 761px)").matches === true);
@@ -46,28 +49,33 @@ export function BagFeature() {
   }, []);
   const items = bag.data;
   const visible = (items || []).filter(item => category === "all" || item.category === category);
-  const addressed = itemId && visible.some(item => item.id === itemId) ? itemId : null;
+  const retained = selectedSnapshot && (itemId === null || selectedSnapshot.id === itemId)
+    && (category === "all" || category === selectedSnapshot.category) ? selectedSnapshot : null;
+  const addressed = retained?.id || (itemId && visible.some(item => item.id === itemId) ? itemId : null);
   const openId = addressed || (desktop && visible[0] ? visible[0].id : null);
-  const open = visible.find(item => item.id === openId) || null;
+  const open = visible.find(item => item.id === openId) || (openId === retained?.id ? retained : null);
   const itemUse = open ? resolveItemUse(open.id, open.category) : null;
   useEffect(() => {
-    if (!items || !itemId || items.some(item => item.id === itemId)) return;
+    if (!items || !itemId || items.some(item => item.id === itemId) || retained) return;
     setUsedId(null);
     navigate(bagHref(new URL(window.location.href), null), true);
-  }, [items, itemId]);
+  }, [items, itemId, retained]);
+  useEffect(() => { setFlowItem(null); }, [itemId, category]);
+  useEffect(() => { setSelectedSnapshot(current => current?.id === itemId ? current : null); }, [itemId]);
   const chooseCategory = (next: string) => {
     setCategory(next);
+    setSelectedSnapshot(null);
     setUsedId(null);
     const stillThere = (items || []).some(item => item.id === itemId && (next === "all" || item.category === next));
     if (itemId && !stillThere) navigate(bagHref(new URL(window.location.href), null), true);
   };
-  const pick = (id: string) => { setUsedId(null); navigate(bagHref(new URL(window.location.href), id)); };
+  const pick = (id: string) => { setSelectedSnapshot(null); setUsedId(null); navigate(bagHref(new URL(window.location.href), id)); };
   if (bag.isPending) return <main className="page-shell bag-page"><h1 className="bag-heading">Bag</h1>
     <section className="ui-panel bag-empty" aria-busy="true"><h2>Loading your bag…</h2></section></main>;
   if (bag.isError && !items) return <main className="page-shell bag-page"><h1 className="bag-heading">Bag</h1>
     <section className="ui-panel bag-empty"><h2>Couldn't load your bag.</h2><p>Your items are still in Discord.</p>
       <button type="button" className="bag-secondary" onClick={() => { void bag.refetch(); }}>Try again</button></section></main>;
-  if (!items?.length) return <main className="page-shell bag-page"><h1 className="bag-heading">Bag</h1>
+  if (!items?.length && !retained) return <main className="page-shell bag-page"><h1 className="bag-heading">Bag</h1>
     <section className="ui-panel bag-empty"><h2>Your bag is empty.</h2><p>Catch, raid and shop rewards will land here.</p></section></main>;
   const groups: { id: string; name: string; items: BagItem[] }[] = [];
   for (const item of visible) {
@@ -85,7 +93,7 @@ export function BagFeature() {
     {phoneDetail && <button type="button" className="bag-mobile-back" onClick={() => { setUsedId(null); navigate(bagHref(new URL(window.location.href), null)); }}>‹ All items</button>}
     <div className="bag-layout">
       <section className="ui-panel bag-panel bag-list" aria-label="Owned items">
-        <header className="ui-panel-heading bag-list-head"><h2>Items</h2><small>{items.length} owned</small></header>
+        <header className="ui-panel-heading bag-list-head"><h2>Items</h2><small>{items?.length || 0} owned</small></header>
         <div className="item-rows">{groups.length ? groups.map(group => <section className="item-group" key={group.id}><h3>{group.name}</h3>
           {group.items.map(item => <button type="button" className="item-row" key={item.id} aria-pressed={item.id === openId} onClick={() => pick(item.id)}>
             {itemArt(item, false, broken[item.id] === true, () => setBroken(current => ({ ...current, [item.id]: true })))}
@@ -95,12 +103,19 @@ export function BagFeature() {
       </section>
       {open && <section className="ui-panel bag-panel bag-detail" aria-label="Selected item"><div className="item-detail">
         <div className="item-detail-head">{itemArt(open, true, broken[open.id] === true, () => setBroken(current => ({ ...current, [open.id]: true })))}
-          <div><p className="item-kind">{open.categoryName}</p><h2>{open.name}</h2></div></div>
-        <p className="item-owned">Owned <b>{open.quantity.toLocaleString()}</b></p>
+          <div><p className="item-kind">{open.categoryName}</p><h2 tabIndex={-1}>{open.name}</h2></div></div>
+        <p className="item-owned">Owned: <b>{open.quantity.toLocaleString()}</b></p>
         <p className="item-description">{open.description}</p>
         {itemUse && <div className="use-bar">{usedId === open.id && <p className="use-note" role="status">{itemUse.closed}</p>}
-          <button type="button" className="primary-button" onClick={() => setUsedId(open.id)}>{itemUse.label}</button></div>}
+          <button type="button" className="primary-button" disabled={open.quantity <= 0} onClick={() => {
+            if (itemUse.action === "catch") setUsedId(open.id); else {
+              // Keep the item detail before the Bag cache can drop the last copy.
+              setSelectedSnapshot({ ...open, quantity: 0 });
+              setFlowItem(open);
+            }
+          }}>{itemUse.label}</button></div>}
       </div></section>}
     </div>
+    {flowItem && <BagPokemonUse key={flowItem.id} item={flowItem} onClose={() => setFlowItem(null)} />}
   </main>;
 }

@@ -78,15 +78,12 @@ const ChangeHeldItem = async (ref, { user, pokemonId }) => {
 
   const onItemSelected = useCallback(
     async (selectedItem) => {
-      const {
-        data: { pokemon: newPokemon, trainer: newTrainer },
-        err: changeItemErr,
-      } = await changeHeldItem(user, pokemon._id.toString(), selectedItem);
-      if (changeItemErr) {
-        refreshTrainer();
-        refreshPokemon();
-        setContent(changeItemErr);
+      const result = await changeHeldItem(user, pokemon._id.toString(), selectedItem, currentHeldItem ?? null);
+      if (result.err || !result.data) {
+        await Promise.all([refreshTrainer(), refreshPokemon()]);
+        setContent(result.err || "Could not confirm the held item change. Refresh before trying again.");
       } else {
+        const { pokemon: newPokemon, trainer: newTrainer } = result.data;
         setTrainer(newTrainer);
         setPokemon(newPokemon);
         setContent(
@@ -105,19 +102,18 @@ const ChangeHeldItem = async (ref, { user, pokemonId }) => {
       pokemon,
       setTrainer,
       refreshTrainer,
+      refreshPokemon,
+      currentHeldItem,
     ],
     ref
   );
   const removeItemButtonKey = useCallbackBinding(async () => {
-    const {
-      data: { pokemon: newPokemon, trainer: newTrainer },
-      err: changeItemErr,
-    } = await removeHeldItem(user, pokemon._id.toString());
-    if (changeItemErr) {
-      refreshTrainer();
-      refreshPokemon();
-      setContent(changeItemErr);
+    const result = await removeHeldItem(user, pokemon._id.toString(), currentHeldItem ?? null);
+    if (result.err || !result.data) {
+      await Promise.all([refreshTrainer(), refreshPokemon()]);
+      setContent(result.err || "Could not confirm the held item change. Refresh before trying again.");
     } else {
+      const { pokemon: newPokemon, trainer: newTrainer } = result.data;
       setTrainer(newTrainer);
       setPokemon(newPokemon);
       setContent(

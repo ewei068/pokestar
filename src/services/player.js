@@ -2,7 +2,7 @@ const { ObjectId } = require("mongodb");
 const { getCollection } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { pokemonConfig, natureConfig, typeConfig, rarities } = require("../config/pokemonConfig");
-const { calculatePokemonStats, findOwnedPokemon, findOwnedPokemons } = require("./pokemon");
+const { calculatePokemonStats, findOwnedPokemon, findOwnedPokemons, changeHeldItem, removeHeldItem } = require("./pokemon");
 const { getTrainer, addExpAndMoneyTrainer } = require("./trainer");
 const { canAddOrMovePokemonToParty, executePartyCommand } = require("./party");
 const { projectTrainerProfile } = require("../web/trainerProfile");
@@ -13,9 +13,11 @@ const { getPokemonExpNeeded, getMoveIds } = require("../utils/pokemonUtils");
 const { logger } = require("../log");
 const { projectNpcCatalog, buildNpcBattle } = require("./npcBattle");
 const { projectDungeonCatalog, projectTowerCatalog, startDungeon, startTower } = require("./playModes");
-const { backpackCategoryConfig, backpackItemConfig } = require("../config/backpackConfig");
+const { backpackCategoryConfig, backpackItemConfig, backpackCategories, backpackItems } = require("../config/backpackConfig");
 const { getDurableBattleService, isDurableBattleEnabled } = require("./durableBattle");
 const { TrainingError, getOwnedTrainingContext, trainOwnedPokemon } = require("./training");
+const { getNatureChoices, changePokemonNature } = require("./pokemonNature");
+const { eventConfig, eventNames } = require("../config/eventConfig");
 
 class PlayerError extends Error {
   /**
@@ -148,7 +150,7 @@ const projectPokemonDetail = (stored, trainer) => {
   const baseExp = getPokemonExpNeeded(stored.level, species.growthRate);
   return {
     ...projectPokemon(stored, trainer), stats: pokemon.stats, ivs: [...stored.ivs], evs: [...stored.evs],
-    nature: { name: nature.name, raisedStat: nature.stats.findIndex((value) => value > 0) < 0 ? null : nature.stats.findIndex((value) => value > 0),
+    nature: { id: String(stored.natureId), name: nature.name, raisedStat: nature.stats.findIndex((value) => value > 0) < 0 ? null : nature.stats.findIndex((value) => value > 0),
       loweredStat: nature.stats.findIndex((value) => value < 0) < 0 ? null : nature.stats.findIndex((value) => value < 0) },
     exp: stored.level >= 100 ? null : { current: stored.exp - baseExp, required: getPokemonExpNeeded(stored.level + 1, species.growthRate) - baseExp },
     moveIds: [...moveIds],
@@ -163,6 +165,16 @@ const projectPokemonDetail = (stored, trainer) => {
     heldItem: heldItem ? { name: heldItem.name, description: heldItem.description } : null,
   };
 };
+
+/**
+ * Web projection composed from Pokemon nature and held-item domain capabilities.
+ * @param {WithId<Pokemon>} pokemon
+ * @param {WithId<Trainer>} trainer
+ * @param {ReturnType<typeof projectBag>["items"]=} items
+ */
+const projectBuild = (pokemon, trainer, items = projectBag(trainer).items) => ({ pokemon: projectPokemonDetail(pokemon, trainer), natures: getNatureChoices(pokemon),
+    heldItems: items.filter(item => item.category === backpackCategories.HELD_ITEMS),
+    mintQuantity: items.find(item => item.id === backpackItems.MINT)?.quantity || 0, mintCost: 1 });
 
 /** @param {PartyInfo} party */
 const projectPartyTargets = (party) => {
@@ -276,6 +288,79 @@ const createPlayerService = () => {
       trainer: projectTrainerProfile(context.trainer), trained: result.trained, gains: result.gains,
       ...(warning ? { warning } : {}) };
   };
+  /**
+   * @param {string} userId
+   * @param {string} id
+   */
+  const build = async (userId, id) => {
+    if (typeof id !== "string" || !/^[a-f\d]{24}$/i.test(id)) throw new PlayerError("pokemon_not_found", 404);
+    const trainer = await requireTrainer(userId);
+    const pokemon = await findOwnedPokemon(userId, id);
+    if (!pokemon) throw new PlayerError("pokemon_not_found", 404);
+    return projectBuild(pokemon, trainer);
+  };
+  /**
+   * The domain change is not replayed when a later grant/read fails.
+   * @param {string} userId
+   * @param {import("./pokemonNature").PokemonNatureResult} result
+   * @param {{exp: number, money: number}} grant
+   */
+  const finishBuildChange = async (userId, result, grant) => {
+    if (result.err || !result.data) throw new PlayerError(result.code || "build_change_failed", result.status || 400);
+    let { trainer, pokemon } = result.data;
+    const { changed } = result.data;
+    let warning;
+    if (changed) {
+      try {
+        const awarded = await addExpAndMoneyTrainer(await requireTrainer(userId), grant.exp, grant.money);
+        if (awarded.err) throw new Error(awarded.err);
+      } catch (error) {
+        logger.warn("Pokemon build participation grant failed", error);
+        warning = "Change saved, but participation rewards could not be confirmed. Refresh Pokemon and Bag.";
+      }
+      try {
+        trainer = await requireTrainer(userId);
+        const refreshed = await findOwnedPokemon(userId, pokemon._id.toString());
+        if (!refreshed) throw new Error("pokemon_not_found");
+        pokemon = refreshed;
+      } catch (error) {
+        logger.warn("Pokemon build refresh failed", error);
+        warning = "Change saved, but refreshed state could not be confirmed. Refresh Pokemon and Bag.";
+      }
+    }
+    const { items } = projectBag(trainer);
+    return { ...projectBuild(pokemon, trainer, items), items, trainer: projectTrainerProfile(trainer),
+      changed, ...(warning ? { warning } : {}) };
+  };
+  /**
+   * @param {string} userId
+   * @param {string} id
+   * @param {Record<string, unknown>} input
+   */
+  const changeNature = async (userId, id, input) => {
+    if (!input || typeof input !== "object" || Array.isArray(input) || Object.keys(input).length !== 2 ||
+        typeof input.natureId !== "string" || typeof input.expectedNatureId !== "string" ||
+        Object.keys(input).some(key => !["natureId", "expectedNatureId"].includes(key))) throw new PlayerError("invalid_nature_request");
+    const result = await changePokemonNature({ id: userId }, id, input.natureId, input.expectedNatureId);
+    const { exp, money } = eventConfig[eventNames.NATURE_CONFIRM];
+    return finishBuildChange(userId, result, { exp, money });
+  };
+  /**
+   * @param {string} userId
+   * @param {string} id
+   * @param {Record<string, unknown>} input
+   */
+  const changeHeld = async (userId, id, input) => {
+    if (!input || typeof input !== "object" || Array.isArray(input) || Object.keys(input).length !== 2 ||
+        !(input.heldItemId === null || typeof input.heldItemId === "string") ||
+        !(input.expectedHeldItemId === null || typeof input.expectedHeldItemId === "string") ||
+        Object.keys(input).some(key => !["heldItemId", "expectedHeldItemId"].includes(key))) throw new PlayerError("invalid_held_item_request");
+    const { heldItemId, expectedHeldItemId } = /** @type {{heldItemId: HeldItemIdEnum | null, expectedHeldItemId: HeldItemIdEnum | null}} */ (input);
+    const result = heldItemId === null
+      ? await removeHeldItem({ id: userId }, id, expectedHeldItemId)
+      : await changeHeldItem({ id: userId }, id, heldItemId, expectedHeldItemId);
+    return finishBuildChange(userId, result, { exp: 5, money: 10 });
+  };
   /** @param {string} userId */
   const party = async (userId) => {
     const trainer = await requireTrainer(userId);
@@ -350,7 +435,7 @@ const createPlayerService = () => {
     } catch (error) { logger.warn("Player interaction grant failed", error); }
     return { ...result, ...await profile(userId) };
   };
-  return { collection, detail, training, train, party, profile, npcs, dungeons, tower, bag, interact };
+  return { collection, detail, training, train, build, changeNature, changeHeldItem: changeHeld, party, profile, npcs, dungeons, tower, bag, interact };
 };
 
 module.exports = { createPlayerService, parseCollectionQuery, projectPokemon, projectPokemonDetail, projectPartyTargets, PlayerError };

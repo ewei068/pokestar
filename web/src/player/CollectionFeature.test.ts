@@ -60,6 +60,8 @@ it("returns from training to the same collection controls and inspection", async
     nature: { name: "Hardy", raisedStat: null, loweredStat: null }, moves: [], ability: null,
     heldItem: null, exp: { current: 10, required: 100 } };
   globalThis.fetch = async (url, init) => {
+    if (String(url).endsWith("/build")) return json({ pokemon: { ...detail, nature: { ...detail.nature, id: "0" }, heldItemId: null },
+      natures: [{ id: "0", name: "Hardy", raisedStat: null, loweredStat: null, stats: detail.stats }], heldItems: [], mintQuantity: 0, mintCost: 1 });
     if (String(url).includes("/training")) return json({ pokemon: detail, locations: [
       { id: "0", name: "Home", emoji: "🏠", level: 0, owned: true, nextGains: { exp: 30, evs: [0,0,0,0,0,0] }, canTrain: true },
     ] });
@@ -84,6 +86,15 @@ it("returns from training to the same collection controls and inspection", async
   assert.equal(new URL(dom.window.location.href).searchParams.get("upgrade"), "train");
   assert.equal(view.queryByRole("textbox", { name: "Search Pokémon" }), null);
   assert.equal(tile.isConnected, true);
+  const historyLength = window.history.length;
+  const returnState = window.history.state.pokemonUpgradeFrom;
+  fireEvent.click(view.getByRole("tab", { name: "Item & nature" }));
+  assert.ok(await view.findByRole("heading", { name: "Item & nature" }));
+  assert.equal(new URL(window.location.href).searchParams.get("upgrade"), "build");
+  assert.equal(window.history.length, historyLength);
+  assert.equal(window.history.state.pokemonUpgradeFrom, returnState);
+  assert.equal(view.queryByRole("button", { name: "Train" }), null);
+  assert.ok(view.getByRole("tab", { name: "Train" }));
   fireEvent.click(view.getByRole("button", { name: "‹ Pokémon" }));
   await waitFor(() => assert.ok(view.getByRole("textbox", { name: "Search Pokémon" })));
   assert.ok(view.getByRole("textbox", { name: "Search Pokémon" }) === search);

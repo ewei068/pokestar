@@ -7,17 +7,12 @@
  * natureConfirm.js Builds the confirmation menu for the nature selected for the pokemon.
  */
 const { getState } = require("../services/state");
-const {
-  getPokemon,
-  DEPRECATEDcalculateAndUpdatePokemonStats: calculateAndUpdatePokemonStats,
-} = require("../services/pokemon");
-const { natureConfig, pokemonConfig } = require("../config/pokemonConfig");
-const { getTrainer, updateTrainer } = require("../services/trainer");
+const { changePokemonNature } = require("../services/pokemonNature");
+const { natureConfig } = require("../config/pokemonConfig");
 const {
   backpackItemConfig,
   backpackItems,
 } = require("../config/backpackConfig");
-const { getItems, removeItems } = require("../utils/trainerUtils");
 
 const natureConfirm = async (interaction, data) => {
   // get state
@@ -41,50 +36,12 @@ const natureConfirm = async (interaction, data) => {
     return { err: "Invalid nature selection." };
   }
 
-  // get trainer
-  let trainer = await getTrainer(interaction.user);
-  if (trainer.err) {
-    return { err: trainer.err };
-  }
-  trainer = trainer.data;
-
-  // get pokemon
-  let pokemon = await getPokemon(trainer, state.pokemonId);
-  if (pokemon.err) {
-    return { err: pokemon.err };
-  }
-  pokemon = pokemon.data;
-
-  // if pokemon already has same nature, err
-  if (pokemon.natureId === natureId) {
-    return { err: "This pokemon already has this nature." };
-  }
-
-  // check for mint
-  const mintCount = getItems(trainer, backpackItems.MINT);
-  if (mintCount < 1) {
-    return {
-      err: "You do not have a mint! Get them daily from `/pve palmer`.",
-    };
-  }
-
-  // reduce mint count
-  removeItems(trainer, backpackItems.MINT, 1);
-  const reduceMint = await updateTrainer(trainer);
-  if (reduceMint.err) {
-    return { err: reduceMint.err };
-  }
-
-  // set pokemon nature
-  pokemon.natureId = natureId;
-  const natureChange = await calculateAndUpdatePokemonStats(
-    pokemon,
-    pokemonConfig[pokemon.speciesId],
-    true
+  const result = await changePokemonNature(
+    interaction.user, state.pokemonId, natureId, state.expectedNatureId
   );
-  if (natureChange.err) {
-    return { err: natureChange.err };
-  }
+  if (result.err || !result.data) return { err: result.err || "Could not confirm the nature change. Refresh before trying again." };
+  if (!result.data.changed) return { err: "This pokemon already has this nature." };
+  const { pokemon } = result.data;
 
   await interaction.update({
     content: `Changed ${pokemon.name}'s nature to ${natureData.name} for 1 ${

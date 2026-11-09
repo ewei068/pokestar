@@ -71,11 +71,13 @@ const {
   SWAP_COST,
 } = require("../config/equipmentConfig");
 const { buildIdConfigSelectRow } = require("../components/idConfigSelectRow");
-const { getItems, removeItems, addItems } = require("../utils/trainerUtils");
+const { getItems, removeItems } = require("../utils/trainerUtils");
 const {
   backpackItemConfig,
   backpackItems,
+  backpackCategories,
 } = require("../config/backpackConfig");
+const { prepareBackpackChange, writeBackpackChange } = require("./backpack");
 const { drawIterable, drawUniform } = require("../utils/gachaUtils");
 const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
 const { buildEquipmentSelectRow } = require("../components/equipmentSelectRow");
@@ -1894,18 +1896,15 @@ const buildEquipmentSwapSend = async ({
 const buildNatureSend = async ({ stateId = null, user = null } = {}) => {
   const state = getState(stateId);
 
-  let trainer = await getTrainer(user);
-  if (trainer.err) {
-    return { err: trainer.err };
-  }
-  trainer = trainer.data;
+  const trainerResult = await getTrainer(user);
+  if (trainerResult.err) return { err: trainerResult.err };
+  const trainer = trainerResult.data;
 
-  let pokemon = await getPokemon(trainer, state.pokemonId);
-  if (pokemon.err) {
-    return { err: pokemon.err };
-  }
-  pokemon = pokemon.data;
+  const pokemonResult = await getPokemon(trainer, state.pokemonId);
+  if (pokemonResult.err) return { err: pokemonResult.err };
+  let pokemon = pokemonResult.data;
 
+  if (!Object.prototype.hasOwnProperty.call(state, "expectedNatureId")) state.expectedNatureId = pokemon.natureId;
   const { natureId } = state;
   const natureData = natureConfig[natureId];
   // if nature exists, change pokemon nature for display
@@ -2001,89 +2000,87 @@ const checkNumPokemon = async (trainer, quantity = 0) => {
 };
 
 /**
- * @param {CompactUser} user
+ * Transfer a held item using current owner/stock and the caller's observed item.
+ * Held-item effects belong to battles, so this never recalculates stored stats.
+ * @param {import("./trainer").TrainerIdentity} user
  * @param {string} pokemonId
- * @param {HeldItemIdEnum} heldItemId
- * @returns {Promise<{data?: {trainer: WithId<Trainer>, pokemon: WithId<Pokemon>}, err?: string}>}
+ * @param {HeldItemIdEnum | null} heldItemId
+ * @param {HeldItemIdEnum | null=} expectedHeldItemId
+ * @returns {Promise<{data?: {trainer: WithId<Trainer>, pokemon: WithId<Pokemon>, changed: boolean}, err?: string, code?: string, status?: number}>}
  */
-const changeHeldItem = async (user, pokemonId, heldItemId) => {
-  const { data: trainer, err: trainerErr } = await getTrainer(user);
-  if (trainerErr) {
-    return { err: trainerErr };
+const transferHeldItem = async (user, pokemonId, heldItemId, expectedHeldItemId) => {
+  /**
+   * @param {unknown} id
+   * @returns {boolean}
+   */
+  const isHeldItem = (id) => typeof id === "string" && Object.prototype.hasOwnProperty.call(backpackItemConfig, id) &&
+    backpackItemConfig[id].category === backpackCategories.HELD_ITEMS;
+  if (heldItemId !== null && !isHeldItem(heldItemId)) return { err: "Invalid held item.", code: "invalid_held_item", status: 400 };
+  if (typeof pokemonId !== "string" || !/^[a-f\d]{24}$/i.test(pokemonId)) {
+    return { err: "Pokemon not found or Pokemon not owned by you.", code: "pokemon_not_found", status: 404 };
   }
-  const { data: pokemon, err: pokemonErr } = await getPokemon(
-    trainer,
-    pokemonId
-  );
-  if (pokemonErr) {
-    return { err: pokemonErr };
+  /** @type {WithId<Trainer>} */
+  let trainer;
+  /** @type {WithId<Pokemon> | null} */
+  let pokemon;
+  try {
+    const result = await getTrainer(user, false);
+    trainer = result.data;
+    if (result.err || !trainer || trainer.userId !== user.id) return { err: result.err || "Error getting trainer.", code: "trainer_unavailable", status: 503 };
+    const store = await getCollection(collectionNames.USER_POKEMON);
+    pokemon = /** @type {WithId<Pokemon> | null} */ (await store.findOne({ userId: user.id, _id: idFrom(pokemonId) }));
+  } catch {
+    return { err: "Could not load Pokemon. Refresh before trying again.", code: "pokemon_unavailable", status: 503 };
   }
-  if (getItems(trainer, heldItemId) < 1) {
-    return { err: "You don't have this item!" };
+  if (!pokemon) return { err: "Pokemon not found or Pokemon not owned by you.", code: "pokemon_not_found", status: 404 };
+  const current = pokemon.heldItemId ?? null;
+  if (expectedHeldItemId !== undefined && expectedHeldItemId !== current) {
+    return { err: "This Pokemon's held item changed. Refresh before trying again.", code: "held_item_changed", status: 409 };
   }
-
-  if (pokemon.heldItemId) {
-    addItems(trainer, pokemon.heldItemId, 1);
+  if (heldItemId === current) return { data: { trainer, pokemon, changed: false } };
+  if (current !== null && !isHeldItem(current)) return { err: "Invalid current held item. Refresh before trying again.", code: "invalid_held_item", status: 409 };
+  const deltas = /** @type {Record<string, number>} */ ({});
+  if (heldItemId !== null) deltas[heldItemId] = -1;
+  if (current !== null) deltas[current] = 1;
+  const inventory = prepareBackpackChange(trainer, deltas);
+  if (!inventory) return { err: "You don't have this item!", code: "insufficient_items", status: 400 };
+  const filter = { userId: user.id, _id: pokemon._id,
+    heldItemId: pokemon.heldItemId === undefined ? { $exists: false } : { $eq: pokemon.heldItemId } };
+  try {
+    const savedTrainer = await writeBackpackChange(inventory);
+    if (!savedTrainer) return { err: "Your Bag changed. Refresh before trying again.", code: "inventory_changed", status: 409 };
+    const saved = await findAndUpdateDocument(collectionNames.USER_POKEMON, filter,
+      { $set: { heldItemId } }, { upsert: false, returnDocument: "after" });
+    if (saved.value) return { data: { trainer: savedTrainer, pokemon: /** @type {WithId<Pokemon>} */ (saved.value), changed: true } };
+    if (await writeBackpackChange(inventory, true)) {
+      return { err: "This Pokemon changed. Refresh before trying again.", code: "held_item_changed", status: 409 };
+    }
+  } catch {
+    // A lost response may follow an applied write; do not refund or replay.
   }
-  removeItems(trainer, heldItemId, 1);
-  pokemon.heldItemId = heldItemId;
-
-  const { data: newTrainer, err: trainerUpdateErr } = await updateTrainer(
-    trainer
-  );
-  if (trainerUpdateErr) {
-    return { err: trainerUpdateErr };
-  }
-  const { data: newPokemon, err: pokemonUpdateErr } =
-    await calculateAndUpdatePokemonStats(pokemon, { force: true });
-  if (pokemonUpdateErr) {
-    return { err: pokemonUpdateErr };
-  }
-
-  return {
-    data: { trainer: newTrainer, pokemon: newPokemon },
-  };
+  return { err: "The change could not be confirmed. Refresh Pokemon and Bag before trying again.", code: "configuration_uncertain", status: 503 };
 };
 
 /**
- * @param {CompactUser} user
+ * @param {import("./trainer").TrainerIdentity} user
  * @param {string} pokemonId
- * @returns {Promise<{data?: {trainer: WithId<Trainer>, pokemon: WithId<Pokemon>}, err?: string}>}
+ * @param {HeldItemIdEnum} heldItemId
+ * @param {HeldItemIdEnum | null=} expectedHeldItemId
+ * @returns {ReturnType<typeof transferHeldItem>}
  */
-const removeHeldItem = async (user, pokemonId) => {
-  const { data: trainer, err: trainerErr } = await getTrainer(user);
-  if (trainerErr) {
-    return { err: trainerErr };
-  }
-  const { data: pokemon, err: pokemonErr } = await getPokemon(
-    trainer,
-    pokemonId
-  );
-  if (pokemonErr) {
-    return { err: pokemonErr };
-  }
-
-  if (pokemon.heldItemId) {
-    addItems(trainer, pokemon.heldItemId, 1);
-  }
-  pokemon.heldItemId = null;
-
-  const { data: newTrainer, err: trainerUpdateErr } = await updateTrainer(
-    trainer
-  );
-  if (trainerUpdateErr) {
-    return { err: trainerUpdateErr };
-  }
-  const { data: newPokemon, err: pokemonUpdateErr } =
-    await calculateAndUpdatePokemonStats(pokemon, { force: true });
-  if (pokemonUpdateErr) {
-    return { err: pokemonUpdateErr };
-  }
-
-  return {
-    data: { trainer: newTrainer, pokemon: newPokemon },
-  };
+const changeHeldItem = async (user, pokemonId, heldItemId, expectedHeldItemId) => {
+  if (heldItemId === null || heldItemId === undefined) return { err: "Invalid held item.", code: "invalid_held_item", status: 400 };
+  return transferHeldItem(user, pokemonId, heldItemId, expectedHeldItemId);
 };
+
+/**
+ * @param {import("./trainer").TrainerIdentity} user
+ * @param {string} pokemonId
+ * @param {HeldItemIdEnum | null=} expectedHeldItemId
+ * @returns {ReturnType<typeof transferHeldItem>}
+ */
+const removeHeldItem = async (user, pokemonId, expectedHeldItemId) =>
+  transferHeldItem(user, pokemonId, null, expectedHeldItemId);
 
 /**
  * Checks if a Pokémon can change forms and validates requirements
