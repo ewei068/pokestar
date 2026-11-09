@@ -127,3 +127,13 @@ live Discord/OAuth, physical-device or process-crash acceptance is claimed. Disc
 Disposable acceptance processes were stopped and their temporary MongoDB data
 and root bundle copy removed after verification. Logs, harness scripts and the
 editable ignored design study remain machine-local.
+
+## PR compatibility check
+
+PR CI passed its Node 24 lane. The Node 18 comparison lane exposed seven failures
+in the inherited training-loop test helper, which used Node 24's mock-timer
+options API. The helper now selects the supported API, and the Retry-After test
+uses an explicit wall clock because Node 18 cannot mock Date with MockTimers.
+All seven lifecycle assertions remain. Full client suites pass on both Node
+18.20.4 and Node 24.22.1 (223 tests each); the Node 18 production build also
+passes. This is a test-only compatibility repair, without runtime changes.
