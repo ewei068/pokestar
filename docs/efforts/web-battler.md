@@ -10,6 +10,22 @@ service contracts and final implementation sequencing remain future work;
 the approved ticket release cut is recorded below.
 The implementation and verification below describe the existing battle experience.
 
+**Nature and held-item implementation · 2026-11-08 (local acceptance complete):**
+The approved combined tab is now **Item & nature** beside Train. Held-item
+selection/removal and the nature button apply directly; Bag Mint/Equip opens the
+active party and then confirmation. Nature rules live in `pokemonNature`, held
+transfers extend `pokemon`, and web projections compose those domain operations.
+There is no page-specific configuration service or new atomicity framework.
+
+[Implementation acceptance](../verification/nature-held-items-2026-11-08.md)
+records 1,022 backend tests, 223 client tests, root/subpath builds, real
+standalone-Mongo/HTTP checks and production-browser acceptance through 320×480.
+One independent review found two client lifecycle defects, both repaired with
+regressions and affected checks. Backend checkJs still fails with 478 existing
+diagnostics, down from 498, with zero additions after normalized comparison.
+Existing cross-document/legacy-writer gaps remain accepted. Changes are local;
+no publishing, deployment or live Discord/OAuth acceptance is claimed.
+
 **Nature and held-item design · 2026-11-08 (approved for planning):** maintainer
 requested one combined configuration tab beside Train, plus a Bag Mint/held-item
 action that opens the active party and then a confirmation. The
@@ -36,7 +52,7 @@ retains confirmed signed gains when stopped, and pauses on departure, session
 loss or uncertainty. Level 100 completes EXP eligibility; useful EV gains and
 Berry reductions can continue. The upgrade host keeps selection/return context
 separate from Train's state so later upgrade panels can own their own lifetime.
-Only Train is implemented.
+At that checkpoint, only Train was implemented.
 
 Discord and web now share canonical training rules and an owned operation with
 conditional, narrow Pokémon and quest writes. Successful web ticks replace the

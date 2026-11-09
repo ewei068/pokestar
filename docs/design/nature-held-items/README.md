@@ -209,3 +209,15 @@ changes and held-item transfers. Web projections compose those capabilities;
 Discord calls the same domain operations. This supersedes the plan's proposed
 `pokemonConfiguration.js` module, while preserving its approved behavior,
 verification and existing reliability limits.
+
+
+## Implementation acceptance · 2026-11-08
+
+The production client now uses **Item & nature**, direct tab actions and the
+approved Bag party/confirmation flow. Nature and held-item domains are shared
+with Discord; the web layer composes their display data and participation policy.
+[Local acceptance](../../verification/nature-held-items-2026-11-08.md) records
+passing suites/builds, real disposable Mongo/HTTP and production-browser checks,
+two repaired review findings, the remaining checkJs baseline and accepted
+reliability limits. The earlier sections above describe fixture-only study work.
+Publishing and deployment have not been performed.

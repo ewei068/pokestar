@@ -59,7 +59,7 @@
 .bag-use-heading h2 { margin: 0; flex: 1; font-weight: 400; font-size: 22px; }
 .bag-use-body { padding: 18px; }
 .bag-use-body > p:first-child { margin-top: 0; }
-.bag-use-body .build-identity h3 { font-size: 24px; font-weight: 400; margin: 0; }
+.bag-use-body .build-identity h3 { font-size: 24px; font-weight: 400; margin: 0; overflow-wrap: anywhere; }
 .bag-use-party.collection-workspace { display: block; width: 100%; padding: 0; margin: 0; --collection-soft: var(--site-soft); }
 .bag-use-party .collection-formation { margin: 0; }
 .bag-use-party .collection-slot[aria-disabled="true"] { cursor: default; }
