@@ -10,6 +10,37 @@ service contracts and final implementation sequencing remain future work;
 the approved ticket release cut is recorded below.
 The implementation and verification below describe the existing battle experience.
 
+**Equipment approval · 2026-11-09 (implementation authorized):** the maintainer
+approved the Upgrade/Reroll study, with the reroll subtitle removed and the
+selected slot’s value/quality previewed as current → ???. Modifier replacement
+is unknown only for multi-option slots. The
+[design record](../design/equipment/README.md#implementation-approval--2026-11-09)
+preserves those refinements. Planning/review/progress will remain internal to
+implementation agents, and execution proceeds without another plan approval.
+No production equipment acceptance is established at this checkpoint.
+
+**Equipment design · 2026-11-08 (proposed, awaiting review):** the maintainer
+requested equipment level upgrades and stat-slot rerolls in the existing Pokémon
+upgrade workspace. The [editable study notes](../design/equipment/README.md)
+record the proposed Equipment tab, six-piece selection, costs/quality, level-up
+stat previews and immediate reroll results. Desktop/phone fixture checks cover
+caps, shortages, pending/departure and uncertain-result refresh; they do not
+establish production operations. Bounded source discovery also identified an
+existing equipment progression write that can restore stale pre-spend money;
+the notes preserve the exact path and verification needed for shared domain
+implementation. Transfers remain #207. No production equipment implementation
+or design approval is claimed.
+
+**Equipment refinement · 2026-11-09 (interaction choice pending):** browser
+feedback removed the inline roll disclosure and six-stat level-up preview, added
+equipment art/base-stat subtitles, and moved optional transparent roll rules into
+an Equipment guide modal. The same study compares Upgrade/Reroll modes with
+per-stat buttons, both with inline spend confirmation. Seventy fixture/width/
+interaction checks include the maintainer’s 783 px viewport, narrow phones,
+guide pools/calculation and focus/scrolling. The maintainer has not selected a
+reroll interaction or approved production UI. Browser comments/chat are the
+current review channel; the ended annotation helper is stopped.
+
 **Nature and held-item implementation · 2026-11-08 (local acceptance complete):**
 The approved combined tab is now **Item & nature** beside Train. Held-item
 selection/removal and the nature button apply directly; Bag Mint/Equip opens the
