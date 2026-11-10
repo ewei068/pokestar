@@ -7,14 +7,11 @@
  * equipmentUpgrade.js Builds the upgrade menu for the selected equipment and waits for interactions.
  */
 const { getState } = require("../../services/state");
-const {
-  buildEquipmentUpgradeSend,
-  upgradeEquipmentLevel,
-  getPokemon,
-  rerollStatSlot,
-} = require("../../services/pokemon");
-const { getTrainer, emitTrainerEvent } = require("../../services/trainer");
-const { trainerEventEnum } = require("../../enums/gameEnums");
+const { buildEquipmentUpgradeSend } = require("../../services/pokemon");
+const { upgradeEquipmentLevel, rerollStatSlot } = require("../../services/pokemonEquipment");
+const { equipmentConfig, modifierConfig, levelUpCost, STAT_REROLL_COST, POKEDOLLAR_MULTIPLIER } = require("../../config/equipmentConfig");
+const { backpackItemConfig } = require("../../config/backpackConfig");
+const { formatMoney } = require("../../utils/utils");
 
 const equipmentUpgrade = async (interaction, data) => {
   // get state
@@ -36,61 +33,35 @@ const equipmentUpgrade = async (interaction, data) => {
     return { err: "Invalid button." };
   }
 
-  const { data: trainer, err: trainerErr } = await getTrainer(interaction.user);
-  if (trainerErr) {
-    return { err: trainerErr };
+  if (!state.expectedEquipment || state.expectedEquipmentType !== state.equipmentType) {
+    return { err: "This equipment selection has expired. Use `/equipment` again." };
   }
-
-  const { data: pokemon, err: pokemonErr } = await getPokemon(
-    trainer,
-    state.pokemonId
-  );
-  if (pokemonErr) {
-    return { err: pokemonErr };
+  const result = button === "upgrade"
+    ? await upgradeEquipmentLevel(interaction.user, state.pokemonId, state.equipmentType, state.expectedEquipment)
+    : await rerollStatSlot(interaction.user, state.pokemonId, state.equipmentType, state.slotId, state.expectedEquipment);
+  if (result.err || !result.data) return { err: result.err || "Equipment change could not be confirmed." };
+  const { pokemon, previousEquipment } = result.data;
+  const equipment = pokemon.equipments[state.equipmentType];
+  state.expectedEquipmentType = state.equipmentType;
+  state.expectedEquipment = structuredClone(equipment);
+  const materialCost = button === "upgrade" ? levelUpCost(previousEquipment.level) : STAT_REROLL_COST;
+  const material = backpackItemConfig[equipmentConfig[state.equipmentType].material];
+  const money = formatMoney(materialCost * POKEDOLLAR_MULTIPLIER);
+  let followUpString = button === "upgrade"
+    ? `Equipment upgraded to level ${equipment.level} for ${money} and ${material.emoji} x${materialCost}!`
+    : `Stat slot ${state.slotId} rerolled to ${modifierConfig[equipment.slots[state.slotId].modifier].name} (${equipment.slots[state.slotId].quality}%) for ${money} and ${material.emoji} x${materialCost}!`;
+  if (result.warning) followUpString += `\n${result.warning}`;
+  let refreshed;
+  try {
+    refreshed = await buildEquipmentUpgradeSend({ stateId: data.stateId, user: interaction.user });
+  } catch {
+    // The paid operation is already confirmed, regardless of this read's outcome.
   }
-
-  let followUpString = null;
-  if (button === "upgrade") {
-    const res = await upgradeEquipmentLevel(
-      trainer,
-      pokemon,
-      state.equipmentType
-    );
-    if (res.err) {
-      return { err: res.err };
-    }
-    followUpString = res.data;
-
-    await emitTrainerEvent(trainerEventEnum.UPGRADED_EQUIPMENT, {
-      trainer,
-      equipment: pokemon.equipments[state.equipmentType],
-    });
-  } else if (button === "slot") {
-    const res = await rerollStatSlot(
-      trainer,
-      pokemon,
-      state.equipmentType,
-      state.slotId
-    );
-    if (res.err) {
-      return { err: res.err };
-    }
-    followUpString = res.data;
-
-    await emitTrainerEvent(trainerEventEnum.REROLLED_EQUIPMENT, {
-      trainer,
-      equipment: pokemon.equipments[state.equipmentType],
-    });
+  if (refreshed?.send && !refreshed.err) await interaction.update(refreshed.send);
+  else {
+    await interaction.update({ components: [] });
+    followUpString += "\nEquipment saved, but the menu could not be refreshed. Refresh with `/equipment`.";
   }
-
-  const { send, err } = await buildEquipmentUpgradeSend({
-    stateId: data.stateId,
-    user: interaction.user,
-  });
-  if (err) {
-    return { err };
-  }
-  await interaction.update(send);
 
   await interaction.followUp({
     content: followUpString,

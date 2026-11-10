@@ -78,7 +78,6 @@ const {
   backpackCategories,
 } = require("../config/backpackConfig");
 const { prepareBackpackChange, writeBackpackChange } = require("./backpack");
-const { drawIterable, drawUniform } = require("../utils/gachaUtils");
 const { buildPokemonSelectRow } = require("../components/pokemonSelectRow");
 const { buildEquipmentSelectRow } = require("../components/equipmentSelectRow");
 const { stageNames } = require("../config/stageConfig");
@@ -724,61 +723,6 @@ const canUpgradeEquipment = (
 };
 
 /**
- * @param {WithId<Trainer>} trainer
- * @param {WithId<Pokemon>} pokemon
- * @param {EquipmentTypeEnum} equipmentType
- * @returns {Promise<{data: string?, err: string?}>}
- */
-const upgradeEquipmentLevel = async (trainer, pokemon, equipmentType) => {
-  const equipment = pokemon.equipments[equipmentType];
-  if (!equipment) {
-    return { data: null, err: "Error upgrading equipment." };
-  }
-  if (!canUpgradeEquipment(trainer, pokemon, equipmentType, true)) {
-    return { data: null, err: "You can't upgrade that equipment right now!" };
-  }
-  const equipmentData = equipmentConfig[equipmentType];
-  const { material } = equipmentData;
-  const materialData = backpackItemConfig[material];
-
-  // withdraw cost from trainer
-  const moneyCost = levelUpCost(equipment.level) * POKEDOLLAR_MULTIPLIER;
-  const materialCost = levelUpCost(equipment.level);
-  removeItems(trainer, material, materialCost);
-  try {
-    const res = await updateDocument(
-      collectionNames.USERS,
-      { _id: idFrom(trainer._id) },
-      { $inc: { money: -moneyCost }, $set: { backpack: trainer.backpack } }
-    );
-    if (res.modifiedCount === 0) {
-      logger.warn(`Failed to update trainer ${trainer._id} money.`);
-      return { data: null, err: "Error upgrading equipment." };
-    }
-  } catch (error) {
-    logger.error(error);
-    return { data: null, err: "Error upgrading equipment." };
-  }
-
-  // update equipment
-  equipment.level += 1;
-  const { err } = await DEPRECATEDcalculateAndUpdatePokemonStats(
-    pokemon,
-    pokemonConfig[pokemon.speciesId],
-    true
-  );
-  if (err) {
-    return { data: null, err };
-  }
-  return {
-    data: `Equipment upgraded to level ${equipment.level} for ${formatMoney(
-      moneyCost
-    )} and ${materialData.emoji} x${materialCost}!`,
-    err: null,
-  };
-};
-
-/**
  * @param {WithId<Pokemon>} pokemon
  * @returns  {Promise<{data?: string?, err: string?}>}
  */
@@ -800,71 +744,6 @@ const toggleLock = async (pokemon) => {
   }
 
   return { err: null };
-};
-
-/**
- *
- * @param {WithId<Trainer>} trainer
- * @param {WithId<Pokemon>} pokemon
- * @param {EquipmentTypeEnum} equipmentType
- * @param {EquipmentModifierSlotEnum} slotId
- * @returns
- */
-const rerollStatSlot = async (trainer, pokemon, equipmentType, slotId) => {
-  const equipment = pokemon.equipments[equipmentType];
-  if (!equipment) {
-    return { data: null, err: "Error rerolling stat slot." };
-  }
-  if (!canUpgradeEquipment(trainer, pokemon, equipmentType, false, true)) {
-    return { data: null, err: "You can't reroll that stat slot right now!" };
-  }
-  const equipmentData = equipmentConfig[equipmentType];
-  const { material } = equipmentData;
-  const materialData = backpackItemConfig[material];
-  const slotData = equipmentData.slots[slotId];
-
-  // withdraw cost from trainer
-  const moneyCost = STAT_REROLL_COST * POKEDOLLAR_MULTIPLIER;
-  const materialCost = STAT_REROLL_COST;
-  removeItems(trainer, material, materialCost);
-  try {
-    const res = await updateDocument(
-      collectionNames.USERS,
-      { _id: idFrom(trainer._id) },
-      { $inc: { money: -moneyCost }, $set: { backpack: trainer.backpack } }
-    );
-    if (res.modifiedCount === 0) {
-      logger.warn(`Failed to update trainer ${trainer._id} money.`);
-      return { data: null, err: "Error rerolling stat slot." };
-    }
-  } catch (error) {
-    logger.error(error);
-    return { data: null, err: "Error rerolling stat slot." };
-  }
-
-  // update equipment
-  equipment.slots[slotId] = {
-    modifier: drawIterable(slotData.modifiers, 1)[0],
-    quality: drawUniform(0, 100, 1)[0],
-  };
-  const slot = equipment.slots[slotId];
-
-  const { err } = await DEPRECATEDcalculateAndUpdatePokemonStats(
-    pokemon,
-    pokemonConfig[pokemon.speciesId],
-    true
-  );
-  if (err) {
-    return { data: null, err };
-  }
-  return {
-    data: `Stat slot ${slotId} rerolled to ${
-      modifierConfig[slot.modifier].name
-    } (${slot.quality}%) for ${formatMoney(moneyCost)} and ${
-      materialData.emoji
-    } x${materialCost}!`,
-    err: null,
-  };
 };
 
 // to be used in mongo aggregate or other
@@ -1518,6 +1397,10 @@ const buildEquipmentUpgradeSend = async ({
   const equipment = pokemon.equipments[equipmentType];
   if (!equipment) {
     return { err: `Pokemon doesn't have ${equipmentType} equipment!` };
+  }
+  if (state.expectedEquipmentType !== equipmentType || !state.expectedEquipment) {
+    state.expectedEquipmentType = equipmentType;
+    state.expectedEquipment = structuredClone(equipment);
   }
 
   const { button } = state;
@@ -2248,8 +2131,6 @@ module.exports = {
   setBattleEligible,
   getBattleEligible,
   canUpgradeEquipment,
-  upgradeEquipmentLevel,
-  rerollStatSlot,
   getPokemonOwnershipStats,
   checkNumPokemon,
   buildPokemonInfoSend,
