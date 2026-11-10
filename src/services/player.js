@@ -9,7 +9,7 @@ const { projectTrainerProfile } = require("../web/trainerProfile");
 const { getMoves } = require("../battle/data/moveRegistry");
 const { getAbilities } = require("../battle/data/abilityRegistry");
 const { getHeldItems } = require("../battle/data/heldItemRegistry");
-const { getPokemonExpNeeded, getMoveIds } = require("../utils/pokemonUtils");
+const { getPokemonExpNeeded, getMoveIds, getEquipmentSlotValue } = require("../utils/pokemonUtils");
 const { logger } = require("../log");
 const { projectNpcCatalog, buildNpcBattle } = require("./npcBattle");
 const { projectDungeonCatalog, projectTowerCatalog, startDungeon, startTower } = require("./playModes");
@@ -18,6 +18,9 @@ const { getDurableBattleService, isDurableBattleEnabled } = require("./durableBa
 const { TrainingError, getOwnedTrainingContext, trainOwnedPokemon } = require("./training");
 const { getNatureChoices, changePokemonNature } = require("./pokemonNature");
 const { eventConfig, eventNames } = require("../config/eventConfig");
+const { equipmentConfig, modifierConfig, modifierSlotConfig, MAX_EQUIPMENT_LEVEL,
+  levelUpCost, STAT_REROLL_COST, POKEDOLLAR_MULTIPLIER } = require("../config/equipmentConfig");
+const { isEquipmentAvailable, upgradeEquipmentLevel, rerollStatSlot } = require("./pokemonEquipment");
 
 class PlayerError extends Error {
   /**
@@ -175,6 +178,71 @@ const projectPokemonDetail = (stored, trainer) => {
 const projectBuild = (pokemon, trainer, items = projectBag(trainer).items) => ({ pokemon: projectPokemonDetail(pokemon, trainer), natures: getNatureChoices(pokemon),
     heldItems: items.filter(item => item.category === backpackCategories.HELD_ITEMS),
     mintQuantity: items.find(item => item.id === backpackItems.MINT)?.quantity || 0, mintCost: 1 });
+
+/**
+ * @typedef {{money: number, shards: number}} EquipmentSpend
+ * @typedef {{id: EquipmentTypeEnum, name: string, icon: string, primaryStat: number,
+ * materialId: BackpackItemEnum, slots: Record<string, EquipmentModifierEnum[]>}} EquipmentTypeView
+ * @typedef {{id: EquipmentModifierEnum, name: string, description: string,
+ * type: EquipmentModifierTypeEnum, stat: number, min: number, max: number}} EquipmentModifierView
+ * @typedef {{maxLevel: number, moneyPerShard: number, rerollCost: EquipmentSpend,
+ * types: EquipmentTypeView[], slots: Array<{id: EquipmentModifierSlotEnum, name: string, scalesWithLevel: boolean}>,
+ * modifiers: EquipmentModifierView[]}} EquipmentCatalog
+ * @typedef {{id: EquipmentTypeEnum, level: number, expectedEquipment: Equipment,
+ * slots: Array<{id: EquipmentModifierSlotEnum, modifier: EquipmentModifierEnum, quality: number, value: number, nextValue: number}>,
+ * upgradeCost: EquipmentSpend | null}} EquipmentPieceView
+ * @typedef {{pokemon: ReturnType<typeof projectPokemonDetail>, money: number,
+ * pieces: EquipmentPieceView[], materials: ReturnType<typeof projectBag>["items"], catalog: EquipmentCatalog,
+ * trainer: ReturnType<typeof projectTrainerProfile>}} PokemonEquipmentContext
+ * @typedef {PokemonEquipmentContext & {items: ReturnType<typeof projectBag>["items"], changed: boolean,
+ * change: {kind: "upgrade" | "reroll", equipmentType: EquipmentTypeEnum, previousEquipment: Equipment,
+ * slotId?: EquipmentModifierSlotEnum}, warning?: string}} PokemonEquipmentViewResult
+ */
+
+/** @returns {EquipmentCatalog} */
+const projectEquipmentCatalog = () => ({
+  maxLevel: MAX_EQUIPMENT_LEVEL, moneyPerShard: POKEDOLLAR_MULTIPLIER,
+  rerollCost: { money: STAT_REROLL_COST * POKEDOLLAR_MULTIPLIER, shards: STAT_REROLL_COST },
+  types: Object.entries(equipmentConfig).map(([typeId, type]) => ({ id: /** @type {EquipmentTypeEnum} */ (typeId),
+    name: type.name, icon: `${typeId.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}.png`,
+    primaryStat: modifierConfig[type.slots.primary.modifiers[0]].stat, materialId: type.material,
+    slots: Object.fromEntries(Object.entries(type.slots).map(([slotId, slot]) => [slotId, [...slot.modifiers]])) })),
+  slots: Object.entries(modifierSlotConfig).map(([slotId, slot]) => ({ id: /** @type {EquipmentModifierSlotEnum} */ (slotId),
+    name: slot.name, scalesWithLevel: slot.level })),
+  modifiers: Object.entries(modifierConfig).map(([modifierId, modifier]) => ({ id: /** @type {EquipmentModifierEnum} */ (modifierId), ...modifier })),
+});
+
+/**
+ * Equipment display is composed from domain availability and canonical config.
+ * No new equipment is synthesized by this read.
+ * @param {WithId<Pokemon>} pokemon
+ * @param {WithId<Trainer>} trainer
+ * @returns {PokemonEquipmentContext}
+ */
+const projectEquipment = (pokemon, trainer) => {
+  const catalog = projectEquipmentCatalog();
+  /** @type {EquipmentPieceView[]} */
+  const pieces = [];
+  for (const type of catalog.types) {
+    const equipment = pokemon.equipments?.[type.id];
+    if (!isEquipmentAvailable(equipment, type.id)) continue;
+    const shards = levelUpCost(equipment.level);
+    pieces.push({ id: type.id, level: equipment.level, expectedEquipment: structuredClone(equipment),
+      upgradeCost: equipment.level >= MAX_EQUIPMENT_LEVEL ? null : { money: shards * POKEDOLLAR_MULTIPLIER, shards },
+      slots: catalog.slots.map(slot => ({ id: slot.id, modifier: equipment.slots[slot.id].modifier,
+        quality: equipment.slots[slot.id].quality, value: getEquipmentSlotValue(slot.id, equipment.slots[slot.id], equipment.level),
+        nextValue: getEquipmentSlotValue(slot.id, equipment.slots[slot.id], Math.min(MAX_EQUIPMENT_LEVEL, equipment.level + 1)) })) });
+  }
+  const materials = [...new Set(catalog.types.map(type => type.materialId))].map(id => {
+    const item = backpackItemConfig[id];
+    const quantity = trainer.backpack?.[item.category]?.[id];
+    return { id, name: item.name, description: item.description, category: item.category,
+      categoryName: backpackCategoryConfig[item.category].name,
+      quantity: Number.isSafeInteger(quantity) && quantity > 0 ? quantity : 0, icon: item.icon || null };
+  });
+  return { pokemon: projectPokemonDetail(pokemon, trainer), money: trainer.money, pieces, materials, catalog,
+    trainer: projectTrainerProfile(trainer) };
+};
 
 /** @param {PartyInfo} party */
 const projectPartyTargets = (party) => {
@@ -361,6 +429,73 @@ const createPlayerService = () => {
       : await changeHeldItem({ id: userId }, id, heldItemId, expectedHeldItemId);
     return finishBuildChange(userId, result, { exp: 5, money: 10 });
   };
+
+  /**
+   * @param {string} userId
+   * @param {string} id
+   * @returns {Promise<PokemonEquipmentContext>}
+   */
+  const equipment = async (userId, id) => {
+    if (typeof id !== "string" || !/^[a-f\d]{24}$/i.test(id)) throw new PlayerError("pokemon_not_found", 404);
+    const trainer = await requireTrainer(userId);
+    const pokemon = await findOwnedPokemon(userId, id);
+    if (!pokemon) throw new PlayerError("pokemon_not_found", 404);
+    return projectEquipment(pokemon, trainer);
+  };
+
+  /**
+   * Confirmed equipment changes are never replayed for failed later effects.
+   * @param {string} userId
+   * @param {import("./pokemonEquipment").PokemonEquipmentResult} result
+   * @param {"upgrade" | "reroll"} kind
+   * @returns {Promise<PokemonEquipmentViewResult>}
+   */
+  const finishEquipmentChange = async (userId, result, kind) => {
+    if (result.err || !result.data) throw new PlayerError(result.code || "equipment_change_failed", result.status || 400);
+    let { trainer, pokemon } = result.data;
+    const warnings = result.warning ? [result.warning] : [];
+    const policy = eventConfig[eventNames.EQUIPMENT_UPGRADE];
+    try {
+      const awarded = await addExpAndMoneyTrainer(await requireTrainer(userId), policy.exp || 0, policy.money || 0);
+      if (awarded.err) throw new Error(awarded.err);
+    } catch (error) {
+      logger.warn("Equipment participation grant failed", error);
+      warnings.push("Equipment saved, but participation rewards could not be confirmed. Refresh Pokemon and Bag.");
+    }
+    try {
+      trainer = await requireTrainer(userId);
+      const refreshed = await findOwnedPokemon(userId, pokemon._id.toString());
+      if (!refreshed) throw new Error("pokemon_not_found");
+      pokemon = refreshed;
+    } catch (error) {
+      logger.warn("Equipment refresh failed", error);
+      warnings.push("Equipment saved, but refreshed state could not be confirmed. Refresh Pokemon and Bag.");
+    }
+    return { ...projectEquipment(pokemon, trainer), items: projectBag(trainer).items, changed: result.data.changed,
+      change: { kind, equipmentType: result.data.equipmentType, previousEquipment: result.data.previousEquipment,
+        ...(result.data.slotId ? { slotId: result.data.slotId } : {}) },
+      ...(warnings.length ? { warning: warnings.join(" ") } : {}) };
+  };
+
+  /**
+   * @param {string} userId
+   * @param {string} id
+   * @param {Record<string, unknown>} input
+   * @param {"upgrade" | "reroll"} kind
+   * @returns {Promise<PokemonEquipmentViewResult>}
+   */
+  const changeEquipment = async (userId, id, input, kind) => {
+    const fields = kind === "upgrade" ? ["equipmentType", "expectedEquipment"] : ["equipmentType", "expectedEquipment", "slotId"];
+    if (!input || typeof input !== "object" || Array.isArray(input) || Object.keys(input).length !== fields.length
+      || Object.keys(input).some(key => !fields.includes(key)) || typeof input.equipmentType !== "string"
+      || !input.expectedEquipment || typeof input.expectedEquipment !== "object" || Array.isArray(input.expectedEquipment)
+      || (kind === "reroll" && typeof input.slotId !== "string")) throw new PlayerError("invalid_equipment_request");
+    const type = /** @type {EquipmentTypeEnum} */ (input.equipmentType);
+    const expected = /** @type {Equipment} */ (input.expectedEquipment);
+    const result = kind === "upgrade" ? await upgradeEquipmentLevel({ id: userId }, id, type, expected)
+      : await rerollStatSlot({ id: userId }, id, type, /** @type {EquipmentModifierSlotEnum} */ (input.slotId), expected);
+    return finishEquipmentChange(userId, result, kind);
+  };
   /** @param {string} userId */
   const party = async (userId) => {
     const trainer = await requireTrainer(userId);
@@ -435,7 +570,22 @@ const createPlayerService = () => {
     } catch (error) { logger.warn("Player interaction grant failed", error); }
     return { ...result, ...await profile(userId) };
   };
-  return { collection, detail, training, train, build, changeNature, changeHeldItem: changeHeld, party, profile, npcs, dungeons, tower, bag, interact };
+  return { collection, detail, training, train, build, changeNature, changeHeldItem: changeHeld, equipment,
+    /**
+     * @param {string} userId
+     * @param {string} id
+     * @param {Record<string, unknown>} input
+     * @returns {Promise<PokemonEquipmentViewResult>}
+     */
+    upgradeEquipment: (userId, id, input) => changeEquipment(userId, id, input, "upgrade"),
+    /**
+     * @param {string} userId
+     * @param {string} id
+     * @param {Record<string, unknown>} input
+     * @returns {Promise<PokemonEquipmentViewResult>}
+     */
+    rerollEquipment: (userId, id, input) => changeEquipment(userId, id, input, "reroll"),
+    party, profile, npcs, dungeons, tower, bag, interact };
 };
 
 module.exports = { createPlayerService, parseCollectionQuery, projectPokemon, projectPokemonDetail, projectPartyTargets, PlayerError };

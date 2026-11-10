@@ -14,6 +14,8 @@ const { createMockTrainer } = require('../../__testing__/mocks/trainer');
 const nature = jest.mocked(require('../pokemonNature').changePokemonNature);
   const held = jest.mocked(require('../pokemon').changeHeldItem);
   const remove = jest.mocked(require('../pokemon').removeHeldItem);
+const equipmentDomain = jest.mocked(require('../pokemonEquipment'));
+const { equipmentConfig, modifierSlotConfig, modifierConfig } = require('../../config/equipmentConfig');
 
 jest.mock('../party', () => ({ ...jest.requireActual('../party'), validatePartyForBattle: jest.fn() }));
 
@@ -23,6 +25,7 @@ jest.mock('../npcBattle', () => ({ ...jest.requireActual('../npcBattle'), buildN
 jest.mock('../trainer', () => ({ getTrainer: jest.fn(), addExpAndMoneyTrainer: jest.fn() }));
 jest.mock('../pokemonNature', () => ({ ...jest.requireActual('../pokemonNature'), changePokemonNature: jest.fn() }));
 jest.mock('../pokemon', () => ({ ...jest.requireActual('../pokemon'), changeHeldItem: jest.fn(), removeHeldItem: jest.fn() }));
+jest.mock('../pokemonEquipment', () => ({ ...jest.requireActual('../pokemonEquipment'), upgradeEquipmentLevel: jest.fn(), rerollStatSlot: jest.fn() }));
 
 
 const mockGetTrainer = /** @type {jest.Mock} */ (trainerService.getTrainer);
@@ -308,4 +311,120 @@ test('domain mutation grants only changed operations, rejects injected fields an
   await expect(service.changeHeldItem(actor, id, { heldItemId: 'h197' })).rejects.toMatchObject({ status: 400 });
   nature.mockResolvedValue({ err: 'changed', code: 'nature_changed', status: 409 });
   await expect(service.changeNature(actor, id, { natureId: '3', expectedNatureId: '1' })).rejects.toMatchObject({ code: 'nature_changed', status: 409 });
+});
+
+const equipmentFixture = () => /** @type {Equipment} */ ({ level: 4, slots: Object.fromEntries(Object.entries(equipmentConfig.powerBracer.slots)
+  .map(([id, slot]) => [id, { modifier: slot.modifiers[0], quality: 75 }])) });
+
+test('equipment reads project canonical values, costs and transparent configured rules without spending', async () => {
+  const before = equipmentFixture();
+  documents[0].equipments.powerBracer = structuredClone(before);
+  trainer.money = 12480;
+  trainer.backpack = { 1: { 6: 32 } };
+  const inventory = structuredClone(trainer.backpack);
+  const context = await service.equipment(actor, documents[0]._id.toHexString());
+  expect(context.money).toBe(12480);
+  expect(context.pieces).toHaveLength(1);
+  expect(context.pieces[0]).toMatchObject({ id: 'powerBracer', level: 4,
+    expectedEquipment: before, upgradeCost: { money: 1000, shards: 5 } });
+  expect(context.pieces[0].slots[0]).toMatchObject({ id: 'primary', modifier: 'baseAtk', value: 9, nextValue: 11, quality: 75 });
+  expect(context.materials.find(item => item.id === '6')).toMatchObject({ name: 'Willpower Shard', quantity: 32 });
+  expect(context.materials.find(item => item.id === '4').quantity).toBe(0);
+  expect(context.catalog).toMatchObject({ maxLevel: 10, rerollCost: { money: 1000, shards: 5 }, moneyPerShard: 200 });
+  expect(context.catalog.types).toHaveLength(6);
+  for (const type of context.catalog.types) {
+    expect(type.materialId).toBe(equipmentConfig[type.id].material);
+    for (const [slotId, pool] of Object.entries(type.slots)) expect(pool).toEqual(equipmentConfig[type.id].slots[slotId].modifiers);
+  }
+  expect(context.catalog.slots.map(slot => slot.scalesWithLevel)).toEqual(Object.values(modifierSlotConfig).map(slot => slot.level));
+  expect(context.catalog.modifiers).toHaveLength(Object.keys(modifierConfig).length);
+  expect(context.pokemon).not.toHaveProperty('userId');
+  expect(context.pokemon).not.toHaveProperty('equipments');
+  expect(documents[0].equipments.powerBracer).toEqual(before);
+  expect(trainer.backpack).toEqual(inventory);
+  expect(mockGrant).not.toHaveBeenCalled();
+  expect(equipmentDomain.upgradeEquipmentLevel).not.toHaveBeenCalled();
+});
+
+test('maxed, missing and incomplete equipment never acquire an upgrade quote through reads', async () => {
+  const id = documents[0]._id.toHexString();
+  expect((await service.equipment(actor, id)).pieces).toEqual([]);
+  documents[0].equipments.powerBracer = { level: 4, slots: {} };
+  expect((await service.equipment(actor, id)).pieces).toEqual([]);
+  documents[0].equipments.powerBracer = { ...equipmentFixture(), level: 10 };
+  expect((await service.equipment(actor, id)).pieces[0].upgradeCost).toBeNull();
+  documents[0].userId = 'other';
+  await expect(service.equipment(actor, id)).rejects.toMatchObject({ status: 404 });
+  expect(mockGrant).not.toHaveBeenCalled();
+});
+
+test('equipment adapters grant configured participation once and preserve duplicate-roll success', async () => {
+  const id = documents[0]._id.toHexString();
+  const before = equipmentFixture();
+  documents[0].equipments.powerBracer = structuredClone(before);
+  mockGrant.mockResolvedValue({ err: null });
+  equipmentDomain.upgradeEquipmentLevel.mockResolvedValue({ data: { trainer, pokemon: documents[0], changed: true,
+    previousEquipment: before, equipmentType: 'powerBracer' } });
+  const upgraded = await service.upgradeEquipment(actor, id, { equipmentType: 'powerBracer', expectedEquipment: before });
+  expect(upgraded.changed).toBe(true);
+  expect(upgraded.change).toMatchObject({ kind: 'upgrade', equipmentType: 'powerBracer', previousEquipment: before });
+  expect(equipmentDomain.upgradeEquipmentLevel).toHaveBeenCalledWith({ id: actor }, id, 'powerBracer', before);
+  expect(mockGrant).toHaveBeenCalledWith(trainer, 15, 0);
+  mockGrant.mockClear();
+  equipmentDomain.rerollStatSlot.mockResolvedValue({ data: { trainer, pokemon: documents[0], changed: true,
+    previousEquipment: before, equipmentType: 'powerBracer', slotId: 'primary' } });
+  const rolled = await service.rerollEquipment(actor, id, { equipmentType: 'powerBracer', slotId: 'primary', expectedEquipment: before });
+  expect(rolled.changed).toBe(true);
+  expect(rolled.pieces[0].expectedEquipment).toEqual(before);
+  expect(rolled.change).toMatchObject({ kind: 'reroll', slotId: 'primary' });
+  expect(equipmentDomain.rerollStatSlot).toHaveBeenCalledWith({ id: actor }, id, 'powerBracer', 'primary', before);
+  expect(mockGrant).toHaveBeenCalledTimes(1);
+  expect(mockGrant).toHaveBeenCalledWith(trainer, 15, 0);
+});
+
+test('equipment requests allowlist fields and require an observed piece before calling the domain', async () => {
+  const id = documents[0]._id.toHexString();
+  const expectedEquipment = equipmentFixture();
+  for (const input of [null, [], {}, { equipmentType: 'powerBracer' },
+    { equipmentType: 'powerBracer', expectedEquipment, money: 0 },
+    { equipmentType: 'powerBracer', expectedEquipment: null },
+    { equipmentType: { $ne: '' }, expectedEquipment }]) {
+    await expect(service.upgradeEquipment(actor, id, input)).rejects.toMatchObject({ status: 400 });
+  }
+  for (const input of [{ equipmentType: 'powerBracer', expectedEquipment },
+    { equipmentType: 'powerBracer', slotId: {}, expectedEquipment },
+    { equipmentType: 'powerBracer', slotId: 'primary', expectedEquipment, quality: 100 }]) {
+    await expect(service.rerollEquipment(actor, id, input)).rejects.toMatchObject({ status: 400 });
+  }
+  expect(equipmentDomain.upgradeEquipmentLevel).not.toHaveBeenCalled();
+  expect(equipmentDomain.rerollStatSlot).not.toHaveBeenCalled();
+  expect(mockGrant).not.toHaveBeenCalled();
+});
+
+test('rejected equipment operations grant nothing; saved quest/grant/read warnings never replay', async () => {
+  const id = documents[0]._id.toHexString();
+  const before = equipmentFixture();
+  documents[0].equipments.powerBracer = structuredClone(before);
+  equipmentDomain.upgradeEquipmentLevel.mockResolvedValue({ err: 'changed', code: 'equipment_changed', status: 409 });
+  await expect(service.upgradeEquipment(actor, id, { equipmentType: 'powerBracer', expectedEquipment: before }))
+    .rejects.toMatchObject({ code: 'equipment_changed', status: 409 });
+  expect(mockGrant).not.toHaveBeenCalled();
+  equipmentDomain.upgradeEquipmentLevel.mockClear();
+  equipmentDomain.upgradeEquipmentLevel.mockResolvedValue({ data: { trainer, pokemon: documents[0], changed: true,
+    previousEquipment: before, equipmentType: 'powerBracer' }, warning: 'Equipment saved, but quest progress could not be confirmed.' });
+  mockGrant.mockResolvedValue({ err: null });
+  const questWarning = await service.upgradeEquipment(actor, id, { equipmentType: 'powerBracer', expectedEquipment: before });
+  expect(questWarning.warning).toMatch(/quest progress/);
+  expect(equipmentDomain.upgradeEquipmentLevel).toHaveBeenCalledTimes(1);
+  mockGrant.mockRejectedValue(new Error('grant failed'));
+  const grantWarning = await service.upgradeEquipment(actor, id, { equipmentType: 'powerBracer', expectedEquipment: before });
+  expect(grantWarning.changed).toBe(true);
+  expect(grantWarning.warning).toMatch(/saved/i);
+  equipmentDomain.upgradeEquipmentLevel.mockClear();
+  mockGetTrainer.mockResolvedValue({ err: 'read unavailable', data: null });
+  const readWarning = await service.upgradeEquipment(actor, id, { equipmentType: 'powerBracer', expectedEquipment: before });
+  expect(readWarning.changed).toBe(true);
+  expect(readWarning.pieces[0].id).toBe('powerBracer');
+  expect(readWarning.warning).toMatch(/saved/i);
+  expect(equipmentDomain.upgradeEquipmentLevel).toHaveBeenCalledTimes(1);
 });
