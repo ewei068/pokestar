@@ -177,3 +177,11 @@ to the shown Quality column. These edits are applied to the study.
 Implementation planning/progress stays machine-local for the implementing agents,
 per maintainer direction. This document preserves the approved design and source
 evidence; it is not an implementation plan or runtime acceptance record.
+
+
+## Production implementation · 2026-11-10
+
+The approved switch interaction and final refinements are implemented in the
+Equipment tab. [Acceptance evidence](../../verification/equipment-2026-11-10.md)
+records automated checks, disposable persistence/HTTP outcomes and production
+Chrome observations separately from the historical fixture study above.

@@ -10,6 +10,22 @@ service contracts and final implementation sequencing remain future work;
 the approved ticket release cut is recorded below.
 The implementation and verification below describe the existing battle experience.
 
+**Equipment implementation · 2026-11-10 (local acceptance complete):** Equipment
+now joins Train and Item & nature in the inspected Pokémon workspace. The
+approved Upgrade/Reroll interface includes item art, base-stat subtitles,
+unknown reroll previews and an optional transparent Equipment guide. Shared
+Discord/web domain operations own guarded spending and persistence, with
+post-save quest progress and adapter participation grants. The browser preserves
+account/lifetime gates and reconciles uncertain results through read-only refresh.
+
+[Acceptance evidence](../verification/equipment-2026-11-10.md) records 1,069
+backend tests, 243 client tests, root/subpath builds, disposable standalone-Mongo/
+HTTP outcomes and production Chrome through 320×480. Backend checkJs retains
+475 existing diagnostics (zero additions, three removals against the parent).
+Cross-document/legacy-writer reliability limits remain accepted; transfers and
+comparison remain #207. Historical study checkpoints below describe their state
+at the time, before this implementation.
+
 **Equipment approval · 2026-11-09 (implementation authorized):** the maintainer
 approved the Upgrade/Reroll study, with the reroll subtitle removed and the
 selected slot’s value/quality previewed as current → ???. Modifier replacement
