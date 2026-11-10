@@ -259,7 +259,7 @@ export class PlayerData {
       if (submitted && !this.closed && epoch === this.epoch) {
         await Promise.all(affected.map(queryKey => this.client.cancelQueries({ queryKey })));
         if (!this.closed && epoch === this.epoch) await Promise.all(affected.map(queryKey =>
-          this.client.invalidateQueries({ queryKey, refetchType: "none" })));
+          this.client.invalidateQueries({ queryKey, refetchType: isCurrent() ? "none" : "active" })));
       }
       this.busy = false;
     }

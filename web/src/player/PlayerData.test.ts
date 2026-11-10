@@ -598,3 +598,30 @@ it("nature/held changes and every submitted training settlement invalidate equip
   await assert.rejects(data.train("one", "0"));
   for (const key of keys) assert.equal(data.client.getQueryState(key)?.isInvalidated, true);
 });
+
+it("refreshes a replacement active equipment observer when the departed purchase settles", async t => {
+  const { QueryObserver } = await import("@tanstack/react-query");
+  const data = equipmentData(); t.after(() => data.dispose());
+  data.client.setQueryData(data.equipment("one").queryKey, equipmentContext);
+  let current = true, reads = 0, posts = 0;
+  let finish!: (response: Response) => void;
+  const saved = equipmentResult();
+  globalThis.fetch = async (_url, options) => {
+    if (options?.method === "POST") { posts++; return new Promise(resolve => { finish = resolve; }); }
+    reads++; return json(saved);
+  };
+  const change = data.upgradeEquipment("one", "powerBracer", equipmentContext.pieces[0].expectedEquipment, () => current);
+  await new Promise(resolve => setTimeout(resolve, 0));
+  current = false;
+  // The fixture uses gcTime: 0; restore the cached view before subscribing.
+  data.client.setQueryData(data.equipment("one").queryKey, equipmentContext);
+  const replacement = new QueryObserver(data.client, { ...data.equipment("one"), staleTime: Infinity });
+  const unsubscribe = replacement.subscribe(() => {}); t.after(unsubscribe);
+  assert.equal(reads, 0);
+  finish(json(saved));
+  await assert.rejects(change, /context_closed/);
+  assert.equal(posts, 1);
+  assert.equal(reads, 1);
+  assert.equal(replacement.getCurrentResult().data?.money, saved.money);
+  assert.deepEqual(replacement.getCurrentResult().data?.pieces, saved.pieces);
+});

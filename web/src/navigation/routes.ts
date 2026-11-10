@@ -19,12 +19,12 @@ export const routeHref = (current: URL, route: SiteRoute): string => {
   return `${url.pathname}${url.search}${url.hash}`;
 };
 
-export type PokemonUpgradeRoute = { pokemonId: string; feature: "train" | "build" };
+export type PokemonUpgradeRoute = { pokemonId: string; feature: "train" | "build" | "equipment" };
 
 export const readPokemonUpgrade = (url: URL): PokemonUpgradeRoute | null => {
   const pokemonId = url.searchParams.get("owned");
   const feature = url.searchParams.get("upgrade");
-  return readRoute(url).page === "pokemon" && pokemonId && (feature === "train" || feature === "build")
+  return readRoute(url).page === "pokemon" && pokemonId && (feature === "train" || feature === "build" || feature === "equipment")
     ? { pokemonId, feature } : null;
 };
 

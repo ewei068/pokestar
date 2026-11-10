@@ -8,6 +8,7 @@ import "./bag/bag.css";
 import "./collection/collection.css";
 import "./upgrades/upgrades.css";
 import "./upgrades/item-nature.css";
+import "./upgrades/equipment.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 if (import.meta.env.DEV && new URLSearchParams(window.location.search).has("previewBattle")) {
