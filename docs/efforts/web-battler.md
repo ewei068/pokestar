@@ -23,7 +23,9 @@ backend tests, 243 client tests, root/subpath builds, disposable standalone-Mong
 HTTP outcomes and production Chrome through 320×480. Backend checkJs retains
 475 existing diagnostics (zero additions, three removals against the parent).
 Cross-document/legacy-writer reliability limits remain accepted; transfers and
-comparison remain #207. Historical study checkpoints below describe their state
+comparison remain #207. Published as [PR #263](https://github.com/ewei068/pokestar/pull/263),
+stacked above #261 without rewriting older branches. No standing PR monitor is
+armed (repository `auto_babysit: false`). Historical study checkpoints below describe their state
 at the time, before this implementation.
 
 **Equipment approval · 2026-11-09 (implementation authorized):** the maintainer

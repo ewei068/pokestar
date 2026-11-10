@@ -100,3 +100,10 @@ Raw run logs, disposable harnesses and browser screenshots remain in `/tmp` with
 the `pokestar-equipment-` prefix. They are machine-local verification aids.
 Physical-device interaction, real OAuth/Discord UI and process-crash acceptance
 were not exercised. Transfers/comparison remain outside this change (#207).
+
+
+The implementation is published as [PR #263](https://github.com/ewei068/pokestar/pull/263)
+above Item & nature (#261). Disposable acceptance services were stopped and their
+Mongo data and temporary bundle copies removed; scripts/logs/screenshots remain
+machine-local. No deployment, merge or live-account mutation occurred. Standing
+PR monitoring is disabled by repository configuration.
