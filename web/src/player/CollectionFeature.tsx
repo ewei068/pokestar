@@ -5,6 +5,8 @@ import { CollectionWorkspace } from "../collection/CollectionWorkspace";
 import { usePlayer } from "./PlayerProvider";
 import { pokemonUpgradeHref, readPokemonUpgrade, routeHref } from "../navigation/routes";
 import { PokemonUpgradeWorkspace } from "../upgrades/PokemonUpgradeWorkspace";
+import { EquipmentFeature } from "../upgrades/EquipmentFeature";
+import type { PokemonUpgradeRoute } from "../navigation/routes";
 import { ItemNatureFeature } from "../upgrades/ItemNatureFeature";
 import { TrainingFeature } from "../upgrades/TrainingFeature";
 import type { CollectionQuery, PlayerOperation } from "./types";
@@ -106,7 +108,7 @@ export const CollectionFeature = () => {
     window.dispatchEvent(new window.PopStateEvent("popstate"));
     window.scrollTo(0, 0);
   };
-  const changeUpgrade = (feature: "train" | "build") => {
+  const changeUpgrade = (feature: PokemonUpgradeRoute["feature"]) => {
     if (!upgrade || feature === upgrade.feature) return;
     window.history.replaceState(window.history.state, "", pokemonUpgradeHref(new URL(window.location.href), upgrade.pokemonId, feature));
     window.dispatchEvent(new window.PopStateEvent("popstate"));
@@ -128,9 +130,9 @@ export const CollectionFeature = () => {
       onTrain={train} active={!upgrade}
       onOperation={perform} pending={mutation.isPending} loading={collection.isPending || collection.isPlaceholderData} detailUnavailable={missing} detailLoading={Boolean(selectedId) && detail.isPending}
       error={message || readError} onRefresh={() => { setMessage(null); void data.refresh(); }} /></div>
-    {upgrade && <PokemonUpgradeWorkspace pokemonId={upgrade.pokemonId} title={upgrade.feature === "train" ? "Train" : "Item & nature"}
+    {upgrade && <PokemonUpgradeWorkspace pokemonId={upgrade.pokemonId} title={upgrade.feature === "train" ? "Train" : upgrade.feature === "build" ? "Item & nature" : "Equipment"}
       feature={upgrade.feature} onFeatureChange={changeUpgrade} onBack={closeUpgrade}>
-      {upgrade.feature === "train" ? <TrainingFeature pokemonId={upgrade.pokemonId} /> : <ItemNatureFeature pokemonId={upgrade.pokemonId} />}
+      {upgrade.feature === "train" ? <TrainingFeature pokemonId={upgrade.pokemonId} /> : upgrade.feature === "build" ? <ItemNatureFeature pokemonId={upgrade.pokemonId} /> : <EquipmentFeature pokemonId={upgrade.pokemonId} />}
     </PokemonUpgradeWorkspace>}
   </main>;
 };

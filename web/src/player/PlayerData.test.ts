@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { afterEach, it } from "node:test";
 import { PlayerData } from "./PlayerData";
-import type { PokemonDetail } from "./types";
+import type { PokemonDetail, PokemonEquipmentContext, PokemonEquipmentResult } from "./types";
 
 const originalFetch = globalThis.fetch;
 afterEach(() => { globalThis.fetch = originalFetch; });
@@ -388,4 +388,240 @@ it("explicit refresh reconciles an uncertain target that was subsequently remove
   assert.equal(posts, 0);
   await data.changeNature("owned", "3", "0");
   assert.equal(posts, 1);
+});
+
+const equipmentData = (onAccountChanged = () => {}) => {
+  const data = new PlayerData("alice", null, onAccountChanged);
+  data.client.setDefaultOptions({ queries: { ...data.client.getDefaultOptions().queries, gcTime: 0 } });
+  data.client.removeQueries({ queryKey: data.trainer().queryKey });
+  data.activate();
+  return data;
+};
+const equipmentContext: PokemonEquipmentContext = {
+  pokemon: pokemonFixture, money: 5000,
+  trainer: { displayName: "Alice", avatarUrl: null, level: 5, money: 5000, exp: null },
+  pieces: [{ id: "powerBracer", level: 4, expectedEquipment: { level: 4,
+    slots: { primary: { modifier: "baseAtk", quality: 75 } } },
+    slots: [{ id: "primary", modifier: "baseAtk", quality: 75, value: 9, nextValue: 11 }],
+    upgradeCost: { money: 1000, shards: 5 } }],
+  materials: [{ id: "6", name: "Willpower Shard", description: "Equipment material", category: "1", categoryName: "Materials", quantity: 12, icon: "willpower-shard.png" }],
+  catalog: { maxLevel: 10, moneyPerShard: 200, rerollCost: { money: 1000, shards: 5 },
+    types: [{ id: "powerBracer", name: "Power Bracer", icon: "power-bracer.png", primaryStat: 1, materialId: "6", slots: { primary: ["baseAtk"] } }],
+    slots: [{ id: "primary", name: "Primary", scalesWithLevel: true }],
+    modifiers: [{ id: "baseAtk", name: "Base Atk", description: "Base Attack", type: "base", stat: 1, min: 1.5, max: 2.5 }] },
+};
+const equipmentResult = (warning?: string): PokemonEquipmentResult => ({ ...equipmentContext,
+  discordUserId: "alice", money: 4000, trainer: { ...equipmentContext.trainer, money: 4000 },
+  items: [{ ...equipmentContext.materials[0], quantity: 7 }], materials: [{ ...equipmentContext.materials[0], quantity: 7 }], changed: true,
+  change: { kind: "reroll", equipmentType: "powerBracer", slotId: "primary", previousEquipment: equipmentContext.pieces[0].expectedEquipment },
+  ...(warning ? { warning } : {}) });
+
+it("equipment reads are actor-scoped and install canonical detail and current money without a write", async t => {
+  const data = equipmentData(); t.after(() => data.dispose());
+  globalThis.fetch = async (url, options) => {
+    assert.match(String(url), /\/player\/pokemon\/one\/equipment$/);
+    assert.notEqual(options?.method, "POST");
+    assert.equal((options?.headers as Record<string, string>)["X-Player-Id"], "alice");
+    return json({ discordUserId: "alice", ...equipmentContext });
+  };
+  const context = await data.client.fetchQuery(data.equipment("one"));
+  assert.deepEqual(context.pieces, equipmentContext.pieces);
+  assert.deepEqual(data.client.getQueryData(data.pokemon("one").queryKey), pokemonFixture);
+  assert.deepEqual(data.client.getQueryData(data.trainer().queryKey), equipmentContext.trainer);
+  let accountChanges = 0;
+  const other = equipmentData(() => { accountChanges++; }); t.after(() => other.dispose());
+  globalThis.fetch = async () => json({ discordUserId: "bob", ...equipmentContext });
+  await assert.rejects(other.client.fetchQuery(other.equipment("one")), /account_changed/);
+  assert.equal(accountChanges, 1);
+  assert.equal(other.client.getQueryData(other.pokemon("one").queryKey), undefined);
+});
+
+it("an identical paid reroll installs its response and invalidates only affected Pokemon caches", async t => {
+  const data = equipmentData(); t.after(() => data.dispose());
+  const affected = [data.build("one").queryKey, data.training("one").queryKey,
+    data.collection(query).queryKey, data.party().queryKey];
+  for (const key of affected) data.client.setQueryData<unknown>(key, { cached: true });
+  data.client.setQueryData(data.npcs().queryKey, []);
+  const result = equipmentResult();
+  globalThis.fetch = async (url, options) => {
+    assert.match(String(url), /\/pokemon\/one\/equipment\/reroll$/);
+    assert.deepEqual(JSON.parse(String(options?.body)), { equipmentType: "powerBracer", slotId: "primary",
+      expectedEquipment: equipmentContext.pieces[0].expectedEquipment });
+    return json(result);
+  };
+  assert.deepEqual(await data.rerollEquipment("one", "powerBracer", "primary", equipmentContext.pieces[0].expectedEquipment), result);
+  assert.deepEqual(data.client.getQueryData(data.equipment("one").queryKey), result);
+  assert.deepEqual(data.client.getQueryData(data.bag().queryKey), result.items);
+  assert.equal(data.client.getQueryData<{ money: number }>(data.trainer().queryKey)?.money, 4000);
+  for (const key of affected) assert.equal(data.client.getQueryState(key)?.isInvalidated, true);
+  assert.equal(data.client.getQueryState(data.npcs().queryKey)?.isInvalidated, false);
+});
+
+it("equipment writes cancel late old reads and stay exclusive with nature, held items and training", async t => {
+  const data = equipmentData(); t.after(() => data.dispose());
+  let finishRead!: (response: Response) => void;
+  let finishWrite!: (response: Response) => void;
+  let posts = 0;
+  globalThis.fetch = async (_url, options) => options?.method === "POST"
+    ? (posts++, new Promise(resolve => { finishWrite = resolve; }))
+    : new Promise(resolve => { finishRead = resolve; });
+  const oldRead = data.client.fetchQuery(data.equipment("one")).catch(() => undefined);
+  await new Promise(resolve => setTimeout(resolve, 0));
+  const change = data.upgradeEquipment("one", "powerBracer", equipmentContext.pieces[0].expectedEquipment);
+  await new Promise(resolve => setTimeout(resolve, 0));
+  await assert.rejects(data.changeNature("one", "3", "0"), /interaction_pending/);
+  await assert.rejects(data.changeHeldItem("one", null, "h211"), /interaction_pending/);
+  await assert.rejects(data.train("one", "0"), /interaction_pending/);
+  await assert.rejects(data.rerollEquipment("one", "powerBracer", "primary", equipmentContext.pieces[0].expectedEquipment), /interaction_pending/);
+  finishWrite(json(equipmentResult()));
+  await change;
+  finishRead(json({ discordUserId: "alice", ...equipmentContext }));
+  await oldRead;
+  assert.equal(posts, 1);
+  assert.equal(data.client.getQueryData<PokemonEquipmentContext>(data.equipment("one").queryKey)?.money, 4000);
+  assert.equal(data.client.getQueryData<{ money: number }>(data.trainer().queryKey)?.money, 4000);
+});
+
+it("a departed equipment response invalidates caches without installing old feature data", async t => {
+  const data = equipmentData(); t.after(() => data.dispose());
+  let current = true;
+  let finish!: (response: Response) => void;
+  globalThis.fetch = async () => new Promise(resolve => { finish = resolve; });
+  const queued = data.upgradeEquipment("one", "powerBracer", equipmentContext.pieces[0].expectedEquipment, () => current);
+  current = false;
+  await assert.rejects(queued, /context_closed/);
+  assert.equal(typeof finish, "undefined");
+  current = true;
+  const submitted = data.rerollEquipment("one", "powerBracer", "primary", equipmentContext.pieces[0].expectedEquipment, () => current);
+  await new Promise(resolve => setTimeout(resolve, 0));
+  data.client.setQueryData(data.equipment("one").queryKey, equipmentContext);
+  data.client.setQueryData(data.bag().queryKey, equipmentContext.materials);
+  current = false;
+  finish(json(equipmentResult()));
+  await assert.rejects(submitted, /context_closed/);
+  assert.equal(data.client.getQueryState(data.equipment("one").queryKey)?.isInvalidated, true);
+  assert.deepEqual(data.client.getQueryData(data.equipment("one").queryKey), equipmentContext);
+  assert.equal(data.client.getQueryData(data.pokemon("one").queryKey), undefined);
+});
+
+it("equipment response loss is never replayed and refresh requires all current reads before clearing the hold", async t => {
+  const data = equipmentData(); t.after(() => data.dispose());
+  let posts = 0;
+  globalThis.fetch = async () => { posts++; throw new TypeError("response lost"); };
+  await assert.rejects(data.rerollEquipment("one", "powerBracer", "primary", equipmentContext.pieces[0].expectedEquipment), /response lost/);
+  await assert.rejects(data.changeNature("two", "3", "0"), /build_refresh_required/);
+  assert.equal(posts, 1);
+  const reads: string[] = [];
+  let finishTrainer!: (response: Response) => void;
+  globalThis.fetch = async (url, options) => {
+    assert.notEqual(options?.method, "POST"); reads.push(String(url));
+    if (String(url).endsWith("/trainer")) return new Promise(resolve => { finishTrainer = resolve; });
+    if (String(url).endsWith("/bag")) return json({ discordUserId: "alice", items: [] });
+    return json({ discordUserId: "alice", ...equipmentContext, natures: [], heldItems: [], mintQuantity: 3, mintCost: 1 });
+  };
+  const refresh = data.refreshBuild("two");
+  await new Promise(resolve => setTimeout(resolve, 0));
+  assert.equal(data.needsBuildRefresh, true);
+  for (const target of ["one", "two"]) for (const kind of ["build", "equipment"]) {
+    assert.ok(reads.some(path => path.endsWith(`/pokemon/${target}/${kind}`)));
+  }
+  finishTrainer(json({ discordUserId: "alice", trainer: equipmentContext.trainer }));
+  await refresh;
+  assert.equal(data.needsBuildRefresh, false);
+  assert.equal(posts, 1);
+});
+
+it("failed or departed equipment refresh cannot release uncertainty; authoritative absence can", async t => {
+  const data = equipmentData(); t.after(() => data.dispose());
+  globalThis.fetch = async () => { throw new TypeError("response lost"); };
+  await assert.rejects(data.upgradeEquipment("one", "powerBracer", equipmentContext.pieces[0].expectedEquipment));
+  globalThis.fetch = async url => String(url).endsWith("/equipment")
+    ? json({ error: "read_unavailable" }, 503)
+    : json({ discordUserId: "alice", ...equipmentContext, items: [] });
+  await assert.rejects(data.refreshBuild("one"));
+  assert.equal(data.needsBuildRefresh, true);
+  let current = true;
+  const finishes: ((response: Response) => void)[] = [];
+  globalThis.fetch = async () => new Promise(resolve => { finishes.push(resolve); });
+  const departed = data.refreshBuild("one", () => current);
+  await new Promise(resolve => setTimeout(resolve, 0));
+  current = false;
+  // Dispose cancels all pending read promises; it must not restore this account.
+  data.dispose();
+  for (const finish of finishes) finish(json({ discordUserId: "alice", ...equipmentContext, items: [] }));
+  await assert.rejects(departed);
+  assert.equal(data.needsBuildRefresh, true);
+  assert.equal(data.client.getQueryCache().getAll().length, 0);
+  const absent = equipmentData(); t.after(() => absent.dispose());
+  globalThis.fetch = async () => { throw new TypeError("response lost"); };
+  await assert.rejects(absent.upgradeEquipment("one", "powerBracer", equipmentContext.pieces[0].expectedEquipment));
+  globalThis.fetch = async url => String(url).includes("/pokemon/one/")
+    ? json({ error: "pokemon_not_found" }, 404)
+    : json({ discordUserId: "alice", trainer: equipmentContext.trainer, items: [] });
+  await absent.refreshBuild("one");
+  assert.equal(absent.needsBuildRefresh, false);
+});
+
+it("a warning after departure holds other build writes until refresh and disposal suppresses late results", async t => {
+  const data = equipmentData(); t.after(() => data.dispose());
+  let current = true;
+  let finish!: (response: Response) => void;
+  globalThis.fetch = async () => new Promise(resolve => { finish = resolve; });
+  const changed = data.upgradeEquipment("one", "powerBracer", equipmentContext.pieces[0].expectedEquipment, () => current);
+  await new Promise(resolve => setTimeout(resolve, 0));
+  current = false;
+  finish(json(equipmentResult("Equipment saved, but quest progress could not be confirmed.")));
+  await assert.rejects(changed, /context_closed/);
+  assert.equal(data.needsBuildRefresh, true);
+  await assert.rejects(data.changeHeldItem("two", null, "h211"), /build_refresh_required/);
+  const disposed = equipmentData(); t.after(() => disposed.dispose());
+  const late = disposed.upgradeEquipment("one", "powerBracer", equipmentContext.pieces[0].expectedEquipment);
+  await new Promise(resolve => setTimeout(resolve, 0));
+  disposed.dispose(); finish(json(equipmentResult()));
+  await assert.rejects(late, /session_closed/);
+  assert.equal(disposed.client.getQueryCache().getAll().length, 0);
+});
+
+it("nature/held changes and every submitted training settlement invalidate equipment previews", async t => {
+  const data = equipmentData(); t.after(() => data.dispose());
+  const keys = [data.equipment("one").queryKey, data.build("one").queryKey];
+  for (const key of keys) data.client.setQueryData<unknown>(key, { cached: true });
+  globalThis.fetch = async () => json({ discordUserId: "alice", pokemon: pokemonFixture, items: [], natures: [], heldItems: [], changed: true });
+  await data.changeHeldItem("one", null, "h211");
+  assert.equal(data.client.getQueryState(data.equipment("one").queryKey)?.isInvalidated, true);
+  for (const key of keys) data.client.setQueryData<unknown>(key, { cached: true });
+  globalThis.fetch = async () => json({ discordUserId: "alice", pokemon: pokemonFixture, locations: [], trained: true, gains: { exp: 2, evs: [] } });
+  await data.train("one", "0");
+  for (const key of keys) assert.equal(data.client.getQueryState(key)?.isInvalidated, true);
+  for (const key of keys) data.client.setQueryData<unknown>(key, { cached: true });
+  globalThis.fetch = async () => { throw new TypeError("training response lost"); };
+  await assert.rejects(data.train("one", "0"));
+  for (const key of keys) assert.equal(data.client.getQueryState(key)?.isInvalidated, true);
+});
+
+it("refreshes a replacement active equipment observer when the departed purchase settles", async t => {
+  const { QueryObserver } = await import("@tanstack/react-query");
+  const data = equipmentData(); t.after(() => data.dispose());
+  data.client.setQueryData(data.equipment("one").queryKey, equipmentContext);
+  let current = true, reads = 0, posts = 0;
+  let finish!: (response: Response) => void;
+  const saved = equipmentResult();
+  globalThis.fetch = async (_url, options) => {
+    if (options?.method === "POST") { posts++; return new Promise(resolve => { finish = resolve; }); }
+    reads++; return json(saved);
+  };
+  const change = data.upgradeEquipment("one", "powerBracer", equipmentContext.pieces[0].expectedEquipment, () => current);
+  await new Promise(resolve => setTimeout(resolve, 0));
+  current = false;
+  // The fixture uses gcTime: 0; restore the cached view before subscribing.
+  data.client.setQueryData(data.equipment("one").queryKey, equipmentContext);
+  const replacement = new QueryObserver(data.client, { ...data.equipment("one"), staleTime: Infinity });
+  const unsubscribe = replacement.subscribe(() => {}); t.after(unsubscribe);
+  assert.equal(reads, 0);
+  finish(json(saved));
+  await assert.rejects(change, /context_closed/);
+  assert.equal(posts, 1);
+  assert.equal(reads, 1);
+  assert.equal(replacement.getCurrentResult().data?.money, saved.money);
+  assert.deepEqual(replacement.getCurrentResult().data?.pieces, saved.pieces);
 });

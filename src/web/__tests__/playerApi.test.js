@@ -6,7 +6,7 @@ let server;
 let url;
 let service;
 beforeEach(async () => {
-  service = { build: jest.fn(), changeNature: jest.fn(), changeHeldItem: jest.fn(), npcs: jest.fn(), dungeons: jest.fn(), tower: jest.fn(), bag: jest.fn(), collection: jest.fn().mockResolvedValue({ items: [] }), detail: jest.fn(), training: jest.fn().mockResolvedValue({ pokemon: {}, locations: [] }), train: jest.fn().mockResolvedValue({ trained: true, gains: { exp: 35, evs: [0, 0, 0, 0, 0, 0] }, trainer: {}, pokemon: {}, locations: [] }), party: jest.fn(), profile: jest.fn(), interact: jest.fn().mockResolvedValue({ trainer: {} }) };
+  service = { equipment: jest.fn(), upgradeEquipment: jest.fn(), rerollEquipment: jest.fn(), build: jest.fn(), changeNature: jest.fn(), changeHeldItem: jest.fn(), npcs: jest.fn(), dungeons: jest.fn(), tower: jest.fn(), bag: jest.fn(), collection: jest.fn().mockResolvedValue({ items: [] }), detail: jest.fn(), training: jest.fn().mockResolvedValue({ pokemon: {}, locations: [] }), train: jest.fn().mockResolvedValue({ trained: true, gains: { exp: 35, evs: [0, 0, 0, 0, 0, 0] }, trainer: {}, pokemon: {}, locations: [] }), party: jest.fn(), profile: jest.fn(), interact: jest.fn().mockResolvedValue({ trainer: {} }) };
   const app = express();
   app.use(express.json());
   app.use('/api', createBattleApi({ battleService: { listActive: async () => [{ battleId: "owned-battle" }] }, sessionStore: { get: async (token) => token === 'valid' ? { userId: 'owner' } : null },
@@ -113,5 +113,32 @@ test('build read and domain mutations inherit session, actor and origin enforcem
   }
   expect(service.changeNature).toHaveBeenCalledWith('owner', 'one', { natureId: '3', expectedNatureId: '1' });
   expect(service.changeHeldItem).toHaveBeenCalledWith('owner', 'one', { heldItemId: null, expectedHeldItemId: 'h197' });
+  expect(service.interact).not.toHaveBeenCalled();
+});
+
+test('equipment read and spend routes enforce session, actor and origin without generic interactions', async () => {
+  service.equipment = jest.fn().mockResolvedValue({ pieces: [], catalog: {} });
+  service.upgradeEquipment = jest.fn().mockResolvedValue({ changed: true });
+  service.rerollEquipment = jest.fn().mockResolvedValue({ changed: true });
+  const path = `${url}/pokemon/one/equipment`;
+  expect((await fetch(path)).status).toBe(401);
+  expect((await fetch(path, { headers: { ...headers, 'X-Player-Id': 'other' } })).status).toBe(409);
+  const context = await fetch(path, { headers });
+  expect(context.status).toBe(200);
+  expect(await context.json()).toEqual({ pieces: [], catalog: {}, discordUserId: 'owner' });
+  expect(service.equipment).toHaveBeenCalledWith('owner', 'one');
+  for (const [action, body] of [['upgrade', { equipmentType: 'powerBracer', expectedEquipment: { level: 4, slots: {} } }],
+    ['reroll', { equipmentType: 'powerBracer', slotId: 'primary', expectedEquipment: { level: 4, slots: {} } }]]) {
+    expect((await fetch(`${path}/${action}`, { method: 'POST', headers: { ...headers, Cookie: '' }, body: JSON.stringify(body) })).status).toBe(401);
+    expect((await fetch(`${path}/${action}`, { method: 'POST', headers: { ...headers, 'X-Player-Id': 'other' }, body: JSON.stringify(body) })).status).toBe(409);
+    expect((await fetch(`${path}/${action}`, { method: 'POST', headers: { ...headers, Origin: 'https://other.example' }, body: JSON.stringify(body) })).status).toBe(403);
+    expect((await fetch(`${path}/${action}`, { method: 'POST', headers, body: JSON.stringify(body) })).status).toBe(200);
+  }
+  expect(service.upgradeEquipment).toHaveBeenCalledWith('owner', 'one', { equipmentType: 'powerBracer', expectedEquipment: { level: 4, slots: {} } });
+  expect(service.rerollEquipment).toHaveBeenCalledWith('owner', 'one', { equipmentType: 'powerBracer', slotId: 'primary', expectedEquipment: { level: 4, slots: {} } });
+  service.rerollEquipment.mockRejectedValueOnce(new PlayerError('equipment_uncertain', 503));
+  const rejected = await fetch(`${path}/reroll`, { method: 'POST', headers, body: '{}' });
+  expect(rejected.status).toBe(503);
+  expect(await rejected.json()).toEqual({ error: 'equipment_uncertain' });
   expect(service.interact).not.toHaveBeenCalled();
 });

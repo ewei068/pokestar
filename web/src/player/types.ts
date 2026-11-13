@@ -48,6 +48,28 @@ export type PokemonBuildContext = {
   natures: NatureChoice[]; heldItems: BagItem[]; mintQuantity: number; mintCost: number;
 };
 export type PokemonBuildResult = PlayerEnvelope & PokemonBuildContext & { changed: boolean; items: BagItem[]; warning?: string };
+export type EquipmentSnapshot = { level: number; slots: Record<string, { modifier: string; quality: number }> };
+export type EquipmentSpend = { money: number; shards: number };
+export type EquipmentPiece = {
+  id: string; level: number; expectedEquipment: EquipmentSnapshot;
+  slots: { id: string; modifier: string; quality: number; value: number; nextValue: number }[];
+  upgradeCost: EquipmentSpend | null;
+};
+export type EquipmentCatalog = {
+  maxLevel: number; moneyPerShard: number; rerollCost: EquipmentSpend;
+  types: { id: string; name: string; icon: string; primaryStat: number; materialId: string; slots: Record<string, string[]> }[];
+  slots: { id: string; name: string; scalesWithLevel: boolean }[];
+  modifiers: { id: string; name: string; description: string; type: "base" | "percent" | "flat";
+    stat: number; min: number; max: number }[];
+};
+export type PokemonEquipmentContext = {
+  pokemon: PokemonDetail; money: number; pieces: EquipmentPiece[]; materials: BagItem[];
+  catalog: EquipmentCatalog; trainer: TrainerProfile;
+};
+export type PokemonEquipmentResult = PlayerEnvelope & PokemonEquipmentContext & {
+  changed: boolean; items: BagItem[]; warning?: string;
+  change: { kind: "upgrade" | "reroll"; equipmentType: string; previousEquipment: EquipmentSnapshot; slotId?: string };
+};
 export type NpcSpecies = { id: string; name: string; spriteUrl: string | null; ace: boolean };
 export type NpcDifficulty = { id: string; name: string; minLevel: number; maxLevel: number; count: number;
   species: NpcSpecies[]; dailyClaimed: boolean; rewards: { name: string; quantity: number; icon: string | null }[] };

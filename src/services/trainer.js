@@ -728,11 +728,13 @@ const updateTrainer = async (trainer) => {
 const emitTrainerEvent = async (eventName, args) => {
   try {
     const { trainer } = args;
-    const before = eventName === trainerEventEnum.TRAINED_POKEMON ? structuredClone(trainer.questData || {}) : null;
+    const questOnly = eventName === trainerEventEnum.TRAINED_POKEMON
+      || eventName === trainerEventEnum.UPGRADED_EQUIPMENT || eventName === trainerEventEnum.REROLLED_EQUIPMENT;
+    const before = questOnly ? structuredClone(trainer.questData || {}) : null;
     // @ts-ignore
     await emitTrainerEventPure(eventName, args);
     if (before) {
-      // Training listeners own quest progress, never a trainer/resource snapshot.
+      // Training and equipment listeners own quests, never resource snapshots.
       const patch = {};
       const filter = { userId: trainer.userId };
       for (const [category, entries] of Object.entries(trainer.questData || {})) {
@@ -746,7 +748,7 @@ const emitTrainerEvent = async (eventName, args) => {
       }
       if (!Object.keys(patch).length) return { data: trainer, err: null };
       const saved = await updateDocument(collectionNames.USERS, filter, { $set: patch });
-      if (!saved.modifiedCount) return { data: null, err: "Quest progress changed during training." };
+      if (!saved.modifiedCount) return { data: null, err: "Quest progress changed during this action." };
       return { data: trainer, err: null };
     }
     return await updateTrainer(trainer);

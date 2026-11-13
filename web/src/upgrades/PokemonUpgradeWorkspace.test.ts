@@ -28,3 +28,13 @@ it("keeps Pokemon/return ownership while a feature panel is replaced", () => {
   fireEvent.click(view.getByRole("button", { name: "‹ Pokémon" }));
   assert.equal(returned, 1);
 });
+
+it("exposes the three approved upgrade tabs and delegates Equipment selection", () => {
+  let chosen = "";
+  const view = render(createElement(PokemonUpgradeWorkspace, { pokemonId: "one", title: "Equipment", feature: "equipment",
+    onBack() {}, onFeatureChange(feature) { chosen = feature; }, children: createElement("p", {}, "Equipment feature") }));
+  assert.equal(view.getAllByRole("tab").length, 3);
+  assert.equal(view.getByRole("tab", { name: "Equipment" }).getAttribute("aria-selected"), "true");
+  fireEvent.click(view.getByRole("tab", { name: "Item & nature" }));
+  assert.equal(chosen, "build");
+});
