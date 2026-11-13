@@ -43,6 +43,37 @@ it("shows unknown previews only for the selected reroll, preserving a fixed modi
   fireEvent.click(view.getByRole("button", { name: "Confirm reroll" }));
   assert.equal(spends, 1);
 });
+it("selects a reroll slot from any cell in its row and spends only on confirmation", () => {
+  const rerolls: string[][] = [];
+  const panel = { ...props, onReroll(type: string, slot: string) { rerolls.push([type, slot]); } };
+  const view = render(createElement(EquipmentPanel, panel));
+  const secondaryRow = () => view.getByRole("row", { name: /Secondary/ });
+  const slot = () => (view.getByLabelText("Stat slot") as HTMLSelectElement).value;
+
+  fireEvent.click(secondaryRow());
+  fireEvent.click(view.getByRole("button", { name: "Reroll" }));
+  assert.equal(slot(), "primary");
+
+  fireEvent.click(view.getByRole("cell", { name: "65%" }));
+  assert.equal(slot(), "secondary");
+  assert.ok(view.getByRole("heading", { name: "Reroll secondary" }));
+  assert.equal(secondaryRow().querySelectorAll(".equipment-next").length, 3);
+  assert.equal(view.getByRole("row", { name: /Primary/ }).querySelectorAll(".equipment-next").length, 0);
+
+  fireEvent.change(view.getByLabelText("Stat slot"), { target: { value: "primary" } });
+  for (const blocked of [{ pending: true }, { refreshing: true }, { error: "Refresh Pokémon & Bag." }]) {
+    view.rerender(createElement(EquipmentPanel, { ...panel, ...blocked }));
+    fireEvent.click(secondaryRow());
+    assert.equal(slot(), "primary");
+  }
+
+  view.rerender(createElement(EquipmentPanel, panel));
+  fireEvent.click(secondaryRow());
+  fireEvent.click(secondaryRow());
+  assert.deepEqual(rerolls, []);
+  fireEvent.click(view.getByRole("button", { name: "Confirm reroll" }));
+  assert.deepEqual(rerolls, [["weight", "secondary"]]);
+});
 it("disables spending for shortage, pending and maximum upgrade, while allowing capped rerolls", () => {
   const view = render(createElement(EquipmentPanel, { ...props, context: { ...context, money: 0 } }));
   assert.equal((view.getByRole("button", { name: "Upgrade level" }) as HTMLButtonElement).disabled, true);

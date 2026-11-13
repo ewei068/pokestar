@@ -107,3 +107,16 @@ above Item & nature (#261). Disposable acceptance services were stopped and thei
 Mongo data and temporary bundle copies removed; scripts/logs/screenshots remain
 machine-local. No deployment, merge or live-account mutation occurred. Standing
 PR monitoring is disabled by repository configuration.
+
+## Reroll row selection · 2026-11-13
+
+Clicking or tapping a stat row in Reroll mode selects that slot in the dropdown
+and updates its preview. The dropdown remains available for keyboard selection.
+Spending requires Confirm reroll. Row selection follows the same disabled
+states as the dropdown.
+
+All 244 web tests and the production build passed. Chrome at 1280×900 with
+mouse input and at 320×480 with emulated touch used the production build and
+disposable MongoDB. Repeated row selection sent no purchase request and left
+the balance and equipment unchanged. Confirmation submitted the selected slot
+once and debited the expected cost. Disposable services and data were removed.

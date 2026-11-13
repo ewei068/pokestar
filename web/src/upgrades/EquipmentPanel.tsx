@@ -30,6 +30,7 @@ export function EquipmentPanel({ context, loading, pending, refreshing, error, r
   const type = catalog.types.find(item => item.id === piece?.id);
   const slotId = piece?.slots.some(slot => slot.id === slotSelection) ? slotSelection : piece?.slots[0]?.id;
   const disabled = pending || refreshing || Boolean(error);
+  const canSelectRerollSlot = mode === "reroll" && !disabled;
   const material = context.materials.find(item => item.id === type?.materialId);
   const cost = mode === "upgrade" ? piece?.upgradeCost : catalog.rerollCost;
   const affordable = Boolean(cost && context.money >= cost.money && (material?.quantity || 0) >= cost.shards);
@@ -63,7 +64,10 @@ export function EquipmentPanel({ context, loading, pending, refreshing, error, r
           <button className="ui-button" aria-pressed={mode === "upgrade"} disabled={pending} onClick={() => setMode("upgrade")}>Upgrade</button>
           <button className="ui-button" aria-pressed={mode === "reroll"} disabled={pending} onClick={() => setMode("reroll")}>Reroll</button></div>
         <table className="equipment-slots"><thead><tr><th>Slot</th><th>Modifier</th><th>Value{mode === "upgrade" && piece.upgradeCost ? " → next" : ""}</th><th>Quality</th></tr></thead>
-          <tbody>{piece.slots.map(slot => { const rerolling = mode === "reroll" && slot.id === slotId; return <tr key={slot.id} className={rerolling ? "equipment-selected-slot" : ""}>
+          <tbody className={canSelectRerollSlot ? "equipment-reroll-slots" : undefined}>{piece.slots.map(slot => {
+            const rerolling = mode === "reroll" && slot.id === slotId;
+            return <tr key={slot.id} className={rerolling ? "equipment-selected-slot" : undefined}
+              onClick={canSelectRerollSlot ? () => setSlotSelection(slot.id) : undefined}>
             <th scope="row">{slotName(slot.id)}</th><td>{name(slot.modifier)}{rerolling && type.slots[slot.id]?.length > 1 && <span className="equipment-next">→ ???</span>}</td>
             <td>{equipmentValue(catalog, slot.modifier, slot.value)}{rerolling ? <span className="equipment-next">→ ???</span>
               : mode === "upgrade" && piece.upgradeCost && slot.value !== slot.nextValue ? <span className="equipment-next">→ {equipmentValue(catalog, slot.modifier, slot.nextValue)}</span> : null}</td>

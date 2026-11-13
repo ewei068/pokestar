@@ -24,6 +24,10 @@
 .equipment-slots td:nth-child(n+3), .equipment-slots thead th:nth-child(n+3) { text-align: right; }
 .equipment-slots thead { color: var(--site-soft); font-size: 12px; }
 .equipment-selected-slot { background: #edbe4314; }
+.equipment-reroll-slots tr { cursor: pointer; }
+@media (hover: hover) {
+  .equipment-reroll-slots tr:hover { background: #edbe4324; }
+}
 .equipment-next { display: inline-block; color: var(--site-gold); margin-left: 6px; white-space: nowrap; }
 .equipment-helper { font-size: 13px; color: var(--site-soft); line-height: 1.5; }
 .equipment-action { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--site-rule); }
