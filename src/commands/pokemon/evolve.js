@@ -5,6 +5,7 @@
  * evolve.js looks up a pokemon, returning an embed with the pokemon's valid evolution options.
  */
 const { getPokemon, getIdFromNameOrId } = require("../../services/pokemon");
+const { getTransformChoices, getTransformVersion } = require("../../services/pokemonTransform");
 const { getTrainer } = require("../../services/trainer");
 const { pokemonConfig } = require("../../config/pokemonConfig");
 const { setState } = require("../../services/state");
@@ -37,19 +38,12 @@ const evolve = async (user, pokemonId) => {
   // get species data
   const speciesData = pokemonConfig[pokemon.data.speciesId];
 
-  // check if pokemon can evolve
-  if (!speciesData.evolution) {
+  const choices = getTransformChoices(pokemon.data.speciesId);
+  if (!choices.some(choice => choice.kind === "evolve")) {
     return { send: null, err: `${pokemon.data.name} cannot evolve!` };
   }
-  const evolutionSpeciesIds = [];
-  for (const evolutionConfig of speciesData.evolution) {
-    if (evolutionConfig.level) {
-      if (pokemon.data.level >= evolutionConfig.level) {
-        evolutionSpeciesIds.push(evolutionConfig.id);
-      }
-    }
-    // TODO: add other evolution methods
-  }
+  const evolutionSpeciesIds = choices.filter(choice => choice.kind === "evolve" && pokemon.data.level >= choice.requiredLevel)
+    .map(choice => choice.targetSpeciesId);
 
   // if empty, pokemon cannot evolve
   if (evolutionSpeciesIds.length === 0) {
@@ -70,8 +64,9 @@ const evolve = async (user, pokemonId) => {
   const stateId = setState(
     {
       userId: user.id,
-      pokemonId: pokemon.data._id,
+      pokemonId: pokemon.data._id.toString(),
       speciesId: null,
+      version: getTransformVersion(pokemon.data),
     },
     150
   );

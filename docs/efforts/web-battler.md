@@ -10,6 +10,17 @@ service contracts and final implementation sequencing remain future work;
 the approved ticket release cut is recorded below.
 The implementation and verification below describe the existing battle experience.
 
+**Evolution and forms · 2026-11-13 (local acceptance complete):** J21 and J22
+share one **Evolution & forms** tab in the inspected Pokémon workspace. The
+maintainer approved the [desktop list and phone picker](../design/evolution-forms/README.md).
+Study and production share a layout rule that gives every upgrade tab equal
+flex sizing. Discord and web use the same guarded transformation, with
+post-save evolution progress and form spending by current rarity.
+[Acceptance evidence](../verification/evolution-forms-2026-11-13.md) records
+1,077 backend tests, 245 client tests, production builds, and disposable
+MongoDB/HTTP/Chrome outcomes, including uncertain responses and the remaining
+cross-document limit.
+
 **Equipment implementation · 2026-11-10 (local acceptance complete):** Equipment
 now joins Train and Item & nature in the inspected Pokémon workspace. The
 approved Upgrade/Reroll interface includes item art, base-stat subtitles,

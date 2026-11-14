@@ -72,12 +72,12 @@ it("keeps encounter context through party editing and battle links", async () =>
     "/pokestar/?playView=dungeons#play");
 });
 
-it("routes Equipment for both hosting paths and clears it when leaving Pokémon", async () => {
+it("routes Equipment and Evolution & forms for both hosting paths and clears it when leaving Pokémon", async () => {
   const { pokemonUpgradeHref, readPokemonUpgrade } = await import("./routes");
-  for (const path of ["/", "/pokestar/"]) {
+  for (const path of ["/", "/pokestar/"]) for (const feature of ["equipment", "transformation"] as const) {
     const current = new URL(`https://example.test${path}?owned=one&campaign=friend#pokemon`);
-    const next = new URL(pokemonUpgradeHref(current, "one", "equipment"), current);
-    assert.deepEqual(readPokemonUpgrade(next), { pokemonId: "one", feature: "equipment" });
+    const next = new URL(pokemonUpgradeHref(current, "one", feature), current);
+    assert.deepEqual(readPokemonUpgrade(next), { pokemonId: "one", feature });
     assert.equal(next.pathname, path);
     assert.equal(next.searchParams.get("campaign"), "friend");
     assert.equal(new URL(routeHref(next, { page: "bag", battleId: null }), current).searchParams.has("upgrade"), false);

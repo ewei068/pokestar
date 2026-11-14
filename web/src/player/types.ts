@@ -70,6 +70,15 @@ export type PokemonEquipmentResult = PlayerEnvelope & PokemonEquipmentContext & 
   changed: boolean; items: BagItem[]; warning?: string;
   change: { kind: "upgrade" | "reroll"; equipmentType: string; previousEquipment: EquipmentSnapshot; slotId?: string };
 };
+export type PokemonTransformationChoice = { targetSpeciesId: string; cost: number; preview: PokemonDetail } &
+  ({ kind: "evolve"; requiredLevel: number } | { kind: "form" });
+export type PokemonTransformationContext = {
+  pokemon: PokemonDetail; expectedVersion: string; choices: PokemonTransformationChoice[]; money: number; trainer: TrainerProfile;
+};
+export type PokemonTransformationResult = PlayerEnvelope & PokemonTransformationContext & {
+  items: BagItem[]; warning?: string;
+  change: { kind: PokemonTransformationChoice["kind"]; previousName: string; targetName: string };
+};
 export type NpcSpecies = { id: string; name: string; spriteUrl: string | null; ace: boolean };
 export type NpcDifficulty = { id: string; name: string; minLevel: number; maxLevel: number; count: number;
   species: NpcSpecies[]; dailyClaimed: boolean; rewards: { name: string; quantity: number; icon: string | null }[] };

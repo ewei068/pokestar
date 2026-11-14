@@ -60,6 +60,7 @@ it("returns from training to the same collection controls and inspection", async
     nature: { name: "Hardy", raisedStat: null, loweredStat: null }, moves: [], ability: null,
     heldItem: null, exp: { current: 10, required: 100 } };
   globalThis.fetch = async (url, init) => {
+    if (String(url).endsWith("/transformation")) return json({ pokemon: detail, money: 0, choices: [], expectedVersion: "preview" });
     if (String(url).endsWith("/equipment")) return json({ pokemon: detail, money: 0, materials: [], pieces: [],
       catalog: { types: [], slots: [], modifiers: [], maxLevel: 10, moneyPerShard: 200, rerollCost: { money: 1000, shards: 5 } } });
     if (String(url).endsWith("/build")) return json({ pokemon: { ...detail, nature: { ...detail.nature, id: "0" }, heldItemId: null },
@@ -101,6 +102,11 @@ it("returns from training to the same collection controls and inspection", async
   assert.ok(await view.findByRole("heading", { name: "No equipment" }));
   assert.equal(view.queryByLabelText("New nature"), null);
   assert.equal(new URL(window.location.href).searchParams.get("upgrade"), "equipment");
+  assert.equal(window.history.length, historyLength);
+  assert.equal(window.history.state.pokemonUpgradeFrom, returnState);
+  fireEvent.click(view.getByRole("tab", { name: "Evolution & forms" }));
+  assert.ok(await view.findByRole("heading", { name: "No evolutions or forms" }));
+  assert.equal(new URL(window.location.href).searchParams.get("upgrade"), "transformation");
   assert.equal(window.history.length, historyLength);
   assert.equal(window.history.state.pokemonUpgradeFrom, returnState);
   fireEvent.click(view.getByRole("button", { name: "‹ Pokémon" }));

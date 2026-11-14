@@ -2,7 +2,7 @@ import { QueryClient, queryOptions } from "@tanstack/react-query";
 import { ApiError, request } from "../http";
 import type { BattleSummary } from "../battles/types";
 import type { TrainerProfile } from "../trainer/types";
-import type { BagItem, CollectionPage, CollectionQuery, DungeonEncounter, Party, NpcEncounter, PlayerEnvelope, PlayerOperation, PlayerResult, PokemonDetail, PokemonSummary, PokemonBuildContext, PokemonBuildResult, EquipmentSnapshot, PokemonEquipmentContext, PokemonEquipmentResult, TrainingContext, TrainingResult, TowerFloor } from "./types";
+import type { BagItem, CollectionPage, CollectionQuery, DungeonEncounter, Party, NpcEncounter, PlayerEnvelope, PlayerOperation, PlayerResult, PokemonDetail, PokemonSummary, PokemonBuildContext, PokemonBuildResult, EquipmentSnapshot, PokemonEquipmentContext, PokemonEquipmentResult, PokemonTransformationChoice, PokemonTransformationContext, PokemonTransformationResult, TrainingContext, TrainingResult, TowerFloor } from "./types";
 
 /** One authenticated account's in-memory server data. Battle sessions remain separate. */
 export class PlayerData {
@@ -142,9 +142,14 @@ export class PlayerData {
     } finally {
       if (submitted && !this.closed && epoch === this.epoch) {
         const previews = [this.build(id).queryKey, this.equipment(id).queryKey];
-        await Promise.all(previews.map(queryKey => this.client.cancelQueries({ queryKey })));
-        if (!this.closed && epoch === this.epoch) await Promise.all(previews.map(queryKey =>
-          this.client.invalidateQueries({ queryKey, refetchType: "none" })));
+        const transformation = this.transformation(id).queryKey;
+        await Promise.all([...previews, transformation].map(queryKey => this.client.cancelQueries({ queryKey })));
+        if (!this.closed && epoch === this.epoch) {
+          await Promise.all([
+            ...previews.map(queryKey => this.client.invalidateQueries({ queryKey, refetchType: "none" })),
+            this.client.invalidateQueries({ queryKey: transformation, refetchType: isCurrent() ? "none" : "active" }),
+          ]);
+        }
       }
       if (submitted && !this.closed && epoch === this.epoch && !isCurrent()) {
         // Departure can finish pre-write reads before the submitted tick settles.
@@ -181,13 +186,35 @@ export class PlayerData {
       } });
   }
 
+  transformation(id: string, isCurrent: () => boolean = () => true) {
+    return queryOptions({ queryKey: [...this.prefix, "transformation", id], retry: false,
+      queryFn: async ({ signal }): Promise<PokemonTransformationContext> => {
+        const result = await this.read<PokemonTransformationContext & PlayerEnvelope>(
+          `/player/pokemon/${encodeURIComponent(id)}/transformation`, signal);
+        if (!isCurrent()) throw new Error("context_closed");
+        this.client.setQueryData(this.pokemon(id).queryKey, result.pokemon);
+        this.client.setQueryData(this.trainer().queryKey, result.trainer);
+        return result;
+      } });
+  }
+
+  confirmTransformation(id: string, choice: Pick<PokemonTransformationChoice, "kind" | "targetSpeciesId">,
+    expectedVersion: string, isCurrent: () => boolean = () => true) {
+    const { kind, targetSpeciesId } = choice;
+    return this.changePokemon<PokemonTransformationResult>(id, "transformation", { kind, targetSpeciesId, expectedVersion },
+      this.transformation(id).queryKey, isCurrent);
+  }
+
   async refreshBuild(id: string, isCurrent: () => boolean = () => true) {
     if (this.closed) return;
     if (this.busy) throw new Error("interaction_pending");
     const epoch = this.epoch;
     const uncertainId = this.uncertainBuildId;
     const ids = [...new Set([id, ...(this.uncertainBuildId ? [this.uncertainBuildId] : [])])];
+    const transformations = ids.map(value => this.transformation(value, isCurrent))
+      .filter(query => this.client.getQueryState(query.queryKey));
     const affected = [...ids.flatMap(value => [this.build(value).queryKey, this.equipment(value).queryKey]),
+      ...transformations.map(query => query.queryKey),
       this.bag().queryKey, this.trainer().queryKey];
     await Promise.all(affected.map(queryKey => this.client.cancelQueries({ queryKey })));
     if (this.closed || epoch !== this.epoch || !isCurrent()) return;
@@ -198,7 +225,8 @@ export class PlayerData {
     await Promise.all([...ids.flatMap(value => [
       this.client.fetchQuery({ ...this.build(value, isCurrent), staleTime: 0 }).catch(reconcileAbsence),
       this.client.fetchQuery({ ...this.equipment(value, isCurrent), staleTime: 0 }).catch(reconcileAbsence),
-    ]), this.client.fetchQuery({ ...this.bag(), staleTime: 0 }), this.client.fetchQuery({ ...this.trainer(), staleTime: 0 })]);
+    ]), ...transformations.map(query => this.client.fetchQuery({ ...query, staleTime: 0 }).catch(reconcileAbsence)),
+    this.client.fetchQuery({ ...this.bag(), staleTime: 0 }), this.client.fetchQuery({ ...this.trainer(), staleTime: 0 })]);
     if (!this.closed && epoch === this.epoch && isCurrent() && this.uncertainBuildId === uncertainId) this.uncertainBuildId = null;
   }
 
@@ -218,8 +246,17 @@ export class PlayerData {
     return this.changePokemon<PokemonEquipmentResult>(id, "equipment/reroll", { equipmentType, slotId, expectedEquipment }, this.equipment(id).queryKey, isCurrent);
   }
 
+  async refreshTransformation(id: string, isCurrent: () => boolean) {
+    await this.refreshBuild(id, isCurrent);
+    if (!isCurrent() || this.closed) return;
+    const affected = [this.training(id).queryKey, this.party().queryKey, [...this.prefix, "collection"]];
+    await Promise.all(affected.map(queryKey => this.client.cancelQueries({ queryKey })));
+    if (!isCurrent() || this.closed) return;
+    await Promise.all(affected.map(queryKey => this.client.invalidateQueries({ queryKey, refetchType: "none" })));
+  }
+
   private async changePokemon<Result extends PlayerEnvelope & { pokemon: PokemonDetail; items: BagItem[]; warning?: string }>(
-    id: string, action: "nature" | "held-item" | "equipment/upgrade" | "equipment/reroll", input: object,
+    id: string, action: "nature" | "held-item" | "equipment/upgrade" | "equipment/reroll" | "transformation", input: object,
     resultKey: readonly unknown[], isCurrent: () => boolean): Promise<Result> {
     if (this.closed) throw new Error("session_closed");
     if (this.busy) throw new Error("interaction_pending");
@@ -229,7 +266,7 @@ export class PlayerData {
     let submitted = false;
     let responseKnown = false;
     const affected = [this.trainer().queryKey, this.pokemon(id).queryKey, this.build(id).queryKey, this.equipment(id).queryKey,
-      this.training(id).queryKey, this.bag().queryKey, [...this.prefix, "collection"], this.party().queryKey];
+      this.transformation(id).queryKey, this.training(id).queryKey, this.bag().queryKey, [...this.prefix, "collection"], this.party().queryKey];
     const check = () => {
       if (this.closed || epoch !== this.epoch) throw new Error("session_closed");
       if (!isCurrent()) throw new Error("context_closed");
@@ -253,7 +290,10 @@ export class PlayerData {
       return result;
     } catch (error) {
       if (submitted && !responseKnown && !this.closed && epoch === this.epoch
-        && (!(error instanceof ApiError) || error.status >= 500)) this.uncertainBuildId = id;
+        && (!(error instanceof ApiError) || error.status >= 500
+          || (action === "transformation" && ["transformation_changed", "insufficient_form_money", "form_money_changed"].includes(error.code)))) {
+        this.uncertainBuildId = id;
+      }
       throw error;
     } finally {
       if (submitted && !this.closed && epoch === this.epoch) {

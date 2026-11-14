@@ -34,7 +34,6 @@ const {
   getPokemonIdToIndex,
   getPartyPokemonIds,
   getAvailableForms,
-  getFormChangeCost,
 } = require("../utils/pokemonUtils");
 const { locations, locationConfig } = require("../config/locationConfig");
 const { calculateTrainingProgress, getTrainingYield } = require("../utils/trainingUtils");
@@ -1965,150 +1964,6 @@ const changeHeldItem = async (user, pokemonId, heldItemId, expectedHeldItemId) =
 const removeHeldItem = async (user, pokemonId, expectedHeldItemId) =>
   transferHeldItem(user, pokemonId, null, expectedHeldItemId);
 
-/**
- * Checks if a Pokémon can change forms and validates requirements
- * @param {WithId<Pokemon>} pokemon Pokémon to change
- * @param {PokemonIdEnum} formSpeciesId Target form ID
- * @param {WithId<Trainer>} trainer Trainer object
- * @returns {{canChange: boolean, err: string}} Result with error message if applicable
- */
-const canChangeForm = (pokemon, formSpeciesId, trainer) => {
-  if (!getAvailableForms(pokemon.speciesId).includes(formSpeciesId)) {
-    return {
-      canChange: false,
-      err: `${pokemon.name} cannot change into this form.`,
-    };
-  }
-
-  // Check if already in target form
-  if (pokemon.speciesId === formSpeciesId) {
-    return {
-      canChange: false,
-      err: `${pokemon.name} is already in this form.`,
-    };
-  }
-
-  // Check if user has enough money
-  const cost = getFormChangeCost(pokemon.speciesId);
-  if (trainer.money < cost) {
-    return {
-      canChange: false,
-      err: `You need ${formatMoney(cost)} to change ${pokemon.name}'s form.`,
-    };
-  }
-
-  return { canChange: true, err: null };
-};
-
-/**
- * Changes a Pokémon's form
- * @param {any} user User initiating the form change
- * @param {string} pokemonId ID of the Pokémon to change form
- * @param {PokemonIdEnum} formSpeciesId Target form ID
- * @returns {Promise<{data: WithId<Pokemon>, err: string?}>}
- */
-const changeForm = async (user, pokemonId, formSpeciesId) => {
-  // Get trainer
-  const trainerResult = await getTrainer(user);
-  if (trainerResult.err) {
-    return { data: null, err: trainerResult.err };
-  }
-  const trainer = trainerResult.data;
-
-  // Get Pokémon
-  const pokemonResult = await getPokemon(trainer, pokemonId);
-  if (pokemonResult.err) {
-    return { data: null, err: pokemonResult.err };
-  }
-  const pokemon = pokemonResult.data;
-
-  const { canChange, err: canChangeErr } = canChangeForm(
-    pokemon,
-    formSpeciesId,
-    trainer
-  );
-  if (!canChange) {
-    return { data: null, err: canChangeErr };
-  }
-
-  // Deduct cost
-  const cost = getFormChangeCost(pokemon.speciesId);
-  trainer.money -= cost;
-  const updateTrainerResult = await updateTrainer(trainer);
-  if (updateTrainerResult.err) {
-    return { data: null, err: updateTrainerResult.err };
-  }
-
-  // Change form
-  const transformedPokemon = transformPokemon(pokemon, formSpeciesId);
-
-  // Update Pokémon in database
-  try {
-    const res = await updateDocument(
-      collectionNames.USER_POKEMON,
-      { userId: pokemon.userId, _id: idFrom(pokemon._id) },
-      { $set: transformedPokemon }
-    );
-    if (res.modifiedCount === 0) {
-      logger.warn(`Failed to change form for Pokemon ${pokemon._id}.`);
-      // Refund money if update fails
-      trainer.money += cost;
-      await updateTrainer(trainer);
-      return { data: null, err: "Error changing Pokémon form." };
-    }
-    logger.info(`Changed form for Pokemon ${pokemon._id}.`);
-    return {
-      data: transformedPokemon,
-      err: null,
-    };
-  } catch (error) {
-    logger.error(error);
-    // Refund money if update fails
-    trainer.money += cost;
-    await updateTrainer(trainer);
-    return { data: null, err: "Error changing Pokémon form." };
-  }
-};
-
-/**
- * @param {WithId<Pokemon>} pokemon
- * @param {PokemonIdEnum} evolutionSpeciesId
- * @returns {Promise<{data: {pokemon: WithId<Pokemon>, species: string}?, err: string?}>}
- */
-const evolvePokemon = async (pokemon, evolutionSpeciesId) => {
-  // get evolved pokemon
-  pokemon = transformPokemon(pokemon, evolutionSpeciesId);
-  const evolutionSpeciesData = pokemonConfig[evolutionSpeciesId];
-
-  // update pokemon
-  try {
-    const res = await updateDocument(
-      collectionNames.USER_POKEMON,
-      { userId: pokemon.userId, _id: idFrom(pokemon._id) },
-      { $set: pokemon }
-    );
-    if (res.modifiedCount === 0) {
-      logger.warn(`Failed to evolve Pokemon ${pokemon._id}.`);
-      return { data: null, err: "Error evolving Pokemon." };
-    }
-    logger.info(`Evolved Pokemon ${pokemon._id}.`);
-
-    const { data: trainer, err: trainerErr } = await getTrainerFromId(
-      pokemon.userId
-    );
-    if (!trainerErr) {
-      await emitTrainerEvent(trainerEventEnum.EVOLVED_POKEMON, {
-        trainer,
-        pokemon,
-      });
-    }
-    return { data: { pokemon, species: evolutionSpeciesData.name }, err: null };
-  } catch (error) {
-    logger.error(error);
-    return { data: null, err: "Error evolving Pokemon." };
-  }
-};
-
 module.exports = {
   findOwnedPokemon,
   findOwnedPokemons,
@@ -2117,8 +1972,6 @@ module.exports = {
   listPokemonsFromTrainer,
   getPokemon,
   getPokemonFromUserId,
-  getEvolvedPokemon: transformPokemon,
-  evolvePokemon,
   calculatePokemonStatsNoEquip,
   calculatePokemonStats,
   calculateAndUpdatePokemonStats,
@@ -2145,7 +1998,5 @@ module.exports = {
   buildNatureSend,
   changeHeldItem,
   removeHeldItem,
-  canChangeForm,
-  changeForm,
   transformPokemon,
 };

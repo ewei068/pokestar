@@ -625,3 +625,30 @@ it("refreshes a replacement active equipment observer when the departed purchase
   assert.equal(replacement.getCurrentResult().data?.money, saved.money);
   assert.deepEqual(replacement.getCurrentResult().data?.pieces, saved.pieces);
 });
+
+it("refreshes an active evolution preview when a Train tick settles after leaving Train", async t => {
+  const { QueryObserver } = await import("@tanstack/react-query");
+  const data = equipmentData(); t.after(() => data.dispose());
+  const transformation = data.transformation("one");
+  const observer = new QueryObserver(data.client, transformation);
+  let settleTick!: (response: Response) => void;
+  let settleOldRead!: (response: Response) => void;
+  let watchingTrain = true;
+  let reads = 0;
+  globalThis.fetch = async (url, init) => {
+    if (init?.method === "POST") return new Promise(resolve => { settleTick = resolve; });
+    assert.match(String(url), /\/transformation$/);
+    if (++reads === 1) return new Promise(resolve => { settleOldRead = resolve; });
+    return json({ discordUserId: "alice", pokemon: { ...pokemonFixture, level: 21 }, choices: [], expectedVersion: "fresh", money: 10 });
+  };
+  const tick = data.train("one", "0", () => watchingTrain);
+  await new Promise(resolve => setTimeout(resolve, 0));
+  watchingTrain = false;
+  t.after(observer.subscribe(() => {}));
+  await new Promise(resolve => setTimeout(resolve, 0));
+  settleTick(json({ discordUserId: "alice", pokemon: { ...pokemonFixture, level: 21 }, locations: [], trained: true }));
+  await assert.rejects(tick, /context_closed/);
+  settleOldRead(json({ discordUserId: "alice", pokemon: pokemonFixture, choices: [], expectedVersion: "old", money: 10 }));
+  assert.equal(reads, 2);
+  assert.equal(observer.getCurrentResult().data?.expectedVersion, "fresh");
+});
