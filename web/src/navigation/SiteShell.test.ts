@@ -7,7 +7,7 @@ import { AudioSettingsProvider } from "../settings/AudioSettings";
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "https://example.test/pokestar/?battle=first" });
 for (const [key, value] of Object.entries({ window: dom.window, document: dom.window.document,
-  navigator: dom.window.navigator, HTMLElement: dom.window.HTMLElement, localStorage: dom.window.localStorage })) {
+  navigator: dom.window.navigator, HTMLElement: dom.window.HTMLElement, Node: dom.window.Node, localStorage: dom.window.localStorage })) {
   Object.defineProperty(globalThis, key, { configurable: true, value });
 }
 dom.window.scrollTo = () => {};
@@ -24,7 +24,7 @@ const shell = () => createElement(AudioSettingsProvider, { children: createEleme
 
 describe("Jewel navigation", () => {
   it("closes an owned upgrade subview and notifies its URL consumers", async () => {
-    dom.reconfigure({ url: "https://example.test/pokestar/?owned=one&upgrade=train#pokemon" });
+    dom.reconfigure({ url: "https://example.test/pokestar/?owned=one&upgrade=train&item=0&unrelated=one#pokemon" });
     let changes = 0;
     const changed = () => { changes++; };
     dom.window.addEventListener("popstate", changed);
@@ -52,6 +52,17 @@ describe("Jewel navigation", () => {
     await user.click(page.getByRole("link", { name: "Open second battle" }));
     assert.ok(page.getByRole("heading", { name: "Battle second" }));
     assert.equal(dom.window.document.title, "Battle | Pokestar");
+  });
+
+  it("clears Play filters from other destinations and restores them with browser Back", async () => {
+    const encounter = "/pokestar/?playView=trainers&npc=blue&difficulty=hard#play";
+    dom.reconfigure({ url: `https://example.test${encounter}` });
+    const page = render(shell());
+    const user = userEvent.setup({ document: dom.window.document });
+    await user.click(page.getByRole("link", { name: "Pokémon" }));
+    assert.equal(dom.window.location.href, "https://example.test/pokestar/#pokemon");
+    await act(async () => { dom.window.history.back(); });
+    await waitFor(() => assert.equal(dom.window.location.href, `https://example.test${encounter}`));
   });
 
   it("uses native keyboard links and truthful destinations without making requests", async () => {

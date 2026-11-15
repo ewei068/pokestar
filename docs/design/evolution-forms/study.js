@@ -172,7 +172,7 @@ function render(focusSelector) {
         ${choices.length ? variantPanel(current, choices) : `<section class="ui-panel empty-copy"><h2>No evolutions or forms</h2>
           <p>${escapeHtml(current.species)} has no available evolutions or alternate forms.</p></section>`}`;
     page.innerHTML = `<section class="pokemon-upgrade-workspace">
-      <button class="ui-button ui-button--inline upgrade-back" data-action="back">‹ Pokémon</button>
+      <button class="page-back upgrade-back" data-action="back"><span aria-hidden="true">←</span> Pokémon</button>
       <h1 tabindex="-1">Evolution &amp; forms</h1>
       <div class="pokemon-upgrade-tabs" role="tablist" aria-label="Pokémon upgrades">
         <button class="ui-button" role="tab" aria-selected="false" disabled>Train</button>

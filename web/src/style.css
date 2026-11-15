@@ -160,8 +160,6 @@ h2 { font-size: 1rem; margin-bottom: .65rem; }
 .availability-panel > svg { width: 42px; height: 42px; color: #f0ce77; margin-bottom: 20px; }
 .availability-panel h2 { font-size: 1.4rem; }
 .availability-panel p { color: var(--site-soft); line-height: 1.6; margin-bottom: 28px; }
-.back-link { color: #f0ce77; text-decoration: none; font-weight: 700; }
-.back-link:hover { text-decoration: underline; }
 /* Battle chrome shares shell typography; arena CSS owns field geometry and cues. */
 .battle-surface { font-family: inherit; }
 

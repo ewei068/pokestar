@@ -19,7 +19,8 @@ post-save evolution progress and form spending by current rarity.
 [Acceptance evidence](../verification/evolution-forms-2026-11-13.md) records
 1,077 backend tests, 245 client tests, production builds, and disposable
 MongoDB/HTTP/Chrome outcomes, including uncertain responses and the remaining
-cross-document limit.
+cross-document limit. The 2026-11-14 navigation polish shares the battle-style
+return control and builds tab URLs from the destination's query parameters.
 
 **Equipment implementation · 2026-11-10 (local acceptance complete):** Equipment
 now joins Train and Item & nature in the inspected Pokémon workspace. The

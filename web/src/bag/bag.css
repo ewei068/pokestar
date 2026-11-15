@@ -46,7 +46,7 @@
   .bag-detail { display: none; }
   .bag-is-detail .bag-list, .bag-is-detail .bag-heading, .bag-is-detail .bag-filters { display: none; }
   .bag-is-detail .bag-detail { display: block; }
-  .bag-is-detail .bag-mobile-back { display: block; width: fit-content; min-height: 44px; margin: 0 0 8px; padding: 0 4px; background: none; border: 0; color: #ffe19a; font-size: 14px; }
+  .bag-is-detail .bag-mobile-back { display: inline-flex; margin-bottom: 8px; }
   .item-detail h2 { font-size: 22px; }
 }
 @media (max-width: 360px) {

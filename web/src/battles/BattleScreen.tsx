@@ -15,6 +15,8 @@ import type { BattleCatalog } from "./types";
 import type { BattleSession } from "./useBattleSession";
 import type { BattleAudio } from "./audio/useBattleAudio";
 import type { BattleMusic } from "./audio/useBattleMusic";
+import { PageBack } from "../navigation/PageBack";
+import { navigationHref } from "../navigation/routes";
 import "./battle-ui.css";
 
 export const BattleScreen = ({ catalog, session, audio, music }: {
@@ -46,9 +48,10 @@ export const BattleScreen = ({ catalog, session, audio, music }: {
       void audio?.playSelect();
   };
 
+  const battlesHref = navigationHref(new URL(window.location.href), "play");
   if (loading && !battle) return <div className="battle-surface"><main className="page-shell"><p>Loading battle…</p></main></div>;
   if (!battle) return <div className="battle-surface" onClickCapture={playInteraction}><main className="page-shell">
-    <a className="back-link" href={import.meta.env.BASE_URL}>← Battles</a>
+    <PageBack label="Battles" href={battlesHref} />
     <p role="alert">{error || "Battle unavailable."}</p>
     <button type="button" className="ui-button ui-button--small" onClick={() => { void refresh(); }}>Retry</button>
   </main></div>;
@@ -103,7 +106,7 @@ export const BattleScreen = ({ catalog, session, audio, music }: {
       [`--arena-${kind}-color`, colors.main], [`--arena-${kind}-background`, colors.light], [`--arena-${kind}-border`, colors.border],
     ])),
   } as CSSProperties}><main className="page-shell arena-page">
-    <div className="ui-panel arena-toolbar"><a className="back-link" href={import.meta.env.BASE_URL}>← Battles</a>
+    <div className="ui-panel arena-toolbar"><PageBack label="Battles" href={battlesHref} />
       <span className="arena-debug">Debug · Battle {battle.battleId.slice(0, 8)} · Revision {playing?.revision ?? battle.revision}</span>
       {music?.showControls && music.trackTitle && <div className="arena-music-control">
         <span title={music.trackTitle}>♫ {music.trackTitle}</span>

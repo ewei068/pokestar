@@ -25,7 +25,7 @@ it("keeps Pokemon/return ownership while a feature panel is replaced", () => {
   view.rerender(createElement(PokemonUpgradeWorkspace, { ...props, title: "Another upgrade", children: createElement("p", {}, "Replacement feature") }));
   assert.equal(departed, 1);
   assert.ok(view.getByText("Replacement feature"));
-  fireEvent.click(view.getByRole("button", { name: "‹ Pokémon" }));
+  fireEvent.click(view.getByRole("button", { name: "Pokémon" }));
   assert.equal(returned, 1);
 });
 

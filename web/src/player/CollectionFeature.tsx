@@ -3,7 +3,7 @@ import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { ApiError } from "../http";
 import { CollectionWorkspace } from "../collection/CollectionWorkspace";
 import { usePlayer } from "./PlayerProvider";
-import { pokemonUpgradeHref, pokemonUpgradeTabs, readPokemonUpgrade, routeHref } from "../navigation/routes";
+import { pokemonHref, pokemonUpgradeHref, pokemonUpgradeTabs, readOwnedPokemon, readPokemonUpgrade } from "../navigation/routes";
 import { PokemonUpgradeWorkspace } from "../upgrades/PokemonUpgradeWorkspace";
 import { EquipmentFeature } from "../upgrades/EquipmentFeature";
 import type { PokemonUpgradeRoute } from "../navigation/routes";
@@ -19,7 +19,7 @@ const upgradeFeatures = {
   transformation: TransformationFeature,
 };
 
-const selectionFromUrl = () => new URL(window.location.href).searchParams.get("owned");
+const selectionFromUrl = () => readOwnedPokemon(new URL(window.location.href));
 const initialQuery: CollectionQuery = { page: 1, pageSize: 24, search: "", sort: "recent", order: "asc" };
 const operationError = (error: unknown) => {
   if (error instanceof ApiError && error.status < 500) {
@@ -71,8 +71,7 @@ export const CollectionFeature = () => {
   useEffect(() => {
     const url = new URL(window.location.href);
     if (url.searchParams.has("upgrade") && !readPokemonUpgrade(url)) {
-      url.searchParams.delete("upgrade");
-      window.history.replaceState(window.history.state, "", url);
+      window.history.replaceState(window.history.state, "", pokemonHref(url, readOwnedPokemon(url)));
     }
   }, [upgrade]);
   const mutation = useMutation({ mutationKey: [...data.prefix, "interaction"], mutationFn: (operation: PlayerOperation) => data.perform(operation),
@@ -98,10 +97,7 @@ export const CollectionFeature = () => {
     if (mutation.isPending) return;
     setSelectedId(id);
     const url = new URL(window.location.href);
-    if (url.searchParams.get("owned") !== id) {
-      url.searchParams.set("owned", id);
-      window.history.pushState(null, "", `${url.pathname}${url.search}${url.hash}`);
-    }
+    if (readOwnedPokemon(url) !== id) window.history.pushState(null, "", pokemonHref(url, id));
     if (!fresh(data.pokemon(id).queryKey)) perform({ kind: "inspect", pokemonId: id });
   };
   const train = (id: string) => {
@@ -124,7 +120,7 @@ export const CollectionFeature = () => {
   const closeUpgrade = () => {
     if (returnContext.current && window.history.state?.pokemonUpgradeFrom === returnContext.current.href) window.history.back();
     else {
-      window.history.replaceState(window.history.state, "", routeHref(new URL(window.location.href), { page: "pokemon", battleId: null }));
+      window.history.replaceState(window.history.state, "", pokemonHref(new URL(window.location.href), upgrade?.pokemonId ?? null));
       window.dispatchEvent(new window.PopStateEvent("popstate"));
     }
   };

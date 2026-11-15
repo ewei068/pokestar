@@ -87,6 +87,7 @@ it("returns from training to the same collection controls and inspection", async
   assert.ok(await view.findByRole("heading", { name: "Train" }));
   assert.equal(new URL(dom.window.location.href).searchParams.get("owned"), "one");
   assert.equal(new URL(dom.window.location.href).searchParams.get("upgrade"), "train");
+  assert.equal(new URL(dom.window.location.href).searchParams.get("campaign"), null);
   assert.equal(view.queryByRole("textbox", { name: "Search Pokémon" }), null);
   assert.equal(tile.isConnected, true);
   const historyLength = window.history.length;
@@ -109,7 +110,7 @@ it("returns from training to the same collection controls and inspection", async
   assert.equal(new URL(window.location.href).searchParams.get("upgrade"), "transformation");
   assert.equal(window.history.length, historyLength);
   assert.equal(window.history.state.pokemonUpgradeFrom, returnState);
-  fireEvent.click(view.getByRole("button", { name: "‹ Pokémon" }));
+  fireEvent.click(view.getByRole("button", { name: "Pokémon" }));
   await waitFor(() => assert.ok(view.getByRole("textbox", { name: "Search Pokémon" })));
   assert.ok(view.getByRole("textbox", { name: "Search Pokémon" }) === search);
   assert.equal((search as HTMLInputElement).value, "Pika");
@@ -117,5 +118,5 @@ it("returns from training to the same collection controls and inspection", async
   assert.equal((view.getByLabelText("Tile labels") as HTMLSelectElement).value, "iv");
   assert.equal(view.getByRole("button", { name: "Moves" }).getAttribute("aria-pressed"), "true");
   assert.equal(new URL(dom.window.location.href).searchParams.get("upgrade"), null);
-  assert.equal(new URL(dom.window.location.href).searchParams.get("campaign"), "friend");
+  assert.equal(new URL(dom.window.location.href).searchParams.get("campaign"), null);
 });

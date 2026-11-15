@@ -53,3 +53,17 @@ curve normalization would change game progression and was outside this work.
 The disposable services and data were removed. Checks used a local session
 fixture and emulated touch. Live Discord, OAuth, and production deployment
 remain unverified.
+
+## Navigation polish · 2026-11-14
+
+Battle, Pokémon upgrades and mobile Play and Bag detail views share
+[`PageBack`](../../web/src/navigation/PageBack.tsx). Chrome compared the
+battle and upgrade controls at 1280, 390 and 320 px, checked keyboard return
+to the inspected Pokémon and tapped the Bag return on phones.
+
+Destination URL tests cover stale and unknown parameters, hosted paths,
+owned Pokémon and Ball ID `0`, and the dependencies between Play views and
+their selections. Chrome exercised the root and `/pokestar/` builds with
+fixture responses. Switching tabs cleared parameters from the previous screen.
+Browser Back restored the original battle and encounter links, and the battle
+breadcrumb carried only the Play selection. The web suite passed 243 tests.

@@ -78,6 +78,13 @@
   color: var(--site-ink); box-shadow: var(--site-control-shadow);
 }
 
+.page-back {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0;
+  border: 0; background: transparent; box-shadow: none; color: var(--site-accent);
+  font-size: 14px; font-weight: 700; text-decoration: none; text-shadow: 0 1px 2px #171126, 0 0 5px #171126;
+}
+.page-back:hover { text-decoration: underline; }
+
 .ui-badge {
   display: inline-flex; align-items: center; gap: 4px; flex: none;
   border: 1px solid var(--badge-line, var(--site-line)); border-radius: var(--site-radius);

@@ -8,16 +8,17 @@ export const readRoute = (url: URL): SiteRoute => {
   return { page, battleId: page === "play" ? url.searchParams.get("battle") || null : null };
 };
 
-export const routeHref = (current: URL, route: SiteRoute): string => {
-  const url = new URL(current);
-  if (route.page === "play" && route.battleId) url.searchParams.set("battle", route.battleId);
-  else url.searchParams.delete("battle");
-  if (route.page !== "pokemon") url.searchParams.delete("owned");
-  url.searchParams.delete("upgrade");
-  if (route.page !== "bag") url.searchParams.delete("item");
-  url.hash = route.page;
-  return `${url.pathname}${url.search}${url.hash}`;
+/** Build from destination state so adding a route can't leak source query keys. */
+const siteHref = (current: URL, page: SitePage, params: Record<string, string | null | undefined> = {}) => {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value) search.set(key, value);
+  }
+  return `${current.pathname}${search.size ? `?${search}` : ""}#${page}`;
 };
+
+export const routeHref = (current: URL, route: SiteRoute): string =>
+  siteHref(current, route.page, { battle: route.page === "play" ? route.battleId : null });
 
 export const pokemonUpgradeTabs = {
   train: "Train",
@@ -27,36 +28,39 @@ export const pokemonUpgradeTabs = {
 } as const;
 export type PokemonUpgradeRoute = { pokemonId: string; feature: keyof typeof pokemonUpgradeTabs };
 
+export const readOwnedPokemon = (url: URL) =>
+  readRoute(url).page === "pokemon" ? url.searchParams.get("owned") || null : null;
+
 export const readPokemonUpgrade = (url: URL): PokemonUpgradeRoute | null => {
-  const pokemonId = url.searchParams.get("owned");
+  const pokemonId = readOwnedPokemon(url);
   const feature = (Object.keys(pokemonUpgradeTabs) as PokemonUpgradeRoute["feature"][])
     .find(tab => tab === url.searchParams.get("upgrade"));
-  return readRoute(url).page === "pokemon" && pokemonId && feature
-    ? { pokemonId, feature } : null;
+  return pokemonId && feature ? { pokemonId, feature } : null;
 };
 
-export const pokemonUpgradeHref = (current: URL, pokemonId: string, feature: PokemonUpgradeRoute["feature"] = "train"): string => {
-  const url = new URL(routeHref(current, { page: "pokemon", battleId: null }), current);
-  url.searchParams.set("owned", pokemonId);
-  url.searchParams.set("upgrade", feature);
-  return `${url.pathname}${url.search}${url.hash}`;
-};
+export const pokemonHref = (current: URL, pokemonId: string | null) =>
+  siteHref(current, "pokemon", { owned: pokemonId });
+
+export const pokemonUpgradeHref = (current: URL, pokemonId: string, feature: PokemonUpgradeRoute["feature"] = "train") =>
+  siteHref(current, "pokemon", { owned: pokemonId, upgrade: pokemonId ? feature : null });
 
 const playViews = ["continue", "trainers", "dungeons", "tower"] as const;
 export type PlayRoute = { view: typeof playViews[number] | null; npcId: string | null; difficulty: string | null; dungeonId: string | null; floor: number | null };
 
 type PlaySelectionParams = { npc?: string; difficulty?: string | null; dungeon?: string; floor?: string };
 
-/** A view keeps only its own open row. Difficulty belongs to that row, not to the tab. */
+/** A view keeps only its own open row. Difficulty belongs to that row. */
 const ownedPlaySelection = (selection: PlayRoute): PlaySelectionParams => {
   if (selection.view === "trainers" && selection.npcId) return { npc: selection.npcId, difficulty: selection.difficulty };
   if (selection.view === "dungeons" && selection.dungeonId) return { dungeon: selection.dungeonId, difficulty: selection.difficulty };
-  if (selection.view === "tower" && selection.floor != null) return { floor: String(selection.floor) };
+  if (selection.view === "tower" && selection.floor != null && Number.isSafeInteger(selection.floor) && selection.floor > 0) {
+    return { floor: String(selection.floor) };
+  }
   return {};
 };
 
 export const readPlayRoute = (url: URL): PlayRoute => {
-  const requested = url.searchParams.get("playView");
+  const requested = readRoute(url).page === "play" ? url.searchParams.get("playView") : null;
   const view = playViews.find(item => item === requested) || null;
   const floor = url.searchParams.get("floor");
   const owned = ownedPlaySelection({
@@ -64,25 +68,26 @@ export const readPlayRoute = (url: URL): PlayRoute => {
     dungeonId: url.searchParams.get("dungeon"), floor: floor && /^\d+$/.test(floor) ? Number(floor) : null,
   });
   return {
-    view, npcId: owned.npc || null, difficulty: owned.difficulty || null,
-    dungeonId: owned.dungeon || null, floor: owned.floor ? Number(owned.floor) : null,
+    view,
+    npcId: owned.npc || null,
+    difficulty: owned.difficulty || null,
+    dungeonId: owned.dungeon || null,
+    floor: owned.floor ? Number(owned.floor) : null,
   };
 };
-export const playHref = (current: URL, selection: PlayRoute & { battleId?: string }): string => {
-  const url = new URL(current);
-  const owned = ownedPlaySelection(selection);
-  for (const [key, value] of [
-    ["playView", selection.view], ["npc", owned.npc], ["difficulty", owned.difficulty],
-    ["dungeon", owned.dungeon], ["floor", owned.floor],
-  ] as const) {
-    if (value) url.searchParams.set(key, value); else url.searchParams.delete(key);
-  }
-  return routeHref(url, { page: "play", battleId: selection.battleId || null });
-};
 
-/** `item` stays on Bag only. An empty id clears the selection, including the real id "0". */
-export const bagHref = (current: URL, item: string | null): string => {
-  const url = new URL(current);
-  if (item) url.searchParams.set("item", item); else url.searchParams.delete("item");
-  return routeHref(url, { page: "bag", battleId: null });
+export const playHref = (current: URL, selection: PlayRoute & { battleId?: string }) =>
+  siteHref(current, "play", { playView: selection.view, ...ownedPlaySelection(selection), battle: selection.battleId });
+
+export const readBagItem = (url: URL) => readRoute(url).page === "bag" ? url.searchParams.get("item") || null : null;
+export const bagHref = (current: URL, item: string | null) => siteHref(current, "bag", { item });
+
+/** Reselecting a page keeps its local selection while closing an upgrade or battle. */
+export const navigationHref = (current: URL, page: SitePage): string => {
+  if (readRoute(current).page === page) {
+    if (page === "play") return playHref(current, readPlayRoute(current));
+    if (page === "pokemon") return pokemonHref(current, readOwnedPokemon(current));
+    if (page === "bag") return bagHref(current, readBagItem(current));
+  }
+  return routeHref(current, { page, battleId: null });
 };

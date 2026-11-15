@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { bagHref } from "../navigation/routes";
+import { PageBack } from "../navigation/PageBack";
+import { bagHref, readBagItem } from "../navigation/routes";
 import { usePlayer } from "../player/PlayerProvider";
 import type { BagItem } from "../player/types";
 import { BagPokemonUse } from "./BagPokemonUse";
@@ -27,7 +28,7 @@ const itemArt = (item: BagItem, detail: boolean, failed: boolean, onError: () =>
 export function BagFeature() {
   const data = usePlayer();
   const bag = useQuery(data.bag());
-  const [itemId, setItemId] = useState(() => new URL(window.location.href).searchParams.get("item"));
+  const [itemId, setItemId] = useState(() => readBagItem(new URL(window.location.href)));
   const [category, setCategory] = useState("all");
   const [flowItem, setFlowItem] = useState<BagItem | null>(null);
   const [selectedSnapshot, setSelectedSnapshot] = useState<BagItem | null>(null);
@@ -35,7 +36,7 @@ export function BagFeature() {
   const [broken, setBroken] = useState<Record<string, boolean>>({});
   const [desktop, setDesktop] = useState(() => window.matchMedia?.("(min-width: 761px)").matches === true);
   useEffect(() => {
-    const sync = () => setItemId(new URL(window.location.href).searchParams.get("item"));
+    const sync = () => setItemId(readBagItem(new URL(window.location.href)));
     window.addEventListener("popstate", sync);
     window.addEventListener("hashchange", sync);
     const media = window.matchMedia?.("(min-width: 761px)");
@@ -90,7 +91,7 @@ export function BagFeature() {
     <div className="bag-filters" role="toolbar" aria-label="Item categories">
       {categories.map(chip => <button type="button" key={chip.id} aria-pressed={category === chip.id} onClick={() => chooseCategory(chip.id)}>{chip.name}</button>)}
     </div>
-    {phoneDetail && <button type="button" className="bag-mobile-back" onClick={() => { setUsedId(null); navigate(bagHref(new URL(window.location.href), null)); }}>‹ All items</button>}
+    {phoneDetail && <PageBack className="bag-mobile-back" label="All items" onBack={() => { setUsedId(null); navigate(bagHref(new URL(window.location.href), null)); }} />}
     <div className="bag-layout">
       <section className="ui-panel bag-panel bag-list" aria-label="Owned items">
         <header className="ui-panel-heading bag-list-head"><h2>Items</h2><small>{items?.length || 0} owned</small></header>
