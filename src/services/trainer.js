@@ -729,12 +729,13 @@ const emitTrainerEvent = async (eventName, args) => {
   try {
     const { trainer } = args;
     const questOnly = eventName === trainerEventEnum.TRAINED_POKEMON
+      || eventName === trainerEventEnum.EVOLVED_POKEMON
       || eventName === trainerEventEnum.UPGRADED_EQUIPMENT || eventName === trainerEventEnum.REROLLED_EQUIPMENT;
     const before = questOnly ? structuredClone(trainer.questData || {}) : null;
     // @ts-ignore
     await emitTrainerEventPure(eventName, args);
     if (before) {
-      // Training and equipment listeners own quests, never resource snapshots.
+      // These listeners own quests, never resource snapshots.
       const patch = {};
       const filter = { userId: trainer.userId };
       for (const [category, entries] of Object.entries(trainer.questData || {})) {

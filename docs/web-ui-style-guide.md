@@ -62,8 +62,8 @@ or workspace's ordinary inputs/buttons into the same base. Formation and sprite
 buttons explicitly reset that base. Keep primary, disabled, hover and focus
 styling in the shared stylesheet.
 
-Use `ui-button--inline` for text-sized inspection actions, including clickable
-badges and Back. It removes the ordinary control's minimum height while
+Use `ui-button--inline` for text-sized actions inside panels, including clickable
+badges and inspector Back. It removes the ordinary control's minimum height while
 retaining its border, hover and focus treatment. Shared move facts use one
 compact row for category, power, accuracy and cooldown.
 
@@ -91,6 +91,18 @@ Pokémon owns collection, owned detail and party/presets. Play owns encounter
 selection, active battles and saved results. More contains secondary destinations
 such as Shop and Crafting. Preserve direct battle links, browser Back, useful
 empty/error recovery and return paths from objectives to gameplay and claims.
+
+Use [`PageBack`](../web/src/navigation/PageBack.tsx) for a return to a parent
+page or list. Use a link for a named destination and a button when the return
+restores local context, such as the inspected Pokémon and its scroll position.
+The arrow is decorative and the destination supplies the accessible name.
+
+Build in-app URLs with [the route helpers](../web/src/navigation/routes.ts).
+Each helper writes the destination's own query parameters and preserves the
+hosting path. Add new page-specific parameters there with their readers. Put
+return context in the relevant route or browser history entry. For example,
+a battle can keep its Play selection, and browser Back restores the encounter
+after visiting Pokémon to edit the party.
 
 ## Design as features are built
 

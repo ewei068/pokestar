@@ -6,7 +6,7 @@ let server;
 let url;
 let service;
 beforeEach(async () => {
-  service = { equipment: jest.fn(), upgradeEquipment: jest.fn(), rerollEquipment: jest.fn(), build: jest.fn(), changeNature: jest.fn(), changeHeldItem: jest.fn(), npcs: jest.fn(), dungeons: jest.fn(), tower: jest.fn(), bag: jest.fn(), collection: jest.fn().mockResolvedValue({ items: [] }), detail: jest.fn(), training: jest.fn().mockResolvedValue({ pokemon: {}, locations: [] }), train: jest.fn().mockResolvedValue({ trained: true, gains: { exp: 35, evs: [0, 0, 0, 0, 0, 0] }, trainer: {}, pokemon: {}, locations: [] }), party: jest.fn(), profile: jest.fn(), interact: jest.fn().mockResolvedValue({ trainer: {} }) };
+  service = { transformation: jest.fn(), confirmTransformation: jest.fn(), equipment: jest.fn(), upgradeEquipment: jest.fn(), rerollEquipment: jest.fn(), build: jest.fn(), changeNature: jest.fn(), changeHeldItem: jest.fn(), npcs: jest.fn(), dungeons: jest.fn(), tower: jest.fn(), bag: jest.fn(), collection: jest.fn().mockResolvedValue({ items: [] }), detail: jest.fn(), training: jest.fn().mockResolvedValue({ pokemon: {}, locations: [] }), train: jest.fn().mockResolvedValue({ trained: true, gains: { exp: 35, evs: [0, 0, 0, 0, 0, 0] }, trainer: {}, pokemon: {}, locations: [] }), party: jest.fn(), profile: jest.fn(), interact: jest.fn().mockResolvedValue({ trainer: {} }) };
   const app = express();
   app.use(express.json());
   app.use('/api', createBattleApi({ battleService: { listActive: async () => [{ battleId: "owned-battle" }] }, sessionStore: { get: async (token) => token === 'valid' ? { userId: 'owner' } : null },
@@ -140,5 +140,24 @@ test('equipment read and spend routes enforce session, actor and origin without 
   const rejected = await fetch(`${path}/reroll`, { method: 'POST', headers, body: '{}' });
   expect(rejected.status).toBe(503);
   expect(await rejected.json()).toEqual({ error: 'equipment_uncertain' });
+  expect(service.interact).not.toHaveBeenCalled();
+});
+
+test('transformation preview and confirmation use the authenticated owner and enforce site origin', async () => {
+  service.transformation = jest.fn().mockResolvedValue({ choices: [] });
+  service.confirmTransformation = jest.fn().mockResolvedValue({ change: { kind: 'form' } });
+  const path = `${url}/pokemon/one/transformation`;
+  expect((await fetch(path)).status).toBe(401);
+  expect((await fetch(path, { headers: { ...headers, 'X-Player-Id': 'other' } })).status).toBe(409);
+  expect(await (await fetch(path, { headers })).json()).toEqual({ choices: [], discordUserId: 'owner' });
+  expect(service.transformation).toHaveBeenCalledWith('owner', 'one');
+  const choice = { kind: 'form', targetSpeciesId: '10009', expectedVersion: 'a'.repeat(64) };
+  const body = JSON.stringify(choice);
+  expect((await fetch(path, { method: 'POST', headers: { ...headers, Cookie: '' }, body })).status).toBe(401);
+  expect((await fetch(path, { method: 'POST', headers: { ...headers, 'X-Player-Id': 'other' }, body })).status).toBe(409);
+  expect((await fetch(path, { method: 'POST', headers: { ...headers, Origin: 'https://other.example' }, body })).status).toBe(403);
+  expect(service.confirmTransformation).not.toHaveBeenCalled();
+  expect(await (await fetch(path, { method: 'POST', headers, body })).json()).toEqual({ change: { kind: 'form' }, discordUserId: 'owner' });
+  expect(service.confirmTransformation).toHaveBeenCalledWith('owner', 'one', choice);
   expect(service.interact).not.toHaveBeenCalled();
 });

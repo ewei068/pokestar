@@ -216,6 +216,7 @@ it("keeps a rejected floor definite, a lost start retryable, and an empty party 
 });
 
 it("clears another tab's open row so Back returns to the list", async () => {
+  dom.window.history.replaceState(null, "", "/?playView=trainers&owned=old&item=0&unknown=1#play");
   playFetch({});
   const view = mount();
   fireEvent.click(await view.findByRole("button", { name: /Blue/ }));
@@ -226,19 +227,19 @@ it("clears another tab's open row so Back returns to the list", async () => {
   const arrived = new URL(dom.window.location.href).searchParams;
   assert.equal(arrived.get("npc"), null);
   assert.equal(arrived.get("difficulty"), null);
-  assert.equal(arrived.get("floor"), null);
+  assert.deepEqual([...arrived.keys()], ["playView"]);
   assert.equal(view.container.querySelector("main")?.classList.contains("npc-is-detail"), false);
   assert.equal(view.container.querySelector(".npc-mobile-back"), null);
   fireEvent.click(view.getByRole("button", { name: /Mind Temple/ }));
   await waitFor(() => assert.equal(new URL(dom.window.location.href).searchParams.get("dungeon"), "mindTemple"));
   const back = view.container.querySelector<HTMLButtonElement>(".npc-mobile-back");
-  assert.equal(back?.textContent, "‹ All dungeons");
+  assert.equal(back?.textContent, "← All dungeons");
   fireEvent.click(back!);
   await waitFor(() => assert.equal(new URL(dom.window.location.href).searchParams.get("dungeon"), null));
   assert.equal(view.container.querySelector("main")?.classList.contains("npc-is-detail"), false);
   dom.window.history.replaceState(null, "", "/?playView=tower&npc=blue&floor=7#play");
   dom.window.dispatchEvent(new dom.window.PopStateEvent("popstate"));
-  await waitFor(() => assert.equal(view.container.querySelector(".npc-mobile-back")?.textContent, "‹ All floors"));
+  await waitFor(() => assert.equal(view.container.querySelector(".npc-mobile-back")?.textContent, "← All floors"));
   fireEvent.click(view.container.querySelector(".npc-mobile-back")!);
   await waitFor(() => {
     const params = new URL(dom.window.location.href).searchParams;

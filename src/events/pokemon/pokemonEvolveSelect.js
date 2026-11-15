@@ -7,7 +7,8 @@
  *
  * pokemonEvolveSelect.js Builds the confirmation menu from the selection of the user in their pokemon's evolution.
  */
-const { getPokemon, getEvolvedPokemon } = require("../../services/pokemon");
+const { getPokemon, transformPokemon } = require("../../services/pokemon");
+const { getTransformChoices, getTransformVersion } = require("../../services/pokemonTransform");
 const { getState } = require("../../services/state");
 const { getTrainer } = require("../../services/trainer");
 const { DEPRECATEDbuildPokemonEmbed } = require("../../embeds/pokemonEmbeds");
@@ -43,13 +44,19 @@ const pokemonEvolveSelect = async (interaction, data) => {
 
   // update embed to selected evolution
   const speciesId = interaction.values[0];
-  state.speciesId = speciesId;
-  const evolvedPokemon = getEvolvedPokemon(pokemon.data, speciesId);
+  const choice = getTransformChoices(pokemon.data.speciesId).find(option => option.kind === "evolve"
+    && option.targetSpeciesId === speciesId && pokemon.data.level >= option.requiredLevel);
+  if (!choice || getTransformVersion(pokemon.data) !== state.version) {
+    return { err: "This Pokémon changed. Use /evolve to check its current evolutions." };
+  }
+  state.speciesId = choice.targetSpeciesId;
+  const evolvedPokemon = transformPokemon({ ...pokemon.data }, choice.targetSpeciesId);
   const embed = DEPRECATEDbuildPokemonEmbed(trainer.data, evolvedPokemon);
 
   // get confirm button
   const rowData = {
     stateId: data.stateId,
+    targetSpeciesId: choice.targetSpeciesId,
   };
   const confirmButtonRow = buildButtonActionRow(
     [

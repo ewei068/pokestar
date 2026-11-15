@@ -58,7 +58,7 @@ it("opens the first row on desktop without writing the item query", async () => 
   assert.equal(new URL(dom.window.location.href).searchParams.get("item"), null);
   assert.ok(view.container.querySelector(".item-rows"));
   assert.match(readFileSync(new URL("./bag.css", import.meta.url), "utf8"), /max-height:\s*calc\(100dvh - 285px\)/);
-  assert.equal(view.queryByRole("button", { name: "‹ All items" }), null);
+  assert.equal(view.queryByRole("button", { name: "All items" }), null);
 });
 
 it("returns from a phone item to the list, including with the browser Back button", async () => {
@@ -68,18 +68,18 @@ it("returns from a phone item to the list, including with the browser Back butto
   assert.ok(await view.findByRole("heading", { name: "Items" }));
   const row = itemRow(view, "Pokeball");
   assert.equal(row.getAttribute("aria-pressed"), "false");
-  assert.equal(view.queryByRole("button", { name: "‹ All items" }), null);
+  assert.equal(view.queryByRole("button", { name: "All items" }), null);
   assert.equal(view.queryByRole("heading", { name: "Pokeball" }), null);
   fireEvent.click(row);
   await waitFor(() => assert.equal(new URL(dom.window.location.href).searchParams.get("item"), "0"));
-  const back = view.getByRole("button", { name: "‹ All items" });
+  const back = view.getByRole("button", { name: "All items" });
   const panel = view.container.querySelector(".bag-detail");
   assert.ok(panel);
   assert.equal(back.compareDocumentPosition(panel) & dom.window.Node.DOCUMENT_POSITION_FOLLOWING, dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
   assert.equal(back.closest(".bag-detail"), null);
   fireEvent.click(back);
   await waitFor(() => assert.equal(new URL(dom.window.location.href).searchParams.get("item"), null));
-  assert.equal(view.queryByRole("button", { name: "‹ All items" }), null);
+  assert.equal(view.queryByRole("button", { name: "All items" }), null);
   fireEvent.click(itemRow(view, "Pokeball"));
   await waitFor(() => assert.equal(new URL(dom.window.location.href).searchParams.get("item"), "0"));
   await act(async () => { dom.window.history.back(); });
@@ -226,7 +226,7 @@ it("names a destination without spending the item or calling the server", async 
   fireEvent.click(itemRow(phone, "Pokeball"));
   fireEvent.click(await phone.findByRole("button", { name: "Catch" }));
   assert.match(phone.getByRole("status").textContent || "", /This ball stays in your bag/);
-  fireEvent.click(phone.getByRole("button", { name: "‹ All items" }));
+  fireEvent.click(phone.getByRole("button", { name: "All items" }));
   await waitFor(() => assert.ok(phone.queryByRole("status") === null));
   fireEvent.click(itemRow(phone, "Pokeball"));
   fireEvent.click(phone.getByRole("button", { name: "Catch" }));

@@ -5,7 +5,6 @@
 }
 .arena-page { width: min(1480px, calc(100% - 36px)); padding: 17px 0 95px; }
 .arena-toolbar { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin-bottom: 13px; padding: 8px 12px; color: var(--site-soft); font-size: var(--site-font-small); }
-.arena-toolbar .back-link { color: var(--site-accent); }
 .arena-music-control { display: flex; align-items: center; gap: 7px; max-width: min(100%, 300px); }
 .arena-music-control span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .arena-music-control button { flex: none; }

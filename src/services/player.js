@@ -2,7 +2,7 @@ const { ObjectId } = require("mongodb");
 const { getCollection } = require("../database/mongoHandler");
 const { collectionNames } = require("../config/databaseConfig");
 const { pokemonConfig, natureConfig, typeConfig, rarities } = require("../config/pokemonConfig");
-const { calculatePokemonStats, findOwnedPokemon, findOwnedPokemons, changeHeldItem, removeHeldItem } = require("./pokemon");
+const { calculatePokemonStats, transformPokemon, findOwnedPokemon, findOwnedPokemons, changeHeldItem, removeHeldItem } = require("./pokemon");
 const { getTrainer, addExpAndMoneyTrainer } = require("./trainer");
 const { canAddOrMovePokemonToParty, executePartyCommand } = require("./party");
 const { projectTrainerProfile } = require("../web/trainerProfile");
@@ -20,6 +20,7 @@ const { getNatureChoices, changePokemonNature } = require("./pokemonNature");
 const { eventConfig, eventNames } = require("../config/eventConfig");
 const { equipmentConfig, modifierConfig, modifierSlotConfig, MAX_EQUIPMENT_LEVEL,
   levelUpCost, STAT_REROLL_COST, POKEDOLLAR_MULTIPLIER } = require("../config/equipmentConfig");
+const { getTransformChoices, getTransformVersion, changePokemonSpecies } = require("./pokemonTransform");
 const { isEquipmentAvailable, upgradeEquipmentLevel, rerollStatSlot } = require("./pokemonEquipment");
 
 class PlayerError extends Error {
@@ -243,6 +244,20 @@ const projectEquipment = (pokemon, trainer) => {
   return { pokemon: projectPokemonDetail(pokemon, trainer), money: trainer.money, pieces, materials, catalog,
     trainer: projectTrainerProfile(trainer) };
 };
+
+/**
+ * @param {WithId<Pokemon>} pokemon
+ * @param {WithId<Trainer>} trainer
+ */
+const projectTransformation = (pokemon, trainer) => ({
+  pokemon: projectPokemonDetail(pokemon, trainer),
+  expectedVersion: getTransformVersion(pokemon),
+  money: trainer.money,
+  trainer: projectTrainerProfile(trainer),
+  choices: getTransformChoices(pokemon.speciesId).map(choice => ({
+    ...choice, preview: projectPokemonDetail(transformPokemon({ ...pokemon }, choice.targetSpeciesId), trainer),
+  })),
+});
 
 /** @param {PartyInfo} party */
 const projectPartyTargets = (party) => {
@@ -496,6 +511,58 @@ const createPlayerService = () => {
       : await rerollStatSlot({ id: userId }, id, type, /** @type {EquipmentModifierSlotEnum} */ (input.slotId), expected);
     return finishEquipmentChange(userId, result, kind);
   };
+  /**
+   * @param {string} userId
+   * @param {string} id
+   */
+  const transformation = async (userId, id) => {
+    const pokemon = await findOwnedPokemon(userId, id);
+    if (!pokemon) throw new PlayerError("pokemon_not_found", 404);
+    return projectTransformation(pokemon, await requireTrainer(userId));
+  };
+
+  /**
+   * @param {string} userId
+   * @param {string} id
+   * @param {Record<string, unknown>} input
+   */
+  const confirmTransformation = async (userId, id, input) => {
+    if (!input || typeof input !== "object" || Array.isArray(input) || Object.keys(input).length !== 3
+      || Object.keys(input).some(key => !["kind", "targetSpeciesId", "expectedVersion"].includes(key))
+      || (input.kind !== "evolve" && input.kind !== "form")
+      || typeof input.targetSpeciesId !== "string" || typeof input.expectedVersion !== "string") {
+      throw new PlayerError("invalid_transformation_request");
+    }
+    const { kind, targetSpeciesId, expectedVersion } = input;
+    const result = await changePokemonSpecies({ id: userId }, id, { kind, targetSpeciesId, expectedVersion });
+    if (!result.data) throw new PlayerError(result.code || "transformation_failed", result.status || 400);
+    let { trainer, pokemon } = result.data;
+    const warnings = result.warning ? [result.warning] : [];
+    const grant = kind === "evolve" ? eventConfig[eventNames.POKEMON_EVOLVE_CONFIRM] : { exp: 5, money: 10 };
+    try {
+      const awarded = await addExpAndMoneyTrainer(await requireTrainer(userId), grant.exp || 0, grant.money || 0);
+      if (awarded.err) throw new Error(awarded.err);
+    } catch (error) {
+      logger.warn("Transformation participation grant failed", error);
+      warnings.push("Participation rewards could not be confirmed.");
+    }
+    try {
+      trainer = await requireTrainer(userId);
+      const refreshed = await findOwnedPokemon(userId, id);
+      if (!refreshed) throw new Error("pokemon_not_found");
+      pokemon = refreshed;
+    } catch (error) {
+      logger.warn("Transformation refresh failed", error);
+      warnings.push("Refreshed Pokémon and money could not be confirmed.");
+    }
+    return {
+      ...projectTransformation(pokemon, trainer),
+      items: projectBag(trainer).items,
+      change: { kind, previousName: result.data.previousName, targetName: pokemonConfig[result.data.targetSpeciesId].name },
+      ...(warnings.length ? { warning: warnings.join(" ") } : {}),
+    };
+  };
+
   /** @param {string} userId */
   const party = async (userId) => {
     const trainer = await requireTrainer(userId);
@@ -585,7 +652,7 @@ const createPlayerService = () => {
      * @returns {Promise<PokemonEquipmentViewResult>}
      */
     rerollEquipment: (userId, id, input) => changeEquipment(userId, id, input, "reroll"),
-    party, profile, npcs, dungeons, tower, bag, interact };
+    transformation, confirmTransformation, party, profile, npcs, dungeons, tower, bag, interact };
 };
 
 module.exports = { createPlayerService, parseCollectionQuery, projectPokemon, projectPokemonDetail, projectPartyTargets, PlayerError };

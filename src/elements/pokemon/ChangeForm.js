@@ -14,11 +14,8 @@ const {
   getFormChangeCost,
 } = require("../../utils/pokemonUtils");
 const { formatMoney } = require("../../utils/utils");
-const {
-  canChangeForm,
-  changeForm,
-  transformPokemon,
-} = require("../../services/pokemon");
+const { transformPokemon } = require("../../services/pokemon");
+const { changePokemonSpecies, getTransformVersion } = require("../../services/pokemonTransform");
 const usePokemon = require("../../hooks/usePokemon");
 const useSelection = require("../../hooks/useSelection");
 
@@ -84,14 +81,12 @@ const ChangeForm = async (ref, { user, pokemonId }) => {
 
   // Transform pokemon temporarily to show preview
   let previewPokemon = pokemon;
-  if (selectedFormId) {
+  if (selectedFormId && availableForms.includes(selectedFormId)) {
     previewPokemon = transformPokemon({ ...pokemon }, selectedFormId);
   }
 
-  const canChange = selectedFormId
-    ? canChangeForm(pokemon, selectedFormId, trainer).canChange
-    : false;
   const cost = getFormChangeCost(pokemon.speciesId);
+  const canChange = selectedFormId && availableForms.includes(selectedFormId) && trainer.money >= cost;
 
   // Handle form change confirmation
   const confirmFormChangeKey = useCallbackBinding(async () => {
@@ -101,13 +96,15 @@ const ChangeForm = async (ref, { user, pokemonId }) => {
     }
 
     try {
-      const result = await changeForm(user, pokemonId, selectedFormId);
-      if (result.err) {
+      const result = await changePokemonSpecies(user, pokemonId, {
+        kind: "form", targetSpeciesId: selectedFormId, expectedVersion: getTransformVersion(pokemon),
+      });
+      if (!result.data) {
         setMessage(`Error: ${result.err}`);
         await refreshTrainer();
         await refreshPokemon();
       } else {
-        const newPokemon = result.data;
+        const { pokemon: newPokemon } = result.data;
         setPokemon(newPokemon);
         await refreshTrainer();
         setMessage(

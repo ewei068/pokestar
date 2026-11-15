@@ -3,15 +3,23 @@ import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { ApiError } from "../http";
 import { CollectionWorkspace } from "../collection/CollectionWorkspace";
 import { usePlayer } from "./PlayerProvider";
-import { pokemonUpgradeHref, readPokemonUpgrade, routeHref } from "../navigation/routes";
+import { pokemonHref, pokemonUpgradeHref, pokemonUpgradeTabs, readOwnedPokemon, readPokemonUpgrade } from "../navigation/routes";
 import { PokemonUpgradeWorkspace } from "../upgrades/PokemonUpgradeWorkspace";
 import { EquipmentFeature } from "../upgrades/EquipmentFeature";
 import type { PokemonUpgradeRoute } from "../navigation/routes";
 import { ItemNatureFeature } from "../upgrades/ItemNatureFeature";
+import { TransformationFeature } from "../upgrades/TransformationFeature";
 import { TrainingFeature } from "../upgrades/TrainingFeature";
 import type { CollectionQuery, PlayerOperation } from "./types";
 
-const selectionFromUrl = () => new URL(window.location.href).searchParams.get("owned");
+const upgradeFeatures = {
+  train: TrainingFeature,
+  build: ItemNatureFeature,
+  equipment: EquipmentFeature,
+  transformation: TransformationFeature,
+};
+
+const selectionFromUrl = () => readOwnedPokemon(new URL(window.location.href));
 const initialQuery: CollectionQuery = { page: 1, pageSize: 24, search: "", sort: "recent", order: "asc" };
 const operationError = (error: unknown) => {
   if (error instanceof ApiError && error.status < 500) {
@@ -63,8 +71,7 @@ export const CollectionFeature = () => {
   useEffect(() => {
     const url = new URL(window.location.href);
     if (url.searchParams.has("upgrade") && !readPokemonUpgrade(url)) {
-      url.searchParams.delete("upgrade");
-      window.history.replaceState(window.history.state, "", url);
+      window.history.replaceState(window.history.state, "", pokemonHref(url, readOwnedPokemon(url)));
     }
   }, [upgrade]);
   const mutation = useMutation({ mutationKey: [...data.prefix, "interaction"], mutationFn: (operation: PlayerOperation) => data.perform(operation),
@@ -90,10 +97,7 @@ export const CollectionFeature = () => {
     if (mutation.isPending) return;
     setSelectedId(id);
     const url = new URL(window.location.href);
-    if (url.searchParams.get("owned") !== id) {
-      url.searchParams.set("owned", id);
-      window.history.pushState(null, "", `${url.pathname}${url.search}${url.hash}`);
-    }
+    if (readOwnedPokemon(url) !== id) window.history.pushState(null, "", pokemonHref(url, id));
     if (!fresh(data.pokemon(id).queryKey)) perform({ kind: "inspect", pokemonId: id });
   };
   const train = (id: string) => {
@@ -116,13 +120,14 @@ export const CollectionFeature = () => {
   const closeUpgrade = () => {
     if (returnContext.current && window.history.state?.pokemonUpgradeFrom === returnContext.current.href) window.history.back();
     else {
-      window.history.replaceState(window.history.state, "", routeHref(new URL(window.location.href), { page: "pokemon", battleId: null }));
+      window.history.replaceState(window.history.state, "", pokemonHref(new URL(window.location.href), upgrade?.pokemonId ?? null));
       window.dispatchEvent(new window.PopStateEvent("popstate"));
     }
   };
   const missing = detail.error instanceof ApiError && detail.error.status === 404;
   const readError = missing ? "This Pokémon is no longer in your collection." :
     collection.isError || party.isError || (selectedId && detail.isError) ? "Couldn't refresh your Pokémon. Try again when you're connected." : null;
+  const UpgradeFeature = upgrade && upgradeFeatures[upgrade.feature];
   return <main className="page-shell owned-page">
     <div ref={collectionView} hidden={Boolean(upgrade)}><h1>Your Pokémon</h1>
     <CollectionWorkspace collection={collection.data} party={party.data} pokemon={missing ? undefined : detail.data}
@@ -130,9 +135,9 @@ export const CollectionFeature = () => {
       onTrain={train} active={!upgrade}
       onOperation={perform} pending={mutation.isPending} loading={collection.isPending || collection.isPlaceholderData} detailUnavailable={missing} detailLoading={Boolean(selectedId) && detail.isPending}
       error={message || readError} onRefresh={() => { setMessage(null); void data.refresh(); }} /></div>
-    {upgrade && <PokemonUpgradeWorkspace pokemonId={upgrade.pokemonId} title={upgrade.feature === "train" ? "Train" : upgrade.feature === "build" ? "Item & nature" : "Equipment"}
+    {upgrade && UpgradeFeature && <PokemonUpgradeWorkspace pokemonId={upgrade.pokemonId} title={pokemonUpgradeTabs[upgrade.feature]}
       feature={upgrade.feature} onFeatureChange={changeUpgrade} onBack={closeUpgrade}>
-      {upgrade.feature === "train" ? <TrainingFeature pokemonId={upgrade.pokemonId} /> : upgrade.feature === "build" ? <ItemNatureFeature pokemonId={upgrade.pokemonId} /> : <EquipmentFeature pokemonId={upgrade.pokemonId} />}
+      <UpgradeFeature pokemonId={upgrade.pokemonId} />
     </PokemonUpgradeWorkspace>}
   </main>;
 };

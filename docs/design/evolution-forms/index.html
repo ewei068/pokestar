@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Evolution &amp; forms · Pokestar design study</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/upgrade-tabs.css">
+  <link rel="stylesheet" href="/study.css">
+  <script type="module" src="/study.js"></script>
+</head>
+<body>
+  <div class="app">
+    <a class="skip-link" href="#site-content">Skip to content</a>
+    <header class="site-header has-trainer">
+      <span class="brand"><span class="brand-mark" aria-hidden="true">✦</span>Pokestar</span>
+      <div class="trainer-resources">
+        <div class="trainer-money" role="group" aria-label="Money"><span data-icon="money"></span><span class="trainer-money-label">Money</span><span id="money"></span></div>
+        <div class="trainer-mobile-identity">Leaf <span class="trainer-level">Lv. 18</span></div>
+      </div>
+      <div class="site-controls">
+        <span class="icon-button" data-icon="bag" aria-label="Bag"></span>
+        <span class="study-account">Leaf <span class="trainer-level">Lv. 18</span></span>
+        <span class="icon-button" data-icon="settings" aria-label="Settings"></span>
+      </div>
+    </header>
+    <div class="site-layout">
+      <nav class="system-bar" aria-label="Main navigation" id="navigation"></nav>
+      <main class="site-content" id="site-content" tabindex="-1">
+        <div class="page-shell" id="page"></div>
+      </main>
+    </div>
+  </div>
+  <aside class="study-tools" aria-label="Design study controls">
+    <details id="study-menu">
+      <summary>Design study</summary>
+      <div class="study-fields">
+        <label for="fixture">Scenario</label>
+        <select class="study-select" id="fixture">
+          <option value="eevee">Eevee · choose an evolution</option>
+          <option value="rotom">Rotom · choose a form</option>
+          <option value="return-form">Rotom-Wash · return to a form</option>
+          <option value="locked">Charmeleon · level required</option>
+          <option value="empty">Charizard · no choices</option>
+          <option value="poor">Rotom · insufficient money</option>
+          <option value="slow">Eevee · slow confirmation</option>
+          <option value="stale">Rotom · changed elsewhere</option>
+          <option value="unknown">Rotom · lost confirmation response</option>
+          <option value="failed">Rotom · change rejected</option>
+          <option value="loading">Loading</option>
+          <option value="load-error">Load failed</option>
+          <option value="long">Rotom · long nickname and missing art</option>
+        </select>
+        <button class="ui-button" id="reset">Reset scenario</button>
+      </div>
+    </details>
+    <div class="variant-controls" aria-label="Layout">
+      <button id="variant-prev" aria-label="Previous layout">‹</button>
+      <span id="variant" aria-live="polite"></span>
+      <button id="variant-next" aria-label="Next layout">›</button>
+    </div>
+  </aside>
+  <dialog id="preview-dialog" aria-labelledby="dialog-heading"></dialog>
+</body>
+</html>

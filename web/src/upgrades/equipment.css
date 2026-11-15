@@ -52,8 +52,6 @@
 .equipment-guide input[type="range"] { width: 100%; accent-color: var(--site-gold); }
 .equipment-guide output { display: block; color: var(--site-gold); font-size: 22px; margin-top: 15px; }
 @media (max-width: 760px) {
-  .pokemon-upgrade-tabs { gap: 6px; }
-  .pokemon-upgrade-tabs button { flex: 1; padding: 8px 5px; font-size: 13px; }
   .equipment-layout { grid-template-columns: minmax(0, 1fr); gap: 14px; }
   .equipment-choices > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .equipment-choices .equipment-choice { padding: 13px 8px; gap: 7px; border-bottom: 1px solid var(--site-rule); }

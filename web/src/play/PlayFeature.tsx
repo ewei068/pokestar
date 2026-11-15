@@ -4,6 +4,7 @@ import { usePlayer } from "../player/PlayerProvider";
 import { CollectionArtwork } from "../collection/CollectionArtwork";
 import { BattleList } from "../battles/BattleList";
 import { ApiError } from "../http";
+import { PageBack } from "../navigation/PageBack";
 import { playHref, readPlayRoute, routeHref } from "../navigation/routes";
 import type { PlayRoute } from "../navigation/routes";
 import { NpcParty } from "./NpcParty";
@@ -108,7 +109,7 @@ export function PlayFeature() {
     {view === null && <p className="npc-empty" role="status">{ongoing.isError ? "Choose Trainer battles or refresh to try again." : "Loading battles…"}</p>}
     {view === "continue" && ongoing.data && <BattleList battles={ongoing.data} npcs={catalog.data || []} dungeons={dungeons.data || []} floors={tower.data?.floors || []} />}
     {view === "trainers" && <>
-      {selection.npcId && <button ref={mobileBack} type="button" className="npc-mobile-back" onClick={() => update({ view: "trainers", npcId: null, difficulty: null })}>‹ All trainers</button>}
+      {selection.npcId && <PageBack buttonRef={mobileBack} className="npc-mobile-back" label="All trainers" onBack={() => update({ view: "trainers", npcId: null, difficulty: null })} />}
       {message && <p className="npc-notice" role="alert">{message}</p>}
       {party.data && (members.length === 0 || members.some(member => !member.battleEligible)) && <p className="npc-notice">
         {members.length === 0 ? "Add a Pokémon to your party to start." : "Your party has a Pokémon that can't battle."} <a className="ui-button npc-secondary" href={routeHref(new URL(window.location.href), { page: "pokemon", battleId: null })}>Edit party</a></p>}
@@ -142,8 +143,8 @@ export function PlayFeature() {
         </div>}
     </>}
     {(view === "dungeons" || view === "tower") && <>
-      {view === "dungeons" && selection.dungeonId && <button ref={mobileBack} type="button" className="npc-mobile-back" onClick={() => update({ view: "dungeons", dungeonId: null, difficulty: null })}>‹ All dungeons</button>}
-      {view === "tower" && selection.floor != null && <button ref={mobileBack} type="button" className="npc-mobile-back" onClick={() => update({ view: "tower", floor: null })}>‹ All floors</button>}
+      {view === "dungeons" && selection.dungeonId && <PageBack buttonRef={mobileBack} className="npc-mobile-back" label="All dungeons" onBack={() => update({ view: "dungeons", dungeonId: null, difficulty: null })} />}
+      {view === "tower" && selection.floor != null && <PageBack buttonRef={mobileBack} className="npc-mobile-back" label="All floors" onBack={() => update({ view: "tower", floor: null })} />}
       {message && <p className="npc-notice" role="alert">{message}</p>}
       {party.data && !partyReady && <p className="npc-notice">{members.length === 0 ? "Add a Pokémon to your party to start." : "Your party has a Pokémon that can't battle."} <a className="ui-button npc-secondary" href={routeHref(new URL(window.location.href), { page: "pokemon", battleId: null })}>Edit party</a></p>}
       {view === "dungeons" && (dungeons.isPending ? <p className="npc-empty" role="status">Loading dungeons…</p> : <DungeonPlay dungeons={dungeons.data || []} selectedId={dungeon?.id || null} difficultyId={selection.difficulty} pending={mutation.isPending} canStart={partyReady}

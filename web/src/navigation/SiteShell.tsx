@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import { SettingsMenu } from "../settings/AudioSettings";
-import { mainPages, routeHref } from "./routes";
+import { mainPages, navigationHref, routeHref } from "./routes";
 import type { SitePage, SiteRoute } from "./routes";
 import { SiteIcon } from "./SiteIcon";
 import { useSiteRoute } from "./useSiteRoute";
@@ -35,7 +35,7 @@ export const SiteShell = ({ children, account, resources }: {
         <span className="brand-mark" aria-hidden="true">✦</span>Pokestar</a>
       {resources}
       <div className="site-controls">
-        <a className="icon-button bag-link" href={routeHref(currentUrl, { page: "bag", battleId: null })}
+        <a className="icon-button bag-link" href={navigationHref(currentUrl, "bag")}
           aria-label="Bag" aria-current={route.page === "bag" ? "page" : undefined}><SiteIcon name="bag" /></a>
         {account}
         <SettingsMenu />
@@ -43,7 +43,7 @@ export const SiteShell = ({ children, account, resources }: {
     </header>
     <div className="site-layout">
       <nav className="system-bar" aria-label="Main navigation">
-        {mainPages.map(page => <a key={page} href={routeHref(currentUrl, { page, battleId: null })}
+        {mainPages.map(page => <a key={page} href={navigationHref(currentUrl, page)}
           aria-current={route.page === page ? "page" : undefined}>
           <SiteIcon name={page} /><span>{pageLabels[page]}</span><span className="nav-arrow" aria-hidden="true">›</span>
         </a>)}

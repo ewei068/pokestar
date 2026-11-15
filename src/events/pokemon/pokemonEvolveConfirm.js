@@ -7,8 +7,8 @@
  * pokemonEvolveConfirm.js builds the after-confirmation menu for the relevant user's pokemon evolution.
  */
 const { getState, deleteState } = require("../../services/state");
-const { getTrainer } = require("../../services/trainer");
-const { getPokemon, evolvePokemon } = require("../../services/pokemon");
+const { changePokemonSpecies } = require("../../services/pokemonTransform");
+const { pokemonConfig } = require("../../config/pokemonConfig");
 const { DEPRECATEDbuildPokemonEmbed } = require("../../embeds/pokemonEmbeds");
 
 const pokemonEvolveConfirm = async (interaction, data) => {
@@ -26,38 +26,22 @@ const pokemonEvolveConfirm = async (interaction, data) => {
     return { err: "This interaction was not initiated by you." };
   }
   // if no pokemon selected, return
-  if (!state.speciesId) {
-    return { err: "No pokemon selected." };
+  if (!state.speciesId || data.targetSpeciesId !== state.speciesId) {
+    return { err: "Choose an evolution again before confirming." };
   }
 
-  // get trainer
-  const trainer = await getTrainer(interaction.user);
-  if (trainer.err) {
-    return { err: trainer.err };
-  }
-
-  // get pokemon
-  const pokemon = await getPokemon(trainer.data, state.pokemonId);
-  if (pokemon.err) {
-    return { err: pokemon.err };
-  }
-  const originalName = pokemon.data.name;
-
-  // evolve pokemon
-  const { speciesId } = state;
-  const evolveResult = await evolvePokemon(pokemon.data, speciesId);
-  if (evolveResult.err) {
-    return { err: evolveResult.err };
-  }
-  const { pokemon: evolvedPokemon, species: newName } = evolveResult.data;
-
-  // update embed to selected evolution
-  const embed = DEPRECATEDbuildPokemonEmbed(trainer.data, evolvedPokemon);
+  const result = await changePokemonSpecies(interaction.user, state.pokemonId, {
+    kind: "evolve", targetSpeciesId: data.targetSpeciesId, expectedVersion: state.version,
+  });
+  if (!result.data) return { err: result.err };
+  const { trainer, pokemon, previousName, targetSpeciesId } = result.data;
+  const newName = pokemonConfig[targetSpeciesId].name;
+  const embed = DEPRECATEDbuildPokemonEmbed(trainer, pokemon);
 
   deleteState(data.stateId);
 
   await interaction.update({
-    content: `Your ${originalName} evolved into a ${newName}!`,
+    content: `Your ${previousName} evolved into a ${newName}!${result.warning ? `\n${result.warning}` : ""}`,
     embeds: [embed],
     components: [],
   });
